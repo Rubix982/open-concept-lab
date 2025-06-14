@@ -1,0 +1,38 @@
+- id: 1
+  name: Transformer From Scratch
+  path: ai/transformer-from-scratch
+  domain: AI
+  status: completed
+  languages: [Python]
+  tags: [transformer, mlp, llm]
+  related_paper: https://arxiv.org/abs/1706.03762
+  summary: Simple transformer to understand self-attention.
+
+- id: 2
+  name: Toy TLS Implementation
+  path: security/toy-tls
+  domain: Security
+  status: in-progress
+  languages: [Rust]
+  tags: [tls, crypto, rustls]
+  related_paper: null
+  summary: Implements basic TLS 1.2 handshake using Rust primitives.
+
+- id: 3
+  name: OS Scheduler Simulator
+  path: systems/os-scheduler-sim
+  domain: Systems
+  status: planned
+  languages: [Rust]
+  tags: [os, scheduling, rust]
+  related_paper: null
+  summary: Preemptive priority scheduling simulator.
+
+- id: 4
+  name: CUDA Sorting Benchmarks
+  path: hpc/cuda-sorting-benchmarks
+  domain: HPC
+  status: completed
+  languages: [C++]
+  tags: [cuda, sorting, gpu]
+  summary: Benchmarked different GPU-based sorting algorithms.
