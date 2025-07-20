@@ -2,39 +2,59 @@
 
 This system helps prospective students, collaborators, or researchers **identify active faculty** in specific research areas, along with **their affiliations, recent funding from NSF, and latest publications** — all in a searchable and mappable format.
 
+- [Rank NSF Linker](#rank-nsf-linker)
+  - [🧭 Use Cases](#-use-cases)
+  - [🔁 Step-by-Step Pipeline](#-step-by-step-pipeline)
+  - [Expected Outcome](#expected-outcome)
+  - [🔗 Algorithm: Mapping CS Faculty to NSF Awards \& Google Scholar Publications](#-algorithm-mapping-cs-faculty-to-nsf-awards--google-scholar-publications)
+    - [🧠 Step-by-Step Algorithm](#-step-by-step-algorithm)
+  - [🛠️ Expand Features to Support Further Use Cases](#️-expand-features-to-support-further-use-cases)
+
+## 🧭 Use Cases
+
+| Use-Case                                      | Description                                                                                                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧑‍🎓 **Prospective MS/PhD Students**            | See what’s being funded, who’s doing the research, and what topics are hot — across US/EU universities. Perfect for tailoring applications.          |
+| 🧠 **Independent Researchers**                | Track research momentum across institutions. Identify trends, labs, grants. Plan their own research or apply for funding.                            |
+| 🧑‍🏫 **Professors / Advisors**                  | Compare institutions, find potential collaborators or co-PIs. Spot underfunded areas. Use NSF history to write better proposals.                     |
+| 🧑‍💼 **Policymakers / Think Tanks**             | Visualize how much money is flowing into AI, Security, etc. across universities. See regional biases or funding trends.                              |
+| 🧑‍💻 **Open-Source Contributors**               | Use it to find professors or teams doing real research in fields they care about (like formal methods, distributed systems) and offer collaboration. |
+| 📚 **Academic Bloggers / Journalists**        | Great for pulling stories: “Top 5 institutions funded in AI last 3 years”, “Security vs. Privacy funding over time” etc.                             |
+| 🧑‍🔬 **Industry Researchers / Hiring Managers** | Spot rising academic talent by tracking who's publishing _and_ getting funded — helps recruitment or scouting for partnerships.                      |
+
 ## 🔁 Step-by-Step Pipeline
 
 1. **Filter Faculty by Area & Region**
 
-   * Parse CSRankings dataset (`generated-author-info.csv`)
-   * Use `AREA_GROUPS` to match subareas to top-level domains (e.g., AI, Systems, etc.)
-   * Allow selection of countries/regions (e.g., US, Germany, Australia)
-   * Deduplicate faculty records by name and department
+   - Parse CSRankings dataset (`generated-author-info.csv`)
+   - Use `AREA_GROUPS` to match subareas to top-level domains (e.g., AI, Systems, etc.)
+   - Allow selection of countries/regions (e.g., US, Germany, Australia)
+   - Deduplicate faculty records by name and department
 
 2. **Map Faculty to University Geolocation**
 
-   * Use institutional CSVs to locate each university's latitude and longitude
-   * Visualize all matches on an interactive map using `folium`, color-coded by area group
-   * Popups show individual faculty, their departments, and matched research venues
+   - Use institutional CSVs to locate each university's latitude and longitude
+   - Visualize all matches on an interactive map using `folium`, color-coded by area group
+   - Popups show individual faculty, their departments, and matched research venues
 
 3. **Integrate NSF Funding Data**
 
-   * Download annual NSF Award Search ZIP files (2019-2025)
-   * Extract and normalize project data (e.g., PI, university, title, abstract)
-   * Join awards to faculty using cleaned names and affiliations
-   * Optionally allow filtering by keyword or award amount
+   - Download annual NSF Award Search ZIP files (2019-2025)
+   - Extract and normalize project data (e.g., PI, university, title, abstract)
+   - Join awards to faculty using cleaned names and affiliations
+   - Optionally allow filtering by keyword or award amount
 
 4. **Enhance with Recent Research Activity**
 
-   * Match faculty to their **Google Scholar** profiles (planned via scraping or Semantic Scholar/ORCID APIs)
-   * Fetch latest 3-5 publications per professor
-   * Display titles, publication year, and direct links in popups or reports
+   - Match faculty to their **Google Scholar** profiles (planned via scraping or Semantic Scholar/ORCID APIs)
+   - Fetch latest 3-5 publications per professor
+   - Display titles, publication year, and direct links in popups or reports
 
 5. **Output Modes**
 
-   * 📦 Export to CSV with all metadata: name, affiliation, area, homepage, NSF awards, recent papers
-   * 🗺️ Generate map (`university_map.html`) to visually explore global research hotspots
-   * 📊 Optionally extend with charts: top-funded areas, award counts by year, etc.
+   - 📦 Export to CSV with all metadata: name, affiliation, area, homepage, NSF awards, recent papers
+   - 🗺️ Generate map (`university_map.html`) to visually explore global research hotspots
+   - 📊 Optionally extend with charts: top-funded areas, award counts by year, etc.
 
 ## Expected Outcome
 
@@ -94,3 +114,16 @@ This algorithm enhances the core faculty selection tool by connecting researcher
        │     → NSF awards (with links)
        │     → Recent publications (Google Scholar)
 ```
+
+## 🛠️ Expand Features to Support Further Use Cases
+
+| Feature                                                  | Why Add It                                                           |
+| -------------------------------------------------------- | -------------------------------------------------------------------- |
+| 🧭 **Smart Filters** (Year, Funding Size, Research Area) | Helps zoom in on the “AI 2023 under \$1M” type of question           |
+| 🧑‍🔬 **Faculty Profile Pages**                             | Like mini pages showing name, institution, NSF grants, papers        |
+| 📄 **Paper ↔ Grant Linkage**                             | If a paper links to a grant (via award ID or PI), show it            |
+| 💰 **Funding Trend Timelines**                           | Show bar graphs / line charts for AI, Systems, Security across years |
+| 📍 **Regional Funding Breakdown**                        | Show how funding is distributed within US or Europe                  |
+| 📤 **Export Options** (CSV, JSON)                        | Helps bloggers, journalists, students do deeper dives                |
+| 🔄 **Daily/Weekly Sync with NSF API**                    | Keep data fresh                                                      |
+| 💡 **“Suggested Researchers” Engine**                    | “If you liked this grant/lab, here are similar ones”                 |

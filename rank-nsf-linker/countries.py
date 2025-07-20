@@ -138,7 +138,7 @@ def filter_faculty_by_country(
         # Normalize university key by removing common suffixes
         country_code = uni_country_map.get(uni_key)
         if not country_code:
-            logger.info(f"⚠️ No country code found for university: {uni_key}")
+            logger.warning(f"⚠️ No country code found for university: {uni_key}")
             not_found_country_codes.add(uni_key.title())
             continue
 

@@ -1,0 +1,433 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "properties": {
+    "awd_id": {
+      "type": "string"
+    },
+    "agcy_id": {
+      "type": "string"
+    },
+    "tran_type": {
+      "type": "string"
+    },
+    "awd_istr_txt": {
+      "type": "string"
+    },
+    "awd_titl_txt": {
+      "type": "string"
+    },
+    "cfda_num": {
+      "type": "string"
+    },
+    "org_code": {
+      "type": "string"
+    },
+    "po_phone": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "po_email": {
+      "type": "string"
+    },
+    "po_sign_block_name": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "awd_eff_date": {
+      "type": "string"
+    },
+    "awd_exp_date": {
+      "type": "string"
+    },
+    "tot_intn_awd_amt": {
+      "type": "number"
+    },
+    "awd_amount": {
+      "type": "number"
+    },
+    "awd_min_amd_letter_date": {
+      "type": "string"
+    },
+    "awd_max_amd_letter_date": {
+      "type": "string"
+    },
+    "awd_abstract_narration": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "awd_arra_amount": {
+      "type": "number"
+    },
+    "dir_abbr": {
+      "type": "string"
+    },
+    "org_dir_long_name": {
+      "type": "string"
+    },
+    "div_abbr": {
+      "type": "string"
+    },
+    "org_div_long_name": {
+      "type": "string"
+    },
+    "awd_agcy_code": {
+      "type": "string"
+    },
+    "fund_agcy_code": {
+      "type": "string"
+    },
+    "pi": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pi_role": {
+            "type": "string"
+          },
+          "pi_first_name": {
+            "type": "string"
+          },
+          "pi_last_name": {
+            "type": "string"
+          },
+          "pi_mid_init": {
+            "type": "string"
+          },
+          "pi_sufx_name": {
+            "type": "string"
+          },
+          "pi_full_name": {
+            "type": "string"
+          },
+          "pi_email_addr": {
+            "type": "string"
+          },
+          "nsf_id": {
+            "type": "string"
+          },
+          "pi_start_date": {
+            "type": "string"
+          },
+          "pi_end_date": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "required": [
+          "nsf_id",
+          "pi_email_addr",
+          "pi_end_date",
+          "pi_first_name",
+          "pi_full_name",
+          "pi_last_name",
+          "pi_mid_init",
+          "pi_role",
+          "pi_start_date",
+          "pi_sufx_name"
+        ]
+      }
+    },
+    "inst": {
+      "type": "object",
+      "properties": {
+        "inst_name": {
+          "type": "string"
+        },
+        "inst_street_address": {
+          "type": "string"
+        },
+        "inst_street_address_2": {
+          "type": "string"
+        },
+        "inst_city_name": {
+          "type": "string"
+        },
+        "inst_state_code": {
+          "type": "string"
+        },
+        "inst_state_name": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "inst_phone_num": {
+          "type": "string"
+        },
+        "inst_zip_code": {
+          "type": "string"
+        },
+        "inst_country_name": {
+          "type": "string"
+        },
+        "cong_dist_code": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "st_cong_dist_code": {
+          "type": "string"
+        },
+        "org_lgl_bus_name": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "org_prnt_uei_num": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "org_uei_num": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "required": [
+        "cong_dist_code",
+        "inst_city_name",
+        "inst_country_name",
+        "inst_name",
+        "inst_phone_num",
+        "inst_state_code",
+        "inst_state_name",
+        "inst_street_address",
+        "inst_street_address_2",
+        "inst_zip_code",
+        "org_lgl_bus_name",
+        "org_prnt_uei_num",
+        "org_uei_num",
+        "st_cong_dist_code"
+      ]
+    },
+    "perf_inst": {
+      "type": "object",
+      "properties": {
+        "perf_inst_name": {
+          "type": "string"
+        },
+        "perf_str_addr": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "perf_city_name": {
+          "type": "string"
+        },
+        "perf_st_code": {
+          "type": "string"
+        },
+        "perf_st_name": {
+          "type": "string"
+        },
+        "perf_zip_code": {
+          "type": "string"
+        },
+        "perf_ctry_code": {
+          "type": "string"
+        },
+        "perf_cong_dist": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "perf_st_cong_dist": {
+          "type": "string"
+        },
+        "perf_ctry_name": {
+          "type": "string"
+        },
+        "perf_ctry_flag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "perf_city_name",
+        "perf_cong_dist",
+        "perf_ctry_code",
+        "perf_ctry_flag",
+        "perf_ctry_name",
+        "perf_inst_name",
+        "perf_st_code",
+        "perf_st_cong_dist",
+        "perf_st_name",
+        "perf_str_addr",
+        "perf_zip_code"
+      ]
+    },
+    "pgm_ele": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pgm_ele_code": {
+                "type": "string"
+              },
+              "pgm_ele_name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pgm_ele_code",
+              "pgm_ele_name"
+            ]
+          }
+        }
+      ]
+    },
+    "pgm_ref": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pgm_ref_code": {
+                "type": "string"
+              },
+              "pgm_ref_txt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "pgm_ref_code",
+              "pgm_ref_txt"
+            ]
+          }
+        }
+      ]
+    },
+    "app_fund": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "app_code": {
+            "type": "string"
+          },
+          "app_name": {
+            "type": "string"
+          },
+          "app_symb_id": {
+            "type": "string"
+          },
+          "fund_code": {
+            "type": "string"
+          },
+          "fund_name": {
+            "type": "string"
+          },
+          "fund_symb_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "app_code",
+          "app_name",
+          "app_symb_id",
+          "fund_code",
+          "fund_name",
+          "fund_symb_id"
+        ]
+      }
+    },
+    "oblg_fy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fund_oblg_fiscal_yr": {
+            "type": "integer"
+          },
+          "fund_oblg_amt": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "fund_oblg_amt",
+          "fund_oblg_fiscal_yr"
+        ]
+      }
+    },
+    "por": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "por_cntn": {
+              "type": "string"
+            },
+            "por_txt_cntn": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "por_cntn",
+            "por_txt_cntn"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "agcy_id",
+    "app_fund",
+    "awd_abstract_narration",
+    "awd_agcy_code",
+    "awd_amount",
+    "awd_arra_amount",
+    "awd_eff_date",
+    "awd_exp_date",
+    "awd_id",
+    "awd_istr_txt",
+    "awd_max_amd_letter_date",
+    "awd_min_amd_letter_date",
+    "awd_titl_txt",
+    "cfda_num",
+    "dir_abbr",
+    "div_abbr",
+    "fund_agcy_code",
+    "inst",
+    "oblg_fy",
+    "org_code",
+    "org_dir_long_name",
+    "org_div_long_name",
+    "perf_inst",
+    "pgm_ele",
+    "pgm_ref",
+    "pi",
+    "po_email",
+    "po_phone",
+    "po_sign_block_name",
+    "por",
+    "tot_intn_awd_amt",
+    "tran_type"
+  ]
+}
