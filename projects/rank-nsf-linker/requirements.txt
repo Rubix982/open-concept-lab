@@ -13,6 +13,6 @@ Pygments==2.19.1
 questionary==2.1.0
 requests==2.32.4
 rich==14.0.0
-urllib3==2.4.0
+urllib3==2.5.0
 wcwidth==0.2.13
 xyzservices==2025.4.0
