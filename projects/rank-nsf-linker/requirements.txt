@@ -9,7 +9,7 @@ MarkupSafe==3.0.2
 mdurl==0.1.2
 numpy==2.3.1
 prompt_toolkit==3.0.51
-Pygments==2.19.1
+Pygments==2.19.2
 questionary==2.1.0
 requests==2.32.4
 rich==14.0.0
