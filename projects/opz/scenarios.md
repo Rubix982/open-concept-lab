@@ -11,15 +11,6 @@
 | Container Escape Simulation                                | PodSecurityPolicy, Seccomp, AppArmor, Runtime Hardening          |
 | False Positives in DevSecOps Scanners                      | Semgrep, Trivy, Prioritization, Suppression Best Practices       |
 | Logging Blind Spot During an Attack                        | Loki, Fluent Bit, Metrics vs Logs, Postmortem Writing            |
-| Pipeline Secrets Exfiltration                              | GitHub Actions, Secret Scanning, Vaults, Threat Modeling         |
-| Drift in IaC Deployments                                   | Terraform, State Conflicts, GitOps Sync Failures                 |
-| Kubernetes Misconfigured RBAC Attack                       | K8s, RBAC, SecurityContext, NetworkPolicies                      |
-| Incident: Outage due to Ingress Controller Misconfig       | NGINX, Helm, Load Balancing, Logs                                |
-| Broken Canary Deployment                                   | Argo Rollouts, Prometheus Alerts, Rollback Strategy              |
-| S3 Bucket Data Leak Simulation                             | AWS IAM Policies, Misconfigured ACLs, Guardrails                 |
-| Container Escape Simulation                                | PodSecurityPolicy, Seccomp, AppArmor, Runtime Hardening          |
-| False Positives in DevSecOps Scanners                      | Semgrep, Trivy, Prioritization, Suppression Best Practices       |
-| Logging Blind Spot During an Attack                        | Loki, Fluent Bit, Metrics vs Logs, Postmortem Writing            |
 | GitOps Desync Leads to Drifted Production                  | ArgoCD, Flux, Terraform, Event-Driven Syncs                      |
 | DNS Misconfiguration Leads to Partial Outage               | Route53, ExternalDNS, Health Checks, HAProxy                     |
 | Rate Limiting Not Enforced on Public API                   | NGINX, AWS API Gateway, DoS Prevention                           |
