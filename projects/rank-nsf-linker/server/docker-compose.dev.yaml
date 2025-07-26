@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: cgr.dev/chainguard/postgres
+    container_name: pg17-local
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./conf/pg_hba.dev.conf:/etc/postgresql/pg_hba.conf:ro
+      - ./conf/postgresql.dev.conf:/etc/postgresql/postgresql.conf:ro
+      - ./certs:/certs:ro
+    command:
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+      - "-c"
+      - "ssl=on"
+      - "-c"
+      - "ssl_cert_file=/certs/server.crt"
+      - "-c"
+      - "ssl_key_file=/certs/server.key"
+      - "-c"
+      - "ssl_ca_file=/certs/ca.crt"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+
+  go-server:
+    container_name: go-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../data:/app/data:rw
+      - ../backup:/app/backup:rw
+      - ../target:/app/target:rw
+      - ./certs:/certs:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: postgres://postgres:postgres@pg17-local:5432/mydb
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    command: ["./go-server"]
+
+volumes:
+  pg_data:
