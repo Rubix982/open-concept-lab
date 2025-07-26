@@ -205,3 +205,6 @@ data/**/**
 CSrankings/
 __pycache__/**/**
 out
+
+# Deck GL
+deck.gl/**/**
