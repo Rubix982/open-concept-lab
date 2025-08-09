@@ -11,7 +11,11 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pg_data:/var/lib/postgresql/data
+<<<<<<< HEAD
       - ./conf/pg_hba.dev.conf:/etc/postgresql/pg_hba.conf:ro
+=======
+      - ./conf/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+>>>>>>> b07a97bd4e1306bca615bd2d96ebd3912a2a7df4
       - ./conf/postgresql.dev.conf:/etc/postgresql/postgresql.conf:ro
       - ./certs:/certs:ro
     command:
