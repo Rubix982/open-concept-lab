@@ -11,9 +11,9 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./conf/pg_hba.prod.conf:/etc/postgresql/pg_hba.conf:ro
-      - ./conf/postgresql.prod.conf:/etc/postgresql/postgresql.conf:ro
-      - ./certs:/certs:ro
+      - ./server/conf/pg_hba.prod.conf:/etc/postgresql/pg_hba.conf:ro
+      - ./server/conf/postgresql.prod.conf:/etc/postgresql/postgresql.conf:ro
+      - ./server/certs:/certs:ro
     command:
       - "-c"
       - "config_file=/etc/postgresql/postgresql.conf"
@@ -40,11 +40,11 @@ services:
   go-server:
     container_name: go-server
     build:
-      context: .
+      context: server/
       dockerfile: Dockerfile
     volumes:
-      - ../data:/app/data:rw
-      - ../backup:/app/backup:rw
+      - ./data:/app/data:rw
+      - ./backup:/app/backup:rw
       - ./certs:/certs:ro
     depends_on:
       postgres:
@@ -59,7 +59,18 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
-    command: ["./go-server"]
+    command: ["./server/go-server"]
+
+  web:
+    container_name: web-ui
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"  # Nginx in Dockerfile serves on 80, mapped to 3000 locally
+    depends_on:
+      - go-server
+    restart: unless-stopped
 
 volumes:
   pg_data:
