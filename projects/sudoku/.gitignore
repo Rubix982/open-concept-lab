@@ -1,0 +1,3 @@
+.env
+.venv/**/**
+soup_dump.html
