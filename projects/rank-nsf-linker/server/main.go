@@ -43,8 +43,8 @@ func main() {
 		return
 	}
 
-	if initDuckDbErr := populatePostgresFromCSVs(); initDuckDbErr != nil {
-		logger.Errorf("failed to initialise duck db: %v", initDuckDbErr)
+	if initPostgresErr := populatePostgresFromCSVs(); initPostgresErr != nil {
+		logger.Errorf("failed to initialize postgres: %v", initPostgresErr)
 		return
 	}
 

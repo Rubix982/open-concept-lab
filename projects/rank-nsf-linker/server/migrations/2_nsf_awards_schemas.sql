@@ -1,28 +1,4 @@
 CREATE TABLE
-    IF NOT EXISTS university (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        country_code TEXT,
-        latitude REAL,
-        longitude REAL,
-        region TEXT,
-        country_name TEXT
-    );
-
-CREATE TABLE
-    IF NOT EXISTS professor (
-        name TEXT,
-        affiliation_id TEXT REFERENCES university (id),
-        homepage TEXT,
-        scholar_id TEXT,
-        departments TEXT,
-        research_area TEXT,
-        paper_count REAL,
-        adjusted_count REAL,
-        year INTEGER
-    );
-
-CREATE TABLE
     IF NOT EXISTS award (
         award_id TEXT PRIMARY KEY,
         agency_id TEXT,
@@ -47,8 +23,7 @@ CREATE TABLE
         division_abbr TEXT,
         division_name TEXT,
         awarding_agency_code TEXT,
-        funding_agency_code TEXT,
-        institution_id TEXT REFERENCES university (id)
+        funding_agency_code TEXT
     );
 
 CREATE TABLE
@@ -145,7 +120,6 @@ CREATE TABLE
     IF NOT EXISTS investigator (
         name TEXT,
         email TEXT,
-        institution_id TEXT REFERENCES university (id),
         is_professor BOOLEAN
     );
 
@@ -154,12 +128,4 @@ CREATE TABLE
         award_id TEXT REFERENCES award (award_id),
         contributor_name TEXT,
         role TEXT
-    );
-
-CREATE TABLE
-    IF NOT EXISTS country (
-        code TEXT PRIMARY KEY,
-        name TEXT,
-        region TEXT,
-        subregion TEXT
     );

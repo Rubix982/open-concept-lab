@@ -24,12 +24,6 @@ var (
 	COUNTRY_INFO_FILENAME = "country-info.csv"
 	GEOLOCATION_FILENAME  = "geolocation.csv"
 
-	CSRankingsFile  = getDataFilePath(CSRANKINGS_FILENAME)
-	GenAuthorFile   = getDataFilePath(GEN_AUTHOR_FILENAME)
-	CountriesFile   = getDataFilePath(COUNTRIES_FILENAME)
-	CountryInfoFile = getDataFilePath(COUNTRY_INFO_FILENAME)
-	GeolocationFile = getDataFilePath(GEOLOCATION_FILENAME)
-
 	BackupCountryInfo = getDataFilePath(COUNTRY_INFO_FILENAME)
 	BackupGeolocation = getDataFilePath(GEOLOCATION_FILENAME)
 
@@ -40,12 +34,12 @@ var (
 	NSFAwardsEndYear   = 2025
 )
 
-var CSVURLs = map[string]string{
-	CSRankingsFile:  CSRANKINGS_RAW_GITHUB + CSRANKINGS_FILENAME,
-	GenAuthorFile:   CSRANKINGS_RAW_GITHUB + GEN_AUTHOR_FILENAME,
-	CountriesFile:   CSRANKINGS_RAW_GITHUB + COUNTRIES_FILENAME,
-	CountryInfoFile: CSRANKINGS_RAW_GITHUB + COUNTRY_INFO_FILENAME,
-	GeolocationFile: CSRANKINGS_RAW_GITHUB + GEOLOCATION_FILENAME,
+var CSVURLs = []string{
+	CSRANKINGS_FILENAME,
+	GEN_AUTHOR_FILENAME,
+	COUNTRIES_FILENAME,
+	COUNTRY_INFO_FILENAME,
+	GEOLOCATION_FILENAME,
 }
 
 func getRootDirPath(rootSubDir string) string {
@@ -98,14 +92,16 @@ func downloadCSVs(force bool) error {
 		}
 	}
 
-	for localPath, url := range CSVURLs {
-		fileName := filepath.Base(localPath)
-		if _, err := os.Stat(localPath); err == nil && !force {
+	for _, fileName := range CSVURLs {
+		url := CSRANKINGS_RAW_GITHUB+fileName
+		logger.Infof("Downloading %s from %s\n", fileName, url)
+
+		fileSavePath := fmt.Sprintf("/app/data/%s", fileName)
+		if _, err := os.Stat(fileSavePath); err == nil && !force {
 			logger.Infof("[✓] %s already exists. Skipping download.\n", fileName)
 			continue
 		}
 
-		logger.Infof("[*] Downloading %s ...\n", fileName)
 		resp, err := http.Get(url)
 		if err != nil || resp.StatusCode != 200 {
 			logger.Infof("[!] Failed to download %s. Status: %d\n", fileName, resp.StatusCode)
@@ -113,16 +109,16 @@ func downloadCSVs(force bool) error {
 		}
 		defer resp.Body.Close()
 
-		out, err := os.Create(localPath)
+		out, err := os.Create(fileSavePath)
 		if err != nil {
-			logger.Infof("[!] Error creating file %s: %v\n", localPath, err)
+			logger.Infof("[!] Error creating file %s: %v\n", fileName, err)
 			continue
 		}
 		defer out.Close()
 
 		_, err = io.Copy(out, resp.Body)
 		if err != nil {
-			logger.Infof("[!] Error writing file %s: %v\n", localPath, err)
+			logger.Infof("[!] Error writing file %s: %v\n", fileName, err)
 			continue
 		}
 
