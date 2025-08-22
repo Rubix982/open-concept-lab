@@ -1,5 +1,8 @@
 # main.py
 
+## Local imports
+from lib import latex_to_md
+
 ## Standard library imports
 import os
 import re
@@ -8,11 +11,13 @@ import json
 import random
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Union, List
+from typing import List, Union
 
 ## Installed package imports
 import requests
 import bs4
+import art
+import mdformat
 from markdownify import markdownify as md
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -34,6 +39,9 @@ OptionShow = "show"
 OptionQuit = "quit"
 OptionExit = "exit"
 OptionTag = "tag"
+
+# ASCII ART FONT
+DEFAULT_FONT = "standard"
 
 
 def generate_problem_analysis(problem_markdown: str) -> str:
@@ -121,11 +129,14 @@ Provide a **checklist of algorithms and data structures to master**, sorted from
 
 ---
 
-Please ensure your response:
+Please ensure your response contains the following requirements. Please generate a lot of detail for each point -- fetch as much relevant information as possible:
 
 - Uses clear and precise language accessible to intermediate to advanced learners
 - Structures the markdown with headings, bullet points, and code examples if relevant
 - Avoids unnecessary repetition of the problem statement
+
+Now, fetch details for these problems,
+
 - Provides actionable insights and encourages deeper learning
 - Mentions related problems and resources (e.g., similar Codeforces or LeetCode problems)
 - Lists common mistakes and pitfalls that cause issues
@@ -136,6 +147,13 @@ Please ensure your response:
 - Mention common mistakes and pitfalls
 - Provide small illustrative code snippets where relevant
 - Ensure links or book references are actionable and credible
+- Mentions more test cases as well apart from what is provided in the question itself
+
+Formatting guidelines,
+
+1. Please do not state "As an AI language model" or similar disclaimers.
+2. Use markdown formatting with headings, bullet points, and code blocks, but do not surround your response with tilde indicates (````) blocks.
+3. Please start with 2nd level indentation for the markdown instead of 1st level (use ## as the starting indentation)
 
 Thank you.
 """
@@ -143,11 +161,11 @@ Thank you.
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are an expert competitive programming instructor and system architect. Provide highly detailed, structured, research-style responses with actionable insights, references, and clear learning roadmaps."},
             {"role": "user", "content": prompt},
         ],
         temperature=0.2,
-        max_tokens=1200,
+        max_tokens=4000,
         n=1,
     )
 
@@ -190,7 +208,7 @@ def save_problem_markdown(
     contest_id: int,
 ) -> None:
     # Create a folder ~/.sudoku/problems if it doesn't exist
-    base_dir = Path.home() / ".sudoku" / "problems"
+    base_dir = DATA_DIR / "problems"
     base_dir.mkdir(parents=True, exist_ok=True)
 
     # Get current date and time in YYYY-MM-DD_HH-MM-SS format
@@ -219,6 +237,19 @@ def remove_classes_from_div(main_div, classes_to_remove: list[str]):
 
 def requests_get(url: str) -> requests.Response:
     return requests.get(url, verify=PROXY)
+
+
+def get_art_formatted_text(text: str) -> str:
+    result, _, _ = art.text2art(
+        text,
+        font=DEFAULT_FONT,
+        decoration=None,
+        chr_ignore=True,
+        sep="\n",
+        space=0,
+        __detailed_return=True,
+    )
+    return result
 
 
 def fetch_problem_statement(
@@ -296,22 +327,35 @@ def fetch_problem_statement(
     md_text = re.sub(r"(?i)^input$", "## Input", md_text, flags=re.MULTILINE)
     md_text = re.sub(r"(?i)^output$", "## Output", md_text, flags=re.MULTILINE)
     md_text = re.sub(r"(?i)^note$", "## Note", md_text, flags=re.MULTILINE)
+    md_text = latex_to_md.LaTeX2Markdown(md_text).to_markdown().strip()
     md_text = (
-        f"# {title}\n\n"
-        f"**Time Limit:** {time_limit_value}\n\n"
-        f"**Memory Limit:** {memory_limit_value}\n\n"
+        f"__Time Limit:__ {time_limit_value}\n\n"
+        f"__Memory Limit:__ {memory_limit_value}\n\n"
+        f"__Problem Rating:__ {problem_rating}\n\n"
+        f"__Contest ID:__ {contest_id}\n\n"
+        f"__Index:__ {index}\n\n"
         "## Description\n\n"
-        f"{md_text.strip()}\n\n"
+        f"{md_text}\n\n"
         "---\n\n"
         "## Examples\n\n"
         f"{extracted_samples}"
     )
-
+    md_text = mdformat.text(md_text, options={"wrap": 80})
+    art_formatted_text_for_title = get_art_formatted_text((title.split(".")[1]).replace(' ', '  '))
+    md_text = f"# Problem\n\n```markdown\n{art_formatted_text_for_title}```\n\n" f"{md_text}"
+    generated_problem_analysis = mdformat.text(
+        generate_problem_analysis(md_text).strip()
+    ).replace("**", "__")
     md_text = (
         f"{md_text}\n"
-        "## OpenAI Analysis\n\n"
-        f"\n{generate_problem_analysis(md_text).strip()}\n"
+        "______________________________________________________________________\n\n"
+        f"```markdown\n{get_art_formatted_text('OpenAI Analysis')}```\n\n"
+        "______________________________________________________________________\n"
+        f"\n{generated_problem_analysis}\n"
     )
+
+    # strange unicode character in output -- skipping
+    md_text = md_text.replace(' ', ' ').replace('’', '\'').strip() + "\n"
 
     # Save locally
     save_problem_markdown(problem_name, index, md_text, problem_rating, contest_id)
@@ -357,21 +401,38 @@ def random_problem(problems):
     return random.choice(problems)
 
 
-def get_problem_under_max_rating(problems, max_rating=1200):
+def get_problem_under_max_rating(
+    problems: List[dict],
+    shown_problems: List[dict],
+    max_rating: int = 1200,
+):
     """Return a random easy problem (<= max_rating)."""
-    easy_problems = [
-        p for p in problems if p.get("rating") and p["rating"] <= max_rating
+    extracted_problems = [
+        p
+        for p in problems
+        if p.get("rating") and p["rating"] <= max_rating and p not in shown_problems
     ]
-    if not easy_problems:
+    if not extracted_problems:
         print(f"[-] No problems found with rating <= {max_rating}")
         return None
-    return random.choice(easy_problems)
+    return random.choice(extracted_problems)
+
+
+def load_shown_problems() -> list:
+    shown_problems_file = DATA_DIR / "shown_problems.json"
+    if not shown_problems_file.exists():
+        return []
+
+    with open(shown_problems_file, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def main():
     problems = load_problems()
     if not problems:
         return
+
+    shown_problems = load_shown_problems()
 
     print(
         "[*] Codeforces CLI — commands: tag <tag>, random [max_rating], show, quit/exit"
@@ -398,7 +459,11 @@ def main():
                     max_rating = int(cmd[1])  # allow user to set threshold
 
                 while True:
-                    p = get_problem_under_max_rating(problems, max_rating=max_rating)
+                    p = get_problem_under_max_rating(
+                        problems=problems,
+                        shown_problems=shown_problems,
+                        max_rating=max_rating,
+                    )
                     if not p:
                         print(f"[-] No problems found with rating <= {max_rating}")
                         break
@@ -434,6 +499,12 @@ def main():
                         last_random_problem_selected["contestId"],
                     )
                 )
+
+                shown_problems.append(last_random_problem_selected)
+
+                with open(DATA_DIR / "shown_problems.json", "w", encoding="utf-8") as f:
+                    f.write(json.dumps(shown_problems, indent=4))
+
             else:
                 print("Unknown command")
     except KeyboardInterrupt:

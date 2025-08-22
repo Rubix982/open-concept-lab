@@ -1,3 +1,4 @@
 .env
 .venv/**/**
 soup_dump.html
+lib/__pycache__/**/**
