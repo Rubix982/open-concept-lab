@@ -24,3 +24,9 @@ There are six kinds of indexes in Postgres,
    1. Block Range Index
 6. Hash
    1. Hash based index for equality comparisons
+
+---
+
+Further GiST reading about use cases and questions about hot caches, write contention, caching strategies, in-memory, hot-spots, and top ranking.
+
+Using Kafka, Redis, hot cache keys for fast reads -- background workers to update these cache keys really quickly.
