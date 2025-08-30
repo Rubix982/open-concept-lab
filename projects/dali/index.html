@@ -1,0 +1,519 @@
+<!--
+  Learning Journal (Single HTML File)
+  ----------------------------------
+  How to use:
+  1) Keep this file at the repo root (e.g., learning-journal.html).
+  2) Each day you learn something, create a directory like ./2025-08-30/db/ with your notes (markdown, txt, code, etc.).
+  3) Add a new <li class="entry"> below with the date, category, tags, and a link to that day's folder.
+  4) The dashboard will auto-compute counts and let you filter by Category/Tags/Text.
+  5) Use the "Print / Export" button to save as PDF.
+
+  Tip: Duplicate an existing <li> as your snippet, then change props.
+
+  Entry format reminder:
+  <li class="entry" data-date="YYYY-MM-DD" data-category="DB" data-tags="tag1,tag2">
+    <a href="./YYYY-MM-DD/<topic-slug>/index.html" target="_blank">YYYY-MM-DD — Category — Title</a>
+    <p>Short note...</p>
+  </li>
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Journal</title>
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --panel: #121822;
+        --muted: #8aa0b6;
+        --text: #e7eef7;
+        --accent: #7cc4ff;
+        --chip: #1b2533;
+        --chip-border: #2a384d;
+        --ok: #34d399;
+        --warn: #f59e0b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial;
+        background: linear-gradient(180deg, #0b0f14, #0d121a 40%, #0b0f14);
+        color: var(--text);
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(8px);
+        background: rgba(11, 15, 20, 0.7);
+        border-bottom: 1px solid #1b2533;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: 0.5px;
+      }
+      .title .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--ok);
+        box-shadow: 0 0 10px var(--ok);
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      input,
+      select,
+      button {
+        background: var(--chip);
+        border: 1px solid var(--chip-border);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+      }
+      input::placeholder {
+        color: #aab8c6;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: var(--accent);
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 16px;
+        padding-top: 10px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid #1b2533;
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .panel h2 {
+        font-size: 14px;
+        letter-spacing: 0.6px;
+        color: var(--muted);
+        margin: 0 0 10px;
+        text-transform: uppercase;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .stat {
+        background: #0f1621;
+        border: 1px solid #1b2533;
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .stat .k {
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .k.warn {
+        color: var(--warn);
+      }
+      .k.ok {
+        color: var(--ok);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        border: 1px solid var(--chip-border);
+        background: var(--chip);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .chip.active {
+        outline: 2px solid var(--accent);
+      }
+
+      .entries {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .entry {
+        border: 1px solid #1b2533;
+        background: #0f1621;
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .entry a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .entry p {
+        margin: 6px 0 0;
+        color: #c0d1e6;
+      }
+      .badges {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .badge {
+        font-size: 11px;
+        border: 1px dashed #2a384d;
+        padding: 4px 8px;
+        border-radius: 999px;
+        color: #b6c9df;
+      }
+
+      footer {
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+        padding: 40px 0;
+      }
+
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        .controls {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Print-friendly */
+      @media print {
+        header,
+        .controls {
+          display: none;
+        }
+        body {
+          background: #fff;
+          color: #000;
+        }
+        .panel {
+          border: 1px solid #ddd;
+        }
+        .entry {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="title">
+          <span class="dot"></span>
+          <h1>Learning Journal</h1>
+        </div>
+        <div class="controls">
+          <input id="search" placeholder="Search text… (title, note, tags)" />
+          <select id="category">
+            <option value="">All Categories</option>
+            <option>DB</option>
+            <option>Distributed</option>
+            <option>Parallel</option>
+            <option>Algorithms-C</option>
+            <option>DevOps</option>
+            <option>Security</option>
+            <option>Systems</option>
+            <option>Other</option>
+          </select>
+          <input id="date" type="date" />
+          <button id="print">Print / Export</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <main>
+        <aside class="panel">
+          <h2>Stats</h2>
+          <div class="stats">
+            <div class="stat">
+              <div>Total Entries</div>
+              <div class="k" id="stat-total">0</div>
+            </div>
+            <div class="stat">
+              <div>Days Logged</div>
+              <div class="k" id="stat-days">0</div>
+            </div>
+            <div class="stat">
+              <div>Current Streak</div>
+              <div class="k ok" id="stat-streak">0</div>
+            </div>
+            <div class="stat">
+              <div>Top Category</div>
+              <div class="k" id="stat-top">—</div>
+            </div>
+          </div>
+          <h2 style="margin-top: 14px">Quick Filters</h2>
+          <div class="chips" id="chips">
+            <span class="chip" data-chip="DB">DB</span>
+            <span class="chip" data-chip="Distributed">Distributed</span>
+            <span class="chip" data-chip="Parallel">Parallel</span>
+            <span class="chip" data-chip="Algorithms-C">Algorithms-C</span>
+            <span class="chip" data-chip="DevOps">DevOps</span>
+            <span class="chip" data-chip="Security">Security</span>
+            <span class="chip" data-chip="Systems">Systems</span>
+            <span class="chip" data-chip="Other">Other</span>
+          </div>
+        </aside>
+
+        <section class="panel">
+          <h2>Entries</h2>
+          <ul class="entries" id="entries">
+            <!-- ===== Sample entries (delete/replace) ===== -->
+            <li
+              class="entry"
+              data-date="2025-08-30"
+              data-category="Algorithms-C"
+              data-tags="c,pointers,arrays"
+            >
+              <a href="./2025-08-30/algorithms-c/" target="_blank"
+                >2025-08-30 — Algorithms-C — Pointer arithmetic for 2D arrays</a
+              >
+              <p>
+                Practiced row-major indexing, boundary checks, and off-by-one
+                pitfalls. Wrote a tiny matrix rotate.
+              </p>
+              <div class="badges">
+                <span class="badge">#c</span><span class="badge">#pointers</span
+                ><span class="badge">#arrays</span>
+              </div>
+            </li>
+            <li
+              class="entry"
+              data-date="2025-08-29"
+              data-category="DB"
+              data-tags="transactions,acid,isolation"
+            >
+              <a href="./2025-08-29/db/" target="_blank"
+                >2025-08-29 — DB — Transaction isolation & anomalies</a
+              >
+              <p>
+                Read about Read Committed vs Repeatable Read vs Snapshot
+                Isolation. Wrote notes + diagrams.
+              </p>
+              <div class="badges">
+                <span class="badge">#acid</span
+                ><span class="badge">#isolation</span>
+              </div>
+            </li>
+            <li
+              class="entry"
+              data-date="2025-08-28"
+              data-category="Distributed"
+              data-tags="raft,consensus,leader-election"
+            >
+              <a href="./2025-08-28/distributed/" target="_blank"
+                >2025-08-28 — Distributed — Raft leader election</a
+              >
+              <p>
+                Stepped through timeouts, terms, heartbeats; mental model for
+                split votes.
+              </p>
+              <div class="badges">
+                <span class="badge">#raft</span
+                ><span class="badge">#consensus</span>
+              </div>
+            </li>
+            <li
+              class="entry"
+              data-date="2025-08-30"
+              data-category="DB"
+              data-tags="indexes,locking,parallelism"
+            >
+              <a href="./content/2025-08-30/db/" target="_blank"
+                >2025-08-30 — DB — Indexes & locking</a
+              >
+              <p>
+                Explored B-trees, GiST, SP-GiST locking mechanisms, and parallel
+                query execution.
+              </p>
+              <div class="badges">
+                <span class="badge">#indexes</span
+                ><span class="badge">#locking</span
+                ><span class="badge">#parallelism</span>
+              </div>
+            </li>
+            <!-- ===== End samples ===== -->
+          </ul>
+        </section>
+      </main>
+
+      <footer>
+        <div>
+          Pro tip: Keep entries brief (1-2 lines). Put long writeups inside the
+          dated folders and just link them here.
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const $ = (sel, root = document) => root.querySelector(sel);
+        const $$ = (sel, root = document) =>
+          Array.from(root.querySelectorAll(sel));
+
+        const entries = $$("#entries .entry");
+        const search = $("#search");
+        const category = $("#category");
+        const date = $("#date");
+        const printBtn = $("#print");
+        const chips = $$("#chips .chip");
+
+        // Restore last filters
+        const saved = JSON.parse(localStorage.getItem("lj.filters") || "{}");
+        if (saved.search) search.value = saved.search;
+        if (saved.category) category.value = saved.category;
+        if (saved.date) date.value = saved.date;
+        if (saved.chip)
+          chips.forEach((c) =>
+            c.dataset.chip === saved.chip
+              ? c.classList.add("active")
+              : c.classList.remove("active")
+          );
+
+        function normalize(s) {
+          return (s || "").toLowerCase();
+        }
+
+        function applyFilters() {
+          const q = normalize(search.value);
+          const cat = category.value;
+          const d = date.value;
+          const activeChip = chips.find((c) => c.classList.contains("active"));
+          const chipVal = activeChip ? activeChip.dataset.chip : "";
+
+          let visible = 0;
+          entries.forEach((li) => {
+            const title = li.querySelector("a")?.textContent || "";
+            const note = li.querySelector("p")?.textContent || "";
+            const tags = li.dataset.tags || "";
+            const hay = normalize([title, note, tags].join(" "));
+            const passSearch = q ? hay.includes(q) : true;
+            const passCat = cat ? li.dataset.category === cat : true;
+            const passDate = d ? li.dataset.date === d : true;
+            const passChip = chipVal
+              ? li.dataset.category === chipVal ||
+                (li.dataset.tags || "")
+                  .toLowerCase()
+                  .includes(chipVal.toLowerCase())
+              : true;
+            const ok = passSearch && passCat && passDate && passChip;
+            li.style.display = ok ? "" : "none";
+            if (ok) visible++;
+          });
+          computeStats();
+          localStorage.setItem(
+            "lj.filters",
+            JSON.stringify({
+              search: search.value,
+              category: category.value,
+              date: date.value,
+              chip: chipVal,
+            })
+          );
+          return visible;
+        }
+
+        function computeStats() {
+          const visibleEntries = $$("#entries .entry").filter(
+            (li) => li.style.display !== "none"
+          );
+          // Total entries (visible) & unique days
+          $("#stat-total").textContent = visibleEntries.length;
+          const days = new Set(visibleEntries.map((li) => li.dataset.date));
+          $("#stat-days").textContent = days.size;
+
+          // Top category among visible
+          const counts = {};
+          visibleEntries.forEach((li) => {
+            counts[li.dataset.category] =
+              (counts[li.dataset.category] || 0) + 1;
+          });
+          const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+          $("#stat-top").textContent = top ? `${top[0]} (${top[1]})` : "—";
+
+          // Streak (consecutive days up to today)
+          const sorted = Array.from(days).sort();
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, "0");
+          const dd = String(today.getDate()).padStart(2, "0");
+          const todayStr = `${yyyy}-${mm}-${dd}`;
+
+          function prevDateStr(s) {
+            const t = new Date(s);
+            t.setDate(t.getDate() - 1);
+            const y = t.getFullYear();
+            const m = String(t.getMonth() + 1).padStart(2, "0");
+            const d = String(t.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+          }
+          let streak = 0;
+          if (sorted.length) {
+            let cur = todayStr;
+            // Count backwards while we have that date in Set
+            while (days.has(cur)) {
+              streak++;
+              cur = prevDateStr(cur);
+            }
+          }
+          $("#stat-streak").textContent = streak;
+        }
+
+        // Event wiring
+        [search, category, date].forEach((el) =>
+          el.addEventListener("input", applyFilters)
+        );
+        chips.forEach((ch) =>
+          ch.addEventListener("click", () => {
+            const wasActive = ch.classList.contains("active");
+            chips.forEach((c) => c.classList.remove("active"));
+            if (!wasActive) ch.classList.add("active");
+            applyFilters();
+          })
+        );
+        printBtn.addEventListener("click", () => window.print());
+
+        // Initial run
+        applyFilters();
+      })();
+    </script>
+  </body>
+</html>
