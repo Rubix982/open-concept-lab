@@ -11,7 +11,7 @@ import json
 import random
 from pathlib import Path
 from datetime import datetime
-from typing import List, Union
+from typing import List, Union, Callable
 
 ## Installed package imports
 import requests
@@ -44,12 +44,77 @@ OptionTag = "tag"
 DEFAULT_FONT = "standard"
 
 
+def generate_problem_casual(problem_markdown: str) -> str:
+    if OPENAI_API_KEY == "":
+        print("[*] OpenAI API Key not found. Exiting ...")
+        return ""
+
+    prompt = f"""
+You are a friendly storyteller and teacher, explaining competitive programming problems in a simple, relaxing way — 
+something light enough for a reader to enjoy before bed when their brain is only at 10-20% power.
+
+Given the following Codeforces problem statement (in markdown format), produce a casual explanation that feels
+like a conversation, not a lecture. Your response should be written in **plain markdown** with a soft, easy-to-read style.
+
+Please include:
+
+---
+
+## 1. Gentle Storytelling Summary
+- Retell the problem in very simple words, like explaining to a friend.
+- Use small metaphors or analogies if it helps (e.g., “Imagine you’re sorting candies”).
+- Avoid heavy math terms unless absolutely necessary.
+
+## 2. The Core Idea
+- What is the problem *really* asking for? 
+- Describe it in everyday terms, focusing on the main trick or decision.
+
+## 3. How You Might Think About Solving It
+- Give a casual sketch of how one might approach it, without going too deep into technical jargon.
+- Mention the key observation in plain English.
+- Include one or two “good to know” hints, but keep it lightweight.
+
+## 4. A Cozy Closing Thought
+- End with a friendly note: encouragement, a fun analogy, or how this problem connects to daily life.
+- The tone should feel relaxing and supportive.
+
+---
+
+### Problem Statement:
+
+{problem_markdown}
+
+---
+
+Formatting rules:
+- Do not use technical section headers like "algorithms", "system design", etc.
+- Keep it warm, casual, and low-pressure.
+- Avoid overwhelming lists or references.
+- Imagine the reader is tired but curious, and just wants to end the day with a little mental puzzle explained gently.
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a friendly teacher and storyteller. Always keep things simple, warm, and casual, with a tone that makes the reader feel at ease.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7,
+        max_tokens=2000,
+        n=1,
+    )
+
+    return response.choices[0].message.content.strip()
+
+
 def generate_problem_analysis(problem_markdown: str) -> str:
     if OPENAI_API_KEY == "":
         print("[*] OpenAI API Key not found. Exiting ...")
         return ""
 
-    print("[*] OpenAI API Key found.")
     prompt = f"""
 You are an expert competitive programming instructor and system architect with a talent for clear, insightful explanations.
 
@@ -161,7 +226,10 @@ Thank you.
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are an expert competitive programming instructor and system architect. Provide highly detailed, structured, research-style responses with actionable insights, references, and clear learning roadmaps."},
+            {
+                "role": "system",
+                "content": "You are an expert competitive programming instructor and system architect. Provide highly detailed, structured, research-style responses with actionable insights, references, and clear learning roadmaps.",
+            },
             {"role": "user", "content": prompt},
         ],
         temperature=0.2,
@@ -237,6 +305,29 @@ def remove_classes_from_div(main_div, classes_to_remove: list[str]):
 
 def requests_get(url: str) -> requests.Response:
     return requests.get(url, verify=PROXY)
+
+
+def append_analysis(
+    md_text: str,
+    generator_fn: Callable[[str], str],
+    label: str,
+) -> str:
+    """
+    Apply a given analysis generator function (like generate_problem_analysis
+    or generate_problem_casual), format the result, and append to md_text.
+    """
+    generated = mdformat.text(generator_fn(md_text).strip()).replace("**", "__")
+
+    md_text = (
+        f"{md_text}\n"
+        "______________________________________________________________________\n\n"
+        f"```markdown\n{get_art_formatted_text(label)}```\n\n"
+        "______________________________________________________________________\n"
+        f"\n{generated}\n"
+    )
+
+    # fix strange unicode issues
+    return md_text.replace(" ", " ").replace("’", "'").strip() + "\n"
 
 
 def get_art_formatted_text(text: str) -> str:
@@ -341,21 +432,18 @@ def fetch_problem_statement(
         f"{extracted_samples}"
     )
     md_text = mdformat.text(md_text, options={"wrap": 80})
-    art_formatted_text_for_title = get_art_formatted_text((title.split(".")[1]).replace(' ', '  '))
-    md_text = f"# Problem\n\n```markdown\n{art_formatted_text_for_title}```\n\n" f"{md_text}"
-    generated_problem_analysis = mdformat.text(
-        generate_problem_analysis(md_text).strip()
-    ).replace("**", "__")
+    art_formatted_text_for_title = get_art_formatted_text(
+        (title.split(".")[1]).replace(" ", "  ")
+    )
     md_text = (
-        f"{md_text}\n"
-        "______________________________________________________________________\n\n"
-        f"```markdown\n{get_art_formatted_text('OpenAI Analysis')}```\n\n"
-        "______________________________________________________________________\n"
-        f"\n{generated_problem_analysis}\n"
+        f"# Problem\n\n```markdown\n{art_formatted_text_for_title}```\n\n" f"{md_text}"
     )
 
-    # strange unicode character in output -- skipping
-    md_text = md_text.replace(' ', ' ').replace('’', '\'').strip() + "\n"
+    for generator_fn, label in [
+        (generate_problem_analysis, "OpenAI Analysis"),
+        (generate_problem_casual, "Casual Analysis"),
+    ]:
+        md_text = append_analysis(md_text, generator_fn, label)
 
     # Save locally
     save_problem_markdown(problem_name, index, md_text, problem_rating, contest_id)
