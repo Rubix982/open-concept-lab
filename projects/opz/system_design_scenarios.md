@@ -1,7 +1,5 @@
 # Distributed Systems & System Design Scenarios
 
-Perfect! Let's expand these **first two sections** with **Failure Triggers / Exercises** and **Interview-Style Follow-Ups** so that each scenario becomes hands-on and discussion-ready. I've added columns for **"Failure / Exercise"** and **"Follow-Up Questions"**:
-
 - [Distributed Systems \& System Design Scenarios](#distributed-systems--system-design-scenarios)
   - [Concurrency \& Coordination](#concurrency--coordination)
   - [Rate Limiting \& Throttling](#rate-limiting--throttling)

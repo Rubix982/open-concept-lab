@@ -1,0 +1,21 @@
+version: 3.8
+
+services:
+  db:
+    image: postgres:15
+    container_name: gis_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER: postgres
+      - POSTGRES_PASSWORD: postgres
+      - POSTGRES_DB: gis_db
+    volumes:
+      - gis_db_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - gis_network
+
+networks:
+  gis_network:
+    driver: bridge
