@@ -1,5 +1,5 @@
 <!--
-  Learning Journal (Single HTML File)
+  Journal (Single HTML File)
   ----------------------------------
   How to use:
   1) Keep this file at the repo root (e.g., learning-journal.html).
@@ -7,14 +7,6 @@
   3) Add a new <li class="entry"> below with the date, category, tags, and a link to that day's folder.
   4) The dashboard will auto-compute counts and let you filter by Category/Tags/Text.
   5) Use the "Print / Export" button to save as PDF.
-
-  Tip: Duplicate an existing <li> as your snippet, then change props.
-
-  Entry format reminder:
-  <li class="entry" data-date="YYYY-MM-DD" data-category="DB" data-tags="tag1,tag2">
-    <a href="./YYYY-MM-DD/<topic-slug>/index.html" target="_blank">YYYY-MM-DD — Category — Title</a>
-    <p>Short note...</p>
-  </li>
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +15,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="src/index.css" />
-  <title>Learning Journal</title>
+  <title>Journal</title>
 </head>
 
 <body>
@@ -31,21 +23,11 @@
     <div class="wrap">
       <div class="title">
         <span class="dot"></span>
-        <h1>Learning Journal</h1>
+        <h1>Journal</h1>
       </div>
       <div class="controls">
         <input id="search" placeholder="Search text… (title, note, tags)" />
-        <select id="category">
-          <option value="">All Categories</option>
-          <option>DB</option>
-          <option>Distributed</option>
-          <option>Parallel</option>
-          <option>Algorithms-C</option>
-          <option>DevOps</option>
-          <option>Security</option>
-          <option>Systems</option>
-          <option>Other</option>
-        </select>
+        <select id="category"></select>
         <input id="date" type="date" />
         <button id="print">Print / Export</button>
       </div>
@@ -76,14 +58,6 @@
         </div>
         <h2 style="margin-top: 14px">Quick Filters</h2>
         <div class="chips" id="chips">
-          <span class="chip" data-chip="DB">DB</span>
-          <span class="chip" data-chip="Distributed">Distributed</span>
-          <span class="chip" data-chip="Parallel">Parallel</span>
-          <span class="chip" data-chip="Algorithms-C">Algorithms-C</span>
-          <span class="chip" data-chip="DevOps">DevOps</span>
-          <span class="chip" data-chip="Security">Security</span>
-          <span class="chip" data-chip="Systems">Systems</span>
-          <span class="chip" data-chip="Other">Other</span>
         </div>
       </aside>
 
@@ -97,44 +71,12 @@
 
       <section class="panel-wide">
         <h2>Learning Heatmap</h2>
-
-        <!-- Optional month labels -->
-        <div class="month-labels">
-          <span>Jan</span>
-          <span>Feb</span>
-          <span>Mar</span>
-          <span>Apr</span>
-          <span>May</span>
-          <span>Jun</span>
-          <span>Jul</span>
-          <span>Aug</span>
-          <span>Sep</span>
-          <span>Oct</span>
-          <span>Nov</span>
-          <span>Dec</span>
-        </div>
-
-        <!-- Heatmap container -->
+        <div class="month-labels" id="month-labels"></div>
         <div id="heatmap"></div>
-
-        <!-- Legend -->
-        <div class="heatmap-legend">
-          <span style="background: #facc15"></span> DB
-          <span style="background: #3b82f6"></span> Distributed
-          <span style="background: #10b981"></span> Parallel
-          <span style="background: #f97316"></span> Algorithms-C
-        </div>
-
+        <div class="heatmap-legend" id="heatmap-legend"></div>
         <div id="heatmap-tooltip" class="tooltip"></div>
       </section>
     </main>
-
-    <footer>
-      <div>
-        Pro tip: Keep entries brief (1-2 lines). Put long writeups inside the
-        dated folders and just link them here.
-      </div>
-    </footer>
   </div>
 
   <script src="src/index.js"></script>

@@ -1,7 +1,7 @@
 [
   {
     "date": "2025-08-30",
-    "category": "Algorithms-C",
+    "category": "Algorithms",
     "tags": ["c", "pointers", "arrays"],
     "title": "Pointer arithmetic for 2D arrays",
     "description": "Practiced row-major indexing, boundary checks, and off-by-one pitfalls. Wrote a tiny matrix rotate."

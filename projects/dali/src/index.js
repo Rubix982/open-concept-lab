@@ -1,44 +1,7 @@
-let globalEntriesData = {};
-
-document.addEventListener("DOMContentLoaded", () => {
-  const loader = document.getElementById("loader");
-  const entriesContainer = document.getElementById("entries");
-
-  fetch("./../data/entries.json")
-    .then((res) => res.json())
-    .then((entriesData) => {
-      globalEntriesData = entriesData;
-      renderEntries(entriesData); // populate <ul>
-      renderYearlyHeatmap(entriesData);
-      loader.style.display = "none"; // hide loader
-      entriesContainer.style.display = "block"; // show entries
-
-      // grab the rendered <li> elements
-      entries = Array.from(entriesContainer.querySelectorAll("li.entry"));
-
-      // if filters were saved in localStorage, apply them now
-      const savedFilters = JSON.parse(
-        localStorage.getItem("lj.filters") || "{}"
-      );
-      if (savedFilters) {
-        search.value = savedFilters.search || "";
-        category.value = savedFilters.category || "";
-        date.value = savedFilters.date || "";
-        // update chip selection if needed
-      }
-
-      applyFilters(entriesData); // filter immediately
-    })
-    .catch((err) => {
-      loader.textContent = "Failed to load entries.";
-      console.error(err);
-    });
-});
-
+let globalEntriesData = []; // will hold all entries once loaded
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-const entries = $$("#entries .entry");
 const search = $("#search");
 const category = $("#category");
 const date = $("#date");
@@ -58,6 +21,137 @@ if (saved.chip)
       : c.classList.remove("active")
   );
 
+// On DOM ready
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("loader");
+  const entriesContainer = document.getElementById("entries");
+
+  fetch("./../data/entries.json")
+    .then((res) => res.json())
+    .then((entriesData) => {
+      globalEntriesData = entriesData;
+      renderEntries(entriesData); // populate <ul>
+      renderYearlyHeatmap();
+      loader.style.display = "none"; // hide loader
+      entriesContainer.style.display = "block"; // show entries
+
+      // if filters were saved in localStorage, apply them now
+      const savedFilters = JSON.parse(
+        localStorage.getItem("lj.filters") || "{}"
+      );
+      if (savedFilters) {
+        search.value = savedFilters.search || "";
+        category.value = savedFilters.category || "";
+        date.value = savedFilters.date || "";
+        // update chip selection if needed
+      }
+
+      applyFilters(); // filter immediately
+    })
+    .catch((err) => {
+      loader.textContent = "Failed to load entries.";
+      console.error("Failed to load entries", err);
+    });
+
+  fetch("./../data/categories.json")
+    .then((res) => res.json())
+    .then((categoryMap) => {
+      const categories = Object.keys(categoryMap.categories || {});
+
+      if (categories.length === 0) {
+        return;
+      }
+      // Populate category dropdown
+      const categorySelect = document.getElementById("category");
+
+      // By default, always add the "All Categories" option
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "All Categories";
+      categorySelect.appendChild(defaultOption);
+
+      categories.forEach((cat) => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+      });
+
+      const chipSelect = document.getElementById("chips");
+
+      categories.forEach((cat) => {
+        const chipSpan = document.createElement("span");
+        chipSpan.textContent = cat;
+        chipSpan.className = "chip";
+        chipSpan.setAttribute("data-chip", cat);
+        chipSelect.appendChild(chipSpan);
+      });
+
+      const heatMapDiv = document.getElementById("heatmap-legend");
+
+      Object.values(categoryMap.categories).forEach((cat) => {
+        const legendDiv = document.createElement("div");
+        legendDiv.className = "heatmap-legend-item";
+
+        // Background Color
+        const legendSpanColor = document.createElement("span");
+        legendSpanColor.style.background = "#" + cat.color;
+        legendDiv.appendChild(legendSpanColor);
+
+        // Color
+        const legendSpanText = document.createElement("span");
+        legendSpanText.textContent = cat.name;
+        legendDiv.appendChild(legendSpanText);
+
+        heatMapDiv.appendChild(legendDiv);
+      });
+    })
+    .catch((err) => {
+      console.error("Failed to load categories.", err);
+    });
+
+  const monthLabelsDiv = document.getElementById("month-labels");
+
+  [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ].forEach((m) => {
+    const span = document.createElement("span");
+    span.textContent = m;
+    monthLabelsDiv.appendChild(span);
+  });
+
+  renderYearlyHeatmap();
+
+  // Event wiring
+  [search, category, date].forEach((el) =>
+    el.addEventListener("input", applyFilters)
+  );
+  chips.forEach((ch) =>
+    ch.addEventListener("click", () => {
+      const wasActive = ch.classList.contains("active");
+      chips.forEach((c) => c.classList.remove("active"));
+      if (!wasActive) ch.classList.add("active");
+      applyFilters();
+    })
+  );
+  printBtn.addEventListener("click", () => window.print());
+
+  // Initial run
+  applyFilters();
+});
+
 function renderEntries(entries) {
   const ul = document.getElementById("entries");
   if (!ul) return;
@@ -70,6 +164,7 @@ function renderEntries(entries) {
     li.dataset.date = entry.date;
     li.dataset.category = entry.category;
     li.dataset.tags = entry.tags.join(",");
+    li.id = getLiId(entry);
 
     li.innerHTML = `
       <a href="${"./content/" + entry.date + "/"}" target="_blank">${
@@ -91,6 +186,16 @@ function normalize(s) {
   return (s || "").toLowerCase();
 }
 
+function getLiId(entry) {
+  return (
+    entry.date +
+    "__" +
+    entry.category +
+    "__" +
+    entry.title.toLowerCase().replace(/\s+/g, "-")
+  );
+}
+
 function applyFilters() {
   const q = normalize(search.value);
   const cat = category.value;
@@ -98,25 +203,35 @@ function applyFilters() {
   const activeChip = chips.find((c) => c.classList.contains("active"));
   const chipVal = activeChip ? activeChip.dataset.chip : "";
 
-  let visible = 0;
-  entries.forEach((li) => {
-    const title = li.querySelector("a")?.textContent || "";
-    const note = li.querySelector("p")?.textContent || "";
-    const tags = li.dataset.tags || "";
+  globalEntriesData.forEach((entry) => {
+    const title =
+      entry.date +
+      " " +
+      entry.category +
+      " " +
+      entry.title +
+      " " +
+      entry.description;
+    const note = entry.description || "";
+    const tags = entry.tags || [];
     const hay = normalize([title, note, tags].join(" "));
     const passSearch = q ? hay.includes(q) : true;
-    const passCat = cat ? li.dataset.category === cat : true;
-    const passDate = d ? li.dataset.date === d : true;
+    const passCat = cat ? entry.category === cat : true;
+    const passDate = d ? entry.date === d : true;
     const passChip = chipVal
-      ? li.dataset.category === chipVal ||
-        (li.dataset.tags || "").toLowerCase().includes(chipVal.toLowerCase())
+      ? entry.category === chipVal ||
+        (entry.tags || "").toLowerCase().includes(chipVal.toLowerCase())
       : true;
     const ok = passSearch && passCat && passDate && passChip;
-    li.style.display = ok ? "" : "none";
-    if (ok) visible++;
+    if (ok) {
+      document.getElementById(getLiId(entry)).style.display = "";
+    } else {
+      document.getElementById(getLiId(entry)).style.display = "none";
+    }
   });
+
   computeStats();
-  renderYearlyHeatmap(entriesData);
+  renderYearlyHeatmap();
   localStorage.setItem(
     "lj.filters",
     JSON.stringify({
@@ -126,23 +241,19 @@ function applyFilters() {
       chip: chipVal,
     })
   );
-  return visible;
 }
 
 function computeStats() {
-  const visibleEntries = Array.from(
-    document.querySelectorAll("#entries .entry")
-  ).filter((li) => li.style.display !== "none");
-
   // Total entries (visible) & unique days
-  $("#stat-total").textContent = visibleEntries.length;
-  const days = new Set(visibleEntries.map((li) => li.dataset.date));
+  $("#stat-total").textContent = globalEntriesData.length;
+
+  const days = new Set(globalEntriesData.map((entry) => entry.date));
   $("#stat-days").textContent = days.size;
 
   // Top category among visible
   const counts = {};
-  visibleEntries.forEach((li) => {
-    counts[li.dataset.category] = (counts[li.dataset.category] || 0) + 1;
+  globalEntriesData.forEach((entry) => {
+    counts[entry.category] = (counts[entry.category] || 0) + 1;
   });
   const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
   $("#stat-top").textContent = top ? `${top[0]} (${top[1]})` : "—";
@@ -176,13 +287,13 @@ function computeStats() {
   $("#stat-streak").textContent = streak;
 }
 
-function renderYearlyHeatmap(visibleEntries) {
+function renderYearlyHeatmap() {
   const heatmapContainer = $("#heatmap");
   if (!heatmapContainer) return;
 
   // Organize entries per day with categories
   const dayData = {};
-  visibleEntries.forEach((dataset) => {
+  globalEntriesData.forEach((dataset) => {
     const d = dataset.date;
     const category = dataset.category || "Other";
     const text = dataset.textContent || dataset.innerText || "";
@@ -273,22 +384,3 @@ function getCategoryColor(cat) {
   };
   return colors[cat] || "#888";
 }
-
-renderYearlyHeatmap(globalEntriesData);
-
-// Event wiring
-[search, category, date].forEach((el) =>
-  el.addEventListener("input", applyFilters)
-);
-chips.forEach((ch) =>
-  ch.addEventListener("click", () => {
-    const wasActive = ch.classList.contains("active");
-    chips.forEach((c) => c.classList.remove("active"));
-    if (!wasActive) ch.classList.add("active");
-    applyFilters();
-  })
-);
-printBtn.addEventListener("click", () => window.print());
-
-// Initial run
-applyFilters();
