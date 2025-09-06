@@ -1,16 +1,23 @@
 # main.py
 
+## Local imports
+from lib import latex_to_md
+
 ## Standard library imports
 import os
 import re
+import time
 import json
 import random
 from pathlib import Path
 from datetime import datetime
+from typing import List, Union, Callable
 
 ## Installed package imports
 import requests
-from bs4 import BeautifulSoup
+import bs4
+import art
+import mdformat
 from markdownify import markdownify as md
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -26,36 +33,50 @@ PROXY = os.getenv("PROXY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+# OPTIONS
+OptionRandom = "random"
+OptionShow = "show"
+OptionQuit = "quit"
+OptionExit = "exit"
+OptionTag = "tag"
 
-def generate_problem_analysis(problem_markdown: str) -> str:
+# ASCII ART FONT
+DEFAULT_FONT = "standard"
+
+
+def generate_problem_casual(problem_markdown: str) -> str:
     if OPENAI_API_KEY == "":
         print("[*] OpenAI API Key not found. Exiting ...")
-        return
+        return ""
 
-    print("[*] OpenAI API Key found.")
-    prompt = (
-        prompt
-    ) = f"""
-You are an expert competitive programming instructor and system architect with a talent for clear, insightful explanations.
+    prompt = f"""
+You are a friendly storyteller and teacher, explaining competitive programming problems in a simple, relaxing way — 
+something light enough for a reader to enjoy before bed when their brain is only at 10-20% power.
 
-Given the following Codeforces problem statement (in markdown format), perform a comprehensive analysis covering the following sections. Please present your response as a well-organized markdown document with distinct headings for each section:
+Given the following Codeforces problem statement (in markdown format), produce a casual explanation that feels
+like a conversation, not a lecture. Your response should be written in **plain markdown** with a soft, easy-to-read style.
+
+Please include:
 
 ---
 
-## 1. Concise Problem Summary  
-Provide a brief, precise summary of the problem in 2-3 sentences. Focus on the key challenge and what the problem is asking for without restating the entire statement.
+## 1. Gentle Storytelling Summary
+- Retell the problem in very simple words, like explaining to a friend.
+- Use small metaphors or analogies if it helps (e.g., “Imagine you’re sorting candies”).
+- Avoid heavy math terms unless absolutely necessary.
 
-## 2. General Themes and Problem Patterns  
-Identify the fundamental themes, concepts, or problem-solving paradigms that appear in this problem. Highlight any common patterns that recur across other competitive programming problems or algorithmic challenges. Explain how these patterns help in structuring a solution.
+## 2. The Core Idea
+- What is the problem *really* asking for? 
+- Describe it in everyday terms, focusing on the main trick or decision.
 
-## 3. Relevant Algorithms, Data Structures, and Techniques  
-List the well-known algorithms, data structures, or computational techniques pertinent to solving this problem. For each, include a short explanation of why it’s relevant and how it applies in this context. If multiple approaches exist, briefly mention alternatives and trade-offs.
+## 3. How You Might Think About Solving It
+- Give a casual sketch of how one might approach it, without going too deep into technical jargon.
+- Mention the key observation in plain English.
+- Include one or two “good to know” hints, but keep it lightweight.
 
-## 4. System Design and Architectural Insights (If Applicable)  
-Explain any system design principles, architectural patterns, or real-world analogies related to this problem or its solutions. This could include considerations for scalability, distributed processing, data consistency, fault tolerance, or other engineering concepts that align with the problem's structure or constraints.
-
-## 5. Practical Learning Tips and Next Steps  
-Offer actionable advice on how to deepen understanding of the problem’s concepts. Suggest related problems to practice, topics to study, or resources (books, tutorials, papers) that reinforce the skills or knowledge involved. Include ways to apply these ideas in broader contexts.
+## 4. A Cozy Closing Thought
+- End with a friendly note: encouragement, a fun analogy, or how this problem connects to daily life.
+- The tone should feel relaxing and supportive.
 
 ---
 
@@ -65,15 +86,139 @@ Offer actionable advice on how to deepen understanding of the problem’s concep
 
 ---
 
-Please ensure your response:
+Formatting rules:
+- Do not use technical section headers like "algorithms", "system design", etc.
+- Keep it warm, casual, and low-pressure.
+- Avoid overwhelming lists or references.
+- Imagine the reader is tired but curious, and just wants to end the day with a little mental puzzle explained gently.
+"""
 
-- Uses clear and precise language accessible to intermediate to advanced learners.
-- Structures the markdown with headings, bullet points, and code examples if relevant.
-- Avoids unnecessary repetition of the problem statement.
-- Provides actionable insights and encourages deeper learning.
-- Mentions related problems and resources. Please mentioned similar CodeForces problems or LeetCode problems
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a friendly teacher and storyteller. Always keep things simple, warm, and casual, with a tone that makes the reader feel at ease.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7,
+        max_tokens=2000,
+        n=1,
+    )
+
+    return response.choices[0].message.content.strip()
+
+
+def generate_problem_analysis(problem_markdown: str) -> str:
+    if OPENAI_API_KEY == "":
+        print("[*] OpenAI API Key not found. Exiting ...")
+        return ""
+
+    prompt = f"""
+You are an expert competitive programming instructor and system architect with a talent for clear, insightful explanations.
+
+Given the following Codeforces problem statement (in markdown format), produce a comprehensive analysis with a strong learning roadmap. Your response should be a markdown document with the following sections:
+
+---
+
+## 1. Concise Problem Summary
+
+Briefly summarize the problem in 2-3 sentences. Highlight the key challenge without restating the entire statement.
+
+## 2. General Themes and Problem Patterns
+
+Identify fundamental themes, paradigms, or patterns. Explain how these patterns guide the problem-solving approach.
+
+## 3. Relevant Algorithms, Data Structures, and Techniques
+
+List **all relevant algorithms, data structures, and computational techniques**, including advanced ones, even if not strictly necessary. For each:
+
+- Why it is relevant
+- How it could be applied
+- Trade-offs and alternatives
+- Recommended resources (books, tutorials, papers, links)
+
+Include algorithms from all domains:
+
+- Graph algorithms (BFS, DFS, Dijkstra, Bellman-Ford, MST, flow algorithms)
+- Dynamic Programming (DP optimizations, memoization, DP on trees/graphs)
+- Number theory (modular arithmetic, combinatorics, prime factorization)
+- String algorithms (KMP, Z-algorithm, suffix arrays, tries)
+- Data structures (segment trees, Fenwick trees, persistent DS, heaps, hashmaps)
+- Greedy, divide & conquer, backtracking, bit manipulation, etc.
+
+## 4. System Design and Architectural Insights (if applicable)
+
+Explain any real-world analogies or system-level considerations related to the problem structure or constraints.
+
+## 5. Practical Learning Tips and Next Steps
+
+- Step-by-step ways to master the skills in this problem
+- Related problems to practice on Codeforces, LeetCode, AtCoder
+- Mistakes or pitfalls to avoid
+- How to connect this problem to broader algorithmic expertise
+
+## 6. Code Sample
+
+A code sample in Python, C, Java or a popular programming language that illustrates the key algorithm or technique used in this problem. Ensure it is well-commented and easy to understand.
+
+```python
+def example_algorithm(data):
+    # This is a simple example algorithm
+    result = []
+    for item in data:
+        if item not in result:
+            result.append(item)
+    return result
+```
+
+Please make sure to add relevant comments where appropriate to inform the user of what to do and why some logic exists.
+
+Try to use some interesting programming built-in constructs that users can remember to use during actual contests to build up muscle memory and improve standard library knowledge.
+
+## 7. Learning Roadmap
+
+Provide a **checklist of algorithms and data structures to master**, sorted from basic to advanced. Include:
+
+- Short description
+- Example problem(s) to practice
+- Reference links or books
+- Tips for efficient learning
+
+---
+
+### Problem Statement:
+
+{problem_markdown}
+
+---
+
+Please ensure your response contains the following requirements. Please generate a lot of detail for each point -- fetch as much relevant information as possible:
+
+- Uses clear and precise language accessible to intermediate to advanced learners
+- Structures the markdown with headings, bullet points, and code examples if relevant
+- Avoids unnecessary repetition of the problem statement
+
+Now, fetch details for these problems,
+
+- Provides actionable insights and encourages deeper learning
+- Mentions related problems and resources (e.g., similar Codeforces or LeetCode problems)
 - Lists common mistakes and pitfalls that cause issues
 - Provides a small code snippet for an example
+- Use clear, structured markdown with headings, bullet points, and code examples
+- Avoid repeating the problem unnecessarily
+- Make it actionable: after reading, a student should know **exactly which algorithms to master and in which order**
+- Mention common mistakes and pitfalls
+- Provide small illustrative code snippets where relevant
+- Ensure links or book references are actionable and credible
+- Mentions more test cases as well apart from what is provided in the question itself
+
+Formatting guidelines,
+
+1. Please do not state "As an AI language model" or similar disclaimers.
+2. Use markdown formatting with headings, bullet points, and code blocks, but do not surround your response with tilde indicates (````) blocks.
+3. Please start with 2nd level indentation for the markdown instead of 1st level (use ## as the starting indentation)
 
 Thank you.
 """
@@ -81,11 +226,14 @@ Thank you.
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {
+                "role": "system",
+                "content": "You are an expert competitive programming instructor and system architect. Provide highly detailed, structured, research-style responses with actionable insights, references, and clear learning roadmaps.",
+            },
             {"role": "user", "content": prompt},
         ],
         temperature=0.2,
-        max_tokens=1200,
+        max_tokens=4000,
         n=1,
     )
 
@@ -119,20 +267,27 @@ def extract_samples(soup):
     return "\n".join(results)
 
 
+#     save_problem_markdown(problem_name, index, problem_rating, contest_id, md_text)
 def save_problem_markdown(
-    contest_id: int,
+    problem_name: str,
     index: str,
     md_text: str,
+    problem_rating: int,
+    contest_id: int,
 ) -> None:
     # Create a folder ~/.sudoku/problems if it doesn't exist
-    base_dir = Path.home() / ".sudoku" / "problems"
+    base_dir = DATA_DIR / "problems"
     base_dir.mkdir(parents=True, exist_ok=True)
 
     # Get current date and time in YYYY-MM-DD_HH-MM-SS format
     date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # Compose filename with date and time e.g. E_611_2025-08-09_14-30-15.md
-    filename = f"{index}_{contest_id}_{date_str}.md"
+    problem_name = re.sub(r"[^\w\s]", "", problem_name)  # Remove special characters
+    problem_name = problem_name.replace(" ", "_")  # Replace spaces with underscores
+    problem_name = problem_name[:50]  # Limit to 50 characters for filename safety
+    problem_name = problem_name.replace("_", "-")  # Replace underscores with hyphens
+    filename = f"{problem_name}_{problem_rating}_{index}_{contest_id}_{date_str}.md"
     file_path = base_dir / filename
 
     with open(file_path, "w", encoding="utf-8") as f:
@@ -152,16 +307,77 @@ def requests_get(url: str) -> requests.Response:
     return requests.get(url, verify=PROXY)
 
 
-def fetch_problem_statement(contest_id: int, index: str) -> str:
-    resp = requests_get(
-        f"{CODEFORCES_BASE_URL}/problemset/problem/{contest_id}/{index}"
+def append_analysis(
+    md_text: str,
+    generator_fn: Callable[[str], str],
+    label: str,
+) -> str:
+    """
+    Apply a given analysis generator function (like generate_problem_analysis
+    or generate_problem_casual), format the result, and append to md_text.
+    """
+    generated = mdformat.text(generator_fn(md_text).strip()).replace("**", "__")
+
+    md_text = (
+        f"{md_text}\n"
+        "______________________________________________________________________\n\n"
+        f"```markdown\n{get_art_formatted_text(label)}```\n\n"
+        "______________________________________________________________________\n"
+        f"\n{generated}\n"
     )
-    resp.raise_for_status()
+
+    # fix strange unicode issues
+    return md_text.replace(" ", " ").replace("’", "'").strip() + "\n"
+
+
+def get_art_formatted_text(text: str) -> str:
+    result, _, _ = art.text2art(
+        text,
+        font=DEFAULT_FONT,
+        decoration=None,
+        chr_ignore=True,
+        sep="\n",
+        space=0,
+        __detailed_return=True,
+    )
+    return result
+
+
+def fetch_problem_statement(
+    problem_name: str,
+    index: str,
+    problem_rating: int,
+    contest_id: int,
+    max_retries: int = 5,
+    backoff_factor: float = 1.5,
+) -> str:
+    """
+    Fetches the Codeforces problem statement with retry logic on failures.
+    max_retries: number of retries before giving up
+    backoff_factor: multiplier for exponential backoff in seconds
+    """
+    url = f"{CODEFORCES_BASE_URL}/problemset/problem/{contest_id}/{index}"
+    for attempt in range(1, max_retries + 1):
+        try:
+            resp = requests_get(url)
+            resp.raise_for_status()
+            break  # success, exit loop
+        except requests.RequestException as e:
+            print(f"[!] Attempt {attempt}/{max_retries} failed: {e}")
+            if attempt == max_retries:
+                raise
+            sleep_time = backoff_factor ** (attempt - 1)
+            print(f"[*] Retrying in {sleep_time:.1f} seconds...")
+            time.sleep(sleep_time)
+    else:
+        raise Exception(
+            f"Failed to fetch problem statement after {max_retries} attempts"
+        )
 
     # Problem statements are inside divs with class 'problem-statement'
-    prob_div = BeautifulSoup(resp.text, "html.parser").find(
-        "div", class_="problem-statement"
-    )
+    prob_div: Union[bs4.Tag, bs4.NavigableString, None] = bs4.BeautifulSoup(
+        resp.text, "html.parser"
+    ).find("div", class_="problem-statement")
     if not prob_div:
         raise Exception("Problem statement div not found")
 
@@ -202,25 +418,35 @@ def fetch_problem_statement(contest_id: int, index: str) -> str:
     md_text = re.sub(r"(?i)^input$", "## Input", md_text, flags=re.MULTILINE)
     md_text = re.sub(r"(?i)^output$", "## Output", md_text, flags=re.MULTILINE)
     md_text = re.sub(r"(?i)^note$", "## Note", md_text, flags=re.MULTILINE)
+    md_text = latex_to_md.LaTeX2Markdown(md_text).to_markdown().strip()
     md_text = (
-        f"# {title}\n\n"
-        f"**Time Limit:** {time_limit_value}\n\n"
-        f"**Memory Limit:** {memory_limit_value}\n\n"
+        f"__Time Limit:__ {time_limit_value}\n\n"
+        f"__Memory Limit:__ {memory_limit_value}\n\n"
+        f"__Problem Rating:__ {problem_rating}\n\n"
+        f"__Contest ID:__ {contest_id}\n\n"
+        f"__Index:__ {index}\n\n"
         "## Description\n\n"
-        f"{md_text.strip()}\n\n"
+        f"{md_text}\n\n"
         "---\n\n"
         "## Examples\n\n"
         f"{extracted_samples}"
     )
-
+    md_text = mdformat.text(md_text, options={"wrap": 80})
+    art_formatted_text_for_title = get_art_formatted_text(
+        (title.split(".")[1]).replace(" ", "  ")
+    )
     md_text = (
-        f"{md_text}\n"
-        "## OpenAI Analysis\n\n"
-        f"```markdown\n{generate_problem_analysis(md_text).strip()}\n```\n"
+        f"# Problem\n\n```markdown\n{art_formatted_text_for_title}```\n\n" f"{md_text}"
     )
 
+    for generator_fn, label in [
+        (generate_problem_analysis, "OpenAI Analysis"),
+        (generate_problem_casual, "Casual Analysis"),
+    ]:
+        md_text = append_analysis(md_text, generator_fn, label)
+
     # Save locally
-    save_problem_markdown(contest_id, index, md_text)
+    save_problem_markdown(problem_name, index, md_text, problem_rating, contest_id)
     return md_text
 
 
@@ -263,20 +489,50 @@ def random_problem(problems):
     return random.choice(problems)
 
 
+def get_problem_under_max_rating(
+    problems: List[dict],
+    shown_problems: List[dict],
+    max_rating: int = 1200,
+):
+    """Return a random easy problem (<= max_rating)."""
+    extracted_problems = [
+        p
+        for p in problems
+        if p.get("rating") and p["rating"] <= max_rating and p not in shown_problems
+    ]
+    if not extracted_problems:
+        print(f"[-] No problems found with rating <= {max_rating}")
+        return None
+    return random.choice(extracted_problems)
+
+
+def load_shown_problems() -> list:
+    shown_problems_file = DATA_DIR / "shown_problems.json"
+    if not shown_problems_file.exists():
+        return []
+
+    with open(shown_problems_file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def main():
     problems = load_problems()
     if not problems:
         return
 
-    print("[*] Codeforces CLI — commands: tag <tag>, random, show, quit/exit")
+    shown_problems = load_shown_problems()
+
+    print(
+        "[*] Codeforces CLI — commands: tag <tag>, random [max_rating], show, quit/exit"
+    )
     last_random_problem_selected = None
 
     try:
         while True:
-            cmd = input("> ").strip().split(maxsplit=1)
+            cmd: list[str] = input("> ").strip().split(maxsplit=1)
             if not cmd:
                 continue
-            if cmd[0] in ["quit", "exit"]:
+            if cmd[0] in [OptionQuit, OptionExit]:
                 break
             elif cmd[0] == "tag" and len(cmd) > 1:
                 results = search_by_tag(problems, cmd[1])
@@ -285,23 +541,58 @@ def main():
                         f"{p['contestId']}{p['index']}: {p['name']} (tags: {p['tags']})"
                     )
                 print(f"[+] Found {len(results)} problems with tag '{cmd[1]}'")
-            elif cmd[0] == "random":
-                p = random_problem(problems)
-                last_random_problem_selected = p
-                url = f"{CODEFORCES_BASE_URL}/problemset/problem/{p['contestId']}/{p['index']}"
-                print(f"[Random] {p['name']} — {url} (tags: {p['tags']})")
-            elif cmd[0] == "show":
+            elif cmd[0] == OptionRandom:
+                max_rating = 1200  # default
+                if len(cmd) > 1 and cmd[1].isdigit():
+                    max_rating = int(cmd[1])  # allow user to set threshold
+
+                while True:
+                    p = get_problem_under_max_rating(
+                        problems=problems,
+                        shown_problems=shown_problems,
+                        max_rating=max_rating,
+                    )
+                    if not p:
+                        print(f"[-] No problems found with rating <= {max_rating}")
+                        break
+                    elif (
+                        last_random_problem_selected
+                        and last_random_problem_selected == p
+                    ):
+                        print(
+                            "[*] Same problem selected as last time. Selecting a new one..."
+                        )
+                        continue
+                    else:
+                        break
+
+                if p:
+                    last_random_problem_selected = p
+                    url = f"{CODEFORCES_BASE_URL}/problemset/problem/{p['contestId']}/{p['index']}"
+                    print(
+                        f"[Rating ≤{max_rating}] {p['name']} — {url} (rating: {p.get('rating')}, tags: {p['tags']})"
+                    )
+            elif cmd[0] == OptionShow:
                 if last_random_problem_selected == None:
                     print(
                         "[*] Please first run 'random' to have a random problem in memory"
                     )
-                else:
-                    print(
-                        fetch_problem_statement(
-                            last_random_problem_selected["contestId"],
-                            last_random_problem_selected["index"],
-                        )
+                    continue
+
+                print(
+                    fetch_problem_statement(
+                        last_random_problem_selected["name"],
+                        last_random_problem_selected["index"],
+                        last_random_problem_selected["rating"],
+                        last_random_problem_selected["contestId"],
                     )
+                )
+
+                shown_problems.append(last_random_problem_selected)
+
+                with open(DATA_DIR / "shown_problems.json", "w", encoding="utf-8") as f:
+                    f.write(json.dumps(shown_problems, indent=4))
+
             else:
                 print("Unknown command")
     except KeyboardInterrupt:

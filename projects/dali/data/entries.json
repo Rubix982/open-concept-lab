@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2025-08-30",
+    "category": "Algorithms",
+    "tags": ["c", "pointers", "arrays"],
+    "title": "Pointer arithmetic for 2D arrays",
+    "description": "Practiced row-major indexing, boundary checks, and off-by-one pitfalls. Wrote a tiny matrix rotate."
+  },
+  {
+    "date": "2025-08-29",
+    "category": "DB",
+    "tags": ["transactions", "acid", "isolation"],
+    "title": "Transaction isolation & anomalies",
+    "description": "Read about Read Committed vs Repeatable Read vs Snapshot Isolation. Wrote notes + diagrams."
+  },
+  {
+    "date": "2025-08-28",
+    "category": "Distributed",
+    "tags": ["raft", "consensus", "leader-election"],
+    "title": "Raft leader election",
+    "description": "Stepped through timeouts, terms, heartbeats; mental model for split votes."
+  },
+  {
+    "date": "2025-08-30",
+    "category": "DB",
+    "tags": ["indexes", "locking", "parallelism"],
+    "title": "Indexes & locking, LeetCode",
+    "description": "Explored B-trees, GiST, SP-GiST locking mechanisms, and parallel query execution. LeetCode, 1x easy, 1x medium."
+  },
+  {
+    "date": "2025-08-31",
+    "category": "Other",
+    "tags": ["javascript", "leetcode"],
+    "title": "Dali, LeetCode",
+    "description": "Added heatmap to Dali. Re-structured the project. Solved Sudoku Hard. Recursive backtracking."
+  }
+]

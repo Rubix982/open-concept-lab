@@ -1,0 +1,54 @@
+{
+  "categories": {
+    "DB": {
+      "name": "Databases",
+      "description": "Database systems, data management, data storage, data retrieval, query optimization, and related topics.",
+      "color": "facc15"
+    },
+    "Distributed": {
+      "name": "Distributed Systems",
+      "description": "Distributed computing, distributed algorithms, consensus protocols, fault tolerance, and related topics.",
+      "color": "3b82f6"
+    },
+    "Parallel": {
+      "name": "Parallel Computing",
+      "description": "Parallel algorithms, parallel architectures, parallel programming models, and related topics.",
+      "color": "3b82f6"
+    },
+    "Algorithms": {
+      "name": "Algorithms & Complexity",
+      "description": "Algorithm design, analysis of algorithms, computational complexity, NP-completeness, and related topics.",
+      "color": "f97316"
+    },
+    "DevOps": {
+      "name": "DevOps & Cloud",
+      "description": "Cloud computing, containerization, orchestration, CI/CD, infrastructure as code, and related topics.",
+      "color": "10b981"
+    },
+    "Security": {
+      "name": "Security & Privacy",
+      "description": "Cryptography, network security, system security, privacy-preserving technologies, and related topics.",
+      "color": "ef4444"
+    },
+    "Systems": {
+      "name": "Systems & Networking",
+      "description": "Operating systems, computer architecture, networking protocols, distributed systems, and related topics.",
+      "color": "8b5cf6"
+    },
+    "LeetCode": {
+      "name": "LeetCode",
+      "description": "Coding problems and solutions from LeetCode, covering a wide range of topics and difficulty levels.",
+      "color": "6366f1"
+    },
+    "CodeForces": {
+      "name": "CodeForces",
+      "description": "Competitive programming problems and solutions from CodeForces, covering various algorithms and data structures.",
+      "color": "6366f1"
+    },
+    "Other": {
+      "name": "Other",
+      "description": "Miscellaneous topics that don't fit into the other categories.",
+      "color": "d1d5db"
+    }
+  }
+}

@@ -1,0 +1,85 @@
+<!--
+  Journal (Single HTML File)
+  ----------------------------------
+  How to use:
+  1) Keep this file at the repo root (e.g., learning-journal.html).
+  2) Each day you learn something, create a directory like ./2025-08-30/db/ with your notes (markdown, txt, code, etc.).
+  3) Add a new <li class="entry"> below with the date, category, tags, and a link to that day's folder.
+  4) The dashboard will auto-compute counts and let you filter by Category/Tags/Text.
+  5) Use the "Print / Export" button to save as PDF.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="src/index.css" />
+  <title>Journal</title>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        <span class="dot"></span>
+        <h1>Journal</h1>
+      </div>
+      <div class="controls">
+        <input id="search" placeholder="Search text… (title, note, tags)" />
+        <select id="category"></select>
+        <input id="date" type="date" />
+        <button id="print">Print / Export</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <aside class="panel">
+        <h2>Stats</h2>
+        <div class="stats">
+          <div class="stat">
+            <div>Total Entries</div>
+            <div class="k" id="stat-total">0</div>
+          </div>
+          <div class="stat">
+            <div>Days Logged</div>
+            <div class="k" id="stat-days">0</div>
+          </div>
+          <div class="stat">
+            <div>Current Streak</div>
+            <div class="k ok" id="stat-streak">0</div>
+          </div>
+          <div class="stat">
+            <div>Top Category</div>
+            <div class="k" id="stat-top">—</div>
+          </div>
+        </div>
+        <h2 style="margin-top: 14px">Quick Filters</h2>
+        <div class="chips" id="chips">
+        </div>
+      </aside>
+
+      <section class="panel">
+        <h2>Entries</h2>
+        <div id="loader">Loading entries...</div>
+        <ul class="entries" id="entries" style="display: none;"></ul>
+      </section>
+
+      <section></section>
+
+      <section class="panel-wide">
+        <h2>Learning Heatmap</h2>
+        <div class="month-labels" id="month-labels"></div>
+        <div id="heatmap"></div>
+        <div class="heatmap-legend" id="heatmap-legend"></div>
+        <div id="heatmap-tooltip" class="tooltip"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="src/index.js"></script>
+</body>
+
+</html>

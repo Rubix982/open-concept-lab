@@ -1,5 +1,5 @@
 branca==0.8.1
-certifi==2025.6.15
+certifi==2025.8.3
 charset-normalizer==3.4.3
 folium==0.20.0
 idna==3.10
@@ -13,6 +13,6 @@ Pygments==2.19.2
 questionary==2.1.0
 requests==2.32.4
 rich==14.1.0
-urllib3==2.4.0
+urllib3==2.5.0
 wcwidth==0.2.13
 xyzservices==2025.4.0
