@@ -10,76 +10,113 @@
 -->
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="src/index.css" />
+    <title>Journal</title>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="src/index.css" />
-  <title>Journal</title>
-</head>
+  <body>
+    <nav>
+      <button data-tab="home" class="active">Journal</button>
+      <button data-tab="calendar">Calendar</button>
+      <button data-tab="blog">Blog</button>
+    </nav>
 
-<body>
-  <header>
-    <div class="wrap">
-      <div class="title">
-        <span class="dot"></span>
-        <h1>Journal</h1>
-      </div>
-      <div class="controls">
-        <input id="search" placeholder="Search text… (title, note, tags)" />
-        <select id="category"></select>
-        <input id="date" type="date" />
-        <button id="print">Print / Export</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="wrap">
     <main>
-      <aside class="panel">
-        <h2>Stats</h2>
-        <div class="stats">
-          <div class="stat">
-            <div>Total Entries</div>
-            <div class="k" id="stat-total">0</div>
+      <section id="home" class="tab active">
+        <header>
+          <div class="wrap">
+            <div class="title">
+              <span class="dot"></span>
+              <h1>Journal</h1>
+            </div>
+            <div class="controls">
+              <input
+                id="search"
+                placeholder="Search text… (title, note, tags)"
+              />
+              <select id="category"></select>
+              <input id="date" type="date" />
+              <button id="print">Print / Export</button>
+            </div>
           </div>
-          <div class="stat">
-            <div>Days Logged</div>
-            <div class="k" id="stat-days">0</div>
-          </div>
-          <div class="stat">
-            <div>Current Streak</div>
-            <div class="k ok" id="stat-streak">0</div>
-          </div>
-          <div class="stat">
-            <div>Top Category</div>
-            <div class="k" id="stat-top">—</div>
-          </div>
-        </div>
-        <h2 style="margin-top: 14px">Quick Filters</h2>
-        <div class="chips" id="chips">
-        </div>
-      </aside>
+        </header>
 
-      <section class="panel">
-        <h2>Entries</h2>
-        <div id="loader">Loading entries...</div>
-        <ul class="entries" id="entries" style="display: none;"></ul>
+        <div class="wrap">
+          <main>
+            <aside class="panel">
+              <h2>Stats</h2>
+              <div class="stats">
+                <div class="stat">
+                  <div>Total Entries</div>
+                  <div class="k" id="stat-total">0</div>
+                </div>
+                <div class="stat">
+                  <div>Days Logged</div>
+                  <div class="k" id="stat-days">0</div>
+                </div>
+                <div class="stat">
+                  <div>Current Streak</div>
+                  <div class="k ok" id="stat-streak">0</div>
+                </div>
+                <div class="stat">
+                  <div>Top Category</div>
+                  <div class="k" id="stat-top">—</div>
+                </div>
+              </div>
+              <h2 style="margin-top: 14px">Quick Filters</h2>
+              <div class="chips" id="chips"></div>
+            </aside>
+
+            <section class="panel">
+              <h2>Entries</h2>
+              <div id="loader">Loading entries...</div>
+              <ul class="entries" id="entries" style="display: none"></ul>
+            </section>
+
+            <section></section>
+
+            <section class="panel-wide">
+              <h2>Learning Heatmap</h2>
+              <div class="month-labels" id="month-labels"></div>
+              <div id="heatmap"></div>
+              <div class="heatmap-legend" id="heatmap-legend"></div>
+              <div id="heatmap-tooltip" class="tooltip"></div>
+            </section>
+          </main>
+        </div>
       </section>
 
-      <section></section>
+      <section id="calendar" class="tab">
+        <h2>Calendar</h2>
+        <p>[Calendar content goes here]</p>
+      </section>
 
-      <section class="panel-wide">
-        <h2>Learning Heatmap</h2>
-        <div class="month-labels" id="month-labels"></div>
-        <div id="heatmap"></div>
-        <div class="heatmap-legend" id="heatmap-legend"></div>
-        <div id="heatmap-tooltip" class="tooltip"></div>
+      <section id="blog" class="tab">
+        <h2>Blog</h2>
+        <p>[Blog content goes here]</p>
       </section>
     </main>
-  </div>
 
-  <script src="src/index.js"></script>
-</body>
+    <script>
+      // Switch tabs when sidebar button is clicked
+      const buttons = document.querySelectorAll("nav button");
+      const tabs = document.querySelectorAll(".tab");
 
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          // remove active class from all
+          buttons.forEach((b) => b.classList.remove("active"));
+          tabs.forEach((tab) => tab.classList.remove("active"));
+
+          // add active class to the clicked button and matching tab
+          btn.classList.add("active");
+          document.getElementById(btn.dataset.tab).classList.add("active");
+        });
+      });
+    </script>
+    <script src="src/index.js"></script>
+  </body>
 </html>
