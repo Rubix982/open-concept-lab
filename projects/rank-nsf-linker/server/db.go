@@ -23,8 +23,8 @@ const (
 
 var primaryKeyAgainstTable = map[string]string{
 	"countries":             "name",
-	"country_info":          "institution",
-	"csrankings":            "name",
+	"universities":          "institution",
+	"professors":            "name",
 	"generated_author_info": "name",
 	"geolocation":           "institution",
 }
@@ -74,6 +74,7 @@ func runMigrations() error {
 		}
 	}
 
+	// For the order, we need to ensure that the migrations are run in the correct sequence
 	sort.Strings(sqlFiles)
 
 	for _, fname := range sqlFiles {
@@ -95,6 +96,16 @@ func runMigrations() error {
 	return nil
 }
 
+func getAlternateTableName(tableName string) string {
+	if tableName == "country_info" {
+		return "universities"
+	} else if tableName == "csrankings" {
+		return "professors"
+	}
+
+	return tableName
+}
+
 func populatePostgresFromCSVs() error {
 	db, err := getPostgresConnection()
 	if err != nil {
@@ -108,13 +119,14 @@ func populatePostgresFromCSVs() error {
 	for _, csvName := range backwardsCompatibleSchemaMap {
 		tableName := strings.Split(csvName, ".")[0]
 		tableName = strings.ReplaceAll(tableName, "-", "_")
+		tableName = getAlternateTableName(tableName)
 
 		originalPath := filepath.Join(getDataFilePath(DATA_DIR), csvName)
 		backupPath := filepath.Join(getDataFilePath(BACKUP_DIR), csvName)
 		primaryKey := primaryKeyAgainstTable[tableName]
 
-		logger.Infof("📁 Processing CSV: %s", csvName)
-		logger.Infof("🔑 Using primary key: %s", primaryKey)
+		logger.Infof("📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
+			csvName, primaryKey, tableName)
 
 		original, headers, err := readCSVAsMap(originalPath, primaryKey)
 		if err != nil {

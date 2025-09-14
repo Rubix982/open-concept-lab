@@ -1,6 +1,6 @@
 APP_NAME := go-server
 DOCKER_COMPOSE := docker compose -f docker-compose.dev.yaml
-SERVICE := go-server
+SERVICE := pg17-local
 
 .PHONY: all build run docker-build up down logs restart clean \
         exec exec-bash ps top start stop status rebuild

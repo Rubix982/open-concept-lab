@@ -111,16 +111,16 @@
   --warn: #f59e0b;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
     Helvetica, Arial;
   background: linear-gradient(180deg, #0b0f14, #0d121a 40%, #0b0f14);
   color: var(--text);
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 10% 90%;
 }
 
 header {
@@ -374,4 +374,43 @@ footer {
   .entry {
     break-inside: avoid;
   }
+}
+
+/* Sidebar */
+nav {
+  background: #111;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+nav button:hover,
+nav button.active {
+  background: #333;
+}
+
+/* Main content */
+main {
+  /* flex: 1; */
+  padding: 20px;
+}
+
+.tab {
+  display: none;
+  /* Hide by default */
+}
+
+.tab.active {
+  display: inline-grid;
+  /* Show only the active one */
 }

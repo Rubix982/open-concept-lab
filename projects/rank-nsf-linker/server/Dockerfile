@@ -32,9 +32,10 @@ COPY --from=builder /app/go-server .
 COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/certs /app/certs
 
-# Make sure certs are readable by the non-root user
+# Make sure certs and the data directory are readable by the non-root user
 RUN chown -R 65532:65532 /app/certs && \
     chown -R 65532:65532 /app/target && \
+    chmod 600 /app/data && \
     chmod 600 /app/certs/client.key /app/certs/client.crt /app/certs/ca.crt
 
 EXPOSE 8080
