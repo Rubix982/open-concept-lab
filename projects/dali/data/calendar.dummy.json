@@ -1,0 +1,233 @@
+{
+    "meta": {
+        "owner": "Saif Islam",
+        "started_on": "2025-09-14",
+        "time_horizon_years": 3,
+        "fields": [
+            "AI",
+            "Security",
+            "Distributed Systems",
+            "DevOps"
+        ],
+        "values": [
+            "Rigorous planning",
+            "Long-term endurance",
+            "Time discipline"
+        ]
+    },
+    "trajectory": {
+        "stages": [
+            {
+                "id": "foundation",
+                "title": "Foundation",
+                "duration": {
+                    "from": "2025-Q4",
+                    "to": "2026-Q2"
+                },
+                "focus": [
+                    "Math",
+                    "Operating Systems",
+                    "Networking",
+                    "Core Concepts"
+                ],
+                "description": "Build irreducible basics in math, OS, networking, and system fundamentals.",
+                "resources": [
+                    "Linear Algebra (Strang)",
+                    "Computer Networking (Kurose)",
+                    "Distributed Systems (Tanenbaum)",
+                    "Security Engineering (Anderson)"
+                ],
+                "goals": [
+                    "Master probability, optimization, and algorithms",
+                    "Understand OS internals and networking",
+                    "Learn CAP theorem, consensus basics",
+                    "Study security primitives (crypto, auth, sandboxing)"
+                ],
+                "milestones": [
+                    {
+                        "name": "Complete Strang Linear Algebra",
+                        "due": "2026-01"
+                    },
+                    {
+                        "name": "Implement basic socket programming",
+                        "due": "2026-02"
+                    }
+                ]
+            },
+            {
+                "id": "base",
+                "title": "Base",
+                "duration": {
+                    "from": "2026-Q2",
+                    "to": "2026-Q4"
+                },
+                "focus": [
+                    "Toy Projects",
+                    "System Implementation",
+                    "Security Labs"
+                ],
+                "description": "Apply fundamentals via hands-on toy projects and reproducible labs.",
+                "projects": [
+                    "Implement Raft consensus algorithm",
+                    "Write a toy authentication system",
+                    "Build CI/CD pipeline with Docker + Terraform"
+                ],
+                "goals": [
+                    "Translate theory into prototypes",
+                    "Simulate failures and recovery",
+                    "Break and fix toy security systems"
+                ],
+                "milestones": [
+                    {
+                        "name": "Working Raft prototype",
+                        "due": "2026-06"
+                    },
+                    {
+                        "name": "Toy CI/CD pipeline live demo",
+                        "due": "2026-09"
+                    }
+                ]
+            },
+            {
+                "id": "structure",
+                "title": "Structure",
+                "duration": {
+                    "from": "2027-Q1",
+                    "to": "2027-Q4"
+                },
+                "focus": [
+                    "Research Themes",
+                    "Medium Projects",
+                    "Open Source Contributions"
+                ],
+                "description": "Climb into research-grade themes with mid-scale projects.",
+                "activities": [
+                    "Read and summarize 20+ papers (NeurIPS, USENIX, SOSP)",
+                    "Contribute to 1 open-source project per field",
+                    "Prototype distributed KV store"
+                ],
+                "goals": [
+                    "Understand cutting-edge designs",
+                    "Combine knowledge across fields",
+                    "Replicate experiments from papers"
+                ],
+                "milestones": [
+                    {
+                        "name": "20 paper summaries compiled",
+                        "due": "2027-06"
+                    },
+                    {
+                        "name": "Distributed KV store benchmarked",
+                        "due": "2027-10"
+                    }
+                ]
+            },
+            {
+                "id": "specialization",
+                "title": "Specialization",
+                "duration": {
+                    "from": "2028-Q1",
+                    "to": "open-ended"
+                },
+                "focus": [
+                    "AI × Security × Systems",
+                    "Research Contributions"
+                ],
+                "description": "Carve out niche expertise and work toward impactful contributions.",
+                "focus_areas": [
+                    "AI-driven test framework generation",
+                    "Secure ML pipelines",
+                    "Distributed AI training infra"
+                ],
+                "milestones": [
+                    {
+                        "name": "Publish workshop-level paper",
+                        "due": "2028-06"
+                    },
+                    {
+                        "name": "Release open-source tool",
+                        "due": "2028-12"
+                    },
+                    {
+                        "name": "Collaborate with Stanford/ETH/CMU lab",
+                        "due": "2029-06"
+                    }
+                ]
+            }
+        ]
+    },
+    "plans": [
+        {
+            "type": "project",
+            "title": "Implement Raft consensus algorithm",
+            "start_date": "2025-10-01",
+            "end_date": "2025-10-21",
+            "description": "Code Raft in Go, simulate leader election, log replication, and recovery scenarios."
+        },
+        {
+            "type": "deep_dive",
+            "title": "ElasticSearch Mastery",
+            "start_date": "2025-11-01",
+            "end_date": "2025-11-14",
+            "hours_per_day": 3,
+            "description": "Read ElasticSearch internals, experiment with indexing and search optimization."
+        },
+        {
+            "type": "habit",
+            "title": "Daily Problem Solving",
+            "start_date": "2025-09-14",
+            "end_date": "2026-09-14",
+            "description": "One CodeForces + one LeetCode problem daily.",
+            "tags": [
+                "Algorithmic Thinking",
+                "Consistency"
+            ]
+        }
+    ],
+    "daily_logs": {
+        "2025-09-14": [
+            {
+                "type": "habit",
+                "entry": "Solved CodeForces #1842A and LeetCode 230. Kept promise of 2 daily challenges."
+            },
+            {
+                "type": "focus",
+                "entry": "Studied Terraform modules for 3 hours, notes taken on variables and providers."
+            }
+        ],
+        "2025-09-15": [
+            {
+                "type": "project",
+                "entry": "Began Raft implementation. Finished leader election logic."
+            },
+            {
+                "type": "habit",
+                "entry": "Skipped CodeForces, completed LeetCode 200 (DFS)."
+            }
+        ]
+    },
+    "weekly_reviews": {
+        "2025-W37": {
+            "summary": {
+                "wins": [
+                    "Terraform pipeline automated",
+                    "First Raft leader election code completed"
+                ],
+                "challenges": [
+                    "Missed 2 CodeForces problems",
+                    "Low evening focus"
+                ],
+                "pacing": "Good on DevOps + Systems, weak on Security"
+            },
+            "next_week_focus": [
+                "Security: 2 labs",
+                "AI: Read 2 papers",
+                "Maintain daily CF+LC streak"
+            ],
+            "meta": {
+                "week_start": "2025-09-08",
+                "week_end": "2025-09-14"
+            }
+        }
+    }
+}

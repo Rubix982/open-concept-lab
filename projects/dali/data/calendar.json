@@ -1,0 +1,95 @@
+{
+    "meta": {
+        "owner": "Saif Islam",
+        "started_on": "2025-09-14",
+        "time_horizon_years": 4,
+        "fields": [
+            "AI",
+            "Security",
+            "Distributed Systems",
+            "DevOps",
+            "DevSecOps",
+            "Research",
+            "Software Engineering"
+        ],
+        "values": [
+            "Rigorous planning",
+            "Long-term endurance",
+            "Time discipline",
+            "Focused approach",
+            "Long-term goal achievements"
+        ]
+    },
+    "trajectory": {
+        "stages": [
+            {
+                "id": "foundation",
+                "title": "Foundation",
+                "duration": {
+                    "from": "2025-Q4 (September)",
+                    "to": "2026-Q2 (March)"
+                },
+                "focus": [
+                    "Programming Skills / LeetCode / CodeForces",
+                    "Pending Projects",
+                    "DevOps & DevSecOps Scenarios",
+                    "ElasticSearch / Postgres / Redis / PebbleDb / Kafka",
+                    "Advanced Data Structures & Algorithms"
+                ],
+                "description": "In the next two quarters, I plan to work on strengthening my programming skills. Further, I want to complete RankNSFLinker and Triage, focus on solving the DevOps/DevSecOps scenarios, and read about developing more in-depth skills about technologies like ElasticSearch/Postgres/Redis/PebbleDb/Kafka",
+                "goals": [
+                    "1 LeetCode + 1 CodeForces problem day = 360 problems by end of the two quarters",
+                    "Get a starting grip on Rust, good integration skills, visualisation skills for triage",
+                    "Work on that dream project, RankNSFLinker, to finally show my depth of thinking",
+                    "Deep data retrieval and storage policies and ideas",
+                    "Acknowledge and implement deep, advanced data structure technigues and algorithmic implementation"
+                ],
+                "milestones": [
+                    {
+                        "name": "150 problems on LeetCode",
+                        "due": "2025-10"
+                    },
+                    {
+                        "name": "30 problems on CodeForces",
+                        "due": "2025-10"
+                    },
+                    {
+                        "name": "Complete rank-nsf-linker",
+                        "due": "2025-11"
+                    },
+                    {
+                        "name": "Complete triage",
+                        "due": "2025-03"
+                    },
+                    {
+                        "name": "DevOps / DevSecOps Scenarios, at least 15-20",
+                        "due": "2025-04"
+                    },
+                    {
+                        "name": "Basic to advanced data engineering reading",
+                        "due": "2025-05"
+                    }
+                ]
+            },
+            {
+                "id": "personal_growth",
+                "title": "Personal Growth",
+                "duration": {
+                    "from": "2025-Q4 (September)"
+                },
+                "focus": [
+                    "Networking",
+                    "Idea Publishing"
+                ],
+                "description": "Starting from this quarter, I will and need to improve my social networking skills. I intend to send out more emails, more messages, more approaches, more focus on attending events, and more focus on taking out focused time to generate new plausible ideas seeing problems around me",
+                "goals": [
+                    "Send at least 5 emails to professor, professionals. Try similar habits."
+                ],
+                "milestones": []
+            }
+        ]
+    },
+    "plans": [],
+    "daily_logs": {},
+    "weekly_reviews": {}
+}
