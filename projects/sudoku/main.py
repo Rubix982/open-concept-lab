@@ -31,7 +31,6 @@ CODEFORCES_BASE_URL = "https://codeforces.com"
 API_URL = f"{CODEFORCES_BASE_URL}/api"
 PROXY = os.getenv("PROXY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
 
 # OPTIONS
 OptionRandom = "random"
@@ -48,6 +47,8 @@ def generate_problem_casual(problem_markdown: str) -> str:
     if OPENAI_API_KEY == "":
         print("[*] OpenAI API Key not found. Exiting ...")
         return ""
+
+    client = OpenAI(api_key=OPENAI_API_KEY)
 
     prompt = f"""
 You are a friendly storyteller and teacher, explaining competitive programming problems in a simple, relaxing way — 

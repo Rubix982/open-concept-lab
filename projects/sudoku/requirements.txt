@@ -17,7 +17,7 @@ mdformat==0.7.22
 mdurl==0.1.2
 openai==1.99.5
 pydantic==2.11.7
-pydantic_core==2.39.0
+pydantic_core==2.33.2
 python-dotenv==1.1.1
 requests==2.32.4
 six==1.17.0
