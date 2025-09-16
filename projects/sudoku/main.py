@@ -305,6 +305,8 @@ def remove_classes_from_div(main_div, classes_to_remove: list[str]):
 
 
 def requests_get(url: str) -> requests.Response:
+    if PROXY == "":
+        return requests.get(url)
     return requests.get(url, verify=PROXY)
 
 

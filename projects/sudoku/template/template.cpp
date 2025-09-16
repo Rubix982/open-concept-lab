@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+// g++-15 -std=c++17 -O2 -Wall 897_A.cpp -o 897_A
 
 // ----------------- Shortcuts -----------------
 #define fastio()                 \
