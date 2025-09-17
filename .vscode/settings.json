@@ -44,6 +44,12 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "algorithm": "cpp",
-    "tuple": "cpp"
+    "tuple": "cpp",
+    "barrier": "cpp",
+    "latch": "cpp",
+    "semaphore": "cpp",
+    "valarray": "cpp",
+    "chrono": "cpp",
+    "random": "cpp"
   }
 }
