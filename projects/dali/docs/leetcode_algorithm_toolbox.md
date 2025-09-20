@@ -23,10 +23,20 @@
     - [**9. Math \& Number Theory**](#9-math--number-theory-1)
     - [**10. Binary Search \& Optimization**](#10-binary-search--optimization)
     - [**11. Advanced / Misc Patterns**](#11-advanced--misc-patterns)
+  - [**System Design Algorithm \& Technique Toolbox**](#system-design-algorithm--technique-toolbox)
+    - [**1. Caching \& Load Balancing**](#1-caching--load-balancing)
+    - [**2. Storage \& Indexing**](#2-storage--indexing)
+    - [**3. Distributed Systems**](#3-distributed-systems)
+    - [**4. Networking**](#4-networking)
+    - [**5. Monitoring \& Observability**](#5-monitoring--observability)
+    - [**6. Security \& Reliability**](#6-security--reliability)
+    - [**7. Scheduling \& Resource Management**](#7-scheduling--resource-management)
 
 ## **1. Arrays & Strings**
 
 - Two pointers (e.g., sliding window, merging, partitioning)
+  - [Two Sum II - Input array is sorted (LeetCode #167)](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
+  - [Squares of a Sorted Array (LeetCode #977)](https://leetcode.com/problems/squares-of-a-sorted-array/)
 - Prefix sums / suffix sums
 - Kadane's algorithm (max subarray)
 - Cyclic arrays / rotations
@@ -245,3 +255,56 @@ Perfect. Let's build a **Mega LeetCode Pattern Map**. I'll structure it so that 
 | Segment Tree           | [Range Sum Query - Mutable](https://leetcode.com/problems/range-sum-query-mutable/)                       | Hard       | Segment tree practice       |
 | Fenwick Tree           | [Count of Smaller Numbers After Self](https://leetcode.com/problems/count-of-smaller-numbers-after-self/) | Hard       | BIT tree / Fenwick tree     |
 | Two-Pointer Trick      | [3Sum Closest](https://leetcode.com/problems/3sum-closest/)                                               | Medium     | Sorting + two-pointer       |
+
+## **System Design Algorithm & Technique Toolbox**
+
+### **1. Caching & Load Balancing**
+
+- **Eviction Policies** → LRU, LFU, ARC (used in Redis, Memcached, OS page replacement).
+- **Hashing Techniques** → Consistent Hashing, Rendezvous Hashing (used in load balancers, sharded DBs).
+- **Bloom Filters / Count-Min Sketch** → Probabilistic membership & frequency checks (used in CDNs, databases).
+- **LRU Cache Implementation** → Map + Doubly Linked List.
+
+### **2. Storage & Indexing**
+
+- **B-Trees & B+ Trees** → Core of relational DB indexes.
+- **LSM Trees** → Write-optimized storage (Cassandra, LevelDB, RocksDB).
+- **Skip Lists** → Ordered map alternative (used in Redis).
+- **Trie / Radix Trees** → Prefix-based indexing (DNS, IP routing, search engines).
+- **Inverted Index** → Search engines, log search (Lucene, Elasticsearch).
+
+### **3. Distributed Systems**
+
+- **Leader Election** → Paxos, Raft basics.
+- **Consensus** → 2PC, 3PC, Raft log replication.
+- **Quorum Reads/Writes** → Cassandra/Dynamo style trade-offs.
+- **Vector Clocks / Lamport Timestamps** → Event ordering in distributed systems.
+- **Gossip Protocols** → Cluster membership, failure detection.
+
+### **4. Networking**
+
+- **TCP Congestion Control** → Reno, CUBIC, BBR.
+- **Load Shedding & Circuit Breakers** → Resilience under failure.
+- **CDN Caching Algorithms** → Edge cache invalidation, TTLs.
+- **Consistent Hashing for CDNs**.
+- **Retry with Exponential Backoff + Jitter** → Prevents thundering herd.
+
+### **5. Monitoring & Observability**
+
+- **Time-Series Data Structures** → Round-Robin DB (RRD), TSDB compaction.
+- **Approximate Aggregates** → HyperLogLog (unique counts), Count-Min Sketch.
+- **Reservoir Sampling** → Streaming metrics, log analysis.
+
+### **6. Security & Reliability**
+
+- **Merkle Trees** → Data integrity in Git, blockchains, distributed storage.
+- **CAP Theorem Tradeoffs** → Partition tolerance choices.
+- **Shamir's Secret Sharing** → Key distribution.
+- **Hash Chains / HMACs** → Secure logging, authentication.
+
+### **7. Scheduling & Resource Management**
+
+- **Fair Queuing Algorithms** → Weighted Fair Queuing, DRR (network routers, Kubernetes scheduling).
+- **Priority Inversion Handling** → OS schedulers.
+- **Token Bucket / Leaky Bucket** → Rate limiting (APIs, load balancers).
+- **Backpressure** → Streaming systems like Kafka.
