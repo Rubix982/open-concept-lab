@@ -1,6 +1,6 @@
 APP_NAME := go-server
 DOCKER_COMPOSE := docker compose -f docker-compose.dev.yaml
-SERVICE := pg17-local
+SERVICE := go-server
 
 .PHONY: all build run docker-build up down logs restart clean \
         exec exec-bash ps top start stop status rebuild
@@ -29,6 +29,14 @@ down:
 # Tail logs
 logs:
 	$(DOCKER_COMPOSE) logs -f
+
+# Tail logs for a specific serviceà
+# Usage:
+# 	make logs-go-server   # logs for go-server
+# 	make logs-postgres    # logs for postgres
+# 	make logs-web         # logs for web
+logs-%:
+	$(DOCKER_COMPOSE) logs -f $*
 
 # Restart cleanly
 restart:
