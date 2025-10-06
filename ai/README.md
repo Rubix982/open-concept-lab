@@ -25,7 +25,7 @@
       - [6. Adversarial robustness for CSPM models (attacks \& defenses)](#6-adversarial-robustness-for-cspm-models-attacks--defenses)
       - [7. Model monitoring \& concept-drift detection for cloud-security models](#7-model-monitoring--concept-drift-detection-for-cloud-security-models)
       - [8. Privacy-preserving threat intel sharing (federated learning)](#8-privacy-preserving-threat-intel-sharing-federated-learning)
-  - [Interview / Hiring Playbook: how to present these projects to Wiz](#interview--hiring-playbook-how-to-present-these-projects-to-wiz)
+      - [Interview / Hiring Playbook: how to present these projects to Wiz](#interview--hiring-playbook-how-to-present-these-projects-to-wiz)
     - [2. **SentinelOne — AI-driven endpoint detection \& response (EDR)**](#2-sentinelone--ai-driven-endpoint-detection--response-edr)
     - [3. **CrowdStrike — AI-powered endpoint + cloud security platform**](#3-crowdstrike--ai-powered-endpoint--cloud-security-platform)
     - [4. **Darktrace — network/enterprise anomaly detection using ML**](#4-darktrace--networkenterprise-anomaly-detection-using-ml)
@@ -271,7 +271,7 @@ What they build: cloud risk posture, vulnerability & misconfiguration discovery,
 **Deliverables:** FL simulation scripts, evaluation, privacy/config tuning guide.
 **Resume bullet:** "Prototyped a federated anomaly detection system for multi-tenant cloud telemetry achieving 92% utility of centralized training with ε=1.5 DP guarantees."
 
-## Interview / Hiring Playbook: how to present these projects to Wiz
+#### Interview / Hiring Playbook: how to present these projects to Wiz
 
 1. **Problem → Data → Model → Production**: Always show the data pipeline (how you’d ingest CloudTrail/IaC), why the model was chosen, and how it would run in-prod (latency, cost, inferencing constraints).
 2. **Explainability & low FPR**: demonstrate how you reduce false positives (explainable features, rule+model hybrids).
