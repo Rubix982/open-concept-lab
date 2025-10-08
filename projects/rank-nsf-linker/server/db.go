@@ -33,8 +33,8 @@ var primaryKeyAgainstTable = map[string]string{
 var backwardsCompatibleSchemaMap = []string{
 	"countries.csv",
 	"csrankings.csv",
-	"geolocation.csv",
 	"country-info.csv",
+	"geolocation.csv",
 	"generated-author-info.csv",
 }
 
@@ -190,7 +190,7 @@ func runMigrations() error {
 
 func getAlternateTableName(tableName string) string {
 	switch tableName {
-	case "country_info":
+	case "country_info", "geolocation":
 		return "universities"
 	case "csrankings":
 		return "professors"
@@ -210,9 +210,9 @@ func populatePostgresFromCSVs() error {
 
 	// Process each CSV from schemaMap
 	for _, csvName := range backwardsCompatibleSchemaMap {
-		tableName := strings.Split(csvName, ".")[0]
-		tableName = strings.ReplaceAll(tableName, "-", "_")
-		tableName = getAlternateTableName(tableName)
+		originalTableName := strings.Split(csvName, ".")[0]
+		originalTableName = strings.ReplaceAll(originalTableName, "-", "_")
+		tableName := getAlternateTableName(originalTableName)
 
 		originalPath := filepath.Join(getDataFilePath(DATA_DIR), csvName)
 		backupPath := filepath.Join(getDataFilePath(BACKUP_DIR), csvName)
@@ -226,6 +226,7 @@ func populatePostgresFromCSVs() error {
 			logger.Errorf("❌ Failed to read original CSV: %v", err)
 			return err
 		}
+		headers = cleanHeaders(tableName, headers)
 		logger.Infof("✅ Read original CSV: %d records", len(original))
 
 		backup := make(map[string][]string)
@@ -249,7 +250,20 @@ func populatePostgresFromCSVs() error {
 		logger.Infof("📦 Merged total records: %d", len(merged))
 		logger.Infof("⬇️ Inserting into Postgres table: %s", tableName)
 
-		if err := insertIntoPostgres(db, tableName, headers, merged); err != nil {
+		if originalTableName == "geolocation" {
+			/// Special case to merge country-info universities with geolocation into a single table
+			for _, row := range merged {
+				if _, err := db.Exec(`
+	   		INSERT INTO universities (institution, latitude, longitude)
+	   		VALUES ($1, $2, $3)
+	   		ON CONFLICT (institution)
+	   		DO UPDATE SET
+	   			latitude = EXCLUDED.latitude,
+	   			longitude = EXCLUDED.longitude;`, row[0], row[1], row[2]); err != nil {
+					return fmt.Errorf("failed to upsert university row (institution=%s): %w", row[0], err)
+				}
+			}
+		} else if err := insertIntoPostgres(db, tableName, headers, merged); err != nil {
 			logger.Errorf("❌ Failed inserting into Postgres: %v", err)
 			return err
 		}
@@ -412,4 +426,19 @@ func populatePostgresFromNsfJsons() error {
 	}
 
 	return nil
+}
+
+func cleanHeaders(
+	tableName string,
+	headers []string,
+) []string {
+	if tableName == "professors" {
+		for i, h := range headers {
+			if h == "scholarid" {
+				headers[i] = "scholar_id"
+			}
+		}
+	}
+
+	return headers
 }

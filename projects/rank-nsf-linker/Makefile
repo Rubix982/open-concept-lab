@@ -81,3 +81,7 @@ rebuild:
 	$(DOCKER_COMPOSE) down -v --remove-orphans
 	$(DOCKER_COMPOSE) build --no-cache
 	$(DOCKER_COMPOSE) up -d
+
+# Remove all
+rm-all:
+	$(DOCKER_COMPOSE) down --rmi all -v --remove-orphans

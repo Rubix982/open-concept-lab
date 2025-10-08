@@ -31,7 +31,7 @@ type NsfAward struct {
 	FederalCatalogDomesticAssistanceNumber string  `json:"cfda_num" db:"cfda_num"`
 	OrgCode                                string  `json:"org_code" db:"org_code"`
 	ProgramOfficePhoneNumber               string  `json:"po_phone" db:"po_phone"`
-	ProgramOfficeEmailNumber               string  `json:"po_email" db:"po_email"`
+	ProgramOfficeEmail                     string  `json:"po_email" db:"po_email"`
 	NSFSigningOfficer                      string  `json:"po_sign_block_name" db:"po_sign_block_name"`
 	AwardEffectiveDate                     string  `json:"awd_eff_date" db:"awd_eff_date"`
 	AwardExpiryDate                        string  `json:"awd_exp_date" db:"awd_exp_date"`
@@ -45,7 +45,9 @@ type NsfAward struct {
 	AwardARRA float64 `json:"awd_arra_amount" db:"awd_arra_amount"`
 
 	DirectorateAbbreviation string `json:"dir_abbr" db:"dir_abbr"`
-	FullDirectorateName     string `json:"org_div_long_name" db:"org_div_long_name"`
+	FullDirectorateName     string `json:"org_dir_long_name" db:"org_dir_long_name"`
+	DivisionAbbreviation    string `json:"div_abbr" db:"div_abbr"`
+	FullDivisionName        string `json:"org_div_long_name" db:"org_div_long_name"`
 	AwardingAgencyCode      string `json:"awd_agcy_code" db:"awd_agcy_code"`
 	FundingAgencyCode       string `json:"fund_agcy_code" db:"fund_agcy_code"`
 	PrincipalInvestigors    []struct {
