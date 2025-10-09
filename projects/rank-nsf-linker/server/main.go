@@ -48,6 +48,11 @@ func main() {
 		return
 	}
 
+	if initProgressErr := populatePostgresFromNsfJsons(); initProgressErr != nil {
+		logger.Errorf("failed to initialize progress: %v", initProgressErr)
+		return
+	}
+
 	r := chi.NewRouter()
 	r.Get("/api/hello", helloWorld)
 	log.Println("Server running on http://localhost:8193")
