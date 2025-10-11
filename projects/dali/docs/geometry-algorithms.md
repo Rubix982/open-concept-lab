@@ -60,24 +60,29 @@ Each topic above is widely used in contests (ICPC, Codeforces, AtCoder, etc.) an
 
 ## References
 
-[^1]: [1](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^2]: [2](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^3]: [3](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^4]: [4](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^5]: [5](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^9]: [9](Binary Exponentiation - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/binary-exp.html)
-[^6]: [6](Operations on polynomials and series - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/polynomial.html)
-[^7]: [7](Operations on polynomials and series - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/polynomial.html)
-[^11]: [11](Operations on polynomials and series - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/polynomial.html)
-[^12]: [12](Operations on polynomials and series - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/polynomial.html)
-[^13]: [13](Operations on polynomials and series - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/polynomial.html)
-[^8]: [8](Discrete Root - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/discrete-root.html)
-[^15]: [15](Discrete Root - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/discrete-root.html)
-[^16]: [16](Discrete Root - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/discrete-root.html)
-[^17]: [17](Discrete Root - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/discrete-root.html)
-[^18]: [18](Discrete Root - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/discrete-root.html)
-[^10]: [10](Garner's Algorithm - Algorithms for Competitive Programming https://cp-algorithms.com/algebra/garners-algorithm.html)
-[^14]: [14](Convex hull construction - Algorithms for Competitive Programming https://cp-algorithms.com/geometry/convex-hull.html)
+### General
+
+[^1]: [1](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^2]: [2](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^3]: [3](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^4]: [4](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^5]: [5](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^9]: [9](Binary Exponentiation - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/binary-exp.html>)
+[^6]: [6](Operations on polynomials and series - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/polynomial.html>)
+[^7]: [7](Operations on polynomials and series - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/polynomial.html>)
+[^11]: [11](Operations on polynomials and series - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/polynomial.html>)
+[^12]: [12](Operations on polynomials and series - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/polynomial.html>)
+[^13]: [13](Operations on polynomials and series - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/polynomial.html>)
+[^8]: [8](Discrete Root - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/discrete-root.html>)
+[^15]: [15](Discrete Root - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/discrete-root.html>)
+[^16]: [16](Discrete Root - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/discrete-root.html>)
+[^17]: [17](Discrete Root - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/discrete-root.html>)
+[^18]: [18](Discrete Root - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/discrete-root.html>)
+[^10]: [10](Garner's Algorithm - Algorithms for Competitive Programming <https://cp-algorithms.com/algebra/garners-algorithm.html>)
+[^14]: [14](Convex hull construction - Algorithms for Competitive Programming <https://cp-algorithms.com/geometry/convex-hull.html>)
+
+### Algorithm Based
+
 [^gcd]: [GCD & Extended Euclidean Algorithm](https://cp-algorithms.com/algebra/euclid.html)  
 [^binary-exp]: [Binary Exponentiation](https://cp-algorithms.com/algebra/binary-exp.html)  
 [^sieve]: [Prime Sieve](https://cp-algorithms.com/algebra/sieve-of-eratosthenes.html)  
