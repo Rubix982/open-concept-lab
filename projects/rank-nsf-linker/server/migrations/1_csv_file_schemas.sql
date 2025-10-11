@@ -45,18 +45,20 @@ CREATE TABLE IF NOT EXISTS generated_author_info (
 );
 
 CREATE TABLE IF NOT EXISTS directorate_division (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-  directorate_abbr TEXT,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  directorate_abbr TEXT NOT NULL,
   directorate_name TEXT,
-  division_abbr TEXT,
-  division_name TEXT
+  division_abbr TEXT NOT NULL,
+  division_name TEXT,
+  CONSTRAINT unique_directorate_division UNIQUE (directorate_abbr, division_abbr)
 );
 
 CREATE TABLE IF NOT EXISTS program_officer (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-  name TEXT,
+  name TEXT NOT NULL,
   phone TEXT,
-  email TEXT
+  email TEXT,
+  CONSTRAINT unique_name UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS award (
@@ -81,39 +83,45 @@ CREATE TABLE IF NOT EXISTS award (
   award_agency_code TEXT,
   fund_agency_code TEXT,
   institution TEXT REFERENCES universities (institution) ON DELETE SET NULL,
-  performing_institution TEXT REFERENCES universities (institution) ON DELETE SET NULL
+  performing_institution TEXT REFERENCES universities (institution) ON DELETE SET NULL,
+  html_content TEXT,
+  raw_content TEXT
 );
 
 CREATE TABLE IF NOT EXISTS program_element (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
-  code TEXT,
-  name TEXT
+  code TEXT NOT NULL,
+  name TEXT,
+  CONSTRAINT program_element_unique_code UNIQUE (award_id, code)
 );
 
 CREATE TABLE IF NOT EXISTS program_reference (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
-  code TEXT,
-  name TEXT
+  code TEXT NOT NULL,
+  name TEXT,
+  CONSTRAINT program_reference_unique_code UNIQUE (award_id, code)
 );
 
-CREATE TABLE IF NOT EXISTS app_funding (
+CREATE TABLE IF NOT EXISTS application_funding (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
-  app_funding_code TEXT,
-  app_funding_name TEXT,
-  app_funding_symbol_id TEXT,
-  fund_code TEXT,
-  fund_name TEXT,
-  fund_symbol_id TEXT
+  code TEXT NOT NULL,
+  name TEXT,
+  symbol_id TEXT,
+  funding_code TEXT,
+  funding_name TEXT,
+  funding_symbol_id TEXT,
+  CONSTRAINT application_funding_unique_code UNIQUE (award_id, code)
 );
 
 CREATE TABLE IF NOT EXISTS fiscal_year_funding (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
   fiscal_year INTEGER,
-  funding_amount REAL
+  funding_amount REAL,
+  CONSTRAINT fiscal_year_funding_unique_fiscal_year UNIQUE (award_id, fiscal_year)
 );
 
 CREATE TABLE IF NOT EXISTS award_pi_rel (
@@ -122,5 +130,6 @@ CREATE TABLE IF NOT EXISTS award_pi_rel (
   program_officer_id UUID REFERENCES program_officer (id),
   pi_role TEXT,
   pi_start_date TEXT,
-  pi_end_date TEXT
+  pi_end_date TEXT,
+  CONSTRAINT award_pi_rel_unique_award_id_program_officer_id UNIQUE (award_id, program_officer_id)
 );

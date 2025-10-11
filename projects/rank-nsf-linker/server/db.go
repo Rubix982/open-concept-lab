@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	_ "github.com/lib/pq"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const (
@@ -123,7 +125,7 @@ type NsfJsonData struct {
 		FiscalYear      int     `json:"fund_oblg_fiscal_yr"`
 		AmountObligated float64 `json:"fund_oblg_amt"`
 	} `json:"oblg_fy"`
-	ProjectOutcomesReport struct {
+	ProjectOutcomesReport *struct {
 		HtmlContent string `json:"por_cntn"`
 		RawText     string `json:"por_txt_cntn"`
 	} `json:"por"`
@@ -397,35 +399,205 @@ func populatePostgresFromNsfJsons() error {
 	defer db.Close()
 
 	internalContainerPath := "/app/data/nsfdata"
+	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
 
-	// We will iterate over the years in the reverse order while populating the DB
 	for year := NSFAwardsEndYear; year >= NSFAwardsStartYear; year-- {
 		path := filepath.Join(internalContainerPath, fmt.Sprintf("%d", year))
 		files, err := os.ReadDir(path)
 		if err != nil {
-			logger.Errorf("❌ Failed to read directory: %v", err)
+			logger.Errorf("❌ Failed to read directory %s: %v", path, err)
 			return err
 		}
 
+		logger.Infof("📂 Processing %d JSON files for year %d", len(files), year)
 		var nsfJsonData NsfJsonData
+
 		for _, file := range files {
-			// All are files, all are JSONs
-			// read the file, and parse as JSON (map[string]interface{})
-			rawBytes, err := os.ReadFile(filepath.Join(path, file.Name()))
+			filePath := filepath.Join(path, file.Name())
+			rawBytes, err := os.ReadFile(filePath)
 			if err != nil {
-				logger.Errorf("❌ Failed to read file: %v", err)
+				logger.Warnf("⚠️  Skipping file (read error): %s (%v)", filePath, err)
 				continue
 			}
 
 			if err := json.Unmarshal(rawBytes, &nsfJsonData); err != nil {
-				logger.Errorf("❌ Failed to parse JSON: %v", err)
+				logger.Warnf("⚠️  Skipping file (parse error): %s (%v)", filePath, err)
 				continue
 			}
 
+			logger.Debugf("➡️  Processing award: %s", nsfJsonData.AwdId)
+			nsfJsonData = cleanNsfJsonData(nsfJsonData)
+			region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
+
+			universityUpsertQuery := `
+				INSERT INTO universities (institution, street_address, city, phone, zip_code, country, region, countryabbrv)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+				ON CONFLICT (institution) DO UPDATE SET
+					street_address = EXCLUDED.street_address,
+					city = EXCLUDED.city,
+					phone = EXCLUDED.phone,
+					zip_code = EXCLUDED.zip_code,
+					country = EXCLUDED.country;
+			`
+			institute := nsfJsonData.Institute
+			_, err = db.Exec(universityUpsertQuery, institute.Name, institute.StreetAddress,
+				institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
+				region, countryabbrv)
+			if err != nil {
+				logger.Warnf("⚠️  University upsert failed (%s): %v", institute.Name, err)
+				continue
+			}
+
+			directorateDivQuery := `
+				INSERT INTO directorate_division (directorate_abbr, directorate_name, division_abbr, division_name)
+				VALUES ($1, $2, $3, $4)
+				ON CONFLICT (directorate_abbr, division_abbr)
+				DO UPDATE SET directorate_abbr = EXCLUDED.directorate_abbr
+				RETURNING id;
+			`
+			var directorateDivisionId string
+			err = db.QueryRow(directorateDivQuery, nsfJsonData.DirectorateAbbreviation,
+				nsfJsonData.OrganizationDirectorateLongName, nsfJsonData.DivisionAbbreviation,
+				nsfJsonData.OrganizationDivisionLongName).Scan(&directorateDivisionId)
+			if err != nil {
+				logger.Warnf("⚠️  Directorate/division upsert failed: %v", err)
+				continue
+			}
+
+			programOfficerQuery := `
+				INSERT INTO program_officer (name, phone, email)
+				VALUES ($1, $2, $3)
+				ON CONFLICT (name) DO UPDATE SET
+					phone = EXCLUDED.phone,
+					email = EXCLUDED.email
+				RETURNING id;
+			`
+			var programOfficerId string
+			err = db.QueryRow(programOfficerQuery, nsfJsonData.PoSignBlockName,
+				nsfJsonData.PoPhoneNumber, nsfJsonData.PoEmailNumber).Scan(&programOfficerId)
+			if err != nil {
+				logger.Warnf("⚠️  Program officer upsert failed: %v", err)
+				continue
+			}
+
+			awardInsertQuery := `
+				INSERT INTO award (
+					id, year, award_agency_id, transaction_type, award_instrument_text, award_title_text, cfda_number,
+					org_code, program_officer_id, award_effective_date, award_expiry_date, total_international_award_amount,
+					award_amount, earliest_amendment_date, most_recent_amendment_date, abstract, arra_award,
+					directorate_division_id, award_agency_code, fund_agency_code, institution, performing_institution,
+					html_content, raw_content
+				)
+				VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
+				ON CONFLICT (id) DO UPDATE SET
+					year = EXCLUDED.year,
+					award_agency_id = EXCLUDED.award_agency_id,
+					transaction_type = EXCLUDED.transaction_type,
+					award_instrument_text = EXCLUDED.award_instrument_text,
+					award_title_text = EXCLUDED.award_title_text,
+					cfda_number = EXCLUDED.cfda_number,
+					org_code = EXCLUDED.org_code,
+					program_officer_id = EXCLUDED.program_officer_id,
+					award_effective_date = EXCLUDED.award_effective_date,
+					award_expiry_date = EXCLUDED.award_expiry_date,
+					total_international_award_amount = EXCLUDED.total_international_award_amount,
+					award_amount = EXCLUDED.award_amount,
+					earliest_amendment_date = EXCLUDED.earliest_amendment_date,
+					most_recent_amendment_date = EXCLUDED.most_recent_amendment_date,
+					abstract = EXCLUDED.abstract,
+					arra_award = EXCLUDED.arra_award,
+					directorate_division_id = EXCLUDED.directorate_division_id,
+					award_agency_code = EXCLUDED.award_agency_code,
+					fund_agency_code = EXCLUDED.fund_agency_code,
+					institution = EXCLUDED.institution,
+					performing_institution = EXCLUDED.performing_institution;
+			`
+
+			htmlContent, rawContent := "", ""
+			if nsfJsonData.ProjectOutcomesReport != nil {
+				htmlContent = nsfJsonData.ProjectOutcomesReport.HtmlContent
+				rawContent = nsfJsonData.ProjectOutcomesReport.RawText
+			}
+
+			awardValues := []any{
+				nsfJsonData.AwdId, year, nsfJsonData.AwardingAgencyCode, nsfJsonData.TranType,
+				nsfJsonData.AwardInstrumentText, nsfJsonData.AwardTitleText,
+				nsfJsonData.FederalCatalogDomesticAssistanceNumber, nsfJsonData.OrgCode,
+				programOfficerId, nsfJsonData.AwardEffectiveDate, nsfJsonData.AwardExpiryDate,
+				nsfJsonData.TotalIntendedAwardAmount, nsfJsonData.AwardAmount,
+				nsfJsonData.EarliestAmendmentDate, nsfJsonData.MostRecentAmendmentDate,
+				nsfJsonData.AwardAbstract, nsfJsonData.AwardARRA, directorateDivisionId,
+				nsfJsonData.AwardingAgencyCode, nsfJsonData.FundingAgencyCode,
+				institute.Name, institute.Name, htmlContent, rawContent,
+			}
+			if _, err = db.Exec(awardInsertQuery, awardValues...); err != nil {
+				logger.Warnf("⚠️  Award upsert failed (%s): %v", nsfJsonData.AwdId, err)
+				continue
+			}
+
+			for _, pe := range nsfJsonData.ProgramElements {
+				if _, err = db.Exec(`
+					INSERT INTO program_element (award_id, code, name)
+					VALUES ($1, $2, $3)
+					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
+				`, nsfJsonData.AwdId, pe.ProgramElementCode, pe.ProgramElementName); err != nil {
+					logger.Warnf("⚠️  Program element upsert failed: %v", err)
+				}
+			}
+
+			for _, pr := range nsfJsonData.ProgramReference {
+				if _, err = db.Exec(`
+					INSERT INTO program_reference (award_id, code, name)
+					VALUES ($1, $2, $3)
+					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
+				`, nsfJsonData.AwdId, pr.ProgramReferenceCode, pr.ProgramReferenceName); err != nil {
+					logger.Warnf("⚠️  Program reference upsert failed: %v", err)
+				}
+			}
+
+			for _, af := range nsfJsonData.ApplicationFunding {
+				if _, err = db.Exec(`
+					INSERT INTO application_funding (award_id, code, name, symbol_id, funding_code, funding_name, funding_symbol_id)
+					VALUES ($1, $2, $3, $4, $5, $6, $7)
+					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name, symbol_id = EXCLUDED.symbol_id;
+				`, nsfJsonData.AwdId, af.ApplicationCode, af.ApplicationName, af.ApplicationSymbolId, af.FundingCode, af.FundingName, af.FundingSymbolId); err != nil {
+					logger.Warnf("⚠️  Application funding upsert failed: %v", err)
+				}
+			}
+
+			for _, fy := range nsfJsonData.FundingObligations {
+				if _, err = db.Exec(`
+					INSERT INTO fiscal_year_funding (award_id, fiscal_year, funding_amount)
+					VALUES ($1, $2, $3)
+					ON CONFLICT (award_id, fiscal_year) DO UPDATE SET funding_amount = EXCLUDED.funding_amount;
+				`, nsfJsonData.AwdId, fy.FiscalYear, fy.AmountObligated); err != nil {
+					logger.Warnf("⚠️  Fiscal year funding upsert failed: %v", err)
+				}
+			}
+
+			for _, pi := range nsfJsonData.PrincipalInvestigators {
+				if _, err = db.Exec(`
+					INSERT INTO award_pi_rel (award_id, program_officer_id, pi_role, pi_start_date, pi_end_date)
+					VALUES ($1, $2, $3, $4, $5)
+					ON CONFLICT (award_id, program_officer_id) DO UPDATE SET
+						pi_role = EXCLUDED.pi_role,
+						pi_start_date = EXCLUDED.pi_start_date,
+						pi_end_date = EXCLUDED.pi_end_date;
+				`, nsfJsonData.AwdId, programOfficerId, pi.Role, pi.StartDate, pi.EndDate); err != nil {
+					logger.Warnf("⚠️  Award-PI relationship upsert failed: %v", err)
+				}
+			}
+
+			logger.Infof("✅ Successfully processed award %s (%d)", nsfJsonData.AwdId, year)
 		}
 	}
 
+	logger.Infof("🎉 NSF JSON population completed successfully.")
 	return nil
+}
+
+func ToTitleCase(str string) string {
+	return cases.Title(language.English).String(strings.TrimSpace(str))
 }
 
 func cleanHeaders(
@@ -441,4 +613,41 @@ func cleanHeaders(
 	}
 
 	return headers
+}
+
+func cleanNsfJsonData(data NsfJsonData) NsfJsonData {
+	data.Institute.Name = ToTitleCase(data.Institute.Name)
+	data.PerformingInsitute.InstituteName = ToTitleCase(data.PerformingInsitute.InstituteName)
+	if data.AwardInstrumentText == "Fellowship Award" {
+		data.Institute.Name = data.PerformingInsitute.InstituteName
+	}
+	data.Institute.StreetAddress = data.Institute.StreetAddress + " " + data.Institute.StreetAddressV2
+	data.Institute.StreetAddress = ToTitleCase(data.Institute.StreetAddress)
+	data.Institute.City = ToTitleCase(data.Institute.City)
+	return data
+}
+
+func getRegionAndCountry(country string) (string, string) {
+	switch country {
+	case "Germany":
+		return "europe", "gr"
+	case "France":
+		return "europe", "fr"
+	case "United Kingdom":
+		return "europe", "gb"
+	case "Canada":
+		return "northamerica", "ca"
+	case "United States":
+		return "northamerica", "us"
+	case "Australia":
+		return "oceania", "au"
+	case "New Zealand":
+		return "oceania", "nz"
+	case "Uruguay":
+		return "southamerica", "uy"
+	case "Brazil":
+		return "southamerica", "br"
+	default:
+		return "northamerica", "us"
+	}
 }
