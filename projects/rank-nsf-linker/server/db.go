@@ -17,11 +17,11 @@ import (
 )
 
 const (
-	MIGRATIONS_DIR = "migrations"
-	BACKUP_DIR     = "backup"
-	DATA_DIR       = "data"
-
-	POSTGRES_DRIVER = "postgres"
+	MIGRATIONS_DIR              = "migrations"
+	BACKUP_DIR                  = "backup"
+	DATA_DIR                    = "data"
+	POSTGRES_DRIVER             = "postgres"
+	NSF_INTERNAL_CONTAINER_PATH = "/app/data/nsfdata"
 )
 
 var primaryKeyAgainstTable = map[string]string{
@@ -66,15 +66,12 @@ type NsfJsonData struct {
 	AwardingAgencyCode                     string  `json:"awd_agcy_code"`
 	FundingAgencyCode                      string  `json:"fund_agcy_code"`
 	PrincipalInvestigators                 []struct {
-		Role       string `json:"pi_role"`
-		FirstName  string `json:"pi_first_name"`
-		LastName   string `json:"pi_last_name"`
-		MiddleName string `json:"pi_mid_init"`
-		NameSuffix string `json:"pi_sufx_name"`
-		EmailAddr  string `json:"pi_email_addr"`
-		NSFId      string `json:"nsf_id"`
-		StartDate  string `json:"pi_start_date"`
-		EndDate    string `json:"pi_end_date"`
+		Role      string `json:"pi_role"`
+		Name      string `json:"pi_full_name"`
+		EmailAddr string `json:"pi_email_addr"`
+		NSFId     string `json:"nsf_id"`
+		StartDate string `json:"pi_start_date"`
+		EndDate   string `json:"pi_end_date"`
 	} `json:"pi"`
 	Institute struct {
 		Name                       string `json:"inst_name"`
@@ -398,7 +395,7 @@ func populatePostgresFromNsfJsons() error {
 
 	defer db.Close()
 
-	internalContainerPath := "/app/data/nsfdata"
+	internalContainerPath := NSF_INTERNAL_CONTAINER_PATH
 	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
 
 	for year := NSFAwardsEndYear; year >= NSFAwardsStartYear; year-- {
@@ -577,13 +574,21 @@ func populatePostgresFromNsfJsons() error {
 
 			for _, pi := range nsfJsonData.PrincipalInvestigators {
 				if _, err = db.Exec(`
-					INSERT INTO award_pi_rel (award_id, program_officer_id, pi_role, pi_start_date, pi_end_date)
+					INSERT INTO professors (name, affiliation, nsf_id)
+					VALUES ($1, $2, $3)
+					ON CONFLICT (name) DO UPDATE SET nsf_id = EXCLUDED.nsf_id;
+				`, pi.Name, nsfJsonData.PerformingInsitute.InstituteName, pi.NSFId); err != nil {
+					logger.Warnf("⚠️  Professor upsert failed: %v", err)
+				}
+
+				if _, err = db.Exec(`
+					INSERT INTO award_pi_rel (award_id, investigator_id, pi_role, pi_start_date, pi_end_date)
 					VALUES ($1, $2, $3, $4, $5)
-					ON CONFLICT (award_id, program_officer_id) DO UPDATE SET
+					ON CONFLICT (award_id, investigator_id) DO UPDATE SET
 						pi_role = EXCLUDED.pi_role,
 						pi_start_date = EXCLUDED.pi_start_date,
 						pi_end_date = EXCLUDED.pi_end_date;
-				`, nsfJsonData.AwdId, programOfficerId, pi.Role, pi.StartDate, pi.EndDate); err != nil {
+				`, nsfJsonData.AwdId, pi.Name, pi.Role, pi.StartDate, pi.EndDate); err != nil {
 					logger.Warnf("⚠️  Award-PI relationship upsert failed: %v", err)
 				}
 			}

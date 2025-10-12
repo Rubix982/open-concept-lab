@@ -30,7 +30,7 @@ var (
 	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/master/"
 	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
-	NSFAwardsStartYear = 2010
+	NSFAwardsStartYear = 2020
 	NSFAwardsEndYear   = 2025
 )
 
@@ -93,7 +93,7 @@ func downloadCSVs(force bool) error {
 	}
 
 	for _, fileName := range CSVURLs {
-		url := CSRANKINGS_RAW_GITHUB+fileName
+		url := CSRANKINGS_RAW_GITHUB + fileName
 		logger.Infof("Downloading %s from %s\n", fileName, url)
 
 		fileSavePath := fmt.Sprintf("/app/data/%s", fileName)

@@ -127,9 +127,9 @@ CREATE TABLE IF NOT EXISTS fiscal_year_funding (
 CREATE TABLE IF NOT EXISTS award_pi_rel (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
-  program_officer_id UUID REFERENCES program_officer (id),
+  investigator_id TEXT REFERENCES professors (name) ON DELETE SET NULL,
   pi_role TEXT,
   pi_start_date TEXT,
   pi_end_date TEXT,
-  CONSTRAINT award_pi_rel_unique_award_id_program_officer_id UNIQUE (award_id, program_officer_id)
+  CONSTRAINT award_pi_rel_unique_award_id_investigator_id UNIQUE (award_id, investigator_id)
 );
