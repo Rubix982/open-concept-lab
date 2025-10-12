@@ -53,6 +53,16 @@ func main() {
 		return
 	}
 
+	if initProgressErr := populatePostgresFromScriptCaches(); initProgressErr != nil {
+		logger.Errorf("failed to initialize script caches: %v", initProgressErr)
+		return
+	}
+
+	if initProgressErr := clearFinalDataStatesInPostgres(); initProgressErr != nil {
+		logger.Errorf("failed to clear final data states: %v", initProgressErr)
+		return
+	}
+
 	r := chi.NewRouter()
 	r.Get("/api/hello", helloWorld)
 	log.Println("Server running on http://localhost:8193")

@@ -81,6 +81,7 @@ rebuild:
 	$(DOCKER_COMPOSE) down -v --remove-orphans
 	$(DOCKER_COMPOSE) build --no-cache
 	$(DOCKER_COMPOSE) up -d
+	make rm-all && make docker-build && make up && make logs-go-server
 
 # Remove all
 rm-all:

@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 
 	_ "github.com/lib/pq"
 	"golang.org/x/text/cases"
@@ -17,11 +19,12 @@ import (
 )
 
 const (
-	MIGRATIONS_DIR              = "migrations"
-	BACKUP_DIR                  = "backup"
-	DATA_DIR                    = "data"
-	POSTGRES_DRIVER             = "postgres"
-	NSF_INTERNAL_CONTAINER_PATH = "/app/data/nsfdata"
+	MIGRATIONS_DIR               = "migrations"
+	BACKUP_DIR                   = "backup"
+	DATA_DIR                     = "data"
+	POSTGRES_DRIVER              = "postgres"
+	NSF_INTERNAL_CONTAINER_PATH  = "/app/data/nsfdata"
+	NSF_GEOCODING_CONTAINER_PATH = "/app/scripts/geocoding"
 )
 
 var primaryKeyAgainstTable = map[string]string{
@@ -398,35 +401,52 @@ func populatePostgresFromNsfJsons() error {
 	internalContainerPath := NSF_INTERNAL_CONTAINER_PATH
 	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
 
+	var wg sync.WaitGroup
+
 	for year := NSFAwardsEndYear; year >= NSFAwardsStartYear; year-- {
-		path := filepath.Join(internalContainerPath, fmt.Sprintf("%d", year))
-		files, err := os.ReadDir(path)
+		wg.Add(1)
+
+		go func(year int) {
+			defer wg.Done()
+			processNsfAwardPerYear(internalContainerPath, year, db)
+		}(year)
+	}
+
+	wg.Wait()
+
+	logger.Infof("🎉 NSF JSON population completed successfully.")
+	return nil
+}
+
+func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) {
+	path := filepath.Join(internalContainerPath, fmt.Sprintf("%d", year))
+	files, err := os.ReadDir(path)
+	if err != nil {
+		logger.Errorf("❌ Failed to read directory %s: %v", path, err)
+		return
+	}
+
+	logger.Infof("📂 Processing %d JSON files for year %d", len(files), year)
+	var nsfJsonData NsfJsonData
+
+	for _, file := range files {
+		filePath := filepath.Join(path, file.Name())
+		rawBytes, err := os.ReadFile(filePath)
 		if err != nil {
-			logger.Errorf("❌ Failed to read directory %s: %v", path, err)
-			return err
+			logger.Warnf("⚠️  Skipping file (read error): %s (%v)", filePath, err)
+			continue
 		}
 
-		logger.Infof("📂 Processing %d JSON files for year %d", len(files), year)
-		var nsfJsonData NsfJsonData
+		if err := json.Unmarshal(rawBytes, &nsfJsonData); err != nil {
+			logger.Warnf("⚠️  Skipping file (parse error): %s (%v)", filePath, err)
+			continue
+		}
 
-		for _, file := range files {
-			filePath := filepath.Join(path, file.Name())
-			rawBytes, err := os.ReadFile(filePath)
-			if err != nil {
-				logger.Warnf("⚠️  Skipping file (read error): %s (%v)", filePath, err)
-				continue
-			}
+		logger.Debugf("➡️  Processing award: %s", nsfJsonData.AwdId)
+		nsfJsonData = cleanNsfJsonData(nsfJsonData)
+		region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
 
-			if err := json.Unmarshal(rawBytes, &nsfJsonData); err != nil {
-				logger.Warnf("⚠️  Skipping file (parse error): %s (%v)", filePath, err)
-				continue
-			}
-
-			logger.Debugf("➡️  Processing award: %s", nsfJsonData.AwdId)
-			nsfJsonData = cleanNsfJsonData(nsfJsonData)
-			region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
-
-			universityUpsertQuery := `
+		universityUpsertQuery := `
 				INSERT INTO universities (institution, street_address, city, phone, zip_code, country, region, countryabbrv)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 				ON CONFLICT (institution) DO UPDATE SET
@@ -436,32 +456,32 @@ func populatePostgresFromNsfJsons() error {
 					zip_code = EXCLUDED.zip_code,
 					country = EXCLUDED.country;
 			`
-			institute := nsfJsonData.Institute
-			_, err = db.Exec(universityUpsertQuery, institute.Name, institute.StreetAddress,
-				institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
-				region, countryabbrv)
-			if err != nil {
-				logger.Warnf("⚠️  University upsert failed (%s): %v", institute.Name, err)
-				continue
-			}
+		institute := nsfJsonData.Institute
+		_, err = db.Exec(universityUpsertQuery, institute.Name, institute.StreetAddress,
+			institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
+			region, countryabbrv)
+		if err != nil {
+			logger.Warnf("⚠️  University upsert failed (%s): %v", institute.Name, err)
+			continue
+		}
 
-			directorateDivQuery := `
+		directorateDivQuery := `
 				INSERT INTO directorate_division (directorate_abbr, directorate_name, division_abbr, division_name)
 				VALUES ($1, $2, $3, $4)
 				ON CONFLICT (directorate_abbr, division_abbr)
 				DO UPDATE SET directorate_abbr = EXCLUDED.directorate_abbr
 				RETURNING id;
 			`
-			var directorateDivisionId string
-			err = db.QueryRow(directorateDivQuery, nsfJsonData.DirectorateAbbreviation,
-				nsfJsonData.OrganizationDirectorateLongName, nsfJsonData.DivisionAbbreviation,
-				nsfJsonData.OrganizationDivisionLongName).Scan(&directorateDivisionId)
-			if err != nil {
-				logger.Warnf("⚠️  Directorate/division upsert failed: %v", err)
-				continue
-			}
+		var directorateDivisionId string
+		err = db.QueryRow(directorateDivQuery, nsfJsonData.DirectorateAbbreviation,
+			nsfJsonData.OrganizationDirectorateLongName, nsfJsonData.DivisionAbbreviation,
+			nsfJsonData.OrganizationDivisionLongName).Scan(&directorateDivisionId)
+		if err != nil {
+			logger.Warnf("⚠️  Directorate/division upsert failed: %v", err)
+			continue
+		}
 
-			programOfficerQuery := `
+		programOfficerQuery := `
 				INSERT INTO program_officer (name, phone, email)
 				VALUES ($1, $2, $3)
 				ON CONFLICT (name) DO UPDATE SET
@@ -469,15 +489,15 @@ func populatePostgresFromNsfJsons() error {
 					email = EXCLUDED.email
 				RETURNING id;
 			`
-			var programOfficerId string
-			err = db.QueryRow(programOfficerQuery, nsfJsonData.PoSignBlockName,
-				nsfJsonData.PoPhoneNumber, nsfJsonData.PoEmailNumber).Scan(&programOfficerId)
-			if err != nil {
-				logger.Warnf("⚠️  Program officer upsert failed: %v", err)
-				continue
-			}
+		var programOfficerId string
+		err = db.QueryRow(programOfficerQuery, nsfJsonData.PoSignBlockName,
+			nsfJsonData.PoPhoneNumber, nsfJsonData.PoEmailNumber).Scan(&programOfficerId)
+		if err != nil {
+			logger.Warnf("⚠️  Program officer upsert failed: %v", err)
+			continue
+		}
 
-			awardInsertQuery := `
+		awardInsertQuery := `
 				INSERT INTO award (
 					id, year, award_agency_id, transaction_type, award_instrument_text, award_title_text, cfda_number,
 					org_code, program_officer_id, award_effective_date, award_expiry_date, total_international_award_amount,
@@ -510,78 +530,78 @@ func populatePostgresFromNsfJsons() error {
 					performing_institution = EXCLUDED.performing_institution;
 			`
 
-			htmlContent, rawContent := "", ""
-			if nsfJsonData.ProjectOutcomesReport != nil {
-				htmlContent = nsfJsonData.ProjectOutcomesReport.HtmlContent
-				rawContent = nsfJsonData.ProjectOutcomesReport.RawText
-			}
+		htmlContent, rawContent := "", ""
+		if nsfJsonData.ProjectOutcomesReport != nil {
+			htmlContent = nsfJsonData.ProjectOutcomesReport.HtmlContent
+			rawContent = nsfJsonData.ProjectOutcomesReport.RawText
+		}
 
-			awardValues := []any{
-				nsfJsonData.AwdId, year, nsfJsonData.AwardingAgencyCode, nsfJsonData.TranType,
-				nsfJsonData.AwardInstrumentText, nsfJsonData.AwardTitleText,
-				nsfJsonData.FederalCatalogDomesticAssistanceNumber, nsfJsonData.OrgCode,
-				programOfficerId, nsfJsonData.AwardEffectiveDate, nsfJsonData.AwardExpiryDate,
-				nsfJsonData.TotalIntendedAwardAmount, nsfJsonData.AwardAmount,
-				nsfJsonData.EarliestAmendmentDate, nsfJsonData.MostRecentAmendmentDate,
-				nsfJsonData.AwardAbstract, nsfJsonData.AwardARRA, directorateDivisionId,
-				nsfJsonData.AwardingAgencyCode, nsfJsonData.FundingAgencyCode,
-				institute.Name, institute.Name, htmlContent, rawContent,
-			}
-			if _, err = db.Exec(awardInsertQuery, awardValues...); err != nil {
-				logger.Warnf("⚠️  Award upsert failed (%s): %v", nsfJsonData.AwdId, err)
-				continue
-			}
+		awardValues := []any{
+			nsfJsonData.AwdId, year, nsfJsonData.AwardingAgencyCode, nsfJsonData.TranType,
+			nsfJsonData.AwardInstrumentText, nsfJsonData.AwardTitleText,
+			nsfJsonData.FederalCatalogDomesticAssistanceNumber, nsfJsonData.OrgCode,
+			programOfficerId, nsfJsonData.AwardEffectiveDate, nsfJsonData.AwardExpiryDate,
+			nsfJsonData.TotalIntendedAwardAmount, nsfJsonData.AwardAmount,
+			nsfJsonData.EarliestAmendmentDate, nsfJsonData.MostRecentAmendmentDate,
+			nsfJsonData.AwardAbstract, nsfJsonData.AwardARRA, directorateDivisionId,
+			nsfJsonData.AwardingAgencyCode, nsfJsonData.FundingAgencyCode,
+			institute.Name, institute.Name, htmlContent, rawContent,
+		}
+		if _, err = db.Exec(awardInsertQuery, awardValues...); err != nil {
+			logger.Warnf("⚠️  Award upsert failed (%s): %v", nsfJsonData.AwdId, err)
+			continue
+		}
 
-			for _, pe := range nsfJsonData.ProgramElements {
-				if _, err = db.Exec(`
+		for _, pe := range nsfJsonData.ProgramElements {
+			if _, err = db.Exec(`
 					INSERT INTO program_element (award_id, code, name)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
 				`, nsfJsonData.AwdId, pe.ProgramElementCode, pe.ProgramElementName); err != nil {
-					logger.Warnf("⚠️  Program element upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Program element upsert failed: %v", err)
 			}
+		}
 
-			for _, pr := range nsfJsonData.ProgramReference {
-				if _, err = db.Exec(`
+		for _, pr := range nsfJsonData.ProgramReference {
+			if _, err = db.Exec(`
 					INSERT INTO program_reference (award_id, code, name)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
 				`, nsfJsonData.AwdId, pr.ProgramReferenceCode, pr.ProgramReferenceName); err != nil {
-					logger.Warnf("⚠️  Program reference upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Program reference upsert failed: %v", err)
 			}
+		}
 
-			for _, af := range nsfJsonData.ApplicationFunding {
-				if _, err = db.Exec(`
+		for _, af := range nsfJsonData.ApplicationFunding {
+			if _, err = db.Exec(`
 					INSERT INTO application_funding (award_id, code, name, symbol_id, funding_code, funding_name, funding_symbol_id)
 					VALUES ($1, $2, $3, $4, $5, $6, $7)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name, symbol_id = EXCLUDED.symbol_id;
 				`, nsfJsonData.AwdId, af.ApplicationCode, af.ApplicationName, af.ApplicationSymbolId, af.FundingCode, af.FundingName, af.FundingSymbolId); err != nil {
-					logger.Warnf("⚠️  Application funding upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Application funding upsert failed: %v", err)
 			}
+		}
 
-			for _, fy := range nsfJsonData.FundingObligations {
-				if _, err = db.Exec(`
+		for _, fy := range nsfJsonData.FundingObligations {
+			if _, err = db.Exec(`
 					INSERT INTO fiscal_year_funding (award_id, fiscal_year, funding_amount)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, fiscal_year) DO UPDATE SET funding_amount = EXCLUDED.funding_amount;
 				`, nsfJsonData.AwdId, fy.FiscalYear, fy.AmountObligated); err != nil {
-					logger.Warnf("⚠️  Fiscal year funding upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Fiscal year funding upsert failed: %v", err)
 			}
+		}
 
-			for _, pi := range nsfJsonData.PrincipalInvestigators {
-				if _, err = db.Exec(`
+		for _, pi := range nsfJsonData.PrincipalInvestigators {
+			if _, err = db.Exec(`
 					INSERT INTO professors (name, affiliation, nsf_id)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (name) DO UPDATE SET nsf_id = EXCLUDED.nsf_id;
 				`, pi.Name, nsfJsonData.PerformingInsitute.InstituteName, pi.NSFId); err != nil {
-					logger.Warnf("⚠️  Professor upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Professor upsert failed: %v", err)
+			}
 
-				if _, err = db.Exec(`
+			if _, err = db.Exec(`
 					INSERT INTO award_pi_rel (award_id, investigator_id, pi_role, pi_start_date, pi_end_date)
 					VALUES ($1, $2, $3, $4, $5)
 					ON CONFLICT (award_id, investigator_id) DO UPDATE SET
@@ -589,16 +609,12 @@ func populatePostgresFromNsfJsons() error {
 						pi_start_date = EXCLUDED.pi_start_date,
 						pi_end_date = EXCLUDED.pi_end_date;
 				`, nsfJsonData.AwdId, pi.Name, pi.Role, pi.StartDate, pi.EndDate); err != nil {
-					logger.Warnf("⚠️  Award-PI relationship upsert failed: %v", err)
-				}
+				logger.Warnf("⚠️  Award-PI relationship upsert failed: %v", err)
 			}
-
-			logger.Infof("✅ Successfully processed award %s (%d)", nsfJsonData.AwdId, year)
 		}
-	}
 
-	logger.Infof("🎉 NSF JSON population completed successfully.")
-	return nil
+		logger.Infof("✅ Successfully processed award %s (%d)", nsfJsonData.AwdId, year)
+	}
 }
 
 func ToTitleCase(str string) string {
@@ -655,4 +671,155 @@ func getRegionAndCountry(country string) (string, string) {
 	default:
 		return "northamerica", "us"
 	}
+}
+
+func populatePostgresFromScriptCaches() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	internalContainerPath := NSF_GEOCODING_CONTAINER_PATH
+	logger.Infof("🚀 Starting script cache population from: %s", internalContainerPath)
+
+	// Paths
+	geoCodedCachePath := path.Join(internalContainerPath, "geocoded_cache.csv")
+	reverseGeoCodedCachePath := path.Join(internalContainerPath, "reverse_geocoded_cache.csv")
+
+	// 1️⃣ Handle geocoded cache first
+	if err := syncCSVToDB(db, geoCodedCachePath); err != nil {
+		logger.Errorf("❌ Failed to sync geocoded cache: %v", err)
+		return err
+	}
+
+	// 2️⃣ Then reverse-geocoded cache
+	if err := syncCSVToDB(db, reverseGeoCodedCachePath); err != nil {
+		logger.Errorf("❌ Failed to sync reverse geocoded cache: %v", err)
+		return err
+	}
+
+	logger.Infof("✅ Completed populating script caches into Postgres")
+	return nil
+}
+
+// syncCSVToDB reads a CSV file and upserts it into the given table
+func syncCSVToDB(
+	db *sql.DB,
+	filePath string,
+) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open file %s: %w", filePath, err)
+	}
+
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.TrimLeadingSpace = true
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read CSV %s: %w", filePath, err)
+	}
+
+	if len(records) < 1 {
+		logger.Warnf("⚠️ CSV %s is empty, skipping", filePath)
+		return nil
+	}
+
+	header := records[0]
+	logger.Infof("📄 Found %d rows (excluding header) in %s", len(records)-1, filepath.Base(filePath))
+
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
+
+	defer tx.Rollback()
+
+	insertQuery := buildUpsertQuery(header)
+	stmt, err := tx.Prepare(insertQuery)
+	if err != nil {
+		return fmt.Errorf("failed to prepare upsert: %w", err)
+	}
+
+	defer stmt.Close()
+
+	for i, row := range records[1:] {
+		args := make([]any, len(row))
+		for j, val := range row {
+			args[j] = strings.TrimSpace(val)
+		}
+
+		if _, err := stmt.Exec(args...); err != nil {
+			logger.Warnf("⚠️ Row %d failed to insert: %v", i+2, err)
+			continue
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	logger.Infof("✅ Synced %s into database successfully", filepath.Base(filePath))
+	return nil
+}
+
+// buildUpsertQuery dynamically builds a Postgres UPSERT query
+func buildUpsertQuery(columns []string) string {
+	colList := strings.Join(columns, ", ")
+	paramList := make([]string, len(columns))
+	updateList := make([]string, len(columns))
+	for i := range columns {
+		paramList[i] = fmt.Sprintf("$%d", i+1)
+		updateList[i] = fmt.Sprintf("%s = EXCLUDED.%s", columns[i], columns[i])
+	}
+
+	return fmt.Sprintf(`
+		INSERT INTO universities (%s)
+		VALUES (%s)
+		ON CONFLICT (%s)
+		DO UPDATE SET %s;
+	`, colList, strings.Join(paramList, ", "), columns[0], strings.Join(updateList, ", "))
+}
+
+func clearFinalDataStatesInPostgres() error {
+	// Select all rows from the table 'universities' where 'region' or 'countryabbrv' is null
+	// Check the 'country' column value, and update the two values appropriately
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+
+	defer db.Close()
+
+	regionCountryAbbrvQueryUpdate := `
+	UPDATE universities
+	SET 
+		region = CASE
+			WHEN country = 'United States' THEN 'northamerica'
+			WHEN country = 'Canada' THEN 'northamerica'
+			WHEN country = 'Germany' THEN 'europe'
+			WHEN country = 'Japan' THEN 'asia'
+			WHEN country = 'Australia' THEN 'oceania'
+			ELSE region
+		END,
+		countryabbrv = CASE
+			WHEN country = 'United States' THEN 'us'
+			WHEN country = 'Canada' THEN 'ca'
+			WHEN country = 'Germany' THEN 'de'
+			WHEN country = 'Japan' THEN 'jp'
+			WHEN country = 'Australia' THEN 'au'
+			ELSE countryabbrv
+		END
+	WHERE region IS NULL OR countryabbrv IS NULL;`
+
+	_, err = db.Exec(regionCountryAbbrvQueryUpdate)
+	if err != nil {
+		return fmt.Errorf("failed to update universities table: %w", err)
+	}
+
+	return nil
 }

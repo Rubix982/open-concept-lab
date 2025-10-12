@@ -13,6 +13,9 @@ COPY . .
 # Copy the migration folder
 COPY migrations /app/
 
+# Copy the scripts folder
+COPY scripts /app/
+
 # Copy the certificates
 COPY certs /app/
 
@@ -30,6 +33,7 @@ RUN mkdir -p /app/target/
 # Copy built binary from builder stage
 COPY --from=builder /app/go-server .
 COPY --from=builder /app/migrations /app/migrations
+COPY --from=builder /app/scripts /app/scripts
 COPY --from=builder /app/certs /app/certs
 
 # Make sure certs and the data directory are readable by the non-root user
