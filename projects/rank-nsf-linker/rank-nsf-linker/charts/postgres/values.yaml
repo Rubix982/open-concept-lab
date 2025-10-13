@@ -1,0 +1,34 @@
+image:
+  repository: cgr.dev/chainguard/postgres
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerName: pg17-local
+
+service:
+  type: ClusterIP
+  port: 5432
+
+postgres:
+  db: mydb
+  user: postgres
+  password: postgres
+
+persistence:
+  enabled: true
+  size: 1Gi
+  mountPath: /var/lib/postgresql/data
+
+configs:
+  postgresqlConf: /etc/postgresql/postgresql.conf
+  hbaConf: /etc/postgresql/pg_hba.conf
+  ssl:
+    enabled: true
+    certFile: /certs/server.crt
+    keyFile: /certs/server.key
+    caFile: /certs/ca.crt
+    mountPath: /certs
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true

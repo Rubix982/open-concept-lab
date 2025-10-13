@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "postgres.fullname" . }}
+  labels:
+    app: {{ include "postgres.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "postgres.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "postgres.name" . }}
+    spec:
+      securityContext:
+        fsGroup: 999  # postgres
+      containers:
+        - name: {{ .Values.containerName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: POSTGRES_DB
+              value: {{ .Values.postgres.db }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgres.password }}
+          command:
+            - "postgres"
+            - "-c"
+            - "config_file={{ .Values.configs.postgresqlConf }}"
+            - "-c"
+            - "hba_file={{ .Values.configs.hbaConf }}"
+            - "-c"
+            - "ssl=on"
+            - "-c"
+            - "ssl_cert_file={{ .Values.configs.ssl.certFile }}"
+            - "-c"
+            - "ssl_key_file={{ .Values.configs.ssl.keyFile }}"
+            - "-c"
+            - "ssl_ca_file={{ .Values.configs.ssl.caFile }}"
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+            - name: configs
+              mountPath: /etc/postgresql
+              readOnly: true
+            - name: certs
+              mountPath: {{ .Values.configs.ssl.mountPath }}
+              readOnly: true
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "{{ .Values.postgres.user }}"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: {{ not .Values.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "postgres.fullname" . }}-pvc
+        - name: configs
+          configMap:
+            name: {{ include "postgres.fullname" . }}-config
+        - name: certs
+          secret:
+            secretName: {{ include "postgres.fullname" . }}-certs
