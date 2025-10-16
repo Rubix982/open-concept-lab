@@ -10,6 +10,9 @@ RUN go mod download
 # Copy source code
 COPY . .
 
+# Copy the env file
+COPY .env /app/
+
 # Copy the migration folder
 COPY migrations /app/
 
@@ -32,6 +35,7 @@ RUN mkdir -p /app/target/
 
 # Copy built binary from builder stage
 COPY --from=builder /app/go-server .
+COPY --from=builder /app/.env /app/.env
 COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/scripts /app/scripts
 COPY --from=builder /app/certs /app/certs
@@ -42,7 +46,7 @@ RUN chown -R 65532:65532 /app/certs && \
     chmod 600 /app/data && \
     chmod 600 /app/certs/client.key /app/certs/client.crt /app/certs/ca.crt
 
-EXPOSE 8080
+EXPOSE 8193
 
 # Run as non-root (Chainguard images often use non-root by default)
 USER 65532

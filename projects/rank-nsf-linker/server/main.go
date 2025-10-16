@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/go-chi/chi"
+	"github.com/joho/godotenv"
 )
 
 func printBanner() {
@@ -21,50 +22,17 @@ func printBanner() {
 	logger.Infof("%s", banner)
 }
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	logger.Infof("Hello, world!")
-}
-
 func main() {
 	printBanner()
 
-	if downloadCsvErr := downloadCSVs(false); downloadCsvErr != nil {
-		logger.Errorf("failed to download csvs: %v", downloadCsvErr)
-		return
+	if err := godotenv.Load(); err != nil {
+		logger.Warnf("⚠️  No .env file found, continuing with system environment variables: %v", err)
 	}
 
-	if downloadNsfDataErr := downloadNSFData(false); downloadNsfDataErr != nil {
-		logger.Errorf("failed to download NSF data: %v", downloadNsfDataErr)
-		return
+	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
+		populatePostgres()
 	}
 
-	if runMigrationsErr := runMigrations(); runMigrationsErr != nil {
-		logger.Errorf("failed to execute migrations: %v", runMigrationsErr)
-		return
-	}
-
-	if initPostgresErr := populatePostgresFromCSVs(); initPostgresErr != nil {
-		logger.Errorf("failed to initialize postgres: %v", initPostgresErr)
-		return
-	}
-
-	if initProgressErr := populatePostgresFromNsfJsons(); initProgressErr != nil {
-		logger.Errorf("failed to initialize progress: %v", initProgressErr)
-		return
-	}
-
-	if initProgressErr := populatePostgresFromScriptCaches(); initProgressErr != nil {
-		logger.Errorf("failed to initialize script caches: %v", initProgressErr)
-		return
-	}
-
-	if initProgressErr := clearFinalDataStatesInPostgres(); initProgressErr != nil {
-		logger.Errorf("failed to clear final data states: %v", initProgressErr)
-		return
-	}
-
-	r := chi.NewRouter()
-	r.Get("/api/hello", helloWorld)
-	log.Println("Server running on http://localhost:8193")
-	http.ListenAndServe(":8193", r)
+	log.Println("Server running on 8080")
+	http.ListenAndServe(":8080", GetRouter())
 }

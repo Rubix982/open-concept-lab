@@ -36,6 +36,8 @@ services:
       - no-new-privileges:true
     tmpfs:
       - /tmp
+    networks:
+      - default
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
@@ -50,6 +52,8 @@ services:
     volumes:
       - es_data:/usr/share/elasticsearch/data
     restart: unless-stopped
+    networks:
+      - default
 
   qdrant:
     image: qdrant/qdrant:v1.3.0
@@ -59,6 +63,8 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
+    networks:
+      - default
 
   go-server:
     container_name: go-server
@@ -66,6 +72,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     volumes:
+      - ./server/.env:/app/.env:ro
       - ./data:/app/data:rw
       - ./backup:/app/backup:rw
       - ./target:/app/target:rw
@@ -90,6 +97,8 @@ services:
       - "8080:8080"
     restart: unless-stopped
     command: ["./server/go-server"]
+    networks:
+      - default
 
   web:
     container_name: web-ui
@@ -103,8 +112,14 @@ services:
     depends_on:
       - go-server
     restart: unless-stopped
+    networks:
+      - default
 
 volumes:
   pg_data:
   es_data:
   qdrant_data:
+
+networks:
+  default:
+    driver: bridge
