@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
-    "mapbox-gl": "^3.14.0",
+    "lodash": "^4.17.21",
     "maplibre-gl": "^5.9.0",
     "vue": "^3.5.17"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.20",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.9.0",
