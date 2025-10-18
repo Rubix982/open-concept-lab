@@ -10,27 +10,27 @@ import (
 	"path/filepath"
 )
 
-var (
-	RootDir, _    = filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), ".."))
-	DataDir       = getRootDirPath("")
-	BackupDir     = getRootDirPath("backup")
-	TargetDir     = getRootDirPath("target")
-	NSFDataDir    = path.Join(getDataFilePath(""), "nsfdata")
-	MigrationsDir = "migrations"
+// Directory and file path constants
+const (
+	DATA_DIR       = "data"
+	BACKUP_DIR     = "backup"
+	TARGET_DIR     = "target"
+	SCRIPTS_DIR    = "scripts"
+	NSF_DATA_DIR   = "nsfdata"
+	GEOCODING_DIR  = "geocoding"
+	MIGRATIONS_DIR = "migrations"
 
+	UNI_AGNST_WEBURL      = "universities_against_homepages.csv"
+	COUNTRIES_FILENAME    = "countries.csv"
 	CSRANKINGS_FILENAME   = "csrankings.csv"
 	GEN_AUTHOR_FILENAME   = "generated-author-info.csv"
-	COUNTRIES_FILENAME    = "countries.csv"
-	COUNTRY_INFO_FILENAME = "country-info.csv"
 	GEOLOCATION_FILENAME  = "geolocation.csv"
-
-	BackupCountryInfo = getDataFilePath(COUNTRY_INFO_FILENAME)
-	BackupGeolocation = getDataFilePath(GEOLOCATION_FILENAME)
+	COUNTRY_INFO_FILENAME = "country-info.csv"
 
 	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/master/"
 	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
-	NSFAwardsStartYear = 2020
+	NSFAwardsStartYear = 2025
 	NSFAwardsEndYear   = 2025
 )
 
@@ -43,7 +43,7 @@ var CSVURLs = []string{
 }
 
 func getRootDirPath(rootSubDir string) string {
-	if appEnv := os.Getenv("APP_ENV"); len(appEnv) > 0 {
+	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
 		return fmt.Sprintf("/app/%v", rootSubDir)
 	}
 
@@ -57,36 +57,24 @@ func getRootDirPath(rootSubDir string) string {
 	return filepath.Join(filepath.Dir(wd), rootSubDir)
 }
 
-func getDataFilePath(fileName string) string {
-	if appEnv := os.Getenv("APP_ENV"); len(appEnv) > 0 {
-		return "/app/data"
-	}
-
-	// Get current working directory (should be `nsf-rank-linker/server`)
-	wd, err := os.Getwd()
-	if err != nil {
-		logger.Errorf("failed to get working directory: %v", err)
-		return filepath.Join("..", "data", fileName) // fallback
-	}
-
-	// Go up to root (../)
-	rootDir := filepath.Dir(wd)
-
-	// Join path to data file
-	return filepath.Join(rootDir, "data", fileName)
-}
-
 func getMigrationsFilePath() string {
-	if appEnv := os.Getenv("APP_ENV"); len(appEnv) > 0 {
-		return fmt.Sprintf("/app/%v", MigrationsDir)
+
+	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
+		return fmt.Sprintf("/app/%v", MIGRATIONS_DIR)
 	}
 
-	return MigrationsDir
+	return MIGRATIONS_DIR
 }
 
 func downloadCSVs(force bool) error {
+
+	dataDir := getRootDirPath(DATA_DIR)
+	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
+	targetDir := getRootDirPath(TARGET_DIR)
+	backupDir := getRootDirPath(BACKUP_DIR)
+
 	// Ensure all the directories exist
-	for _, dir := range []string{DataDir, BackupDir, TargetDir, NSFDataDir} {
+	for _, dir := range []string{dataDir, backupDir, targetDir, nsfDataDir} {
 		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			return fmt.Errorf("failed to create directory %s: %v", dir, err)
 		}
@@ -130,9 +118,13 @@ func downloadCSVs(force bool) error {
 
 // DownloadNSFData fetches and extracts NSF award data per year.
 func downloadNSFData(force bool) error {
+
+	dataDir := getRootDirPath(DATA_DIR)
+	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
+
 	for year := NSFAwardsStartYear; year <= NSFAwardsEndYear; year++ {
-		zipFile := filepath.Join(NSFDataDir, fmt.Sprintf("nsf_awards_%d.zip", year))
-		extractDir := filepath.Join(NSFDataDir, fmt.Sprintf("%d", year))
+		zipFile := filepath.Join(nsfDataDir, fmt.Sprintf("nsf_awards_%d.zip", year))
+		extractDir := filepath.Join(nsfDataDir, fmt.Sprintf("%d", year))
 
 		if _, err := os.Stat(extractDir); err == nil && !force {
 			logger.Infof("[✓] %s already exists. Skipping download.", filepath.Base(extractDir))

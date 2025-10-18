@@ -19,12 +19,7 @@ import (
 )
 
 const (
-	MIGRATIONS_DIR               = "migrations"
-	BACKUP_DIR                   = "backup"
-	DATA_DIR                     = "data"
-	POSTGRES_DRIVER              = "postgres"
-	NSF_INTERNAL_CONTAINER_PATH  = "/app/data/nsfdata"
-	NSF_GEOCODING_CONTAINER_PATH = "/app/scripts/geocoding"
+	POSTGRES_DRIVER = "postgres"
 )
 
 var primaryKeyAgainstTable = map[string]string{
@@ -128,8 +123,8 @@ func populatePostgresFromCSVs() error {
 		originalTableName = strings.ReplaceAll(originalTableName, "-", "_")
 		tableName := getAlternateTableName(originalTableName)
 
-		originalPath := filepath.Join(getDataFilePath(DATA_DIR), csvName)
-		backupPath := filepath.Join(getDataFilePath(BACKUP_DIR), csvName)
+		originalPath := filepath.Join(getRootDirPath(DATA_DIR), csvName)
+		backupPath := filepath.Join(getRootDirPath(BACKUP_DIR), csvName)
 		primaryKey := primaryKeyAgainstTable[tableName]
 
 		logger.Infof("📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
@@ -173,7 +168,7 @@ func populatePostgresFromCSVs() error {
 	   		ON CONFLICT (institution)
 	   		DO UPDATE SET
 	   			latitude = EXCLUDED.latitude,
-	   			longitude = EXCLUDED.longitude;`, row[0], row[1], row[2]); err != nil {
+	   			longitude = EXCLUDED.longitude;`, normalizeInstitutionName(row[0]), row[1], row[2]); err != nil {
 					return fmt.Errorf("failed to upsert university row (institution=%s): %w", row[0], err)
 				}
 			}
@@ -213,6 +208,11 @@ func insertIntoPostgres(
 
 	count := 0
 	for _, row := range rows {
+
+		if tableName == "universities" {
+			row[0] = normalizeInstitutionName(row[0])
+		}
+
 		vals := make([]any, len(row))
 		for i := range row {
 			val := strings.TrimSpace(row[i])
@@ -310,7 +310,7 @@ func populatePostgresFromNsfJsons() error {
 
 	defer db.Close()
 
-	internalContainerPath := NSF_INTERNAL_CONTAINER_PATH
+	internalContainerPath := path.Join(getRootDirPath(DATA_DIR), NSF_DATA_DIR)
 	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
 
 	var wg sync.WaitGroup
@@ -369,11 +369,13 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					country = EXCLUDED.country;
 			`
 		institute := nsfJsonData.Institute
+		originalInstName := institute.Name
+		institute.Name = normalizeInstitutionName(institute.Name)
 		_, err = db.Exec(universityUpsertQuery, institute.Name, institute.StreetAddress,
 			institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
 			region, countryabbrv)
 		if err != nil {
-			logger.Warnf("⚠️  University upsert failed (%s): %v", institute.Name, err)
+			logger.Warnf("⚠️  University upsert failed (%s, normalized '%s'): %v", originalInstName, institute.Name, err)
 			continue
 		}
 
@@ -509,7 +511,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					INSERT INTO professors (name, affiliation, nsf_id)
 					VALUES ($1, $2, $3)
 					ON CONFLICT (name) DO UPDATE SET nsf_id = EXCLUDED.nsf_id;
-				`, pi.Name, nsfJsonData.PerformingInsitute.InstituteName, pi.NSFId); err != nil {
+				`, pi.Name, normalizeInstitutionName(nsfJsonData.PerformingInsitute.InstituteName), pi.NSFId); err != nil {
 				logger.Warnf("⚠️  Professor upsert failed: %v", err)
 			}
 
@@ -593,7 +595,7 @@ func populatePostgresFromScriptCaches() error {
 	}
 	defer db.Close()
 
-	internalContainerPath := NSF_GEOCODING_CONTAINER_PATH
+	internalContainerPath := path.Join(getRootDirPath(SCRIPTS_DIR), GEOCODING_DIR)
 	logger.Infof("🚀 Starting script cache population from: %s", internalContainerPath)
 
 	// Paths
@@ -684,6 +686,9 @@ func buildUpsertQuery(columns []string) string {
 	paramList := make([]string, len(columns))
 	updateList := make([]string, len(columns))
 	for i := range columns {
+		if columns[i] == "institution" {
+			columns[i] = normalizeInstitutionName(columns[i])
+		}
 		paramList[i] = fmt.Sprintf("$%d", i+1)
 		updateList[i] = fmt.Sprintf("%s = EXCLUDED.%s", columns[i], columns[i])
 	}
@@ -736,6 +741,94 @@ func clearFinalDataStatesInPostgres() error {
 	return nil
 }
 
+func populateHomepagesAgainstUniversities() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	file, err := os.Open(filepath.Join(getRootDirPath(BACKUP_DIR), UNI_AGNST_WEBURL))
+	if err != nil {
+		return fmt.Errorf("failed to open CSV: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = -1
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read CSV: %v", err)
+	}
+
+	updated, skipped, fuzzyMatched := 0, 0, 0
+
+	for _, row := range records {
+		if len(row) < 2 {
+			skipped++
+			continue
+		}
+
+		institution := strings.TrimSpace(row[0])
+		homepage := strings.TrimSpace(row[1])
+
+		if institution == "" || homepage == "" {
+			skipped++
+			continue
+		}
+
+		originalInstitution := institution
+		institution = normalizeInstitutionName(institution)
+
+		// Try exact match first
+		var exists bool
+		err = db.QueryRow(`SELECT EXISTS(SELECT 1 FROM universities WHERE institution = $1)`, institution).Scan(&exists)
+		if err != nil {
+			logger.Warnf("⚠️ Failed to check %s (normalized '%s'): %v", originalInstitution, institution, err)
+			continue
+		}
+
+		var matchedInstitution string
+
+		if !exists {
+			// Try fuzzy match (similarity > 0.80)
+			err = db.QueryRow(`
+				SELECT institution
+				FROM universities
+				WHERE similarity(institution, $1) > 0.80
+				ORDER BY similarity(institution, $1) DESC
+				LIMIT 1
+			`, institution).Scan(&matchedInstitution)
+
+			if err == sql.ErrNoRows {
+				skipped++
+				continue
+			}
+			if err != nil {
+				logger.Warnf("⚠️ Fuzzy match failed for %s (normalized '%s'): %v", originalInstitution, institution, err)
+				continue
+			}
+
+			fuzzyMatched++
+		} else {
+			matchedInstitution = institution
+		}
+
+		// Update homepage
+		_, err = db.Exec(`UPDATE universities SET homepage = $1 WHERE institution = $2`, homepage, matchedInstitution)
+		if err != nil {
+			logger.Warnf("⚠️ Failed to update %s: %v", matchedInstitution, err)
+			continue
+		}
+
+		updated++
+	}
+
+	logger.Infof("✅ Populated homepages for %d institutions (%d fuzzy matched, %d skipped)", updated, fuzzyMatched, skipped)
+	return nil
+}
+
 func populatePostgres() {
 	if downloadCsvErr := downloadCSVs(false); downloadCsvErr != nil {
 		logger.Errorf("failed to download csvs: %v", downloadCsvErr)
@@ -764,6 +857,11 @@ func populatePostgres() {
 
 	if initProgressErr := populatePostgresFromScriptCaches(); initProgressErr != nil {
 		logger.Errorf("failed to initialize script caches: %v", initProgressErr)
+		return
+	}
+
+	if initProgressErr := populateHomepagesAgainstUniversities(); initProgressErr != nil {
+		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
 		return
 	}
 

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS universities (
   country TEXT,
   region TEXT,
   countryabbrv TEXT,
+  homepage TEXT,
   latitude REAL,
   longitude REAL
 );
