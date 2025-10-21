@@ -14,6 +14,7 @@ import (
 	"sync"
 
 	_ "github.com/lib/pq"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -35,7 +36,6 @@ var backwardsCompatibleSchemaMap = []string{
 	"csrankings.csv",
 	"country-info.csv",
 	"geolocation.csv",
-	"generated-author-info.csv",
 }
 
 func getPostgresConnection() (*sql.DB, error) {
@@ -103,6 +103,8 @@ func getAlternateTableName(tableName string) string {
 		return "universities"
 	case "csrankings":
 		return "professors"
+	case "generated_author_info":
+		return "professor_areas"
 	}
 
 	return tableName
@@ -744,11 +746,28 @@ func clearFinalDataStatesInPostgres() error {
 func populateHomepagesAgainstUniversities() error {
 	db, err := getPostgresConnection()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("❌ Failed to connect to DB: %v", err)
 	}
 	defer db.Close()
 
+	// Step 1. Load universities from DB into memory
+	rows, err := db.Query(`SELECT institution FROM universities`)
+	if err != nil {
+		return fmt.Errorf("failed to load universities: %v", err)
+	}
+	defer rows.Close()
+
+	universities := make(map[string]bool)
+	var universityList []string
+	for rows.Next() {
+		var inst string
+		if err := rows.Scan(&inst); err == nil {
+			universities[normalizeInstitutionName(inst)] = true
+			universityList = append(universityList, normalizeInstitutionName(inst))
+		}
+	}
+
+	// Step 2. Read CSV
 	file, err := os.Open(filepath.Join(getRootDirPath(BACKUP_DIR), UNI_AGNST_WEBURL))
 	if err != nil {
 		return fmt.Errorf("failed to open CSV: %v", err)
@@ -762,70 +781,234 @@ func populateHomepagesAgainstUniversities() error {
 		return fmt.Errorf("failed to read CSV: %v", err)
 	}
 
-	updated, skipped, fuzzyMatched := 0, 0, 0
+	type updatePair struct {
+		homepage    string
+		institution string
+	}
 
+	var updates []updatePair
+	var updated, skipped, fuzzyMatched int
+
+	// Step 3. Match in memory
 	for _, row := range records {
 		if len(row) < 2 {
 			skipped++
 			continue
 		}
 
-		institution := strings.TrimSpace(row[0])
+		rawInst := strings.TrimSpace(row[0])
 		homepage := strings.TrimSpace(row[1])
-
-		if institution == "" || homepage == "" {
+		if rawInst == "" || homepage == "" {
 			skipped++
 			continue
 		}
 
-		originalInstitution := institution
-		institution = normalizeInstitutionName(institution)
+		normInst := normalizeInstitutionName(rawInst)
+		match := normInst
 
-		// Try exact match first
-		var exists bool
-		err = db.QueryRow(`SELECT EXISTS(SELECT 1 FROM universities WHERE institution = $1)`, institution).Scan(&exists)
-		if err != nil {
-			logger.Warnf("⚠️ Failed to check %s (normalized '%s'): %v", originalInstitution, institution, err)
-			continue
-		}
-
-		var matchedInstitution string
-
-		if !exists {
-			// Try fuzzy match (similarity > 0.80)
-			err = db.QueryRow(`
-				SELECT institution
-				FROM universities
-				WHERE similarity(institution, $1) > 0.80
-				ORDER BY similarity(institution, $1) DESC
-				LIMIT 1
-			`, institution).Scan(&matchedInstitution)
-
-			if err == sql.ErrNoRows {
+		if !universities[normInst] {
+			// fuzzy fallback
+			best := fuzzy.RankFindNormalized(normInst, universityList)
+			if len(best) == 0 || best[0].Distance > 10 { // tune distance
 				skipped++
 				continue
 			}
-			if err != nil {
-				logger.Warnf("⚠️ Fuzzy match failed for %s (normalized '%s'): %v", originalInstitution, institution, err)
-				continue
-			}
-
+			match = universityList[best[0].OriginalIndex]
 			fuzzyMatched++
-		} else {
-			matchedInstitution = institution
 		}
 
-		// Update homepage
-		_, err = db.Exec(`UPDATE universities SET homepage = $1 WHERE institution = $2`, homepage, matchedInstitution)
+		updates = append(updates, updatePair{homepage: homepage, institution: match})
+		updated++
+	}
+
+	// Step 4. Bulk update with transaction
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Prepare(`UPDATE universities SET homepage = $1 WHERE institution = $2`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	for _, u := range updates {
+		if _, err := stmt.Exec(u.homepage, u.institution); err != nil {
+			logger.Warnf("⚠️ Failed to update %s: %v", u.institution, err)
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	logger.Infof("✅ Updated %d institutions (%d fuzzy matched, %d skipped)", updated, fuzzyMatched, skipped)
+	return nil
+}
+
+func syncProfessorsAffiliationsToUniversities() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	// We need to iterate over all the professors
+	rows, err := db.Query(`SELECT name, affiliation FROM professors`)
+	if err != nil {
+		return fmt.Errorf("failed to query professors table: %w", err)
+	}
+
+	defer rows.Close()
+
+	updated, skipped := 0, 0
+
+	for rows.Next() {
+		var name, affiliation string
+		if err := rows.Scan(&name, &affiliation); err != nil {
+			logger.Warnf("⚠️ Failed to scan professor row: %v", err)
+			continue
+		}
+
+		normalizedAffiliation := normalizeInstitutionName(affiliation)
+
+		var matchedInstitution string
+		err = db.QueryRow(`
+			SELECT institution
+			FROM universities
+			WHERE similarity(institution, $1) > 0.80
+			ORDER BY similarity(institution, $1) DESC
+			LIMIT 1
+		`, normalizedAffiliation).Scan(&matchedInstitution)
+
+		if err == sql.ErrNoRows {
+			logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", name, affiliation)
+			skipped++
+			continue
+		}
+
 		if err != nil {
-			logger.Warnf("⚠️ Failed to update %s: %v", matchedInstitution, err)
+			logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", name, affiliation, err)
+			continue
+		}
+
+		// Update professor's affiliation to the matched institution
+		_, err = db.Exec(`UPDATE professors SET affiliation = $1 WHERE name = $2`, matchedInstitution, name)
+		if err != nil {
+			logger.Warnf("⚠️ Failed to update professor '%s' affiliation: %v", name, err)
 			continue
 		}
 
 		updated++
 	}
 
-	logger.Infof("✅ Populated homepages for %d institutions (%d fuzzy matched, %d skipped)", updated, fuzzyMatched, skipped)
+	logger.Infof("✅ Synchronized affiliations for %d professors (%d skipped)", updated, skipped)
+
+	return nil
+}
+
+func syncProfessorInterestsToProfessorsAndUniversities() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	file, err := os.Open(filepath.Join(getRootDirPath(DATA_DIR), GEN_AUTHOR_FILENAME))
+	if err != nil {
+		return fmt.Errorf("failed to open CSV: %v", err)
+	}
+	defer file.Close()
+
+	// No backup directly right now for generated-author-info.csv
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read CSV: %v", err)
+	}
+
+	updated, skipped := 0, 0
+
+	for _, row := range records {
+		if len(row) < 6 {
+			skipped++
+			continue
+		}
+
+		name := strings.TrimSpace(row[0])
+		dept := strings.TrimSpace(row[1])
+		area := strings.TrimSpace(row[2])
+		count := strings.TrimSpace(row[3])
+		adjustedCount := strings.TrimSpace(row[4])
+		year := strings.TrimSpace(row[5])
+
+		if name == "" || dept == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
+			skipped++
+			continue
+		}
+
+		normalizedDept := normalizeInstitutionName(dept)
+
+		var matchedInstitution string
+		err = db.QueryRow(`
+			SELECT institution
+			FROM universities
+			WHERE similarity(institution, $1) > 0.80
+			ORDER BY similarity(institution, $1) DESC
+			LIMIT 1
+		`, normalizedDept).Scan(&matchedInstitution)
+
+		if err == sql.ErrNoRows {
+			logger.Warnf("⚠️ No match found for professor '%s' with dept '%s'", name, dept)
+			skipped++
+			continue
+		}
+
+		if err != nil {
+			logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with dept '%s': %v", name, dept, err)
+			continue
+		}
+
+		var matchedProfessor string
+		err = db.QueryRow(`
+			SELECT name
+			FROM professors
+			WHERE similarity(name, $1) > 0.80
+			ORDER BY similarity(name, $1) DESC
+			LIMIT 1
+		`, name).Scan(&matchedProfessor)
+
+		if err == sql.ErrNoRows {
+			logger.Warnf("⚠️ No professor found with name '%s'", name)
+			skipped++
+			continue
+		}
+
+		if err != nil {
+			logger.Warnf("⚠️ Failed to find professor '%s': %v", name, err)
+			continue
+		}
+
+		_, err = db.Exec(`
+			INSERT INTO professor_areas (name, dept, area, count, adjusted_count, year)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			ON CONFLICT (name, dept, area, year)
+			DO UPDATE SET
+				count = EXCLUDED.count,
+				adjusted_count = EXCLUDED.adjusted_count;
+		`, matchedProfessor, matchedInstitution, area, count, adjustedCount, year)
+		if err != nil {
+			logger.Warnf("⚠️ Failed to insert into professor_areas table: %v", err)
+			continue
+		}
+
+		updated++
+	}
+
+	logger.Infof("✅ Synchronized professor interests for %d professors (%d skipped)", updated, skipped)
+
 	return nil
 }
 
@@ -869,4 +1052,16 @@ func populatePostgres() {
 		logger.Errorf("failed to clear final data states: %v", initProgressErr)
 		return
 	}
+
+	if initProgressErr := syncProfessorsAffiliationsToUniversities(); initProgressErr != nil {
+		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
+		return
+	}
+
+	if initProgressErr := syncProfessorInterestsToProfessorsAndUniversities(); initProgressErr != nil {
+		logger.Errorf("failed to sync professor interests to professors and universities: %v", initProgressErr)
+		return
+	}
+
+	logger.Infof("🎉 Postgres population completed successfully.")
 }

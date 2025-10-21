@@ -19,11 +19,12 @@ RUN chown -R appuser:appgroup /app
 # Switch to non-root user
 USER appuser
 
-# Copy package.json AND package-lock.json first for caching
-COPY --chown=appuser:appgroup package.json yarn.lock node_modules ./
+# ---- Dependency installation (cached layer) ----
+# Copy only dependency manifests first for caching
+COPY --chown=appuser:appgroup package.json yarn.lock ./
 
 # Install dependencies (will cache unless package files change)
-RUN yarn
+RUN yarn install --frozen-lockfile
 
 # Copy rest of the source code with correct ownership
 COPY --chown=appuser:appgroup . .
@@ -34,11 +35,13 @@ RUN yarn run build
 # Stage 2: Serve with nginx (already non-root user)
 FROM cgr.dev/chainguard/nginx
 
-# Clean default nginx files (running as root in build time)
+# Switch to root (Chainguard Nginx runs as non-root by default later)
 USER root
 
-# Copy built static files from build stage
+# Copy built static files from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port 80
+# Expose default HTTP port
 EXPOSE 80
+
+# No CMD needed - Chainguard's nginx image provides it by default

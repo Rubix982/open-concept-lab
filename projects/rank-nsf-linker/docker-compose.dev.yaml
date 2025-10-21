@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: cgr.dev/chainguard/postgres
+    image: host.docker.internal:5128/cgr.dev/chainguard/postgres
     container_name: pg17-local
     restart: unless-stopped
     ports:
@@ -40,7 +40,7 @@ services:
       - default
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    image: host.docker.internal:5128/docker.elastic.co/elasticsearch/elasticsearch:8.13.0
     container_name: es-local
     environment:
       - discovery.type=single-node
@@ -56,7 +56,7 @@ services:
       - default
 
   qdrant:
-    image: qdrant/qdrant:v1.3.0
+    image: host.docker.internal:5128/qdrant/qdrant:v1.3.0
     container_name: qdrant-local
     ports:
       - "6333:6333"
@@ -67,6 +67,7 @@ services:
       - default
 
   go-server:
+    image: host.docker.internal:5128/go-server:latest
     container_name: go-server
     build:
       context: ./server
@@ -101,6 +102,7 @@ services:
       - default
 
   web:
+    image: host.docker.internal:5128/web-ui:latest
     container_name: web-ui
     build:
       context: ./web

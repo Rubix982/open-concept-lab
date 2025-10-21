@@ -9,6 +9,8 @@ This system helps prospective students, collaborators, or researchers **identify
   - [🔗 Algorithm: Mapping CS Faculty to NSF Awards \& Google Scholar Publications](#-algorithm-mapping-cs-faculty-to-nsf-awards--google-scholar-publications)
     - [🧠 Step-by-Step Algorithm](#-step-by-step-algorithm)
   - [🛠️ Expand Features to Support Further Use Cases](#️-expand-features-to-support-further-use-cases)
+- [Debugging](#debugging)
+  - [http: server gave HTTP response to HTTPS client](#http-server-gave-http-response-to-https-client)
 
 ## 🧭 Use Cases
 
@@ -127,3 +129,15 @@ This algorithm enhances the core faculty selection tool by connecting researcher
 | 📤 **Export Options** (CSV, JSON)                        | Helps bloggers, journalists, students do deeper dives                |
 | 🔄 **Daily/Weekly Sync with NSF API**                    | Keep data fresh                                                      |
 | 💡 **“Suggested Researchers” Engine**                    | “If you liked this grant/lab, here are similar ones”                 |
+
+# Debugging
+
+## http: server gave HTTP response to HTTPS client
+
+If "HTTP/HTTPS" error occurs while pushing the docker images, add the following to the Docker Engine configuration,
+
+```json
+  "insecure-registries": [
+    "host.docker.internal:5128"
+  ]
+```

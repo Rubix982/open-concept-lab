@@ -36,13 +36,14 @@ CREATE TABLE IF NOT EXISTS professors (
   nsf_id TEXT
 );
 
-CREATE TABLE IF NOT EXISTS generated_author_info (
-  name TEXT,
-  dept TEXT,
-  area TEXT,
+CREATE TABLE IF NOT EXISTS professor_areas (
+  name TEXT NOT NULL,
+  dept TEXT NOT NULL,
+  area TEXT NOT NULL,
   count REAL,
-  adjustedcount REAL,
-  year INTEGER
+  adjusted_count REAL,
+  year INTEGER,
+  PRIMARY KEY (name, dept, area, year)
 );
 
 CREATE TABLE IF NOT EXISTS directorate_division (

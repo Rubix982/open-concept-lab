@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect

@@ -112,7 +112,7 @@
       <template v-else>
         <!-- University Header -->
         <div class="uni-header">
-          <h2>{{ selectedUniversity.name }}</h2>
+          <h2>{{ selectedUniversity.institution }}</h2>
           <div class="uni-meta">
             <span
               class="meta-badge"
@@ -121,9 +121,6 @@
               }"
             >
               {{ selectedUniversity.top_area }}
-            </span>
-            <span v-if="selectedUniversity.ranking" class="meta-badge ranking">
-              #{{ selectedUniversity.ranking }}
             </span>
           </div>
         </div>
@@ -155,7 +152,7 @@
             <div class="stat-details">
               <div class="stat-label">NSF Awards</div>
               <div class="stat-value">
-                {{ selectedUniversity.nsf_awards || 0 }}
+                <!-- {{ selectedUniversity.nsf_awards || 0 }} -->
               </div>
             </div>
           </div>
@@ -169,30 +166,12 @@
               </div>
             </div>
           </div>
-
-          <div class="stat-card" v-if="selectedUniversity.students">
-            <div class="stat-icon">🎓</div>
-            <div class="stat-details">
-              <div class="stat-label">Students</div>
-              <div class="stat-value">
-                {{ formatNumber(selectedUniversity.students) }}
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-card" v-if="selectedUniversity.founded">
-            <div class="stat-icon">📅</div>
-            <div class="stat-details">
-              <div class="stat-label">Founded</div>
-              <div class="stat-value">{{ selectedUniversity.founded }}</div>
-            </div>
-          </div>
         </div>
 
         <div class="uni-links">
           <a
-            v-if="selectedUniversity.website"
-            :href="selectedUniversity.website"
+            v-if="selectedUniversity.homepage"
+            :href="selectedUniversity.homepage"
             target="_blank"
             class="link-btn"
           >
@@ -283,7 +262,7 @@
                   <span v-else class="fac-name">{{ f.name }}</span>
                 </div>
 
-                <div v-if="f.dept" class="fac-dept">{{ f.dept }}</div>
+                <!-- <div v-if="f.dept" class="fac-dept">{{ f.dept }}</div> -->
 
                 <div
                   v-if="f.matched_areas && f.matched_areas.length"
@@ -364,10 +343,10 @@
                 <span class="award-amount"
                   >${{ formatNumber(award.amount) }}</span
                 >
-                <span class="award-year">{{ award.year }}</span>
+                <!-- <span class="award-year">{{ award.year }}</span>
                 <span v-if="award.program" class="award-program">{{
                   award.program
-                }}</span>
+                }}</span> -->
               </div>
             </li>
           </ul>
@@ -630,9 +609,8 @@ const CONFERENCE_MAP: ConferenceDict = {
 
 // -------------------- Types --------------------
 type Faculty = {
-  name: string;
-  homepage?: string;
-  dept?: string;
+  name: string; // part of the schema
+  homepage?: string; // part of the schema
   matched_areas?: string[];
   interests?: string[];
   citations?: number;
@@ -641,33 +619,26 @@ type Faculty = {
 };
 
 type NSFAward = {
-  title: string;
-  amount: number;
-  year: number;
-  program?: string;
+  title: string; // part of the schema, award_title_text
+  amount: number; // part of the schema, award_amount
+  years: number[]; // part of the schema, most_recent_amendment_date subtracted from earliest_amendment_date
 };
 
 type UniSummary = {
-  id: string;
-  name: string;
-  longitude: number;
-  latitude: number;
-  top_area?: string;
-  faculty_count?: number;
-  funding?: number;
-  nsf_awards?: number;
+  institution: string; // part of schema
+  longitude: number; // part of schema
+  latitude: number; // part of schema
+  top_area?: string; // for each university, get the faculty, get the distinct topic area for those faculty
+  faculty_count?: number; // for each university, get the count of faculty
+  funding?: number; // for each university, get the total funding, organize by year
 };
 
 type UniDetail = UniSummary & {
-  city?: string;
-  country?: string;
-  website?: string;
-  ranking?: number | null;
-  faculty?: Faculty[];
-  students?: number;
-  founded?: number;
-  institution_type?: string;
-  recent_nsf_awards?: NSFAward[];
+  city?: string; // part of schema
+  country?: string; // part of schema
+  homepage?: string; // part of schema
+  faculty?: Faculty[]; // list of faculty with their details
+  recent_nsf_awards?: NSFAward[]; // for each university, get recent NSF awards with details
 };
 
 // -------------------- Config --------------------
@@ -727,8 +698,8 @@ const filteredUniversities = computed(() => {
       return false;
 
     // NSF filter
-    if (showNSFOnly.value && (!u.nsf_awards || u.nsf_awards === 0))
-      return false;
+    // if (showNSFOnly.value && (!u.nsf_awards || u.nsf_awards === 0))
+    //   return false;
 
     return true;
   });
@@ -836,17 +807,16 @@ function getAreaColor(area?: string): string {
 
 function buildFeatureCollection(summaries: UniSummary[]) {
   const features = summaries.map((u) => {
-    universitiesById.set(u.id, u);
+    universitiesById.set(u.institution, u);
     return {
       type: "Feature" as const,
       properties: {
-        id: u.id,
-        name: u.name,
+        name: u.institution,
         top_area: u.top_area ?? "Other",
-        label: shortLabel(u.name),
+        label: shortLabel(u.institution),
         faculty_count: u.faculty_count ?? 0,
         funding: u.funding ?? 0,
-        nsf_awards: u.nsf_awards ?? 0,
+        // nsf_awards: u.nsf_awards ?? 0,
       },
       geometry: {
         type: "Point" as const,
@@ -1082,7 +1052,7 @@ onMounted(async () => {
       popupRef.value?.remove();
       const html = `
         <div class="map-popup">
-          <strong>${summary.name}</strong><br/>
+          <strong>${summary.institution}</strong><br/>
           <small>Faculty: ${props.faculty_count ?? 0}</small><br/>
           <small>Funding: $${(props.funding || 0).toFixed(1)}M</small><br/>
           <small>NSF Awards: ${props.nsf_awards || 0}</small><br/>
@@ -1138,7 +1108,7 @@ onMounted(async () => {
       detailLoading.value = true;
       selectedUniversity.value = {
         id,
-        name: "Loading…",
+        institution: "Loading…",
         longitude: 0,
         latitude: 0,
         top_area: "Other",
@@ -1277,7 +1247,7 @@ function searchAndFly() {
   const q = search.value.trim().toLowerCase();
   if (!q) return;
   for (const [id, u] of universitiesById) {
-    if (u.name.toLowerCase().includes(q)) {
+    if (u.institution.toLowerCase().includes(q)) {
       map.easeTo({ center: [u.longitude, u.latitude], zoom: 8, duration: 700 });
       if (!detailsCache.has(id))
         axios
