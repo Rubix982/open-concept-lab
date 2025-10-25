@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func printBanner() {
@@ -22,8 +23,14 @@ func printBanner() {
 	logger.Infof("%s", banner)
 }
 
+func startMetricsServer() {
+	http.Handle("/metrics", promhttp.Handler())
+	go http.ListenAndServe(":2112", nil)
+}
+
 func main() {
 	printBanner()
+	startMetricsServer()
 
 	if err := godotenv.Load(); err != nil {
 		logger.Warnf("⚠️  No .env file found, continuing with system environment variables: %v", err)

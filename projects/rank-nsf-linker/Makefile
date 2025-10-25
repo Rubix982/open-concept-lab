@@ -74,10 +74,14 @@ infra-images:
 	$(call ensure_image,cgr.dev/chainguard/postgres)
 	$(call ensure_image,docker.elastic.co/elasticsearch/elasticsearch:8.13.0)
 	$(call ensure_image,qdrant/qdrant:v1.3.0)
+	$(call ensure_image,prom/prometheus:latest)
+	$(call ensure_image,grafana/grafana:12.3.0-18733571275-ubuntu)
+	$(call ensure_image,prometheuscommunity/postgres-exporter:v0.18.1)
 
 # App lifecycle
 docker-build:
-	$(DOCKER_COMPOSE) build
+	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,)
+	docker image prune -f
 
 # Spin up services in background
 up: registry up-infra

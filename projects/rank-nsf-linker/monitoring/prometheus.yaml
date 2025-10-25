@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s  # scrape metrics every 5 seconds
+
+scrape_configs:
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['pg-exporter:9187']
+
+  - job_name: 'go-app'
+    static_configs:
+      - targets: ['go-server:2112']   # assuming your Go app exposes metrics here

@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/lithammer/fuzzysearch/fuzzy"
@@ -740,6 +742,8 @@ func clearFinalDataStatesInPostgres() error {
 		return fmt.Errorf("failed to update universities table: %w", err)
 	}
 
+	logger.Infof("✅ Cleared final data states in Postgres successfully")
+
 	return nil
 }
 
@@ -861,7 +865,7 @@ func syncProfessorsAffiliationsToUniversities() error {
 
 	defer rows.Close()
 
-	updated, skipped := 0, 0
+	var professors []map[string]string
 
 	for rows.Next() {
 		var name, affiliation string
@@ -869,38 +873,73 @@ func syncProfessorsAffiliationsToUniversities() error {
 			logger.Warnf("⚠️ Failed to scan professor row: %v", err)
 			continue
 		}
-
-		normalizedAffiliation := normalizeInstitutionName(affiliation)
-
-		var matchedInstitution string
-		err = db.QueryRow(`
-			SELECT institution
-			FROM universities
-			WHERE similarity(institution, $1) > 0.80
-			ORDER BY similarity(institution, $1) DESC
-			LIMIT 1
-		`, normalizedAffiliation).Scan(&matchedInstitution)
-
-		if err == sql.ErrNoRows {
-			logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", name, affiliation)
-			skipped++
-			continue
-		}
-
-		if err != nil {
-			logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", name, affiliation, err)
-			continue
-		}
-
-		// Update professor's affiliation to the matched institution
-		_, err = db.Exec(`UPDATE professors SET affiliation = $1 WHERE name = $2`, matchedInstitution, name)
-		if err != nil {
-			logger.Warnf("⚠️ Failed to update professor '%s' affiliation: %v", name, err)
-			continue
-		}
-
-		updated++
+		professors = append(professors, map[string]string{
+			"name":        name,
+			"affiliation": affiliation,
+		})
 	}
+
+	sem := make(chan struct{}, 20)
+	var wg sync.WaitGroup
+
+	var updated, skipped int64
+
+	for _, prof := range professors {
+		wg.Add(1)
+		sem <- struct{}{}
+
+		go func(prof map[string]string) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			affiliation := prof["affiliation"]
+			if affiliation == "" {
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+			profName := prof["name"]
+			if profName == "" {
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			// Fuzzy match affiliation against universities
+			normalizedAffiliation := normalizeInstitutionName(affiliation)
+
+			var matchedInstitution string
+			err = db.QueryRow(`
+				SELECT institution
+				FROM universities
+				WHERE institution % $1
+				ORDER BY similarity(institution, $1) DESC
+				LIMIT 1
+			`, normalizedAffiliation).Scan(&matchedInstitution)
+
+			if err == sql.ErrNoRows {
+				logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", profName, affiliation)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			if err != nil {
+				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			// Update professor's affiliation to the matched institution
+			_, err = db.Exec(`UPDATE professors SET affiliation = $1 WHERE name = $2`, matchedInstitution, profName)
+			if err != nil {
+				logger.Warnf("⚠️ Failed to update professor '%s' affiliation: %v", profName, err)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			atomic.AddInt64(&updated, 1)
+		}(prof)
+	}
+
+	wg.Wait()
 
 	logger.Infof("✅ Synchronized affiliations for %d professors (%d skipped)", updated, skipped)
 
@@ -915,13 +954,15 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 	}
 	defer db.Close()
 
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(50)
+	db.SetConnMaxLifetime(time.Minute * 10)
+
 	file, err := os.Open(filepath.Join(getRootDirPath(DATA_DIR), GEN_AUTHOR_FILENAME))
 	if err != nil {
 		return fmt.Errorf("failed to open CSV: %v", err)
 	}
 	defer file.Close()
-
-	// No backup directly right now for generated-author-info.csv
 
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
@@ -929,86 +970,167 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 		return fmt.Errorf("failed to read CSV: %v", err)
 	}
 
-	updated, skipped := 0, 0
-
+	// Filter header and invalid rows
+	var validRows [][]string
 	for _, row := range records {
-		if len(row) < 6 {
-			skipped++
+		if len(row) < 6 || strings.TrimSpace(row[0]) == "name" {
 			continue
 		}
-
-		name := strings.TrimSpace(row[0])
-		dept := strings.TrimSpace(row[1])
-		area := strings.TrimSpace(row[2])
-		count := strings.TrimSpace(row[3])
-		adjustedCount := strings.TrimSpace(row[4])
-		year := strings.TrimSpace(row[5])
-
-		if name == "" || dept == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
-			skipped++
-			continue
-		}
-
-		normalizedDept := normalizeInstitutionName(dept)
-
-		var matchedInstitution string
-		err = db.QueryRow(`
-			SELECT institution
-			FROM universities
-			WHERE similarity(institution, $1) > 0.80
-			ORDER BY similarity(institution, $1) DESC
-			LIMIT 1
-		`, normalizedDept).Scan(&matchedInstitution)
-
-		if err == sql.ErrNoRows {
-			logger.Warnf("⚠️ No match found for professor '%s' with dept '%s'", name, dept)
-			skipped++
-			continue
-		}
-
-		if err != nil {
-			logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with dept '%s': %v", name, dept, err)
-			continue
-		}
-
-		var matchedProfessor string
-		err = db.QueryRow(`
-			SELECT name
-			FROM professors
-			WHERE similarity(name, $1) > 0.80
-			ORDER BY similarity(name, $1) DESC
-			LIMIT 1
-		`, name).Scan(&matchedProfessor)
-
-		if err == sql.ErrNoRows {
-			logger.Warnf("⚠️ No professor found with name '%s'", name)
-			skipped++
-			continue
-		}
-
-		if err != nil {
-			logger.Warnf("⚠️ Failed to find professor '%s': %v", name, err)
-			continue
-		}
-
-		_, err = db.Exec(`
-			INSERT INTO professor_areas (name, dept, area, count, adjusted_count, year)
-			VALUES ($1, $2, $3, $4, $5, $6)
-			ON CONFLICT (name, dept, area, year)
-			DO UPDATE SET
-				count = EXCLUDED.count,
-				adjusted_count = EXCLUDED.adjusted_count;
-		`, matchedProfessor, matchedInstitution, area, count, adjustedCount, year)
-		if err != nil {
-			logger.Warnf("⚠️ Failed to insert into professor_areas table: %v", err)
-			continue
-		}
-
-		updated++
+		validRows = append(validRows, row)
 	}
 
-	logger.Infof("✅ Synchronized professor interests for %d professors (%d skipped)", updated, skipped)
+	sem := make(chan struct{}, 50) // limit concurrency to 50 goroutines
+	var wg sync.WaitGroup
+	var updated, skipped int64
 
+	for _, row := range validRows {
+		wg.Add(1)
+		sem <- struct{}{}
+
+		go func(row []string) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			name := strings.TrimSpace(row[0])
+			dept := strings.TrimSpace(row[1])
+			area := strings.TrimSpace(row[2])
+			count := strings.TrimSpace(row[3])
+			adjustedCount := strings.TrimSpace(row[4])
+			year := strings.TrimSpace(row[5])
+
+			if name == "" || dept == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
+				logger.Warnf("⚠️ Skipped invalid row: %v", row)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			normalizedDept := normalizeInstitutionName(dept)
+
+			var matchedInstitution string
+			err = db.QueryRow(`
+				SELECT institution
+				FROM universities
+				WHERE institution % $1
+				ORDER BY similarity(institution, $1) DESC
+				LIMIT 1
+			`, normalizedDept).Scan(&matchedInstitution)
+
+			if err == sql.ErrNoRows {
+				logger.Warnf("⚠️ No match found for professor '%s' with dept '%s'", name, dept)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+			if err != nil {
+				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with dept '%s': %v", name, dept, err)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			var matchedProfessor string
+			err = db.QueryRow(`
+				SELECT name
+				FROM professors
+				WHERE name % $1
+				ORDER BY similarity(name, $1) DESC
+				LIMIT 1
+			`, name).Scan(&matchedProfessor)
+
+			if err == sql.ErrNoRows {
+				logger.Warnf("⚠️ No professor found with name '%s'", name)
+				// Add the professor if it does not exist so we can to continue below
+				_, insertErr := db.Exec(`
+					INSERT INTO professors (name, affiliation)
+					VALUES ($1, $2)
+					ON CONFLICT (name) DO NOTHING;
+				`, name, matchedInstitution)
+				if insertErr != nil {
+					logger.Warnf("⚠️ Failed to insert new professor '%s': %v", name, insertErr)
+					atomic.AddInt64(&skipped, 1)
+					return
+				}
+				logger.Infof("➕ Added new professor '%s' with affiliation '%s'", name, matchedInstitution)
+				matchedProfessor = name
+			} else if err != nil {
+				logger.Warnf("⚠️ Failed to find professor '%s': %v", name, err)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			_, err = db.Exec(`
+				INSERT INTO professor_areas (name, dept, area, count, adjusted_count, year)
+				VALUES ($1, $2, $3, $4, $5, $6)
+				ON CONFLICT (name, dept, area, year)
+				DO UPDATE SET
+					count = EXCLUDED.count,
+					adjusted_count = EXCLUDED.adjusted_count;
+			`, matchedProfessor, matchedInstitution, area, count, adjustedCount, year)
+			if err != nil {
+				logger.Warnf("⚠️ Failed to insert into professor_areas for '%s': %v", matchedProfessor, err)
+				atomic.AddInt64(&skipped, 1)
+				return
+			}
+
+			logger.Infof("✅ Synchronized interests for professor '%s' in area '%s'", matchedProfessor, area)
+			atomic.AddInt64(&updated, 1)
+		}(row)
+	}
+
+	wg.Wait()
+
+	logger.Infof("✅ Synchronized professor interests for %d professors (%d skipped)", updated, skipped)
+	return nil
+}
+
+func removeDuplicateEntries() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	// Delete duplicate entries based on name and affiliation, keeping the one with the lowest id
+	// NOTE: This is a hardcoded fix for specific known duplicates
+	result, err := db.Exec(`
+		DELETE FROM professors where name IN ('Ronald J. Brachman', 'Ron Brachman [Tech]')
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to remove duplicate entries: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	logger.Infof("✅ Removed %d duplicate professor entries", rowsAffected)
+	return nil
+}
+
+func removeTagsFromProfessorNames() error {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return err
+	}
+	defer db.Close()
+
+	// Update professor names by removing HTML tags
+	result, err := db.Exec(`
+		UPDATE professors
+		SET name = regexp_replace(name, '\s*\[[^]]*\]', '', 'g')
+		WHERE name ~ '\[[^]]*\]';
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to update professor names: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	logger.Infof("✅ Removed Topic Tags from %d professor names", rowsAffected)
 	return nil
 }
 
@@ -1030,6 +1152,16 @@ func populatePostgres() {
 
 	if initPostgresErr := populatePostgresFromCSVs(); initPostgresErr != nil {
 		logger.Errorf("failed to initialize postgres: %v", initPostgresErr)
+		return
+	}
+
+	if initProgressErr := removeDuplicateEntries(); initProgressErr != nil {
+		logger.Errorf("failed to initialize progress: %v", initProgressErr)
+		return
+	}
+
+	if initProgressErr := removeTagsFromProfessorNames(); initProgressErr != nil {
+		logger.Errorf("failed to remove tags from professor names: %v", initProgressErr)
 		return
 	}
 

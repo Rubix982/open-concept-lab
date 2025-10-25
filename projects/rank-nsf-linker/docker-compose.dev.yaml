@@ -66,12 +66,53 @@ services:
     networks:
       - default
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - pg-exporter
+    networks:
+      - default
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:12.3.0-18733571275-ubuntu
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - default
+
+  # Postgres Exporter
+  pg-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: pg-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres
+    networks:
+      - default
+
   go-server:
     image: host.docker.internal:5128/go-server:latest
     container_name: go-server
     build:
       context: ./server
       dockerfile: Dockerfile
+      tags:
+        - rank-nsf-linker-go-server:latest
     volumes:
       - ./server/.env:/app/.env:ro
       - ./data:/app/data:rw
@@ -107,6 +148,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+      tags:
+        - rank-nsf-linker-web:latest
     volumes:
       - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
