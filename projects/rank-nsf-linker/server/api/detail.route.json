@@ -1,0 +1,110 @@
+{
+    "method": "GET",
+    "detail_endpoint": "/api/universities/{institution_name}",
+    "detail_response": {
+        "institution": "Massachusetts Institute of Technology",
+        "location": {
+            "city": "Cambridge",
+            "state": "MA",
+            "country": "USA",
+            "longitude": -71.0942,
+            "latitude": 42.3601
+        },
+        "homepage": "https://www.mit.edu",
+        "overview": {
+            "total_faculty": 156,
+            "total_nsf_funding": 125.5,
+            "total_awards": 234,
+            "active_awards": 45,
+            "date_range": {
+                "earliest": "2015-01-01",
+                "latest": "2024-12-31"
+            }
+        },
+        "funding_timeline": [
+            {
+                "year": 2024,
+                "total_amount": 25.5,
+                "award_count": 12,
+                "top_area": "AI"
+            },
+            {
+                "year": 2023,
+                "total_amount": 32.1,
+                "award_count": 18,
+                "top_area": "Systems"
+            }
+        ],
+        "research_distribution": [
+            {
+                "area": "AI",
+                "faculty_count": 45,
+                "total_funding": 52.3,
+                "award_count": 89,
+                "percentage": 28.8
+            },
+            {
+                "area": "Systems",
+                "faculty_count": 32,
+                "total_funding": 38.7,
+                "award_count": 67,
+                "percentage": 20.5
+            }
+        ],
+        "faculty": [
+            {
+                "name": "John Doe",
+                "homepage": "https://example.com/~jdoe",
+                "primary_areas": [
+                    "AI",
+                    "ML"
+                ],
+                "interests": [
+                    "deep learning",
+                    "computer vision"
+                ],
+                "metrics": {
+                    "citations": 15420,
+                    "publications": 89,
+                    "hindex": 45
+                },
+                "nsf_awards": {
+                    "total_funding": 3.5,
+                    "award_count": 5,
+                    "active_count": 2
+                }
+            }
+        ],
+        "recent_awards": [
+            {
+                "title": "CAREER: Advancing Neural Architecture Search",
+                "award_id": "2142857",
+                "amount": 550000,
+                "start_date": "2023-09-01",
+                "end_date": "2028-08-31",
+                "program": "Division Of Information & Intelligent Systems",
+                "directorate": "Computer & Information Science & Engineering",
+                "award_type": "CAREER",
+                "principal_investigator": "John Doe",
+                "research_areas": [
+                    "AI",
+                    "ML"
+                ],
+                "abstract": "This project aims to...",
+                "nsf_url": "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2142857"
+            }
+        ],
+        "insights": {
+            "funding_trend": "increasing",
+            "yoy_growth": 15.5,
+            "hot_topics": [
+                "large language models",
+                "quantum computing"
+            ],
+            "emerging_areas": [
+                "AI Safety",
+                "Neuromorphic Computing"
+            ]
+        }
+    }
+}

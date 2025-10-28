@@ -1,0 +1,27 @@
+{
+    "method": "GET",
+    "summary_endpoint": "/api/universities/summary",
+    "summary_response": [
+        {
+            "institution": "Massachusetts Institute of Technology",
+            "longitude": -71.0942,
+            "latitude": 42.3601,
+            "city": "Cambridge",
+            "region": "northamerica",
+            "country": "United States",
+            "stats": {
+                "total_faculty": 156,
+                "top_research_area": "AI",
+                "total_nsf_funding": 125.5,
+                "nsf_award_count": 234,
+                "active_awards": 45
+            },
+            "research_areas": {
+                "AI": 45,
+                "Systems": 32,
+                "Theory": 28,
+                "Interdisciplinary": 51
+            }
+        }
+    ]
+}

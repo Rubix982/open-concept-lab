@@ -46,6 +46,7 @@ func RequestLogger(next http.Handler) http.Handler {
 func GetRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(RequestLogger)
+	r.Get("/universities/summary", getUniversitySummary)
 	r.Get("/universities", getAllUniversitiesWithCoordinates)
 
 	return r

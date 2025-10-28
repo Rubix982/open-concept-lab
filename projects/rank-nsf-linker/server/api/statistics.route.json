@@ -1,0 +1,57 @@
+{
+    "method": "GET",
+    "statistics_endpoint": "/api/statistics?year=2024&area=AI",
+    "statistics_response": {
+        "total_funding": 2500.5,
+        "total_awards": 1234,
+        "total_institutions": 456,
+        "top_institutions": [
+            {
+                "institution": "MIT",
+                "funding": 125.5,
+                "awards": 234
+            }
+        ],
+        "top_programs": [
+            {
+                "program": "Division Of Information & Intelligent Systems",
+                "funding": 450.2,
+                "awards": 567
+            }
+        ],
+        "funding_by_year": [
+            {
+                "year": 2024,
+                "amount": 2500.5
+            },
+            {
+                "year": 2023,
+                "amount": 2300.1
+            }
+        ],
+        "by_research_area": [
+            {
+                "area": "AI",
+                "funding": 800.5,
+                "awards": 456
+            },
+            {
+                "area": "Systems",
+                "funding": 650.3,
+                "awards": 389
+            }
+        ],
+        "by_award_type": [
+            {
+                "type": "CAREER",
+                "funding": 450.2,
+                "awards": 123
+            },
+            {
+                "type": "Standard Grant",
+                "funding": 1800.3,
+                "awards": 890
+            }
+        ]
+    }
+}

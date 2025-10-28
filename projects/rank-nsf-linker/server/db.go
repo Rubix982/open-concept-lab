@@ -917,6 +917,17 @@ func syncProfessorsAffiliationsToUniversities() error {
 
 			if err == sql.ErrNoRows {
 				logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", profName, affiliation)
+				// We should insert the affiliation as a new university
+				_, insertErr := db.Exec(`INSERT INTO universities (institution) VALUES ($1) ON CONFLICT (institution) DO NOTHING;`, normalizedAffiliation)
+				if insertErr != nil {
+					logger.Warnf("⚠️ Failed to insert new university for affiliation '%s': %v", normalizedAffiliation, insertErr)
+					atomic.AddInt64(&skipped, 1)
+					return
+				}
+				matchedInstitution = normalizedAffiliation
+				logger.Infof("➕ Added new university for affiliation '%s'", normalizedAffiliation)
+			} else if err != nil {
+				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}

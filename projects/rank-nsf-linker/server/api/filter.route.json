@@ -1,0 +1,26 @@
+{
+    "method": "GET",
+    "filter_endpoint": "/api/awards?institution={name}&year={2024}&area={AI}&min_amount={100000}&program={CAREER}&pi={faculty_name}&limit=50&offset=0",
+    "filter_response": {
+        "total": 1234,
+        "page": 1,
+        "per_page": 50,
+        "awards": [
+            {
+                "award_id": "2142857",
+                "title": "CAREER: Advancing Neural Architecture Search",
+                "institution": "MIT",
+                "pi": "John Doe",
+                "amount": 550000,
+                "start_date": "2023-09-01",
+                "end_date": "2028-08-31",
+                "program": "Division Of Information & Intelligent Systems",
+                "research_areas": [
+                    "AI",
+                    "ML"
+                ],
+                "award_type": "CAREER"
+            }
+        ]
+    }
+}

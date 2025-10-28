@@ -15,12 +15,29 @@ func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
 	}
 
 	query := `
-	SELECT json_agg(row_to_json(t))
-	FROM (
-		SELECT institution, city, country, latitude, longitude
-		FROM universities
-		WHERE latitude IS NOT NULL AND longitude IS NOT NULL
-	) t;
+	    SELECT institution, longitude, latitude, city, region, country,
+	`
+	var result []byte
+	err = db.QueryRow(query).Scan(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func fetchUniversitySummary() ([]byte, error) {
+	db, err := getPostgresConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	query := `
+	SELECT json_build_object(
+		'total_universities', COUNT(*),
+		'countries', COUNT(DISTINCT country),
+		'with_coordinates', COUNT(*) FILTER (WHERE latitude IS NOT NULL AND longitude IS NOT NULL)
+	)
+	FROM universities;
 	`
 	var result []byte
 	err = db.QueryRow(query).Scan(&result)
@@ -41,4 +58,17 @@ func getAllUniversitiesWithCoordinates(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(universities)
+}
+
+func getUniversitySummary(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	summary, err := fetchUniversitySummary()
+	if err != nil {
+		logger.Errorf("Failed to fetch university summary: %v", err)
+		http.Error(w, "Failed to fetch university summary", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(summary)
 }
