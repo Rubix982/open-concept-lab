@@ -42,12 +42,12 @@ CREATE INDEX professors_name_trgm_idx ON professors USING gin (name gin_trgm_ops
 
 CREATE TABLE IF NOT EXISTS professor_areas (
   name TEXT NOT NULL,
-  dept TEXT NOT NULL,
+  affiliation TEXT NOT NULL,
   area TEXT NOT NULL,
   count REAL,
   adjusted_count REAL,
   year INTEGER,
-  PRIMARY KEY (name, dept, area, year)
+  PRIMARY KEY (name, affiliation, area, year)
 );
 
 CREATE TABLE IF NOT EXISTS directorate_division (

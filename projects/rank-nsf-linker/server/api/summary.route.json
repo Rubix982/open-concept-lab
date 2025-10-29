@@ -9,9 +9,9 @@
             "city": "Cambridge",
             "region": "northamerica",
             "country": "United States",
+            "homepage": "https://www.mit.edu",
             "stats": {
                 "total_faculty": 156,
-                "top_research_area": "AI",
                 "total_nsf_funding": 125.5,
                 "nsf_award_count": 234,
                 "active_awards": 45
@@ -21,7 +21,39 @@
                 "Systems": 32,
                 "Theory": 28,
                 "Interdisciplinary": 51
-            }
+            },
+            "faculty": [
+                {
+                    "name": "Dr. Jane Doe",
+                    "nsf_funding": 2.5,
+                    "awards_count": 3,
+                    "active_awards": 1,
+                    "research_areas": [
+                        "AI",
+                        "Robotics"
+                    ],
+                    "sub_areas": [
+                        "aaai",
+                        "ijcai"
+                    ],
+                    "homepage": "http://janedoe.mit.edu"
+                },
+                {
+                    "name": "Dr. John Smith",
+                    "nsf_funding": 1.0,
+                    "awards_count": 1,
+                    "active_awards": 0,
+                    "research_areas": [
+                        "Systems",
+                        "Networking"
+                    ],
+                    "sub_areas": [
+                        "sigcomm",
+                        "nsdi"
+                    ],
+                    "homepage": "http://johnsmith.mit.edu"
+                }
+            ]
         }
     ]
 }

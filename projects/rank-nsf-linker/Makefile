@@ -147,6 +147,10 @@ status:
 	$(DOCKER_COMPOSE) ps --services --filter "status=running"
 
 # Full rebuild with clean
+# Usage: make rebuild
+#
+# For a no cache build
+# make rebuild NO_CACHE=true
 rebuild:
 	make rm-all
 	make registry

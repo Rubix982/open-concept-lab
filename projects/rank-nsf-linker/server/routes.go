@@ -15,7 +15,8 @@ func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
 	}
 
 	query := `
-	    SELECT institution, longitude, latitude, city, region, country,
+	    SELECT institution, longitude, latitude, city, region, country
+		FROM universities;
 	`
 	var result []byte
 	err = db.QueryRow(query).Scan(&result)
@@ -31,13 +32,12 @@ func fetchUniversitySummary() ([]byte, error) {
 		return nil, err
 	}
 
+	// First, we need to get the following columns for each entry in the universities table: 1): institution 2) longitude 3) latitude 4) city 5) region 6) country
+	// Then, for each row, we need to build a stats object. To build build this object, we need the following fields, 1): total_faculty, 2): top_research_area, 3): total_nsf_funding, 4): nsf_award_count, 5): active_awards
+	// Fetching each of these fields is difficult. For example, to get the int64 value for total_faculty, we need to join two tables, the universities (from institution) table to the professors (to affiliation) table, and then count the number of unique professors for that affiliation.
+	// To get the top_research_area, we then need to use these distinct list of professors, and then join with the table professor_areas, and get the "AI"
 	query := `
-	SELECT json_build_object(
-		'total_universities', COUNT(*),
-		'countries', COUNT(DISTINCT country),
-		'with_coordinates', COUNT(*) FILTER (WHERE latitude IS NOT NULL AND longitude IS NOT NULL)
-	)
-	FROM universities;
+
 	`
 	var result []byte
 	err = db.QueryRow(query).Scan(&result)

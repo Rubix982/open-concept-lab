@@ -495,7 +495,7 @@ const AREA_GROUPS: AreaGroups = {
 type ConferenceDict = Record<string, string>;
 
 // @ts-expect-error --- IGNORE ---
-const CONFERENCE_MAP: ConferenceDict = {
+const SUB_AREA_MAP: ConferenceDict = {
   aaai: "AAAI Conference on Artificial Intelligence",
   ijcai: "International Joint Conference on Artificial Intelligence",
   mlmining: "Data Mining and Knowledge Discovery",

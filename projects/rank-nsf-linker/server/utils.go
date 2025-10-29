@@ -21,5 +21,19 @@ func normalizeInstitutionName(name string) string {
 	re = regexp.MustCompile(`\s+`)
 	name = re.ReplaceAllString(name, " ")
 
-	return strings.TrimSpace(name)
+	// Trim whitespace
+	name = strings.TrimSpace(name)
+
+	// If the name starts with "Univ of ", replace it with "University Of "
+	if strings.HasPrefix(strings.ToLower(name), "univ of ") {
+		name = "University Of " + strings.TrimSpace(name[8:])
+	} else if strings.HasPrefix(strings.ToLower(name), "univ. of ") {
+		name = "University Of " + strings.TrimSpace(name[9:])
+	} else if strings.HasPrefix(strings.ToLower(name), "univ ") {
+		name = "University " + strings.TrimSpace(name[5:])
+	} else if strings.HasPrefix(strings.ToLower(name), "univ. ") {
+		name = "University " + strings.TrimSpace(name[6:])
+	}
+
+	return name
 }

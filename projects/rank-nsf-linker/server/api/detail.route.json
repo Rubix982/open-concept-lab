@@ -3,15 +3,13 @@
     "detail_endpoint": "/api/universities/{institution_name}",
     "detail_response": {
         "institution": "Massachusetts Institute of Technology",
-        "location": {
-            "city": "Cambridge",
-            "state": "MA",
-            "country": "USA",
-            "longitude": -71.0942,
-            "latitude": 42.3601
-        },
+        "longitude": -71.0942,
+        "latitude": 42.3601,
+        "city": "Cambridge",
+        "region": "northamerica",
+        "country": "United States",
         "homepage": "https://www.mit.edu",
-        "overview": {
+        "stats": {
             "total_faculty": 156,
             "total_nsf_funding": 125.5,
             "total_awards": 234,

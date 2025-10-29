@@ -543,10 +543,17 @@ func cleanHeaders(
 	tableName string,
 	headers []string,
 ) []string {
-	if tableName == "professors" {
+	switch tableName {
+	case "professors":
 		for i, h := range headers {
 			if h == "scholarid" {
 				headers[i] = "scholar_id"
+			}
+		}
+	case "professor_areas":
+		for i, h := range headers {
+			if h == "dept" {
+				headers[i] = "affiliation"
 			}
 		}
 	}
@@ -741,6 +748,23 @@ func clearFinalDataStatesInPostgres() error {
 	if err != nil {
 		return fmt.Errorf("failed to update universities table: %w", err)
 	}
+
+	// institutionUpdateQuery := `
+	// UPDATE universities
+	// SET institution = CASE
+	// 	WHEN institution ILIKE 'Univ of %' THEN 'University Of ' || SUBSTRING(institution FROM 9)
+	// 	WHEN institution ILIKE 'Univ. of %' THEN 'University Of ' || SUBSTRING(institution FROM 11)
+	// 	WHEN institution ILIKE 'Univ Of %' THEN 'University Of ' || SUBSTRING(institution FROM 10)
+	// 	WHEN institution ILIKE 'Univ. Of %' THEN 'University Of ' || SUBSTRING(institution FROM 12)
+	// 	WHEN institution ILIKE 'Univ %' THEN 'University ' || SUBSTRING(institution FROM 6)
+	// 	WHEN institution ILIKE 'Univ. %' THEN 'University ' || SUBSTRING(institution FROM 7)
+	// 	ELSE institution
+	// END;`
+
+	// _, err = db.Exec(institutionUpdateQuery)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to update institution names in universities table: %w", err)
+	// }
 
 	logger.Infof("✅ Cleared final data states in Postgres successfully")
 
@@ -1003,19 +1027,19 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 			defer func() { <-sem }()
 
 			name := strings.TrimSpace(row[0])
-			dept := strings.TrimSpace(row[1])
+			affiliation := strings.TrimSpace(row[1])
 			area := strings.TrimSpace(row[2])
 			count := strings.TrimSpace(row[3])
 			adjustedCount := strings.TrimSpace(row[4])
 			year := strings.TrimSpace(row[5])
 
-			if name == "" || dept == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
+			if name == "" || affiliation == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
 				logger.Warnf("⚠️ Skipped invalid row: %v", row)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
 
-			normalizedDept := normalizeInstitutionName(dept)
+			normalizedAffiliation := normalizeInstitutionName(affiliation)
 
 			var matchedInstitution string
 			err = db.QueryRow(`
@@ -1024,15 +1048,15 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 				WHERE institution % $1
 				ORDER BY similarity(institution, $1) DESC
 				LIMIT 1
-			`, normalizedDept).Scan(&matchedInstitution)
+			`, normalizedAffiliation).Scan(&matchedInstitution)
 
 			if err == sql.ErrNoRows {
-				logger.Warnf("⚠️ No match found for professor '%s' with dept '%s'", name, dept)
+				logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", name, affiliation)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
 			if err != nil {
-				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with dept '%s': %v", name, dept, err)
+				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", name, affiliation, err)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
@@ -1068,9 +1092,9 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 			}
 
 			_, err = db.Exec(`
-				INSERT INTO professor_areas (name, dept, area, count, adjusted_count, year)
+				INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
 				VALUES ($1, $2, $3, $4, $5, $6)
-				ON CONFLICT (name, dept, area, year)
+				ON CONFLICT (name, affiliation, area, year)
 				DO UPDATE SET
 					count = EXCLUDED.count,
 					adjusted_count = EXCLUDED.adjusted_count;
