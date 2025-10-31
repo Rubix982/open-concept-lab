@@ -1169,66 +1169,129 @@ func removeTagsFromProfessorNames() error {
 	return nil
 }
 
+func markPipelineAsCompleted(step string, status string) {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return
+	}
+
+	defer db.Close()
+
+	_, err = db.Exec(`
+		INSERT INTO pipeline_status (pipeline_name, last_run, status)
+		VALUES ($1, NOW(), $2)
+		ON CONFLICT (pipeline_name) DO UPDATE SET last_run = NOW(), status = $2;
+	`, step, status)
+	if err != nil {
+		logger.Errorf("❌ Failed to mark pipeline step '%s' as completed: %v", step, err)
+		return
+	}
+
+	logger.Infof("✅ Marked pipeline step '%s' as completed", step)
+}
+
+func isPipelineInProgress(step string) bool {
+	db, err := getPostgresConnection()
+	if err != nil {
+		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		return false
+	}
+
+	defer db.Close()
+
+	var status string
+	err = db.QueryRow(`
+		SELECT status
+		FROM pipeline_status
+		WHERE pipeline_name = $1;
+	`, step).Scan(&status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		}
+		logger.Errorf("❌ Failed to check pipeline step '%s' status: %v", step, err)
+		return false
+	}
+
+	return status == string(PIPELINE_STATUS_IN_PROGRESS) && status != string(PIPELINE_STATUS_COMPLETED)
+}
+
 func populatePostgres() {
+	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
+
 	if downloadCsvErr := downloadCSVs(false); downloadCsvErr != nil {
 		logger.Errorf("failed to download csvs: %v", downloadCsvErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if downloadNsfDataErr := downloadNSFData(false); downloadNsfDataErr != nil {
 		logger.Errorf("failed to download NSF data: %v", downloadNsfDataErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if runMigrationsErr := runMigrations(); runMigrationsErr != nil {
 		logger.Errorf("failed to execute migrations: %v", runMigrationsErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initPostgresErr := populatePostgresFromCSVs(); initPostgresErr != nil {
 		logger.Errorf("failed to initialize postgres: %v", initPostgresErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := removeDuplicateEntries(); initProgressErr != nil {
 		logger.Errorf("failed to initialize progress: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := removeTagsFromProfessorNames(); initProgressErr != nil {
 		logger.Errorf("failed to remove tags from professor names: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := populatePostgresFromNsfJsons(); initProgressErr != nil {
 		logger.Errorf("failed to initialize progress: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := populatePostgresFromScriptCaches(); initProgressErr != nil {
 		logger.Errorf("failed to initialize script caches: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := populateHomepagesAgainstUniversities(); initProgressErr != nil {
 		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := clearFinalDataStatesInPostgres(); initProgressErr != nil {
 		logger.Errorf("failed to clear final data states: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := syncProfessorsAffiliationsToUniversities(); initProgressErr != nil {
 		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	if initProgressErr := syncProfessorInterestsToProfessorsAndUniversities(); initProgressErr != nil {
 		logger.Errorf("failed to sync professor interests to professors and universities: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
 
 	logger.Infof("🎉 Postgres population completed successfully.")
+	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 }

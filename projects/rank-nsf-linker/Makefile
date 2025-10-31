@@ -46,8 +46,10 @@ push-images:
 	@echo "📤 Tagging and pushing images to local registry..."
 	@docker tag rank-nsf-linker-go-server:latest $(REGISTRY)/go-server:latest
 	@docker tag rank-nsf-linker-web:latest $(REGISTRY)/web-ui:latest
+	@docker tag rank-nsf-linker-logging-service:latest $(REGISTRY)/logging-service:latest
 	@docker push $(REGISTRY)/go-server:latest
 	@docker push $(REGISTRY)/web-ui:latest
+	@docker push $(REGISTRY)/logging-service:latest
 	@echo "✅ Images pushed to $(REGISTRY)"
 
 # Registry Setup
@@ -86,8 +88,8 @@ docker-build:
 # Spin up services in background
 up: registry up-infra
 	@if ! docker ps --format '{{.Names}}' | grep -q "$(SERVICE)"; then \
-		echo "🚀 Launching main services (web + go-server)..."; \
-		$(DOCKER_COMPOSE) up -d go-server web; \
+		echo "🚀 Launching main services (web, go-server, logging-service)..."; \
+		$(DOCKER_COMPOSE) up -d go-server web logging-service; \
 	else \
 		echo "✅ Main services already running."; \
 	fi
@@ -105,6 +107,7 @@ logs:
 # 	make logs-go-server   # logs for go-server
 # 	make logs-postgres    # logs for postgres
 # 	make logs-web         # logs for web
+# 	make logs-logging-service # logs for logging-service
 logs-%:
 	$(DOCKER_COMPOSE) logs -f $*
 

@@ -12,6 +12,7 @@
     "axios": "^1.12.2",
     "lodash": "^4.17.21",
     "maplibre-gl": "^5.9.0",
+    "p-limit": "^7.2.0",
     "vue": "^3.5.17"
   },
   "devDependencies": {

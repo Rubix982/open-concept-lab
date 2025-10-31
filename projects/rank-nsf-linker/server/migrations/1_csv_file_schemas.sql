@@ -139,3 +139,9 @@ CREATE TABLE IF NOT EXISTS award_pi_rel (
   pi_end_date TEXT,
   CONSTRAINT award_pi_rel_unique_award_id_investigator_id UNIQUE (award_id, investigator_id)
 );
+
+CREATE TABLE IF NOT EXISTS pipeline_status (
+  pipeline_name TEXT PRIMARY KEY,
+  last_run TIMESTAMP NOT NULL,
+  status TEXT NOT NULL
+);
