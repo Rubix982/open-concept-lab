@@ -4,6 +4,7 @@ Receives, processes, and stores client-side logs with rich metadata
 Uses Elasticsearch for powerful search and analytics
 """
 
+<<<<<<< HEAD
 import os
 import json
 import time
@@ -22,6 +23,23 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 from logging.handlers import RotatingFileHandler
+=======
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import logging
+from logging.handlers import RotatingFileHandler
+import json
+import traceback
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, Any, Optional, List
+import hashlib
+from dataclasses import dataclass, asdict
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError
+import os
+import dotenv
+>>>>>>> e0f9502bd6c6ed3c2b8326c91957684ea8c5da44
 
 dotenv.load_dotenv()
 
@@ -893,6 +911,7 @@ def internal_error(e: Exception):
 
 if __name__ == "__main__":
     print("🚀 Starting Self-Hosted Logging Service")
+<<<<<<< HEAD
 print("""
 '                                                                                                                             
 '    ,------.                    ,--.         ,--.  ,--.  ,---.   ,------.     ,--.    ,--.          ,--.                     
@@ -902,6 +921,8 @@ print("""
 '    `--' '--'  `--`--' `--''--' `--'`--'     `--'  `--' `-----'  `--'         `-----' `--' `--''--' `--'`--'  `----' `--'    
 '                                                                                                                             
     """)
+=======
+>>>>>>> e0f9502bd6c6ed3c2b8326c91957684ea8c5da44
     print(f"📁 Logs directory: {Config.LOG_DIR.absolute()}")
 
     # Initialize Elasticsearch
