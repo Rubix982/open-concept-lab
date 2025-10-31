@@ -1,5 +1,11 @@
 <template>
-  <div class="app">
+  <div v-if="!backendIsReady" class="processing-overlay">
+    <div class="processing-message">
+      <span>Server is processing…</span>
+    </div>
+  </div>
+
+  <div v-if="backendIsReady" class="app">
     <div ref="mapContainer" id="map" class="map-container" />
 
     <!-- Enhanced Controls Panel -->
@@ -362,6 +368,259 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
 import lodash from "lodash";
+import pLimit from "p-limit";
+
+const COUNTRIES_LIST = [
+  "Afghanistan",
+  "Åland Islands",
+  "Albania",
+  "Algeria",
+  "American Samoa",
+  "Andorra",
+  "Angola",
+  "Anguilla",
+  "Antarctica",
+  "Antigua and Barbuda",
+  "Argentina",
+  "Armenia",
+  "Aruba",
+  "Australia",
+  "Austria",
+  "Azerbaijan",
+  "Bahamas",
+  "Bahrain",
+  "Bangladesh",
+  "Barbados",
+  "Belarus",
+  "Belgium",
+  "Belize",
+  "Benin",
+  "Bermuda",
+  "Bhutan",
+  "Bolivia",
+  "Bonaire, Sint Eustatius and Saba",
+  "Bosnia And Herzegovina",
+  "Botswana",
+  "Bouvet Island",
+  "Brazil",
+  "British Indian Ocean Territory",
+  "Brunei Darussalam",
+  "Bulgaria",
+  "Burkina Faso",
+  "Burundi",
+  "Cabo Verde",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Cayman Islands",
+  "Central African Republic",
+  "Chad",
+  "Chile",
+  "China",
+  "Christmas Island",
+  "Cocos (Keeling) Islands",
+  "Colombia",
+  "Comoros",
+  "Congo",
+  "Congo (Democratic Republic Of The)",
+  "Cook Islands",
+  "Costa Rica",
+  "Côte D'Ivoire",
+  "Croatia",
+  "Cuba",
+  "Curaçao",
+  "Cyprus",
+  "Czech Republic",
+  "Denmark",
+  "Djibouti",
+  "Dominica",
+  "Dominican Republic",
+  "Ecuador",
+  "Egypt",
+  "El Salvador",
+  "Equatorial Guinea",
+  "Eritrea",
+  "Estonia",
+  "Eswatini",
+  "Ethiopia",
+  "Falkland Islands (Malvinas)",
+  "Faroe Islands",
+  "Fiji",
+  "Finland",
+  "France",
+  "French Guiana",
+  "French Polynesia",
+  "French Southern Territories",
+  "Gabon",
+  "Gambia",
+  "Georgia",
+  "Germany",
+  "Ghana",
+  "Gibraltar",
+  "Greece",
+  "Greenland",
+  "Grenada",
+  "Guadeloupe",
+  "Guam",
+  "Guatemala",
+  "Guernsey",
+  "Guinea",
+  "Guinea Bissau",
+  "Guyana",
+  "Haiti",
+  "Heard Island and McDonald Islands",
+  "Holy See",
+  "Honduras",
+  "Hong Kong",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Indonesia",
+  "Iran",
+  "Iraq",
+  "Ireland",
+  "Isle of Man",
+  "Israel",
+  "Italy",
+  "Jamaica",
+  "Japan",
+  "Jersey",
+  "Jordan",
+  "Kazakhstan",
+  "Kenya",
+  "Kiribati",
+  "South Korea",
+  "South Korea",
+  "Kuwait",
+  "Kyrgyzstan",
+  "Laos",
+  "Latvia",
+  "Lebanon",
+  "Lesotho",
+  "Liberia",
+  "Libya",
+  "Liechtenstein",
+  "Lithuania",
+  "Luxembourg",
+  "Macao",
+  "Madagascar",
+  "Malawi",
+  "Malaysia",
+  "Maldives",
+  "Mali",
+  "Malta",
+  "Marshall Islands",
+  "Martinique",
+  "Mauritania",
+  "Mauritius",
+  "Mayotte",
+  "Mexico",
+  "Micronesia (Federated States of)",
+  "Moldova",
+  "Monaco",
+  "Mongolia",
+  "Montenegro",
+  "Montserrat",
+  "Morocco",
+  "Mozambique",
+  "Myanmar",
+  "Namibia",
+  "Nauru",
+  "Nepal",
+  "Netherlands",
+  "New Caledonia",
+  "New Zealand",
+  "Nicaragua",
+  "Niger",
+  "Nigeria",
+  "Niue",
+  "Norfolk Island",
+  "Macedonia",
+  "Northern Mariana Islands",
+  "Norway",
+  "Oman",
+  "Pakistan",
+  "Palau",
+  "Palestine",
+  "Panama",
+  "Papua New Guinea",
+  "Paraguay",
+  "Peru",
+  "Philippines",
+  "Pitcairn",
+  "Poland",
+  "Portugal",
+  "Puerto Rico",
+  "Qatar",
+  "Réunion",
+  "Romania",
+  "Russia",
+  "Rwanda",
+  "Saint Barthélemy",
+  "Saint Helena, Ascension and Tristan da Cunha",
+  "Saint Kitts and Nevis",
+  "Saint Lucia",
+  "Saint Martin (French part)",
+  "Saint Pierre and Miquelon",
+  "Saint Vincent and the Grenadines",
+  "Samoa",
+  "San Marino",
+  "Sao Tome and Principe",
+  "Saudi Arabia",
+  "Senegal",
+  "Serbia",
+  "Seychelles",
+  "Sierra Leone",
+  "Singapore",
+  "Sint Maarten (Dutch part)",
+  "Slovakia",
+  "Slovenia",
+  "Solomon Islands",
+  "Somalia",
+  "South Africa",
+  "South Georgia and the South Sandwich Islands",
+  "South Sudan",
+  "Spain",
+  "Sri Lanka",
+  "Sudan",
+  "Suriname",
+  "Svalbard and Jan Mayen",
+  "Sweden",
+  "Switzerland",
+  "Syria",
+  "Taiwan",
+  "Tajikistan",
+  "Tanzania",
+  "Thailand",
+  "Timor-Leste",
+  "Togo",
+  "Tokelau",
+  "Tonga",
+  "Trinidad and Tobago",
+  "Tunisia",
+  "Turkey",
+  "Turkmenistann",
+  "Turks and Caicos Islands",
+  "Tuvalu",
+  "Uganda",
+  "Ukraine",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "United States Minor Outlying Islands",
+  "Uruguay",
+  "Uzbekistan",
+  "Vanuatu",
+  "Venezuela",
+  "Vietnam",
+  "Virgin Islands (British)",
+  "Virgin Islands (U.S.)",
+  "Wallis and Futuna",
+  "Western Sahara",
+  "Yemen",
+  "Zambia",
+  "Zimbabwe",
+];
 
 type AreaSubgroup = {
   name: string;
@@ -666,6 +925,7 @@ const selectedUniversity = ref<null | UniDetail>(null);
 const selectedId = ref<string | null>(null);
 
 const detailLoading = ref(false);
+const backendIsReady = ref(false);
 const search = ref("");
 const popupRef = ref<maplibregl.Popup | null>(null);
 
@@ -917,41 +1177,61 @@ function updateMapData() {
   }
 }
 
-// -------------------- Core logic --------------------
-onMounted(async () => {
-  if (!mapContainer.value) return;
+async function fetchCountrySummaries(country: string): Promise<UniSummary[]> {
+  const all: UniSummary[] = [];
+  let page = 1;
+  const pageSize = 50;
+  let hasMore = true;
 
-  map = new maplibregl.Map({
-    container: mapContainer.value,
-    style: {
-      version: 8,
-      sources: {
-        osm: {
-          type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-          tileSize: 256,
-        },
-      },
-      layers: [{ id: "osm", type: "raster", source: "osm" }],
-    },
-    center: [0, 20],
-    zoom: 2,
-  });
+  while (hasMore) {
+    const { data } = await axios.post<{
+      results: UniSummary[];
+      total: number;
+      page: number;
+      pageSize: number;
+    }>("/api/universities/summary", {
+      country,
+      page,
+      limit: pageSize,
+    });
 
-  map.doubleClickZoom.disable();
-  map.addControl(
-    new maplibregl.NavigationControl({ showCompass: true }),
-    "top-left"
+    all.push(...data.results);
+
+    const totalPages = Math.ceil(data.total / pageSize);
+    hasMore = page < totalPages;
+    page++;
+  }
+
+  return all;
+}
+
+async function fetchAllSummaries(onCountryDone: (data: UniSummary[]) => void) {
+  const limit = pLimit(5); // concurrency limit to avoid server overload
+  const promises = COUNTRIES_LIST.map((country) =>
+    limit(async () => {
+      try {
+        const data = await fetchCountrySummaries(country);
+        onCountryDone(data);
+        return data;
+      } catch (err: any) {
+        errorHandler(err, `Failed to fetch summaries for ${country}`);
+        return [];
+      }
+    })
   );
-  map.addControl(new maplibregl.FullscreenControl(), "top-left");
 
-  try {
-    const { data: summaries } = await axios.get<UniSummary[]>(
-      "/api/universities/summary"
-    );
+  // Wait for all to complete
+  const results = await Promise.all(promises);
+  return results.flat();
+}
 
-    allUniversities.value = summaries;
-    const fc = buildFeatureCollection(summaries);
+async function setupMapWithSummaries(all: UniSummary[]) {
+  const summaries = await fetchAllSummaries((data) => {
+    if (!map) return;
+
+    all.push(...data);
+
+    const fc = buildFeatureCollection(all);
 
     map.addSource("unis", {
       type: "geojson",
@@ -1051,13 +1331,13 @@ onMounted(async () => {
 
       popupRef.value?.remove();
       const html = `
-        <div class="map-popup">
-          <strong>${summary.institution}</strong><br/>
-          <small>Faculty: ${props.faculty_count ?? 0}</small><br/>
-          <small>Funding: $${(props.funding || 0).toFixed(1)}M</small><br/>
-          <small>NSF Awards: ${props.nsf_awards || 0}</small><br/>
-          <small style="color: #666;">Double-click for details</small>
-        </div>`;
+          <div class="map-popup">
+            <strong>${summary.institution}</strong><br/>
+            <small>Faculty: ${props.faculty_count ?? 0}</small><br/>
+            <small>Funding: $${(props.funding || 0).toFixed(1)}M</small><br/>
+            <small>NSF Awards: ${props.nsf_awards || 0}</small><br/>
+            <small style="color: #666;">Double-click for details</small>
+          </div>`;
 
       if (map) {
         popupRef.value = new maplibregl.Popup({
@@ -1123,8 +1403,8 @@ onMounted(async () => {
         selectedId.value = id;
         activeFacultyAreas.value = new Set();
         updateSelectedFilter(id);
-      } catch (err) {
-        console.error("Failed to load details for", id, err);
+      } catch (err: any) {
+        errorHandler(err, `Failed to fetch details for university ${id}`);
         selectedUniversity.value = null;
       } finally {
         detailLoading.value = false;
@@ -1139,10 +1419,86 @@ onMounted(async () => {
       );
       map!.on("mouseleave", layer, () => (map!.getCanvas().style.cursor = ""));
     });
-  } catch (err) {
-    console.error("Failed to load university summaries:", err);
+  });
+
+  allUniversities.value = summaries;
+  backendIsReady.value = true;
+}
+
+// -------------------- Core logic --------------------
+onMounted(async () => {
+  if (!mapContainer.value) return;
+
+  map = new maplibregl.Map({
+    container: mapContainer.value,
+    style: {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+        },
+      },
+      layers: [{ id: "osm", type: "raster", source: "osm" }],
+    },
+    center: [0, 20],
+    zoom: 2,
+  });
+
+  map.doubleClickZoom.disable();
+  map.addControl(
+    new maplibregl.NavigationControl({ showCompass: true }),
+    "top-left"
+  );
+  map.addControl(new maplibregl.FullscreenControl(), "top-left");
+
+  const all: UniSummary[] = [];
+
+  while (backendIsReady.value === false) {
+    try {
+      await axios.get("/api/health");
+      backendIsReady.value = true;
+    } catch (err) {
+      console.warn("Backend not ready, retrying in 3 seconds...");
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+  }
+
+  try {
+    await setupMapWithSummaries(all);
+  } catch (err: Error | any) {
+    if (axios.isAxiosError(err) && err.response) {
+      if (err.response.status === 503) {
+        backendIsReady.value = false;
+        errorHandler(
+          new Error("Backend service is unavailable (503)"),
+          "Error fetching university summaries"
+        );
+      }
+    } else {
+      errorHandler(err, "Error fetching university summaries");
+    }
   }
 });
+
+function errorHandler(err: Error, prefix = "") {
+  const message = prefix ? `${prefix}: ${err.message}` : err.message;
+  // Make a request to the logging-service
+  axios
+    .post("/logs/log", {
+      level: "error",
+      message: message,
+      stack: err.stack,
+      timestamp: new Date().toISOString(),
+    })
+    .catch((loggingError) => {
+      console.error(
+        "Failed to log error to the logging service:",
+        loggingError
+      );
+    });
+}
 
 function updatePointsLayer() {
   if (!map || !map.getLayer("points")) return;
@@ -1886,6 +2242,28 @@ hr {
   color: #64748b;
   display: block;
   margin-top: 2px;
+}
+
+.processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.processing-message {
+  font-size: 2rem;
+  color: #333;
+  font-weight: bold;
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 /* Responsive adjustments */

@@ -142,6 +142,30 @@ services:
     networks:
       - default
 
+  logging-service:
+    image: host.docker.internal:5128/logging-service:latest
+    container_name: logging-service
+    build:
+      context: ./logging-service
+      dockerfile: Dockerfile
+      tags:
+        - rank-nsf-linker-logging-service:latest
+    volumes:
+      - ./logging-service/.env:/app/.env:ro
+    ports:
+      - "5257:5257"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5257/health"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - elasticsearch
+    networks:
+      - default
+
   web:
     image: host.docker.internal:5128/web-ui:latest
     container_name: web-ui
