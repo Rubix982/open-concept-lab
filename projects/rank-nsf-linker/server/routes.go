@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
 	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
@@ -9,9 +12,9 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	query := `
@@ -27,9 +30,9 @@ func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
 }
 
 func fetchUniversitySummary() ([]byte, error) {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	// First, we need to get the following columns for each entry in the universities table: 1): institution 2) longitude 3) latitude 4) city 5) region 6) country

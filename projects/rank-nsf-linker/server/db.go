@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/csv"
 	"encoding/json"
@@ -22,10 +23,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-const (
-	POSTGRES_DRIVER = "postgres"
-)
-
 var primaryKeyAgainstTable = map[string]string{
 	"countries":             "name",
 	"universities":          "institution",
@@ -41,29 +38,106 @@ var backwardsCompatibleSchemaMap = []string{
 	"geolocation.csv",
 }
 
-func getPostgresConnection() (*sql.DB, error) {
-	dbUrl := "postgres://postgres:postgres@localhost:5432/mydb?sslmode=disable"
-	if appDbUrl := os.Getenv("DB_URL"); len(appDbUrl) > 0 {
-		dbUrl = appDbUrl
-	}
-	db, err := sql.Open(POSTGRES_DRIVER, dbUrl)
-	if err != nil {
-		logger.Errorf("❌ Failed to connect to DB: %v", err)
-		return nil, err
+var (
+	globalDB *sql.DB
+	initOnce sync.Once
+	initErr  error
+)
+
+// InitPostgres ensures the DB is initialized only once, safely under concurrency.
+func InitPostgres() (*sql.DB, error) {
+	initOnce.Do(func() {
+		postgresUser := os.Getenv("POSTGRES_USER")
+		if len(postgresUser) == 0 {
+			postgresUser = "postgres"
+		}
+		postgresPassword := os.Getenv("POSTGRES_PASSWORD")
+		if len(postgresPassword) == 0 {
+			postgresPassword = "postgres"
+		}
+		postgresDBName := os.Getenv("POSTGRES_DB_NAME")
+		if len(postgresDBName) == 0 {
+			postgresDBName = "mydb"
+		}
+		postgresHost := os.Getenv("POSTGRES_HOST")
+		if len(postgresHost) == 0 {
+			postgresHost = "postgres"
+		}
+		postgresPort := os.Getenv("POSTGRES_PORT")
+		if len(postgresPort) == 0 {
+			postgresPort = "5432"
+		}
+
+		dbURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			postgresUser, postgresPassword, postgresHost, postgresPort, postgresDBName)
+
+		db, err := sql.Open("postgres", dbURL)
+		if err != nil {
+			initErr = fmt.Errorf("failed to open DB: %w", err)
+			return
+		}
+
+		// Configure the pool
+		db.SetMaxOpenConns(30)                  // max total connections
+		db.SetMaxIdleConns(15)                  // max idle
+		db.SetConnMaxLifetime(30 * time.Minute) // recycle connections
+		db.SetConnMaxIdleTime(10 * time.Minute) // optional, for cleanup
+
+		// Verify connection
+		if err := db.Ping(); err != nil {
+			initErr = fmt.Errorf("failed to ping DB: %w", err)
+			return
+		}
+
+		globalDB = db
+	})
+
+	return globalDB, initErr
+}
+
+// Close gracefully closes the global database connection pool.
+func CloseDB() {
+	if globalDB == nil {
+		return // nothing to close
 	}
 
-	return db, nil
+	// Optionally: give it a small timeout to allow in-flight queries to finish
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Use PingContext to make sure DB is responsive before shutdown
+	if err := globalDB.PingContext(ctx); err != nil {
+		logger.Infof("⚠️ Database not reachable during shutdown: %v", err)
+	}
+
+	if err := globalDB.Close(); err != nil {
+		logger.Errorf("❌ Failed to close database cleanly: %v", err)
+	} else {
+		logger.Infof("✅ Database connection pool closed cleanly.")
+	}
+
+	globalDB = nil
+}
+
+// GetDB safely returns the global connection pool.
+func GetDB() (*sql.DB, error) {
+	if globalDB == nil {
+		if _, err := InitPostgres(); err != nil {
+			return nil, err
+		}
+	}
+	if globalDB == nil {
+		return nil, fmt.Errorf("database not initialized")
+	}
+	return globalDB, nil
 }
 
 // RunMigrations executes all .sql files in order
 func runMigrations() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-
-	defer db.Close()
 
 	files, err := os.ReadDir(getMigrationsFilePath())
 	if err != nil {
@@ -114,13 +188,10 @@ func getAlternateTableName(tableName string) string {
 }
 
 func populatePostgresFromCSVs() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-
-	defer db.Close()
 
 	// Process each CSV from schemaMap
 	for _, csvName := range backwardsCompatibleSchemaMap {
@@ -307,13 +378,10 @@ func readCSVAsMap(
 }
 
 func populatePostgresFromNsfJsons() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-
-	defer db.Close()
 
 	internalContainerPath := path.Join(getRootDirPath(DATA_DIR), NSF_DATA_DIR)
 	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
@@ -600,12 +668,10 @@ func getRegionAndCountry(country string) (string, string) {
 }
 
 func populatePostgresFromScriptCaches() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	internalContainerPath := path.Join(getRootDirPath(SCRIPTS_DIR), GEOCODING_DIR)
 	logger.Infof("🚀 Starting script cache population from: %s", internalContainerPath)
@@ -716,13 +782,10 @@ func buildUpsertQuery(columns []string) string {
 func clearFinalDataStatesInPostgres() error {
 	// Select all rows from the table 'universities' where 'region' or 'countryabbrv' is null
 	// Check the 'country' column value, and update the two values appropriately
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-
-	defer db.Close()
 
 	regionCountryAbbrvQueryUpdate := `
 	UPDATE universities
@@ -756,11 +819,10 @@ func clearFinalDataStatesInPostgres() error {
 }
 
 func populateHomepagesAgainstUniversities() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		return fmt.Errorf("❌ Failed to connect to DB: %v", err)
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	// Step 1. Load universities from DB into memory
 	rows, err := db.Query(`SELECT institution FROM universities`)
@@ -858,12 +920,10 @@ func populateHomepagesAgainstUniversities() error {
 }
 
 func syncProfessorsAffiliationsToUniversities() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	// We need to iterate over all the professors
 	rows, err := db.Query(`SELECT name, affiliation FROM professors`)
@@ -966,12 +1026,10 @@ func syncProfessorsAffiliationsToUniversities() error {
 }
 
 func syncProfessorInterestsToProfessorsAndUniversities() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	db.SetMaxOpenConns(100)
 	db.SetMaxIdleConns(50)
@@ -1154,12 +1212,10 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 }
 
 func removeDuplicateEntries() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	// Delete duplicate entries based on name and affiliation, keeping the one with the lowest id
 	// NOTE: This is a hardcoded fix for specific known duplicates
@@ -1180,12 +1236,10 @@ func removeDuplicateEntries() error {
 }
 
 func removeTagsFromProfessorNames() error {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return err
+		return fmt.Errorf("cannot get DB: %w", err)
 	}
-	defer db.Close()
 
 	// Update professor names by removing HTML tags
 	result, err := db.Exec(`
@@ -1207,12 +1261,11 @@ func removeTagsFromProfessorNames() error {
 }
 
 func markPipelineAsCompleted(step string, status string) {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
+		logger.Errorf("❌ Failed to get DB: %v", err)
 		return
 	}
-	defer db.Close()
 
 	// Check if table exists
 	var exists bool
@@ -1249,13 +1302,10 @@ func markPipelineAsCompleted(step string, status string) {
 }
 
 func GetPipelineStatus(step string) string {
-	db, err := getPostgresConnection()
+	db, err := GetDB()
 	if err != nil {
-		logger.Fatalf("❌ Failed to connect to DB: %v", err)
 		return ""
 	}
-
-	defer db.Close()
 
 	var status string
 	err = db.QueryRow(`

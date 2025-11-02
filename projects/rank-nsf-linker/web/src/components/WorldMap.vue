@@ -1063,7 +1063,7 @@ const uniqueFacultyAreas = computed(() => {
 });
 
 // -------------------- Utilities --------------------
-function shortLabel(name: string) {
+function shortLabel(name: string): string {
   if (!name) return "";
   const parts = name.split(/\s+/).slice(0, 3);
   return parts
@@ -1504,10 +1504,7 @@ onMounted(async () => {
         let serverStatus = err.response.headers["server-status"] || "";
         const parts = serverStatus.split("/");
         const currentStatus = parts[1] || serverStatus;
-        const retryAfter = parseInt(
-          err.response.headers["retry-after"] || "3",
-          10
-        );
+        const retryAfter = parseInt(err.response.headers["Retry-After"], 10);
 
         pipelineStatusMessage.value = currentStatus;
 

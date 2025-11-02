@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -39,8 +42,24 @@ func main() {
 	waitForServices()
 	printBanner()
 	startMetricsServer()
-	logger.Info("Server running on 8080")
-	go http.ListenAndServe(":8080", GetRouter())
+
+	// Setup your HTTP server
+	srv := &http.Server{Addr: ":8080", Handler: GetRouter()}
+
+	// Channel to listen for OS-level signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop,
+		os.Interrupt,    // CTRL+C
+		syscall.SIGTERM, // docker stop, kubectl stop
+		syscall.SIGQUIT, // kill -3, etc.
+	)
+
+	go func() {
+		logger.Infof("🚀 Server is running on :8080")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Fatalf("❌ Server error: %v", err)
+		}
+	}()
 
 	// We cannot couple the migrations with the populate function because state change for the pipelines
 	// are irrespective of whether we are populating the DB or not.
@@ -58,9 +77,22 @@ func main() {
 		populatePostgres()
 	}
 
-	// If the server shuts down, it is restarted and so we see "main" running again from the logs. We need to
-	for {
-		// Sleep to avoid spinning and consuming 100% CPU
-		time.Sleep(1 * time.Second)
+	// Block and wait for shutdown signal
+	sig := <-stop
+	logger.Warnf("⚠️  Received signal: %s — starting graceful shutdown...", sig)
+
+	// Graceful shutdown: stop accepting new connections
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Shutdown HTTP server
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Errorf("❌ Server shutdown error: %v", err)
+	} else {
+		logger.Info("✅ HTTP server stopped gracefully.")
 	}
+
+	CloseDB()
+
+	logger.Info("👋 Shutdown complete. Exiting now.")
 }
