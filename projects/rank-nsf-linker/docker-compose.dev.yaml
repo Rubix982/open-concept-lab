@@ -144,6 +144,12 @@ services:
       - "8080:8080"
     restart: unless-stopped
     command: ["./server/go-server"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://go-server:8080/health"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     networks:
       - default
 

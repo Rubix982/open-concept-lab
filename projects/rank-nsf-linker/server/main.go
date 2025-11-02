@@ -53,7 +53,6 @@ func main() {
 
 	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
 		populatePostgres()
-		return
 	}
 
 	// If the server shuts down, it is restarted and so we see "main" running again from the logs. We need to
