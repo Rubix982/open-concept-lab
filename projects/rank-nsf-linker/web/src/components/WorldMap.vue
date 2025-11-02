@@ -1,6 +1,12 @@
 <template>
+  <div v-if="pipelineStatusMessage === ''" class="processing-overlay">
+    <div class="processing-message">
+      <span>Rendering map ...</span>
+    </div>
+  </div>
+
   <div
-    v-if="pipelineStatusMessage !== 'in-progress'"
+    v-if="pipelineStatusMessage === 'in-progress'"
     class="processing-overlay"
   >
     <div class="processing-message">
@@ -8,7 +14,7 @@
     </div>
   </div>
 
-  <div v-if="pipelineStatusMessage !== 'failed'" class="processing-overlay">
+  <div v-if="pipelineStatusMessage === 'failed'" class="processing-overlay">
     <div class="processing-message">
       <span
         >Server has run into an issue. Please reach out at
@@ -381,7 +387,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
 import lodash from "lodash";
 import pLimit from "p-limit";
-import { server } from "typescript";
 
 const COUNTRIES_LIST = [
   "Afghanistan",
@@ -1440,8 +1445,17 @@ async function setupMapWithSummaries(all: UniSummary[]) {
 
 // -------------------- Core logic --------------------
 onMounted(async () => {
-  if (!mapContainer.value) return;
+  console.log("🗺️ Mounting component and initializing map...");
 
+  if (!mapContainer.value) {
+    // Initialise mapContainer if not present
+    mapContainer.value = document.createElement("div");
+    mapContainer.value.style.width = "100%";
+    mapContainer.value.style.height = "100%";
+    document.body.appendChild(mapContainer.value);
+  }
+
+  console.log("🌍 Creating MapLibre instance...");
   map = new maplibregl.Map({
     container: mapContainer.value,
     style: {
@@ -1466,45 +1480,76 @@ onMounted(async () => {
   );
   map.addControl(new maplibregl.FullscreenControl(), "top-left");
 
-  const all: UniSummary[] = [];
+  console.log(
+    "✅ Map initialized successfully. Waiting for backend to be ready..."
+  );
 
-  while (pipelineStatusMessage.value === "in-progress") {
+  const all: UniSummary[] = [];
+  let attempt = 0;
+
+  while (
+    pipelineStatusMessage.value === "in-progress" ||
+    !pipelineStatusMessage.value ||
+    pipelineStatusMessage.value === ""
+  ) {
+    attempt++;
+    console.log(`🔁 [Attempt ${attempt}] Checking backend health...`);
+
     try {
       await axios.get("/api/health");
       pipelineStatusMessage.value = "completed";
+      console.log("✅ Backend is ready! Proceeding with data setup.");
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         let serverStatus = err.response.headers["server-status"] || "";
-        serverStatus = serverStatus.split("/")[1];
+        const parts = serverStatus.split("/");
+        const currentStatus = parts[1] || serverStatus;
         const retryAfter = parseInt(
           err.response.headers["retry-after"] || "3",
           10
         );
 
-        pipelineStatusMessage.value = serverStatus;
-        if (serverStatus === "in-progress") {
+        pipelineStatusMessage.value = currentStatus;
+
+        if (currentStatus === "in-progress") {
+          console.warn(
+            `⏳ Backend pipeline still in progress (retry after ${retryAfter}s)...`
+          );
           await new Promise((resolve) =>
             setTimeout(resolve, retryAfter * 1000)
           );
-        } else if (serverStatus === "failed") {
+        } else if (currentStatus === "failed") {
+          console.error(
+            "❌ Backend pipeline reported a permanent failure. Stopping retries."
+          );
           errorHandler(
             new Error("Backend pipeline failed"),
             "Error fetching university summaries"
           );
           break;
+        } else {
+          console.warn(
+            `⚠️ Received unknown backend status: "${currentStatus}". Retrying in ${retryAfter}s.`
+          );
+          await new Promise((resolve) =>
+            setTimeout(resolve, retryAfter * 1000)
+          );
         }
       } else {
-        console.error("Unexpected error:", err);
+        console.error("❗ Unexpected error while checking backend:", err);
         await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     }
   }
 
+  console.log("🚀 Starting map data setup...");
   try {
     await setupMapWithSummaries(all);
+    console.log("🎉 Map data successfully loaded and rendered.");
   } catch (err: Error | any) {
     if (axios.isAxiosError(err) && err.response) {
       const httpStatus = err.response.status;
+      console.error(`❌ Axios error during setup: HTTP ${httpStatus}`);
       if (httpStatus === 500) {
         pipelineStatusMessage.value = "failed";
         errorHandler(
@@ -1513,11 +1558,15 @@ onMounted(async () => {
         );
       } else if (httpStatus === 503) {
         pipelineStatusMessage.value = "in-progress";
+        console.warn("⚠️ Backend still in progress (503).");
       }
     } else {
+      console.error("❗ Unexpected error during map setup:", err);
       errorHandler(err, "Error fetching university summaries");
     }
   }
+
+  console.log("🏁 onMounted completed execution.");
 });
 
 function errorHandler(err: Error, prefix = "") {

@@ -169,3 +169,22 @@ rm-all:
 
 rm-all-hard:
 	$(DOCKER_COMPOSE) down --rmi all -v --remove-orphans
+
+# Usage: make build-one SERVICE=go-server
+build-one:
+	@echo "🔨 Building image for service: $(SERVICE)"
+	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,) $(SERVICE)
+	@echo "✅ Image for $(SERVICE) built successfully."
+
+# Usage: make up-one SERVICE=go-server
+up-one:
+	@echo "🚀 Starting container for service: $(SERVICE)"
+	$(DOCKER_COMPOSE) up -d $(SERVICE)
+	@echo "✅ Service $(SERVICE) is up."
+
+# Usage: make rebuild-one SERVICE=go-server
+rebuild-one:
+	@echo "♻️ Rebuilding and restarting $(SERVICE)..."
+	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,) $(SERVICE)
+	$(DOCKER_COMPOSE) up -d $(SERVICE)
+	@echo "✅ $(SERVICE) rebuilt and restarted successfully."
