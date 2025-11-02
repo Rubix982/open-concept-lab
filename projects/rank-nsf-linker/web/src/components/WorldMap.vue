@@ -1,11 +1,23 @@
 <template>
-  <div v-if="!backendIsReady" class="processing-overlay">
+  <div
+    v-if="pipelineStatusMessage !== 'in-progress'"
+    class="processing-overlay"
+  >
     <div class="processing-message">
-      <span>Server is processing…</span>
+      <span>The server is currently being updated. Please wait ...</span>
     </div>
   </div>
 
-  <div v-if="backendIsReady" class="app">
+  <div v-if="pipelineStatusMessage !== 'failed'" class="processing-overlay">
+    <div class="processing-message">
+      <span
+        >Server has run into an issue. Please reach out at
+        saifulislam84210@gmail.com</span
+      >
+    </div>
+  </div>
+
+  <div v-if="pipelineStatusMessage === 'completed'" class="app">
     <div ref="mapContainer" id="map" class="map-container" />
 
     <!-- Enhanced Controls Panel -->
@@ -369,6 +381,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
 import lodash from "lodash";
 import pLimit from "p-limit";
+import { server } from "typescript";
 
 const COUNTRIES_LIST = [
   "Afghanistan",
@@ -925,7 +938,7 @@ const selectedUniversity = ref<null | UniDetail>(null);
 const selectedId = ref<string | null>(null);
 
 const detailLoading = ref(false);
-const backendIsReady = ref(false);
+const pipelineStatusMessage = ref("");
 const search = ref("");
 const popupRef = ref<maplibregl.Popup | null>(null);
 
@@ -1422,7 +1435,7 @@ async function setupMapWithSummaries(all: UniSummary[]) {
   });
 
   allUniversities.value = summaries;
-  backendIsReady.value = true;
+  pipelineStatusMessage.value = "completed";
 }
 
 // -------------------- Core logic --------------------
@@ -1455,13 +1468,35 @@ onMounted(async () => {
 
   const all: UniSummary[] = [];
 
-  while (backendIsReady.value === false) {
+  while (pipelineStatusMessage.value === "in-progress") {
     try {
       await axios.get("/api/health");
-      backendIsReady.value = true;
-    } catch (err) {
-      console.warn("Backend not ready, retrying in 3 seconds...");
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      pipelineStatusMessage.value = "completed";
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        let serverStatus = err.response.headers["server-status"] || "";
+        serverStatus = serverStatus.split("/")[1];
+        const retryAfter = parseInt(
+          err.response.headers["retry-after"] || "3",
+          10
+        );
+
+        pipelineStatusMessage.value = serverStatus;
+        if (serverStatus === "in-progress") {
+          await new Promise((resolve) =>
+            setTimeout(resolve, retryAfter * 1000)
+          );
+        } else if (serverStatus === "failed") {
+          errorHandler(
+            new Error("Backend pipeline failed"),
+            "Error fetching university summaries"
+          );
+          break;
+        }
+      } else {
+        console.error("Unexpected error:", err);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
     }
   }
 
@@ -1469,12 +1504,15 @@ onMounted(async () => {
     await setupMapWithSummaries(all);
   } catch (err: Error | any) {
     if (axios.isAxiosError(err) && err.response) {
-      if (err.response.status === 503) {
-        backendIsReady.value = false;
+      const httpStatus = err.response.status;
+      if (httpStatus === 500) {
+        pipelineStatusMessage.value = "failed";
         errorHandler(
-          new Error("Backend service is unavailable (503)"),
+          new Error("Backend service is unavailable (500)"),
           "Error fetching university summaries"
         );
+      } else if (httpStatus === 503) {
+        pipelineStatusMessage.value = "in-progress";
       }
     } else {
       errorHandler(err, "Error fetching university summaries");

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 )
 
 // ResponseWriter wrapper to capture HTTP status
@@ -44,15 +46,24 @@ func RequestLogger(next http.Handler) http.Handler {
 	})
 }
 
-func PreventRequestIfPipelineIsInProgress(next http.Handler) http.Handler {
+func PreventRequestIfPipelineIsNotCompleted(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if isPipelineInProgress("populate_postgres") {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			w.Header().Set("Retry-After", "60")
-			w.Write([]byte("Service temporarily unavailable: Database population in progress. Please try again shortly."))
+		pipelineStatus := GetPipelineStatus(cast.ToString(PIPELINE_POPULATE_POSTGRES))
+		if pipelineStatus == cast.ToString(PIPELINE_STATUS_COMPLETED) {
+			next.ServeHTTP(w, r)
 			return
 		}
-		next.ServeHTTP(w, r)
+
+		httpStatus := http.StatusServiceUnavailable
+		if pipelineStatus == cast.ToString(PIPELINE_STATUS_FAILED) {
+			httpStatus = http.StatusInternalServerError
+		}
+
+		w.WriteHeader(httpStatus)
+		w.Header().Set("Server-Status", fmt.Sprintf("%s/%s", string(PIPELINE_POPULATE_POSTGRES), pipelineStatus))
+		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Retry-After", "60")
+		w.Write([]byte("Service temporarily unavailable. Please try again shortly."))
 	})
 }
 
@@ -62,7 +73,7 @@ func GetRouter() *chi.Mux {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
-	r.Use(PreventRequestIfPipelineIsInProgress)
+	r.Use(PreventRequestIfPipelineIsNotCompleted)
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further

@@ -1248,11 +1248,11 @@ func markPipelineAsCompleted(step string, status string) {
 	logger.Infof("✅ Marked pipeline step '%s' as completed", step)
 }
 
-func isPipelineInProgress(step string) bool {
+func GetPipelineStatus(step string) string {
 	db, err := getPostgresConnection()
 	if err != nil {
 		logger.Fatalf("❌ Failed to connect to DB: %v", err)
-		return false
+		return ""
 	}
 
 	defer db.Close()
@@ -1265,13 +1265,14 @@ func isPipelineInProgress(step string) bool {
 	`, step).Scan(&status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return false
+			return ""
 		}
+
 		logger.Errorf("❌ Failed to check pipeline step '%s' status: %v", step, err)
-		return false
+		return ""
 	}
 
-	return status == string(PIPELINE_STATUS_IN_PROGRESS) && status != string(PIPELINE_STATUS_COMPLETED)
+	return status
 }
 
 func populatePostgres() {
