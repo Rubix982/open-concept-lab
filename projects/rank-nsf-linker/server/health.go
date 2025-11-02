@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -16,7 +17,7 @@ func waitForElasticsearch() {
 
 	for {
 		attempts += 1
-		resp, err := client.Get("http://elasticsearch:9200/_cluster/health")
+		resp, err := client.Get(fmt.Sprintf("%v/_cluster/health", ELASTICSEARCH_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
 			fmt.Println("✅ Elasticsearch is ready")
 			return
@@ -34,7 +35,27 @@ func waitForElasticsearch() {
 }
 
 func waitForPostgres() {
-	dsn := "postgres://postgres:postgres@postgres:5432/mydb?sslmode=disable"
+	postgresPort := os.Getenv("POSTGRES_PORT")
+	if postgresPort == "" {
+		postgresPort = "5432"
+	}
+
+	postgresUser := os.Getenv("POSTGRES_USER")
+	if postgresUser == "" {
+		postgresUser = "postgres"
+	}
+
+	postgresPassword := os.Getenv("POSTGRES_PASSWORD")
+	if postgresPassword == "" {
+		postgresPassword = "postgres"
+	}
+
+	postgresDbName := os.Getenv("POSTGRES_DB")
+	if postgresDbName == "" {
+		postgresDbName = "mydb"
+	}
+
+	dsn := fmt.Sprintf("postgres://%s:%s@postgres:%s/%s?sslmode=disable", postgresUser, postgresPassword, postgresPort, postgresDbName)
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
@@ -74,7 +95,7 @@ func waitForLoggingService() {
 
 	for {
 		attempts += 1
-		resp, err := client.Get("http://logging-service:5257/health")
+		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
 			fmt.Println("✅ Logging Service is ready")
 			return

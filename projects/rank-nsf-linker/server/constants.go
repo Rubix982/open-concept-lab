@@ -21,3 +21,9 @@ type DataPopulationPipelines string
 const (
 	PIPELINE_POPULATE_POSTGRES DataPopulationPipelines = "populate_postgres"
 )
+
+// Service Discovery Routes
+const (
+	ELASTICSEARCH_SERVICE_ROUTE = "http://elasticsearch:9200"
+	LOGGING_SERVICE_ROUTE       = "http://logging-service:5257"
+)

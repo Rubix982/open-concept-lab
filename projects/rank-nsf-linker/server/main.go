@@ -29,6 +29,13 @@ func startMetricsServer() {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		logger.Warnf("⚠️  No .env file found, trying .env.local: %v", err)
+		if err := godotenv.Load(".env.local"); err != nil {
+			logger.Warnf("⚠️  No .env.local file found either, continuing with system environment variables: %v", err)
+		}
+	}
+
 	waitForServices()
 	printBanner()
 	startMetricsServer()
@@ -41,10 +48,6 @@ func main() {
 	if runMigrationsErr := runMigrations(); runMigrationsErr != nil {
 		logger.Errorf("failed to execute migrations: %v", runMigrationsErr)
 		return
-	}
-
-	if err := godotenv.Load(); err != nil {
-		logger.Warnf("⚠️  No .env file found, continuing with system environment variables: %v", err)
 	}
 
 	// If we actually go to populate the DB, we mark the pipeline as in progress anyways, so

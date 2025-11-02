@@ -14,10 +14,14 @@ import (
 )
 
 var (
-	logger                   *logrus.Logger
-	once                     sync.Once
-	LOGGING_SERVICE_ENDPOINT = "http://logging-service:5257/logs/log"
+	logger    *logrus.Logger
+	once      sync.Once
+	LogsRoute string
 )
+
+func init() {
+	LogsRoute = fmt.Sprintf("%s/logs/log", LOGGING_SERVICE_ROUTE)
+}
 
 // LoggingServiceHook sends log entries to an HTTP logging service
 type LoggingServiceHook struct{}
@@ -43,7 +47,7 @@ func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
 	}
 
 	go func() {
-		req, err := http.NewRequest("POST", LOGGING_SERVICE_ENDPOINT, bytes.NewBuffer(body))
+		req, err := http.NewRequest("POST", LogsRoute, bytes.NewBuffer(body))
 		if err != nil {
 			fmt.Println("Failed to create HTTP request for log:", err)
 			return
