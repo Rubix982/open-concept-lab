@@ -20,10 +20,6 @@ COPY .env .
 # Ensure the nonroot user can write logs.
 RUN mkdir -p /app/logs && chown 65532:65532 /app/logs
 
-# Set configuration variables
-ENV ELASTICSEARCH_HOST="http://elasticsearch:9200"
-ENV PYTHONUNBUFFERED=1
-
 # Expose the port
 EXPOSE 5000
 

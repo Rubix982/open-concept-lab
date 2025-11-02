@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS universities (
   longitude REAL
 );
 
-CREATE INDEX universities_institution_trgm_idx ON universities USING gin (institution gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS universities_institution_trgm_idx ON universities USING gin (institution gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS professors (
   name TEXT PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS professors (
   nsf_id TEXT
 );
 
-CREATE INDEX professors_name_trgm_idx ON professors USING gin (name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS professors_name_trgm_idx ON professors USING gin (name gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS professor_areas (
   name TEXT NOT NULL,

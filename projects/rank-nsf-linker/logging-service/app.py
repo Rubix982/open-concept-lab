@@ -12,7 +12,9 @@ import dotenv
 import logging
 import hashlib
 import traceback
+import inspect
 
+from colorama import Fore, Style, init
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dataclasses import dataclass, asdict
@@ -43,7 +45,7 @@ class Config:
     }
 
     # Elasticsearch Configuration
-    ES_HOSTS = [os.getenv("ELASTICSEARCH_HOST", "http://localhost:9200")]
+    ES_HOST = os.getenv("ELASTICSEARCH_HOST", "http://elasticsearch:9200")
     ES_TIMEOUT = 30
 
     # Index names
@@ -85,18 +87,19 @@ def init_elasticsearch():
     """Initialize Elasticsearch client and indices with exponential backoff"""
     global es_client
 
-    base_delay = 1.0   # starting delay in seconds
-    max_delay = 60.0   # cap max sleep time to 60s
+    base_delay = 1.0  # starting delay in seconds
+    max_delay = 60.0  # cap max sleep time to 60s
     attempt: int = 0
 
     while True:
         attempt += 1
         try:
             es_client = Elasticsearch(
-                Config.ES_HOSTS,
+                [Config.ES_HOST],
                 request_timeout=Config.ES_TIMEOUT,
                 retry_on_timeout=True,
                 max_retries=3,
+                verify_certs=False,
             )
 
             if es_client.ping():
@@ -111,7 +114,7 @@ def init_elasticsearch():
             # Add a bit of jitter to avoid sync retries
             wait_time += random.uniform(0, 0.5)
             app.logger.warning(
-                f"⚠️ Attempt {attempt} has failed to connect to Elasticsearch: {e}"
+                f"⚠️ Attempt {attempt} has failed to connect to Elasticsearch: {e} at {Config.ES_HOST}. Retrying..."
             )
 
             app.logger.info(f"⏳ Retrying in {wait_time:.1f}s...")
@@ -179,17 +182,26 @@ def create_indices():
         )
         app.logger.info(f"✅ Created index: {Config.OCCURRENCES_INDEX}")
 
+init(autoreset=True)  # ensures color reset after each print
 
 # --- Logging Configuration ---
 class StructuredLogger:
-    """Enhanced logging with rotation and structured output"""
+    """Enhanced logging with rotation, structured output, line info, and colors"""
+
+    LEVEL_COLORS = {
+        "INFO": Fore.GREEN,
+        "WARNING": Fore.YELLOW,
+        "WARN": Fore.YELLOW,
+        "ERROR": Fore.RED,
+        "CRITICAL": Fore.MAGENTA,
+    }
 
     def __init__(self, name: str):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.INFO)
         self.logger.handlers.clear()
 
-        # Rotating file handler for structured logs
+        # Rotating file handler
         log_file = Config.LOG_DIR / "client_errors.log"
         file_handler = RotatingFileHandler(
             log_file,
@@ -197,26 +209,41 @@ class StructuredLogger:
             backupCount=Config.BACKUP_COUNT,
             encoding="utf-8",
         )
-
-        # JSON formatter for easy parsing
-        formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+        file_formatter = logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
-        file_handler.setFormatter(formatter)
+        file_handler.setFormatter(file_formatter)
         self.logger.addHandler(file_handler)
 
-        # Console handler for development
+        # Console handler with colors
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
+        console_formatter = logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s",
+            datefmt="%H:%M:%S",
+        )
+        console_handler.setFormatter(console_formatter)
         self.logger.addHandler(console_handler)
 
     def log(self, level: str, entry: LogEntry):
-        """Log a structured entry"""
+        """Log a structured entry with line info and colors"""
         log_data = entry.to_dict()
         message = json.dumps(log_data, ensure_ascii=False)
 
+        # Get caller info
+        current_frame = inspect.currentframe()
+        frame = current_frame.f_back if current_frame is not None else None
+        filename = frame.f_code.co_filename if frame is not None else "<unknown>"
+        lineno = frame.f_lineno if frame is not None else 0
+
         log_level = Config.LOG_LEVELS.get(level.lower(), logging.INFO)
-        self.logger.log(log_level, message)
+
+        # Add color for console output
+        color = self.LEVEL_COLORS.get(level.upper(), "")
+        colored_message = f"{color}{message}{Style.RESET_ALL}"
+
+        # Log to console and file
+        self.logger.log(log_level, f"{filename}:{lineno} | {colored_message}")
 
 
 logger = StructuredLogger("client_logger")
@@ -893,18 +920,20 @@ def internal_error(e: Exception):
 
 if __name__ == "__main__":
     print("🚀 Starting Self-Hosted Logging Service")
-    print("""
+    print(
+        """
 ██████   █████  ███    ██ ██   ██     ███    ██ ███████ ███████     ██      ██ ███    ██ ██   ██ ███████ ██████  
 ██   ██ ██   ██ ████   ██ ██  ██      ████   ██ ██      ██          ██      ██ ████   ██ ██  ██  ██      ██   ██ 
 ██████  ███████ ██ ██  ██ █████       ██ ██  ██ ███████ █████       ██      ██ ██ ██  ██ █████   █████   ██████  
 ██   ██ ██   ██ ██  ██ ██ ██  ██      ██  ██ ██      ██ ██          ██      ██ ██  ██ ██ ██  ██  ██      ██   ██ 
-██   ██ ██   ██ ██   ████ ██   ██     ██   ████ ███████ ██          ███████ ██ ██   ████ ██   ██ ███████ ██   ██""")
+██   ██ ██   ██ ██   ████ ██   ██     ██   ████ ███████ ██          ███████ ██ ██   ████ ██   ██ ███████ ██   ██"""
+    )
     print(f"📁 Logs directory: {Config.LOG_DIR.absolute()}")
 
     # Initialize Elasticsearch
     try:
         init_elasticsearch()
-        print(f"🔍 Elasticsearch: {Config.ES_HOSTS[0]}")
+        print(f"🔍 Elasticsearch: {Config.ES_HOST}")
         print(f"📊 Indices: {Config.ERRORS_INDEX}, {Config.OCCURRENCES_INDEX}")
     except Exception as e:
         print(f"❌ Elasticsearch initialization failed: {e}")
@@ -923,6 +952,6 @@ if __name__ == "__main__":
     print("  GET  /logs/timeline                 - Error timeline")
     print("  GET  /health                       - Health check")
     print("\n💡 Environment variables:")
-    print("  ELASTICSEARCH_HOST (default: http://localhost:9200)")
+    print("  ELASTICSEARCH_HOST (default: http://elasticsearch:9200)")
 
     app.run(host="0.0.0.0", port=5257, debug=False)

@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"path"
@@ -15,7 +16,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	_ "github.com/lib/pq"
+	pq "github.com/lib/pq"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -749,23 +750,6 @@ func clearFinalDataStatesInPostgres() error {
 		return fmt.Errorf("failed to update universities table: %w", err)
 	}
 
-	// institutionUpdateQuery := `
-	// UPDATE universities
-	// SET institution = CASE
-	// 	WHEN institution ILIKE 'Univ of %' THEN 'University Of ' || SUBSTRING(institution FROM 9)
-	// 	WHEN institution ILIKE 'Univ. of %' THEN 'University Of ' || SUBSTRING(institution FROM 11)
-	// 	WHEN institution ILIKE 'Univ Of %' THEN 'University Of ' || SUBSTRING(institution FROM 10)
-	// 	WHEN institution ILIKE 'Univ. Of %' THEN 'University Of ' || SUBSTRING(institution FROM 12)
-	// 	WHEN institution ILIKE 'Univ %' THEN 'University ' || SUBSTRING(institution FROM 6)
-	// 	WHEN institution ILIKE 'Univ. %' THEN 'University ' || SUBSTRING(institution FROM 7)
-	// 	ELSE institution
-	// END;`
-
-	// _, err = db.Exec(institutionUpdateQuery)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to update institution names in universities table: %w", err)
-	// }
-
 	logger.Infof("✅ Cleared final data states in Postgres successfully")
 
 	return nil
@@ -1000,119 +984,172 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
+
+	// Create a temporary staging table
+	_, err = db.Exec(`
+        CREATE TABLE IF NOT EXISTS staging_professor_areas (
+            name TEXT,
+            affiliation TEXT,
+            area TEXT,
+            count DOUBLE PRECISION,
+            adjusted_count DOUBLE PRECISION,
+            year INT
+        );
+    `)
 	if err != nil {
-		return fmt.Errorf("failed to read CSV: %v", err)
+		return fmt.Errorf("failed to create staging table: %v", err)
 	}
 
-	// Filter header and invalid rows
-	var validRows [][]string
-	for _, row := range records {
+	defer func() {
+		_, err := db.Exec(`DROP TABLE IF EXISTS staging_professor_areas;`)
+		if err != nil {
+			logger.Warnf("⚠️ Failed to drop staging table: %v", err)
+		}
+	}()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %v", err)
+	}
+
+	stmt, err := tx.Prepare(pq.CopyIn("staging_professor_areas", "name", "affiliation", "area",
+		"count", "adjusted_count", "year"))
+	if err != nil {
+		return fmt.Errorf("failed to prepare COPY statement: %v", err)
+	}
+
+	const batchSize = 5000
+	var batch [][]interface{}
+	var validRows int
+
+	for {
+		row, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			logger.Warnf("⚠️ Skipping invalid row: %v", err)
+			continue
+		}
+
 		if len(row) < 6 || strings.TrimSpace(row[0]) == "name" {
 			continue
 		}
-		validRows = append(validRows, row)
-	}
 
-	sem := make(chan struct{}, 50) // limit concurrency to 50 goroutines
-	var wg sync.WaitGroup
-	var updated, skipped int64
+		name := strings.TrimSpace(row[0])
+		affiliation := strings.TrimSpace(row[1])
+		area := strings.TrimSpace(row[2])
+		count := strings.TrimSpace(row[3])
+		adjustedCount := strings.TrimSpace(row[4])
+		year := strings.TrimSpace(row[5])
 
-	for _, row := range validRows {
-		wg.Add(1)
-		sem <- struct{}{}
+		if name == "" || affiliation == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
+			logger.Warnf("⚠️ Skipped invalid row: %v", row)
+			continue
+		}
 
-		go func(row []string) {
-			defer wg.Done()
-			defer func() { <-sem }()
+		normalizedAffiliation := normalizeInstitutionName(affiliation)
+		batch = append(batch, []interface{}{name, normalizedAffiliation, area, count, adjustedCount, year})
+		validRows++
 
-			name := strings.TrimSpace(row[0])
-			affiliation := strings.TrimSpace(row[1])
-			area := strings.TrimSpace(row[2])
-			count := strings.TrimSpace(row[3])
-			adjustedCount := strings.TrimSpace(row[4])
-			year := strings.TrimSpace(row[5])
-
-			if name == "" || affiliation == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
-				logger.Warnf("⚠️ Skipped invalid row: %v", row)
-				atomic.AddInt64(&skipped, 1)
-				return
-			}
-
-			normalizedAffiliation := normalizeInstitutionName(affiliation)
-
-			var matchedInstitution string
-			err = db.QueryRow(`
-				SELECT institution
-				FROM universities
-				WHERE institution % $1
-				ORDER BY similarity(institution, $1) DESC
-				LIMIT 1
-			`, normalizedAffiliation).Scan(&matchedInstitution)
-
-			if err == sql.ErrNoRows {
-				logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", name, affiliation)
-				atomic.AddInt64(&skipped, 1)
-				return
-			}
-			if err != nil {
-				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", name, affiliation, err)
-				atomic.AddInt64(&skipped, 1)
-				return
-			}
-
-			var matchedProfessor string
-			err = db.QueryRow(`
-				SELECT name
-				FROM professors
-				WHERE name % $1
-				ORDER BY similarity(name, $1) DESC
-				LIMIT 1
-			`, name).Scan(&matchedProfessor)
-
-			if err == sql.ErrNoRows {
-				logger.Warnf("⚠️ No professor found with name '%s'", name)
-				// Add the professor if it does not exist so we can to continue below
-				_, insertErr := db.Exec(`
-					INSERT INTO professors (name, affiliation)
-					VALUES ($1, $2)
-					ON CONFLICT (name) DO NOTHING;
-				`, name, matchedInstitution)
-				if insertErr != nil {
-					logger.Warnf("⚠️ Failed to insert new professor '%s': %v", name, insertErr)
-					atomic.AddInt64(&skipped, 1)
-					return
+		if len(batch) >= batchSize {
+			for _, r := range batch {
+				if _, err := stmt.Exec(r...); err != nil {
+					logger.Warnf("⚠️ Failed to add row to staging table: %v", err)
 				}
-				logger.Infof("➕ Added new professor '%s' with affiliation '%s'", name, matchedInstitution)
-				matchedProfessor = name
-			} else if err != nil {
-				logger.Warnf("⚠️ Failed to find professor '%s': %v", name, err)
-				atomic.AddInt64(&skipped, 1)
-				return
 			}
-
-			_, err = db.Exec(`
-				INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
-				VALUES ($1, $2, $3, $4, $5, $6)
-				ON CONFLICT (name, affiliation, area, year)
-				DO UPDATE SET
-					count = EXCLUDED.count,
-					adjusted_count = EXCLUDED.adjusted_count;
-			`, matchedProfessor, matchedInstitution, area, count, adjustedCount, year)
-			if err != nil {
-				logger.Warnf("⚠️ Failed to insert into professor_areas for '%s': %v", matchedProfessor, err)
-				atomic.AddInt64(&skipped, 1)
-				return
-			}
-
-			logger.Infof("✅ Synchronized interests for professor '%s' in area '%s'", matchedProfessor, area)
-			atomic.AddInt64(&updated, 1)
-		}(row)
+			batch = batch[:0]
+		}
 	}
 
-	wg.Wait()
+	// Insert remaining rows
+	for _, r := range batch {
+		if _, err := stmt.Exec(r...); err != nil {
+			logger.Warnf("⚠️ Failed to add row to staging table: %v", err)
+		}
+	}
 
-	logger.Infof("✅ Synchronized professor interests for %d professors (%d skipped)", updated, skipped)
+	if _, err = stmt.Exec(); err != nil {
+		return fmt.Errorf("failed to finalize COPY: %v", err)
+	}
+
+	if err = stmt.Close(); err != nil {
+		return fmt.Errorf("failed to close COPY statement: %v", err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
+
+	logger.Infof("✅ Copied %d valid rows into staging table", validRows)
+
+	// Batch UPSERT into final table
+	const upsertBatchSize = 1000
+	offset := 0
+
+	for {
+		rows, err := db.Query(`
+            SELECT s.name, s.affiliation, s.area, s.count, s.adjusted_count, s.year
+            FROM staging_professor_areas s
+            ORDER BY s.name
+            OFFSET $1 LIMIT $2
+        `, offset, upsertBatchSize)
+		if err != nil {
+			return fmt.Errorf("failed to fetch staging batch: %v", err)
+		}
+
+		batchCount := 0
+		txUpsert, err := db.Begin()
+		if err != nil {
+			return fmt.Errorf("failed to start upsert transaction: %v", err)
+		}
+
+		stmtUpsert, err := txUpsert.Prepare(`
+            INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (name, affiliation, area, year)
+            DO UPDATE SET
+                count = EXCLUDED.count,
+                adjusted_count = EXCLUDED.adjusted_count;
+        `)
+		if err != nil {
+			return fmt.Errorf("failed to prepare upsert statement: %v", err)
+		}
+
+		for rows.Next() {
+			var name, affiliation, area string
+			var count, adjustedCount float64
+			var year int
+
+			if err := rows.Scan(&name, &affiliation, &area, &count, &adjustedCount, &year); err != nil {
+				logger.Warnf("⚠️ Failed to scan row for upsert: %v", err)
+				continue
+			}
+
+			if _, err := stmtUpsert.Exec(name, affiliation, area, count, adjustedCount, year); err != nil {
+				logger.Warnf("⚠️ Failed to upsert row: %v", err)
+				continue
+			}
+			batchCount++
+		}
+
+		if err := stmtUpsert.Close(); err != nil {
+			return fmt.Errorf("failed to close upsert statement: %v", err)
+		}
+
+		if err := txUpsert.Commit(); err != nil {
+			return fmt.Errorf("failed to commit upsert transaction: %v", err)
+		}
+
+		rows.Close()
+
+		if batchCount == 0 {
+			break
+		}
+		offset += batchCount
+	}
+
+	logger.Infof("✅ Synchronized professor interests successfully from CSV")
 	return nil
 }
 
@@ -1175,9 +1212,29 @@ func markPipelineAsCompleted(step string, status string) {
 		logger.Fatalf("❌ Failed to connect to DB: %v", err)
 		return
 	}
-
 	defer db.Close()
 
+	// Check if table exists
+	var exists bool
+	err = db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1
+			FROM information_schema.tables 
+			WHERE table_schema = 'public' 
+			AND table_name = 'pipeline_status'
+		)
+	`).Scan(&exists)
+	if err != nil {
+		logger.Errorf("❌ Failed to check if table exists: %v", err)
+		return
+	}
+
+	if !exists {
+		logger.Warn("⚠️ Table 'pipeline_status' does not exist, skipping insert/update")
+		return
+	}
+
+	// Proceed with upsert
 	_, err = db.Exec(`
 		INSERT INTO pipeline_status (pipeline_name, last_run, status)
 		VALUES ($1, NOW(), $2)
@@ -1228,12 +1285,6 @@ func populatePostgres() {
 
 	if downloadNsfDataErr := downloadNSFData(false); downloadNsfDataErr != nil {
 		logger.Errorf("failed to download NSF data: %v", downloadNsfDataErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if runMigrationsErr := runMigrations(); runMigrationsErr != nil {
-		logger.Errorf("failed to execute migrations: %v", runMigrationsErr)
 		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
