@@ -72,6 +72,8 @@ up-infra:
 		echo "✅ Infrastructure already running."; \
 	fi
 
+# We cannot provide a specific tag to postgres as CGR only provides 'latest' and 'latest-dev'
+# Hence, we always pull the image with the latest tag by default
 infra-images:
 	$(call ensure_image,cgr.dev/chainguard/postgres)
 	$(call ensure_image,docker.elastic.co/elasticsearch/elasticsearch:8.13.0)

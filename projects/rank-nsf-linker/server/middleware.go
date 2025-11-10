@@ -42,7 +42,7 @@ func RequestLogger(next http.Handler) http.Handler {
 		next.ServeHTTP(ww, r)
 
 		duration := time.Since(start)
-		LogRequest(r, r.RemoteAddr, ww.status, duration).Info("Handled request")
+		LogRequest(r, r.RemoteAddr, ww.status, duration).Debug("Handled request")
 	})
 }
 

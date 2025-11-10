@@ -7,19 +7,24 @@ const (
 )
 
 type PipelineStatus string
+type DataPopulationPipelines string
 
-// Pipeline Constants
+// Pipeline Constants -- PIPELINE_POPULATE_POSTGRES
 const (
 	PIPELINE_STATUS_IN_PROGRESS PipelineStatus = "in-progress"
 	PIPELINE_STATUS_COMPLETED   PipelineStatus = "completed"
 	PIPELINE_STATUS_FAILED      PipelineStatus = "failed"
 )
 
-type DataPopulationPipelines string
+// Data Population Pipeline Constants
+const (
+	POPULATION_STATUS_SUCCEEDED PipelineStatus = "succeeded"
+)
 
 // Current Available Data Population Pipelines
 const (
-	PIPELINE_POPULATE_POSTGRES DataPopulationPipelines = "populate_postgres"
+	PIPELINE_POPULATE_POSTGRES   DataPopulationPipelines = "populate_postgres"
+	POPULATION_SUCCEEDED_MESSAGE DataPopulationPipelines = "population_succeeded"
 )
 
 // Service Discovery Routes

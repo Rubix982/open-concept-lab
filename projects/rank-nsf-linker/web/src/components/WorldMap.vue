@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <div v-if="pipelineStatusMessage === 'completed'" class="app">
+  <div v-if="pipelineStatusMessage === 'completed'" class="app" id="appMap">
     <div ref="mapContainer" id="map" class="map-container" />
 
     <!-- Enhanced Controls Panel -->
@@ -1452,7 +1452,6 @@ onMounted(async () => {
     mapContainer.value = document.createElement("div");
     mapContainer.value.style.width = "100%";
     mapContainer.value.style.height = "100%";
-    document.body.appendChild(mapContainer.value);
   }
 
   console.log("🌍 Creating MapLibre instance...");
@@ -1563,6 +1562,13 @@ onMounted(async () => {
     }
   }
 
+  const mainMapContainer = document.getElementById("app");
+  if (!mainMapContainer) {
+    console.error("❌ Map container element with ID 'map' not found.");
+    return;
+  } else {
+    mainMapContainer.appendChild(mapContainer.value);
+  }
   console.log("🏁 onMounted completed execution.");
 });
 
@@ -1570,7 +1576,7 @@ function errorHandler(err: Error, prefix = "") {
   const message = prefix ? `${prefix}: ${err.message}` : err.message;
   // Make a request to the logging-service
   axios
-    .post("/logs/log", {
+    .post("/ls/logs/log", {
       level: "error",
       message: message,
       stack: err.stack,

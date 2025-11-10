@@ -1245,7 +1245,12 @@ func removeTagsFromProfessorNames() error {
 	result, err := db.Exec(`
 		UPDATE professors
 		SET name = regexp_replace(name, '\s*\[[^]]*\]', '', 'g')
-		WHERE name ~ '\[[^]]*\]';
+		WHERE name ~ '\[[^]]*\]' 
+		AND NOT EXISTS (
+			SELECT 1 FROM professors p2
+			WHERE p2.name = regexp_replace(professors.name, '\s*\[[^]]*\]', '', 'g')
+			AND p2.name <> professors.name
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("failed to update professor names: %w", err)
@@ -1326,6 +1331,13 @@ func GetPipelineStatus(step string) string {
 }
 
 func populatePostgres() {
+	// Will replace with Temporal later
+	if isDataAlreadyPopulated := GetPipelineStatus(string(POPULATION_SUCCEEDED_MESSAGE)); isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
+		logger.Infof("ℹ️  Postgres population already completed previously, skipping.")
+		return
+	}
+
+	logger.Infof("🚀 Starting Postgres population pipeline...")
 	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
 	if downloadCsvErr := downloadCSVs(false); downloadCsvErr != nil {
@@ -1396,4 +1408,5 @@ func populatePostgres() {
 
 	logger.Infof("🎉 Postgres population completed successfully.")
 	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
+	markPipelineAsCompleted(string(POPULATION_SUCCEEDED_MESSAGE), string(POPULATION_STATUS_SUCCEEDED))
 }
