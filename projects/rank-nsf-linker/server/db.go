@@ -1212,26 +1212,117 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 }
 
 func removeDuplicateEntries() error {
+	// TODO: A lot of duplicates we are removing are actually labs or departments
+	// under a single university. In the future, we should consider normalizing
+	// these entries instead of deleting them outright. One possible approach is to
+	// create a parent-child relationship in the universities table to represent
+	// main institutions and their associated sub-entities.
+
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
-	// Delete duplicate entries based on name and affiliation, keeping the one with the lowest id
-	// NOTE: This is a hardcoded fix for specific known duplicates
-	result, err := db.Exec(`
-		DELETE FROM professors where name IN ('Ronald J. Brachman', 'Ron Brachman [Tech]')
-	`)
-	if err != nil {
-		return fmt.Errorf("failed to remove duplicate entries: %w", err)
+	sqlDeleteQueryTemplate := `DELETE FROM %s WHERE %s IN (%s)`
+
+	for table, duplicates := range map[string]map[string][]string{
+		"professors": {"name": []string{
+			"Ronald J. Brachman",
+			"Ron Brachman [Tech]",
+		}},
+		"universities": {"institution": []string{
+			// University of California, Berkeley variants
+			"U.c. Berkeley",
+			"Uc Berkeley",
+			"Department Of Mathematics, University Of California, Berkeley",
+			"University Of California, Berkeley Department Of Mathematics",
+			"University Of California, Berkeley, Department Of Mathematics",
+			"Department Of Integrative Biology, Uc Berkeley",
+			"The University Of California Berkeley",
+			"Univ. of California - Berkeley",
+			"University Of California - Berkeley",
+			"Univ. Of California, Berkeley, Dept Of Integrative Biology",
+			"Univ of California Berkeley",
+			"The University Of California, Berkeley",
+			"University Of California, Berkeley",
+			"University Of California-Berkeley",
+			"Univ Of California Berkeley",
+
+			//University Of Illinois Urbana-Champaign variants
+			"Univ. of Illinois at Urbana-Champaign",
+			"University Of Illinios Urbana-Champaign",
+			"University Of Illinois, Urbana-Champaign",
+			"University Of Illinois Urbana-Champaign",
+			"University Of Illinois At Urbana Champaign",
+			"Univ of Illinois at Urbana Champaign",
+			"University Of Illinois At Urbana-Champaign",
+			"Univ Of Illinois At Urbana Champaign",
+
+			// University of Texas at Austin variants
+			"University Of Texas At Austin",
+			"University of Texas at Austin",
+			"The University Of Texas At Austin",
+			"University Of Texas Austin",
+			"University Of Texas At Austin Marine Science Institute",
+			"The University Of Texas At Austin, Department Of Astronomy",
+
+			// University Of Michigan Ann Arbor variants
+			"Regents Of The University Of Michigan Ann Arbor",
+			"Regents Of The University Of Michigan - Ann Arbor",
+
+			// University Of California San Diego variants
+			"The Regents Of The Univ Of Calif U c San Diego",
+			"San Diego State University",
+			"University Of California San Diego Scripps Inst Of Oceanography",
+			"University Of San Diego",
+			"University Of California San Diego (Ucsd)",
+			"Univ. of California - San Diego",
+			"San Diego State University Foundation",
+			"Scripps Institution Of Oceanography Uc San Diego",
+			"University Of California San Diego",
+			"Univ of California San Diego",
+			"University Of California, San Diego",
+			"Univ Of California San Diego",
+
+			// University Of Wisconsin Madison variants
+			"University Of Wisconsin Madison",
+			"University of Wisconsin Madison",
+			"University Of Wisconsin, Madison",
+			"University Of Wisconsin-Madison / Trout Lake Research Station",
+			"University Of Wisconsin - Madison, Dept Of Botany",
+			"University Of Wisconsin-Madison",
+
+			// University Of California Los Angeles variants
+			"University Of California Los Angeles",
+			"University Of California - Los Angeles",
+			"University Of California, Los Angeles",
+			"Univ. of California - Los Angeles",
+			"California State University, Los Angeles",
+			"Univ of California Los Angeles",
+			"Univ Of California Los Angeles",
+
+			// University Of Marlyand College Park variants
+			"University of Maryland College Park",
+			"University Of Maryland College Park",
+			"University Of Maryland, College Park",
+		}},
+	} {
+		for column, values := range duplicates {
+			deleteQuery := fmt.Sprintf(sqlDeleteQueryTemplate, table, column, strings.Join(values, ", "))
+			result, err := db.Exec(deleteQuery)
+			if err != nil {
+				return fmt.Errorf("failed to remove duplicate entries: %w", err)
+			}
+
+			rowsAffected, err := result.RowsAffected()
+			if err != nil {
+				return fmt.Errorf("failed to get rows affected: %w", err)
+			}
+
+			logger.Infof("✅ Removed %d duplicate %s entries from %s", rowsAffected, column, table)
+		}
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
-	}
-
-	logger.Infof("✅ Removed %d duplicate professor entries", rowsAffected)
 	return nil
 }
 

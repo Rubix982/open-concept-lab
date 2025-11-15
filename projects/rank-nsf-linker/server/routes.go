@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message":"Hello, world!"}`))
-}
-
 func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
 	db, err := GetDB()
 	if err != nil {
@@ -39,42 +33,65 @@ func fetchUniversitySummary(r *http.Request) ([]byte, error) {
 	// Extract the "country" name from the JSON request body
 	var reqBody struct {
 		Country string `json:"country"`
+		Limit   int    `json:"limit"`
+		Offset  int    `json:"offset"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		return nil, fmt.Errorf("failed to decode request body: %w", err)
 	}
 	country := reqBody.Country
+	limit := reqBody.Limit
+	offset := reqBody.Offset
 	if country == "" {
 		return nil, fmt.Errorf("country parameter is required")
 	}
 
 	// Now, we can query the database for the university with this country
-
-	query := `
-		SELECT
-			u.institution,
-			u.longitude,
-			u.latitude,
-			u.city,
-			u.region
-		FROM universities u
-		WHERE u.country = $1
-		;
-	`
-	var institution, longitude, latitude, city, region string
-	err = db.QueryRow(query, country).Scan(&institution, &longitude, &latitude, &city, &region)
+	query := `SELECT * FROM university_summary_view usv WHERE usv.country = $1 LIMIT $2 OFFSET $3;`
+	rows, err := db.Query(query, country, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	mapResult := make(map[string]interface{})
-	mapResult["institution"] = institution
-	mapResult["longitude"] = longitude
-	mapResult["latitude"] = latitude
-	mapResult["city"] = city
-	mapResult["region"] = region
-	mapResult["country"] = country
-	results := []interface{}{}
-	results = append(results, mapResult)
+
+	defer rows.Close()
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	var results []map[string]any
+	for rows.Next() {
+		// Create a slice of interface to hold the column values
+		values := make([]any, len(columns))
+		valuePtrs := make([]any, len(columns))
+		for i := range columns {
+			valuePtrs[i] = &values[i]
+		}
+
+		if err := rows.Scan(valuePtrs...); err != nil {
+			return nil, err
+		}
+
+		mapResult := make(map[string]any)
+		for i, col := range columns {
+			val := values[i]
+			b, ok := val.([]byte)
+			if !ok {
+				mapResult[col] = val
+				continue
+			}
+
+			var jsonVal any
+			if err := json.Unmarshal(b, &jsonVal); err == nil {
+				mapResult[col] = jsonVal
+				continue
+			}
+
+			mapResult[col] = string(b)
+		}
+		results = append(results, mapResult)
+	}
 
 	// Now, we need to get the stats object for this university
 	jsonData, err := json.Marshal(results)

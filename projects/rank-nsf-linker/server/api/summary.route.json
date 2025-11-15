@@ -12,8 +12,8 @@
             "homepage": "https://www.mit.edu",
             "stats": {
                 "total_faculty": 156,
-                "total_nsf_funding": 125.5,
-                "nsf_award_count": 234,
+                "total_funding": 125.5,
+                "award_count": 234,
                 "active_awards": 45
             },
             "research_areas": {
