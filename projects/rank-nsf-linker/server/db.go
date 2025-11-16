@@ -1305,6 +1305,41 @@ func removeDuplicateEntries() error {
 			"University of Maryland College Park",
 			"University Of Maryland College Park",
 			"University Of Maryland, College Park",
+
+			// Purdue University variants
+			"Indiana University-Purdue University At Indianapolis",
+
+			// University Of Massachusetts Amherst
+			"University of Massachusetts Amherst",
+			"University Of Massachusetts Amherst",
+			"University Of Massachusetts - Amherst",
+
+			// University Of California, Irvine
+			"University Of California Irvine",
+			"Univ. of California - Irvine",
+			"University Of California At Irvine",
+			"University Of California, Irvine",
+			"Univ of California Irvine",
+			"Univ Of California Irvine",
+
+			// University Of California, Santa Barbara
+			"University Of California Santa Barbara",
+			"University Of Califonia, Santa Barbara",
+			"Univ. of California - Santa Barbara",
+			"Univ of California Santa Barbara",
+			"University Of California, Santa Barbara",
+			"Univ Of California Santa Barbara",
+
+			// University Of North Carolina Chapel Hill
+			"University Of North Carolina Chapel Hill",
+			"University Of North Carolina, Chapel Hill",
+
+			// University Of Minnesota Twin Cities
+			"University Of Minnesota Twin Cities",
+			"University Of Minnesota - Twin Cities",
+
+			// University Of Pennsylvania State University
+			"Penn State University, University Park",
 		}},
 	} {
 		for column, values := range duplicates {
@@ -1353,6 +1388,122 @@ func removeTagsFromProfessorNames() error {
 	}
 
 	logger.Infof("✅ Removed Topic Tags from %d professor names", rowsAffected)
+	return nil
+}
+
+func copyLabsFromUniversitiesToLabsTable() error {
+	db, err := GetDB()
+	if err != nil {
+		logger.Errorf("❌ Cannot get DB: %v", err)
+		return fmt.Errorf("cannot get DB: %w", err)
+	}
+
+	logger.Infof("🔎 Searching for labs in universities table...")
+
+	// Find all labs in universities table
+	rows, err := db.Query(`
+		SELECT institution, street_address, city, phone, zip_code, country, region, countryabbrv, homepage, latitude, longitude
+		FROM universities
+		WHERE institution ILIKE '%lab%'
+		OR institution ILIKE '%laboratory%'
+		OR institution ILIKE '%research center%'
+		OR institution ILIKE '%research centre%'
+		OR institution ILIKE '%llc%'
+		OR institution ILIKE '%inc%'
+		OR institution ILIKE '%dept%'
+	`)
+	if err != nil {
+		logger.Errorf("❌ Failed to query labs from universities: %v", err)
+		return fmt.Errorf("failed to query labs from universities: %w", err)
+	}
+
+	defer rows.Close()
+
+	var labs []LabModel
+	var scannedRows int
+
+	for rows.Next() {
+		var institution, streetAddr, city, phone, zipCode, country, region, countryAbbrv, homepage string
+		var latitude, longitude float64
+		rowScanErr := rows.Scan(&institution, &streetAddr, &city, &phone, &zipCode, &country, &region, &countryAbbrv, &homepage, &latitude, &longitude)
+		if rowScanErr != nil {
+			logger.Errorf("❌ Failed to scan lab row: %v", rowScanErr)
+			return fmt.Errorf("failed to scan lab row: %w", rowScanErr)
+		}
+		labs = append(labs, LabModel{
+			Insitution:    institution,
+			StreetAddress: streetAddr,
+			City:          city,
+			Phone:         phone,
+			ZipCode:       zipCode,
+			Country:       country,
+			Region:        region,
+			CountryAbbrv:  countryAbbrv,
+			Homepage:      homepage,
+			Latitude:      latitude,
+			Longitude:     longitude,
+		})
+		scannedRows++
+	}
+
+	if len(labs) == 0 {
+		logger.Warnf("⚠️ No labs found in universities table to copy.")
+		return nil
+	}
+
+	logger.Infof("Found %d labs to copy from universities table.", scannedRows)
+
+	// Insert labs into labs table
+	tx, err := db.Begin()
+	if err != nil {
+		logger.Errorf("❌ Failed to begin transaction: %v", err)
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	stmt, err := tx.Prepare(`
+		INSERT INTO labs (lab, street_address, city, phone, zip_code, country, region, countryabbrv, homepage, latitude, longitude)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		ON CONFLICT (lab) DO NOTHING;
+	`)
+	if err != nil {
+		logger.Errorf("❌ Failed to prepare insert statement: %v", err)
+		tx.Rollback()
+		return fmt.Errorf("failed to prepare insert statement: %w", err)
+	}
+
+	defer stmt.Close()
+
+	var insertedLabs int
+	for _, lab := range labs {
+		_, statementExecErr := stmt.Exec(lab.Insitution, lab.StreetAddress, lab.City, lab.Phone, lab.ZipCode, lab.Country, lab.Region, lab.CountryAbbrv, lab.Homepage, lab.Latitude, lab.Longitude)
+		if statementExecErr != nil {
+			logger.Errorf("❌ Failed to insert lab '%s': %v", lab.Insitution, statementExecErr)
+			tx.Rollback()
+			return fmt.Errorf("failed to insert lab: %w", statementExecErr)
+		}
+		insertedLabs++
+		logger.Debugf("➕ Inserted lab '%s' into labs table.", lab.Insitution)
+	}
+
+	logger.Infof("🗑️ Deleting copied labs from universities table...")
+
+	var deletedLabs int
+	for _, lab := range labs {
+		if _, err := tx.Exec(`DELETE FROM universities WHERE institution = $1`, lab.Insitution); err != nil {
+			logger.Errorf("❌ Failed to delete lab '%s' from universities: %v", lab.Insitution, err)
+			tx.Rollback()
+			return fmt.Errorf("failed to delete lab from universities: %w", err)
+		}
+		deletedLabs++
+		logger.Debugf("🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
+	}
+
+	if err := tx.Commit(); err != nil {
+		logger.Errorf("❌ Failed to commit transaction: %v", err)
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	logger.Infof("✅ Copied %d labs from universities to labs table and deleted them from universities.", insertedLabs)
 	return nil
 }
 
@@ -1493,6 +1644,12 @@ func populatePostgres() {
 
 	if initProgressErr := syncProfessorInterestsToProfessorsAndUniversities(); initProgressErr != nil {
 		logger.Errorf("failed to sync professor interests to professors and universities: %v", initProgressErr)
+		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
+		return
+	}
+
+	if initProgressErr := copyLabsFromUniversitiesToLabsTable(); initProgressErr != nil {
+		logger.Errorf("failed to copy labs from universities to labs table: %v", initProgressErr)
 		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
 		return
 	}
