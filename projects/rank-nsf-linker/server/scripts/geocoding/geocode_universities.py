@@ -16,7 +16,7 @@ CACHE_CSV = "geocoded_cache.csv"
 conn = psycopg2.connect(
     host="localhost",  # assuming port mapping to local 5432
     port=5432,
-    dbname="mydb",
+    dbname="rank-nsf-linker",
     user="postgres",
     password=os.getenv("POSTGRES_PASSWORD", "postgres")  # or whatever you set
 )

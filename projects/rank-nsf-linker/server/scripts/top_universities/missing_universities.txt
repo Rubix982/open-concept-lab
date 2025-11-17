@@ -13,7 +13,7 @@ University of California--Santa Barbara ---->>>> University Of California-Santa 
 University of North Carolina--Chapel Hill ---->>>> University Of North Carolina At Chapel Hill
 University of Minnesota--Twin Cities ---->>>> University Of Minnesota-Twin Cities
 Pennsylvania State University--University Park ---->>>> Pennsylvania State Univ University Park
-Texas A&M University--College Station
+Texas A&M University--College Station ---->>>> Texas A&M Univerisity
 University of California--Davis
 University of Colorado--Boulder
 Rutgers University--New Brunswick

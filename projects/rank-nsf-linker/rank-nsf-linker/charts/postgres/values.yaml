@@ -10,7 +10,7 @@ service:
   port: 5432
 
 postgres:
-  db: mydb
+  db: rank-nsf-linker
   user: postgres
   password: postgres
 

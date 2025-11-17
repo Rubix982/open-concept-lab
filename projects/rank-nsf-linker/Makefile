@@ -163,6 +163,12 @@ rebuild:
 	make docker-build
 	make push-images
 	make up
+	@if pgrep -f "docker compose.*logs -f go-server" >/dev/null; then \
+		echo "🛑 Killing existing go-server log daemon..."; \
+		pkill -f "docker compose.*logs -f go-server"; \
+	fi
+	@echo "🚀 Starting go-server log daemon in background..."
+	$(DOCKER_COMPOSE) logs -f go-server > go-server.log 2>&1 &
 	make logs-go-server
 
 # Remove all

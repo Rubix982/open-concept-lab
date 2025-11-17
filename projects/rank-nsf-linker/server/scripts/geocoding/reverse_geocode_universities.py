@@ -16,7 +16,7 @@ CACHE_CSV = "reverse_geocoded_cache.csv"
 conn = psycopg2.connect(
     host="localhost",  # docker exposes 5432 -> localhost
     port=5432,
-    dbname="mydb",
+    dbname="rank-nsf-linker",
     user="postgres",
     password=os.getenv("POSTGRES_PASSWORD", "postgres"),
 )

@@ -6,9 +6,9 @@ SET pg_trgm.similarity_threshold = 0.8;
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT FROM pg_database WHERE datname = 'mydb'
+        SELECT FROM pg_database WHERE datname = 'rank-nsf-linker'
     ) THEN
-        CREATE DATABASE mydb;
+        CREATE DATABASE "rank-nsf-linker";
     END IF;
 END
 $$;

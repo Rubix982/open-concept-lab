@@ -57,7 +57,7 @@ func InitPostgres() (*sql.DB, error) {
 		}
 		postgresDBName := os.Getenv("POSTGRES_DB_NAME")
 		if len(postgresDBName) == 0 {
-			postgresDBName = "mydb"
+			postgresDBName = "rank-nsf-linker"
 		}
 		postgresHost := os.Getenv("POSTGRES_HOST")
 		if len(postgresHost) == 0 {
@@ -427,7 +427,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 			continue
 		}
 
-		logger.Debugf("➡️  Processing award: %s", nsfJsonData.AwdId)
+		logger.Infof("➡️  Processing award: %s", nsfJsonData.AwdId)
 		nsfJsonData = cleanNsfJsonData(nsfJsonData)
 		region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
 
@@ -1343,10 +1343,18 @@ func removeDuplicateEntries() error {
 		}},
 	} {
 		for column, values := range duplicates {
-			deleteQuery := fmt.Sprintf(sqlDeleteQueryTemplate, table, column, strings.Join(values, ", "))
-			result, err := db.Exec(deleteQuery)
+			var deleteQueryBuilder strings.Builder
+			for _, val := range values {
+				deleteQueryBuilder.WriteString(fmt.Sprintf("'%s', ", strings.ReplaceAll(val, "'", "''")))
+			}
+			// Remove trailing comma and space
+			deleteQuery := strings.TrimSuffix(deleteQueryBuilder.String(), ", ")
+
+			// Construct and execute delete query
+			execDeleteQuery := fmt.Sprintf(sqlDeleteQueryTemplate, table, column, deleteQuery)
+			result, err := db.Exec(execDeleteQuery)
 			if err != nil {
-				return fmt.Errorf("failed to remove duplicate entries: %w", err)
+				return fmt.Errorf("failed to remove duplicate entries: %w. Errored query: %v", err, execDeleteQuery)
 			}
 
 			rowsAffected, err := result.RowsAffected()
@@ -1402,15 +1410,26 @@ func copyLabsFromUniversitiesToLabsTable() error {
 
 	// Find all labs in universities table
 	rows, err := db.Query(`
-		SELECT institution, street_address, city, phone, zip_code, country, region, countryabbrv, homepage, latitude, longitude
+		SELECT
+			institution,
+			COALESCE(street_address, ''),
+			COALESCE(city, ''),
+			COALESCE(phone, ''),
+			COALESCE(zip_code, ''),
+			COALESCE(country, ''),
+			COALESCE(region, ''),
+			COALESCE(countryabbrv, ''),
+			COALESCE(homepage, ''),
+			latitude,
+			longitude
 		FROM universities
-		WHERE institution ILIKE '%lab%'
-		OR institution ILIKE '%laboratory%'
-		OR institution ILIKE '%research center%'
-		OR institution ILIKE '%research centre%'
-		OR institution ILIKE '%llc%'
-		OR institution ILIKE '%inc%'
-		OR institution ILIKE '%dept%'
+		WHERE institution ILIKE '% lab%'
+		OR institution ILIKE '% laboratory%'
+		OR institution ILIKE '% research center%'
+		OR institution ILIKE '% research centre%'
+		OR institution ILIKE '% llc%'
+		OR institution ILIKE '% inc%'
+		OR institution ILIKE '% dept%'
 	`)
 	if err != nil {
 		logger.Errorf("❌ Failed to query labs from universities: %v", err)
@@ -1427,6 +1446,11 @@ func copyLabsFromUniversitiesToLabsTable() error {
 		var latitude, longitude float64
 		rowScanErr := rows.Scan(&institution, &streetAddr, &city, &phone, &zipCode, &country, &region, &countryAbbrv, &homepage, &latitude, &longitude)
 		if rowScanErr != nil {
+			// Handle NULL float64 scan error gracefully for longitude and latitude
+			if strings.Contains(rowScanErr.Error(), "converting NULL to float64 is unsupported") {
+				continue
+			}
+
 			logger.Errorf("❌ Failed to scan lab row: %v", rowScanErr)
 			return fmt.Errorf("failed to scan lab row: %w", rowScanErr)
 		}
@@ -1482,20 +1506,24 @@ func copyLabsFromUniversitiesToLabsTable() error {
 			return fmt.Errorf("failed to insert lab: %w", statementExecErr)
 		}
 		insertedLabs++
-		logger.Debugf("➕ Inserted lab '%s' into labs table.", lab.Insitution)
+		logger.Infof("➕ Inserted lab '%s' into labs table.", lab.Insitution)
 	}
 
 	logger.Infof("🗑️ Deleting copied labs from universities table...")
 
+	// TODO: All labs must obviously have a link to a central university. For now, we are deleting
+	// the mention of the labs from the universities table. In the future, we should create a
+	// proper relationship between labs and their parent universities.
+
 	var deletedLabs int
 	for _, lab := range labs {
-		if _, err := tx.Exec(`DELETE FROM universities WHERE institution = $1`, lab.Insitution); err != nil {
+		if _, err := tx.Exec(`DELETE FROM labs WHERE institution = $1`, lab.Insitution); err != nil {
 			logger.Errorf("❌ Failed to delete lab '%s' from universities: %v", lab.Insitution, err)
 			tx.Rollback()
 			return fmt.Errorf("failed to delete lab from universities: %w", err)
 		}
 		deletedLabs++
-		logger.Debugf("🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
+		logger.Infof("🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -1504,6 +1532,68 @@ func copyLabsFromUniversitiesToLabsTable() error {
 	}
 
 	logger.Infof("✅ Copied %d labs from universities to labs table and deleted them from universities.", insertedLabs)
+	return nil
+}
+
+func validateAndFormatDbData() error {
+	db, err := GetDB()
+	if err != nil {
+		return fmt.Errorf("cannot get DB: %w", err)
+	}
+
+	// We need find all instances in the table universities where the institution name
+	// needs to be normalized or formatted properly
+	// For example, for "Texas A and M", we should normalize it to "Texas A&M"
+	// Or, for "Univ. of California - Berkeley", we should normalize it to "University of California, Berkeley"
+	// Or, for "Texas A&M University-San Antonio", we should normalize it to "Texas A&M University - San Antonio"
+	rows, err := db.Query(`SELECT institution FROM universities`)
+	if err != nil {
+		return fmt.Errorf("failed to query universities: %w", err)
+	}
+	defer rows.Close()
+
+	var institutions []string
+	for rows.Next() {
+		var inst string
+		if err := rows.Scan(&inst); err != nil {
+			logger.Warnf("⚠️ Failed to scan institution: %v", err)
+			continue
+		}
+		institutions = append(institutions, inst)
+	}
+
+	var updatedCount int
+	for _, inst := range institutions {
+		normalized := normalizeInstitutionName(inst)
+		if normalized != inst {
+			// Check if normalized institution already exists
+			var exists bool
+			err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM universities WHERE institution = $1)`, normalized).Scan(&exists)
+			if err != nil {
+				logger.Warnf("⚠️ Failed to check existence for '%s': %v", normalized, err)
+				continue
+			}
+			if exists {
+				// Delete the current row to avoid unique constraint violation
+				_, delErr := db.Exec(`DELETE FROM universities WHERE institution = $1`, inst)
+				if delErr != nil {
+					logger.Warnf("⚠️ Failed to delete duplicate institution '%s': %v", inst, delErr)
+				} else {
+					logger.Warnf("🗑️ Deleted duplicate institution '%s' (normalized as '%s')", inst, normalized)
+				}
+				continue
+			}
+			_, err = db.Exec(`UPDATE universities SET institution = $1 WHERE institution = $2`, normalized, inst)
+			if err != nil {
+				logger.Warnf("⚠️ Failed to update institution '%s' to '%s': %v", inst, normalized, err)
+				continue
+			}
+			updatedCount++
+			logger.Infof("🔄 Updated institution '%s' to '%s'.", inst, normalized)
+		}
+	}
+
+	logger.Infof("✅ Validated and formatted %d institution names in universities table.", updatedCount)
 	return nil
 }
 
@@ -1545,7 +1635,7 @@ func markPipelineAsCompleted(step string, status string) {
 		return
 	}
 
-	logger.Infof("✅ Marked pipeline step '%s' as completed", step)
+	logger.Infof("✅ Marked pipeline step '%s' as '%s'", step, status)
 }
 
 func GetPipelineStatus(step string) string {
@@ -1573,88 +1663,65 @@ func GetPipelineStatus(step string) string {
 }
 
 func populatePostgres() {
-	// Will replace with Temporal later
+	steps := []struct {
+		name string
+		fn   func() error
+	}{
+		{"Download CSVs", downloadCSVs},
+		{"Download NSF Data", downloadNSFData},
+		{"Populate from CSVs", populatePostgresFromCSVs},
+		{"Remove Tags from Professor Names", removeTagsFromProfessorNames},
+		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
+		{"Populate from Script Caches", populatePostgresFromScriptCaches},
+		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
+		{"Clear Final Data States", clearFinalDataStatesInPostgres},
+		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
+		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
+		{"Copy Labs from Universities to Labs Table", copyLabsFromUniversitiesToLabsTable},
+		{"Remove Duplicate Entries", removeDuplicateEntries},
+		{"Validate and Format DB Data", validateAndFormatDbData},
+	}
+
+	totalSteps := len(steps)
+	successfulSteps := 0
+
+	// Time tracking: last pipeline completion
+	var lastRunTime time.Time
+	db, err := GetDB()
+	if err == nil {
+		err = db.QueryRow(`SELECT last_run FROM pipeline_status WHERE pipeline_name = $1`, string(POPULATION_SUCCEEDED_MESSAGE)).Scan(&lastRunTime)
+		if err == nil && !lastRunTime.IsZero() {
+			logger.Infof("⏱️ Last pipeline completed at: %s (%.2f hours ago)", lastRunTime.Format(time.RFC3339), time.Since(lastRunTime).Hours())
+		}
+	}
+
 	if isDataAlreadyPopulated := GetPipelineStatus(string(POPULATION_SUCCEEDED_MESSAGE)); isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
 		logger.Infof("ℹ️  Postgres population already completed previously, skipping.")
 		return
 	}
 
-	logger.Infof("🚀 Starting Postgres population pipeline...")
+	logger.Infof("🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
 	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
-	if downloadCsvErr := downloadCSVs(false); downloadCsvErr != nil {
-		logger.Errorf("failed to download csvs: %v", downloadCsvErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
+	pipelineStart := time.Now()
+	for i, step := range steps {
+		stepStart := time.Now()
+		logger.Infof("🔄 Step %d/%d: '%s' - starting...", i+1, totalSteps, step.name)
+		if err := step.fn(); err != nil {
+			logger.Errorf("❌ Step %d/%d: '%s' - failed: %v", i+1, totalSteps, step.name, err)
+			markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
+			logger.Infof("🛑 Pipeline stopped after %d/%d successful steps.", successfulSteps, totalSteps)
+			logger.Infof("⏱️ Pipeline ran for %s before failure.", time.Since(pipelineStart).String())
+			return
+		}
+		stepDuration := time.Since(stepStart)
+		successfulSteps++
+		logger.Infof("✅ Step %d/%d: '%s' - succeeded. (%d/%d steps completed) [Step duration: %s]", i+1, totalSteps, step.name, successfulSteps, totalSteps, stepDuration.String())
 	}
 
-	if downloadNsfDataErr := downloadNSFData(false); downloadNsfDataErr != nil {
-		logger.Errorf("failed to download NSF data: %v", downloadNsfDataErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initPostgresErr := populatePostgresFromCSVs(); initPostgresErr != nil {
-		logger.Errorf("failed to initialize postgres: %v", initPostgresErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := removeDuplicateEntries(); initProgressErr != nil {
-		logger.Errorf("failed to initialize progress: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := removeTagsFromProfessorNames(); initProgressErr != nil {
-		logger.Errorf("failed to remove tags from professor names: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := populatePostgresFromNsfJsons(); initProgressErr != nil {
-		logger.Errorf("failed to initialize progress: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := populatePostgresFromScriptCaches(); initProgressErr != nil {
-		logger.Errorf("failed to initialize script caches: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := populateHomepagesAgainstUniversities(); initProgressErr != nil {
-		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := clearFinalDataStatesInPostgres(); initProgressErr != nil {
-		logger.Errorf("failed to clear final data states: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := syncProfessorsAffiliationsToUniversities(); initProgressErr != nil {
-		logger.Errorf("failed to sync professor affiliations: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := syncProfessorInterestsToProfessorsAndUniversities(); initProgressErr != nil {
-		logger.Errorf("failed to sync professor interests to professors and universities: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	if initProgressErr := copyLabsFromUniversitiesToLabsTable(); initProgressErr != nil {
-		logger.Errorf("failed to copy labs from universities to labs table: %v", initProgressErr)
-		markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-		return
-	}
-
-	logger.Infof("🎉 Postgres population completed successfully.")
+	totalDuration := time.Since(pipelineStart)
+	logger.Infof("🎉 Postgres population completed successfully. All %d steps succeeded.", totalSteps)
+	logger.Infof("⏱️ Total pipeline duration: %s", totalDuration.String())
 	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 	markPipelineAsCompleted(string(POPULATION_SUCCEEDED_MESSAGE), string(POPULATION_STATUS_SUCCEEDED))
 }

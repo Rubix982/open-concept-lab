@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: mydb
+      POSTGRES_DB: rank-nsf-linker
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -132,10 +132,10 @@ services:
       qdrant:
         condition: service_started
     environment:
-      DB_URL: postgres://postgres:postgres@pg17-local:5432/mydb
+      DB_URL: postgres://postgres:postgres@pg17-local:5432/rank-nsf-linker
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: mydb
+      DB_NAME: rank-nsf-linker
       DB_USER: postgres
       DB_PASSWORD: postgres
       ES_HOST: http://es-local:9200

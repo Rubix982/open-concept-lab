@@ -73,10 +73,6 @@ func main() {
 	// we can mark it as completed here.
 	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 
-	if initProgressErr := copyLabsFromUniversitiesToLabsTable(); initProgressErr != nil {
-		logger.Errorf("failed to copy labs from universities to labs table: %v", initProgressErr)
-	}
-
 	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
 		populatePostgres()
 	}

@@ -10,12 +10,12 @@ func normalizeInstitutionName(name string) string {
 	name = strings.TrimSpace(name)
 
 	// Replace connectors/punctuation with spaces but keep words intact
-	re := regexp.MustCompile(`[.,;:/()'\-]+`)
+	re := regexp.MustCompile(`[.,;:/()']+`)
 	name = re.ReplaceAllString(name, " ")
 
-	// Normalize "&" to "and" only if surrounded by spaces
-	re = regexp.MustCompile(`\s*&\s*`)
-	name = re.ReplaceAllString(name, " and ")
+	// Add spaces around hyphens between words (e.g., "A-B" -> "A - B")
+	re = regexp.MustCompile(`(\w)-(\w)`)
+	name = re.ReplaceAllString(name, "$1 - $2")
 
 	// Collapse multiple spaces
 	re = regexp.MustCompile(`\s+`)
@@ -27,12 +27,26 @@ func normalizeInstitutionName(name string) string {
 	// If the name starts with "Univ of ", replace it with "University Of "
 	if strings.HasPrefix(strings.ToLower(name), "univ of ") {
 		name = "University Of " + strings.TrimSpace(name[8:])
-	} else if strings.HasPrefix(strings.ToLower(name), "univ. of ") {
+	}
+	if strings.HasPrefix(strings.ToLower(name), "univ. of ") {
 		name = "University Of " + strings.TrimSpace(name[9:])
-	} else if strings.HasPrefix(strings.ToLower(name), "univ ") {
+	}
+	if strings.HasPrefix(strings.ToLower(name), "univ ") {
 		name = "University " + strings.TrimSpace(name[5:])
-	} else if strings.HasPrefix(strings.ToLower(name), "univ. ") {
+	}
+	if strings.HasPrefix(strings.ToLower(name), "univ. ") {
 		name = "University " + strings.TrimSpace(name[6:])
+	}
+	if strings.HasPrefix(strings.ToLower(name), "texas a and m") {
+		// Special case for Texas A&M (case-insensitive)
+		// Preserve any trailing text after "Texas A And M"
+		name = "Texas A&M"
+		if len(name) > len("Texas A And M") {
+			suffix := strings.TrimSpace(name[len("Texas A And M"):])
+			if suffix != "" {
+				name += " " + suffix
+			}
+		}
 	}
 
 	return name

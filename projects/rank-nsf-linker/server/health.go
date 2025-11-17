@@ -52,7 +52,7 @@ func waitForPostgres() {
 
 	postgresDbName := os.Getenv("POSTGRES_DB")
 	if postgresDbName == "" {
-		postgresDbName = "mydb"
+		postgresDbName = "rank-nsf-linker"
 	}
 
 	dsn := fmt.Sprintf("postgres://%s:%s@postgres:%s/%s?sslmode=disable", postgresUser, postgresPassword, postgresPort, postgresDbName)

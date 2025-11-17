@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: mydb
+      POSTGRES_DB: rank-nsf-linker
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -50,10 +50,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DB_URL: postgres://postgres:postgres@pg17-local:5432/mydb?sslmode=verify-full&sslcert=/app/certs/client.crt&sslkey=/app/certs/client.key&sslrootcert=/app/certs/ca.crt
+      DB_URL: postgres://postgres:postgres@pg17-local:5432/rank-nsf-linker?sslmode=verify-full&sslcert=/app/certs/client.crt&sslkey=/app/certs/client.key&sslrootcert=/app/certs/ca.crt
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: mydb
+      DB_NAME: rank-nsf-linker
       DB_USER: postgres
       DB_PASSWORD: postgres
     ports:

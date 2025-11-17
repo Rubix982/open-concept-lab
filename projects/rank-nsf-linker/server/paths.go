@@ -10,38 +10,6 @@ import (
 	"path/filepath"
 )
 
-// Directory and file path constants
-const (
-	DATA_DIR       = "data"
-	BACKUP_DIR     = "backup"
-	TARGET_DIR     = "target"
-	SCRIPTS_DIR    = "scripts"
-	NSF_DATA_DIR   = "nsfdata"
-	GEOCODING_DIR  = "geocoding"
-	MIGRATIONS_DIR = "migrations"
-
-	UNI_AGNST_WEBURL      = "universities_against_homepages.csv"
-	COUNTRIES_FILENAME    = "countries.csv"
-	CSRANKINGS_FILENAME   = "csrankings.csv"
-	GEN_AUTHOR_FILENAME   = "generated-author-info.csv"
-	GEOLOCATION_FILENAME  = "geolocation.csv"
-	COUNTRY_INFO_FILENAME = "country-info.csv"
-
-	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/master/"
-	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
-
-	NSFAwardsStartYear = 2025
-	NSFAwardsEndYear   = 2025
-)
-
-var CSVURLs = []string{
-	CSRANKINGS_FILENAME,
-	GEN_AUTHOR_FILENAME,
-	COUNTRIES_FILENAME,
-	COUNTRY_INFO_FILENAME,
-	GEOLOCATION_FILENAME,
-}
-
 func getRootDirPath(rootSubDir string) string {
 	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
 		return fmt.Sprintf("/app/%v", rootSubDir)
@@ -66,7 +34,7 @@ func getMigrationsFilePath() string {
 	return MIGRATIONS_DIR
 }
 
-func downloadCSVs(force bool) error {
+func downloadCSVs() error {
 
 	dataDir := getRootDirPath(DATA_DIR)
 	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
@@ -85,7 +53,7 @@ func downloadCSVs(force bool) error {
 		logger.Infof("Downloading %s from %s\n", fileName, url)
 
 		fileSavePath := fmt.Sprintf("/app/data/%s", fileName)
-		if _, err := os.Stat(fileSavePath); err == nil && !force {
+		if _, err := os.Stat(fileSavePath); err == nil {
 			logger.Infof("[✓] %s already exists. Skipping download.\n", fileName)
 			continue
 		}
@@ -117,7 +85,7 @@ func downloadCSVs(force bool) error {
 }
 
 // DownloadNSFData fetches and extracts NSF award data per year.
-func downloadNSFData(force bool) error {
+func downloadNSFData() error {
 
 	dataDir := getRootDirPath(DATA_DIR)
 	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
@@ -126,7 +94,7 @@ func downloadNSFData(force bool) error {
 		zipFile := filepath.Join(nsfDataDir, fmt.Sprintf("nsf_awards_%d.zip", year))
 		extractDir := filepath.Join(nsfDataDir, fmt.Sprintf("%d", year))
 
-		if _, err := os.Stat(extractDir); err == nil && !force {
+		if _, err := os.Stat(extractDir); err == nil {
 			logger.Infof("[✓] %s already exists. Skipping download.", filepath.Base(extractDir))
 			continue
 		}
@@ -162,7 +130,7 @@ func downloadNSFData(force bool) error {
 
 		logger.Infof("[✓] %s downloaded.", filepath.Base(zipFile))
 
-		if _, err = os.Stat(extractDir); err == nil && !force {
+		if _, err = os.Stat(extractDir); err == nil {
 			logger.Infof("[✓] Already extracted to %s", extractDir)
 			continue
 		}
