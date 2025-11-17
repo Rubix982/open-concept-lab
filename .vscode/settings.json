@@ -50,6 +50,17 @@
     "semaphore": "cpp",
     "valarray": "cpp",
     "chrono": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "list": "cpp",
+    "__tree": "cpp",
+    "map": "cpp",
+    "regex": "cpp",
+    "set": "cpp",
+    "span": "cpp",
+    "unordered_set": "cpp",
+    "flat_map": "cpp",
+    "flat_set": "cpp",
+    "ranges": "cpp",
+    "stacktrace": "cpp"
   }
 }
