@@ -52,6 +52,40 @@ These algorithms are less commonly taught but extremely powerful when applied in
     - [**8.3 Online Bipartite Matching (Karp-Vazirani-Vazirani)**](#83-online-bipartite-matching-karp-vazirani-vazirani)
     - [**8.4 Gale-Shapley Stable Matching**](#84-gale-shapley-stable-matching)
     - [**8.5 Kinetic Data Algorithms**](#85-kinetic-data-algorithms)
+  - [**9 Persistent Data Structures**](#9-persistent-data-structures)
+    - [Core Concept](#core-concept)
+    - [Fundamental Techniques](#fundamental-techniques)
+      - [Path Copying (Fat Node Method)](#path-copying-fat-node-method)
+      - [How it works:](#how-it-works)
+      - [Node Copying vs. Fat Nodes](#node-copying-vs-fat-nodes)
+    - [Key Examples](#key-examples)
+      - [Persistent Segment Tree](#persistent-segment-tree)
+        - [Structure](#structure)
+        - [Application](#application)
+        - [Example Problem](#example-problem)
+    - [Persistent-Union Find (Disjoint Set)](#persistent-union-find-disjoint-set)
+      - [Solution](#solution)
+      - [Complexity](#complexity)
+      - [Application](#application-1)
+    - [Persistent Treap](#persistent-treap)
+      - [Why Treaps Work Well](#why-treaps-work-well)
+      - [Operations](#operations)
+      - [Use Cases](#use-cases)
+    - [Persistent Array](#persistent-array)
+      - [Implementation (Radix Tree)](#implementation-radix-tree)
+    - [Persistent Red-Black Tress](#persistent-red-black-tress)
+      - [Solution](#solution-1)
+      - [Complexity](#complexity-1)
+    - [Real-World Applications](#real-world-applications)
+      - [Version Control Systems (Git)](#version-control-systems-git)
+      - [Databases With Time-Travel - PostgreSQL MVCC (Multi-Version Concurrency Control)](#databases-with-time-travel---postgresql-mvcc-multi-version-concurrency-control)
+      - [Datomic Database](#datomic-database)
+      - [Functional Programming Languages](#functional-programming-languages)
+      - [Undo/Redo Systems](#undoredo-systems)
+      - [Blockchain \& Immutable Ledgers](#blockchain--immutable-ledgers)
+      - [Computational Geometry](#computational-geometry)
+      - [Trade-offs](#trade-offs)
+    - [Performance Characteristics](#performance-characteristics)
   - [**9. Conclusion**](#9-conclusion)
 
 ---
@@ -238,6 +272,221 @@ These algorithms are less commonly taught but extremely powerful when applied in
 ### **8.5 Kinetic Data Algorithms**
 
 - Maintain properties as points move.  
+
+## **9 Persistent Data Structures**
+
+### Core Concept
+
+Persistent data structures preserve all previous versions of themselves when modified, rather than destructively updating in-place. Each modification creates a new version while keeping old versions accessible and fully functional.
+
+Types of Persistence
+
+* Partially Persistent: Can access all old versions but only modify the latest
+* Fully Persistent: Can access AND modify any version (branching history)
+* Confluently Persistent: Can combine multiple versions into a new version
+
+### Fundamental Techniques
+
+#### Path Copying (Fat Node Method)
+
+When modifying a node, copy only the nodes along the path from root to the modified node. Share unchanged subtrees between versions.
+
+Example: Persistent Binary Tree
+Time Complexity: O(log n) per operation
+Space per version: O(log n) additional nodes
+
+#### How it works:
+
+Insert/update at leaf: copy path from root to leaf
+All other nodes remain shared
+
+Each version maintains its own root pointer
+
+#### Node Copying vs. Fat Nodes
+
+1. Path Copying,
+   1. Create new nodes with updated values
+   2. Point to existing children where unchanged
+   3. Lightweight and cache-friendly
+2. Fat Nodes,
+   1. Store all historical values in each node
+   2. Each modification adds timestamp + value
+   3. Better when many updates to same nodes
+
+### Key Examples
+
+#### Persistent Segment Tree
+
+Use Case: Query any version of a range structure
+
+##### Structure
+
+* Each update creates O(lg n) new nodes
+* Old versions remain queryable
+* Total space: O(m lg n) for m updates
+
+##### Application
+
+* Time-series range queries
+* "What was the sum of range [L,R] at time T?"
+* Computational geometry (point-in-time sweeps)
+
+##### Example Problem
+
+```text
+Given array modifications over time, answer:
+"What was the maximum value in range [10, 50] 
+after the 37th update?"
+```
+
+### Persistent-Union Find (Disjoint Set)
+
+Challenge: Union-Find uses path compression (destructive)
+
+#### Solution
+
+* Remove path compression OR
+* Use lazy path copying with timestamps
+* Maintain version tree modified of union operations
+
+#### Complexity
+
+* Without path compression: O(log n) per operation
+* With persistent path compression: O(log^2 n)
+
+#### Application
+
+* Dynamic connectivity queries at different times
+* "Were nodes A and B connected after update 15?"
+
+### Persistent Treap
+
+#### Why Treaps Work Well
+
+* Randomized structure naturally supports path copying
+* Split/merge operations creates new roots
+* Expected O(log n) per operation
+
+#### Operations
+
+* Split: Returns two new treaps
+* Merge: Creates new root
+* Insert/delete via split+merge
+
+#### Use Cases
+
+* Versioned ordered sets
+* Rope data structure (text editors)
+* Implicit key structures
+
+### Persistent Array
+
+Goal: Support O(1) access and O(log n) updates
+
+#### Implementation (Radix Tree)
+
+* 32-ary or 64-ary tree
+* Array indices as keys
+* Only copy path to modified element
+
+Space: O(log n) is around O(1) practically for 32-bit indices
+
+### Persistent Red-Black Tress
+
+Challenge: Red-black trees require rotations affecting multiple nodes
+
+#### Solution
+
+* Copy nodes involved in rotations
+* Maintain balance properties per version
+* Each rotation affects O(1) nodes
+
+#### Complexity
+
+* Insert/Delete: O(log n) time, O(log n) space per operation
+* Access any version: O(log n)
+
+### Real-World Applications
+
+#### Version Control Systems (Git)
+
+* Each commit is a version
+* Trees are shared between commits (unchanged directories)
+* Only differences are stored
+
+#### Databases With Time-Travel - PostgreSQL MVCC (Multi-Version Concurrency Control)
+
+* Each transaction sees a consistent snapshot
+* Old versions maintained for rollback
+* Garbage collection removes old versions
+
+#### Datomic Database
+
+* Immutable facts with timestamps
+* Query database at any point in time
+* Built on persistent data structures
+
+#### Functional Programming Languages
+
+* Clojure,
+  * All core data structures are persistent
+  * Structural sharing for efficiency
+  * Enables safe concurrent programming
+
+Example:
+
+```clojure
+(def v1 [1 2 3 4 5])
+(def v2 (assoc v1 2 99))  ; v1 unchanged, v2 shares structure
+```
+
+#### Undo/Redo Systems
+
+* Text Editors,
+  * Each edit creates new version
+  * Jump to any previous state instantly
+  * No need to reverse operations
+* Graphics Software,
+  * Non-destructive editing
+  * Layer History
+  * Branching edits
+
+#### Blockchain & Immutable Ledgers
+
+* Each block is a new version
+* Previous states remain accessible
+* Merkle trees for efficient verification
+
+#### Computational Geometry
+
+* Sweepline with Persistent BST,
+  * Maintain event structure across sweep
+  * Query geometric relationships at different x-coordinates
+  * Rollback to previous sweep positions
+
+#### Trade-offs
+
+* Advantages,
+  * Safety: No mutation means no race conditions
+  * Simplicity: Easier to reason about
+  * History: Access any past state O(1) switching
+  * Undo: Free undo/redo functionality
+  * Parallelism: Safety share between threads
+* Disadvantages,
+  * Space: O(log n) overhead per update (vs O(1) mutable)
+  * Constant factors: Copying has overhead
+  * Cache: More pointer chasing, less cache friendly
+  * GC Pressure: Creates more objects (in managed languages)
+
+### Performance Characteristics
+
+| Operation Mutable Persistent (Path Copy)        |
+| :---------------------------------------------- |
+| Access  O(1) or O(log n)  Same as mutable       |
+| Update  O(1) or O(log n)  Same + O(log n) space |
+| Access old version  N/A O(1) version switch     |
+| Space per version O(n)  O(log n)                |
+|                                                 |
 
 ---
 

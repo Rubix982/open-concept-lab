@@ -1,0 +1,174 @@
+version: '3.8'
+
+services:
+  # Temporal Server (All-in-one for development)
+  temporal:
+    image: temporalio/auto-setup:latest
+    ports:
+      - "7233:7233" # gRPC
+      - "8233:8233" # HTTP
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_SEEDS=postgres
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_DB=temporal
+    depends_on:
+      - postgres
+      - elasticsearch
+    networks:
+      - persistent-memory-net
+
+  # PostgreSQL for Temporal
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=temporal
+      - POSTGRES_PASSWORD=temporal
+      - POSTGRES_DB=temporal
+    networks:
+      - persistent-memory-net
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Elasticsearch for Temporal (Visibility)
+  elasticsearch:
+    image: elasticsearch:7.16.2
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    networks:
+      - persistent-memory-net
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  # Temporal Web UI
+  temporal-ui:
+    image: temporalio/ui:latest
+    ports:
+      - "8088:8080"
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - temporal
+    networks:
+      - persistent-memory-net
+
+  # ChromaDB (Vector Store)
+  vector-db:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - persistent-memory-net
+
+  # Our Application (Worker)
+  app:
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./data:/app/data
+    environment:
+      - TEMPORAL_HOST=temporal:7233
+      - CHROMA_HOST=vector-db
+      - CHROMA_PORT=8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONPATH=/app/src
+      - LLM_BACKEND=ollama
+      - OLLAMA_HOST=http://host.docker.internal:11434/v1
+      - OLLAMA_MODEL=mistral
+    depends_on:
+      - temporal
+      - vector-db
+    networks:
+      - persistent-memory-net
+    command: python -m persistent_memory.worker
+
+  # Local LLM Service (Ollama) - DISABLED for Option B (Host/Metal)
+  # llm-service:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   networks:
+  #     - persistent-memory-net
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+    # Note: GPU support in Docker on Mac (Metal) is not currently supported.
+    # This container will run on CPU. To use Metal, run Ollama on the host
+    # and set OLLAMA_HOST=http://host.docker.internal:11434 in the app.
+
+  # API Server
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - CHROMA_HOST=vector-db
+      - CHROMA_PORT=8000
+      - TEMPORAL_HOST=temporal:7233
+      - LLM_BACKEND=ollama
+      - OLLAMA_HOST=http://host.docker.internal:11434/v1
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    networks:
+      - persistent-memory-net
+    depends_on:
+      - temporal
+      - vector-db
+    command: python -m uvicorn persistent_memory.api:app --host 0.0.0.0 --port 8080
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - persistent-memory-net
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - persistent-memory-net
+    depends_on:
+      - prometheus
+
+networks:
+  persistent-memory-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  es_data:
+  chroma_data:
+  ollama_data:
+  prometheus_data:
+  grafana_data:

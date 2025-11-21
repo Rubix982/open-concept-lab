@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'persistent-memory-api'
+    static_configs:
+      - targets: ['api:8080']
+    metrics_path: '/metrics'
+
+  - job_name: 'temporal'
+    static_configs:
+      - targets: ['temporal:7233']
+
+  - job_name: 'chroma'
+    static_configs:
+      - targets: ['vector-db:8000']
