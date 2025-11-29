@@ -1,7 +1,11 @@
+# Production Dependencies
+# Minimal set for production deployment
+# Install with: pip install -r requirements-prod.txt
+
 # Core Dependencies
 temporalio>=1.0.0
 pydantic>=2.0.0
-pydantic-settings>=2.0.0  # Required for chromadb compatibility with pydantic v2
+pydantic-settings>=2.0.0
 
 # LLM & AI
 openai>=1.0.0
@@ -20,30 +24,18 @@ requests>=2.28.0
 
 # CLI
 typer>=0.9.0
-rich>=10.0.0  # For beautiful CLI output
+rich>=10.0.0
 
 # Research Paper Processing
 feedparser>=6.0.0
 PyPDF2>=3.0.0
 
 # Data Processing
-numpy>=1.24.0
+numpy>=1.24.0,<2.0.0
 pandas>=2.0.0
 
 # Monitoring & Metrics
 prometheus-client>=0.19.0
-matplotlib>=3.8.0
-
-# Development & Testing
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-cov>=4.1.0
-pytest-benchmark>=4.0.0
-
-# Code Quality
-ruff>=0.1.0
-mypy>=1.7.0
-pre-commit>=3.5.0
 
 # Utilities
 python-dotenv>=1.0.0

@@ -1,21 +1,24 @@
 import asyncio
 import os
+
 from temporalio.client import Client
 from temporalio.worker import Worker
 
+from persistent_memory.activities import (
+    chunk_text_activity,
+    download_book_activity,
+    embed_and_store_activity,
+    extract_facts_activity,
+)
+
 # Import workflows and activities
 from persistent_memory.ingestion_workflow import IngestBookWorkflow
-from persistent_memory.activities import (
-    download_book_activity,
-    chunk_text_activity,
-    embed_and_store_activity,
-    extract_facts_activity
-)
+
 
 async def main():
     # Connect to Temporal server
     temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
-    
+
     # Retry loop for connection
     while True:
         try:
@@ -36,12 +39,13 @@ async def main():
             download_book_activity,
             chunk_text_activity,
             embed_and_store_activity,
-            extract_facts_activity
+            extract_facts_activity,
         ],
     )
 
     print(f"Worker started, connecting to {temporal_host}...")
     await worker.run()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

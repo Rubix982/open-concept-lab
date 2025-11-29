@@ -1,4 +1,4 @@
-.PHONY: install up down shell test clean
+.PHONY: install up down shell test clean format lint lint-strict format-lint check pre-commit
 
 install:
 	pip install -e .
@@ -52,12 +52,28 @@ test-coverage:
 	@echo "Coverage report: htmlcov/index.html"
 
 # Code Quality
+format:
+	@echo "🎨 Formatting code with ruff..."
+	ruff format src/ tests/ *.py
+	@echo "✅ Formatting complete!"
+
 lint:
+	@echo "🔍 Linting code with ruff..."
+	ruff check src/ tests/ --fix
+	@echo "🔍 Type checking with mypy..."
+	mypy src/ --ignore-missing-imports --no-error-summary || true
+	@echo "✅ Linting complete!"
+
+lint-strict:
+	@echo "🔍 Strict linting (no auto-fix)..."
 	ruff check src/ tests/
 	mypy src/ --ignore-missing-imports
 
-format:
-	ruff format src/ tests/
+format-lint: format lint
+	@echo "✅ Format and lint complete!"
+
+check: format-lint test-unit
+	@echo "✅ All checks passed!"
 
 pre-commit:
 	pre-commit run --all-files

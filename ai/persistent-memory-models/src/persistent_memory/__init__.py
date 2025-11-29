@@ -2,7 +2,7 @@
 Persistent Memory Models
 =======================
 
-A production-grade AI memory system with hierarchical attention, 
+A production-grade AI memory system with hierarchical attention,
 knowledge graphs, and research paper ingestion capabilities.
 """
 
@@ -10,6 +10,7 @@ knowledge graphs, and research paper ingestion capabilities.
 try:
     import pydantic
     from pydantic_settings import BaseSettings
+
     pydantic.BaseSettings = BaseSettings
 except ImportError:
     pass
@@ -18,29 +19,28 @@ except ImportError:
 try:
     from .persistent_vector_store import PersistentVectorStore
 except ImportError:
-    PersistentVectorStore = None
+    PersistentVectorStore = None  # type: ignore
 except Exception:
     # Handle pydantic validation errors
-    PersistentVectorStore = None
-
-from .persistent_knowledge_graph import PersistentKnowledgeGraph
-from .persistent_context import PersistentContextAI as PersistentContext
+    PersistentVectorStore = None  # type: ignore
 
 # Research & Data Components
 from .arxiv_downloader import ArxivDownloader, ArxivPaper
-from .data_repository import DataRepository, get_repository
-from .conference_connector import ConferenceConnector, Conference
-
-# Attention & Retrieval
-from .hierarchical_attention import HierarchicalAttentionNetwork
 from .attention_retrieval import AttentionEnhancedRetrieval
-
-# Workflows
-from .paper_ingestion_workflow import ResearchPaperIngestionWorkflow
-from .ingestion_workflow import IngestBookWorkflow
+from .conference_connector import Conference, ConferenceConnector
+from .data_repository import DataRepository, get_repository
 
 # Utilities
 from .fact_extractor import FactExtractor
+
+# Attention & Retrieval
+from .hierarchical_attention import HierarchicalAttentionNetwork
+from .ingestion_workflow import IngestBookWorkflow
+
+# Workflows
+from .paper_ingestion_workflow import ResearchPaperIngestionWorkflow
+from .persistent_context import PersistentContextAI as PersistentContext
+from .persistent_knowledge_graph import PersistentKnowledgeGraph
 
 __version__ = "0.1.0"
 
@@ -49,7 +49,6 @@ __all__ = [
     "PersistentVectorStore",
     "PersistentKnowledgeGraph",
     "PersistentContext",
-    
     # Research
     "ArxivDownloader",
     "ArxivPaper",
@@ -57,15 +56,12 @@ __all__ = [
     "get_repository",
     "ConferenceConnector",
     "Conference",
-    
     # Attention
     "HierarchicalAttentionNetwork",
     "AttentionEnhancedRetrieval",
-    
     # Workflows
     "ResearchPaperIngestionWorkflow",
     "IngestBookWorkflow",
-    
     # Utils
     "FactExtractor",
 ]
