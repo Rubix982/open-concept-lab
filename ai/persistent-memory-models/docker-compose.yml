@@ -66,6 +66,17 @@ services:
     networks:
       - persistent-memory-net
 
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - persistent-memory-net
+    command: redis-server --appendonly yes
+
   # Our Application (Worker)
   app:
     build: .
@@ -172,3 +183,4 @@ volumes:
   ollama_data:
   prometheus_data:
   grafana_data:
+  redis_data:
