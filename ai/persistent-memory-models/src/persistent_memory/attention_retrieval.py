@@ -28,8 +28,8 @@ class AttentionEnhancedRetrieval:
     def __init__(
         self,
         vector_store: PersistentVectorStore,
-        attention_config: AttentionConfig = None,
-        model_path: str = None,
+        attention_config: AttentionConfig | None = None,
+        model_path: str | None = None,
     ):
         self.vector_store = vector_store
         self.config = attention_config or AttentionConfig()
@@ -226,7 +226,7 @@ class AttentionDataset:
 def evaluate_attention_retrieval(
     retrieval_system: AttentionEnhancedRetrieval,
     test_queries: list[str],
-    ground_truth: dict[str, list[str]] = None,
+    ground_truth: dict[str, list[str]] | None = None,
 ) -> dict[str, float]:
     """
     Evaluate attention-based retrieval.
@@ -237,7 +237,12 @@ def evaluate_attention_retrieval(
     - MRR (Mean Reciprocal Rank)
     - Attention entropy (diversity of attention)
     """
-    metrics = {"precision": [], "recall": [], "mrr": [], "attention_entropy": []}
+    metrics: dict[str, list[float]] = {
+        "precision": [],
+        "recall": [],
+        "mrr": [],
+        "attention_entropy": [],
+    }
 
     for query in test_queries:
         result = retrieval_system.retrieve_with_attention(query, k=10, return_attention=True)
@@ -261,9 +266,9 @@ def evaluate_attention_retrieval(
 
     # Average metrics
     return {
-        "avg_precision": np.mean(metrics["precision"]) if metrics["precision"] else 0,
-        "avg_recall": np.mean(metrics["recall"]) if metrics["recall"] else 0,
-        "avg_attention_entropy": np.mean(metrics["attention_entropy"]),
+        "avg_precision": float(np.mean(metrics["precision"])) if metrics["precision"] else 0.0,
+        "avg_recall": float(np.mean(metrics["recall"])) if metrics["recall"] else 0.0,
+        "avg_attention_entropy": float(np.mean(metrics["attention_entropy"])),
     }
 
 

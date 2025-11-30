@@ -52,7 +52,7 @@ class ContextQualityMonitor:
         self.window_size = window_size
 
         # Rolling windows for metrics
-        self.metrics = {
+        self.metrics: dict[str, deque[float]] = {
             "retrieval_precision": deque(maxlen=window_size),
             "retrieval_recall": deque(maxlen=window_size),
             "latency": deque(maxlen=window_size),

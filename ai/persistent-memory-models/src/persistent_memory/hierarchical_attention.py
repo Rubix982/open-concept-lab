@@ -335,7 +335,7 @@ class AttentionTrainer:
         loss.backward()
         self.optimizer.step()
 
-        return loss.item()
+        return float(loss.item())
 
 
 if __name__ == "__main__":

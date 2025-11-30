@@ -151,7 +151,8 @@ class DataRepository:
         # Download if needed
         paper_data = self.get_paper(arxiv_id)
         if paper_data and "pdf_path" in paper_data:
-            return paper_data["pdf_path"]
+            pdf_path_str: str = paper_data["pdf_path"]
+            return pdf_path_str
 
         return None
 
@@ -289,7 +290,8 @@ class DataRepository:
     def _load_index(self) -> dict[str, Any]:
         """Load index from disk."""
         if self.index_path.exists():
-            return json.loads(self.index_path.read_text(encoding="utf-8"))
+            result: dict[str, Any] = json.loads(self.index_path.read_text(encoding="utf-8"))
+            return result
         return {}
 
     def _save_index(self):

@@ -87,7 +87,7 @@ class ArxivDownloader:
         """
         self._rate_limit()
 
-        params = {
+        params: dict[str, str | int] = {
             "search_query": query,
             "start": 0,
             "max_results": max_results,

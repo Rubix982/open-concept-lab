@@ -99,7 +99,9 @@ class ResearchPaperIngestionWorkflow:
                 fact_extraction_tasks.append(task)
 
         # Wait for all fact extractions
-        fact_results = await workflow.wait_for_all(*fact_extraction_tasks)
+        import asyncio
+
+        fact_results = await asyncio.gather(*fact_extraction_tasks)
 
         # Step 4: (Optional) Update attention model
         if params.use_attention and len(paper_results) >= 5:

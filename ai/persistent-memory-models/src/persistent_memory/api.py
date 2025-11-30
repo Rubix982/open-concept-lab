@@ -138,7 +138,9 @@ async def query(request: QueryRequest):
     # Query knowledge graph
     if not request.layers or "graph" in request.layers:
         graph_results = PersistentKnowledgeGraph().query(request.query)
-        results.extend([{**r, "source": "graph"} for r in graph_results])
+        # graph_results is a dict with 'nodes' and 'edges', not a list
+        if graph_results.get("nodes"):
+            results.append({"data": graph_results, "source": "graph"})
 
     response_metadata = {
         "total_results": len(results),

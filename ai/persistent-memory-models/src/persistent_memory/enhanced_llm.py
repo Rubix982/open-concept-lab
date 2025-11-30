@@ -88,6 +88,7 @@ class EnhancedLLM:
         self.knowledge_graph = PersistentKnowledgeGraph()  # Semantic memory
 
         # Advanced Retrieval
+        self.retrieval: AttentionEnhancedRetrieval | None
         if enable_attention:
             logger.info("🔬 Enabling hierarchical attention...")
             self.retrieval = AttentionEnhancedRetrieval(self.vector_store)
@@ -99,6 +100,7 @@ class EnhancedLLM:
         self.context_allocator = DynamicContextAllocator(max_tokens=max_context_tokens)
 
         # Quality Monitoring
+        self.quality_monitor: ContextQualityMonitor | None
         if enable_quality_monitoring:
             logger.info("📊 Enabling quality monitoring...")
             self.quality_monitor = ContextQualityMonitor()
@@ -106,6 +108,7 @@ class EnhancedLLM:
             self.quality_monitor = None
 
         # Query Caching
+        self.cache: QueryCache | None
         if enable_cache:
             try:
                 logger.info("⚡ Enabling query cache...")
@@ -170,7 +173,7 @@ class EnhancedLLM:
                         "cached": True,
                         "latency": time.time() - start_time,
                     }
-                return response_val
+                return str(response_val) if not return_metadata else response_val
 
         # Step 2: Retrieve relevant context from memory
         relevant_contexts = []
@@ -222,16 +225,14 @@ class EnhancedLLM:
         if use_memory:
             logger.info("🔍 Extracting facts...")
             try:
-                facts = await self.fact_extractor.extract_from_text(
+                extraction_result = await self.fact_extractor.extract_from_text(
                     f"User: {user_input}\nAssistant: {response}"
                 )
-                logger.info(f"   Extracted {len(facts.get('facts', []))} facts")
+                logger.info(f"   Extracted {len(extraction_result.facts)} facts")
 
                 # Store facts in knowledge graph
-                for fact in facts.get("facts", []):
-                    self.knowledge_graph.add_fact(
-                        fact["subject"], fact["predicate"], fact["object"]
-                    )
+                for fact in extraction_result.facts:
+                    self.knowledge_graph.add_fact(fact.subject, fact.predicate, fact.object)
             except Exception as e:
                 logger.warning(f"Fact extraction failed: {e}")
 
@@ -259,7 +260,7 @@ class EnhancedLLM:
 
         # Step 10: Cache result
         if self.cache and use_memory:
-            await self.cache.set(user_input, response, ttl=3600)
+            await self.cache.set(user_input, {"value": response}, ttl=3600)
 
         latency = time.time() - start_time
         logger.info(f"⏱️  Total latency: {latency:.2f}s")
@@ -306,7 +307,7 @@ Use the provided context to give accurate, informed responses."""
                 temperature=0.7,
                 max_tokens=500,
             )
-            return response.choices[0].message.content
+            return str(response.choices[0].message.content or "")
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
             return f"I apologize, but I encountered an error: {str(e)}"
@@ -332,11 +333,11 @@ Use the provided context to give accurate, informed responses."""
         )
 
         # Extract and store facts
-        facts = await self.fact_extractor.extract_from_text(text)
-        for fact in facts.get("facts", []):
-            self.knowledge_graph.add_fact(fact["subject"], fact["predicate"], fact["object"])
+        extraction_result = await self.fact_extractor.extract_from_text(text)
+        for fact in extraction_result.facts:
+            self.knowledge_graph.add_fact(fact.subject, fact.predicate, fact.object)
 
-        logger.info(f"✅ Learned {len(facts.get('facts', []))} new facts")
+        logger.info(f"✅ Learned {len(extraction_result.facts)} new facts")
 
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about the enhanced LLM."""

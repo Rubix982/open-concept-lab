@@ -30,7 +30,7 @@ class BatchProcessor:
     - Error handling
     """
 
-    def __init__(self, config: BatchConfig = None):
+    def __init__(self, config: BatchConfig | None = None):
         self.config = config or BatchConfig()
         self.processed = 0
         self.failed = 0
@@ -119,7 +119,9 @@ class BatchProcessor:
                     await asyncio.sleep(self.config.retry_delay * (attempt + 1))
 
         # All retries failed
-        raise last_error
+        if last_error:
+            raise last_error
+        raise Exception(f"Failed to process {file_path}")
 
 
 class DocumentScanner:
@@ -128,7 +130,9 @@ class DocumentScanner:
     SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".epub"}
 
     @staticmethod
-    def scan_directory(directory: str, recursive: bool = True, extensions: set = None) -> list[str]:
+    def scan_directory(
+        directory: str, recursive: bool = True, extensions: set | None = None
+    ) -> list[str]:
         """
         Scan directory for supported documents.
 
@@ -146,14 +150,14 @@ class DocumentScanner:
         if not path.exists():
             raise ValueError(f"Directory not found: {directory}")
 
-        files = []
+        files: list[str] = []
 
         if recursive:
             for ext in extensions:
-                files.extend(path.rglob(f"*{ext}"))
+                files.extend([str(f) for f in path.rglob(f"*{ext}")])
         else:
             for ext in extensions:
-                files.extend(path.glob(f"*{ext}"))
+                files.extend([str(f) for f in path.glob(f"*{ext}")])
 
         file_paths = [str(f) for f in files]
         logger.info(f"Found {len(file_paths)} documents in {directory}")

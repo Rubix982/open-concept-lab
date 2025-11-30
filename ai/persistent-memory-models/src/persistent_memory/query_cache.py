@@ -86,7 +86,8 @@ class QueryCache:
             if cached:
                 self.hits += 1
                 logger.debug(f"Cache HIT for query: {query[:50]}")
-                return json.loads(cached)
+                result: dict[str, Any] = json.loads(cached)
+                return result
             else:
                 self.misses += 1
                 logger.debug(f"Cache MISS for query: {query[:50]}")
@@ -175,13 +176,19 @@ class CachedVectorStore:
         # Try cache first
         cached = await self.cache.get(query, k=k)
         if cached is not None:
-            return cached
+            # Unwrap if wrapped in dict
+            if isinstance(cached, dict) and "results" in cached:
+                results_list: list[dict[str, Any]] = cached["results"]
+                return results_list
+            # If it's already a list, return it
+            if isinstance(cached, list):
+                return cached
 
         # Cache miss - do actual search
-        results = self.vector_store.search(query, k=k)
+        results: list[dict[str, Any]] = self.vector_store.search(query, k=k)
 
         # Cache for future
-        await self.cache.set(query, results, k=k)
+        await self.cache.set(query, {"results": results}, k=k)
 
         return results
 

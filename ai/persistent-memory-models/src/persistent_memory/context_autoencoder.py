@@ -82,7 +82,8 @@ class ContextAutoencoder(nn.Module):
 
     def decode(self, z: torch.Tensor) -> torch.Tensor:
         """Decode latent representation back to original space."""
-        return self.decoder(z)
+        decoded: torch.Tensor = self.decoder(z)
+        return decoded
 
     def forward(
         self, x: torch.Tensor
@@ -112,7 +113,10 @@ class ContextAutoencoder(nn.Module):
         # KL divergence (for VAE)
         kl_loss = 0.0
         if self.architecture == "variational" and mu is not None and logvar is not None:
-            kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=-1).mean()
+            kl_loss_value: torch.Tensor = -0.5 * torch.sum(
+                1 + logvar - mu.pow(2) - logvar.exp(), dim=-1
+            )
+            kl_loss = float(kl_loss_value.mean().item())
 
         # Combined loss
         total_loss = reconstruction_loss + 0.5 * semantic_loss + 0.1 * kl_loss

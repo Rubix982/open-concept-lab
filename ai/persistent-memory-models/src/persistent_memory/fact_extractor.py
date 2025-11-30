@@ -71,7 +71,8 @@ class FactExtractor:
 
     async def extract_from_text(self, text: str) -> ExtractionResult:
         """Alias for extract_from_chunk."""
-        return await self.extract_from_chunk(text)
+        result: ExtractionResult = await self.extract_from_chunk(text)
+        return result
 
     @track_duration(llm_call_duration)
     async def extract_from_chunk(self, text_chunk: str) -> ExtractionResult:

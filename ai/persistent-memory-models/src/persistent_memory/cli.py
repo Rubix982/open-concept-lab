@@ -223,9 +223,10 @@ def query(query_text: str, k: int = 5):
     print("\n--- Knowledge Graph Results ---")
     graph_results = kg.query(query_text)
 
-    if graph_results:
-        for result in graph_results[:k]:
-            print(f"{result.get('subject')} -> {result.get('predicate')} -> {result.get('object')}")
+    if graph_results and graph_results.get("nodes"):
+        nodes = graph_results.get("nodes", [])[:k]
+        for node in nodes:
+            print(f"Entity: {node}")
     else:
         print("No direct entity matches found in graph.")
 

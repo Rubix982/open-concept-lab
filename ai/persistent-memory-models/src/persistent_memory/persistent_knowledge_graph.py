@@ -16,7 +16,9 @@ class PersistentKnowledgeGraph:
         self.graph = nx.MultiDiGraph()
         self._load()
 
-    def add_fact(self, subject: str, predicate: str, object: str, metadata: dict[str, Any] = None):
+    def add_fact(
+        self, subject: str, predicate: str, object: str, metadata: dict[str, Any] | None = None
+    ):
         """
         Add a fact (edge) to the graph.
         """
@@ -33,7 +35,8 @@ class PersistentKnowledgeGraph:
             return {"nodes": [], "edges": []}
 
         subgraph = nx.ego_graph(self.graph, entity, radius=depth)
-        return nx.node_link_data(subgraph)
+        result: dict[str, Any] = nx.node_link_data(subgraph)
+        return result
 
     def query(self, query: str) -> dict[str, Any]:
         """

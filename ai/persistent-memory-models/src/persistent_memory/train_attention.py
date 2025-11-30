@@ -117,9 +117,9 @@ class AttentionTrainer:
         """Train for one epoch."""
         self.model.train()
 
-        total_loss = 0
-        total_ranking_loss = 0
-        total_attention_loss = 0
+        total_loss = 0.0
+        total_ranking_loss = 0.0
+        total_attention_loss = 0.0
 
         for batch_idx, batch in enumerate(dataloader):
             # Move to device
@@ -174,9 +174,9 @@ class AttentionTrainer:
             self.optimizer.step()
 
             # Track losses
-            total_loss += loss.item()
-            total_ranking_loss += ranking_loss_val.item()
-            total_attention_loss += attention_loss.item()
+            total_loss += float(loss.item())
+            total_ranking_loss += float(ranking_loss_val.item())
+            total_attention_loss += float(attention_loss.item())
 
             if batch_idx % 10 == 0:
                 logger.info(

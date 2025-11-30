@@ -68,7 +68,7 @@ class DynamicContextAllocator:
         self,
         query: str,
         available_contexts: list[dict[str, Any]],
-        conversation_history: list[dict[str, str]] = None,
+        conversation_history: list[dict[str, str]] | None = None,
     ) -> tuple[dict[str, Any], int]:
         """
         Optimally allocate limited context window.
@@ -188,7 +188,7 @@ Use the provided context to answer questions accurately and comprehensively."""
         self, history: list[dict[str, str]], max_tokens: int
     ) -> list[dict[str, str]]:
         """Get recent conversation history within token budget."""
-        selected = []
+        selected: list[dict[str, str]] = []
         current_tokens = 0
 
         # Take most recent first
