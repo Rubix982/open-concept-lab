@@ -1211,13 +1211,173 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 	return nil
 }
 
-func removeDuplicateEntries() error {
-	// TODO: A lot of duplicates we are removing are actually labs or departments
-	// under a single university. In the future, we should consider normalizing
-	// these entries instead of deleting them outright. One possible approach is to
-	// create a parent-child relationship in the universities table to represent
-	// main institutions and their associated sub-entities.
+// identifyCanonicalUniversity selects the canonical name from a list of university name variants.
+// It prefers full names over abbreviated ones and avoids department-specific names.
+func identifyCanonicalUniversity(variants []string) string {
+	if len(variants) == 0 {
+		return ""
+	}
 
+	// Score each variant based on quality indicators
+	type scoredVariant struct {
+		name  string
+		score int
+	}
+
+	var scored []scoredVariant
+	for _, variant := range variants {
+		score := 0
+		lower := strings.ToLower(variant)
+
+		// Prefer longer names (more complete)
+		score += len(variant)
+
+		// Penalize abbreviations
+		if strings.Contains(lower, "univ.") || strings.Contains(lower, "dept") {
+			score -= 50
+		}
+
+		// Penalize department/lab specific names
+		if strings.Contains(lower, "department of") || strings.Contains(lower, "dept of") ||
+			strings.Contains(lower, "lab") || strings.Contains(lower, "institute of") ||
+			strings.Contains(lower, "scripps") || strings.Contains(lower, "marine science") {
+			score -= 100
+		}
+
+		// Prefer "University of" format over "Univ of" or "U.c."
+		if strings.HasPrefix(lower, "university of") || strings.HasPrefix(lower, "the university of") {
+			score += 30
+		}
+
+		// Penalize "The" prefix slightly (less canonical)
+		if strings.HasPrefix(lower, "the ") {
+			score -= 5
+		}
+
+		// Prefer comma-separated format (e.g., "University of California, Berkeley")
+		if strings.Count(variant, ",") == 1 {
+			score += 20
+		}
+
+		scored = append(scored, scoredVariant{name: variant, score: score})
+	}
+
+	// Sort by score descending
+	sort.Slice(scored, func(i, j int) bool {
+		return scored[i].score > scored[j].score
+	})
+
+	return scored[0].name
+}
+
+// buildUniversityNormalizationMap creates a mapping of variant university names to their canonical forms.
+// It analyzes the duplicate lists and identifies the best canonical name for each group.
+func buildUniversityNormalizationMap(duplicateGroups map[string][]string) map[string]string {
+	normalizationMap := make(map[string]string)
+
+	for _, variants := range duplicateGroups {
+		if len(variants) == 0 {
+			continue
+		}
+
+		// Identify the canonical name for this group
+		canonical := identifyCanonicalUniversity(variants)
+
+		// Map all variants to the canonical name
+		for _, variant := range variants {
+			if variant != canonical {
+				normalizationMap[variant] = canonical
+			}
+		}
+	}
+
+	return normalizationMap
+}
+
+// normalizeUniversityReferences updates all foreign key references to use canonical university names.
+// This ensures data consistency before removing duplicate university entries.
+func normalizeUniversityReferences(normalizationMap map[string]string) error {
+	db, err := GetDB()
+	if err != nil {
+		return fmt.Errorf("cannot get DB: %w", err)
+	}
+
+	if len(normalizationMap) == 0 {
+		logger.Infof("ℹ️ No university name normalization needed")
+		return nil
+	}
+
+	// Start a transaction for atomicity
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var totalUpdated int64
+
+	// Update award.institution
+	for variant, canonical := range normalizationMap {
+		result, err := tx.Exec(`UPDATE award SET institution = $1 WHERE institution = $2`, canonical, variant)
+		if err != nil {
+			return fmt.Errorf("failed to update award.institution from '%s' to '%s': %w", variant, canonical, err)
+		}
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected > 0 {
+			logger.Infof("🔄 Updated %d award.institution references: '%s' → '%s'", rowsAffected, variant, canonical)
+			totalUpdated += rowsAffected
+		}
+	}
+
+	// Update award.performing_institution
+	for variant, canonical := range normalizationMap {
+		result, err := tx.Exec(`UPDATE award SET performing_institution = $1 WHERE performing_institution = $2`, canonical, variant)
+		if err != nil {
+			return fmt.Errorf("failed to update award.performing_institution from '%s' to '%s': %w", variant, canonical, err)
+		}
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected > 0 {
+			logger.Infof("🔄 Updated %d award.performing_institution references: '%s' → '%s'", rowsAffected, variant, canonical)
+			totalUpdated += rowsAffected
+		}
+	}
+
+	// Update professor_areas.affiliation
+	for variant, canonical := range normalizationMap {
+		result, err := tx.Exec(`UPDATE professor_areas SET affiliation = $1 WHERE affiliation = $2`, canonical, variant)
+		if err != nil {
+			return fmt.Errorf("failed to update professor_areas.affiliation from '%s' to '%s': %w", variant, canonical, err)
+		}
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected > 0 {
+			logger.Infof("🔄 Updated %d professor_areas.affiliation references: '%s' → '%s'", rowsAffected, variant, canonical)
+			totalUpdated += rowsAffected
+		}
+	}
+
+	// Update professors.affiliation
+	for variant, canonical := range normalizationMap {
+		result, err := tx.Exec(`UPDATE professors SET affiliation = $1 WHERE affiliation = $2`, canonical, variant)
+		if err != nil {
+			return fmt.Errorf("failed to update professors.affiliation from '%s' to '%s': %w", variant, canonical, err)
+		}
+		rowsAffected, _ := result.RowsAffected()
+		if rowsAffected > 0 {
+			logger.Infof("🔄 Updated %d professors.affiliation references: '%s' → '%s'", rowsAffected, variant, canonical)
+			totalUpdated += rowsAffected
+		}
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit normalization transaction: %w", err)
+	}
+
+	logger.Infof("✅ Successfully normalized %d foreign key references across all tables", totalUpdated)
+	return nil
+}
+
+func removeDuplicateEntries() error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -1225,7 +1385,8 @@ func removeDuplicateEntries() error {
 
 	sqlDeleteQueryTemplate := `DELETE FROM %s WHERE %s IN (%s)`
 
-	for table, duplicates := range map[string]map[string][]string{
+	// Define duplicate groups for normalization
+	duplicateData := map[string]map[string][]string{
 		"professors": {"name": []string{
 			"Ronald J. Brachman",
 			"Ron Brachman [Tech]",
@@ -1341,7 +1502,76 @@ func removeDuplicateEntries() error {
 			// University Of Pennsylvania State University
 			"Penn State University, University Park",
 		}},
-	} {
+	}
+
+	// Step 1: Build normalization map for universities and normalize references
+	if universityDuplicates, ok := duplicateData["universities"]; ok {
+		if institutionVariants, ok := universityDuplicates["institution"]; ok {
+			// Group variants by university (currently all in one list, need to split by university)
+			// For now, we'll create groups based on common patterns
+			groups := make(map[string][]string)
+
+			// Group by university name patterns
+			for _, variant := range institutionVariants {
+				lower := strings.ToLower(variant)
+				var groupKey string
+
+				switch {
+				case strings.Contains(lower, "berkeley"):
+					groupKey = "berkeley"
+				case strings.Contains(lower, "illinois") && strings.Contains(lower, "urbana"):
+					groupKey = "illinois_urbana"
+				case strings.Contains(lower, "texas") && strings.Contains(lower, "austin"):
+					groupKey = "texas_austin"
+				case strings.Contains(lower, "michigan") && strings.Contains(lower, "ann arbor"):
+					groupKey = "michigan_ann_arbor"
+				case strings.Contains(lower, "san diego"):
+					groupKey = "san_diego"
+				case strings.Contains(lower, "wisconsin") && strings.Contains(lower, "madison"):
+					groupKey = "wisconsin_madison"
+				case strings.Contains(lower, "los angeles") || strings.Contains(lower, "ucla"):
+					groupKey = "ucla"
+				case strings.Contains(lower, "maryland") && strings.Contains(lower, "college park"):
+					groupKey = "maryland_college_park"
+				case strings.Contains(lower, "purdue") || strings.Contains(lower, "indianapolis"):
+					groupKey = "purdue_indianapolis"
+				case strings.Contains(lower, "massachusetts") && strings.Contains(lower, "amherst"):
+					groupKey = "umass_amherst"
+				case strings.Contains(lower, "irvine"):
+					groupKey = "uci"
+				case strings.Contains(lower, "santa barbara"):
+					groupKey = "ucsb"
+				case strings.Contains(lower, "north carolina") && strings.Contains(lower, "chapel hill"):
+					groupKey = "unc_chapel_hill"
+				case strings.Contains(lower, "minnesota") && strings.Contains(lower, "twin cities"):
+					groupKey = "minnesota_twin_cities"
+				case strings.Contains(lower, "penn state"):
+					groupKey = "penn_state"
+				default:
+					continue
+				}
+
+				groups[groupKey] = append(groups[groupKey], variant)
+			}
+
+			// Build normalization map
+			normalizationMap := buildUniversityNormalizationMap(groups)
+
+			// Log the normalization plan
+			logger.Infof("📋 University normalization plan:")
+			for variant, canonical := range normalizationMap {
+				logger.Infof("   '%s' → '%s'", variant, canonical)
+			}
+
+			// Normalize all foreign key references
+			if err := normalizeUniversityReferences(normalizationMap); err != nil {
+				return fmt.Errorf("failed to normalize university references: %w", err)
+			}
+		}
+	}
+
+	// Step 2: Delete duplicate entries
+	for table, duplicates := range duplicateData {
 		for column, values := range duplicates {
 			var deleteQueryBuilder strings.Builder
 			for _, val := range values {

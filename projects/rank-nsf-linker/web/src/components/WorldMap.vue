@@ -33,9 +33,22 @@
           v-model="search"
           @input="onSearchInput"
           @keydown.enter.prevent="searchAndFly"
-          placeholder="Search university (press Enter)"
+          @focus="showSearchResults = true"
+          placeholder="Search university, city, or state..."
           class="search"
         />
+        <!-- Search Results Dropdown -->
+        <div v-if="showSearchResults && searchResults.length > 0" class="search-results">
+          <div 
+            v-for="result in searchResults.slice(0, 5)" 
+            :key="result.institution"
+            @click="flyToUniversity(result)"
+            class="search-result-item"
+          >
+            <div class="result-name">{{ result.institution }}</div>
+            <div class="result-location">{{ result.city }}, {{ result.region }}</div>
+          </div>
+        </div>
       </div>
 
       <!-- Filters -->
@@ -45,6 +58,22 @@
         </button>
 
         <div v-if="showFilters" class="filters-content">
+          <!-- Quick Presets -->
+          <div class="filter-presets">
+            <button @click="applyPreset('top-funded')" class="preset-btn">
+              💰 Top Funded
+            </button>
+            <button @click="applyPreset('large-faculty')" class="preset-btn">
+              👥 Large Faculty
+            </button>
+            <button @click="applyPreset('ai-focused')" class="preset-btn">
+              🤖 AI Focused
+            </button>
+            <button @click="applyPreset('active-awards')" class="preset-btn">
+              🏆 Active Awards
+            </button>
+          </div>
+
           <!-- Research Area Filter -->
           <div class="filter-group">
             <label>Research Areas:</label>
@@ -87,12 +116,54 @@
             </div>
           </div>
 
-          <!-- NSF Awards Filter -->
+          <!-- Faculty Count Filter -->
+          <div class="filter-group">
+            <label>Faculty Count:</label>
+            <div class="range-inputs">
+              <input
+                v-model.number="facultyMin"
+                type="number"
+                placeholder="Min"
+                class="range-input"
+              />
+              <span>—</span>
+              <input
+                v-model.number="facultyMax"
+                type="number"
+                placeholder="Max"
+                class="range-input"
+              />
+            </div>
+          </div>
+
+          <!-- Active Awards Filter -->
           <div class="filter-group">
             <label>
-              <input v-model="showNSFOnly" type="checkbox" />
-              NSF Award Recipients Only
+              <input v-model="showActiveAwardsOnly" type="checkbox" />
+              Active NSF Awards Only
             </label>
+          </div>
+
+          <!-- State/Region Filter -->
+          <div class="filter-group">
+            <label>State/Region:</label>
+            <select v-model="selectedState" class="viz-select">
+              <option value="">All States</option>
+              <option v-for="state in uniqueStates" :key="state" :value="state">
+                {{ state }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Sort Universities -->
+          <div class="filter-group">
+            <label>Sort Universities:</label>
+            <select v-model="universitySort" class="viz-select">
+              <option value="name">By Name</option>
+              <option value="funding">By Funding (High to Low)</option>
+              <option value="faculty">By Faculty Count (High to Low)</option>
+              <option value="awards">By Active Awards (High to Low)</option>
+            </select>
           </div>
 
           <!-- Visualization Mode -->
@@ -113,7 +184,7 @@
       <!-- Stats Overview -->
       <div class="stats-overview">
         <div class="stat-item">
-          <div class="stat-value">{{ filteredUniversities.length }}</div>
+          <div class="stat-value">{{ sortedUniversities.length }}</div>
           <div class="stat-label">Universities</div>
         </div>
         <div class="stat-item">
@@ -123,6 +194,10 @@
         <div class="stat-item">
           <div class="stat-value">${{ totalFundingDisplay }}M</div>
           <div class="stat-label">Total Funding</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ totalActiveAwards }}</div>
+          <div class="stat-label">Active Awards</div>
         </div>
       </div>
     </div>
@@ -918,6 +993,69 @@ type UniDetail = UniSummary & {
   recent_nsf_awards?: NSFAward[]; // for each university, get recent NSF awards with details
 };
 
+// -------------------- Functions --------------------
+function applyPreset(preset: string) {
+  resetFilters();
+
+  switch (preset) {
+    case 'top-funded':
+      fundingMin.value = 100; // $100M+
+      universitySort.value = 'funding';
+      break;
+    case 'large-faculty':
+      facultyMin.value = 50;
+      universitySort.value = 'faculty';
+      break;
+    case 'ai-focused':
+      activeAreas.value = new Set(['AI']);
+      break;
+    case 'active-awards':
+      showActiveAwardsOnly.value = true;
+      universitySort.value = 'awards';
+      break;
+  }
+}
+
+function onSearchInput() {
+  if (!search.value.trim()) {
+    searchResults.value = [];
+    showSearchResults.value = false;
+    return;
+  }
+
+  const query = search.value.toLowerCase().trim();
+  searchResults.value = allUniversities.value.filter(u => {
+    const inst = u.institution.toLowerCase();
+    const city = (u.city || '').toLowerCase();
+    const region = (u.region || '').toLowerCase();
+
+    // Match institution, city, or region
+    return inst.includes(query) ||
+           city.includes(query) ||
+           region.includes(query);
+  });
+
+  showSearchResults.value = searchResults.value.length > 0;
+}
+
+function flyToUniversity(uni: UniSummary) {
+  if (!map) return;
+
+  showSearchResults.value = false;
+  search.value = uni.institution;
+
+  map.flyTo({
+    center: [uni.longitude, uni.latitude],
+    zoom: 12,
+    duration: 1500
+  });
+
+  // Select the university
+  setTimeout(() => {
+    selectUniversity(uni.institution);
+  }, 1500);
+}
+
 // -------------------- Config --------------------
 const AREA_COLORS: Record<string, string> = {
   AI: "#10b981",
@@ -954,8 +1092,16 @@ const showFilters = ref(false);
 const activeAreas = ref(new Set<string>(Object.keys(AREA_COLORS)));
 const fundingMin = ref<number | null>(null);
 const fundingMax = ref<number | null>(null);
-const showNSFOnly = ref(false);
+const facultyMin = ref<number | null>(null);
+const facultyMax = ref<number | null>(null);
+const showActiveAwardsOnly = ref(false);
+const selectedState = ref<string>("");
+const universitySort = ref<"name" | "funding" | "faculty" | "awards">("name");
 const vizMode = ref<"area" | "funding" | "faculty" | "nsf">("area");
+
+// Search
+const showSearchResults = ref(false);
+const searchResults = ref<UniSummary[]>([]);
 
 // Faculty filters
 const facultySort = ref<"name" | "citations" | "publications" | "hindex">(
@@ -964,6 +1110,14 @@ const facultySort = ref<"name" | "citations" | "publications" | "hindex">(
 const activeFacultyAreas = ref(new Set<string>());
 
 // -------------------- Computed --------------------
+const uniqueStates = computed(() => {
+  const states = new Set<string>();
+  allUniversities.value.forEach(u => {
+    if (u.region) states.add(u.region);
+  });
+  return Array.from(states).sort();
+});
+
 const filteredUniversities = computed(() => {
   return allUniversities.value.filter((u) => {
     // Area filter
@@ -975,13 +1129,52 @@ const filteredUniversities = computed(() => {
     if (fundingMax.value !== null && (u.funding || 0) > fundingMax.value)
       return false;
 
-    // NSF filter
-    // if (showNSFOnly.value && (!u.nsf_awards || u.nsf_awards === 0))
-    //   return false;
+    // Faculty count filter
+    if (facultyMin.value !== null && (u.faculty_count || 0) < facultyMin.value)
+      return false;
+    if (facultyMax.value !== null && (u.faculty_count || 0) > facultyMax.value)
+      return false;
+
+    // Active awards filter
+    if (showActiveAwardsOnly.value && (!u.stats?.active_awards || u.stats.active_awards === 0))
+      return false;
+
+    // State filter
+    if (selectedState.value && u.region !== selectedState.value)
+      return false;
 
     return true;
   });
 });
+
+const sortedUniversities = computed(() => {
+  const sorted = [...filteredUniversities.value];
+
+  switch (universitySort.value) {
+    case "funding":
+      sorted.sort((a, b) => (b.funding || 0) - (a.funding || 0));
+      break;
+    case "faculty":
+      sorted.sort((a, b) => (b.faculty_count || 0) - (a.faculty_count || 0));
+      break;
+    case "awards":
+      sorted.sort((a, b) =>
+        (b.stats?.active_awards || 0) - (a.stats?.active_awards || 0)
+      );
+      break;
+    default:
+      sorted.sort((a, b) => a.institution.localeCompare(b.institution));
+  }
+
+  return sorted;
+});
+
+const totalActiveAwards = computed(() =>
+  filteredUniversities.value.reduce(
+    (sum, u) => sum + (u.stats?.active_awards || 0),
+    0
+  )
+);
 
 const totalFaculty = computed(() =>
   filteredUniversities.value.reduce((sum, u) => sum + (u.faculty_count || 0), 0)
@@ -1179,16 +1372,23 @@ function resetFilters() {
   activeAreas.value = new Set(Object.keys(AREA_COLORS));
   fundingMin.value = null;
   fundingMax.value = null;
-  showNSFOnly.value = false;
+  facultyMin.value = null;
+  facultyMax.value = null;
+  showActiveAwardsOnly.value = false;
+  selectedState.value = "";
+  universitySort.value = "name";
+  search.value = "";
+  searchResults.value = [];
+  showSearchResults.value = false;
   vizMode.value = "area";
   activeFacultyAreas.value = new Set();
   updateMapData();
 }
 
-function updateMapData() {
-  if (!map) return;
+function updatePointsLayer() {
+  if (!map || !map.getSource("unis")) return;
 
-  const fc = buildFeatureCollection(filteredUniversities.value);
+  const fc = buildFeatureCollection(sortedUniversities.value);
   const source = map.getSource("unis") as maplibregl.GeoJSONSource;
   if (source) {
     source.setData(fc as any);
@@ -1224,23 +1424,16 @@ async function fetchCountrySummaries(country: string): Promise<UniSummary[]> {
 }
 
 async function fetchAllSummaries(onCountryDone: (data: UniSummary[]) => void) {
-  const limit = pLimit(5); // concurrency limit to avoid server overload
-  const promises = COUNTRIES_LIST.map((country) =>
-    limit(async () => {
-      try {
-        const data = await fetchCountrySummaries(country);
-        onCountryDone(data);
-        return data;
-      } catch (err: any) {
-        errorHandler(err, `Failed to fetch summaries for ${country}`);
-        return [];
-      }
-    })
-  );
-
-  // Wait for all to complete
-  const results = await Promise.all(promises);
-  return results.flat();
+  try {
+    // Fetch top US universities from new endpoint
+    const response = await axios.get<UniSummary[]>('/api/universities/top?limit=100');
+    const data = response.data;
+    onCountryDone(data);
+    return data;
+  } catch (err: any) {
+    errorHandler(err, 'Failed to fetch top universities');
+    return [];
+  }
 }
 
 async function setupMapWithSummaries(all: UniSummary[]) {
@@ -1468,8 +1661,8 @@ onMounted(async () => {
       },
       layers: [{ id: "osm", type: "raster", source: "osm" }],
     },
-    center: [0, 20],
-    zoom: 2,
+    center: [-95, 37], // Center of US
+    zoom: 4, // Closer zoom for US
   });
 
   map.doubleClickZoom.disable();
@@ -1768,6 +1961,7 @@ onBeforeUnmount(() => {
 
 .search-section {
   margin-bottom: 12px;
+  position: relative;
 }
 
 .search {
@@ -1783,6 +1977,47 @@ onBeforeUnmount(() => {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: #f8fafc;
+}
+
+.result-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.result-location {
+  font-size: 12px;
+  color: #64748b;
 }
 
 .filters-section {
@@ -1811,6 +2046,37 @@ onBeforeUnmount(() => {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #e2e8f0;
+}
+
+.filter-presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preset-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.preset-btn:active {
+  transform: translateY(0);
 }
 
 .filter-group {
