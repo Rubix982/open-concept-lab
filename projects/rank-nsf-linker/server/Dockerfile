@@ -33,6 +33,9 @@ WORKDIR /app
 RUN mkdir -p /app/data/nsfdata
 RUN mkdir -p /app/target/
 
+# Install Python3 and pip for scraper
+RUN apk add --no-cache python3 py3-pip
+
 # Copy built binary from builder stage
 COPY --from=builder /app/go-server .
 COPY --from=builder /app/.env /app/.env
@@ -40,9 +43,14 @@ COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/scripts /app/scripts
 COPY --from=builder /app/certs /app/certs
 
+# Copy scraper code and install dependencies
+COPY scraper /app/scraper
+RUN cd /app/scraper && pip3 install --no-cache-dir -r requirements.txt
+
 # Make sure certs and the data directory are readable by the non-root user
 RUN chown -R 65532:65532 /app/certs && \
     chown -R 65532:65532 /app/target && \
+    chown -R 65532:65532 /app/scraper && \
     chmod 600 /app/data && \
     chmod 600 /app/certs/client.key /app/certs/client.crt /app/certs/ca.crt
 

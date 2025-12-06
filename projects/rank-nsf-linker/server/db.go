@@ -1904,6 +1904,7 @@ func populatePostgres() {
 		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
 		{"Populate from Script Caches", populatePostgresFromScriptCaches},
 		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
+		{"Scrape Professor Homepages", scrapeProfessorHomepages},
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
