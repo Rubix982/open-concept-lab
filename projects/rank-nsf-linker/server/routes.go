@@ -1,11 +1,121 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 )
+
+// SearchRequest represents a faculty search request
+type SearchRequest struct {
+	Query   string                 `json:"query"`
+	Limit   int                    `json:"limit"`
+	Filters map[string]interface{} `json:"filters,omitempty"`
+}
+
+// SearchResult represents a single search result
+type SearchResult struct {
+	Score    float64                `json:"score"`
+	Metadata map[string]interface{} `json:"metadata"`
+}
+
+// searchFacultyByResearch handles semantic search for faculty
+func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	// Parse request body
+	var req SearchRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate query
+	if req.Query == "" {
+		http.Error(w, "Query is required", http.StatusBadRequest)
+		return
+	}
+
+	// Set default limit
+	if req.Limit == 0 {
+		req.Limit = 10
+	}
+
+	logger.Infof("Searching for: '%s' (limit: %d)", req.Query, req.Limit)
+
+	// Find Python and search script
+	pythonCmd := "python3"
+	if _, err := exec.LookPath(pythonCmd); err != nil {
+		pythonCmd = "python"
+		if _, err := exec.LookPath(pythonCmd); err != nil {
+			http.Error(w, "Python not available", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Find research service directory
+	researchDir := "research_service"
+	if _, err := os.Stat(researchDir); os.IsNotExist(err) {
+		researchDir = filepath.Join("server", "research_service")
+		if _, err := os.Stat(researchDir); os.IsNotExist(err) {
+			http.Error(w, "Research service not found", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	searchScript := filepath.Join(researchDir, "search_api.py")
+
+	// Prepare input JSON
+	inputJSON, err := json.Marshal(req)
+	if err != nil {
+		http.Error(w, "Failed to prepare search request", http.StatusInternalServerError)
+		return
+	}
+
+	// Run Python search
+	cmd := exec.Command(pythonCmd, searchScript)
+	cmd.Dir = researchDir
+	cmd.Stdin = bytes.NewReader(inputJSON)
+
+	// Set environment variables
+	cmd.Env = append(os.Environ(),
+		fmt.Sprintf("POSTGRES_HOST=%s", os.Getenv("POSTGRES_HOST")),
+		fmt.Sprintf("POSTGRES_PORT=%s", os.Getenv("POSTGRES_PORT")),
+		fmt.Sprintf("POSTGRES_USER=%s", os.Getenv("POSTGRES_USER")),
+		fmt.Sprintf("POSTGRES_PASSWORD=%s", os.Getenv("POSTGRES_PASSWORD")),
+		fmt.Sprintf("POSTGRES_DB_NAME=%s", os.Getenv("POSTGRES_DB_NAME")),
+		fmt.Sprintf("QDRANT_HOST=%s", os.Getenv("QDRANT_HOST")),
+		fmt.Sprintf("QDRANT_PORT=%s", os.Getenv("QDRANT_PORT")),
+	)
+
+	// Execute and capture output
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		logger.Errorf("Search failed: %v\nOutput: %s", err, string(output))
+		http.Error(w, "Search failed", http.StatusInternalServerError)
+		return
+	}
+
+	// Parse results
+	var results []SearchResult
+	if err := json.Unmarshal(output, &results); err != nil {
+		logger.Errorf("Failed to parse search results: %v", err)
+		http.Error(w, "Failed to parse results", http.StatusInternalServerError)
+		return
+	}
+
+	logger.Infof("Found %d results for query: '%s'", len(results), req.Query)
+
+	// Return results
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(results)
+}
 
 func fetchAllUniversitiesWithCoordinates() ([]byte, error) {
 	db, err := GetDB()

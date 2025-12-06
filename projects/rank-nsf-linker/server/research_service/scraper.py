@@ -6,6 +6,7 @@ from datetime import datetime
 
 from .crawler import WebCrawler
 from .config import config
+from .cache import scrape_cache
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +17,12 @@ class FacultyScraper:
     def __init__(
         self,
         max_depth: int = None,
-        delay: float = None
+        delay: float = None,
+        use_cache: bool = True
     ):
         self.max_depth = max_depth or config.max_depth
         self.delay = delay or config.delay_seconds
+        self.use_cache = use_cache
         self.crawler = WebCrawler(
             max_depth=self.max_depth,
             delay=self.delay,
@@ -41,6 +44,13 @@ class FacultyScraper:
         Returns:
             List of scraped content dictionaries
         """
+        # Check cache first
+        if self.use_cache and scrape_cache.has_cached(professor_name):
+            logger.info(f"Loading {professor_name} from cache")
+            cached = scrape_cache.load_cached(professor_name)
+            if cached:
+                return cached
+        
         logger.info(f"Starting scrape for {professor_name} at {homepage}")
         
         try:
@@ -52,6 +62,10 @@ class FacultyScraper:
                 result['professor_name'] = professor_name
                 result['professor_homepage'] = homepage
                 result['scraped_at'] = datetime.utcnow().isoformat()
+            
+            # Save to cache
+            if self.use_cache and results:
+                scrape_cache.save_to_cache(professor_name, results)
             
             logger.info(f"Scraped {len(results)} pages for {professor_name}")
             return results

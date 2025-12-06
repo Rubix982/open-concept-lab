@@ -31,6 +31,7 @@ FROM cgr.dev/chainguard/wolfi-base
 WORKDIR /app
 
 RUN mkdir -p /app/data/nsfdata
+RUN mkdir -p /app/data/scraped_cache
 RUN mkdir -p /app/target/
 
 # Install Python3 and pip for scraper
@@ -43,14 +44,14 @@ COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/scripts /app/scripts
 COPY --from=builder /app/certs /app/certs
 
-# Copy scraper code and install dependencies
-COPY scraper /app/scraper
-RUN cd /app/scraper && pip3 install --no-cache-dir -r requirements.txt
+# Copy research service (scraper + embeddings + qdrant) and install dependencies
+COPY research_service /app/research_service
+RUN cd /app/research_service && pip3 install --no-cache-dir -r requirements.txt
 
 # Make sure certs and the data directory are readable by the non-root user
 RUN chown -R 65532:65532 /app/certs && \
     chown -R 65532:65532 /app/target && \
-    chown -R 65532:65532 /app/scraper && \
+    chown -R 65532:65532 /app/research_service && \
     chmod 600 /app/data && \
     chmod 600 /app/certs/client.key /app/certs/client.crt /app/certs/ca.crt
 

@@ -89,5 +89,8 @@ func GetRouter() *chi.Mux {
 	r.Get("/universities", getAllUniversitiesWithCoordinates)
 	r.Get("/universities/top", getTopUniversitiesSummary)
 
+	// Search API
+	r.Post("/search/faculty", searchFacultyByResearch)
+
 	return r
 }

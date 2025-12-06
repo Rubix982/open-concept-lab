@@ -139,7 +139,14 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       ES_HOST: http://es-local:9200
-      QDRANT_HOST: http://qdrant-local:6333
+      QDRANT_HOST: qdrant-local
+      QDRANT_PORT: 6333
+      # PostgreSQL for research service
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: rank-nsf-linker
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -188,7 +195,7 @@ services:
     volumes:
       - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "3000:80"  # Nginx in Dockerfile serves on 80, mapped to 3000 locally
+      - "3000:80" # Nginx in Dockerfile serves on 80, mapped to 3000 locally
     depends_on:
       - go-server
     restart: unless-stopped

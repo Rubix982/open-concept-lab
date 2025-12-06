@@ -38,15 +38,69 @@
           class="search"
         />
         <!-- Search Results Dropdown -->
-        <div v-if="showSearchResults && searchResults.length > 0" class="search-results">
-          <div 
-            v-for="result in searchResults.slice(0, 5)" 
+        <div
+          v-if="showSearchResults && searchResults.length > 0"
+          class="search-results"
+        >
+          <div
+            v-for="result in searchResults.slice(0, 5)"
             :key="result.institution"
             @click="flyToUniversity(result)"
             class="search-result-item"
           >
             <div class="result-name">{{ result.institution }}</div>
-            <div class="result-location">{{ result.city }}, {{ result.region }}</div>
+            <div class="result-location">
+              {{ result.city }}, {{ result.region }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Semantic Research Search -->
+      <div class="semantic-search-section">
+        <div class="semantic-search-header">
+          <span>🔬 Search by Research Topic</span>
+        </div>
+        <div class="semantic-search-input">
+          <input
+            v-model="researchQuery"
+            @keydown.enter.prevent="searchByResearch"
+            placeholder="e.g., 'machine learning for healthcare'"
+            class="research-search-input"
+          />
+          <button
+            @click="searchByResearch"
+            class="search-btn"
+            :disabled="!researchQuery.trim()"
+          >
+            Search
+          </button>
+        </div>
+
+        <!-- Research Search Results -->
+        <div v-if="researchSearching" class="research-loading">
+          Searching...
+        </div>
+        <div v-else-if="researchResults.length > 0" class="research-results">
+          <div class="results-header">
+            Found {{ researchResults.length }} relevant faculty
+          </div>
+          <div
+            v-for="(result, idx) in researchResults"
+            :key="idx"
+            @click="selectResearchResult(result)"
+            class="research-result-item"
+          >
+            <div class="result-professor">
+              {{ result.metadata.professor_name }}
+              <span class="result-score"
+                >{{ (result.score * 100).toFixed(0) }}% match</span
+              >
+            </div>
+            <div class="result-title">{{ result.metadata.title }}</div>
+            <div class="result-snippet">
+              {{ result.metadata.content_snippet }}
+            </div>
           </div>
         </div>
       </div>
@@ -998,20 +1052,20 @@ function applyPreset(preset: string) {
   resetFilters();
 
   switch (preset) {
-    case 'top-funded':
+    case "top-funded":
       fundingMin.value = 100; // $100M+
-      universitySort.value = 'funding';
+      universitySort.value = "funding";
       break;
-    case 'large-faculty':
+    case "large-faculty":
       facultyMin.value = 50;
-      universitySort.value = 'faculty';
+      universitySort.value = "faculty";
       break;
-    case 'ai-focused':
-      activeAreas.value = new Set(['AI']);
+    case "ai-focused":
+      activeAreas.value = new Set(["AI"]);
       break;
-    case 'active-awards':
+    case "active-awards":
       showActiveAwardsOnly.value = true;
-      universitySort.value = 'awards';
+      universitySort.value = "awards";
       break;
   }
 }
@@ -1024,15 +1078,15 @@ function onSearchInput() {
   }
 
   const query = search.value.toLowerCase().trim();
-  searchResults.value = allUniversities.value.filter(u => {
+  searchResults.value = allUniversities.value.filter((u) => {
     const inst = u.institution.toLowerCase();
-    const city = (u.city || '').toLowerCase();
-    const region = (u.region || '').toLowerCase();
+    const city = (u.city || "").toLowerCase();
+    const region = (u.region || "").toLowerCase();
 
     // Match institution, city, or region
-    return inst.includes(query) ||
-           city.includes(query) ||
-           region.includes(query);
+    return (
+      inst.includes(query) || city.includes(query) || region.includes(query)
+    );
   });
 
   showSearchResults.value = searchResults.value.length > 0;
@@ -1047,13 +1101,59 @@ function flyToUniversity(uni: UniSummary) {
   map.flyTo({
     center: [uni.longitude, uni.latitude],
     zoom: 12,
-    duration: 1500
+    duration: 1500,
   });
 
   // Select the university
   setTimeout(() => {
     selectUniversity(uni.institution);
   }, 1500);
+}
+
+async function searchByResearch() {
+  if (!researchQuery.value.trim()) return;
+
+  researchSearching.value = true;
+  researchResults.value = [];
+
+  try {
+    const response = await axios.post("/api/search/faculty", {
+      query: researchQuery.value,
+      limit: 10,
+    });
+
+    researchResults.value = response.data;
+    logger.Infof(
+      `Found ${response.data.length} results for: ${researchQuery.value}`
+    );
+  } catch (err: any) {
+    errorHandler(err, "Failed to search by research topic");
+  } finally {
+    researchSearching.value = false;
+  }
+}
+
+function selectResearchResult(result: any) {
+  const professorName = result.metadata.professor_name;
+
+  // Find the professor's university
+  const professor = allUniversities.value.find((u) =>
+    u.faculty?.some((f) => f.name === professorName)
+  );
+
+  if (professor) {
+    // Fly to university
+    map?.flyTo({
+      center: [professor.longitude, professor.latitude],
+      zoom: 12,
+      duration: 1500,
+    });
+
+    // Select university and highlight professor
+    setTimeout(() => {
+      selectUniversity(professor.institution);
+    }, 1500);
+  }
 }
 
 // -------------------- Config --------------------
@@ -1103,6 +1203,11 @@ const vizMode = ref<"area" | "funding" | "faculty" | "nsf">("area");
 const showSearchResults = ref(false);
 const searchResults = ref<UniSummary[]>([]);
 
+// Research search
+const researchQuery = ref("");
+const researchSearching = ref(false);
+const researchResults = ref<any[]>([]);
+
 // Faculty filters
 const facultySort = ref<"name" | "citations" | "publications" | "hindex">(
   "name"
@@ -1112,7 +1217,7 @@ const activeFacultyAreas = ref(new Set<string>());
 // -------------------- Computed --------------------
 const uniqueStates = computed(() => {
   const states = new Set<string>();
-  allUniversities.value.forEach(u => {
+  allUniversities.value.forEach((u) => {
     if (u.region) states.add(u.region);
   });
   return Array.from(states).sort();
@@ -1136,12 +1241,14 @@ const filteredUniversities = computed(() => {
       return false;
 
     // Active awards filter
-    if (showActiveAwardsOnly.value && (!u.stats?.active_awards || u.stats.active_awards === 0))
+    if (
+      showActiveAwardsOnly.value &&
+      (!u.stats?.active_awards || u.stats.active_awards === 0)
+    )
       return false;
 
     // State filter
-    if (selectedState.value && u.region !== selectedState.value)
-      return false;
+    if (selectedState.value && u.region !== selectedState.value) return false;
 
     return true;
   });
@@ -1158,8 +1265,8 @@ const sortedUniversities = computed(() => {
       sorted.sort((a, b) => (b.faculty_count || 0) - (a.faculty_count || 0));
       break;
     case "awards":
-      sorted.sort((a, b) =>
-        (b.stats?.active_awards || 0) - (a.stats?.active_awards || 0)
+      sorted.sort(
+        (a, b) => (b.stats?.active_awards || 0) - (a.stats?.active_awards || 0)
       );
       break;
     default:
@@ -1426,12 +1533,14 @@ async function fetchCountrySummaries(country: string): Promise<UniSummary[]> {
 async function fetchAllSummaries(onCountryDone: (data: UniSummary[]) => void) {
   try {
     // Fetch top US universities from new endpoint
-    const response = await axios.get<UniSummary[]>('/api/universities/top?limit=100');
+    const response = await axios.get<UniSummary[]>(
+      "/api/universities/top?limit=100"
+    );
     const data = response.data;
     onCountryDone(data);
     return data;
   } catch (err: any) {
-    errorHandler(err, 'Failed to fetch top universities');
+    errorHandler(err, "Failed to fetch top universities");
     return [];
   }
 }
@@ -2018,6 +2127,128 @@ onBeforeUnmount(() => {
 .result-location {
   font-size: 12px;
   color: #64748b;
+}
+
+/* Semantic Research Search */
+.semantic-search-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  color: white;
+}
+
+.semantic-search-header {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.semantic-search-input {
+  display: flex;
+  gap: 8px;
+}
+
+.research-search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+}
+
+.research-search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.search-btn {
+  padding: 8px 16px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.research-loading {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.research-results {
+  margin-top: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.results-header {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.research-result-item {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e293b;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.research-result-item:hover {
+  background: white;
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-professor {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.result-score {
+  font-size: 11px;
+  background: #10b981;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.result-title {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.result-snippet {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
 }
 
 .filters-section {
