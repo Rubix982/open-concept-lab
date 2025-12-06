@@ -88,6 +88,23 @@ func GetRouter() *chi.Mux {
 	r.Post("/universities/summary", getUniversitySummary)
 	r.Get("/universities", getAllUniversitiesWithCoordinates)
 	r.Get("/universities/top", getTopUniversitiesSummary)
+	r.Get("/universities/top-funded", getTopFundedUniversities)
+	r.Get("/universities/most-awards", getMostAwardsUniversities)
+
+	// Professor endpoints
+	r.Get("/professors/by-university", getProfessorsByUniversity)
+
+	// Stats endpoints
+	r.Get("/stats/university-count", getUniversityCount)
+	r.Get("/stats/professor-count", getProfessorCount)
+	r.Get("/stats/award-count", getAwardCount)
+	r.Get("/stats/funding-total", getTotalFunding)
+	r.Get("/stats/avg-funding-per-award", getAvgFundingPerAward)
+
+	// Filter/Metadata endpoints
+	r.Get("/filters/available-areas", getAvailableAreas)
+	r.Get("/filters/available-universities", getAvailableUniversities)
+	r.Get("/filters/available-years", getAvailableYears)
 
 	// Search API
 	r.Post("/search/faculty", searchFacultyByResearch)

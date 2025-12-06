@@ -6,8 +6,6 @@ import uuid
 import logging
 import numpy as np
 
-from .config import config
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,9 +13,10 @@ class QdrantService:
     """Qdrant vector database service."""
     
     def __init__(self):
-        self.client = QdrantClient(host=config.host, port=config.port)
+        from .config import config
+        self.client = QdrantClient(host=config.qdrant_host, port=config.qdrant_port)
         self.collection_name = config.collection_name
-        logger.info(f"Connected to Qdrant at {config.host}:{config.port}")
+        logger.info(f"Connected to Qdrant at {config.qdrant_host}:{config.qdrant_port}")
     
     def create_collection(self, vector_size: int = None):
         """
@@ -26,6 +25,7 @@ class QdrantService:
         Args:
             vector_size: Dimension of vectors (default from config)
         """
+        from .config import config
         vector_size = vector_size or config.vector_size
         
         # Check if collection exists

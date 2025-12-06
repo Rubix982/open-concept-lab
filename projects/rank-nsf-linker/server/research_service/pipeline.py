@@ -3,16 +3,10 @@ import asyncio
 import asyncpg
 from typing import List, Dict
 import logging
-import sys
-import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from embeddings.embedder import ResearchEmbedder
-from embeddings.config import config as embedding_config
-from qdrant.client import qdrant_service
-from qdrant.config import config as qdrant_config
+from .embedder import ResearchEmbedder
+from .client import qdrant_service
+from .config import config
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,7 +26,7 @@ class EmbeddingPipeline:
     async def connect_db(self):
         """Connect to PostgreSQL."""
         self.db_pool = await asyncpg.create_pool(
-            embedding_config.postgres_dsn,
+            config.postgres_dsn,
             min_size=2,
             max_size=10
         )

@@ -24,6 +24,380 @@ type SearchResult struct {
 	Metadata map[string]interface{} `json:"metadata"`
 }
 
+// Stats endpoints
+
+func getUniversityCount(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM universities").Scan(&count)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"count": count})
+}
+
+func getProfessorCount(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM professors").Scan(&count)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"count": count})
+}
+
+func getAwardCount(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM nsf_awards").Scan(&count)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]int{"count": count})
+}
+
+func getTotalFunding(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	var total float64
+	err = db.QueryRow("SELECT COALESCE(SUM(awarded_amount_to_date), 0) FROM nsf_awards").Scan(&total)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]float64{"total_funding": total})
+}
+
+func getAvgFundingPerAward(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	var avg float64
+	err = db.QueryRow("SELECT COALESCE(AVG(awarded_amount_to_date), 0) FROM nsf_awards WHERE awarded_amount_to_date > 0").Scan(&avg)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]float64{"avg_funding": avg})
+}
+
+// Filter/Metadata endpoints
+
+func getAvailableAreas(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := db.Query("SELECT DISTINCT area FROM professors WHERE area IS NOT NULL AND area != '' ORDER BY area")
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var areas []string
+	for rows.Next() {
+		var area string
+		if err := rows.Scan(&area); err != nil {
+			continue
+		}
+		areas = append(areas, area)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string][]string{"areas": areas})
+}
+
+func getAvailableUniversities(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := db.Query("SELECT DISTINCT institution FROM universities ORDER BY institution")
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var universities []string
+	for rows.Next() {
+		var uni string
+		if err := rows.Scan(&uni); err != nil {
+			continue
+		}
+		universities = append(universities, uni)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string][]string{"universities": universities})
+}
+
+func getAvailableYears(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT DISTINCT EXTRACT(YEAR FROM start_date)::int as year 
+		FROM nsf_awards 
+		WHERE start_date IS NOT NULL 
+		ORDER BY year DESC
+	`)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var years []int
+	for rows.Next() {
+		var year int
+		if err := rows.Scan(&year); err != nil {
+			continue
+		}
+		years = append(years, year)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string][]int{"years": years})
+}
+
+// Enhanced University endpoints
+
+func getTopFundedUniversities(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	limit := r.URL.Query().Get("limit")
+	if limit == "" {
+		limit = "10"
+	}
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	query := `
+		SELECT 
+			u.institution,
+			u.latitude,
+			u.longitude,
+			u.city,
+			u.region,
+			u.country,
+			COALESCE(SUM(n.awarded_amount_to_date), 0) as total_funding,
+			COUNT(n.award_id) as award_count
+		FROM universities u
+		LEFT JOIN nsf_awards n ON u.institution = n.institution
+		GROUP BY u.institution, u.latitude, u.longitude, u.city, u.region, u.country
+		ORDER BY total_funding DESC
+		LIMIT $1
+	`
+
+	rows, err := db.Query(query, limit)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type UniversityFunding struct {
+		Institution  string  `json:"institution"`
+		Latitude     float64 `json:"latitude"`
+		Longitude    float64 `json:"longitude"`
+		City         string  `json:"city"`
+		Region       string  `json:"region"`
+		Country      string  `json:"country"`
+		TotalFunding float64 `json:"total_funding"`
+		AwardCount   int     `json:"award_count"`
+	}
+
+	var results []UniversityFunding
+	for rows.Next() {
+		var uf UniversityFunding
+		if err := rows.Scan(&uf.Institution, &uf.Latitude, &uf.Longitude, &uf.City, &uf.Region, &uf.Country, &uf.TotalFunding, &uf.AwardCount); err != nil {
+			continue
+		}
+		results = append(results, uf)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
+func getMostAwardsUniversities(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	limit := r.URL.Query().Get("limit")
+	if limit == "" {
+		limit = "10"
+	}
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	query := `
+		SELECT 
+			u.institution,
+			u.latitude,
+			u.longitude,
+			u.city,
+			u.region,
+			u.country,
+			COUNT(n.award_id) as award_count,
+			COALESCE(SUM(n.awarded_amount_to_date), 0) as total_funding
+		FROM universities u
+		LEFT JOIN nsf_awards n ON u.institution = n.institution
+		GROUP BY u.institution, u.latitude, u.longitude, u.city, u.region, u.country
+		ORDER BY award_count DESC
+		LIMIT $1
+	`
+
+	rows, err := db.Query(query, limit)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type UniversityAwards struct {
+		Institution  string  `json:"institution"`
+		Latitude     float64 `json:"latitude"`
+		Longitude    float64 `json:"longitude"`
+		City         string  `json:"city"`
+		Region       string  `json:"region"`
+		Country      string  `json:"country"`
+		AwardCount   int     `json:"award_count"`
+		TotalFunding float64 `json:"total_funding"`
+	}
+
+	var results []UniversityAwards
+	for rows.Next() {
+		var ua UniversityAwards
+		if err := rows.Scan(&ua.Institution, &ua.Latitude, &ua.Longitude, &ua.City, &ua.Region, &ua.Country, &ua.AwardCount, &ua.TotalFunding); err != nil {
+			continue
+		}
+		results = append(results, ua)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
+func getProfessorsByUniversity(w http.ResponseWriter, r *http.Request) {
+	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+
+	university := r.URL.Query().Get("university")
+	if university == "" {
+		http.Error(w, "university parameter required", http.StatusBadRequest)
+		return
+	}
+
+	db, err := GetDB()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	query := `
+		SELECT name, affiliation, area, homepage, citations, publications, hindex
+		FROM professors
+		WHERE affiliation = $1
+		ORDER BY citations DESC
+	`
+
+	rows, err := db.Query(query, university)
+	if err != nil {
+		http.Error(w, "Query failed", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type Professor struct {
+		Name         string `json:"name"`
+		Affiliation  string `json:"affiliation"`
+		Area         string `json:"area"`
+		Homepage     string `json:"homepage"`
+		Citations    int    `json:"citations"`
+		Publications int    `json:"publications"`
+		HIndex       int    `json:"hindex"`
+	}
+
+	var results []Professor
+	for rows.Next() {
+		var p Professor
+		if err := rows.Scan(&p.Name, &p.Affiliation, &p.Area, &p.Homepage, &p.Citations, &p.Publications, &p.HIndex); err != nil {
+			continue
+		}
+		results = append(results, p)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
 // searchFacultyByResearch handles semantic search for faculty
 func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
 	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)

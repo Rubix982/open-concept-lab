@@ -7,17 +7,21 @@ import logging
 from .config import config
 
 logger = logging.getLogger(__name__)
+# from .config import config # This line will be moved
+# logger = logging.getLogger(__name__)
 
 
 class ResearchEmbedder:
     """Generate embeddings for research content."""
     
     def __init__(self, model_name: str = None):
+        from .config import config
         self.model_name = model_name or config.model_name
         logger.info(f"Loading embedding model: {self.model_name}")
         
         self.model = SentenceTransformer(self.model_name)
         self.dimension = self.model.get_sentence_embedding_dimension()
+        self.batch_size = config.batch_size
         
         logger.info(f"Model loaded. Dimension: {self.dimension}")
     
@@ -60,7 +64,7 @@ class ResearchEmbedder:
         
         embeddings = self.model.encode(
             texts,
-            batch_size=config.batch_size,
+            batch_size=self.batch_size,
             show_progress_bar=show_progress,
             convert_to_numpy=True
         )
