@@ -9,7 +9,6 @@ import (
 	"io"
 	"maps"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"sort"
@@ -1893,106 +1892,55 @@ func GetPipelineStatus(step string) string {
 	return status
 }
 
-// generateResearchEmbeddings generates embeddings for scraped content
-func generateResearchEmbeddings() error {
-	logger.Info("🧠 Starting research embedding generation...")
+func runGoResearchPipeline() error {
+	logger.Info("🚀 Starting Go-based Research Pipeline...")
 
-	// Get the research service directory path
-	researchDir := "research_service"
-	if _, err := os.Stat(researchDir); os.IsNotExist(err) {
-		researchDir = filepath.Join("server", "research_service")
-		if _, err := os.Stat(researchDir); os.IsNotExist(err) {
-			logger.Warn("⚠️  Research service directory not found, skipping")
-			return nil
-		}
+	// 1. Get professors
+	profs, err := getProfessorsWithHomepages()
+	if err != nil {
+		return fmt.Errorf("failed to get professors: %w", err)
+	}
+	logger.Infof("Found %d professors to process", len(profs))
+
+	// 2. Init Service
+	svc, err := NewResearchService()
+	if err != nil {
+		return fmt.Errorf("failed to init research service: %w", err)
+	}
+	defer svc.Close()
+
+	// 3. Convert to generic profile
+	var profiles []ProfessorProfile
+	for _, p := range profs {
+		profiles = append(profiles, ProfessorProfile{
+			Name:     p.Name,
+			Homepage: p.Homepage,
+		})
 	}
 
-	// Check if Python is available
-	pythonCmd := "python3"
-	if _, err := exec.LookPath(pythonCmd); err != nil {
-		pythonCmd = "python"
-		if _, err := exec.LookPath(pythonCmd); err != nil {
-			logger.Warn("⚠️  Python not found, skipping embeddings")
-			return nil
-		}
-	}
-
-	// Run the embedding pipeline
-	logger.Info("🚀 Running embedding generation and Qdrant ingestion...")
-
-	// Set environment variables
-	env := os.Environ()
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_HOST, os.Getenv(ENV_POSTGRES_HOST)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PORT, os.Getenv(ENV_POSTGRES_PORT)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_USER, os.Getenv(ENV_POSTGRES_USER)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PASSWORD, os.Getenv(ENV_POSTGRES_PASSWORD)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_DB_NAME, os.Getenv(ENV_POSTGRES_DB_NAME)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_QDRANT_HOST, os.Getenv(ENV_QDRANT_HOST)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_QDRANT_PORT, os.Getenv(ENV_QDRANT_PORT)))
-
-	// Run pipeline with batch size of 100
-	pipelineCmd := exec.Command(pythonCmd, "pipeline.py", "100")
-	pipelineCmd.Dir = researchDir
-	pipelineCmd.Env = env
-	pipelineCmd.Stdout = os.Stdout
-	pipelineCmd.Stderr = os.Stderr
-
-	if err := pipelineCmd.Run(); err != nil {
-		logger.Errorf("❌ Embedding pipeline failed: %v", err)
-		logger.Info("Continuing pipeline despite embedding failure...")
-		return nil
-	}
-
-	logger.Info("✅ Research embedding generation completed successfully")
+	// 4. Run
+	svc.ProcessProfessors(profiles)
 	return nil
 }
 
-// scrapeProfessorHomepages triggers the Python scraper to scrape all professor homepages
-func scrapeProfessorHomepages() error {
-	logger.Info("🕷️  Starting professor homepage scraping...")
+func getProfessorsWithHomepages() ([]struct{ Name, Homepage string }, error) {
+	query := "SELECT name, homepage FROM professors WHERE homepage IS NOT NULL AND homepage != ''"
 
-	researchDir := getResearchServicePath()
-	if _, err := os.Stat(researchDir); os.IsNotExist(err) {
-		return fmt.Errorf("research service directory not found")
+	rows, err := globalDB.Query(query)
+	if err != nil {
+		return nil, err
 	}
+	defer rows.Close()
 
-	// Check if Python is available
-	pythonCmd := "python3"
-	if _, err := exec.LookPath(pythonCmd); err != nil {
-		pythonCmd = "python"
-		if _, err := exec.LookPath(pythonCmd); err != nil {
-			logger.Warn("⚠️  Python not found, skipping scraper. Install Python to enable scraping.")
-			return nil // Don't fail the pipeline, just skip
+	var profs []struct{ Name, Homepage string }
+	for rows.Next() {
+		var p struct{ Name, Homepage string }
+		if err := rows.Scan(&p.Name, &p.Homepage); err != nil {
+			return nil, err
 		}
+		profs = append(profs, p)
 	}
-
-	// Run the scraper
-	logger.Info("🚀 Running scraper for all professors with homepages...")
-
-	// Set environment variables for scraper
-	env := os.Environ()
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_HOST, os.Getenv(ENV_POSTGRES_HOST)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PORT, os.Getenv(ENV_POSTGRES_PORT)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_USER, os.Getenv(ENV_POSTGRES_USER)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PASSWORD, os.Getenv(ENV_POSTGRES_PASSWORD)))
-	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_DB_NAME, os.Getenv(ENV_POSTGRES_DB_NAME)))
-
-	// Run scraper with limit (scrape all professors)
-	scraperCmd := exec.Command(pythonCmd, "example.py", "1000") // Limit to 1000 professors
-	scraperCmd.Dir = researchDir
-	scraperCmd.Env = env
-	scraperCmd.Stdout = os.Stdout
-	scraperCmd.Stderr = os.Stderr
-
-	if err := scraperCmd.Run(); err != nil {
-		logger.Errorf("❌ Scraper failed: %v", err)
-		// Don't fail the pipeline, just log the error
-		logger.Info("Continuing pipeline despite scraper failure...")
-		return nil
-	}
-
-	logger.Info("✅ Professor homepage scraping completed successfully")
-	return nil
+	return profs, nil
 }
 
 func populatePostgres() {
@@ -2007,8 +1955,7 @@ func populatePostgres() {
 		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
 		{"Populate from Script Caches", populatePostgresFromScriptCaches},
 		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
-		{"Scrape Professor Homepages", scrapeProfessorHomepages},
-		{"Generate Research Embeddings", generateResearchEmbeddings},
+		{"Run Research Pipeline (Go)", runGoResearchPipeline},
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},

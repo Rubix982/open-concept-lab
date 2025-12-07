@@ -147,6 +147,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB_NAME: rank-nsf-linker
+      # Persistent Cache for Hugging Face Models
+      HF_HOME: /app/data/hf_cache
     ports:
       - "8080:8080"
     restart: unless-stopped

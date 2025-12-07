@@ -2,6 +2,7 @@ package main
 
 // Directory and file path constants
 const (
+	// Directories
 	DATA_DIR             = "data"
 	BACKUP_DIR           = "backup"
 	TARGET_DIR           = "target"
@@ -9,18 +10,23 @@ const (
 	NSF_DATA_DIR         = "nsfdata"
 	GEOCODING_DIR        = "geocoding"
 	MIGRATIONS_DIR       = "migrations"
+	SCRAPE_CACHE_DIR     = "scraped_cache"
 	RESEARCH_SERVICE_DIR = "research_service"
 
+	// Specific Files
 	UNI_AGNST_WEBURL      = "universities_against_homepages.csv"
 	COUNTRIES_FILENAME    = "countries.csv"
 	CSRANKINGS_FILENAME   = "csrankings.csv"
 	GEN_AUTHOR_FILENAME   = "generated-author-info.csv"
 	GEOLOCATION_FILENAME  = "geolocation.csv"
 	COUNTRY_INFO_FILENAME = "country-info.csv"
+	EMBEDDER_SCRIPT       = "embedder.py"
 
+	// URLs
 	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/master/"
 	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
+	// Data Fetching Configuration
 	NSFAwardsStartYear = 2025
 	NSFAwardsEndYear   = 2025
 )

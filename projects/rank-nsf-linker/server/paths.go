@@ -34,13 +34,20 @@ func getMigrationsFilePath() string {
 	return MIGRATIONS_DIR
 }
 
-func getResearchServicePath() string {
-
+func getScrapedDataFilePath() string {
 	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
-		return fmt.Sprintf("/app/%v", RESEARCH_SERVICE_DIR)
+		return fmt.Sprintf("/app/data/%v", SCRAPE_CACHE_DIR)
 	}
 
-	return RESEARCH_SERVICE_DIR
+	return SCRAPE_CACHE_DIR
+}
+
+func getEmbedderFilePath() string {
+	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
+		return fmt.Sprintf("/app/%v/%v", SCRIPTS_DIR, EMBEDDER_SCRIPT)
+	}
+
+	return fmt.Sprintf("%v/%v", SCRIPTS_DIR, EMBEDDER_SCRIPT)
 }
 
 func downloadCSVs() error {
