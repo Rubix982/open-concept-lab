@@ -34,6 +34,15 @@ func getMigrationsFilePath() string {
 	return MIGRATIONS_DIR
 }
 
+func getResearchServicePath() string {
+
+	if appEnv := os.Getenv(APP_ENV_FLAG); len(appEnv) > 0 {
+		return fmt.Sprintf("/app/%v", RESEARCH_SERVICE_DIR)
+	}
+
+	return RESEARCH_SERVICE_DIR
+}
+
 func downloadCSVs() error {
 
 	dataDir := getRootDirPath(DATA_DIR)

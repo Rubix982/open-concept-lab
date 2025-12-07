@@ -1492,16 +1492,6 @@ function resetFilters() {
   updateMapData();
 }
 
-function updatePointsLayer() {
-  if (!map || !map.getSource("unis")) return;
-
-  const fc = buildFeatureCollection(sortedUniversities.value);
-  const source = map.getSource("unis") as maplibregl.GeoJSONSource;
-  if (source) {
-    source.setData(fc as any);
-  }
-}
-
 async function fetchCountrySummaries(country: string): Promise<UniSummary[]> {
   const all: UniSummary[] = [];
   let page = 1;
@@ -1988,7 +1978,6 @@ function updateSelectedFilter(id: string | null) {
 }
 
 // Search handlers
-const onSearchInput = lodash.debounce(() => {}, 300);
 
 function searchAndFly() {
   if (!map) return;

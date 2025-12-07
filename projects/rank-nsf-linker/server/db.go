@@ -48,23 +48,23 @@ var (
 // InitPostgres ensures the DB is initialized only once, safely under concurrency.
 func InitPostgres() (*sql.DB, error) {
 	initOnce.Do(func() {
-		postgresUser := os.Getenv("POSTGRES_USER")
+		postgresUser := os.Getenv(ENV_POSTGRES_USER)
 		if len(postgresUser) == 0 {
 			postgresUser = "postgres"
 		}
-		postgresPassword := os.Getenv("POSTGRES_PASSWORD")
+		postgresPassword := os.Getenv(ENV_POSTGRES_PASSWORD)
 		if len(postgresPassword) == 0 {
 			postgresPassword = "postgres"
 		}
-		postgresDBName := os.Getenv("POSTGRES_DB_NAME")
+		postgresDBName := os.Getenv(ENV_POSTGRES_DB_NAME)
 		if len(postgresDBName) == 0 {
 			postgresDBName = "rank-nsf-linker"
 		}
-		postgresHost := os.Getenv("POSTGRES_HOST")
+		postgresHost := os.Getenv(ENV_POSTGRES_HOST)
 		if len(postgresHost) == 0 {
 			postgresHost = "postgres"
 		}
-		postgresPort := os.Getenv("POSTGRES_PORT")
+		postgresPort := os.Getenv(ENV_POSTGRES_PORT)
 		if len(postgresPort) == 0 {
 			postgresPort = "5432"
 		}
@@ -1917,31 +1917,18 @@ func generateResearchEmbeddings() error {
 		}
 	}
 
-	// Install dependencies if needed
-	logger.Info("📦 Checking research service dependencies...")
-	requirementsPath := filepath.Join(researchDir, "requirements.txt")
-	if _, err := os.Stat(requirementsPath); err == nil {
-		installCmd := exec.Command(pythonCmd, "-m", "pip", "install", "-q", "-r", requirementsPath)
-		installCmd.Dir = researchDir
-		if output, err := installCmd.CombinedOutput(); err != nil {
-			logger.Warnf("⚠️  Failed to install embedding dependencies: %v\nOutput: %s", err, string(output))
-			logger.Info("Continuing without embeddings...")
-			return nil
-		}
-	}
-
 	// Run the embedding pipeline
 	logger.Info("🚀 Running embedding generation and Qdrant ingestion...")
 
 	// Set environment variables
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("POSTGRES_HOST=%s", os.Getenv("POSTGRES_HOST")))
-	env = append(env, fmt.Sprintf("POSTGRES_PORT=%s", os.Getenv("POSTGRES_PORT")))
-	env = append(env, fmt.Sprintf("POSTGRES_USER=%s", os.Getenv("POSTGRES_USER")))
-	env = append(env, fmt.Sprintf("POSTGRES_PASSWORD=%s", os.Getenv("POSTGRES_PASSWORD")))
-	env = append(env, fmt.Sprintf("POSTGRES_DB_NAME=%s", os.Getenv("POSTGRES_DB_NAME")))
-	env = append(env, fmt.Sprintf("QDRANT_HOST=%s", os.Getenv("QDRANT_HOST")))
-	env = append(env, fmt.Sprintf("QDRANT_PORT=%s", os.Getenv("QDRANT_PORT")))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_HOST, os.Getenv(ENV_POSTGRES_HOST)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PORT, os.Getenv(ENV_POSTGRES_PORT)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_USER, os.Getenv(ENV_POSTGRES_USER)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PASSWORD, os.Getenv(ENV_POSTGRES_PASSWORD)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_DB_NAME, os.Getenv(ENV_POSTGRES_DB_NAME)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_QDRANT_HOST, os.Getenv(ENV_QDRANT_HOST)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_QDRANT_PORT, os.Getenv(ENV_QDRANT_PORT)))
 
 	// Run pipeline with batch size of 100
 	pipelineCmd := exec.Command(pythonCmd, "pipeline.py", "100")
@@ -1964,15 +1951,9 @@ func generateResearchEmbeddings() error {
 func scrapeProfessorHomepages() error {
 	logger.Info("🕷️  Starting professor homepage scraping...")
 
-	// Get the research service directory path
-	// In Docker: /app/research_service
-	// Locally: server/research_service
-	researchDir := "research_service"
+	researchDir := getResearchServicePath()
 	if _, err := os.Stat(researchDir); os.IsNotExist(err) {
-		researchDir = filepath.Join("server", "research_service")
-		if _, err := os.Stat(researchDir); os.IsNotExist(err) {
-			return fmt.Errorf("research service directory not found")
-		}
+		return fmt.Errorf("research service directory not found")
 	}
 
 	// Check if Python is available
@@ -1985,29 +1966,16 @@ func scrapeProfessorHomepages() error {
 		}
 	}
 
-	// Install dependencies if needed
-	logger.Info("📦 Checking research service dependencies...")
-	requirementsPath := filepath.Join(researchDir, "requirements.txt")
-	if _, err := os.Stat(requirementsPath); err == nil {
-		installCmd := exec.Command(pythonCmd, "-m", "pip", "install", "-q", "-r", requirementsPath)
-		installCmd.Dir = researchDir
-		if output, err := installCmd.CombinedOutput(); err != nil {
-			logger.Warnf("⚠️  Failed to install scraper dependencies: %v\nOutput: %s", err, string(output))
-			logger.Info("Continuing without scraper...")
-			return nil // Don't fail pipeline
-		}
-	}
-
 	// Run the scraper
 	logger.Info("🚀 Running scraper for all professors with homepages...")
 
 	// Set environment variables for scraper
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("POSTGRES_HOST=%s", os.Getenv("POSTGRES_HOST")))
-	env = append(env, fmt.Sprintf("POSTGRES_PORT=%s", os.Getenv("POSTGRES_PORT")))
-	env = append(env, fmt.Sprintf("POSTGRES_USER=%s", os.Getenv("POSTGRES_USER")))
-	env = append(env, fmt.Sprintf("POSTGRES_PASSWORD=%s", os.Getenv("POSTGRES_PASSWORD")))
-	env = append(env, fmt.Sprintf("POSTGRES_DB_NAME=%s", os.Getenv("POSTGRES_DB_NAME")))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_HOST, os.Getenv(ENV_POSTGRES_HOST)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PORT, os.Getenv(ENV_POSTGRES_PORT)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_USER, os.Getenv(ENV_POSTGRES_USER)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_PASSWORD, os.Getenv(ENV_POSTGRES_PASSWORD)))
+	env = append(env, fmt.Sprintf("%s=%s", ENV_POSTGRES_DB_NAME, os.Getenv(ENV_POSTGRES_DB_NAME)))
 
 	// Run scraper with limit (scrape all professors)
 	scraperCmd := exec.Command(pythonCmd, "example.py", "1000") // Limit to 1000 professors

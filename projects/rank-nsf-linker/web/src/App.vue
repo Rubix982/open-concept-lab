@@ -1,22 +1,12 @@
 <script setup lang="ts">
 import WorldMap from "./components/WorldMap.vue";
 import StatsDashboard from "./components/StatsDashboard.vue";
-import { ref } from "vue";
-
-const worldMapRef = ref<InstanceType<typeof WorldMap> | null>(null);
-
-function handleSelectUniversity(universityName: string) {
-  // Find and select the university in WorldMap
-  if (worldMapRef.value) {
-    worldMapRef.value.selectUniversity(universityName);
-  }
-}
 </script>
 
 <template>
   <div id="app">
-    <StatsDashboard @select-university="handleSelectUniversity" />
-    <WorldMap ref="worldMapRef" />
+    <StatsDashboard />
+    <WorldMap />
   </div>
 </template>
 

@@ -2,13 +2,14 @@ package main
 
 // Directory and file path constants
 const (
-	DATA_DIR       = "data"
-	BACKUP_DIR     = "backup"
-	TARGET_DIR     = "target"
-	SCRIPTS_DIR    = "scripts"
-	NSF_DATA_DIR   = "nsfdata"
-	GEOCODING_DIR  = "geocoding"
-	MIGRATIONS_DIR = "migrations"
+	DATA_DIR             = "data"
+	BACKUP_DIR           = "backup"
+	TARGET_DIR           = "target"
+	SCRIPTS_DIR          = "scripts"
+	NSF_DATA_DIR         = "nsfdata"
+	GEOCODING_DIR        = "geocoding"
+	MIGRATIONS_DIR       = "migrations"
+	RESEARCH_SERVICE_DIR = "research_service"
 
 	UNI_AGNST_WEBURL      = "universities_against_homepages.csv"
 	COUNTRIES_FILENAME    = "countries.csv"
@@ -68,4 +69,15 @@ const (
 // Postgres Constants
 const (
 	POSTGRES_DRIVER = "postgres"
+)
+
+// Environment Variable Names
+const (
+	ENV_POSTGRES_USER     = "POSTGRES_USER"
+	ENV_POSTGRES_PASSWORD = "POSTGRES_PASSWORD"
+	ENV_POSTGRES_DB_NAME  = "POSTGRES_DB_NAME"
+	ENV_POSTGRES_HOST     = "POSTGRES_HOST"
+	ENV_POSTGRES_PORT     = "POSTGRES_PORT"
+	ENV_QDRANT_HOST       = "QDRANT_HOST"
+	ENV_QDRANT_PORT       = "QDRANT_PORT"
 )
