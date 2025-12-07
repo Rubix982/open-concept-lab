@@ -1895,52 +1895,25 @@ func GetPipelineStatus(step string) string {
 func runGoResearchPipeline() error {
 	logger.Info("🚀 Starting Go-based Research Pipeline...")
 
-	// 1. Get professors
-	profs, err := getProfessorsWithHomepages()
-	if err != nil {
-		return fmt.Errorf("failed to get professors: %w", err)
-	}
-	logger.Infof("Found %d professors to process", len(profs))
-
 	// 2. Init Service
 	svc, err := NewResearchService()
 	if err != nil {
 		return fmt.Errorf("failed to init research service: %w", err)
 	}
-	defer svc.Close()
+	// Note: We do NOT defer svc.Close() here because we want the workers to run in the background.
+	// In a more robust setup, we'd pass 'svc' to main's cleanup routine.
 
-	// 3. Convert to generic profile
-	var profiles []ProfessorProfile
-	for _, p := range profs {
-		profiles = append(profiles, ProfessorProfile{
-			Name:     p.Name,
-			Homepage: p.Homepage,
-		})
+	// 3. Seed Queue
+	if err := svc.SeedQueue(); err != nil {
+		svc.Close() // Close only if seeding fails
+		return fmt.Errorf("failed to seed queue: %w", err)
 	}
 
-	// 4. Run
-	svc.ProcessProfessors(profiles)
+	// 4. Start Processing (Background)
+	svc.StartQueueProcessor(4)
+	logger.Info("🚀 Research Queue Processor started in background")
+
 	return nil
-}
-
-func getProfessorsWithHomepages() ([]struct{ Name, Homepage string }, error) {
-	query := "SELECT name, homepage FROM professors WHERE homepage IS NOT NULL AND homepage != ''"
-
-	rows, err := globalDB.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var profs []struct{ Name, Homepage string }
-	for rows.Next() {
-		var p struct{ Name, Homepage string }
-		if err := rows.Scan(&p.Name, &p.Homepage); err != nil {
-			return nil, err
-		}
-		profs = append(profs, p)
-	}
-	return profs, nil
 }
 
 func populatePostgres() {
@@ -1955,7 +1928,7 @@ func populatePostgres() {
 		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
 		{"Populate from Script Caches", populatePostgresFromScriptCaches},
 		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
-		{"Run Research Pipeline (Go)", runGoResearchPipeline},
+		{"Run Research Pipeline", runGoResearchPipeline},
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},

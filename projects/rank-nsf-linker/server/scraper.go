@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"math"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -182,6 +183,22 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 		mu.Unlock()
 	})
 
+	// Find and visit links (Recursive)
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+		// Resolve absolute URL
+		absoluteURL := e.Request.AbsoluteURL(link)
+		if absoluteURL == "" {
+			return
+		}
+
+		// Security Check: Only visit if it shares the same host and path prefix
+		// This prevents crawling the entire university website.
+		if isSafeToVisit(prof.Homepage, absoluteURL) {
+			e.Request.Visit(absoluteURL)
+		}
+	})
+
 	// Error handling
 	c.OnError(func(r *colly.Response, err error) {
 		logger.Warnf("Scraping error for %s: %v", r.Request.URL, err)
@@ -250,4 +267,27 @@ func (s *Scraper) classifyContent(url, title string) string {
 	}
 
 	return "homepage"
+}
+
+func isSafeToVisit(rootURL, targetURL string) bool {
+	rootObj, err := url.Parse(rootURL)
+	if err != nil {
+		return false
+	}
+	targetObj, err := url.Parse(targetURL)
+	if err != nil {
+		return false
+	}
+
+	// 1. Must be same host
+	if rootObj.Host != targetObj.Host {
+		return false
+	}
+
+	// 2. Must start with the same path prefix
+	// Normalize paths by removing trailing slashes
+	rootPath := strings.TrimRight(rootObj.Path, "/")
+	targetPath := strings.TrimRight(targetObj.Path, "/")
+
+	return strings.HasPrefix(targetPath, rootPath)
 }
