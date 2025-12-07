@@ -1,4 +1,4 @@
-package main
+package scraperworker
 
 import (
 	"encoding/json"
