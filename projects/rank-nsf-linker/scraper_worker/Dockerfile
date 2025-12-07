@@ -16,25 +16,24 @@ FROM cgr.dev/chainguard/wolfi-base
 
 WORKDIR /app
 
-# Create necessary directories
-RUN mkdir -p /app/data/hf_cache
-
-# Install Python and Pip
-RUN apk add --no-cache python3 py3-pip
+# Install Python, Pip, and create directories in one layer
+RUN apk add --no-cache python3 py3-pip && \
+    mkdir -p /app/data/hf_cache
 
 # Copy binary
 COPY --from=builder /app/scraper-worker .
 
-# Copy Python scripts
-COPY embedder.py .
+# Copy Python dependencies first for better caching
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Permissions
+# Copy remaining Python scripts
+COPY embedder.py .
+
+# Set permissions
 RUN chown -R 65532:65532 /app && \
-    chmod 755 /app/embedder.py
+    chmod 755 /app/embedder.py && \
+    chmod 755 /app/scraper-worker
 
 USER 65532
 
