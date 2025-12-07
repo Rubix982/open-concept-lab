@@ -1895,24 +1895,26 @@ func GetPipelineStatus(step string) string {
 func runGoResearchPipeline() error {
 	logger.Info("🚀 Starting Go-based Research Pipeline...")
 
-	// 2. Init Service
-	svc, err := NewResearchService()
+	logger.Info("🌱 Seeding scrape queue...")
+
+	// Insert professors who are not already in the queue
+	query := `
+		INSERT INTO scrape_queue (professor_name, url, status)
+		SELECT name, homepage, 'pending'
+		FROM professors
+		WHERE homepage IS NOT NULL AND homepage != ''
+		ON CONFLICT (professor_name, url) DO NOTHING;
+	`
+	res, err := globalDB.Exec(query)
 	if err != nil {
-		return fmt.Errorf("failed to init research service: %w", err)
-	}
-	// Note: We do NOT defer svc.Close() here because we want the workers to run in the background.
-	// In a more robust setup, we'd pass 'svc' to main's cleanup routine.
-
-	// 3. Seed Queue
-	if err := svc.SeedQueue(); err != nil {
-		svc.Close() // Close only if seeding fails
-		return fmt.Errorf("failed to seed queue: %w", err)
+		return err
 	}
 
-	// 4. Start Processing (Background)
-	svc.StartQueueProcessor(4)
-	logger.Info("🚀 Research Queue Processor started in background")
+	count, _ := res.RowsAffected()
+	logger.Infof("Added %d new jobs to queue", count)
 
+	// The scraper worker will pick up entries from the table in concurrent workers and process
+	// them onwards in the background)
 	return nil
 }
 

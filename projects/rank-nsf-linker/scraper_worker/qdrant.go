@@ -4,17 +4,15 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/qdrant/go-client/qdrant"
 )
 
 type QdrantClient struct {
-	client     pb.PointsClient
-	collClient pb.CollectionsClient // Add CollectionsClient to manage collections
-	conn       *grpc.ClientConn
+	client     *qdrant.Client
 	collection string
 }
 
@@ -25,19 +23,24 @@ func NewQdrantClient() (*QdrantClient, error) {
 		qHost = "qdrant-local"
 	}
 	if qPort == "" {
-		qPort = "6333"
+		qPort = "6334" // Default GRPC port for Qdrant is 6334
 	}
 
-	addr := fmt.Sprintf("%s:%s", qHost, qPort)
-	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	port, err := strconv.Atoi(qPort)
+	if err != nil {
+		return nil, fmt.Errorf("invalid QDRANT_PORT: %w", err)
+	}
+
+	client, err := qdrant.NewClient(&qdrant.Config{
+		Host: qHost,
+		Port: port,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to qdrant: %w", err)
 	}
 
 	return &QdrantClient{
-		client:     pb.NewPointsClient(conn),
-		collClient: pb.NewCollectionsClient(conn), // Initialize CollectionsClient
-		conn:       conn,
+		client:     client,
 		collection: "faculty_research",
 	}, nil
 }
@@ -47,26 +50,23 @@ func (q *QdrantClient) EnsureCollection(vectorSize uint64) error {
 	defer cancel()
 
 	// Check if exists
-	_, err := q.collClient.Get(ctx, &pb.GetCollectionInfoRequest{
-		CollectionName: q.collection,
-	})
-	if err == nil {
+	exists, err := q.client.CollectionExists(ctx, q.collection)
+	if err != nil {
+		return fmt.Errorf("failed to check collection existence: %w", err)
+	}
+	if exists {
 		logger.Infof("Collection %s already exists", q.collection)
 		return nil
 	}
 
 	// Create
 	logger.Infof("Creating collection %s with vector size %d", q.collection, vectorSize)
-	_, err = q.collClient.Create(ctx, &pb.CreateCollection{
+	err = q.client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: q.collection,
-		VectorsConfig: &pb.VectorsConfig{
-			Config: &pb.VectorsConfig_Params{
-				Params: &pb.VectorParams{
-					Size:     vectorSize,
-					Distance: pb.Distance_Cosine,
-				},
-			},
-		},
+		VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
+			Size:     vectorSize,
+			Distance: qdrant.Distance_Cosine,
+		}),
 	})
 	return err
 }
@@ -80,32 +80,26 @@ func (q *QdrantClient) Upsert(id string, vector []float32, payload map[string]st
 		id = uuid.New().String()
 	}
 
-	// Prepare payload (convert to Value)
-	qPayload := make(map[string]*pb.Value)
+	// Prepare payload
+	qPayload := make(map[string]any)
 	for k, v := range payload {
-		qPayload[k] = &pb.Value{Kind: &pb.Value_StringValue{StringValue: v}}
+		qPayload[k] = v
 	}
 
-	point := &pb.PointStruct{
-		Id: &pb.PointId{
-			PointIdOptions: &pb.PointId_Uuid{Uuid: id},
-		},
-		Vectors: &pb.Vectors{
-			VectorsOptions: &pb.Vectors_Vector{
-				Vector: &pb.Vector{Data: vector},
+	_, err := q.client.Upsert(ctx, &qdrant.UpsertPoints{
+		CollectionName: q.collection,
+		Points: []*qdrant.PointStruct{
+			{
+				Id:      qdrant.NewIDUUID(id),
+				Vectors: qdrant.NewVectors(vector...),
+				Payload: qdrant.NewValueMap(qPayload),
 			},
 		},
-		Payload: qPayload,
-	}
-
-	_, err := q.client.Upsert(ctx, &pb.UpsertPoints{
-		CollectionName: q.collection,
-		Points:         []*pb.PointStruct{point},
 	})
 
 	return err
 }
 
 func (q *QdrantClient) Close() {
-	q.conn.Close()
+	q.client.Close()
 }

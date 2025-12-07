@@ -110,6 +110,54 @@ services:
     networks:
       - default
 
+  scraper-worker:
+    image: host.docker.internal:5128/scraper-worker:latest
+    container_name: scraper-worker
+    build:
+      context: ./scraper_worker
+      dockerfile: Dockerfile
+      tags:
+        - rank-nsf-linker-scraper-worker:latest
+    volumes:
+      - ./scraper_worker/.env:/app/.env:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
+      qdrant:
+        condition: service_started
+    environment:
+      DB_URL: postgres://postgres:postgres@pg17-local:5432/rank-nsf-linker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: rank-nsf-linker
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      ES_HOST: http://es-local:9200
+      QDRANT_HOST: qdrant-local
+      QDRANT_PORT: 6333
+      # PostgreSQL for research service
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: rank-nsf-linker
+      # Persistent Cache for Hugging Face Models
+      HF_HOME: /app/data/hf_cache
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    command: ["./scraper_worker/scraper_worker"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://scraper-worker:8080/health"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      - default
+
   go-server:
     image: host.docker.internal:5128/go-server:latest
     container_name: go-server
