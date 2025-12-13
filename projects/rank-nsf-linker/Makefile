@@ -160,6 +160,7 @@ status:
 # For a no cache build
 # make rebuild NO_CACHE=true
 rebuild:
+	export DOCKER_BUILDKIT=1
 	make rm-all
 	make registry
 	make infra-images
@@ -172,6 +173,7 @@ rebuild:
 	fi
 	@echo "🚀 Starting go-server log daemon in background..."
 	$(DOCKER_COMPOSE) logs -f go-server > go-server.log 2>&1 &
+	$(DOCKER_COMPOSE) logs -f scraper-worker > scraper-worker.log 2>&1 &
 	make logs-go-server
 
 # Remove all

@@ -119,6 +119,7 @@ services:
       tags:
         - rank-nsf-linker-scraper-worker:latest
     volumes:
+      - ./scraper_worker/models:/app/models
       - ./scraper_worker/.env:/app/.env:ro
     depends_on:
       postgres:
