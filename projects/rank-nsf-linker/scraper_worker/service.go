@@ -43,9 +43,9 @@ func NewResearchService() (*ResearchService, error) {
 }
 
 // StartQueueProcessor starts multiple workers to poll the DB queue
-func (s *ResearchService) StartQueueProcessor(workerCount int) {
-	logger.Infof("🚀 Starting %d queue workers", workerCount)
-	for i := range workerCount {
+func (s *ResearchService) StartQueueProcessor() {
+	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
+	for i := range WORKER_COUNT {
 		s.wg.Add(1)
 		go s.workerLoop(i)
 	}
@@ -91,7 +91,7 @@ func (s *ResearchService) claimJob() (*ScrapeJob, error) {
 			SELECT id
 			FROM scrape_queue
 			WHERE status = 'pending'
-			OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs
+			-- OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
 			ORDER BY created_at ASC
 			FOR UPDATE SKIP LOCKED
 			LIMIT 1

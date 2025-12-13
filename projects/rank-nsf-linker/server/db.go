@@ -1892,32 +1892,6 @@ func GetPipelineStatus(step string) string {
 	return status
 }
 
-func runGoResearchPipeline() error {
-	logger.Info("🚀 Starting Go-based Research Pipeline...")
-
-	logger.Info("🌱 Seeding scrape queue...")
-
-	// Insert professors who are not already in the queue
-	query := `
-		INSERT INTO scrape_queue (professor_name, url, status)
-		SELECT name, homepage, 'pending'
-		FROM professors
-		WHERE homepage IS NOT NULL AND homepage != ''
-		ON CONFLICT (professor_name, url) DO NOTHING;
-	`
-	res, err := globalDB.Exec(query)
-	if err != nil {
-		return err
-	}
-
-	count, _ := res.RowsAffected()
-	logger.Infof("Added %d new jobs to queue", count)
-
-	// The scraper worker will pick up entries from the table in concurrent workers and process
-	// them onwards in the background)
-	return nil
-}
-
 func populatePostgres() {
 	steps := []struct {
 		name string
@@ -1930,7 +1904,6 @@ func populatePostgres() {
 		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
 		{"Populate from Script Caches", populatePostgresFromScriptCaches},
 		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
-		{"Run Research Pipeline", runGoResearchPipeline},
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},

@@ -29,6 +29,8 @@ const (
 	ENV_QDRANT_PORT       = "QDRANT_PORT"
 
 	LOGGING_SERVICE_ROUTE = "http://logging-service:5257"
+
+	WORKER_COUNT = 10
 )
 
 // InitPostgres ensures the DB is initialized only once, safely under concurrency.

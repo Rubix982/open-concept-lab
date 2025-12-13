@@ -19,7 +19,7 @@ func startResearchPipeline() error {
 	}
 
 	// 4. Start Processing (Background)
-	svc.StartQueueProcessor(4)
+	svc.StartQueueProcessor()
 	logger.Info("🚀 Research Queue Processor started in background")
 
 	return nil
@@ -89,6 +89,7 @@ func main() {
 	waitForServices()
 	printBanner()
 	startMetricsServer()
+	go syncProfessorsWithScrapeQueue()
 
 	if processResearchErr := startResearchPipeline(); processResearchErr != nil {
 		logger.Errorf("❌ Failed to process research: %v", processResearchErr)

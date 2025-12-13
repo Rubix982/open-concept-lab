@@ -4,6 +4,7 @@ go 1.25.1
 
 require (
 	github.com/PuerkitoBio/goquery v1.11.0
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1

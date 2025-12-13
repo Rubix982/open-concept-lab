@@ -2,6 +2,7 @@ package scraperworker
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/url"
 	"os"
@@ -49,26 +50,55 @@ func NewScraper() *Scraper {
 }
 
 func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, error) {
-	// Check cache first
+	// Check cache first (with TTL)
 	safeName := strings.ReplaceAll(prof.Name, "/", "_")
 	safeName = strings.ReplaceAll(safeName, " ", "_")
 	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
-	if _, err := os.Stat(cachePath); err == nil {
-		content, err := os.ReadFile(cachePath)
-		if err == nil {
-			var cached []ScrapedContent
-			if err := json.Unmarshal(content, &cached); err == nil {
-				logger.Infof("✓ Cache hit for %s", prof.Name)
-				return cached, nil
+	if info, err := os.Stat(cachePath); err == nil {
+		// Cache expires after 7 days
+		if time.Since(info.ModTime()) < 7*24*time.Hour {
+			content, err := os.ReadFile(cachePath)
+			if err == nil {
+				var cached []ScrapedContent
+				if err := json.Unmarshal(content, &cached); err == nil {
+					logger.Infof("✓ Cache hit for %s (age: %v)", prof.Name, time.Since(info.ModTime()).Round(time.Hour))
+					return cached, nil
+				}
 			}
+		} else {
+			logger.Infof("Cache expired for %s, re-scraping", prof.Name)
 		}
 	}
 
 	var contents []ScrapedContent
 	var mu sync.Mutex
 
-	// Clone collector for isolation if needed, but here we reuse
+	// Clone collector with limits
 	c := s.collector.Clone()
+	c.AllowURLRevisit = false
+	c.MaxDepth = 2
+	c.Async = true
+	c.SetRequestTimeout(30 * time.Second)
+
+	c.Limit(&colly.LimitRule{
+		DomainGlob:  "*",
+		Parallelism: 2,
+		Delay:       200 * time.Millisecond,
+	})
+
+	// Page count limiter
+	visitCount := 0
+	maxPages := 20
+
+	c.OnRequest(func(r *colly.Request) {
+		visitCount++
+		if visitCount > maxPages {
+			logger.Warnf("Reached max pages (%d), stopping crawl for %s", maxPages, prof.Name)
+			r.Abort()
+			return
+		}
+		logger.Debugf("Visiting [%d/%d]: %s", visitCount, maxPages, r.URL)
+	})
 
 	// OnHTML handlers
 	c.OnHTML("html", func(e *colly.HTMLElement) {
@@ -86,6 +116,17 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 		// Algorithm: Find the node with the highest Text Density Score.
 		// Score = TextLength * (1 - LinkDensity) * TagBoost
 
+		// Check if this is a publications/research page
+		url := e.Request.URL.String()
+		urlLower := strings.ToLower(url)
+		titleLower := strings.ToLower(title)
+		isPublicationPage := strings.Contains(urlLower, "publication") ||
+			strings.Contains(urlLower, "research") ||
+			strings.Contains(urlLower, "paper") ||
+			strings.Contains(titleLower, "publication") ||
+			strings.Contains(titleLower, "research")
+
+		// Find the node with the highest Text Density Score
 		var bestNode *goquery.Selection
 		var maxScore float64
 
@@ -109,11 +150,9 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 			linkDensity := float64(linkTextLength) / float64(totalLength)
 
-			// Skip if it's mostly links (navigation, lists of papers usually have high density but we might want them?
-			// Actually for "Research", lists of papers ARE the content.
-			// But for "Homepage", we want bio.
-			// Let's be lenient on linkDensity for academic pages, but usually sidebar nav is > 0.7
-			if linkDensity > 0.6 {
+			// Skip high-link-density nodes UNLESS it's a publication page
+			// (Publication pages are legitimately link-heavy)
+			if !isPublicationPage && linkDensity > 0.6 {
 				return
 			}
 
@@ -121,9 +160,10 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 			// 1. Base: Log of text length (diminishing returns, but generally more is better)
 			// 2. Penalty: Link Density
 			// 3. Boost: HTML5 tags
-
+			// Scoring: Log(length) * (1 - linkDensity) * TagBoost
 			score := math.Log(float64(totalLength)) * (1.0 - linkDensity)
 
+			// Boost semantic HTML5 tags
 			if s.Is("article") || s.Is("main") {
 				score *= 1.5
 			}
@@ -131,13 +171,17 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 				score *= 1.2
 			}
 
-			// Slight penalty for common sidebar classes (heuristic)
+			// Class-based heuristics
 			if class, exists := s.Attr("class"); exists {
-				class = strings.ToLower(class)
-				if strings.Contains(class, "sidebar") || strings.Contains(class, "menu") || strings.Contains(class, "widget") {
+				classLower := strings.ToLower(class)
+				if strings.Contains(classLower, "sidebar") ||
+					strings.Contains(classLower, "menu") ||
+					strings.Contains(classLower, "widget") {
 					score *= 0.1
 				}
-				if strings.Contains(class, "content") || strings.Contains(class, "body") || strings.Contains(class, "main") {
+				if strings.Contains(classLower, "content") ||
+					strings.Contains(classLower, "body") ||
+					strings.Contains(classLower, "main") {
 					score *= 1.2
 				}
 			}
@@ -158,13 +202,21 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 		// Clean Text
 		cleanText := s.cleanText(rawText)
+
+		// Truncate if too long (safety limit)
 		if len(cleanText) > 50000 {
 			cleanText = cleanText[:50000]
+			logger.Warnf("Truncated content for %s (was >50KB)", url)
 		}
 
-		// Classify
-		url := e.Request.URL.String()
+		// Classify content type
 		contentType := s.classifyContent(url, title)
+
+		// Skip if content is too short (likely navigation/error page)
+		if len(cleanText) < 200 {
+			logger.Debugf("Skipping %s: content too short (%d chars)", url, len(cleanText))
+			return
+		}
 
 		content := ScrapedContent{
 			ProfessorName: prof.Name,
@@ -175,8 +227,8 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 			ScrapedAt:     time.Now(),
 		}
 
-		// Log extraction details
-		logger.Debugf("Extracted: '%s' (Type: %s, Length: %d chars) from %s", title, contentType, len(cleanText), url)
+		logger.Debugf("✓ Extracted: '%s' (Type: %s, Length: %d chars) from %s",
+			title, contentType, len(cleanText), url)
 
 		mu.Lock()
 		contents = append(contents, content)
@@ -194,6 +246,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 		// Security Check: Only visit if it shares the same host and path prefix
 		// This prevents crawling the entire university website.
+		// Only visit if it shares the same host and path prefix
 		if isSafeToVisit(prof.Homepage, absoluteURL) {
 			e.Request.Visit(absoluteURL)
 		}
@@ -206,26 +259,29 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 	// Visit homepage
 	logger.Infof("🕷️ Scraping homepage: %s", prof.Homepage)
-	c.OnRequest(func(r *colly.Request) {
-		logger.Debugf("Visiting: %s", r.URL)
-	})
-
 	err := c.Visit(prof.Homepage)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to visit homepage: %w", err)
 	}
 
 	c.Wait()
 
+	// Check if we got any content
+	if len(contents) == 0 {
+		logger.Warnf("No content extracted for %s", prof.Name)
+		return nil, fmt.Errorf("no content extracted from %s", prof.Homepage)
+	}
+
 	// Save to cache
-	if len(contents) > 0 {
-		data, err := json.MarshalIndent(contents, "", "  ")
-		if err == nil {
-			if err := os.WriteFile(cachePath, data, 0644); err != nil {
-				logger.Errorf("Failed to write cache for %s: %v", prof.Name, err)
-			} else {
-				logger.Infof("Saved cache for %s (%d items)", prof.Name, len(contents))
-			}
+	data, err := json.MarshalIndent(contents, "", "  ")
+	if err != nil {
+		logger.Errorf("Failed to marshal cache for %s: %v", prof.Name, err)
+	} else {
+		if err := os.WriteFile(cachePath, data, 0644); err != nil {
+			logger.Errorf("Failed to write cache for %s: %v", prof.Name, err)
+		} else {
+			logger.Infof("💾 Saved cache for %s (%d pages, %d total chars)",
+				prof.Name, len(contents), len(contents))
 		}
 	}
 
@@ -244,7 +300,7 @@ func (s *Scraper) classifyContent(url, title string) string {
 	urlLower := strings.ToLower(url)
 	titleLower := strings.ToLower(title)
 
-	// Keywords
+	// Check URL path for keywords
 	if slices.Contains([]string{"publication", "paper", "pub"}, urlLower) {
 		return "publication"
 	}
@@ -258,12 +314,15 @@ func (s *Scraper) classifyContent(url, title string) string {
 		return "teaching"
 	}
 
-	// Title keywords
+	// Check title for keywords
 	if slices.Contains([]string{"publications", "papers"}, titleLower) {
 		return "publication"
 	}
 	if slices.Contains([]string{"research", "projects"}, titleLower) {
 		return "project"
+	}
+	if slices.Contains([]string{"biography", "about", "cv"}, titleLower) {
+		return "bio"
 	}
 
 	return "homepage"
@@ -284,10 +343,20 @@ func isSafeToVisit(rootURL, targetURL string) bool {
 		return false
 	}
 
-	// 2. Must start with the same path prefix
-	// Normalize paths by removing trailing slashes
+	// 2. Must be same scheme (http vs https)
+	if rootObj.Scheme != targetObj.Scheme {
+		return false
+	}
+
+	// 3. Normalize paths
 	rootPath := strings.TrimRight(rootObj.Path, "/")
 	targetPath := strings.TrimRight(targetObj.Path, "/")
 
-	return strings.HasPrefix(targetPath, rootPath)
+	// 4. Must be exact match OR start with root path + separator
+	if targetPath == rootPath {
+		return true
+	}
+
+	// 5. Check if target is a subpath (with path separator boundary)
+	return strings.HasPrefix(targetPath, rootPath+"/")
 }
