@@ -15,6 +15,45 @@ type ResearchService struct {
 	running  bool
 }
 
+type ScrapeJob struct {
+	ID            string
+	ProfessorName string
+	URL           string
+}
+
+const (
+	SERVICE_SAVE_TO_DB_QUERY = `
+		UPDATE scrape_queue
+		SET status = 'processing', updated_at = NOW(), attempts = attempts + 1, last_attempt = NOW()
+		WHERE id = (
+			SELECT id
+			FROM scrape_queue
+			WHERE status = 'pending'
+			-- OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
+			ORDER BY created_at ASC
+			FOR UPDATE SKIP LOCKED
+			LIMIT 1
+		)
+		RETURNING id, professor_name, url;
+	`
+
+	// Postgres FIFO Queue with SKIP LOCKED for concurrency safety
+	CLAIM_JOB_DB_QUERY = `
+		UPDATE scrape_queue
+		SET status = 'processing', updated_at = NOW(), attempts = attempts + 1, last_attempt = NOW()
+		WHERE id = (
+			SELECT id
+			FROM scrape_queue
+			WHERE status = 'pending'
+			-- OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
+			ORDER BY created_at ASC
+			FOR UPDATE SKIP LOCKED
+			LIMIT 1
+		)
+		RETURNING id, professor_name, url;
+	`
+)
+
 func NewResearchService() (*ResearchService, error) {
 	embedder, err := NewEmbedder()
 	if err != nil {
@@ -42,22 +81,14 @@ func NewResearchService() (*ResearchService, error) {
 	}, nil
 }
 
-// StartQueueProcessor starts multiple workers to poll the DB queue
-func (s *ResearchService) StartQueueProcessor() {
-	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
-	for i := range WORKER_COUNT {
-		s.wg.Add(1)
-		go s.workerLoop(i)
-	}
-}
-
 func (s *ResearchService) workerLoop(id int) {
 	defer s.wg.Done()
 	logger.Debugf("Worker %d started", id)
 
 	for s.running {
 		// Poll for a job
-		job, err := s.claimJob()
+		job := &ScrapeJob{}
+		err := globalDB.QueryRow(CLAIM_JOB_DB_QUERY).Scan(&job.ID, &job.ProfessorName, &job.URL)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// No jobs, sleep and retry
@@ -72,35 +103,6 @@ func (s *ResearchService) workerLoop(id int) {
 		logger.Infof("Worker %d: Processing %s (%s)", id, job.ProfessorName, job.URL)
 		s.processJob(id, job)
 	}
-}
-
-type ScrapeJob struct {
-	ID            string
-	ProfessorName string
-	URL           string
-}
-
-func (s *ResearchService) claimJob() (*ScrapeJob, error) {
-	var job ScrapeJob
-
-	// Postgres FIFO Queue with SKIP LOCKED for concurrency safety
-	query := `
-		UPDATE scrape_queue
-		SET status = 'processing', updated_at = NOW(), attempts = attempts + 1, last_attempt = NOW()
-		WHERE id = (
-			SELECT id
-			FROM scrape_queue
-			WHERE status = 'pending'
-			-- OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
-			ORDER BY created_at ASC
-			FOR UPDATE SKIP LOCKED
-			LIMIT 1
-		)
-		RETURNING id, professor_name, url;
-	`
-
-	err := globalDB.QueryRow(query).Scan(&job.ID, &job.ProfessorName, &job.URL)
-	return &job, err
 }
 
 func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
@@ -121,8 +123,14 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 	// 2. Process Results (Save DB, Embed, Vector DB)
 	for _, content := range contents {
-		// Save to Postgres
-		if err := s.saveToDB(content); err != nil {
+		if _, err := globalDB.Exec(SERVICE_SAVE_TO_DB_QUERY,
+			content.ProfessorName,
+			content.URL,
+			content.ContentType,
+			content.Title,
+			content.Content,
+			content.ScrapedAt,
+		); err != nil {
 			logger.Errorf("Failed to save content: %v", err)
 			continue
 		}
@@ -178,26 +186,4 @@ func (s *ResearchService) Close() {
 	s.wg.Wait()
 	s.embedder.Close()
 	s.qdrant.Close()
-}
-
-func (s *ResearchService) saveToDB(content ScrapedContent) error {
-	query := `
-		INSERT INTO scraped_content (professor_name, url, content_type, title, content, scraped_at, embedding_generated)
-		VALUES ($1, $2, $3, $4, $5, $6, TRUE)
-		ON CONFLICT (professor_name, url)
-		DO UPDATE SET
-			content = EXCLUDED.content,
-			title = EXCLUDED.title,
-			scraped_at = EXCLUDED.scraped_at,
-			embedding_generated = TRUE;
-	`
-	_, err := globalDB.Exec(query,
-		content.ProfessorName,
-		content.URL,
-		content.ContentType,
-		content.Title,
-		content.Content,
-		content.ScrapedAt,
-	)
-	return err
 }

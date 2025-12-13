@@ -19,7 +19,11 @@ func startResearchPipeline() error {
 	}
 
 	// 4. Start Processing (Background)
-	svc.StartQueueProcessor()
+	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
+	for i := range WORKER_COUNT {
+		svc.wg.Add(1)
+		go svc.workerLoop(i)
+	}
 	logger.Info("🚀 Research Queue Processor started in background")
 
 	return nil
