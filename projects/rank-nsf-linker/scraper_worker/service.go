@@ -6,8 +6,57 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"regexp"
+	"sort"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/spf13/cast"
+)
+
+type SearchResult struct {
+	// Professor metadata
+	ProfessorName string
+
+	// Document metadata
+	URL         string
+	Title       string
+	ContentType string
+	ScrapedAt   time.Time
+
+	// Chunk metadata
+	ChunkText   string // The actual text chunk that matched
+	ChunkIndex  int    // Which chunk (0-based)
+	TotalChunks int    // Total chunks in this document
+	TokenCount  int    // Tokens in this chunk
+
+	// Scoring
+	Score    float32 // Final weighted score (cosine_sim * content_weight)
+	RawScore float32 // Original cosine similarity before weighting
+	Weight   float32 // Content type weight applied
+}
+
+// Optional: Helper to format chunk position
+func (r *SearchResult) ChunkPosition() string {
+	if r.TotalChunks <= 1 {
+		return ""
+	}
+	return fmt.Sprintf("Chunk %d of %d", r.ChunkIndex+1, r.TotalChunks)
+}
+
+// Optional: Helper to get short snippet
+func (r *SearchResult) Snippet(maxChars int) string {
+	if len(r.ChunkText) <= maxChars {
+		return r.ChunkText
+	}
+	return r.ChunkText[:maxChars] + "..."
+}
+
+// Optional: Helper to check if this is the main/first chunk
+func (r *SearchResult) IsMainChunk() bool {
+	return r.ChunkIndex == 0
+}
 
 	"github.com/spf13/cast"
 )
@@ -185,11 +234,49 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 		// Embed with content-aware chunking
 		results, err := s.embedder.EmbedContent(content.Content, ContentType(content.ContentType))
+		// Embed with content-aware chunking
+		results, err := s.embedder.EmbedContent(content.Content, ContentType(content.ContentType))
 		if err != nil {
 			logger.Errorf("Failed to embed: %v", err)
 			continue
 		}
 
+		// Upsert each chunk as a separate vector
+		for _, result := range results {
+			// Generate unique ID: professor_url_chunkIndex
+			pointID := fmt.Sprintf("%s_%s_chunk%d",
+				s.sanitizeForID(content.ProfessorName),
+				s.sanitizeForID(content.URL),
+				result.ChunkIndex,
+			)
+
+			// Prepare payload with chunk metadata
+			payload := map[string]interface{}{
+				"professor_name": content.ProfessorName,
+				"url":            content.URL,
+				"content_type":   string(result.ContentType),
+				"title":          content.Title,
+				"scraped_at":     content.ScrapedAt.Format(time.RFC3339),
+
+				// Chunk-specific metadata
+				"chunk_index":  result.ChunkIndex,
+				"total_chunks": result.TotalChunks,
+				"chunk_text":   result.Text,
+				"token_count":  result.TokenCount,
+
+				// Weight for retrieval scoring
+				"weight": result.Weight,
+			}
+
+			// Upsert to Qdrant
+			if err := s.qdrant.Upsert(pointID, result.Embedding, payload); err != nil {
+				logger.Errorf("Failed to upsert chunk %d to Qdrant: %v", result.ChunkIndex, err)
+				continue
+			}
+		}
+
+		logger.Infof("✓ Upserted %d chunks for %s (%s)",
+			len(results), content.ProfessorName, content.URL)
 		// Upsert each chunk as a separate vector
 		for _, result := range results {
 			// Generate unique ID: professor_url_chunkIndex
