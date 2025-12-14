@@ -12,6 +12,7 @@ networkx==3.6.1
 numpy==2.3.5
 optimum==2.0.0
 packaging==25.0
+onnxruntime==1.21.1
 PyYAML==6.0.3
 regex==2025.11.3
 requests==2.32.5

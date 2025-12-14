@@ -1,6 +1,7 @@
 package scraperworker
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -8,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -17,9 +17,53 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
+type ContentType string
+
 var (
-	CleanTextRegex = regexp.MustCompile(`[^\w\s.,;:!?()-]`)
+	CleanTextRegex            = regexp.MustCompile(`[^\w\s.,;:!?()-]`)
+	DisallowedURLFiltersRegex = []*regexp.Regexp{
+		regexp.MustCompile(`\.pdf$`),
+		regexp.MustCompile(`\.zip$`),
+		regexp.MustCompile(`\.doc[x]?$`),
+	}
 )
+
+const (
+	ContentPublication ContentType = "publication"
+	ContentProject     ContentType = "project"
+	ContentBiography   ContentType = "biography"
+	ContentTeaching    ContentType = "teaching"
+	ContentStudents    ContentType = "students"
+	ContentTalk        ContentType = "talk"
+	ContentCode        ContentType = "code"
+	ContentNews        ContentType = "news"
+	ContentAward       ContentType = "award"
+	ContentDataset     ContentType = "dataset"
+	ContentHomepage    ContentType = "homepage"
+)
+
+// Classification rules with priority (higher = more specific)
+var ClassificationRules = []struct {
+	contentType ContentType
+	keywords    []string
+	priority    int
+}{
+	// High priority (very specific)
+	{ContentPublication, []string{"publication", "papers", "proceedings", "article", "citations", "scholar"}, 10},
+	{ContentCode, []string{"github", "gitlab", "bitbucket", "software", "code", "repository", "tool"}, 9},
+	{ContentDataset, []string{"dataset", "data", "corpus", "benchmark"}, 9},
+	{ContentTalk, []string{"talk", "presentation", "slides", "conference", "seminar", "workshop"}, 8},
+
+	// Medium priority
+	{ContentProject, []string{"project", "research", "grant", "lab", "group"}, 7},
+	{ContentStudents, []string{"student", "phd", "postdoc", "collaborator", "team", "member"}, 7},
+	{ContentTeaching, []string{"teaching", "course", "syllabus", "lecture", "class"}, 7},
+	{ContentAward, []string{"award", "honor", "recognition", "prize", "fellow"}, 6},
+	{ContentNews, []string{"news", "blog", "announcement", "update"}, 6},
+
+	// Low priority (generic)
+	{ContentBiography, []string{"bio", "about", "cv", "resume", "vita", "profile"}, 5},
+}
 
 type Scraper struct {
 	collector *colly.Collector
@@ -35,6 +79,7 @@ func NewScraper() *Scraper {
 		colly.Async(true),
 		colly.MaxDepth(2),
 		colly.UserAgent("FacultyResearchBot/1.0"),
+		colly.CacheDir("./cache/colly"), // Built-in HTTP caching:w
 	)
 
 	// Politeness
@@ -43,6 +88,26 @@ func NewScraper() *Scraper {
 		Parallelism: 4, // Concurrent requests!
 		RandomDelay: 1 * time.Second,
 	})
+	c.SetRequestTimeout(30 * time.Second)
+	c.MaxBodySize = 10 * 1024 * 1024                   // 10MB limit (prevent downloading huge PDFs)
+	c.MaxRequests = 100                                // Safety valve per scrape session
+	c.IgnoreRobotsTxt = false                          // Default, but be explicit
+	c.DetectCharset = true                             // Academic sites sometimes use legacy encodings
+	c.DisallowedURLFilters = DisallowedURLFiltersRegex // Block file downloads
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	c.Context = ctx
+	c.ParseHTTPErrorResponse = true
+
+	c.OnResponse(func(r *colly.Response) {
+		if r.StatusCode >= 400 {
+			logger.Warnf("HTTP %d for %s", r.StatusCode, r.Request.URL)
+		}
+	})
+	c.AllowURLRevisit = false
+	c.MaxDepth = 2
+	c.Async = true
 
 	return &Scraper{
 		collector: c,
@@ -73,24 +138,11 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 	var contents []ScrapedContent
 	var mu sync.Mutex
 
-	// Clone collector with limits
-	c := s.collector.Clone()
-	c.AllowURLRevisit = false
-	c.MaxDepth = 2
-	c.Async = true
-	c.SetRequestTimeout(30 * time.Second)
-
-	c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
-		Parallelism: 2,
-		Delay:       200 * time.Millisecond,
-	})
-
 	// Page count limiter
 	visitCount := 0
 	maxPages := 20
 
-	c.OnRequest(func(r *colly.Request) {
+	s.collector.OnRequest(func(r *colly.Request) {
 		visitCount++
 		if visitCount > maxPages {
 			logger.Warnf("Reached max pages (%d), stopping crawl for %s", maxPages, prof.Name)
@@ -101,7 +153,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 	})
 
 	// OnHTML handlers
-	c.OnHTML("html", func(e *colly.HTMLElement) {
+	s.collector.OnHTML("html", func(e *colly.HTMLElement) {
 		// Clean DOM: Remove boilerplate
 		e.DOM.Find("script, style, noscript, iframe, nav, footer, header, aside, .nav, .footer, .header, .menu").Remove()
 		e.DOM.Find("svg, button, input, form, select, textarea").Remove() // Remove UI elements
@@ -210,7 +262,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 		}
 
 		// Classify content type
-		contentType := s.classifyContent(url, title)
+		contentType := s.classifyContent(url, title, cleanText)
 
 		// Skip if content is too short (likely navigation/error page)
 		if len(cleanText) < 200 {
@@ -221,7 +273,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 		content := ScrapedContent{
 			ProfessorName: prof.Name,
 			URL:           url,
-			ContentType:   contentType,
+			ContentType:   string(contentType),
 			Title:         title,
 			Content:       cleanText,
 			ScrapedAt:     time.Now(),
@@ -236,7 +288,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 	})
 
 	// Find and visit links (Recursive)
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	s.collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		// Resolve absolute URL
 		absoluteURL := e.Request.AbsoluteURL(link)
@@ -253,18 +305,18 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 	})
 
 	// Error handling
-	c.OnError(func(r *colly.Response, err error) {
+	s.collector.OnError(func(r *colly.Response, err error) {
 		logger.Warnf("Scraping error for %s: %v", r.Request.URL, err)
 	})
 
 	// Visit homepage
 	logger.Infof("🕷️ Scraping homepage: %s", prof.Homepage)
-	err := c.Visit(prof.Homepage)
+	err := s.collector.Visit(prof.Homepage)
 	if err != nil {
 		return nil, fmt.Errorf("failed to visit homepage: %w", err)
 	}
 
-	c.Wait()
+	s.collector.Wait()
 
 	// Check if we got any content
 	if len(contents) == 0 {
@@ -296,36 +348,76 @@ func (s *Scraper) cleanText(text string) string {
 	return strings.TrimSpace(CleanTextRegex.ReplaceAllString(text, ""))
 }
 
-func (s *Scraper) classifyContent(url, title string) string {
+func (s *Scraper) classifyContent(
+	url string,
+	title string,
+	content string,
+) ContentType {
 	urlLower := strings.ToLower(url)
 	titleLower := strings.ToLower(title)
 
-	// Check URL path for keywords
-	if slices.Contains([]string{"publication", "paper", "pub"}, urlLower) {
-		return "publication"
-	}
-	if slices.Contains([]string{"project", "research"}, urlLower) {
-		return "project"
-	}
-	if slices.Contains([]string{"bio", "about", "cv", "resume"}, urlLower) {
-		return "bio"
-	}
-	if slices.Contains([]string{"teaching", "course"}, urlLower) {
-		return "teaching"
+	bestMatch := ContentHomepage
+	bestScore := 0
+
+	for _, rule := range ClassificationRules {
+		score := 0
+
+		// Check URL path (higher weight)
+		for _, keyword := range rule.keywords {
+			if strings.Contains(urlLower, keyword) {
+				score += rule.priority * 2 // URL match is stronger signal
+				break
+			}
+		}
+
+		// Check title (lower weight)
+		for _, keyword := range rule.keywords {
+			if strings.Contains(titleLower, keyword) {
+				score += rule.priority
+				break
+			}
+		}
+
+		if score > bestScore {
+			bestScore = score
+			bestMatch = rule.contentType
+		}
 	}
 
-	// Check title for keywords
-	if slices.Contains([]string{"publications", "papers"}, titleLower) {
-		return "publication"
-	}
-	if slices.Contains([]string{"research", "projects"}, titleLower) {
-		return "project"
-	}
-	if slices.Contains([]string{"biography", "about", "cv"}, titleLower) {
-		return "bio"
+	if bestMatch == ContentHomepage {
+		// Analyze content patterns
+		contentLower := strings.ToLower(content)
+
+		// Look for publication markers in text
+		pubMarkers := []string{"abstract:", "doi:", "arxiv:", "published in", "conference:", "journal:"}
+		pubCount := 0
+		for _, marker := range pubMarkers {
+			if strings.Contains(contentLower, marker) {
+				pubCount++
+			}
+		}
+
+		if pubCount >= 2 {
+			return ContentPublication
+		}
+
+		// Look for project markers
+		projMarkers := []string{"funded by", "nsf grant", "collaboration with", "research question"}
+		projCount := 0
+		for _, marker := range projMarkers {
+			if strings.Contains(contentLower, marker) {
+				projCount++
+			}
+		}
+
+		if projCount >= 2 {
+			return ContentProject
+		}
+
+		return ContentHomepage
 	}
 
-	return "homepage"
+	return bestMatch
 }
 
 func isSafeToVisit(rootURL, targetURL string) bool {
