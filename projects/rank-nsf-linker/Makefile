@@ -86,6 +86,7 @@ infra-images:
 
 # App lifecycle
 docker-build:
+	BUILDKIT_PROGRESS=plain 
 	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,)
 	docker image prune -f
 
