@@ -24,6 +24,10 @@
   </div>
 
   <div v-if="pipelineStatusMessage === 'completed'" class="app" id="appMap">
+    <div v-if="loadingCountries" class="country-loading">
+      Loading universities...
+    </div>
+
     <div ref="mapContainer" id="map" class="map-container" />
 
     <!-- Enhanced Controls Panel -->
@@ -101,6 +105,46 @@
             <div class="result-snippet">
               {{ result.metadata.content_snippet }}
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Country Selection -->
+      <div class="country-selection-section">
+        <button
+          class="country-toggle"
+          @click="showCountrySelector = !showCountrySelector"
+        >
+          🌍 Countries ({{ selectedCountries.size }})
+        </button>
+
+        <div v-if="showCountrySelector" class="country-selector">
+          <input
+            v-model="countrySearchQuery"
+            placeholder="Search countries..."
+            class="country-search"
+          />
+          <div class="country-list">
+            <label
+              v-for="country in filteredCountries.slice(0, 10)"
+              :key="country"
+              class="country-item"
+            >
+              <input
+                type="checkbox"
+                :checked="selectedCountries.has(country)"
+                @change="toggleCountry(country)"
+              />
+              <span>{{ country }}</span>
+            </label>
+          </div>
+          <div class="country-actions">
+            <button @click="selectAllCountries" class="country-btn">
+              Select All
+            </button>
+            <button @click="clearAllCountries" class="country-btn">
+              Clear All
+            </button>
           </div>
         </div>
       </div>
@@ -514,8 +558,6 @@ import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import axios from "axios";
-import lodash from "lodash";
-import pLimit from "p-limit";
 
 const COUNTRIES_LIST = [
   "Afghanistan",
@@ -1030,6 +1072,10 @@ type NSFAward = {
   years: number[]; // part of the schema, most_recent_amendment_date subtracted from earliest_amendment_date
 };
 
+type UniStats = {
+  active_awards?: number;
+};
+
 type UniSummary = {
   institution: string; // part of schema
   longitude: number; // part of schema
@@ -1037,6 +1083,11 @@ type UniSummary = {
   top_area?: string; // for each university, get the faculty, get the distinct topic area for those faculty
   faculty_count?: number; // for each university, get the count of faculty
   funding?: number; // for each university, get the total funding, organize by year
+  city?: string; // for each university, get their city
+  region?: string; // for each university, get their region is populated
+  country?: string; // for each university, get their country is populated
+  faculty?: Faculty[]; // list of faculty with their details
+  stats?: UniStats;
 };
 
 type UniDetail = UniSummary & {
@@ -1123,7 +1174,7 @@ async function searchByResearch() {
     });
 
     researchResults.value = response.data;
-    logger.Infof(
+    console.log(
       `Found ${response.data.length} results for: ${researchQuery.value}`
     );
   } catch (err: any) {
@@ -1170,6 +1221,19 @@ const CLUSTER_RADIUS = 60;
 const POPUP_MAX_WIDTH = 300;
 
 // -------------------- Refs & state --------------------
+const selectedCountries = ref(new Set<string>(["United States"])); // Default to US
+const showCountrySelector = ref(false);
+const countrySearchQuery = ref("");
+
+// Add computed for filtered countries
+const filteredCountries = computed(() => {
+  if (!countrySearchQuery.value.trim()) return COUNTRIES_LIST;
+
+  const query = countrySearchQuery.value.toLowerCase();
+  return COUNTRIES_LIST.filter((c) => c.toLowerCase().includes(query));
+});
+
+const loadingCountries = ref(false);
 const mapContainer = ref<HTMLDivElement | null>(null);
 let map: maplibregl.Map | null = null;
 
@@ -1455,6 +1519,26 @@ function getMarkerSize(props: any, mode: string): number {
   }
 }
 
+function updateMapData() {
+  if (!map) return;
+
+  const source = map.getSource("unis") as maplibregl.GeoJSONSource;
+  if (!source) {
+    console.warn('Map source "unis" not yet initialized');
+    return;
+  }
+
+  // Build new feature collection from filtered and sorted universities
+  const fc = buildFeatureCollection(sortedUniversities.value);
+
+  // Update the map data
+  source.setData(fc);
+
+  console.log(
+    `Map updated: ${sortedUniversities.value.length} universities visible`
+  );
+}
+
 // -------------------- Filter Functions --------------------
 function toggleAreaFilter(area: string) {
   if (activeAreas.value.has(area)) {
@@ -1490,6 +1574,93 @@ function resetFilters() {
   vizMode.value = "area";
   activeFacultyAreas.value = new Set();
   updateMapData();
+}
+
+function toggleCountry(country: string) {
+  if (selectedCountries.value.has(country)) {
+    selectedCountries.value.delete(country);
+
+    // Remove universities from this country
+    allUniversities.value = allUniversities.value.filter(
+      (u) => u.country !== country
+    );
+    updateMapData();
+  } else {
+    selectedCountries.value.add(country);
+
+    // Load universities from this country
+    loadAdditionalCountries();
+  }
+  selectedCountries.value = new Set(selectedCountries.value);
+
+  // Refetch data for new country selection
+  refreshMapData();
+}
+
+function selectAllCountries() {
+  selectedCountries.value = new Set(COUNTRIES_LIST);
+  refreshMapData();
+}
+
+function clearAllCountries() {
+  selectedCountries.value = new Set(["United States"]); // Keep at least US
+  refreshMapData();
+}
+
+async function refreshMapData() {
+  if (!map) return;
+  loadingCountries.value = true;
+  console.log(
+    `🔄 Fetching data for ${selectedCountries.value.size} countries...`
+  );
+
+  // Fetch data for all selected countries
+  const allSummaries: UniSummary[] = [];
+
+  for (const country of selectedCountries.value) {
+    try {
+      const summaries = await fetchCountrySummaries(country);
+      allSummaries.push(...summaries);
+      console.log(`✓ Loaded ${summaries.length} universities from ${country}`);
+    } catch (err) {
+      console.error(`Failed to fetch ${country}:`, err);
+    } finally {
+    }
+  }
+
+  try {
+    // Update allUniversities and map
+    allUniversities.value = allSummaries;
+    updateMapData();
+
+    // Refit map bounds to show all countries
+    fitMapToData(allSummaries);
+  } catch (err) {
+    console.error("Failed to update map data:", err);
+  } finally {
+    loadingCountries.value = false;
+  }
+}
+
+function fitMapToData(summaries: UniSummary[]) {
+  if (!map || summaries.length === 0) return;
+
+  const coords = summaries.map((u) => [u.longitude, u.latitude]);
+  const lons = coords.map((c) => c[0]);
+  const lats = coords.map((c) => c[1]);
+
+  const minLon = Math.min(...lons);
+  const maxLon = Math.max(...lons);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+
+  map.fitBounds(
+    [
+      [minLon, minLat],
+      [maxLon, maxLat],
+    ],
+    { padding: 50, maxZoom: 7, duration: 1000 }
+  );
 }
 
 async function fetchCountrySummaries(country: string): Promise<UniSummary[]> {
@@ -1532,6 +1703,42 @@ async function fetchAllSummaries(onCountryDone: (data: UniSummary[]) => void) {
   } catch (err: any) {
     errorHandler(err, "Failed to fetch top universities");
     return [];
+  }
+}
+
+async function loadAdditionalCountries() {
+  if (!map) return;
+
+  loadingCountries.value = true;
+
+  try {
+    const additionalSummaries: UniSummary[] = [];
+
+    // Fetch data for newly selected countries (excluding what we already have)
+    for (const country of selectedCountries.value) {
+      if (country === "United States") continue; // Already loaded
+
+      try {
+        const summaries = await fetchCountrySummaries(country);
+        additionalSummaries.push(...summaries);
+        console.log(
+          `✓ Loaded ${summaries.length} universities from ${country}`
+        );
+      } catch (err) {
+        console.error(`Failed to fetch ${country}:`, err);
+      }
+    }
+
+    // Add to existing data
+    allUniversities.value = [...allUniversities.value, ...additionalSummaries];
+
+    // Update map
+    updateMapData();
+
+    // Refit bounds
+    fitMapToData(allUniversities.value);
+  } finally {
+    loadingCountries.value = false;
   }
 }
 
@@ -1685,40 +1892,7 @@ async function setupMapWithSummaries(all: UniSummary[]) {
       const feature = e.features?.[0];
       if (!feature) return;
       const id = (feature.properties as any).id as string;
-
-      if (detailsCache.has(id)) {
-        selectedUniversity.value = detailsCache.get(id)!;
-        visibleCount.value = FAC_SLAB;
-        selectedId.value = id;
-        activeFacultyAreas.value = new Set();
-        updateSelectedFilter(id);
-        return;
-      }
-
-      detailLoading.value = true;
-      selectedUniversity.value = {
-        id,
-        institution: "Loading…",
-        longitude: 0,
-        latitude: 0,
-        top_area: "Other",
-        faculty_count: 0,
-      } as UniDetail;
-
-      try {
-        const { data } = await axios.get<UniDetail>(`/api/universities/${id}`);
-        detailsCache.set(id, data);
-        selectedUniversity.value = data;
-        visibleCount.value = FAC_SLAB;
-        selectedId.value = id;
-        activeFacultyAreas.value = new Set();
-        updateSelectedFilter(id);
-      } catch (err: any) {
-        errorHandler(err, `Failed to fetch details for university ${id}`);
-        selectedUniversity.value = null;
-      } finally {
-        detailLoading.value = false;
-      }
+      await selectUniversity(id);
     });
 
     ["points", "clusters"].forEach((layer) => {
@@ -1733,6 +1907,47 @@ async function setupMapWithSummaries(all: UniSummary[]) {
 
   allUniversities.value = summaries;
   pipelineStatusMessage.value = "completed";
+}
+
+async function selectUniversity(institutionId: string) {
+  if (detailsCache.has(institutionId)) {
+    selectedUniversity.value = detailsCache.get(institutionId)!;
+    visibleCount.value = FAC_SLAB;
+    selectedId.value = institutionId;
+    activeFacultyAreas.value = new Set();
+    updateSelectedFilter(institutionId);
+    return;
+  }
+
+  detailLoading.value = true;
+  selectedUniversity.value = {
+    institutionId,
+    institution: "Loading…",
+    longitude: 0,
+    latitude: 0,
+    top_area: "Other",
+    faculty_count: 0,
+  } as UniDetail;
+
+  try {
+    const { data } = await axios.get<UniDetail>(
+      `/api/universities/${institutionId}`
+    );
+    detailsCache.set(institutionId, data);
+    selectedUniversity.value = data;
+    visibleCount.value = FAC_SLAB;
+    selectedId.value = institutionId;
+    activeFacultyAreas.value = new Set();
+    updateSelectedFilter(institutionId);
+  } catch (err: any) {
+    errorHandler(
+      err,
+      `Failed to fetch details for university ${institutionId}`
+    );
+    selectedUniversity.value = null;
+  } finally {
+    detailLoading.value = false;
+  }
 }
 
 // -------------------- Core logic --------------------
@@ -2879,5 +3094,94 @@ hr {
   .quick-stats {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.country-selection-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.country-toggle {
+  width: 100%;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.country-toggle:hover {
+  background: #f8fafc;
+}
+
+.country-selector {
+  margin-top: 12px;
+}
+
+.country-search {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.country-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px;
+  background: #fff;
+}
+
+.country-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.country-item:hover {
+  background: #f8fafc;
+}
+
+.country-item input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.country-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.country-btn {
+  flex: 1;
+  padding: 6px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.country-btn:hover {
+  background: #2563eb;
 }
 </style>
