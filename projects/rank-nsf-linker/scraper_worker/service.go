@@ -6,57 +6,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"regexp"
-	"sort"
-	"strings"
 	"sync"
 	"time"
-
-	"github.com/spf13/cast"
-)
-
-type SearchResult struct {
-	// Professor metadata
-	ProfessorName string
-
-	// Document metadata
-	URL         string
-	Title       string
-	ContentType string
-	ScrapedAt   time.Time
-
-	// Chunk metadata
-	ChunkText   string // The actual text chunk that matched
-	ChunkIndex  int    // Which chunk (0-based)
-	TotalChunks int    // Total chunks in this document
-	TokenCount  int    // Tokens in this chunk
-
-	// Scoring
-	Score    float32 // Final weighted score (cosine_sim * content_weight)
-	RawScore float32 // Original cosine similarity before weighting
-	Weight   float32 // Content type weight applied
-}
-
-// Optional: Helper to format chunk position
-func (r *SearchResult) ChunkPosition() string {
-	if r.TotalChunks <= 1 {
-		return ""
-	}
-	return fmt.Sprintf("Chunk %d of %d", r.ChunkIndex+1, r.TotalChunks)
-}
-
-// Optional: Helper to get short snippet
-func (r *SearchResult) Snippet(maxChars int) string {
-	if len(r.ChunkText) <= maxChars {
-		return r.ChunkText
-	}
-	return r.ChunkText[:maxChars] + "..."
-}
-
-// Optional: Helper to check if this is the main/first chunk
-func (r *SearchResult) IsMainChunk() bool {
-	return r.ChunkIndex == 0
-}
 
 	"github.com/spf13/cast"
 )
@@ -232,8 +183,6 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 			continue
 		}
 
-		// Embed with content-aware chunking
-		results, err := s.embedder.EmbedContent(content.Content, ContentType(content.ContentType))
 		// Embed with content-aware chunking
 		results, err := s.embedder.EmbedContent(content.Content, ContentType(content.ContentType))
 		if err != nil {
