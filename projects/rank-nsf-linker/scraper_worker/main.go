@@ -1,4 +1,4 @@
-package scraperworker
+package main
 
 import (
 	"fmt"
@@ -93,10 +93,13 @@ func main() {
 	waitForServices()
 	printBanner()
 	startMetricsServer()
+	InitPostgres()
 	go syncProfessorsWithScrapeQueue()
 
 	if processResearchErr := startResearchPipeline(); processResearchErr != nil {
 		logger.Errorf("❌ Failed to process research: %v", processResearchErr)
+		for {
+		}
 		return
 	}
 }

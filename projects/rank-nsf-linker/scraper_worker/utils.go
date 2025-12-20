@@ -1,4 +1,4 @@
-package scraperworker
+package main
 
 import (
 	"database/sql"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -32,6 +34,18 @@ const (
 
 	WORKER_COUNT = 10
 )
+
+func GetGlobalDB() (*sql.DB, error) {
+	if globalDB == nil {
+		if _, err := InitPostgres(); err != nil {
+			return nil, err
+		}
+	}
+	if globalDB == nil {
+		return nil, fmt.Errorf("database not initialized")
+	}
+	return globalDB, nil
+}
 
 // InitPostgres ensures the DB is initialized only once, safely under concurrency.
 func InitPostgres() (*sql.DB, error) {

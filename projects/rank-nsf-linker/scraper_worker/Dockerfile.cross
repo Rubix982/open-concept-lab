@@ -1,0 +1,106 @@
+## FOR CROSS COMPILATION IF NEEDED IN FUTURE
+
+# Stage 1: Build Go Binary
+FROM --platform=$BUILDPLATFORM golang:1.25.5-bookworm AS builder
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS=linux
+ARG TARGETARCH
+
+# Debug: Print all build args
+RUN echo "BUILDPLATFORM=$BUILDPLATFORM" && \
+    echo "TARGETPLATFORM=$TARGETPLATFORM" && \
+    echo "TARGETOS=$TARGETOS" && \
+    echo "TARGETARCH=$TARGETARCH"
+
+WORKDIR /app
+
+# Use reliable mirror
+# RUN sed -i 's|http://deb.debian.org|http://ftp.us.debian.org|g' /etc/apt/sources.list && \
+#    sed -i 's|http://security.debian.org|http://ftp.us.debian.org|g' /etc/apt/sources.list
+
+# Install cross-compilers
+COPY scripts/install-cross-compilers.sh .
+RUN chmod +x install-cross-compilers.sh && ./install-cross-compilers.sh
+
+# Download ONNX Runtime for target architecture
+COPY scripts/onnx-setup.sh .
+RUN chmod +x onnx-setup.sh && \
+    export TARGETARCH=${TARGETARCH} && \
+    ./onnx-setup.sh
+
+# Set CGO environment
+ENV CGO_CFLAGS="-I/usr/local/onnxruntime/include"
+ENV CGO_LDFLAGS="-L/usr/local/onnxruntime/lib -lonnxruntime"
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Cross-compile with architecture-specific compiler
+COPY scripts/build.sh . 
+RUN chmod +x build.sh && \
+    export TARGETARCH=${TARGETARCH} \
+    TARGETOS=${TARGETOS} \
+    BUILDPLATFORM=${BUILDPLATFORM} && \
+    ./build.sh
+
+# Stage 2: Export Model (with pip cache mount)
+FROM python:3.12-slim AS model-exporter
+
+WORKDIR /export
+
+# Copy the requirements.txt file
+COPY requirements.txt .
+COPY scripts/install-requirements.sh .
+
+RUN chmod +x install-requirements.sh && \
+    ./install-requirements.sh
+
+# Copy export script
+COPY export_model.py .
+
+# Run export (creates ./models/all-MiniLM-L6-v2-onnx/)
+RUN python export_model.py && \
+    ls -lah models/all-MiniLM-L6-v2-onnx/ && \
+    echo "✓ ONNX export complete"
+
+# Stage 3: Runtime (Go + ONNX model only, no Python)
+FROM --platform=$TARGETPLATFORM debian:bullseye-slim
+
+ARG TARGETARCH
+
+WORKDIR /app
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy ONNX Runtime shared library from builder
+COPY --from=builder /usr/local/onnxruntime/lib/libonnxruntime.so* /usr/local/lib/
+
+# Update shared library cache
+RUN ldconfig && ldconfig -p | grep onnx
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Copy binary and model
+COPY --from=builder /app/scraper-worker .
+COPY --from=model-exporter /export/models/all-MiniLM-L6-v2-onnx /app/models/all-MiniLM-L6-v2-onnx
+
+ENV MODEL_DIR=/app/models/all-MiniLM-L6-v2-onnx
+
+# Create non-root user
+RUN groupadd -g 65532 nonroot && \
+    useradd -u 65532 -g nonroot -s /sbin/nologin nonroot && \
+    chown -R nonroot:nonroot /app && \
+    chmod 755 /app/scraper-worker
+
+USER nonroot
+
+ENTRYPOINT ["./scraper-worker"]

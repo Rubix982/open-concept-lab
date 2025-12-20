@@ -1,4 +1,4 @@
-package scraperworker
+package main
 
 import (
 	"database/sql"
@@ -127,11 +127,16 @@ func NewResearchService() (*ResearchService, error) {
 func (s *ResearchService) workerLoop(id int) {
 	defer s.wg.Done()
 	logger.Debugf("Worker %d started", id)
+	db, err := GetGlobalDB()
+	if err != nil {
+		logger.Errorf("Worker %d: Failed to get global DB: %v", id, err)
+		return
+	}
 
 	for s.running {
 		// Poll for a job
 		job := &ScrapeJob{}
-		err := globalDB.QueryRow(CLAIM_JOB_DB_QUERY).Scan(&job.ID, &job.ProfessorName, &job.URL)
+		err := db.QueryRow(CLAIM_JOB_DB_QUERY).Scan(&job.ID, &job.ProfessorName, &job.URL)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// No jobs, sleep and retry
@@ -163,10 +168,15 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 		s.completeJob(job.ID) // Mark complete anyway to avoid infinite retries
 		return
 	}
+	db, err := GetGlobalDB()
+	if err != nil {
+		logger.Errorf("Worker %d: Failed to get global DB: %v", workerID, err)
+		return
+	}
 
 	// 2. Process Results (Save DB, Embed, Vector DB)
 	for _, content := range contents {
-		if _, err := globalDB.Exec(SERVICE_SAVE_TO_DB_QUERY,
+		if _, err := db.Exec(SERVICE_SAVE_TO_DB_QUERY,
 			content.ProfessorName,
 			content.URL,
 			content.ContentType,
@@ -387,14 +397,26 @@ func (s *ResearchService) deduplicateByURL(results []SearchResult, limit int) []
 }
 
 func (s *ResearchService) completeJob(id string) {
-	_, err := globalDB.Exec("UPDATE scrape_queue SET status = 'completed', updated_at = NOW() WHERE id = $1", id)
+	db, err := GetGlobalDB()
+	if err != nil {
+		logger.Errorf("Failed to get global DB: %v", err)
+		return
+	}
+
+	_, err = db.Exec("UPDATE scrape_queue SET status = 'completed', updated_at = NOW() WHERE id = $1", id)
 	if err != nil {
 		logger.Errorf("Failed to complete job %s: %v", id, err)
 	}
 }
 
 func (s *ResearchService) failJob(id, errorMsg string) {
-	_, err := globalDB.Exec("UPDATE scrape_queue SET status = 'failed', error_message = $2, updated_at = NOW() WHERE id = $1", id, errorMsg)
+	db, err := GetGlobalDB()
+	if err != nil {
+		logger.Errorf("Failed to get global DB: %v", err)
+		return
+	}
+
+	_, err = db.Exec("UPDATE scrape_queue SET status = 'failed', error_message = $2, updated_at = NOW() WHERE id = $1", id, errorMsg)
 	if err != nil {
 		logger.Errorf("Failed to fail job %s: %v", id, err)
 	}

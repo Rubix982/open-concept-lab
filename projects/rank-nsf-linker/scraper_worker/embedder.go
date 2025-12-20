@@ -1,27 +1,32 @@
-package scraperworker
+package main
 
 import (
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
+	"sync"
+
+	"github.com/owulveryck/onnx-go"
+	"github.com/owulveryck/onnx-go/backend/x/gorgonnx"
 	"github.com/sugarme/tokenizer"
 	"github.com/sugarme/tokenizer/pretrained"
-	ort "github.com/yalue/onnxruntime_go"
+	"gorgonia.org/tensor"
 )
 
 const (
-	MINILM_L6_V2_ONNX_MODEL_DIR        = "./models/all-MiniLM-L6-v2-onnx"
+	MINILM_L6_V2_ONNX_MODEL_DIR        = "/export/models/all-MiniLM-L6-v2-onnx"
 	MINILM_L6_V2_ONNX_MODEL_DIM_OUT    = 384
 	MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS = 128
 )
 
 // ContentTypeWeight defines importance multipliers for retrieval
 var ContentTypeWeight = map[ContentType]float32{
-	ContentPublication: 2.0, // Highest priority
+	ContentPublication: 2.0,
 	ContentProject:     1.8,
 	ContentCode:        1.6,
 	ContentDataset:     1.6,
@@ -31,7 +36,7 @@ var ContentTypeWeight = map[ContentType]float32{
 	ContentAward:       1.0,
 	ContentNews:        0.8,
 	ContentBiography:   0.6,
-	ContentHomepage:    0.5, // Lowest priority
+	ContentHomepage:    0.5,
 }
 
 type EmbeddingResult struct {
@@ -39,33 +44,36 @@ type EmbeddingResult struct {
 	ContentType ContentType
 	ChunkIndex  int
 	TotalChunks int
-	Weight      float32 // For retrieval scoring
-	Text        string  // Original chunk text
+	Weight      float32
+	Text        string
 	TokenCount  int
 }
 
 type Embedder struct {
-	session   *ort.DynamicAdvancedSession
+	model     *onnx.Model
+	backend   *gorgonnx.Graph
 	tokenizer *tokenizer.Tokenizer
+	mu        sync.Mutex
 }
 
 func NewEmbedder() (*Embedder, error) {
-	// Initialize ONNX Runtime
-	err := ort.InitializeEnvironment()
-	if err != nil {
-		return nil, fmt.Errorf("failed to init ONNX: %w", err)
-	}
-
 	// Load ONNX model
 	modelPath := filepath.Join(MINILM_L6_V2_ONNX_MODEL_DIR, "model.onnx")
-	session, err := ort.NewDynamicAdvancedSession(
-		modelPath,
-		[]string{"input_ids", "attention_mask", "token_type_ids"},
-		[]string{"last_hidden_state"},
-		nil,
-	)
+
+	// Read model file
+	modelBytes, err := os.ReadFile(modelPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load model: %w", err)
+		return nil, fmt.Errorf("failed to read model: %w", err)
+	}
+
+	// Create backend
+	backend := gorgonnx.NewGraph()
+
+	// Parse ONNX model
+	model := onnx.NewModel(backend)
+	err = model.UnmarshalBinary(modelBytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse model: %w", err)
 	}
 
 	// Load tokenizer
@@ -74,12 +82,16 @@ func NewEmbedder() (*Embedder, error) {
 	log.Printf("✓ Model loaded: %s", modelPath)
 
 	return &Embedder{
-		session:   session,
+		model:     model,
+		backend:   backend,
 		tokenizer: tk,
 	}, nil
 }
 
 func (e *Embedder) Embed(text string) ([]float32, int, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	if text == "" {
 		return make([]float32, MINILM_L6_V2_ONNX_MODEL_DIM_OUT), 0, nil
 	}
@@ -97,53 +109,64 @@ func (e *Embedder) Embed(text string) ([]float32, int, error) {
 	// Pad or truncate to max length
 	maxLen := MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS
 	tokenCount := len(ids)
-	inputIDs := padOrTruncate(ids, maxLen)
-	attnMask := padOrTruncate(attentionMask, maxLen)
-	tokenTypeIDs := padOrTruncate(typeIds, maxLen)
+	inputIDs := padOrTruncateFloat32(ids, maxLen)
+	attnMask := padOrTruncateFloat32(attentionMask, maxLen)
+	tokenTypeIDs := padOrTruncateFloat32(typeIds, maxLen)
 
-	// Create input tensors
-	inputShape := ort.NewShape(1, int64(maxLen))
+	// Prepare inputs
+	// Standard BERT inputs order: 0: input_ids, 1: attention_mask, 2: token_type_ids
 
-	inputIDsTensor, err := ort.NewTensor(inputShape, inputIDs)
-	if err != nil {
-		return nil, 0, err
+	// 0: input_ids
+	t0 := tensor.New(
+		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
+		tensor.WithBacking(inputIDs),
+	)
+	if err := e.model.SetInput(0, t0); err != nil {
+		return nil, 0, fmt.Errorf("failed to set input_ids: %w", err)
 	}
-	defer inputIDsTensor.Destroy()
 
-	attnMaskTensor, err := ort.NewTensor(inputShape, attnMask)
-	if err != nil {
-		return nil, 0, err
+	// 1: attention_mask
+	t1 := tensor.New(
+		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
+		tensor.WithBacking(attnMask),
+	)
+	if err := e.model.SetInput(1, t1); err != nil {
+		return nil, 0, fmt.Errorf("failed to set attention_mask: %w", err)
 	}
-	defer attnMaskTensor.Destroy()
 
-	tokenTypeIDsTensor, err := ort.NewTensor(inputShape, tokenTypeIDs)
-	if err != nil {
-		return nil, 0, err
+	// 2: token_type_ids
+	t2 := tensor.New(
+		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
+		tensor.WithBacking(tokenTypeIDs),
+	)
+	if err := e.model.SetInput(2, t2); err != nil {
+		return nil, 0, fmt.Errorf("failed to set token_type_ids: %w", err)
 	}
-	defer tokenTypeIDsTensor.Destroy()
-
-	// Prepare inputs and outputs
-	inputs := []ort.Value{inputIDsTensor, attnMaskTensor, tokenTypeIDsTensor}
-	outputs := []ort.Value{nil} // nil = auto-allocate output
 
 	// Run inference
-	err = e.session.Run(inputs, outputs)
-	if err != nil {
+	if err := e.backend.Run(); err != nil {
 		return nil, 0, fmt.Errorf("inference failed: %w", err)
 	}
-	defer outputs[0].Destroy()
 
-	// Type assert to concrete tensor type
-	outputTensor, ok := outputs[0].(*ort.Tensor[float32])
-	if !ok {
-		return nil, 0, fmt.Errorf("output is not a float32 tensor")
+	// Extract last_hidden_state (Output 0)
+	// We assume last_hidden_state is the first output.
+	outputs, err := e.model.GetOutputTensors()
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to get output tensors: %w", err)
 	}
+	if len(outputs) == 0 {
+		return nil, 0, fmt.Errorf("no output tensors returned")
+	}
+	outputTensor := outputs[0]
 
-	// Extract data
-	data := outputTensor.GetData()
+	dense, ok := outputTensor.(*tensor.Dense)
+	if !ok {
+		return nil, 0, fmt.Errorf("output is not a dense tensor")
+	}
+	lastHiddenState := dense.Float32s() // This returns the flattened data
 
 	// Mean pool over sequence dimension
-	embedding := meanPool(data, maxLen, MINILM_L6_V2_ONNX_MODEL_DIM_OUT)
+	embedding := meanPool(lastHiddenState, maxLen, MINILM_L6_V2_ONNX_MODEL_DIM_OUT)
 
 	// L2 normalize for cosine similarity
 	e.normalizeEmbedding(embedding)
@@ -345,17 +368,14 @@ func (e *Embedder) scaleEmbedding(embedding []float32, weight float32) {
 }
 
 func (e *Embedder) Close() {
-	if e.session != nil {
-		e.session.Destroy()
-	}
-	ort.DestroyEnvironment()
+	// onnx-go doesn't require explicit cleanup
 }
 
-// Helper: Pad or truncate to target length and convert to int64 for ONNX
-func padOrTruncate(slice []int, length int) []int64 {
-	result := make([]int64, length)
+// Helper: Pad or truncate to target length as float32
+func padOrTruncateFloat32(slice []int, length int) []float32 {
+	result := make([]float32, length)
 	for i := 0; i < len(slice) && i < length; i++ {
-		result[i] = int64(slice[i])
+		result[i] = float32(slice[i])
 	}
 	return result
 }

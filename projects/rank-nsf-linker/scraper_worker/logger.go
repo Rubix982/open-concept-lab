@@ -1,4 +1,4 @@
-package scraperworker
+package main
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package scraperworker
+package main
 
 import (
 	"time"
@@ -8,6 +8,13 @@ import (
 
 func syncProfessorsWithScrapeQueue() {
 	logger.Info("Starting syncProfessorsWithScrapeQueue operation")
+
+	db, err := GetGlobalDB()
+	if err != nil {
+		logger.Errorf("Failed to get global DB: %v", err)
+		return
+	}
+
 	operation := func() error {
 		logger.Debug("Preparing to execute INSERT INTO scrape_queue query")
 		query := `
@@ -17,7 +24,7 @@ func syncProfessorsWithScrapeQueue() {
 			WHERE homepage IS NOT NULL AND homepage != ''
 			ON CONFLICT (professor_name, url) DO NOTHING;
 		`
-		res, err := globalDB.Exec(query)
+		res, err := db.Exec(query)
 		if err != nil {
 			logger.Errorf("Failed to sync professors with scrape queue: %v", err)
 			return err
@@ -32,8 +39,7 @@ func syncProfessorsWithScrapeQueue() {
 	expBackoff.MaxElapsedTime = 5 * time.Minute // or any suitable max time
 
 	logger.Debugf("Starting backoff retry with max elapsed time: %v", expBackoff.MaxElapsedTime)
-	err := backoff.Retry(operation, expBackoff)
-	if err != nil {
+	if err = backoff.Retry(operation, expBackoff); err != nil {
 		logger.Errorf("All retries failed for syncing professors: %v", err)
 	} else {
 		logger.Info("syncProfessorsWithScrapeQueue operation completed successfully")

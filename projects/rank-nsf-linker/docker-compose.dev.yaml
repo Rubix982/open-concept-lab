@@ -1,3 +1,7 @@
+x-build-defaults: &build-defaults
+  args:
+    BUILDKIT_PROGRESS: plain
+
 services:
   postgres:
     image: host.docker.internal:5128/cgr.dev/chainguard/postgres
@@ -121,6 +125,18 @@ services:
     volumes:
       - ./scraper_worker/models:/app/models
       - ./scraper_worker/.env:/app/.env:ro
+    entrypoint: >
+      sh -c "
+      if [ ! -f /app/models/all-MiniLM-L6-v2-onnx/model.onnx ]; then
+        echo '→ First run: copying models from image to host';
+        mkdir -p /app/models/all-MiniLM-L6-v2-onnx;
+        cp -r /tmp/embedded-models/all-MiniLM-L6-v2-onnx/* /app/models/all-MiniLM-L6-v2-onnx/;
+        echo '✓ Models copied to host';
+      else
+        echo '✓ Using models from host';
+      fi;
+      exec ./scraper-worker
+      "
     depends_on:
       postgres:
         condition: service_healthy
@@ -146,8 +162,6 @@ services:
       POSTGRES_DB_NAME: rank-nsf-linker
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
-    ports:
-      - "8080:8080"
     restart: unless-stopped
     command: ["./scraper_worker/scraper_worker"]
     healthcheck:

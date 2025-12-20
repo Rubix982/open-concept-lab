@@ -86,8 +86,7 @@ infra-images:
 
 # App lifecycle
 docker-build:
-	BUILDKIT_PROGRESS=plain 
-	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,)
+	$(DOCKER_COMPOSE) build --progress=plain $(if $(NO_CACHE),--no-cache,)
 	docker image prune -f
 
 # Spin up services in background
@@ -161,6 +160,7 @@ status:
 # For a no cache build
 # make rebuild NO_CACHE=true
 rebuild:
+	export BUILDKIT_PROGRESS=plain
 	export DOCKER_BUILDKIT=1
 	make rm-all
 	make registry
@@ -199,6 +199,7 @@ up-one:
 # Usage: make rebuild-one SERVICE=go-server
 rebuild-one:
 	@echo "♻️ Rebuilding and restarting $(SERVICE)..."
-	$(DOCKER_COMPOSE) build $(if $(NO_CACHE),--no-cache,) $(SERVICE)
+	export BUILDKIT_PROGRESS=plain
+	$(DOCKER_COMPOSE) build --progress=plain $(if $(NO_CACHE),--no-cache,) $(SERVICE)
 	$(DOCKER_COMPOSE) up -d $(SERVICE)
 	@echo "✅ $(SERVICE) rebuilt and restarted successfully."
