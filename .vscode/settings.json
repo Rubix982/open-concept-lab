@@ -62,5 +62,6 @@
     "flat_set": "cpp",
     "ranges": "cpp",
     "stacktrace": "cpp"
-  }
+  },
+  "kiroAgent.configureMCP": "Disabled"
 }
