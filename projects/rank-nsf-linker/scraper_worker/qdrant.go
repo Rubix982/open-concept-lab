@@ -172,17 +172,14 @@ func (q *QdrantClient) EnsureCollection(vectorSize uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Check if exists
-	exists, err := q.client.CollectionExists(ctx, q.collection)
-	if err != nil {
-		return fmt.Errorf("failed to check collection existence: %w", err)
-	}
-	if exists {
+	// Try to get collection info instead of CollectionExists (more compatible)
+	_, err := q.client.GetCollectionInfo(ctx, q.collection)
+	if err == nil {
 		logger.Infof("Collection %s already exists", q.collection)
 		return nil
 	}
 
-	// Create
+	// If collection doesn't exist, create it
 	logger.Infof("Creating collection %s with vector size %d", q.collection, vectorSize)
 	err = q.client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: q.collection,
@@ -191,7 +188,13 @@ func (q *QdrantClient) EnsureCollection(vectorSize uint64) error {
 			Distance: qdrant.Distance_Cosine,
 		}),
 	})
-	return err
+
+	if err != nil {
+		return fmt.Errorf("failed to create collection: %w", err)
+	}
+
+	logger.Infof("✓ Collection %s created successfully", q.collection)
+	return nil
 }
 
 func (q *QdrantClient) Upsert(id string, vector []float32, payload map[string]interface{}) error {

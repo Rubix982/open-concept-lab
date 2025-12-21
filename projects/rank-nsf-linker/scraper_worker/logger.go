@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -20,11 +21,27 @@ var (
 )
 
 func init() {
-	LogsRoute = fmt.Sprintf("%s/logs/log", LOGGING_SERVICE_ROUTE)
+	LogsRoute = fmt.Sprintf("%s/logs/batch", LOGGING_SERVICE_ROUTE)
 }
 
-// LoggingServiceHook sends log entries to an HTTP logging service
-type LoggingServiceHook struct{}
+// LoggingServiceHook sends log entries to an HTTP logging service in batches
+type LoggingServiceHook struct {
+	buffer    []map[string]interface{}
+	mu        sync.Mutex
+	batchSize int
+}
+
+func NewLoggingServiceHook() *LoggingServiceHook {
+	hook := &LoggingServiceHook{
+		buffer:    make([]map[string]interface{}, 0, 200),
+		batchSize: 200, // Flush after 200 logs
+	}
+
+	// Start background flusher (every 5 seconds)
+	go hook.periodicFlush()
+
+	return hook
+}
 
 func (h *LoggingServiceHook) Levels() []logrus.Level {
 	return logrus.AllLevels[:logrus.InfoLevel+1]
@@ -39,28 +56,76 @@ func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
 		"timestamp": entry.Time.Format("2006-01-02T15:04:05.000Z07:00"),
 	}
 
-	body, err := json.Marshal(payload)
-	if err != nil {
-		// fallback to console if JSON marshaling fails
-		fmt.Println("Failed to marshal log entry:", err)
-		return err
+	h.mu.Lock()
+	h.buffer = append(h.buffer, payload)
+	shouldFlush := len(h.buffer) >= h.batchSize
+	h.mu.Unlock()
+
+	// Flush if buffer is full
+	if shouldFlush {
+		go h.flush()
 	}
 
-	go func() {
-		req, err := http.NewRequest("POST", LogsRoute, bytes.NewBuffer(body))
-		if err != nil {
-			fmt.Println("Failed to create HTTP request for log:", err)
-			return
-		}
-		req.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{}
-		if _, err := client.Do(req); err != nil {
-			fmt.Println("Failed to send log to logging service:", err)
-		}
-	}()
-
 	return nil
+}
+
+// periodicFlush flushes logs every 5 seconds
+func (h *LoggingServiceHook) periodicFlush() {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		h.flush()
+	}
+}
+
+// flush sends batched logs to the logging service
+func (h *LoggingServiceHook) flush() {
+	h.mu.Lock()
+	if len(h.buffer) == 0 {
+		h.mu.Unlock()
+		return
+	}
+
+	// Copy buffer and clear it
+	batch := make([]map[string]interface{}, len(h.buffer))
+	copy(batch, h.buffer)
+	h.buffer = h.buffer[:0] // Clear buffer
+	h.mu.Unlock()
+
+	// Send batch
+	body, err := json.Marshal(map[string]interface{}{
+		"logs":  batch,
+		"count": len(batch),
+	})
+	if err != nil {
+		fmt.Printf("Failed to marshal log batch (%d logs): %v\n", len(batch), err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", LogsRoute, bytes.NewBuffer(body))
+	if err != nil {
+		fmt.Printf("Failed to create HTTP request for log batch: %v\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("Failed to send log batch (%d logs): %v\n", len(batch), err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Logging service returned status %d for batch of %d logs\n", resp.StatusCode, len(batch))
+	}
+}
+
+// Flush is called on shutdown to send remaining logs
+func (h *LoggingServiceHook) Flush() {
+	h.flush()
 }
 
 // GetLogger returns the singleton logger instance
@@ -68,7 +133,7 @@ func init() {
 	once.Do(func() {
 		logger = logrus.New()
 		logger.SetOutput(os.Stdout)
-		logger.SetLevel(logrus.InfoLevel)
+		logger.SetLevel(logrus.DebugLevel)
 		logger.SetFormatter(&logrus.TextFormatter{
 			ForceColors:     true,
 			FullTimestamp:   true,

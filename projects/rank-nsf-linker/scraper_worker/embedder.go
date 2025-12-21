@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"os"
 	"path/filepath"
@@ -19,7 +18,7 @@ import (
 )
 
 const (
-	MINILM_L6_V2_ONNX_MODEL_DIR        = "/export/models/all-MiniLM-L6-v2-onnx"
+	MINILM_L6_V2_ONNX_MODEL_DIR        = "/app/models/all-MiniLM-L6-v2-onnx"
 	MINILM_L6_V2_ONNX_MODEL_DIM_OUT    = 384
 	MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS = 128
 )
@@ -79,7 +78,7 @@ func NewEmbedder() (*Embedder, error) {
 	// Load tokenizer
 	tk := pretrained.BertBaseUncased()
 
-	log.Printf("✓ Model loaded: %s", modelPath)
+	logger.Infof("✓ Model loaded: %s", modelPath)
 
 	return &Embedder{
 		model:     model,
@@ -206,7 +205,7 @@ func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*Embedd
 
 		embedding, tokenCount, err := e.Embed(contextualChunk)
 		if err != nil {
-			log.Printf("Warning: failed to embed chunk %d: %v", i, err)
+			logger.Warnf("Warning: failed to embed chunk %d: %v", i, err)
 			continue
 		}
 

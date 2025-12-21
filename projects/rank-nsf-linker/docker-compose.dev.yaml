@@ -68,7 +68,8 @@ services:
     image: host.docker.internal:5128/qdrant/qdrant:v1.3.0
     container_name: qdrant-local
     ports:
-      - "6333:6333"
+      - "6333:6333" # HTTP/REST API
+      - "6334:6334" # gRPC API
     volumes:
       - qdrant_data:/qdrant/storage
     restart: unless-stopped
@@ -123,20 +124,7 @@ services:
       tags:
         - rank-nsf-linker-scraper-worker:latest
     volumes:
-      - ./scraper_worker/models:/app/models
       - ./scraper_worker/.env:/app/.env:ro
-    entrypoint: >
-      sh -c "
-      if [ ! -f /app/models/all-MiniLM-L6-v2-onnx/model.onnx ]; then
-        echo '→ First run: copying models from image to host';
-        mkdir -p /app/models/all-MiniLM-L6-v2-onnx;
-        cp -r /tmp/embedded-models/all-MiniLM-L6-v2-onnx/* /app/models/all-MiniLM-L6-v2-onnx/;
-        echo '✓ Models copied to host';
-      else
-        echo '✓ Using models from host';
-      fi;
-      exec ./scraper-worker
-      "
     depends_on:
       postgres:
         condition: service_healthy
@@ -145,6 +133,7 @@ services:
       qdrant:
         condition: service_started
     environment:
+      DEBUG: 1
       DB_URL: postgres://postgres:postgres@pg17-local:5432/rank-nsf-linker
       DB_HOST: postgres
       DB_PORT: 5432
@@ -153,7 +142,7 @@ services:
       DB_PASSWORD: postgres
       ES_HOST: http://es-local:9200
       QDRANT_HOST: qdrant-local
-      QDRANT_PORT: 6333
+      QDRANT_PORT: 6334 # gRPC port for Go client
       # PostgreSQL for research service
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -163,6 +152,8 @@ services:
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
     restart: unless-stopped
+    ports:
+      - "2112:2112" # Prometheus metrics endpoint
     command: ["./scraper_worker/scraper_worker"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://scraper-worker:8080/health"]
@@ -203,7 +194,7 @@ services:
       DB_PASSWORD: postgres
       ES_HOST: http://es-local:9200
       QDRANT_HOST: qdrant-local
-      QDRANT_PORT: 6333
+      QDRANT_PORT: 6334 # gRPC port for Go client
       # PostgreSQL for research service
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432

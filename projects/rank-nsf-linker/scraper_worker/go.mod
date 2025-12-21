@@ -8,6 +8,7 @@ require (
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/owulveryck/onnx-go v0.5.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/qdrant/go-client v1.16.2
@@ -36,7 +37,6 @@ require (
 	github.com/google/flatbuffers v1.11.0 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/leesper/go_rng v0.0.0-20190531154944-a612b043e353 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nlnwa/whatwg-url v0.6.2 // indirect

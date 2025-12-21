@@ -182,7 +182,9 @@ def create_indices():
         )
         app.logger.info(f"✅ Created index: {Config.OCCURRENCES_INDEX}")
 
+
 init(autoreset=True)  # ensures color reset after each print
+
 
 # --- Logging Configuration ---
 class StructuredLogger:
@@ -466,6 +468,100 @@ def receive_log():
     except Exception as e:
         app.logger.error(
             f"Failed to process log: {e}\n{traceback.format_exc()}", exc_info=True
+        )
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+
+
+@app.route("/logs/batch", methods=["POST"])
+def receive_log_batch():
+    """
+    Batch endpoint for receiving multiple logs at once
+
+    Expected payload:
+    {
+        "logs": [
+            {"level": "info", "message": "Log 1", ...},
+            {"level": "error", "message": "Log 2", ...}
+        ],
+        "count": 2
+    }
+    """
+    try:
+        data = request.get_json(silent=True)
+
+        if not data or "logs" not in data:
+            return jsonify({"status": "error", "message": "Missing 'logs' array"}), 400
+
+        logs = data.get("logs", [])
+        if not isinstance(logs, list):
+            return (
+                jsonify({"status": "error", "message": "'logs' must be an array"}),
+                400,
+            )
+
+        processed_count = 0
+        error_ids = []
+
+        # Process each log in the batch
+        for log_data in logs:
+            try:
+                if "message" not in log_data:
+                    continue
+
+                level = log_data.get("level", "info").lower()
+                message = log_data.get("message", "No message provided")
+                url = log_data.get("url", "N/A")
+
+                fingerprint = generate_fingerprint(
+                    message, url, log_data.get("stack_trace")
+                )
+
+                entry = LogEntry(
+                    timestamp=log_data.get(
+                        "timestamp", datetime.now(timezone.utc).isoformat()
+                    ),
+                    level=level,
+                    message=message,
+                    url=url,
+                    user_agent=request.headers.get("User-Agent"),
+                    client_ip=request.remote_addr,
+                    fingerprint=fingerprint,
+                    stack_trace=log_data.get("stack_trace"),
+                    user_id=log_data.get("user_id"),
+                    session_id=log_data.get("session_id"),
+                    environment=log_data.get("environment", "production"),
+                    extra_data=log_data.get("extra"),
+                )
+
+                logger.log(level, entry)
+
+                if level in ["error", "critical"]:
+                    error_id = store_error(entry)
+                    error_ids.append(error_id)
+
+                processed_count += 1
+
+            except Exception as e:
+                app.logger.warning(f"Failed to process log in batch: {e}")
+                continue
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Processed {processed_count}/{len(logs)} logs",
+                    "processed": processed_count,
+                    "total": len(logs),
+                    "error_ids": error_ids if error_ids else None,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(
+            f"Failed to process log batch: {e}\\n{traceback.format_exc()}",
+            exc_info=True,
         )
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 

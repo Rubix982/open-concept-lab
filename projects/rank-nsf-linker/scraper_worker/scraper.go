@@ -90,7 +90,7 @@ func NewScraper() *Scraper {
 	})
 	c.SetRequestTimeout(30 * time.Second)
 	c.MaxBodySize = 10 * 1024 * 1024                   // 10MB limit (prevent downloading huge PDFs)
-	c.MaxRequests = 100                                // Safety valve per scrape session
+	c.MaxRequests = 10000                              // Safety valve per scrape session
 	c.IgnoreRobotsTxt = false                          // Default, but be explicit
 	c.DetectCharset = true                             // Academic sites sometimes use legacy encodings
 	c.DisallowedURLFilters = DisallowedURLFiltersRegex // Block file downloads

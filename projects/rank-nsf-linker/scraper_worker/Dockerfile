@@ -46,6 +46,9 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/scraper-worker ./scraper-worker
 
+# Copy Go modules to SAME PATH as builder
+COPY --from=builder /root/go/pkg/mod /root/go/pkg/mod
+
 # Copy models from exporter
 COPY --from=model-exporter /export/models/all-MiniLM-L6-v2-onnx ./models/all-MiniLM-L6-v2-onnx
 
@@ -54,8 +57,9 @@ COPY scripts/init_models.sh /usr/local/bin/init_models.sh
 RUN chmod +x /usr/local/bin/init_models.sh && \
     sh /usr/local/bin/init_models.sh
 
-# Create data directory
-RUN mkdir -p /app/data
+# Create directories and set permissions
+RUN mkdir -p /app/data /app/models && \
+    chown -R 65532:65532 /app /root/
 
 # Validate everything is in place
 RUN test -f /app/scraper-worker && \

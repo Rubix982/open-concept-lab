@@ -3,19 +3,22 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func startResearchPipeline() error {
+func startResearchPipeline() (*ResearchService, error) {
 	logger.Info("🚀 Starting Go-based Research Pipeline...")
 
 	// 2. Init Service
 	svc, err := NewResearchService()
 	if err != nil {
-		return fmt.Errorf("failed to init research service: %w", err)
+		return nil, fmt.Errorf("failed to init research service: %w", err)
 	}
 
 	// 4. Start Processing (Background)
@@ -26,7 +29,7 @@ func startResearchPipeline() error {
 	}
 	logger.Info("🚀 Research Queue Processor started in background")
 
-	return nil
+	return svc, nil
 }
 
 func waitForLoggingService() {
@@ -96,10 +99,22 @@ func main() {
 	InitPostgres()
 	go syncProfessorsWithScrapeQueue()
 
-	if processResearchErr := startResearchPipeline(); processResearchErr != nil {
+	svc, processResearchErr := startResearchPipeline()
+	if processResearchErr != nil {
 		logger.Errorf("❌ Failed to process research: %v", processResearchErr)
-		for {
-		}
-		return
+		os.Exit(1)
 	}
+
+	// Setup signal handling for graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Wait for shutdown signal
+	sig := <-sigChan
+	logger.Infof("🛑 Received signal %v, initiating graceful shutdown...", sig)
+
+	// Stop accepting new jobs
+	svc.Close()
+
+	logger.Info("✅ All workers stopped gracefully")
 }
