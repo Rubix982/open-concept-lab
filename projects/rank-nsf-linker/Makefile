@@ -3,7 +3,7 @@ DOCKER_COMPOSE := docker compose -f docker-compose.dev.yaml
 REGISTRY_CONTAINER := local-registry
 REGISTRY_PORT := 5128
 REGISTRY := host.docker.internal:$(REGISTRY_PORT)
-SERVICE := go-server
+SERVICE := scraper-worker
 
 # Helper: pull or cache image in registry if missing
 define ensure_image

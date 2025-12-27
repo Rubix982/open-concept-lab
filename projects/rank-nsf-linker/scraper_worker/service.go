@@ -184,19 +184,15 @@ type ScrapeJob struct {
 }
 
 const (
+	// Insert scraped content into the database
 	SERVICE_SAVE_TO_DB_QUERY = `
-		UPDATE scrape_queue
-		SET status = 'processing', updated_at = NOW(), attempts = attempts + 1, last_attempt = NOW()
-		WHERE id = (
-			SELECT id
-			FROM scrape_queue
-			WHERE status = 'pending'
-			-- TODO: OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
-			ORDER BY created_at ASC
-			FOR UPDATE SKIP LOCKED
-			LIMIT 1
-		)
-		RETURNING id, professor_name, url;
+		INSERT INTO scraped_content (professor_name, url, content_type, title, content, scraped_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (professor_name, url) DO UPDATE
+		SET content_type = EXCLUDED.content_type,
+		    title = EXCLUDED.title,
+		    content = EXCLUDED.content,
+		    scraped_at = EXCLUDED.scraped_at;
 	`
 
 	// Postgres FIFO Queue with SKIP LOCKED for concurrency safety
@@ -310,7 +306,7 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	scrapeStart := time.Now()
 
 	prof := ProfessorProfile{Name: job.ProfessorName, Homepage: job.URL}
-	contents, err := s.scraper.ScrapeProfessor(prof)
+	contents, err := s.scraper.ScrapeProfessor(workerID, prof)
 	scrapeDuration.Observe(time.Since(scrapeStart).Seconds())
 
 	if err != nil {
@@ -348,6 +344,13 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	for i, content := range contents {
 		logger.Debugf("[Worker %d] [Job %s] Processing content %d/%d: %s (type: %s)",
 			workerID, job.ID, i+1, len(contents), content.Title, content.ContentType)
+
+		// Validate that the content belongs to the target professor
+		if content.ProfessorName != job.ProfessorName {
+			logger.Warnf("[Worker %d] [Job %s] Skipping content with mismatched professor name: got '%s', expected '%s'",
+				workerID, job.ID, content.ProfessorName, job.ProfessorName)
+			continue
+		}
 
 		// Save to DB
 		if _, err := db.Exec(SERVICE_SAVE_TO_DB_QUERY,

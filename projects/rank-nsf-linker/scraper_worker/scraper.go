@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -84,8 +83,9 @@ func NewScraper() *Scraper {
 
 	// Politeness
 	c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
-		Parallelism: 4, // Concurrent requests!
+		DomainGlob: "*",
+		// Parallelism is the number of the maximum allowed concurrent requests of the matching domains
+		Parallelism: 4,
 		RandomDelay: 1 * time.Second,
 	})
 	c.SetRequestTimeout(30 * time.Second)
@@ -94,10 +94,6 @@ func NewScraper() *Scraper {
 	c.IgnoreRobotsTxt = false                          // Default, but be explicit
 	c.DetectCharset = true                             // Academic sites sometimes use legacy encodings
 	c.DisallowedURLFilters = DisallowedURLFiltersRegex // Block file downloads
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
-
-	c.Context = ctx
 	c.ParseHTTPErrorResponse = true
 
 	c.OnResponse(func(r *colly.Response) {
@@ -114,8 +110,9 @@ func NewScraper() *Scraper {
 	}
 }
 
-func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, error) {
+func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
 	// Check cache first (with TTL)
+	logPrefix := fmt.Sprintf("[Worker %d] -", workerID)
 	safeName := strings.ReplaceAll(prof.Name, "/", "_")
 	safeName = strings.ReplaceAll(safeName, " ", "_")
 	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
@@ -126,12 +123,13 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 			if err == nil {
 				var cached []ScrapedContent
 				if err := json.Unmarshal(content, &cached); err == nil {
-					logger.Infof("✓ Cache hit for %s (age: %v)", prof.Name, time.Since(info.ModTime()).Round(time.Hour))
+					logger.Infof("%s - ✓ Cache hit for %s (age: %v)", logPrefix, prof.Name,
+						time.Since(info.ModTime()).Round(time.Hour))
 					return cached, nil
 				}
 			}
 		} else {
-			logger.Infof("Cache expired for %s, re-scraping", prof.Name)
+			logger.Infof("%s - Cache expired for %s, re-scraping", logPrefix, prof.Name)
 		}
 	}
 
@@ -149,7 +147,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 			r.Abort()
 			return
 		}
-		logger.Debugf("Visiting [%d/%d]: %s", visitCount, maxPages, r.URL)
+		logger.Debugf("Visiting [%d/%d] for professor '%v' under route: %s", visitCount, maxPages, prof.Name, r.URL)
 	})
 
 	// OnHTML handlers
@@ -258,7 +256,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 		// Truncate if too long (safety limit)
 		if len(cleanText) > 50000 {
 			cleanText = cleanText[:50000]
-			logger.Warnf("Truncated content for %s (was >50KB)", url)
+			logger.Warnf("%s - Truncated content for %s (was >50KB)", logPrefix, url)
 		}
 
 		// Classify content type
@@ -266,7 +264,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 		// Skip if content is too short (likely navigation/error page)
 		if len(cleanText) < 200 {
-			logger.Debugf("Skipping %s: content too short (%d chars)", url, len(cleanText))
+			logger.Debugf("%s - Skipping %s: content too short (%d chars)", logPrefix, url, len(cleanText))
 			return
 		}
 
@@ -279,7 +277,7 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 			ScrapedAt:     time.Now(),
 		}
 
-		logger.Debugf("✓ Extracted: '%s' (Type: %s, Length: %d chars) from %s",
+		logger.Debugf("%s -	✓ Extracted: '%s' (Type: %s, Length: %d chars) from %s", logPrefix,
 			title, contentType, len(cleanText), url)
 
 		mu.Lock()
@@ -306,11 +304,11 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 	// Error handling
 	s.collector.OnError(func(r *colly.Response, err error) {
-		logger.Warnf("Scraping error for %s: %v", r.Request.URL, err)
+		logger.Warnf("%s - Scraping error for %s: %v", logPrefix, r.Request.URL, err)
 	})
 
 	// Visit homepage
-	logger.Infof("🕷️ Scraping homepage: %s", prof.Homepage)
+	logger.Infof("%s - 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
 	err := s.collector.Visit(prof.Homepage)
 	if err != nil {
 		return nil, fmt.Errorf("failed to visit homepage: %w", err)
@@ -320,19 +318,19 @@ func (s *Scraper) ScrapeProfessor(prof ProfessorProfile) ([]ScrapedContent, erro
 
 	// Check if we got any content
 	if len(contents) == 0 {
-		logger.Warnf("No content extracted for %s", prof.Name)
+		logger.Warnf("%s - No content extracted for %s", logPrefix, prof.Name)
 		return nil, fmt.Errorf("no content extracted from %s", prof.Homepage)
 	}
 
 	// Save to cache
 	data, err := json.MarshalIndent(contents, "", "  ")
 	if err != nil {
-		logger.Errorf("Failed to marshal cache for %s: %v", prof.Name, err)
+		logger.Errorf("%s - Failed to marshal cache for %s: %v", logPrefix, prof.Name, err)
 	} else {
 		if err := os.WriteFile(cachePath, data, 0644); err != nil {
-			logger.Errorf("Failed to write cache for %s: %v", prof.Name, err)
+			logger.Errorf("%s - Failed to write cache for %s: %v", logPrefix, prof.Name, err)
 		} else {
-			logger.Infof("💾 Saved cache for %s (%d pages, %d total chars)",
+			logger.Infof("%s - 💾 Saved cache for %s (%d pages, %d total chars)", logPrefix,
 				prof.Name, len(contents), len(contents))
 		}
 	}

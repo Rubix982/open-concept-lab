@@ -151,6 +151,7 @@ services:
       POSTGRES_DB_NAME: rank-nsf-linker
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
+      EMBEDDER_SERVICE_URL: http://embedder:8000
     restart: unless-stopped
     ports:
       - "2112:2112" # Prometheus metrics endpoint
@@ -257,6 +258,41 @@ services:
     restart: unless-stopped
     networks:
       - default
+
+  embedder:
+    image: rank-nsf-linker-embedder:latest
+    container_name: embedder
+    build:
+      context: ./embedder
+      dockerfile: Dockerfile
+      tags:
+        - rank-nsf-linker-embedder:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+      - BATCH_SIZE=32
+      - LOG_LEVEL=INFO
+      - FLASK_DEBUG=true
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import requests; requests.get('http://localhost:8000/health', timeout=5).raise_for_status()",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s # Faster now!
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
 
 volumes:
   pg_data:

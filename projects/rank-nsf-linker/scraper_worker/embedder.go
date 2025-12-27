@@ -1,26 +1,24 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"math"
+	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
-
-	"sync"
-
-	"github.com/owulveryck/onnx-go"
-	"github.com/owulveryck/onnx-go/backend/x/gorgonnx"
-	"github.com/sugarme/tokenizer"
-	"github.com/sugarme/tokenizer/pretrained"
-	"gorgonia.org/tensor"
+	"time"
 )
 
 const (
-	MINILM_L6_V2_ONNX_MODEL_DIR        = "/app/models/all-MiniLM-L6-v2-onnx"
 	MINILM_L6_V2_ONNX_MODEL_DIM_OUT    = 384
 	MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS = 128
+)
+
+var (
+	// Get embedder service URL from environment
+	embedderServiceURL = getEnv("EMBEDDER_SERVICE_URL", "http://embedder:8000")
 )
 
 // ContentTypeWeight defines importance multipliers for retrieval
@@ -49,167 +47,323 @@ type EmbeddingResult struct {
 }
 
 type Embedder struct {
-	model     *onnx.Model
-	backend   *gorgonnx.Graph
-	tokenizer *tokenizer.Tokenizer
-	mu        sync.Mutex
+	httpClient *http.Client
+	baseURL    string
 }
+
+// --- API Request/Response Types ---
+
+type embedRequest struct {
+	Text string `json:"text"`
+}
+
+type embedResponse struct {
+	Status     string    `json:"status"`
+	Embedding  []float32 `json:"embedding"`
+	TokenCount int       `json:"token_count"`
+	Dimension  int       `json:"dimension"`
+	LatencyMs  float64   `json:"latency_ms,omitempty"`
+}
+
+type batchEmbedRequest struct {
+	Texts []string `json:"texts"`
+}
+
+type batchEmbedResponse struct {
+	Status      string      `json:"status"`
+	Embeddings  [][]float32 `json:"embeddings"`
+	TokenCounts []int       `json:"token_counts"`
+	Dimension   int         `json:"dimension"`
+	Count       int         `json:"count"`
+	LatencyMs   float64     `json:"latency_ms,omitempty"`
+}
+
+type contentEmbedRequest struct {
+	Text        string `json:"text"`
+	ContentType string `json:"content_type"`
+	Chunk       bool   `json:"chunk"`
+}
+
+type contentEmbedResult struct {
+	Embedding   []float32 `json:"embedding"`
+	ContentType string    `json:"content_type"`
+	ChunkIndex  int       `json:"chunk_index"`
+	TotalChunks int       `json:"total_chunks"`
+	Weight      float32   `json:"weight"`
+	Text        string    `json:"text"`
+	TokenCount  int       `json:"token_count"`
+}
+
+type contentEmbedResponse struct {
+	Status      string               `json:"status"`
+	Results     []contentEmbedResult `json:"results"`
+	TotalChunks int                  `json:"total_chunks"`
+	Dimension   int                  `json:"dimension"`
+	LatencyMs   float64              `json:"latency_ms,omitempty"`
+}
+
+// --- Embedder Implementation ---
 
 func NewEmbedder() (*Embedder, error) {
-	// Load ONNX model
-	modelPath := filepath.Join(MINILM_L6_V2_ONNX_MODEL_DIR, "model.onnx")
-
-	// Read model file
-	modelBytes, err := os.ReadFile(modelPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read model: %w", err)
+	client := &http.Client{
+		Timeout: 60 * time.Second, // Longer timeout for batch operations
+		Transport: &http.Transport{
+			MaxIdleConns:        100,
+			MaxIdleConnsPerHost: 10,
+			IdleConnTimeout:     90 * time.Second,
+		},
 	}
 
-	// Create backend
-	backend := gorgonnx.NewGraph()
-
-	// Parse ONNX model
-	model := onnx.NewModel(backend)
-	err = model.UnmarshalBinary(modelBytes)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse model: %w", err)
+	embedder := &Embedder{
+		httpClient: client,
+		baseURL:    embedderServiceURL,
 	}
 
-	// Load tokenizer
-	tk := pretrained.BertBaseUncased()
+	// Health check with retries
+	maxRetries := 10
+	retryDelay := 2 * time.Second
 
-	logger.Infof("✓ Model loaded: %s", modelPath)
+	logger.Infof("Connecting to embedder service at %s...", embedderServiceURL)
 
-	return &Embedder{
-		model:     model,
-		backend:   backend,
-		tokenizer: tk,
-	}, nil
+	for i := 0; i < maxRetries; i++ {
+		resp, err := client.Get(embedder.baseURL + "/health")
+		if err == nil && resp.StatusCode == 200 {
+			resp.Body.Close()
+
+			// Parse health response for info
+			var healthResp map[string]interface{}
+			resp, _ = client.Get(embedder.baseURL + "/health")
+			if resp != nil {
+				json.NewDecoder(resp.Body).Decode(&healthResp)
+				resp.Body.Close()
+
+				if model, ok := healthResp["model"].(string); ok {
+					logger.Infof("✓ Embedder service connected")
+					logger.Infof("  Model: %s", model)
+					logger.Infof("  Dimension: %.0f", healthResp["embedding_dim"])
+					logger.Infof("  Max tokens: %.0f", healthResp["max_tokens"])
+				}
+			}
+
+			return embedder, nil
+		}
+
+		if resp != nil {
+			resp.Body.Close()
+		}
+
+		logger.Warnf("Embedder service not ready (attempt %d/%d), retrying in %v...",
+			i+1, maxRetries, retryDelay)
+		time.Sleep(retryDelay)
+	}
+
+	return nil, fmt.Errorf("embedder service not reachable after %d attempts", maxRetries)
 }
 
+// Embed embeds a single text using the /embed endpoint
 func (e *Embedder) Embed(text string) ([]float32, int, error) {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-
 	if text == "" {
 		return make([]float32, MINILM_L6_V2_ONNX_MODEL_DIM_OUT), 0, nil
 	}
 
-	// Tokenize
-	encoding, err := e.tokenizer.EncodeSingle(text, true)
+	reqBody := embedRequest{Text: text}
+	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, 0, fmt.Errorf("tokenization failed: %w", err)
+		return nil, 0, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	ids := encoding.GetIds()
-	attentionMask := encoding.GetAttentionMask()
-	typeIds := encoding.GetTypeIds()
-
-	// Pad or truncate to max length
-	maxLen := MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS
-	tokenCount := len(ids)
-	inputIDs := padOrTruncateFloat32(ids, maxLen)
-	attnMask := padOrTruncateFloat32(attentionMask, maxLen)
-	tokenTypeIDs := padOrTruncateFloat32(typeIds, maxLen)
-
-	// Prepare inputs
-	// Standard BERT inputs order: 0: input_ids, 1: attention_mask, 2: token_type_ids
-
-	// 0: input_ids
-	t0 := tensor.New(
-		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
-		tensor.WithBacking(inputIDs),
+	resp, err := e.httpClient.Post(
+		e.baseURL+"/embed",
+		"application/json",
+		bytes.NewBuffer(jsonData),
 	)
-	if err := e.model.SetInput(0, t0); err != nil {
-		return nil, 0, fmt.Errorf("failed to set input_ids: %w", err)
-	}
-
-	// 1: attention_mask
-	t1 := tensor.New(
-		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
-		tensor.WithBacking(attnMask),
-	)
-	if err := e.model.SetInput(1, t1); err != nil {
-		return nil, 0, fmt.Errorf("failed to set attention_mask: %w", err)
-	}
-
-	// 2: token_type_ids
-	t2 := tensor.New(
-		tensor.WithShape(1, MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS),
-		tensor.WithBacking(tokenTypeIDs),
-	)
-	if err := e.model.SetInput(2, t2); err != nil {
-		return nil, 0, fmt.Errorf("failed to set token_type_ids: %w", err)
-	}
-
-	// Run inference
-	if err := e.backend.Run(); err != nil {
-		return nil, 0, fmt.Errorf("inference failed: %w", err)
-	}
-
-	// Extract last_hidden_state (Output 0)
-	// We assume last_hidden_state is the first output.
-	outputs, err := e.model.GetOutputTensors()
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to get output tensors: %w", err)
+		return nil, 0, fmt.Errorf("http request failed: %w", err)
 	}
-	if len(outputs) == 0 {
-		return nil, 0, fmt.Errorf("no output tensors returned")
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		var errorResp map[string]interface{}
+		json.NewDecoder(resp.Body).Decode(&errorResp)
+		return nil, 0, fmt.Errorf("embedder returned status %d: %v",
+			resp.StatusCode, errorResp["message"])
 	}
-	outputTensor := outputs[0]
 
-	dense, ok := outputTensor.(*tensor.Dense)
-	if !ok {
-		return nil, 0, fmt.Errorf("output is not a dense tensor")
+	var embedResp embedResponse
+	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
+		return nil, 0, fmt.Errorf("failed to decode response: %w", err)
 	}
-	lastHiddenState := dense.Float32s() // This returns the flattened data
 
-	// Mean pool over sequence dimension
-	embedding := meanPool(lastHiddenState, maxLen, MINILM_L6_V2_ONNX_MODEL_DIM_OUT)
+	if embedResp.Status != "success" {
+		return nil, 0, fmt.Errorf("embedding failed: status=%s", embedResp.Status)
+	}
 
-	// L2 normalize for cosine similarity
-	e.normalizeEmbedding(embedding)
-
-	return embedding, tokenCount, nil
+	return embedResp.Embedding, embedResp.TokenCount, nil
 }
 
-// normalizeEmbedding applies L2 normalization for cosine similarity
-func (e *Embedder) normalizeEmbedding(embedding []float32) {
-	var norm float32
-	for _, v := range embedding {
-		norm += v * v
+// EmbedBatch efficiently embeds multiple texts using the /embed/batch endpoint
+func (e *Embedder) EmbedBatch(texts []string) ([][]float32, []int, error) {
+	if len(texts) == 0 {
+		return nil, nil, nil
 	}
-	norm = float32(math.Sqrt(float64(norm)))
 
-	if norm > 0 {
-		for i := range embedding {
-			embedding[i] /= norm
-		}
+	reqBody := batchEmbedRequest{Texts: texts}
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
+
+	resp, err := e.httpClient.Post(
+		e.baseURL+"/embed/batch",
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf("http request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		var errorResp map[string]interface{}
+		json.NewDecoder(resp.Body).Decode(&errorResp)
+		return nil, nil, fmt.Errorf("embedder returned status %d: %v",
+			resp.StatusCode, errorResp["message"])
+	}
+
+	var embedResp batchEmbedResponse
+	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
+		return nil, nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if embedResp.Status != "success" {
+		return nil, nil, fmt.Errorf("batch embedding failed: status=%s", embedResp.Status)
+	}
+
+	return embedResp.Embeddings, embedResp.TokenCounts, nil
 }
 
-// EmbedContent processes content with type-aware chunking and weighting
+// EmbedContentDirect uses Python service's /embed/content endpoint directly
+// This is the simplest approach - let Python handle all chunking/weighting
+func (e *Embedder) EmbedContentDirect(text string, contentType ContentType) ([]*EmbeddingResult, error) {
+	reqBody := contentEmbedRequest{
+		Text:        text,
+		ContentType: string(contentType),
+		Chunk:       true,
+	}
+
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := e.httpClient.Post(
+		e.baseURL+"/embed/content",
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("http request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		var errorResp map[string]interface{}
+		json.NewDecoder(resp.Body).Decode(&errorResp)
+		return nil, fmt.Errorf("embedder returned status %d: %v",
+			resp.StatusCode, errorResp["message"])
+	}
+
+	var embedResp contentEmbedResponse
+	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if embedResp.Status != "success" {
+		return nil, fmt.Errorf("content embedding failed: status=%s", embedResp.Status)
+	}
+
+	// Convert to EmbeddingResult format
+	results := make([]*EmbeddingResult, 0, len(embedResp.Results))
+	for _, res := range embedResp.Results {
+		results = append(results, &EmbeddingResult{
+			Embedding:   res.Embedding,
+			ContentType: contentType,
+			ChunkIndex:  res.ChunkIndex,
+			TotalChunks: res.TotalChunks,
+			Weight:      res.Weight,
+			Text:        res.Text,
+			TokenCount:  res.TokenCount,
+		})
+	}
+
+	return results, nil
+}
+
+// EmbedContent processes content with Go-side chunking, then batch embeds
+// This maintains your existing Go logic while using Python for inference
 func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*EmbeddingResult, error) {
+	// Option 1: Use Python's /embed/content endpoint (recommended - simpler)
+	// Uncomment this line to delegate everything to Python:
+	// return e.EmbedContentDirect(text, contentType)
+
+	// Option 2: Keep Go-side chunking logic (what's below)
+	// This is useful if you want Go to control chunking behavior
+
 	// Preprocess based on content type
 	cleaned := e.preprocessByType(text, contentType)
 
 	// Smart chunking based on content type
 	chunks := e.chunkByType(cleaned, contentType)
 
+	// Add context to each chunk
+	contextualChunks := make([]string, len(chunks))
+	for i, chunk := range chunks {
+		contextualChunks[i] = e.addTypeContext(chunk, contentType)
+	}
+
+	// Batch embed all chunks for efficiency
+	embeddings, tokenCounts, err := e.EmbedBatch(contextualChunks)
+	if err != nil {
+		// Fallback to individual embedding if batch fails
+		logger.Warnf("Batch embedding failed, falling back to individual: %v", err)
+		return e.embedContentIndividual(chunks, contentType)
+	}
+
+	// Apply weighting and build results
+	results := make([]*EmbeddingResult, 0, len(chunks))
+	weight := ContentTypeWeight[contentType]
+
+	for i := range chunks {
+		embedding := embeddings[i]
+		e.scaleEmbedding(embedding, weight)
+
+		results = append(results, &EmbeddingResult{
+			Embedding:   embedding,
+			ContentType: contentType,
+			ChunkIndex:  i,
+			TotalChunks: len(chunks),
+			Weight:      weight,
+			Text:        chunks[i],
+			TokenCount:  tokenCounts[i],
+		})
+	}
+
+	return results, nil
+}
+
+// embedContentIndividual is fallback for when batch fails
+func (e *Embedder) embedContentIndividual(chunks []string, contentType ContentType) ([]*EmbeddingResult, error) {
 	results := make([]*EmbeddingResult, 0, len(chunks))
 	weight := ContentTypeWeight[contentType]
 
 	for i, chunk := range chunks {
-		// Add content type context to improve embedding quality
 		contextualChunk := e.addTypeContext(chunk, contentType)
-
 		embedding, tokenCount, err := e.Embed(contextualChunk)
 		if err != nil {
 			logger.Warnf("Warning: failed to embed chunk %d: %v", i, err)
 			continue
 		}
 
-		// Apply content type weighting to embedding vector
 		e.scaleEmbedding(embedding, weight)
 
 		results = append(results, &EmbeddingResult{
@@ -226,7 +380,8 @@ func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*Embedd
 	return results, nil
 }
 
-// preprocessByType cleans text based on content type
+// --- Text Processing Functions (Keep your existing logic) ---
+
 func (e *Embedder) preprocessByType(text string, contentType ContentType) string {
 	// Remove excessive whitespace
 	text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
@@ -234,53 +389,38 @@ func (e *Embedder) preprocessByType(text string, contentType ContentType) string
 
 	switch contentType {
 	case ContentPublication:
-		// Keep DOI, arXiv IDs, citations
-		// Remove "Download PDF" type noise
 		text = regexp.MustCompile(`(?i)(download|view) (pdf|paper|full text)`).ReplaceAllString(text, "")
-
 	case ContentCode:
-		// Keep code structure markers
-		// Remove excess newlines but preserve some structure
 		text = regexp.MustCompile(`\n{3,}`).ReplaceAllString(text, "\n\n")
-
 	case ContentBiography:
-		// Remove CV boilerplate
 		text = regexp.MustCompile(`(?i)(curriculum vitae|download cv)`).ReplaceAllString(text, "")
 	}
 
 	return text
 }
 
-// chunkByType splits text intelligently based on content type
 func (e *Embedder) chunkByType(text string, contentType ContentType) []string {
-	// Rough token estimate: ~4 chars per token
 	maxChars := MINILM_L6_V2_ONNX_MODEL_MAX_TOKENS * 4
-	overlapChars := 50 // Small overlap to preserve context
+	overlapChars := 50
 
 	switch contentType {
 	case ContentPublication:
-		// Try to keep abstracts together
 		return e.semanticChunk(text, maxChars, overlapChars, []string{
 			"Abstract:", "Introduction:", "Methods:", "Results:", "Conclusion:",
 		})
-
 	case ContentProject:
 		return e.semanticChunk(text, maxChars, overlapChars, []string{
 			"Overview:", "Objectives:", "Team:", "Publications:",
 		})
-
 	default:
-		// Simple sliding window for other types
 		return e.slidingWindowChunk(text, maxChars, overlapChars)
 	}
 }
 
-// semanticChunk tries to split on semantic boundaries
 func (e *Embedder) semanticChunk(text string, maxChars, overlap int, boundaries []string) []string {
 	chunks := []string{}
-
-	// Find boundary positions
 	positions := []int{0}
+
 	for _, boundary := range boundaries {
 		if idx := strings.Index(text, boundary); idx != -1 {
 			positions = append(positions, idx)
@@ -297,20 +437,17 @@ func (e *Embedder) semanticChunk(text string, maxChars, overlap int, boundaries 
 		}
 	}
 
-	// Create chunks from boundaries
 	for i := 0; i < len(positions)-1; i++ {
 		start := positions[i]
 		end := positions[i+1]
 
 		if end-start > maxChars {
-			// Section too large, fallback to sliding window
 			chunks = append(chunks, e.slidingWindowChunk(text[start:end], maxChars, overlap)...)
 		} else {
 			chunks = append(chunks, text[start:end])
 		}
 	}
 
-	// Fallback if no boundaries found
 	if len(chunks) == 0 {
 		return e.slidingWindowChunk(text, maxChars, overlap)
 	}
@@ -318,7 +455,6 @@ func (e *Embedder) semanticChunk(text string, maxChars, overlap int, boundaries 
 	return chunks
 }
 
-// slidingWindowChunk creates overlapping chunks
 func (e *Embedder) slidingWindowChunk(text string, maxChars, overlap int) []string {
 	if len(text) <= maxChars {
 		return []string{text}
@@ -339,7 +475,6 @@ func (e *Embedder) slidingWindowChunk(text string, maxChars, overlap int) []stri
 	return chunks
 }
 
-// addTypeContext prepends content type for better embedding context
 func (e *Embedder) addTypeContext(text string, contentType ContentType) string {
 	var prefix string
 	switch contentType {
@@ -359,7 +494,6 @@ func (e *Embedder) addTypeContext(text string, contentType ContentType) string {
 	return prefix + text
 }
 
-// scaleEmbedding applies content type weight
 func (e *Embedder) scaleEmbedding(embedding []float32, weight float32) {
 	for i := range embedding {
 		embedding[i] *= weight
@@ -367,28 +501,14 @@ func (e *Embedder) scaleEmbedding(embedding []float32, weight float32) {
 }
 
 func (e *Embedder) Close() {
-	// onnx-go doesn't require explicit cleanup
+	// HTTP client cleanup handled automatically
+	e.httpClient.CloseIdleConnections()
 }
 
-// Helper: Pad or truncate to target length as float32
-func padOrTruncateFloat32(slice []int, length int) []float32 {
-	result := make([]float32, length)
-	for i := 0; i < len(slice) && i < length; i++ {
-		result[i] = float32(slice[i])
+// Helper function to get environment variable with default
+func getEnv(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
-	return result
-}
-
-// Helper: Mean pooling
-func meanPool(data []float32, seqLen, hiddenDim int) []float32 {
-	result := make([]float32, hiddenDim)
-	for i := 0; i < seqLen; i++ {
-		for j := 0; j < hiddenDim; j++ {
-			result[j] += data[i*hiddenDim+j]
-		}
-	}
-	for j := 0; j < hiddenDim; j++ {
-		result[j] /= float32(seqLen)
-	}
-	return result
+	return fallback
 }
