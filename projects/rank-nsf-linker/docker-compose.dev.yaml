@@ -152,7 +152,7 @@ services:
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
       EMBEDDER_SERVICE_URL: http://embedder:8000
-    restart: unless-stopped
+    restart: on-failure
     ports:
       - "2112:2112" # Prometheus metrics endpoint
     command: ["./scraper_worker/scraper_worker"]

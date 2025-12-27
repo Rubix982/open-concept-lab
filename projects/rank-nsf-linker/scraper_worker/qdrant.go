@@ -68,6 +68,39 @@ func (q *QdrantClient) Search(queryVector []float32, limit uint64) ([]*QdrantSea
 	return results, nil
 }
 
+// HasEmbeddings checks if there are any vectors for a given professor
+func (q *QdrantClient) HasEmbeddings(professorName string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Filter by professor_name
+	filter := &qdrant.Filter{
+		Must: []*qdrant.Condition{
+			{
+				ConditionOneOf: &qdrant.Condition_Field{
+					Field: &qdrant.FieldCondition{
+						Key: "professor_name",
+						Match: &qdrant.Match{
+							MatchValue: &qdrant.Match_Keyword{Keyword: professorName},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	countResult, err := q.client.Count(ctx, &qdrant.CountPoints{
+		CollectionName: q.collection,
+		Filter:         filter,
+	})
+
+	if err != nil {
+		return false, fmt.Errorf("failed to count points: %w", err)
+	}
+
+	return countResult > 0, nil
+}
+
 // SearchWithFilter performs a filtered vector search
 func (q *QdrantClient) SearchWithFilter(queryVector []float32, limit uint64, filter *qdrant.Filter) ([]*QdrantSearchResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

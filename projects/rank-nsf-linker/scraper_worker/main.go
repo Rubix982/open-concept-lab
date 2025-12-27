@@ -23,6 +23,7 @@ func startResearchPipeline() (*ResearchService, error) {
 
 	// 4. Start Processing (Background)
 	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
+	svc.totalWorkers = WORKER_COUNT
 	for i := range WORKER_COUNT {
 		svc.wg.Add(1)
 		go svc.workerLoop(i)
@@ -110,11 +111,16 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// Wait for shutdown signal
-	sig := <-sigChan
-	logger.Infof("🛑 Received signal %v, initiating graceful shutdown...", sig)
+	select {
+	case sig := <-sigChan:
+		logger.Infof("🛑 Received signal %v, initiating graceful shutdown...", sig)
+	case <-svc.shutdownChan:
+		logger.Infof("🛑 Service finished all jobs (idle), shutting down...")
+	}
 
 	// Stop accepting new jobs
 	svc.Close()
 
 	logger.Info("✅ All workers stopped gracefully")
+	os.Exit(0) // Prevent docker from restarting
 }
