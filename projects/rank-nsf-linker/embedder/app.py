@@ -1,29 +1,33 @@
 """
+
 Self-Hosted Embedding Service
 High-performance semantic embeddings with batch processing
 Uses Sentence-Transformers for state-of-the-art embeddings
+
 """
 
-import re
-import os
-import uuid
-import time
+import gc
 import logging
-import traceback
+import os
+import re
 import threading
-from pathlib import Path
-from typing import List, Optional, Dict, Any
-from dataclasses import dataclass, asdict
+import time
+import traceback
+import uuid
+from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import dotenv
-from colorama import Fore, Style, init
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from flask_compress import Compress
-from sentence_transformers import SentenceTransformer
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import numpy as np
+import psutil
+import torch
+from colorama import Fore, Style, init
+from flask import Flask, g, jsonify, request
+from flask_compress import Compress
+from flask_cors import CORS
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, Info, generate_latest
+from sentence_transformers import SentenceTransformer
 
 dotenv.load_dotenv()
 
@@ -64,34 +68,20 @@ embed_token_count = Histogram(
 # System metrics
 system_cpu_usage = Gauge("system_cpu_usage_percent", "Current CPU usage percentage")
 
-system_memory_usage = Gauge(
-    "system_memory_usage_bytes", "Current memory usage in bytes"
-)
+system_memory_usage = Gauge("system_memory_usage_bytes", "Current memory usage in bytes")
 
-system_memory_percent = Gauge(
-    "system_memory_percent", "Current memory usage percentage"
-)
+system_memory_percent = Gauge("system_memory_percent", "Current memory usage percentage")
 
-python_memory_rss = Gauge(
-    "python_memory_rss_bytes", "Python process RSS memory in bytes"
-)
+python_memory_rss = Gauge("python_memory_rss_bytes", "Python process RSS memory in bytes")
 
-python_memory_vms = Gauge(
-    "python_memory_vms_bytes", "Python process VMS memory in bytes"
-)
+python_memory_vms = Gauge("python_memory_vms_bytes", "Python process VMS memory in bytes")
 
 # Model metrics
-model_load_duration = Gauge(
-    "model_load_duration_seconds", "Time taken to load the model"
-)
+model_load_duration = Gauge("model_load_duration_seconds", "Time taken to load the model")
 
-model_memory_usage = Gauge(
-    "model_memory_usage_bytes", "Estimated model memory usage in bytes"
-)
+model_memory_usage = Gauge("model_memory_usage_bytes", "Estimated model memory usage in bytes")
 
-torch_memory_allocated = Gauge(
-    "torch_memory_allocated_bytes", "PyTorch memory allocated"
-)
+torch_memory_allocated = Gauge("torch_memory_allocated_bytes", "PyTorch memory allocated")
 
 torch_memory_reserved = Gauge("torch_memory_reserved_bytes", "PyTorch memory reserved")
 
@@ -109,6 +99,88 @@ service_info.info(
         "max_tokens": "128",
     }
 )
+
+
+# --- Configuration ---
+class Config:
+    """Service configuration."""
+
+    # Environment
+    ENV = os.getenv("ENVIRONMENT", "production")
+    DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+
+    # Model settings
+    MODEL_NAME = os.getenv("MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
+    EMBEDDING_DIM = 384
+    MAX_TOKENS = 128
+
+    # Performance
+    BATCH_SIZE = int(os.getenv("BATCH_SIZE", "32"))
+    MAX_BATCH_SIZE = 128
+
+    # Logging
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG" if DEBUG else "INFO")
+
+    # Service
+    PORT = int(os.getenv("PORT", "8000"))
+    HOST = os.getenv("HOST", "0.0.0.0")
+
+    # Monitoring
+    MONITOR_INTERVAL = float(os.getenv("MONITOR_INTERVAL", "5.0"))
+
+
+# --- Structured Logger (matching your style) ---
+class StructuredLogger:
+    """Enhanced logging with colors and structure"""
+
+    LEVEL_COLORS = {
+        "INFO": Fore.GREEN,
+        "WARNING": Fore.YELLOW,
+        "WARN": Fore.YELLOW,
+        "ERROR": Fore.RED,
+        "CRITICAL": Fore.MAGENTA,
+        "DEBUG": Fore.CYAN,
+    }
+
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(getattr(logging, Config.LOG_LEVEL))
+        self.logger.handlers.clear()
+
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.DEBUG)
+
+        # Custom formatter with colors
+        formatter = logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s",
+            datefmt="%H:%M:%S",
+        )
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
+
+    def _colorize(self, level: str, message: str) -> str:
+        """Add color to log message"""
+        color = self.LEVEL_COLORS.get(level.upper(), "")
+        return f"{color}{message}{Style.RESET_ALL}"
+
+    def info(self, message: str):
+        self.logger.info(self._colorize("INFO", message))
+
+    def warning(self, message: str):
+        self.logger.warning(self._colorize("WARNING", message))
+
+    def error(self, message: str):
+        self.logger.error(self._colorize("ERROR", message))
+
+    def debug(self, message: str):
+        self.logger.debug(self._colorize("DEBUG", message))
+
+    def critical(self, message: str):
+        self.logger.critical(self._colorize("CRITICAL", message))
+
+
+log = StructuredLogger("embedder")
 
 
 class SystemMonitor:
@@ -145,7 +217,7 @@ class SystemMonitor:
                     torch_memory_reserved.set(torch.cuda.memory_reserved())
 
             except Exception as e:
-                logger.error(f"System monitoring error: {e}")
+                log.info(f"System monitoring error: {e}")
 
             time.sleep(self.interval)
 
@@ -165,22 +237,22 @@ def metrics():
 
 @app.before_request
 def add_request_id():
-    request.request_id = str(uuid.uuid4())[:8]
-    logger.debug(f"[{request.request_id}] {request.method} {request.path}")
+    g.request_id = str(uuid.uuid4())[:8]
+    log.debug(f"[{g.request_id}] {request.method} {request.path}")
 
 
 @app.after_request
 def log_response(response):
-    if hasattr(request, "request_id"):
-        logger.debug(f"[{request.request_id}] Response: {response.status_code}")
+    if hasattr(g, "request_id"):
+        log.debug(f"[{g.request_id}] Response: {response.status_code}")
     return response
 
 
 # Update error responses to include request_id
 @app.errorhandler(500)
 def internal_error(e):
-    request_id = getattr(request, "request_id", "unknown")
-    logger.error(f"[{request_id}] Internal error: {e}\n{traceback.format_exc()}")
+    request_id = getattr(g, "request_id", "unknown")
+    log.info(f"[{request_id}] Internal error: {e}\n{traceback.format_exc()}")
     return (
         jsonify(
             {
@@ -191,34 +263,6 @@ def internal_error(e):
         ),
         500,
     )
-
-
-# --- Configuration ---
-class Config:
-    """Service configuration"""
-
-    # Environment
-    ENV = os.getenv("ENVIRONMENT", "production")
-    DEBUG = os.getenv("DEBUG", "false").lower() == "true"
-
-    # Model settings
-    MODEL_NAME = os.getenv("MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
-    EMBEDDING_DIM = 384
-    MAX_TOKENS = 128
-
-    # Performance
-    BATCH_SIZE = int(os.getenv("BATCH_SIZE", "32"))
-    MAX_BATCH_SIZE = 128
-
-    # Logging
-    LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG" if DEBUG else "INFO")
-
-    # Service
-    PORT = int(os.getenv("PORT", "8000"))
-    HOST = os.getenv("HOST", "0.0.0.0")
-
-    # Monitoring
-    MONITOR_INTERVAL = float(os.getenv("MONITOR_INTERVAL", "5.0"))
 
 
 # --- Content Type Enum (matching Go implementation) ---
@@ -319,60 +363,6 @@ class ContentEmbedResponse:
     dimension: int
 
 
-# --- Structured Logger (matching your style) ---
-class StructuredLogger:
-    """Enhanced logging with colors and structure"""
-
-    LEVEL_COLORS = {
-        "INFO": Fore.GREEN,
-        "WARNING": Fore.YELLOW,
-        "WARN": Fore.YELLOW,
-        "ERROR": Fore.RED,
-        "CRITICAL": Fore.MAGENTA,
-        "DEBUG": Fore.CYAN,
-    }
-
-    def __init__(self, name: str):
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(getattr(logging, Config.LOG_LEVEL))
-        self.logger.handlers.clear()
-
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
-
-        # Custom formatter with colors
-        formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d | %(message)s",
-            datefmt="%H:%M:%S",
-        )
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
-
-    def _colorize(self, level: str, message: str) -> str:
-        """Add color to log message"""
-        color = self.LEVEL_COLORS.get(level.upper(), "")
-        return f"{color}{message}{Style.RESET_ALL}"
-
-    def info(self, message: str):
-        self.logger.info(self._colorize("INFO", message))
-
-    def warning(self, message: str):
-        self.logger.warning(self._colorize("WARNING", message))
-
-    def error(self, message: str):
-        self.logger.error(self._colorize("ERROR", message))
-
-    def debug(self, message: str):
-        self.logger.debug(self._colorize("DEBUG", message))
-
-    def critical(self, message: str):
-        self.logger.critical(self._colorize("CRITICAL", message))
-
-
-logger = StructuredLogger("embedder")
-
-
 # --- Model Manager ---
 class ModelManager:
     """Singleton model manager with lazy loading"""
@@ -399,7 +389,7 @@ class ModelManager:
         self._loading = True
 
         try:
-            logger.info(f"📦 Loading model: {Config.MODEL_NAME}")
+            log.info(f"📦 Loading model: {Config.MODEL_NAME}")
 
             # Track memory before loading
             mem_before = psutil.Process().memory_info().rss
@@ -417,24 +407,22 @@ class ModelManager:
             model_load_duration.set(elapsed)
             model_memory_usage.set(model_memory)
 
-            logger.info(f"✅ Model loaded in {elapsed:.2f}s")
-            logger.info(f"📊 Embedding dimension: {Config.EMBEDDING_DIM}")
-            logger.info(f"🔢 Max tokens: {Config.MAX_TOKENS}")
-            logger.info(f"💾 Model memory: {model_memory / 1024 / 1024:.2f} MB")
+            log.info(f"✅ Model loaded in {elapsed:.2f}s")
+            log.info(f"📊 Embedding dimension: {Config.EMBEDDING_DIM}")
+            log.info(f"🔢 Max tokens: {Config.MAX_TOKENS}")
+            log.info(f"💾 Model memory: {model_memory / 1024 / 1024:.2f} MB")
 
             # Warm-up model
-            logger.info("🔥 Warming up model...")
+            log.info("🔥 Warming up model...")
             warmup_start = time.time()
-            _ = self._model.encode(
-                ["warmup text", "another warmup"], show_progress_bar=False
-            )
-            logger.info(f"✅ Model warmed up in {time.time() - warmup_start:.2f}s")
+            _ = self._model.encode(["warmup text", "another warmup"], show_progress_bar=False)
+            log.info(f"✅ Model warmed up in {time.time() - warmup_start:.2f}s")
 
             return self._model
 
         except Exception as e:
-            logger.error(f"❌ Failed to load model: {e}")
-            logger.error(traceback.format_exc())
+            log.info(f"❌ Failed to load model: {e}")
+            log.info(traceback.format_exc())
             raise
         finally:
             self._loading = False
@@ -485,9 +473,9 @@ def embed_single(text: str) -> tuple[List[float], int]:
 
     # Log if slow or memory-intensive
     if duration > 1.0:
-        logger.warning(f"Slow embedding: {duration:.2f}s for {token_count} tokens")
+        log.warning(f"Slow embedding: {duration:.2f}s for {token_count} tokens")
     if mem_delta > 10 * 1024 * 1024:  # 10MB
-        logger.warning(f"High memory delta: {mem_delta / 1024 / 1024:.2f}MB")
+        log.warning(f"High memory delta: {mem_delta / 1024 / 1024:.2f}MB")
 
     return embedding.tolist(), token_count
 
@@ -526,9 +514,8 @@ def embed_batch(texts: List[str]) -> tuple[List[List[float]], List[int]]:
     mem_delta = mem_after - mem_before
 
     if mem_delta > 50 * 1024 * 1024:  # 50MB
-        logger.warning(
-            f"High batch memory: {mem_delta / 1024 / 1024:.2f}MB "
-            f"for {len(texts)} texts"
+        log.warning(
+            f"High batch memory: {mem_delta / 1024 / 1024:.2f}MB " f"for {len(texts)} texts"
         )
 
     # Reconstruct full results
@@ -597,9 +584,7 @@ def chunk_by_type(text: str, content_type: ContentType) -> List[str]:
         return sliding_window_chunk(text, max_chars, overlap_chars)
 
 
-def semantic_chunk(
-    text: str, max_chars: int, overlap: int, boundaries: List[str]
-) -> List[str]:
+def semantic_chunk(text: str, max_chars: int, overlap: int, boundaries: List[str]) -> List[str]:
     """Split on semantic boundaries"""
     chunks = []
 
@@ -670,7 +655,7 @@ def add_type_context(text: str, content_type: ContentType) -> str:
 def health_check():
     """Health check with resource information"""
     try:
-        model = model_manager.model
+        _ = model_manager.model
 
         # Get current resource usage
         process = psutil.Process()
@@ -699,14 +684,13 @@ def health_check():
         )
 
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
+        log.info(f"Health check failed: {e}")
         return jsonify({"status": "unhealthy", "error": str(e)}), 503
 
 
 @app.route("/embed", methods=["POST"])
 def embed_endpoint():
-    """
-    Embed single text
+    """Embed single text with comprehensive logging
 
     Request:
     {
@@ -721,59 +705,157 @@ def embed_endpoint():
     }
     """
     endpoint_name = "embed"
+    request_id = g.request_id
+
+    # Log request start
+    log.info(f"[{request_id}] POST /embed - Request received")
+
     try:
+        # Parse request body
+        log.debug(f"[{request_id}] Parsing request body")
         data = request.get_json(silent=True)
 
-        if not data or "text" not in data:
+        # Validate request
+        if not data:
+            log.warning(f"[{request_id}] Empty request body")
             embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
-            return jsonify({"status": "error", "message": "Missing 'text' field"}), 400
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Empty request body",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        if "text" not in data:
+            log.warning(f"[{request_id}] Missing 'text' field in request")
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Missing 'text' field",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
 
         text = data["text"]
+        text_length = len(text)
+        text_preview = text[:50] + "..." if len(text) > 50 else text
 
-        # Track request
+        log.info(
+            f"[{request_id}] Text received: {text_length} chars, " f"preview: '{text_preview}'"
+        )
+
+        # Validate text length
+        if text_length == 0:
+            log.warning(f"[{request_id}] Empty text provided")
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Empty text provided",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        if text_length > 10000:
+            log.warning(f"[{request_id}] Text too long: {text_length} chars (max: 10000)")
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"Text too long: {text_length} chars (max: 10000)",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        # Track request metrics
         embed_requests_total.labels(endpoint=endpoint_name, status="success").inc()
+        log.debug(f"[{request_id}] Starting embedding process")
 
+        # Perform embedding
         start = time.time()
-        embedding, token_count = embed_single(text)
-        duration = time.time() - start
+
+        try:
+            embedding, token_count = embed_single(text)
+            duration = time.time() - start
+
+            log.info(
+                f"[{request_id}] Embedding successful: "
+                f"{token_count} tokens, {duration*1000:.1f}ms, "
+                f"dim={len(embedding)}"
+            )
+
+        except Exception as embed_error:
+            log.error(f"[{request_id}] Embedding failed: {embed_error}", exc_info=True)
+            raise
 
         # Update metrics
         embed_request_duration.labels(endpoint=endpoint_name).observe(duration)
         embed_token_count.labels(endpoint=endpoint_name).observe(token_count)
 
-        logger.debug(
-            f"[{g.request_id}] Embedded {token_count} tokens in {duration*1000:.1f}ms"
+        # Log performance warnings
+        if duration > 1.0:
+            log.warning(f"[{request_id}] Slow embedding detected: {duration*1000:.1f}ms")
+
+        if token_count > 100:
+            log.debug(
+                f"[{request_id}] Large text: {token_count} tokens " f"(~{token_count * 4} chars)"
+            )
+
+        # Build response
+        response_data = {
+            "status": "success",
+            "embedding": embedding,
+            "token_count": token_count,
+            "dimension": Config.EMBEDDING_DIM,
+            "latency_ms": round(duration * 1000, 2),
+            "request_id": request_id,
+        }
+
+        log.info(
+            f"[{request_id}] Response ready: " f"status=200, size={len(str(response_data))} bytes"
         )
 
-        return (
-            jsonify(
-                {
-                    "status": "success",
-                    "embedding": embedding,
-                    "token_count": token_count,
-                    "dimension": Config.EMBEDDING_DIM,
-                    "latency_ms": round(duration * 1000, 2),
-                    "request_id": g.request_id,
-                }
-            ),
-            200,
-        )
+        return jsonify(response_data), 200
 
     except Exception as e:
+        # Log full error details
+        log.error(f"[{request_id}] Unhandled exception in /embed endpoint", exc_info=True)
+        log.error(f"[{request_id}] Error type: {type(e).__name__}, " f"Error message: {str(e)}")
+
+        # Update error metrics
         embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
-        logger.error(
-            f"[{g.request_id}] Embedding failed: {e}\n{traceback.format_exc()}"
-        )
-        return (
-            jsonify({"status": "error", "message": str(e), "request_id": g.request_id}),
-            500,
-        )
+
+        # Return error response
+        error_response = {
+            "status": "error",
+            "message": str(e),
+            "error_type": type(e).__name__,
+            "request_id": request_id,
+        }
+
+        log.info(f"[{request_id}] Error response sent: status=500")
+
+        return jsonify(error_response), 500
 
 
 @app.route("/embed/batch", methods=["POST"])
 def embed_batch_endpoint():
     """
-    Embed batch of texts
+    Embed batch of texts with comprehensive logging
 
     Request:
     {
@@ -788,72 +870,238 @@ def embed_batch_endpoint():
         "count": 2
     }
     """
+    endpoint_name = "embed_batch"
+    request_id = g.request_id
+
+    # Log request start
+    log.info(f"[{request_id}] POST /embed/batch - Request received")
+
     try:
+        # Parse request body
+        log.debug(f"[{request_id}] Parsing batch request body")
         data = request.get_json(silent=True)
 
-        if not data or "texts" not in data:
-            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
-            return jsonify({"status": "error", "message": "Missing 'texts' field"}), 400
-
-        texts = data["texts"]
-
-        if not isinstance(texts, list):
+        # Validate request body exists
+        if not data:
+            log.warning(f"[{request_id}] Empty request body")
             embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return (
-                jsonify({"status": "error", "message": "'texts' must be an array"}),
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Empty request body",
+                        "request_id": request_id,
+                    }
+                ),
                 400,
             )
 
-        if len(texts) > Config.MAX_BATCH_SIZE:
+        # Validate 'texts' field exists
+        if "texts" not in data:
+            log.warning(f"[{request_id}] Missing 'texts' field in batch request")
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Missing 'texts' field",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        texts = data["texts"]
+
+        # Validate 'texts' is a list
+        if not isinstance(texts, list):
+            log.warning(
+                f"[{request_id}] Invalid 'texts' type: {type(texts).__name__} " f"(expected list)"
+            )
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "'texts' must be an array",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        batch_size = len(texts)
+
+        # Validate batch not empty
+        if batch_size == 0:
+            log.warning(f"[{request_id}] Empty texts array provided")
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Empty texts array",
+                        "request_id": request_id,
+                    }
+                ),
+                400,
+            )
+
+        # Calculate batch statistics
+        total_chars = sum(len(str(t)) for t in texts)
+        avg_chars = total_chars / batch_size
+        max_text_len = max(len(str(t)) for t in texts)
+        min_text_len = min(len(str(t)) for t in texts)
+
+        log.info(
+            f"[{request_id}] Batch request: {batch_size} texts, "
+            f"total_chars={total_chars}, avg_chars={avg_chars:.1f}, "
+            f"min={min_text_len}, max={max_text_len}"
+        )
+
+        # Validate batch size
+        if batch_size > Config.MAX_BATCH_SIZE:
+            log.warning(
+                f"[{request_id}] Batch size {batch_size} exceeds "
+                f"maximum {Config.MAX_BATCH_SIZE}"
+            )
             embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return (
                 jsonify(
                     {
                         "status": "error",
                         "message": f"Batch size exceeds maximum ({Config.MAX_BATCH_SIZE})",
+                        "max_allowed": Config.MAX_BATCH_SIZE,
+                        "provided": batch_size,
+                        "request_id": request_id,
                     }
                 ),
                 400,
             )
 
+        # Check for any extremely long texts
+        long_texts = [i for i, t in enumerate(texts) if len(str(t)) > 5000]
+        if long_texts:
+            log.warning(
+                f"[{request_id}] Found {len(long_texts)} texts longer than 5000 chars: "
+                f"indices={long_texts[:5]}"  # Show first 5
+            )
+
+        # Log batch details
+        log.debug(
+            f"[{request_id}] Batch breakdown: "
+            f"empty_texts={sum(1 for t in texts if not str(t).strip())}, "
+            f"valid_texts={sum(1 for t in texts if str(t).strip())}"
+        )
+
+        # Track successful request
         embed_requests_total.labels(endpoint=endpoint_name, status="success").inc()
+        log.debug(f"[{request_id}] Starting batch embedding process")
 
+        # Perform batch embedding
         start = time.time()
-        embeddings, token_counts = embed_batch(texts)
-        duration = time.time() - start
 
-        total_tokens = sum(token_counts)
+        try:
+            embeddings, token_counts = embed_batch(texts)
+            duration = time.time() - start
+
+            # Calculate batch statistics
+            total_tokens = sum(token_counts)
+            avg_tokens = total_tokens / batch_size
+            max_tokens = max(token_counts)
+            min_tokens = min(token_counts)
+            avg_time_per_text = (duration / batch_size) * 1000
+
+            log.info(
+                f"[{request_id}] Batch embedding successful: "
+                f"{batch_size} texts, {total_tokens} total tokens "
+                f"(avg={avg_tokens:.1f}, min={min_tokens}, max={max_tokens}), "
+                f"{duration*1000:.1f}ms total ({avg_time_per_text:.1f}ms/text)"
+            )
+
+        except Exception as embed_error:
+            log.error(
+                f"[{request_id}] Batch embedding failed during processing: {embed_error}",
+                exc_info=True,
+            )
+            raise
 
         # Update metrics
         embed_request_duration.labels(endpoint=endpoint_name).observe(duration)
         embed_token_count.labels(endpoint=endpoint_name).observe(total_tokens)
+        embed_batch_size.observe(batch_size)
 
-        logger.debug(
-            f"[{g.request_id}] Batch: {len(texts)} texts, "
-            f"{total_tokens} tokens in {duration*1000:.1f}ms"
+        # Performance warnings
+        if duration > 5.0:
+            log.warning(
+                f"[{request_id}] Slow batch embedding: {duration*1000:.1f}ms "
+                f"for {batch_size} texts (>{5.0}s threshold)"
+            )
+
+        if avg_time_per_text > 200:
+            log.warning(f"[{request_id}] High per-text latency: {avg_time_per_text:.1f}ms/text")
+
+        # Check for failed embeddings (zero vectors)
+        zero_embeddings = sum(1 for emb in embeddings if all(v == 0.0 for v in emb))
+        if zero_embeddings > 0:
+            log.warning(
+                f"[{request_id}] Found {zero_embeddings} zero embeddings " f"(likely empty inputs)"
+            )
+
+        # Build response
+        response_data = {
+            "status": "success",
+            "embeddings": embeddings,
+            "token_counts": token_counts,
+            "dimension": Config.EMBEDDING_DIM,
+            "count": batch_size,
+            "latency_ms": round(duration * 1000, 2),
+            "request_id": request_id,
+        }
+
+        response_size = len(str(response_data))
+        log.info(
+            f"[{request_id}] Batch response ready: "
+            f"status=200, size={response_size} bytes "
+            f"(~{response_size/1024:.1f} KB)"
         )
-        return (
-            jsonify(
-                {
-                    "status": "success",
-                    "embeddings": embeddings,
-                    "token_counts": token_counts,
-                    "dimension": Config.EMBEDDING_DIM,
-                    "count": len(texts),
-                    "latency_ms": round(duration * 1000, 2),
-                    "request_id": g.request_id,
-                }
-            ),
-            200,
-        )
+
+        # Warn if response is large
+        if response_size > 1_000_000:  # 1MB
+            log.warning(f"[{request_id}] Large response size: {response_size/1024/1024:.2f} MB")
+
+        return jsonify(response_data), 200
 
     except Exception as e:
-        embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
-        logger.error(f"[{g.request_id}] Batch failed: {e}\n{traceback.format_exc()}")
-        return (
-            jsonify({"status": "error", "message": str(e), "request_id": g.request_id}),
-            500,
+        # Log full error details
+        log.error(
+            f"[{request_id}] Unhandled exception in /embed/batch endpoint",
+            exc_info=True,
         )
+        log.error(f"[{request_id}] Error type: {type(e).__name__}, " f"Error message: {str(e)}")
+
+        # Log batch context if available
+        if "batch_size" in locals():
+            log.error(
+                f"[{request_id}] Batch context: "
+                f"batch_size={batch_size}, "
+                f"total_chars={total_chars if 'total_chars' in locals() else 'N/A'}"
+            )
+
+        # Update error metrics
+        embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+
+        # Return error response
+        error_response = {
+            "status": "error",
+            "message": str(e),
+            "error_type": type(e).__name__,
+            "request_id": request_id,
+        }
+
+        log.info(f"[{request_id}] Error response sent: status=500")
+
+        return jsonify(error_response), 500
 
 
 @app.route("/embed/content", methods=["POST"])
@@ -899,11 +1147,12 @@ def embed_content_endpoint():
         try:
             content_type = ContentType(content_type_str)
         except ValueError:
+            content_type_res = [t.value for t in ContentType]
             return (
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"Invalid content_type. Must be one of: {[t.value for t in ContentType]}",
+                        "message": f"Invalid content_type. Must be one of: {content_type_res}",
                     }
                 ),
                 400,
@@ -941,9 +1190,7 @@ def embed_content_endpoint():
                     "total_chunks": len(chunks),
                     "weight": weight,
                     "text": (
-                        chunk_text[:200] + "..."
-                        if len(chunk_text) > 200
-                        else chunk_text
+                        chunk_text[:200] + "..." if len(chunk_text) > 200 else chunk_text
                     ),  # Truncate for response
                     "token_count": token_count,
                 }
@@ -951,7 +1198,7 @@ def embed_content_endpoint():
 
         elapsed = (time.time() - start) * 1000
 
-        logger.debug(f"Content embedded: {len(chunks)} chunks in {elapsed:.1f}ms")
+        log.debug(f"Content embedded: {len(chunks)} chunks in {elapsed:.1f}ms")
 
         return (
             jsonify(
@@ -967,7 +1214,7 @@ def embed_content_endpoint():
         )
 
     except Exception as e:
-        logger.error(f"Content embedding failed: {e}\n{traceback.format_exc()}")
+        log.info(f"Content embedding failed: {e}\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -1015,55 +1262,39 @@ def not_found(e):
     )
 
 
-@app.errorhandler(500)
-def internal_error(e):
-    request_id = getattr(g, "request_id", "unknown")
-    logger.error(f"[{request_id}] Internal error: {e}\n{traceback.format_exc()}")
-    return (
-        jsonify(
-            {
-                "status": "error",
-                "message": "Internal server error",
-                "request_id": request_id,
-            }
-        ),
-        500,
-    )
-
-
 # --- Main ---
 if __name__ == "__main__":
     print("🚀 Starting Embedding Service")
     print(
         """
-███████ ███    ███ ██████  ███████ ██████  ██████  ███████ ██████  
-██      ████  ████ ██   ██ ██      ██   ██ ██   ██ ██      ██   ██ 
-█████   ██ ████ ██ ██████  █████   ██   ██ ██   ██ █████   ██████  
-██      ██  ██  ██ ██   ██ ██      ██   ██ ██   ██ ██      ██   ██ 
-███████ ██      ██ ██████  ███████ ██████  ██████  ███████ ██   ██ 
+███████ ███    ███ ██████  ███████ ██████  ██████  ███████ ██████
+██      ████  ████ ██   ██ ██      ██   ██ ██   ██ ██      ██   ██
+█████   ██ ████ ██ ██████  █████   ██   ██ ██   ██ █████   ██████
+██      ██  ██  ██ ██   ██ ██      ██   ██ ██   ██ ██      ██   ██
+███████ ██      ██ ██████  ███████ ██████  ██████  ███████ ██   ██
     """
     )
 
-    logger.info(f"📦 Model: {Config.MODEL_NAME}")
-    logger.info(f"📊 Embedding dimension: {Config.EMBEDDING_DIM}")
-    logger.info(f"🔢 Max tokens: {Config.MAX_TOKENS}")
-    logger.info(f"⚡ Batch size: {Config.BATCH_SIZE}")
+    log.info(f"📦 Model: {Config.MODEL_NAME}")
+    log.info(f"📊 Embedding dimension: {Config.EMBEDDING_DIM}")
+    log.info(f"🔢 Max tokens: {Config.MAX_TOKENS}")
+    log.info(f"⚡ Batch size: {Config.BATCH_SIZE}")
 
     # Pre-load model
     try:
         model_manager.load_model()
     except Exception as e:
-        logger.error(f"Failed to load model: {e}")
-        logger.warning("Service will start but embedding will fail until model loads")
+        log.info(f"Failed to load model: {e}")
+        log.warning("Service will start but embedding will fail until model loads")
 
-    logger.info(f"🌐 Server running on http://{Config.HOST}:{Config.PORT}")
-    logger.info("\n📚 Endpoints:")
-    logger.info("  GET  /                  - Service info")
-    logger.info("  GET  /health            - Health check")
-    logger.info("  GET  /metrics           - Prometheus metrics")
-    logger.info("  POST /embed             - Embed single text")
-    logger.info("  POST /embed/batch       - Embed batch of texts")
-    logger.info("  POST /embed/content     - Content-aware embedding")
+    log.info(f"🌐 Server running on http://{Config.HOST}:{Config.PORT}")
+    log.info("\n📚 Endpoints:")
+    log.info("  GET  /                  - Service info")
+    log.info("  GET  /health            - Health check")
+    log.info("  GET  /metrics           - Prometheus metrics")
+    log.info("  POST /embed             - Embed single text")
+    log.info("  POST /embed/batch       - Embed batch of texts")
+    log.info("  POST /embed/content     - Content-aware embedding")
 
     # Enable debug mode via environment variable
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"

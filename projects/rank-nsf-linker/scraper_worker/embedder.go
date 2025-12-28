@@ -121,7 +121,7 @@ func NewEmbedder() (*Embedder, error) {
 
 	// Health check with retries
 	maxRetries := 10
-	retryDelay := 2 * time.Second
+	retryDelay := 30 * time.Second
 
 	logger.Infof("Connecting to embedder service at %s...", embedderServiceURL)
 
@@ -160,6 +160,70 @@ func NewEmbedder() (*Embedder, error) {
 	return nil, fmt.Errorf("embedder service not reachable after %d attempts", maxRetries)
 }
 
+// postWithRetry handles HTTP POST requests with exponential backoff and retries
+func (e *Embedder) postWithRetry(endpoint string, reqBody interface{}, respDest interface{}) error {
+	maxRetries := 5
+	baseDelay := 1 * time.Second
+	var lastErr error
+
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	for i := 0; i < maxRetries; i++ {
+		// Calculate current delay with exponential backoff
+		delay := baseDelay * time.Duration(1<<uint(i))
+
+		resp, err := e.httpClient.Post(
+			e.baseURL+endpoint,
+			"application/json",
+			bytes.NewBuffer(jsonData),
+		)
+
+		if err != nil {
+			lastErr = err
+			logger.Warnf("Embedder request failed (attempt %d/%d): %v. Retrying in %v...",
+				i+1, maxRetries, err, delay)
+			time.Sleep(delay)
+			continue
+		}
+
+		// Check status code
+		if resp.StatusCode != 200 {
+			var errorResp map[string]interface{}
+			json.NewDecoder(resp.Body).Decode(&errorResp)
+			resp.Body.Close()
+
+			errMsg := fmt.Sprintf("status %d", resp.StatusCode)
+			if msg, ok := errorResp["message"].(string); ok {
+				errMsg += ": " + msg
+			}
+
+			// Don't retry on client errors (4xx), only server errors (5xx)
+			if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+				return fmt.Errorf("embedder returned %s", errMsg)
+			}
+
+			lastErr = fmt.Errorf("embedder returned %s", errMsg)
+			logger.Warnf("Embedder server error (attempt %d/%d): %s. Retrying in %v...",
+				i+1, maxRetries, errMsg, delay)
+			time.Sleep(delay)
+			continue
+		}
+
+		// Decode response
+		defer resp.Body.Close()
+		if err := json.NewDecoder(resp.Body).Decode(respDest); err != nil {
+			return fmt.Errorf("failed to decode response: %w", err)
+		}
+
+		return nil
+	}
+
+	return fmt.Errorf("request failed after %d attempts: %w", maxRetries, lastErr)
+}
+
 // Embed embeds a single text using the /embed endpoint
 func (e *Embedder) Embed(text string) ([]float32, int, error) {
 	if text == "" {
@@ -167,31 +231,10 @@ func (e *Embedder) Embed(text string) ([]float32, int, error) {
 	}
 
 	reqBody := embedRequest{Text: text}
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, 0, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	resp, err := e.httpClient.Post(
-		e.baseURL+"/embed",
-		"application/json",
-		bytes.NewBuffer(jsonData),
-	)
-	if err != nil {
-		return nil, 0, fmt.Errorf("http request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		var errorResp map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&errorResp)
-		return nil, 0, fmt.Errorf("embedder returned status %d: %v",
-			resp.StatusCode, errorResp["message"])
-	}
-
 	var embedResp embedResponse
-	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
-		return nil, 0, fmt.Errorf("failed to decode response: %w", err)
+
+	if err := e.postWithRetry("/embed", reqBody, &embedResp); err != nil {
+		return nil, 0, err
 	}
 
 	if embedResp.Status != "success" {
@@ -208,31 +251,10 @@ func (e *Embedder) EmbedBatch(texts []string) ([][]float32, []int, error) {
 	}
 
 	reqBody := batchEmbedRequest{Texts: texts}
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	resp, err := e.httpClient.Post(
-		e.baseURL+"/embed/batch",
-		"application/json",
-		bytes.NewBuffer(jsonData),
-	)
-	if err != nil {
-		return nil, nil, fmt.Errorf("http request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		var errorResp map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&errorResp)
-		return nil, nil, fmt.Errorf("embedder returned status %d: %v",
-			resp.StatusCode, errorResp["message"])
-	}
-
 	var embedResp batchEmbedResponse
-	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
-		return nil, nil, fmt.Errorf("failed to decode response: %w", err)
+
+	if err := e.postWithRetry("/embed/batch", reqBody, &embedResp); err != nil {
+		return nil, nil, err
 	}
 
 	if embedResp.Status != "success" {
@@ -251,31 +273,9 @@ func (e *Embedder) EmbedContentDirect(text string, contentType ContentType) ([]*
 		Chunk:       true,
 	}
 
-	jsonData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	resp, err := e.httpClient.Post(
-		e.baseURL+"/embed/content",
-		"application/json",
-		bytes.NewBuffer(jsonData),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("http request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		var errorResp map[string]interface{}
-		json.NewDecoder(resp.Body).Decode(&errorResp)
-		return nil, fmt.Errorf("embedder returned status %d: %v",
-			resp.StatusCode, errorResp["message"])
-	}
-
 	var embedResp contentEmbedResponse
-	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+	if err := e.postWithRetry("/embed/content", reqBody, &embedResp); err != nil {
+		return nil, err
 	}
 
 	if embedResp.Status != "success" {

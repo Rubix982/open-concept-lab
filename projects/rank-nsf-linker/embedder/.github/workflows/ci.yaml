@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Format check
+        run: |
+          black . --check --line-length 100
+          isort . --check --profile black
+
+      - name: Lint
+        run: |
+          flake8 . --max-line-length=100 --exclude=venv
+
+      - name: Type check
+        run: |
+          mypy . --ignore-missing-imports
+
+      - name: Security check
+        run: |
+          bandit -r . --exclude ./venv
+
+      - name: Test
+        run: |
+          pytest tests/ -v --cov=.

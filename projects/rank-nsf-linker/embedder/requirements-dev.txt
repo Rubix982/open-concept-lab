@@ -1,0 +1,28 @@
+# Code formatting
+black==23.12.1
+isort==5.13.2
+
+# Linting
+flake8==7.0.0
+pylint==3.0.3
+flake8-docstrings==1.7.0
+flake8-bugbear==23.12.2
+pep8-naming==0.13.3
+
+# Type checking
+mypy==1.8.0
+types-requests==2.31.0.20231231
+
+# Security
+bandit==1.7.6
+
+# Complexity
+radon==6.0.1
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Utilities
+pipdeptree==2.13.1

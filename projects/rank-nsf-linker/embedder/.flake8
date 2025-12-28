@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 100
+exclude = 
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    build,
+    dist,
+    *.egg-info
+
+# Ignore specific errors
+extend-ignore = 
+    E203,
+    W503,
+    E501,
+
+max-complexity = 10
+docstring-convention = google

@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"math"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -81,6 +83,11 @@ func NewScraper() *Scraper {
 		colly.CacheDir("./cache/colly"), // Built-in HTTP caching:w
 	)
 
+	// Disable TLS verification to allow scraping sites with expired/self-signed certs
+	c.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
+
 	// Politeness
 	c.Limit(&colly.LimitRule{
 		DomainGlob: "*",
@@ -138,7 +145,7 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 
 	// Page count limiter
 	visitCount := 0
-	maxPages := 20
+	maxPages := 40
 
 	s.collector.OnRequest(func(r *colly.Request) {
 		visitCount++
