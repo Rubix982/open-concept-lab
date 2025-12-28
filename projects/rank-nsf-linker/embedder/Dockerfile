@@ -18,9 +18,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install build dependencies for psutil
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install runtime dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
+
+# Remove build dependencies to reduce image size
+RUN apt-get purge -y --auto-remove gcc python3-dev && apt-get clean
 
 # Copy cached model from stage 1
 COPY --from=model-downloader /models /root/.cache/torch/sentence_transformers

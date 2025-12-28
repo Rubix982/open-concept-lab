@@ -81,10 +81,15 @@ services:
     container_name: prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
       - "9090:9090"
     depends_on:
       - pg-exporter
+      - embedder
     networks:
       - default
 
@@ -93,10 +98,15 @@ services:
     image: grafana/grafana:12.3.0-18733571275-ubuntu
     container_name: grafana
     environment:
+      - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     ports:
       - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     depends_on:
       - prometheus
     networks:
@@ -270,10 +280,13 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - ENVIRONMENT=development
       - MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
       - BATCH_SIZE=32
-      - LOG_LEVEL=INFO
+      - LOG_LEVEL=DEBUG
       - FLASK_DEBUG=true
+    volumes:
+      - ./embedder/app.py:/app/app.py:ro
     healthcheck:
       test:
         [
@@ -293,11 +306,20 @@ services:
           memory: 2G
         reservations:
           memory: 1G
+    depends_on:
+      - postgres
+      - qdrant
+      - scraper-worker
+      - go-server
+    networks:
+      - default
 
 volumes:
   pg_data:
   es_data:
   qdrant_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   default:

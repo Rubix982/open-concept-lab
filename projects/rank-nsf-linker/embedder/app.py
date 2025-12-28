@@ -10,6 +10,7 @@ import uuid
 import time
 import logging
 import traceback
+import threading
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, asdict
@@ -30,15 +31,130 @@ app = Flask(__name__)
 CORS(app)
 Compress(app)
 
-# Metrics
-embed_requests = Counter(
-    "embed_requests_total", "Total embedding requests", ["endpoint"]
-)
-embed_errors = Counter("embed_errors_total", "Total embedding errors", ["endpoint"])
-embed_latency = Histogram("embed_latency_seconds", "Embedding latency", ["endpoint"])
-
 # Initialize colorama
 init(autoreset=True)
+
+# --- Prometheus Metrics ---
+
+# Request metrics
+embed_requests_total = Counter(
+    "embed_requests_total", "Total embedding requests", ["endpoint", "status"]
+)
+
+embed_request_duration = Histogram(
+    "embed_request_duration_seconds",
+    "Time spent processing embedding requests",
+    ["endpoint"],
+    buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0],
+)
+
+embed_batch_size = Histogram(
+    "embed_batch_size",
+    "Number of texts in batch requests",
+    buckets=[1, 5, 10, 20, 32, 50, 100, 128],
+)
+
+embed_token_count = Histogram(
+    "embed_token_count",
+    "Number of tokens processed",
+    ["endpoint"],
+    buckets=[10, 50, 100, 200, 500, 1000, 5000],
+)
+
+# System metrics
+system_cpu_usage = Gauge("system_cpu_usage_percent", "Current CPU usage percentage")
+
+system_memory_usage = Gauge(
+    "system_memory_usage_bytes", "Current memory usage in bytes"
+)
+
+system_memory_percent = Gauge(
+    "system_memory_percent", "Current memory usage percentage"
+)
+
+python_memory_rss = Gauge(
+    "python_memory_rss_bytes", "Python process RSS memory in bytes"
+)
+
+python_memory_vms = Gauge(
+    "python_memory_vms_bytes", "Python process VMS memory in bytes"
+)
+
+# Model metrics
+model_load_duration = Gauge(
+    "model_load_duration_seconds", "Time taken to load the model"
+)
+
+model_memory_usage = Gauge(
+    "model_memory_usage_bytes", "Estimated model memory usage in bytes"
+)
+
+torch_memory_allocated = Gauge(
+    "torch_memory_allocated_bytes", "PyTorch memory allocated"
+)
+
+torch_memory_reserved = Gauge("torch_memory_reserved_bytes", "PyTorch memory reserved")
+
+# Cache metrics (if using cache later)
+cache_hits = Counter("cache_hits_total", "Total cache hits")
+cache_misses = Counter("cache_misses_total", "Total cache misses")
+
+# Service info
+service_info = Info("embedder_service", "Embedder service information")
+service_info.info(
+    {
+        "version": "1.0.0",
+        "model": os.getenv("MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2"),
+        "embedding_dim": "384",
+        "max_tokens": "128",
+    }
+)
+
+
+class SystemMonitor:
+    """Background thread to collect system metrics"""
+
+    def __init__(self, interval=5.0):
+        self.interval = interval
+        self.running = True
+        self.process = psutil.Process()
+        self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
+        self.thread.start()
+
+    def _monitor_loop(self):
+        """Continuously collect system metrics"""
+        while self.running:
+            try:
+                # CPU usage
+                cpu_percent = psutil.cpu_percent(interval=1)
+                system_cpu_usage.set(cpu_percent)
+
+                # System memory
+                mem = psutil.virtual_memory()
+                system_memory_usage.set(mem.used)
+                system_memory_percent.set(mem.percent)
+
+                # Process memory
+                mem_info = self.process.memory_info()
+                python_memory_rss.set(mem_info.rss)
+                python_memory_vms.set(mem_info.vms)
+
+                # PyTorch memory (if CUDA available)
+                if torch.cuda.is_available():
+                    torch_memory_allocated.set(torch.cuda.memory_allocated())
+                    torch_memory_reserved.set(torch.cuda.memory_reserved())
+
+            except Exception as e:
+                logger.error(f"System monitoring error: {e}")
+
+            time.sleep(self.interval)
+
+    def stop(self):
+        self.running = False
+
+
+# Start system monitor
+system_monitor = SystemMonitor(interval=5.0)
 
 
 @app.route("/metrics")
@@ -81,6 +197,10 @@ def internal_error(e):
 class Config:
     """Service configuration"""
 
+    # Environment
+    ENV = os.getenv("ENVIRONMENT", "production")
+    DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+
     # Model settings
     MODEL_NAME = os.getenv("MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
     EMBEDDING_DIM = 384
@@ -91,11 +211,14 @@ class Config:
     MAX_BATCH_SIZE = 128
 
     # Logging
-    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG" if DEBUG else "INFO")
 
     # Service
     PORT = int(os.getenv("PORT", "8000"))
     HOST = os.getenv("HOST", "0.0.0.0")
+
+    # Monitoring
+    MONITOR_INTERVAL = float(os.getenv("MONITOR_INTERVAL", "5.0"))
 
 
 # --- Content Type Enum (matching Go implementation) ---
@@ -269,7 +392,6 @@ class ModelManager:
             return self._model
 
         if self._loading:
-            # Wait for another thread to finish loading
             while self._loading:
                 time.sleep(0.1)
             return self._model
@@ -278,15 +400,35 @@ class ModelManager:
 
         try:
             logger.info(f"📦 Loading model: {Config.MODEL_NAME}")
-            start = time.time()
 
+            # Track memory before loading
+            mem_before = psutil.Process().memory_info().rss
+
+            start = time.time()
             self._model = SentenceTransformer(Config.MODEL_NAME)
             self._model.max_seq_length = Config.MAX_TOKENS
-
             elapsed = time.time() - start
+
+            # Track memory after loading
+            mem_after = psutil.Process().memory_info().rss
+            model_memory = mem_after - mem_before
+
+            # Update metrics
+            model_load_duration.set(elapsed)
+            model_memory_usage.set(model_memory)
+
             logger.info(f"✅ Model loaded in {elapsed:.2f}s")
             logger.info(f"📊 Embedding dimension: {Config.EMBEDDING_DIM}")
             logger.info(f"🔢 Max tokens: {Config.MAX_TOKENS}")
+            logger.info(f"💾 Model memory: {model_memory / 1024 / 1024:.2f} MB")
+
+            # Warm-up model
+            logger.info("🔥 Warming up model...")
+            warmup_start = time.time()
+            _ = self._model.encode(
+                ["warmup text", "another warmup"], show_progress_bar=False
+            )
+            logger.info(f"✅ Model warmed up in {time.time() - warmup_start:.2f}s")
 
             return self._model
 
@@ -316,28 +458,47 @@ def estimate_token_count(text: str) -> int:
 
 
 def embed_single(text: str) -> tuple[List[float], int]:
-    """Embed single text"""
+    """Embed single text with metrics tracking"""
     if not text or not text.strip():
-        # Return zero vector for empty text
         return [0.0] * Config.EMBEDDING_DIM, 0
 
     model = model_manager.model
-    embedding = model.encode(text, show_progress_bar=False, convert_to_numpy=True)
 
-    # Ensure L2 normalization (for cosine similarity)
+    # Track memory before
+    gc.collect()
+    mem_before = psutil.Process().memory_info().rss
+
+    start = time.time()
+    embedding = model.encode(text, show_progress_bar=False, convert_to_numpy=True)
+    duration = time.time() - start
+
+    # Track memory after
+    mem_after = psutil.Process().memory_info().rss
+    mem_delta = mem_after - mem_before
+
+    # Ensure L2 normalization
     norm = np.linalg.norm(embedding)
     if norm > 0:
         embedding = embedding / norm
 
     token_count = estimate_token_count(text)
 
+    # Log if slow or memory-intensive
+    if duration > 1.0:
+        logger.warning(f"Slow embedding: {duration:.2f}s for {token_count} tokens")
+    if mem_delta > 10 * 1024 * 1024:  # 10MB
+        logger.warning(f"High memory delta: {mem_delta / 1024 / 1024:.2f}MB")
+
     return embedding.tolist(), token_count
 
 
 def embed_batch(texts: List[str]) -> tuple[List[List[float]], List[int]]:
-    """Embed batch of texts efficiently"""
+    """Embed batch of texts efficiently with metrics"""
     if not texts:
         return [], []
+
+    # Track batch size
+    embed_batch_size.observe(len(texts))
 
     # Filter empty texts
     non_empty_indices = [i for i, t in enumerate(texts) if t and t.strip()]
@@ -348,6 +509,11 @@ def embed_batch(texts: List[str]) -> tuple[List[List[float]], List[int]]:
         return [[0.0] * Config.EMBEDDING_DIM] * len(texts), [0] * len(texts)
 
     model = model_manager.model
+
+    # Track memory
+    gc.collect()
+    mem_before = psutil.Process().memory_info().rss
+
     embeddings = model.encode(
         non_empty_texts,
         batch_size=Config.BATCH_SIZE,
@@ -356,7 +522,16 @@ def embed_batch(texts: List[str]) -> tuple[List[List[float]], List[int]]:
         normalize_embeddings=True,  # L2 normalize
     )
 
-    # Reconstruct full results with zeros for empty texts
+    mem_after = psutil.Process().memory_info().rss
+    mem_delta = mem_after - mem_before
+
+    if mem_delta > 50 * 1024 * 1024:  # 50MB
+        logger.warning(
+            f"High batch memory: {mem_delta / 1024 / 1024:.2f}MB "
+            f"for {len(texts)} texts"
+        )
+
+    # Reconstruct full results
     full_embeddings: List[List[float]] = []
     full_token_counts: List[int] = []
 
@@ -493,9 +668,14 @@ def add_type_context(text: str, content_type: ContentType) -> str:
 # --- API Endpoints ---
 @app.route("/health", methods=["GET"])
 def health_check():
-    """Health check endpoint"""
+    """Health check with resource information"""
     try:
         model = model_manager.model
+
+        # Get current resource usage
+        process = psutil.Process()
+        mem_info = process.memory_info()
+        cpu_percent = process.cpu_percent(interval=0.1)
 
         return (
             jsonify(
@@ -507,6 +687,12 @@ def health_check():
                     "embedding_dim": Config.EMBEDDING_DIM,
                     "max_tokens": Config.MAX_TOKENS,
                     "batch_size": Config.BATCH_SIZE,
+                    "resources": {
+                        "memory_rss_mb": mem_info.rss / 1024 / 1024,
+                        "memory_vms_mb": mem_info.vms / 1024 / 1024,
+                        "cpu_percent": cpu_percent,
+                        "torch_cuda_available": torch.cuda.is_available(),
+                    },
                 }
             ),
             200,
@@ -534,22 +720,30 @@ def embed_endpoint():
         "dimension": 384
     }
     """
+    endpoint_name = "embed"
     try:
-        start = time.time()
         data = request.get_json(silent=True)
 
         if not data or "text" not in data:
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return jsonify({"status": "error", "message": "Missing 'text' field"}), 400
 
         text = data["text"]
 
-        embed_requests.labels(endpoint="embed").inc()
+        # Track request
+        embed_requests_total.labels(endpoint=endpoint_name, status="success").inc()
+
         start = time.time()
         embedding, token_count = embed_single(text)
-        elapsed = (time.time() - start) * 1000
+        duration = time.time() - start
 
-        embed_latency.labels(endpoint="embed").observe(elapsed / 1000)
-        logger.debug(f"Embedded text ({token_count} tokens) in {elapsed:.1f}ms")
+        # Update metrics
+        embed_request_duration.labels(endpoint=endpoint_name).observe(duration)
+        embed_token_count.labels(endpoint=endpoint_name).observe(token_count)
+
+        logger.debug(
+            f"[{g.request_id}] Embedded {token_count} tokens in {duration*1000:.1f}ms"
+        )
 
         return (
             jsonify(
@@ -558,16 +752,22 @@ def embed_endpoint():
                     "embedding": embedding,
                     "token_count": token_count,
                     "dimension": Config.EMBEDDING_DIM,
-                    "latency_ms": round(elapsed, 2),
+                    "latency_ms": round(duration * 1000, 2),
+                    "request_id": g.request_id,
                 }
             ),
             200,
         )
 
     except Exception as e:
-        embed_errors.labels(endpoint="embed").inc()
-        logger.error(f"Embedding failed: {e}\n{traceback.format_exc()}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+        logger.error(
+            f"[{g.request_id}] Embedding failed: {e}\n{traceback.format_exc()}"
+        )
+        return (
+            jsonify({"status": "error", "message": str(e), "request_id": g.request_id}),
+            500,
+        )
 
 
 @app.route("/embed/batch", methods=["POST"])
@@ -592,17 +792,20 @@ def embed_batch_endpoint():
         data = request.get_json(silent=True)
 
         if not data or "texts" not in data:
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return jsonify({"status": "error", "message": "Missing 'texts' field"}), 400
 
         texts = data["texts"]
 
         if not isinstance(texts, list):
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return (
                 jsonify({"status": "error", "message": "'texts' must be an array"}),
                 400,
             )
 
         if len(texts) > Config.MAX_BATCH_SIZE:
+            embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
             return (
                 jsonify(
                     {
@@ -613,12 +816,22 @@ def embed_batch_endpoint():
                 400,
             )
 
+        embed_requests_total.labels(endpoint=endpoint_name, status="success").inc()
+
         start = time.time()
         embeddings, token_counts = embed_batch(texts)
-        elapsed = (time.time() - start) * 1000
+        duration = time.time() - start
 
-        logger.debug(f"Batch embedded {len(texts)} texts in {elapsed:.1f}ms")
+        total_tokens = sum(token_counts)
 
+        # Update metrics
+        embed_request_duration.labels(endpoint=endpoint_name).observe(duration)
+        embed_token_count.labels(endpoint=endpoint_name).observe(total_tokens)
+
+        logger.debug(
+            f"[{g.request_id}] Batch: {len(texts)} texts, "
+            f"{total_tokens} tokens in {duration*1000:.1f}ms"
+        )
         return (
             jsonify(
                 {
@@ -627,15 +840,20 @@ def embed_batch_endpoint():
                     "token_counts": token_counts,
                     "dimension": Config.EMBEDDING_DIM,
                     "count": len(texts),
-                    "latency_ms": round(elapsed, 2),
+                    "latency_ms": round(duration * 1000, 2),
+                    "request_id": g.request_id,
                 }
             ),
             200,
         )
 
     except Exception as e:
-        logger.error(f"Batch embedding failed: {e}\n{traceback.format_exc()}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        embed_requests_total.labels(endpoint=endpoint_name, status="error").inc()
+        logger.error(f"[{g.request_id}] Batch failed: {e}\n{traceback.format_exc()}")
+        return (
+            jsonify({"status": "error", "message": str(e), "request_id": g.request_id}),
+            500,
+        )
 
 
 @app.route("/embed/content", methods=["POST"])
@@ -755,7 +973,10 @@ def embed_content_endpoint():
 
 @app.route("/", methods=["GET"])
 def root():
-    """Root endpoint"""
+    """Root endpoint with stats"""
+    process = psutil.Process()
+    mem_info = process.memory_info()
+
     return (
         jsonify(
             {
@@ -764,9 +985,14 @@ def root():
                 "model": Config.MODEL_NAME,
                 "endpoints": {
                     "health": "/health",
+                    "metrics": "/metrics",
                     "embed": "/embed",
                     "batch": "/embed/batch",
                     "content": "/embed/content",
+                },
+                "stats": {
+                    "memory_mb": round(mem_info.rss / 1024 / 1024, 2),
+                    "cpu_percent": process.cpu_percent(interval=0.1),
                 },
             }
         ),
@@ -778,15 +1004,31 @@ def root():
 @app.errorhandler(404)
 def not_found(e):
     return (
-        jsonify({"status": "error", "message": f"Endpoint not found: {request.path}"}),
+        jsonify(
+            {
+                "status": "error",
+                "message": f"Endpoint not found: {request.path}",
+                "request_id": getattr(g, "request_id", "unknown"),
+            }
+        ),
         404,
     )
 
 
 @app.errorhandler(500)
 def internal_error(e):
-    logger.error(f"Internal error: {e}\n{traceback.format_exc()}")
-    return jsonify({"status": "error", "message": "Internal server error"}), 500
+    request_id = getattr(g, "request_id", "unknown")
+    logger.error(f"[{request_id}] Internal error: {e}\n{traceback.format_exc()}")
+    return (
+        jsonify(
+            {
+                "status": "error",
+                "message": "Internal server error",
+                "request_id": request_id,
+            }
+        ),
+        500,
+    )
 
 
 # --- Main ---
@@ -818,11 +1060,15 @@ if __name__ == "__main__":
     logger.info("\n📚 Endpoints:")
     logger.info("  GET  /                  - Service info")
     logger.info("  GET  /health            - Health check")
+    logger.info("  GET  /metrics           - Prometheus metrics")
     logger.info("  POST /embed             - Embed single text")
     logger.info("  POST /embed/batch       - Embed batch of texts")
-    logger.info("  POST /embed/content     - Content-aware embedding with chunking")
+    logger.info("  POST /embed/content     - Content-aware embedding")
 
     # Enable debug mode via environment variable
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 
-    app.run(host=Config.HOST, port=Config.PORT, debug=debug_mode)
+    try:
+        app.run(host=Config.HOST, port=Config.PORT, debug=debug_mode)
+    finally:
+        system_monitor.stop()

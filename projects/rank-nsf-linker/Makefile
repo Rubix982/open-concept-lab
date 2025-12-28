@@ -48,10 +48,12 @@ push-images:
 	@docker tag rank-nsf-linker-scraper-worker:latest $(REGISTRY)/scraper-worker:latest
 	@docker tag rank-nsf-linker-web:latest $(REGISTRY)/web-ui:latest
 	@docker tag rank-nsf-linker-logging-service:latest $(REGISTRY)/logging-service:latest
+	@docker tag rank-nsf-linker-embedder:latest $(REGISTRY)/embedder:latest
 	@docker push $(REGISTRY)/go-server:latest
 	@docker push ${REGISTRY}/scraper-worker:latest
 	@docker push $(REGISTRY)/web-ui:latest
 	@docker push $(REGISTRY)/logging-service:latest
+	@docker push $(REGISTRY)/embedder:latest
 	@echo "✅ Images pushed to $(REGISTRY)"
 
 # Registry Setup
@@ -92,8 +94,8 @@ docker-build:
 # Spin up services in background
 up: registry up-infra
 	@if ! docker ps --format '{{.Names}}' | grep -q "$(SERVICE)"; then \
-		echo "🚀 Launching main services (web, go-server, scraper-worker, logging-service)..."; \
-		$(DOCKER_COMPOSE) up -d go-server scraper-worker web logging-service; \
+		echo "🚀 Launching main services (web, go-server, scraper-worker, logging-service, embedder)..."; \
+		$(DOCKER_COMPOSE) up -d go-server scraper-worker web logging-service embedder; \
 	else \
 		echo "✅ Main services already running."; \
 	fi
@@ -113,6 +115,7 @@ logs:
 # 	make logs-postgres    # logs for postgres
 # 	make logs-web         # logs for web
 # 	make logs-logging-service # logs for logging-service
+# 	make logs-embedder   # logs for embedder
 logs-%:
 	$(DOCKER_COMPOSE) logs -f $*
 

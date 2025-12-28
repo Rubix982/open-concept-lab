@@ -425,12 +425,12 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 		prof := ProfessorProfile{Name: job.ProfessorName, Homepage: job.URL}
 		scrapedContents, err := s.scraper.ScrapeProfessor(workerID, prof)
-		scrapeDuration := time.Since(scrapeStart).Seconds()
-		scrapeDuration.Observe(scrapeDuration)
+		duration := time.Since(scrapeStart).Seconds()
+		scrapeDuration.Observe(duration)
 
 		if err != nil {
 			logger.Errorf("[Worker %d] [Job %s] ❌ Scrape failed after %.2fs: %v",
-				workerID, job.ID, scrapeDuration, err)
+				workerID, job.ID, duration, err)
 			scrapeErrorsTotal.WithLabelValues("scrape_failure").Inc()
 			jobsProcessedTotal.WithLabelValues("failed").Inc()
 			s.failJob(job.ID, fmt.Sprintf("scrape_error: %v", err))
@@ -439,7 +439,7 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 		contents = scrapedContents
 		logger.Infof("[Worker %d] [Job %s] ✓ Scrape completed: %d pages in %.2fs",
-			workerID, job.ID, len(contents), scrapeDuration)
+			workerID, job.ID, len(contents), duration)
 	}
 
 	if len(contents) == 0 {

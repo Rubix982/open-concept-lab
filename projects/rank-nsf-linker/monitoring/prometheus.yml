@@ -11,12 +11,32 @@ scrape_configs:
           service: "postgres"
           environment: "dev"
 
-  # Scraper Worker - NEW
+  # Embedder
+  - job_name: "embedder"
+    static_configs:
+      - targets: ["embedder:8000"]
+        labels:
+          service: "embedder"
+          environment: "dev"
+    metrics_path: "/metrics"
+    scrape_interval: 10s # More frequent scraping for active service
+
+  # Scraper Worker
   - job_name: "scraper-worker"
     static_configs:
       - targets: ["scraper-worker:2112"]
         labels:
           service: "scraper-worker"
+          environment: "dev"
+    metrics_path: "/metrics"
+    scrape_interval: 10s # More frequent scraping for active service
+
+  # Go Server
+  - job_name: "go-server"
+    static_configs:
+      - targets: ["go-server:8080"]
+        labels:
+          service: "go-server"
           environment: "dev"
     metrics_path: "/metrics"
     scrape_interval: 10s # More frequent scraping for active service

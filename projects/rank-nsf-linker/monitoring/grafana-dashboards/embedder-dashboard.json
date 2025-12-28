@@ -1,0 +1,61 @@
+{
+    "dashboard": {
+        "title": "Embedder Service Monitoring",
+        "panels": [
+            {
+                "title": "Request Rate",
+                "targets": [
+                    {
+                        "expr": "rate(embed_requests_total[1m])",
+                        "legendFormat": "{{endpoint}} - {{status}}"
+                    }
+                ],
+                "type": "graph"
+            },
+            {
+                "title": "Request Latency (p95)",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, rate(embed_request_duration_seconds_bucket[5m]))",
+                        "legendFormat": "{{endpoint}}"
+                    }
+                ],
+                "type": "graph"
+            },
+            {
+                "title": "Memory Usage",
+                "targets": [
+                    {
+                        "expr": "python_memory_rss_bytes / 1024 / 1024",
+                        "legendFormat": "RSS (MB)"
+                    },
+                    {
+                        "expr": "model_memory_usage_bytes / 1024 / 1024",
+                        "legendFormat": "Model (MB)"
+                    }
+                ],
+                "type": "graph"
+            },
+            {
+                "title": "CPU Usage",
+                "targets": [
+                    {
+                        "expr": "system_cpu_usage_percent",
+                        "legendFormat": "CPU %"
+                    }
+                ],
+                "type": "graph"
+            },
+            {
+                "title": "Batch Size Distribution",
+                "targets": [
+                    {
+                        "expr": "embed_batch_size",
+                        "legendFormat": "Batch Size"
+                    }
+                ],
+                "type": "heatmap"
+            }
+        ]
+    }
+}
