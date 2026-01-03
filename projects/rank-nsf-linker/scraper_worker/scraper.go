@@ -30,6 +30,8 @@ var (
 	DisallowedURLFiltersRegex = []*regexp.Regexp{
 		regexp.MustCompile(`\.pdf$`),
 		regexp.MustCompile(`\.zip$`),
+		regexp.MustCompile(`\.mov$`),
+		regexp.MustCompile(`\.mp4$`),
 		regexp.MustCompile(`\.doc[x]?$`),
 	}
 )
@@ -297,7 +299,7 @@ func NewScraper() *Scraper {
 
 func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
 	// Check cache first (with TTL)
-	logPrefix := fmt.Sprintf("[Worker %d] -", workerID)
+	logPrefix := fmt.Sprintf("[Worker %d] -", workerID+1)
 	safeName := strings.ReplaceAll(prof.Name, "/", "_")
 	safeName = strings.ReplaceAll(safeName, " ", "_")
 	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
@@ -334,11 +336,11 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 	s.collector.OnRequest(func(r *colly.Request) {
 		visitCount++
 		if visitCount > maxPages {
-			logger.Warnf("Reached max pages (%d), stopping crawl for %s", maxPages, prof.Name)
+			logger.Infof("%s Reached max pages (%d), stopping crawl for %s", logPrefix, maxPages, prof.Name)
 			r.Abort()
 			return
 		}
-		logger.Debugf("Visiting [%d/%d] for professor '%v' under route: %s", visitCount, maxPages, prof.Name, r.URL)
+		logger.Debugf("%s Visiting [%d/%d] for professor '%v' under route: %s", logPrefix, visitCount, maxPages, prof.Name, r.URL)
 	})
 
 	// OnHTML handlers
@@ -445,9 +447,9 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 		cleanText := s.cleanText(rawText)
 
 		// Truncate if too long (safety limit)
-		if len(cleanText) > 50000 {
-			cleanText = cleanText[:50000]
-			logger.Warnf("%s - Truncated content for %s (was >50KB)", logPrefix, url)
+		if len(cleanText) > 80000 {
+			cleanText = cleanText[:80000]
+			logger.Warnf("%s - Truncated content for %s (was >80KB)", logPrefix, url)
 		}
 
 		// Classify content type
@@ -502,6 +504,10 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 	logger.Infof("%s - 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
 	err := s.collector.Visit(prof.Homepage)
 	if err != nil {
+		if strings.Contains(err.Error(), "already visited") {
+			logger.Warnf("%s - Skipping homepage visit as already visited: %s", logPrefix, prof.Homepage)
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed to visit homepage: %w", err)
 	}
 
@@ -509,7 +515,7 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 
 	// Check if we got any content
 	if len(contents) == 0 {
-		logger.Warnf("%s - No content extracted for %s", logPrefix, prof.Name)
+		logger.Infof("%s - No content extracted for %s", logPrefix, prof.Name)
 		return nil, fmt.Errorf("no content extracted from %s", prof.Homepage)
 	}
 

@@ -13,17 +13,17 @@ func waitForElasticsearch() {
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	fmt.Println("Waiting for ElasticSearch to be ready...")
+	logger.Info("Waiting for ElasticSearch to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/_cluster/health", ELASTICSEARCH_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			fmt.Println("✅ Elasticsearch is ready")
+			logger.Info("✅ Elasticsearch is ready")
 			return
 		}
 
-		fmt.Printf("Waiting for Elasticsearch to be ready for attempt %d... retrying in %s\n", attempts, delay)
+		logger.Infof("Waiting for Elasticsearch to be ready for attempt %d... retrying in %s\n", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay
@@ -60,7 +60,7 @@ func waitForPostgres() {
 	maxDelay := 30 * time.Second
 	attempts := 0
 
-	fmt.Println("Waiting for Postgres to be ready...")
+	logger.Info("Waiting for Postgres to be ready...")
 
 	for {
 		attempts++
@@ -71,12 +71,12 @@ func waitForPostgres() {
 		}
 
 		if err == nil {
-			fmt.Println("✅ Postgres is ready")
+			logger.Info("✅ Postgres is ready")
 			db.Close()
 			return
 		}
 
-		fmt.Printf("Attempt %d: Postgres not ready yet, retrying in %s...\n", attempts, delay)
+		logger.Infof("Attempt %d: Postgres not ready yet, retrying in %s...", attempts, delay)
 		time.Sleep(delay)
 
 		delay *= 2
@@ -91,17 +91,17 @@ func waitForLoggingService() {
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	fmt.Println("Waiting for Logging Service to be ready...")
+	logger.Info("Waiting for Logging Service to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			fmt.Println("✅ Logging Service is ready")
+			logger.Info("✅ Logging Service is ready")
 			return
 		}
 
-		fmt.Printf("Waiting for Logging Service to be ready for attempt %d... retrying in %s\n", attempts, delay)
+		logger.Infof("Waiting for Logging Service to be ready for attempt %d... retrying in %s...", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay

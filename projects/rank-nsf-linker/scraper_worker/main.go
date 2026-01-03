@@ -25,6 +25,7 @@ func startResearchPipeline() (*ResearchService, error) {
 	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
 	svc.totalWorkers = WORKER_COUNT
 	for i := range WORKER_COUNT {
+		defer handlePanic(WORKER_GO_ROUTINE_NAME, fmt.Sprintf(WORKER_GO_ROUTINE_RECOVER_ID, i))
 		svc.wg.Add(1)
 		go svc.workerLoop(i)
 	}
@@ -38,17 +39,17 @@ func waitForLoggingService() {
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	fmt.Println("Waiting for Logging Service to be ready...")
+	logger.Info("Waiting for Logging Service to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			fmt.Println("✅ Logging Service is ready")
+			logger.Info("✅ Logging Service is ready")
 			return
 		}
 
-		fmt.Printf("Waiting for Logging Service to be ready for attempt %d... retrying in %s\n", attempts, delay)
+		logger.Infof("Waiting for Logging Service to be ready for attempt %d... retrying in %s\n", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay
@@ -77,16 +78,22 @@ func printBanner() {
 	logger.Infof("%s", banner)
 }
 
-func waitForServices() {
-	waitForLoggingService()
-}
-
 func startMetricsServer() {
 	http.Handle("/metrics", promhttp.Handler())
 	go http.ListenAndServe(":2112", nil)
 }
 
 func main() {
+	defer handlePanic(MAIN_GO_ROUTINE_NAME, MAIN_GO_ROUTINE_RECOVER_ID)
+
+	monitor := NewMemoryMonitor(logger)
+	ticker := time.NewTicker(30 * time.Second)
+	go func() {
+		for range ticker.C {
+			monitor.LogMemoryStats()
+		}
+	}()
+
 	if err := godotenv.Load(); err != nil {
 		logger.Warnf("⚠️  No .env file found, trying .env.local: %v", err)
 		if err := godotenv.Load(".env.local"); err != nil {
@@ -94,7 +101,7 @@ func main() {
 		}
 	}
 
-	waitForServices()
+	waitForLoggingService()
 	printBanner()
 	startMetricsServer()
 	InitPostgres()

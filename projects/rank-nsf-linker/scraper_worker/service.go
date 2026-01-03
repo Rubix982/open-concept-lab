@@ -520,47 +520,50 @@ func (s *ResearchService) workerLoop(id int) {
 }
 
 func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
+	defer handlePanic(PROCESS_JOB_GO_ROUTINE_NAME, fmt.Sprintf(PROCESS_JOB_GO_ROUTINE_RECOVER_ID, workerID))
+
 	jobStart := time.Now()
+	logPrefix := fmt.Sprintf("[Worker %d] [Job %s]", workerID+1, job.ID)
 	defer func() {
 		duration := time.Since(jobStart).Seconds()
 		jobDuration.Observe(duration)
-		logger.Infof("[Worker %d] [Job %s] Job completed in %.2fs", workerID, job.ID, duration)
+		logger.Infof("%s Job completed in %.2fs", logPrefix, duration)
 	}()
 
-	logger.Infof("[Worker %d] [Job %s] 🚀 Starting job for professor: %s", workerID, job.ID, job.ProfessorName)
+	logger.Infof("%s 🚀 Starting job for professor: %s", logPrefix, job.ProfessorName)
 
 	// ============================================================================
 	// PHASE 0: Check Pre-existing Data
 	// ============================================================================
-	logger.Debugf("[Worker %d] [Job %s] Phase 0: Checking for existing data", workerID, job.ID)
+	logger.Debugf("%s Phase 0: Checking for existing data", logPrefix)
 
 	existingContents, err := s.fetchContentFromDB(job.ProfessorName)
 	if err != nil {
-		logger.Warnf("[Worker %d] [Job %s] Failed to check DB for existing content: %v", workerID, job.ID, err)
+		logger.Warnf("%s Failed to check DB for existing content: %v", logPrefix, err)
 	}
 
 	dataFoundInDB := len(existingContents) > 0
 	dataFoundInQdrant := false
 
 	if dataFoundInDB {
-		logger.Debugf("[Worker %d] [Job %s] Found %d existing content items in DB", workerID, job.ID, len(existingContents))
+		logger.Debugf("%s Found %d existing content items in DB", logPrefix, len(existingContents))
 		hasEmbeddings, err := s.qdrant.HasEmbeddings(job.ProfessorName)
 		if err != nil {
-			logger.Warnf("[Worker %d] [Job %s] Failed to check Qdrant for existing embeddings: %v", workerID, job.ID, err)
+			logger.Warnf("%s Failed to check Qdrant for existing embeddings: %v", logPrefix, err)
 		} else {
 			dataFoundInQdrant = hasEmbeddings
 			if hasEmbeddings {
-				logger.Debugf("[Worker %d] [Job %s] Found existing embeddings in Qdrant", workerID, job.ID)
+				logger.Debugf("%s Found existing embeddings in Qdrant", logPrefix)
 			}
 		}
 	} else {
-		logger.Debugf("[Worker %d] [Job %s] No existing data found in DB", workerID, job.ID)
+		logger.Debugf("%s No existing data found in DB", logPrefix)
 	}
 
 	// Case 3: Data fully present
 	if dataFoundInDB && dataFoundInQdrant {
-		logger.Infof("[Worker %d] [Job %s] ✅ Data already complete (DB: %d items, Qdrant: ✓). Skipping.",
-			workerID, job.ID, len(existingContents))
+		logger.Infof("%s ✅ Data already complete (DB: %d items, Qdrant: ✓). Skipping.",
+			logPrefix, len(existingContents))
 		jobsProcessedTotal.WithLabelValues("completed").Inc()
 		s.completeJob(job.ID)
 		return
@@ -573,13 +576,12 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	// ============================================================================
 	// Case 2: Data in DB but missing in Qdrant (Recovery)
 	if dataFoundInDB && !dataFoundInQdrant {
-		logger.Infof("[Worker %d] [Job %s] 🔄 Recovery mode: DB has %d items, Qdrant missing. Loading from DB.",
-			workerID, job.ID, len(existingContents))
+		logger.Infof("%s 🔄 Recovery mode: DB has %d items, Qdrant missing. Loading from DB.",
+			logPrefix, len(existingContents))
 		contents = existingContents
 	} else {
 		// Case 1: New Job or Data missing (Scrape)
-		logger.Infof("[Worker %d] [Job %s] Phase 1: Starting fresh scrape for %s",
-			workerID, job.ID, job.ProfessorName)
+		logger.Infof("%s Phase 1: Starting fresh scrape for %s", logPrefix, job.ProfessorName)
 		scrapeStart := time.Now()
 
 		prof := ProfessorProfile{Name: job.ProfessorName, Homepage: job.URL}
@@ -589,14 +591,19 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 		if err != nil {
 			if strings.Contains(err.Error(), "no content extracted") {
-				logger.Warnf("[Worker %d] [Job %s] ⚠️  No content available for %s (empty result)",
-					workerID, job.ID, job.ProfessorName)
+				logger.Infof("%s ⚠️  No content available for %s (empty result)",
+					logPrefix, job.ProfessorName)
+				jobsProcessedTotal.WithLabelValues("completed").Inc()
+				s.completeJob(job.ID)
+				return
+			} else if strings.Contains(err.Error(), "extracted content too short") {
+				logger.Infof("%s ⚠️  Extracted content too short for %s (empty result)",
+					logPrefix, job.ProfessorName)
 				jobsProcessedTotal.WithLabelValues("completed").Inc()
 				s.completeJob(job.ID)
 				return
 			}
-			logger.Errorf("[Worker %d] [Job %s] ❌ Scrape failed after %.2fs: %v",
-				workerID, job.ID, duration, err)
+			logger.Errorf("%s ❌ Scrape failed after %.2fs: %v", logPrefix, duration, err)
 			scrapeErrorsTotal.WithLabelValues("scrape_failure").Inc()
 			jobsProcessedTotal.WithLabelValues("failed").Inc()
 			s.failJob(job.ID, fmt.Sprintf("scrape_error: %v", err))
@@ -604,13 +611,12 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 		}
 
 		contents = scrapedContents
-		logger.Infof("[Worker %d] [Job %s] ✓ Scrape completed: %d pages in %.2fs",
-			workerID, job.ID, len(contents), duration)
+		logger.Infof("%s ✓ Scrape completed: %d pages in %.2fs",
+			logPrefix, len(contents), duration)
 	}
 
 	if len(contents) == 0 {
-		logger.Warnf("[Worker %d] [Job %s] ⚠️  No content available for %s (empty result)",
-			workerID, job.ID, job.ProfessorName)
+		logger.Warnf("%s ⚠️  No content available for %s (empty result)", logPrefix, job.ProfessorName)
 		jobsProcessedTotal.WithLabelValues("completed").Inc()
 		s.completeJob(job.ID)
 		return
@@ -618,7 +624,7 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 	db, err := GetGlobalDB()
 	if err != nil {
-		logger.Errorf("[Worker %d] [Job %s] ❌ Failed to get DB connection: %v", workerID, job.ID, err)
+		logger.Errorf("%s ❌ Failed to get DB connection: %v", logPrefix, err)
 		jobsProcessedTotal.WithLabelValues("failed").Inc()
 		s.failJob(job.ID, fmt.Sprintf("db_connection_error: %v", err))
 		return
@@ -627,7 +633,7 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	// ============================================================================
 	// PHASE 2: Process Content (DB → Embed → Qdrant)
 	// ============================================================================
-	logger.Infof("[Worker %d] [Job %s] Phase 2: Processing %d content items", workerID, job.ID, len(contents))
+	logger.Infof("%s Phase 2: Processing %d content items", logPrefix, len(contents))
 
 	// Track failures
 	var (
@@ -640,13 +646,13 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 
 	for i, content := range contents {
 		contentStart := time.Now()
-		logger.Debugf("[Worker %d] [Job %s] [%d/%d] Processing: %s (type: %s, url: %s)",
-			workerID, job.ID, i+1, len(contents), content.Title, content.ContentType, content.URL)
+		logger.Debugf("%s [%d/%d] Processing: %s (type: %s, url: %s)",
+			logPrefix, i+1, len(contents), content.Title, content.ContentType, content.URL)
 
 		// Validate professor name
 		if content.ProfessorName != job.ProfessorName {
-			logger.Warnf("[Worker %d] [Job %s] [%d/%d] ⚠️  Name mismatch: got '%s', expected '%s'. Skipping.",
-				workerID, job.ID, i+1, len(contents), content.ProfessorName, job.ProfessorName)
+			logger.Warnf("%s [%d/%d] ⚠️  Name mismatch: got '%s', expected '%s'. Skipping.",
+				logPrefix, i+1, len(contents), content.ProfessorName, job.ProfessorName)
 			continue
 		}
 
@@ -659,13 +665,12 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 			content.Content,
 			content.ScrapedAt,
 		); err != nil {
-			logger.Errorf("[Worker %d] [Job %s] [%d/%d] ❌ DB insert failed: %v",
-				workerID, job.ID, i+1, len(contents), err)
+			logger.Errorf("%s [%d/%d] ❌ DB insert failed: %v", logPrefix, i+1, len(contents), err)
 			dbFailures++
 			continue // Skip embedding if DB fails
 		}
 		pagesScrapedTotal.WithLabelValues(content.ContentType).Inc()
-		logger.Debugf("[Worker %d] [Job %s] [%d/%d] ✓ Saved to DB", workerID, job.ID, i+1, len(contents))
+		logger.Debugf("%s [%d/%d] ✓ Saved to DB", logPrefix, i+1, len(contents))
 
 		// --- Step 2.2: Generate Embeddings ---
 		embedStart := time.Now()
@@ -674,22 +679,64 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 		embeddingDuration.Observe(embedDuration)
 
 		if err != nil {
-			logger.Errorf("[Worker %d] [Job %s] [%d/%d] ❌ Embedding failed after %.2fs: %v",
-				workerID, job.ID, i+1, len(contents), embedDuration, err)
+			logger.Errorf("%s [%d/%d] ❌ Embedding failed after %.2fs: %v",
+				logPrefix, i+1, len(contents), embedDuration, err)
 			embeddingFailures++
 			continue // Skip Qdrant if embedding fails
 		}
 
 		embeddingsGeneratedTotal.Add(float64(len(results)))
 		chunksProcessedTotal.WithLabelValues(content.ContentType).Add(float64(len(results)))
-		logger.Debugf("[Worker %d] [Job %s] [%d/%d] ✓ Generated %d embeddings in %.2fs",
-			workerID, job.ID, i+1, len(contents), len(results), embedDuration)
+		logger.Debugf("%s [%d/%d] ✓ Generated %d embeddings in %.2fs",
+			logPrefix, i+1, len(contents), len(results), embedDuration)
 
 		// --- Step 2.3: Upsert to Qdrant ---
 		successCount := 0
 		chunkFailures := 0
 
 		for _, result := range results {
+			logger.WithFields(logrus.Fields{
+				"chunk_index":  result.ChunkIndex,
+				"content_page": fmt.Sprintf("%d/%d", i+1, len(contents)),
+				"professor":    content.ProfessorName,
+			}).Debugf("%s Upserting to Qdrant", logPrefix)
+
+			if len(result.Embedding) == 0 {
+				logger.Errorf("%s [%d/%d] Chunk %d: Empty embedding", logPrefix, i+1, len(contents), result.ChunkIndex)
+				chunkFailures++
+				continue
+			}
+
+			if len(result.Embedding) != 384 {
+				logger.WithFields(logrus.Fields{
+					"expected_dim": 384,
+					"actual_dim":   len(result.Embedding),
+					"text_preview": result.Text[:min(100, len(result.Text))],
+				}).Errorf("%s Embedding dimension mismatch!", logPrefix)
+				chunkFailures++
+				continue
+			}
+
+			// Log embedding stats for first chunk only (avoid spam)
+			if result.ChunkIndex == 0 {
+				var sum float32
+				for _, v := range result.Embedding {
+					sum += v
+				}
+				mean := sum / float32(len(result.Embedding))
+
+				logger.WithFields(logrus.Fields{
+					"embedding_dim":  len(result.Embedding),
+					"embedding_mean": mean,
+					"embedding_min":  minFloat32(result.Embedding),
+					"embedding_max":  maxFloat32(result.Embedding),
+					"text_length":    len(result.Text),
+					"token_count":    result.TokenCount,
+				}).Debugf("%s Embedding statistics", logPrefix)
+			}
+
+			logger.Debugf("%s [%d/%d] Chunk %d: Upserting to Qdrant",
+				logPrefix, i+1, len(contents), result.ChunkIndex)
 			pointID := fmt.Sprintf("%s_%s_chunk%d",
 				s.sanitizeForID(content.ProfessorName),
 				s.sanitizeForID(content.URL),
@@ -711,9 +758,13 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 			}
 
 			qdrantStart := time.Now()
-			if err := s.qdrant.Upsert(uuid.New().String(), result.Embedding, payload); err != nil {
-				logger.Errorf("[Worker %d] [Job %s] [%d/%d] ❌ Qdrant upsert failed for chunk %d: %v",
-					workerID, job.ID, i+1, len(contents), result.ChunkIndex, err)
+
+			// Comment in to check embedding results
+			// logger.Debugf("%s Upserting to Qdrant. Payload: %v. Result: %+v. Embedding: %+v", logPrefix, payload, result, result.Embedding)
+
+			if err := s.qdrant.Upsert(result.Embedding, payload); err != nil {
+				logger.Errorf("%s [%d/%d] ❌ Qdrant upsert failed for chunk %d: %v",
+					logPrefix, i+1, len(contents), result.ChunkIndex, err)
 				qdrantUpsertsTotal.WithLabelValues("error").Inc()
 				chunkFailures++
 				continue
@@ -729,11 +780,11 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 		contentDuration := time.Since(contentStart).Seconds()
 
 		if chunkFailures > 0 {
-			logger.Warnf("[Worker %d] [Job %s] [%d/%d] ⚠️  Partial success: %d/%d chunks in %.2fs (%s)",
-				workerID, job.ID, i+1, len(contents), successCount, len(results), contentDuration, content.URL)
+			logger.Warnf("%s [%d/%d] ⚠️  Partial success: %d/%d chunks in %.2fs (%s)",
+				logPrefix, i+1, len(contents), successCount, len(results), contentDuration, content.URL)
 		} else {
-			logger.Infof("[Worker %d] [Job %s] [%d/%d] ✅ Complete: %d chunks in %.2fs (%s)",
-				workerID, job.ID, i+1, len(contents), successCount, contentDuration, content.Title)
+			logger.Infof("%s [%d/%d] ✅ Complete: %d chunks in %.2fs (%s)",
+				logPrefix, i+1, len(contents), successCount, contentDuration, content.Title)
 		}
 
 		contentProcessed++
@@ -745,15 +796,15 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	totalContent := len(contents)
 	totalFailures := dbFailures + embeddingFailures + qdrantFailures
 
-	logger.Infof("[Worker %d] [Job %s] Phase 3: Processing summary", workerID, job.ID)
-	logger.Infof("[Worker %d] [Job %s]   Content: %d/%d processed", workerID, job.ID, contentProcessed, totalContent)
-	logger.Infof("[Worker %d] [Job %s]   Chunks: %d successfully upserted", workerID, job.ID, totalChunks)
-	logger.Infof("[Worker %d] [Job %s]   Failures: DB=%d, Embedding=%d, Qdrant=%d (total=%d)",
-		workerID, job.ID, dbFailures, embeddingFailures, qdrantFailures, totalFailures)
+	logger.Infof("%s Phase 3: Processing summary", logPrefix)
+	logger.Infof("%s   Content: %d/%d processed", logPrefix, contentProcessed, totalContent)
+	logger.Infof("%s   Chunks: %d successfully upserted", logPrefix, totalChunks)
+	logger.Infof("%s   Failures: DB=%d, Embedding=%d, Qdrant=%d (total=%d)",
+		logPrefix, dbFailures, embeddingFailures, qdrantFailures, totalFailures)
 
 	// Decision logic
 	if contentProcessed == 0 {
-		logger.Errorf("[Worker %d] [Job %s] ❌ FAILED: Zero content processed", workerID, job.ID)
+		logger.Errorf("%s ❌ FAILED: Zero content processed", logPrefix)
 		jobsProcessedTotal.WithLabelValues("failed").Inc()
 		s.failJob(job.ID, fmt.Sprintf("no_content_processed: db=%d, embedding=%d, qdrant=%d",
 			dbFailures, embeddingFailures, qdrantFailures))
@@ -761,8 +812,8 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	}
 
 	if dbFailures > 0 || embeddingFailures > 0 {
-		logger.Errorf("[Worker %d] [Job %s] ❌ FAILED: Critical failures detected (DB=%d, Embedding=%d)",
-			workerID, job.ID, dbFailures, embeddingFailures)
+		logger.Errorf("%s ❌ FAILED: Critical failures detected (DB=%d, Embedding=%d)",
+			logPrefix, dbFailures, embeddingFailures)
 		jobsProcessedTotal.WithLabelValues("failed").Inc()
 		s.failJob(job.ID, fmt.Sprintf("critical_failures: db=%d, embedding=%d, qdrant=%d",
 			dbFailures, embeddingFailures, qdrantFailures))
@@ -772,20 +823,20 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 	if qdrantFailures > 0 {
 		failureRate := float64(qdrantFailures) / float64(totalChunks+qdrantFailures)
 		if failureRate > 0.2 {
-			logger.Errorf("[Worker %d] [Job %s] ❌ FAILED: High Qdrant failure rate %.1f%% (%d/%d chunks)",
-				workerID, job.ID, failureRate*100, qdrantFailures, totalChunks+qdrantFailures)
+			logger.Errorf("%s ❌ FAILED: High Qdrant failure rate %.1f%% (%d/%d chunks)",
+				logPrefix, failureRate*100, qdrantFailures, totalChunks+qdrantFailures)
 			jobsProcessedTotal.WithLabelValues("failed").Inc()
 			s.failJob(job.ID, fmt.Sprintf("high_qdrant_failure_rate: %.1f%% (%d/%d chunks)",
 				failureRate*100, qdrantFailures, totalChunks+qdrantFailures))
 			return
 		}
 
-		logger.Warnf("[Worker %d] [Job %s] ⚠️  COMPLETED with warnings: %.1f%% Qdrant failures (%d/%d chunks)",
-			workerID, job.ID, failureRate*100, qdrantFailures, totalChunks+qdrantFailures)
+		logger.Warnf("%s ⚠️  COMPLETED with warnings: %.1f%% Qdrant failures (%d/%d chunks)",
+			logPrefix, failureRate*100, qdrantFailures, totalChunks+qdrantFailures)
 	}
 
-	logger.Infof("[Worker %d] [Job %s] ✅ SUCCESS: Processed %s (%d pages, %d chunks)",
-		workerID, job.ID, job.ProfessorName, contentProcessed, totalChunks)
+	logger.Infof("%s ✅ SUCCESS: Processed %s (%d pages, %d chunks)",
+		logPrefix, job.ProfessorName, contentProcessed, totalChunks)
 	jobsProcessedTotal.WithLabelValues("completed").Inc()
 	s.completeJob(job.ID)
 }
@@ -1016,6 +1067,32 @@ func (s *ResearchService) failJob(id, errorMsg string) error {
 	}
 
 	return nil
+}
+
+func minFloat32(arr []float32) float32 {
+	if len(arr) == 0 {
+		return 0
+	}
+	min := arr[0]
+	for _, v := range arr {
+		if v < min {
+			min = v
+		}
+	}
+	return min
+}
+
+func maxFloat32(arr []float32) float32 {
+	if len(arr) == 0 {
+		return 0
+	}
+	max := arr[0]
+	for _, v := range arr {
+		if v > max {
+			max = v
+		}
+	}
+	return max
 }
 
 func (s *ResearchService) Close() {

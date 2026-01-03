@@ -9,36 +9,73 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	logger    *logrus.Logger
-	once      sync.Once
-	LogsRoute string
+	logger         *logrus.Logger
+	internalLogger *logrus.Logger // For hook's own logging
+	once           sync.Once
+	LogsRoute      string
 )
-
-func init() {
-	LogsRoute = fmt.Sprintf("%s/logs/batch", LOGGING_SERVICE_ROUTE)
-}
 
 // LoggingServiceHook sends log entries to an HTTP logging service in batches
 type LoggingServiceHook struct {
-	buffer    []map[string]interface{}
-	mu        sync.Mutex
-	batchSize int
+	buffer         []map[string]interface{}
+	mu             sync.Mutex
+	batchSize      int
+	flushInterval  time.Duration
+	circuitBreaker *LoggingCircuitBreaker
+	inFire         atomic.Bool // Prevent re-entrant calls
 }
+
+type LoggingCircuitBreaker struct {
+	state        atomic.Uint32 // 0=closed, 1=open, 2=half-open
+	failureCount atomic.Uint32
+	lastFailure  atomic.Int64
+	lastSuccess  atomic.Int64
+	threshold    uint32
+	timeout      time.Duration
+
+	// Track if we've logged the "service down" message
+	downMessageLogged atomic.Bool
+	droppedLogs       atomic.Uint64
+	sentLogs          atomic.Uint64
+}
+
+const (
+	CBStateClosed = iota
+	CBStateOpen
+	CBStateHalfOpen
+)
+
+const (
+	flushInterval = 5 * time.Second
+	batchSize     = 200
+)
 
 func NewLoggingServiceHook() *LoggingServiceHook {
 	hook := &LoggingServiceHook{
-		buffer:    make([]map[string]interface{}, 0, 200),
-		batchSize: 200, // Flush after 200 logs
+		buffer:        make([]map[string]interface{}, 0, batchSize),
+		batchSize:     batchSize, // Flush after 200 logs
+		flushInterval: flushInterval,
+		circuitBreaker: &LoggingCircuitBreaker{
+			threshold: 3,                // Open after 3 failures
+			timeout:   60 * time.Second, // Try again after 1 minute
+		},
 	}
 
 	// Start background flusher (every 5 seconds)
-	go hook.periodicFlush()
+	go func() {
+		ticker := time.NewTicker(flushInterval)
+		defer ticker.Stop()
+		for range ticker.C {
+			hook.flush()
+		}
+	}()
 
 	return hook
 }
@@ -48,6 +85,28 @@ func (h *LoggingServiceHook) Levels() []logrus.Level {
 }
 
 func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
+	// Prevent re-entrant calls
+	if !h.inFire.CompareAndSwap(false, true) {
+		// Already inside Fire(), drop this log silently
+		return nil
+	}
+	defer h.inFire.Store(false)
+
+	// Catch panics in Fire() itself
+	defer func() {
+		if r := recover(); r != nil {
+			// Log to stderr directly, bypass logger
+			fmt.Fprintf(os.Stderr, "PANIC in LoggingServiceHook.Fire: %v\n", r)
+		}
+	}()
+
+	// Don't log messages from the hook itself to prevent infinite loops
+	if caller, ok := entry.Data["component"].(string); ok {
+		if caller == "LoggingServiceHook" {
+			return nil
+		}
+	}
+
 	payload := map[string]interface{}{
 		"level":     entry.Level.String(),
 		"message":   entry.Message,
@@ -59,6 +118,13 @@ func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
 	h.mu.Lock()
 	h.buffer = append(h.buffer, payload)
 	shouldFlush := len(h.buffer) >= h.batchSize
+	// If circuit is open and buffer is full, drop oldest logs
+	if h.circuitBreaker.state.Load() == CBStateOpen {
+		if len(h.buffer) >= h.batchSize*10 { // Max 10 batches worth
+			// Drop oldest half
+			h.buffer = h.buffer[len(h.buffer)/2:]
+		}
+	}
 	h.mu.Unlock()
 
 	// Flush if buffer is full
@@ -69,16 +135,6 @@ func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
 	return nil
 }
 
-// periodicFlush flushes logs every 5 seconds
-func (h *LoggingServiceHook) periodicFlush() {
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-
-	for range ticker.C {
-		h.flush()
-	}
-}
-
 // flush sends batched logs to the logging service
 func (h *LoggingServiceHook) flush() {
 	h.mu.Lock()
@@ -87,40 +143,138 @@ func (h *LoggingServiceHook) flush() {
 		return
 	}
 
+	// Check circuit breaker BEFORE trying
+	if !h.circuitBreaker.Allow() {
+		// Circuit is open, drop logs silently
+		h.circuitBreaker.droppedLogs.Add(uint64(len(h.buffer)))
+		h.buffer = h.buffer[:0] // Clear buffer to prevent memory buildup
+		h.mu.Unlock()
+		return
+	}
+
+	logPrefix := "[LoggingServiceHookFlush]"
+
 	// Copy buffer and clear it
 	batch := make([]map[string]interface{}, len(h.buffer))
 	copy(batch, h.buffer)
-	h.buffer = h.buffer[:0] // Clear buffer
+	h.buffer = h.buffer[:0]
 	h.mu.Unlock()
 
 	// Send batch
+	err := h.sendBatch(batch)
+
+	if err != nil {
+		h.circuitBreaker.RecordFailure()
+
+		// Only log on FIRST failure or state transitions
+		if h.circuitBreaker.ShouldLogError() {
+			internalLogger.Warnf("%s - Logging service unavailable, circuit breaker opened (logs will be dropped)", logPrefix)
+		}
+		return
+	}
+
+	// Success - record and maybe log recovery
+	if h.circuitBreaker.RecordSuccess() {
+		internalLogger.Infof("%s - ✓ Logging service recovered, circuit breaker closed", logPrefix)
+	}
+	h.circuitBreaker.sentLogs.Add(uint64(len(batch)))
+}
+
+func (h *LoggingServiceHook) sendBatch(batch []map[string]interface{}) error {
 	body, err := json.Marshal(map[string]interface{}{
 		"logs":  batch,
 		"count": len(batch),
 	})
 	if err != nil {
-		fmt.Printf("Failed to marshal log batch (%d logs): %v\n", len(batch), err)
-		return
+		return fmt.Errorf("marshal failed: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", LogsRoute, bytes.NewBuffer(body))
 	if err != nil {
-		fmt.Printf("Failed to create HTTP request for log batch: %v\n", err)
-		return
+		return fmt.Errorf("request creation failed: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Timeout: 5 * time.Second} // Shorter timeout for logs
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Printf("Failed to send log batch (%d logs): %v\n", len(batch), err)
-		return
+		return fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Logging service returned status %d for batch of %d logs\n", resp.StatusCode, len(batch))
+		return fmt.Errorf("bad status: %d", resp.StatusCode)
 	}
+
+	return nil
+}
+
+func (cb *LoggingCircuitBreaker) Allow() bool {
+	state := cb.state.Load()
+
+	switch state {
+	case CBStateOpen:
+		// Check if timeout elapsed
+		lastFail := time.Unix(cb.lastFailure.Load(), 0)
+		if time.Since(lastFail) > cb.timeout {
+			// Try half-open
+			if cb.state.CompareAndSwap(CBStateOpen, CBStateHalfOpen) {
+				cb.downMessageLogged.Store(false) // Allow logging recovery
+				return true
+			}
+		}
+		return false // Still open
+
+	case CBStateHalfOpen:
+		// Allow ONE attempt
+		return true
+
+	case CBStateClosed:
+		// Normal operation
+		return true
+	}
+
+	return false
+}
+
+func (cb *LoggingCircuitBreaker) RecordFailure() {
+	cb.lastFailure.Store(time.Now().Unix())
+
+	state := cb.state.Load()
+
+	if state == CBStateHalfOpen {
+		// Failed in half-open, back to open
+		cb.state.Store(CBStateOpen)
+		cb.downMessageLogged.Store(false) // Allow re-logging
+		return
+	}
+
+	if state == CBStateClosed {
+		count := cb.failureCount.Add(1)
+		if count >= cb.threshold {
+			cb.state.Store(CBStateOpen)
+			cb.downMessageLogged.Store(false) // Allow initial log
+		}
+	}
+}
+
+func (cb *LoggingCircuitBreaker) RecordSuccess() bool {
+	cb.lastSuccess.Store(time.Now().Unix())
+
+	state := cb.state.Load()
+	wasOpen := (state == CBStateOpen || state == CBStateHalfOpen)
+
+	if state != CBStateClosed {
+		cb.state.Store(CBStateClosed)
+		cb.failureCount.Store(0)
+	}
+
+	return wasOpen // Return true if we recovered from open state
+}
+
+func (cb *LoggingCircuitBreaker) ShouldLogError() bool {
+	// Only log once when circuit opens
+	return cb.downMessageLogged.CompareAndSwap(false, true)
 }
 
 // Flush is called on shutdown to send remaining logs
@@ -130,7 +284,20 @@ func (h *LoggingServiceHook) Flush() {
 
 // GetLogger returns the singleton logger instance
 func init() {
+	LogsRoute = fmt.Sprintf("%s/logs/batch", LOGGING_SERVICE_ROUTE)
 	once.Do(func() {
+		// Internal logger (no hooks, just stdout)
+		internalLogger = logrus.New()
+		internalLogger.SetOutput(os.Stdout)
+		internalLogger.SetLevel(logrus.WarnLevel) // Only warnings/errors
+		internalLogger.SetFormatter(&logrus.TextFormatter{
+			ForceColors:     true,
+			FullTimestamp:   true,
+			TimestampFormat: "15:04:05",
+			PadLevelText:    true,
+		})
+
+		// Main logger (with hooks)
 		logger = logrus.New()
 		logger.SetOutput(os.Stdout)
 		logger.SetLevel(logrus.DebugLevel)
@@ -144,6 +311,6 @@ func init() {
 			},
 		})
 		logger.SetReportCaller(true)
-		logger.AddHook(&LoggingServiceHook{})
+		logger.AddHook(NewLoggingServiceHook())
 	})
 }

@@ -39,24 +39,26 @@ func (h *LoggingServiceHook) Fire(entry *logrus.Entry) error {
 		"timestamp": entry.Time.Format("2006-01-02T15:04:05.000Z07:00"),
 	}
 
+	logPrefix := "[LoggingServiceHookFire]"
+
 	body, err := json.Marshal(payload)
 	if err != nil {
 		// fallback to console if JSON marshaling fails
-		fmt.Println("Failed to marshal log entry:", err)
+		logger.Errorf("%s - Failed to marshal log entry: %v", logPrefix, err)
 		return err
 	}
 
 	go func() {
 		req, err := http.NewRequest("POST", LogsRoute, bytes.NewBuffer(body))
 		if err != nil {
-			fmt.Println("Failed to create HTTP request for log:", err)
+			logger.Errorf("%s - Failed to create HTTP request for log: %v", logPrefix, err)
 			return
 		}
 		req.Header.Set("Content-Type", "application/json")
 
 		client := &http.Client{}
 		if _, err := client.Do(req); err != nil {
-			fmt.Println("Failed to send log to logging service:", err)
+			logger.Errorf("%s - Failed to send log to logging service: %v", logPrefix, err)
 		}
 	}()
 
