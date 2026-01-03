@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
@@ -18,21 +19,43 @@ func syncProfessorsWithScrapeQueue() {
 	operation := func() error {
 		logger.Debug("Preparing to execute INSERT INTO scrape_queue query")
 		query := `
-			INSERT INTO scrape_queue (professor_name, url, status)
-			SELECT name, homepage, 'pending'
-			FROM professors
-			WHERE homepage IS NOT NULL AND homepage != ''
-			ON CONFLICT (professor_name, url) DO NOTHING;
-		`
-		res, err := db.Exec(query)
-		if err != nil {
-			logger.Errorf("Failed to sync professors with scrape queue: %v", err)
-			return err
-		}
+		INSERT INTO scrape_queue (professor_name, url, status)
+		SELECT name, homepage, 'pending'
+		FROM professors
+		WHERE homepage IS NOT NULL AND homepage != ''
+		ON CONFLICT (professor_name, url) DO NOTHING;
+	`
 
-		count, _ := res.RowsAffected()
-		logger.Infof("Added %d new jobs to queue", count)
-		return nil
+		// Retry indefinitely with exponential backoff capped at 30s
+		backoff := time.Second
+		maxBackoff := 30 * time.Second
+
+		for {
+			res, err := db.Exec(query)
+			if err != nil {
+				// Check if it's a "table doesn't exist" error
+				if strings.Contains(err.Error(), "does not exist") ||
+					strings.Contains(err.Error(), "no such table") {
+					logger.Warnf("Table not ready yet, retrying in %v: %v", backoff, err)
+					time.Sleep(backoff)
+
+					// Exponential backoff
+					backoff *= 2
+					if backoff > maxBackoff {
+						backoff = maxBackoff
+					}
+					continue
+				}
+
+				// Other errors should fail immediately
+				logger.Errorf("Failed to sync professors with scrape queue: %v", err)
+				return err
+			}
+
+			count, _ := res.RowsAffected()
+			logger.Infof("Added %d new jobs to queue", count)
+			return nil
+		}
 	}
 
 	expBackoff := backoff.NewExponentialBackOff()

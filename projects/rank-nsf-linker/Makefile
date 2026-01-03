@@ -206,3 +206,10 @@ rebuild-one:
 	$(DOCKER_COMPOSE) build --progress=plain $(if $(NO_CACHE),--no-cache,) $(SERVICE)
 	$(DOCKER_COMPOSE) up -d $(SERVICE)
 	@echo "✅ $(SERVICE) rebuilt and restarted successfully."
+
+# Bring down specific service(s)
+# Example usage: make down-service SERVICE=scraper-worker
+# Or multiple: make down-service SERVICE="scraper-worker db"
+down-service:
+	$(DOCKER_COMPOSE) stop $(SERVICE)
+	$(DOCKER_COMPOSE) rm -f $(SERVICE)

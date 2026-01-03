@@ -162,6 +162,8 @@ services:
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
       EMBEDDER_SERVICE_URL: http://embedder:8000
+    mem_limit: 2g
+    shm_size: 512mb
     restart: on-failure
     ports:
       - "2112:2112" # Prometheus metrics endpoint

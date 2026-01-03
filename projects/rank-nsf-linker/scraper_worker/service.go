@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )
 
@@ -202,19 +203,26 @@ const (
 
 	// Postgres FIFO Queue with SKIP LOCKED for concurrency safety
 	CLAIM_JOB_DB_QUERY = `
-		UPDATE scrape_queue
-		SET status = 'processing', updated_at = NOW(), attempts = attempts + 1, last_attempt = NOW()
-		WHERE id = (
+		WITH next_job AS (
 			SELECT id
 			FROM scrape_queue
-			WHERE status in ('pending', 'failed')
+			WHERE status IN ('pending', 'failed')
 			AND attempts < 3
-			-- OR (status = 'processing' AND last_attempt < NOW() - INTERVAL '10 minutes') -- Recover stuck jobs, commented out, will test later
+			AND (worker_id IS NULL OR worker_id = $1)  -- Allow retry by same worker
 			ORDER BY created_at ASC
 			FOR UPDATE SKIP LOCKED
 			LIMIT 1
 		)
-		RETURNING id, professor_name, url;
+		UPDATE scrape_queue
+		SET 
+			status = 'processing',
+			updated_at = NOW(),
+			attempts = attempts + 1,
+			last_attempt = NOW(),
+			worker_id = $1
+		FROM next_job
+		WHERE scrape_queue.id = next_job.id
+		RETURNING scrape_queue.id, scrape_queue.professor_name, scrape_queue.url;
 	`
 )
 
@@ -268,58 +276,119 @@ func (s *ResearchService) workerLoop(id int) {
 	defer activeWorkers.Dec()
 
 	activeWorkers.Inc()
-	logger.Infof("Worker %d started", id)
+	workerID := fmt.Sprintf("worker-%d-%s", id+1, uuid.NewString()[:8])
+	logPrefix := fmt.Sprintf("[Worker %d]", id+1)
+
+	logger.WithFields(logrus.Fields{
+		"worker_id":  workerID,
+		"worker_num": id + 1,
+		"component":  "worker_loop",
+	})
+
+	logger.Infof("%s - Worker starting up", logPrefix)
 
 	db, err := GetGlobalDB()
 	if err != nil {
-		logger.Errorf("Worker %d: Failed to get global DB: %v", id, err)
+		logger.WithError(err).Fatalf("%s - Failed to get global DB connection", logPrefix)
 		return
 	}
 
+	logger.Infof("%s - Database connection established", logPrefix)
+
+	// Worker lifecycle metrics
+	var (
+		jobsProcessed    int64
+		jobsFailed       int64
+		totalIdleTime    time.Duration
+		lastJobStartTime time.Time
+		workerStartTime  = time.Now()
+	)
+
 	consecutiveEmptyPolls := 0
-	maxEmptyPolls := 3 // Check 3 times before considering shutdown
+	maxEmptyPolls := 3
+
+	logger.WithFields(logrus.Fields{
+		"max_empty_polls": maxEmptyPolls,
+		"poll_interval":   "2s",
+		"error_backoff":   "5s",
+	}).Infof("%s - Worker loop configuration set", logPrefix)
 
 	for {
+		iterationStart := time.Now()
+
 		// Check for shutdown before processing
 		select {
 		case <-s.shutdownChan:
-			// Signal received, exit worker
-			logger.Debugf("Worker %d received shutdown signal", id)
+			uptime := time.Since(workerStartTime)
+			logger.WithFields(logrus.Fields{
+				"uptime_sec":      uptime.Seconds(),
+				"jobs_processed":  jobsProcessed,
+				"jobs_failed":     jobsFailed,
+				"total_idle_time": totalIdleTime.String(),
+			}).Infof("%s - Worker received shutdown signal, exiting gracefully", logPrefix)
 			return
 		default:
 		}
 
 		// Poll for a job
+		pollStart := time.Now()
 		job := &ScrapeJob{}
-		err := db.QueryRow(CLAIM_JOB_DB_QUERY).Scan(&job.ID, &job.ProfessorName, &job.URL)
+
+		logger.WithFields(logrus.Fields{
+			"claim_query":  "CLAIM_JOB_DB_QUERY",
+			"worker_id":    workerID,
+			"poll_attempt": consecutiveEmptyPolls + 1,
+		}).Tracef("%s - Attempting to claim job from queue", logPrefix)
+
+		err := db.QueryRow(CLAIM_JOB_DB_QUERY, workerID).Scan(&job.ID, &job.ProfessorName, &job.URL)
+		pollDuration := time.Since(pollStart)
+
 		if err != nil {
 			if err == sql.ErrNoRows {
+				// Track idle time
+				idleStart := time.Now()
+
 				// Mark this worker as idle
 				s.workerMu.Lock()
 				s.idleWorkers++
 				currentIdle := s.idleWorkers
+				totalWorkers := s.totalWorkers
 				s.workerMu.Unlock()
 
 				consecutiveEmptyPolls++
 
+				logger.WithFields(logrus.Fields{
+					"idle_workers":         currentIdle,
+					"total_workers":        totalWorkers,
+					"consecutive_polls":    consecutiveEmptyPolls,
+					"max_empty_polls":      maxEmptyPolls,
+					"poll_duration_ms":     pollDuration.Milliseconds(),
+					"jobs_processed_total": jobsProcessed,
+				}).Debugf("%s - Queue empty, no jobs available", logPrefix)
+
 				// Check if all workers are idle and we've polled multiple times
-				if currentIdle >= s.totalWorkers && consecutiveEmptyPolls >= maxEmptyPolls {
-					logger.Infof("[Worker %d] All %d workers idle after %d empty polls, initiating graceful shutdown",
-						id, s.totalWorkers, consecutiveEmptyPolls)
+				if currentIdle >= totalWorkers && consecutiveEmptyPolls >= maxEmptyPolls {
+					logger.WithFields(logrus.Fields{
+						"idle_workers":   currentIdle,
+						"total_workers":  totalWorkers,
+						"empty_polls":    consecutiveEmptyPolls,
+						"jobs_processed": jobsProcessed,
+						"jobs_failed":    jobsFailed,
+						"worker_uptime":  time.Since(workerStartTime).String(),
+					}).Infof("%s - All workers idle after max empty polls, initiating graceful shutdown", logPrefix)
 
 					// Signal shutdown to everyone (including main)
 					s.shutdownOnce.Do(func() {
+						logger.Infof("%s - Worker triggering global shutdown signal", logPrefix)
 						close(s.shutdownChan)
 					})
 					return
 				}
 
-				logger.Debugf("[Worker %d] No jobs available (%d/%d workers idle, poll %d/%d)",
-					id, currentIdle, s.totalWorkers, consecutiveEmptyPolls, maxEmptyPolls)
-
-				// Mark worker as no longer idle before next iteration (after sleep)
-				// We defer the decrement or do it after sleep.
-				// To avoid holding the lock status during sleep, we decrement after sleep.
+				logger.WithFields(logrus.Fields{
+					"sleep_duration": "2s",
+					"reason":         "queue_empty",
+				}).Tracef("%s - Worker entering idle sleep", logPrefix)
 
 				// Sleep before retrying (interruptible)
 				select {
@@ -327,10 +396,20 @@ func (s *ResearchService) workerLoop(id int) {
 					s.workerMu.Lock()
 					s.idleWorkers--
 					s.workerMu.Unlock()
-					logger.Infof("Worker %d stopped", id)
+
+					logger.WithFields(logrus.Fields{
+						"jobs_processed": jobsProcessed,
+						"jobs_failed":    jobsFailed,
+					}).Infof("%s - Worker stopped during idle period", logPrefix)
 					return
 				case <-time.After(2 * time.Second):
-					// Continue after sleep
+					idleDuration := time.Since(idleStart)
+					totalIdleTime += idleDuration
+
+					logger.WithFields(logrus.Fields{
+						"idle_duration_ms": idleDuration.Milliseconds(),
+						"total_idle_time":  totalIdleTime.String(),
+					}).Tracef("%s - Worker woke from idle sleep", logPrefix)
 				}
 
 				s.workerMu.Lock()
@@ -339,24 +418,104 @@ func (s *ResearchService) workerLoop(id int) {
 
 				continue
 			}
-			logger.Errorf("Worker %d: Failed to claim job: %v", id, err)
+
+			// Non-ErrNoRows error
+			logger.WithFields(logrus.Fields{
+				"error":            err.Error(),
+				"poll_duration_ms": pollDuration.Milliseconds(),
+			}).Errorf("%s - Failed to claim job from queue", logPrefix)
 
 			// Sleep on error (interruptible)
+			logger.WithField("backoff_duration", "5s").Warnf("%s - Entering error backoff", logPrefix)
+
 			select {
 			case <-s.shutdownChan:
-				logger.Infof("Worker %d received shutdown call", id)
+				logger.Infof("%s - Worker stopped during error backoff", logPrefix)
 				return
 			case <-time.After(5 * time.Second):
+				logger.Debugf("%s - Worker resuming after error backoff", logPrefix)
 				continue
 			}
 		}
 
-		// Reset empty poll counter when we get a job
+		// Job claimed successfully
 		consecutiveEmptyPolls = 0
+		jobsProcessed++
+		lastJobStartTime = time.Now()
 
-		logger.Infof("[Worker %d] [Job %s] Processing professor: %s (URL: %s)",
-			id, job.ID, job.ProfessorName, job.URL)
+		logger.WithFields(logrus.Fields{
+			"job_id":           job.ID,
+			"professor_name":   job.ProfessorName,
+			"url":              job.URL,
+			"poll_duration_ms": pollDuration.Milliseconds(),
+			"claim_timestamp":  lastJobStartTime.Format(time.RFC3339),
+		}).Infof("%s - Job claimed successfully", logPrefix)
+
+		// Verify exclusive lock (debugging)
+		var lockCheck int
+		lockCheckStart := time.Now()
+		err = db.QueryRow(`
+			SELECT COUNT(*) FROM scrape_queue 
+			WHERE id = $1 AND status = 'processing'
+		`, job.ID).Scan(&lockCheck)
+
+		lockCheckDuration := time.Since(lockCheckStart)
+
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"job_id": job.ID,
+				"error":  err.Error(),
+			}).Warnf("%s - Lock verification query failed", logPrefix)
+		} else if lockCheck != 1 {
+			logger.WithFields(logrus.Fields{
+				"job_id":         job.ID,
+				"lock_count":     lockCheck,
+				"expected":       1,
+				"professor_name": job.ProfessorName,
+				"url":            job.URL,
+				"worker_id":      workerID,
+			}).Error("🚨 LOCK VIOLATION DETECTED! Job claimed by multiple workers")
+
+			jobsFailed++
+			continue // Skip processing this job
+		} else {
+			logger.WithFields(logrus.Fields{
+				"job_id":                 job.ID,
+				"lock_check_duration_ms": lockCheckDuration.Milliseconds(),
+			}).Trace("Lock verification passed")
+		}
+
+		// Process the job
+		logger.WithFields(logrus.Fields{
+			"job_id":         job.ID,
+			"professor_name": job.ProfessorName,
+			"url":            job.URL,
+		}).Infof("%s - Starting job processing", logPrefix)
+
+		processingStart := time.Now()
 		s.processJob(id, job)
+		processingDuration := time.Since(processingStart)
+
+		logger.WithFields(logrus.Fields{
+			"job_id":              job.ID,
+			"professor_name":      job.ProfessorName,
+			"processing_time_sec": processingDuration.Seconds(),
+			"total_iteration_ms":  time.Since(iterationStart).Milliseconds(),
+			"jobs_processed":      jobsProcessed,
+		}).Infof("%s - Job processing completed", logPrefix)
+
+		// Check job outcome
+		var finalStatus string
+		db.QueryRow(`SELECT status FROM scrape_queue WHERE id = $1`, job.ID).Scan(&finalStatus)
+
+		logger.WithFields(logrus.Fields{
+			"job_id":       job.ID,
+			"final_status": finalStatus,
+		}).Debugf("%s - Job final status recorded", logPrefix)
+
+		if finalStatus == "failed" {
+			jobsFailed++
+		}
 	}
 }
 
@@ -429,6 +588,13 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob) {
 		scrapeDuration.Observe(duration)
 
 		if err != nil {
+			if strings.Contains(err.Error(), "no content extracted") {
+				logger.Warnf("[Worker %d] [Job %s] ⚠️  No content available for %s (empty result)",
+					workerID, job.ID, job.ProfessorName)
+				jobsProcessedTotal.WithLabelValues("completed").Inc()
+				s.completeJob(job.ID)
+				return
+			}
 			logger.Errorf("[Worker %d] [Job %s] ❌ Scrape failed after %.2fs: %v",
 				workerID, job.ID, duration, err)
 			scrapeErrorsTotal.WithLabelValues("scrape_failure").Inc()
@@ -859,4 +1025,5 @@ func (s *ResearchService) Close() {
 	s.wg.Wait()
 	s.embedder.Close()
 	s.qdrant.Close()
+	s.scraper.Close()
 }
