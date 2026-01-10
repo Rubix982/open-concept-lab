@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/gocolly/colly/v2"
 )
 
 const (
@@ -105,6 +107,7 @@ type contentEmbedResponse struct {
 // --- Embedder Implementation ---
 
 func NewEmbedder() (*Embedder, error) {
+	embedderCtx := colly.NewContext()
 	client := &http.Client{
 		Timeout: 60 * time.Second, // Longer timeout for batch operations
 		Transport: &http.Transport{
@@ -123,7 +126,7 @@ func NewEmbedder() (*Embedder, error) {
 	maxRetries := 10
 	retryDelay := 30 * time.Second
 
-	logger.Infof("Connecting to embedder service at %s...", embedderServiceURL)
+	logger.Infof(embedderCtx, "Connecting to embedder service at %s...", embedderServiceURL)
 
 	for i := 0; i < maxRetries; i++ {
 		resp, err := client.Get(embedder.baseURL + "/health")
@@ -138,10 +141,10 @@ func NewEmbedder() (*Embedder, error) {
 				resp.Body.Close()
 
 				if model, ok := healthResp["model"].(string); ok {
-					logger.Infof("✓ Embedder service connected")
-					logger.Infof("  Model: %s", model)
-					logger.Infof("  Dimension: %.0f", healthResp["embedding_dim"])
-					logger.Infof("  Max tokens: %.0f", healthResp["max_tokens"])
+					logger.Infof(embedderCtx, "✓ Embedder service connected")
+					logger.Infof(embedderCtx, "  Model: %s", model)
+					logger.Infof(embedderCtx, "  Dimension: %.0f", healthResp["embedding_dim"])
+					logger.Infof(embedderCtx, "  Max tokens: %.0f", healthResp["max_tokens"])
 				}
 			}
 
@@ -152,7 +155,7 @@ func NewEmbedder() (*Embedder, error) {
 			resp.Body.Close()
 		}
 
-		logger.Warnf("Embedder service not ready (attempt %d/%d), retrying in %v...",
+		logger.Warnf(embedderCtx, "Embedder service not ready (attempt %d/%d), retrying in %v...",
 			i+1, maxRetries, retryDelay)
 		time.Sleep(retryDelay)
 	}
@@ -162,6 +165,7 @@ func NewEmbedder() (*Embedder, error) {
 
 // postWithRetry handles HTTP POST requests with exponential backoff and retries
 func (e *Embedder) postWithRetry(endpoint string, reqBody interface{}, respDest interface{}) error {
+	postCtx := colly.NewContext()
 	maxRetries := 5
 	baseDelay := 1 * time.Second
 	var lastErr error
@@ -170,6 +174,10 @@ func (e *Embedder) postWithRetry(endpoint string, reqBody interface{}, respDest 
 	if err != nil {
 		return fmt.Errorf("failed to marshal request: %w", err)
 	}
+	logger.SetFields(postCtx, map[string]interface{}{
+		"endpoint": endpoint,
+		"body":     string(jsonData),
+	})
 
 	for i := 0; i < maxRetries; i++ {
 		// Calculate current delay with exponential backoff
@@ -183,7 +191,7 @@ func (e *Embedder) postWithRetry(endpoint string, reqBody interface{}, respDest 
 
 		if err != nil {
 			lastErr = err
-			logger.Warnf("Embedder request failed (attempt %d/%d): %v. Retrying in %v...",
+			logger.Warnf(postCtx, "Embedder request failed (attempt %d/%d): %v. Retrying in %v...",
 				i+1, maxRetries, err, delay)
 			time.Sleep(delay)
 			continue
@@ -206,7 +214,7 @@ func (e *Embedder) postWithRetry(endpoint string, reqBody interface{}, respDest 
 			}
 
 			lastErr = fmt.Errorf("embedder returned %s", errMsg)
-			logger.Warnf("Embedder server error (attempt %d/%d): %s. Retrying in %v...",
+			logger.Warnf(postCtx, "Embedder server error (attempt %d/%d): %s. Retrying in %v...",
 				i+1, maxRetries, errMsg, delay)
 			time.Sleep(delay)
 			continue
@@ -301,14 +309,7 @@ func (e *Embedder) EmbedContentDirect(text string, contentType ContentType) ([]*
 
 // EmbedContent processes content with Go-side chunking, then batch embeds
 // This maintains your existing Go logic while using Python for inference
-func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*EmbeddingResult, error) {
-	// Option 1: Use Python's /embed/content endpoint (recommended - simpler)
-	// Uncomment this line to delegate everything to Python:
-	// return e.EmbedContentDirect(text, contentType)
-
-	// Option 2: Keep Go-side chunking logic (what's below)
-	// This is useful if you want Go to control chunking behavior
-
+func (e *Embedder) EmbedContent(ctx *colly.Context, text string, contentType ContentType) ([]*EmbeddingResult, error) {
 	// Preprocess based on content type
 	cleaned := e.preprocessByType(text, contentType)
 
@@ -325,8 +326,8 @@ func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*Embedd
 	embeddings, tokenCounts, err := e.EmbedBatch(contextualChunks)
 	if err != nil {
 		// Fallback to individual embedding if batch fails
-		logger.Warnf("Batch embedding failed, falling back to individual: %v", err)
-		return e.embedContentIndividual(chunks, contentType)
+		logger.Warnf(ctx, "Batch embedding failed, falling back to individual: %v", err)
+		return e.embedContentIndividual(ctx, chunks, contentType)
 	}
 
 	// Apply weighting and build results
@@ -352,7 +353,7 @@ func (e *Embedder) EmbedContent(text string, contentType ContentType) ([]*Embedd
 }
 
 // embedContentIndividual is fallback for when batch fails
-func (e *Embedder) embedContentIndividual(chunks []string, contentType ContentType) ([]*EmbeddingResult, error) {
+func (e *Embedder) embedContentIndividual(ctx *colly.Context, chunks []string, contentType ContentType) ([]*EmbeddingResult, error) {
 	results := make([]*EmbeddingResult, 0, len(chunks))
 	weight := ContentTypeWeight[contentType]
 
@@ -360,7 +361,7 @@ func (e *Embedder) embedContentIndividual(chunks []string, contentType ContentTy
 		contextualChunk := e.addTypeContext(chunk, contentType)
 		embedding, tokenCount, err := e.Embed(contextualChunk)
 		if err != nil {
-			logger.Warnf("Warning: failed to embed chunk %d: %v", i, err)
+			logger.Warnf(ctx, "Warning: failed to embed chunk %d: %v", i, err)
 			continue
 		}
 

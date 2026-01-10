@@ -8,12 +8,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func startResearchPipeline() (*ResearchService, error) {
-	logger.Info("🚀 Starting Go-based Research Pipeline...")
+func startResearchPipeline(ctx *colly.Context) (*ResearchService, error) {
+	logger.Infof(ctx, "🚀 Starting Go-based Research Pipeline...")
 
 	// 2. Init Service
 	svc, err := NewResearchService()
@@ -22,34 +23,34 @@ func startResearchPipeline() (*ResearchService, error) {
 	}
 
 	// 4. Start Processing (Background)
-	logger.Infof("🚀 Starting %d queue workers", WORKER_COUNT)
+	logger.Infof(ctx, "🚀 Starting %d queue workers", WORKER_COUNT)
 	svc.totalWorkers = WORKER_COUNT
 	for i := range WORKER_COUNT {
 		defer handlePanic(WORKER_GO_ROUTINE_NAME, fmt.Sprintf(WORKER_GO_ROUTINE_RECOVER_ID, i))
 		svc.wg.Add(1)
 		go svc.workerLoop(i)
 	}
-	logger.Info("🚀 Research Queue Processor started in background")
+	logger.Infof(ctx, "🚀 Research Queue Processor started in background")
 
 	return svc, nil
 }
 
-func waitForLoggingService() {
+func waitForLoggingService(ctx *colly.Context) {
 	client := &http.Client{}
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	logger.Info("Waiting for Logging Service to be ready...")
+	logger.Info(ctx, "Waiting for Logging Service to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			logger.Info("✅ Logging Service is ready")
+			logger.Info(ctx, "✅ Logging Service is ready")
 			return
 		}
 
-		logger.Infof("Waiting for Logging Service to be ready for attempt %d... retrying in %s\n", attempts, delay)
+		logger.Infof(ctx, "Waiting for Logging Service to be ready for attempt %d... retrying in %s\n", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay
@@ -75,7 +76,7 @@ func printBanner() {
                                                                                                                                              
                                                                                    
 `
-	logger.Infof("%s", banner)
+	logger.Infof(colly.NewContext(), "%s", banner)
 }
 
 func startMetricsServer() {
@@ -86,7 +87,8 @@ func startMetricsServer() {
 func main() {
 	defer handlePanic(MAIN_GO_ROUTINE_NAME, MAIN_GO_ROUTINE_RECOVER_ID)
 
-	monitor := NewMemoryMonitor(logger)
+	mainCtx := colly.NewContext()
+	monitor := NewMemoryMonitor()
 	ticker := time.NewTicker(30 * time.Second)
 	go func() {
 		for range ticker.C {
@@ -95,21 +97,21 @@ func main() {
 	}()
 
 	if err := godotenv.Load(); err != nil {
-		logger.Warnf("⚠️  No .env file found, trying .env.local: %v", err)
+		logger.Warnf(mainCtx, "⚠️  No .env file found, trying .env.local: %v", err)
 		if err := godotenv.Load(".env.local"); err != nil {
-			logger.Warnf("⚠️  No .env.local file found either, continuing with system environment variables: %v", err)
+			logger.Warnf(mainCtx, "⚠️  No .env.local file found either, continuing with system environment variables: %v", err)
 		}
 	}
 
-	waitForLoggingService()
+	waitForLoggingService(mainCtx)
 	printBanner()
 	startMetricsServer()
 	InitPostgres()
-	go syncProfessorsWithScrapeQueue()
+	go syncProfessorsWithScrapeQueue(mainCtx)
 
-	svc, processResearchErr := startResearchPipeline()
+	svc, processResearchErr := startResearchPipeline(mainCtx)
 	if processResearchErr != nil {
-		logger.Errorf("❌ Failed to process research: %v", processResearchErr)
+		logger.Errorf(mainCtx, "❌ Failed to process research: %v", processResearchErr)
 		os.Exit(1)
 	}
 
@@ -120,14 +122,14 @@ func main() {
 	// Wait for shutdown signal
 	select {
 	case sig := <-sigChan:
-		logger.Infof("🛑 Received signal %v, initiating graceful shutdown...", sig)
+		logger.Infof(mainCtx, "🛑 Received signal %v, initiating graceful shutdown...", sig)
 	case <-svc.shutdownChan:
-		logger.Infof("🛑 Service finished all jobs (idle), shutting down...")
+		logger.Infof(mainCtx, "🛑 Service finished all jobs (idle), shutting down...")
 	}
 
 	// Stop accepting new jobs
 	svc.Close()
 
-	logger.Info("✅ All workers stopped gracefully")
+	logger.Infof(mainCtx, "✅ All workers stopped gracefully")
 	os.Exit(0) // Prevent docker from restarting
 }

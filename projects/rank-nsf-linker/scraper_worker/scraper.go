@@ -1,11 +1,9 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"math"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -21,6 +19,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 )
 
 type ContentType string
@@ -74,6 +73,9 @@ var ClassificationRules = []struct {
 }
 
 type Scraper struct {
+	contentLock    sync.Mutex
+	contents       []ScrapedContent
+	scraperCtx     *colly.Context
 	collector      *colly.Collector
 	browser        *rod.Browser
 	scraperID      string
@@ -83,180 +85,54 @@ type Scraper struct {
 }
 
 func NewScraper() *Scraper {
+	scraperCtx := colly.NewContext()
 	scraperID := uuid.NewString()[:8] // Short ID for logs
-
-	logger.WithFields(logrus.Fields{
+	s := &Scraper{
+		contentLock: sync.Mutex{},
+		contents:    []ScrapedContent{},
+		scraperCtx:  scraperCtx,
+		scraperID:   scraperID,
+	}
+	logger.WithFields(scraperCtx, logrus.Fields{
 		"scraper_id": scraperID,
 		"component":  "scraper",
 	})
 
-	logger.Info("Initializing scraper...")
+	logger.Info(scraperCtx, "Initializing scraper...")
 
 	// Ensure cache directory exists
 	cachePath := getScrapedDataFilePath()
 	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
 		if err := os.MkdirAll(cachePath, 0755); err != nil {
-			logger.WithError(err).Fatal("Failed to create cache directory")
+			logger.WithError(scraperCtx, err).Fatal("Failed to create cache directory")
 		}
-		logger.WithField("path", cachePath).Debug("Created cache directory")
+		logger.WithField(scraperCtx, "path", cachePath).Debug("Created cache directory")
 	} else {
-		logger.WithField("path", cachePath).Debug("Cache directory exists")
+		logger.WithField(scraperCtx, "path", cachePath).Debug("Cache directory exists")
 	}
-
-	collyCache := "./cache/colly"
-	if _, err := os.Stat(collyCache); os.IsNotExist(err) {
-		os.MkdirAll(collyCache, 0755)
-		logger.WithField("path", collyCache).Debug("Created colly cache directory")
-	}
-
-	c := colly.NewCollector(
-		colly.Async(true),
-		colly.MaxDepth(2),
-		colly.UserAgent("FacultyResearchBot/1.0"),
-		colly.CacheDir(collyCache),
-	)
-
-	// Disable TLS verification
-	c.WithTransport(&http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	})
-	logger.Warn("TLS verification disabled (InsecureSkipVerify=true)")
-
-	// Politeness configuration
-	c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
-		Parallelism: 4,
-		RandomDelay: 1 * time.Second,
-	})
-	c.SetRequestTimeout(30 * time.Second)
-	c.MaxBodySize = 10 * 1024 * 1024
-	c.MaxRequests = 10000
-	c.IgnoreRobotsTxt = true
-	c.DetectCharset = true
-	c.DisallowedURLFilters = DisallowedURLFiltersRegex
-	c.ParseHTTPErrorResponse = true
-	c.AllowURLRevisit = false
-	c.MaxDepth = 2
-	c.Async = true
-
-	logger.WithFields(logrus.Fields{
-		"async":           true,
-		"max_depth":       2,
-		"max_requests":    10000,
-		"parallelism":     4,
-		"random_delay":    "1s",
-		"request_timeout": "30s",
-		"max_body_size":   "10MB",
-		"ignore_robots":   true,
-		"cache_dir":       collyCache,
-		"user_agent":      "FacultyResearchBot/1.0",
-	}).Info("Colly collector configured")
 
 	// Request lifecycle tracking
 	var inFlight atomic.Int64
 	var totalRequests atomic.Int64
 	var failedRequests atomic.Int64
+	s.inFlight = &inFlight
+	s.totalRequests = &totalRequests
+	s.failedRequests = &failedRequests
+	s.collector = getDefaultCollyConfig(scraperCtx)
+	s.setupOnHtmlHandlers()
+	s.setupOnRequestHandlers()
+	s.setupOnResponseHandlers()
+	s.setupOnErrorHandlers()
 
-	c.OnRequest(func(r *colly.Request) {
-		totalRequests.Add(1)
-		inFlight.Add(1)
-		r.Ctx.Put("start_time", time.Now())
-
-		logger.WithFields(logrus.Fields{
-			"url":       r.URL.String(),
-			"depth":     r.Depth,
-			"in_flight": inFlight.Load(),
-			"total":     totalRequests.Load(),
-		}).Debug("Request started")
-	})
-
-	c.OnResponse(func(r *colly.Response) {
-		inFlight.Add(-1)
-		start, _ := r.Ctx.GetAny("start_time").(time.Time)
-		duration := time.Since(start)
-
-		fromCache := r.Headers.Get("X-From-Cache") != ""
-
-		logger.WithFields(logrus.Fields{
-			"url":         r.Request.URL.String(),
-			"status":      r.StatusCode,
-			"bytes":       len(r.Body),
-			"duration_ms": duration.Milliseconds(),
-			"from_cache":  fromCache,
-			"in_flight":   inFlight.Load(),
-		}).Debug("Response received")
-
-		if r.StatusCode >= 400 {
-			failedRequests.Add(1)
-			logger.WithFields(logrus.Fields{
-				"url":    r.Request.URL.String(),
-				"status": r.StatusCode,
-			}).Warn("HTTP error response")
-		}
-	})
-
-	c.OnError(func(r *colly.Response, err error) {
-		inFlight.Add(-1)
-		failedRequests.Add(1)
-		if r != nil {
-			logger.WithFields(logrus.Fields{
-				"url":    r.Request.URL.String(),
-				"method": r.Request.Method,
-				"depth":  r.Request.Depth,
-			}).Warn("Request failed")
-		}
-
-		if r != nil {
-			logger.WithFields(logrus.Fields{
-				"url":    r.Request.URL.String(),
-				"method": r.Request.Method,
-				"depth":  r.Request.Depth,
-			}).Warn("Request failed")
-		}
-
-		// Classify error type
-		errorType := "unknown"
-		switch {
-		case strings.Contains(err.Error(), "timeout"):
-			errorType = "timeout"
-		case strings.Contains(err.Error(), "TLS"):
-			errorType = "tls"
-		case strings.Contains(err.Error(), "DNS"):
-			errorType = "dns"
-		case strings.Contains(err.Error(), "connection refused"):
-			errorType = "connection_refused"
-		}
-		logger.WithFields(logrus.Fields{
-			"url":        r.Request.URL.String(),
-			"method":     r.Request.Method,
-			"depth":      r.Request.Depth,
-			"error_type": errorType,
-		}).WithError(err).Error("Request failed")
-	})
-
-	// Log filtered URLs
-	c.OnRequest(func(r *colly.Request) {
-		for _, pattern := range DisallowedURLFiltersRegex {
-			if pattern.MatchString(r.URL.String()) {
-				logger.WithFields(logrus.Fields{
-					"url":     r.URL.String(),
-					"pattern": pattern.String(),
-				}).Debug("URL blocked by disallowed filter")
-				r.Abort()
-				return
-			}
-		}
-	})
-
-	logger.Info("Setting up Chromium browser...")
+	logger.Info(scraperCtx, "✓ Setting up Chromium browser...")
 
 	// Browser initialization
 	systemBrowser := "/usr/bin/chromium"
 	if _, err := os.Stat(systemBrowser); err != nil {
-		logger.WithError(err).Fatal("System Chromium not found")
+		logger.WithError(scraperCtx, err).Fatal("System Chromium not found")
 	}
 
-	logger.WithField("chromium_bin", systemBrowser).Debug("Chromium binary validated")
+	logger.WithField(scraperCtx, "chromium_bin", systemBrowser).Debug("Chromium binary validated")
 
 	l := launcher.New().
 		Bin(systemBrowser).
@@ -268,82 +144,31 @@ func NewScraper() *Scraper {
 
 	debugURL, err := l.Launch()
 	if err != nil {
-		logger.WithError(err).Fatal("Failed to launch Chromium")
+		logger.WithError(scraperCtx, err).Fatal("Failed to launch Chromium")
 	}
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(scraperCtx, logrus.Fields{
 		"debug_url":  debugURL,
 		"headless":   true,
 		"no_sandbox": true,
 	}).Info("Chromium launched successfully")
 
 	browser := rod.New().ControlURL(debugURL).MustConnect()
+	s.browser = browser
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(scraperCtx, logrus.Fields{
 		"scraper_id": scraperID,
 		"browser":    "chromium",
 		"collector":  "colly",
 	}).Info("✓ Scraper initialized successfully")
 
-	s := &Scraper{
-		collector:      c,
-		browser:        browser,
-		scraperID:      scraperID,
-		totalRequests:  &totalRequests,
-		failedRequests: &failedRequests,
-		inFlight:       &inFlight,
-	}
-
 	return s
 }
 
-func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
-	// Check cache first (with TTL)
-	logPrefix := fmt.Sprintf("[Worker %d] -", workerID+1)
-	safeName := strings.ReplaceAll(prof.Name, "/", "_")
-	safeName = strings.ReplaceAll(safeName, " ", "_")
-	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
-	if info, err := os.Stat(cachePath); err == nil {
-		// Cache expires after 7 days
-		if time.Since(info.ModTime()) < 7*24*time.Hour {
-			content, err := os.ReadFile(cachePath)
-			if err == nil {
-				var cached []ScrapedContent
-				if err := json.Unmarshal(content, &cached); err == nil {
-					logger.Infof("%s - ✓ Cache hit for %s (age: %v)", logPrefix, prof.Name,
-						time.Since(info.ModTime()).Round(time.Hour))
-					return cached, nil
-				}
-			}
-		} else {
-			logger.Infof("%s - Cache expired for %s, re-scraping", logPrefix, prof.Name)
-		}
-	}
-
-	var contents []ScrapedContent
-	var mu sync.Mutex
-
-	// Check if this is a Google Site
-	if strings.Contains(prof.Homepage, "sites.google.com") {
-		logger.Infof("%s - 🌐 Detected Google Site, using browser scraper", logPrefix)
-		return s.scrapeGoogleSiteProfile(workerID, prof)
-	}
-
-	// Page count limiter
-	visitCount := 0
-	maxPages := 40
-
-	s.collector.OnRequest(func(r *colly.Request) {
-		visitCount++
-		if visitCount > maxPages {
-			logger.Infof("%s Reached max pages (%d), stopping crawl for %s", logPrefix, maxPages, prof.Name)
-			r.Abort()
-			return
-		}
-		logger.Debugf("%s Visiting [%d/%d] for professor '%v' under route: %s", logPrefix, visitCount, maxPages, prof.Name, r.URL)
-	})
-
-	// OnHTML handlers
+func (s *Scraper) setupOnHtmlHandlers() {
+	logPrefix := s.scraperCtx.Get("log_prefix")
+	profName := s.scraperCtx.Get("prof_name")
+	profHomepage := s.scraperCtx.Get("prof_homepage")
 	s.collector.OnHTML("html", func(e *colly.HTMLElement) {
 		// Clean DOM: Remove boilerplate
 		e.DOM.Find("script, style, noscript, iframe, nav, footer, header, aside, .nav, .footer, .header, .menu").Remove()
@@ -444,25 +269,25 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 		}
 
 		// Clean Text
-		cleanText := s.cleanText(rawText)
+		cleanText := cleanText(rawText)
 
 		// Truncate if too long (safety limit)
 		if len(cleanText) > 80000 {
 			cleanText = cleanText[:80000]
-			logger.Warnf("%s - Truncated content for %s (was >80KB)", logPrefix, url)
+			logger.Warnf(s.scraperCtx, "%s - Truncated content for %s (was >80KB)", logPrefix, url)
 		}
 
 		// Classify content type
-		contentType := s.classifyContent(url, title, cleanText)
+		contentType := classifyContent(url, title, cleanText)
 
 		// Skip if content is too short (likely navigation/error page)
 		if len(cleanText) < 200 {
-			logger.Debugf("%s - Skipping %s: content too short (%d chars)", logPrefix, url, len(cleanText))
+			logger.Debugf(s.scraperCtx, "%s - Skipping %s: content too short (%d chars)", logPrefix, url, len(cleanText))
 			return
 		}
 
 		content := ScrapedContent{
-			ProfessorName: prof.Name,
+			ProfessorName: profName,
 			URL:           url,
 			ContentType:   string(contentType),
 			Title:         title,
@@ -470,12 +295,12 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 			ScrapedAt:     time.Now(),
 		}
 
-		logger.Debugf("%s -	✓ Extracted: '%s' (Type: %s, Length: %d chars) from %s", logPrefix,
+		logger.Debugf(s.scraperCtx, "%s -	✓ Extracted: '%s' (Type: %s, Length: %d chars) from %s", logPrefix,
 			title, contentType, len(cleanText), url)
 
-		mu.Lock()
-		contents = append(contents, content)
-		mu.Unlock()
+		s.contentLock.Lock()
+		s.contents = append(s.contents, content)
+		s.contentLock.Unlock()
 	})
 
 	// Find and visit links (Recursive)
@@ -490,22 +315,171 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 		// Security Check: Only visit if it shares the same host and path prefix
 		// This prevents crawling the entire university website.
 		// Only visit if it shares the same host and path prefix
-		if isSafeToVisit(prof.Homepage, absoluteURL) {
+		if isSafeToVisit(profHomepage, absoluteURL) {
 			e.Request.Visit(absoluteURL)
 		}
 	})
+}
 
-	// Error handling
+func (s *Scraper) setupOnErrorHandlers() {
 	s.collector.OnError(func(r *colly.Response, err error) {
-		logger.Warnf("%s - Scraping error for %s: %v", logPrefix, r.Request.URL, err)
+		logPrefix := s.scraperCtx.Get("log_prefix")
+		requestUrl := "about:blank"
+		if r.Request != nil {
+			requestUrl = r.Request.URL.String()
+		}
+		logger.Warnf(s.scraperCtx, "%s - Scraping error for %s: %v", logPrefix, requestUrl, err)
+
+		s.inFlight.Add(-1)
+		s.failedRequests.Add(1)
+		if r != nil {
+			logger.WithFields(s.scraperCtx, logrus.Fields{
+				"url":    r.Request.URL.String(),
+				"method": r.Request.Method,
+				"depth":  r.Request.Depth,
+			}).Warn("Request failed")
+		}
+
+		if r != nil {
+			logger.WithFields(s.scraperCtx, logrus.Fields{
+				"url":    r.Request.URL.String(),
+				"method": r.Request.Method,
+				"depth":  r.Request.Depth,
+			}).Warn("Request failed")
+		}
+
+		// Classify error type
+		errorType := "unknown"
+		switch {
+		case strings.Contains(err.Error(), "timeout"):
+			errorType = "timeout"
+		case strings.Contains(err.Error(), "TLS"):
+			errorType = "tls"
+		case strings.Contains(err.Error(), "DNS"):
+			errorType = "dns"
+		case strings.Contains(err.Error(), "connection refused"):
+			errorType = "connection_refused"
+		}
+		logger.WithFields(s.scraperCtx, logrus.Fields{
+			"url":        r.Request.URL.String(),
+			"method":     r.Request.Method,
+			"depth":      r.Request.Depth,
+			"error_type": errorType,
+		}).WithError(err).Error("Request failed")
+	})
+}
+
+func (s *Scraper) setupOnResponseHandlers() {
+	s.collector.OnResponse(func(r *colly.Response) {
+		s.inFlight.Add(-1)
+		start, _ := r.Ctx.GetAny("start_time").(time.Time)
+		duration := time.Since(start)
+
+		fromCache := r.Headers.Get("X-From-Cache") != ""
+
+		logger.WithFields(s.scraperCtx, logrus.Fields{
+			"url":         r.Request.URL.String(),
+			"status":      r.StatusCode,
+			"bytes":       len(r.Body),
+			"duration_ms": duration.Milliseconds(),
+			"from_cache":  fromCache,
+			"in_flight":   s.inFlight.Load(),
+		}).Debug("Response received")
+
+		if r.StatusCode >= 400 {
+			s.failedRequests.Add(1)
+			logger.WithFields(s.scraperCtx, logrus.Fields{
+				"url":    r.Request.URL.String(),
+				"status": r.StatusCode,
+			}).Warn("HTTP error response")
+		}
 	})
 
+}
+
+func (s *Scraper) setupOnRequestHandlers() {
+	s.collector.OnRequest(func(r *colly.Request) {
+		s.totalRequests.Add(1)
+		s.inFlight.Add(1)
+		r.Ctx.Put("start_time", time.Now())
+
+		logger.WithFields(s.scraperCtx, logrus.Fields{
+			"url":       r.URL.String(),
+			"depth":     r.Depth,
+			"in_flight": s.inFlight.Load(),
+			"total":     s.totalRequests.Load(),
+		}).Debug("Request started")
+	})
+
+	s.collector.OnRequest(func(r *colly.Request) {
+		for _, pattern := range DisallowedURLFiltersRegex {
+			if pattern.MatchString(r.URL.String()) {
+				logger.WithFields(s.scraperCtx, logrus.Fields{
+					"url":     r.URL.String(),
+					"pattern": pattern.String(),
+				}).Debug("URL blocked by disallowed filter")
+				r.Abort()
+				return
+			}
+		}
+	})
+
+	s.collector.OnRequest(func(r *colly.Request) {
+		logPrefix := s.scraperCtx.Get("log_prefix")
+		visitCount := cast.ToInt(s.scraperCtx.Get("visit_count"))
+		profName := s.scraperCtx.Get("prof_name")
+		visitCount++
+		s.scraperCtx.Put("visit_count", visitCount)
+		if visitCount > MAX_PAGES {
+			logger.Infof(s.scraperCtx, "%s Reached max pages (%d), stopping crawl for %s", logPrefix, MAX_PAGES, profName)
+			r.Abort()
+			return
+		}
+		logger.Debugf(s.scraperCtx, "%s Visiting [%d/%d] for professor '%v' under route: %s", logPrefix, visitCount, MAX_PAGES, profName, r.URL)
+	})
+}
+
+func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
+	// Check cache first (with TTL)
+	logPrefix := fmt.Sprintf("[Worker %d] -", workerID+1)
+	safeName := strings.ReplaceAll(prof.Name, "/", "_")
+	safeName = strings.ReplaceAll(safeName, " ", "_")
+	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
+	if info, err := os.Stat(cachePath); err == nil {
+		// Cache expires after 7 days
+		if time.Since(info.ModTime()) < 7*24*time.Hour {
+			content, err := os.ReadFile(cachePath)
+			if err == nil {
+				var cached []ScrapedContent
+				if err := json.Unmarshal(content, &cached); err == nil {
+					logger.Infof(s.scraperCtx, "%s - ✓ Cache hit for %s (age: %v)", logPrefix, prof.Name,
+						time.Since(info.ModTime()).Round(time.Hour))
+					return cached, nil
+				}
+			}
+		} else {
+			logger.Infof(s.scraperCtx, "%s - Cache expired for %s, re-scraping", logPrefix, prof.Name)
+		}
+	}
+
+	// Check if this is a Google Site
+	if strings.Contains(prof.Homepage, "sites.google.com") {
+		logger.Infof(s.scraperCtx, "%s - 🌐 Detected Google Site, using browser scraper", logPrefix)
+		return s.scrapeGoogleSiteProfile(workerID, prof)
+	}
+
+	// Page count limiter
+	visitCount := 0
+	s.scraperCtx.Put("visit_count", visitCount)
+	s.scraperCtx.Put("prof_name", prof.Name)
+	s.scraperCtx.Put("log_prefix", logPrefix)
+
 	// Visit homepage
-	logger.Infof("%s - 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
+	logger.Infof(s.scraperCtx, "%s - 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
 	err := s.collector.Visit(prof.Homepage)
 	if err != nil {
 		if strings.Contains(err.Error(), "already visited") {
-			logger.Warnf("%s - Skipping homepage visit as already visited: %s", logPrefix, prof.Homepage)
+			logger.Warnf(s.scraperCtx, "%s - Skipping homepage visit as already visited: %s", logPrefix, prof.Homepage)
 			return nil, nil
 		}
 		return nil, fmt.Errorf("failed to visit homepage: %w", err)
@@ -514,28 +488,28 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 	s.collector.Wait()
 
 	// Check if we got any content
-	if len(contents) == 0 {
-		logger.Infof("%s - No content extracted for %s", logPrefix, prof.Name)
+	if len(s.contents) == 0 {
+		logger.Infof(s.scraperCtx, "%s - No content extracted for %s", logPrefix, prof.Name)
 		return nil, fmt.Errorf("no content extracted from %s", prof.Homepage)
 	}
 
 	// Save to cache
-	data, err := json.MarshalIndent(contents, "", "  ")
+	data, err := json.MarshalIndent(s.contents, "", "  ")
 	if err != nil {
-		logger.Errorf("%s - Failed to marshal cache for %s: %v", logPrefix, prof.Name, err)
+		logger.Errorf(s.scraperCtx, "%s - Failed to marshal cache for %s: %v", logPrefix, prof.Name, err)
 	} else {
 		if err := os.WriteFile(cachePath, data, 0644); err != nil {
-			logger.Errorf("%s - Failed to write cache for %s: %v", logPrefix, prof.Name, err)
+			logger.Errorf(s.scraperCtx, "%s - Failed to write cache for %s: %v", logPrefix, prof.Name, err)
 		} else {
-			logger.Infof("%s - 💾 Saved cache for %s (%d pages, %d total chars)", logPrefix,
-				prof.Name, len(contents), len(contents))
+			logger.Infof(s.scraperCtx, "%s - 💾 Saved cache for %s (%d pages, %d total chars)", logPrefix,
+				prof.Name, len(s.contents), len(s.contents))
 		}
 	}
 
-	return contents, nil
+	return s.contents, nil
 }
 
-func (s *Scraper) cleanText(text string) string {
+func cleanText(text string) string {
 	// Normalize whitespace
 	text = strings.Join(strings.Fields(text), " ")
 
@@ -543,7 +517,7 @@ func (s *Scraper) cleanText(text string) string {
 	return strings.TrimSpace(CleanTextRegex.ReplaceAllString(text, ""))
 }
 
-func (s *Scraper) classifyContent(
+func classifyContent(
 	url string,
 	title string,
 	content string,
@@ -619,7 +593,7 @@ func (s *Scraper) classifyContent(
 func (s *Scraper) scrapeGoogleSiteProfile(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
 	logPrefix := fmt.Sprintf("[Worker %d] -", workerID)
 
-	logger.Infof("%s - 🕷️ Scraping Google Site: %s", logPrefix, prof.Homepage)
+	logger.Infof(s.scraperCtx, "%s - 🕷️ Scraping Google Site: %s", logPrefix, prof.Homepage)
 
 	html, title, err := s.scrapeWithBrowser(prof.Homepage)
 	if err != nil {
@@ -662,7 +636,7 @@ func (s *Scraper) scrapeGoogleSiteProfile(workerID int, prof ProfessorProfile) (
 		rawText = doc.Find("body").Text()
 	}
 
-	cleanText := s.cleanText(rawText)
+	cleanText := cleanText(rawText)
 
 	if len(cleanText) < 200 {
 		return nil, fmt.Errorf("extracted content too short (%d chars)", len(cleanText))
@@ -673,7 +647,7 @@ func (s *Scraper) scrapeGoogleSiteProfile(workerID int, prof ProfessorProfile) (
 		cleanText = cleanText[:50000]
 	}
 
-	contentType := s.classifyContent(prof.Homepage, title, cleanText)
+	contentType := classifyContent(prof.Homepage, title, cleanText)
 
 	content := ScrapedContent{
 		ProfessorName: prof.Name,
@@ -684,7 +658,7 @@ func (s *Scraper) scrapeGoogleSiteProfile(workerID int, prof ProfessorProfile) (
 		ScrapedAt:     time.Now(),
 	}
 
-	logger.Infof("%s - ✓ Extracted from Google Site: '%s' (Length: %d chars)",
+	logger.Infof(s.scraperCtx, "%s - ✓ Extracted from Google Site: '%s' (Length: %d chars)",
 		logPrefix, title, len(cleanText))
 
 	// Save to cache (reuse existing cache logic)
@@ -758,7 +732,7 @@ func (s *Scraper) scrapeWithBrowser(url string) (string, string, error) {
 
 // Cleanup on exit
 func (s *Scraper) Close() {
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(s.scraperCtx, logrus.Fields{
 		"total_requests":  s.totalRequests.Load(),
 		"failed_requests": s.failedRequests.Load(),
 		"in_flight":       s.inFlight.Load(),
@@ -766,6 +740,6 @@ func (s *Scraper) Close() {
 
 	if s.browser != nil {
 		s.browser.MustClose()
-		logger.Debug("Browser closed")
+		logger.Debug(s.scraperCtx, "Browser closed")
 	}
 }

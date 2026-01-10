@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync/atomic"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )
@@ -33,20 +34,22 @@ var panicCounter = prometheus.NewCounterVec(
 )
 
 type PanicHandler struct {
-	logger      *logrus.Logger
 	panicCount  atomic.Uint32
 	serviceName string
 	restartFunc func() error // optional: service restart logic
 }
 
-func NewPanicHandler(logger *logrus.Logger, serviceName string) *PanicHandler {
+func NewPanicHandler(serviceName string) *PanicHandler {
 	return &PanicHandler{
-		logger:      logger,
 		serviceName: serviceName,
 	}
 }
 
 func (ph *PanicHandler) Recover(component string) {
+	recoverCtx := colly.NewContext()
+	logger.SetFields(recoverCtx, map[string]interface{}{
+		"component": component,
+	})
 	if r := recover(); r != nil {
 		count := ph.panicCount.Add(1)
 
@@ -56,7 +59,7 @@ func (ph *PanicHandler) Recover(component string) {
 
 		// Format stack trace
 		stack := debug.Stack()
-		ph.logger.WithFields(logrus.Fields{
+		logger.WithFields(recoverCtx, logrus.Fields{
 			"stack": string(stack),
 		}).Debug("Stack trace")
 		stackLines := strings.Split(string(stack), "\n")
@@ -69,7 +72,7 @@ func (ph *PanicHandler) Recover(component string) {
 			}
 		}
 
-		ph.logger.WithFields(logrus.Fields{
+		logger.WithFields(recoverCtx, logrus.Fields{
 			"panic":         fmt.Sprintf("%v", r),
 			"component":     component,
 			"function":      funcName,
@@ -81,14 +84,14 @@ func (ph *PanicHandler) Recover(component string) {
 
 		// Alert if too many panics
 		if count > 5 {
-			ph.logger.Fatal("⛔ Too many panics - shutting down")
+			logger.Fatal(recoverCtx, "⛔ Too many panics - shutting down")
 		}
 
 		// Optional: try restart
 		if ph.restartFunc != nil {
-			ph.logger.Warn("♻️  Attempting component restart...")
+			logger.Warn(recoverCtx, "♻️  Attempting component restart...")
 			if err := ph.restartFunc(); err != nil {
-				ph.logger.WithError(err).Error("Failed to restart component")
+				logger.WithError(recoverCtx, err).Error("Failed to restart component")
 			}
 		}
 		panicCounter.WithLabelValues(component).Inc()
@@ -105,7 +108,7 @@ func getGoroutineID() uint64 {
 }
 
 func handlePanic(serviceName string, component string) {
-	NewPanicHandler(logger, serviceName).Recover(component)
+	NewPanicHandler(serviceName).Recover(component)
 }
 
 func init() {

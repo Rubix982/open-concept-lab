@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/google/uuid"
 	"github.com/qdrant/go-client/qdrant"
 	"github.com/sirupsen/logrus"
@@ -246,19 +247,19 @@ func NewQdrantClient() (*QdrantClient, error) {
 	return q, nil
 }
 
-func (q *QdrantClient) EnsureCollection(vectorSize uint64) error {
+func (q *QdrantClient) EnsureCollection(collyCtx *colly.Context, vectorSize uint64) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Try to get collection info instead of CollectionExists (more compatible)
 	_, err := q.client.GetCollectionInfo(ctx, q.collection)
 	if err == nil {
-		logger.Infof("Collection %s already exists", q.collection)
+		logger.Infof(collyCtx, "Collection %s already exists", q.collection)
 		return nil
 	}
 
 	// If collection doesn't exist, create it
-	logger.Infof("Creating collection %s with vector size %d", q.collection, vectorSize)
+	logger.Infof(collyCtx, "Creating collection %s with vector size %d", q.collection, vectorSize)
 	err = q.client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: q.collection,
 		VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
@@ -271,29 +272,29 @@ func (q *QdrantClient) EnsureCollection(vectorSize uint64) error {
 		return fmt.Errorf("failed to create collection: %w", err)
 	}
 
-	logger.Infof("✓ Collection %s created successfully", q.collection)
+	logger.Infof(collyCtx, "✓ Collection %s created successfully", q.collection)
 	return nil
 }
 
-func (q *QdrantClient) Upsert(vector []float32, payload map[string]interface{}) error {
+func (q *QdrantClient) Upsert(collyCtx *colly.Context, vector []float32, payload map[string]interface{}) error {
 	// 1. Health check first
-	if err := q.healthCheck.Check(q.client, q.collection); err != nil {
+	if err := q.healthCheck.Check(collyCtx, q.client, q.collection); err != nil {
 		// Log only ONCE per unhealthy period
 		if q.healthCheck.consecutiveFails == 1 {
-			logger.WithError(err).Error("🚨 Qdrant connection unhealthy - skipping upserts")
+			logger.WithError(collyCtx, err).Error("🚨 Qdrant connection unhealthy - skipping upserts")
 		}
 		return fmt.Errorf("qdrant unavailable: %w", err)
 	}
 
 	// 2. Circuit breaker wrapper
-	return q.circuitBreaker.Call(func() error {
-		return q.upsertInternal(vector, payload)
+	return q.circuitBreaker.Call(collyCtx, func() error {
+		return q.upsertInternal(collyCtx, vector, payload)
 	})
 }
 
-func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]interface{}) error {
+func (q *QdrantClient) upsertInternal(collyCtx *colly.Context, vector []float32, payload map[string]interface{}) error {
 	id := uuid.New().String()
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(collyCtx, logrus.Fields{
 		"component":   "qdrant",
 		"operation":   "upsert",
 		"collection":  q.collection,
@@ -313,14 +314,14 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 		payloadKeys = append(payloadKeys, k)
 	}
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(collyCtx, logrus.Fields{
 		"payload_keys":  payloadKeys,
 		"payload_count": len(payload),
 	}).Debug("Payload prepared for upsert")
 
 	// Validate vector
 	if len(vector) == 0 {
-		logger.Error("Empty vector provided for upsert")
+		logger.Error(collyCtx, "Empty vector provided for upsert")
 		return fmt.Errorf("vector cannot be empty")
 	}
 
@@ -341,7 +342,7 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 	}
 	mean := sum / float32(len(vector))
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(collyCtx, logrus.Fields{
 		"vector_min":  minVal,
 		"vector_max":  maxVal,
 		"vector_mean": mean,
@@ -360,7 +361,9 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 		Payload: qdrant.NewValueMap(qPayload),
 	}
 
-	logger.WithField("timeout", "10s").Debug("Executing Qdrant upsert request")
+	logger.WithFields(collyCtx, logrus.Fields{
+		"timeout": "10s",
+	}).Debug("Executing Qdrant upsert request")
 
 	upsertStart := time.Now()
 	shouldWaitOnResponse := true
@@ -385,7 +388,7 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 			errorType = "dimension_mismatch"
 		}
 
-		logger.WithFields(logrus.Fields{
+		logger.WithFields(collyCtx, logrus.Fields{
 			"error":       err.Error(),
 			"error_type":  errorType,
 			"duration_ms": upsertDuration.Milliseconds(),
@@ -395,7 +398,7 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 	}
 
 	// Log success details
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(collyCtx, logrus.Fields{
 		"duration_ms":     upsertDuration.Milliseconds(),
 		"response_status": response.Status.String(),
 		"operation_id":    response.OperationId,
@@ -403,10 +406,10 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 
 	// Additional validation: verify point was inserted
 	if response.String() == "" {
-		logger.Warn("Qdrant upsert returned nil result (unexpected)")
+		logger.Warn(collyCtx, "Qdrant upsert returned nil result (unexpected)")
 	}
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(collyCtx, logrus.Fields{
 		"point_id":    point.Id,
 		"duration_ms": upsertDuration.Milliseconds(),
 	}).Info("✓ Vector upserted to Qdrant")
@@ -417,7 +420,7 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 
 	parsedUUID, err := uuid.Parse(id)
 	if err != nil {
-		logger.WithError(err).Error("Failed to parse UUID for verification")
+		logger.WithError(collyCtx, err).Error("Failed to parse UUID for verification")
 		return fmt.Errorf("uuid parse failed: %w", err)
 	}
 	verifyPoints, err := q.client.Get(ctx2, &qdrant.GetPoints{
@@ -428,16 +431,18 @@ func (q *QdrantClient) upsertInternal(vector []float32, payload map[string]inter
 	})
 
 	if err != nil {
-		logger.WithError(err).Error("Failed to verify point after upsert")
+		logger.WithError(collyCtx, err).Error("Failed to verify point after upsert")
 		return err
 	}
 
 	if len(verifyPoints) == 0 {
-		logger.Error("🚨 Point not found immediately after upsert!")
+		logger.Error(collyCtx, "🚨 Point not found immediately after upsert!")
 		return fmt.Errorf("upsert verification failed: point not persisted")
 	}
 
-	logger.WithField("point_id", id).Debug("✓ Point verified in Qdrant")
+	logger.WithFields(collyCtx, logrus.Fields{
+		"point_id": id,
+	}).Debug("✓ Point verified in Qdrant")
 
 	return nil
 }
@@ -446,13 +451,19 @@ func (q *QdrantClient) LogCollectionInfo() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	qdrantCtx := colly.NewContext()
+	logger.WithFields(qdrantCtx, logrus.Fields{
+		"component":  "qdrant",
+		"operation":  "log_collection_info",
+		"collection": q.collection,
+	})
 	info, err := q.client.GetCollectionClusterInfo(ctx, q.collection)
 	if err != nil {
-		logger.WithError(err).Warn("Failed to fetch Qdrant collection info")
+		logger.WithError(qdrantCtx, err).Warn("Failed to fetch Qdrant collection info")
 		return
 	}
 
-	logger.WithFields(logrus.Fields{
+	logger.WithFields(qdrantCtx, logrus.Fields{
 		"collection":    q.collection,
 		"vectors_count": info.LocalShards,
 		"peer_id":       info.PeerId,
@@ -462,7 +473,7 @@ func (q *QdrantClient) LogCollectionInfo() {
 }
 
 // Health check with exponential backoff
-func (hc *HealthChecker) Check(client *qdrant.Client, collection string) error {
+func (hc *HealthChecker) Check(collyCtx *colly.Context, client *qdrant.Client, collection string) error {
 	hc.mu.Lock()
 	defer hc.mu.Unlock()
 
@@ -496,7 +507,7 @@ func (hc *HealthChecker) Check(client *qdrant.Client, collection string) error {
 		))
 		hc.checkInterval = backoff
 
-		logger.WithFields(logrus.Fields{
+		logger.WithFields(collyCtx, logrus.Fields{
 			"consecutive_fails": hc.consecutiveFails,
 			"next_check_in":     backoff.String(),
 			"error":             err.Error(),
@@ -507,7 +518,9 @@ func (hc *HealthChecker) Check(client *qdrant.Client, collection string) error {
 
 	// Reset on success
 	if hc.consecutiveFails > 0 {
-		logger.WithField("after_fails", hc.consecutiveFails).Info("✓ Qdrant recovered")
+		logger.WithFields(collyCtx, logrus.Fields{
+			"after_fails": hc.consecutiveFails,
+		}).Info("✓ Qdrant recovered")
 	}
 
 	hc.consecutiveFails = 0
@@ -518,7 +531,7 @@ func (hc *HealthChecker) Check(client *qdrant.Client, collection string) error {
 }
 
 // Circuit breaker logic
-func (cb *CircuitBreaker) Call(fn func() error) error {
+func (cb *CircuitBreaker) Call(collyCtx *colly.Context, fn func() error) error {
 	state := cb.state.Load()
 
 	switch state {
@@ -528,7 +541,9 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
 		if time.Since(lastFail) > cb.timeout {
 			// Try half-open
 			cb.state.Store(StateHalfOpen)
-			logger.Info("🔄 Circuit breaker: OPEN → HALF-OPEN")
+			logger.WithFields(collyCtx, logrus.Fields{
+				"state": "OPEN → HALF-OPEN",
+			}).Info("🔄 Circuit breaker")
 		} else {
 			return fmt.Errorf("circuit breaker open (retry after %s)",
 				cb.timeout-time.Since(lastFail))
@@ -540,14 +555,14 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
 		if err == nil {
 			cb.state.Store(StateClosed)
 			cb.failureCount.Store(0)
-			logger.Info("✓ Circuit breaker: HALF-OPEN → CLOSED")
+			logger.Info(collyCtx, "✓ Circuit breaker: HALF-OPEN → CLOSED")
 			return nil
 		}
 
 		// Failed in half-open, back to open
 		cb.state.Store(StateOpen)
 		cb.lastFailure.Store(time.Now().Unix())
-		logger.Warn("❌ Circuit breaker: HALF-OPEN → OPEN")
+		logger.Warn(collyCtx, "❌ Circuit breaker: HALF-OPEN → OPEN")
 		return err
 	}
 
@@ -559,7 +574,9 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
 
 		if count >= cb.threshold {
 			cb.state.Store(StateOpen)
-			logger.WithField("failures", count).Warn("⚠️  Circuit breaker: CLOSED → OPEN")
+			logger.WithFields(collyCtx, logrus.Fields{
+				"failures": count,
+			}).Warn("⚠️  Circuit breaker: CLOSED → OPEN")
 		}
 		return err
 	}

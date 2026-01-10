@@ -7,16 +7,18 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/sirupsen/logrus"
 )
 
 var (
-	logger         *logrus.Logger
+	logger         ContextLogger
 	internalLogger *logrus.Logger // For hook's own logging
 	once           sync.Once
 	LogsRoute      string
@@ -44,6 +46,135 @@ type LoggingCircuitBreaker struct {
 	downMessageLogged atomic.Bool
 	droppedLogs       atomic.Uint64
 	sentLogs          atomic.Uint64
+}
+
+// ContextLogger wraps logrus.Logger and auto-extracts colly.Context fields
+type ContextLogger struct {
+	logger *logrus.Logger
+}
+
+// NewContextLogger creates a logger that auto-includes context fields
+func NewContextLogger(logger *logrus.Logger) *ContextLogger {
+	return &ContextLogger{
+		logger: logger,
+	}
+}
+
+// extractFields uses reflection to extract all k-v pairs from colly.Context
+func (cl *ContextLogger) extractFields(ctx *colly.Context) logrus.Fields {
+	fields := logrus.Fields{}
+
+	if ctx == nil {
+		return fields
+	}
+
+	// colly.Context wraps a *sync.Map in field "contextMap"
+	v := reflect.ValueOf(ctx).Elem()
+	mapField := v.FieldByName("contextMap")
+
+	if !mapField.IsValid() || mapField.IsNil() {
+		return fields
+	}
+
+	// Get the sync.Map
+	syncMap, ok := mapField.Interface().(*sync.Map)
+	if !ok {
+		return fields
+	}
+
+	// Extract all key-value pairs
+	syncMap.Range(func(key, value interface{}) bool {
+		if keyStr, ok := key.(string); ok {
+			fields[keyStr] = value
+		}
+		return true
+	})
+
+	return fields
+}
+
+// Info logs message with all context fields
+func (cl *ContextLogger) Info(ctx *colly.Context, msg string) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Info(msg)
+}
+
+// Infof logs formatted message with all context fields
+func (cl *ContextLogger) Infof(ctx *colly.Context, format string, args ...interface{}) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Infof(format, args...)
+}
+
+// Error logs error with all context fields
+func (cl *ContextLogger) Error(ctx *colly.Context, msg string) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Error(msg)
+}
+
+// Errorf logs formatted error with all context fields
+func (cl *ContextLogger) Errorf(ctx *colly.Context, format string, args ...interface{}) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Errorf(format, args...)
+}
+
+// WithError logs error with err field + context fields
+func (cl *ContextLogger) WithError(ctx *colly.Context, err error) *logrus.Entry {
+	return cl.logger.WithFields(cl.extractFields(ctx)).WithError(err)
+}
+
+// WithField adds additional field on top of context fields
+func (cl *ContextLogger) WithField(ctx *colly.Context, key string, value interface{}) *logrus.Entry {
+	fields := cl.extractFields(ctx)
+	fields[key] = value
+	return cl.logger.WithFields(fields)
+}
+
+// WithFields merges additional fields with context fields
+func (cl *ContextLogger) WithFields(ctx *colly.Context, additionalFields logrus.Fields) *logrus.Entry {
+	fields := cl.extractFields(ctx)
+	for k, v := range additionalFields {
+		fields[k] = v
+	}
+	return cl.logger.WithFields(fields)
+}
+
+// Debug logs debug message with context fields
+func (cl *ContextLogger) Debug(ctx *colly.Context, msg string) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Debug(msg)
+}
+
+// Debugf logs formatted debug message with context fields
+func (cl *ContextLogger) Debugf(ctx *colly.Context, format string, args ...interface{}) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Debugf(format, args...)
+}
+
+// Warn logs warning with context fields
+func (cl *ContextLogger) Warn(ctx *colly.Context, msg string) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Warn(msg)
+}
+
+// Warnf logs formatted warning with context fields
+func (cl *ContextLogger) Warnf(ctx *colly.Context, format string, args ...interface{}) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Warnf(format, args...)
+}
+
+// Fatal logs formatted warning with context fields
+func (cl *ContextLogger) Fatal(ctx *colly.Context, format string) {
+	cl.logger.WithFields(cl.extractFields(ctx)).Fatal(format)
+}
+
+// SetFields sets multiple fields in colly.Context at once
+func (cl *ContextLogger) SetFields(ctx *colly.Context, fields map[string]interface{}) {
+	if ctx == nil {
+		return
+	}
+
+	for key, value := range fields {
+		ctx.Put(key, value)
+	}
+}
+
+// SetField sets a single field (alias for ctx.Put for consistency)
+func (cl *ContextLogger) SetField(ctx *colly.Context, key string, value interface{}) {
+	if ctx != nil {
+		ctx.Put(key, value)
+	}
 }
 
 const (
@@ -298,10 +429,10 @@ func init() {
 		})
 
 		// Main logger (with hooks)
-		logger = logrus.New()
-		logger.SetOutput(os.Stdout)
-		logger.SetLevel(logrus.DebugLevel)
-		logger.SetFormatter(&logrus.TextFormatter{
+		logger := NewContextLogger(logrus.New())
+		logger.logger.SetOutput(os.Stdout)
+		logger.logger.SetLevel(logrus.DebugLevel)
+		logger.logger.SetFormatter(&logrus.TextFormatter{
 			ForceColors:     true,
 			FullTimestamp:   true,
 			TimestampFormat: "15:04:05",
@@ -310,7 +441,7 @@ func init() {
 				return "", fmt.Sprintf(" - %s:%d", filepath.Base(f.File), f.Line)
 			},
 		})
-		logger.SetReportCaller(true)
-		logger.AddHook(NewLoggingServiceHook())
+		logger.logger.SetReportCaller(true)
+		logger.logger.AddHook(NewLoggingServiceHook())
 	})
 }

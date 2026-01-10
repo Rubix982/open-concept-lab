@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )
@@ -25,9 +26,8 @@ type MemoryMonitor struct {
 	lastCheckTime  time.Time
 }
 
-func NewMemoryMonitor(logger *logrus.Logger) *MemoryMonitor {
+func NewMemoryMonitor() *MemoryMonitor {
 	return &MemoryMonitor{
-		logger:        logger,
 		lastCheckTime: time.Now(),
 	}
 }
@@ -35,6 +35,7 @@ func NewMemoryMonitor(logger *logrus.Logger) *MemoryMonitor {
 func (mm *MemoryMonitor) LogMemoryStats() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
+	memCtx := colly.NewContext()
 
 	now := time.Now()
 	elapsed := now.Sub(mm.lastCheckTime).Seconds()
@@ -68,13 +69,13 @@ func (mm *MemoryMonitor) LogMemoryStats() {
 
 	// Alert conditions
 	if heapInUse > 90 {
-		mm.logger.Warn("⚠️  High heap utilization")
+		logger.Warn(memCtx, "⚠️  High heap utilization")
 	}
 	if m.NumGC-mm.lastNumGC > 10 && elapsed < 10 {
-		mm.logger.Warn("⚠️  Excessive GC activity")
+		logger.Warn(memCtx, "⚠️  Excessive GC activity")
 	}
 
-	mm.logger.WithFields(fields).Info("📊 Memory stats")
+	logger.WithFields(memCtx, fields).Info("📊 Memory stats")
 
 	// Update state
 	mm.lastTotalAlloc = m.TotalAlloc
