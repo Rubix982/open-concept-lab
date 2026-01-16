@@ -8,11 +8,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func printBanner() {
+func printBanner(ctx *colly.Context) {
 	banner := `
 
 ██████╗  █████╗ ███╗   ██╗██╗  ██╗    ██╗     ██╗███╗   ██╗██╗  ██╗███████╗██████╗ 
@@ -23,7 +24,7 @@ func printBanner() {
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝    ╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
                                                                                    
 `
-	logger.Infof("%s", banner)
+	logger.Infof(ctx, "%s", banner)
 }
 
 func startMetricsServer() {
@@ -32,15 +33,18 @@ func startMetricsServer() {
 }
 
 func main() {
+	initLogger()
+	mainCtx := colly.NewContext()
+
 	if err := godotenv.Load(); err != nil {
-		logger.Warnf("⚠️  No .env file found, trying .env.local: %v", err)
+		logger.Warnf(mainCtx, "⚠️  No .env file found, trying .env.local: %v", err)
 		if err := godotenv.Load(".env.local"); err != nil {
-			logger.Warnf("⚠️  No .env.local file found either, continuing with system environment variables: %v", err)
+			logger.Warnf(mainCtx, "⚠️  No .env.local file found either, continuing with system environment variables: %v", err)
 		}
 	}
 
-	waitForServices()
-	printBanner()
+	waitForServices(mainCtx)
+	printBanner(mainCtx)
 	startMetricsServer()
 
 	// Setup your HTTP server
@@ -55,31 +59,31 @@ func main() {
 	)
 
 	go func() {
-		logger.Infof("🚀 Server is running on :8080")
+		logger.Infof(mainCtx, "🚀 Server is running on :8080")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatalf("❌ Server error: %v", err)
+			logger.Fatalf(mainCtx, "❌ Server error: %v", err)
 		}
 	}()
 
 	// We cannot couple the migrations with the populate function because state change for the pipelines
 	// are irrespective of whether we are populating the DB or not.
 	// We need to run migrations always when the server starts.
-	if runMigrationsErr := runMigrations(); runMigrationsErr != nil {
-		logger.Errorf("failed to execute migrations: %v", runMigrationsErr)
+	if runMigrationsErr := runMigrations(mainCtx); runMigrationsErr != nil {
+		logger.Errorf(mainCtx, "failed to execute migrations: %v", runMigrationsErr)
 		return
 	}
 
 	// If we actually go to populate the DB, we mark the pipeline as in progress anyways, so
 	// we can mark it as completed here.
-	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
+	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 
 	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
-		populatePostgres()
+		populatePostgres(mainCtx)
 	}
 
 	// Block and wait for shutdown signal
 	sig := <-stop
-	logger.Warnf("⚠️  Received signal: %s — starting graceful shutdown...", sig)
+	logger.Warnf(mainCtx, "⚠️  Received signal: %s — starting graceful shutdown...", sig)
 
 	// Graceful shutdown: stop accepting new connections
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -87,12 +91,12 @@ func main() {
 
 	// Shutdown HTTP server
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Errorf("❌ Server shutdown error: %v", err)
+		logger.Errorf(mainCtx, "❌ Server shutdown error: %v", err)
 	} else {
-		logger.Info("✅ HTTP server stopped gracefully.")
+		logger.Infof(mainCtx, "✅ HTTP server stopped gracefully.")
 	}
 
-	CloseDB()
+	CloseDB(mainCtx)
 
-	logger.Info("👋 Shutdown complete. Exiting now.")
+	logger.Infof(mainCtx, "👋 Shutdown complete. Exiting now.")
 }

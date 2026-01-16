@@ -48,14 +48,24 @@ type LoggingCircuitBreaker struct {
 	sentLogs          atomic.Uint64
 }
 
+type LoggingContextType string
+
+const (
+	LoggingContextTypeLogPrefix     LoggingContextType = "log_prefix"
+	LoggingContextTypeProfessorName LoggingContextType = "prof_name"
+	LoggingContextTypeProfHomepage  LoggingContextType = "prof_homepage"
+	LoggingContextTypeVisitCount    LoggingContextType = "visit_count"
+)
+
 // ContextLogger wraps logrus.Logger and auto-extracts colly.Context fields
 type ContextLogger struct {
 	logger *logrus.Logger
 }
 
 // NewContextLogger creates a logger that auto-includes context fields
-func NewContextLogger(logger *logrus.Logger) *ContextLogger {
-	return &ContextLogger{
+func NewContextLogger(logger *logrus.Logger) ContextLogger {
+	logger.SetReportCaller(true) // Enable caller information
+	return ContextLogger{
 		logger: logger,
 	}
 }
@@ -72,7 +82,11 @@ func (cl *ContextLogger) extractFields(ctx *colly.Context) logrus.Fields {
 	v := reflect.ValueOf(ctx).Elem()
 	mapField := v.FieldByName("contextMap")
 
-	if !mapField.IsValid() || mapField.IsNil() {
+	if !mapField.IsValid() || mapField.IsNil() || mapField.Type() != reflect.TypeOf(&sync.Map{}) || mapField.IsZero() {
+		return fields
+	}
+
+	if !mapField.CanInterface() {
 		return fields
 	}
 
@@ -413,8 +427,12 @@ func (h *LoggingServiceHook) Flush() {
 	h.flush()
 }
 
-// GetLogger returns the singleton logger instance
 func init() {
+	initLogger()
+}
+
+// GetLogger returns the singleton logger instance
+func initLogger() {
 	LogsRoute = fmt.Sprintf("%s/logs/batch", LOGGING_SERVICE_ROUTE)
 	once.Do(func() {
 		// Internal logger (no hooks, just stdout)
@@ -429,7 +447,7 @@ func init() {
 		})
 
 		// Main logger (with hooks)
-		logger := NewContextLogger(logrus.New())
+		logger = NewContextLogger(logrus.New())
 		logger.logger.SetOutput(os.Stdout)
 		logger.logger.SetLevel(logrus.DebugLevel)
 		logger.logger.SetFormatter(&logrus.TextFormatter{

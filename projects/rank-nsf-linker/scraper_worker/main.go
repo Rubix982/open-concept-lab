@@ -85,6 +85,7 @@ func startMetricsServer() {
 }
 
 func main() {
+	initLogger()
 	defer handlePanic(MAIN_GO_ROUTINE_NAME, MAIN_GO_ROUTINE_RECOVER_ID)
 
 	mainCtx := colly.NewContext()

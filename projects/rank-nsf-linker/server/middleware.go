@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/gocolly/colly/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )
@@ -23,7 +24,7 @@ func (w *statusResponseWriter) WriteHeader(code int) {
 }
 
 func LogRequest(r *http.Request, remote string, status int, duration time.Duration) *logrus.Entry {
-	return logger.WithFields(logrus.Fields{
+	return logger.WithFields(colly.NewContext(), logrus.Fields{
 		"method":   r.Method,
 		"path":     r.URL.Path,
 		"remote":   remote,
@@ -48,7 +49,7 @@ func RequestLogger(next http.Handler) http.Handler {
 
 func PreventRequestIfPipelineIsNotCompleted(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pipelineStatus := GetPipelineStatus(cast.ToString(PIPELINE_POPULATE_POSTGRES))
+		pipelineStatus := GetPipelineStatus(colly.NewContext(), cast.ToString(PIPELINE_POPULATE_POSTGRES))
 		if pipelineStatus == cast.ToString(PIPELINE_STATUS_COMPLETED) {
 			next.ServeHTTP(w, r)
 			return

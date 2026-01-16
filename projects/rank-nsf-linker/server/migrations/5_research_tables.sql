@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS scrape_queue (
 
 CREATE INDEX IF NOT EXISTS idx_scrape_queue_status ON scrape_queue(status);
 
-ALTER TABLE scrape_queue ADD COLUMN worker_id TEXT;
+ALTER TABLE scrape_queue ADD COLUMN IF NOT EXISTS worker_id TEXT;
 
 -- Prevent duplicate processing attempts
-CREATE UNIQUE INDEX idx_processing_job ON scrape_queue(professor_name, url) WHERE status = 'processing';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_processing_job ON scrape_queue(professor_name, url) WHERE status = 'processing';

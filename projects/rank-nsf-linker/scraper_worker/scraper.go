@@ -166,9 +166,9 @@ func NewScraper() *Scraper {
 }
 
 func (s *Scraper) setupOnHtmlHandlers() {
-	logPrefix := s.scraperCtx.Get("log_prefix")
-	profName := s.scraperCtx.Get("prof_name")
-	profHomepage := s.scraperCtx.Get("prof_homepage")
+	logPrefix := s.scraperCtx.Get(string(LoggingContextTypeLogPrefix))
+	profName := s.scraperCtx.Get(string(LoggingContextTypeProfessorName))
+	profHomepage := s.scraperCtx.Get(string(LoggingContextTypeProfHomepage))
 	s.collector.OnHTML("html", func(e *colly.HTMLElement) {
 		// Clean DOM: Remove boilerplate
 		e.DOM.Find("script, style, noscript, iframe, nav, footer, header, aside, .nav, .footer, .header, .menu").Remove()
@@ -425,11 +425,11 @@ func (s *Scraper) setupOnRequestHandlers() {
 	})
 
 	s.collector.OnRequest(func(r *colly.Request) {
-		logPrefix := s.scraperCtx.Get("log_prefix")
-		visitCount := cast.ToInt(s.scraperCtx.Get("visit_count"))
-		profName := s.scraperCtx.Get("prof_name")
+		logPrefix := s.scraperCtx.Get(string(LoggingContextTypeLogPrefix))
+		visitCount := cast.ToInt(s.scraperCtx.Get(string(LoggingContextTypeVisitCount)))
+		profName := s.scraperCtx.Get(string(LoggingContextTypeProfessorName))
 		visitCount++
-		s.scraperCtx.Put("visit_count", visitCount)
+		s.scraperCtx.Put(string(LoggingContextTypeVisitCount), cast.ToString(visitCount))
 		if visitCount > MAX_PAGES {
 			logger.Infof(s.scraperCtx, "%s Reached max pages (%d), stopping crawl for %s", logPrefix, MAX_PAGES, profName)
 			r.Abort()
@@ -442,6 +442,12 @@ func (s *Scraper) setupOnRequestHandlers() {
 func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]ScrapedContent, error) {
 	// Check cache first (with TTL)
 	logPrefix := fmt.Sprintf("[Worker %d] -", workerID+1)
+
+	// Page count limiter
+	s.scraperCtx.Put(string(LoggingContextTypeVisitCount), "0")
+	s.scraperCtx.Put(string(LoggingContextTypeProfessorName), prof.Name)
+	s.scraperCtx.Put(string(LoggingContextTypeLogPrefix), logPrefix)
+
 	safeName := strings.ReplaceAll(prof.Name, "/", "_")
 	safeName = strings.ReplaceAll(safeName, " ", "_")
 	cachePath := filepath.Join(getScrapedDataFilePath(), safeName+".json")
@@ -452,34 +458,28 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 			if err == nil {
 				var cached []ScrapedContent
 				if err := json.Unmarshal(content, &cached); err == nil {
-					logger.Infof(s.scraperCtx, "%s - ✓ Cache hit for %s (age: %v)", logPrefix, prof.Name,
+					logger.Infof(s.scraperCtx, "%s ✓ Cache hit for %s (age: %v)", logPrefix, prof.Name,
 						time.Since(info.ModTime()).Round(time.Hour))
 					return cached, nil
 				}
 			}
 		} else {
-			logger.Infof(s.scraperCtx, "%s - Cache expired for %s, re-scraping", logPrefix, prof.Name)
+			logger.Infof(s.scraperCtx, "%s Cache expired for %s, re-scraping", logPrefix, prof.Name)
 		}
 	}
 
 	// Check if this is a Google Site
 	if strings.Contains(prof.Homepage, "sites.google.com") {
-		logger.Infof(s.scraperCtx, "%s - 🌐 Detected Google Site, using browser scraper", logPrefix)
+		logger.Infof(s.scraperCtx, "%s 🌐 Detected Google Site, using browser scraper", logPrefix)
 		return s.scrapeGoogleSiteProfile(workerID, prof)
 	}
 
-	// Page count limiter
-	visitCount := 0
-	s.scraperCtx.Put("visit_count", visitCount)
-	s.scraperCtx.Put("prof_name", prof.Name)
-	s.scraperCtx.Put("log_prefix", logPrefix)
-
 	// Visit homepage
-	logger.Infof(s.scraperCtx, "%s - 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
+	logger.Infof(s.scraperCtx, "%s 🕷️ Scraping homepage: %s", logPrefix, prof.Homepage)
 	err := s.collector.Visit(prof.Homepage)
 	if err != nil {
 		if strings.Contains(err.Error(), "already visited") {
-			logger.Warnf(s.scraperCtx, "%s - Skipping homepage visit as already visited: %s", logPrefix, prof.Homepage)
+			logger.Warnf(s.scraperCtx, "%s Skipping homepage visit as already visited: %s", logPrefix, prof.Homepage)
 			return nil, nil
 		}
 		return nil, fmt.Errorf("failed to visit homepage: %w", err)
@@ -489,19 +489,19 @@ func (s *Scraper) ScrapeProfessor(workerID int, prof ProfessorProfile) ([]Scrape
 
 	// Check if we got any content
 	if len(s.contents) == 0 {
-		logger.Infof(s.scraperCtx, "%s - No content extracted for %s", logPrefix, prof.Name)
+		logger.Infof(s.scraperCtx, "%s No content extracted for %s", logPrefix, prof.Name)
 		return nil, fmt.Errorf("no content extracted from %s", prof.Homepage)
 	}
 
 	// Save to cache
 	data, err := json.MarshalIndent(s.contents, "", "  ")
 	if err != nil {
-		logger.Errorf(s.scraperCtx, "%s - Failed to marshal cache for %s: %v", logPrefix, prof.Name, err)
+		logger.Errorf(s.scraperCtx, "%s Failed to marshal cache for %s: %v", logPrefix, prof.Name, err)
 	} else {
 		if err := os.WriteFile(cachePath, data, 0644); err != nil {
 			logger.Errorf(s.scraperCtx, "%s - Failed to write cache for %s: %v", logPrefix, prof.Name, err)
 		} else {
-			logger.Infof(s.scraperCtx, "%s - 💾 Saved cache for %s (%d pages, %d total chars)", logPrefix,
+			logger.Infof(s.scraperCtx, "%s 💾 Saved cache for %s (%d pages, %d total chars)", logPrefix,
 				prof.Name, len(s.contents), len(s.contents))
 		}
 	}

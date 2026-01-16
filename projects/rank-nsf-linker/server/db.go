@@ -17,6 +17,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	pq "github.com/lib/pq"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"golang.org/x/text/cases"
@@ -96,24 +97,24 @@ func InitPostgres() (*sql.DB, error) {
 }
 
 // Close gracefully closes the global database connection pool.
-func CloseDB() {
+func CloseDB(ctx *colly.Context) {
 	if globalDB == nil {
 		return // nothing to close
 	}
 
 	// Optionally: give it a small timeout to allow in-flight queries to finish
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	dbCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Use PingContext to make sure DB is responsive before shutdown
-	if err := globalDB.PingContext(ctx); err != nil {
-		logger.Infof("⚠️ Database not reachable during shutdown: %v", err)
+	if err := globalDB.PingContext(dbCtx); err != nil {
+		logger.Infof(ctx, "⚠️ Database not reachable during shutdown: %v", err)
 	}
 
 	if err := globalDB.Close(); err != nil {
-		logger.Errorf("❌ Failed to close database cleanly: %v", err)
+		logger.Errorf(ctx, "❌ Failed to close database cleanly: %v", err)
 	} else {
-		logger.Infof("✅ Database connection pool closed cleanly.")
+		logger.Infof(ctx, "✅ Database connection pool closed cleanly.")
 	}
 
 	globalDB = nil
@@ -133,7 +134,7 @@ func GetDB() (*sql.DB, error) {
 }
 
 // RunMigrations executes all .sql files in order
-func runMigrations() error {
+func runMigrations(ctx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -157,7 +158,7 @@ func runMigrations() error {
 
 	for _, fname := range sqlFiles {
 		path := filepath.Join(MIGRATIONS_DIR, fname)
-		logger.Printf("🧩 Running migration: %s", fname)
+		logger.Infof(ctx, "🧩 Running migration: %s", fname)
 
 		sqlContent, err := os.ReadFile(path)
 		if err != nil {
@@ -168,7 +169,7 @@ func runMigrations() error {
 			return fmt.Errorf("failed to execute migration %s: %w", fname, err)
 		}
 
-		logger.Printf("✅ Successfully ran: %s", fname)
+		logger.Infof(ctx, "✅ Successfully ran: %s", fname)
 	}
 
 	return nil
@@ -187,7 +188,7 @@ func getAlternateTableName(tableName string) string {
 	return tableName
 }
 
-func populatePostgresFromCSVs() error {
+func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -203,28 +204,28 @@ func populatePostgresFromCSVs() error {
 		backupPath := filepath.Join(getRootDirPath(BACKUP_DIR), csvName)
 		primaryKey := primaryKeyAgainstTable[tableName]
 
-		logger.Infof("📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
+		logger.Infof(mainCtx, "📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
 			csvName, primaryKey, tableName)
 
-		original, headers, err := readCSVAsMap(originalPath, primaryKey)
+		original, headers, err := readCSVAsMap(mainCtx, originalPath, primaryKey)
 		if err != nil {
-			logger.Errorf("❌ Failed to read original CSV: %v", err)
+			logger.Errorf(mainCtx, "❌ Failed to read original CSV: %v", err)
 			return err
 		}
 		headers = cleanHeaders(tableName, headers)
-		logger.Infof("✅ Read original CSV: %d records", len(original))
+		logger.Infof(mainCtx, "✅ Read original CSV: %d records", len(original))
 
 		backup := make(map[string][]string)
 		if _, err := os.Stat(backupPath); err == nil {
-			logger.Infof("🕒 Backup file found: %s", backupPath)
-			backup, _, err = readCSVAsMap(backupPath, primaryKey)
+			logger.Infof(mainCtx, "🕒 Backup file found: %s", backupPath)
+			backup, _, err = readCSVAsMap(mainCtx, backupPath, primaryKey)
 			if err != nil {
-				logger.Errorf("❌ Failed to read backup CSV: %v", err)
+				logger.Errorf(mainCtx, "❌ Failed to read backup CSV: %v", err)
 				return err
 			}
-			logger.Infof("✅ Read backup CSV: %d records", len(backup))
+			logger.Infof(mainCtx, "✅ Read backup CSV: %d records", len(backup))
 		} else {
-			logger.Warnf("⚠️ No backup file found for: %s", backupPath)
+			logger.Warnf(mainCtx, "⚠️ No backup file found for: %s", backupPath)
 		}
 
 		// Merge backup + original
@@ -232,8 +233,8 @@ func populatePostgresFromCSVs() error {
 		maps.Copy(merged, backup)
 		maps.Copy(merged, original)
 
-		logger.Infof("📦 Merged total records: %d", len(merged))
-		logger.Infof("⬇️ Inserting into Postgres table: %s", tableName)
+		logger.Infof(mainCtx, "📦 Merged total records: %d", len(merged))
+		logger.Infof(mainCtx, "⬇️ Inserting into Postgres table: %s", tableName)
 
 		if originalTableName == "geolocation" {
 			/// Special case to merge country-info universities with geolocation into a single table
@@ -248,18 +249,19 @@ func populatePostgresFromCSVs() error {
 					return fmt.Errorf("failed to upsert university row (institution=%s): %w", row[0], err)
 				}
 			}
-		} else if err := insertIntoPostgres(db, tableName, headers, merged); err != nil {
-			logger.Errorf("❌ Failed inserting into Postgres: %v", err)
+		} else if err := insertIntoPostgres(mainCtx, db, tableName, headers, merged); err != nil {
+			logger.Errorf(mainCtx, "❌ Failed inserting into Postgres: %v", err)
 			return err
 		}
 
-		logger.Infof("✅ Done inserting into %s\n", tableName)
+		logger.Infof(mainCtx, "✅ Done inserting into %s\n", tableName)
 	}
 
 	return nil
 }
 
 func insertIntoPostgres(
+	mainCtx *colly.Context,
 	db *sql.DB,
 	tableName string,
 	headers []string,
@@ -300,22 +302,23 @@ func insertIntoPostgres(
 		}
 
 		if _, err := stmt.Exec(vals...); err != nil {
-			logger.Errorf("❌ Insert failed: %v. Row: %v", err, vals)
+			logger.Errorf(mainCtx, "❌ Insert failed: %v. Row: %v", err, vals)
 			continue
 		}
 		count++
 	}
 
-	logger.Infof("✅ Inserted %d rows into table %s", count, tableName)
+	logger.Infof(mainCtx, "✅ Inserted %d rows into table %s", count, tableName)
 	return nil
 }
 
 // Helper: Read CSV as map of primaryKey -> row
 func readCSVAsMap(
+	mainCtx *colly.Context,
 	filePath string,
 	primaryKey string,
 ) (map[string][]string, []string, error) {
-	logger.Infof("📥 Reading CSV: %s", filePath)
+	logger.Infof(mainCtx, "📥 Reading CSV: %s", filePath)
 
 	f, err := os.Open(filePath)
 	if err != nil {
@@ -343,7 +346,7 @@ func readCSVAsMap(
 		headers[i] = clean(h)
 	}
 
-	logger.Infof("📌 Cleaned headers: %v", headers)
+	logger.Infof(mainCtx, "📌 Cleaned headers: %v", headers)
 
 	index := -1
 	primaryKey = clean(primaryKey)
@@ -362,7 +365,7 @@ func readCSVAsMap(
 	skipped := 0
 	for i, row := range rows[1:] {
 		if len(row) != len(headers) {
-			logger.Warnf("⚠️ Skipping malformed row %d: wrong length", i+1)
+			logger.Warnf(mainCtx, "⚠️ Skipping malformed row %d: wrong length", i+1)
 			skipped++
 			continue
 		}
@@ -371,20 +374,20 @@ func readCSVAsMap(
 	}
 
 	if skipped > 0 {
-		logger.Warnf("⚠️ Skipped %d malformed rows from %s", skipped, filePath)
+		logger.Warnf(mainCtx, "⚠️ Skipped %d malformed rows from %s", skipped, filePath)
 	}
 
 	return out, headers, nil
 }
 
-func populatePostgresFromNsfJsons() error {
+func populatePostgresFromNsfJsons(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	internalContainerPath := path.Join(getRootDirPath(DATA_DIR), NSF_DATA_DIR)
-	logger.Infof("🚀 Starting NSF JSON population from: %s", internalContainerPath)
+	logger.Infof(mainCtx, "🚀 Starting NSF JSON population from: %s", internalContainerPath)
 
 	var wg sync.WaitGroup
 
@@ -393,41 +396,46 @@ func populatePostgresFromNsfJsons() error {
 
 		go func(year int) {
 			defer wg.Done()
-			processNsfAwardPerYear(internalContainerPath, year, db)
+			processNsfAwardPerYear(mainCtx, internalContainerPath, year, db)
 		}(year)
 	}
 
 	wg.Wait()
 
-	logger.Infof("🎉 NSF JSON population completed successfully.")
+	logger.Infof(mainCtx, "🎉 NSF JSON population completed successfully.")
 	return nil
 }
 
-func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) {
+func processNsfAwardPerYear(
+	mainCtx *colly.Context,
+	internalContainerPath string,
+	year int,
+	db *sql.DB,
+) {
 	path := filepath.Join(internalContainerPath, fmt.Sprintf("%d", year))
 	files, err := os.ReadDir(path)
 	if err != nil {
-		logger.Errorf("❌ Failed to read directory %s: %v", path, err)
+		logger.Errorf(mainCtx, "❌ Failed to read directory %s: %v", path, err)
 		return
 	}
 
-	logger.Infof("📂 Processing %d JSON files for year %d", len(files), year)
+	logger.Infof(mainCtx, "📂 Processing %d JSON files for year %d", len(files), year)
 	var nsfJsonData NsfJsonData
 
 	for _, file := range files {
 		filePath := filepath.Join(path, file.Name())
 		rawBytes, err := os.ReadFile(filePath)
 		if err != nil {
-			logger.Warnf("⚠️  Skipping file (read error): %s (%v)", filePath, err)
+			logger.Warnf(mainCtx, "⚠️  Skipping file (read error): %s (%v)", filePath, err)
 			continue
 		}
 
 		if err := json.Unmarshal(rawBytes, &nsfJsonData); err != nil {
-			logger.Warnf("⚠️  Skipping file (parse error): %s (%v)", filePath, err)
+			logger.Warnf(mainCtx, "⚠️  Skipping file (parse error): %s (%v)", filePath, err)
 			continue
 		}
 
-		logger.Infof("➡️  Processing award: %s", nsfJsonData.AwdId)
+		logger.Infof(mainCtx, "➡️  Processing award: %s", nsfJsonData.AwdId)
 		nsfJsonData = cleanNsfJsonData(nsfJsonData)
 		region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
 
@@ -448,7 +456,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 			institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
 			region, countryabbrv)
 		if err != nil {
-			logger.Warnf("⚠️  University upsert failed (%s, normalized '%s'): %v", originalInstName, institute.Name, err)
+			logger.Warnf(mainCtx, "⚠️  University upsert failed (%s, normalized '%s'): %v", originalInstName, institute.Name, err)
 			continue
 		}
 
@@ -464,7 +472,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 			nsfJsonData.OrganizationDirectorateLongName, nsfJsonData.DivisionAbbreviation,
 			nsfJsonData.OrganizationDivisionLongName).Scan(&directorateDivisionId)
 		if err != nil {
-			logger.Warnf("⚠️  Directorate/division upsert failed: %v", err)
+			logger.Warnf(mainCtx, "⚠️  Directorate/division upsert failed: %v", err)
 			continue
 		}
 
@@ -480,7 +488,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 		err = db.QueryRow(programOfficerQuery, nsfJsonData.PoSignBlockName,
 			nsfJsonData.PoPhoneNumber, nsfJsonData.PoEmailNumber).Scan(&programOfficerId)
 		if err != nil {
-			logger.Warnf("⚠️  Program officer upsert failed: %v", err)
+			logger.Warnf(mainCtx, "⚠️  Program officer upsert failed: %v", err)
 			continue
 		}
 
@@ -535,7 +543,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 			institute.Name, institute.Name, htmlContent, rawContent,
 		}
 		if _, err = db.Exec(awardInsertQuery, awardValues...); err != nil {
-			logger.Warnf("⚠️  Award upsert failed (%s): %v", nsfJsonData.AwdId, err)
+			logger.Warnf(mainCtx, "⚠️  Award upsert failed (%s): %v", nsfJsonData.AwdId, err)
 			continue
 		}
 
@@ -545,7 +553,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
 				`, nsfJsonData.AwdId, pe.ProgramElementCode, pe.ProgramElementName); err != nil {
-				logger.Warnf("⚠️  Program element upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Program element upsert failed: %v", err)
 			}
 		}
 
@@ -555,7 +563,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name;
 				`, nsfJsonData.AwdId, pr.ProgramReferenceCode, pr.ProgramReferenceName); err != nil {
-				logger.Warnf("⚠️  Program reference upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Program reference upsert failed: %v", err)
 			}
 		}
 
@@ -565,7 +573,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					VALUES ($1, $2, $3, $4, $5, $6, $7)
 					ON CONFLICT (award_id, code) DO UPDATE SET name = EXCLUDED.name, symbol_id = EXCLUDED.symbol_id;
 				`, nsfJsonData.AwdId, af.ApplicationCode, af.ApplicationName, af.ApplicationSymbolId, af.FundingCode, af.FundingName, af.FundingSymbolId); err != nil {
-				logger.Warnf("⚠️  Application funding upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Application funding upsert failed: %v", err)
 			}
 		}
 
@@ -575,7 +583,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					VALUES ($1, $2, $3)
 					ON CONFLICT (award_id, fiscal_year) DO UPDATE SET funding_amount = EXCLUDED.funding_amount;
 				`, nsfJsonData.AwdId, fy.FiscalYear, fy.AmountObligated); err != nil {
-				logger.Warnf("⚠️  Fiscal year funding upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Fiscal year funding upsert failed: %v", err)
 			}
 		}
 
@@ -585,7 +593,7 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 					VALUES ($1, $2, $3)
 					ON CONFLICT (name) DO UPDATE SET nsf_id = EXCLUDED.nsf_id;
 				`, pi.Name, normalizeInstitutionName(nsfJsonData.PerformingInsitute.InstituteName), pi.NSFId); err != nil {
-				logger.Warnf("⚠️  Professor upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Professor upsert failed: %v", err)
 			}
 
 			if _, err = db.Exec(`
@@ -596,11 +604,11 @@ func processNsfAwardPerYear(internalContainerPath string, year int, db *sql.DB) 
 						pi_start_date = EXCLUDED.pi_start_date,
 						pi_end_date = EXCLUDED.pi_end_date;
 				`, nsfJsonData.AwdId, pi.Name, pi.Role, pi.StartDate, pi.EndDate); err != nil {
-				logger.Warnf("⚠️  Award-PI relationship upsert failed: %v", err)
+				logger.Warnf(mainCtx, "⚠️  Award-PI relationship upsert failed: %v", err)
 			}
 		}
 
-		logger.Infof("✅ Successfully processed award %s (%d)", nsfJsonData.AwdId, year)
+		logger.Infof(mainCtx, "✅ Successfully processed award %s (%d)", nsfJsonData.AwdId, year)
 	}
 }
 
@@ -667,37 +675,38 @@ func getRegionAndCountry(country string) (string, string) {
 	}
 }
 
-func populatePostgresFromScriptCaches() error {
+func populatePostgresFromScriptCaches(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	internalContainerPath := path.Join(getRootDirPath(SCRIPTS_DIR), GEOCODING_DIR)
-	logger.Infof("🚀 Starting script cache population from: %s", internalContainerPath)
+	logger.Infof(mainCtx, "🚀 Starting script cache population from: %s", internalContainerPath)
 
 	// Paths
 	geoCodedCachePath := path.Join(internalContainerPath, "geocoded_cache.csv")
 	reverseGeoCodedCachePath := path.Join(internalContainerPath, "reverse_geocoded_cache.csv")
 
 	// 1️⃣ Handle geocoded cache first
-	if err := syncCSVToDB(db, geoCodedCachePath); err != nil {
-		logger.Errorf("❌ Failed to sync geocoded cache: %v", err)
+	if err := syncCSVToDB(mainCtx, db, geoCodedCachePath); err != nil {
+		logger.Errorf(mainCtx, "❌ Failed to sync geocoded cache: %v", err)
 		return err
 	}
 
 	// 2️⃣ Then reverse-geocoded cache
-	if err := syncCSVToDB(db, reverseGeoCodedCachePath); err != nil {
-		logger.Errorf("❌ Failed to sync reverse geocoded cache: %v", err)
+	if err := syncCSVToDB(mainCtx, db, reverseGeoCodedCachePath); err != nil {
+		logger.Errorf(mainCtx, "❌ Failed to sync reverse geocoded cache: %v", err)
 		return err
 	}
 
-	logger.Infof("✅ Completed populating script caches into Postgres")
+	logger.Infof(mainCtx, "✅ Completed populating script caches into Postgres")
 	return nil
 }
 
 // syncCSVToDB reads a CSV file and upserts it into the given table
 func syncCSVToDB(
+	mainCtx *colly.Context,
 	db *sql.DB,
 	filePath string,
 ) error {
@@ -716,12 +725,12 @@ func syncCSVToDB(
 	}
 
 	if len(records) < 1 {
-		logger.Warnf("⚠️ CSV %s is empty, skipping", filePath)
+		logger.Warnf(mainCtx, "⚠️ CSV %s is empty, skipping", filePath)
 		return nil
 	}
 
 	header := records[0]
-	logger.Infof("📄 Found %d rows (excluding header) in %s", len(records)-1, filepath.Base(filePath))
+	logger.Infof(mainCtx, "📄 Found %d rows (excluding header) in %s", len(records)-1, filepath.Base(filePath))
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -745,7 +754,7 @@ func syncCSVToDB(
 		}
 
 		if _, err := stmt.Exec(args...); err != nil {
-			logger.Warnf("⚠️ Row %d failed to insert: %v", i+2, err)
+			logger.Warnf(mainCtx, "⚠️ Row %d failed to insert: %v", i+2, err)
 			continue
 		}
 	}
@@ -754,7 +763,7 @@ func syncCSVToDB(
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	logger.Infof("✅ Synced %s into database successfully", filepath.Base(filePath))
+	logger.Infof(mainCtx, "✅ Synced %s into database successfully", filepath.Base(filePath))
 	return nil
 }
 
@@ -779,7 +788,7 @@ func buildUpsertQuery(columns []string) string {
 	`, colList, strings.Join(paramList, ", "), columns[0], strings.Join(updateList, ", "))
 }
 
-func clearFinalDataStatesInPostgres() error {
+func clearFinalDataStatesInPostgres(mainCtx *colly.Context) error {
 	// Select all rows from the table 'universities' where 'region' or 'countryabbrv' is null
 	// Check the 'country' column value, and update the two values appropriately
 	db, err := GetDB()
@@ -813,12 +822,12 @@ func clearFinalDataStatesInPostgres() error {
 		return fmt.Errorf("failed to update universities table: %w", err)
 	}
 
-	logger.Infof("✅ Cleared final data states in Postgres successfully")
+	logger.Infof(mainCtx, "✅ Cleared final data states in Postgres successfully")
 
 	return nil
 }
 
-func populateHomepagesAgainstUniversities() error {
+func populateHomepagesAgainstUniversities(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -908,18 +917,18 @@ func populateHomepagesAgainstUniversities() error {
 
 	for _, u := range updates {
 		if _, err := stmt.Exec(u.homepage, u.institution); err != nil {
-			logger.Warnf("⚠️ Failed to update %s: %v", u.institution, err)
+			logger.Warnf(mainCtx, "⚠️ Failed to update %s: %v", u.institution, err)
 		}
 	}
 	if err := tx.Commit(); err != nil {
 		return err
 	}
 
-	logger.Infof("✅ Updated %d institutions (%d fuzzy matched, %d skipped)", updated, fuzzyMatched, skipped)
+	logger.Infof(mainCtx, "✅ Updated %d institutions (%d fuzzy matched, %d skipped)", updated, fuzzyMatched, skipped)
 	return nil
 }
 
-func syncProfessorsAffiliationsToUniversities() error {
+func syncProfessorsAffiliationsToUniversities(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -938,7 +947,7 @@ func syncProfessorsAffiliationsToUniversities() error {
 	for rows.Next() {
 		var name, affiliation string
 		if err := rows.Scan(&name, &affiliation); err != nil {
-			logger.Warnf("⚠️ Failed to scan professor row: %v", err)
+			logger.Warnf(mainCtx, "⚠️ Failed to scan professor row: %v", err)
 			continue
 		}
 		professors = append(professors, map[string]string{
@@ -984,24 +993,24 @@ func syncProfessorsAffiliationsToUniversities() error {
 			`, normalizedAffiliation).Scan(&matchedInstitution)
 
 			if err == sql.ErrNoRows {
-				logger.Warnf("⚠️ No match found for professor '%s' with affiliation '%s'", profName, affiliation)
+				logger.Warnf(mainCtx, "⚠️ No match found for professor '%s' with affiliation '%s'", profName, affiliation)
 				// We should insert the affiliation as a new university
 				_, insertErr := db.Exec(`INSERT INTO universities (institution) VALUES ($1) ON CONFLICT (institution) DO NOTHING;`, normalizedAffiliation)
 				if insertErr != nil {
-					logger.Warnf("⚠️ Failed to insert new university for affiliation '%s': %v", normalizedAffiliation, insertErr)
+					logger.Warnf(mainCtx, "⚠️ Failed to insert new university for affiliation '%s': %v", normalizedAffiliation, insertErr)
 					atomic.AddInt64(&skipped, 1)
 					return
 				}
 				matchedInstitution = normalizedAffiliation
-				logger.Infof("➕ Added new university for affiliation '%s'", normalizedAffiliation)
+				logger.Infof(mainCtx, "➕ Added new university for affiliation '%s'", normalizedAffiliation)
 			} else if err != nil {
-				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
+				logger.Warnf(mainCtx, "⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
 
 			if err != nil {
-				logger.Warnf("⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
+				logger.Warnf(mainCtx, "⚠️ Fuzzy match failed for professor '%s' with affiliation '%s': %v", profName, affiliation, err)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
@@ -1009,7 +1018,7 @@ func syncProfessorsAffiliationsToUniversities() error {
 			// Update professor's affiliation to the matched institution
 			_, err = db.Exec(`UPDATE professors SET affiliation = $1 WHERE name = $2`, matchedInstitution, profName)
 			if err != nil {
-				logger.Warnf("⚠️ Failed to update professor '%s' affiliation: %v", profName, err)
+				logger.Warnf(mainCtx, "⚠️ Failed to update professor '%s' affiliation: %v", profName, err)
 				atomic.AddInt64(&skipped, 1)
 				return
 			}
@@ -1020,12 +1029,12 @@ func syncProfessorsAffiliationsToUniversities() error {
 
 	wg.Wait()
 
-	logger.Infof("✅ Synchronized affiliations for %d professors (%d skipped)", updated, skipped)
+	logger.Infof(mainCtx, "✅ Synchronized affiliations for %d professors (%d skipped)", updated, skipped)
 
 	return nil
 }
 
-func syncProfessorInterestsToProfessorsAndUniversities() error {
+func syncProfessorInterestsToProfessorsAndUniversities(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -1061,7 +1070,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 	defer func() {
 		_, err := db.Exec(`DROP TABLE IF EXISTS staging_professor_areas;`)
 		if err != nil {
-			logger.Warnf("⚠️ Failed to drop staging table: %v", err)
+			logger.Warnf(mainCtx, "⚠️ Failed to drop staging table: %v", err)
 		}
 	}()
 
@@ -1086,7 +1095,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 			break
 		}
 		if err != nil {
-			logger.Warnf("⚠️ Skipping invalid row: %v", err)
+			logger.Warnf(mainCtx, "⚠️ Skipping invalid row: %v", err)
 			continue
 		}
 
@@ -1102,7 +1111,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 		year := strings.TrimSpace(row[5])
 
 		if name == "" || affiliation == "" || area == "" || count == "" || adjustedCount == "" || year == "" {
-			logger.Warnf("⚠️ Skipped invalid row: %v", row)
+			logger.Warnf(mainCtx, "⚠️ Skipped invalid row: %v", row)
 			continue
 		}
 
@@ -1113,7 +1122,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 		if len(batch) >= batchSize {
 			for _, r := range batch {
 				if _, err := stmt.Exec(r...); err != nil {
-					logger.Warnf("⚠️ Failed to add row to staging table: %v", err)
+					logger.Warnf(mainCtx, "⚠️ Failed to add row to staging table: %v", err)
 				}
 			}
 			batch = batch[:0]
@@ -1123,7 +1132,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 	// Insert remaining rows
 	for _, r := range batch {
 		if _, err := stmt.Exec(r...); err != nil {
-			logger.Warnf("⚠️ Failed to add row to staging table: %v", err)
+			logger.Warnf(mainCtx, "⚠️ Failed to add row to staging table: %v", err)
 		}
 	}
 
@@ -1139,7 +1148,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
 
-	logger.Infof("✅ Copied %d valid rows into staging table", validRows)
+	logger.Infof(mainCtx, "✅ Copied %d valid rows into staging table", validRows)
 
 	// Batch UPSERT into final table
 	const upsertBatchSize = 1000
@@ -1180,12 +1189,12 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 			var year int
 
 			if err := rows.Scan(&name, &affiliation, &area, &count, &adjustedCount, &year); err != nil {
-				logger.Warnf("⚠️ Failed to scan row for upsert: %v", err)
+				logger.Warnf(mainCtx, "⚠️ Failed to scan row for upsert: %v", err)
 				continue
 			}
 
 			if _, err := stmtUpsert.Exec(name, affiliation, area, count, adjustedCount, year); err != nil {
-				logger.Warnf("⚠️ Failed to upsert row: %v", err)
+				logger.Warnf(mainCtx, "⚠️ Failed to upsert row: %v", err)
 				continue
 			}
 			batchCount++
@@ -1207,7 +1216,7 @@ func syncProfessorInterestsToProfessorsAndUniversities() error {
 		offset += batchCount
 	}
 
-	logger.Infof("✅ Synchronized professor interests successfully from CSV")
+	logger.Infof(mainCtx, "✅ Synchronized professor interests successfully from CSV")
 	return nil
 }
 
@@ -1296,14 +1305,14 @@ func buildUniversityNormalizationMap(duplicateGroups map[string][]string) map[st
 
 // normalizeUniversityReferences updates all foreign key references to use canonical university names.
 // This ensures data consistency before removing duplicate university entries.
-func normalizeUniversityReferences(normalizationMap map[string]string) error {
+func normalizeUniversityReferences(mainCtx *colly.Context, normalizationMap map[string]string) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	if len(normalizationMap) == 0 {
-		logger.Infof("ℹ️ No university name normalization needed")
+		logger.Infof(mainCtx, "ℹ️ No university name normalization needed")
 		return nil
 	}
 
@@ -1324,7 +1333,7 @@ func normalizeUniversityReferences(normalizationMap map[string]string) error {
 		}
 		rowsAffected, _ := result.RowsAffected()
 		if rowsAffected > 0 {
-			logger.Infof("🔄 Updated %d award.institution references: '%s' → '%s'", rowsAffected, variant, canonical)
+			logger.Infof(mainCtx, "🔄 Updated %d award.institution references: '%s' → '%s'", rowsAffected, variant, canonical)
 			totalUpdated += rowsAffected
 		}
 	}
@@ -1337,20 +1346,73 @@ func normalizeUniversityReferences(normalizationMap map[string]string) error {
 		}
 		rowsAffected, _ := result.RowsAffected()
 		if rowsAffected > 0 {
-			logger.Infof("🔄 Updated %d award.performing_institution references: '%s' → '%s'", rowsAffected, variant, canonical)
+			logger.Infof(mainCtx, "🔄 Updated %d award.performing_institution references: '%s' → '%s'", rowsAffected, variant, canonical)
 			totalUpdated += rowsAffected
 		}
 	}
 
 	// Update professor_areas.affiliation
 	for variant, canonical := range normalizationMap {
+		// Create savepoint before risky operation
+		_, err := tx.Exec(`SAVEPOINT before_update`)
+		if err != nil {
+			return fmt.Errorf("failed to create savepoint: %w", err)
+		}
+
 		result, err := tx.Exec(`UPDATE professor_areas SET affiliation = $1 WHERE affiliation = $2`, canonical, variant)
 		if err != nil {
-			return fmt.Errorf("failed to update professor_areas.affiliation from '%s' to '%s': %w", variant, canonical, err)
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				// Rollback to savepoint (clears the error state)
+				_, rollbackErr := tx.Exec(`ROLLBACK TO SAVEPOINT before_update`)
+				if rollbackErr != nil {
+					return fmt.Errorf("failed to rollback to savepoint: %w", rollbackErr)
+				}
+
+				logger.Infof(mainCtx, "ℹ️  Duplicate constraint for '%s', cleaning up...", variant)
+
+				// Now we can execute commands again
+				deleteQuery := `
+                WITH duplicates AS (
+                    SELECT DISTINCT pa1.name, pa1.area
+                    FROM professor_areas pa1
+                    INNER JOIN professor_areas pa2 
+                      ON pa1.name = pa2.name
+                     AND pa1.area = pa2.area
+                    WHERE pa1.affiliation = $1
+                      AND pa2.affiliation = $2
+                )
+                DELETE FROM professor_areas
+                WHERE affiliation = $1
+                  AND (name, area) IN (SELECT * FROM duplicates)
+            `
+
+				delResult, err := tx.Exec(deleteQuery, variant, canonical)
+				if err != nil {
+					return fmt.Errorf("failed to delete duplicates: %w", err)
+				}
+
+				deleted, _ := delResult.RowsAffected()
+				logger.Infof(mainCtx, "🗑️  Deleted %d duplicate rows with affiliation '%s'", deleted, variant)
+
+				// Retry the UPDATE
+				result, err = tx.Exec(`UPDATE professor_areas SET affiliation = $1 WHERE affiliation = $2`, canonical, variant)
+				if err != nil {
+					return fmt.Errorf("retry update failed: %w", err)
+				}
+
+				// Release savepoint (cleanup)
+				_, _ = tx.Exec(`RELEASE SAVEPOINT before_update`)
+			} else {
+				return fmt.Errorf("failed to update professor_areas.affiliation: %w", err)
+			}
+		} else {
+			// Success - release savepoint
+			_, _ = tx.Exec(`RELEASE SAVEPOINT before_update`)
 		}
+
 		rowsAffected, _ := result.RowsAffected()
 		if rowsAffected > 0 {
-			logger.Infof("🔄 Updated %d professor_areas.affiliation references: '%s' → '%s'", rowsAffected, variant, canonical)
+			logger.Infof(mainCtx, "🔄 Updated %d professor_areas.affiliation: '%s' → '%s'", rowsAffected, variant, canonical)
 			totalUpdated += rowsAffected
 		}
 	}
@@ -1363,7 +1425,7 @@ func normalizeUniversityReferences(normalizationMap map[string]string) error {
 		}
 		rowsAffected, _ := result.RowsAffected()
 		if rowsAffected > 0 {
-			logger.Infof("🔄 Updated %d professors.affiliation references: '%s' → '%s'", rowsAffected, variant, canonical)
+			logger.Infof(mainCtx, "🔄 Updated %d professors.affiliation references: '%s' → '%s'", rowsAffected, variant, canonical)
 			totalUpdated += rowsAffected
 		}
 	}
@@ -1373,11 +1435,11 @@ func normalizeUniversityReferences(normalizationMap map[string]string) error {
 		return fmt.Errorf("failed to commit normalization transaction: %w", err)
 	}
 
-	logger.Infof("✅ Successfully normalized %d foreign key references across all tables", totalUpdated)
+	logger.Infof(mainCtx, "✅ Successfully normalized %d foreign key references across all tables", totalUpdated)
 	return nil
 }
 
-func removeDuplicateEntries() error {
+func removeDuplicateEntries(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -1558,13 +1620,13 @@ func removeDuplicateEntries() error {
 			normalizationMap := buildUniversityNormalizationMap(groups)
 
 			// Log the normalization plan
-			logger.Infof("📋 University normalization plan:")
+			logger.Infof(mainCtx, "📋 University normalization plan:")
 			for variant, canonical := range normalizationMap {
-				logger.Infof("   '%s' → '%s'", variant, canonical)
+				logger.Infof(mainCtx, "   '%s' → '%s'", variant, canonical)
 			}
 
 			// Normalize all foreign key references
-			if err := normalizeUniversityReferences(normalizationMap); err != nil {
+			if err := normalizeUniversityReferences(mainCtx, normalizationMap); err != nil {
 				return fmt.Errorf("failed to normalize university references: %w", err)
 			}
 		}
@@ -1592,14 +1654,14 @@ func removeDuplicateEntries() error {
 				return fmt.Errorf("failed to get rows affected: %w", err)
 			}
 
-			logger.Infof("✅ Removed %d duplicate %s entries from %s", rowsAffected, column, table)
+			logger.Infof(mainCtx, "✅ Removed %d duplicate %s entries from %s", rowsAffected, column, table)
 		}
 	}
 
 	return nil
 }
 
-func removeTagsFromProfessorNames() error {
+func removeTagsFromProfessorNames(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -1625,18 +1687,18 @@ func removeTagsFromProfessorNames() error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 
-	logger.Infof("✅ Removed Topic Tags from %d professor names", rowsAffected)
+	logger.Infof(mainCtx, "✅ Removed Topic Tags from %d professor names", rowsAffected)
 	return nil
 }
 
-func copyLabsFromUniversitiesToLabsTable() error {
+func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
-		logger.Errorf("❌ Cannot get DB: %v", err)
+		logger.Errorf(mainCtx, "❌ Cannot get DB: %v", err)
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
-	logger.Infof("🔎 Searching for labs in universities table...")
+	logger.Infof(mainCtx, "🔎 Searching for labs in universities table...")
 
 	// Find all labs in universities table
 	rows, err := db.Query(`
@@ -1662,7 +1724,7 @@ func copyLabsFromUniversitiesToLabsTable() error {
 		OR institution ILIKE '% dept%'
 	`)
 	if err != nil {
-		logger.Errorf("❌ Failed to query labs from universities: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to query labs from universities: %v", err)
 		return fmt.Errorf("failed to query labs from universities: %w", err)
 	}
 
@@ -1681,7 +1743,7 @@ func copyLabsFromUniversitiesToLabsTable() error {
 				continue
 			}
 
-			logger.Errorf("❌ Failed to scan lab row: %v", rowScanErr)
+			logger.Errorf(mainCtx, "❌ Failed to scan lab row: %v", rowScanErr)
 			return fmt.Errorf("failed to scan lab row: %w", rowScanErr)
 		}
 		labs = append(labs, LabModel{
@@ -1701,16 +1763,16 @@ func copyLabsFromUniversitiesToLabsTable() error {
 	}
 
 	if len(labs) == 0 {
-		logger.Warnf("⚠️ No labs found in universities table to copy.")
+		logger.Warnf(mainCtx, "⚠️ No labs found in universities table to copy.")
 		return nil
 	}
 
-	logger.Infof("Found %d labs to copy from universities table.", scannedRows)
+	logger.Infof(mainCtx, "Found %d labs to copy from universities table.", scannedRows)
 
 	// Insert labs into labs table
 	tx, err := db.Begin()
 	if err != nil {
-		logger.Errorf("❌ Failed to begin transaction: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to begin transaction: %v", err)
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
@@ -1720,7 +1782,7 @@ func copyLabsFromUniversitiesToLabsTable() error {
 		ON CONFLICT (lab) DO NOTHING;
 	`)
 	if err != nil {
-		logger.Errorf("❌ Failed to prepare insert statement: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to prepare insert statement: %v", err)
 		tx.Rollback()
 		return fmt.Errorf("failed to prepare insert statement: %w", err)
 	}
@@ -1731,15 +1793,15 @@ func copyLabsFromUniversitiesToLabsTable() error {
 	for _, lab := range labs {
 		_, statementExecErr := stmt.Exec(lab.Insitution, lab.StreetAddress, lab.City, lab.Phone, lab.ZipCode, lab.Country, lab.Region, lab.CountryAbbrv, lab.Homepage, lab.Latitude, lab.Longitude)
 		if statementExecErr != nil {
-			logger.Errorf("❌ Failed to insert lab '%s': %v", lab.Insitution, statementExecErr)
+			logger.Errorf(mainCtx, "❌ Failed to insert lab '%s': %v", lab.Insitution, statementExecErr)
 			tx.Rollback()
 			return fmt.Errorf("failed to insert lab: %w", statementExecErr)
 		}
 		insertedLabs++
-		logger.Infof("➕ Inserted lab '%s' into labs table.", lab.Insitution)
+		logger.Infof(mainCtx, "➕ Inserted lab '%s' into labs table.", lab.Insitution)
 	}
 
-	logger.Infof("🗑️ Deleting copied labs from universities table...")
+	logger.Infof(mainCtx, "🗑️ Deleting copied labs from universities table...")
 
 	// TODO: All labs must obviously have a link to a central university. For now, we are deleting
 	// the mention of the labs from the universities table. In the future, we should create a
@@ -1748,24 +1810,24 @@ func copyLabsFromUniversitiesToLabsTable() error {
 	var deletedLabs int
 	for _, lab := range labs {
 		if _, err := tx.Exec(`DELETE FROM labs WHERE institution = $1`, lab.Insitution); err != nil {
-			logger.Errorf("❌ Failed to delete lab '%s' from universities: %v", lab.Insitution, err)
+			logger.Errorf(mainCtx, "❌ Failed to delete lab '%s' from universities: %v", lab.Insitution, err)
 			tx.Rollback()
 			return fmt.Errorf("failed to delete lab from universities: %w", err)
 		}
 		deletedLabs++
-		logger.Infof("🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
+		logger.Infof(mainCtx, "🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
 	}
 
 	if err := tx.Commit(); err != nil {
-		logger.Errorf("❌ Failed to commit transaction: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to commit transaction: %v", err)
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	logger.Infof("✅ Copied %d labs from universities to labs table and deleted them from universities.", insertedLabs)
+	logger.Infof(mainCtx, "✅ Copied %d labs from universities to labs table and deleted them from universities.", insertedLabs)
 	return nil
 }
 
-func validateAndFormatDbData() error {
+func validateAndFormatDbData(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
 		return fmt.Errorf("cannot get DB: %w", err)
@@ -1786,7 +1848,7 @@ func validateAndFormatDbData() error {
 	for rows.Next() {
 		var inst string
 		if err := rows.Scan(&inst); err != nil {
-			logger.Warnf("⚠️ Failed to scan institution: %v", err)
+			logger.Warnf(mainCtx, "⚠️ Failed to scan institution: %v", err)
 			continue
 		}
 		institutions = append(institutions, inst)
@@ -1800,37 +1862,37 @@ func validateAndFormatDbData() error {
 			var exists bool
 			err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM universities WHERE institution = $1)`, normalized).Scan(&exists)
 			if err != nil {
-				logger.Warnf("⚠️ Failed to check existence for '%s': %v", normalized, err)
+				logger.Warnf(mainCtx, "⚠️ Failed to check existence for '%s': %v", normalized, err)
 				continue
 			}
 			if exists {
 				// Delete the current row to avoid unique constraint violation
 				_, delErr := db.Exec(`DELETE FROM universities WHERE institution = $1`, inst)
 				if delErr != nil {
-					logger.Warnf("⚠️ Failed to delete duplicate institution '%s': %v", inst, delErr)
+					logger.Warnf(mainCtx, "⚠️ Failed to delete duplicate institution '%s': %v", inst, delErr)
 				} else {
-					logger.Warnf("🗑️ Deleted duplicate institution '%s' (normalized as '%s')", inst, normalized)
+					logger.Warnf(mainCtx, "🗑️ Deleted duplicate institution '%s' (normalized as '%s')", inst, normalized)
 				}
 				continue
 			}
 			_, err = db.Exec(`UPDATE universities SET institution = $1 WHERE institution = $2`, normalized, inst)
 			if err != nil {
-				logger.Warnf("⚠️ Failed to update institution '%s' to '%s': %v", inst, normalized, err)
+				logger.Warnf(mainCtx, "⚠️ Failed to update institution '%s' to '%s': %v", inst, normalized, err)
 				continue
 			}
 			updatedCount++
-			logger.Infof("🔄 Updated institution '%s' to '%s'.", inst, normalized)
+			logger.Infof(mainCtx, "🔄 Updated institution '%s' to '%s'.", inst, normalized)
 		}
 	}
 
-	logger.Infof("✅ Validated and formatted %d institution names in universities table.", updatedCount)
+	logger.Infof(mainCtx, "✅ Validated and formatted %d institution names in universities table.", updatedCount)
 	return nil
 }
 
-func markPipelineAsCompleted(step string, status string) {
+func markPipelineAsCompleted(mainCtx *colly.Context, step string, status string) {
 	db, err := GetDB()
 	if err != nil {
-		logger.Errorf("❌ Failed to get DB: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to get DB: %v", err)
 		return
 	}
 
@@ -1845,12 +1907,12 @@ func markPipelineAsCompleted(step string, status string) {
 		)
 	`).Scan(&exists)
 	if err != nil {
-		logger.Errorf("❌ Failed to check if table exists: %v", err)
+		logger.Errorf(mainCtx, "❌ Failed to check if table exists: %v", err)
 		return
 	}
 
 	if !exists {
-		logger.Warn("⚠️ Table 'pipeline_status' does not exist, skipping insert/update")
+		logger.Warn(mainCtx, "⚠️ Table 'pipeline_status' does not exist, skipping insert/update")
 		return
 	}
 
@@ -1861,14 +1923,14 @@ func markPipelineAsCompleted(step string, status string) {
 		ON CONFLICT (pipeline_name) DO UPDATE SET last_run = NOW(), status = $2;
 	`, step, status)
 	if err != nil {
-		logger.Errorf("❌ Failed to mark pipeline step '%s' as completed: %v", step, err)
+		logger.Errorf(mainCtx, "❌ Failed to mark pipeline step '%s' as completed: %v", step, err)
 		return
 	}
 
-	logger.Infof("✅ Marked pipeline step '%s' as '%s'", step, status)
+	logger.Infof(mainCtx, "✅ Marked pipeline step '%s' as '%s'", step, status)
 }
 
-func GetPipelineStatus(step string) string {
+func GetPipelineStatus(mainCtx *colly.Context, step string) string {
 	db, err := GetDB()
 	if err != nil {
 		return ""
@@ -1885,17 +1947,17 @@ func GetPipelineStatus(step string) string {
 			return ""
 		}
 
-		logger.Errorf("❌ Failed to check pipeline step '%s' status: %v", step, err)
+		logger.Errorf(mainCtx, "❌ Failed to check pipeline step '%s' status: %v", step, err)
 		return ""
 	}
 
 	return status
 }
 
-func populatePostgres() {
+func populatePostgres(mainCtx *colly.Context) {
 	steps := []struct {
 		name string
-		fn   func() error
+		fn   func(*colly.Context) error
 	}{
 		{"Download CSVs", downloadCSVs},
 		{"Download NSF Data", downloadNSFData},
@@ -1921,37 +1983,37 @@ func populatePostgres() {
 	if err == nil {
 		err = db.QueryRow(`SELECT last_run FROM pipeline_status WHERE pipeline_name = $1`, string(POPULATION_SUCCEEDED_MESSAGE)).Scan(&lastRunTime)
 		if err == nil && !lastRunTime.IsZero() {
-			logger.Infof("⏱️ Last pipeline completed at: %s (%.2f hours ago)", lastRunTime.Format(time.RFC3339), time.Since(lastRunTime).Hours())
+			logger.Infof(mainCtx, "⏱️ Last pipeline completed at: %s (%.2f hours ago)", lastRunTime.Format(time.RFC3339), time.Since(lastRunTime).Hours())
 		}
 	}
 
-	if isDataAlreadyPopulated := GetPipelineStatus(string(POPULATION_SUCCEEDED_MESSAGE)); isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
-		logger.Infof("ℹ️  Postgres population already completed previously, skipping.")
+	if isDataAlreadyPopulated := GetPipelineStatus(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE)); isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
+		logger.Infof(mainCtx, "ℹ️  Postgres population already completed previously, skipping.")
 		return
 	}
 
-	logger.Infof("🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
-	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
+	logger.Infof(mainCtx, "🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
+	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
 	pipelineStart := time.Now()
 	for i, step := range steps {
 		stepStart := time.Now()
-		logger.Infof("🔄 Step %d/%d: '%s' - starting...", i+1, totalSteps, step.name)
-		if err := step.fn(); err != nil {
-			logger.Errorf("❌ Step %d/%d: '%s' - failed: %v", i+1, totalSteps, step.name, err)
-			markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
-			logger.Infof("🛑 Pipeline stopped after %d/%d successful steps.", successfulSteps, totalSteps)
-			logger.Infof("⏱️ Pipeline ran for %s before failure.", time.Since(pipelineStart).String())
+		logger.Infof(mainCtx, "🔄 Step %d/%d: '%s' - starting...", i+1, totalSteps, step.name)
+		if err := step.fn(mainCtx); err != nil {
+			logger.Errorf(mainCtx, "❌ Step %d/%d: '%s' - failed: %v", i+1, totalSteps, step.name, err)
+			markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_FAILED))
+			logger.Infof(mainCtx, "🛑 Pipeline stopped after %d/%d successful steps.", successfulSteps, totalSteps)
+			logger.Infof(mainCtx, "⏱️ Pipeline ran for %s before failure.", time.Since(pipelineStart).String())
 			return
 		}
 		stepDuration := time.Since(stepStart)
 		successfulSteps++
-		logger.Infof("✅ Step %d/%d: '%s' - succeeded. (%d/%d steps completed) [Step duration: %s]", i+1, totalSteps, step.name, successfulSteps, totalSteps, stepDuration.String())
+		logger.Infof(mainCtx, "✅ Step %d/%d: '%s' - succeeded. (%d/%d steps completed) [Step duration: %s]", i+1, totalSteps, step.name, successfulSteps, totalSteps, stepDuration.String())
 	}
 
 	totalDuration := time.Since(pipelineStart)
-	logger.Infof("🎉 Postgres population completed successfully. All %d steps succeeded.", totalSteps)
-	logger.Infof("⏱️ Total pipeline duration: %s", totalDuration.String())
-	markPipelineAsCompleted(string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
-	markPipelineAsCompleted(string(POPULATION_SUCCEEDED_MESSAGE), string(POPULATION_STATUS_SUCCEEDED))
+	logger.Infof(mainCtx, "🎉 Postgres population completed successfully. All %d steps succeeded.", totalSteps)
+	logger.Infof(mainCtx, "⏱️ Total pipeline duration: %s", totalDuration.String())
+	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
+	markPipelineAsCompleted(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE), string(POPULATION_STATUS_SUCCEEDED))
 }

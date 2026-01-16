@@ -665,13 +665,6 @@ func (s *ResearchService) processJob(workerID int, job *ScrapeJob, scraperServic
 		logger.Debugf(processJobCtx, "%s [%d/%d] Processing: %s (type: %s, url: %s)",
 			logPrefix, i+1, len(contents), content.Title, content.ContentType, content.URL)
 
-		// Validate professor name
-		if content.ProfessorName != job.ProfessorName {
-			logger.Warnf(processJobCtx, "%s [%d/%d] ⚠️  Name mismatch: got '%s', expected '%s'. Skipping.",
-				logPrefix, i+1, len(contents), content.ProfessorName, job.ProfessorName)
-			continue
-		}
-
 		// --- Step 2.1: Save to DB ---
 		if _, err := db.Exec(SERVICE_SAVE_TO_DB_QUERY,
 			content.ProfessorName,

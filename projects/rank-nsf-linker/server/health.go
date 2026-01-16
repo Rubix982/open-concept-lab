@@ -6,24 +6,26 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gocolly/colly/v2"
 )
 
-func waitForElasticsearch() {
+func waitForElasticsearch(ctx *colly.Context) {
 	client := &http.Client{}
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	logger.Info("Waiting for ElasticSearch to be ready...")
+	logger.Info(ctx, "Waiting for ElasticSearch to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/_cluster/health", ELASTICSEARCH_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			logger.Info("✅ Elasticsearch is ready")
+			logger.Info(ctx, "✅ Elasticsearch is ready")
 			return
 		}
 
-		logger.Infof("Waiting for Elasticsearch to be ready for attempt %d... retrying in %s\n", attempts, delay)
+		logger.Infof(ctx, "Waiting for Elasticsearch to be ready for attempt %d... retrying in %s\n", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay
@@ -34,7 +36,7 @@ func waitForElasticsearch() {
 	}
 }
 
-func waitForPostgres() {
+func waitForPostgres(ctx *colly.Context) {
 	postgresPort := os.Getenv("POSTGRES_PORT")
 	if postgresPort == "" {
 		postgresPort = "5432"
@@ -60,7 +62,7 @@ func waitForPostgres() {
 	maxDelay := 30 * time.Second
 	attempts := 0
 
-	logger.Info("Waiting for Postgres to be ready...")
+	logger.Infof(ctx, "Waiting for Postgres to be ready...")
 
 	for {
 		attempts++
@@ -71,12 +73,12 @@ func waitForPostgres() {
 		}
 
 		if err == nil {
-			logger.Info("✅ Postgres is ready")
+			logger.Infof(ctx, "✅ Postgres is ready")
 			db.Close()
 			return
 		}
 
-		logger.Infof("Attempt %d: Postgres not ready yet, retrying in %s...", attempts, delay)
+		logger.Infof(ctx, "Attempt %d: Postgres not ready yet, retrying in %s...", attempts, delay)
 		time.Sleep(delay)
 
 		delay *= 2
@@ -86,22 +88,22 @@ func waitForPostgres() {
 	}
 }
 
-func waitForLoggingService() {
+func waitForLoggingService(ctx *colly.Context) {
 	client := &http.Client{}
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
-	logger.Info("Waiting for Logging Service to be ready...")
+	logger.Infof(ctx, "Waiting for Logging Service to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
 		if err == nil && resp.StatusCode == 200 {
-			logger.Info("✅ Logging Service is ready")
+			logger.Infof(ctx, "✅ Logging Service is ready")
 			return
 		}
 
-		logger.Infof("Waiting for Logging Service to be ready for attempt %d... retrying in %s...", attempts, delay)
+		logger.Infof(ctx, "Waiting for Logging Service to be ready for attempt %d... retrying in %s...", attempts, delay)
 		time.Sleep(delay)
 
 		// Exponential backoff: double the delay each time, up to maxDelay
@@ -112,8 +114,8 @@ func waitForLoggingService() {
 	}
 }
 
-func waitForServices() {
-	waitForElasticsearch()
-	waitForPostgres()
-	waitForLoggingService()
+func waitForServices(ctx *colly.Context) {
+	waitForElasticsearch(ctx)
+	waitForPostgres(ctx)
+	waitForLoggingService(ctx)
 }

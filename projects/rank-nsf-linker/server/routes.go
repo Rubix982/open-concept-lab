@@ -27,7 +27,8 @@ type SearchResult struct {
 // Stats endpoints
 
 func getUniversityCount(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -47,7 +48,8 @@ func getUniversityCount(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProfessorCount(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -67,7 +69,8 @@ func getProfessorCount(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAwardCount(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -87,7 +90,8 @@ func getAwardCount(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTotalFunding(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -107,7 +111,8 @@ func getTotalFunding(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAvgFundingPerAward(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -129,7 +134,8 @@ func getAvgFundingPerAward(w http.ResponseWriter, r *http.Request) {
 // Filter/Metadata endpoints
 
 func getAvailableAreas(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -158,7 +164,8 @@ func getAvailableAreas(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAvailableUniversities(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -187,7 +194,8 @@ func getAvailableUniversities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAvailableYears(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	db, err := GetDB()
 	if err != nil {
@@ -223,7 +231,8 @@ func getAvailableYears(w http.ResponseWriter, r *http.Request) {
 // Enhanced University endpoints
 
 func getTopFundedUniversities(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	limit := r.URL.Query().Get("limit")
 	if limit == "" {
@@ -285,7 +294,8 @@ func getTopFundedUniversities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMostAwardsUniversities(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	limit := r.URL.Query().Get("limit")
 	if limit == "" {
@@ -347,7 +357,8 @@ func getMostAwardsUniversities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProfessorsByUniversity(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	university := r.URL.Query().Get("university")
 	if university == "" {
@@ -400,7 +411,8 @@ func getProfessorsByUniversity(w http.ResponseWriter, r *http.Request) {
 
 // searchFacultyByResearch handles semantic search for faculty
 func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	// Parse request body
 	var req SearchRequest
@@ -420,7 +432,7 @@ func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
 		req.Limit = 10
 	}
 
-	logger.Infof("Searching for: '%s' (limit: %d)", req.Query, req.Limit)
+	logger.Infof(ctx, "Searching for: '%s' (limit: %d)", req.Query, req.Limit)
 
 	// Find Python and search script
 	pythonCmd := "python3"
@@ -470,7 +482,7 @@ func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
 	// Execute and capture output
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		logger.Errorf("Search failed: %v\nOutput: %s", err, string(output))
+		logger.Errorf(ctx, "Search failed: %v\nOutput: %s", err, string(output))
 		http.Error(w, "Search failed", http.StatusInternalServerError)
 		return
 	}
@@ -478,12 +490,12 @@ func searchFacultyByResearch(w http.ResponseWriter, r *http.Request) {
 	// Parse results
 	var results []SearchResult
 	if err := json.Unmarshal(output, &results); err != nil {
-		logger.Errorf("Failed to parse search results: %v", err)
+		logger.Errorf(ctx, "Failed to parse search results: %v", err)
 		http.Error(w, "Failed to parse results", http.StatusInternalServerError)
 		return
 	}
 
-	logger.Infof("Found %d results for query: '%s'", len(results), req.Query)
+	logger.Infof(ctx, "Found %d results for query: '%s'", len(results), req.Query)
 
 	// Return results
 	w.Header().Set("Content-Type", "application/json")
@@ -587,10 +599,11 @@ func fetchUniversitySummary(r *http.Request) ([]byte, error) {
 }
 
 func getAllUniversitiesWithCoordinates(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 	universities, err := fetchAllUniversitiesWithCoordinates()
 	if err != nil {
-		logger.Errorf("Failed to fetch universities: %v", err)
+		logger.Errorf(ctx, "Failed to fetch universities: %v", err)
 		http.Error(w, "Failed to fetch universities", http.StatusInternalServerError)
 		return
 	}
@@ -600,10 +613,11 @@ func getAllUniversitiesWithCoordinates(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUniversitySummary(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 	summary, err := fetchUniversitySummary(r)
 	if err != nil {
-		logger.Errorf("Failed to fetch university summary: %v", err)
+		logger.Errorf(ctx, "Failed to fetch university summary: %v", err)
 		http.Error(w, "Failed to fetch university summary", http.StatusInternalServerError)
 		return
 	}
@@ -803,7 +817,8 @@ func fetchTopUniversitiesSummary(limit int) ([]byte, error) {
 }
 
 func getTopUniversitiesSummary(w http.ResponseWriter, r *http.Request) {
-	logger.Printf("[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+	ctx := buildCollyContext(w, r)
+	logger.Infof(ctx, "[HANDLER] %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	// Get limit from query param, default to 100
 	limit := 100
@@ -815,7 +830,7 @@ func getTopUniversitiesSummary(w http.ResponseWriter, r *http.Request) {
 
 	summary, err := fetchTopUniversitiesSummary(limit)
 	if err != nil {
-		logger.Errorf("Failed to fetch top universities: %v", err)
+		logger.Errorf(ctx, "Failed to fetch top universities: %v", err)
 		http.Error(w, "Failed to fetch top universities", http.StatusInternalServerError)
 		return
 	}

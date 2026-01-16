@@ -32,8 +32,8 @@ const (
 
 	LOGGING_SERVICE_ROUTE = "http://logging-service:5257"
 
-	WORKER_COUNT = 10
-	MAX_PAGES    = 10
+	WORKER_COUNT = 20
+	MAX_PAGES    = 40
 )
 
 func GetGlobalDB() (*sql.DB, error) {
