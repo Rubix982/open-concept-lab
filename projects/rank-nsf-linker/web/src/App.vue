@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import WorldMap from "./components/WorldMap.vue";
-import StatsDashboard from "./components/StatsDashboard.vue";
 </script>
 
 <template>
   <div id="app">
-    <StatsDashboard />
     <WorldMap />
   </div>
 </template>
