@@ -5,11 +5,7 @@ export const PIPELINE_STATUS = {
   IN_PROGRESS: "in_progress",
   COMPLETED: "completed",
   FAILED: "failed",
-<<<<<<< HEAD
 };
-=======
-} as const;
->>>>>>> 962a05dbf001d509be8502016bbde6bb630fb352
 
 export type PipelineStatusType =
   (typeof PIPELINE_STATUS)[keyof typeof PIPELINE_STATUS];

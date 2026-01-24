@@ -1,0 +1,44 @@
+.pwa-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  max-width: 400px;
+}
+
+.pwa-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.pwa-button:hover {
+  background: #2563eb;
+}
+
+.pwa-button-cancel {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pwa-button-cancel:hover {
+  background: #f1f5f9;
+}

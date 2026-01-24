@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import WorldMap from "./components/WorldMap.vue";
+setInterval(() => {
+  caches.open("map-tiles-cache").then((cache) => {
+    cache.keys().then((keys) => {
+      console.log(`📊 Cached tiles: ${keys.length}`);
+    });
+  });
+}, 10000); // Every 10 seconds
 </script>
 
 <template>
@@ -7,27 +14,3 @@ import WorldMap from "./components/WorldMap.vue";
     <WorldMap />
   </div>
 </template>
-
-<style scoped>
-#app {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-</style>
-
-<style>
-/* Ensure html and body also fill viewport */
-html,
-body,
-#app {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-</style>
