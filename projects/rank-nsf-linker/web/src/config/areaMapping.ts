@@ -1,0 +1,245 @@
+export type AreaSubgroup = {
+  name: string;
+  subareas: string[];
+};
+
+export type AreaGroup = Record<string, AreaSubgroup>;
+
+export type AreaGroups = Record<string, AreaGroup>;
+
+export const AREA_GROUPS: AreaGroups = {
+  AI: {
+    AI: {
+      name: "Artificial intelligence",
+      subareas: ["aaai", "ijcai"],
+    },
+    ML: {
+      name: "Machine learning",
+      subareas: ["mlmining", "icml", "kdd", "iclr", "nips"],
+    },
+    NLP: {
+      name: "Natural language processing",
+      subareas: ["nlp", "acl", "emnlp", "naacl"],
+    },
+    Vision: {
+      name: "Computer vision",
+      subareas: ["vision", "cvpr", "eccv", "iccv"],
+    },
+    WebIR: {
+      name: "The Web & information retrieval",
+      subareas: ["inforet", "sigir", "www"],
+    },
+  },
+  Systems: {
+    Arch: {
+      name: "Computer architecture",
+      subareas: ["arch", "asplos", "isca", "micro", "hpca"],
+    },
+    Net: {
+      name: "Computer networks",
+      subareas: ["comm", "sigcomm", "nsdi"],
+    },
+    Sec: {
+      name: "Computer security",
+      subareas: ["sec", "ccs", "oakland", "usenixsec", "ndss", "pets"],
+    },
+    DB: {
+      name: "Databases",
+      subareas: ["mod", "sigmod", "vldb", "icde", "pods"],
+    },
+    EDA: {
+      name: "Design automation",
+      subareas: ["eda", "dac", "iccad"],
+    },
+    Emb: {
+      name: "Embedded & real-time systems",
+      subareas: ["bed", "emsoft", "rtas", "rtss"],
+    },
+    HPC: {
+      name: "High-performance computing",
+      subareas: ["hpc", "sc", "hpdc", "ics"],
+    },
+    Mobile: {
+      name: "Mobile computing",
+      subareas: ["mobile", "mobicom", "mobisys", "sensys"],
+    },
+    Metrics: {
+      name: "Measurement & perf. analysis",
+      subareas: ["metrics", "imc", "sigmetrics"],
+    },
+    OS: {
+      name: "Operating systems",
+      subareas: ["ops", "sosp", "osdi", "fast", "usenixatc", "eurosys"],
+    },
+    PL: {
+      name: "Programming languages",
+      subareas: ["pldi", "popl", "icfp", "oopsla", "plan"],
+    },
+    SE: {
+      name: "Software engineering",
+      subareas: ["soft", "fse", "icse", "ase", "issta"],
+    },
+  },
+  Theory: {
+    Theory: {
+      name: "Algorithms & complexity",
+      subareas: ["act", "focs", "soda", "stoc"],
+    },
+    Crypto: {
+      name: "Cryptography",
+      subareas: ["crypt", "crypto", "eurocrypt"],
+    },
+    Log: {
+      name: "Logic & verification",
+      subareas: ["log", "cav", "lics"],
+    },
+  },
+  Interdisciplinary: {
+    "Comp. Bio": {
+      name: "Comp. bio & bioinformatics",
+      subareas: ["bio", "ismb", "recomb"],
+    },
+    Graphics: {
+      name: "Computer graphics",
+      subareas: ["graph", "siggraph", "siggraph-asia", "eurographics"],
+    },
+    CSEd: {
+      name: "Computer science education",
+      subareas: ["csed", "sigcse"],
+    },
+    ECom: {
+      name: "Economics & computation",
+      subareas: ["ecom", "ec", "wine"],
+    },
+    HCI: {
+      name: "Human-computer interaction",
+      subareas: ["chi", "chiconf", "ubicomp", "uist"],
+    },
+    Robotics: {
+      name: "Robotics",
+      subareas: ["robotics", "icra", "iros", "rss"],
+    },
+    Visualization: {
+      name: "Visualization",
+      subareas: ["visualization", "vis", "vr"],
+    },
+  },
+} as const;
+
+export type AreaGroupsType = (typeof AREA_GROUPS)[keyof typeof AREA_GROUPS];
+
+export type ConferenceDict = Record<string, string>;
+
+export const SUB_AREA_MAP: ConferenceDict = {
+  aaai: "AAAI Conference on Artificial Intelligence",
+  ijcai: "International Joint Conference on Artificial Intelligence",
+  mlmining: "Data Mining and Knowledge Discovery",
+  icml: "International Conference on Machine Learning",
+  kdd: "ACM SIGKDD Conference on Knowledge Discovery and Data Mining",
+  iclr: "International Conference on Learning Representations",
+  nips: "Neural Information Processing Systems",
+  nlp: "Natural Language Processing (General)",
+  acl: "Annual Meeting of the Association for Computational Linguistics",
+  emnlp: "Empirical Methods in Natural Language Processing",
+  naacl:
+    "North American Chapter of the Association for Computational Linguistics",
+  vision: "Computer Vision (General)",
+  cvpr: "IEEE Conference on Computer Vision and Pattern Recognition",
+  eccv: "European Conference on Computer Vision",
+  iccv: "International Conference on Computer Vision",
+  inforet: "Information Retrieval (General)",
+  sigir:
+    "ACM SIGIR Conference on Research and Development in Information Retrieval",
+  www: "International World Wide Web Conference",
+  arch: "Computer Architecture (General)",
+  asplos:
+    "Architectural Support for Programming Languages and Operating Systems",
+  isca: "International Symposium on Computer Architecture",
+  micro: "IEEE/ACM International Symposium on Microarchitecture",
+  hpca: "IEEE International Symposium on High-Performance Computer Architecture",
+  comm: "Communications (General)",
+  sigcomm: "ACM SIGCOMM Conference",
+  nsdi: "USENIX Symposium on Networked Systems Design and Implementation",
+  sec: "Computer Security (General)",
+  ccs: "ACM Conference on Computer and Communications Security",
+  oakland: "IEEE Symposium on Security and Privacy",
+  usenixsec: "USENIX Security Symposium",
+  ndss: "Network and Distributed System Security Symposium",
+  pets: "Privacy Enhancing Technologies Symposium",
+  mod: "Databases (General)",
+  sigmod: "ACM SIGMOD International Conference on Management of Data",
+  vldb: "International Conference on Very Large Data Bases",
+  icde: "IEEE International Conference on Data Engineering",
+  pods: "ACM Symposium on Principles of Database Systems",
+  eda: "Electronic Design Automation (General)",
+  dac: "Design Automation Conference",
+  iccad: "International Conference on Computer-Aided Design",
+  bed: "Embedded Systems (General)",
+  emsoft: "International Conference on Embedded Software",
+  rtas: "IEEE Real-Time and Embedded Technology and Applications Symposium",
+  rtss: "IEEE Real-Time Systems Symposium",
+  hpc: "High-Performance Computing (General)",
+  sc: "International Conference for High Performance Computing, Networking, Storage and Analysis",
+  hpdc: "ACM Symposium on High-Performance Parallel and Distributed Computing",
+  ics: "ACM International Conference on Supercomputing",
+  mobile: "Mobile Computing (General)",
+  mobicom: "ACM International Conference on Mobile Computing and Networking",
+  mobisys:
+    "ACM International Conference on Mobile Systems, Applications, and Services",
+  sensys: "ACM Conference on Embedded Networked Sensor Systems",
+  metrics: "Performance Measurement (General)",
+  imc: "ACM Internet Measurement Conference",
+  sigmetrics: "ACM SIGMETRICS / IFIP Performance Conference",
+  ops: "Operating Systems (General)",
+  sosp: "ACM Symposium on Operating Systems Principles",
+  osdi: "USENIX Symposium on Operating Systems Design and Implementation",
+  fast: "USENIX Conference on File and Storage Technologies",
+  usenixatc: "USENIX Annual Technical Conference",
+  eurosys: "European Conference on Computer Systems",
+  pldi: "Programming Language Design and Implementation",
+  popl: "Principles of Programming Languages",
+  icfp: "International Conference on Functional Programming",
+  oopsla: "Object-Oriented Programming, Systems, Languages, and Applications",
+  plan: "Programming Languages (General)",
+  soft: "Software Engineering (General)",
+  fse: "ACM SIGSOFT Symposium on the Foundations of Software Engineering",
+  icse: "International Conference on Software Engineering",
+  ase: "Automated Software Engineering Conference",
+  issta: "International Symposium on Software Testing and Analysis",
+  act: "Algorithms and Complexity Theory (General)",
+  focs: "IEEE Symposium on Foundations of Computer Science",
+  soda: "ACM-SIAM Symposium on Discrete Algorithms",
+  stoc: "ACM Symposium on Theory of Computing",
+  crypt: "Cryptography (General)",
+  crypto: "International Cryptology Conference",
+  eurocrypt: "European Symposium on Research in Computer Security",
+  log: "Logic and Verification (General)",
+  cav: "Computer Aided Verification",
+  lics: "Logic in Computer Science",
+  bio: "Computational Biology and Bioinformatics (General)",
+  ismb: "Intelligent Systems for Molecular Biology",
+  recomb: "Research in Computational Molecular Biology",
+  graph: "Computer Graphics (General)",
+  siggraph: "ACM SIGGRAPH Conference",
+  "siggraph-asia": "ACM SIGGRAPH Asia",
+  eurographics: "Eurographics Symposium",
+  csed: "Computer Science Education (General)",
+  sigcse: "ACM Technical Symposium on Computer Science Education",
+  ecom: "Economics and Computation (General)",
+  ec: "ACM Conference on Economics and Computation",
+  wine: "Web and Internet Economics Conference",
+  chi: "Human Factors in Computing Systems",
+  chiconf: "ACM CHI Conference",
+  ubicomp:
+    "ACM International Joint Conference on Pervasive and Ubiquitous Computing",
+  uist: "ACM Symposium on User Interface Software and Technology",
+  robotics: "Robotics (General)",
+  icra: "IEEE International Conference on Robotics and Automation",
+  iros: "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+  rss: "Robotics: Science and Systems",
+  visualization: "Visualization (General)",
+  vis: "IEEE Visualization Conference",
+  vr: "IEEE Conference on Virtual Reality and 3D User Interfaces",
+};
+
+export type SubAreaType = (typeof SUB_AREA_MAP)[keyof typeof SUB_AREA_MAP];
