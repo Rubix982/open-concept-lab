@@ -1,5 +1,5 @@
 import axios from "axios";
-import maplibregl from "maplibre-gl";
+import mapboxgl from "mapbox-gl";
 import type { Ref } from "vue";
 
 import type { UniSummary } from "@/models/models";
@@ -7,6 +7,7 @@ import { errorHandler } from "@/utils/errorHandlingUtils";
 import { buildFeatureCollection } from "@/utils/coloringUtils";
 import { updatePointsLayer } from "@/utils/coloringUtils";
 import { CLUSTER_RADIUS } from "@/config/styleConfig";
+import { PIPELINE_STATUS } from "@/config/pipelineStatus";
 
 export async function fetchAllSummaries(
   onCountryDone: (data: UniSummary[]) => void
@@ -27,13 +28,17 @@ export async function fetchAllSummaries(
 
 export async function setupMapWithSummaries(
   pipelineStatusMessage: Ref<string>,
-  map: maplibregl.Map
+  map: any
 ) {
   let summaries: UniSummary[] = [];
   const universitiesById = new Map<string, UniSummary>();
   await fetchAllSummaries((data) => {
-    if (!map) return;
+    if (!map) {
+      console.log("❌ Map not initialized");
+      return;
+    }
 
+    console.log("✅ Fetched data", data);
     summaries.push(...data);
 
     const fc = buildFeatureCollection(universitiesById, summaries);
@@ -124,32 +129,6 @@ export async function setupMapWithSummaries(
       );
     }
 
-    map.on("click", "clusters", async (e) => {
-      const features = map!.queryRenderedFeatures(e.point, {
-        layers: ["clusters"],
-      });
-      if (!features.length) return;
-      const clusterId = features[0].properties.cluster_id;
-      const source = map!.getSource("unis") as maplibregl.GeoJSONSource;
-      const zoomVal = await source.getClusterExpansionZoom(clusterId);
-      map!.easeTo({
-        center:
-          features[0].geometry.type === "Point"
-            ? (features[0].geometry.coordinates as [number, number])
-            : [0, 0],
-        zoom: zoomVal,
-        duration: 500,
-      });
-    });
-
-    map.on("dblclick", "points", async (e) => {
-      e.originalEvent?.preventDefault();
-      const feature = e.features?.[0];
-      if (!feature) return;
-      // const id = (feature.properties as any).id as string;
-      // await selectUniversity(id);
-    });
-
     ["points", "clusters"].forEach((layer) => {
       map!.on(
         "mouseenter",
@@ -160,5 +139,5 @@ export async function setupMapWithSummaries(
     });
   });
 
-  pipelineStatusMessage.value = "completed";
+  pipelineStatusMessage.value = PIPELINE_STATUS.COMPLETED;
 }

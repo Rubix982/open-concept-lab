@@ -40,6 +40,58 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
           {
+            // Mapbox tiles
+            urlPattern: /^https:\/\/api\.mapbox\.com\/v4\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "mapbox-tiles-cache",
+              expiration: {
+                maxEntries: 2000,
+                maxAgeSeconds: 60 * 60 * 24 * 90,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // Mapbox styles
+            urlPattern: /^https:\/\/api\.mapbox\.com\/styles\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "mapbox-styles-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 90,
+              },
+            },
+          },
+          {
+            // Mapbox fonts
+            urlPattern: /^https:\/\/api\.mapbox\.com\/fonts\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "mapbox-fonts-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 90,
+              },
+            },
+          },
+          {
+            // API data
+            urlPattern: /^https?:\/\/.*\/api\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-data-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+              networkTimeoutSeconds: 10,
+            },
+          },
+          {
             // Cache map tiles aggressively
             urlPattern: /^https:\/\/[abc]\.basemaps\.cartocdn\.com\/.*/i,
             handler: "CacheFirst",

@@ -295,6 +295,8 @@ services:
         - rank-nsf-linker-web:latest
     volumes:
       - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./web-cache:/var/cache/nginx
+      - ./web-sw-cache:/usr/share/nginx/html/sw-cache
     ports:
       - "3000:80" # Nginx in Dockerfile serves on 80, mapped to 3000 locally
     depends_on:

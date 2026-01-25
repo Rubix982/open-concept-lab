@@ -1,9 +1,12 @@
 import type { Ref } from "vue";
 import axios from "axios";
-import maplibregl from "maplibre-gl";
+import mapboxgl from "mapbox-gl";
 
 import { errorHandler } from "@/utils/errorHandlingUtils";
 import { setupMapWithSummaries } from "@/utils/filteringUtils";
+import { PIPELINE_STATUS } from "@/config/pipelineStatus";
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 /*
 # UI/UX improvements - enumerated
@@ -157,49 +160,42 @@ export async function initializeMap(
     throw new Error("Map container not found");
   }
 
-  map.value = new maplibregl.Map({
+  // Check if container is visible
+  const { offsetWidth, offsetHeight } = mapContainer.value;
+  if (offsetWidth === 0 || offsetHeight === 0) {
+    throw new Error("Map container has no dimensions - is it hidden?");
+  }
+
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+  map.value = new mapboxgl.Map({
     container: mapContainer.value,
-    style: {
-      version: 8,
-      glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
-      sources: {
-        "carto-tiles": {
-          type: "raster",
-          tiles: [
-            "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-            "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-            "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-          ],
-          tileSize: 256,
-          attribution: "© OpenStreetMap contributors © CARTO",
-        },
-      },
-      layers: [{ id: "carto-tiles", type: "raster", source: "carto-tiles" }],
-    },
-    center: [-95, 37],
+    style: `mapbox://styles/mapbox/light-v11`,
+    center: [-96, 39],
     zoom: 4,
-    fadeDuration: 300, // smooth layer transitions
+    fadeDuration: 300,
   });
 
-  map.value.doubleClickZoom.disable();
-  map.value.addControl(new maplibregl.TerrainControl({ source: "terrain" }));
-  map.value.addControl(new maplibregl.FullscreenControl(), "top-left");
-  map.value.addControl(
-    new maplibregl.NavigationControl({ showCompass: true }),
-    "top-left"
+  console.log(
+    `✅ Map instance created. Container size: ${offsetWidth} x ${offsetHeight}.`
   );
+
+  map.value.on("load", () => {
+    console.log("✅ Map loaded and rendered");
+  });
+
+  map.value.on("error", (e: any) => {
+    console.error("❌ Map error:", e.error);
+  });
 
   return new Promise((resolve) => {
     map.value.on("load", () => {
-      console.log("✅ Map loaded, ready for layers");
-
-      map.value.flyTo({
-        center: [-196, 50],
-        zoom: 2,
-        duration: 2000,
-        essential: true,
-      });
-
+      map.value.doubleClickZoom.disable();
+      map.value.addControl(new mapboxgl.FullscreenControl(), "top-left");
+      map.value.addControl(
+        new mapboxgl.NavigationControl({ showCompass: true }),
+        "top-left"
+      );
+      console.log(`✅ Controls added`);
       resolve(map.value);
     });
   });
@@ -245,11 +241,13 @@ function handleHealthCheckError(err: any) {
 
 export async function waitForBackendReady(pipelineStatusMessage: Ref<string>) {
   let attempt = 0;
+  console.log(
+    `⏳ Waiting for backend to be ready. Pipeline Status ${pipelineStatusMessage.value}`
+  );
 
   while (
-    pipelineStatusMessage.value === "in-progress" ||
-    !pipelineStatusMessage.value ||
-    pipelineStatusMessage.value === ""
+    pipelineStatusMessage.value === PIPELINE_STATUS.IN_PROGRESS ||
+    pipelineStatusMessage.value === PIPELINE_STATUS.PENDING
   ) {
     attempt++;
     console.log(`🔁 [Attempt ${attempt}] Checking backend health...`);

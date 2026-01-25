@@ -6,7 +6,7 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE_NAME = "map-tiles-v1";
 const DATA_CACHE = "university-data-v1";
 
-sw.addEventListener("install", (event) => {
+sw.addEventListener("install", () => {
   console.log("🔧 Service Worker installing...");
   sw.skipWaiting();
 });
@@ -82,3 +82,40 @@ sw.addEventListener("fetch", (event) => {
     event.respondWith(fetch(event.request));
   }
 });
+
+export async function preloadMapTiles() {
+  if (!("caches" in window)) return;
+
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+
+  if (!MAPBOX_TOKEN) {
+    console.warn("⚠️ Cannot pre-cache: MAPBOX_TOKEN missing");
+    return;
+  }
+
+  const cache = await caches.open(CACHE_NAME);
+
+  const tilesToCache = [
+    `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/4/3/5.vector.pbf?sku=101YMMqGVf3Cz&access_token=${MAPBOX_TOKEN}`,
+    `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/4/4/5.vector.pbf?sku=101YMMqGVf3Cz&access_token=${MAPBOX_TOKEN}`,
+    `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/4/5/5.vector.pbf?sku=101YMMqGVf3Cz&access_token=${MAPBOX_TOKEN}`,
+  ];
+
+  try {
+    await Promise.all(
+      tilesToCache.map((url) =>
+        fetch(url)
+          .then((response) => {
+            if (response.ok) {
+              return cache.put(url, response);
+            }
+          })
+          .catch((err) => console.warn("Failed to cache:", url, err))
+      )
+    );
+
+    console.log("✅ Pre-cached", tilesToCache.length, "map tiles");
+  } catch (err) {
+    console.error("❌ Pre-cache error:", err);
+  }
+}

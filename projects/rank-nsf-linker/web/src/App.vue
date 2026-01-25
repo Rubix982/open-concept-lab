@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
+import { preloadMapTiles } from "./public/serviceWorker";
 import WorldMap from "./components/WorldMap.vue";
+onMounted(() => {
+  preloadMapTiles();
+});
 setInterval(() => {
   caches.open("map-tiles-cache").then((cache) => {
     cache.keys().then((keys) => {

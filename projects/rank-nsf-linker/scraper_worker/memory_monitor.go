@@ -20,7 +20,6 @@ var (
 )
 
 type MemoryMonitor struct {
-	logger         *logrus.Logger
 	lastNumGC      uint32
 	lastTotalAlloc uint64
 	lastCheckTime  time.Time

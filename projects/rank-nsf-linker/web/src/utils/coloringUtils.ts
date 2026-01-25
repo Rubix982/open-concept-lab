@@ -30,7 +30,6 @@ export function buildFeatureCollection(
         label: shortLabel(u.institution),
         faculty_count: u.faculty_count ?? 0,
         funding: u.funding ?? 0,
-        // nsf_awards: u.nsf_awards ?? 0,
       },
       geometry: {
         type: "Point" as const,
