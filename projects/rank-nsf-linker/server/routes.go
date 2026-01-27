@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+
+	"github.com/gocolly/colly/v2"
 )
 
 // SearchRequest represents a faculty search request
@@ -626,130 +628,94 @@ func getUniversitySummary(w http.ResponseWriter, r *http.Request) {
 	w.Write(summary)
 }
 
-func fetchTopUniversitiesSummary(limit int) ([]byte, error) {
+func getTableFriendlyCountryName(country string) string {
+	switch country {
+	case "USA":
+		return "United States"
+	case "CAN":
+		return "Canada"
+	case "MEX":
+		return "Mexico"
+	case "GBR":
+		return "United Kingdom"
+	case "DEU":
+		return "Germany"
+	case "FRA":
+		return "France"
+	case "ITA":
+		return "Italy"
+	case "ESP":
+		return "Spain"
+	case "NLD":
+		return "Netherlands"
+	case "CHE":
+		return "Switzerland"
+	case "SWE":
+		return "Sweden"
+	case "NOR":
+		return "Norway"
+	case "DNK":
+		return "Denmark"
+	case "POL":
+		return "Poland"
+	case "CHN":
+		return "China"
+	case "JPN":
+		return "Japan"
+	case "IND":
+		return "India"
+	case "KOR":
+		return "South Korea"
+	case "SGP":
+		return "Singapore"
+	case "AUS":
+		return "Australia"
+	case "NZL":
+		return "New Zealand"
+	case "BRA":
+		return "Brazil"
+	case "ARG":
+		return "Argentina"
+	case "CHL":
+		return "Chile"
+	case "ZAF":
+		return "South Africa"
+	case "EGY":
+		return "Egypt"
+	case "NGA":
+		return "Nigeria"
+	case "SAU":
+		return "Saudi Arabia"
+	case "ARE":
+		return "United Arab Emirates"
+	}
+	return ""
+}
+
+func fetchTopUniversitiesSummary(
+	ctx *colly.Context,
+	limit int,
+	country string,
+) ([]byte, error) {
 	db, err := GetDB()
 	if err != nil {
 		return nil, fmt.Errorf("cannot get DB: %w", err)
 	}
 
 	// Top US universities from out.txt (complete list of 110 universities)
-	topUniversities := []string{
-		"Massachusetts Institute of Technology",
-		"Carnegie Mellon University",
-		"Stanford University",
-		"University of California--Berkeley",
-		"University of Illinois--Urbana-Champaign",
-		"Georgia Institute of Technology",
-		"Cornell University",
-		"Princeton University",
-		"University of Texas--Austin",
-		"University of Washington",
-		"University of Michigan--Ann Arbor",
-		"California Institute of Technology",
-		"Columbia University",
-		"University of California--San Diego",
-		"University of Wisconsin--Madison",
-		"University of California--Los Angeles",
-		"University of Maryland--College Park",
-		"University of Pennsylvania",
-		"Harvard University",
-		"Purdue University--West Lafayette",
-		"Johns Hopkins University",
-		"University of Massachusetts--Amherst",
-		"University of Southern California",
-		"Yale University",
-		"Duke University",
-		"Rice University",
-		"Brown University",
-		"New York University",
-		"Northeastern University",
-		"Northwestern University",
-		"University of California--Irvine",
-		"University of California--Santa Barbara",
-		"University of Chicago",
-		"University of North Carolina--Chapel Hill",
-		"Ohio State University",
-		"University of Minnesota--Twin Cities",
-		"University of Virginia",
-		"Virginia Tech",
-		"Arizona State University",
-		"Pennsylvania State University--University Park",
-		"Texas A&M University--College Station",
-		"University of California--Davis",
-		"University of Colorado--Boulder",
-		"Rutgers University--New Brunswick",
-		"Boston University",
-		"Dartmouth College",
-		"Stony Brook University--SUNY",
-		"University of Florida",
-		"Vanderbilt University",
-		"Washington University in St. Louis",
-		"Indiana University--Bloomington",
-		"North Carolina State University",
-		"University of Pittsburgh",
-		"Michigan State University",
-		"University of California--Riverside",
-		"University of California--Santa Cruz",
-		"University of Illinois Chicago",
-		"University of Notre Dame",
-		"University of Rochester",
-		"University of Utah",
-		"Tufts University",
-		"University of Arizona",
-		"University of Texas--Dallas",
-		"George Mason University",
-		"Iowa State University",
-		"Oregon State University",
-		"Rensselaer Polytechnic Institute",
-		"Syracuse University",
-		"University at Buffalo--SUNY",
-		"University of Central Florida",
-		"Case Western Reserve University",
-		"Georgetown University",
-		"George Washington University",
-		"Rochester Institute of Technology",
-		"Toyota Technological Institute at Chicago",
-		"University of Delaware",
-		"University of Iowa",
-		"University of Oregon",
-		"William & Mary",
-		"Clemson University",
-		"Emory University",
-		"New Jersey Institute of Technology",
-		"Stevens Institute of Technology",
-		"University of Georgia",
-		"University of Maryland, Baltimore County",
-		"University of Nebraska--Lincoln",
-		"University of Tennessee--Knoxville",
-		"Auburn University",
-		"Colorado School of Mines",
-		"Drexel University",
-		"Florida State University",
-		"University of Connecticut",
-		"University of Kansas",
-		"Binghamton University--SUNY",
-		"Colorado State University",
-		"Illinois Institute of Technology",
-		"Lehigh University",
-		"University of North Carolina--Charlotte",
-		"University of South Florida",
-		"University of Texas--Arlington",
-		"Washington State University",
-		"Worcester Polytechnic Institute",
-		"Brandeis University",
-		"Kansas State University",
-		"Naval Postgraduate School",
-		"Temple University",
-		"University of California--Merced",
-		"University of Kentucky",
-		"University of New Mexico",
-		"Brigham Young University",
+	topUniversities := TOP_UNIVERSITIES_AGAINST_COUNTRY[country]
+	if len(topUniversities) == 0 {
+		return nil, fmt.Errorf("no top universities found for country: %s", country)
+	}
+	dbFriendlyCountryName := getTableFriendlyCountryName(country)
+	if dbFriendlyCountryName == "" {
+		return nil, fmt.Errorf("no country found for country code: %s", country)
 	}
 
 	// Build query with ILIKE patterns
 	query := `
 		SELECT * FROM university_summary_view usv 
-		WHERE usv.country = 'United States' 
+		WHERE usv.country = $1 
 		AND (
 	`
 
@@ -759,11 +725,14 @@ func fetchTopUniversitiesSummary(limit int) ([]byte, error) {
 		if i > 0 {
 			query += " OR "
 		}
-		query += fmt.Sprintf("usv.institution ILIKE $%d", i+1)
+		query += fmt.Sprintf("usv.institution ILIKE $%d", i+2)
 		params = append([]interface{}{"%" + uni + "%"}, params...)
 	}
+	params = append([]interface{}{dbFriendlyCountryName}, params...)
 
-	query += ") LIMIT $" + fmt.Sprintf("%d", len(topUniversities)+1) + ";"
+	query += ") LIMIT $" + fmt.Sprintf("%d", len(topUniversities)+2) + ";"
+
+	logger.Debugf(ctx, "Query: %s. Params: %v", query, params)
 
 	rows, err := db.Query(query, params...)
 	if err != nil {
@@ -828,7 +797,14 @@ func getTopUniversitiesSummary(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	summary, err := fetchTopUniversitiesSummary(limit)
+	countryStr := r.URL.Query().Get("country")
+	if countryStr == "" {
+		logger.Errorf(ctx, "country parameter is required")
+		http.Error(w, "country parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	summary, err := fetchTopUniversitiesSummary(ctx, limit, countryStr)
 	if err != nil {
 		logger.Errorf(ctx, "Failed to fetch top universities: %v", err)
 		http.Error(w, "Failed to fetch top universities", http.StatusInternalServerError)

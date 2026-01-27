@@ -107,6 +107,22 @@ export default defineConfig({
             },
           },
           {
+            // Match localhost API calls
+            urlPattern: /^https?:\/\/localhost:3000\/api\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "go-server-api-data-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+              },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
             // Cache API data with network-first strategy
             urlPattern: /^https?:\/\/.*\/api\/.*/i,
             handler: "NetworkFirst",

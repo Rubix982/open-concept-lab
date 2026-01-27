@@ -1,21 +1,17 @@
 import axios from "axios";
-import mapboxgl from "mapbox-gl";
-import type { Ref } from "vue";
-
 import type { UniSummary } from "@/models/models";
 import { errorHandler } from "@/utils/errorHandlingUtils";
-import { buildFeatureCollection } from "@/utils/coloringUtils";
-import { updatePointsLayer } from "@/utils/coloringUtils";
-import { CLUSTER_RADIUS } from "@/config/styleConfig";
-import { PIPELINE_STATUS } from "@/config/pipelineStatus";
+import { setupMapInteractions } from "./mapInteractions";
+import { logger } from "./logger";
 
 export async function fetchAllSummaries(
-  onCountryDone: (data: UniSummary[]) => void
+  onCountryDone: (data: UniSummary[]) => void,
+  country: string
 ) {
   try {
     // Fetch top US universities from new endpoint
     const response = await axios.get<UniSummary[]>(
-      "/api/universities/top?limit=100"
+      `/api/universities/top?limit=100&country=${country}`
     );
     const data = response.data;
     onCountryDone(data);
@@ -26,118 +22,113 @@ export async function fetchAllSummaries(
   }
 }
 
-export async function setupMapWithSummaries(
-  pipelineStatusMessage: Ref<string>,
-  map: any
-) {
-  let summaries: UniSummary[] = [];
+export async function setupMapWithSummaries(map: any, countryCode: string) {
+  const mapLogger = logger.child("MapSetup");
+
+  mapLogger.info("Setting up map for country", { countryCode });
+
+  removeExistingMapData(map);
+
   const universitiesById = new Map<string, UniSummary>();
+
   await fetchAllSummaries((data) => {
     if (!map) {
-      console.log("❌ Map not initialized");
+      mapLogger.error("Map not initialized");
       return;
     }
 
-    console.log("✅ Fetched data", data);
-    summaries.push(...data);
+    mapLogger.debug("Fetched universities", {
+      count: data.length,
+      countryCode,
+    });
 
-    const fc = buildFeatureCollection(universitiesById, summaries);
-
-    map.addSource("unis", {
+    map.addSource("universities", {
       type: "geojson",
-      data: fc,
-      cluster: true,
-      clusterRadius: CLUSTER_RADIUS,
-    });
-
-    // Cluster layers
-    map.addLayer({
-      id: "clusters",
-      type: "circle",
-      source: "unis",
-      filter: ["has", "point_count"],
-      paint: {
-        "circle-color": [
-          "step",
-          ["get", "point_count"],
-          "#51bbd6",
-          10,
-          "#f1f075",
-          30,
-          "#f28cb1",
-        ],
-        "circle-radius": ["step", ["get", "point_count"], 18, 10, 26, 30, 36],
-        "circle-opacity": 0.95,
+      data: {
+        type: "FeatureCollection",
+        features: data.map((uni) => ({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [uni.longitude, uni.latitude],
+          },
+          properties: {
+            id: uni.institution,
+            name: uni.institution,
+            funding: uni.funding,
+            top_area: uni.top_area ?? "Other",
+            label: shortLabel(uni.institution),
+            faculty_count: uni.faculty_count ?? 0,
+          },
+        })),
       },
     });
 
-    map.addLayer({
-      id: "cluster-count",
-      type: "symbol",
-      source: "unis",
-      filter: ["has", "point_count"],
-      layout: { "text-field": "{point_count_abbreviated}", "text-size": 12 },
-      paint: { "text-color": "#000" },
+    data.forEach((uni) => {
+      universitiesById.set(uni.institution, uni);
     });
+    setupMapInteractions(map, universitiesById);
 
-    // Dynamic point colors based on viz mode
-    updatePointsLayer(map);
-
-    // Labels
     map.addLayer({
-      id: "point-label",
-      type: "symbol",
-      source: "unis",
-      filter: ["!", ["has", "point_count"]],
-      layout: {
-        "text-field": ["get", "label"],
-        "text-size": 10,
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-      },
-      paint: { "text-color": "#fff" },
-    });
-
-    // Selected highlight
-    map.addLayer({
-      id: "selected-point",
+      id: "university-points",
       type: "circle",
-      source: "unis",
-      filter: ["==", ["get", "id"], ""],
+      source: "universities",
       paint: {
-        "circle-color": "#ff6b6b",
-        "circle-radius": 14,
-        "circle-stroke-width": 3,
+        "circle-radius": 8,
+        "circle-color": "#3b82f6",
+        "circle-stroke-width": 2,
         "circle-stroke-color": "#fff",
       },
     });
 
-    // Fit bounds
-    const coords = fc.features.map((f: any) => f.geometry.coordinates);
-    if (coords.length) {
-      const lons = coords.map((c: any) => c[0]);
-      const lats = coords.map((c: any) => c[1]);
-      const minLon = Math.min(...lons),
-        maxLon = Math.max(...lons),
-        minLat = Math.min(...lats),
-        maxLat = Math.max(...lats);
-      map.fitBounds(
-        [
-          [minLon, minLat],
-          [maxLon, maxLat],
-        ],
-        { padding: 40, maxZoom: 7, duration: 800 }
-      );
-    }
-
-    ["points", "clusters"].forEach((layer) => {
-      map!.on(
-        "mouseenter",
-        layer,
-        () => (map!.getCanvas().style.cursor = "pointer")
-      );
-      map!.on("mouseleave", layer, () => (map!.getCanvas().style.cursor = ""));
+    mapLogger.debug("Map setup complete", {
+      universities: data.length,
+      country: countryCode,
     });
+  }, countryCode);
+}
+
+function shortLabel(name: string): string {
+  if (!name) return "";
+  const parts = name.split(/\s+/).slice(0, 3);
+  return parts
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 4);
+}
+
+// Helper function to remove existing map data
+function removeExistingMapData(map: any) {
+  const mapLogger = logger.child("MapCleanup");
+
+  // List of layer IDs to remove
+  const layersToRemove = [
+    "university-points",
+    "clusters",
+    "cluster-count",
+    "point-label",
+    "selected-point",
+  ];
+
+  // List of source IDs to remove
+  const sourcesToRemove = ["universities", "unis"];
+
+  // Remove layers
+  layersToRemove.forEach((layerId) => {
+    if (map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+      mapLogger.debug("Removed layer", { layerId });
+    }
   });
 
-  pipelineStatusMessage.value = PIPELINE_STATUS.COMPLETED;
+  // Remove sources
+  sourcesToRemove.forEach((sourceId) => {
+    if (map.getSource(sourceId)) {
+      map.removeSource(sourceId);
+      mapLogger.debug("Removed source", { sourceId });
+    }
+  });
+
+  mapLogger.info("Map cleanup complete");
 }

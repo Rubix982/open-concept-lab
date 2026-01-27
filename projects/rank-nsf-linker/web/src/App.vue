@@ -2,15 +2,12 @@
 import { onMounted } from "vue";
 import { preloadMapTiles } from "./public/serviceWorker";
 import WorldMap from "./components/WorldMap.vue";
+import { logCacheStats } from "./utils/backgroundServices";
 onMounted(() => {
   preloadMapTiles();
 });
 setInterval(() => {
-  caches.open("map-tiles-cache").then((cache) => {
-    cache.keys().then((keys) => {
-      console.log(`📊 Cached tiles: ${keys.length}`);
-    });
-  });
+  logCacheStats();
 }, 10000); // Every 10 seconds
 </script>
 

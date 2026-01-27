@@ -1,0 +1,171 @@
+/* mapInteractions.css */
+
+/* Tooltip styling */
+.map-tooltip .mapboxgl-popup-content {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.map-tooltip .mapboxgl-popup-tip {
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.tooltip-content {
+  text-align: center;
+}
+
+.faculty-count {
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* Popup styling */
+.university-popup {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.university-popup h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.uni-location {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.university-popup hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 12px 0;
+}
+
+.faculty-list {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.faculty-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.faculty-item {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.faculty-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.faculty-item strong {
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.faculty-item a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.faculty-item a:hover {
+  text-decoration: underline;
+}
+
+.faculty-item small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.faculty-item em {
+  color: #475569;
+  font-size: 12px;
+}
+
+.faculty-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.faculty-name a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.faculty-name a:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+.faculty-name span {
+  color: #1e293b;
+}
+
+.faculty-metrics {
+  color: #64748b;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.faculty-interests,
+.faculty-areas {
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.faculty-interests strong,
+.faculty-areas strong {
+  color: #475569;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.faculty-interests {
+  color: #059669;
+}
+
+.faculty-areas {
+  color: #7c3aed;
+}
+
+.no-data {
+  color: #94a3b8;
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+}
+
+/* Scrollbar styling */
+.faculty-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.faculty-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.faculty-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.faculty-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

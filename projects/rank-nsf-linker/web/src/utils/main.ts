@@ -5,8 +5,11 @@ import mapboxgl from "mapbox-gl";
 import { errorHandler } from "@/utils/errorHandlingUtils";
 import { setupMapWithSummaries } from "@/utils/filteringUtils";
 import { PIPELINE_STATUS } from "@/config/pipelineStatus";
+import { logger } from "@/utils/logger";
+import { selectedCountry } from "@/config/mapSettings";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+const mainLogger = logger.child("main");
 
 /*
 # UI/UX improvements - enumerated
@@ -154,7 +157,7 @@ export async function initializeMap(
   mapContainer: Ref<HTMLDivElement | null>,
   map: Ref<any>
 ) {
-  console.log("🗺️ Initializing map...");
+  mainLogger.debug("🗺️ Initializing map...");
 
   if (!mapContainer.value) {
     throw new Error("Map container not found");
@@ -175,12 +178,12 @@ export async function initializeMap(
     fadeDuration: 300,
   });
 
-  console.log(
+  mainLogger.debug(
     `✅ Map instance created. Container size: ${offsetWidth} x ${offsetHeight}.`
   );
 
   map.value.on("load", () => {
-    console.log("✅ Map loaded and rendered");
+    mainLogger.debug("✅ Map loaded and rendered");
   });
 
   map.value.on("error", (e: any) => {
@@ -195,7 +198,7 @@ export async function initializeMap(
         new mapboxgl.NavigationControl({ showCompass: true }),
         "top-left"
       );
-      console.log(`✅ Controls added`);
+      mainLogger.debug(`✅ Controls added`);
       resolve(map.value);
     });
   });
@@ -241,7 +244,7 @@ function handleHealthCheckError(err: any) {
 
 export async function waitForBackendReady(pipelineStatusMessage: Ref<string>) {
   let attempt = 0;
-  console.log(
+  mainLogger.debug(
     `⏳ Waiting for backend to be ready. Pipeline Status ${pipelineStatusMessage.value}`
   );
 
@@ -250,7 +253,7 @@ export async function waitForBackendReady(pipelineStatusMessage: Ref<string>) {
     pipelineStatusMessage.value === PIPELINE_STATUS.PENDING
   ) {
     attempt++;
-    console.log(`🔁 [Attempt ${attempt}] Checking backend health...`);
+    mainLogger.debug(`🔁 [Attempt ${attempt}] Checking backend health...`);
 
     const result = await checkBackendHealth();
     pipelineStatusMessage.value = result.status;
@@ -267,14 +270,24 @@ export async function loadMapData(
   pipelineStatusMessage: Ref<string>,
   map: Ref<any>
 ) {
-  console.log("🚀 Starting map data setup...");
+  mainLogger.debug("🚀 Starting map data setup...");
 
   try {
     if (!map.value) {
       throw new Error("Map instance is not initialized");
     }
-    await setupMapWithSummaries(pipelineStatusMessage, map.value);
-    console.log("🎉 Map data successfully loaded and rendered.");
+
+    // Use stored preference instead of hardcoded "USA"
+    const preferredCountry = selectedCountry.value;
+
+    mainLogger.debug("Loading map with preferred country", {
+      country: preferredCountry,
+    });
+
+    await setupMapWithSummaries(map.value, preferredCountry);
+
+    mainLogger.debug("🎉 Map data successfully loaded and rendered.");
+    pipelineStatusMessage.value = PIPELINE_STATUS.COMPLETED;
   } catch (err) {
     handleMapSetupError(pipelineStatusMessage, err);
   }

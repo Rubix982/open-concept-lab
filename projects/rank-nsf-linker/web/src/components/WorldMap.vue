@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  computed,
-  nextTick,
-} from "vue";
-import { updatePointsLayer } from "@/utils/coloringUtils.ts";
+// Libraries
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from "vue";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { registerSW } from "virtual:pwa-register";
+
+// Utils
 import {
   initializeMap,
   waitForBackendReady,
   loadMapData,
 } from "@/utils/main.ts";
-import {
-  vizMode,
-  PIPELINE_STATUS,
-  STATUS_CONFIG,
-} from "@/config/pipelineStatus.ts";
-import { registerSW } from "virtual:pwa-register";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import { PIPELINE_STATUS, STATUS_CONFIG } from "@/config/pipelineStatus.ts";
+import { logger } from "@/utils/logger";
 
+// Sub-components
+import LeftPanel from "./LeftPanel.vue";
+
+// Stores
+import { mapInstance } from "@/config/mapSettings";
+
+// Styles
 import "@/assets/styles/pwa.css";
 import "@/assets/styles/style.css";
 import "@/assets/styles/worldMap.css";
+import "@/assets/styles/mapInteractions.css";
 
 const pipelineStatusMessage = ref(PIPELINE_STATUS.PENDING);
 const currentPipelineStatus = computed(
@@ -34,20 +34,13 @@ const shouldShowMap = computed(
   () => pipelineStatusMessage.value === PIPELINE_STATUS.COMPLETED
 );
 const mapContainer = ref<HTMLDivElement | null>(null);
-const map = ref<mapboxgl.Map | null>(null);
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 onMounted(async () => {
   await waitForBackendReady(pipelineStatusMessage);
   await nextTick();
-
-  console.log("Container dimensions:", {
-    width: mapContainer.value?.offsetWidth,
-    height: mapContainer.value?.offsetHeight,
-  });
-
-  await initializeMap(mapContainer, map);
-  await loadMapData(pipelineStatusMessage, map);
+  await initializeMap(mapContainer, mapInstance);
+  await loadMapData(pipelineStatusMessage, mapInstance);
   if (mapContainer.value) {
     mapContainer.value.style.width = "100vw";
     mapContainer.value.style.height = "100vh";
@@ -59,14 +52,14 @@ const offlineReady = ref(false);
 const updateServiceWorker = registerSW({
   onNeedRefresh() {
     needRefresh.value = true;
-    console.log("🔄 New content available, click to update");
+    logger.debug("🔄 New content available, click to update");
   },
   onOfflineReady() {
     offlineReady.value = true;
-    console.log("✅ App ready to work offline");
+    logger.debug("✅ App ready to work offline");
   },
   onRegistered(registration) {
-    console.log("✅ Service Worker registered:", registration);
+    logger.debug("✅ Service Worker registered:", registration);
   },
   onRegisterError(error) {
     console.error("❌ Service Worker registration failed:", error);
@@ -83,12 +76,8 @@ async function updateApp() {
   closePrompt();
 }
 
-watch(vizMode, () => {
-  updatePointsLayer(map.value);
-});
-
 onBeforeUnmount(() => {
-  map.value?.remove();
+  mapInstance.value?.remove();
 });
 </script>
 
@@ -115,6 +104,8 @@ onBeforeUnmount(() => {
       <span>{{ currentPipelineStatus.message }}</span>
     </div>
   </div>
+
+  <LeftPanel />
 
   <div v-show="shouldShowMap" class="app" id="appMap">
     <div

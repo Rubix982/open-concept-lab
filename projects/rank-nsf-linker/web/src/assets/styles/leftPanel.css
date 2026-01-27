@@ -1,0 +1,102 @@
+/* leftPanel.css */
+
+.left-panel-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.left-panel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 380px;
+  background: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.left-panel.expanded {
+  transform: translateX(0);
+}
+
+.panel-content {
+  padding: 24px;
+}
+
+.panel-content h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.panel-content p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Toggle Button */
+.panel-toggle {
+  position: fixed;
+  left: 0;
+  top: 2%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 64px;
+  background: #ffffff;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+}
+
+.panel-toggle:hover {
+  background: #f8fafc;
+  width: 64px;
+}
+
+.panel-toggle.expanded {
+  left: 380px;
+}
+
+/* Chevron Icon */
+.chevron-icon {
+  color: #64748b;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.panel-toggle:hover .chevron-icon {
+  color: #1e293b;
+}
+
+/* Scrollbar Styling */
+.left-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-panel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.left-panel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.left-panel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
