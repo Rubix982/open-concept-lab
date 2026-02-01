@@ -87,17 +87,3 @@ type NsfJsonData struct {
 		RawText     string `json:"por_txt_cntn"`
 	} `json:"por"`
 }
-
-type LabModel struct {
-	Insitution    string
-	StreetAddress string
-	City          string
-	Phone         string
-	ZipCode       string
-	Country       string
-	Region        string
-	CountryAbbrv  string
-	Homepage      string
-	Latitude      float64
-	Longitude     float64
-}

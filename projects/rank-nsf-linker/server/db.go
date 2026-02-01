@@ -1233,6 +1233,10 @@ func identifyCanonicalUniversity(variants []string) string {
 		score int
 	}
 
+	overrideMap := map[string]string{
+		"Carnegie - Mellon University": "Carnegie Mellon University",
+	}
+
 	var scored []scoredVariant
 	for _, variant := range variants {
 		score := 0
@@ -1276,7 +1280,13 @@ func identifyCanonicalUniversity(variants []string) string {
 		return scored[i].score > scored[j].score
 	})
 
-	return scored[0].name
+	scoredName := scored[0].name
+
+	if overrideName := overrideMap[scoredName]; overrideName != "" {
+		return overrideName
+	}
+
+	return scoredName
 }
 
 // buildUniversityNormalizationMap creates a mapping of variant university names to their canonical forms.
@@ -1563,6 +1573,11 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 
 			// University Of Pennsylvania State University
 			"Penn State University, University Park",
+
+			// Carnegie Mellon Variants
+			"Carnegie - Mellon University",
+			"Carnegie Mellon University",
+			"Carnegie Institute",
 		}},
 	}
 
@@ -1609,6 +1624,8 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 					groupKey = "minnesota_twin_cities"
 				case strings.Contains(lower, "penn state"):
 					groupKey = "penn_state"
+				case strings.Contains(lower, "carnegie"):
+					groupKey = "cmu"
 				default:
 					continue
 				}
@@ -1691,6 +1708,26 @@ func removeTagsFromProfessorNames(mainCtx *colly.Context) error {
 	return nil
 }
 
+// getParentUniversity maps lab names to their parent universities
+func getParentUniversity(labName string) string {
+	// Hardcoded mapping of labs to their parent universities
+	parentMap := map[string]string{
+		// Carnegie Mellon University
+		"Carnegie Institution For Science Department Of Embryology": "Carnegie Mellon University",
+		"Carnegie Institution For Science":                          "Carnegie Mellon University",
+		"Carnegie Institution Of Washington":                        "Carnegie Mellon University",
+		"Carnegie Learning":                                         "Carnegie Mellon University",
+	}
+
+	// Check if we have a known parent
+	if parent, exists := parentMap[labName]; exists {
+		return parent
+	}
+
+	// Default: return the lab name itself (no known parent)
+	return labName
+}
+
 func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
@@ -1700,8 +1737,31 @@ func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 
 	logger.Infof(mainCtx, "🔎 Searching for labs in universities table...")
 
-	// Find all labs in universities table
-	rows, err := db.Query(`
+	hardcodedLabs := []string{
+		// Carnegie Mellon University
+		"Carnegie Institution For Science Department Of Embryology",
+		"Carnegie Institution For Science",
+		"Carnegie Museum Of Natural History",
+		"Carnegie Learning",
+		"Observatories Of The Carnegie Institution For Science",
+		"Carnegie Institution Of Washington",
+	}
+	whereConditions := []string{
+		"institution ILIKE '% lab%'",
+		"institution ILIKE '% laboratory%'",
+		"institution ILIKE '% research center%'",
+		"institution ILIKE '% research centre%'",
+		"institution ILIKE '% llc%'",
+		"institution ILIKE '% inc%'",
+		"institution ILIKE '% dept%'",
+	}
+
+	// Add exact matches for hardcoded labs
+	for _, lab := range hardcodedLabs {
+		whereConditions = append(whereConditions, fmt.Sprintf("institution = '%s'", lab))
+	}
+
+	dbQuery := fmt.Sprintf(`
 		SELECT
 			institution,
 			COALESCE(street_address, ''),
@@ -1715,14 +1775,11 @@ func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 			latitude,
 			longitude
 		FROM universities
-		WHERE institution ILIKE '% lab%'
-		OR institution ILIKE '% laboratory%'
-		OR institution ILIKE '% research center%'
-		OR institution ILIKE '% research centre%'
-		OR institution ILIKE '% llc%'
-		OR institution ILIKE '% inc%'
-		OR institution ILIKE '% dept%'
-	`)
+		WHERE %s
+	`, strings.Join(whereConditions, " OR "))
+
+	// Find all labs in universities table
+	rows, err := db.Query(dbQuery)
 	if err != nil {
 		logger.Errorf(mainCtx, "❌ Failed to query labs from universities: %v", err)
 		return fmt.Errorf("failed to query labs from universities: %w", err)
@@ -1730,100 +1787,68 @@ func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 
 	defer rows.Close()
 
-	var labs []LabModel
-	var scannedRows int
-
 	for rows.Next() {
+		tx, err := db.Begin()
+		if err != nil {
+			logger.Errorf(mainCtx, "❌ Failed to begin transaction: %v", err)
+			return fmt.Errorf("failed to begin transaction: %w", err)
+		}
+
+		stmt, err := tx.Prepare(`
+		INSERT INTO labs (lab, street_address, city, phone, zip_code, country, region, countryabbrv, homepage, latitude, longitude, institution)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		ON CONFLICT (lab) DO NOTHING;
+	`)
+		if err != nil {
+			logger.Errorf(mainCtx, "❌ Failed to prepare insert statement: %v", err)
+			tx.Rollback()
+			return fmt.Errorf("failed to prepare insert statement: %w", err)
+		}
+
 		var institution, streetAddr, city, phone, zipCode, country, region, countryAbbrv, homepage string
 		var latitude, longitude float64
 		rowScanErr := rows.Scan(&institution, &streetAddr, &city, &phone, &zipCode, &country, &region, &countryAbbrv, &homepage, &latitude, &longitude)
 		if rowScanErr != nil {
 			// Handle NULL float64 scan error gracefully for longitude and latitude
 			if strings.Contains(rowScanErr.Error(), "converting NULL to float64 is unsupported") {
+				// TOOD: This is a a longer effort and affects 12 rows only. We don't have lat,long for
+				// these extra rows for some reason (not universities at all), and ideally, we would
+				// like to get the long/lat once, and preserve somewhere in the volume beyond the
+				// life of this container, and then the container would pick up these once resolved
+				// coorindates, and use them ... or we could just Google Map search once instead of
+				// wasting 3 hours to automate something that affects only 2 rows. ¯\_(ツ)_/¯
 				continue
 			}
 
 			logger.Errorf(mainCtx, "❌ Failed to scan lab row: %v", rowScanErr)
 			return fmt.Errorf("failed to scan lab row: %w", rowScanErr)
 		}
-		labs = append(labs, LabModel{
-			Insitution:    institution,
-			StreetAddress: streetAddr,
-			City:          city,
-			Phone:         phone,
-			ZipCode:       zipCode,
-			Country:       country,
-			Region:        region,
-			CountryAbbrv:  countryAbbrv,
-			Homepage:      homepage,
-			Latitude:      latitude,
-			Longitude:     longitude,
-		})
-		scannedRows++
-	}
 
-	if len(labs) == 0 {
-		logger.Warnf(mainCtx, "⚠️ No labs found in universities table to copy.")
-		return nil
-	}
-
-	logger.Infof(mainCtx, "Found %d labs to copy from universities table.", scannedRows)
-
-	// Insert labs into labs table
-	tx, err := db.Begin()
-	if err != nil {
-		logger.Errorf(mainCtx, "❌ Failed to begin transaction: %v", err)
-		return fmt.Errorf("failed to begin transaction: %w", err)
-	}
-
-	stmt, err := tx.Prepare(`
-		INSERT INTO labs (lab, street_address, city, phone, zip_code, country, region, countryabbrv, homepage, latitude, longitude)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		ON CONFLICT (lab) DO NOTHING;
-	`)
-	if err != nil {
-		logger.Errorf(mainCtx, "❌ Failed to prepare insert statement: %v", err)
-		tx.Rollback()
-		return fmt.Errorf("failed to prepare insert statement: %w", err)
-	}
-
-	defer stmt.Close()
-
-	var insertedLabs int
-	for _, lab := range labs {
-		_, statementExecErr := stmt.Exec(lab.Insitution, lab.StreetAddress, lab.City, lab.Phone, lab.ZipCode, lab.Country, lab.Region, lab.CountryAbbrv, lab.Homepage, lab.Latitude, lab.Longitude)
+		_, statementExecErr := stmt.Exec(institution, streetAddr, city, phone, zipCode, country, region, countryAbbrv, homepage, latitude, longitude, getParentUniversity(institution))
 		if statementExecErr != nil {
-			logger.Errorf(mainCtx, "❌ Failed to insert lab '%s': %v", lab.Insitution, statementExecErr)
+			logger.Errorf(mainCtx, "❌ Failed to insert lab '%s': %v", institution, statementExecErr)
 			tx.Rollback()
 			return fmt.Errorf("failed to insert lab: %w", statementExecErr)
 		}
-		insertedLabs++
-		logger.Infof(mainCtx, "➕ Inserted lab '%s' into labs table.", lab.Insitution)
-	}
 
-	logger.Infof(mainCtx, "🗑️ Deleting copied labs from universities table...")
+		logger.Infof(mainCtx, "➕ Inserted lab '%s' into labs table.", institution)
 
-	// TODO: All labs must obviously have a link to a central university. For now, we are deleting
-	// the mention of the labs from the universities table. In the future, we should create a
-	// proper relationship between labs and their parent universities.
-
-	var deletedLabs int
-	for _, lab := range labs {
-		if _, err := tx.Exec(`DELETE FROM labs WHERE institution = $1`, lab.Insitution); err != nil {
-			logger.Errorf(mainCtx, "❌ Failed to delete lab '%s' from universities: %v", lab.Insitution, err)
+		if _, err := tx.Exec(`DELETE FROM universities WHERE institution = $1`, institution); err != nil {
+			logger.Errorf(mainCtx, "❌ Failed to delete lab '%s' from universities: %v", institution, err)
 			tx.Rollback()
 			return fmt.Errorf("failed to delete lab from universities: %w", err)
 		}
-		deletedLabs++
-		logger.Infof(mainCtx, "🗑️ Deleted lab '%s' from universities table.", lab.Insitution)
+
+		logger.Infof(mainCtx, "🗑️ Deleted lab '%s' from universities table.", institution)
+
+		if err := tx.Commit(); err != nil {
+			logger.Errorf(mainCtx, "❌ Failed to commit transaction: %v", err)
+			return fmt.Errorf("failed to commit transaction: %w", err)
+		}
+
+		stmt.Close()
 	}
 
-	if err := tx.Commit(); err != nil {
-		logger.Errorf(mainCtx, "❌ Failed to commit transaction: %v", err)
-		return fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	logger.Infof(mainCtx, "✅ Copied %d labs from universities to labs table and deleted them from universities.", insertedLabs)
 	return nil
 }
 
@@ -1969,9 +1994,9 @@ func populatePostgres(mainCtx *colly.Context) {
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
-		{"Copy Labs from Universities to Labs Table", copyLabsFromUniversitiesToLabsTable},
 		{"Remove Duplicate Entries", removeDuplicateEntries},
 		{"Validate and Format DB Data", validateAndFormatDbData},
+		{"Copy Labs from Universities to Labs Table", copyLabsFromUniversitiesToLabsTable},
 	}
 
 	totalSteps := len(steps)
