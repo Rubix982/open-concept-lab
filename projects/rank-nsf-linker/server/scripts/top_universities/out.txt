@@ -6,9 +6,9 @@ WITH input_list(name) AS (
     ('University of California--Berkeley'), -- ✅
     ('University of Illinois--Urbana-Champaign'), -- ✅
     ('Georgia Institute of Technology'), -- ✅
-    ('Cornell University'),
-    ('Princeton University'),
-    ('University of Texas--Austin'),
+    ('Cornell University'), -- ✅
+    ('Princeton University'), -- ✅
+    ('University of Texas--Austin'), -- ✅
     ('University of Washington'),
     ('University of Michigan--Ann Arbor'),
     ('California Institute of Technology'),
