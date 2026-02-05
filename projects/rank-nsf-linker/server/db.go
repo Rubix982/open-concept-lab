@@ -1761,6 +1761,21 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 
 		// Stanford University
 		"Stanford Univeristy": "Stanford University",
+
+		// Georgia University
+		"University Of Georgia": "University of Georgia",
+
+		// Georgia Institute of Technology
+		"Georgia Institute Of Technology": "Georgia Institute of Technology",
+
+		// George Washington University
+		"The George Washington University": "George Washington University",
+
+		// University of Washington
+		"University Of Washington": "University of Washington",
+
+		// Washington University
+		"Washington University in St Louis": "Washington University",
 	}
 
 	// Step 1: Build normalization map for universities and normalize references
@@ -1936,6 +1951,15 @@ func getParentUniversity(labName string) string {
 		"Stanford University - Department Of Biology":   "Stanford University",
 		"Stanford University Department Of Mathematics": "Stanford University",
 		"Stanford University - Biology Department":      "Stanford University",
+
+		// Cornell Tech
+		"Cornell Tech": "Cornell University",
+		"Joan And Sanford I Weill Medical College Of Cornell University": "Cornell University",
+
+		// University Of Washington
+		"University Of Washington Sch Of Marine And Env Affairs":      "University of Washington",
+		"University Of Washington Department Of Atmospheric Sciences": "University of Washington",
+		"University Of Washington Department Of Mathematics":          "University of Washington",
 	}
 
 	// Check if we have a known parent
@@ -1948,6 +1972,11 @@ func getParentUniversity(labName string) string {
 }
 
 func copyOrgsAndStartupsFromUniTable(mainCtx *colly.Context) error {
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+
 	rowsToEntertain := []string{
 		"Harvard - Smithsonian Center For Astrophysics",
 		"Smithsonian National Museum Of Natural History",
@@ -1969,9 +1998,30 @@ func copyOrgsAndStartupsFromUniTable(mainCtx *colly.Context) error {
 		"Virolock Technologies Limited Liability Company",
 		"Neurx Medical Limited Liability Company",
 		"Department Of Invertebrate Zoology Smithsonian Institution",
+
+		// Georgia Tech
+		"Georgia Tech Research Corp",
+		"Georgia Tech Research Corporation",
+		"Georgia Tech Applied Research Corporation",
+		"Georgia Biomedical Partnership",
+		"Georgia Research Alliance",
+
+		// Cornell
+		"Weill Cornell Graduate School Of Medical Sciences",
 	}
 
-	for range rowsToEntertain {
+	placeholders := make([]string, len(rowsToEntertain))
+	args := make([]interface{}, len(rowsToEntertain))
+	for i, name := range rowsToEntertain {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = name
+	}
+
+	_, err = db.Exec(fmt.Sprintf(
+		"INSERT INTO organizations SELECT * FROM universities WHERE institution IN (%s)", strings.Join(placeholders, ", "),
+	), args...)
+	if err != nil {
+		return fmt.Errorf("failed to copy over rows from the 'universities' table to the 'organizations' table. Error: %v", err)
 	}
 
 	return nil
@@ -2011,6 +2061,15 @@ func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 		"Stanford University - Department Of Biology",
 		"Stanford University Department Of Mathematics",
 		"Stanford University - Biology Department",
+
+		// Cornell
+		"Cornell Tech",
+		"Joan And Sanford I Weill Medical College Of Cornell University",
+
+		// University of Washington
+		"University Of Washington Sch Of Marine And Env Affairs",
+		"University Of Washington Department Of Atmospheric Sciences",
+		"University Of Washington Department Of Mathematics",
 	}
 	whereConditions := []string{
 		"institution ILIKE '% lab%'",

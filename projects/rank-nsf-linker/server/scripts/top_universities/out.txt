@@ -1,11 +1,11 @@
 WITH input_list(name) AS (
   VALUES
-    ('Massachusetts Institute of Technology'),
-    ('Carnegie Mellon University'),
-    ('Stanford University'),
-    ('University of California--Berkeley'),
-    ('University of Illinois--Urbana-Champaign'),
-    ('Georgia Institute of Technology'),
+    ('Massachusetts Institute of Technology'), -- ✅
+    ('Carnegie Mellon University'), -- ✅
+    ('Stanford University') -- ✅,
+    ('University of California--Berkeley'), -- ✅
+    ('University of Illinois--Urbana-Champaign'), -- ✅
+    ('Georgia Institute of Technology'), -- ✅
     ('Cornell University'),
     ('Princeton University'),
     ('University of Texas--Austin'),

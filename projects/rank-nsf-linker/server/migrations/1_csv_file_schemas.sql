@@ -94,6 +94,9 @@ CREATE TABLE IF NOT EXISTS award (
   raw_content TEXT
 );
 
+-- TODO: For 'award', now that we have orgnizations as well, we should also reference via foreign
+-- key if that also happens in our data
+
 CREATE TABLE IF NOT EXISTS program_element (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
   award_id TEXT REFERENCES award (id) ON DELETE CASCADE,
