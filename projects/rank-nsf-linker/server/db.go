@@ -20,6 +20,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	pq "github.com/lib/pq"
 	"github.com/lithammer/fuzzysearch/fuzzy"
+	"github.com/spf13/cast"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -1449,6 +1450,45 @@ func normalizeUniversityReferences(mainCtx *colly.Context, normalizationMap map[
 	return nil
 }
 
+func removeEdgeCaseEntries(mainCtx *colly.Context) error {
+	db, err := GetDB()
+	if err != nil {
+		return fmt.Errorf("cannot get DB: %w", err)
+	}
+
+	sqlDeleteQueryTemplate := `DELETE FROM %s WHERE %s IN (%s)`
+
+	dataToRemove := map[string]interface{}{
+		"universities": map[string]interface{}{
+			"key": "institution",
+			"entries": []string{
+				// The reason we are removing this row, is because "University Of Masschusetts"
+				// is a generic name of a family of universities. https://en.wikipedia.org/wiki/University_of_Massachusetts
+				// Specifically, this entry corresponds to six other universities, which is a
+				// parent-child mapping we do not support yet. Further, the row for this in universities
+				// provides the street address as "South Hawkins Avenue" and city as "Akron"
+				// which does not map to any of the six locations for UMass. The currently listed
+				// locations are -> 'Amherst,' 'Boston,' 'Dartmouth,' 'Lowell,' 'Worcestor - Medical,'
+				// and 'Dartmouth - Law'
+				"University Of Massachusetts",
+			},
+		},
+	}
+
+	for tableToRemoveFrom, tableMetadata := range dataToRemove {
+		tableMetadataMap := cast.ToStringMap(tableMetadata)
+		tableKey := cast.ToString(tableMetadataMap["key"])
+		tableEntries := cast.ToStringSlice(tableMetadataMap["entries"])
+		sqlFormattedQuery := fmt.Sprintf(sqlDeleteQueryTemplate, tableToRemoveFrom, tableKey, tableEntries)
+		if _, err := db.Exec(sqlFormattedQuery); err != nil {
+			logger.Errorf(mainCtx, "Failed to execute deleteion query -> '%s'. Error: %v", sqlFormattedQuery, err)
+			return fmt.Errorf("failed to execute deletion query for table '%s'. Error: %v", tableToRemoveFrom, err)
+		}
+	}
+
+	return nil
+}
+
 func removeDuplicateEntries(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
@@ -1574,22 +1614,176 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 			// University Of Pennsylvania State University
 			"Penn State University, University Park",
 
-			// Carnegie Mellon Variants
+			// Carnegie Mellon Variants
 			"Carnegie - Mellon University",
 			"Carnegie Mellon University",
 			"Carnegie Institute",
-		}},
+
+			// MIT Variants
+			"Massachusetts Institute Of Technology Mit",
+			"Massachusetts Institute Of Technology",
+			"Massachusetts Institute of Technology",
+
+			// University Of Massachusetts
+			"University Of Massachusetts",
+			"University of Massachusetts Boston",
+		},
+		},
+	}
+
+	// Override map: explicit variant -> canonical name mappings
+	universityOverrides := map[string]string{
+		// Berkeley
+		"U.c. Berkeley": "University of California, Berkeley",
+		"Uc Berkeley":   "University of California, Berkeley",
+		"Department Of Mathematics, University Of California, Berkeley": "University of California, Berkeley",
+		"University Of California, Berkeley Department Of Mathematics":  "University of California, Berkeley",
+		"University Of California, Berkeley, Department Of Mathematics": "University of California, Berkeley",
+		"Department Of Integrative Biology, Uc Berkeley":                "University of California, Berkeley",
+		"The University Of California Berkeley":                         "University of California, Berkeley",
+		"Univ. of California - Berkeley":                                "University of California, Berkeley",
+		"University Of California - Berkeley":                           "University of California, Berkeley",
+		"Univ. Of California, Berkeley, Dept Of Integrative Biology":    "University of California, Berkeley",
+		"Univ of California Berkeley":                                   "University of California, Berkeley",
+		"The University Of California, Berkeley":                        "University of California, Berkeley",
+		"University Of California, Berkeley":                            "University of California, Berkeley",
+		"University Of California-Berkeley":                             "University of California, Berkeley",
+		"Univ Of California Berkeley":                                   "University of California, Berkeley",
+
+		// UIUC
+		"Univ. of Illinois at Urbana-Champaign":      "University of Illinois Urbana-Champaign",
+		"University Of Illinios Urbana-Champaign":    "University of Illinois Urbana-Champaign",
+		"University Of Illinois, Urbana-Champaign":   "University of Illinois Urbana-Champaign",
+		"University Of Illinois Urbana-Champaign":    "University of Illinois Urbana-Champaign",
+		"University Of Illinois At Urbana Champaign": "University of Illinois Urbana-Champaign",
+		"Univ of Illinois at Urbana Champaign":       "University of Illinois Urbana-Champaign",
+		"University Of Illinois At Urbana-Champaign": "University of Illinois Urbana-Champaign",
+		"Univ Of Illinois At Urbana Champaign":       "University of Illinois Urbana-Champaign",
+
+		// UT Austin
+		"University Of Texas At Austin":                              "University of Texas at Austin",
+		"University of Texas at Austin":                              "University of Texas at Austin",
+		"The University Of Texas At Austin":                          "University of Texas at Austin",
+		"University Of Texas Austin":                                 "University of Texas at Austin",
+		"University Of Texas At Austin Marine Science Institute":     "University of Texas at Austin",
+		"The University Of Texas At Austin, Department Of Astronomy": "University of Texas at Austin",
+
+		// Michigan
+		"Regents Of The University Of Michigan Ann Arbor":   "University of Michigan-Ann Arbor",
+		"Regents Of The University Of Michigan - Ann Arbor": "University of Michigan-Ann Arbor",
+
+		// UCSD
+		"The Regents Of The Univ Of Calif U c San Diego":                  "University of California, San Diego",
+		"San Diego State University":                                      "San Diego State University", // Keep separate
+		"University Of California San Diego Scripps Inst Of Oceanography": "University of California, San Diego",
+		"University Of San Diego":                                         "University of San Diego", // Keep separate
+		"University Of California San Diego (Ucsd)":                       "University of California, San Diego",
+		"Univ. of California - San Diego":                                 "University of California, San Diego",
+		"San Diego State University Foundation":                           "San Diego State University", // Keep separate
+		"Scripps Institution Of Oceanography Uc San Diego":                "University of California, San Diego",
+		"University Of California San Diego":                              "University of California, San Diego",
+		"Univ of California San Diego":                                    "University of California, San Diego",
+		"University Of California, San Diego":                             "University of California, San Diego",
+		"Univ Of California San Diego":                                    "University of California, San Diego",
+
+		// Wisconsin-Madison
+		"University Of Wisconsin Madison":                               "University of Wisconsin-Madison",
+		"University of Wisconsin Madison":                               "University of Wisconsin-Madison",
+		"University Of Wisconsin, Madison":                              "University of Wisconsin-Madison",
+		"University Of Wisconsin-Madison / Trout Lake Research Station": "University of Wisconsin-Madison",
+		"University Of Wisconsin - Madison, Dept Of Botany":             "University of Wisconsin-Madison",
+		"University Of Wisconsin-Madison":                               "University of Wisconsin-Madison",
+
+		// UCLA
+		"University Of California Los Angeles":     "University of California, Los Angeles",
+		"University Of California - Los Angeles":   "University of California, Los Angeles",
+		"University Of California, Los Angeles":    "University of California, Los Angeles",
+		"Univ. of California - Los Angeles":        "University of California, Los Angeles",
+		"California State University, Los Angeles": "California State University, Los Angeles", // Keep separate
+		"Univ of California Los Angeles":           "University of California, Los Angeles",
+		"Univ Of California Los Angeles":           "University of California, Los Angeles",
+
+		// UMD
+		"University of Maryland College Park":  "University of Maryland, College Park",
+		"University Of Maryland College Park":  "University of Maryland, College Park",
+		"University Of Maryland, College Park": "University of Maryland, College Park",
+
+		// Purdue/IUPUI
+		"Indiana University-Purdue University At Indianapolis": "Indiana University-Purdue University Indianapolis",
+
+		// UMass
+		"University of Massachusetts Amherst":   "University of Massachusetts - Amherst",
+		"University Of Massachusetts Amherst":   "University of Massachusetts - Amherst",
+		"University Of Massachusetts - Amherst": "University of Massachusetts - Amherst",
+		"University of Massachusetts Boston":    "University of Massachusetts - Boston",
+		"University Of Massachusetts Boston":    "University of Massachusetts - Boston",
+		"University of Massachusetts Dartmouth": "University of Massachusetts - Dartmouth",
+		"University Of Massachusetts Dartmouth": "University of Massachusetts - Dartmouth",
+		"University Of Massachusetts Lowell":    "University of Massachusetts - Lowell",
+		"University of Massachusetts Lowell":    "University of Massachusetts - Lowell",
+
+		// UC Irvine
+		"University Of California Irvine":    "University of California, Irvine",
+		"Univ. of California - Irvine":       "University of California, Irvine",
+		"University Of California At Irvine": "University of California, Irvine",
+		"University Of California, Irvine":   "University of California, Irvine",
+		"Univ of California Irvine":          "University of California, Irvine",
+		"Univ Of California Irvine":          "University of California, Irvine",
+
+		// UC Santa Barbara
+		"University Of California Santa Barbara":  "University of California, Santa Barbara",
+		"University Of Califonia, Santa Barbara":  "University of California, Santa Barbara",
+		"Univ. of California - Santa Barbara":     "University of California, Santa Barbara",
+		"Univ of California Santa Barbara":        "University of California, Santa Barbara",
+		"University Of California, Santa Barbara": "University of California, Santa Barbara",
+		"Univ Of California Santa Barbara":        "University of California, Santa Barbara",
+
+		// UNC Chapel Hill
+		"University Of North Carolina Chapel Hill":  "University of North Carolina at Chapel Hill",
+		"University Of North Carolina, Chapel Hill": "University of North Carolina at Chapel Hill",
+
+		// Minnesota
+		"University Of Minnesota Twin Cities":   "University of Minnesota-Twin Cities",
+		"University Of Minnesota - Twin Cities": "University of Minnesota-Twin Cities",
+
+		// Penn State
+		"Penn State University, University Park": "Pennsylvania State University",
+
+		// CMU
+		"Carnegie - Mellon University": "Carnegie Mellon University",
+		"Carnegie Mellon University":   "Carnegie Mellon University",
+		"Carnegie Institute":           "Carnegie Mellon University",
+
+		// MIT
+		"Massachusetts Institute Of Technology Mit": "Massachusetts Institute of Technology",
+		"Massachusetts Institute Of Technology":     "Massachusetts Institute of Technology",
+		"Massachusetts Institute of Technology":     "Massachusetts Institute of Technology",
+
+		// Stanford University
+		"Stanford Univeristy": "Stanford University",
 	}
 
 	// Step 1: Build normalization map for universities and normalize references
 	if universityDuplicates, ok := duplicateData["universities"]; ok {
 		if institutionVariants, ok := universityDuplicates["institution"]; ok {
+			normalizationMap := make(map[string]string)
+
+			// Apply overrides first
+			for variant, canonical := range universityOverrides {
+				normalizationMap[variant] = canonical
+			}
+
+			// Heuristic grouping for anything not in override
 			// Group variants by university (currently all in one list, need to split by university)
 			// For now, we'll create groups based on common patterns
 			groups := make(map[string][]string)
 
 			// Group by university name patterns
 			for _, variant := range institutionVariants {
+				if _, exists := normalizationMap[variant]; exists {
+					continue // Already handled by override
+				}
+
 				lower := strings.ToLower(variant)
 				var groupKey string
 
@@ -1626,6 +1820,8 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 					groupKey = "penn_state"
 				case strings.Contains(lower, "carnegie"):
 					groupKey = "cmu"
+				case strings.Contains(lower, "massachusetts institute of technology"):
+					groupKey = "mit"
 				default:
 					continue
 				}
@@ -1633,8 +1829,13 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 				groups[groupKey] = append(groups[groupKey], variant)
 			}
 
-			// Build normalization map
-			normalizationMap := buildUniversityNormalizationMap(groups)
+			// Build normalization map from heuristic groups (only for non-override variants)
+			heuristicMap := buildUniversityNormalizationMap(groups)
+			for variant, canonical := range heuristicMap {
+				if _, exists := normalizationMap[variant]; !exists {
+					normalizationMap[variant] = canonical
+				}
+			}
 
 			// Log the normalization plan
 			logger.Infof(mainCtx, "📋 University normalization plan:")
@@ -1715,8 +1916,26 @@ func getParentUniversity(labName string) string {
 		// Carnegie Mellon University
 		"Carnegie Institution For Science Department Of Embryology": "Carnegie Mellon University",
 		"Carnegie Institution For Science":                          "Carnegie Mellon University",
-		"Carnegie Institution Of Washington":                        "Carnegie Mellon University",
 		"Carnegie Learning":                                         "Carnegie Mellon University",
+		"Observatories Of The Carnegie Institution For Science":     "Carnegie Mellon University",
+		"Carnegie Institution Of Washington":                        "Carnegie Mellon University",
+
+		// MIT
+		"Massachusetts Eye And Ear Infirmary":                             "Massachusetts Institute of Technology",
+		"Massachusetts General Hospital":                                  "Massachusetts Institute of Technology",
+		"Massachusetts Institute Of Technology Department Of Mathematics": "Massachusetts Institute of Technology",
+		"Mit Civil And Environmental Engineering":                         "Massachusetts Institute of Technology",
+		"Mit Department Of Mathematics":                                   "Massachusetts Institute of Technology",
+
+		// University Of Masachusetts
+		"Department Of Linguistics University Of Massachusetts Amherst": "University Of Massachusetts",
+
+		// Stanford University
+		"Stanford University Mathematics Department":    "Stanford University",
+		"Stanford Nanofabrication Facility Snf":         "Stanford University",
+		"Stanford University - Department Of Biology":   "Stanford University",
+		"Stanford University Department Of Mathematics": "Stanford University",
+		"Stanford University - Biology Department":      "Stanford University",
 	}
 
 	// Check if we have a known parent
@@ -1726,6 +1945,36 @@ func getParentUniversity(labName string) string {
 
 	// Default: return the lab name itself (no known parent)
 	return labName
+}
+
+func copyOrgsAndStartupsFromUniTable(mainCtx *colly.Context) error {
+	rowsToEntertain := []string{
+		"Harvard - Smithsonian Center For Astrophysics",
+		"Smithsonian National Museum Of Natural History",
+		"Smithsonian Institution",
+		"Smith College",
+		"RMIT University",
+		"Smithsonian Institution Astrophysical Observatory",
+		"Mithrilai Corp",
+		"Smithsonian Astrophysical Observatory",
+		"Massachusetts General Hospital The General Hospital Corp",
+		"Nantucket Maria Mitchell Association",
+		"Lusk Alexander Dmitri",
+		"Scientific Committee On Oceanic Research Scor",
+		"Smithsonian Conservation Biology Institute And National Zoo",
+		"Coherent Photonics Limited Liability Company",
+		"Smithsonian Tropical Research Institute",
+		"Mitre Corporation Virginia",
+		"Vishwamitra Research Institute",
+		"Virolock Technologies Limited Liability Company",
+		"Neurx Medical Limited Liability Company",
+		"Department Of Invertebrate Zoology Smithsonian Institution",
+	}
+
+	for range rowsToEntertain {
+	}
+
+	return nil
 }
 
 func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
@@ -1745,6 +1994,23 @@ func copyLabsFromUniversitiesToLabsTable(mainCtx *colly.Context) error {
 		"Carnegie Learning",
 		"Observatories Of The Carnegie Institution For Science",
 		"Carnegie Institution Of Washington",
+
+		// MIT
+		"Massachusetts Eye And Ear Infirmary",
+		"Massachusetts General Hospital",
+		"Massachusetts Institute Of Technology Department Of Mathematics",
+		"Mit Civil And Environmental Engineering",
+		"Mit Department Of Mathematics",
+
+		// University Of Massachusetts
+		"Department Of Linguistics University Of Massachusetts Amherst",
+
+		// Stanford University
+		"Stanford University Mathematics Department",
+		"Stanford Nanofabrication Facility Snf",
+		"Stanford University - Department Of Biology",
+		"Stanford University Department Of Mathematics",
+		"Stanford University - Biology Department",
 	}
 	whereConditions := []string{
 		"institution ILIKE '% lab%'",
@@ -1994,9 +2260,15 @@ func populatePostgres(mainCtx *colly.Context) {
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
+		{"Remove Edge Case Entries", removeEdgeCaseEntries},
 		{"Remove Duplicate Entries", removeDuplicateEntries},
 		{"Validate and Format DB Data", validateAndFormatDbData},
 		{"Copy Labs from Universities to Labs Table", copyLabsFromUniversitiesToLabsTable},
+		// TODO: We need to introduce a new table where we can copy over
+		// rows from 'universities' to tables that are specifically for
+		// independent institutions like the "Smithsonian Institute" or
+		// the "Mithrilai Corp"
+		{"Copy Organizations And Startups Over", copyOrgsAndStartupsFromUniTable},
 	}
 
 	totalSteps := len(steps)
