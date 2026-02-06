@@ -1,1 +1,3 @@
 *.csv
+ipeds_cache/**/**
+ipeds_dict/**/**

@@ -406,6 +406,161 @@ SELECT i.unitid,
     f.year
 FROM ipeds_institutions i
     JOIN ipeds_finance f ON i.unitid = f.unitid;
+-- Institutional Characteristics
+CREATE TABLE ipeds_institutional_characteristics (
+    unitid INTEGER PRIMARY KEY,
+    open_admission INTEGER,
+    credit_life_experience INTEGER,
+    credit_exam INTEGER,
+    credit_military INTEGER,
+    credit_online INTEGER,
+    student_learning_outcomes INTEGER,
+    learning_assessment INTEGER,
+    calendar_system INTEGER,
+    years_college_required INTEGER,
+    undergrad_application_fee INTEGER,
+    grad_application_fee INTEGER,
+    room_offered INTEGER,
+    board_offered INTEGER,
+    room_capacity INTEGER,
+    board_capacity INTEGER,
+    room_charge INTEGER,
+    board_charge INTEGER,
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Tuition and Fees
+CREATE TABLE ipeds_tuition_fees (
+    unitid INTEGER,
+    year INTEGER,
+    tuition_in_district INTEGER,
+    tuition_in_state INTEGER,
+    tuition_out_of_state INTEGER,
+    fees_in_district INTEGER,
+    fees_in_state INTEGER,
+    fees_out_of_state INTEGER,
+    per_credit_in_district INTEGER,
+    per_credit_in_state INTEGER,
+    per_credit_out_of_state INTEGER,
+    grad_tuition_in_state INTEGER,
+    grad_tuition_out_of_state INTEGER,
+    grad_fees_in_state INTEGER,
+    grad_fees_out_of_state INTEGER,
+    PRIMARY KEY (unitid, year),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Graduation Rates
+CREATE TABLE ipeds_graduation_rates (
+    unitid INTEGER,
+    year INTEGER,
+    cohort_type INTEGER,
+    cohort_size INTEGER,
+    completers_total INTEGER,
+    completers_men INTEGER,
+    completers_women INTEGER,
+    completers_nonresident INTEGER,
+    completers_hispanic INTEGER,
+    completers_american_indian INTEGER,
+    completers_asian INTEGER,
+    completers_black INTEGER,
+    completers_hawaiian INTEGER,
+    completers_white INTEGER,
+    completers_two_or_more INTEGER,
+    completers_unknown INTEGER,
+    PRIMARY KEY (unitid, year, cohort_type),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Graduation by Income Level
+CREATE TABLE ipeds_graduation_pell (
+    unitid INTEGER,
+    year INTEGER,
+    cohort_type INTEGER,
+    pell_cohort_size INTEGER,
+    pell_completers_total INTEGER,
+    pell_completers_men INTEGER,
+    pell_completers_women INTEGER,
+    loan_cohort_size INTEGER,
+    loan_completers_total INTEGER,
+    loan_completers_men INTEGER,
+    loan_completers_women INTEGER,
+    PRIMARY KEY (unitid, year, cohort_type),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Faculty Salaries
+CREATE TABLE ipeds_faculty_salaries (
+    unitid INTEGER,
+    year INTEGER,
+    academic_rank INTEGER,
+    gender INTEGER,
+    faculty_count INTEGER,
+    average_salary INTEGER,
+    PRIMARY KEY (unitid, year, academic_rank, gender),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Financial Aid
+CREATE TABLE ipeds_financial_aid (
+    unitid INTEGER,
+    year INTEGER,
+    undergrads_total INTEGER,
+    fulltime_firsttime_total INTEGER,
+    federal_grant_recipients INTEGER,
+    federal_grant_percent NUMERIC(5, 2),
+    pell_recipients INTEGER,
+    pell_percent NUMERIC(5, 2),
+    state_local_grant_recipients INTEGER,
+    state_local_grant_percent NUMERIC(5, 2),
+    institutional_grant_recipients INTEGER,
+    institutional_grant_percent NUMERIC(5, 2),
+    loan_recipients INTEGER,
+    loan_percent NUMERIC(5, 2),
+    grant_aid_recipients INTEGER,
+    grant_aid_percent NUMERIC(5, 2),
+    average_grant_amount INTEGER,
+    any_aid_recipients INTEGER,
+    any_aid_percent NUMERIC(5, 2),
+    PRIMARY KEY (unitid, year),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Outcome Measures
+CREATE TABLE ipeds_outcome_measures (
+    unitid INTEGER,
+    year INTEGER,
+    outcome_cohort_size INTEGER,
+    completed_8yr_percent NUMERIC(5, 2),
+    completed_8yr_men INTEGER,
+    completed_8yr_women INTEGER,
+    enrolled_8yr_percent NUMERIC(5, 2),
+    enrolled_8yr_men INTEGER,
+    enrolled_8yr_women INTEGER,
+    neither_8yr_percent NUMERIC(5, 2),
+    PRIMARY KEY (unitid, year),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Academic Libraries
+CREATE TABLE ipeds_academic_libraries (
+    unitid INTEGER,
+    year INTEGER,
+    books_physical INTEGER,
+    books_electronic INTEGER,
+    serials_digital INTEGER,
+    serials_print INTEGER,
+    databases INTEGER,
+    video_materials INTEGER,
+    audio_materials INTEGER,
+    total_expenses BIGINT,
+    staff_expenses BIGINT,
+    collection_expenses BIGINT,
+    operations_expenses BIGINT,
+    librarian_fte NUMERIC,
+    service_hours_per_year INTEGER,
+    PRIMARY KEY (unitid, year),
+    FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
+);
+-- Indexes
+CREATE INDEX idx_tuition_year ON ipeds_tuition_fees(year);
+CREATE INDEX idx_grad_rates_year ON ipeds_graduation_rates(year);
+CREATE INDEX idx_salaries_rank ON ipeds_faculty_salaries(academic_rank, average_salary DESC);
+CREATE INDEX idx_fin_aid_pell ON ipeds_financial_aid(pell_percent DESC);
+CREATE INDEX idx_libraries_exp ON ipeds_academic_libraries(total_expenses DESC);
 -- ============================================================
 -- COMMENTS
 -- ============================================================
