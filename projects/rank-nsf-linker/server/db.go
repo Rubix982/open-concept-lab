@@ -1471,6 +1471,8 @@ func removeEdgeCaseEntries(mainCtx *colly.Context) error {
 				// locations are -> 'Amherst,' 'Boston,' 'Dartmouth,' 'Lowell,' 'Worcestor - Medical,'
 				// and 'Dartmouth - Law'
 				"University Of Massachusetts",
+				//
+
 			},
 		},
 	}
@@ -1772,10 +1774,25 @@ func removeDuplicateEntries(mainCtx *colly.Context) error {
 		"The George Washington University": "George Washington University",
 
 		// University of Washington
-		"University Of Washington": "University of Washington",
+		"University Of Washington":         "University of Washington - Seattle",
+		"University Of Washington Tacoma":  "University of Washington - Tacoma",
+		"University Of Washington Bothell": "University of Washington - Bothell",
 
-		// Washington University
-		"Washington University in St Louis": "Washington University",
+		// Washington University
+		"Washington University In St Louis": "Washington University - St Louis",
+		"Washington University in St Louis": "Washington University - St Louis",
+
+		// Michigan
+		"University Of Michigan - Dearborn":                "University of Michigan - Dearborn",
+		"University of Michigan Dearborn":                  "University of Michigan - Dearborn",
+		"University Of Michigan Dearborn":                  "University of Michigan - Dearborn",
+		"Regents Of The University Of Michigan Dearborn":   "University of Michigan - Dearborn",
+		"Regents Of The University Of Michigan - Dearborn": "University of Michigan - Dearborn",
+		"The University Of Michigan":                       "University of Michigan - Ann Arbor",
+		"University of Michigan":                           "University of Michigan - Ann Arbor",
+		"University Of Michigan":                           "University of Michigan - Ann Arbor",
+		"Regents Of The University Of Michigan Flint":      "University of Michigan - Flint",
+		"Regents Of The University Of Michigan - Flint":    "University of Michigan - Flint",
 	}
 
 	// Step 1: Build normalization map for universities and normalize references
@@ -2008,6 +2025,10 @@ func copyOrgsAndStartupsFromUniTable(mainCtx *colly.Context) error {
 
 		// Cornell
 		"Weill Cornell Graduate School Of Medical Sciences",
+
+		// Washington
+		"Sharon Washington",
+		"Greater Washington Educational Telecommunications Association",
 	}
 
 	placeholders := make([]string, len(rowsToEntertain))
