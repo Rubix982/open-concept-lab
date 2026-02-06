@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS universities (
   homepage TEXT,
   latitude REAL,
   longitude REAL
+  -- TODO: We should add another field here to link to a main IPEDs related table for the future
 );
 
 CREATE INDEX IF NOT EXISTS universities_institution_trgm_idx ON universities USING gin (institution gin_trgm_ops);

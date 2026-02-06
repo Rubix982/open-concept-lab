@@ -21,61 +21,75 @@ def fetch_ipeds_data(year: int = 2023) -> Dict[str, pd.DataFrame]:
     wayback_url = f"https://web.archive.org/web/20240822183521/{base_url}"
 
     # IPEDS file codes for different surveys
+    transformed_year = int(str(year).replace("0", "2", -1))
     files = {
         "institutions": f"HD{year}",
         "enrollment": f"EF{year}A",
         "staff": f"S{year}_IS",
-        "finance": f"F{year}_F2",
+        "finance": [
+            f"F{transformed_year}_F2",
+            f"F{transformed_year}_F1A",
+            f"F{transformed_year}",
+        ],
         "completions": f"C{year}_A",
         "admissions": f"ADM{year}",
-        "financial_aid": f"SFA{year}",
+        "financial_aid": [
+            f"SFAV{transformed_year}",
+            f"SFA{transformed_year}_P1",
+            f"SFA{transformed_year}_P2",
+        ],
     }
 
     dataframes = {}
 
-    for key, file_code in files.items():
-        sources = [f"{wayback_url}/{file_code}.zip"]
+    for key, file_codes in files.items():
+        # Handle both single file code and list of file codes
+        if isinstance(file_codes, str):
+            file_codes = [file_codes]
 
         loaded = False
 
-        for source_url in sources:
-            try:
-                print(f"Downloading {key} from {source_url}...")
+        for file_code in file_codes:
+            sources = [f"{wayback_url}/{file_code}.zip"]
 
-                response = requests.get(source_url, timeout=30)
-                response.raise_for_status()
+            for source_url in sources:
+                try:
+                    print(f"Downloading {key} from {source_url}...")
 
-                # Extract CSV from zip
-                with zipfile.ZipFile(io.BytesIO(response.content)) as z:
-                    # List all files in the zip
-                    file_list = z.namelist()
-                    print(f"  Files in archive: {file_list}")
+                    response = requests.get(source_url, timeout=30)
+                    response.raise_for_status()
 
-                    # Find the CSV file (might have different naming)
-                    csv_files = [f for f in file_list if f.lower().endswith(".csv")]
+                    # Extract CSV from zip
+                    with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+                        file_list = z.namelist()
+                        print(f"  Files in archive: {file_list}")
 
-                    if not csv_files:
-                        print(f"  ✗ No CSV file found in archive")
-                        continue
+                        csv_files = [f for f in file_list if f.lower().endswith(".csv")]
 
-                    # Use the first CSV file found
-                    csv_name = csv_files[0]
-                    print(f"  Reading: {csv_name}")
+                        if not csv_files:
+                            print(f"  ✗ No CSV file found in archive")
+                            continue
 
-                    with z.open(csv_name) as csv_file:
-                        df = pd.read_csv(csv_file, encoding="latin1")
-                        dataframes[key] = df
-                        print(f"✓ Loaded {len(df)} rows for {key}")
-                        loaded = True
-                        break
+                        csv_name = csv_files[0]
+                        print(f"  Reading: {csv_name}")
 
-            except requests.exceptions.RequestException as e:
-                print(f"✗ Failed from {source_url}: {e}")
-                continue
+                        with z.open(csv_name) as csv_file:
+                            df = pd.read_csv(csv_file, encoding="latin1")
+                            dataframes[key] = df
+                            print(f"✓ Loaded {len(df)} rows for {key}")
+                            loaded = True
+                            break
 
-            except (zipfile.BadZipFile, KeyError) as e:
-                print(f"✗ Invalid zip file from {source_url}: {e}")
-                continue
+                except requests.exceptions.RequestException as e:
+                    print(f"✗ Failed from {source_url}: {e}")
+                    continue
+
+                except (zipfile.BadZipFile, KeyError) as e:
+                    print(f"✗ Invalid zip file from {source_url}: {e}")
+                    continue
+
+            if loaded:
+                break  # Stop trying other file codes if we found one
 
         if not loaded:
             print(f"✗ All sources failed for {key}")
@@ -226,54 +240,45 @@ def transform_staff(df: pd.DataFrame, year: int) -> pd.DataFrame:
     print(f"Unique FACSTAT values: {df['FACSTAT'].unique()}")
     print(f"Unique ARANK values: {df['ARANK'].unique()}")
 
-    # SISCAT codes (staff category):
-    # 2310 = Instructional staff total
-    # 2320 = Research staff
-    # 2330 = Public service staff
-    # etc.
+    print(f"\nSample rows:")
+    print(df[["UNITID", "SISCAT", "FACSTAT", "ARANK", "HRTOTLT"]].head(30))
 
-    # FACSTAT codes (faculty status):
-    # 10 = All faculty and staff
+    # SISCAT interpretation from sample:
+    # 1 = Grand total (all staff)
+    # 100-106 = Primarily instruction (by FACSTAT)
+    # 200-206 = Instruction with research/service (by FACSTAT)
+    # 300-306 = Primarily research (by FACSTAT)
+    # 400-456 = Other categories
+
+    # FACSTAT interpretation from sample:
+    # 0 = Total for that SISCAT category
+    # 10 = All faculty/staff in category
     # 20 = Tenured
     # 30 = On tenure track
     # 40 = Not on tenure track
+    # 42 = Not on tenure track - multi-year
+    # 43 = Not on tenure track - annual
     # 50 = Without faculty status
 
-    # ARANK codes (academic rank):
-    # 10 = All ranks
-    # 20 = Professors
-    # 30 = Associate professors
-    # 40 = Assistant professors
-    # 50 = Instructors
-    # 60 = Lecturers
-    # 70 = No academic rank
+    # ARANK from sample:
+    # 0 = All ranks
+    # 1 = Professors
+    # 2 = Associate professors
+    # 3 = Assistant professors
+    # 4 = Instructors
+    # 5 = Lecturers
+    # 6 = No academic rank
 
-    # Get total instructional staff (all ranks, all faculty status)
-    instructional_total = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 10) & (df["ARANK"] == 10)
+    # Get total instructional staff: SISCAT=100, FACSTAT=10, ARANK=0
+    instructional = df[
+        (df["SISCAT"] == 100) & (df["FACSTAT"] == 10) & (df["ARANK"] == 0)
     ][["UNITID", "HRTOTLT", "HRTOTLM", "HRTOTLW"]].copy()
 
-    # Get tenured faculty
-    tenured = df[(df["SISCAT"] == 2310) & (df["FACSTAT"] == 20) & (df["ARANK"] == 10)][
-        ["UNITID", "HRTOTLT"]
-    ].copy()
+    if instructional.empty:
+        print("Warning: No instructional staff data found")
+        return pd.DataFrame()
 
-    # Get tenure-track faculty
-    tenure_track = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 30) & (df["ARANK"] == 10)
-    ][["UNITID", "HRTOTLT"]].copy()
-
-    # Get research staff (if available)
-    research = (
-        df[(df["SISCAT"] == 2320) & (df["FACSTAT"] == 10) & (df["ARANK"] == 10)][
-            ["UNITID", "HRTOTLT"]
-        ].copy()
-        if 2320 in df["SISCAT"].values
-        else None
-    )
-
-    # Build result
-    result = instructional_total.rename(
+    result = instructional.rename(
         columns={
             "UNITID": "unitid",
             "HRTOTLT": "instructional_staff_total",
@@ -282,61 +287,79 @@ def transform_staff(df: pd.DataFrame, year: int) -> pd.DataFrame:
         }
     )
 
-    # Add tenure info
+    # Get tenured faculty: SISCAT=200, FACSTAT=20, ARANK=0
+    tenured = df[(df["SISCAT"] == 200) & (df["FACSTAT"] == 20) & (df["ARANK"] == 0)][
+        ["UNITID", "HRTOTLT"]
+    ].rename(columns={"UNITID": "unitid", "HRTOTLT": "tenured_faculty"})
+
     if not tenured.empty:
-        tenured = tenured.rename(
-            columns={"UNITID": "unitid", "HRTOTLT": "tenured_faculty"}
-        )
         result = result.merge(tenured, on="unitid", how="left")
 
-    if not tenure_track.empty:
-        tenure_track = tenure_track.rename(
-            columns={"UNITID": "unitid", "HRTOTLT": "tenure_track_faculty"}
-        )
-        result = result.merge(tenure_track, on="unitid", how="left")
-
-    if research is not None and not research.empty:
-        research = research.rename(
-            columns={"UNITID": "unitid", "HRTOTLT": "research_staff"}
-        )
-        result = result.merge(research, on="unitid", how="left")
-
-    # Add faculty by rank
-    professors = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 10) & (df["ARANK"] == 20)
+    # Get tenure-track: SISCAT=300, FACSTAT=30, ARANK=0
+    tenure_track = df[
+        (df["SISCAT"] == 300) & (df["FACSTAT"] == 30) & (df["ARANK"] == 0)
     ][["UNITID", "HRTOTLT"]].rename(
-        columns={"UNITID": "unitid", "HRTOTLT": "professors"}
+        columns={"UNITID": "unitid", "HRTOTLT": "tenure_track_faculty"}
     )
 
+    if not tenure_track.empty:
+        result = result.merge(tenure_track, on="unitid", how="left")
+
+    # Get not-on-tenure-track: SISCAT=400, FACSTAT=40, ARANK=0
+    not_tenure_track = df[
+        (df["SISCAT"] == 400) & (df["FACSTAT"] == 40) & (df["ARANK"] == 0)
+    ][["UNITID", "HRTOTLT"]].rename(
+        columns={"UNITID": "unitid", "HRTOTLT": "not_tenure_track_faculty"}
+    )
+
+    if not not_tenure_track.empty:
+        result = result.merge(not_tenure_track, on="unitid", how="left")
+
+    # Faculty by rank from SISCAT=100 (all instructional), varying ARANK
+    professors = df[(df["SISCAT"] == 101) & (df["FACSTAT"] == 10) & (df["ARANK"] == 1)][
+        ["UNITID", "HRTOTLT"]
+    ].rename(columns={"UNITID": "unitid", "HRTOTLT": "professors"})
+
     associate_profs = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 10) & (df["ARANK"] == 30)
+        (df["SISCAT"] == 102) & (df["FACSTAT"] == 10) & (df["ARANK"] == 2)
     ][["UNITID", "HRTOTLT"]].rename(
         columns={"UNITID": "unitid", "HRTOTLT": "associate_professors"}
     )
 
     assistant_profs = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 10) & (df["ARANK"] == 40)
+        (df["SISCAT"] == 103) & (df["FACSTAT"] == 10) & (df["ARANK"] == 3)
     ][["UNITID", "HRTOTLT"]].rename(
         columns={"UNITID": "unitid", "HRTOTLT": "assistant_professors"}
     )
 
-    result = result.merge(professors, on="unitid", how="left")
-    result = result.merge(associate_profs, on="unitid", how="left")
-    result = result.merge(assistant_profs, on="unitid", how="left")
+    instructors = df[
+        (df["SISCAT"] == 104) & (df["FACSTAT"] == 10) & (df["ARANK"] == 4)
+    ][["UNITID", "HRTOTLT"]].rename(
+        columns={"UNITID": "unitid", "HRTOTLT": "instructors"}
+    )
 
-    # Add demographics for instructional staff
+    if not professors.empty:
+        result = result.merge(professors, on="unitid", how="left")
+    if not associate_profs.empty:
+        result = result.merge(associate_profs, on="unitid", how="left")
+    if not assistant_profs.empty:
+        result = result.merge(assistant_profs, on="unitid", how="left")
+    if not instructors.empty:
+        result = result.merge(instructors, on="unitid", how="left")
+
+    # Demographics from SISCAT=100, FACSTAT=10, ARANK=0
     demographics = df[
-        (df["SISCAT"] == 2310) & (df["FACSTAT"] == 10) & (df["ARANK"] == 10)
+        (df["SISCAT"] == 100) & (df["FACSTAT"] == 10) & (df["ARANK"] == 0)
     ][
         [
             "UNITID",
-            "HRAIANT",  # American Indian
-            "HRASIAT",  # Asian
-            "HRBKAAT",  # Black
-            "HRHISPT",  # Hispanic
-            "HRWHITT",  # White
-            "HR2MORT",  # Two or more races
-            "HRNRALT",  # Non-resident alien
+            "HRAIANT",
+            "HRASIAT",
+            "HRBKAAT",
+            "HRHISPT",
+            "HRWHITT",
+            "HR2MORT",
+            "HRNRALT",
         ]
     ].rename(
         columns={
@@ -351,48 +374,208 @@ def transform_staff(df: pd.DataFrame, year: int) -> pd.DataFrame:
         }
     )
 
-    result = result.merge(demographics, on="unitid", how="left")
+    if not demographics.empty:
+        result = result.merge(demographics, on="unitid", how="left")
+
     result["year"] = year
 
     return result
 
 
 def transform_finance(df: pd.DataFrame, year: int) -> pd.DataFrame:
-    """Transform F_F2 (Finance) data to match schema"""
+    """Transform F_F2 (Finance) data - Extract ALL useful columns"""
+    print(f"List of columns in the finance table: {df.columns.values}")
+
+    # Get all non-X columns (X prefix = imputation flags, skip those)
+    finance_columns = [col for col in df.columns if not col.startswith("X")]
+
     return (
-        df[
-            [
-                "UNITID",
-                "F2D01",  # Total revenues
-                "F2C011",  # Tuition revenue
-                "F2E051",  # Federal grants
-                "F2E061",  # State grants
-                "F2E071",  # Private grants
-                "F2H01",  # Endowment income
-                "F2D02",  # Total expenses
-                "F2E011",  # Instruction expenses
-                "F2E021",  # Research expenses
-                "F2E031",  # Public service expenses
-                "F2E041",  # Academic support
-                "F2H02",  # Endowment assets EOY
-            ]
-        ]
+        df[finance_columns]
         .assign(year=year)
         .rename(
             columns={
                 "UNITID": "unitid",
-                "F2D01": "total_revenues",
-                "F2C011": "tuition_revenue",
-                "F2E051": "federal_grants",
-                "F2E061": "state_grants",
-                "F2E071": "private_grants",
-                "F2H01": "endowment_income",
-                "F2D02": "total_expenses",
-                "F2E011": "instruction_expenses",
-                "F2E021": "research_expenses",
-                "F2E031": "public_service_expenses",
-                "F2E041": "academic_support_expenses",
+                # ========== SECTION A: ASSETS & LIABILITIES ==========
+                "F2A01": "total_assets",
+                "F2A19": "total_liabilities",
+                "F2A20": "net_assets",
+                "F2A02": "current_assets",
+                "F2A03": "long_term_investments",
+                "F2A03A": "land_buildings_equipment_net",
+                "F2A04": "property_plant_equipment",
+                "F2A05": "accumulated_depreciation",
+                "F2A05A": "intangible_assets_net",
+                "F2A05B": "other_noncurrent_assets",
+                "F2A06": "deferred_outflows",
+                "F2A11": "current_liabilities",
+                "F2A12": "long_term_debt_current",
+                "F2A13": "other_current_liabilities",
+                "F2A15": "noncurrent_liabilities",
+                "F2A16": "long_term_debt_noncurrent",
+                "F2A17": "other_noncurrent_liabilities",
+                "F2A18": "deferred_inflows",
+                # ========== SECTION B: SCHOLARSHIPS ==========
+                "F2B01": "federal_grants_scholarships",
+                "F2B02": "state_local_grants_scholarships",
+                "F2B03": "institutional_grants_scholarships",
+                "F2B04": "total_discounts_allowances",
+                "F2B05": "total_scholarships_fellowships",
+                "F2B06": "net_scholarships_fellowships",
+                "F2B07": "allowances_tuition_fees",
+                # ========== SECTION C: REVENUES ==========
+                "F2C01": "total_revenues",
+                "F2C02": "total_operating_revenues",
+                "F2C03": "total_nonoperating_revenues",
+                "F2C04": "other_revenues_additions",
+                "F2C05": "tuition_fees_gross",
+                "F2C06": "tuition_fees_allowances",
+                "F2C07": "tuition_fees_net",
+                "F2C08": "federal_appropriations",
+                "F2C09": "state_appropriations",
+                "F2C10": "local_appropriations",
+                # Revenue details
+                "F2C12": "federal_grants_contracts",
+                "F2C121": "federal_operating_grants",
+                "F2C122": "federal_nonoperating_grants",
+                "F2C13": "state_grants_contracts",
+                "F2C131": "state_operating_grants",
+                "F2C132": "state_nonoperating_grants",
+                "F2C14": "local_grants_contracts",
+                "F2C141": "local_operating_grants",
+                "F2C142": "local_nonoperating_grants",
+                "F2C15": "private_gifts_grants_contracts",
+                "F2C151": "private_operating_grants",
+                "F2C152": "private_nonoperating_grants",
+                "F2C16": "investment_return",
+                "F2C161": "investment_income_operating",
+                "F2C162": "investment_income_nonoperating",
+                "F2C17": "other_revenues",
+                "F2C171": "sales_services_auxiliary",
+                "F2C172": "sales_services_hospitals",
+                # ========== SECTION D: FUNCTIONAL EXPENSES ==========
+                "F2D01": "total_expenses",
+                "F2D012": "total_operating_expenses",
+                "F2D013": "total_nonoperating_expenses",
+                "F2D014": "other_expenses_deductions",
+                "F2D02": "instruction_total",
+                "F2D022": "instruction_salaries",
+                "F2D023": "instruction_benefits",
+                "F2D024": "instruction_operations",
+                "F2D03": "research_total",
+                "F2D032": "research_salaries",
+                "F2D033": "research_benefits",
+                "F2D034": "research_operations",
+                "F2D04": "public_service_total",
+                "F2D042": "public_service_salaries",
+                "F2D043": "public_service_benefits",
+                "F2D044": "public_service_operations",
+                "F2D05": "academic_support_total",
+                "F2D052": "academic_support_salaries",
+                "F2D053": "academic_support_benefits",
+                "F2D054": "academic_support_operations",
+                "F2D06": "student_services_total",
+                "F2D062": "student_services_salaries",
+                "F2D063": "student_services_benefits",
+                "F2D064": "student_services_operations",
+                "F2D07": "institutional_support_total",
+                "F2D072": "institutional_support_salaries",
+                "F2D073": "institutional_support_benefits",
+                "F2D074": "institutional_support_operations",
+                "F2D08": "auxiliary_enterprises_total",
+                "F2D082": "auxiliary_salaries",
+                "F2D083": "auxiliary_benefits",
+                "F2D084": "auxiliary_operations",
+                "F2D08A": "hospital_services_total",
+                "F2D082A": "hospital_salaries",
+                "F2D083A": "hospital_benefits",
+                "F2D084A": "hospital_operations",
+                "F2D08B": "independent_operations_total",
+                "F2D082B": "independent_operations_salaries",
+                "F2D083B": "independent_operations_benefits",
+                "F2D084B": "independent_operations_operations",
+                "F2D09": "other_core_expenses_total",
+                "F2D092": "other_core_salaries",
+                "F2D093": "other_core_benefits",
+                "F2D094": "other_core_operations",
+                # Non-core expenses
+                "F2D10": "depreciation",
+                "F2D102": "depreciation_buildings",
+                "F2D103": "depreciation_equipment",
+                "F2D104": "depreciation_other",
+                "F2D11": "interest_expense",
+                "F2D112": "interest_debt_financing",
+                "F2D12": "other_natural_expenses",
+                "F2D122": "other_natural_expenses_detail",
+                # Specific function details
+                "F2D13": "total_salaries_wages",
+                "F2D132": "total_benefits",
+                "F2D14": "operation_maintenance_plant",
+                "F2D142": "operation_maintenance_salaries",
+                "F2D143": "operation_maintenance_benefits",
+                "F2D144": "operation_maintenance_operations",
+                "F2D15": "net_grant_aid_students",
+                "F2D152": "scholarships_fellowships_net",
+                "F2D153": "discounts_allowances",
+                "F2D154": "other_student_aid",
+                "F2D16": "total_other_expenses",
+                "F2D162": "other_expenses_salaries",
+                "F2D163": "other_expenses_benefits",
+                "F2D164": "other_expenses_operations",
+                "F2D17": "total_net_other_gains_losses",
+                "F2D172": "gains_losses_investments",
+                "F2D173": "gains_losses_endowment",
+                "F2D174": "other_nonoperating_gains_losses",
+                "F2D18": "total_other_changes",
+                "F2D182": "capital_appropriations",
+                "F2D183": "capital_grants_gifts",
+                "F2D184": "additions_permanent_endowments",
+                # ========== SECTION E: NATURAL CLASSIFICATION ==========
+                "F2E011": "instruction_salaries_wages",
+                "F2E012": "instruction_employee_benefits",
+                "F2E021": "research_salaries_wages",
+                "F2E022": "research_employee_benefits",
+                "F2E031": "public_service_salaries_wages",
+                "F2E032": "public_service_employee_benefits",
+                "F2E041": "academic_support_salaries_wages",
+                "F2E042": "academic_support_employee_benefits",
+                "F2E051": "student_services_salaries_wages",
+                "F2E052": "student_services_employee_benefits",
+                "F2E061": "institutional_support_salaries_wages",
+                "F2E062": "institutional_support_employee_benefits",
+                "F2E071": "auxiliary_salaries_wages",
+                "F2E072": "auxiliary_employee_benefits",
+                "F2E081": "net_grant_aid_salaries",
+                "F2E091": "hospital_salaries_wages",
+                "F2E092": "hospital_employee_benefits",
+                "F2E101": "independent_operations_salaries_wages",
+                "F2E102": "independent_operations_employee_benefits",
+                "F2E121": "other_expenses_salaries_wages",
+                "F2E122": "other_expenses_employee_benefits",
+                # Total natural expenses
+                "F2E131": "depreciation_total",
+                "F2E132": "interest_total",
+                "F2E133": "operation_maintenance_total",
+                "F2E134": "all_other_expenses",
+                "F2E135": "total_salaries_wages_natural",
+                "F2E136": "total_employee_benefits_natural",
+                "F2E137": "total_all_other_natural",
+                # ========== SECTION H: ENDOWMENT ==========
+                "F2FHA": "endowment_flag",
+                "F2H01": "endowment_assets_boy",
                 "F2H02": "endowment_assets_eoy",
+                "F2H03": "total_endowment_additions",
+                "F2H03A": "endowment_gifts",
+                "F2H03B": "endowment_investment_gains",
+                "F2H03C": "endowment_withdrawals",
+                "F2H03D": "endowment_other_changes",
+                # ========== SECTION I: PENSION ==========
+                "F2I01": "pension_expense",
+                "F2I02": "opeb_expense",
+                "F2I03": "pension_plan_fiduciary_net_position",
+                "F2I04": "opeb_plan_fiduciary_net_position",
+                "F2I05": "pension_net_liability",
+                "F2I06": "opeb_net_liability",
+                "F2I07": "other_postemployment_benefits",
             }
         )
     )
