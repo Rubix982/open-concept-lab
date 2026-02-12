@@ -10,7 +10,7 @@ mdurl==0.1.2
 numpy==2.3.2
 prompt_toolkit==3.0.51
 Pygments==2.19.2
-questionary==2.1.0
+questionary==2.1.1
 requests==2.32.4
 rich==14.1.0
 urllib3==2.5.0
