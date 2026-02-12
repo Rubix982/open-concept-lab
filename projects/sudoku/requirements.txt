@@ -3,7 +3,7 @@ anyio==4.10.0
 art==6.5
 beautifulsoup4==4.13.4
 certifi==2025.8.3
-charset-normalizer==3.4.2
+charset-normalizer==3.4.4
 distro==1.9.0
 dotenv==0.9.9
 h11==0.16.0
