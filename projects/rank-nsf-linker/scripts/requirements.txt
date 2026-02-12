@@ -11,7 +11,7 @@ numpy==2.3.2
 prompt_toolkit==3.0.51
 Pygments==2.19.2
 questionary==2.1.0
-requests==2.32.4
+requests==2.32.5
 rich==14.1.0
 urllib3==2.5.0
 wcwidth==0.2.13
