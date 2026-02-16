@@ -14,7 +14,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	colly "github.com/gocolly/colly/v2"
 	"github.com/sirupsen/logrus"
 )
 

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
-	"github.com/gocolly/colly/v2"
+	chi "github.com/go-chi/chi/v5"
+	colly "github.com/gocolly/colly/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )

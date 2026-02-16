@@ -1,0 +1,363 @@
+rules:
+  # ===================================================================
+  # ERROR HANDLING
+  # ===================================================================
+
+  - id: error-not-checked
+    patterns:
+      - pattern: |
+          $FUNC(...)
+      - pattern-not: |
+          $VAR := $FUNC(...)
+      - pattern-not: |
+          $VAR, $ERR := $FUNC(...)
+      - pattern-not: |
+          _, $ERR := $FUNC(...)
+      - metavariable-pattern:
+          metavariable: $FUNC
+          patterns:
+            - pattern-either:
+                - pattern: io.Copy
+                - pattern: fmt.Fprintf
+                - pattern: json.Unmarshal
+    message: Function returns error but it's not checked
+    languages: [go]
+    severity: WARNING
+
+  - id: defer-in-loop
+    patterns:
+      - pattern-either:
+          - pattern: |
+              for ... {
+                ...
+                defer $FUNC(...)
+                ...
+              }
+          - pattern: |
+              for ... := range ... {
+                ...
+                defer $FUNC(...)
+                ...
+              }
+    message: defer inside loop can cause resource leaks - consider extracting to function
+    languages: [go]
+    severity: WARNING
+
+  - id: error-shadow
+    patterns:
+      - pattern: |
+          if $ERR := ...; $ERR != nil {
+            ...
+            $ERR := ...
+            ...
+          }
+    message: Error variable shadowed inside if block
+    languages: [go]
+    severity: ERROR
+
+  # ===================================================================
+  # SECURITY
+  # ===================================================================
+
+  - id: sql-injection-risk
+    patterns:
+      - pattern-either:
+          - pattern: |
+              db.Exec(fmt.Sprintf(..., $VAR, ...), ...)
+          - pattern: |
+              db.Query(fmt.Sprintf(..., $VAR, ...), ...)
+          - pattern: |
+              db.Exec($STR + $VAR + ..., ...)
+          - pattern: |
+              db.Query($STR + $VAR + ..., ...)
+    message: Potential SQL injection - use parameterized queries
+    languages: [go]
+    severity: ERROR
+
+  - id: hardcoded-credentials
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $VAR := "password123"
+          - pattern: |
+              const $VAR = "password123"
+          - pattern: |
+              $VAR := "secret_key_..."
+    message: Hardcoded credentials detected - use environment variables or secrets manager
+    languages: [go]
+    severity: ERROR
+
+  - id: weak-crypto
+    patterns:
+      - pattern-either:
+          - pattern: md5.New()
+          - pattern: sha1.New()
+          - pattern: des.NewCipher(...)
+          - pattern: rc4.NewCipher(...)
+    message: Weak cryptographic algorithm - use SHA-256 or better
+    languages: [go]
+    severity: WARNING
+
+  - id: insecure-random
+    patterns:
+      - pattern-either:
+          - pattern: math/rand.Read(...)
+          - pattern: rand.Read(...)
+      - pattern-not: crypto/rand.Read(...)
+    message: Using insecure random - use crypto/rand for security-sensitive operations
+    languages: [go]
+    severity: ERROR
+
+  # ===================================================================
+  # CONTEXT USAGE
+  # ===================================================================
+
+  - id: context-in-struct
+    patterns:
+      - pattern: |
+          type $STRUCT struct {
+            ...
+            ctx context.Context
+            ...
+          }
+    message: Don't store context in structs - pass as function parameter
+    languages: [go]
+    severity: WARNING
+
+  - id: http-request-without-context
+    patterns:
+      - pattern: http.NewRequest($METHOD, $URL, $BODY)
+      - pattern-not-inside: |
+          http.NewRequestWithContext(...)
+    message: Use http.NewRequestWithContext for cancellation support
+    languages: [go]
+    severity: WARNING
+
+  - id: context-todo-in-production
+    patterns:
+      - pattern: context.TODO()
+      - pattern-not-inside: |
+          func Test$FUNC(...) { ... }
+    message: context.TODO() should not be used in production code
+    languages: [go]
+    severity: WARNING
+
+  # ===================================================================
+  # RESOURCE MANAGEMENT
+  # ===================================================================
+
+  - id: unclosed-http-body
+    patterns:
+      - pattern: |
+          $RESP, $ERR := $CLIENT.$METHOD(...)
+      - pattern-not-inside: |
+          ...
+          defer $RESP.Body.Close()
+          ...
+    message: HTTP response body not closed - add defer resp.Body.Close()
+    languages: [go]
+    severity: ERROR
+
+  - id: unclosed-file
+    patterns:
+      - pattern: |
+          $FILE, $ERR := os.Open(...)
+      - pattern-not-inside: |
+          ...
+          defer $FILE.Close()
+          ...
+    message: File not closed - add defer file.Close()
+    languages: [go]
+    severity: ERROR
+
+  - id: unclosed-sql-rows
+    patterns:
+      - pattern: |
+          $ROWS, $ERR := $DB.Query(...)
+      - pattern-not-inside: |
+          ...
+          defer $ROWS.Close()
+          ...
+    message: SQL rows not closed - add defer rows.Close()
+    languages: [go]
+    severity: ERROR
+
+  # ===================================================================
+  # CONCURRENCY
+  # ===================================================================
+
+  - id: goroutine-leak
+    patterns:
+      - pattern: |
+          go func() {
+            ...
+            for {
+              ...
+            }
+          }()
+      - pattern-not-inside: |
+          go func() {
+            ...
+            for {
+              select {
+                case <-$CTX.Done():
+                  return
+                ...
+              }
+            }
+          }()
+    message: Goroutine with infinite loop without context cancellation
+    languages: [go]
+    severity: WARNING
+
+  - id: mutex-copy
+    patterns:
+      - pattern-either:
+          - pattern: |
+              func $FUNC(..., $VAR sync.Mutex, ...) { ... }
+          - pattern: |
+              func $FUNC(..., $VAR sync.RWMutex, ...) { ... }
+          - pattern: |
+              $VAR2 := $VAR
+      - metavariable-type:
+          metavariable: $VAR
+          types:
+            - sync.Mutex
+            - sync.RWMutex
+    message: Mutex copied by value - use pointer instead
+    languages: [go]
+    severity: ERROR
+
+  - id: waitgroup-copy
+    patterns:
+      - pattern: |
+          func $FUNC(..., $VAR sync.WaitGroup, ...) { ... }
+    message: WaitGroup copied by value - use pointer instead
+    languages: [go]
+    severity: ERROR
+
+  # ===================================================================
+  # BEST PRACTICES
+  # ===================================================================
+
+  - id: time-after-in-loop
+    patterns:
+      - pattern-either:
+          - pattern: |
+              for ... {
+                ...
+                <-time.After(...)
+                ...
+              }
+          - pattern: |
+              for ... := range ... {
+                ...
+                <-time.After(...)
+                ...
+              }
+    message: time.After causes memory leak in loops - use time.NewTimer instead
+    languages: [go]
+    severity: WARNING
+
+  - id: empty-interface-usage
+    patterns:
+      - pattern-either:
+          - pattern: |
+              func $FUNC(..., $VAR interface{}, ...) { ... }
+          - pattern: |
+              type $TYPE interface{}
+    message: Avoid interface{} - use specific types or any (Go 1.18+)
+    languages: [go]
+    severity: INFO
+
+  - id: sprintf-with-single-string
+    patterns:
+      - pattern: fmt.Sprintf("%s", $VAR)
+    message: Unnecessary fmt.Sprintf with single %s - use string conversion directly
+    languages: [go]
+    severity: INFO
+
+  - id: redundant-type-conversion
+    patterns:
+      - pattern: string([]byte($VAR))
+      - metavariable-type:
+          metavariable: $VAR
+          types:
+            - string
+    message: Redundant type conversion - variable is already a string
+    languages: [go]
+    severity: INFO
+
+  # ===================================================================
+  # NIL CHECKS
+  # ===================================================================
+
+  - id: nil-dereference-risk
+    patterns:
+      - pattern: |
+          if $VAR != nil {
+            ...
+            $VAR.$FIELD
+            ...
+          }
+    message: Potential nil dereference - check pointer before accessing fields
+    languages: [go]
+    severity: WARNING
+
+  - id: return-nil-error
+    patterns:
+      - pattern: |
+          func $FUNC(...) (..., error) {
+            ...
+            return ..., nil
+          }
+    message: Explicitly returning nil error is idiomatic
+    languages: [go]
+    severity: INFO
+
+  # ===================================================================
+  # JSON/ENCODING
+  # ===================================================================
+
+  - id: json-number-as-string
+    patterns:
+      - pattern: |
+          json:\"$FIELD,string\"
+      - metavariable-pattern:
+          metavariable: $FIELD
+          patterns:
+            - pattern-regex: ^[0-9]+$
+    message: JSON number fields should use proper numeric types
+    languages: [go]
+    severity: WARNING
+
+  # ===================================================================
+  # HTTP/API
+  # ===================================================================
+
+  - id: missing-request-timeout
+    patterns:
+      - pattern: |
+          &http.Client{...}
+      - pattern-not-inside: |
+          &http.Client{
+            ...
+            Timeout: ...,
+            ...
+          }
+    message: HTTP client without timeout - set reasonable timeout
+    languages: [go]
+    severity: WARNING
+
+  - id: http-status-literal
+    patterns:
+      - pattern-either:
+          - pattern: |
+              w.WriteHeader(200)
+          - pattern: |
+              w.WriteHeader(404)
+          - pattern: |
+              w.WriteHeader(500)
+    message: Use http.Status constants instead of magic numbers
+    languages: [go]
+    severity: INFO

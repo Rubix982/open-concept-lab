@@ -9,7 +9,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/gocolly/colly/v2"
+	colly "github.com/gocolly/colly/v2"
 )
 
 func getRootDirPath(rootSubDir string) string {
@@ -167,6 +167,17 @@ func downloadNSFData(mainCtx *colly.Context) error {
 		logger.Infof(mainCtx, "[🧹] Cleaned up %s after extraction", filepath.Base(zipFile))
 	}
 
+	return nil
+}
+
+func downloadIPEDSData(mainCtx *colly.Context) error {
+	dataDir := getRootDirPath(DATA_DIR)
+
+	for year := IPEDSCurrentlyRangedYear; year <= IPEDSLatestYear; year++ {
+		if err := NewIPEDSFetcher(year, dataDir).DownloadAll(mainCtx); err != nil {
+			return fmt.Errorf("failed to process ipeds download for the year '%d'. Error: %v", year, err)
+		}
+	}
 	return nil
 }
 

@@ -1,0 +1,225 @@
+run:
+  timeout: 5m
+  tests: true
+  # Skip vendor, third-party, and generated code
+  skip-dirs:
+    - vendor
+    - third_party
+    - .git
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*_gen\\.go$"
+
+linters:
+  enable:
+    # Core linters - must fix
+    - errcheck # Check error returns
+    - gosimple # Simplify code
+    - govet # Go vet built-in
+    - ineffassign # Detect ineffectual assignments
+    - staticcheck # Advanced static analysis
+    - typecheck # Type checking
+    - unused # Detect unused code
+
+    # Code quality - strongly recommended
+    - gofmt # Format code
+    - goimports # Fix imports
+    - revive # Drop-in golint replacement
+    - gocritic # Extensive diagnostics
+    - misspell # Fix common spelling mistakes
+    - unconvert # Remove unnecessary conversions
+    - unparam # Find unused function parameters
+
+    # Error handling
+    - errname # Check error naming conventions
+    - errorlint # Error wrapping checks
+    - nilerr # Check nil error returns
+
+    # Performance
+    - prealloc # Find slice preallocation opportunities
+    - bodyclose # Check HTTP body is closed
+
+    # Security
+    - gosec # Security checks
+
+    # Style & maintainability
+    - gocyclo # Cyclomatic complexity
+    - gocognit # Cognitive complexity
+    - funlen # Function length
+    - nestif # Deep nesting
+    - whitespace # Trailing whitespace
+
+    # Best practices
+    - containedctx # Context in struct check
+    - contextcheck # Context usage
+    - durationcheck # Time.Duration checks
+    - noctx # HTTP requests without context
+    - sqlclosecheck # SQL rows/statements closed
+
+  disable:
+    # Too opinionated or noisy for most projects
+    - exhaustive # Exhaustive switch/map checks
+    - exhaustruct # Exhaustive struct initialization
+    - gochecknoglobals # No globals
+    - gochecknoinits # No init functions
+    - godox # TODO/FIXME checks
+    - varnamelen # Variable name length
+    - wrapcheck # Error wrapping everywhere
+    - nlreturn # Blank line before return
+    - wsl # Whitespace linter (too strict)
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+    exclude-functions:
+      - io.Copy(*bytes.Buffer)
+      - io.Copy(os.Stdout)
+
+  govet:
+    enable:
+      - shadow # Check for shadowed variables
+      - printf # Printf format strings
+      - structtag # Struct tag validation
+    disable:
+      - fieldalignment # Don't enforce struct field ordering
+
+  gocyclo:
+    min-complexity: 15 # Reasonable for most code
+
+  gocognit:
+    min-complexity: 20 # Cognitive complexity threshold
+
+  funlen:
+    lines: 100 # Max function length
+    statements: 50 # Max statements per function
+
+  nestif:
+    min-complexity: 5 # Max nesting depth
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+    disabled-checks:
+      - unnamedResult # Allow unnamed returns
+      - hugeParam # Large params are okay sometimes
+      - rangeValCopy # Copying in range is fine
+
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+        arguments:
+          - "checkPrivateReceivers"
+          - "sayRepetitiveInsteadOfStutters"
+      - name: if-return
+      - name: increment-decrement
+      - name: var-naming
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: unused-parameter
+      - name: unreachable-code
+      - name: redefines-builtin-id
+
+  gosec:
+    excludes:
+      - G104 # Errors that can be safely ignored
+      - G307 # Deferring unsafe method
+    config:
+      G111: "2000" # SQL string concat limit
+
+  misspell:
+    locale: US
+
+  staticcheck:
+    checks:
+      - all
+      - "-SA1019" # Allow deprecated functions (sometimes necessary)
+
+  goimports:
+    local-prefixes: github.com/Rubix982/open-concept-lab
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: false
+
+issues:
+  # Maximum issues count per linter
+  max-issues-per-linter: 50
+  max-same-issues: 3
+
+  # Don't hide multiple issues on the same line
+  new: false
+
+  # Exclude common false positives
+  exclude-rules:
+    # Exclude some linters from test files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - funlen
+        - gosec
+        - errcheck
+        - dupl
+
+    # Exclude shadow warnings for err variable
+    - text: 'shadow: declaration of "err"'
+      linters:
+        - govet
+
+    # Exclude certain linters for main/init
+    - path: cmd/
+      linters:
+        - gochecknoinits
+        - gochecknoglobals
+
+    # Allow long lines in generated code
+    - path: ".*\\.pb\\.go$"
+      linters:
+        - lll
+
+    # Ignore complexity in CLI code
+    - path: cmd/.*\.go
+      linters:
+        - gocyclo
+        - gocognit
+
+  # Show all issues
+  exclude-use-default: false
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+severity:
+  default-severity: error
+  rules:
+    - linters:
+        - errcheck
+        - gosec
+        - govet
+      severity: error
+    - linters:
+        - revive
+        - stylecheck
+      severity: warning

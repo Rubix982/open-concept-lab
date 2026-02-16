@@ -14,10 +14,10 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"sync/atomic"
+	atomic "sync/atomic"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	colly "github.com/gocolly/colly/v2"
 	pq "github.com/lib/pq"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/spf13/cast"
@@ -258,6 +258,17 @@ func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 		logger.Infof(mainCtx, "✅ Done inserting into %s\n", tableName)
 	}
 
+	return nil
+}
+
+func populatePostgresFromIpedsCSVs(mainCtx *colly.Context) error {
+	dataDir := getRootDirPath(DATA_DIR)
+
+	for year := IPEDSCurrentlyRangedYear; year <= IPEDSLatestYear; year++ {
+		if err := RunIPEDSIngestion(mainCtx, dataDir, year); err != nil {
+			return fmt.Errorf("failed to process ipeds download for the year '%d'. Error: %v", year, err)
+		}
+	}
 	return nil
 }
 
@@ -1456,7 +1467,7 @@ func removeEdgeCaseEntries(mainCtx *colly.Context) error {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
-	sqlDeleteQueryTemplate := `DELETE FROM %s WHERE %s IN (%s)`
+	sqlDeleteQueryTemplate := `DELETE FROM %s WHERE %s IN ('%s')`
 
 	dataToRemove := map[string]interface{}{
 		"universities": map[string]interface{}{
@@ -1471,8 +1482,6 @@ func removeEdgeCaseEntries(mainCtx *colly.Context) error {
 				// locations are -> 'Amherst,' 'Boston,' 'Dartmouth,' 'Lowell,' 'Worcestor - Medical,'
 				// and 'Dartmouth - Law'
 				"University Of Massachusetts",
-				//
-
 			},
 		},
 	}
@@ -2325,18 +2334,20 @@ func GetPipelineStatus(mainCtx *colly.Context, step string) string {
 	return status
 }
 
-func populatePostgres(mainCtx *colly.Context) {
+func executeWorkflows(mainCtx *colly.Context) {
 	steps := []struct {
 		name string
 		fn   func(*colly.Context) error
 	}{
-		{"Download CSVs", downloadCSVs},
+		{"Download Pre-Req CSVs", downloadCSVs},
 		{"Download NSF Data", downloadNSFData},
-		{"Populate from CSVs", populatePostgresFromCSVs},
-		{"Remove Tags from Professor Names", removeTagsFromProfessorNames},
-		{"Populate from NSF JSONs", populatePostgresFromNsfJsons},
-		{"Populate from Script Caches", populatePostgresFromScriptCaches},
+		{"Download IPEDS Data", downloadIPEDSData},
+		{"Populate From CSVs", populatePostgresFromCSVs},
+		{"Remove Tags From Professor Names", removeTagsFromProfessorNames},
+		{"Populate From NSF JSONs", populatePostgresFromNsfJsons},
+		{"Populate From Script Caches", populatePostgresFromScriptCaches},
 		{"Populate Homepages Against Universities", populateHomepagesAgainstUniversities},
+		{"Populate From IPEDS' CSVs", populatePostgresFromIpedsCSVs},
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},

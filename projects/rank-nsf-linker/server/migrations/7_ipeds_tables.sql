@@ -1,7 +1,7 @@
 -- ============================================================
 -- IPEDS INSTITUTIONS TABLE
 -- ============================================================
-CREATE TABLE ipeds_institutions (
+CREATE TABLE IF NOT EXISTS ipeds_institutions (
     unitid INTEGER PRIMARY KEY,
     institution_name TEXT NOT NULL,
     institution_alias TEXT,
@@ -32,7 +32,7 @@ CREATE TABLE ipeds_institutions (
 -- ============================================================
 -- IPEDS ENROLLMENT TABLE
 -- ============================================================
-CREATE TABLE ipeds_enrollment (
+CREATE TABLE IF NOT EXISTS ipeds_enrollment (
     unitid INTEGER,
     YEAR INTEGER,
     total_enrollment INTEGER,
@@ -53,7 +53,7 @@ CREATE TABLE ipeds_enrollment (
 -- ============================================================
 -- IPEDS STAFF TABLE
 -- ============================================================
-CREATE TABLE ipeds_staff (
+CREATE TABLE IF NOT EXISTS ipeds_staff (
     unitid INTEGER,
     YEAR INTEGER,
     instructional_staff_total INTEGER,
@@ -79,7 +79,7 @@ CREATE TABLE ipeds_staff (
 -- ============================================================
 -- IPEDS FINANCE TABLE
 -- ============================================================
-CREATE TABLE ipeds_finance (
+CREATE TABLE IF NOT EXISTS ipeds_finance (
     unitid INTEGER,
     YEAR INTEGER,
     -- Assets & Liabilities (Section A)
@@ -265,7 +265,7 @@ CREATE TABLE ipeds_finance (
 -- ============================================================
 -- IPEDS COMPLETIONS TABLE
 -- ============================================================
-CREATE TABLE ipeds_completions (
+CREATE TABLE IF NOT EXISTS ipeds_completions (
     unitid INTEGER,
     YEAR INTEGER,
     total_degrees INTEGER,
@@ -304,7 +304,7 @@ CREATE TABLE ipeds_completions (
 -- ============================================================
 -- IPEDS ADMISSIONS TABLE
 -- ============================================================
-CREATE TABLE ipeds_admissions (
+CREATE TABLE IF NOT EXISTS ipeds_admissions (
     unitid INTEGER,
     YEAR INTEGER,
     applicants INTEGER,
@@ -323,23 +323,72 @@ CREATE TABLE ipeds_admissions (
 -- INDEXES FOR PERFORMANCE
 -- ============================================================
 -- Institution lookups
-CREATE INDEX idx_institutions_name ON ipeds_institutions(institution_name);
-CREATE INDEX idx_institutions_state ON ipeds_institutions(state);
-CREATE INDEX idx_institutions_carnegie ON ipeds_institutions(carnegie_classification);
-CREATE INDEX idx_institutions_system ON ipeds_institutions(system_name);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_institutions_name'
+    ) THEN
+        CREATE INDEX idx_institutions_name ON ipeds_institutions(institution_name);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_institutions_state'
+    ) THEN
+        CREATE INDEX idx_institutions_state ON ipeds_institutions(state);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_institutions_carnegie'
+    ) THEN
+        CREATE INDEX idx_institutions_carnegie ON ipeds_institutions(carnegie_classification);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_institutions_system'
+    ) THEN
+        CREATE INDEX idx_institutions_system ON ipeds_institutions(system_name);
+    END IF;
+END $$;
 -- Research-related queries
-CREATE INDEX idx_finance_research ON ipeds_finance(unitid, research_total);
-CREATE INDEX idx_staff_faculty ON ipeds_staff(unitid, instructional_staff_total);
-CREATE INDEX idx_enrollment_total ON ipeds_enrollment(unitid, total_enrollment);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_finance_research'
+    ) THEN
+        CREATE INDEX idx_finance_research ON ipeds_finance(unitid, research_total);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_staff_faculty'
+    ) THEN
+        CREATE INDEX idx_staff_faculty ON ipeds_staff(unitid, instructional_staff_total);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_enrollment_total'
+    ) THEN
+        CREATE INDEX idx_enrollment_total ON ipeds_enrollment(unitid, total_enrollment);
+    END IF;
+END $$;
 -- Time-based queries
-CREATE INDEX idx_finance_year ON ipeds_finance(YEAR);
-CREATE INDEX idx_enrollment_year ON ipeds_enrollment(YEAR);
-CREATE INDEX idx_staff_year ON ipeds_staff(YEAR);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_finance_year'
+    ) THEN
+        CREATE INDEX idx_finance_year ON ipeds_finance(YEAR);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_enrollment_year'
+    ) THEN
+        CREATE INDEX idx_enrollment_year ON ipeds_enrollment(YEAR);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_staff_year'
+    ) THEN
+        CREATE INDEX idx_staff_year ON ipeds_staff(YEAR);
+    END IF;
+END $$;
 -- ============================================================
 -- USEFUL VIEWS
 -- ============================================================
 -- Research intensity view
-CREATE VIEW v_research_intensity AS
+CREATE OR REPLACE VIEW v_research_intensity AS
 SELECT i.unitid,
     i.institution_name,
     i.state,
@@ -369,7 +418,7 @@ FROM ipeds_institutions i
     AND e.year = f.year
 WHERE f.research_total > 0;
 -- Faculty composition view
-CREATE VIEW v_faculty_composition AS
+CREATE OR REPLACE VIEW v_faculty_composition AS
 SELECT i.unitid,
     i.institution_name,
     s.instructional_staff_total,
@@ -389,7 +438,7 @@ SELECT i.unitid,
 FROM ipeds_institutions i
     JOIN ipeds_staff s ON i.unitid = s.unitid;
 -- Financial health view
-CREATE VIEW v_financial_health AS
+CREATE OR REPLACE VIEW v_financial_health AS
 SELECT i.unitid,
     i.institution_name,
     f.total_assets,
@@ -407,7 +456,7 @@ SELECT i.unitid,
 FROM ipeds_institutions i
     JOIN ipeds_finance f ON i.unitid = f.unitid;
 -- Institutional Characteristics
-CREATE TABLE ipeds_institutional_characteristics (
+CREATE TABLE IF NOT EXISTS ipeds_institutional_characteristics (
     unitid INTEGER PRIMARY KEY,
     open_admission INTEGER,
     credit_life_experience INTEGER,
@@ -429,7 +478,7 @@ CREATE TABLE ipeds_institutional_characteristics (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Tuition and Fees
-CREATE TABLE ipeds_tuition_fees (
+CREATE TABLE IF NOT EXISTS ipeds_tuition_fees (
     unitid INTEGER,
     year INTEGER,
     tuition_in_district INTEGER,
@@ -449,7 +498,7 @@ CREATE TABLE ipeds_tuition_fees (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Graduation Rates
-CREATE TABLE ipeds_graduation_rates (
+CREATE TABLE IF NOT EXISTS ipeds_graduation_rates (
     unitid INTEGER,
     year INTEGER,
     cohort_type INTEGER,
@@ -470,7 +519,7 @@ CREATE TABLE ipeds_graduation_rates (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Graduation by Income Level
-CREATE TABLE ipeds_graduation_pell (
+CREATE TABLE IF NOT EXISTS ipeds_graduation_pell (
     unitid INTEGER,
     year INTEGER,
     cohort_type INTEGER,
@@ -486,7 +535,7 @@ CREATE TABLE ipeds_graduation_pell (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Faculty Salaries
-CREATE TABLE ipeds_faculty_salaries (
+CREATE TABLE IF NOT EXISTS ipeds_faculty_salaries (
     unitid INTEGER,
     year INTEGER,
     academic_rank INTEGER,
@@ -497,7 +546,7 @@ CREATE TABLE ipeds_faculty_salaries (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Financial Aid
-CREATE TABLE ipeds_financial_aid (
+CREATE TABLE IF NOT EXISTS ipeds_financial_aid (
     unitid INTEGER,
     year INTEGER,
     undergrads_total INTEGER,
@@ -521,7 +570,7 @@ CREATE TABLE ipeds_financial_aid (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Outcome Measures
-CREATE TABLE ipeds_outcome_measures (
+CREATE TABLE IF NOT EXISTS ipeds_outcome_measures (
     unitid INTEGER,
     year INTEGER,
     outcome_cohort_size INTEGER,
@@ -536,7 +585,7 @@ CREATE TABLE ipeds_outcome_measures (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Academic Libraries
-CREATE TABLE ipeds_academic_libraries (
+CREATE TABLE IF NOT EXISTS ipeds_academic_libraries (
     unitid INTEGER,
     year INTEGER,
     books_physical INTEGER,
@@ -556,11 +605,34 @@ CREATE TABLE ipeds_academic_libraries (
     FOREIGN KEY (unitid) REFERENCES ipeds_institutions(unitid)
 );
 -- Indexes
-CREATE INDEX idx_tuition_year ON ipeds_tuition_fees(year);
-CREATE INDEX idx_grad_rates_year ON ipeds_graduation_rates(year);
-CREATE INDEX idx_salaries_rank ON ipeds_faculty_salaries(academic_rank, average_salary DESC);
-CREATE INDEX idx_fin_aid_pell ON ipeds_financial_aid(pell_percent DESC);
-CREATE INDEX idx_libraries_exp ON ipeds_academic_libraries(total_expenses DESC);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_tuition_year'
+    ) THEN
+        CREATE INDEX idx_tuition_year ON ipeds_tuition_fees(year);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_grad_rates_year'
+    ) THEN
+        CREATE INDEX idx_grad_rates_year ON ipeds_graduation_rates(year);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_salaries_rank'
+    ) THEN
+        CREATE INDEX idx_salaries_rank ON ipeds_faculty_salaries(academic_rank, average_salary DESC);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_fin_aid_pell'
+    ) THEN
+        CREATE INDEX idx_fin_aid_pell ON ipeds_financial_aid(pell_percent DESC);
+    END IF;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes WHERE indexname = 'idx_libraries_exp'
+    ) THEN
+        CREATE INDEX idx_libraries_exp ON ipeds_academic_libraries(total_expenses DESC);
+    END IF;
+END $$;
 -- ============================================================
 -- COMMENTS
 -- ============================================================

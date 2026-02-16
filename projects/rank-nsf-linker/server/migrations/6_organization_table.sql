@@ -1,1 +1,1 @@
-CREATE TABLE organizations (LIKE universities INCLUDING ALL);
+CREATE TABLE IF NOT EXISTS organizations (LIKE universities INCLUDING ALL);

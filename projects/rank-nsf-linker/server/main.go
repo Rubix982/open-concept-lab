@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	colly "github.com/gocolly/colly/v2"
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -78,7 +78,7 @@ func main() {
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 
 	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
-		populatePostgres(mainCtx)
+		executeWorkflows(mainCtx)
 	}
 
 	// Block and wait for shutdown signal

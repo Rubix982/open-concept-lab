@@ -9,6 +9,7 @@ const (
 	SCRIPTS_DIR          = "scripts"
 	NSF_DATA_DIR         = "nsfdata"
 	GEOCODING_DIR        = "geocoding"
+	IPEDS_DATA_DIR       = "ipeds"
 	MIGRATIONS_DIR       = "migrations"
 	SCRAPE_CACHE_DIR     = "scraped_cache"
 	RESEARCH_SERVICE_DIR = "research_service"
@@ -29,6 +30,11 @@ const (
 	// Data Fetching Configuration
 	NSFAwardsStartYear = 2025
 	NSFAwardsEndYear   = 2025
+
+	// IPEDS Data Fetching Configuration
+	IPEDSEarliestYear        = 2002
+	IPEDSCurrentlyRangedYear = 2018
+	IPEDSLatestYear          = 2024
 )
 
 var CSVURLs = []string{

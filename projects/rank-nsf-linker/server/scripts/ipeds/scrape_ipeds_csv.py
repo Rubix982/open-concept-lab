@@ -11,6 +11,7 @@ import zipfile
 import re
 import tempfile
 import json
+import os
 from typing import Dict, Any
 import concurrent.futures as cf
 import logging
@@ -970,8 +971,12 @@ def transform_admissions(df: pd.DataFrame, year: int) -> pd.DataFrame:
 
 
 def main():
-    year = 2023  # 2022-23 academic year
+    for index in range(2010, 2022):
+        print(f"Processing year {index}")
+        processDataForYear(index)
 
+
+def processDataForYear(year: int) -> None:
     print("Fetching IPEDS data...")
     data, column_maps = fetch_ipeds_data(year)
 
@@ -1038,23 +1043,37 @@ def main():
         ),
     }
 
+    data_path = f"./ipeds_data/{year}"
+    columns_path = f"./ipeds_columns/{year}"
+    os.makedirs(data_path, exist_ok=True)
+    os.makedirs(columns_path, exist_ok=True)
+
+    # 2. Process each dataframe
     for key, df in data.items():
         if df is None:
             continue
+
+        # 3. Transform data if transformation exists
         if key in transforms:
             transform_fn, filename = transforms[key]
             transformed = transform_fn(df)
         else:
+            # No transformation - use passthrough
             filename = f"ipeds_{key}.csv"
             transformed = passthrough(df)
-        transformed.to_csv(filename, index=False)
+
+        # 4. Save CSV to year folder
+        csv_path = Path(data_path).joinpath(filename)
+        transformed.to_csv(csv_path, index=False)
         print(f"✓ Saved {len(transformed)} records to {filename}")
+
+        # 5. Save column mappings for non-transformed data
         if key not in transforms:
             mapping = column_maps.get(key)
             if mapping:
                 lines = ["column\tlabel"]
                 lines.extend(f"{col}\t{label}" for col, label in mapping.items())
-                column_path = f"ipeds_{key}_columns.txt"
+                column_path = Path(columns_path).joinpath(f"ipeds_{key}_columns.txt")
                 Path(column_path).write_text("\n".join(lines))
                 print(f"✓ Saved column map to {column_path}")
 
