@@ -12,7 +12,7 @@ from persistent_memory.ingestion_workflow import IngestBookParams, IngestBookWor
 from persistent_memory.metrics import query_duration, query_total, track_duration
 from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
 from persistent_memory.persistent_vector_store import PersistentVectorStore
-from persistent_memory.query_cache import QueryCache
+from persistent_memory.stores import QueryCache
 from persistent_memory.streaming_query import StreamingQueryEngine
 
 app = FastAPI(
@@ -196,7 +196,9 @@ async def ingest(request: IngestRequest, background_tasks: BackgroundTasks):
     try:
         client = await Client.connect("temporal:7233")
 
-        workflow_id = request.workflow_id or f"ingest-{request.file_path.split('/')[-1]}"
+        workflow_id = (
+            request.workflow_id or f"ingest-{request.file_path.split('/')[-1]}"
+        )
 
         handle = await client.start_workflow(
             IngestBookWorkflow.run,
