@@ -2,6 +2,7 @@
 
 - [Research Knowledge Infrastructure - Vision, Architecture, and Design Rationale](#research-knowledge-infrastructure---vision-architecture-and-design-rationale)
   - [Problem Statement](#problem-statement)
+    - [Why This Matters](#why-this-matters)
   - [Goal](#goal)
   - [Architecture](#architecture)
     - [Four-Layer Memory Model](#four-layer-memory-model)
@@ -14,7 +15,6 @@
   - [Stack](#stack)
   - [Build Order](#build-order)
   - [Honest Constraints](#honest-constraints)
-  - [Why This Matters](#why-this-matters)
 
 ---
 
@@ -27,6 +27,12 @@ It is not that there is not an abundant research related to a target problem or 
 Existing tools — Connected Papers, Semantic Scholar, Elicit, ResearchRabbit — operate at the citation level. A citation only means "this paper referenced that paper." It says nothing about why, what specifically was borrowed, whether it was used to support or contradict a claim, or how an idea evolved across years of literature.
 
 **Citation-level connection is a solved problem. Claim-level connection is not.**
+
+### Why This Matters
+
+Research is siloed in ways that are not just linguistic or geographic — they are structural. A team working on a problem may be unaware that a foundational piece of it was solved elsewhere years prior, because citation graphs do not surface that connection at the right granularity.
+
+What this system builds toward is **intellectual infrastructure**: a queryable map of what ideas exist, what they are built on, and where they are being taken. Starting with research literature, scoped carefully, built with rigor.
 
 ---
 
@@ -211,8 +217,6 @@ This is not general misinformation detection. The system operates on a closed ep
 | API server          | Go                                                      |
 | UI                  | Minimal Vue or plain HTML                               |
 
-Start with DuckDB. Two tables: `facts(id, paper_id, claim, evidence, metric, value, status, confidence)` and `edges(source_fact_id, target_fact_id, relation_type)`. Migrate to a proper graph database only when traversal complexity justifies it.
-
 ---
 
 ## Build Order
@@ -239,13 +243,3 @@ Prove the structure works on a small corpus before expanding scope.
 **Corpus quality is the ceiling.** The system's epistemic reliability is bounded by what is ingested. Garbage in, garbage out — but at a more dangerous level of apparent authority.
 
 None of these are blockers. They are engineering problems with tractable solutions. Stating them clearly now prevents over-promising later.
-
----
-
-## Why This Matters
-
-Research is siloed in ways that are not just linguistic or geographic — they are structural. A team working on a problem may be unaware that a foundational piece of it was solved elsewhere years prior, because citation graphs do not surface that connection at the right granularity.
-
-What this system builds toward is **intellectual infrastructure**: a queryable map of what ideas exist, what they are built on, and where they are being taken. Starting with research literature, scoped carefully, built with rigor.
-
-The difficulty of the problem is precisely what makes it worth building.
