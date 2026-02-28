@@ -8,11 +8,15 @@
     - [Four-Layer Memory Model](#four-layer-memory-model)
     - [Human Analogy for Each Layer](#human-analogy-for-each-layer)
     - [Technical Requirements Per Layer](#technical-requirements-per-layer)
+      - [Layer 1](#layer-1)
+      - [Layer 2](#layer-2)
+      - [Layer 3](#layer-3)
+      - [Layer 4](#layer-4)
+      - [Claim Identity and Edge Classification](#claim-identity-and-edge-classification)
     - [The Full AI Stack](#the-full-ai-stack)
     - [Fine-Tuning and the Data Flywheel](#fine-tuning-and-the-data-flywheel)
     - [Build Sequence](#build-sequence)
     - [Epistemic Classification](#epistemic-classification)
-  - [Stack](#stack)
   - [Build Order](#build-order)
   - [Honest Constraints](#honest-constraints)
 
@@ -26,8 +30,6 @@ It is not that there is not an abundant research related to a target problem or 
 
 Existing tools — Connected Papers, Semantic Scholar, Elicit, ResearchRabbit — operate at the citation level. A citation only means "this paper referenced that paper." It says nothing about why, what specifically was borrowed, whether it was used to support or contradict a claim, or how an idea evolved across years of literature.
 
-**Citation-level connection is a solved problem. Claim-level connection is not.**
-
 ### Why This Matters
 
 Research is siloed in ways that are not just linguistic or geographic — they are structural. A team working on a problem may be unaware that a foundational piece of it was solved elsewhere years prior, because citation graphs do not surface that connection at the right granularity.
@@ -40,7 +42,7 @@ What this system builds toward is **intellectual infrastructure**: a queryable m
 
 Build infrastructure that captures research knowledge at its lowest granularity — discrete ideas and the dependency relationships between them — and makes those relationships queryable.
 
-The atomic unit is not a paper. It is not even a claim. It is an **idea node**: the smallest discrete concept that can stand alone and be built upon. Papers are containers. Citations are weak pointers. The goal is the dependency graph underneath both.
+The atomic unit is an **idea node**: the smallest discrete concept that can stand alone and be built upon. Papers are containers. Citations are weak pointers. The goal is the dependency graph underneath both.
 
 This makes the intellectual lineage of an idea visible and traversable:
 
@@ -112,9 +114,15 @@ A precise way to understand what each layer represents, using a concrete example
 
 Each layer requires distinct AI techniques. They are not interchangeable.
 
+#### Layer 1
+
 **Layer 1** uses standard dense retrieval — chunk, embed, store in a vector index. No LLM needed at query time. Model required: any capable embedding model (`bge-m3`, `nomic-embed-text`).
 
+#### Layer 2
+
 **Layer 2** uses structured extraction via a prompted LLM, once per paper at ingest time. The paper is passed to the model with a fixed schema to fill. Model required: any capable instruction-following model, 7B–8B class. Key technique: structured output generation (JSON mode).
+
+#### Layer 3
 
 **Layer 3** is the hardest layer. Three sub-problems must be solved:
 
@@ -124,7 +132,39 @@ Each layer requires distinct AI techniques. They are not interchangeable.
 
 Model required: a small model (3B–8B) fine-tuned specifically on your extraction schema. General models are too inconsistent for structured extraction at scale. A dedicated NLI (Natural Language Inference) classifier handles contradiction detection between claims.
 
+#### Layer 4
+
 **Layer 4** runs as a batch job, not real-time. Two steps: cluster L3 fact embeddings by similarity (HDBSCAN or k-means), then pass each cluster to a reasoning-capable LLM asking what general principle the cluster suggests. Model required: a larger reasoning model, called infrequently.
+
+#### Claim Identity and Edge Classification
+
+The deduplication problem at L3 is not a pure semantic similarity problem. Two claims can be semantically close but epistemically divergent — collapsing them destroys exactly the information the system is built to preserve.
+
+Claim identity is a function of three components: content (what is being asserted), context (domain and experimental conditions), and epistemic status (what was found, and with what confidence). Two claims are candidates for merging only when all three components are in sufficient agreement.
+
+The merge/cluster algorithm operates on four signals:
+
+```groovy
+merge_score = f(
+  semantic_similarity(assertion_embeddings),
+  domain_overlap(domain_tags),
+  condition_compatibility(experimental_setup),
+  epistemic_agreement(outcome, status)
+)
+```
+
+High semantic similarity alone is not sufficient for a merge. The outcome of the algorithm is not binary — it produces typed edges:
+
+|                    Signal Pattern                    |                   Action                   |
+| :--------------------------------------------------: | :----------------------------------------: |
+|       High similarity across all four signals        |   Merge → single node, multiple sources    |
+|    High semantic + same domain + opposing outcome    |             Contradiction edge             |
+|   High semantic + different domain + same outcome    | Replication edge (cross-domain validation) |
+| High semantic + different domain + different outcome |         Separate nodes, weak link          |
+
+A contradiction edge is not a failure state. It is a first-class data structure — the signal that a claim is contested at L3 epistemic classification.
+
+Domain tags are not assigned from a predefined taxonomy. They are extracted from the paper at ingest time as flat strings, then clustered and merged as the corpus grows. The domain hierarchy is a derived layer, not an ingest-time constraint.
 
 ---
 
@@ -203,19 +243,6 @@ The fourth class — ungrounded — is what most RAG systems silently ignore. Wh
 This is not general misinformation detection. The system operates on a closed epistemic corpus — peer-reviewed literature only. Within that boundary, every claim has traceable provenance. That constraint is the source of the system's reliability.
 
 **Limitation to state clearly:** the system can only flag what contradicts the ingested corpus. A flawed paper that was ingested will be treated as a source. Epistemic value is proportional to corpus quality.
-
----
-
-## Stack
-
-| Component           | Technology                                              |
-| ------------------- | ------------------------------------------------------- |
-| PDF ingestion       | Python — pymupdf or marker                              |
-| Fact extraction     | Python — structured LLM output via instructor           |
-| Fact + edge storage | DuckDB (initial), Neo4j (when graph complexity demands) |
-| Vector index        | Qdrant                                                  |
-| API server          | Go                                                      |
-| UI                  | Minimal Vue or plain HTML                               |
 
 ---
 
