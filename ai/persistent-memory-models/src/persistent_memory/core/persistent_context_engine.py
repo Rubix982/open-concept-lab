@@ -2,18 +2,12 @@ import asyncio
 import time
 import json
 import os
-import chromadb
 import networkx as nx
 from datetime import datetime
 from typing import Any
 
-from persistent_memory.compressed_context_store import CompressedContextStore
-from persistent_memory.context_router import ContextRouter
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-from persistent_memory.persistent_vector_store import PersistentVectorStore
-from persistent_memory.working_memory import TransformerContext
-from persistent_memory.fact_extractor import FactExtractor
-from persistent_memory.persistent_context_engine import PersistentContextEngine
+from persistent_memory.stores.latency_optimizer import CompressedContextStore
+from persistent_memory.core.context_router import ContextRouter
 
 
 class TransformerContext:
@@ -114,7 +108,7 @@ class PersistentContextAI:
         self.fact_extractor = FactExtractor(llm_model, self.context_engine.semantic)
 
         # New: Quality Monitoring
-        from persistent_memory.context_quality_monitor import ContextQualityMonitor
+        from persistent_memory.core.context_quality_monitor import ContextQualityMonitor
 
         self.quality_monitor = ContextQualityMonitor()
 
@@ -369,6 +363,7 @@ class PersistentVectorStore:
         chroma_host = os.getenv("CHROMA_HOST", "localhost")
         chroma_port = os.getenv("CHROMA_PORT", "8000")
 
+        import chromadb
         self.client = chromadb.HttpClient(host=chroma_host, port=int(chroma_port))
         self.collection = self.client.get_or_create_collection(name=collection_name)
 

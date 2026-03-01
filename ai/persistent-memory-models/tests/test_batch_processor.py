@@ -1,13 +1,7 @@
 import unittest
-import asyncio
-import logging
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
 from unittest.mock import MagicMock
-from persistent_memory.processors import BatchProcessor, BatchConfig, DocumentScanner
 
-logger = logging.getLogger(__name__)
+from persistent_memory.processors import BatchProcessor, BatchConfig, DocumentScanner
 
 
 class TestBatchProcessor(unittest.TestCase):
@@ -48,34 +42,6 @@ class TestBatchProcessor(unittest.TestCase):
         scanner = DocumentScanner()
         files = scanner.scan_directory("./data", recursive=True)
         self.assertIsInstance(files, list)
-
-    async def test_end_to_end_demo(self):
-        """Demo batch processing."""
-        logging.basicConfig(level=logging.INFO)
-
-        async def mock_processor(file_path: str):
-            """Mock document processor."""
-            await asyncio.sleep(0.5)  # Simulate processing
-            logger.info(f"Processed: {file_path}")
-            return {"file": file_path, "chunks": 10}
-
-        def progress_callback(current, total, file_path):
-            """Progress callback."""
-            percent = (current / total) * 100
-            print(f"Progress: {current}/{total} ({percent:.1f}%) - {file_path}")
-
-        # Scan for documents
-        scanner = DocumentScanner()
-        files = scanner.scan_directory("./data", recursive=True)
-
-        # Process in batches
-        processor = BatchProcessor(BatchConfig(batch_size=5, max_concurrent=3))
-
-        summary = await processor.process_documents(
-            files, mock_processor, progress_callback
-        )
-
-        print(f"\nSummary: {summary}")
 
 
 if __name__ == "__main__":

@@ -5,20 +5,11 @@ from datetime import timedelta
 
 from temporalio import workflow, activity
 
-from persistent_memory.persistent_vector_store import PersistentVectorStore
-from persistent_memory.fact_extractor import FactExtractor, MockFactExtractor
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
+from persistent_memory.core.persistent_context_engine import PersistentVectorStore, PersistentKnowledgeGraph
+from persistent_memory.core.fact_extractor import FactExtractor, MockFactExtractor
 
 
-with workflow.unsafe.imports_passed_through():
-    from persistent_memory.activities import (
-        IngestBookParams,
-        IngestBookResult,
-        chunk_text_activity,
-        download_book_activity,
-        embed_and_store_activity,
-        extract_facts_activity,
-    )
+# IngestBookParams, IngestBookResult, and activity functions are defined below in this module
 
 
 @workflow.defn

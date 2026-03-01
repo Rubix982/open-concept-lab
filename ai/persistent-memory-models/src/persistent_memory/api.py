@@ -8,12 +8,11 @@ from prometheus_client import make_asgi_app
 from pydantic import BaseModel
 from temporalio.client import Client
 
-from persistent_memory.ingestion_workflow import IngestBookParams, IngestBookWorkflow
-from persistent_memory.metrics import query_duration, query_total, track_duration
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.workflows.book_ingestion_workflow import IngestBookParams, IngestBookWorkflow
+from persistent_memory.utils.metrics import query_duration, query_total, track_duration
+from persistent_memory.core.persistent_context_engine import PersistentKnowledgeGraph, PersistentVectorStore
 from persistent_memory.stores import QueryCache
-from persistent_memory.streaming_query import StreamingQueryEngine
+from persistent_memory.processors.streaming_query import StreamingQueryEngine
 
 app = FastAPI(
     title="Persistent Memory API",
@@ -215,8 +214,8 @@ async def ingest(request: IngestRequest, background_tasks: BackgroundTasks):
 @app.post("/ingest/batch")
 async def batch_ingest(request: BatchIngestRequest):
     """Ingest multiple documents from a directory."""
-    from persistent_memory.batch_processor import BatchProcessor, DocumentScanner
-    from persistent_memory.cli import trigger_ingestion
+    from persistent_memory.processors.batch_processor import BatchProcessor, DocumentScanner
+    from persistent_memory.utils.cli import trigger_ingestion
 
     try:
         # Scan directory

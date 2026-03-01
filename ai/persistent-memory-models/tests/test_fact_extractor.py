@@ -2,7 +2,7 @@
 
 import pytest
 
-from persistent_memory.fact_extractor import ExtractionResult, FactExtractor, MockFactExtractor
+from persistent_memory.core.fact_extractor import ExtractionResult, FactExtractor, MockFactExtractor
 
 
 class TestMockFactExtractor:
