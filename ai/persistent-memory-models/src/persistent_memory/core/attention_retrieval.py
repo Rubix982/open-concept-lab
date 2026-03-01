@@ -11,11 +11,11 @@ import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
 
-from persistent_memory.hierarchical_attention import (
+from persistent_memory.core.hierarchical_attention import (
     AttentionConfig,
     HierarchicalAttentionNetwork,
 )
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.core.persistent_context_engine import PersistentVectorStore
 
 logger = logging.getLogger(__name__)
 

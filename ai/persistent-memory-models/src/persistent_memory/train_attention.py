@@ -14,8 +14,8 @@ import torch.nn as nn
 from sentence_transformers import SentenceTransformer
 from torch.utils.data import DataLoader, Dataset
 
-from persistent_memory.hierarchical_attention import AttentionConfig, HierarchicalAttentionNetwork
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.core.hierarchical_attention import AttentionConfig, HierarchicalAttentionNetwork
+from persistent_memory.core.persistent_context_engine import PersistentVectorStore
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

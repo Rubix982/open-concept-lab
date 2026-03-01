@@ -1,6 +1,8 @@
-from persistent_memory.persistent_context_engine import PersistentContextEngine
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.core.persistent_context_engine import (
+    PersistentContextEngine,
+    PersistentKnowledgeGraph,
+    PersistentVectorStore,
+)
 
 
 class AccessControlLayer:

@@ -6,9 +6,9 @@ import os
 from typing import Any
 
 from openai import AsyncOpenAI
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
-from persistent_memory.metrics import fact_extraction_total, llm_call_duration, track_duration
+from persistent_memory.utils.metrics import fact_extraction_total, llm_call_duration, track_duration
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +22,9 @@ class Fact(BaseModel):
     confidence: float = Field(description="Confidence score between 0 and 1", ge=0.0, le=1.0)
     source_text: str | None = Field(default=None, description="Original text snippet")
 
-    @validator("subject", "predicate", "object")
-    def not_empty(self, cls, v):
+    @field_validator("subject", "predicate", "object")
+    @classmethod
+    def not_empty(cls, v):
         if not v or not v.strip():
             raise ValueError("Field cannot be empty")
         return v.strip()

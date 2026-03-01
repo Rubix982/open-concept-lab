@@ -135,7 +135,7 @@ class ResearchPaperIngestionWorkflow:
 @activity.defn
 async def fetch_papers_activity(params: PaperIngestionParams) -> list[dict[str, Any]]:
     """Fetch papers from arXiv based on parameters."""
-    from persistent_memory.arxiv_downloader import ArxivDownloader, get_curated_papers
+    from persistent_memory.core.arxiv_downloader import ArxivDownloader
 
     downloader = ArxivDownloader()
     papers = []
@@ -152,9 +152,10 @@ async def fetch_papers_activity(params: PaperIngestionParams) -> list[dict[str, 
         results = downloader.search(params.search_query, max_results=params.max_papers)
         papers = [p.to_dict() for p in results]
 
-    # Option 3: Curated collection
+    # Option 3: Curated collection (not yet implemented)
     elif params.collection_name:
-        arxiv_ids = get_curated_papers(params.collection_name)
+        logger.warning("get_curated_papers is not yet implemented; collection_name will be ignored")
+        arxiv_ids = []
         for arxiv_id in arxiv_ids[: params.max_papers]:
             paper = downloader.get_paper_by_id(arxiv_id)
             if paper:
@@ -167,11 +168,11 @@ async def fetch_papers_activity(params: PaperIngestionParams) -> list[dict[str, 
 @activity.defn
 async def process_paper_activity(paper: dict[str, Any]) -> dict[str, Any]:
     """Download and process a single paper using DataRepository."""
-    from persistent_memory.data_repository import get_repository
-    from persistent_memory.persistent_vector_store import PersistentVectorStore
+    from persistent_memory.stores.data_repository import DataRepository
+    from persistent_memory.core.persistent_context_engine import PersistentVectorStore
 
     vector_store = PersistentVectorStore()
-    repo = get_repository()
+    repo = DataRepository()
 
     try:
         arxiv_id = paper["arxiv_id"]
@@ -231,9 +232,8 @@ async def process_paper_activity(paper: dict[str, Any]) -> dict[str, Any]:
 @activity.defn
 async def extract_facts_from_paper_activity(paper_result: dict[str, Any]) -> list[dict]:
     """Extract facts from paper using LLM."""
-    from persistent_memory.fact_extractor import FactExtractor
-    from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-    from persistent_memory.persistent_vector_store import PersistentVectorStore
+    from persistent_memory.core.fact_extractor import FactExtractor
+    from persistent_memory.core.persistent_context_engine import PersistentKnowledgeGraph, PersistentVectorStore
 
     if not paper_result["success"]:
         return []

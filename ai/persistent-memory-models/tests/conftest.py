@@ -5,9 +5,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-from persistent_memory.persistent_vector_store import PersistentVectorStore
-
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -20,7 +17,7 @@ def event_loop():
 @pytest.fixture
 def mock_vector_store():
     """Mock vector store for testing."""
-    store = MagicMock(spec=PersistentVectorStore)
+    store = MagicMock()
     store.search.return_value = [{"id": "1", "text": "test", "distance": 0.1}]
     return store
 
@@ -28,7 +25,7 @@ def mock_vector_store():
 @pytest.fixture
 def mock_knowledge_graph():
     """Mock knowledge graph for testing."""
-    kg = MagicMock(spec=PersistentKnowledgeGraph)
+    kg = MagicMock()
     kg.query.return_value = []
     return kg
 

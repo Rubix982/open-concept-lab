@@ -6,14 +6,14 @@ import os
 import typer
 from temporalio.client import Client
 
-from persistent_memory.data_repository import get_repository
+from persistent_memory.stores.data_repository import DataRepository
 
 app = typer.Typer()
 
 
 async def trigger_ingestion(file_path: str):
     """Trigger the ingestion workflow."""
-    from persistent_memory.ingestion_workflow import (
+    from persistent_memory.workflows.book_ingestion_workflow import (
         IngestBookParams,
         IngestBookWorkflow,
     )
@@ -42,7 +42,7 @@ async def trigger_paper_ingestion(
     max_papers: int = 10,
 ):
     """Trigger paper ingestion workflow."""
-    from persistent_memory.paper_ingestion_workflow import (
+    from persistent_memory.workflows.paper_ingestion_workflow import (
         PaperIngestionParams,
         ResearchPaperIngestionWorkflow,
     )
@@ -127,7 +127,7 @@ def search_papers(
     query: str, max_results: int = typer.Option(10, help="Maximum results")
 ):
     """Search for papers on arXiv without ingesting."""
-    from persistent_memory.arxiv_downloader import ArxivDownloader
+    from persistent_memory.core.arxiv_downloader import ArxivDownloader
 
     downloader = ArxivDownloader()
     papers = downloader.search(query, max_results=max_results)
@@ -146,7 +146,7 @@ def search_papers(
 @app.command()
 def list_conferences():
     """List supported AI conferences."""
-    from persistent_memory.conference_connector import ConferenceConnector
+    from persistent_memory.core.conference_connector import ConferenceConnector
 
     connector = ConferenceConnector()
     conferences = connector.list_conferences()
@@ -172,7 +172,7 @@ def ingest_conference(
     Example:
         cli ingest-conference --name=neurips --year=2023
     """
-    from persistent_memory.conference_connector import ConferenceConnector
+    from persistent_memory.core.conference_connector import ConferenceConnector
 
     connector = ConferenceConnector()
 
@@ -211,8 +211,7 @@ def ingest_conference(
 @app.command()
 def query(query_text: str, k: int = 5):
     """Query the memory system."""
-    from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-    from persistent_memory.persistent_vector_store import PersistentVectorStore
+    from persistent_memory.core.persistent_context_engine import PersistentKnowledgeGraph, PersistentVectorStore
 
     vs = PersistentVectorStore()
     kg = PersistentKnowledgeGraph()
@@ -250,7 +249,7 @@ def query(query_text: str, k: int = 5):
 @app.command()
 def stats():
     """Show repository statistics."""
-    repo = get_repository()
+    repo = DataRepository()
     stats = repo.get_stats()
 
     print("\n📊 Data Repository Statistics")
@@ -268,7 +267,7 @@ def stats():
 @app.command()
 def get(arxiv_id: str, show_text: bool = False):
     """Get a specific paper (downloads if not cached)."""
-    repo = get_repository()
+    repo = DataRepository()
 
     print(f"\n📄 Getting paper {arxiv_id}...")
     paper = repo.get_paper(arxiv_id)
@@ -294,7 +293,7 @@ def get(arxiv_id: str, show_text: bool = False):
 @app.command()
 def search(query: str, max_results: int = 5):
     """Search and cache papers."""
-    repo = get_repository()
+    repo = DataRepository()
 
     print(f"\n🔍 Searching for: '{query}'")
     papers = repo.search_and_cache(query, max_results=max_results)
@@ -309,7 +308,7 @@ def search(query: str, max_results: int = 5):
 @app.command()
 def list_cached():
     """List all cached papers."""
-    repo = get_repository()
+    repo = DataRepository()
     papers = repo.get_cached_papers()
 
     print(f"\n📚 Cached Papers ({len(papers)}):")
@@ -326,7 +325,7 @@ def clear(
     all: bool = typer.Option(False, help="Clear entire cache"),
 ):
     """Clear cache."""
-    repo = get_repository()
+    repo = DataRepository()
 
     if all:
         confirm = typer.confirm("⚠️  Clear entire cache?")
@@ -343,7 +342,7 @@ def clear(
 @app.command()
 def get_text(arxiv_id: str):
     """Get extracted text for a paper."""
-    repo = get_repository()
+    repo = DataRepository()
     text = repo.get_text(arxiv_id)
 
     if text:

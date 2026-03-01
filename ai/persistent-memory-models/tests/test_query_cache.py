@@ -1,14 +1,8 @@
 import unittest
-from unittest.mock import MagicMock
-import hashlib
+from unittest.mock import MagicMock, patch
 import json
-import logging
-from typing import Any
 
-import redis.asyncio as redis
-from src.persistent_memory.stores.query_cache import QueryCache
-
-logger = logging.getLogger(__name__)
+from persistent_memory.stores.query_cache import QueryCache
 
 
 class TestQueryCache(unittest.TestCase):
@@ -44,30 +38,6 @@ class TestQueryCache(unittest.TestCase):
         self.assertEqual(stats["total_requests"], 0)
         self.assertEqual(stats["hit_rate"], 0)
         self.assertEqual(stats["enabled"], True)
-
-    async def test_end_to_end_demo(self):
-        """Demo query caching."""
-        cache = QueryCache(redis_url="redis://localhost:6379")
-        await cache.connect()
-
-        # Simulate queries
-        query = "Who is Elizabeth Bennet?"
-
-        # First query (cache miss)
-        result1 = await cache.get(query, k=5)
-        print(f"First query: {result1}")  # None
-
-        # Cache the result
-        await cache.set(query, {"results": ["mock data"]}, k=5)
-
-        # Second query (cache hit)
-        result2 = await cache.get(query, k=5)
-        print(f"Second query: {result2}")  # {"results": ["mock data"]}
-
-        # Stats
-        print(f"Cache stats: {cache.get_stats()}")
-
-        await cache.disconnect()
 
 
 if __name__ == "__main__":

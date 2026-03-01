@@ -1,23 +1,36 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+try:
+    import torch
+    import numpy as np
+    HAS_TORCH = True
+except ImportError:
+    HAS_TORCH = False
 
 from persistent_memory.core import HierarchicalAttentionNetwork
+
+if HAS_TORCH:
+    from persistent_memory.core import AttentionConfig
 
 
 class TestHierarchicalAttentionNetwork(unittest.TestCase):
     def setUp(self):
+        if not HAS_TORCH:
+            self.skipTest("torch not available")
         self.attention_network = HierarchicalAttentionNetwork()
 
     def test_forward(self):
         response = self.attention_network.forward("Hello")
         self.assertIsInstance(response, str)
 
+    @pytest.mark.skipif(not HAS_TORCH, reason="torch not available")
     def test_end_to_end_demo(self) -> None:
-        # Demo
         config = AttentionConfig()
         model = HierarchicalAttentionNetwork(config)
 
-        # Dummy data
         batch_size = 2
         query_emb = torch.randn(batch_size, config.embedding_dim)
         chunk_embs = torch.randn(batch_size, 10, config.embedding_dim)
@@ -25,14 +38,7 @@ class TestHierarchicalAttentionNetwork(unittest.TestCase):
 
         outputs = model(query_emb, chunk_embs, sentence_embs)
 
-        print("Output shapes:")
-        for k, v in outputs.items():
-            print(f"  {k}: {v.shape}")
-
-        print("\nAttention weights:")
-        weights = model.get_attention_weights(outputs)
-        print(f"  Chunk attention: {weights['chunk_attention'][0]}")
-        print(f"  Top 3 chunks: {np.argsort(weights['chunk_attention'][0])[-3:]}")
+        assert isinstance(outputs, dict)
 
 
 if __name__ == "__main__":

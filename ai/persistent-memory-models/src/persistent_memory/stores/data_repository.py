@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from persistent_memory.arxiv_downloader import ArxivDownloader
+from persistent_memory.core.arxiv_downloader import ArxivDownloader
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@
 
 import pytest
 
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.core.persistent_context_engine import PersistentVectorStore
 
 
 @pytest.mark.benchmark
@@ -25,7 +25,6 @@ class TestVectorStorePerformance:
         """Benchmark search operations."""
         store = PersistentVectorStore(collection_name="benchmark_test")
 
-        # Pre-populate
         texts = [f"Sample text {i}" for i in range(1000)]
         ids = [f"id_{i}" for i in range(1000)]
         metadatas = [{"index": i} for i in range(1000)]

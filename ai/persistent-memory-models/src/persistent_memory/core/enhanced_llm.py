@@ -26,15 +26,12 @@ from typing import Any
 # LLM backend
 from openai import AsyncOpenAI
 
-from persistent_memory.attention_retrieval import AttentionEnhancedRetrieval
-from persistent_memory.context_quality_monitor import ContextQualityMonitor
-from persistent_memory.dynamic_context_allocator import DynamicContextAllocator
-from persistent_memory.fact_extractor import FactExtractor
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-
-# Our advanced components
-from persistent_memory.persistent_vector_store import PersistentVectorStore
-from persistent_memory.query_cache import QueryCache
+from persistent_memory.core.attention_retrieval import AttentionEnhancedRetrieval
+from persistent_memory.core.context_quality_monitor import ContextQualityMonitor
+from persistent_memory.core.dynamic_context_allocator import DynamicContextAllocator
+from persistent_memory.core.fact_extractor import FactExtractor
+from persistent_memory.core.persistent_context_engine import PersistentKnowledgeGraph, PersistentVectorStore
+from persistent_memory.stores.query_cache import QueryCache
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

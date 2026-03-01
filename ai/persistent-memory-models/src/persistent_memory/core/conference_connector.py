@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from persistent_memory.arxiv_downloader import ArxivDownloader, ArxivPaper
+from persistent_memory.core.arxiv_downloader import ArxivDownloader, ArxivPaper
 
 logger = logging.getLogger(__name__)
 

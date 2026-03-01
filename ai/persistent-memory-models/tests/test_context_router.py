@@ -1,12 +1,11 @@
 import unittest
 from unittest.mock import MagicMock
 
-from persistent_memory.context_router import ContextRouter
+from persistent_memory.core.context_router import ContextRouter
 
 
 class TestContextRouter(unittest.TestCase):
     def setUp(self):
-        # Mock layers
         self.working = MagicMock()
         self.episodic = MagicMock()
         self.semantic = MagicMock()
@@ -20,22 +19,17 @@ class TestContextRouter(unittest.TestCase):
         self.router = ContextRouter([self.working, self.episodic, self.semantic, self.archive])
 
     def test_routing(self):
-        # Mock router network to return high probability for all layers
         self.router.router = MagicMock(return_value=[0.1, 0.4, 0.4, 0.3])
 
         results = self.router.route_query("test query")
 
-        # Check if all layers were queried
         self.working.get_current_context.assert_called()
         self.episodic.search.assert_called()
         self.semantic.query.assert_called()
         self.archive.retrieve.assert_called()
 
-        # Check results structure
         self.assertTrue(len(results) > 0)
-        self.assertEqual(
-            results[0]["layer"], "working"
-        )  # working memory usually ranked high due to recency mock
+        self.assertEqual(results[0]["layer"], "working")
 
 
 if __name__ == "__main__":

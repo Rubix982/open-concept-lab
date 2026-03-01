@@ -4,15 +4,13 @@ import os
 from temporalio.client import Client
 from temporalio.worker import Worker
 
-from persistent_memory.activities import (
+from persistent_memory.workflows.book_ingestion_workflow import (
+    IngestBookWorkflow,
     chunk_text_activity,
     download_book_activity,
     embed_and_store_activity,
     extract_facts_activity,
 )
-
-# Import workflows and activities
-from persistent_memory.ingestion_workflow import IngestBookWorkflow
 
 
 async def main():

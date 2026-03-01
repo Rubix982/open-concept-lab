@@ -4,9 +4,8 @@ import logging
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from persistent_memory.dynamic_context_allocator import DynamicContextAllocator
-from persistent_memory.persistent_knowledge_graph import PersistentKnowledgeGraph
-from persistent_memory.persistent_vector_store import PersistentVectorStore
+from persistent_memory.core.dynamic_context_allocator import DynamicContextAllocator
+from persistent_memory.core.persistent_context_engine import PersistentKnowledgeGraph, PersistentVectorStore
 
 logger = logging.getLogger(__name__)
 
