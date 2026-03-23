@@ -204,6 +204,7 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `docs/graphsage_v2_plan.md`: development plan for mini-batch GraphSAGE v2
 - `docs/graphsage_v2_1_plan.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
 - `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
+- `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
 
 ## What We Learned
 
