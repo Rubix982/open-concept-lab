@@ -1,0 +1,110 @@
+{
+  "dataset": "arxiv",
+  "mode": "over-smoothing",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 21438,
+      "num_undirected_edges": 10719,
+      "average_degree": 13.698402555910544,
+      "density": 0.008758569409149963
+    }
+  },
+  "question_count": 3,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/full_experiment/over_smoothing/accuracy_comparison.png",
+    "history_comparison": "artifacts/full_experiment/over_smoothing/history_comparison.png",
+    "tsne_grid": "artifacts/full_experiment/over_smoothing/tsne_grid.png",
+    "over_smoothing_diagnostics": "artifacts/full_experiment/over_smoothing/over_smoothing_diagnostics.png"
+  },
+  "runs": [
+    {
+      "name": "depth_1",
+      "metrics": {
+        "train_accuracy": 0.825,
+        "val_accuracy": 0.6424242424242425,
+        "test_accuracy": 0.6343434343434343,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 1
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 1,
+        "mean_pairwise_cosine": 0.04646320641040802,
+        "embedding_variance": 0.026651665568351746
+      },
+      "paths": {
+        "metrics": "artifacts/full_experiment/over_smoothing/depth_1_metrics.json",
+        "history": "artifacts/full_experiment/over_smoothing/depth_1_history.json",
+        "details": "artifacts/full_experiment/over_smoothing/depth_1_details.json",
+        "embeddings": "artifacts/full_experiment/over_smoothing/depth_1_embeddings.npy",
+        "logits": "artifacts/full_experiment/over_smoothing/depth_1_logits.npy",
+        "tsne": "artifacts/full_experiment/over_smoothing/depth_1_tsne.png"
+      }
+    },
+    {
+      "name": "depth_2",
+      "metrics": {
+        "train_accuracy": 0.6625,
+        "val_accuracy": 0.5878787878787879,
+        "test_accuracy": 0.5515151515151515,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 2,
+        "mean_pairwise_cosine": 0.7479248642921448,
+        "embedding_variance": 0.025483565405011177
+      },
+      "paths": {
+        "metrics": "artifacts/full_experiment/over_smoothing/depth_2_metrics.json",
+        "history": "artifacts/full_experiment/over_smoothing/depth_2_history.json",
+        "details": "artifacts/full_experiment/over_smoothing/depth_2_details.json",
+        "embeddings": "artifacts/full_experiment/over_smoothing/depth_2_embeddings.npy",
+        "logits": "artifacts/full_experiment/over_smoothing/depth_2_logits.npy",
+        "tsne": "artifacts/full_experiment/over_smoothing/depth_2_tsne.png"
+      }
+    },
+    {
+      "name": "depth_3",
+      "metrics": {
+        "train_accuracy": 0.5125,
+        "val_accuracy": 0.48282828282828283,
+        "test_accuracy": 0.47474747474747475,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 3
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 3,
+        "mean_pairwise_cosine": 0.8147898316383362,
+        "embedding_variance": 0.02419118583202362
+      },
+      "paths": {
+        "metrics": "artifacts/full_experiment/over_smoothing/depth_3_metrics.json",
+        "history": "artifacts/full_experiment/over_smoothing/depth_3_history.json",
+        "details": "artifacts/full_experiment/over_smoothing/depth_3_details.json",
+        "embeddings": "artifacts/full_experiment/over_smoothing/depth_3_embeddings.npy",
+        "logits": "artifacts/full_experiment/over_smoothing/depth_3_logits.npy",
+        "tsne": "artifacts/full_experiment/over_smoothing/depth_3_tsne.png"
+      }
+    }
+  ]
+}

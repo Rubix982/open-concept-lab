@@ -1,5 +1,24 @@
 {
+  "dataset": "arxiv",
   "mode": "baseline",
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k5_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k5_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k5_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k5_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 11324,
+      "num_undirected_edges": 5662,
+      "average_degree": 7.235782747603833,
+      "density": 0.004626459557291454
+    }
+  },
   "question_count": 1,
   "visualizations": {
     "accuracy_comparison": "artifacts/baseline/accuracy_comparison.png",
@@ -10,12 +29,12 @@
     {
       "name": "baseline",
       "metrics": {
-        "train_accuracy": 0.9928571428571429,
-        "val_accuracy": 0.838,
-        "test_accuracy": 0.8152804642166345,
-        "num_train_nodes": 140,
-        "num_val_nodes": 500,
-        "num_test_nodes": 2068,
+        "train_accuracy": 0.8625,
+        "val_accuracy": 0.6161616161616161,
+        "test_accuracy": 0.5818181818181818,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
         "num_layers": 2
       },
       "details": {

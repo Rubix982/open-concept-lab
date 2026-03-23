@@ -1,0 +1,7 @@
+{
+  "question": "How cleanly do learned embeddings separate topic classes?",
+  "mean_centroid_distance": 0.13427152360479036,
+  "min_centroid_distance": 0.06822855770587921,
+  "max_centroid_distance": 0.1963919997215271,
+  "within_class_dispersion": 0.12142896465957165
+}

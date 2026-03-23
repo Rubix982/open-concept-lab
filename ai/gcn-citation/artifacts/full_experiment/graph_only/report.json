@@ -1,0 +1,54 @@
+{
+  "dataset": "arxiv",
+  "mode": "graph-only",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 21438,
+      "num_undirected_edges": 10719,
+      "average_degree": 13.698402555910544,
+      "density": 0.008758569409149963
+    }
+  },
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/full_experiment/graph_only/accuracy_comparison.png",
+    "history_comparison": "artifacts/full_experiment/graph_only/history_comparison.png",
+    "tsne_grid": "artifacts/full_experiment/graph_only/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "graph_only",
+      "metrics": {
+        "train_accuracy": 0.4125,
+        "val_accuracy": 0.24242424242424243,
+        "test_accuracy": 0.2494949494949495,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "How much signal remains when lexical node features are removed?"
+      },
+      "paths": {
+        "metrics": "artifacts/full_experiment/graph_only/graph_only_metrics.json",
+        "history": "artifacts/full_experiment/graph_only/graph_only_history.json",
+        "details": "artifacts/full_experiment/graph_only/graph_only_details.json",
+        "embeddings": "artifacts/full_experiment/graph_only/graph_only_embeddings.npy",
+        "logits": "artifacts/full_experiment/graph_only/graph_only_logits.npy",
+        "tsne": "artifacts/full_experiment/graph_only/graph_only_tsne.png"
+      }
+    }
+  ]
+}

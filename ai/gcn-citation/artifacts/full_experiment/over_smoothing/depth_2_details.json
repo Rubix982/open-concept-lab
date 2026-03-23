@@ -1,0 +1,6 @@
+{
+  "question": "Do deeper models collapse node representations toward one another?",
+  "depth": 2,
+  "mean_pairwise_cosine": 0.7479248642921448,
+  "embedding_variance": 0.025483565405011177
+}

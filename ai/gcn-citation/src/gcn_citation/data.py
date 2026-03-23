@@ -182,12 +182,28 @@ def make_splits(labels: np.ndarray, rng: np.random.Generator) -> tuple[np.ndarra
     for label in np.unique(labels):
         label_indices = np.where(labels == label)[0]
         shuffled = rng.permutation(label_indices)
-        train_mask[shuffled[:20]] = True
+        if shuffled.shape[0] >= 30:
+            train_count = 20
+        else:
+            # For smaller custom datasets, keep some examples aside for validation/test.
+            train_count = max(1, int(np.floor(shuffled.shape[0] * 0.6)))
+        train_mask[shuffled[:train_count]] = True
 
     remaining = np.where(~train_mask)[0]
     remaining = rng.permutation(remaining)
-    val_mask[remaining[:500]] = True
-    test_mask[remaining[500:1500]] = True
+
+    if remaining.shape[0] >= 1500:
+        val_count = 500
+        test_count = min(1000, remaining.shape[0] - val_count)
+    elif remaining.shape[0] <= 1:
+        val_count = remaining.shape[0]
+        test_count = 0
+    else:
+        val_count = max(1, remaining.shape[0] // 3)
+        test_count = remaining.shape[0] - val_count
+
+    val_mask[remaining[:val_count]] = True
+    test_mask[remaining[val_count : val_count + test_count]] = True
 
     if (~(train_mask | val_mask | test_mask)).any():
         leftover = np.where(~(train_mask | val_mask | test_mask))[0]

@@ -1,0 +1,88 @@
+{
+  "dataset": "arxiv",
+  "mode": "full-experiment",
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 21438,
+      "num_undirected_edges": 10719,
+      "average_degree": 13.698402555910544,
+      "density": 0.008758569409149963
+    }
+  },
+  "included_modes": [
+    "baseline",
+    "feature-only",
+    "graph-only",
+    "depth-ablation",
+    "over-smoothing",
+    "embedding-separation"
+  ],
+  "density_top_k_values": [
+    5,
+    10,
+    20,
+    40
+  ],
+  "mode_reports": [
+    {
+      "mode": "baseline",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/baseline/report.json"
+    },
+    {
+      "mode": "feature-only",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/feature_only/report.json"
+    },
+    {
+      "mode": "graph-only",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/graph_only/report.json"
+    },
+    {
+      "mode": "depth-ablation",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/depth_ablation/report.json"
+    },
+    {
+      "mode": "over-smoothing",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/over_smoothing/report.json"
+    },
+    {
+      "mode": "embedding-separation",
+      "top_k": null,
+      "report_path": "artifacts/full_experiment/embedding_separation/report.json"
+    },
+    {
+      "mode": "baseline",
+      "top_k": 5,
+      "report_path": "artifacts/full_experiment/density_top_k_5/report.json"
+    },
+    {
+      "mode": "baseline",
+      "top_k": 10,
+      "report_path": "artifacts/full_experiment/density_top_k_10/report.json"
+    },
+    {
+      "mode": "baseline",
+      "top_k": 20,
+      "report_path": "artifacts/full_experiment/density_top_k_20/report.json"
+    },
+    {
+      "mode": "baseline",
+      "top_k": 40,
+      "report_path": "artifacts/full_experiment/density_top_k_40/report.json"
+    }
+  ]
+}

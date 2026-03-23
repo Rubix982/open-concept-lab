@@ -1,0 +1,54 @@
+{
+  "dataset": "arxiv",
+  "mode": "baseline",
+  "top_k": 20,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k20_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k20_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k20_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k20_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 41188,
+      "num_undirected_edges": 20594,
+      "average_degree": 26.318210862619807,
+      "density": 0.016827500551547192
+    }
+  },
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/full_experiment/density_top_k_20/accuracy_comparison.png",
+    "history_comparison": "artifacts/full_experiment/density_top_k_20/history_comparison.png",
+    "tsne_grid": "artifacts/full_experiment/density_top_k_20/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 0.5125,
+        "val_accuracy": 0.5494949494949495,
+        "test_accuracy": 0.501010101010101,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "What does the standard 2-layer GCN achieve on this split?"
+      },
+      "paths": {
+        "metrics": "artifacts/full_experiment/density_top_k_20/baseline_metrics.json",
+        "history": "artifacts/full_experiment/density_top_k_20/baseline_history.json",
+        "details": "artifacts/full_experiment/density_top_k_20/baseline_details.json",
+        "embeddings": "artifacts/full_experiment/density_top_k_20/baseline_embeddings.npy",
+        "logits": "artifacts/full_experiment/density_top_k_20/baseline_logits.npy",
+        "tsne": "artifacts/full_experiment/density_top_k_20/baseline_tsne.png"
+      }
+    }
+  ]
+}
