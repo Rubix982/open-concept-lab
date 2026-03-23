@@ -1,0 +1,33 @@
+{
+  "mode": "embedding-separation",
+  "question_count": 1,
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 0.44285714285714284,
+        "val_accuracy": 0.378,
+        "test_accuracy": 0.39893617021276595,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "How cleanly do learned embeddings separate topic classes?",
+        "mean_centroid_distance": 0.14173868653320132,
+        "min_centroid_distance": 0.06229722499847412,
+        "max_centroid_distance": 0.22166968882083893,
+        "within_class_dispersion": 0.22024308570793696
+      },
+      "paths": {
+        "metrics": "artifacts/embedding_separation/baseline_metrics.json",
+        "history": "artifacts/embedding_separation/baseline_history.json",
+        "details": "artifacts/embedding_separation/baseline_details.json",
+        "embeddings": "artifacts/embedding_separation/baseline_embeddings.npy",
+        "logits": "artifacts/embedding_separation/baseline_logits.npy",
+        "tsne": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "train_accuracy": 0.25,
+  "val_accuracy": 0.244,
+  "test_accuracy": 0.23500967117988394,
+  "num_train_nodes": 140,
+  "num_val_nodes": 500,
+  "num_test_nodes": 2068,
+  "num_layers": 3
+}

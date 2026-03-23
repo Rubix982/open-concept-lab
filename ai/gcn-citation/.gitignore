@@ -1,0 +1,18 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local experiment outputs
+data/
+artifacts/.cache/
+artifacts/.mplconfig/
+artifacts/**/*.npy
+artifacts/**/*.wal
+
+# Notebook and OS noise
+.DS_Store

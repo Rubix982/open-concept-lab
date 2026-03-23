@@ -1,0 +1,78 @@
+{
+  "mode": "depth-ablation",
+  "question_count": 3,
+  "runs": [
+    {
+      "name": "depth_1",
+      "metrics": {
+        "train_accuracy": 0.6857142857142857,
+        "val_accuracy": 0.42,
+        "test_accuracy": 0.40522243713733075,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 1
+      },
+      "details": {
+        "question": "How does performance change with network depth?",
+        "depth": 1
+      },
+      "paths": {
+        "metrics": "artifacts/depth_ablation/depth_1_metrics.json",
+        "history": "artifacts/depth_ablation/depth_1_history.json",
+        "details": "artifacts/depth_ablation/depth_1_details.json",
+        "embeddings": "artifacts/depth_ablation/depth_1_embeddings.npy",
+        "logits": "artifacts/depth_ablation/depth_1_logits.npy",
+        "tsne": ""
+      }
+    },
+    {
+      "name": "depth_2",
+      "metrics": {
+        "train_accuracy": 0.44285714285714284,
+        "val_accuracy": 0.378,
+        "test_accuracy": 0.39893617021276595,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "How does performance change with network depth?",
+        "depth": 2
+      },
+      "paths": {
+        "metrics": "artifacts/depth_ablation/depth_2_metrics.json",
+        "history": "artifacts/depth_ablation/depth_2_history.json",
+        "details": "artifacts/depth_ablation/depth_2_details.json",
+        "embeddings": "artifacts/depth_ablation/depth_2_embeddings.npy",
+        "logits": "artifacts/depth_ablation/depth_2_logits.npy",
+        "tsne": ""
+      }
+    },
+    {
+      "name": "depth_3",
+      "metrics": {
+        "train_accuracy": 0.25,
+        "val_accuracy": 0.244,
+        "test_accuracy": 0.23500967117988394,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 3
+      },
+      "details": {
+        "question": "How does performance change with network depth?",
+        "depth": 3
+      },
+      "paths": {
+        "metrics": "artifacts/depth_ablation/depth_3_metrics.json",
+        "history": "artifacts/depth_ablation/depth_3_history.json",
+        "details": "artifacts/depth_ablation/depth_3_details.json",
+        "embeddings": "artifacts/depth_ablation/depth_3_embeddings.npy",
+        "logits": "artifacts/depth_ablation/depth_3_logits.npy",
+        "tsne": ""
+      }
+    }
+  ]
+}

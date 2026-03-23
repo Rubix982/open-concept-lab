@@ -1,0 +1,90 @@
+{
+  "mode": "over-smoothing",
+  "question_count": 3,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/over_smoothing/accuracy_comparison.png",
+    "history_comparison": "artifacts/over_smoothing/history_comparison.png",
+    "tsne_grid": "artifacts/over_smoothing/tsne_grid.png",
+    "over_smoothing_diagnostics": "artifacts/over_smoothing/over_smoothing_diagnostics.png"
+  },
+  "runs": [
+    {
+      "name": "depth_1",
+      "metrics": {
+        "train_accuracy": 0.36428571428571427,
+        "val_accuracy": 0.284,
+        "test_accuracy": 0.2852998065764023,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 1
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 1,
+        "mean_pairwise_cosine": 0.1426950991153717,
+        "embedding_variance": 0.059240423142910004
+      },
+      "paths": {
+        "metrics": "artifacts/over_smoothing/depth_1_metrics.json",
+        "history": "artifacts/over_smoothing/depth_1_history.json",
+        "details": "artifacts/over_smoothing/depth_1_details.json",
+        "embeddings": "artifacts/over_smoothing/depth_1_embeddings.npy",
+        "logits": "artifacts/over_smoothing/depth_1_logits.npy",
+        "tsne": "artifacts/over_smoothing/depth_1_tsne.png"
+      }
+    },
+    {
+      "name": "depth_2",
+      "metrics": {
+        "train_accuracy": 0.2857142857142857,
+        "val_accuracy": 0.29,
+        "test_accuracy": 0.316247582205029,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 2,
+        "mean_pairwise_cosine": 0.43726035952568054,
+        "embedding_variance": 0.047802601009607315
+      },
+      "paths": {
+        "metrics": "artifacts/over_smoothing/depth_2_metrics.json",
+        "history": "artifacts/over_smoothing/depth_2_history.json",
+        "details": "artifacts/over_smoothing/depth_2_details.json",
+        "embeddings": "artifacts/over_smoothing/depth_2_embeddings.npy",
+        "logits": "artifacts/over_smoothing/depth_2_logits.npy",
+        "tsne": "artifacts/over_smoothing/depth_2_tsne.png"
+      }
+    },
+    {
+      "name": "depth_3",
+      "metrics": {
+        "train_accuracy": 0.17142857142857143,
+        "val_accuracy": 0.184,
+        "test_accuracy": 0.19390715667311412,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 3
+      },
+      "details": {
+        "question": "Do deeper models collapse node representations toward one another?",
+        "depth": 3,
+        "mean_pairwise_cosine": 0.7844059467315674,
+        "embedding_variance": 0.015842074528336525
+      },
+      "paths": {
+        "metrics": "artifacts/over_smoothing/depth_3_metrics.json",
+        "history": "artifacts/over_smoothing/depth_3_history.json",
+        "details": "artifacts/over_smoothing/depth_3_details.json",
+        "embeddings": "artifacts/over_smoothing/depth_3_embeddings.npy",
+        "logits": "artifacts/over_smoothing/depth_3_logits.npy",
+        "tsne": "artifacts/over_smoothing/depth_3_tsne.png"
+      }
+    }
+  ]
+}

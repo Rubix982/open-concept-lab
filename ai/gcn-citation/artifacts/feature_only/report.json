@@ -1,0 +1,29 @@
+{
+  "mode": "feature-only",
+  "question_count": 1,
+  "runs": [
+    {
+      "name": "feature_only",
+      "metrics": {
+        "train_accuracy": 0.6142857142857143,
+        "val_accuracy": 0.31,
+        "test_accuracy": 0.31721470019342357,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "How much signal remains when citation propagation is removed?"
+      },
+      "paths": {
+        "metrics": "artifacts/feature_only/feature_only_metrics.json",
+        "history": "artifacts/feature_only/feature_only_history.json",
+        "details": "artifacts/feature_only/feature_only_details.json",
+        "embeddings": "artifacts/feature_only/feature_only_embeddings.npy",
+        "logits": "artifacts/feature_only/feature_only_logits.npy",
+        "tsne": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "mode": "graph-only",
+  "question_count": 1,
+  "runs": [
+    {
+      "name": "graph_only",
+      "metrics": {
+        "train_accuracy": 0.15,
+        "val_accuracy": 0.118,
+        "test_accuracy": 0.1455512572533849,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "How much signal remains when lexical node features are removed?"
+      },
+      "paths": {
+        "metrics": "artifacts/graph_only/graph_only_metrics.json",
+        "history": "artifacts/graph_only/graph_only_history.json",
+        "details": "artifacts/graph_only/graph_only_details.json",
+        "embeddings": "artifacts/graph_only/graph_only_embeddings.npy",
+        "logits": "artifacts/graph_only/graph_only_logits.npy",
+        "tsne": ""
+      }
+    }
+  ]
+}

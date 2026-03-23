@@ -1,0 +1,34 @@
+{
+  "mode": "baseline",
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/baseline/accuracy_comparison.png",
+    "history_comparison": "artifacts/baseline/history_comparison.png",
+    "tsne_grid": "artifacts/baseline/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 0.2857142857142857,
+        "val_accuracy": 0.29,
+        "test_accuracy": 0.316247582205029,
+        "num_train_nodes": 140,
+        "num_val_nodes": 500,
+        "num_test_nodes": 2068,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "What does the standard 2-layer GCN achieve on this split?"
+      },
+      "paths": {
+        "metrics": "artifacts/baseline/baseline_metrics.json",
+        "history": "artifacts/baseline/baseline_history.json",
+        "details": "artifacts/baseline/baseline_details.json",
+        "embeddings": "artifacts/baseline/baseline_embeddings.npy",
+        "logits": "artifacts/baseline/baseline_logits.npy",
+        "tsne": "artifacts/baseline/baseline_tsne.png"
+      }
+    }
+  ]
+}
