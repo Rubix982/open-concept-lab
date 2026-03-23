@@ -1,0 +1,24 @@
+{
+  "dataset": "arxiv",
+  "model": "gcn",
+  "graphsage_variant": "",
+  "cache_only": true,
+  "summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 7798,
+    "graph_stats": {
+      "num_nodes": 7798,
+      "num_directed_edges": 120480,
+      "num_undirected_edges": 60240,
+      "average_degree": 15.45011541420877,
+      "density": 0.001981546160601356
+    }
+  }
+}

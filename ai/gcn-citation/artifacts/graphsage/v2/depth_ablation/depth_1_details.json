@@ -1,0 +1,16 @@
+{
+  "question": "How does GraphSAGE-v2 performance change with network depth?",
+  "depth": 1,
+  "diagnostics": {
+    "variant": "v2",
+    "batch_size": 64,
+    "effective_fanouts": [
+      10
+    ],
+    "num_batches_last_epoch": 2,
+    "avg_target_nodes_per_batch": 40.0,
+    "avg_local_nodes_per_batch": 369.808,
+    "avg_epoch_seconds": 0.0083672266798676,
+    "total_training_seconds": 2.0918066699669
+  }
+}

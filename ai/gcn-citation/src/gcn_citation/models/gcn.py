@@ -14,6 +14,7 @@ class TrainingResult:
     logits: np.ndarray
     history: list[dict[str, float]]
     layer_embeddings: list[np.ndarray]
+    diagnostics: dict[str, object] | None = None
 
 
 class ManualGCN:

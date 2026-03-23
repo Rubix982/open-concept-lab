@@ -1,0 +1,83 @@
+{
+  "dataset": "arxiv",
+  "model": "graphsage",
+  "graphsage_variant": "v2",
+  "graphsage_sampler": "degree-weighted",
+  "mode": "baseline",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 7798,
+    "graph_stats": {
+      "num_nodes": 7798,
+      "num_directed_edges": 120480,
+      "num_undirected_edges": 60240,
+      "average_degree": 15.45011541420877,
+      "density": 0.001981546160601356
+    }
+  },
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/graphsage/v2/degree-weighted/baseline/accuracy_comparison.png",
+    "history_comparison": "artifacts/graphsage/v2/degree-weighted/baseline/history_comparison.png",
+    "tsne_grid": "artifacts/graphsage/v2/degree-weighted/baseline/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 0.9875,
+        "val_accuracy": 0.602,
+        "test_accuracy": 0.6101413133832086,
+        "num_train_nodes": 80,
+        "num_val_nodes": 500,
+        "num_test_nodes": 7218,
+        "num_layers": 2,
+        "avg_epoch_seconds": 0.14193335998873227,
+        "num_batches_last_epoch": 2.0,
+        "avg_local_nodes_per_batch": 1512.132
+      },
+      "details": {
+        "question": "What does the standard 2-layer GraphSAGE-v2 achieve on this split?",
+        "diagnostics": {
+          "variant": "v2",
+          "sampler": "degree-weighted",
+          "batch_size": 64,
+          "effective_fanouts": [
+            10,
+            5
+          ],
+          "num_batches_last_epoch": 2,
+          "avg_target_nodes_per_batch": 40.0,
+          "avg_local_nodes_per_batch": 1512.132,
+          "avg_sampled_links_per_batch": 2525.58,
+          "avg_layer_active_counts": [
+            232.558,
+            40.0
+          ],
+          "avg_layer_expanded_counts": [
+            1512.132,
+            232.558
+          ],
+          "avg_epoch_seconds": 0.14193335998873227,
+          "total_training_seconds": 35.483339997183066
+        }
+      },
+      "paths": {
+        "metrics": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_metrics.json",
+        "history": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_history.json",
+        "details": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_details.json",
+        "embeddings": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_embeddings.npy",
+        "logits": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_logits.npy",
+        "tsne": "artifacts/graphsage/v2/degree-weighted/baseline/baseline_tsne.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "dataset": "arxiv",
+  "model": "graphsage",
+  "graphsage_variant": "v2",
+  "mode": "depth-ablation",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 21438,
+      "num_undirected_edges": 10719,
+      "average_degree": 13.698402555910544,
+      "density": 0.008758569409149963
+    }
+  },
+  "question_count": 2,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/graphsage/v2/depth_ablation/accuracy_comparison.png",
+    "history_comparison": "artifacts/graphsage/v2/depth_ablation/history_comparison.png",
+    "tsne_grid": "artifacts/graphsage/v2/depth_ablation/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "depth_1",
+      "metrics": {
+        "train_accuracy": 0.9875,
+        "val_accuracy": 0.6484848484848484,
+        "test_accuracy": 0.6242424242424243,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 1,
+        "avg_epoch_seconds": 0.0083672266798676,
+        "num_batches_last_epoch": 2.0,
+        "avg_local_nodes_per_batch": 369.808
+      },
+      "details": {
+        "question": "How does GraphSAGE-v2 performance change with network depth?",
+        "depth": 1,
+        "diagnostics": {
+          "variant": "v2",
+          "batch_size": 64,
+          "effective_fanouts": [
+            10
+          ],
+          "num_batches_last_epoch": 2,
+          "avg_target_nodes_per_batch": 40.0,
+          "avg_local_nodes_per_batch": 369.808,
+          "avg_epoch_seconds": 0.0083672266798676,
+          "total_training_seconds": 2.0918066699669
+        }
+      },
+      "paths": {
+        "metrics": "artifacts/graphsage/v2/depth_ablation/depth_1_metrics.json",
+        "history": "artifacts/graphsage/v2/depth_ablation/depth_1_history.json",
+        "details": "artifacts/graphsage/v2/depth_ablation/depth_1_details.json",
+        "embeddings": "artifacts/graphsage/v2/depth_ablation/depth_1_embeddings.npy",
+        "logits": "artifacts/graphsage/v2/depth_ablation/depth_1_logits.npy",
+        "tsne": "artifacts/graphsage/v2/depth_ablation/depth_1_tsne.png"
+      }
+    },
+    {
+      "name": "depth_2",
+      "metrics": {
+        "train_accuracy": 0.95,
+        "val_accuracy": 0.6383838383838384,
+        "test_accuracy": 0.6252525252525253,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 2,
+        "avg_epoch_seconds": 0.01867082715575816,
+        "num_batches_last_epoch": 2.0,
+        "avg_local_nodes_per_batch": 953.85
+      },
+      "details": {
+        "question": "How does GraphSAGE-v2 performance change with network depth?",
+        "depth": 2,
+        "diagnostics": {
+          "variant": "v2",
+          "batch_size": 64,
+          "effective_fanouts": [
+            10,
+            5
+          ],
+          "num_batches_last_epoch": 2,
+          "avg_target_nodes_per_batch": 40.0,
+          "avg_local_nodes_per_batch": 953.85,
+          "avg_epoch_seconds": 0.01867082715575816,
+          "total_training_seconds": 4.66770678893954
+        }
+      },
+      "paths": {
+        "metrics": "artifacts/graphsage/v2/depth_ablation/depth_2_metrics.json",
+        "history": "artifacts/graphsage/v2/depth_ablation/depth_2_history.json",
+        "details": "artifacts/graphsage/v2/depth_ablation/depth_2_details.json",
+        "embeddings": "artifacts/graphsage/v2/depth_ablation/depth_2_embeddings.npy",
+        "logits": "artifacts/graphsage/v2/depth_ablation/depth_2_logits.npy",
+        "tsne": "artifacts/graphsage/v2/depth_ablation/depth_2_tsne.png"
+      }
+    }
+  ]
+}

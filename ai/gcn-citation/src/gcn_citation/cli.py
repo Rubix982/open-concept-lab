@@ -41,6 +41,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=[10, 5],
         help="Neighbor sample sizes per GraphSAGE layer. Extra layers reuse the last value.",
     )
+    parser.add_argument("--graphsage-variant", choices=["v1", "v2"], default="v1")
+    parser.add_argument("--graphsage-batch-size", type=int, default=64)
+    parser.add_argument(
+        "--graphsage-sampler",
+        choices=["uniform", "with-replacement", "degree-weighted"],
+        default="uniform",
+    )
     parser.add_argument(
         "--arxiv-categories",
         nargs="+",
@@ -76,6 +83,13 @@ def _configure_environment(artifacts_dir: Path) -> None:
     os.environ["MPLCONFIGDIR"] = str(mpl_config_dir)
     os.environ["XDG_CACHE_HOME"] = str(cache_dir)
     os.environ["LOKY_MAX_CPU_COUNT"] = str(os.cpu_count() or 1)
+
+
+def _artifact_root_dir(args: argparse.Namespace) -> Path:
+    model_root_dir = args.artifacts_dir / args.model
+    if args.model == "graphsage":
+        model_root_dir = model_root_dir / args.graphsage_variant / args.graphsage_sampler
+    return model_root_dir
 
 
 def _save_experiment_outputs(
@@ -228,6 +242,8 @@ def _run_single_mode(
     return {
         "dataset": args.dataset,
         "model": args.model,
+        "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
+        "graphsage_sampler": args.graphsage_sampler if args.model == "graphsage" else "",
         "mode": mode_name,
         "top_k": top_k_override,
         "dataset_summary": dataset_summary,
@@ -251,6 +267,8 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
         cache_report = {
             "dataset": args.dataset,
             "model": args.model,
+            "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
+            "graphsage_sampler": args.graphsage_sampler if args.model == "graphsage" else "",
             "mode": "full-experiment",
             "cache_only": True,
             "dataset_summary": base_dataset_summary,
@@ -298,6 +316,8 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
     suite_report = {
         "dataset": args.dataset,
         "model": args.model,
+        "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
+        "graphsage_sampler": args.graphsage_sampler if args.model == "graphsage" else "",
         "mode": "full-experiment",
         "dataset_summary": base_dataset_summary,
         "included_modes": base_mode_names,
@@ -321,7 +341,7 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
 def main() -> None:
     args = build_parser().parse_args()
     _configure_environment(args.artifacts_dir)
-    model_root_dir = args.artifacts_dir / args.model
+    model_root_dir = _artifact_root_dir(args)
     mode_dir = model_root_dir / args.mode.replace("-", "_")
     mode_dir.mkdir(parents=True, exist_ok=True)
 
@@ -336,6 +356,8 @@ def main() -> None:
         cache_report = {
             "dataset": args.dataset,
             "model": args.model,
+            "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
+            "graphsage_sampler": args.graphsage_sampler if args.model == "graphsage" else "",
             "cache_only": True,
             "summary": dataset_summary,
         }

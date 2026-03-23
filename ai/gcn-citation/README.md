@@ -66,6 +66,22 @@ Train GraphSAGE with mean aggregation on the same cached corpus:
 python3 main.py \
   --dataset arxiv \
   --model graphsage \
+  --graphsage-variant v1 \
+  --mode baseline \
+  --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
+  --arxiv-max-results 2000 \
+  --graphsage-fanouts 10 5
+```
+
+Try the mini-batch GraphSAGE v2 path:
+
+```bash
+python3 main.py \
+  --dataset arxiv \
+  --model graphsage \
+  --graphsage-variant v2 \
+  --graphsage-batch-size 64 \
+  --graphsage-sampler uniform \
   --mode baseline \
   --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
   --arxiv-max-results 2000 \
@@ -97,6 +113,14 @@ Supported models:
 
 - `gcn`: full-graph degree-normalized message passing
 - `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
+  - `v1`: full-batch sampled-neighborhood baseline
+  - `v2`: first mini-batch mean-aggregation path
+  - sampler variants: `uniform`, `with-replacement`, `degree-weighted`
+
+Artifact layout is namespaced by model configuration:
+
+- `artifacts/gcn/<mode>/...`
+- `artifacts/graphsage/<variant>/<sampler>/<mode>/...`
 
 Fetch and cache a larger arXiv corpus without training:
 
@@ -119,6 +143,48 @@ python3 main.py \
   --arxiv-max-results 2000
 ```
 
+Run the V1 version of the GraphSAGE model,
+
+```bash
+python3 main.py \
+  --model graphsage \
+  --graphsage-variant v1 \
+  --dataset arxiv \
+  --mode depth-ablation \
+  --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
+  --arxiv-max-results 2000 \
+  --graphsage-fanouts 10 5
+```
+
+Run the V2 version of the GraphSAHE model,
+
+```bash
+python3 main.py \
+  --model graphsage \
+  --graphsage-variant v2 \
+  --graphsage-batch-size 64 \
+  --dataset arxiv \
+  --mode depth-ablation \
+  --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
+  --arxiv-max-results 2000 \
+  --graphsage-fanouts 10 5
+```
+
+Running with a custom sampler for GraphSAGE,
+
+```bash
+python3 main.py \
+  --model graphsage \
+  --graphsage-variant v2 \
+  --graphsage-sampler uniform \
+  --graphsage-batch-size 64 \
+  --dataset arxiv \
+  --mode baseline \
+  --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
+  --arxiv-max-results 10000 \
+  --graphsage-fanouts 10 5
+```
+
 Artifacts are written to model-specific and mode-specific folders under `artifacts/`:
 
 - `artifacts/gcn/baseline/report.json`
@@ -128,13 +194,16 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `artifacts/gcn/baseline/baseline_tsne.png`
 - `artifacts/gcn/baseline/accuracy_comparison.png`
 - `artifacts/gcn/baseline/history_comparison.png`
-- `artifacts/graphsage/baseline/report.json`
+- `artifacts/graphsage/v2/uniform/baseline/report.json`
 
 ## Research roadmap
 
 - `docs/research_questions.md`: structured research questions and experiment backlog for future analysis modes
 - `docs/arxiv_pipeline_plan.md`: implementation roadmap for the cached arXiv corpus pipeline
 - `docs/prog_learning_roadmap.md`: staged learning roadmap inspired by the ProG benchmark paper
+- `docs/graphsage_v2_plan.md`: development plan for mini-batch GraphSAGE v2
+- `docs/graphsage_v2_1_plan.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
+- `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
 
 ## What We Learned
 
@@ -199,3 +268,6 @@ Visualization outputs:
 - `docs/research_questions.md`: research questions grouped by theme
 - `docs/arxiv_pipeline_plan.md`: staged plan for caching and scaling arXiv experiments
 - `docs/prog_learning_roadmap.md`: staged concept-to-implementation roadmap inspired by ProG
+- `docs/graphsage_v2_plan.md`: implementation plan for GraphSAGE v2
+- `docs/graphsage_v2_1_plan.md`: cleanup and diagnostics plan for GraphSAGE v2.1
+- `docs/graphsage_sampler_plan.md`: sampler-variant plan for GraphSAGE

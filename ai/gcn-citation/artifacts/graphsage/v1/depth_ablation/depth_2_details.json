@@ -1,0 +1,4 @@
+{
+  "question": "How does GraphSAGE-v1 performance change with network depth?",
+  "depth": 2
+}

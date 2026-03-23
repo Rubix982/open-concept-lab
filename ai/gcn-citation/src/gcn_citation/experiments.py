@@ -33,6 +33,9 @@ class ExperimentArgs(Protocol):
     hidden_dim: int
     model: str
     graphsage_fanouts: list[int]
+    graphsage_variant: str
+    graphsage_batch_size: int
+    graphsage_sampler: str
 
 
 class TrainingKwargs(TypedDict):
@@ -54,7 +57,9 @@ def _base_training_kwargs(args: ExperimentArgs) -> TrainingKwargs:
 
 
 def _model_label(args: ExperimentArgs) -> str:
-    return "GCN" if args.model == "gcn" else "GraphSAGE"
+    if args.model == "gcn":
+        return "GCN"
+    return f"GraphSAGE-{args.graphsage_variant}"
 
 
 def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: ExperimentArgs):
@@ -68,6 +73,9 @@ def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: Experi
         graph,
         hidden_dims=hidden_dims,
         fanouts=args.graphsage_fanouts,
+        variant=args.graphsage_variant,
+        batch_size=args.graphsage_batch_size,
+        sampler=args.graphsage_sampler,
         **_base_training_kwargs(args),
     )
 
@@ -81,13 +89,17 @@ def _run_named_training(
     details: dict[str, float | int | str | list[float] | list[int] | dict[str, float]] | None = None,
 ) -> ExperimentArtifact:
     result = _train_selected_model(graph, hidden_dims, args)
+    final_details = {} if details is None else dict(details)
+    diagnostics = result.diagnostics
+    if diagnostics is not None:
+        final_details["diagnostics"] = diagnostics
     return ExperimentArtifact(
         name=name,
         metrics=result.metrics,
         embeddings=result.hidden_embeddings,
         logits=result.logits,
         history=result.history,
-        details={} if details is None else details,
+        details=final_details,
     )
 
 
