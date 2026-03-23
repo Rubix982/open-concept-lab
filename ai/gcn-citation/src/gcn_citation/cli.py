@@ -7,12 +7,15 @@ from pathlib import Path
 
 import numpy as np
 
+from .arxiv_data import build_cached_arxiv_dataset
+from .arxiv_data import load_arxiv_graph_data
 from .data import load_graph_data
 from .experiments import MODE_TO_RUNNER
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run manual NumPy GCN experiments on the Cora citation graph.")
+    parser.add_argument("--dataset", choices=["cora", "arxiv"], default="cora")
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts"))
     parser.add_argument(
@@ -27,6 +30,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--weight-decay", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.5)
     parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument(
+        "--arxiv-categories",
+        nargs="+",
+        default=["cs.AI", "cs.LG", "cs.CL", "cs.CV"],
+        help="arXiv categories to fetch when --dataset arxiv is selected.",
+    )
+    parser.add_argument("--arxiv-max-results", type=int, default=280)
+    parser.add_argument("--arxiv-batch-size", type=int, default=100)
+    parser.add_argument("--arxiv-delay-seconds", type=float, default=3.0)
+    parser.add_argument("--arxiv-top-k", type=int, default=10)
+    parser.add_argument("--arxiv-max-features", type=int, default=1000)
+    parser.add_argument("--cache-only", action="store_true", help="Fetch/cache arXiv data and stop before training.")
+    parser.add_argument(
+        "--refresh-arxiv-cache",
+        action="store_true",
+        help="Refresh cached arXiv raw and processed artifacts before building the dataset.",
+    )
     parser.add_argument(
         "--skip-tsne",
         action="store_true",
@@ -147,11 +167,40 @@ def main() -> None:
     mode_dir = args.artifacts_dir / args.mode.replace("-", "_")
     mode_dir.mkdir(parents=True, exist_ok=True)
 
-    graph = load_graph_data(
-        data_dir=args.data_dir,
-        db_path=mode_dir / "cora.duckdb",
-        seed=args.seed,
-    )
+    if args.dataset == "cora":
+        graph = load_graph_data(
+            data_dir=args.data_dir,
+            db_path=mode_dir / "cora.duckdb",
+            seed=args.seed,
+        )
+        db_path = mode_dir / "cora.duckdb"
+        dataset_summary: dict[str, object] = {}
+    else:
+        graph, dataset_summary = build_cached_arxiv_dataset(
+            data_dir=args.data_dir / "arxiv",
+            db_path=mode_dir / "arxiv.duckdb",
+            seed=args.seed,
+            categories=args.arxiv_categories,
+            max_results=args.arxiv_max_results,
+            top_k=args.arxiv_top_k,
+            max_features=args.arxiv_max_features,
+            page_size=args.arxiv_batch_size,
+            delay_seconds=args.arxiv_delay_seconds,
+            refresh_cache=args.refresh_arxiv_cache,
+            cache_only=args.cache_only,
+        )
+        db_path = mode_dir / "arxiv.duckdb"
+        if args.cache_only:
+            cache_report = {
+                "dataset": args.dataset,
+                "cache_only": True,
+                "summary": dataset_summary,
+            }
+            report_path = mode_dir / "cache_report.json"
+            report_path.write_text(json.dumps(cache_report, indent=2))
+            print(json.dumps(cache_report, indent=2))
+            print(f"Cache report saved to: {report_path}")
+            return
 
     runner = MODE_TO_RUNNER[args.mode]
     artifacts = runner(graph, args)
@@ -163,7 +212,9 @@ def main() -> None:
     visuals = _build_mode_visualizations(args=args, graph=graph, runs=runs, mode_dir=mode_dir)
 
     report = {
+        "dataset": args.dataset,
         "mode": args.mode,
+        "dataset_summary": dataset_summary,
         "question_count": len(artifacts),
         "visualizations": visuals,
         "runs": [
@@ -179,5 +230,5 @@ def main() -> None:
     report_path.write_text(json.dumps(report, indent=2))
 
     print(json.dumps(report, indent=2))
-    print(f"DuckDB saved to: {mode_dir / 'cora.duckdb'}")
+    print(f"DuckDB saved to: {db_path}")
     print(f"Experiment report saved to: {report_path}")
