@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Protocol
+from typing import TypedDict
 
 import numpy as np
 
@@ -8,7 +10,8 @@ from .data import GraphData
 from .data import clone_graph_data
 from .data import identity_adjacency
 from .data import structural_identity_features
-from .model import train_gcn
+from .models import train_gcn
+from .models import train_graphsage
 
 
 @dataclass
@@ -21,14 +24,52 @@ class ExperimentArtifact:
     details: dict[str, float | int | str | list[float] | list[int] | dict[str, float]]
 
 
-def _base_training_kwargs(args: object) -> dict[str, int | float | list[int]]:
+class ExperimentArgs(Protocol):
+    epochs: int
+    learning_rate: float
+    weight_decay: float
+    dropout: float
+    seed: int
+    hidden_dim: int
+    model: str
+    graphsage_fanouts: list[int]
+
+
+class TrainingKwargs(TypedDict):
+    epochs: int
+    learning_rate: float
+    weight_decay: float
+    dropout: float
+    seed: int
+
+
+def _base_training_kwargs(args: ExperimentArgs) -> TrainingKwargs:
     return {
-        "epochs": args.epochs,
-        "learning_rate": args.learning_rate,
-        "weight_decay": args.weight_decay,
-        "dropout": args.dropout,
-        "seed": args.seed,
+        "epochs": int(args.epochs),
+        "learning_rate": float(args.learning_rate),
+        "weight_decay": float(args.weight_decay),
+        "dropout": float(args.dropout),
+        "seed": int(args.seed),
     }
+
+
+def _model_label(args: ExperimentArgs) -> str:
+    return "GCN" if args.model == "gcn" else "GraphSAGE"
+
+
+def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: ExperimentArgs):
+    if args.model == "gcn":
+        return train_gcn(
+            graph,
+            hidden_dims=hidden_dims,
+            **_base_training_kwargs(args),
+        )
+    return train_graphsage(
+        graph,
+        hidden_dims=hidden_dims,
+        fanouts=args.graphsage_fanouts,
+        **_base_training_kwargs(args),
+    )
 
 
 def _run_named_training(
@@ -36,14 +77,10 @@ def _run_named_training(
     name: str,
     *,
     hidden_dims: list[int],
-    args: object,
+    args: ExperimentArgs,
     details: dict[str, float | int | str | list[float] | list[int] | dict[str, float]] | None = None,
 ) -> ExperimentArtifact:
-    result = train_gcn(
-        graph,
-        hidden_dims=hidden_dims,
-        **_base_training_kwargs(args),
-    )
+    result = _train_selected_model(graph, hidden_dims, args)
     return ExperimentArtifact(
         name=name,
         metrics=result.metrics,
@@ -54,19 +91,19 @@ def _run_named_training(
     )
 
 
-def run_baseline_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
+def run_baseline_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
     return [
         _run_named_training(
             graph,
             name="baseline",
             hidden_dims=[args.hidden_dim],
             args=args,
-            details={"question": "What does the standard 2-layer GCN achieve on this split?"},
+            details={"question": f"What does the standard 2-layer {_model_label(args)} achieve on this split?"},
         )
     ]
 
 
-def run_feature_only_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
+def run_feature_only_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
     feature_graph = clone_graph_data(graph, adjacency_hat=identity_adjacency(graph.features.shape[0]))
     return [
         _run_named_training(
@@ -74,12 +111,12 @@ def run_feature_only_mode(graph: GraphData, args: object) -> list[ExperimentArti
             name="feature_only",
             hidden_dims=[args.hidden_dim],
             args=args,
-            details={"question": "How much signal remains when citation propagation is removed?"},
+            details={"question": f"How much signal remains for {_model_label(args)} when graph propagation is removed?"},
         )
     ]
 
 
-def run_graph_only_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
+def run_graph_only_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
     graph_only = clone_graph_data(graph, features=structural_identity_features(graph.features.shape[0]))
     return [
         _run_named_training(
@@ -87,17 +124,23 @@ def run_graph_only_mode(graph: GraphData, args: object) -> list[ExperimentArtifa
             name="graph_only",
             hidden_dims=[args.hidden_dim],
             args=args,
-            details={"question": "How much signal remains when lexical node features are removed?"},
+            details={"question": f"How much signal remains for {_model_label(args)} when lexical node features are removed?"},
         )
     ]
 
 
-def run_depth_ablation_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
-    depth_map = {
-        "depth_1": [],
-        "depth_2": [args.hidden_dim],
-        "depth_3": [args.hidden_dim, args.hidden_dim],
-    }
+def run_depth_ablation_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
+    if args.model == "graphsage":
+        depth_map = {
+            "depth_1": [],
+            "depth_2": [args.hidden_dim],
+        }
+    else:
+        depth_map = {
+            "depth_1": [],
+            "depth_2": [args.hidden_dim],
+            "depth_3": [args.hidden_dim, args.hidden_dim],
+        }
     return [
         _run_named_training(
             graph,
@@ -105,7 +148,7 @@ def run_depth_ablation_mode(graph: GraphData, args: object) -> list[ExperimentAr
             hidden_dims=hidden_dims,
             args=args,
             details={
-                "question": "How does performance change with network depth?",
+                "question": f"How does {_model_label(args)} performance change with network depth?",
                 "depth": len(hidden_dims) + 1,
             },
         )
@@ -126,7 +169,7 @@ def _embedding_variance(embeddings: np.ndarray) -> float:
     return float(np.mean(np.sum(centered ** 2, axis=1)))
 
 
-def run_over_smoothing_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
+def run_over_smoothing_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
     artifacts = run_depth_ablation_mode(graph, args)
     for artifact in artifacts:
         artifact.details["mean_pairwise_cosine"] = _mean_pairwise_cosine(artifact.embeddings)
@@ -160,7 +203,7 @@ def _within_class_dispersion(embeddings: np.ndarray, labels: np.ndarray) -> floa
     return float(np.mean(dispersion))
 
 
-def run_embedding_separation_mode(graph: GraphData, args: object) -> list[ExperimentArtifact]:
+def run_embedding_separation_mode(graph: GraphData, args: ExperimentArgs) -> list[ExperimentArtifact]:
     baseline = run_baseline_mode(graph, args)[0]
     baseline.details.update(_pairwise_class_distance(baseline.embeddings, graph.labels))
     baseline.details["within_class_dispersion"] = _within_class_dispersion(baseline.embeddings, graph.labels)

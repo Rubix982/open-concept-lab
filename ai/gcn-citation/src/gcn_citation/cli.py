@@ -18,6 +18,7 @@ ALL_MODES = sorted([*SINGLE_RUN_MODES, "full-experiment"])
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run manual NumPy GCN experiments on the Cora citation graph.")
+    parser.add_argument("--model", choices=["gcn", "graphsage"], default="gcn")
     parser.add_argument("--dataset", choices=["cora", "arxiv"], default="cora")
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts"))
@@ -33,6 +34,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--weight-decay", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.5)
     parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument(
+        "--graphsage-fanouts",
+        nargs="+",
+        type=int,
+        default=[10, 5],
+        help="Neighbor sample sizes per GraphSAGE layer. Extra layers reuse the last value.",
+    )
     parser.add_argument(
         "--arxiv-categories",
         nargs="+",
@@ -219,6 +227,7 @@ def _run_single_mode(
 
     return {
         "dataset": args.dataset,
+        "model": args.model,
         "mode": mode_name,
         "top_k": top_k_override,
         "dataset_summary": dataset_summary,
@@ -241,6 +250,7 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
     if args.cache_only:
         cache_report = {
             "dataset": args.dataset,
+            "model": args.model,
             "mode": "full-experiment",
             "cache_only": True,
             "dataset_summary": base_dataset_summary,
@@ -287,6 +297,7 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
 
     suite_report = {
         "dataset": args.dataset,
+        "model": args.model,
         "mode": "full-experiment",
         "dataset_summary": base_dataset_summary,
         "included_modes": base_mode_names,
@@ -323,6 +334,7 @@ def main() -> None:
     if args.cache_only:
         cache_report = {
             "dataset": args.dataset,
+            "model": args.model,
             "cache_only": True,
             "summary": dataset_summary,
         }

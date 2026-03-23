@@ -1,13 +1,13 @@
 # Citation Graph Node Classifier
 
-Manual 2-layer Graph Convolutional Network (GCN) for node classification on graph datasets built from Cora and arXiv.
+Manual graph neural network experiments for node classification on graph datasets built from Cora and arXiv.
 
 ## What this project does
 
 - Downloads and parses the Cora citation graph
 - Fetches arXiv papers by category and builds a similarity graph from title + abstract TF-IDF features
 - Stores nodes, sparse features, and citation edges in DuckDB
-- Trains a manual NumPy GCN with the normalized adjacency formula
+- Trains manual NumPy GCN and GraphSAGE variants
 - Evaluates the model in a semi-supervised setting with 140 labeled nodes
 - Produces a t-SNE plot of learned node embeddings
 
@@ -24,6 +24,7 @@ Run a specific model-behavior experiment mode:
 python3 main.py --mode feature-only
 python3 main.py --mode graph-only
 python3 main.py --mode depth-ablation --skip-tsne
+python3 main.py --model graphsage --mode depth-ablation --skip-tsne
 ```
 
 Run on a small arXiv slice:
@@ -59,6 +60,18 @@ python3 main.py \
 
 This reuses the cached raw metadata and processed snapshot under `data/arxiv/` instead of refetching the corpus every run.
 
+Train GraphSAGE with mean aggregation on the same cached corpus:
+
+```bash
+python3 main.py \
+  --dataset arxiv \
+  --model graphsage \
+  --mode baseline \
+  --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
+  --arxiv-max-results 2000 \
+  --graphsage-fanouts 10 5
+```
+
 Run the full experiment suite in one command:
 
 ```bash
@@ -79,6 +92,11 @@ This suite mode runs:
 - over-smoothing
 - embedding-separation
 - baseline density sweeps across the requested `top_k` values
+
+Supported models:
+
+- `gcn`: full-graph degree-normalized message passing
+- `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
 
 Fetch and cache a larger arXiv corpus without training:
 
@@ -115,6 +133,19 @@ Artifacts are written to mode-specific folders under `artifacts/`:
 
 - `docs/research_questions.md`: structured research questions and experiment backlog for future analysis modes
 - `docs/arxiv_pipeline_plan.md`: implementation roadmap for the cached arXiv corpus pipeline
+- `docs/prog_learning_roadmap.md`: staged learning roadmap inspired by the ProG benchmark paper
+
+## What We Learned
+
+- We built intuition for GCNs as degree-normalized neighbor aggregation over graph-structured data.
+- We clarified how the normalized adjacency matrix stabilizes message passing.
+- We revisited gradient descent and manual backpropagation in a NumPy-based neural network.
+- We used t-SNE to inspect learned node embeddings and compare representation quality across runs.
+- We introduced experiment modes for feature-only, graph-only, depth ablation, over-smoothing, and embedding separation.
+- We extended the project from the fixed Cora benchmark to a cached local arXiv corpus.
+- We built a reusable arXiv fetch/cache/build workflow so experiments can run repeatedly on local data.
+- We added a single-command full experiment suite for orchestrated runs across multiple modes.
+- Our first strong result on the cached arXiv corpus is that a 1-layer GCN currently outperforms deeper variants, both in the t-SNE plots and in validation/test accuracy.
 
 ## Dataset support
 
@@ -158,9 +189,12 @@ Visualization outputs:
 
 - `main.py`: CLI entrypoint for the full pipeline
 - `src/gcn_citation/data.py`: dataset download, parsing, DuckDB persistence, graph prep
-- `src/gcn_citation/model.py`: manual 2-layer NumPy GCN and training loop
+- `src/gcn_citation/models/`: graph model implementations such as GCN and GraphSAGE
+- `src/gcn_citation/pretraining/`: scaffolding for graph pre-training methods
+- `src/gcn_citation/prompting/`: scaffolding for graph prompt-learning methods
 - `src/gcn_citation/experiments.py`: model behavior experiment runners
 - `src/gcn_citation/arxiv_data.py`: arXiv fetching, parsing, TF-IDF feature building, and similarity graph construction
 - `src/gcn_citation/visualize.py`: t-SNE plot generation
 - `docs/research_questions.md`: research questions grouped by theme
 - `docs/arxiv_pipeline_plan.md`: staged plan for caching and scaling arXiv experiments
+- `docs/prog_learning_roadmap.md`: staged concept-to-implementation roadmap inspired by ProG
