@@ -13,6 +13,7 @@ artifacts/.cache/
 artifacts/.mplconfig/
 artifacts/**/*.npy
 artifacts/**/*.wal
+artifacts/**/*.duckdb
 
 # Notebook and OS noise
 .DS_Store

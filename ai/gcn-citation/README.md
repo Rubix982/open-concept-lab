@@ -119,15 +119,16 @@ python3 main.py \
   --arxiv-max-results 2000
 ```
 
-Artifacts are written to mode-specific folders under `artifacts/`:
+Artifacts are written to model-specific and mode-specific folders under `artifacts/`:
 
-- `artifacts/baseline/report.json`
-- `artifacts/baseline/cora.duckdb`
-- `artifacts/baseline/baseline_metrics.json`
-- `artifacts/baseline/baseline_embeddings.npy`
-- `artifacts/baseline/baseline_tsne.png`
-- `artifacts/baseline/accuracy_comparison.png`
-- `artifacts/baseline/history_comparison.png`
+- `artifacts/gcn/baseline/report.json`
+- `artifacts/gcn/baseline/cora.duckdb`
+- `artifacts/gcn/baseline/baseline_metrics.json`
+- `artifacts/gcn/baseline/baseline_embeddings.npy`
+- `artifacts/gcn/baseline/baseline_tsne.png`
+- `artifacts/gcn/baseline/accuracy_comparison.png`
+- `artifacts/gcn/baseline/history_comparison.png`
+- `artifacts/graphsage/baseline/report.json`
 
 ## Research roadmap
 

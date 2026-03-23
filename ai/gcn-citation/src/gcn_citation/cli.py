@@ -321,7 +321,8 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
 def main() -> None:
     args = build_parser().parse_args()
     _configure_environment(args.artifacts_dir)
-    mode_dir = args.artifacts_dir / args.mode.replace("-", "_")
+    model_root_dir = args.artifacts_dir / args.model
+    mode_dir = model_root_dir / args.mode.replace("-", "_")
     mode_dir.mkdir(parents=True, exist_ok=True)
 
     if args.mode == "full-experiment":
