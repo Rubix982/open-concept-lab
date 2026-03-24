@@ -1,4 +1,6 @@
 duckdb>=1.2.1
+jax>=0.4.30
+jaxlib>=0.4.30
 matplotlib>=3.10.0
 numpy>=1.26.0
 scikit-learn>=1.8.0

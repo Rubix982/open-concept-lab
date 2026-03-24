@@ -211,6 +211,7 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `docs/graphsage_v2_1_plan.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
 - `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
 - `docs/graphsage_aggregator_plan.md`: staged plan for expanding GraphSAGE aggregators from `mean` to `pool` and later `lstm`
+- `docs/graphsage_jax_plan.md`: additive plan for introducing a JAX backend for future GraphSAGE `lstm` work
 - `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
 
 ## What We Learned
@@ -280,3 +281,4 @@ Visualization outputs:
 - `docs/graphsage_v2_1_plan.md`: cleanup and diagnostics plan for GraphSAGE v2.1
 - `docs/graphsage_sampler_plan.md`: sampler-variant plan for GraphSAGE
 - `docs/graphsage_aggregator_plan.md`: aggregator expansion plan for GraphSAGE
+- `docs/graphsage_jax_plan.md`: JAX backend plan for future GraphSAGE LSTM work
