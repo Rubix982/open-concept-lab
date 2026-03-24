@@ -35,6 +35,7 @@ class ExperimentArgs(Protocol):
     graphsage_fanouts: list[int]
     graphsage_variant: str
     graphsage_batch_size: int
+    graphsage_aggregator: str
     graphsage_sampler: str
 
 
@@ -59,7 +60,7 @@ def _base_training_kwargs(args: ExperimentArgs) -> TrainingKwargs:
 def _model_label(args: ExperimentArgs) -> str:
     if args.model == "gcn":
         return "GCN"
-    return f"GraphSAGE-{args.graphsage_variant}"
+    return f"GraphSAGE-{args.graphsage_variant}-{args.graphsage_aggregator}"
 
 
 def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: ExperimentArgs):
@@ -75,6 +76,7 @@ def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: Experi
         fanouts=args.graphsage_fanouts,
         variant=args.graphsage_variant,
         batch_size=args.graphsage_batch_size,
+        aggregator=args.graphsage_aggregator,
         sampler=args.graphsage_sampler,
         **_base_training_kwargs(args),
     )

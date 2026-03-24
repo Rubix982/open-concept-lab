@@ -67,6 +67,7 @@ python3 main.py \
   --dataset arxiv \
   --model graphsage \
   --graphsage-variant v1 \
+  --graphsage-aggregator mean \
   --mode baseline \
   --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
   --arxiv-max-results 2000 \
@@ -80,6 +81,7 @@ python3 main.py \
   --dataset arxiv \
   --model graphsage \
   --graphsage-variant v2 \
+  --graphsage-aggregator mean \
   --graphsage-batch-size 64 \
   --graphsage-sampler uniform \
   --mode baseline \
@@ -115,12 +117,13 @@ Supported models:
 - `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
   - `v1`: full-batch sampled-neighborhood baseline
   - `v2`: first mini-batch mean-aggregation path
+  - aggregator variants: `mean`, `pool`
   - sampler variants: `uniform`, `with-replacement`, `degree-weighted`
 
 Artifact layout is namespaced by model configuration:
 
 - `artifacts/gcn/<mode>/...`
-- `artifacts/graphsage/<variant>/<sampler>/<mode>/...`
+- `artifacts/graphsage/<variant>/<aggregator>/<sampler>/<mode>/...`
 
 Fetch and cache a larger arXiv corpus without training:
 
@@ -149,6 +152,7 @@ Run the V1 version of the GraphSAGE model,
 python3 main.py \
   --model graphsage \
   --graphsage-variant v1 \
+  --graphsage-aggregator mean \
   --dataset arxiv \
   --mode depth-ablation \
   --arxiv-categories cs.AI cs.LG cs.CL cs.CV \
@@ -162,6 +166,7 @@ Run the V2 version of the GraphSAHE model,
 python3 main.py \
   --model graphsage \
   --graphsage-variant v2 \
+  --graphsage-aggregator mean \
   --graphsage-batch-size 64 \
   --dataset arxiv \
   --mode depth-ablation \
@@ -176,6 +181,7 @@ Running with a custom sampler for GraphSAGE,
 python3 main.py \
   --model graphsage \
   --graphsage-variant v2 \
+  --graphsage-aggregator mean \
   --graphsage-sampler uniform \
   --graphsage-batch-size 64 \
   --dataset arxiv \
@@ -194,7 +200,7 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `artifacts/gcn/baseline/baseline_tsne.png`
 - `artifacts/gcn/baseline/accuracy_comparison.png`
 - `artifacts/gcn/baseline/history_comparison.png`
-- `artifacts/graphsage/v2/uniform/baseline/report.json`
+- `artifacts/graphsage/v2/mean/uniform/baseline/report.json`
 
 ## Research roadmap
 
@@ -204,6 +210,7 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `docs/graphsage_v2_plan.md`: development plan for mini-batch GraphSAGE v2
 - `docs/graphsage_v2_1_plan.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
 - `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
+- `docs/graphsage_aggregator_plan.md`: staged plan for expanding GraphSAGE aggregators from `mean` to `pool` and later `lstm`
 - `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
 
 ## What We Learned
@@ -272,3 +279,4 @@ Visualization outputs:
 - `docs/graphsage_v2_plan.md`: implementation plan for GraphSAGE v2
 - `docs/graphsage_v2_1_plan.md`: cleanup and diagnostics plan for GraphSAGE v2.1
 - `docs/graphsage_sampler_plan.md`: sampler-variant plan for GraphSAGE
+- `docs/graphsage_aggregator_plan.md`: aggregator expansion plan for GraphSAGE

@@ -44,7 +44,7 @@ def _sample_neighbor_mean_matrix(
 
 
 class ManualGraphSAGE:
-    """Mean-aggregator GraphSAGE.
+    """Manual GraphSAGE with configurable neighborhood aggregators.
 
     Each layer samples a fixed-size neighborhood, computes the mean neighbor
     representation, concatenates it with the node's current representation, and
@@ -57,13 +57,19 @@ class ManualGraphSAGE:
         hidden_dims: list[int],
         output_dim: int,
         rng: np.random.Generator,
+        aggregator: str = "mean",
         dropout: float = 0.5,
     ) -> None:
         self.rng = rng
+        self.aggregator = aggregator
         self.dropout = dropout
         layer_dims = [input_dim, *hidden_dims, output_dim]
         self.weights = [
             self._glorot((layer_dims[index] * 2, layer_dims[index + 1]))
+            for index in range(len(layer_dims) - 1)
+        ]
+        self.pool_weights = [
+            self._glorot((layer_dims[index], layer_dims[index]))
             for index in range(len(layer_dims) - 1)
         ]
 
@@ -71,11 +77,15 @@ class ManualGraphSAGE:
         limit = np.sqrt(6.0 / (shape[0] + shape[1]))
         return self.rng.uniform(-limit, limit, size=shape).astype(np.float32)
 
-    def state_dict(self) -> list[np.ndarray]:
-        return [weight.copy() for weight in self.weights]
+    def state_dict(self) -> dict[str, list[np.ndarray]]:
+        return {
+            "weights": [weight.copy() for weight in self.weights],
+            "pool_weights": [weight.copy() for weight in self.pool_weights],
+        }
 
-    def load_state_dict(self, weights: list[np.ndarray]) -> None:
-        self.weights = [weight.copy() for weight in weights]
+    def load_state_dict(self, state: dict[str, list[np.ndarray]]) -> None:
+        self.weights = [weight.copy() for weight in state["weights"]]
+        self.pool_weights = [weight.copy() for weight in state["pool_weights"]]
 
     def forward(
         self,
@@ -88,8 +98,13 @@ class ManualGraphSAGE:
         current = features
 
         for layer_index, weight in enumerate(self.weights):
-            neighbor_mean = sampled_neighbor_matrices[layer_index] @ current
-            concat_input = np.concatenate([current, neighbor_mean], axis=1)
+            neighbor_input = current
+            pool_pre_activation = current @ self.pool_weights[layer_index]
+            if self.aggregator == "pool":
+                neighbor_input = np.maximum(pool_pre_activation, 0.0)
+
+            neighbor_aggregate = sampled_neighbor_matrices[layer_index] @ neighbor_input
+            concat_input = np.concatenate([current, neighbor_aggregate], axis=1)
             pre_activation = concat_input @ weight
             is_output_layer = layer_index == len(self.weights) - 1
 
@@ -111,6 +126,8 @@ class ManualGraphSAGE:
                     "pre_activation": pre_activation,
                     "dropout_mask": dropout_mask,
                     "sampled_neighbor_matrix": sampled_neighbor_matrices[layer_index],
+                    "pool_pre_activation": pool_pre_activation,
+                    "neighbor_input": neighbor_input,
                     "input_dim": np.array([activations[-1].shape[1]], dtype=np.int64),
                 }
             )
@@ -265,6 +282,7 @@ def _local_row_stochastic_matrix(
 class GraphSAGETrainingDiagnostics:
     variant: str
     sampler: str
+    aggregator: str
     batch_size: int
     effective_fanouts: list[int]
     num_batches_last_epoch: int
@@ -285,6 +303,7 @@ def train_graphsage(
     variant: str = "v1",
     batch_size: int = 64,
     sampler: str = "uniform",
+    aggregator: str = "mean",
     epochs: int = 250,
     learning_rate: float = 0.2,
     weight_decay: float = 5e-4,
@@ -298,6 +317,7 @@ def train_graphsage(
         hidden_dims=effective_hidden_dims,
         output_dim=len(graph.label_names),
         rng=rng,
+        aggregator=aggregator,
         dropout=dropout,
     )
 
@@ -332,36 +352,50 @@ def train_graphsage(
         raise ValueError(f"Unsupported GraphSAGE variant: {variant}")
     if sampler not in {"uniform", "with-replacement", "degree-weighted"}:
         raise ValueError(f"Unsupported GraphSAGE sampler: {sampler}")
+    if aggregator not in {"mean", "pool"}:
+        raise ValueError(f"Unsupported GraphSAGE aggregator: {aggregator}")
 
     for epoch in range(1, epochs + 1):
         epoch_start = time.perf_counter()
         if variant == "v1":
             logits, _, layer_caches = model.forward(sampled_neighbor_matrices, graph.features, training=True)
             data_loss, grad_logits = masked_cross_entropy(logits, graph.labels, graph.train_mask)
-            reg_loss = 0.5 * weight_decay * sum(np.sum(weight ** 2) for weight in model.weights)
+            reg_loss = 0.5 * weight_decay * (
+                sum(np.sum(weight ** 2) for weight in model.weights)
+                + sum(np.sum(weight ** 2) for weight in model.pool_weights)
+            )
             loss = data_loss + float(reg_loss)
 
             grads = [np.zeros_like(weight, dtype=np.float32) for weight in model.weights]
+            pool_grads = [np.zeros_like(weight, dtype=np.float32) for weight in model.pool_weights]
             grad_current = grad_logits
 
             for layer_index in range(len(model.weights) - 1, -1, -1):
                 cache = layer_caches[layer_index]
                 grads[layer_index] = cache["concat_input"].T @ grad_current + weight_decay * model.weights[layer_index]
-
-                if layer_index == 0:
-                    continue
-
                 grad_concat = grad_current @ model.weights[layer_index].T
                 input_dim = int(cache["input_dim"][0])
                 grad_self = grad_concat[:, :input_dim]
                 grad_neighbors = grad_concat[:, input_dim:]
-                grad_previous = grad_self + cache["sampled_neighbor_matrix"].T @ grad_neighbors
+                grad_neighbor_input = cache["sampled_neighbor_matrix"].T @ grad_neighbors
+                if aggregator == "pool":
+                    pool_mask = (cache["pool_pre_activation"] > 0).astype(np.float32)
+                    grad_pool_input = grad_neighbor_input * pool_mask
+                    previous_activation = cache["concat_input"][:, :input_dim]
+                    pool_grads[layer_index] = previous_activation.T @ grad_pool_input + weight_decay * model.pool_weights[layer_index]
+                    grad_previous = grad_self + grad_pool_input @ model.pool_weights[layer_index].T
+                else:
+                    pool_grads[layer_index] = weight_decay * model.pool_weights[layer_index]
+                    grad_previous = grad_self + grad_neighbor_input
+                if layer_index == 0:
+                    continue
                 previous_cache = layer_caches[layer_index - 1]
                 grad_previous_hidden = grad_previous * previous_cache["dropout_mask"]
                 grad_current = grad_previous_hidden * (previous_cache["pre_activation"] > 0)
 
             for layer_index, grad_weight in enumerate(grads):
                 model.weights[layer_index] -= learning_rate * grad_weight.astype(np.float32)
+                model.pool_weights[layer_index] -= learning_rate * pool_grads[layer_index].astype(np.float32)
             batch_count_last_epoch = 1
             total_batch_count += 1
             total_target_nodes += int(train_indices.shape[0])
@@ -412,10 +446,14 @@ def train_graphsage(
 
                 logits, _, layer_caches = model.forward(local_matrices, local_features, training=True)
                 data_loss, grad_logits = masked_cross_entropy(logits, local_labels, local_train_mask)
-                reg_loss = 0.5 * weight_decay * sum(np.sum(weight ** 2) for weight in model.weights)
+                reg_loss = 0.5 * weight_decay * (
+                    sum(np.sum(weight ** 2) for weight in model.weights)
+                    + sum(np.sum(weight ** 2) for weight in model.pool_weights)
+                )
                 batch_losses.append(data_loss + float(reg_loss))
 
                 grads = [np.zeros_like(weight, dtype=np.float32) for weight in model.weights]
+                pool_grads = [np.zeros_like(weight, dtype=np.float32) for weight in model.pool_weights]
                 grad_current = grad_logits
 
                 for layer_index in range(len(model.weights) - 1, -1, -1):
@@ -423,15 +461,22 @@ def train_graphsage(
                     active_mask = active_masks[layer_index][:, None].astype(np.float32)
                     masked_grad_current = grad_current * active_mask
                     grads[layer_index] = cache["concat_input"].T @ masked_grad_current + weight_decay * model.weights[layer_index]
-
-                    if layer_index == 0:
-                        continue
-
                     grad_concat = masked_grad_current @ model.weights[layer_index].T
                     input_dim = int(cache["input_dim"][0])
                     grad_self = grad_concat[:, :input_dim]
                     grad_neighbors = grad_concat[:, input_dim:]
-                    grad_previous = grad_self + cache["sampled_neighbor_matrix"].T @ grad_neighbors
+                    grad_neighbor_input = cache["sampled_neighbor_matrix"].T @ grad_neighbors
+                    if aggregator == "pool":
+                        pool_mask = (cache["pool_pre_activation"] > 0).astype(np.float32)
+                        grad_pool_input = grad_neighbor_input * pool_mask
+                        previous_activation = cache["concat_input"][:, :input_dim]
+                        pool_grads[layer_index] = previous_activation.T @ grad_pool_input + weight_decay * model.pool_weights[layer_index]
+                        grad_previous = grad_self + grad_pool_input @ model.pool_weights[layer_index].T
+                    else:
+                        pool_grads[layer_index] = weight_decay * model.pool_weights[layer_index]
+                        grad_previous = grad_self + grad_neighbor_input
+                    if layer_index == 0:
+                        continue
                     previous_cache = layer_caches[layer_index - 1]
                     prev_active_mask = active_masks[layer_index - 1][:, None].astype(np.float32)
                     grad_previous_hidden = grad_previous * previous_cache["dropout_mask"] * prev_active_mask
@@ -439,6 +484,7 @@ def train_graphsage(
 
                 for layer_index, grad_weight in enumerate(grads):
                     model.weights[layer_index] -= learning_rate * grad_weight.astype(np.float32)
+                    model.pool_weights[layer_index] -= learning_rate * pool_grads[layer_index].astype(np.float32)
 
             loss = float(np.mean(batch_losses))
 
@@ -473,6 +519,7 @@ def train_graphsage(
     diagnostics = GraphSAGETrainingDiagnostics(
         variant=variant,
         sampler=sampler,
+        aggregator=aggregator,
         batch_size=batch_size,
         effective_fanouts=effective_fanouts,
         num_batches_last_epoch=batch_count_last_epoch,
@@ -497,6 +544,7 @@ def train_graphsage(
         diagnostics={
             "variant": diagnostics.variant,
             "sampler": diagnostics.sampler,
+            "aggregator": diagnostics.aggregator,
             "batch_size": diagnostics.batch_size,
             "effective_fanouts": diagnostics.effective_fanouts,
             "num_batches_last_epoch": diagnostics.num_batches_last_epoch,
