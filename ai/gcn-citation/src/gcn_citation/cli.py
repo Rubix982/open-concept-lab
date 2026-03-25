@@ -44,7 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--graphsage-variant", choices=["v1", "v2"], default="v1")
     parser.add_argument("--graphsage-backend", choices=["numpy", "jax"], default="numpy")
     parser.add_argument("--graphsage-batch-size", type=int, default=64)
-    parser.add_argument("--graphsage-aggregator", choices=["mean", "pool"], default="mean")
+    parser.add_argument("--graphsage-aggregator", choices=["mean", "pool", "lstm"], default="mean")
     parser.add_argument(
         "--graphsage-sampler",
         choices=["uniform", "with-replacement", "degree-weighted"],

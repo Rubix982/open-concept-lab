@@ -90,6 +90,34 @@ python3 main.py \
   --graphsage-fanouts 10 5
 ```
 
+Try the first JAX GraphSAGE backend path:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model graphsage \
+  --graphsage-backend jax \
+  --graphsage-variant v1 \
+  --graphsage-aggregator mean \
+  --graphsage-sampler uniform \
+  --mode baseline \
+  --skip-tsne
+```
+
+Try the JAX LSTM GraphSAGE path:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model graphsage \
+  --graphsage-backend jax \
+  --graphsage-variant v1 \
+  --graphsage-aggregator lstm \
+  --graphsage-sampler uniform \
+  --mode baseline \
+  --skip-tsne
+```
+
 Run the full experiment suite in one command:
 
 ```bash
@@ -115,15 +143,16 @@ Supported models:
 
 - `gcn`: full-graph degree-normalized message passing
 - `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
+  - backend variants: `numpy`, `jax`
   - `v1`: full-batch sampled-neighborhood baseline
   - `v2`: first mini-batch mean-aggregation path
-  - aggregator variants: `mean`, `pool`
+  - aggregator variants: `mean`, `pool`, `lstm`
   - sampler variants: `uniform`, `with-replacement`, `degree-weighted`
 
 Artifact layout is namespaced by model configuration:
 
 - `artifacts/gcn/<mode>/...`
-- `artifacts/graphsage/<variant>/<aggregator>/<sampler>/<mode>/...`
+- `artifacts/graphsage/<backend>/<variant>/<aggregator>/<sampler>/<mode>/...`
 
 Fetch and cache a larger arXiv corpus without training:
 

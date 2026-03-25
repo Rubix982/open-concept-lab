@@ -1,16 +1,6 @@
 from __future__ import annotations
 
-"""JAX-backed GraphSAGE implementations.
-
-This module starts with a deliberately small but real JAX training path:
-
-- full-batch GraphSAGE
-- mean aggregation
-- shared sampler logic from the NumPy GraphSAGE path
-
-That gives the project a working JAX backend before moving on to the more
-ambitious LSTM aggregator.
-"""
+"""JAX-backed GraphSAGE implementations."""
 
 from dataclasses import dataclass
 from functools import partial
@@ -23,11 +13,12 @@ from .gcn import accuracy
 from .graphsage import _build_adjacency_lists
 from .graphsage import _fanouts_for_depth
 from .graphsage import _sample_neighbor_mean_matrix
+from .graphsage import _sample_neighbors_for_node
 
 try:
     import jax
     import jax.numpy as jnp
-except ImportError:  # pragma: no cover - exercised only when JAX is unavailable
+except ImportError:  # pragma: no cover
     jax = None
     jnp = None
 
@@ -62,13 +53,10 @@ def numpy_to_jax(array: np.ndarray):
 
 
 def build_jax_graph_inputs(graph: GraphData) -> dict[str, object]:
-    """Convert the existing GraphData container into JAX-friendly arrays."""
-
     ensure_jax_available()
     return {
         "features": numpy_to_jax(graph.features),
         "labels": numpy_to_jax(graph.labels.astype(np.int32)),
-        "edges": numpy_to_jax(graph.edges.astype(np.int32)),
         "train_mask": numpy_to_jax(graph.train_mask.astype(np.float32)),
         "val_mask": numpy_to_jax(graph.val_mask.astype(np.float32)),
         "test_mask": numpy_to_jax(graph.test_mask.astype(np.float32)),
@@ -86,20 +74,102 @@ def _init_params(
     hidden_dims: list[int],
     output_dim: int,
     rng: np.random.Generator,
+    aggregator: str,
 ) -> dict[str, list[jnp.ndarray]]:
     layer_dims = [input_dim, *hidden_dims, output_dim]
-    weights = [
-        numpy_to_jax(_glorot(rng, (layer_dims[index] * 2, layer_dims[index + 1])))
-        for index in range(len(layer_dims) - 1)
-    ]
-    return {"weights": weights}
+    params: dict[str, list[jnp.ndarray]] = {
+        "weights": [
+            numpy_to_jax(_glorot(rng, (layer_dims[index] * 2, layer_dims[index + 1])))
+            for index in range(len(layer_dims) - 1)
+        ]
+    }
+    if aggregator == "lstm":
+        params["lstm_input_weights"] = []
+        params["lstm_hidden_weights"] = []
+        params["lstm_biases"] = []
+        for layer_input_dim in layer_dims[:-1]:
+            params["lstm_input_weights"].append(numpy_to_jax(_glorot(rng, (layer_input_dim, layer_input_dim * 4))))
+            params["lstm_hidden_weights"].append(numpy_to_jax(_glorot(rng, (layer_input_dim, layer_input_dim * 4))))
+            params["lstm_biases"].append(jnp.zeros((layer_input_dim * 4,), dtype=jnp.float32))
+    return params
+
+
+def _build_sampled_neighbor_sequences(
+    adjacency_lists: list[np.ndarray],
+    node_degrees: np.ndarray,
+    fanout: int,
+    rng: np.random.Generator,
+    sampler: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    num_nodes = len(adjacency_lists)
+    indices = np.zeros((num_nodes, fanout), dtype=np.int32)
+    mask = np.zeros((num_nodes, fanout), dtype=np.float32)
+
+    for node_index, neighbors in enumerate(adjacency_lists):
+        if neighbors.shape[0] == 0:
+            indices[node_index, :] = node_index
+            continue
+
+        if neighbors.shape[0] <= fanout and sampler != "with-replacement":
+            chosen = neighbors
+        else:
+            chosen = _sample_neighbors_for_node(neighbors, node_degrees, fanout, rng, sampler)
+
+        chosen_count = min(chosen.shape[0], fanout)
+        if chosen_count > 0:
+            indices[node_index, :chosen_count] = chosen[:chosen_count]
+            mask[node_index, :chosen_count] = 1.0
+        if chosen_count < fanout:
+            indices[node_index, chosen_count:] = node_index
+
+    return indices, mask
+
+
+def _lstm_aggregate(
+    current: jnp.ndarray,
+    neighbor_indices: jnp.ndarray,
+    neighbor_mask: jnp.ndarray,
+    input_weight: jnp.ndarray,
+    hidden_weight: jnp.ndarray,
+    bias: jnp.ndarray,
+) -> jnp.ndarray:
+    neighbor_embeddings = current[neighbor_indices]
+    hidden_dim = current.shape[1]
+    batch_size = neighbor_embeddings.shape[0]
+    initial_hidden = jnp.zeros((batch_size, hidden_dim), dtype=current.dtype)
+    initial_cell = jnp.zeros((batch_size, hidden_dim), dtype=current.dtype)
+
+    def step(carry, inputs):
+        hidden_state, cell_state = carry
+        x_t, mask_t = inputs
+        gates = x_t @ input_weight + hidden_state @ hidden_weight + bias
+        input_gate, forget_gate, output_gate, candidate = jnp.split(gates, 4, axis=1)
+        input_gate = jax.nn.sigmoid(input_gate)
+        forget_gate = jax.nn.sigmoid(forget_gate)
+        output_gate = jax.nn.sigmoid(output_gate)
+        candidate = jnp.tanh(candidate)
+        next_cell = forget_gate * cell_state + input_gate * candidate
+        next_hidden = output_gate * jnp.tanh(next_cell)
+        mask_column = mask_t[:, None]
+        masked_hidden = mask_column * next_hidden + (1.0 - mask_column) * hidden_state
+        masked_cell = mask_column * next_cell + (1.0 - mask_column) * cell_state
+        return (masked_hidden, masked_cell), masked_hidden
+
+    (final_hidden, _), _ = jax.lax.scan(
+        step,
+        (initial_hidden, initial_cell),
+        (jnp.swapaxes(neighbor_embeddings, 0, 1), jnp.swapaxes(neighbor_mask, 0, 1)),
+    )
+    return final_hidden
 
 
 def _forward(
     params: dict[str, list[jnp.ndarray]],
     sampled_neighbor_matrices: list[jnp.ndarray],
+    sampled_neighbor_sequences: list[tuple[jnp.ndarray, jnp.ndarray]] | None,
     features: jnp.ndarray,
     *,
+    aggregator: str,
     dropout: float,
     training: bool,
     rng_key,
@@ -112,8 +182,21 @@ def _forward(
         keys = [rng_key for _ in params["weights"]]
 
     for layer_index, weight in enumerate(params["weights"]):
-        neighbor_mean = sampled_neighbor_matrices[layer_index] @ current
-        concat_input = jnp.concatenate([current, neighbor_mean], axis=1)
+        if aggregator == "lstm":
+            assert sampled_neighbor_sequences is not None
+            neighbor_indices, neighbor_mask = sampled_neighbor_sequences[layer_index]
+            neighbor_aggregate = _lstm_aggregate(
+                current,
+                neighbor_indices,
+                neighbor_mask,
+                params["lstm_input_weights"][layer_index],
+                params["lstm_hidden_weights"][layer_index],
+                params["lstm_biases"][layer_index],
+            )
+        else:
+            neighbor_aggregate = sampled_neighbor_matrices[layer_index] @ current
+
+        concat_input = jnp.concatenate([current, neighbor_aggregate], axis=1)
         pre_activation = concat_input @ weight
         is_output_layer = layer_index == len(params["weights"]) - 1
 
@@ -132,11 +215,7 @@ def _forward(
     return current, hidden_layers
 
 
-def _masked_cross_entropy(
-    logits: jnp.ndarray,
-    labels: jnp.ndarray,
-    mask: jnp.ndarray,
-) -> jnp.ndarray:
+def _masked_cross_entropy(logits: jnp.ndarray, labels: jnp.ndarray, mask: jnp.ndarray) -> jnp.ndarray:
     log_probs = jax.nn.log_softmax(logits, axis=1)
     one_hot = jax.nn.one_hot(labels, logits.shape[1])
     per_node_loss = -jnp.sum(one_hot * log_probs, axis=1)
@@ -159,19 +238,11 @@ def train_graphsage_jax(
     dropout: float,
     seed: int,
 ) -> TrainingResult:
-    """Train a first real JAX GraphSAGE path.
-
-    Current scope:
-    - full-batch GraphSAGE only (`variant="v1"`)
-    - mean aggregation only
-    - shared sampler logic with the NumPy implementation
-    """
-
     ensure_jax_available()
     if variant != "v1":
-        raise NotImplementedError("The first JAX GraphSAGE path currently supports only variant='v1'.")
-    if aggregator != "mean":
-        raise NotImplementedError("The first JAX GraphSAGE path currently supports only aggregator='mean'.")
+        raise NotImplementedError("The current JAX GraphSAGE path supports only variant='v1'.")
+    if aggregator not in {"mean", "lstm"}:
+        raise NotImplementedError("The current JAX GraphSAGE path supports only aggregators 'mean' and 'lstm'.")
 
     _ = JAXGraphSAGEConfig(
         hidden_dims=hidden_dims,
@@ -194,6 +265,7 @@ def train_graphsage_jax(
     adjacency_lists = _build_adjacency_lists(graph.features.shape[0], graph.edges)
     node_degrees = np.asarray([neighbors.shape[0] for neighbors in adjacency_lists], dtype=np.int64)
     effective_fanouts = _fanouts_for_depth(len(hidden_dims) + 1, fanouts or [10, 5])
+
     sampled_neighbor_matrices_np = [
         _sample_neighbor_mean_matrix(
             adjacency_lists,
@@ -206,49 +278,66 @@ def train_graphsage_jax(
     ]
     sampled_neighbor_matrices = [numpy_to_jax(matrix) for matrix in sampled_neighbor_matrices_np]
 
+    sampled_neighbor_sequences = None
+    if aggregator == "lstm":
+        sampled_neighbor_sequences_np = [
+            _build_sampled_neighbor_sequences(
+                adjacency_lists,
+                node_degrees=node_degrees,
+                fanout=fanout,
+                rng=np_rng,
+                sampler=sampler,
+            )
+            for fanout in effective_fanouts
+        ]
+        sampled_neighbor_sequences = [
+            (numpy_to_jax(indices), numpy_to_jax(mask))
+            for indices, mask in sampled_neighbor_sequences_np
+        ]
+
     params = _init_params(
         input_dim=graph.features.shape[1],
         hidden_dims=hidden_dims,
         output_dim=len(graph.label_names),
         rng=np_rng,
+        aggregator=aggregator,
     )
-    best_params = {"weights": [weight.copy() for weight in params["weights"]]}
+    best_params = {key: [value.copy() for value in values] for key, values in params.items()}
     best_val_accuracy = -np.inf
     history: list[dict[str, float]] = []
 
     @partial(jax.jit, static_argnames=("training",))
-    def predict(
-        current_params: dict[str, list[jnp.ndarray]],
-        rng_key,
-        *,
-        training: bool,
-    ) -> tuple[jnp.ndarray, list[jnp.ndarray]]:
+    def predict(current_params, rng_key, *, training: bool):
         return _forward(
             current_params,
             sampled_neighbor_matrices,
+            sampled_neighbor_sequences,
             features,
+            aggregator=aggregator,
             dropout=dropout,
             training=training,
             rng_key=rng_key,
         )
 
     @jax.jit
-    def train_step(
-        current_params: dict[str, list[jnp.ndarray]],
-        rng_key,
-    ) -> tuple[dict[str, list[jnp.ndarray]], jnp.ndarray]:
+    def train_step(current_params, rng_key):
         def loss_fn(model_params):
             logits, _ = predict(model_params, rng_key, training=True)
             data_loss = _masked_cross_entropy(logits, labels, train_mask)
-            reg_loss = 0.5 * weight_decay * sum(jnp.sum(weight ** 2) for weight in model_params["weights"])
+            reg_loss = 0.5 * weight_decay * sum(
+                jnp.sum(weight ** 2)
+                for group in model_params.values()
+                for weight in group
+            )
             return data_loss + reg_loss
 
         loss, grads = jax.value_and_grad(loss_fn)(current_params)
         updated_params = {
-            "weights": [
+            key: [
                 weight - learning_rate * grad
-                for weight, grad in zip(current_params["weights"], grads["weights"], strict=True)
+                for weight, grad in zip(current_params[key], grads[key], strict=True)
             ]
+            for key in current_params
         }
         return updated_params, loss
 
@@ -259,7 +348,6 @@ def train_graphsage_jax(
         params, loss = train_step(params, step_key)
         eval_logits, hidden_layers = predict(params, eval_key, training=False)
         eval_logits_np = np.asarray(eval_logits)
-
         history.append(
             {
                 "epoch": float(epoch),
@@ -269,11 +357,9 @@ def train_graphsage_jax(
                 "test_accuracy": accuracy(eval_logits_np, graph.labels, graph.test_mask),
             }
         )
-
-        current_val_accuracy = history[-1]["val_accuracy"]
-        if current_val_accuracy > best_val_accuracy:
-            best_val_accuracy = current_val_accuracy
-            best_params = {"weights": [weight.copy() for weight in params["weights"]]}
+        if history[-1]["val_accuracy"] > best_val_accuracy:
+            best_val_accuracy = history[-1]["val_accuracy"]
+            best_params = {key: [value.copy() for value in values] for key, values in params.items()}
 
     final_logits, final_hidden_layers = predict(best_params, rng_key, training=False)
     final_logits_np = np.asarray(final_logits)

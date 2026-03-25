@@ -1,0 +1,70 @@
+{
+  "dataset": "arxiv",
+  "model": "graphsage",
+  "graphsage_backend": "jax",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "lstm",
+  "graphsage_sampler": "uniform",
+  "mode": "baseline",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_2000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_2000/cs_AI_cs_LG_cs_CL_cs_CV_2000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 1565,
+    "graph_stats": {
+      "num_nodes": 1565,
+      "num_directed_edges": 21438,
+      "num_undirected_edges": 10719,
+      "average_degree": 13.698402555910544,
+      "density": 0.008758569409149963
+    }
+  },
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/accuracy_comparison.png",
+    "history_comparison": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/history_comparison.png",
+    "tsne_grid": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 0.9875,
+        "val_accuracy": 0.6262626262626263,
+        "test_accuracy": 0.6070707070707071,
+        "num_train_nodes": 80,
+        "num_val_nodes": 495,
+        "num_test_nodes": 990,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "What does the standard 2-layer GraphSAGE-jax-v1-lstm achieve on this split?",
+        "diagnostics": {
+          "backend": "jax",
+          "variant": "v1",
+          "aggregator": "lstm",
+          "sampler": "uniform",
+          "effective_fanouts": [
+            10,
+            5
+          ],
+          "batch_size": 64
+        }
+      },
+      "paths": {
+        "metrics": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_metrics.json",
+        "history": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_history.json",
+        "details": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_details.json",
+        "embeddings": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_embeddings.npy",
+        "logits": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_logits.npy",
+        "tsne": "artifacts/graphsage/jax/v1/lstm/uniform/baseline/baseline_tsne.png"
+      }
+    }
+  ]
+}

@@ -67,8 +67,21 @@ Suggested file:
 1. Add JAX as an optional dependency
 2. Add a dedicated JAX GraphSAGE module
 3. Reuse the existing sampled-neighborhood and experiment infrastructure where practical
-4. Implement a first working JAX GraphSAGE path for `lstm`
-5. Compare against the NumPy `mean` and `pool` variants
+4. Implement a first working JAX GraphSAGE path
+5. Extend that path toward `lstm`
+6. Compare against the NumPy `mean` and `pool` variants
+
+## Current status
+
+The first real JAX GraphSAGE path is now in place with this scope:
+
+- backend: `jax`
+- variant: `v1`
+- aggregator: `mean`
+- sampler support reused from the NumPy path
+
+This is intentionally smaller than the long-term goal. It gives the project a
+real JAX execution path before the harder `lstm` aggregator is added.
 
 ## Comparison plan
 
