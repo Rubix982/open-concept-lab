@@ -8,6 +8,7 @@ Manual graph neural network experiments for node classification on graph dataset
 - Fetches arXiv papers by category and builds a similarity graph from title + abstract TF-IDF features
 - Stores nodes, sparse features, and citation edges in DuckDB
 - Trains manual NumPy GCN and GraphSAGE variants
+- Trains a first JAX GAT baseline
 - Evaluates the model in a semi-supervised setting with 140 labeled nodes
 - Produces a t-SNE plot of learned node embeddings
 
@@ -25,6 +26,7 @@ python3 main.py --mode feature-only
 python3 main.py --mode graph-only
 python3 main.py --mode depth-ablation --skip-tsne
 python3 main.py --model graphsage --mode depth-ablation --skip-tsne
+python3 main.py --model gat --mode baseline --skip-tsne
 ```
 
 Run on a small arXiv slice:
@@ -104,6 +106,16 @@ python3 main.py \
   --skip-tsne
 ```
 
+Try the first GAT baseline:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model gat \
+  --mode baseline \
+  --skip-tsne
+```
+
 Try the JAX LSTM GraphSAGE path:
 
 ```bash
@@ -142,6 +154,7 @@ This suite mode runs:
 Supported models:
 
 - `gcn`: full-graph degree-normalized message passing
+- `gat`: first JAX graph-attention baseline with dense adjacency masking
 - `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
   - backend variants: `numpy`, `jax`
   - `v1`: full-batch sampled-neighborhood baseline
@@ -241,6 +254,7 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
 - `docs/graphsage_aggregator_plan.md`: staged plan for expanding GraphSAGE aggregators from `mean` to `pool` and later `lstm`
 - `docs/graphsage_jax_plan.md`: additive plan for introducing a JAX backend for future GraphSAGE `lstm` work
+- `docs/gat_plan.md`: staged plan for the first GAT implementation
 - `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
 
 ## What We Learned
@@ -311,3 +325,4 @@ Visualization outputs:
 - `docs/graphsage_sampler_plan.md`: sampler-variant plan for GraphSAGE
 - `docs/graphsage_aggregator_plan.md`: aggregator expansion plan for GraphSAGE
 - `docs/graphsage_jax_plan.md`: JAX backend plan for future GraphSAGE LSTM work
+- `docs/gat_plan.md`: GAT implementation plan

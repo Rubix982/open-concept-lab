@@ -10,6 +10,7 @@ from .data import GraphData
 from .data import clone_graph_data
 from .data import identity_adjacency
 from .data import structural_identity_features
+from .models import train_gat_jax
 from .models import train_gcn
 from .models import train_graphsage
 from .models import train_graphsage_jax
@@ -33,6 +34,7 @@ class ExperimentArgs(Protocol):
     seed: int
     hidden_dim: int
     model: str
+    gat_heads: int
     graphsage_fanouts: list[int]
     graphsage_backend: str
     graphsage_variant: str
@@ -62,6 +64,8 @@ def _base_training_kwargs(args: ExperimentArgs) -> TrainingKwargs:
 def _model_label(args: ExperimentArgs) -> str:
     if args.model == "gcn":
         return "GCN"
+    if args.model == "gat":
+        return "GAT-jax"
     return f"GraphSAGE-{args.graphsage_backend}-{args.graphsage_variant}-{args.graphsage_aggregator}"
 
 
@@ -70,6 +74,13 @@ def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: Experi
         return train_gcn(
             graph,
             hidden_dims=hidden_dims,
+            **_base_training_kwargs(args),
+        )
+    if args.model == "gat":
+        return train_gat_jax(
+            graph,
+            hidden_dims=hidden_dims,
+            heads=args.gat_heads,
             **_base_training_kwargs(args),
         )
     if args.graphsage_backend == "jax":

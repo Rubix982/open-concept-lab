@@ -18,7 +18,7 @@ ALL_MODES = sorted([*SINGLE_RUN_MODES, "full-experiment"])
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run manual NumPy GCN experiments on the Cora citation graph.")
-    parser.add_argument("--model", choices=["gcn", "graphsage"], default="gcn")
+    parser.add_argument("--model", choices=["gcn", "graphsage", "gat"], default="gcn")
     parser.add_argument("--dataset", choices=["cora", "arxiv"], default="cora")
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts"))
@@ -30,6 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--epochs", type=int, default=250)
     parser.add_argument("--hidden-dim", type=int, default=16)
+    parser.add_argument("--gat-heads", type=int, default=1)
     parser.add_argument("--learning-rate", type=float, default=0.2)
     parser.add_argument("--weight-decay", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.5)
@@ -250,6 +251,7 @@ def _run_single_mode(
     return {
         "dataset": args.dataset,
         "model": args.model,
+        "gat_heads": args.gat_heads if args.model == "gat" else 0,
         "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
         "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
         "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -277,6 +279,7 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
         cache_report = {
             "dataset": args.dataset,
             "model": args.model,
+            "gat_heads": args.gat_heads if args.model == "gat" else 0,
             "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
             "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
             "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -328,6 +331,7 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
     suite_report = {
         "dataset": args.dataset,
         "model": args.model,
+        "gat_heads": args.gat_heads if args.model == "gat" else 0,
         "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
         "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
         "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -370,6 +374,7 @@ def main() -> None:
         cache_report = {
             "dataset": args.dataset,
             "model": args.model,
+            "gat_heads": args.gat_heads if args.model == "gat" else 0,
             "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
             "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
             "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",

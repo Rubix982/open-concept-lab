@@ -2,6 +2,7 @@
 
 from .gcn import TrainingResult
 from .gcn import accuracy
+from .gat_jax import train_gat_jax
 from .gcn import masked_cross_entropy
 from .gcn import train_gcn
 from .graphsage import train_graphsage
@@ -13,6 +14,7 @@ __all__ = [
     "accuracy",
     "jax_available",
     "masked_cross_entropy",
+    "train_gat_jax",
     "train_gcn",
     "train_graphsage",
     "train_graphsage_jax",
