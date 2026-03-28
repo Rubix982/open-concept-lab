@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 
 import numpy as np
 
@@ -13,12 +16,12 @@ from .data import load_graph_data
 from .experiments import MODE_TO_RUNNER
 
 SINGLE_RUN_MODES = sorted(MODE_TO_RUNNER.keys())
-ALL_MODES = sorted([*SINGLE_RUN_MODES, "full-experiment"])
+ALL_MODES = sorted([*SINGLE_RUN_MODES, "compare-runs", "full-experiment"])
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run manual NumPy GCN experiments on the Cora citation graph.")
-    parser.add_argument("--model", choices=["gcn", "graphsage", "gat"], default="gcn")
+    parser.add_argument("--model", choices=["gcn", "graphsage", "gat", "gt"], default="gcn")
     parser.add_argument("--dataset", choices=["cora", "arxiv"], default="cora")
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--artifacts-dir", type=Path, default=Path("artifacts"))
@@ -31,6 +34,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--epochs", type=int, default=250)
     parser.add_argument("--hidden-dim", type=int, default=16)
     parser.add_argument("--gat-heads", type=int, default=1)
+    parser.add_argument("--gat-attention-dropout", type=float, default=0.5)
+    parser.add_argument("--gt-heads", type=int, default=4)
+    parser.add_argument("--gt-layers", type=int, default=2)
+    parser.add_argument("--gt-trace-with-nnsight", action="store_true")
     parser.add_argument("--learning-rate", type=float, default=0.2)
     parser.add_argument("--weight-decay", type=float, default=5e-4)
     parser.add_argument("--dropout", type=float, default=0.5)
@@ -63,6 +70,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--arxiv-top-k", type=int, default=10)
     parser.add_argument("--density-top-k-values", nargs="+", type=int, default=[5, 10, 20, 40])
     parser.add_argument("--arxiv-max-features", type=int, default=1000)
+    parser.add_argument("--compare-config-a", type=Path, default=None)
+    parser.add_argument("--compare-config-b", type=Path, default=None)
+    parser.add_argument("--compare-name", type=str, default="default")
     parser.add_argument("--cache-only", action="store_true", help="Fetch/cache arXiv data and stop before training.")
     parser.add_argument(
         "--refresh-arxiv-cache",
@@ -99,6 +109,258 @@ def _artifact_root_dir(args: argparse.Namespace) -> Path:
             / args.graphsage_sampler
         )
     return model_root_dir
+
+
+def _load_compare_config(path: Path) -> dict[str, object]:
+    payload = json.loads(path.read_text())
+    if not isinstance(payload, dict):
+        raise ValueError(f"Compare config must be a JSON object: {path}")
+    if payload.get("mode") == "compare-runs":
+        raise ValueError(f"Nested compare-runs is not allowed: {path}")
+    return payload
+
+
+def _config_to_cli_args(config: dict[str, object]) -> list[str]:
+    args: list[str] = []
+    for key, value in config.items():
+        if key in {"compare_label", "run_label"}:
+            continue
+        flag = f"--{key.replace('_', '-')}"
+        if isinstance(value, bool):
+            if value:
+                args.append(flag)
+            continue
+        if isinstance(value, list):
+            args.append(flag)
+            args.extend(str(item) for item in value)
+            continue
+        if value is None:
+            continue
+        args.extend([flag, str(value)])
+    return args
+
+
+def _extract_report_path(stdout: str) -> str:
+    for line in reversed(stdout.splitlines()):
+        prefix = "Experiment report saved to: "
+        if line.startswith(prefix):
+            return line[len(prefix) :].strip()
+        cache_prefix = "Cache report saved to: "
+        if line.startswith(cache_prefix):
+            return line[len(cache_prefix) :].strip()
+    raise ValueError("Could not locate report path in subprocess output.")
+
+
+def _summarize_report(report: dict[str, object], label: str) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for run in report.get("runs", []):
+        metrics = run.get("metrics", {})
+        rows.append(
+            {
+                "label": label,
+                "model": report.get("model", ""),
+                "mode": report.get("mode", ""),
+                "gat_heads": report.get("gat_heads", ""),
+                "gt_heads": report.get("gt_heads", ""),
+                "gt_layers": report.get("gt_layers", ""),
+                "graphsage_backend": report.get("graphsage_backend", ""),
+                "graphsage_variant": report.get("graphsage_variant", ""),
+                "graphsage_aggregator": report.get("graphsage_aggregator", ""),
+                "graphsage_sampler": report.get("graphsage_sampler", ""),
+                "run_name": run.get("name", ""),
+                "train_accuracy": metrics.get("train_accuracy", None),
+                "val_accuracy": metrics.get("val_accuracy", None),
+                "test_accuracy": metrics.get("test_accuracy", None),
+                "num_layers": metrics.get("num_layers", None),
+            }
+        )
+    return rows
+
+
+def _format_metric(value: object) -> str:
+    if isinstance(value, float):
+        return f"{value:.4f}"
+    return str(value)
+
+
+def _best_row(rows: list[dict[str, object]], metric: str) -> dict[str, object] | None:
+    valid_rows = [row for row in rows if isinstance(row.get(metric), (int, float))]
+    if not valid_rows:
+        return None
+    return max(valid_rows, key=lambda row: float(row[metric]))
+
+
+def _build_winner_summary(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    summary: list[dict[str, object]] = []
+    for metric in ("train_accuracy", "val_accuracy", "test_accuracy"):
+        winner = _best_row(rows, metric)
+        if winner is None:
+            continue
+        summary.append(
+            {
+                "metric": metric,
+                "label": winner.get("label", ""),
+                "value": winner.get(metric),
+                "model": winner.get("model", ""),
+                "gt_heads": winner.get("gt_heads", ""),
+                "gt_layers": winner.get("gt_layers", ""),
+                "graphsage_backend": winner.get("graphsage_backend", ""),
+                "graphsage_aggregator": winner.get("graphsage_aggregator", ""),
+                "graphsage_sampler": winner.get("graphsage_sampler", ""),
+            }
+        )
+    return summary
+
+
+def _write_comparison_table(output_path: Path, rows: list[dict[str, object]]) -> None:
+    headers = [
+        "label",
+        "model",
+        "mode",
+        "gat_heads",
+        "gt_heads",
+        "gt_layers",
+        "graphsage_backend",
+        "graphsage_variant",
+        "graphsage_aggregator",
+        "graphsage_sampler",
+        "run_name",
+        "train_accuracy",
+        "val_accuracy",
+        "test_accuracy",
+        "num_layers",
+    ]
+    winner_summary = _build_winner_summary(rows)
+    lines: list[str] = []
+    if winner_summary:
+        lines.append("## Winners")
+        lines.append("")
+        for item in winner_summary:
+            lines.append(
+                "- "
+                f"{item['metric']}: {item['label']} "
+                f"({ _format_metric(item['value']) })"
+            )
+        lines.append("")
+        lines.append("## Comparison Table")
+        lines.append("")
+
+    lines.extend(
+        [
+            "| " + " | ".join(headers) + " |",
+            "| " + " | ".join(["---"] * len(headers)) + " |",
+        ]
+    )
+    for row in rows:
+        lines.append("| " + " | ".join(_format_metric(row.get(header, "")) for header in headers) + " |")
+    output_path.write_text("\n".join(lines) + "\n")
+
+
+def _run_compare_subprocess(
+    *,
+    config_path: Path,
+    label: str,
+    run_dir: Path,
+    data_dir: Path,
+) -> dict[str, object]:
+    config = _load_compare_config(config_path)
+    display_label = str(config.get("compare_label") or config.get("run_label") or label)
+    config.setdefault("data_dir", str(data_dir))
+    config["artifacts_dir"] = str(run_dir)
+    command = [sys.executable, "main.py", *_config_to_cli_args(config)]
+    completed = subprocess.run(
+        command,
+        cwd=Path(__file__).resolve().parents[2],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    stdout_path = run_dir / "stdout.log"
+    stderr_path = run_dir / "stderr.log"
+    stdout_path.write_text(completed.stdout)
+    stderr_path.write_text(completed.stderr)
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"Compare run '{label}' failed with exit code {completed.returncode}.\n"
+            f"stderr:\n{completed.stderr}"
+        )
+    report_path = Path(_extract_report_path(completed.stdout))
+    report = json.loads(report_path.read_text())
+    return {
+        "label": display_label,
+        "config_path": str(config_path),
+        "report_path": str(report_path),
+        "stdout_path": str(stdout_path),
+        "stderr_path": str(stderr_path),
+        "report": report,
+    }
+
+
+def _run_compare_mode(args: argparse.Namespace) -> tuple[dict[str, object], Path]:
+    if args.compare_config_a is None or args.compare_config_b is None:
+        raise ValueError("--compare-config-a and --compare-config-b are required for --mode compare-runs.")
+
+    compare_dir = args.artifacts_dir / "compare_runs" / args.compare_name
+    compare_dir.mkdir(parents=True, exist_ok=True)
+    run_a_dir = compare_dir / "run_a"
+    run_b_dir = compare_dir / "run_b"
+    run_a_dir.mkdir(parents=True, exist_ok=True)
+    run_b_dir.mkdir(parents=True, exist_ok=True)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        future_a = executor.submit(
+            _run_compare_subprocess,
+            config_path=args.compare_config_a,
+            label="run_a",
+            run_dir=run_a_dir,
+            data_dir=args.data_dir,
+        )
+        future_b = executor.submit(
+            _run_compare_subprocess,
+            config_path=args.compare_config_b,
+            label="run_b",
+            run_dir=run_b_dir,
+            data_dir=args.data_dir,
+        )
+        result_a = future_a.result()
+        result_b = future_b.result()
+
+    comparison_rows = [
+        *_summarize_report(result_a["report"], result_a["label"]),
+        *_summarize_report(result_b["report"], result_b["label"]),
+    ]
+    comparison_table_path = compare_dir / "comparison.md"
+    _write_comparison_table(comparison_table_path, comparison_rows)
+
+    winner_summary = _build_winner_summary(comparison_rows)
+    comparison_json = {
+        "mode": "compare-runs",
+        "name": args.compare_name,
+        "config_a": str(args.compare_config_a),
+        "config_b": str(args.compare_config_b),
+        "runs": [
+            {
+                "label": result_a["label"],
+                "config_path": result_a["config_path"],
+                "report_path": result_a["report_path"],
+                "stdout_path": result_a["stdout_path"],
+                "stderr_path": result_a["stderr_path"],
+            },
+            {
+                "label": result_b["label"],
+                "config_path": result_b["config_path"],
+                "report_path": result_b["report_path"],
+                "stdout_path": result_b["stdout_path"],
+                "stderr_path": result_b["stderr_path"],
+            },
+        ],
+        "comparison_rows": comparison_rows,
+        "winner_summary": winner_summary,
+        "comparison_table_path": str(comparison_table_path),
+    }
+    report_path = compare_dir / "report.json"
+    report_path.write_text(json.dumps(comparison_json, indent=2))
+    return comparison_json, report_path
 
 
 def _save_experiment_outputs(
@@ -252,6 +514,8 @@ def _run_single_mode(
         "dataset": args.dataset,
         "model": args.model,
         "gat_heads": args.gat_heads if args.model == "gat" else 0,
+        "gt_heads": args.gt_heads if args.model == "gt" else 0,
+        "gt_layers": args.gt_layers if args.model == "gt" else 0,
         "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
         "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
         "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -280,6 +544,8 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
             "dataset": args.dataset,
             "model": args.model,
             "gat_heads": args.gat_heads if args.model == "gat" else 0,
+            "gt_heads": args.gt_heads if args.model == "gt" else 0,
+            "gt_layers": args.gt_layers if args.model == "gt" else 0,
             "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
             "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
             "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -332,6 +598,8 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
         "dataset": args.dataset,
         "model": args.model,
         "gat_heads": args.gat_heads if args.model == "gat" else 0,
+        "gt_heads": args.gt_heads if args.model == "gt" else 0,
+        "gt_layers": args.gt_layers if args.model == "gt" else 0,
         "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
         "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
         "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",
@@ -359,6 +627,13 @@ def _run_full_experiment(args: argparse.Namespace, suite_dir: Path) -> tuple[dic
 def main() -> None:
     args = build_parser().parse_args()
     _configure_environment(args.artifacts_dir)
+
+    if args.mode == "compare-runs":
+        report, report_path = _run_compare_mode(args)
+        print(json.dumps(report, indent=2))
+        print(f"Comparison report saved to: {report_path}")
+        return
+
     model_root_dir = _artifact_root_dir(args)
     mode_dir = model_root_dir / args.mode.replace("-", "_")
     mode_dir.mkdir(parents=True, exist_ok=True)
@@ -375,6 +650,8 @@ def main() -> None:
             "dataset": args.dataset,
             "model": args.model,
             "gat_heads": args.gat_heads if args.model == "gat" else 0,
+            "gt_heads": args.gt_heads if args.model == "gt" else 0,
+            "gt_layers": args.gt_layers if args.model == "gt" else 0,
             "graphsage_backend": args.graphsage_backend if args.model == "graphsage" else "",
             "graphsage_variant": args.graphsage_variant if args.model == "graphsage" else "",
             "graphsage_aggregator": args.graphsage_aggregator if args.model == "graphsage" else "",

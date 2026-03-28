@@ -1,0 +1,13 @@
+{
+  "compare_label": "cora-numpy-mean-debug",
+  "model": "graphsage",
+  "graphsage_backend": "numpy",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "mean",
+  "graphsage_sampler": "uniform",
+  "dataset": "cora",
+  "mode": "baseline",
+  "epochs": 10,
+  "skip_tsne": true,
+  "graphsage_fanouts": [10, 5]
+}

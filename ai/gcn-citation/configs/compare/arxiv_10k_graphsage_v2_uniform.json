@@ -1,0 +1,15 @@
+{
+  "compare_label": "arxiv10k-v2-uniform",
+  "model": "graphsage",
+  "graphsage_backend": "numpy",
+  "graphsage_variant": "v2",
+  "graphsage_aggregator": "mean",
+  "graphsage_sampler": "uniform",
+  "graphsage_batch_size": 64,
+  "dataset": "arxiv",
+  "mode": "baseline",
+  "epochs": 250,
+  "arxiv_categories": ["cs.AI", "cs.LG", "cs.CL", "cs.CV"],
+  "arxiv_max_results": 10000,
+  "graphsage_fanouts": [10, 5]
+}

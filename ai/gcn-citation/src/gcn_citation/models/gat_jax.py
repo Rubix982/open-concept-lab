@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""First JAX implementation of a Graph Attention Network (GAT).
+"""First reusable JAX implementation of a Graph Attention Network (GAT).
 
 This file is intentionally written as a learning-oriented baseline:
 
@@ -11,6 +11,13 @@ This file is intentionally written as a learning-oriented baseline:
 The central idea of GAT is that neighbors are not averaged uniformly.
 Instead, the model learns an attention score for each node-neighbor pair,
 then normalizes those scores with a softmax before aggregating messages.
+
+This file now supports real multi-head hidden attention, which makes it a
+better foundation for future experiments and reuse:
+
+- hidden layers can use multiple attention heads
+- hidden heads are concatenated, following the original GAT intuition
+- the output layer stays single-head for stable class logits
 """
 
 from dataclasses import dataclass
@@ -40,6 +47,7 @@ class GATConfig:
     learning_rate: float
     weight_decay: float
     dropout: float
+    attention_dropout: float
     seed: int
 
 
@@ -58,34 +66,45 @@ def _build_attention_mask(num_nodes: int, edges: np.ndarray) -> np.ndarray:
     return adjacency
 
 
+def _layer_head_counts(hidden_dims: list[int], heads: int) -> list[int]:
+    # Hidden layers get multi-head attention; the final classifier layer uses a
+    # single head so logits stay in [num_nodes, num_classes].
+    hidden_layer_count = len(hidden_dims)
+    return [heads] * hidden_layer_count + [1]
+
+
 def _init_params(
     input_dim: int,
     hidden_dims: list[int],
     output_dim: int,
+    heads: int,
     rng: np.random.Generator,
 ) -> dict[str, list[jnp.ndarray]]:
-    layer_dims = [input_dim, *hidden_dims, output_dim]
-    # Each GAT layer learns:
-    # 1. a feature projection W
-    # 2. a source-side attention vector a_src
-    # 3. a destination-side attention vector a_dst
-    #
-    # The source/destination split gives us pairwise edge scores without
-    # explicitly learning a full N x N edge-parameter matrix.
-    return {
-        "weights": [
-            numpy_to_jax(_glorot(rng, (layer_dims[index], layer_dims[index + 1])))
-            for index in range(len(layer_dims) - 1)
-        ],
-        "attention_src": [
-            numpy_to_jax(_glorot(rng, (layer_dims[index + 1], 1)))
-            for index in range(len(layer_dims) - 1)
-        ],
-        "attention_dst": [
-            numpy_to_jax(_glorot(rng, (layer_dims[index + 1], 1)))
-            for index in range(len(layer_dims) - 1)
-        ],
+    layer_output_dims = [*hidden_dims, output_dim]
+    head_counts = _layer_head_counts(hidden_dims, heads)
+    params = {
+        "weights": [],
+        "attention_src": [],
+        "attention_dst": [],
     }
+
+    current_input_dim = input_dim
+    for output_dim_for_layer, head_count in zip(layer_output_dims, head_counts, strict=True):
+        # Each head has its own projection and its own source/destination
+        # attention vectors. This is the real "multi-view neighborhood"
+        # mechanism of multi-head GAT.
+        params["weights"].append(
+            numpy_to_jax(_glorot(rng, (current_input_dim, output_dim_for_layer * head_count)))
+        )
+        params["attention_src"].append(
+            numpy_to_jax(_glorot(rng, (head_count, output_dim_for_layer)))
+        )
+        params["attention_dst"].append(
+            numpy_to_jax(_glorot(rng, (head_count, output_dim_for_layer)))
+        )
+        current_input_dim = output_dim_for_layer * head_count
+
+    return params
 
 
 def _gat_layer(
@@ -96,41 +115,50 @@ def _gat_layer(
     adjacency_mask: jnp.ndarray,
     *,
     training: bool,
-    dropout: float,
+    feature_dropout: float,
+    attention_dropout: float,
     rng_key,
     is_output_layer: bool,
-) -> jnp.ndarray:
-    # First project node features into the layer's hidden space.
-    projected = current @ weight
+    collect_attention: bool,
+) -> tuple[jnp.ndarray, jnp.ndarray | None]:
+    num_heads = attention_src.shape[0]
+    head_dim = attention_src.shape[1]
 
-    # Compute one score contribution from the "source" node and one from the
-    # "destination" node, then add them to get edge logits e_ij.
-    src_logits = projected @ attention_src
-    dst_logits = projected @ attention_dst
-    attention_scores = jax.nn.leaky_relu(src_logits + dst_logits.T, negative_slope=0.2)
+    # First project features, then reshape into [nodes, heads, head_dim].
+    projected = (current @ weight).reshape(current.shape[0], num_heads, head_dim)
 
-    # Non-neighbors should never receive attention mass, so we mask them to a
-    # very negative value before the softmax.
-    masked_scores = jnp.where(adjacency_mask, attention_scores, -1e9)
-    attention = jax.nn.softmax(masked_scores, axis=1)
-
-    if training and dropout > 0.0:
-        keep_probability = 1.0 - dropout
-        # We regularize both projected node features and the attention map.
-        # This mirrors the idea that GAT can overfit both what it says and
-        # which neighbors it listens to.
-        feature_mask = jax.random.bernoulli(rng_key, p=keep_probability, shape=projected.shape)
+    feature_key, attention_key = jax.random.split(rng_key)
+    if training and feature_dropout > 0.0:
+        keep_probability = 1.0 - feature_dropout
+        feature_mask = jax.random.bernoulli(feature_key, p=keep_probability, shape=projected.shape)
         projected = projected * feature_mask.astype(projected.dtype) / keep_probability
-        attention_mask = jax.random.bernoulli(rng_key, p=keep_probability, shape=attention.shape)
+
+    # Each head independently scores node i as a source and node j as a
+    # destination, then combines those scores into edge logits e_ij.
+    src_logits = jnp.einsum("nhd,hd->nh", projected, attention_src)
+    dst_logits = jnp.einsum("nhd,hd->nh", projected, attention_dst)
+    attention_scores = jax.nn.leaky_relu(
+        src_logits.T[:, :, None] + dst_logits.T[:, None, :],
+        negative_slope=0.2,
+    )
+
+    adjacency_mask_per_head = adjacency_mask[None, :, :]
+    masked_scores = jnp.where(adjacency_mask_per_head, attention_scores, -1e9)
+    attention = jax.nn.softmax(masked_scores, axis=2)
+
+    if training and attention_dropout > 0.0:
+        keep_probability = 1.0 - attention_dropout
+        attention_mask = jax.random.bernoulli(attention_key, p=keep_probability, shape=attention.shape)
         attention = attention * attention_mask.astype(attention.dtype) / keep_probability
 
-    # Attention-weighted message passing:
-    # each row of `attention` contains normalized coefficients for the
-    # neighbors of one node.
-    aggregated = attention @ projected
+    # Each head aggregates its own weighted neighbor mixture. Hidden layers
+    # concatenate heads; the output layer averages them to keep logits stable.
+    aggregated = jnp.einsum("hij,jhd->ihd", attention, projected)
     if is_output_layer:
-        return aggregated
-    return jax.nn.elu(aggregated)
+        output = jnp.mean(aggregated, axis=1)
+        return output, attention if collect_attention else None
+    concatenated = aggregated.reshape(aggregated.shape[0], num_heads * head_dim)
+    return jax.nn.elu(concatenated), attention if collect_attention else None
 
 
 def _forward(
@@ -140,10 +168,13 @@ def _forward(
     *,
     training: bool,
     dropout: float,
+    attention_dropout: float,
     rng_key,
-) -> tuple[jnp.ndarray, list[jnp.ndarray]]:
+    collect_attention: bool,
+) -> tuple[jnp.ndarray, list[jnp.ndarray], list[jnp.ndarray]]:
     current = features
     hidden_layers: list[jnp.ndarray] = []
+    attention_layers: list[jnp.ndarray] = []
     if training:
         # One RNG key per layer keeps dropout reproducible and layer-local.
         keys = jax.random.split(rng_key, len(params["weights"]))
@@ -151,21 +182,89 @@ def _forward(
         keys = [rng_key for _ in params["weights"]]
 
     for layer_index, weight in enumerate(params["weights"]):
-        current = _gat_layer(
+        current, attention = _gat_layer(
             current,
             weight,
             params["attention_src"][layer_index],
             params["attention_dst"][layer_index],
             adjacency_mask,
             training=training,
-            dropout=dropout,
+            feature_dropout=dropout,
+            attention_dropout=attention_dropout,
             rng_key=keys[layer_index],
             is_output_layer=layer_index == len(params["weights"]) - 1,
+            collect_attention=collect_attention,
         )
+        if attention is not None:
+            attention_layers.append(attention)
         if layer_index != len(params["weights"]) - 1:
             hidden_layers.append(current)
 
-    return current, hidden_layers
+    return current, hidden_layers, attention_layers
+
+
+def _summarize_attention_maps(
+    attention_layers: list[np.ndarray],
+    adjacency_mask: np.ndarray,
+    *,
+    max_nodes: int = 5,
+    top_k_neighbors: int = 3,
+) -> dict[str, object]:
+    summaries: list[dict[str, object]] = []
+    node_indices = np.arange(adjacency_mask.shape[0], dtype=np.int32)
+
+    for layer_index, attention in enumerate(attention_layers):
+        # attention shape: [heads, source_node, target_node]
+        head_summaries: list[dict[str, object]] = []
+        for head_index in range(attention.shape[0]):
+            head_attention = attention[head_index]
+            neighbor_counts = np.clip(adjacency_mask.sum(axis=1), 1, None)
+            entropy = -np.sum(head_attention * np.log(np.clip(head_attention, 1e-12, None)), axis=1)
+            normalized_entropy = entropy / np.log(neighbor_counts)
+            normalized_entropy = np.nan_to_num(normalized_entropy, nan=0.0, posinf=0.0, neginf=0.0)
+            max_attention = head_attention.max(axis=1)
+            self_attention = head_attention[node_indices, node_indices]
+            sparsity_over_01 = (head_attention > 0.1).mean(axis=1)
+
+            sample_nodes: list[dict[str, object]] = []
+            for node_index in range(min(max_nodes, head_attention.shape[0])):
+                weights = head_attention[node_index]
+                neighbor_indices = np.flatnonzero(adjacency_mask[node_index])
+                ranked_neighbors = neighbor_indices[np.argsort(weights[neighbor_indices])[::-1]]
+                top_indices = ranked_neighbors[:top_k_neighbors]
+                sample_nodes.append(
+                    {
+                        "node_index": int(node_index),
+                        "top_neighbors": [
+                            {
+                                "neighbor_index": int(neighbor_index),
+                                "attention": float(weights[neighbor_index]),
+                            }
+                            for neighbor_index in top_indices
+                        ],
+                    }
+                )
+
+            head_summaries.append(
+                {
+                    "head_index": head_index,
+                    "mean_entropy": float(normalized_entropy.mean()),
+                    "mean_max_attention": float(max_attention.mean()),
+                    "mean_self_attention": float(self_attention.mean()),
+                    "mean_fraction_over_0_1": float(sparsity_over_01.mean()),
+                    "sample_nodes": sample_nodes,
+                }
+            )
+
+        summaries.append(
+            {
+                "layer_index": layer_index,
+                "num_heads": attention.shape[0],
+                "heads": head_summaries,
+            }
+        )
+
+    return {"attention_layers": summaries}
 
 
 def _masked_cross_entropy(logits: jnp.ndarray, labels: jnp.ndarray, mask: jnp.ndarray) -> jnp.ndarray:
@@ -187,6 +286,7 @@ def train_gat_jax(
     learning_rate: float,
     weight_decay: float,
     dropout: float,
+    attention_dropout: float,
     seed: int,
 ) -> TrainingResult:
     ensure_jax_available()
@@ -197,6 +297,7 @@ def train_gat_jax(
         learning_rate=learning_rate,
         weight_decay=weight_decay,
         dropout=dropout,
+        attention_dropout=attention_dropout,
         seed=seed,
     )
 
@@ -212,14 +313,15 @@ def train_gat_jax(
         input_dim=graph.features.shape[1],
         hidden_dims=hidden_dims,
         output_dim=len(graph.label_names),
+        heads=heads,
         rng=np_rng,
     )
     best_params = {key: [value.copy() for value in values] for key, values in params.items()}
     best_val_accuracy = -np.inf
     history: list[dict[str, float]] = []
 
-    @partial(jax.jit, static_argnames=("training",))
-    def predict(current_params, rng_key, *, training: bool):
+    @partial(jax.jit, static_argnames=("training", "collect_attention"))
+    def predict(current_params, rng_key, *, training: bool, collect_attention: bool):
         # This is the reusable forward pass for both training and evaluation.
         # JIT-compiling it is where JAX starts to pay off.
         return _forward(
@@ -228,13 +330,15 @@ def train_gat_jax(
             adjacency_mask,
             training=training,
             dropout=dropout,
+            attention_dropout=attention_dropout,
             rng_key=rng_key,
+            collect_attention=collect_attention,
         )
 
     @jax.jit
     def train_step(current_params, rng_key):
         def loss_fn(model_params):
-            logits, _ = predict(model_params, rng_key, training=True)
+            logits, _, _ = predict(model_params, rng_key, training=True, collect_attention=False)
             data_loss = _masked_cross_entropy(logits, labels, train_mask)
             # L2 regularization across all learned tensors keeps the first GAT
             # baseline comparable to the rest of the repo's models.
@@ -262,7 +366,7 @@ def train_gat_jax(
         # randomness. That makes evaluation deterministic for a given state.
         rng_key, step_key, eval_key = jax.random.split(rng_key, 3)
         params, loss = train_step(params, step_key)
-        eval_logits, hidden_layers = predict(params, eval_key, training=False)
+        eval_logits, hidden_layers, _ = predict(params, eval_key, training=False, collect_attention=False)
         eval_logits_np = np.asarray(eval_logits)
         history.append(
             {
@@ -279,9 +383,15 @@ def train_gat_jax(
 
     # As with the other models in the repo, we restore the best validation
     # checkpoint before saving final metrics and embeddings.
-    final_logits, final_hidden_layers = predict(best_params, rng_key, training=False)
+    final_logits, final_hidden_layers, final_attention_layers = predict(
+        best_params,
+        rng_key,
+        training=False,
+        collect_attention=True,
+    )
     final_logits_np = np.asarray(final_logits)
     hidden_layers_np = [np.asarray(layer) for layer in final_hidden_layers]
+    attention_layers_np = [np.asarray(layer) for layer in final_attention_layers]
     hidden_embeddings = hidden_layers_np[-1] if hidden_layers_np else final_logits_np
 
     metrics = {
@@ -303,5 +413,8 @@ def train_gat_jax(
         diagnostics={
             "backend": "jax",
             "heads": heads,
+            "attention_dropout": attention_dropout,
+            "layer_head_counts": _layer_head_counts(hidden_dims, heads),
+            **_summarize_attention_maps(attention_layers_np, np.asarray(adjacency_mask)),
         },
     )

@@ -12,6 +12,7 @@ from .data import identity_adjacency
 from .data import structural_identity_features
 from .models import train_gat_jax
 from .models import train_gcn
+from .models import train_gt_torch
 from .models import train_graphsage
 from .models import train_graphsage_jax
 
@@ -35,6 +36,10 @@ class ExperimentArgs(Protocol):
     hidden_dim: int
     model: str
     gat_heads: int
+    gat_attention_dropout: float
+    gt_heads: int
+    gt_layers: int
+    gt_trace_with_nnsight: bool
     graphsage_fanouts: list[int]
     graphsage_backend: str
     graphsage_variant: str
@@ -66,6 +71,8 @@ def _model_label(args: ExperimentArgs) -> str:
         return "GCN"
     if args.model == "gat":
         return "GAT-jax"
+    if args.model == "gt":
+        return "GT-torch"
     return f"GraphSAGE-{args.graphsage_backend}-{args.graphsage_variant}-{args.graphsage_aggregator}"
 
 
@@ -81,6 +88,16 @@ def _train_selected_model(graph: GraphData, hidden_dims: list[int], args: Experi
             graph,
             hidden_dims=hidden_dims,
             heads=args.gat_heads,
+            attention_dropout=args.gat_attention_dropout,
+            **_base_training_kwargs(args),
+        )
+    if args.model == "gt":
+        return train_gt_torch(
+            graph,
+            hidden_dim=hidden_dims[0] if hidden_dims else graph.features.shape[1],
+            heads=args.gt_heads,
+            layers=args.gt_layers,
+            trace_with_nnsight=args.gt_trace_with_nnsight,
             **_base_training_kwargs(args),
         )
     if args.graphsage_backend == "jax":

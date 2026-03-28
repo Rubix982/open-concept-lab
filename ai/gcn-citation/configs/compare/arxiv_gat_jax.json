@@ -1,0 +1,10 @@
+{
+  "compare_label": "arxiv-gat-jax",
+  "model": "gat",
+  "dataset": "arxiv",
+  "mode": "baseline",
+  "epochs": 250,
+  "gat_heads": 1,
+  "arxiv_categories": ["cs.AI", "cs.LG", "cs.CL", "cs.CV"],
+  "arxiv_max_results": 2000
+}

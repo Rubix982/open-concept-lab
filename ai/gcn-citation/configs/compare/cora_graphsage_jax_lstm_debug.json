@@ -1,0 +1,13 @@
+{
+  "compare_label": "cora-jax-lstm-debug",
+  "model": "graphsage",
+  "graphsage_backend": "jax",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "lstm",
+  "graphsage_sampler": "uniform",
+  "dataset": "cora",
+  "mode": "baseline",
+  "epochs": 10,
+  "skip_tsne": true,
+  "graphsage_fanouts": [10, 5]
+}

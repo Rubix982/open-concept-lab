@@ -9,6 +9,7 @@ Manual graph neural network experiments for node classification on graph dataset
 - Stores nodes, sparse features, and citation edges in DuckDB
 - Trains manual NumPy GCN and GraphSAGE variants
 - Trains a first JAX GAT baseline
+- Trains a first PyTorch Graph Transformer baseline
 - Evaluates the model in a semi-supervised setting with 140 labeled nodes
 - Produces a t-SNE plot of learned node embeddings
 
@@ -27,6 +28,7 @@ python3 main.py --mode graph-only
 python3 main.py --mode depth-ablation --skip-tsne
 python3 main.py --model graphsage --mode depth-ablation --skip-tsne
 python3 main.py --model gat --mode baseline --skip-tsne
+python3 main.py --model gt --mode baseline --skip-tsne
 ```
 
 Run on a small arXiv slice:
@@ -116,6 +118,58 @@ python3 main.py \
   --skip-tsne
 ```
 
+Try reusable multi-head GAT:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model gat \
+  --mode baseline \
+  --gat-heads 2 \
+  --gat-attention-dropout 0.3 \
+  --skip-tsne
+```
+
+Try the first Graph Transformer baseline:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model gt \
+  --mode baseline \
+  --gt-heads 4 \
+  --gt-layers 2 \
+  --skip-tsne
+```
+
+Trace GT internals with NNsight:
+
+```bash
+python3 main.py \
+  --dataset cora \
+  --model gt \
+  --mode baseline \
+  --gt-heads 4 \
+  --gt-layers 2 \
+  --gt-trace-with-nnsight \
+  --skip-tsne
+```
+
+When enabled, GT diagnostics include an `nnsight_trace` summary for:
+
+- `input_projection`
+- each transformer block output
+- `classifier`
+- final `model_logits`
+
+The GAT run details now include attention diagnostics such as:
+
+- per-layer head counts
+- mean attention entropy
+- mean self-attention
+- mean strongest-neighbor attention
+- sample top-attended neighbors for a few nodes
+
 Try the JAX LSTM GraphSAGE path:
 
 ```bash
@@ -151,10 +205,47 @@ This suite mode runs:
 - embedding-separation
 - baseline density sweeps across the requested `top_k` values
 
+Compare two run configurations in parallel and save a contrast table:
+
+```bash
+python3 main.py \
+  --mode compare-runs \
+  --compare-name graphsage-aggregators \
+  --compare-config-a configs/compare/graphsage_mean.json \
+  --compare-config-b configs/compare/graphsage_lstm.json
+```
+
+This writes:
+
+- `artifacts/compare_runs/<name>/report.json`
+- `artifacts/compare_runs/<name>/comparison.md`
+- `artifacts/compare_runs/<name>/run_a/...`
+- `artifacts/compare_runs/<name>/run_b/...`
+
+You can add a friendly label inside each JSON config with `compare_label`:
+
+```json
+{
+  "compare_label": "numpy-mean",
+  "model": "graphsage",
+  "graphsage_backend": "numpy",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "mean",
+  "graphsage_sampler": "uniform",
+  "dataset": "cora",
+  "mode": "baseline",
+  "epochs": 2,
+  "skip_tsne": true
+}
+```
+
+Starter configs live under `configs/compare/` if you want ready-made comparisons without writing JSON from scratch.
+
 Supported models:
 
 - `gcn`: full-graph degree-normalized message passing
 - `gat`: first JAX graph-attention baseline with dense adjacency masking
+- `gt`: first PyTorch graph-transformer baseline with graph-aware masked attention
 - `graphsage`: sampled-neighborhood mean aggregation with self/neighbor concatenation
   - backend variants: `numpy`, `jax`
   - `v1`: full-batch sampled-neighborhood baseline

@@ -1,0 +1,14 @@
+{
+  "compare_label": "arxiv10k-numpy-pool",
+  "model": "graphsage",
+  "graphsage_backend": "numpy",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "pool",
+  "graphsage_sampler": "uniform",
+  "dataset": "arxiv",
+  "mode": "baseline",
+  "epochs": 250,
+  "arxiv_categories": ["cs.AI", "cs.LG", "cs.CL", "cs.CV"],
+  "arxiv_max_results": 10000,
+  "graphsage_fanouts": [10, 5]
+}

@@ -2,5 +2,7 @@ duckdb>=1.2.1
 jax>=0.4.30
 jaxlib>=0.4.30
 matplotlib>=3.10.0
+nnsight>=0.6.3
 numpy>=1.26.0
 scikit-learn>=1.8.0
+torch>=2.11.0
