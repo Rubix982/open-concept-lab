@@ -73,12 +73,7 @@ class GTBlock(nn.Module):
 
     def __init__(self, hidden_dim: int, heads: int, dropout: float) -> None:
         super().__init__()
-        self.attention = nn.MultiheadAttention(
-            embed_dim=hidden_dim,
-            num_heads=heads,
-            dropout=dropout,
-            batch_first=True,
-        )
+        self.attention = GraphMultiheadSelfAttention(hidden_dim, heads, dropout)
         self.norm_1 = nn.LayerNorm(hidden_dim)
         self.ffn = nn.Sequential(
             nn.Linear(hidden_dim, hidden_dim * 4),
@@ -96,18 +91,63 @@ class GTBlock(nn.Module):
         attn_mask: torch.Tensor,
         need_weights: bool,
     ) -> tuple[torch.Tensor, torch.Tensor | None]:
-        attended, attention_weights = self.attention(
-            hidden,
-            hidden,
+        attended, attention_weights, _, _ = self.attention(
             hidden,
             attn_mask=attn_mask,
             need_weights=need_weights,
-            average_attn_weights=False,
         )
         hidden = self.norm_1(hidden + self.dropout(attended))
         ff_hidden = self.ffn(hidden)
         hidden = self.norm_2(hidden + self.dropout(ff_hidden))
         return hidden, attention_weights
+
+
+class GraphMultiheadSelfAttention(nn.Module):
+    """Custom multi-head self-attention that exposes per-head outputs.
+
+    We use this instead of the opaque PyTorch `MultiheadAttention` module so
+    future NNsight interventions can target individual heads directly.
+    """
+
+    def __init__(self, hidden_dim: int, heads: int, dropout: float) -> None:
+        super().__init__()
+        if hidden_dim % heads != 0:
+            raise ValueError(f"hidden_dim={hidden_dim} must be divisible by heads={heads}")
+        self.hidden_dim = hidden_dim
+        self.heads = heads
+        self.head_dim = hidden_dim // heads
+        self.query = nn.Linear(hidden_dim, hidden_dim)
+        self.key = nn.Linear(hidden_dim, hidden_dim)
+        self.value = nn.Linear(hidden_dim, hidden_dim)
+        self.out_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(
+        self,
+        hidden: torch.Tensor,
+        *,
+        attn_mask: torch.Tensor,
+        need_weights: bool,
+    ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor, torch.Tensor]:
+        batch_size, num_nodes, _ = hidden.shape
+        query = self.query(hidden).reshape(batch_size, num_nodes, self.heads, self.head_dim).permute(0, 2, 1, 3)
+        key = self.key(hidden).reshape(batch_size, num_nodes, self.heads, self.head_dim).permute(0, 2, 1, 3)
+        value = self.value(hidden).reshape(batch_size, num_nodes, self.heads, self.head_dim).permute(0, 2, 1, 3)
+
+        scores = torch.matmul(query, key.transpose(-1, -2)) / np.sqrt(self.head_dim)
+        expanded_mask = attn_mask.unsqueeze(0).unsqueeze(0)
+        scores = scores.masked_fill(expanded_mask, float("-inf"))
+        attention_weights = torch.softmax(scores, dim=-1)
+        attention_weights = self.dropout(attention_weights)
+
+        # Keep each head separate so NNsight interventions can zero/scale one
+        # head without ambiguity.
+        head_outputs = torch.matmul(attention_weights, value)  # [B, H, N, Dh]
+        merged_heads = head_outputs.permute(0, 2, 1, 3).reshape(batch_size, num_nodes, self.hidden_dim)
+        merged_output = self.out_proj(merged_heads)
+        if need_weights:
+            return merged_output, attention_weights.squeeze(0), head_outputs.squeeze(0), merged_heads.squeeze(0)
+        return merged_output, None, head_outputs.squeeze(0), merged_heads.squeeze(0)
 
 
 class GraphTransformer(nn.Module):

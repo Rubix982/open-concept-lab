@@ -1,0 +1,73 @@
+{
+  "dataset": "arxiv",
+  "model": "graphsage",
+  "gat_heads": 0,
+  "graphsage_backend": "jax",
+  "graphsage_variant": "v1",
+  "graphsage_aggregator": "lstm",
+  "graphsage_sampler": "uniform",
+  "mode": "baseline",
+  "top_k": null,
+  "dataset_summary": {
+    "corpus_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "dataset_key": "cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "raw_dir": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000",
+    "processed_dir": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000",
+    "manifest_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/manifest.json",
+    "entries_path": "data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/entries.json",
+    "summary_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/summary.json",
+    "snapshot_path": "data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/dataset_snapshot.npz",
+    "cached_entries": 7798,
+    "graph_stats": {
+      "num_nodes": 7798,
+      "num_directed_edges": 120480,
+      "num_undirected_edges": 60240,
+      "average_degree": 15.45011541420877,
+      "density": 0.001981546160601356
+    }
+  },
+  "question_count": 1,
+  "visualizations": {
+    "accuracy_comparison": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/accuracy_comparison.png",
+    "history_comparison": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/history_comparison.png",
+    "tsne_grid": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/tsne_grid.png"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "metrics": {
+        "train_accuracy": 1.0,
+        "val_accuracy": 0.594,
+        "test_accuracy": 0.6129121640343586,
+        "num_train_nodes": 80,
+        "num_val_nodes": 500,
+        "num_test_nodes": 7218,
+        "num_layers": 2
+      },
+      "details": {
+        "question": "What does the standard 2-layer GraphSAGE-jax-v1-lstm achieve on this split?",
+        "diagnostics": {
+          "backend": "jax",
+          "variant": "v1",
+          "aggregator": "lstm",
+          "sampler": "uniform",
+          "effective_fanouts": [
+            10,
+            5
+          ],
+          "batch_size": 64
+        }
+      },
+      "paths": {
+        "metrics": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_metrics.json",
+        "history": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_history.json",
+        "details": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_details.json",
+        "embeddings": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_embeddings.npy",
+        "logits": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_logits.npy",
+        "tsne": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/baseline_tsne.png"
+      }
+    }
+  ]
+}
+DuckDB saved to: artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/arxiv.duckdb
+Experiment report saved to: artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/report.json

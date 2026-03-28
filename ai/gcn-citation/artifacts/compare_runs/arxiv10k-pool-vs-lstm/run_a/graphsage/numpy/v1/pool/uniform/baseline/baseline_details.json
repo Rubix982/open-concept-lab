@@ -1,0 +1,27 @@
+{
+  "question": "What does the standard 2-layer GraphSAGE-numpy-v1-pool achieve on this split?",
+  "diagnostics": {
+    "variant": "v1",
+    "sampler": "uniform",
+    "aggregator": "pool",
+    "batch_size": 64,
+    "effective_fanouts": [
+      10,
+      5
+    ],
+    "num_batches_last_epoch": 1,
+    "avg_target_nodes_per_batch": 80.0,
+    "avg_local_nodes_per_batch": 7798.0,
+    "avg_sampled_links_per_batch": 116970.0,
+    "avg_layer_active_counts": [
+      7798.0,
+      7798.0
+    ],
+    "avg_layer_expanded_counts": [
+      7798.0,
+      7798.0
+    ],
+    "avg_epoch_seconds": 1.1552543205207912,
+    "total_training_seconds": 288.8135801301978
+  }
+}

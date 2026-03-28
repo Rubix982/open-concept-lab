@@ -1,0 +1,8 @@
+[arxiv] reusing cached corpus cs_AI_cs_LG_cs_CL_cs_CV_10000 with 7798 entries from data/arxiv/raw/cs_AI_cs_LG_cs_CL_cs_CV_10000/entries.json
+[arxiv] reusing processed snapshot data/arxiv/processed/cs_AI_cs_LG_cs_CL_cs_CV_10000/cs_AI_cs_LG_cs_CL_cs_CV_10000_k10_f1000/dataset_snapshot.npz
+[arxiv] writing DuckDB dataset to artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/arxiv.duckdb
+[arxiv] dataset ready: 7798 nodes, 120480 directed edges, train/val/test=80/500/7218
+Matplotlib is building the font cache; this may take a moment.
+  File "/Users/saif.islam/.pyenv/versions/3.11.0/lib/python3.11/site-packages/joblib/externals/loky/backend/context.py", line 276, in _count_physical_cores
+    cpu_count_physical = int(cpu_info)
+                         ^^^^^^^^^^^^^

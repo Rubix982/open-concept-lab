@@ -1,0 +1,14 @@
+{
+  "question": "What does the standard 2-layer GraphSAGE-jax-v1-lstm achieve on this split?",
+  "diagnostics": {
+    "backend": "jax",
+    "variant": "v1",
+    "aggregator": "lstm",
+    "sampler": "uniform",
+    "effective_fanouts": [
+      10,
+      5
+    ],
+    "batch_size": 64
+  }
+}

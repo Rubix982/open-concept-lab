@@ -347,6 +347,8 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 - `docs/graphsage_jax_plan.md`: additive plan for introducing a JAX backend for future GraphSAGE `lstm` work
 - `docs/gat_plan.md`: staged plan for the first GAT implementation
 - `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
+- `docs/gt_plan.md`: staged plan for the first Graph Transformer baseline
+- `docs/gt_nnsight_plan.md`: intervention roadmap for making `GT + NNsight` a real interpretability workflow
 
 ## What We Learned
 

@@ -1,0 +1,84 @@
+{
+  "mode": "compare-runs",
+  "name": "arxiv10k-pool-vs-lstm",
+  "config_a": "configs/compare/arxiv_10k_graphsage_numpy_pool.json",
+  "config_b": "configs/compare/arxiv_10k_graphsage_jax_lstm.json",
+  "runs": [
+    {
+      "label": "arxiv10k-numpy-pool",
+      "config_path": "configs/compare/arxiv_10k_graphsage_numpy_pool.json",
+      "report_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_a/graphsage/numpy/v1/pool/uniform/baseline/report.json",
+      "stdout_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_a/stdout.log",
+      "stderr_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_a/stderr.log"
+    },
+    {
+      "label": "arxiv10k-jax-lstm",
+      "config_path": "configs/compare/arxiv_10k_graphsage_jax_lstm.json",
+      "report_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/graphsage/jax/v1/lstm/uniform/baseline/report.json",
+      "stdout_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/stdout.log",
+      "stderr_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/run_b/stderr.log"
+    }
+  ],
+  "comparison_rows": [
+    {
+      "label": "arxiv10k-numpy-pool",
+      "model": "graphsage",
+      "mode": "baseline",
+      "gat_heads": 0,
+      "graphsage_backend": "numpy",
+      "graphsage_variant": "v1",
+      "graphsage_aggregator": "pool",
+      "graphsage_sampler": "uniform",
+      "run_name": "baseline",
+      "train_accuracy": 1.0,
+      "val_accuracy": 0.622,
+      "test_accuracy": 0.6094486007204212,
+      "num_layers": 2
+    },
+    {
+      "label": "arxiv10k-jax-lstm",
+      "model": "graphsage",
+      "mode": "baseline",
+      "gat_heads": 0,
+      "graphsage_backend": "jax",
+      "graphsage_variant": "v1",
+      "graphsage_aggregator": "lstm",
+      "graphsage_sampler": "uniform",
+      "run_name": "baseline",
+      "train_accuracy": 1.0,
+      "val_accuracy": 0.594,
+      "test_accuracy": 0.6129121640343586,
+      "num_layers": 2
+    }
+  ],
+  "winner_summary": [
+    {
+      "metric": "train_accuracy",
+      "label": "arxiv10k-numpy-pool",
+      "value": 1.0,
+      "model": "graphsage",
+      "graphsage_backend": "numpy",
+      "graphsage_aggregator": "pool",
+      "graphsage_sampler": "uniform"
+    },
+    {
+      "metric": "val_accuracy",
+      "label": "arxiv10k-numpy-pool",
+      "value": 0.622,
+      "model": "graphsage",
+      "graphsage_backend": "numpy",
+      "graphsage_aggregator": "pool",
+      "graphsage_sampler": "uniform"
+    },
+    {
+      "metric": "test_accuracy",
+      "label": "arxiv10k-jax-lstm",
+      "value": 0.6129121640343586,
+      "model": "graphsage",
+      "graphsage_backend": "jax",
+      "graphsage_aggregator": "lstm",
+      "graphsage_sampler": "uniform"
+    }
+  ],
+  "comparison_table_path": "artifacts/compare_runs/arxiv10k-pool-vs-lstm/comparison.md"
+}

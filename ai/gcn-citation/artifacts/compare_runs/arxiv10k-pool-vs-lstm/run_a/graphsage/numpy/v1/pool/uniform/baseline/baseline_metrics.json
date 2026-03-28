@@ -1,0 +1,12 @@
+{
+  "train_accuracy": 1.0,
+  "val_accuracy": 0.622,
+  "test_accuracy": 0.6094486007204212,
+  "num_train_nodes": 80,
+  "num_val_nodes": 500,
+  "num_test_nodes": 7218,
+  "num_layers": 2,
+  "avg_epoch_seconds": 1.1552543205207912,
+  "num_batches_last_epoch": 1.0,
+  "avg_local_nodes_per_batch": 7798.0
+}
