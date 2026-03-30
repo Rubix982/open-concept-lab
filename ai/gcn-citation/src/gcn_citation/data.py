@@ -70,10 +70,18 @@ def ensure_cora_dataset(data_dir: Path) -> tuple[Path, Path]:
     return content_path, cites_path
 
 
-def _parse_cora(content_path: Path, cites_path: Path) -> tuple[np.ndarray, np.ndarray, list[str], np.ndarray, np.ndarray]:
-    rows = [line.strip().split() for line in content_path.read_text().splitlines() if line.strip()]
+def _parse_cora(
+    content_path: Path, cites_path: Path
+) -> tuple[np.ndarray, np.ndarray, list[str], np.ndarray, np.ndarray]:
+    rows = [
+        line.strip().split()
+        for line in content_path.read_text().splitlines()
+        if line.strip()
+    ]
     paper_ids = np.array([row[0] for row in rows], dtype=object)
-    features = np.asarray([[int(value) for value in row[1:-1]] for row in rows], dtype=np.float32)
+    features = np.asarray(
+        [[int(value) for value in row[1:-1]] for row in rows], dtype=np.float32
+    )
     label_names = sorted({row[-1] for row in rows})
     label_to_idx = {label: idx for idx, label in enumerate(label_names)}
     labels = np.array([label_to_idx[row[-1]] for row in rows], dtype=np.int64)
@@ -146,7 +154,12 @@ def persist_to_duckdb(
         )
 
         node_rows = [
-            (int(idx), str(paper_ids[idx]), int(labels[idx]), str(label_names[labels[idx]]))
+            (
+                int(idx),
+                str(paper_ids[idx]),
+                int(labels[idx]),
+                str(label_names[labels[idx]]),
+            )
             for idx in range(len(paper_ids))
         ]
         connection.executemany("INSERT INTO nodes VALUES (?, ?, ?, ?)", node_rows)
@@ -156,7 +169,9 @@ def persist_to_duckdb(
             (int(node_idx), int(feature_idx), float(features[node_idx, feature_idx]))
             for node_idx, feature_idx in nonzero_rows
         ]
-        connection.executemany("INSERT INTO node_features VALUES (?, ?, ?)", feature_rows)
+        connection.executemany(
+            "INSERT INTO node_features VALUES (?, ?, ?)", feature_rows
+        )
 
         edge_rows = [(int(src_idx), int(dst_idx)) for src_idx, dst_idx in edges]
         connection.executemany("INSERT INTO edges VALUES (?, ?)", edge_rows)
@@ -168,12 +183,16 @@ def persist_to_duckdb(
             "num_classes": str(len(label_names)),
             "label_names": json.dumps(label_names),
         }
-        connection.executemany("INSERT INTO metadata VALUES (?, ?)", list(metadata.items()))
+        connection.executemany(
+            "INSERT INTO metadata VALUES (?, ?)", list(metadata.items())
+        )
     finally:
         connection.close()
 
 
-def make_splits(labels: np.ndarray, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def make_splits(
+    labels: np.ndarray, rng: np.random.Generator
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     num_nodes = labels.shape[0]
     train_mask = np.zeros(num_nodes, dtype=bool)
     val_mask = np.zeros(num_nodes, dtype=bool)
@@ -227,7 +246,9 @@ def build_normalized_adjacency(num_nodes: int, edges: np.ndarray) -> np.ndarray:
 
 def load_graph_data(data_dir: Path, db_path: Path, seed: int) -> GraphData:
     content_path, cites_path = ensure_cora_dataset(data_dir)
-    paper_ids, features, label_names, labels, edges = _parse_cora(content_path, cites_path)
+    paper_ids, features, label_names, labels, edges = _parse_cora(
+        content_path, cites_path
+    )
     persist_to_duckdb(db_path, paper_ids, features, label_names, labels, edges)
 
     rng = np.random.default_rng(seed)

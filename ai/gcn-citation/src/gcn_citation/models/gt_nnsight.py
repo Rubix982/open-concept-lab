@@ -18,7 +18,9 @@ def nnsight_available() -> bool:
 
 def ensure_nnsight_available() -> None:
     if not nnsight_available():
-        raise ImportError("NNsight is not installed. Install `nnsight` before requesting GT tracing with NNsight.")
+        raise ImportError(
+            "NNsight is not installed. Install `nnsight` before requesting GT tracing with NNsight."
+        )
 
 
 def _tensor_summary(name: str, value: Any) -> dict[str, object]:
@@ -57,7 +59,9 @@ def _logit_shift_summary(
         "mean_abs_logit_shift": float(np.mean(np.abs(difference))),
         "max_abs_logit_shift": float(np.max(np.abs(difference))),
         "mean_l2_logit_shift": float(np.mean(per_node_l2)),
-        "num_prediction_changes": int(np.sum(baseline_predictions != patched_predictions)),
+        "num_prediction_changes": int(
+            np.sum(baseline_predictions != patched_predictions)
+        ),
         "top_changed_nodes": [
             {
                 "node_index": int(node_index),
@@ -86,7 +90,9 @@ def trace_gt_modules_with_nnsight(
     classifier_output = None
     model_logits = None
 
-    with wrapped.trace(features, degree_features, attn_mask=attn_mask, collect_attention=True):
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=True
+    ):
         input_projection_output = wrapped.input_projection.output.save()
         for index in range(len(model.blocks)):
             block_outputs.append(wrapped.blocks[index].output[0].save())
@@ -95,7 +101,9 @@ def trace_gt_modules_with_nnsight(
 
     return {
         "backend": "nnsight",
-        "input_projection": _tensor_summary("input_projection", input_projection_output),
+        "input_projection": _tensor_summary(
+            "input_projection", input_projection_output
+        ),
         "blocks": [
             _tensor_summary(f"block_{index}", block_output)
             for index, block_output in enumerate(block_outputs)
@@ -129,21 +137,27 @@ def patch_gt_block_output_with_nnsight(
 
     ensure_nnsight_available()
     if block_index < 0 or block_index >= len(model.blocks):
-        raise ValueError(f"Invalid GT block index {block_index}. Model has {len(model.blocks)} blocks.")
+        raise ValueError(
+            f"Invalid GT block index {block_index}. Model has {len(model.blocks)} blocks."
+        )
     if mode not in {"zero", "scale"}:
         raise ValueError(f"Unsupported GT patch mode: {mode}")
 
     wrapped = NNsight(model)
     baseline_logits = None
     baseline_block_output = None
-    with wrapped.trace(features, degree_features, attn_mask=attn_mask, collect_attention=False):
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=False
+    ):
         baseline_block_output = wrapped.blocks[block_index].output[0].save()
         baseline_logits = wrapped.output[0].save()
 
     wrapped = NNsight(model)
     patched_logits = None
     original_block_output = None
-    with wrapped.trace(features, degree_features, attn_mask=attn_mask, collect_attention=False):
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=False
+    ):
         original_block_output = wrapped.blocks[block_index].output[0].clone().save()
         original_output = wrapped.blocks[block_index].output
         if mode == "zero":
@@ -164,10 +178,124 @@ def patch_gt_block_output_with_nnsight(
             "mode": mode,
             "scale": scale,
         },
-        "baseline_block_output": _tensor_summary(f"block_{block_index}_baseline_output", baseline_block_output),
-        "patched_block_input_reference": _tensor_summary(f"block_{block_index}_pre_patch_output", original_block_output),
+        "baseline_block_output": _tensor_summary(
+            f"block_{block_index}_baseline_output", baseline_block_output
+        ),
+        "patched_block_input_reference": _tensor_summary(
+            f"block_{block_index}_pre_patch_output", original_block_output
+        ),
         "baseline_logits": _tensor_summary("baseline_logits", baseline_logits_np),
         "patched_logits": _tensor_summary("patched_logits", patched_logits_np),
+        "logit_shift": _logit_shift_summary(baseline_logits_np, patched_logits_np),
+    }
+
+
+def compare_attention_routing_with_nnsight(
+    model,
+    *,
+    features,
+    degree_features,
+    attn_mask,
+    patch_block_index: int = 0,
+    observe_block_index: int = 1,
+    top_k_nodes: int = 5,
+) -> dict[str, object]:
+    """Compare attention routing in `observe_block_index` before and after
+    zeroing `patch_block_index`'s output.
+
+    The key question: does zeroing block 0's output change *which* neighbors
+    block 1 attends to, or only *what values* get aggregated?
+
+    Returns per-head routing shift metrics including whether each node's
+    top-attended neighbor changed.
+    """
+    ensure_nnsight_available()
+
+    if observe_block_index >= len(model.blocks):
+        raise ValueError(
+            f"observe_block_index={observe_block_index} out of range. "
+            f"Model has {len(model.blocks)} blocks."
+        )
+    if patch_block_index >= observe_block_index:
+        raise ValueError("patch_block_index must be less than observe_block_index.")
+
+    # --- Baseline run: normal forward, capture block attention weights ---
+    wrapped = NNsight(model)
+    baseline_attn_weights = None
+    baseline_logits = None
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=True
+    ):
+        baseline_attn_weights = (
+            wrapped.blocks[observe_block_index].attention.output[1].save()
+        )
+        baseline_logits = wrapped.output[0].save()
+
+    # --- Patched run: zero block patch_block_index output, then capture ---
+    wrapped = NNsight(model)
+    patched_attn_weights = None
+    patched_logits = None
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=True
+    ):
+        original_output = wrapped.blocks[patch_block_index].output
+        patched_hidden = original_output[0] * 0.0
+        wrapped.blocks[patch_block_index].output = (patched_hidden, original_output[1])
+        patched_attn_weights = (
+            wrapped.blocks[observe_block_index].attention.output[1].save()
+        )
+        patched_logits = wrapped.output[0].save()
+
+    baseline_attn_np = _to_numpy(baseline_attn_weights)  # [heads, nodes, nodes]
+    patched_attn_np = _to_numpy(patched_attn_weights)  # [heads, nodes, nodes]
+    routing_diff = np.abs(baseline_attn_np - patched_attn_np)
+
+    head_summaries: list[dict[str, object]] = []
+    for head_idx in range(baseline_attn_np.shape[0]):
+        head_diff = routing_diff[head_idx]  # [nodes, nodes]
+        per_node_shift = head_diff.mean(axis=1)
+        top_nodes = np.argsort(per_node_shift)[::-1][:top_k_nodes]
+
+        head_summaries.append(
+            {
+                "head_index": head_idx,
+                "mean_routing_shift": float(head_diff.mean()),
+                "max_routing_shift": float(head_diff.max()),
+                "top_shifted_nodes": [
+                    {
+                        "node_index": int(node),
+                        "mean_shift": float(per_node_shift[node]),
+                        "baseline_top_neighbor": int(
+                            baseline_attn_np[head_idx, node].argmax()
+                        ),
+                        "patched_top_neighbor": int(
+                            patched_attn_np[head_idx, node].argmax()
+                        ),
+                        "top_neighbor_changed": bool(
+                            baseline_attn_np[head_idx, node].argmax()
+                            != patched_attn_np[head_idx, node].argmax()
+                        ),
+                    }
+                    for node in top_nodes
+                ],
+            }
+        )
+
+    baseline_logits_np = _to_numpy(baseline_logits)
+    patched_logits_np = _to_numpy(patched_logits)
+
+    return {
+        "backend": "nnsight",
+        "experiment": "attention_routing_shift",
+        "patch_block_index": patch_block_index,
+        "observe_block_index": observe_block_index,
+        "routing_shift": {
+            "num_heads": int(baseline_attn_np.shape[0]),
+            "num_nodes": int(baseline_attn_np.shape[1]),
+            "overall_mean_shift": float(routing_diff.mean()),
+            "overall_max_shift": float(routing_diff.max()),
+            "heads": head_summaries,
+        },
         "logit_shift": _logit_shift_summary(baseline_logits_np, patched_logits_np),
     }
 
@@ -185,7 +313,9 @@ def ablate_gt_head_with_nnsight(
 
     ensure_nnsight_available()
     if block_index < 0 or block_index >= len(model.blocks):
-        raise ValueError(f"Invalid GT block index {block_index}. Model has {len(model.blocks)} blocks.")
+        raise ValueError(
+            f"Invalid GT block index {block_index}. Model has {len(model.blocks)} blocks."
+        )
     if head_index < 0 or head_index >= model.blocks[block_index].attention.heads:
         raise ValueError(
             f"Invalid GT head index {head_index} for block {block_index}. "
@@ -195,14 +325,18 @@ def ablate_gt_head_with_nnsight(
     wrapped = NNsight(model)
     baseline_logits = None
     baseline_head_outputs = None
-    with wrapped.trace(features, degree_features, attn_mask=attn_mask, collect_attention=False):
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=False
+    ):
         baseline_head_outputs = wrapped.blocks[block_index].attention.output[2].save()
         baseline_logits = wrapped.output[0].save()
 
     wrapped = NNsight(model)
     original_head_outputs = None
     patched_logits = None
-    with wrapped.trace(features, degree_features, attn_mask=attn_mask, collect_attention=False):
+    with wrapped.trace(
+        features, degree_features, attn_mask=attn_mask, collect_attention=False
+    ):
         original_attention_output = wrapped.blocks[block_index].attention.output
         original_head_outputs = original_attention_output[2].clone().save()
         patched_head_outputs = original_attention_output[2].clone()
@@ -211,7 +345,11 @@ def ablate_gt_head_with_nnsight(
             patched_head_outputs.shape[1],
             -1,
         )
-        patched_merged_output = wrapped.blocks[block_index].attention.out_proj(patched_merged_heads).unsqueeze(0)
+        patched_merged_output = (
+            wrapped.blocks[block_index]
+            .attention.out_proj(patched_merged_heads)
+            .unsqueeze(0)
+        )
         wrapped.blocks[block_index].attention.output = (
             patched_merged_output,
             original_attention_output[1],

@@ -1,0 +1,375 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | grep -E '\\.py$' | { read -r f; /Users/saifulislam/.pyenv/versions/3.11.0/bin/black \"$f\"; } 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(awk:*)",
+      "Bash(base64:*)",
+      "Bash(basename:*)",
+      "Bash(cat:*)",
+      "Bash(cd:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(cp:*)",
+      "Bash(curl:*)",
+      "Bash(cut:*)",
+      "Bash(date:*)",
+      "Bash(diff:*)",
+      "Bash(dirname:*)",
+      "Bash(du:*)",
+      "Bash(echo:*)",
+      "Bash(env:*)",
+      "Bash(export:*)",
+      "Bash(file:*)",
+      "Bash(find:*)",
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(grep:*)",
+      "Bash(gzip:*)",
+      "Bash(head:*)",
+      "Bash(history:*)",
+      "Bash(id:*)",
+      "Bash(jq:*)",
+      "Bash(kill:*)",
+      "Bash(ln:*)",
+      "Bash(ls:*)",
+      "Bash(lsof:*)",
+      "Bash(make:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(netstat:*)",
+      "Bash(nohup:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(ps:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pwd:*)",
+      "Bash(rm:*)",
+      "Bash(rg:*)",
+      "Bash(rsync:*)",
+      "Bash(sed:*)",
+      "Bash(sleep:*)",
+      "Bash(sort:*)",
+      "Bash(stat:*)",
+      "Bash(tail:*)",
+      "Bash(tar:*)",
+      "Bash(tee:*)",
+      "Bash(test:*)",
+      "Bash(timeout:*)",
+      "Bash(top:*)",
+      "Bash(touch:*)",
+      "Bash(tr:*)",
+      "Bash(tree:*)",
+      "Bash(umask:*)",
+      "Bash(uniq:*)",
+      "Bash(unzip:*)",
+      "Bash(uptime:*)",
+      "Bash(wc:*)",
+      "Bash(wget:*)",
+      "Bash(which:*)",
+      "Bash(whoami:*)",
+      "Bash(xargs:*)",
+      "Bash(zip:*)",
+      "WebFetchTool(domain:*.github.com)",
+      "WebFetchTool(domain:*.gitlab.com)",
+      "WebFetchTool(domain:*.stackoverflow.com)",
+      "WebFetchTool(domain:docs.anthropic.com)",
+      "WebFetchTool(domain:en.wikipedia.org)",
+      "WebFetchTool(domain:pypi.org)",
+      "WebFetchTool(domain:pytorch.org)",
+      "WebFetchTool(domain:*.pytorch.org)",
+      "WebFetchTool(domain:jax.readthedocs.io)",
+      "WebFetchTool(domain:scikit-learn.org)",
+      "WebFetchTool(domain:*.scikit-learn.org)",
+      "WebFetchTool(domain:numpy.org)",
+      "WebFetchTool(domain:*.numpy.org)",
+      "WebFetchTool(domain:arxiv.org)",
+      "WebFetchTool(domain:*.arxiv.org)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:platform.claude.com)",
+      "Bash(claude --version:*)",
+      "WebSearch",
+      "Bash(pyenv which:*)",
+      "Bash(pyenv shell:*)",
+      "Bash(black --version)",
+      "Bash(PYENV_VERSION=3.11.0 pyenv exec which black)",
+      "Read(//Users/saifulislam/.pyenv/versions/3.11.0/bin/**)",
+      "Read(//Users/saifulislam/.pyenv/versions/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~/*)",
+      "Bash(sudo rm:*)",
+      "Bash(sudo shutdown:*)",
+      "Bash(sudo reboot:*)",
+      "Bash(sudo halt:*)",
+      "Bash(sudo poweroff:*)",
+      "Bash(format:*)",
+      "Bash(fdisk:*)",
+      "Bash(mkfs:*)",
+      "Bash(parted:*)",
+      "Bash(dd if=/dev/*)",
+      "Bash(dd of=/dev/*)",
+      "Bash(crontab -r:*)",
+      "Bash(iptables:*)",
+      "Bash(ufw:*)",
+      "WebFetchTool(domain:*.malware.*)",
+      "WebFetchTool(domain:*.virus.*)",
+      "WebFetchTool(domain:*.phishing.*)",
+      "WebFetchTool(domain:*.torrent.*)",
+      "WebFetchTool(domain:*.darkweb.*)"
+    ]
+  },
+  "experimental": {
+    "enableAdvancedCodeAnalysis": true,
+    "enableGitIntegration": true,
+    "allowFileSystemOperations": true,
+    "maxConcurrentOperations": 10,
+    "enableCacheOptimization": true,
+    "enablePerformanceMetrics": true
+  },
+  "codebase": {
+    "language": "python",
+    "pythonVersion": "3.9+",
+    "frameworks": [
+      "numpy",
+      "jax",
+      "pytorch",
+      "scikit-learn"
+    ],
+    "databases": [
+      "duckdb"
+    ],
+    "architecture": "research-sandbox",
+    "projectType": "graph-neural-networks",
+    "modules": [
+      "models",
+      "experiments",
+      "data",
+      "visualization",
+      "pretraining",
+      "prompting"
+    ],
+    "commonPatterns": {
+      "configFiles": [
+        "*.json",
+        "requirements.txt",
+        "*.yaml",
+        "*.md"
+      ],
+      "experimentConfigs": [
+        "configs/compare/*.json"
+      ],
+      "artifacts": [
+        "artifacts/**/*.json",
+        "artifacts/**/*.npy",
+        "artifacts/**/*.png",
+        "artifacts/**/*.duckdb"
+      ],
+      "dataFiles": [
+        "data/**/*.npz",
+        "data/**/*.xml",
+        "data/**/*.duckdb"
+      ],
+      "modelFiles": [
+        "src/gcn_citation/models/*.py"
+      ],
+      "planFiles": [
+        "docs/*_plan.md"
+      ]
+    }
+  },
+  "team": {
+    "preferredCommitStyle": "conventional",
+    "commitMessageTemplate": "{description}\n\n{body}\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+    "requireTestsForChanges": false,
+    "enableLinting": false,
+    "enableFormatting": true,
+    "codeReviewRequired": false,
+    "branchingStrategy": "feature-branch",
+    "mainBranch": "main",
+    "protectedBranches": [
+      "main"
+    ],
+    "requirePRForMerge": false
+  },
+  "development": {
+    "environment": "local",
+    "debugMode": true,
+    "enableProfiler": false,
+    "logLevel": "info",
+    "enableMetrics": true,
+    "hotReload": false,
+    "enableCodeCompletion": true,
+    "enableInlineDocumentation": true,
+    "enableRefactoringSuggestions": true,
+    "preferredTerminal": "bash",
+    "enableColorOutput": true,
+    "timezone": "Asia/Karachi"
+  },
+  "security": {
+    "enableSecretScanning": true,
+    "preventSecretsInCommits": true,
+    "requireSignedCommits": false,
+    "enableGPGVerification": false,
+    "blockedSecretPatterns": [
+      "password=*",
+      "secret=*",
+      "token=*",
+      "key=*",
+      "aws_access_key_id=*",
+      "aws_secret_access_key=*"
+    ]
+  },
+  "testing": {
+    "framework": "manual-experiments",
+    "experimentCommands": {
+      "baseline": "python3 main.py --mode baseline",
+      "gcn": "python3 main.py --model gcn --mode baseline",
+      "graphsage": "python3 main.py --model graphsage --mode baseline",
+      "gat": "python3 main.py --model gat --mode baseline --skip-tsne",
+      "gt": "python3 main.py --model gt --mode baseline --gt-heads 4 --gt-layers 2 --skip-tsne",
+      "full-experiment": "python3 main.py --mode full-experiment --skip-tsne",
+      "compare": "python3 main.py --mode compare-runs --compare-name test --compare-config-a configs/compare/cora_graphsage_numpy_mean_debug.json --compare-config-b configs/compare/cora_graphsage_jax_lstm_debug.json"
+    },
+    "enableBenchmarks": true,
+    "parallelExecution": false
+  },
+  "ai": {
+    "codeAnalysisDepth": "comprehensive",
+    "suggestOptimizations": true,
+    "suggestRefactoring": true,
+    "explainComplexCode": true,
+    "generateTests": false,
+    "generateDocumentation": true,
+    "detectCodeSmells": true,
+    "suggestBestPractices": true,
+    "enableContextualHelp": true,
+    "preferredExplanationStyle": "concise",
+    "enableProactiveAssistance": true
+  },
+  "workflows": {
+    "defaultWorkflows": {
+      "new-model": [
+        "create-branch",
+        "implement-model",
+        "add-to-experiments",
+        "run-baseline-test",
+        "update-documentation",
+        "commit-changes"
+      ],
+      "new-experiment-mode": [
+        "create-branch",
+        "implement-mode-runner",
+        "add-to-MODE_TO_RUNNER",
+        "test-on-cora",
+        "update-documentation",
+        "commit-changes"
+      ],
+      "research-session": [
+        "review-CLAUDE.md",
+        "check-artifacts-folder",
+        "identify-next-experiment",
+        "run-experiment",
+        "analyze-results",
+        "update-docs"
+      ]
+    }
+  },
+  "performance": {
+    "enableCaching": true,
+    "cacheDirectory": ".claude/cache",
+    "maxCacheSize": "2GB",
+    "enableParallelProcessing": false,
+    "enableIndexing": true,
+    "indexPatterns": [
+      "*.py",
+      "*.json",
+      "*.md"
+    ],
+    "excludeFromIndexing": [
+      "artifacts/",
+      "data/",
+      ".git/",
+      "*.log",
+      "*.npy",
+      "*.npz",
+      "*.duckdb",
+      "*.png"
+    ]
+  },
+  "codeQuality": {
+    "enableStaticAnalysis": false,
+    "enableComplexityAnalysis": true,
+    "enablePerformanceAnalysis": true,
+    "cyclomaticComplexityThreshold": 15,
+    "enforceNamingConventions": true,
+    "namingConventions": {
+      "functions": "snake_case",
+      "variables": "snake_case",
+      "constants": "UPPER_SNAKE_CASE",
+      "classes": "PascalCase",
+      "modules": "snake_case"
+    }
+  },
+  "documentation": {
+    "autoGenerateComments": false,
+    "generateAPIDocumentation": false,
+    "generateReadme": false,
+    "includeExamples": true,
+    "includeUsageInstructions": true,
+    "documentationFormat": "markdown",
+    "enableTODOTracking": true,
+    "enableFIXMETracking": true
+  },
+  "research": {
+    "projectContext": "Graph Neural Networks Research",
+    "primaryDatasets": [
+      "cora",
+      "arxiv"
+    ],
+    "models": [
+      "gcn",
+      "graphsage",
+      "gat",
+      "gt"
+    ],
+    "experimentModes": [
+      "baseline",
+      "feature-only",
+      "graph-only",
+      "depth-ablation",
+      "over-smoothing",
+      "embedding-separation",
+      "full-experiment",
+      "compare-runs"
+    ],
+    "artifactLocations": {
+      "reports": "artifacts/**/report.json",
+      "metrics": "artifacts/**/*_metrics.json",
+      "embeddings": "artifacts/**/*_embeddings.npy",
+      "visualizations": "artifacts/**/*.png"
+    },
+    "keyFiles": {
+      "entrypoint": "main.py",
+      "cli": "src/gcn_citation/cli.py",
+      "experiments": "src/gcn_citation/experiments.py",
+      "models": "src/gcn_citation/models/",
+      "roadmap": "CLAUDE.md",
+      "plans": "docs/*_plan.md"
+    }
+  }
+}
