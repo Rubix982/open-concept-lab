@@ -1,0 +1,10 @@
+{"id": "https://openalex.org/W0000000001", "ids": {"openalex": "https://openalex.org/W0000000001", "arxiv": "2106.01001"}, "referenced_works": ["https://openalex.org/W0000000002"]}
+{"id": "https://openalex.org/W0000000002", "ids": {"openalex": "https://openalex.org/W0000000002", "arxiv": "2106.01002"}, "referenced_works": ["https://openalex.org/W0000000003"]}
+{"id": "https://openalex.org/W0000000003", "ids": {"openalex": "https://openalex.org/W0000000003", "arxiv": "2106.01003"}, "referenced_works": ["https://openalex.org/W0000000001"]}
+{"id": "https://openalex.org/W0000000004", "ids": {"openalex": "https://openalex.org/W0000000004", "arxiv": "2106.01004"}, "referenced_works": ["https://openalex.org/W9999999999"]}
+{"id": "https://openalex.org/W0000000005", "ids": {"openalex": "https://openalex.org/W0000000005", "arxiv": "2106.01005"}, "referenced_works": ["https://openalex.org/W8888888888"]}
+{"id": "https://openalex.org/W0000000006", "ids": {"openalex": "https://openalex.org/W0000000006", "arxiv": "9999.99991"}, "referenced_works": ["https://openalex.org/W0000000001"]}
+{"id": "https://openalex.org/W0000000007", "ids": {"openalex": "https://openalex.org/W0000000007", "arxiv": "9999.99992"}, "referenced_works": ["https://openalex.org/W0000000002"]}
+{"id": "https://openalex.org/W0000000008", "ids": {"openalex": "https://openalex.org/W0000000008"}, "referenced_works": ["https://openalex.org/W0000000001"]}
+{"id": "https://openalex.org/W0000000009", "ids": {"openalex": "https://openalex.org/W0000000009"}, "referenced_works": ["https://openalex.org/W0000000002", "https://openalex.org/W0000000003"]}
+{"id": "https://openalex.org/W0000000010", "ids": {"openalex": "https://openalex.org/W0000000010", "arxiv": "2106.01003"}, "referenced_works": []}

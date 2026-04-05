@@ -8,8 +8,11 @@ __pycache__/
 venv/
 env/
 
-# Local experiment outputs
-data/
+# Local experiment outputs — ignore data contents but not curated ground truth
+data/*
+!data/ground_truth/
+data/ground_truth/*
+!data/ground_truth/cross_disciplinary_pairs.json
 artifacts/.cache/
 artifacts/.mplconfig/
 artifacts/**/*.npy

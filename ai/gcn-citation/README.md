@@ -337,18 +337,18 @@ Artifacts are written to model-specific and mode-specific folders under `artifac
 
 ## Research roadmap
 
-- `docs/research_questions.md`: structured research questions and experiment backlog for future analysis modes
-- `docs/arxiv_pipeline_plan.md`: implementation roadmap for the cached arXiv corpus pipeline
-- `docs/prog_learning_roadmap.md`: staged learning roadmap inspired by the ProG benchmark paper
-- `docs/graphsage_v2_plan.md`: development plan for mini-batch GraphSAGE v2
-- `docs/graphsage_v2_1_plan.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
-- `docs/graphsage_sampler_plan.md`: next-step plan for GraphSAGE sampler variants
-- `docs/graphsage_aggregator_plan.md`: staged plan for expanding GraphSAGE aggregators from `mean` to `pool` and later `lstm`
-- `docs/graphsage_jax_plan.md`: additive plan for introducing a JAX backend for future GraphSAGE `lstm` work
-- `docs/gat_plan.md`: staged plan for the first GAT implementation
-- `docs/session_2026_03_24.md`: session summary capturing today's implementation progress, findings, and next steps
-- `docs/gt_plan.md`: staged plan for the first Graph Transformer baseline
-- `docs/gt_nnsight_plan.md`: intervention roadmap for making `GT + NNsight` a real interpretability workflow
+- `docs/research/research_questions.md`: structured research questions and experiment backlog for future analysis modes
+- `docs/plans/arxiv_pipeline.md`: implementation roadmap for the cached arXiv corpus pipeline
+- `docs/plans/prog_learning_roadmap.md`: staged learning roadmap inspired by the ProG benchmark paper
+- `docs/plans/graphsage_v2.md`: development plan for mini-batch GraphSAGE v2
+- `docs/plans/graphsage_v2_1.md`: refinement plan for GraphSAGE v2 mini-batching diagnostics and scaling readiness
+- `docs/plans/graphsage_sampler.md`: next-step plan for GraphSAGE sampler variants
+- `docs/plans/graphsage_aggregator.md`: staged plan for expanding GraphSAGE aggregators from `mean` to `pool` and later `lstm`
+- `docs/plans/graphsage_jax.md`: additive plan for introducing a JAX backend for future GraphSAGE `lstm` work
+- `docs/plans/gat.md`: staged plan for the first GAT implementation
+- `docs/sessions/2026-03-24.md`: session summary capturing today's implementation progress, findings, and next steps
+- `docs/plans/gt.md`: staged plan for the first Graph Transformer baseline
+- `docs/plans/gt_nnsight.md`: intervention roadmap for making `GT + NNsight` a real interpretability workflow
 
 ## What We Learned
 
@@ -410,12 +410,12 @@ Visualization outputs:
 - `src/gcn_citation/experiments.py`: model behavior experiment runners
 - `src/gcn_citation/arxiv_data.py`: arXiv fetching, parsing, TF-IDF feature building, and similarity graph construction
 - `src/gcn_citation/visualize.py`: t-SNE plot generation
-- `docs/research_questions.md`: research questions grouped by theme
-- `docs/arxiv_pipeline_plan.md`: staged plan for caching and scaling arXiv experiments
-- `docs/prog_learning_roadmap.md`: staged concept-to-implementation roadmap inspired by ProG
-- `docs/graphsage_v2_plan.md`: implementation plan for GraphSAGE v2
-- `docs/graphsage_v2_1_plan.md`: cleanup and diagnostics plan for GraphSAGE v2.1
-- `docs/graphsage_sampler_plan.md`: sampler-variant plan for GraphSAGE
-- `docs/graphsage_aggregator_plan.md`: aggregator expansion plan for GraphSAGE
-- `docs/graphsage_jax_plan.md`: JAX backend plan for future GraphSAGE LSTM work
-- `docs/gat_plan.md`: GAT implementation plan
+- `docs/research/research_questions.md`: research questions grouped by theme
+- `docs/plans/arxiv_pipeline.md`: staged plan for caching and scaling arXiv experiments
+- `docs/plans/prog_learning_roadmap.md`: staged concept-to-implementation roadmap inspired by ProG
+- `docs/plans/graphsage_v2.md`: implementation plan for GraphSAGE v2
+- `docs/plans/graphsage_v2_1.md`: cleanup and diagnostics plan for GraphSAGE v2.1
+- `docs/plans/graphsage_sampler.md`: sampler-variant plan for GraphSAGE
+- `docs/plans/graphsage_aggregator.md`: aggregator expansion plan for GraphSAGE
+- `docs/plans/graphsage_jax.md`: JAX backend plan for future GraphSAGE LSTM work
+- `docs/plans/gat.md`: GAT implementation plan

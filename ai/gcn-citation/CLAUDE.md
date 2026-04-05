@@ -210,7 +210,7 @@ Enable tracing with `--gt-trace-with-nnsight`:
 
 - Captures activations at: input projection, transformer block outputs, classifier, final logits
 - Supports intervention workflows: `ablate_gt_head_with_nnsight()`, `patch_gt_block_output_with_nnsight()`
-- See `docs/gt_nnsight_plan.md` for roadmap
+- See `docs/plans/gt_nnsight.md` for roadmap
 
 ## Development Notes
 
@@ -273,7 +273,7 @@ This project is evolving into a **ProG-inspired graph learning lab** with a stag
 
 - GPF, GPF-plus, GPPT, Gprompt, All-in-one
 
-**Research Questions**: `docs/research_questions.md` contains structured backlog organized by:
+**Research Questions**: `docs/research/research_questions.md` contains structured backlog organized by:
 
 - Model Behavior (ablations, depth, over-smoothing, embedding separation)
 - Data Questions (class difficulty, homophily, degree effects)
@@ -283,16 +283,19 @@ This project is evolving into a **ProG-inspired graph learning lab** with a stag
 - Baselines and Comparisons (logistic regression, MLP, label propagation)
 - Robustness (edge removal, noise injection, generalization)
 
-**Detailed Implementation Plans** in `docs/`:
+**Detailed Implementation Plans** in `docs/plans/`:
 
 - `prog_learning_roadmap.md`: ProG-inspired learning roadmap
-- `arxiv_pipeline_plan.md`: arXiv corpus caching strategy
-- `graphsage_v2_plan.md`, `graphsage_v2_1_plan.md`: Mini-batch GraphSAGE evolution
-- `graphsage_sampler_plan.md`, `graphsage_aggregator_plan.md`: Sampling and aggregation variants
-- `graphsage_jax_plan.md`: JAX backend for LSTM aggregators
-- `gat_plan.md`: GAT implementation stages
-- `gt_plan.md`, `gt_nnsight_plan.md`: Graph Transformer and interpretability roadmap
-- `session_2026_03_24.md`: Session notes (GraphSAGE progress, arXiv 7.8K corpus milestone)
+- `arxiv_pipeline.md`: arXiv corpus caching strategy
+- `graphsage_v2.md`, `graphsage_v2_1.md`: Mini-batch GraphSAGE evolution
+- `graphsage_sampler.md`, `graphsage_aggregator.md`: Sampling and aggregation variants
+- `graphsage_jax.md`: JAX backend for LSTM aggregators
+- `gat.md`: GAT implementation stages
+- `gt.md`, `gt_nnsight.md`: Graph Transformer and interpretability roadmap
+
+**Session Notes** in `docs/sessions/`:
+
+- `2026-03-24.md`: Session notes (GraphSAGE progress, arXiv 7.8K corpus milestone)
 
 **Working Style**: For each new method - implement minimal version, run on Cora for sanity check, test on arXiv corpus, compare against prior methods, document findings.
 
@@ -400,12 +403,12 @@ The GT intervention helpers (`patch_gt_block_output_with_nnsight`, `ablate_gt_he
 If continuing GT intervention development, start by reading:
 
 1. `README.md` (understand overall project structure)
-2. `docs/gt_plan.md` (GT baseline implementation roadmap)
-3. `docs/gt_nnsight_plan.md` (intervention roadmap and future work)
+2. `docs/plans/gt.md` (GT baseline implementation roadmap)
+3. `docs/plans/gt_nnsight.md` (intervention roadmap and future work)
 4. Inspect code:
    - `src/gcn_citation/models/gt_torch.py` (model architecture)
    - `src/gcn_citation/models/gt_nnsight.py` (tracing and intervention utilities)
-5. Review `docs/session_2026_03_24.md` for recent session notes
+5. Review `docs/sessions/2026-03-24.md` for recent session notes
 
 ## Current Experiment Status
 
