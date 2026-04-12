@@ -38,7 +38,9 @@ _MODEL_CACHE: dict = {}
 # ---------------------------------------------------------------------------
 
 
-def _get_model(model_name: str, device: str):
+def _get_model(
+    model_name: str, device: str, adapter_name: str = "allenai/specter2_adhoc_query"
+):
     """Load (or return cached) SPECTER2 tokenizer and model.
 
     Uses the ``adapters`` library (same as embedder.py Path 3).  The model is
@@ -48,6 +50,9 @@ def _get_model(model_name: str, device: str):
     Args:
         model_name: HuggingFace model identifier for the SPECTER2 base model.
         device: PyTorch device string — ``"mps"``, ``"cuda"``, or ``"cpu"``.
+        adapter_name: HuggingFace adapter identifier to activate.  Default
+            ``"allenai/specter2_adhoc_query"`` which produces discriminative
+            scores for concept/query-level search (R-007).
 
     Returns:
         Tuple of ``(tokenizer, model)`` ready for inference.
@@ -56,7 +61,7 @@ def _get_model(model_name: str, device: str):
         ImportError: If ``torch``, ``transformers``, or ``adapters`` are not
             installed.
     """
-    key = (model_name, device)
+    key = (model_name, device, adapter_name)
     if key in _MODEL_CACHE:
         return _MODEL_CACHE[key]
 
@@ -78,13 +83,14 @@ def _get_model(model_name: str, device: str):
         ) from exc
 
     t0 = time.monotonic()
-    print(f"[query] Loading SPECTER2 ({model_name}) on {device} ...", file=sys.stderr)
+    print(
+        f"[query] Loading SPECTER2 ({model_name}, adapter={adapter_name}) on {device} ...",
+        file=sys.stderr,
+    )
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoAdapterModel.from_pretrained(model_name)
-    model.load_adapter(
-        "allenai/specter2", source="hf", load_as="specter2", set_active=True
-    )
+    model.load_adapter(adapter_name, source="hf", set_active=True)
     model = model.to(device)
     model.eval()
 

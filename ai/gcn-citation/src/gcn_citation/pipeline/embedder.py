@@ -468,8 +468,9 @@ def embed_locally(
     batch_size: int = 32,
     device: str = "mps",
     model_name: str = "allenai/specter2_base",
+    adapter_name: str = "allenai/specter2",  # proximity (default, backward compat)
 ) -> np.ndarray:
-    """Embed papers locally using SPECTER2 + the proximity adapter.
+    """Embed papers locally using SPECTER2 + a configurable adapter.
 
     Implements Path 3 (last-resort fallback) of the hybrid pipeline.  Used for
     papers that are absent from both the Semantic Scholar bulk dataset and the
@@ -499,6 +500,10 @@ def embed_locally(
         device: PyTorch device string — ``"mps"``, ``"cuda"``, or ``"cpu"``.
         model_name: HuggingFace model identifier for SPECTER2 base model.
             Default ``"allenai/specter2_base"``.
+        adapter_name: HuggingFace adapter identifier to load on top of the
+            base model.  Default ``"allenai/specter2"`` (proximity adapter,
+            backward-compatible).  Use ``"allenai/specter2_adhoc_query"`` for
+            concept/query-level search with better discriminability.
 
     Returns:
         The embedding array with locally-inferred rows filled in.
@@ -548,9 +553,7 @@ def embed_locally(
     # --- Load model and tokenizer ---
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoAdapterModel.from_pretrained(model_name)
-    model.load_adapter(
-        "allenai/specter2", source="hf", load_as="specter2", set_active=True
-    )
+    model.load_adapter(adapter_name, source="hf", set_active=True)
     model = model.to(device)
     model.eval()
 
@@ -623,6 +626,7 @@ def embed_papers(
     batch_size: int = 32,
     device: str = "mps",
     model_name: str = "allenai/specter2_base",
+    adapter_name: str = "allenai/specter2",  # proximity (default, backward compat)
 ) -> np.ndarray:
     """Embed arXiv papers with SPECTER2 using a hybrid three-path strategy.
 
@@ -657,6 +661,11 @@ def embed_papers(
             ``"cuda"``, or ``"cpu"``.
         model_name: HuggingFace model identifier for the SPECTER2 base model.
             Default ``"allenai/specter2_base"``.
+        adapter_name: HuggingFace adapter identifier to load for local
+            inference (Path 3).  Default ``"allenai/specter2"`` (proximity
+            adapter, backward-compatible).  Use
+            ``"allenai/specter2_adhoc_query"`` for concept/query-level search
+            with better score discriminability.
 
     Returns:
         Float32 numpy array of shape ``[N, 768]``, L2-normalised.  The array
@@ -776,6 +785,7 @@ def embed_papers(
             batch_size=batch_size,
             device=device,
             model_name=model_name,
+            adapter_name=adapter_name,
         )
 
     # --- L2 normalise all rows ---
