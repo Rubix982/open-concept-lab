@@ -1168,7 +1168,7 @@ These edges go into the existing `claim_edges` table using paper-level IDs
 
 ### E-023 · Semantic Scholar citation edges once API key arrives
 
-**Status:** open
+**Status:** cancelled
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
@@ -1205,7 +1205,7 @@ Expected: significantly more citation edges than the 0 from OpenAlex.
 
 **Blockers:** R-006 (coverage research), Semantic Scholar API key (external)
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
@@ -1358,5 +1358,46 @@ normalization stabilizes training by normalizing layer inputs" with its source
 papers — not just "here are papers that mention batch normalization."
 
 **Blockers:** E-020 (bulk L3 extraction), R-007 (embedding model choice)
+
+**Closed:** —
+
+---
+
+### E-027 · Semantic Scholar citation edges (unauthenticated, 1 RPS)
+
+**Status:** open
+**Type:** implement
+**Priority:** low
+**Created:** 2026-04-12
+
+**Description:**
+E-023 was cancelled — Semantic Scholar denied the API key application.
+However, the /references endpoint works unauthenticated at 1 RPS, which
+is sufficient for our 500-paper corpus (~8 minutes).
+
+Implement `src/knowledge/citations_s2.py` using the unauthenticated path:
+
+```python
+def fetch_s2_citations(
+    db_path: Path,
+    *,
+    requests_per_second: float = 0.9,   # stay under 1 RPS limit
+    cache_path: Path | None = None,
+) -> dict[str, int]:  # {"fetched": N, "edges": N, "errors": N}
+```
+
+For each paper in paper_summaries:
+- GET https://api.semanticscholar.org/graph/v1/paper/ArXiv:{id}/references
+  ?fields=externalIds&limit=200
+- NO x-api-key header (unauthenticated)
+- Rate limit: 0.9 RPS with exponential backoff per O-004
+- For each reference with an ArXiv ID in our corpus: insert cites edge
+  into paper_edges table (edge_type='cites')
+- Cache results to avoid re-fetching
+
+Important: from R-006, expect ~0 intra-corpus edges at 500-paper scale
+(random sample doesn't self-cite). Real value at 5K+ focused subfield corpus.
+
+**Blockers:** none (no API key needed)
 
 **Closed:** —

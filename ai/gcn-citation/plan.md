@@ -24,14 +24,14 @@ See: `docs/research/knowledge_infra_requirements.md`
 | ----- | ---------- | -------------------------------------------------------- | ------ |
 | E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)         | open   |
 | E-026 | Engineer   | L3 claim embedding index for idea-level search           | open   |
-| E-023 | Engineer   | Semantic Scholar citation edges (needs API key)          | open   |
+| E-027 | Engineer   | S2 citation edges (unauthenticated, 1 RPS)               | open   |
 
 ## Blocked
 
 | ID    | Blocked By                                        |
 | ----- | ------------------------------------------------- |
 | E-026 | E-020 ✅ (bulk L3 complete), R-007 ✅ (adhoc_query confirmed) — **unblocked** |
-| E-023 | Semantic Scholar API key (external, still pending) |
+| E-027 | None — unauthenticated S2 works at 1 RPS; low priority at 500-paper scale |
 
 ## Phase 1 Status — COMPLETE ✅
 
