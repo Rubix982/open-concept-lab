@@ -470,3 +470,477 @@ ALL CHECKS PASSED
 - `agents/engineer/workspace/integration_test_10k.py`
 
 **Closed:** —
+
+---
+
+### E-013 · DuckDB schema for knowledge infrastructure (L1 + L2)
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Create `src/knowledge/schema.py` — the DuckDB schema for the four-layer knowledge
+infrastructure. Phase 1 needs L1 (chunks) and L2 (paper summaries) tables only.
+
+**Tables to create:**
+
+```sql
+-- L1: raw chunks from papers
+CREATE TABLE chunks (
+    chunk_id       VARCHAR PRIMARY KEY,
+    arxiv_id       VARCHAR NOT NULL,
+    chunk_index    INTEGER NOT NULL,
+    text           TEXT NOT NULL,
+    char_start     INTEGER,
+    char_end       INTEGER,
+    embedding_row  INTEGER,  -- row index in embeddings_l1.npy
+    created_at     TIMESTAMP DEFAULT NOW()
+);
+
+-- L2: paper-level summaries
+CREATE TABLE paper_summaries (
+    arxiv_id          VARCHAR PRIMARY KEY,
+    title             TEXT,
+    contribution      TEXT,
+    method            TEXT,
+    datasets          JSON,   -- list of strings
+    key_findings      JSON,   -- list of strings
+    limitations       TEXT,
+    domain_tags       JSON,   -- list of strings
+    related_methods   JSON,   -- list of strings
+    extraction_model  VARCHAR,
+    extracted_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- L3: claim nodes (Phase 2 — create table now, populate later)
+CREATE TABLE claims (
+    claim_id         VARCHAR PRIMARY KEY,
+    claim_type       VARCHAR,  -- empirical|theoretical|architectural|comparative|observation
+    assertion        TEXT NOT NULL,
+    domain           VARCHAR,
+    method           VARCHAR,
+    dataset          VARCHAR,
+    metric           VARCHAR,
+    value            VARCHAR,
+    conditions       TEXT,
+    epistemic_status VARCHAR DEFAULT 'preliminary',
+    confidence       FLOAT DEFAULT 0.5,
+    embedding_row    INTEGER,
+    created_at       TIMESTAMP DEFAULT NOW(),
+    last_updated     TIMESTAMP DEFAULT NOW()
+);
+
+-- L3: which papers support each claim
+CREATE TABLE claim_sources (
+    claim_id    VARCHAR REFERENCES claims(claim_id),
+    arxiv_id    VARCHAR NOT NULL,
+    excerpt     TEXT,
+    PRIMARY KEY (claim_id, arxiv_id)
+);
+
+-- L3: typed edges between claims
+CREATE TABLE claim_edges (
+    edge_id      VARCHAR PRIMARY KEY,
+    source_id    VARCHAR REFERENCES claims(claim_id),
+    target_id    VARCHAR REFERENCES claims(claim_id),
+    edge_type    VARCHAR,  -- supports|contradicts|extends|replicates_in_domain|requires|refines
+    confidence   FLOAT DEFAULT 0.5,
+    created_at   TIMESTAMP DEFAULT NOW()
+);
+```
+
+Also create `src/knowledge/__init__.py` and `src/knowledge/schema.py` with:
+- `init_database(db_path: Path) -> duckdb.DuckDBPyConnection` — creates all tables
+- `get_connection(db_path: Path) -> duckdb.DuckDBPyConnection` — returns connection
+
+Validate with a small test: create the DB, insert one dummy paper summary, query it back.
+
+**Artifacts:**
+- `src/knowledge/__init__.py`
+- `src/knowledge/schema.py`
+- `agents/engineer/workspace/validate_schema.py`
+
+**Blockers:** none
+
+**Key implementation decisions:**
+- All L3 tables (claims, claim_sources, claim_edges) are created now with CHECK constraints fully defined, even though Phase 1 only populates L1/L2. Schema is forward-compatible.
+- `claim_sources` uses NO foreign key reference to `claims` (DuckDB FK enforcement is limited); referential integrity is enforced at application layer.
+- `INSERT OR REPLACE INTO _meta` is used (DuckDB syntax) rather than SQL standard `INSERT OR REPLACE` — `ON CONFLICT DO UPDATE` also works but the former is more concise and matches DuckDB idioms.
+- `get_connection` does not call `init_database` — callers must ensure the DB was already initialized. This keeps the two responsibilities separate.
+
+**Validation results:** 8/8 PASS
+- init_database_creates_6_tables: PASS — all 6 tables found
+- init_database_idempotent: PASS — second call raised no error
+- paper_summary_round_trip: PASS — all 10 fields verified
+- claim_valid_type_round_trip: PASS — claim_type='empirical' accepted and retrieved
+- invalid_claim_type_raises: PASS — ConstraintException raised as expected
+- invalid_epistemic_status_raises: PASS — ConstraintException raised as expected
+- invalid_edge_type_raises: PASS — ConstraintException raised as expected
+- get_connection_works: PASS — paper_summaries=1, version='1.0.0'
+
+**Closed:** 2026-03-29
+
+---
+
+### E-014 · L1 paper ingest pipeline
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Implement `src/knowledge/ingest.py` — takes arXiv papers from the existing
+DataFrame and ingests them into L1 (chunks) in DuckDB.
+
+For Phase 1, use **abstract-only** (not full PDF). The abstract is already in
+`data/pipeline/arxiv_10k.parquet`. Full PDF extraction is a Phase 2+ concern.
+
+**Chunking strategy for abstract-only:**
+- Abstract is typically 150-250 words — treat as a single chunk
+- chunk_id: f"{arxiv_id}_abstract"
+- Embed using existing SPECTER2 embeddings from `data/pipeline/embeddings_10k.npy`
+  (each paper already has one embedding = the abstract embedding)
+- Store embedding_row = row index in the existing .npy file
+
+**Implement:**
+```python
+def ingest_papers(
+    papers: pd.DataFrame,           # arxiv_10k.parquet schema
+    embeddings_path: Path,          # embeddings_10k.npy
+    db_path: Path,
+    *,
+    batch_size: int = 100,
+    skip_existing: bool = True,     # resume support
+) -> dict[str, int]:                # {"ingested": N, "skipped": N, "errors": N}
+```
+
+**Validation:** ingest 50 papers, verify:
+- chunk count = 50 (one per abstract)
+- all arxiv_ids unique in chunks table
+- embedding_row indices are valid (< len(embeddings))
+- resume: run again, all 50 skipped
+
+**Artifacts:**
+- `src/knowledge/ingest.py` — full implementation
+- `agents/engineer/workspace/validate_ingest.py` — validation script (8/8 PASS)
+
+**Key implementation decisions:**
+- `embedding_row` = DataFrame `iloc` index (same ordering as `embeddings_10k.npy`)
+- `INSERT OR IGNORE` used so concurrent callers never raise an integrity error
+- `skip_existing` pre-fetches all existing `chunk_id` values in one query and uses an in-memory set for O(1) per-row lookup — avoids N round-trips to SQLite
+- `conn.commit()` called after every batch flush per O-005 rule
+- Abstract null/NaN handled with `pd.notna()` guard, producing empty string (never None)
+- Embeddings loaded with `mmap_mode="r"` to validate shape without fully loading 10K×768 floats into RAM
+
+**Validation results:** 8/8 PASS
+- ingested_50_papers: PASS — ingested=50
+- chunks_count_50: PASS — got 50
+- arxiv_ids_unique: PASS — unique=50
+- chunk_id_pattern: PASS — bad patterns=0
+- embedding_row_in_range: PASS — max_row=49, n_embeddings=10000
+- no_null_text: PASS — nulls=0
+- resume_skips_all: PASS — skipped=50, ingested=0
+- count_unchanged_after_resume: PASS — got 50
+
+**Blockers:** E-013
+
+**Closed:** 2026-03-29
+
+---
+
+### E-015 · L2 extraction pipeline (Ollama local model)
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Implement `src/knowledge/extract_l2.py` — uses local Ollama model to extract a
+structured L2 paper summary for each paper and stores it in DuckDB.
+
+**Model:** `qwen2.5-coder:7b` via Ollama (already installed, strong at structured JSON).
+**API:** Ollama HTTP API at `http://localhost:11434` — no auth, no API key needed.
+
+Uses the prompt designed and validated in R-003.
+
+**Artifacts:**
+- `src/knowledge/extract_l2.py` — full implementation
+- `agents/engineer/workspace/validate_extract_l2.py` — validation script (7/7 PASS)
+
+**Key implementation decisions:**
+- `_validate_summary()` fills all missing fields with safe defaults before DB insert;
+  also coerces list fields that the model occasionally returns as strings
+- `extract_paper_summary()` retries once on `json.JSONDecodeError` by prepending an
+  explicit JSON-only instruction (`_RETRY_PREFIX`) to the original prompt
+- `extract_batch()` pre-fetches existing `arxiv_id` values in a single query for O(1)
+  skip checks — avoids N round-trips per paper
+- `conn.commit()` is called after EACH successful paper insert (Ollama is slow;
+  commit-per-paper ensures partial progress is never lost on crash)
+- `INSERT OR REPLACE` used so re-running with `skip_existing=False` is idempotent
+- `timeout=90` (vs 60 in ticket stub) — first paper consistently takes 10-12s on cold
+  model load; 90s gives headroom for heavy abstracts without hanging
+
+**Validation results:** 7/7 PASS
+- paper_summaries has exactly 10 rows: PASS
+- all contribution fields non-empty: PASS
+- all domain_tags parseable as JSON lists: PASS
+- all key_findings have >= 1 item: PASS
+- extraction_model == "qwen2.5-coder:7b" for all rows: PASS
+- skip_existing=True: result["skipped"] == 10: PASS
+- skip_existing=True: result["extracted"] == 0: PASS
+
+**Performance:** 63.3s for 10 papers; avg 6.3s/paper (first paper ~11s cold load,
+subsequent 4-7s warm). For 50 papers: ~5 min; 500 papers: ~52 min.
+
+**Quality notes observed:**
+- Model produces 2 findings (not 3) when abstract has only 2 distinct quantitative
+  claims — correct behavior per R-003 (not hallucinating numbers)
+- Domain tags plausible and specific across all 10 papers
+- Contribution sentences accurate and one-sentence for all 10 papers
+
+**Blockers:** E-013, R-003
+
+**Closed:** 2026-03-29
+
+---
+
+### E-016 · Basic query interface (L1 + L2)
+
+**Status:** open
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-04-12
+
+**Description:**
+Implement `src/knowledge/query.py` — a simple query interface over L1 + L2.
+No LLM at query time. Pure semantic search + DuckDB lookup.
+
+```python
+def search_papers(
+    query: str,
+    db_path: Path,
+    embeddings_path: Path,
+    *,
+    top_k: int = 10,
+    model_name: str = "allenai/specter2_base",
+) -> list[dict]:
+    """
+    1. Embed the query using SPECTER2
+    2. Cosine similarity against embeddings_l1.npy
+    3. Return top_k papers with their L2 summaries from DuckDB
+    """
+```
+
+Also implement a CLI entry point:
+```bash
+python -m src.knowledge.query "batch normalization in transformers"
+```
+
+Output format:
+```
+[1] arxiv:2208.02389 — Risk-Aware Linear Bandits...
+    Contribution: ...
+    Method: ...
+    Key findings: ...
+    Domain: [optimization, bandits]
+
+[2] arxiv:2305.13936 — ...
+```
+
+**Validation:** run 5 queries, verify results are topically relevant.
+Example queries to test:
+- "attention mechanism improvements"
+- "contrastive learning self-supervised"
+- "batch normalization regularization"
+- "graph neural network over-smoothing"
+- "diffusion model image generation"
+
+**Blockers:** E-014, E-015
+
+**Closed:** —
+
+---
+
+### E-016 · Query interface (L1 + L2 semantic search)
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Closed:** 2026-03-29
+
+**Description:**
+Implement `src/knowledge/query.py` — semantic search over L1 chunks + L2 summaries.
+No LLM at query time. Pure cosine similarity + DuckDB lookup.
+
+```python
+def search_papers(
+    query: str,
+    db_path: Path,
+    embeddings_path: Path,
+    *,
+    top_k: int = 10,
+    model_name: str = "allenai/specter2_base",
+    ollama_base_url: str = "http://localhost:11434",
+) -> list[dict]:
+    """
+    1. Embed query using SPECTER2 (local MPS inference, one vector)
+    2. Cosine similarity against embeddings_10k.npy (mmap)
+    3. Look up top_k arxiv_ids in paper_summaries table
+    4. Return list of dicts with: arxiv_id, title, contribution, method,
+       key_findings, domain_tags, similarity_score
+    """
+```
+
+Also implement a CLI:
+```bash
+python -m src.knowledge.query "batch normalization in transformers"
+```
+
+Output format (one paper per result):
+```
+[1] 0.923 — arxiv:2208.02389
+    Contribution: ...
+    Method: ...
+    Key findings: ...
+    Domain: [optimization, deep_learning]
+```
+
+Note: SPECTER2 embedding of the query uses the same MPS path as embedder.py.
+Set PYTORCH_ENABLE_MPS_FALLBACK=1 and KMP_DUPLICATE_LIB_OK=TRUE.
+Do NOT import faiss in this module (OpenMP conflict — see E-012 decisions).
+
+Validation: run 5 test queries, verify results are topically relevant:
+- "attention mechanism improvements"
+- "contrastive learning self-supervised"
+- "batch normalization regularization"
+- "graph neural network over-smoothing"
+- "diffusion model image generation"
+
+**Blockers:** E-015
+
+**Closed:** —
+
+---
+
+### E-017 · Filter corpus for quality papers
+
+**Status:** open
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-04-12
+
+**Description:**
+Before bulk extraction (E-018), filter the 10K paper corpus to a higher-quality
+subset. R-003 found that thin/recent abstracts produce empty key_findings.
+
+Implement `src/knowledge/filter_corpus.py`:
+
+```python
+def filter_quality_papers(
+    papers: pd.DataFrame,
+    *,
+    min_abstract_words: int = 80,
+    year_min: int = 2018,
+    year_max: int = 2024,
+    max_papers: int = 500,
+    seed: int = 42,
+) -> pd.DataFrame:
+    """
+    Filter and sample papers for high-quality L2 extraction.
+    
+    Criteria:
+    - abstract word count >= min_abstract_words (filters thin abstracts)
+    - year in [year_min, year_max] (avoids too-recent/too-old papers)
+    - deduplicate by title (remove near-duplicates from versioned preprints)
+    - sample max_papers from result, balanced across top categories
+    """
+```
+
+Validate: from 10K papers, filtered set should have:
+- 100% abstracts >= 80 words
+- 100% year in [2018, 2024]
+- No duplicate titles
+- Balanced category distribution (no single category > 40%)
+
+**Blockers:** none
+
+**Closed:** —
+
+---
+
+### E-018 · Bulk L2 extraction run on 500 papers
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Run L2 extraction on the filtered 500-paper corpus. This is the "build the corpus"
+step — without enough papers extracted, queries return too few results to be useful.
+
+Script: `agents/engineer/workspace/run_bulk_extraction.py`
+
+Steps:
+1. Load arxiv_10k.parquet
+2. Apply filter_quality_papers() → ~500 papers
+3. Ingest to L1 first (ingest_papers)
+4. Run extract_batch() for L2
+5. Print progress and final count
+
+Expected runtime: ~52 minutes at 6.3s/paper.
+Checkpoint/resume: extract_batch already supports skip_existing=True.
+
+Output DB: `data/knowledge/knowledge.db`
+
+**Blockers:** E-015, E-017
+
+**Closed:** —
+
+---
+
+### E-019 · Phase 1 end-to-end validation
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Prove Phase 1 works: fire 10 real queries against the populated DB and verify
+results are meaningful.
+
+Script: `agents/engineer/workspace/validate_phase1.py`
+
+Test queries:
+1. "batch normalization in deep networks"
+2. "self-supervised contrastive learning"
+3. "transformer attention mechanism"
+4. "graph neural network message passing"
+5. "diffusion probabilistic models"
+6. "vision transformer image classification"
+7. "reinforcement learning policy gradient"
+8. "neural network optimization Adam SGD"
+9. "knowledge distillation model compression"
+10. "overparameterization generalization deep learning"
+
+For each query:
+- Run search_papers(), get top 5
+- Print: query, top result arxiv_id + contribution + similarity score
+- Check: top result similarity > 0.5 (sanity threshold)
+- Check: top result domain_tags not empty
+
+Phase 1 is DONE when: ≥ 8/10 queries return at least one topically relevant paper
+in the top 3 results (manual review required — print results for human judgment).
+
+**Blockers:** E-016, E-018
+
+**Closed:** —

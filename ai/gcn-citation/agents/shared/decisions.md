@@ -394,3 +394,181 @@ _Date: 2026-04-12_
 **Rule:** Only store tensors (float32, int64, bool) as HetggeroData node attributes. Non-tensor metadata (string IDs, category names) must be kept in separate Python dicts external to the graph.
 
 **Correct pattern:** maintain `id_to_index = build_id_to_index(arxiv_ids)` separately; look up node IDs by integer index when needed.
+
+---
+
+## [E-013] Decision: knowledge/schema.py — DuckDB schema design choices
+
+_Date: 2026-03-29_
+
+**Decision: L3 tables created upfront with full CHECK constraints** — All five domain
+tables (chunks, paper_summaries, claims, claim_sources, claim_edges) plus `_meta` are
+created at `init_database()` time, even though Phase 1 only writes L1/L2 data.  The
+`claims`, `claim_sources`, and `claim_edges` tables carry their full CHECK constraints
+(`claim_type`, `epistemic_status`, `edge_type`) from day one.
+**Rationale:** Schema migrations on DuckDB are painful — there is no `ALTER TABLE ADD
+CONSTRAINT`.  Defining constraints now avoids a destructive drop-and-recreate when
+Phase 2 begins populating L3.  Empty tables with correct constraints are zero cost.
+
+**Decision: No foreign keys on `claim_sources` or `claim_edges`** — The ticket DDL
+spec uses `VARCHAR NOT NULL` (not `REFERENCES claims(claim_id)`) for `claim_id`
+columns in `claim_sources` and `claim_edges`.  DuckDB parses `REFERENCES` syntax but
+does NOT enforce FK constraints at DML time (it is a no-op).  Keeping the columns as
+plain `NOT NULL` avoids the false impression of enforced referential integrity while
+matching the spec.
+**Rationale:** Referential integrity is enforced at the application layer
+(`ingest.py`, `extract_l3.py`) where the claim must exist before sources/edges are
+written.  Relying on silent DuckDB FKs would be misleading.
+
+**Decision: `get_connection` is a thin wrapper — does not call `init_database`** —
+`get_connection(db_path)` opens and returns a connection; it does not create tables.
+Callers are expected to have called `init_database()` previously.
+**Rationale:** Separates the "ensure schema exists" concern from the "open a
+connection" concern.  Callers that only want to read from an already-initialised DB
+should not pay the cost of re-running all DDL.  The two functions have distinct
+semantics and are both named in the public API.
+
+**Decision: `INSERT OR REPLACE` for `_meta` versioning** — After creating tables,
+`init_database` runs `INSERT OR REPLACE INTO _meta VALUES ('version', ?)` to stamp the
+DB version.  This is idempotent on re-initialisation.
+**Rationale:** `INSERT OR REPLACE` is DuckDB's idiomatic upsert syntax (equivalent to
+`INSERT INTO ... ON CONFLICT (key) DO UPDATE SET value = excluded.value`).  It keeps
+the version row current on any future schema upgrade that bumps
+`KNOWLEDGE_DB_VERSION`.
+
+---
+
+## [O-005] Decision: SQLite over DuckDB for knowledge infrastructure
+
+_Date: 2026-04-12_
+
+**Decision:** Use SQLite (stdlib `sqlite3`) instead of DuckDB for `data/knowledge/knowledge.db`.
+**Rationale:** DuckDB allows only one writer connection at a time. Parallel extraction
+pipelines (L2 extraction for multiple papers simultaneously) would block on each other.
+SQLite with WAL mode (`PRAGMA journal_mode=WAL`) supports concurrent readers and one
+writer, and requires no additional install.
+**How to apply:** All `src/knowledge/` modules use `sqlite3` from stdlib.
+JSON fields stored as TEXT — use `json.dumps()` on write, `json.loads()` on read.
+Always call `conn.commit()` after DML operations.
+**Revisit if:** Query complexity grows to require DuckDB's analytical SQL features
+(window functions, ASOF joins, etc.).
+
+---
+
+## [E-015] Decision: extract_l2.py — Implementation Choices
+
+_Date: 2026-03-29_
+
+**Decision: timeout=90s instead of ticket stub's 60s** — The first Ollama call
+in a session incurs a model-load overhead (~10-12s on M2 for qwen2.5-coder:7b).
+Combined with a heavy abstract and JSON generation, 60s is tight. 90s provides
+safe headroom without meaningfully delaying the batch pipeline.
+**Rationale:** Observed first-paper latency of 11.2s during validation. With a
+60s timeout the cold-start case could timeout spuriously on a loaded M2.
+
+**Decision: `_validate_summary()` coerces list fields from strings** — The model
+occasionally returns a JSON string (e.g. `"key_findings": "finding one"`) rather
+than a list for list-typed fields. `_validate_summary()` wraps non-list values as
+`[str(val)]` rather than failing.
+**Rationale:** Prevents DB insert from failing on a type mismatch. Downstream
+consumers (L3 extraction, query interface) always receive a list, regardless of
+model output variance.
+
+**Decision: retry prepends `_RETRY_PREFIX` to the full original prompt** — On
+`json.JSONDecodeError` in attempt 1, attempt 2 prepends "Return ONLY a JSON
+object, no other text:" before the full prompt (including schema and rules).
+**Rationale:** The prefix reinforces the JSON-only constraint without discarding
+the schema instructions. A replacement prompt without the schema would lose the
+field definitions that guide extraction quality.
+
+**Decision: `INSERT OR REPLACE` for paper_summaries** — Re-running with
+`skip_existing=False` or after a partial failure will overwrite the row rather
+than raise a `UNIQUE constraint` error.
+**Rationale:** Idempotent inserts make reruns safe. The alternative (`INSERT OR
+IGNORE`) would silently skip re-extraction if a row exists but is incomplete (e.g.
+from a partial failure where only defaults were written). `OR REPLACE` ensures the
+latest successful extraction always wins.
+
+**Decision: skip_existing uses a pre-fetched in-memory set** — All existing
+`arxiv_id` values are loaded in one `SELECT arxiv_id FROM paper_summaries` query
+at the start of `extract_batch()`. Per-paper lookup is O(1) set membership.
+**Rationale:** N round-trips to SQLite at 6s/paper (Ollama latency) would add
+negligible absolute time, but the single-query pattern is consistent with
+`ingest.py` and is correct regardless of batch size.
+
+---
+
+## [E-014] Decision: ingest.py — L1 paper ingest implementation choices
+
+_Date: 2026-03-29_
+
+**Decision: `embedding_row` = DataFrame `iloc` index** — The `embedding_row` field
+in each chunk record is set to the paper's positional index in the input DataFrame
+(i.e. `idx` from `itertuples`), not the original DataFrame index.  This aligns with
+how `embeddings_10k.npy` was produced — the embedder outputs one row per paper in
+DataFrame order, so row 0 in the `.npy` corresponds to `papers.iloc[0]`.
+**Rationale:** The embeddings file was written sequentially during `embed_papers()`,
+which iterates the DataFrame in positional order.  Using `iloc` index (not `.index`)
+ensures alignment even when the caller passes a reset-indexed subset.
+
+**Decision: `INSERT OR IGNORE` instead of `INSERT`** — The SQL is `INSERT OR IGNORE
+INTO chunks ...`.  The `skip_existing` pre-fetch set is the primary deduplication
+mechanism (avoids wasted work); `INSERT OR IGNORE` is a safety net for concurrent
+writers or edge cases where the pre-fetch set is stale.
+**Rationale:** Matching behaviour of existing pipeline modules.  `INSERT OR IGNORE`
+never raises and never overwrites existing data, which is correct for an idempotent
+ingest.
+
+**Decision: Pre-fetch all existing `chunk_id` values once** — When `skip_existing=True`,
+one `SELECT chunk_id FROM chunks` query loads all existing IDs into a Python `set`.
+Per-row existence checks are then O(1) in-process lookups rather than N round-trips.
+**Rationale:** For a 10K ingest over an existing 9K-row table, N individual `SELECT`
+calls would add measurable overhead.  The set fits easily in RAM (each chunk_id is
+~20 chars = ~20 bytes × 10K ≈ 200 KB).
+
+**Decision: `mmap_mode="r"` for embeddings** — The `.npy` file is opened with
+`np.load(..., mmap_mode="r")` to read only the array length (used for bounds
+checking), then the reference is discarded.  The full 10K × 768 float32 array
+(~30 MB) is never loaded into memory by this function.
+**Rationale:** `ingest.py` does not need the embedding values — it only stores the
+row index.  Memory-mapping for a shape check avoids reading 30 MB unnecessarily.
+
+---
+
+## [E-016] Decision: query.py — numpy cosine search and model caching
+
+_Date: 2026-03-29_
+
+**Decision: numpy dot-product instead of FAISS** — `query.py` uses
+`embeddings @ query_vec` (numpy matrix-vector dot product) for k-NN search
+rather than FAISS.  FAISS is never imported in this module.
+**Rationale:** E-012 established that FAISS and PyTorch cannot coexist in the
+same process on macOS Apple Silicon due to conflicting OpenMP runtimes (either
+segfault or silent hang, even with `KMP_DUPLICATE_LIB_OK=TRUE`).  Since
+`query.py` must import PyTorch to run SPECTER2 inference, FAISS is categorically
+excluded.  Numpy dot-product on L2-normalised vectors is equivalent to cosine
+similarity.  Performance on 10K × 768 is sub-second; revisit for 100K+ scale.
+
+**Decision: module-level `_MODEL_CACHE` dict** — SPECTER2 tokenizer and model
+are cached in a module-level `_MODEL_CACHE: dict` keyed by `(model_name, device)`
+tuple.  Subsequent calls to `search_papers()` in the same process skip model
+loading entirely.
+**Rationale:** SPECTER2 loading takes ~10–20s on cold start (model download +
+adapter loading + device transfer).  For any workload with multiple sequential
+queries (CLI loop, batch evaluation), caching is essential.  The dict approach
+supports multiple (model, device) combinations without global singletons.
+
+**Decision: query embedded as raw text (no sep_token)** — For free-text queries,
+the query string is passed directly to the tokenizer without the
+`title + sep_token + abstract` format used for paper ingestion.
+**Rationale:** The `sep_token` format is for SPECTER2's proximity adapter, which
+was trained on (title, abstract) pairs.  A free-text query does not have a title
+and abstract — wrapping it in that format would add noise.  The query is treated
+as a short document and the model handles it correctly as-is.
+
+**Decision: `mmap_mode="r"` for embeddings in query** — The embeddings matrix is
+opened read-only with `np.load(..., mmap_mode="r")` so only accessed pages are
+paged into RAM.  The full 10K × 768 float32 array (~30 MB) must be loaded for the
+matrix multiply; mmap allows the OS to manage this efficiently.
+**Rationale:** Consistent with E-014 mmap pattern.  Also prevents any accidental
+mutation of the embeddings file during query execution.

@@ -146,3 +146,136 @@ the same `allenai/specter2` proximity adapter that R-001 identified for local in
 
 Confidence: high
 Recommendation for E-006: downloader (bulk + per-paper API gap fill), local inference as last-resort fallback
+
+---
+
+## [R-003] Finding: L2 Extraction Prompt Design and Validation
+
+_Date: 2026-04-12_
+_Model tested: qwen2.5-coder:7b via Ollama at http://localhost:11434_
+
+### Summary
+
+Designed and validated a single-string L2 extraction prompt against 5 real arXiv papers
+from the 10K corpus. All 5 extractions parsed as valid JSON on the first attempt. Quality
+is medium-to-high with specific known failure modes documented below.
+
+---
+
+### Final Prompt (v1)
+
+```
+You are a research assistant specializing in AI, machine learning, and computer science.
+Your task is to extract a structured summary from an arXiv paper.
+
+Read the title and abstract below, then output ONLY a single JSON object that matches
+the schema exactly. Do NOT add any explanation, markdown, code fences, preamble, or
+commentary. Output raw JSON only.
+
+Schema:
+{
+  "contribution": "<ONE sentence: the main contribution of this paper>",
+  "method": "<The specific technique, architecture, or algorithm used — be precise,
+not generic (e.g. 'transformer encoder with cross-attention' not 'deep learning')>",
+  "datasets": ["<dataset name>", "..."],
+  "key_findings": [
+    "<finding 1 — include numbers/metrics where available>",
+    "<finding 2>",
+    "<finding 3>"
+  ],
+  "limitations": "<Known constraints, scope limitations, or null if none stated>",
+  "domain_tags": ["<2-4 specific tags, e.g. NLP, transformers, language_modeling>"],
+  "related_methods": ["<name of related technique or paper>", "..."]
+}
+
+Rules:
+- "contribution" must be one sentence only.
+- "method" must name the specific technique, not just "neural network" or "deep learning".
+- "key_findings" must contain exactly 3 items; include numeric results if stated.
+- "datasets" must be an empty list [] if no datasets are named in the abstract.
+- "domain_tags" must contain 2 to 4 tags maximum.
+- Output JSON only. No explanation. No markdown. No code fences.
+
+Paper title: {title}
+
+Abstract:
+{abstract}
+
+JSON:
+```
+
+No iterations needed. Prompt worked on first attempt with clean JSON output across all 5 papers.
+
+---
+
+### Quality Assessment — 5 Papers
+
+| # | Subfield | arxiv_id | contribution OK? | method specific? | findings specific (w/ metrics)? | domain_tags sensible? | JSON parse |
+|---|---|---|---|---|---|---|---|
+| 1 | NLP / language modeling | 2603.01059 | Yes — accurate, one sentence | Partial — "small-large model collaborative architecture" (names the pattern but not exact model names) | Yes — 4.72/5.0, 3x token reduction | Yes — [NLP, chatbots, privacy] (3 tags) | OK |
+| 2 | Computer Vision | 2512.11321 | Yes — accurate, one sentence | Yes — "language-driven model trained on multimodal data...ARKit-based facial control space" | Yes — 3.4% and 2.7% improvements named | Partial — [NLP, facial_animation] (should include "computer_vision" or "3D_animation") | OK |
+| 3 | Optimization / theory | 2603.28939 | Yes — accurate, one sentence | Yes — "Polar Linear Algebra with self-adjoint-inspired spectral constraints" | Partial — findings are qualitative, not numeric (abstract lacks quantitative results) | Yes — [operator_learning, spectral_properties, linear_algebra] | OK |
+| 4 | Graph learning / GNN* | 2604.02322 | Yes — accurate for the actual paper | Yes — "training to solve N problems simultaneously within shared context window" | Yes — 15.8%-62.6% token reduction named | Partial — [NLP, transformers, language_modeling] (paper is LLM efficiency, not GNN) | OK |
+| 5 | Statistics / probabilistic ML | 2510.17903 | Yes — accurate, one sentence | Yes — "fused-lasso regularizer on Laplacians + ADMM algorithm" (precise) | Partial — findings are qualitative ("outperforms baselines") due to abstract level | Yes — [graph_signal_processing, time_varying_networks, ADMM] | OK |
+
+**Note on Paper 4**: The sampling strategy selected a cs.LG paper about LLM batch-reasoning
+efficiency rather than a GNN paper. The GNN paper category is weakly represented in cs.LG;
+E-015 should filter by title/abstract keywords (e.g. "graph neural", "GNN", "message
+passing") when sampling for domain coverage tests.
+
+---
+
+### Overall Quality Verdict
+
+**Medium-high.**
+
+- JSON parsing: 5/5 clean parses — no structural failures
+- Contribution field: 5/5 accurate one-sentence summaries
+- Method field: 4/5 specific; 1 partial (Paper 1: architecture pattern named but not implementation detail)
+- Key findings with metrics: 3/5 have numeric results (abstracts for Papers 3 and 5 were
+  qualitative by nature, not extraction failures)
+- Domain tags: 4/5 sensible; 1 miss (Paper 2 tagged NLP instead of CV)
+- Limitations field: model often echoes the abstract text rather than synthesizing a true
+  constraint; acceptable for L2 use case
+
+---
+
+### Known Failure Modes for E-015
+
+1. **Domain tag drift for cross-domain papers**: Papers at NLP/CV intersection were tagged
+   as NLP, dropping CV. E-015 should post-process domain_tags against the paper's arXiv
+   category field to catch cross-domain mislabels.
+
+2. **Vague method for system/framework papers**: Papers that describe a "system" or
+   "framework" rather than a single algorithm produce coarser method descriptions.
+   Acceptable for L2, but will degrade L3 claim specificity.
+
+3. **Qualitative findings when abstract lacks numbers**: If the abstract reports no
+   quantitative results, the model produces qualitative findings. This is correct behavior
+   (the model is not hallucinating numbers), but E-015 should flag these as `has_metrics: false`
+   so downstream users know to expect prose findings.
+
+4. **Limitations field echoes abstract text**: Model often repeats stated challenges as
+   "limitations" rather than identifying scope constraints. Acceptable for Phase 1 but
+   worth improving in student fine-tuning (Phase 3).
+
+5. **related_methods field is shallow**: Tends to name 1-2 broad methods rather than
+   specific prior works. For L2 this is acceptable; for L3 claim extraction this would
+   need a stronger prompt.
+
+6. **Sampling note**: The parquet categories for GNN/graph papers are scattered across
+   cs.LG and cs.AI. A keyword pre-filter on title+abstract is needed to reliably select
+   GNN papers from these categories.
+
+---
+
+### Confidence
+
+**High** for production use in E-015 Phase 1 pipeline. The prompt reliably produces
+valid, parseable JSON with accurate contribution sentences and specific methods.
+The identified failure modes are predictable and manageable via post-processing.
+
+Recommended: use this prompt verbatim for the first 50-paper ingest. Re-evaluate after
+reviewing those 50 extractions before scaling to 500.
+
+Raw extraction outputs: `agents/researcher/findings/r003_l2_extractions.json`

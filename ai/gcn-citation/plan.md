@@ -10,16 +10,37 @@ idea-based link prediction via lightweight prompts — without fine-tuning the b
 
 ## Current Phase
 
-**Phase 0 COMPLETE** ✅ — All pipeline modules implemented and validated on real 10K arXiv data.
-Next: Phase 1 — Scale to 100K + supervised baselines
+**Knowledge Infrastructure — Phase 1: L1 + L2 Pipeline**
+
+GNN/arXiv work (Phase 0) is complete and serves as the technical foundation.
+The primary goal is now the Research Knowledge Infrastructure: a four-layer
+claim-level knowledge graph over AI/ML/DL/CV/Statistics literature.
+
+See: `docs/research/knowledge_infra_requirements.md`
 
 ## Active Tickets
 
-_None. Phase 0 complete._
+| ID    | Agent      | Title                                          | Status  |
+| ----- | ---------- | ---------------------------------------------- | ------- |
+| E-016 | Engineer   | Query interface (L1 + L2 semantic search)      | open    |
+| E-017 | Engineer   | Filter corpus for quality papers               | open    |
+| E-018 | Engineer   | Bulk L2 extraction on 500 papers               | open    |
+| E-019 | Engineer   | Phase 1 end-to-end validation                  | open    |
+| R-004 | Researcher | Research NLI models for edge classification    | open    |
 
 ## Blocked
 
-_None._
+| ID    | Blocked By       |
+| ----- | ---------------- |
+| E-018 | E-015 ✅, E-017  |
+| E-019 | E-016, E-018     |
+
+## Completed (Knowledge Infra Phase 1)
+
+- E-013 · SQLite schema — 8/8 pass
+- R-003 · L2 extraction prompt (qwen2.5-coder:7b) — medium-high quality
+- E-014 · L1 ingest pipeline — 8/8 pass
+- E-015 · L2 extraction pipeline (Ollama) — 7/7 pass, 6.3s/paper
 
 ## Completed This Session (2026-04-05)
 
