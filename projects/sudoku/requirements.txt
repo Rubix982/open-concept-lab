@@ -15,7 +15,7 @@ markdown-it-py==3.0.0
 markdownify==1.1.0
 mdformat==0.7.22
 mdurl==0.1.2
-openai==1.99.5
+openai==1.109.1
 pydantic==2.11.7
 pydantic_core==2.33.2
 python-dotenv==1.1.1
