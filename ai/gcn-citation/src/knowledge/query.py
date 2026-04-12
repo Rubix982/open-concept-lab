@@ -233,28 +233,36 @@ def search_papers(
     # --- Step 3: Load embeddings (mmap, read-only) ---
     embeddings = np.load(str(embeddings_path), mmap_mode="r")
 
-    # --- Step 4: Cosine search ---
-    top_idx, top_scores = _cosine_search(query_vec, embeddings, top_k)
+    # --- Step 3b: Constrain search to rows that exist in the DB ---
+    # The embedding array has 10K rows but the DB may only have 500 papers.
+    # Searching all 10K rows would return mostly papers not in the DB.
+    conn = get_connection(db_path)
+    db_rows = conn.execute(
+        "SELECT embedding_row, arxiv_id FROM chunks ORDER BY embedding_row"
+    ).fetchall()
+    conn.close()
+
+    if not db_rows:
+        return []
+
+    valid_rows = np.array([r["embedding_row"] for r in db_rows], dtype=np.int64)
+    row_to_arxiv_full: dict[int, str] = {
+        int(r["embedding_row"]): r["arxiv_id"] for r in db_rows
+    }
+
+    # Build a dense sub-matrix of only the valid rows
+    embeddings_subset = np.array(embeddings[valid_rows], dtype=np.float32)
+
+    # --- Step 4: Cosine search within DB subset ---
+    local_idx, top_scores = _cosine_search(query_vec, embeddings_subset, top_k)
+    # Map local indices back to real embedding row numbers
+    top_idx = valid_rows[local_idx]
 
     if len(top_idx) == 0:
         return []
 
-    # --- Step 5: Resolve row indices → arxiv_ids via chunks table ---
-    conn = get_connection(db_path)
-    try:
-        placeholders = ",".join("?" for _ in top_idx)
-        rows = conn.execute(
-            f"SELECT embedding_row, arxiv_id FROM chunks "
-            f"WHERE embedding_row IN ({placeholders})",
-            [int(i) for i in top_idx],
-        ).fetchall()
-    finally:
-        conn.close()
-
-    # Build mapping: embedding_row → arxiv_id
-    row_to_arxiv: dict[int, str] = {
-        int(row["embedding_row"]): row["arxiv_id"] for row in rows
-    }
+    # --- Step 5: Resolve row indices → arxiv_ids (already fetched above) ---
+    row_to_arxiv = row_to_arxiv_full
 
     # --- Step 6: Fetch paper_summaries ---
     arxiv_ids_ordered = []
