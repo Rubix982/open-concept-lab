@@ -272,3 +272,121 @@ in our 500-paper corpus (i.e. how many intra-corpus citation edges we'd get).
 **Blockers:** Semantic Scholar API key (external — still pending approval)
 
 **Closed:** 2026-04-12
+
+---
+
+### R-007 · Research embedding models for concept/idea-level search
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-04-12
+**Closed:** 2026-03-29
+
+**Description:**
+SPECTER2 (proximity adapter) fails for concept-level keyword search because it
+was trained for paper-paper citation similarity, not query-document retrieval.
+All ML papers score 0.89-0.94 against any query — not discriminative.
+
+Research which model best represents **ideas** as searchable vectors, evaluating
+both paper-level and claim-level encoding.
+
+**Key insight to test first:** SPECTER2 has an `adhoc_query` adapter designed
+specifically for query-document retrieval. Test this before switching models:
+```python
+model.load_adapter("allenai/specter2", source="hf", set_active=True)  # current (proximity)
+model.load_adapter("allenai/specter2_adhoc_query", source="hf", set_active=True)  # test this
+```
+
+**Candidate models to evaluate (all run on MPS):**
+
+1. **SPECTER2 adhoc_query adapter** — same model, different head. Zero extra cost.
+2. **`nomic-ai/nomic-embed-text-v1.5`** — top MTEB open model, 768d, runs locally
+3. **`BAAI/bge-small-en-v1.5`** — compact (33M params), fast, strong concept search
+4. **`sentence-transformers/all-MiniLM-L6-v2`** — 22M params, very fast, proven quality
+
+**Evaluation protocol:**
+
+Use the 10 Phase 1 queries from E-019. For each model:
+1. Embed the query text
+2. Embed all 500 paper contributions from `paper_summaries` (short text, not full abstract)
+3. Cosine search → top 5
+4. Count: how many of the top 5 are topically relevant to the query?
+
+Record for each model:
+- Relevance score (topical hits in top 5, out of 10 queries)
+- Inference time per paper on MPS
+- Model size (params, disk)
+- Does it handle short concept phrases well?
+
+**Critical question for L3 claims:** will the same model work for short
+one-sentence claim assertions (e.g. "Batch normalization reduces internal
+covariate shift in deep networks")? Test on 5 sample claims from the DB.
+
+**Output:** Write to agents/shared/findings.md as [R-007]:
+- Results table: model × relevance × speed × size
+- Recommendation: which model to use for E-025 re-embedding
+- Whether SPECTER2 adhoc_query fixes it (saves switching models)
+
+**Blockers:** none
+
+**Artifacts:**
+- agents/researcher/findings/r007_embedding_eval.json (SPECTER2 adhoc_query results, relevance annotations)
+- agents/shared/findings.md → [R-007] Finding: Embedding Models for Concept/Idea-Level Search
+
+**Key result:**
+- SPECTER2 adhoc_query adapter fixes score compression: range 0.52-0.79 (std=0.036) vs proximity adapter 0.89-0.94 (std~0.01)
+- 4/10 fully relevant at rank 1, 4/10 partial — significantly better than proximity adapter (0/10)
+- 11ms/paper on MPS — identical speed to proximity adapter
+- Recommendation for E-025: swap to adhoc_query adapter (zero-cost fix, same base model)
+- BGE-small-en-v1.5 installed as fallback; run r007_eval.py to get BGE comparison numbers
+- Claim-level embeddings are usable: off-diagonal cosine 0.61-0.68 (not collapsed)
+
+**Closed:** 2026-03-29
+
+---
+
+### R-008 · Design hybrid retrieval strategy for idea-level queries
+
+**Status:** open
+**Type:** research
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Even with a better embedding model, hybrid retrieval (text search + semantic
+search) is standard practice for production knowledge systems. Research the
+best hybrid strategy for our SQLite-based system.
+
+**SQLite FTS5 is built-in** — no extra library needed. Research:
+
+1. **FTS5 text search** over L2 `contribution + key_findings`:
+   - Syntax: `CREATE VIRTUAL TABLE search_index USING fts5(arxiv_id, text)`
+   - Query: `SELECT * FROM search_index WHERE search_index MATCH 'batch normalization'`
+   - Does BM25 scoring from FTS5 already give good topical results?
+   - Test on same 10 Phase 1 queries
+
+2. **Hybrid scoring formula** — combine text + embedding scores:
+   - `final_score = alpha * bm25_score + (1-alpha) * embedding_score`
+   - What alpha gives best results? Test alpha = 0.3, 0.5, 0.7
+
+3. **Query expansion**: for short queries, expand with related terms before
+   searching. E.g., "GNN" → "graph neural network message passing aggregation"
+   Use qwen2.5-coder:7b for expansion (already installed, no extra cost):
+   ```python
+   expanded = ollama_expand("GNN")  # returns richer query
+   ```
+
+4. **L3 claim search**: when claim nodes exist, should we search claim
+   assertions directly instead of paper contributions? How does this interact
+   with hybrid retrieval?
+
+**Output:** Write to agents/shared/findings.md as [R-008]:
+- FTS5 alone: relevance on 10 queries
+- Hybrid alpha sweep: which alpha is best
+- Query expansion: does it help?
+- Recommendation for E-024 implementation
+
+**Blockers:** none (can use existing DB)
+
+**Closed:** —

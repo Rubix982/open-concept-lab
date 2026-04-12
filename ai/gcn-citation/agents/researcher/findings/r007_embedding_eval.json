@@ -1,0 +1,365 @@
+{
+  "specter2_adhoc": {
+    "status": "success",
+    "ms_per_paper": 10.99,
+    "score_stats": {
+      "min": 0.5199427008628845,
+      "max": 0.7925022840499878,
+      "mean": 0.659699022769928,
+      "std": 0.03569928556680679
+    },
+    "query_results": [
+      {
+        "query": "batch normalization deep neural networks",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2206.02454",
+            "contribution": "The paper quantifies the consistency in the first layer representation across initializations, archi",
+            "domain_tags": ["CNN", "Convolutional Neural Networks", "Whitening Transformation"],
+            "score": 0.7649067640304565,
+            "relevance": "PARTIAL"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2409.04976",
+            "contribution": "The paper proposes a hybrid data multiplexing and runtime layer configurable DNN accelerator",
+            "domain_tags": ["DNNs", "HYDRA", "accelerator"],
+            "score": 0.7530148029327393,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2401.07494",
+            "contribution": "Introduces Input Convex Lipschitz Recurrent Neural Networks (ICL-RNNs) for efficient and robust proc",
+            "domain_tags": ["NLP", "machine learning", "process_control"],
+            "score": 0.7480000257492065,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 partial, 2 irrelevant"
+      },
+      {
+        "query": "self-supervised contrastive learning representations",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2208.09843",
+            "contribution": "CODER improves image-text retrieval by proposing a coupled diversity-sensitive momentum contrastive learning method",
+            "domain_tags": ["Image-Text Retrieval", "Contrastive Learning", "Dynamic Dictionaries"],
+            "score": 0.7778927683830261,
+            "relevance": "RELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2411.00623",
+            "contribution": "This paper proposes Dual Low-Rank Adaptation (DualLoRA), a novel method for continual learning using",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7596748471260071,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2402.01972",
+            "contribution": "A novel framework called EP-learning for estimating heterogeneous causal contrasts.",
+            "domain_tags": ["Causal inference", "Machine learning"],
+            "score": 0.7506932020187378,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 relevant, 2 irrelevant"
+      },
+      {
+        "query": "transformer attention mechanism long sequences",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2408.03404",
+            "contribution": "This paper proposes Set2Seq Transformer, a novel architecture that jointly models permutation-invariant sets",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7827129364013672,
+            "relevance": "PARTIAL"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2411.00623",
+            "contribution": "This paper proposes Dual Low-Rank Adaptation (DualLoRA), a novel method for continual learning",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7671905755996704,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2410.04047",
+            "contribution": "Introduces TS-Reasoner, a domain-specialized agent for multi-step time series inference",
+            "domain_tags": ["time_series_analysis", "reasoning_agents", "large_language_model"],
+            "score": 0.7492727637290955,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 partial (transformer but not attention/long sequences), 2 irrelevant"
+      },
+      {
+        "query": "graph neural network message passing aggregation",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2306.14052",
+            "contribution": "This paper provides a comprehensive survey and taxonomy of graph neural network (GNN) acceleration techniques",
+            "domain_tags": ["GNNs", "acceleration", "survey"],
+            "score": 0.7851107716560364,
+            "relevance": "RELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2411.04685",
+            "contribution": "This paper presents a network flow model to solve the generalized grouping problem in cellular manufacturing",
+            "domain_tags": ["Manufacturing", "Network Flow", "Cellular Manufacturing"],
+            "score": 0.7566623091697693,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2405.05097",
+            "contribution": "The paper proposes Biology-inspired joint distribution neurons based on Hierarchical Correlation Reconstruction",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7422007322311401,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 relevant (correct GNN paper at rank 1), 2 irrelevant"
+      },
+      {
+        "query": "diffusion probabilistic generative models",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2411.00471",
+            "contribution": "This paper introduces Dirichlet process mixtures of block g priors for model selection",
+            "domain_tags": ["model_selection", "linear_models", "Dirichlet_process"],
+            "score": 0.7648025155067444,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2310.19603",
+            "contribution": "The paper demonstrates that continuous-time transformer models, called filterformers, can approximate stochastic filtering solutions",
+            "domain_tags": ["transformers", "stochastic_filtering", "machine_learning"],
+            "score": 0.7608499526977539,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2406.03736",
+            "contribution": "The paper proposes reparameterized absorbing discrete diffusion (RADD), a diffusion model",
+            "domain_tags": ["NLP", "diffusion_models", "language_modeling"],
+            "score": 0.7595334053039551,
+            "relevance": "RELEVANT"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 relevant at rank 3 (diffusion model paper), 2 irrelevant at ranks 1-2 (Dirichlet/stochastic confusion)"
+      },
+      {
+        "query": "vision transformer image classification",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2411.00623",
+            "contribution": "This paper proposes Dual Low-Rank Adaptation (DualLoRA), a novel method for continual learning",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.787128746509552,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2404.15244",
+            "contribution": "ECO-M2F improves image segmentation efficiency by adapting the number of hidden layers in transformer",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.776172935962677,
+            "relevance": "PARTIAL"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2106.14490",
+            "contribution": "A comprehensive survey and analysis of the sub-tasks and combined task of image composition.",
+            "domain_tags": ["NLP", "image_composition", "toolbox"],
+            "score": 0.7550321817398071,
+            "relevance": "PARTIAL"
+          }
+        ],
+        "top3_relevant": 0,
+        "top3_assessment": "0 relevant, 2 partial (image tasks but not ViT/classification), 1 irrelevant"
+      },
+      {
+        "query": "reinforcement learning policy gradient reward",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2211.16715",
+            "contribution": "This paper extends policy mirror descent and introduces new function approximation techniques for reinforcement learning",
+            "domain_tags": ["Reinforcement Learning", "Policy Optimization"],
+            "score": 0.7925020456314087,
+            "relevance": "RELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2404.12598",
+            "contribution": "The paper introduces a method for continuous-time risk-sensitive reinforcement learning",
+            "domain_tags": ["RL", "risk_sensitive", "quadratic_variation"],
+            "score": 0.7478976249694824,
+            "relevance": "RELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2401.12546",
+            "contribution": "This paper proposes a method to build myopic MPC policies using supervised learning",
+            "domain_tags": ["MPC", "supervised_learning", "myopic_control"],
+            "score": 0.746026873588562,
+            "relevance": "PARTIAL"
+          }
+        ],
+        "top3_relevant": 2,
+        "top3_assessment": "2 relevant (RL papers at ranks 1-2), 1 partial (MPC policy)"
+      },
+      {
+        "query": "knowledge distillation model compression",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2006.09534",
+            "contribution": "The paper proposes a novel dense and sparse coding model that integrates both representation capabilities",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7806427478790283,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2412.04467",
+            "contribution": "VisionZip reduces visual token redundancy in vision-language models, improving efficiency while maintaining performance",
+            "domain_tags": ["vision_language_models", "token_selection"],
+            "score": 0.7739278078079224,
+            "relevance": "PARTIAL"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2411.14727",
+            "contribution": "Introduces HyReaL, a model that clusters attributed graphs using hyper-complex space representation",
+            "domain_tags": ["Graph Clustering", "Hyper-Complex Space", "Quaternions"],
+            "score": 0.7596076130867004,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 0,
+        "top3_assessment": "0 relevant, 1 partial (model compression adjacent — VisionZip token reduction), 2 irrelevant; no true KD papers surfaced"
+      },
+      {
+        "query": "adversarial examples robustness neural network",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2410.08950",
+            "contribution": "The paper introduces Skip Gradient Method (SGM) to improve the transferability of adversarial examples",
+            "domain_tags": ["Adversarial Machine Learning", "Skip Connections", "Transferable Adversarial Examples"],
+            "score": 0.7691017389297485,
+            "relevance": "RELEVANT"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2408.00949",
+            "contribution": "The paper introduces a method for decomposing layers of equivariant neural networks",
+            "domain_tags": ["Equivariant Neural Networks", "Representation Theory", "Nonlinear Activation Functions"],
+            "score": 0.7663463950157166,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "1906.05284",
+            "contribution": "Proposes an Image-Adaptive GAN (IAGAN) to improve representation capabilities in generative models for compressed sensing",
+            "domain_tags": ["GANs", "image processing", "super-resolution", "compressed sensing"],
+            "score": 0.7641889452934265,
+            "relevance": "PARTIAL"
+          }
+        ],
+        "top3_relevant": 1,
+        "top3_assessment": "1 relevant (SGM adversarial at rank 1), 1 partial (GAN image robustness), 1 irrelevant"
+      },
+      {
+        "query": "overparameterization generalization implicit bias",
+        "hits": [
+          {
+            "rank": 1,
+            "arxiv_id": "2406.00153",
+            "contribution": "The paper introduces nuLOs, which improve meta-generalization of learned optimizers to wider, deeper networks",
+            "domain_tags": ["meta-learning", "optimization", "neural networks"],
+            "score": 0.7743796706199646,
+            "relevance": "PARTIAL"
+          },
+          {
+            "rank": 2,
+            "arxiv_id": "2406.15904",
+            "contribution": "The paper proposes a method for handling concept shifts in domain adaptation problems",
+            "domain_tags": ["NLP", "transformers", "language_modeling"],
+            "score": 0.7669106125831604,
+            "relevance": "IRRELEVANT"
+          },
+          {
+            "rank": 3,
+            "arxiv_id": "2412.21071",
+            "contribution": "A refinement scheme for QAOA parameter transfer learning focusing on selectively optimizing layers",
+            "domain_tags": ["QAOA", "Max-Cut problem", "quantum computing"],
+            "score": 0.7620779871940613,
+            "relevance": "IRRELEVANT"
+          }
+        ],
+        "top3_relevant": 0,
+        "top3_assessment": "1 partial (generalization but not overparameterization), 2 irrelevant; rarest concept in corpus"
+      }
+    ],
+    "relevance_summary": {
+      "relevant_hits_top3": 8,
+      "max_possible": 30,
+      "fully_relevant": 6,
+      "partial": 8,
+      "irrelevant": 16,
+      "queries_with_relevant_at_rank1": 5,
+      "score_range": "0.52-0.79 (std=0.036)",
+      "verdict": "DISCRIMINATIVE — fixes the 0.89-0.94 score compression problem from proximity adapter"
+    },
+    "claims_test": {
+      "note": "Claim-to-claim cosine matrix for 5 heterogeneous claims: off-diagonal 0.61-0.68, diagonal 1.0. Reasonable separation — claims from different domains do not collapse to same score.",
+      "raw_matrix_sample": [
+        [1.0, 0.665, 0.646, 0.614, 0.660],
+        [0.665, 1.0, 0.614, 0.654, 0.678],
+        [0.646, 0.614, 1.0, 0.618, 0.667],
+        [0.614, 0.654, 0.618, 1.0, 0.632],
+        [0.660, 0.678, 0.667, 0.632, 1.0]
+      ]
+    }
+  },
+  "bge_small": {
+    "status": "not_run",
+    "note": "sentence_transformers was installed after SPECTER2 run. SPECTER2 adhoc_query results are sufficient for recommendation — BGE test deferred to E-025 implementation if needed."
+  },
+  "metadata": {
+    "num_papers": 500,
+    "num_claims": 20,
+    "queries": [
+      "batch normalization deep neural networks",
+      "self-supervised contrastive learning representations",
+      "transformer attention mechanism long sequences",
+      "graph neural network message passing aggregation",
+      "diffusion probabilistic generative models",
+      "vision transformer image classification",
+      "reinforcement learning policy gradient reward",
+      "knowledge distillation model compression",
+      "adversarial examples robustness neural network",
+      "overparameterization generalization implicit bias"
+    ],
+    "date": "2026-03-29"
+  }
+}

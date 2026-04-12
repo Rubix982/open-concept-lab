@@ -10,6 +10,7 @@ embeddings array, which corresponds to the row index in the source DataFrame.
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -147,3 +148,54 @@ def ingest_papers(
         file=sys.stderr,
     )
     return counters
+
+
+def build_search_index(db_path: Path) -> int:
+    """Build or rebuild the FTS5 full-text search index from paper_summaries.
+
+    Indexes: contribution + key_findings text for each paper.
+    Safe to call multiple times — deletes existing rows then re-inserts.
+
+    Args:
+        db_path: Path to the SQLite knowledge database.
+
+    Returns:
+        Number of papers indexed.
+    """
+    db_path = Path(db_path)
+
+    conn = get_connection(db_path)
+    try:
+        # Clear existing search index
+        conn.execute("DELETE FROM search_index")
+
+        # Load all paper_summaries
+        rows = conn.execute(
+            "SELECT arxiv_id, contribution, key_findings FROM paper_summaries"
+        ).fetchall()
+
+        count = 0
+        batch: list[tuple[str, str]] = []
+        for row in rows:
+            arxiv_id: str = row["arxiv_id"]
+            contribution: str = row["contribution"] or ""
+            try:
+                findings: list[str] = json.loads(row["key_findings"] or "[]")
+            except (json.JSONDecodeError, TypeError):
+                findings = []
+            text = contribution + " " + " ".join(findings)
+            batch.append((arxiv_id, text.strip()))
+            count += 1
+
+        conn.executemany(
+            "INSERT INTO search_index(arxiv_id, text) VALUES (?, ?)",
+            batch,
+        )
+        conn.commit()
+        print(
+            f"[ingest] build_search_index: indexed {count} papers into FTS5.",
+            file=sys.stderr,
+        )
+        return count
+    finally:
+        conn.close()

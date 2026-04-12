@@ -129,6 +129,11 @@ CREATE TABLE IF NOT EXISTS _meta (
 );
 """
 
+_DDL_SEARCH_INDEX = """
+CREATE VIRTUAL TABLE IF NOT EXISTS search_index
+USING fts5(arxiv_id UNINDEXED, text, tokenize='porter ascii');
+"""
+
 _ALL_DDL = [
     _DDL_CHUNKS,
     _DDL_PAPER_SUMMARIES,
@@ -137,6 +142,7 @@ _ALL_DDL = [
     _DDL_CLAIM_EDGES,
     _DDL_PAPER_EDGES,
     _DDL_META,
+    _DDL_SEARCH_INDEX,
 ]
 
 

@@ -668,3 +668,21 @@ varies. No further prompt engineering is in scope for E-020.
 - Avg claims/paper: 1.00 (model compliance with max_claims=3 instruction TBD)
 - All claim_types valid, assertions non-empty, no first-person prefixes
 - claim_id format correct, claim_sources coverage 100%, resume idempotent
+
+---
+
+## [E-024] Decision: Hybrid FTS5 + embedding re-ranking in query.py
+
+_Date: 2026-03-29_
+
+**Decision:** Replace pure embedding search in `search_papers()` with a two-stage hybrid retrieval: FTS5 BM25 text search → top-50 candidates, then embedding re-ranking with hybrid score `text_weight * norm_bm25 + embed_weight * cosine`. Default weights: `text_weight=0.6`, `embed_weight=0.4`. Falls back to pure embedding search when FTS5 returns zero matches.
+
+**FTS5 index:** A new `search_index` virtual table uses `porter ascii` tokenization and indexes `contribution + key_findings` text from `paper_summaries`. Indexed by `build_search_index(db_path)` in `ingest.py`.
+
+**BM25 normalization:** SQLite FTS5 returns negative BM25 scores (lower = better). Normalized to [0,1] by `(score - min) / (max - min + 1e-9)`, then flipped so 1.0 = best match.
+
+**Backward compatibility:** New `text_weight` and `embed_weight` params are keyword-only with defaults. Existing callers using positional or keyword `top_k`/`model_name`/`device` args are unaffected.
+
+**Rationale:** Pure embedding search alone misses exact keyword matches (e.g. "batch normalization" may rank lower than a vaguely related paper with a high cosine score). BM25 provides precision for keyword queries; embeddings provide semantic broadening. The two-stage design keeps embedding inference cost proportional to the number of FTS5 candidates (max 50), not the full 10K corpus.
+
+**Applies to:** `src/knowledge/query.py`, `src/knowledge/ingest.py`, `src/knowledge/schema.py`.

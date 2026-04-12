@@ -20,17 +20,31 @@ See: `docs/research/knowledge_infra_requirements.md`
 
 ## Active Tickets
 
-| ID    | Agent      | Title                                                | Status      |
-| ----- | ---------- | ---------------------------------------------------- | ----------- |
-| E-018 | Engineer   | Bulk L2 extraction on 500 papers                     | in-progress |
-| E-019 | Engineer   | Phase 1 end-to-end validation                        | open        |
-| R-005 | Researcher | Design L3 claim extraction schema + prompt           | open        |
-| R-006 | Researcher | Research Semantic Scholar API for citation edges     | open        |
-| E-020 | Engineer   | Implement L3 claim extraction pipeline               | open        |
-| E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)     | open        |
-| E-022 | Engineer   | L2-derived relational edges (shares_method, co_domain) | open      |
-| E-023 | Engineer   | Semantic Scholar citation edges                      | open        |
-| R-004 | Researcher | Research NLI models for edge classification          | open        |
+| ID    | Agent      | Title                                                    | Status      |
+| ----- | ---------- | -------------------------------------------------------- | ----------- |
+| E-020 | Engineer   | Bulk L3 claim extraction (500 papers)                    | in-progress |
+| R-007 | Researcher | Research embedding models for concept/idea-level search  | open        |
+| R-008 | Researcher | Design hybrid BM25 + embedding retrieval strategy        | open        |
+| E-024 | Engineer   | Hybrid FTS5 + embedding re-ranking in query.py           | open        |
+| E-025 | Engineer   | Re-embed corpus with best model from R-007               | open        |
+| E-026 | Engineer   | L3 claim embedding index for idea-level search           | open        |
+| E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)         | open        |
+| E-023 | Engineer   | Semantic Scholar citation edges (needs API key)          | open        |
+
+## Blocked
+
+| ID    | Blocked By                              |
+| ----- | --------------------------------------- |
+| E-024 | R-008 (for optimal weights; can start with defaults) |
+| E-025 | R-007 (must know which model)           |
+| E-026 | E-020 (bulk L3 claims), R-007           |
+| E-021 | E-020 (bulk L3 claims)                  |
+| E-023 | Semantic Scholar API key (external)     |
+
+## E-019 Finding: SPECTER2 proximity adapter fails for concept search
+All 10/10 automated checks pass but 0/10 topically relevant results.
+Root cause: SPECTER2 trained for paper-paper citation similarity, not concept queries.
+Fix: R-007 (test adhoc_query adapter + alternatives) + E-024 (hybrid FTS5+embedding).
 
 ## Blocked
 

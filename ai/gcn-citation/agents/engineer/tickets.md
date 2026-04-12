@@ -1206,3 +1206,157 @@ Expected: significantly more citation edges than the 0 from OpenAlex.
 **Blockers:** R-006 (coverage research), Semantic Scholar API key (external)
 
 **Closed:** —
+
+---
+
+### E-024 · Hybrid BM25/FTS5 + embedding re-ranking in query.py
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Replace the pure embedding search in `src/knowledge/query.py` with a hybrid
+retrieval that combines SQLite FTS5 text search (high precision for keywords)
+with embedding re-ranking (semantic broadening).
+
+**What to build:**
+
+**Step 1: FTS5 index** (add to `schema.py`):
+```sql
+CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
+    arxiv_id UNINDEXED,
+    text,                -- contribution + ' ' + key_findings joined
+    content='paper_summaries',
+    tokenize='porter ascii'
+);
+```
+Populate by: `INSERT INTO search_index SELECT arxiv_id, contribution || ' ' || key_findings FROM paper_summaries`
+
+Add `build_search_index(db_path)` function to `src/knowledge/ingest.py` that creates and populates the FTS5 index.
+
+**Step 2: Update search_papers() in query.py:**
+```python
+def search_papers(
+    query: str,
+    db_path: Path,
+    embeddings_path: Path,
+    *,
+    top_k: int = 10,
+    text_weight: float = 0.6,    # weight for BM25 score
+    embed_weight: float = 0.4,   # weight for cosine similarity
+    model_name: str = "allenai/specter2_base",
+    device: str = "mps",
+) -> list[dict]:
+```
+
+Algorithm:
+1. FTS5 text search → top 50 candidates with BM25 scores
+2. Embed query → cosine search over those 50 candidates only
+3. Hybrid score = text_weight × normalized_bm25 + embed_weight × cosine_score
+4. Re-rank and return top_k
+
+If FTS5 returns 0 results (query too specific): fall back to pure embedding.
+
+**Validation:** run the 10 Phase 1 queries, verify:
+- "batch normalization" now returns papers mentioning batch normalization
+- "graph neural network" returns papers mentioning GNNs
+- "diffusion" returns diffusion model papers
+- All 10 queries return topically relevant top-1 result
+
+**Blockers:** R-008 (for optimal text_weight / embed_weight values)
+Can implement with default weights before R-008 closes.
+
+**Artifacts:**
+- `src/knowledge/schema.py` — added `_DDL_SEARCH_INDEX` (FTS5 virtual table) and appended to `_ALL_DDL`
+- `src/knowledge/ingest.py` — added `build_search_index(db_path)` function
+- `src/knowledge/query.py` — replaced `search_papers()` with hybrid FTS5 + embedding re-ranking; new params `text_weight` / `embed_weight`; fallback to pure embedding on FTS5 miss
+- `agents/engineer/workspace/validate_hybrid_query.py` — validation script
+
+**Closed:** 2026-03-29
+
+---
+
+### E-025 · Re-embed corpus with best model from R-007
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Replace `data/pipeline/embeddings_10k.npy` with embeddings from the model
+recommended in R-007. This makes semantic search over ideas and concepts work
+correctly.
+
+**What to update:**
+- `src/gcn_citation/pipeline/embedder.py` — add support for the new model
+- Re-run embedding for the 10K corpus
+- Update `data/pipeline/embeddings_10k.npy` and checkpoint
+- Re-run `build_method_edges` (similarity edges will change with new embeddings)
+
+**Also embed L3 claims** (when available):
+- Create `data/knowledge/embeddings_claims.npy` — one vector per claim assertion
+- Claim assertions are short sentences (50-150 tokens) — verify new model handles these well
+- Update `query.py` to optionally search over claim embeddings
+
+**Blockers:** R-007 (must know which model to use)
+
+**Closed:** —
+
+---
+
+### E-026 · L3 claim embedding index for idea-level search
+
+**Status:** open
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-04-12
+
+**Description:**
+Once L3 claims are extracted (E-020 batch run) and the embedding model is chosen
+(R-007), build a dedicated embedding index over claim assertions.
+
+This is the "ideas as nodes" layer — claims are the atomic units the vision
+document describes, and they need to be semantically searchable.
+
+**What to build:**
+- `src/knowledge/embed_claims.py`:
+  ```python
+  def embed_claims(
+      db_path: Path,
+      output_path: Path,  # data/knowledge/embeddings_claims.npy
+      *,
+      model_name: str,   # from R-007 recommendation
+      device: str = "mps",
+      batch_size: int = 64,
+  ) -> np.ndarray:
+      """Embed all claim assertions in the claims table.
+      Returns [N_claims, D] array aligned with claim_id order.
+      """
+  ```
+- Add `search_claims()` to `query.py`:
+  ```python
+  def search_claims(
+      query: str,
+      db_path: Path,
+      claims_embeddings_path: Path,
+      *,
+      top_k: int = 10,
+  ) -> list[dict]:
+      """Search claim nodes by concept.
+      Returns claims with: claim_id, assertion, claim_type, domain,
+      source_arxiv_ids, similarity_score
+      """
+  ```
+
+**Why this matters:** searching claims instead of papers gives you answers at
+the idea level. "batch normalization" → returns the specific claim "Batch
+normalization stabilizes training by normalizing layer inputs" with its source
+papers — not just "here are papers that mention batch normalization."
+
+**Blockers:** E-020 (bulk L3 extraction), R-007 (embedding model choice)
+
+**Closed:** —

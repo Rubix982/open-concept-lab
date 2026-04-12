@@ -180,22 +180,30 @@ def search_papers(
     embeddings_path: Path,
     *,
     top_k: int = 10,
+    text_weight: float = 0.6,
+    embed_weight: float = 0.4,
     model_name: str = "allenai/specter2_base",
     device: str = "mps",
 ) -> list[dict]:
-    """Semantic search over the knowledge database using SPECTER2 embeddings.
+    """Hybrid BM25 + embedding search over the knowledge database.
 
-    Steps:
+    Two-stage retrieval:
 
-    1. Load (or return cached) SPECTER2 model.
-    2. Embed the query into a 768-d L2-normalised float32 vector.
-    3. Load ``embeddings_path`` as a read-only memory-mapped numpy array.
-    4. Run brute-force cosine search (numpy dot product) to find ``top_k``
-       nearest rows.
-    5. For each row index, look up the corresponding ``arxiv_id`` from the
-       ``chunks`` table (via ``embedding_row``).
-    6. Fetch ``paper_summaries`` for those arxiv IDs.
-    7. Return results as dicts, sorted by descending similarity score.
+    1. **FTS5 text search** (Porter-stemmed BM25) over ``search_index`` to
+       find up to 50 candidate papers.
+    2. **Embedding re-ranking** — embed the query with SPECTER2, compute
+       cosine similarity for the candidates only, then combine BM25 and
+       cosine scores into a hybrid score.
+
+    If the FTS5 index returns no results (e.g. query terms have no text match
+    or the index is empty), falls back to a pure embedding search over all
+    papers in the DB.
+
+    **BM25 normalization:** SQLite FTS5 returns negative BM25 scores (lower =
+    better).  These are normalised to ``[0, 1]`` and flipped so that 1 = best
+    match.
+
+    **Hybrid score:** ``text_weight * norm_bm25 + embed_weight * cosine``
 
     Args:
         query: Free-text query string (no special formatting required).
@@ -206,7 +214,11 @@ def search_papers(
             ``[N, 768]``, L2-normalised float32) produced by
             :mod:`src.gcn_citation.pipeline.embedder`.
         top_k: Number of results to return.  If fewer than ``top_k`` papers
-            have embeddings, returns however many exist.
+            are available, returns however many exist.
+        text_weight: Weight for the normalised BM25 score in the hybrid
+            formula.  Must sum with ``embed_weight`` to 1 (not enforced).
+        embed_weight: Weight for the cosine similarity score in the hybrid
+            formula.
         model_name: HuggingFace model identifier for the SPECTER2 base model.
         device: PyTorch device string — ``"mps"``, ``"cuda"``, or ``"cpu"``.
 
@@ -217,7 +229,8 @@ def search_papers(
         (float).  Fields absent from the DB are ``None`` / ``[]``.
 
     Raises:
-        FileNotFoundError: If ``embeddings_path`` does not exist.
+        FileNotFoundError: If ``embeddings_path`` or ``db_path`` does not
+            exist.
     """
     db_path = Path(db_path)
     embeddings_path = Path(embeddings_path)
@@ -227,69 +240,190 @@ def search_papers(
     if not db_path.exists():
         raise FileNotFoundError(f"Knowledge DB not found: {db_path}")
 
-    # --- Step 1 + 2: Embed query ---
+    # --- Embed query ---
     query_vec = _embed_query(query, model_name, device)
 
-    # --- Step 3: Load embeddings (mmap, read-only) ---
+    # --- Load embeddings (mmap, read-only) ---
     embeddings = np.load(str(embeddings_path), mmap_mode="r")
 
-    # --- Step 3b: Constrain search to rows that exist in the DB ---
-    # The embedding array has 10K rows but the DB may only have 500 papers.
-    # Searching all 10K rows would return mostly papers not in the DB.
+    # --- Load all valid DB rows (embedding_row → arxiv_id) ---
     conn = get_connection(db_path)
-    db_rows = conn.execute(
-        "SELECT embedding_row, arxiv_id FROM chunks ORDER BY embedding_row"
-    ).fetchall()
-    conn.close()
+    try:
+        db_rows = conn.execute(
+            "SELECT embedding_row, arxiv_id FROM chunks ORDER BY embedding_row"
+        ).fetchall()
+    finally:
+        conn.close()
 
     if not db_rows:
         return []
 
     valid_rows = np.array([r["embedding_row"] for r in db_rows], dtype=np.int64)
-    row_to_arxiv_full: dict[int, str] = {
+    row_to_arxiv: dict[int, str] = {
         int(r["embedding_row"]): r["arxiv_id"] for r in db_rows
     }
+    # Reverse map for candidate selection
+    arxiv_to_local: dict[str, int] = {r["arxiv_id"]: i for i, r in enumerate(db_rows)}
 
-    # Build a dense sub-matrix of only the valid rows
-    embeddings_subset = np.array(embeddings[valid_rows], dtype=np.float32)
+    # --- Stage 1: FTS5 text search → candidates ---
+    # FTS5 reserved words (AND, OR, NOT, NEAR, etc.) and hyphens break raw queries.
+    # Extract only alphanumeric tokens >= 3 chars, join with AND for precise matching.
+    _STOPWORDS = {
+        "and",
+        "or",
+        "not",
+        "the",
+        "a",
+        "an",
+        "in",
+        "of",
+        "for",
+        "to",
+        "is",
+        "are",
+        "was",
+        "with",
+        "that",
+        "this",
+        "on",
+        "at",
+    }
+    import re as _re
 
-    # --- Step 4: Cosine search within DB subset ---
-    local_idx, top_scores = _cosine_search(query_vec, embeddings_subset, top_k)
-    # Map local indices back to real embedding row numbers
-    top_idx = valid_rows[local_idx]
-
-    if len(top_idx) == 0:
-        return []
-
-    # --- Step 5: Resolve row indices → arxiv_ids (already fetched above) ---
-    row_to_arxiv = row_to_arxiv_full
-
-    # --- Step 6: Fetch paper_summaries ---
-    arxiv_ids_ordered = []
-    score_by_arxiv: dict[str, float] = {}
-    for idx, score in zip(top_idx, top_scores):
-        arxiv_id = row_to_arxiv.get(int(idx))
-        if arxiv_id and arxiv_id not in score_by_arxiv:
-            arxiv_ids_ordered.append(arxiv_id)
-            score_by_arxiv[arxiv_id] = float(score)
-
-    if not arxiv_ids_ordered:
-        return []
+    _tokens = [
+        t
+        for t in _re.sub(r"[^a-zA-Z0-9 ]", " ", query).lower().split()
+        if len(t) >= 3 and t not in _STOPWORDS
+    ]
+    # Use at most 2 key tokens with AND — requiring all 5+ tokens is too strict
+    # and returns 0 results. 2-token AND gives precision with coverage.
+    _key_tokens = _tokens[:2] if len(_tokens) >= 2 else _tokens
+    fts_query = " AND ".join(_key_tokens) if _key_tokens else None
 
     conn = get_connection(db_path)
+    fts_results = []
+    if fts_query:
+        try:
+            fts_results = conn.execute(
+                """
+                SELECT arxiv_id, bm25(search_index) AS bm25_score
+                FROM search_index
+                WHERE search_index MATCH ?
+                ORDER BY bm25_score
+                LIMIT 50
+                """,
+                (fts_query,),
+            ).fetchall()
+        except Exception as exc:
+            print(
+                f"[query] FTS5 search error (falling back to pure embedding): {exc}",
+                file=sys.stderr,
+            )
+    conn.close()
+
+    if fts_results:
+        print(
+            f"[query] FTS5 returned {len(fts_results)} candidates; re-ranking with embeddings.",
+            file=sys.stderr,
+        )
+        # --- Stage 2: Hybrid re-ranking over FTS5 candidates ---
+        candidate_arxiv_ids = [r["arxiv_id"] for r in fts_results]
+        bm25_scores_raw = np.array(
+            [r["bm25_score"] for r in fts_results], dtype=np.float64
+        )
+
+        # Normalise BM25: FTS5 returns negative scores (lower = better match)
+        # Flip so that 1.0 = best match, 0.0 = worst among candidates.
+        min_s = bm25_scores_raw.min()
+        max_s = bm25_scores_raw.max()
+        norm_bm25 = (bm25_scores_raw - min_s) / (max_s - min_s + 1e-9)
+        norm_bm25 = 1.0 - norm_bm25  # flip: most negative raw → closest to 1.0
+
+        # Gather embedding rows for candidates (skip those absent from chunks)
+        candidate_local_indices = []
+        candidate_order = []  # position in fts_results that has an embedding
+        for i, arxiv_id in enumerate(candidate_arxiv_ids):
+            local_idx = arxiv_to_local.get(arxiv_id)
+            if local_idx is not None:
+                candidate_local_indices.append(local_idx)
+                candidate_order.append(i)
+
+        if candidate_local_indices:
+            cand_embedding_rows = valid_rows[candidate_local_indices]
+            cand_embeddings = np.array(
+                embeddings[cand_embedding_rows], dtype=np.float32
+            )
+            cand_cosine = (cand_embeddings @ query_vec).astype(np.float64)
+
+            # Build hybrid scores for candidates that have embeddings
+            hybrid_scores: dict[str, float] = {}
+            for order_pos, local_pos, cosine_score in zip(
+                candidate_order, candidate_local_indices, cand_cosine
+            ):
+                arxiv_id = candidate_arxiv_ids[order_pos]
+                hybrid = text_weight * float(
+                    norm_bm25[order_pos]
+                ) + embed_weight * float(cosine_score)
+                hybrid_scores[arxiv_id] = hybrid
+
+            # Candidates without embeddings get text-only score
+            for i, arxiv_id in enumerate(candidate_arxiv_ids):
+                if arxiv_id not in hybrid_scores:
+                    hybrid_scores[arxiv_id] = text_weight * float(norm_bm25[i])
+
+        else:
+            # No candidates have embeddings — use BM25 score only
+            hybrid_scores = {
+                arxiv_id: text_weight * float(norm_bm25[i])
+                for i, arxiv_id in enumerate(candidate_arxiv_ids)
+            }
+
+        # Sort by hybrid score descending and take top_k
+        ranked = sorted(hybrid_scores.items(), key=lambda x: x[1], reverse=True)
+        top_arxiv_ids = [arxiv_id for arxiv_id, _ in ranked[:top_k]]
+        score_by_arxiv: dict[str, float] = {
+            arxiv_id: score for arxiv_id, score in ranked[:top_k]
+        }
+
+    else:
+        # --- Fallback: pure embedding search over all DB papers ---
+        print(
+            "[query] FTS5 returned no results; falling back to pure embedding search.",
+            file=sys.stderr,
+        )
+        embeddings_subset = np.array(embeddings[valid_rows], dtype=np.float32)
+        local_idx, top_scores = _cosine_search(query_vec, embeddings_subset, top_k)
+        top_embedding_rows = valid_rows[local_idx]
+
+        if len(top_embedding_rows) == 0:
+            return []
+
+        top_arxiv_ids = []
+        score_by_arxiv = {}
+        for emb_row, score in zip(top_embedding_rows, top_scores):
+            arxiv_id = row_to_arxiv.get(int(emb_row))
+            if arxiv_id and arxiv_id not in score_by_arxiv:
+                top_arxiv_ids.append(arxiv_id)
+                score_by_arxiv[arxiv_id] = float(score)
+
+    if not top_arxiv_ids:
+        return []
+
+    # --- Fetch paper_summaries ---
+    conn = get_connection(db_path)
     try:
-        placeholders = ",".join("?" for _ in arxiv_ids_ordered)
+        placeholders = ",".join("?" for _ in top_arxiv_ids)
         summary_rows = conn.execute(
             f"SELECT arxiv_id, title, contribution, method, "
             f"key_findings, domain_tags "
             f"FROM paper_summaries "
             f"WHERE arxiv_id IN ({placeholders})",
-            arxiv_ids_ordered,
+            top_arxiv_ids,
         ).fetchall()
     finally:
         conn.close()
 
-    # Build a lookup by arxiv_id (summaries may be absent for uncompleted extraction)
+    # Build lookup by arxiv_id
     summary_by_arxiv: dict[str, dict] = {}
     for row in summary_rows:
         arxiv_id = row["arxiv_id"]
@@ -302,9 +436,9 @@ def search_papers(
             "domain_tags": json_loads(row["domain_tags"]) or [],
         }
 
-    # --- Step 7: Build result list in score order ---
+    # --- Build result list in hybrid score order ---
     results: list[dict] = []
-    for arxiv_id in arxiv_ids_ordered:
+    for arxiv_id in top_arxiv_ids:
         score = score_by_arxiv[arxiv_id]
         base = summary_by_arxiv.get(arxiv_id) or {
             "arxiv_id": arxiv_id,
