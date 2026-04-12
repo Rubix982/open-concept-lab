@@ -56,13 +56,51 @@ _CO_CATEGORY_CAP = 1_000  # max pairs emitted per category to avoid O(N²) blowu
 # ---------------------------------------------------------------------------
 
 
+def _build_knn_edges_sklearn(
+    embeddings: np.ndarray,
+    k: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """k-NN fallback using scikit-learn — avoids FAISS/PyTorch OpenMP conflict on macOS."""
+    from sklearn.neighbors import NearestNeighbors
+
+    print(
+        "[graph_builder] Using sklearn NearestNeighbors (FAISS/torch OpenMP conflict).",
+        file=sys.stderr,
+    )
+    # cosine similarity = euclidean on L2-normalised vectors
+    vecs = embeddings.copy().astype(np.float64)
+    norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+    vecs /= np.maximum(norms, 1e-12)
+
+    nn = NearestNeighbors(
+        n_neighbors=k + 1, metric="cosine", algorithm="brute", n_jobs=-1
+    )
+    nn.fit(vecs)
+    _, indices = nn.kneighbors(vecs)  # [N, k+1] — first column is self
+
+    n = embeddings.shape[0]
+    src_list, dst_list = [], []
+    for i in range(n):
+        for j in indices[i]:
+            if j != i:
+                src_list.append(i)
+                dst_list.append(j)
+
+    return np.array(src_list, dtype=np.int64), np.array(dst_list, dtype=np.int64)
+
+
 def build_knn_edges(
     embeddings: np.ndarray,
     *,
     k: int = 10,
     batch_size: int = 10_000,
+    use_sklearn_fallback: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Build k-NN similarity edges using FAISS (CPU).
+    """Build k-NN similarity edges using FAISS (CPU) or sklearn fallback.
+
+    On macOS with Apple Silicon, FAISS and PyTorch cannot coexist in the same
+    process due to an OpenMP double-init conflict. Pass ``use_sklearn_fallback=True``
+    when running in a process that also imports PyTorch.
 
     L2-normalises ``embeddings`` and builds a ``faiss.IndexFlatIP`` (inner
     product = cosine similarity after normalisation).  Queries the index in
@@ -75,15 +113,23 @@ def build_knn_edges(
         k: Number of nearest neighbours to retrieve per node.
         batch_size: Number of query rows processed per FAISS call.  Lower
             values reduce peak memory at the cost of slightly higher overhead.
+        use_sklearn_fallback: If True, use scikit-learn instead of FAISS.
+            Required when PyTorch is already imported in the same process on
+            macOS (FAISS/PyTorch OpenMP conflict causes hang/segfault).
 
     Returns:
         A tuple ``(source_indices, target_indices)`` of int64 integer arrays,
         each of length up to ``N * k`` after self-loops are removed.
 
     Raises:
-        ImportError: If ``faiss`` is not installed.
+        ImportError: If neither ``faiss`` nor ``sklearn`` is installed.
         ValueError: If ``embeddings`` is not 2-D or not float32.
     """
+    if use_sklearn_fallback:
+        if embeddings.ndim != 2:
+            raise ValueError(f"embeddings must be 2-D, got shape {embeddings.shape}")
+        return _build_knn_edges_sklearn(embeddings, k)
+
     if faiss is None:
         raise ImportError(
             "faiss is required for build_knn_edges(). "
@@ -254,7 +300,9 @@ def build_hetero_graph(
     # Paper node attributes
     # -----------------------------------------------------------------------
     graph["paper"].x = torch.tensor(embeddings, dtype=torch.float32)
-    graph["paper"].arxiv_id = list(papers["arxiv_id"])
+    # arxiv_id is NOT stored on the graph — PyG cannot batch Python lists of
+    # strings and raises "invalid feature tensor type" in NeighborLoader.
+    # Use build_id_to_index() from citations.py to maintain id↔index mapping.
 
     # Multi-hot label matrix [N, num_categories]
     y = np.zeros((n_papers, num_categories), dtype=np.float32)
@@ -301,7 +349,12 @@ def build_hetero_graph(
     # -----------------------------------------------------------------------
     # Edge type 2: ('paper', 'similar_to', 'paper') — undirected k-NN
     # -----------------------------------------------------------------------
-    knn_src, knn_dst = build_knn_edges(embeddings.astype(np.float32), k=knn_k)
+    # Use sklearn fallback when torch is imported (FAISS/PyTorch OpenMP conflict on macOS).
+    # FAISS can only safely run in a process where torch has NOT been imported.
+    _torch_loaded = "torch" in sys.modules
+    knn_src, knn_dst = build_knn_edges(
+        embeddings.astype(np.float32), k=knn_k, use_sklearn_fallback=_torch_loaded
+    )
 
     # Make undirected: concatenate (src, dst) and (dst, src), then deduplicate
     sim_src = np.concatenate([knn_src, knn_dst])

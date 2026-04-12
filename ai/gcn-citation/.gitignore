@@ -20,4 +20,5 @@ artifacts/**/*.wal
 artifacts/**/*.duckdb
 
 # Notebook and OS noise
+.conversations
 .DS_Store

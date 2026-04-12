@@ -10,20 +10,16 @@ idea-based link prediction via lightweight prompts — without fine-tuning the b
 
 ## Current Phase
 
-Phase 0 — Foundation Infrastructure (10K → 100K pipeline validation)
+**Phase 0 COMPLETE** ✅ — All pipeline modules implemented and validated on real 10K arXiv data.
+Next: Phase 1 — Scale to 100K + supervised baselines
 
 ## Active Tickets
 
-| ID    | Agent    | Title                                    | Status  |
-| ----- | -------- | ---------------------------------------- | ------- |
-| E-010 | Engineer | End-to-end 10K integration test          | open    |
-| E-011 | Engineer | Install faiss-cpu + torch_geometric      | open    |
+_None. Phase 0 complete._
 
 ## Blocked
 
-| ID    | Blocked By                                                    |
-| ----- | ------------------------------------------------------------- |
-| E-010 | E-011 (faiss-cpu + torch_geometric needed to run the pipeline) |
+_None._
 
 ## Completed This Session (2026-04-05)
 

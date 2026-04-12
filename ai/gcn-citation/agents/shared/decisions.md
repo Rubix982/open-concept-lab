@@ -4,6 +4,37 @@ _Owned by: Engineer. All agents read. Append-only._
 
 ---
 
+## [O-004] Decision: Semantic Scholar API — rate limiting and backoff required
+
+_Date: 2026-04-12_
+
+**Decision:** All Semantic Scholar API calls must implement exponential backoff and
+respect the 1 RPS rate limit. This is a hard requirement agreed to in the API
+license during registration — not optional.
+
+**Rules for any code that calls the Semantic Scholar API:**
+1. **Rate limit**: never exceed 1 request per second. Use `time.sleep(1.0 / rps)`
+   between calls with `rps ≤ 0.9` as the default (stay safely under the limit).
+2. **Exponential backoff**: on any 429 (Too Many Requests) or 5xx response, wait
+   `min(2^attempt * base_delay, max_delay)` before retrying. Defaults:
+   `base_delay=1.0s`, `max_delay=60.0s`, `max_attempts=5`.
+3. **Jitter**: add random jitter (`random.uniform(0, 0.5) * delay`) to backoff
+   to avoid thundering herd if multiple processes run simultaneously.
+4. **Respect Retry-After**: if the response includes a `Retry-After` header, use
+   that value instead of computed backoff.
+5. **Never hammer on error**: if 5 consecutive retries fail, log and skip — do not
+   loop indefinitely.
+6. **API key inactive warning**: keys inactive for 60+ days may be revoked. Ensure
+   at least one API call is made every ~45 days if the key is to be kept active.
+
+**Rationale:** We agreed to these terms in the API license agreement. Violating
+rate limits risks key revocation and is inconsiderate to a free public resource.
+
+**Applies to:** `pipeline/embedder.py` (fetch_embeddings_per_paper), any future
+code that calls api.semanticscholar.org.
+
+---
+
 ## [O-000] Decision: Python Environment — dedicated venv required
 
 _Date: 2026-04-05_
@@ -250,6 +281,49 @@ No global state. Each module is independently importable and testable.
 
 ---
 
+## [E-010] Decision: load_openalex_citations_api() — Implementation Choices
+
+_Date: 2026-03-29_
+
+**Decision: `_api_get()` helper owns all retry/backoff/sleep logic** — All rate
+limiting, retry, exponential backoff, jitter, and `Retry-After` handling is
+centralised in a single `_api_get()` helper.  The main function never calls
+`time.sleep` or inspects HTTP status codes directly.
+**Rationale:** Keeps `load_openalex_citations_api()` readable and makes the
+retry behaviour independently testable (Test 2, 3, 4 in the validation script
+call `_api_get()` directly).
+
+**Decision: Jitter formula is `delay += random.uniform(0, 0.5) * delay`** —
+Up to 50% of the computed backoff is added as random jitter.  So a 2-second
+backoff becomes 2.0–3.0 seconds randomly.
+**Rationale:** Matches the O-004 spec (`random.uniform(0, 0.5) * delay`).
+Using multiplicative jitter (not additive) keeps jitter proportional to the
+backoff magnitude, which is better at separating concurrent processes at
+longer backoffs.
+
+**Decision: Pass 1 cache written after EACH batch** — The JSON cache is
+flushed to disk immediately after each Pass 1 batch completes.
+**Rationale:** Crash-safe resume — if the process is killed mid-run, the next
+invocation will skip all batches processed so far.  The cost (one JSON write
+per batch) is negligible compared to the HTTP round-trip.
+
+**Decision: `requests_per_second` hard-clamped to 9.0** — Even if the caller
+passes a higher value, `rps = min(requests_per_second, 9.0)` is enforced
+inside the function before any requests are made.
+**Rationale:** OpenAlex's documented limit is 10 RPS.  Staying at 9.0 leaves
+a 10% safety margin.  The clamp makes the O-004 constraint automatic rather
+than relying on callers to pass a safe value.
+
+**Decision: Pass 2 strips full OpenAlex URL to bare work-ID** — Referenced
+work URLs like `https://openalex.org/W123456` are stripped to `W123456` for
+the `openalex_id:` filter query.  The original full URL is retained as the
+lookup key for the `openalex_url → arxiv_id` resolution map.
+**Rationale:** The OpenAlex API filter `openalex_id:W123` expects the bare ID
+format.  Keeping the full URL as the internal map key avoids a second
+URL-reconstruction step when writing to `openalex_to_arxiv`.
+
+---
+
 ## [E-009] Decision: sampling.py — num_workers=0 MPS Constraint
 
 _Date: 2026-03-29_
@@ -280,3 +354,43 @@ once and reused.
 seed nodes to a given split.  There is no way to share a single loader across
 splits with different masks — each split needs its own loader.  Building the
 `num_neighbors` dict once avoids repeating the edge-type filtering logic.
+
+---
+
+## [E-012] Decision: FAISS + PyTorch OpenMP conflict on macOS Apple Silicon
+
+_Date: 2026-04-12_
+
+**Decision:** Never import `faiss` and `torch` in the same process on macOS. `graph_builder.py` now auto-detects whether torch is in `sys.modules` and automatically uses `sklearn.NearestNeighbors` instead of FAISS when both would be present.
+
+**What happens:** FAISS bundles its own OpenMP runtime. PyTorch bundles a different one. When both are loaded in the same process on macOS, the result is either a segfault (exit 139) or a silent hang (process never returns). `KMP_DUPLICATE_LIB_OK=TRUE` suppresses the error message but does NOT fix the underlying conflict.
+
+**Rule:** Any code that uses FAISS must either (a) not import torch, or (b) use `use_sklearn_fallback=True` in `build_knn_edges()`. For the graph building pipeline (which always has torch imported), sklearn is the correct path.
+
+**Performance:** sklearn brute-force k-NN on 10K × 768 takes ~22 seconds — acceptable. At 100K it will be much slower; revisit with a subprocess-based FAISS isolator for Phase 1.
+
+**Applies to:** `pipeline/graph_builder.py`, any future code mixing FAISS and PyTorch.
+
+---
+
+## [E-012] Decision: OpenAlex does not index referenced_works for arXiv preprints
+
+_Date: 2026-04-12_
+
+**Decision:** The `referenced_works` field in OpenAlex is empty for arXiv preprints that were never published in a journal. Only papers with publisher metadata (journal articles with DOIs registered in CrossRef) have outgoing citation data in OpenAlex.
+
+**Impact:** For a corpus of recent arXiv preprints, citation edges will be near-zero via OpenAlex. The integration test confirmed 0 citation edges for 10K cs.* papers from 2022-2023.
+
+**Fix for Phase 1:** Consider Semantic Scholar API which extracts references directly from PDF text — it has much better preprint coverage. Alternatively, accept that `cites` edges are sparse and rely on `similar_to` (k-NN) edges as the primary graph structure for arXiv preprints.
+
+---
+
+## [E-012] Decision: arxiv_id must not be stored as HeteroData node attribute
+
+_Date: 2026-04-12_
+
+**Decision:** `graph["paper"].arxiv_id` was removed. PyG's `NeighborLoader` tries to batch ALL node attributes into tensors during mini-batch construction. A Python list of strings cannot be batched and raises "invalid feature tensor type".
+
+**Rule:** Only store tensors (float32, int64, bool) as HetggeroData node attributes. Non-tensor metadata (string IDs, category names) must be kept in separate Python dicts external to the graph.
+
+**Correct pattern:** maintain `id_to_index = build_id_to_index(arxiv_ids)` separately; look up node IDs by integer index when needed.

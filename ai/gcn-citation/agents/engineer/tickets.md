@@ -286,3 +286,187 @@ SPECTER2 inference.
 - load_embeddings_returns_correct_shape: (10, 768), dtype=float32
 
 **Closed:** 2026-03-29
+
+---
+
+### E-010 · Add load_openalex_citations_api() to pipeline/citations.py
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Add an API-based citation fetcher to `src/gcn_citation/pipeline/citations.py` for
+use when the corpus is small (≤50K papers) where S3 bulk download is overkill.
+OpenAlex REST API requires no auth key and allows 10 RPS.
+
+**Implement this function:**
+
+```python
+def load_openalex_citations_api(
+    arxiv_ids: list[str],
+    *,
+    requests_per_second: float = 9.0,
+    cache_path: Path | None = None,
+) -> CitationEdges:
+```
+
+**Algorithm:**
+1. Batch arxiv_ids into groups of 50
+2. For each batch: `GET https://api.openalex.org/works?filter=ids.arxiv:{id1}|{id2}|...&select=id,ids,referenced_works&per-page=50`
+3. Parse response: extract `ids.arxiv` (source) and `referenced_works` (list of OpenAlex URLs)
+4. Collect all unique referenced OpenAlex URLs
+5. Batch-fetch those referenced works (groups of 50) to get their `ids.arxiv` fields
+6. Filter to pairs where both source AND target arXiv IDs are in the input set
+7. Return `CitationEdges` with string arXiv IDs
+
+**Rate limiting — MANDATORY per O-004 in agents/shared/decisions.md:**
+- Hard cap: `requests_per_second <= 9.0`
+- Exponential backoff on 429/5xx: `min(2^attempt * 1.0, 60.0)` seconds, max 5 retries
+- Add jitter: `random.uniform(0, 0.5) * delay`
+- Respect `Retry-After` header if present
+- After 5 consecutive failures on a single batch: log warning, skip batch, continue
+
+**Caching:**
+- If `cache_path` provided: save progress as JSON after each batch (resume support)
+- On resume: skip arxiv_ids already in cache
+
+**Validation — `agents/engineer/workspace/validate_openalex_api.py`:**
+1. Batching: 120 IDs → 3 batches of 50 (mock HTTP)
+2. Backoff triggered on 429 (mock)
+3. Retry-After header respected (mock)
+4. Batch skipped after 5 failures (mock)
+5. Output CitationEdges only contains pairs where both endpoints are in known set
+All checks PASS before closing.
+
+**Blockers:** none
+
+**Artifacts:**
+- `src/gcn_citation/pipeline/citations.py` (updated — new function + helpers added)
+- `agents/engineer/workspace/validate_openalex_api.py` — validation script (6/6 PASS)
+
+**Key implementation decisions:**
+- `_api_get()` helper centralises rate limiting, retries, backoff, and Retry-After support
+- Pass 2 (resolve referenced works) batches unique referenced OpenAlex URLs in groups of 50
+- Full OpenAlex URLs stripped to bare ID part (e.g. "W123456") for the Pass 2 filter query
+- Cache JSON keyed on arXiv ID: `{arxiv_id: {"openalex_id": str, "referenced_openalex_ids": [str]}}`
+- Cache written after EACH batch in Pass 1 (not after full pass) for crash-safe resume
+- `requests_per_second` clamped to `min(rps, 9.0)` to enforce O-004 rate limit rule
+- Jitter formula: `delay += random.uniform(0, 0.5) * delay` (i.e. up to 50% of computed delay)
+
+**Validation results:** 6/6 PASS
+- Batching (120 IDs → 3 Pass-1 calls): PASS
+- 429 backoff (2 retries, increasing delay): PASS
+- Retry-After header (sleep(5.0) called): PASS
+- Max retries exceeded (batch skipped, no exception): PASS
+- Edge filtering (only in-corpus edges): PASS
+- Cache resume (cached IDs skipped in Pass 1): PASS
+
+**Closed:** 2026-03-29
+
+---
+
+### E-011 · Download 10K arXiv papers and embed with local SPECTER2
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-04-12
+
+**Description:**
+Produce two artifacts for E-012: a 10K paper DataFrame and a SPECTER2 embedding array.
+
+**Step 1 — Stream 10K papers via HuggingFace:**
+```python
+from datasets import load_dataset
+ds = load_dataset("Cornell-University/arxiv", split="train", streaming=True)
+```
+Filter to papers where categories contains any of: cs.AI, cs.LG, cs.CL, cs.CV, stat.ML.
+Stop after 10,000 papers. Save to `data/pipeline/arxiv_10k.parquet`.
+
+Map fields to our schema: arxiv_id, title, abstract, categories (list), primary_category,
+is_interdisciplinary, year, month.
+
+**Step 2 — Embed with local SPECTER2:**
+```python
+from src.gcn_citation.pipeline.embedder import embed_papers
+embeddings = embed_papers(
+    papers=df,
+    output_path=Path("data/pipeline/embeddings_10k.npy"),
+    checkpoint_path=Path("data/pipeline/embeddings_10k_checkpoint.json"),
+    api_key=None,
+    device="mps",
+    batch_size=32,
+)
+```
+Set `PYTORCH_ENABLE_MPS_FALLBACK=1` and `KMP_DUPLICATE_LIB_OK=TRUE` before any torch import.
+Expected time: ~60-90 seconds for 10K papers on M2 MPS.
+
+**Step 3 — Validate:**
+- parquet: 10K rows, correct columns
+- npy: shape [10000, 768], dtype float32
+- L2 norm of 5 random rows ≈ 1.0
+- Print count of interdisciplinary papers
+Write to `agents/engineer/workspace/validate_10k_data.py`. All checks PASS before closing.
+
+**Environment:** Always activate `.venv` first: `source .venv/bin/activate`
+
+**Blockers:** none
+
+**Artifacts:**
+- `data/pipeline/arxiv_10k.parquet`
+- `data/pipeline/embeddings_10k.npy`
+- `data/pipeline/embeddings_10k_checkpoint.json`
+- `agents/engineer/workspace/download_and_embed_10k.py`
+- `agents/engineer/workspace/validate_10k_data.py`
+
+**Closed:** —
+
+---
+
+### E-012 · End-to-end 10K integration test
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-04-12
+
+**Description:**
+Assemble and validate the full Phase 0 pipeline on real 10K arXiv data.
+Proves all five pipeline modules work together correctly end-to-end.
+
+**Inputs:** data/pipeline/arxiv_10k.parquet, embeddings_10k.npy, citations from OpenAlex API
+
+**Steps:**
+1. Load parquet + mmap embeddings
+2. `load_openalex_citations_api(arxiv_ids)` → CitationEdges
+3. `assign_indices(edges, id_to_index)` → integer indices
+4. `build_hetero_graph(papers, embeddings, citation_edges, knn_k=10)`
+5. `validate_graph(graph)` → must return empty warnings list
+6. `get_dataloaders(graph, train_mask, val_mask, test_mask)` → 70/15/15 split
+7. Iterate one batch → verify valid HeteroData
+8. Train 10-epoch GT on train split, run forward pass → verify logits shape
+
+**Report:**
+```
+=== Phase 0 Integration Test: 10K arXiv ===
+Papers:          10,000
+Citation edges:  XXXX
+k-NN edges:      XXXX
+belongs_to:      XXXX
+co_category:     XXXX
+Graph valid:     PASS
+GT forward:      PASS
+ALL CHECKS PASSED
+```
+
+**Blockers:** E-010, E-011
+
+**Artifacts:**
+- `agents/engineer/workspace/integration_test_10k.py`
+
+**Closed:** —
