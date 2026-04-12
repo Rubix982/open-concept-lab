@@ -909,7 +909,7 @@ Output DB: `data/knowledge/knowledge.db`
 
 ### E-019 · Phase 1 end-to-end validation
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
@@ -943,7 +943,7 @@ in the top 3 results (manual review required — print results for human judgmen
 
 **Blockers:** E-016, E-018
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
@@ -1101,7 +1101,7 @@ Verify edge_type assignments are sensible.
 
 ### E-022 · L2-derived relational edges (shares_method, co_domain)
 
-**Status:** closed
+**Status:** open
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
@@ -1281,7 +1281,7 @@ Can implement with default weights before R-008 closes.
 
 ### E-025 · Re-embed corpus with best model from R-007
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12

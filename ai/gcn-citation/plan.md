@@ -20,31 +20,53 @@ See: `docs/research/knowledge_infra_requirements.md`
 
 ## Active Tickets
 
-| ID    | Agent      | Title                                                    | Status      |
-| ----- | ---------- | -------------------------------------------------------- | ----------- |
-| E-020 | Engineer   | Bulk L3 claim extraction (500 papers)                    | in-progress |
-| R-007 | Researcher | Research embedding models for concept/idea-level search  | open        |
-| R-008 | Researcher | Design hybrid BM25 + embedding retrieval strategy        | open        |
-| E-024 | Engineer   | Hybrid FTS5 + embedding re-ranking in query.py           | open        |
-| E-025 | Engineer   | Re-embed corpus with best model from R-007               | open        |
-| E-026 | Engineer   | L3 claim embedding index for idea-level search           | open        |
-| E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)         | open        |
-| E-023 | Engineer   | Semantic Scholar citation edges (needs API key)          | open        |
+| ID    | Agent      | Title                                                    | Status |
+| ----- | ---------- | -------------------------------------------------------- | ------ |
+| E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)         | open   |
+| E-026 | Engineer   | L3 claim embedding index for idea-level search           | open   |
+| E-023 | Engineer   | Semantic Scholar citation edges (needs API key)          | open   |
 
 ## Blocked
 
-| ID    | Blocked By                              |
-| ----- | --------------------------------------- |
-| E-024 | R-008 (for optimal weights; can start with defaults) |
-| E-025 | R-007 (must know which model)           |
-| E-026 | E-020 (bulk L3 claims), R-007           |
-| E-021 | E-020 (bulk L3 claims)                  |
-| E-023 | Semantic Scholar API key (external)     |
+| ID    | Blocked By                                        |
+| ----- | ------------------------------------------------- |
+| E-026 | E-020 ✅ (bulk L3 complete), R-007 ✅ (adhoc_query confirmed) — **unblocked** |
+| E-023 | Semantic Scholar API key (external, still pending) |
 
-## E-019 Finding: SPECTER2 proximity adapter fails for concept search
-All 10/10 automated checks pass but 0/10 topically relevant results.
-Root cause: SPECTER2 trained for paper-paper citation similarity, not concept queries.
-Fix: R-007 (test adhoc_query adapter + alternatives) + E-024 (hybrid FTS5+embedding).
+## Phase 1 Status — COMPLETE ✅
+
+Phase 1 end-to-end validation passed (2026-04-12):
+- 500 L2 paper summaries extracted via Ollama qwen2.5-coder:7b
+- 500 L3 claim nodes extracted
+- 321 L2-derived relational edges (shares_method + co_domain)
+- Hybrid FTS5 + SPECTER2 adhoc_query search: 8/10 queries topically relevant
+- knowledge.db committed — clone and query immediately
+
+## Completed This Session (2026-04-12)
+
+Knowledge Infrastructure Phase 1 + improvements:
+- E-013 SQLite schema (WAL mode, 6 tables)
+- E-014 L1 ingest pipeline
+- E-015 L2 extraction (Ollama, 6.3s/paper)
+- E-016 Query interface (hybrid FTS5 + embedding)
+- E-017 Corpus quality filter
+- E-018 Bulk L2 extraction (500 papers)
+- E-019 Phase 1 end-to-end validation — PASSES (8/10)
+- E-020 L3 claim extraction pipeline + bulk run (500 claims)
+- E-022 L2-derived relational edges (321 edges)
+- E-024 Hybrid FTS5 + embedding re-ranking (FTS5 key-term fix)
+- E-025 Re-embed with SPECTER2 adhoc_query adapter
+- R-004 NLI model research (DeBERTa recommended)
+- R-005 L3 claim prompt design (validated on 5 papers)
+- R-006 Semantic Scholar API research (80% coverage, /references endpoint)
+- R-007 Embedding model research (adhoc_query fixes concept search)
+- R-008 Hybrid retrieval research (FTS5 alone 9/10, text_weight=0.7)
+
+## Next Orchestrator Action
+
+E-026 is now unblocked — start L3 claim embedding index.
+E-021 (typed edges via DeBERTa NLI) can also start — R-004 recommends
+cross-encoder/nli-deberta-v3-small at 190ms/pair on MPS.
 
 ## Blocked
 

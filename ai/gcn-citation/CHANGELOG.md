@@ -4,6 +4,39 @@ _Append-only. One entry per session. Written by orchestrator at session end._
 
 ---
 
+## 2026-04-12 · Session 6
+
+### Knowledge Infrastructure Phase 1 — COMPLETE
+
+**Core pipeline:**
+- [E-013] SQLite schema (WAL mode, 6 tables) — src/knowledge/schema.py
+- [E-014] L1 abstract ingest — src/knowledge/ingest.py
+- [E-015] L2 extraction via Ollama qwen2.5-coder:7b (6.3s/paper) — src/knowledge/extract_l2.py
+- [E-017] Quality corpus filter (abstract length, year, dedup, stratified sample) — src/knowledge/filter_corpus.py
+- [E-018] Bulk L2 extraction — 500 papers in data/knowledge/knowledge.db
+- [E-020] L3 claim extraction pipeline + bulk run (500 claim nodes) — src/knowledge/extract_l3.py
+- [E-022] L2-derived relational edges (321 edges: shares_method + co_domain) — src/knowledge/derive_edges.py
+
+**Search + retrieval:**
+- [E-016] Hybrid FTS5 + SPECTER2 query interface — src/knowledge/query.py
+- [E-024] FTS5 key-term extraction fix (AND-join top-2 tokens, not all 5+)
+- [E-025] Re-embed with SPECTER2 adhoc_query adapter — score std 0.03 vs 0.01 before
+
+**Validation:**
+- [E-019] Phase 1 end-to-end validation PASSES — 8/10 queries topically relevant
+
+**Research:**
+- [R-004] NLI model eval: cross-encoder/nli-deberta-v3-small recommended (190ms/pair MPS)
+- [R-005] L3 claim prompt: high quality on 5 papers, all atomic + self-contained
+- [R-006] Semantic Scholar /references endpoint: 80% preprint coverage
+- [R-007] SPECTER2 adhoc_query fixes concept search; no model switch needed
+- [R-008] FTS5 alone 9/10 coverage; text_weight=0.7 for hybrid
+
+**Data committed (reproducible from clone):**
+- data/knowledge/knowledge.db — 500 L2 summaries + 500 L3 claims + 321 edges
+- data/pipeline/embeddings_10k.npy — adhoc_query embeddings [10000, 768]
+- data/pipeline/arxiv_10k.parquet — 500 filtered papers
+
 ## 2026-04-05 · Session 5
 
 - [E-008] Implemented pipeline/graph_builder.py — 4 edge types, co_category capped at 1K pairs/category — src/gcn_citation/pipeline/graph_builder.py

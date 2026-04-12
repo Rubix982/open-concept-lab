@@ -348,7 +348,7 @@ covariate shift in deep networks")? Test on 5 sample claims from the DB.
 
 ### R-008 · Design hybrid retrieval strategy for idea-level queries
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-12
@@ -389,4 +389,4 @@ best hybrid strategy for our SQLite-based system.
 
 **Blockers:** none (can use existing DB)
 
-**Closed:** —
+**Closed:** 2026-04-12
