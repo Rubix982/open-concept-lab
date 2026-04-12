@@ -419,3 +419,147 @@ Visualization outputs:
 - `docs/plans/graphsage_aggregator.md`: aggregator expansion plan for GraphSAGE
 - `docs/plans/graphsage_jax.md`: JAX backend plan for future GraphSAGE LSTM work
 - `docs/plans/gat.md`: GAT implementation plan
+
+---
+
+## Research Knowledge Infrastructure
+
+A queryable knowledge system over AI/ML research literature. The atomic unit is
+an **idea node** — discrete claims extracted from papers — not the papers
+themselves. Built on top of the arXiv pipeline and GNN work above.
+
+### What's in it
+
+- **500 AI/ML papers** (cs.AI, cs.LG, cs.CV, cs.CL, stat.ML, 2018-2024)
+  with structured L2 summaries: contribution, method, key findings, domain tags
+- **L3 claim nodes** — atomic scientific assertions extracted per paper
+- **Relational edges** — `shares_method` and `co_domain` links derived from L2 summaries
+- **Hybrid search** — FTS5 text matching + SPECTER2 semantic re-ranking
+
+Everything is pre-built. No re-running needed — just query.
+
+### Setup
+
+```bash
+source .venv/bin/activate   # Python 3.11, see venv setup below
+export KMP_DUPLICATE_LIB_OK=TRUE
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+```
+
+**First time only** — build the FTS5 search index:
+
+```python
+from src.knowledge.ingest import build_search_index
+from pathlib import Path
+build_search_index(Path("data/knowledge/knowledge.db"))
+```
+
+### Query by concept
+
+**CLI:**
+```bash
+python -m src.knowledge.query "graph neural network message passing"
+python -m src.knowledge.query "knowledge distillation model compression"
+python -m src.knowledge.query "diffusion generative models"
+```
+
+**Python:**
+```python
+from src.knowledge.query import search_papers
+from pathlib import Path
+
+results = search_papers(
+    "transformer attention mechanism",
+    db_path=Path("data/knowledge/knowledge.db"),
+    embeddings_path=Path("data/pipeline/embeddings_10k.npy"),
+    top_k=5,
+)
+
+for r in results:
+    print(f"{r['similarity_score']:.3f} — arxiv:{r['arxiv_id']}")
+    print(f"  {r['contribution']}")
+    print(f"  Domain: {r['domain_tags']}")
+```
+
+Each result includes: `arxiv_id`, `title`, `contribution`, `method`,
+`key_findings`, `domain_tags`, `similarity_score`.
+
+### Browse the knowledge graph (SQLite)
+
+```bash
+sqlite3 data/knowledge/knowledge.db
+```
+
+**Find papers by topic:**
+```sql
+SELECT arxiv_id, contribution FROM paper_summaries
+WHERE LOWER(contribution) LIKE '%attention%'
+LIMIT 5;
+```
+
+**Browse L3 claims (atomic idea nodes):**
+```sql
+SELECT claim_id, claim_type, assertion, domain, method
+FROM claims
+WHERE domain = 'NLP'
+LIMIT 10;
+```
+
+**Find papers sharing a method:**
+```sql
+SELECT source_id, target_id, shared_value
+FROM paper_edges
+WHERE edge_type = 'shares_method'
+AND shared_value LIKE '%transformer%';
+```
+
+**Find papers in the same domain cluster:**
+```sql
+SELECT source_id, target_id, shared_value
+FROM paper_edges
+WHERE edge_type = 'co_domain'
+AND shared_value = 'graph_neural_network'
+LIMIT 10;
+```
+
+### Database schema
+
+| Table | Contents |
+|---|---|
+| `paper_summaries` | L2 structured summaries (500 papers) |
+| `chunks` | L1 abstract text + embedding row index |
+| `claims` | L3 atomic claim nodes |
+| `claim_sources` | Which papers support each claim |
+| `paper_edges` | Relational edges (shares_method, co_domain) |
+| `search_index` | FTS5 full-text index (Porter-stemmed) |
+
+### Extend the corpus
+
+Re-run bulk extraction on more papers:
+
+```python
+from src.knowledge.filter_corpus import filter_quality_papers
+from src.knowledge.ingest import ingest_papers, build_search_index
+from src.knowledge.extract_l2 import extract_batch
+from src.knowledge.extract_l3 import extract_claims_batch
+import pandas as pd
+from pathlib import Path
+
+DB = Path("data/knowledge/knowledge.db")
+EMB = Path("data/pipeline/embeddings_10k.npy")
+
+df = pd.read_parquet("data/pipeline/arxiv_10k.parquet")
+filtered = filter_quality_papers(df, max_papers=500)
+
+ingest_papers(filtered, EMB, DB)          # L1: chunks
+extract_batch(filtered, DB)              # L2: summaries (~6s/paper via Ollama)
+extract_claims_batch(DB)                 # L3: claim nodes (~6s/paper via Ollama)
+build_search_index(DB)                   # rebuild FTS5 index
+```
+
+Requires Ollama running locally (`ollama serve`) with `qwen2.5-coder:7b` pulled.
+
+### Architecture reference
+
+See `docs/research/requirements.md` for the full four-layer design:
+L1 (raw chunks) → L2 (paper summaries) → L3 (claim nodes) → L4 (meta patterns).
