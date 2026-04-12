@@ -125,10 +125,11 @@ Include the final prompt text and 2-3 example extractions with quality notes.
 
 ### R-004 · Research NLI models for contradiction/support classification
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-04-12
+**Closed:** 2026-03-29
 
 **Description:**
 Research which NLI (Natural Language Inference) model is best suited for
@@ -155,4 +156,119 @@ Recommendation: which model to use for Phase 2 edge classification.
 
 **Blockers:** none (can run in parallel with Phase 1)
 
-**Closed:** —
+**Artifacts:**
+- agents/researcher/findings/r004_nli_results.json (raw inference outputs across all models and methods)
+- agents/shared/findings.md → [R-004] Finding: NLI Models for Contradiction/Support Classification
+
+**Key result:**
+- All three models run on MPS without errors
+- `cross-encoder/nli-deberta-v3-small` recommended for E-021: fastest (190ms/pair), correct on support and contradiction pairs
+- Use zero-shot-classification pipeline with semantic label template + confidence threshold 0.50 for neutral fallback
+- `MoritzLaurer/deberta-v3-large-zeroshot-v2.0` (corrected ID) is a binary model — cannot distinguish contradiction from neutral, wrong fit for this task
+- Neutral detection fails universally for structurally similar but topically unrelated claim pairs — confidence threshold mitigates this
+
+**Closed:** 2026-03-29
+
+---
+
+### R-005 · Design L3 claim extraction schema and prompt for AI/ML domain
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Design the L3 claim extraction schema and validate it on 5 papers from the L2
+corpus. L3 is the hardest layer — it must extract discrete, self-contained claims
+at the granularity of ideas, not sentences.
+
+**The core question**: what is a "claim" in an AI/ML paper? It must be:
+- Self-contained (can stand alone without reading the paper)
+- Falsifiable (could in principle be contradicted by another paper)
+- Atomic (not bundled with multiple distinct assertions)
+
+**Schema to design:**
+```json
+{
+  "claim_id": "uuid — generated",
+  "claim_type": "empirical | theoretical | architectural | comparative | observation",
+  "assertion": "The claim in one sentence, self-contained.",
+  "method": "Technique or model being described (e.g. 'BERT', 'ResNet', 'Adam')",
+  "domain": "NLP | CV | RL | optimization | theory | graph_learning | statistics",
+  "dataset": "Dataset name if applicable, null otherwise",
+  "metric": "Accuracy | F1 | BLEU | loss | etc., null if non-numeric",
+  "value": "Numeric result as string, null if absent",
+  "conditions": "What conditions qualify this claim (dataset size, architecture, etc.)"
+}
+```
+
+**Prompt design task:**
+1. Write a single Ollama prompt (qwen2.5-coder:7b) that takes a paper's
+   title + abstract + key_findings (from L2) and returns a JSON array of
+   1-5 claim objects
+2. Test on 5 papers from the L2 corpus covering different subfields
+3. For each paper, manually verify:
+   - Are the claims atomic (not bundled)?
+   - Is the assertion self-contained (no "this paper" or "we")?
+   - Is claim_type correct?
+   - Would two papers asserting the same thing produce mergeable claims?
+
+**Critical: claim identity test**
+Take one claim from paper A and find a paper B that makes the same claim.
+Do the extracted claims look similar enough to be deduplicated via embedding?
+This tests whether the extraction is consistent enough for L3 to work.
+
+**Output:** Write to agents/shared/findings.md as [R-005]:
+- Final prompt text
+- 5-paper extraction results (table)
+- Quality verdict: high / medium / low
+- Claim identity test result
+- Known failure modes for E-021
+
+**Blockers:** E-018 (need L2 summaries to feed as input)
+
+**Closed:** 2026-04-12
+
+---
+
+### R-006 · Research Semantic Scholar API for real citation edges
+
+**Status:** closed
+**Type:** research
+**Priority:** medium
+**Created:** 2026-04-12
+
+**Description:**
+OpenAlex has 0 citation edges for arXiv preprints (referenced_works empty for
+papers without journal publication). Semantic Scholar extracts references from
+PDF text — it has real citation data for preprints.
+
+We applied for a Semantic Scholar API key. This ticket covers the research and
+initial implementation once the key arrives.
+
+**Research questions:**
+1. What endpoint gives outgoing citations for a paper? (referenced_works analog)
+   - Check: `GET /graph/v1/paper/ArXiv:{id}?fields=references`
+   - Does `references` include papers cited IN this paper?
+2. What is the rate limit for the standard tier vs partner tier?
+3. For our 500-paper corpus: what % of papers have reference data in S2?
+   Test with 10 papers: `GET /graph/v1/paper/ArXiv:{id}?fields=references,citationCount`
+4. What is the reference schema? Do we get arXiv IDs for cited papers,
+   or just S2 paper IDs we need to resolve?
+5. Estimate: how many citation edges would 500 papers produce?
+
+**If API key is available:**
+Write a small test script that fetches citations for 5 papers and reports
+how many references each had, and how many of those references are also
+in our 500-paper corpus (i.e. how many intra-corpus citation edges we'd get).
+
+**Output:** agents/shared/findings.md as [R-006]:
+- Endpoint that works for citation data
+- Coverage: % of our papers with reference data
+- Estimated intra-corpus citation edges
+- Rate limits and download strategy for 500 papers
+
+**Blockers:** Semantic Scholar API key (external — still pending approval)
+
+**Closed:** 2026-04-12

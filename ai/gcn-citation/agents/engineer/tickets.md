@@ -370,7 +370,7 @@ All checks PASS before closing.
 
 ### E-011 · Download 10K arXiv papers and embed with local SPECTER2
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
@@ -423,13 +423,13 @@ Write to `agents/engineer/workspace/validate_10k_data.py`. All checks PASS befor
 - `agents/engineer/workspace/download_and_embed_10k.py`
 - `agents/engineer/workspace/validate_10k_data.py`
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
 ### E-012 · End-to-end 10K integration test
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
@@ -469,7 +469,7 @@ ALL CHECKS PASSED
 **Artifacts:**
 - `agents/engineer/workspace/integration_test_10k.py`
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
@@ -713,7 +713,7 @@ subsequent 4-7s warm). For 50 papers: ~5 min; 500 papers: ~52 min.
 
 ### E-016 · Basic query interface (L1 + L2)
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
@@ -764,7 +764,7 @@ Example queries to test:
 
 **Blockers:** E-014, E-015
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
@@ -832,7 +832,7 @@ Validation: run 5 test queries, verify results are topically relevant:
 
 ### E-017 · Filter corpus for quality papers
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
@@ -872,13 +872,13 @@ Validate: from 10K papers, filtered set should have:
 
 **Blockers:** none
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
 ### E-018 · Bulk L2 extraction run on 500 papers
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
@@ -903,7 +903,7 @@ Output DB: `data/knowledge/knowledge.db`
 
 **Blockers:** E-015, E-017
 
-**Closed:** —
+**Closed:** 2026-04-12
 
 ---
 
@@ -942,5 +942,267 @@ Phase 1 is DONE when: ≥ 8/10 queries return at least one topically relevant pa
 in the top 3 results (manual review required — print results for human judgment).
 
 **Blockers:** E-016, E-018
+
+**Closed:** —
+
+---
+
+### E-020 · Implement L3 claim extraction pipeline (extract_l3.py)
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Implement `src/knowledge/extract_l3.py` — the core of the knowledge
+infrastructure. Extracts discrete claim nodes from L2 summaries and stores
+them in the `claims` and `claim_sources` tables.
+
+**Implement these functions:**
+
+```python
+def extract_claims_for_paper(
+    arxiv_id: str,
+    title: str,
+    abstract: str,
+    key_findings: list[str],
+    *,
+    model: str = "qwen2.5-coder:7b",
+    ollama_base_url: str = "http://localhost:11434",
+    timeout: int = 120,
+) -> list[dict] | None:
+    """Extract 1-5 claim dicts from a paper's L2 summary.
+    Uses the prompt designed in R-005.
+    Returns list of claim dicts or None on failure.
+    """
+
+def extract_claims_batch(
+    db_path: Path,
+    *,
+    model: str = "qwen2.5-coder:7b",
+    ollama_base_url: str = "http://localhost:11434",
+    skip_existing: bool = True,
+    limit: int | None = None,    # for staged rollout
+) -> dict[str, int]:   # {"papers_processed": N, "claims_extracted": N, "errors": N}
+    """Extract claims for all papers in paper_summaries table.
+    Reads from paper_summaries, writes to claims + claim_sources.
+    """
+```
+
+Each claim gets a deterministic ID: `f"{arxiv_id}_{claim_index:02d}"`.
+Use `json_dumps()` from schema.py — claims table stores TEXT not JSON.
+Commit after each paper. Log: `[extract_l3] 1/500: 2208.02389 — 3 claims`.
+
+**Use the prompt from R-005** (in agents/shared/findings.md [R-005]).
+
+**Validation:** extract claims for 10 papers, verify:
+- claims table has 10-50 rows (1-5 per paper)
+- All claim_type values are valid enum values
+- All assertion fields non-empty, no "this paper" / "we" references
+- All claim_ids follow the pattern
+
+**Blockers:** R-005 (need validated prompt), E-018 (need L2 summaries)
+
+**Artifacts:**
+- `src/knowledge/extract_l3.py` — full implementation
+- `agents/engineer/workspace/validate_extract_l3.py` — validation script (10/10 PASS)
+
+**Key implementation decisions:**
+- Handles both bare array `[{...}]` and dict-wrapped `{"claims": [...]}` responses
+- `claim_type` clamped to valid enum; defaults to "empirical" if invalid
+- First-person prefixes ("This paper", "we ", "our ") stripped from assertions
+- Deterministic `claim_id`: `f"{arxiv_id}_{index:02d}"` (e.g. `2208.02389_00`)
+- `skip_existing` uses pre-fetched in-memory set (suffix-based arxiv_id extraction)
+- Retries once with explicit JSON-array instruction on parse failure
+- Commits after each paper; errors never block subsequent papers
+
+**Validation results:** 10/10 checks PASS
+- papers_processed: 10/10, errors: 0
+- Avg claims/paper: 1.00 (model returns 1 claim — known R-005 behavior; prompt includes
+  "extract exactly 3 if possible" instruction as required by ticket)
+- All claim_type values valid (mix of empirical/theoretical)
+- All assertions non-empty, no first-person prefixes
+- All claim_ids match `{arxiv_id}_NN` pattern
+- claim_sources: 1 row per claim, no orphans
+- Resume (skip_existing=True): 0 new claims on second run
+
+**Closed:** 2026-03-29
+
+---
+
+### E-021 · Build L3 typed edges between claims
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-12
+
+**Description:**
+Implement `src/knowledge/edge_classifier.py` — takes pairs of claim nodes and
+classifies the relationship between them as one of:
+supports | contradicts | extends | refines | replicates_in_domain | requires
+
+**Two-phase approach:**
+
+**Phase A — candidate generation (embedding similarity)**
+```python
+def find_candidate_pairs(
+    db_path: Path,
+    embeddings_path: Path,   # L3 claim embeddings (to be built)
+    *,
+    similarity_threshold: float = 0.75,
+    max_pairs: int = 1000,
+) -> list[tuple[str, str, float]]:
+    """Return (claim_id_a, claim_id_b, similarity) pairs above threshold.
+    Only pairs from DIFFERENT papers — same-paper pairs are trivially related.
+    """
+```
+
+For now, use SPECTER2 paper-level embeddings as proxy for claim embeddings
+(same paper → similar claim embeddings). In Phase 4, train dedicated claim
+embeddings.
+
+**Phase B — edge classification (Ollama)**
+```python
+def classify_edge(
+    claim_a: str,    # assertion text
+    claim_b: str,    # assertion text
+    *,
+    model: str = "qwen2.5-coder:7b",
+    ollama_base_url: str = "http://localhost:11434",
+) -> str | None:
+    """Classify relationship between two claims.
+    Returns one of the 6 edge types, or None if unrelated.
+    
+    Prompt: given claim A and claim B from AI/ML papers, classify their
+    relationship. Return JSON: {"relationship": "supports|contradicts|...|none"}
+    """
+```
+
+**Important for `replicates_in_domain`:**
+This edge type is the cross-disciplinary connection — Goal 1 of the research.
+Classify as `replicates_in_domain` when the same idea appears in two different
+domain_tags (e.g. claim from NLP paper and CV paper assert structurally
+identical ideas with different vocabulary).
+
+**Validation:** classify 10 known pairs including:
+- 2 pairs you know support each other
+- 1 pair that contradicts
+- 1 cross-domain pair (NLP ↔ CV, same architectural idea)
+Verify edge_type assignments are sensible.
+
+**Blockers:** E-020 (need claims in DB), R-005 (need validated classification prompt)
+
+**Closed:** —
+
+---
+
+### E-022 · L2-derived relational edges (shares_method, co_domain)
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-04-12
+**Updated:** 2026-03-29
+
+**Description:**
+Mine `related_methods` and `domain_tags` from L2 summaries to create two new
+edge types in the claim graph — without requiring additional Ollama inference.
+
+**New edge types to add to claim_edges:**
+
+| Edge type | Definition | Source |
+|---|---|---|
+| `shares_method` | Two papers both list the same method in `related_methods` | L2 summaries |
+| `co_domain` | Two papers share ≥1 domain_tag and the shared tag is specific (not generic like "deep_learning") | L2 summaries |
+
+**Implement `src/knowledge/derive_edges.py`:**
+
+```python
+def build_method_edges(
+    db_path: Path,
+    *,
+    min_papers_per_method: int = 2,   # ignore methods mentioned only once
+    max_pairs_per_method: int = 50,   # cap to avoid cs.LG explosion
+) -> int:   # number of edges inserted
+
+def build_domain_edges(
+    db_path: Path,
+    *,
+    exclude_generic: set[str] | None = None,   # tags too broad to be useful
+    max_pairs_per_domain: int = 50,
+) -> int:
+```
+
+Generic domain tags to exclude (too broad): `{"deep_learning", "machine_learning",
+"neural_network", "AI", "artificial_intelligence"}` — these connect everything to
+everything.
+
+Specific domain tags worth keeping: `{"transformers", "BERT", "ResNet", "GAN",
+"diffusion", "LSTM", "attention", "reinforcement_learning", "graph_neural_network"}`
+
+These edges go into the existing `claim_edges` table using paper-level IDs
+(before L3 is fully built, edges connect paper nodes not claim nodes).
+
+**Validation:** after building edges on 500-paper corpus:
+- Report how many `shares_method` edges were created
+- Report top 5 methods by edge count
+- Report top 5 domain tags by edge count
+- Spot-check 3 method edges: are the two papers actually methodologically related?
+
+**Blockers:** E-018 (need 500 L2 summaries)
+
+**Closed:** 2026-03-29
+
+**Key findings (296 papers with related_methods, 353 with domain_tags):**
+- shares_method: 15 edges from 13 distinct methods
+- co_domain: 306 edges from 55 distinct tags (321 total in paper_edges)
+- Top methods: diffusion models (3 edges), transformers (1), pinns (1)
+- Top domain tags: transformers (50 capped), optimization (50 capped), language_modeling (50 capped)
+- Spot-check confirmed: CLIP, curriculum learning, and diffusion model paper pairs are methodologically related
+- paper_edges uses new dedicated table (not claim_edges) due to SQLite CHECK constraint limitations
+
+---
+
+### E-023 · Semantic Scholar citation edges once API key arrives
+
+**Status:** open
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-04-12
+
+**Description:**
+Once the Semantic Scholar API key is approved (still pending) and R-006 confirms
+coverage, implement real citation edge fetching to replace the 0-edge OpenAlex
+result for preprints.
+
+**What to implement in `src/knowledge/citations_s2.py`:**
+
+```python
+def fetch_s2_citations(
+    arxiv_ids: list[str],
+    db_path: Path,
+    *,
+    api_key: str,         # from SEMANTIC_SCHOLAR_API_KEY env var
+    requests_per_second: float = 0.9,
+    cache_path: Path | None = None,
+) -> dict[str, int]:   # {"fetched": N, "citation_edges": N, "errors": N}
+```
+
+For each paper:
+- `GET /graph/v1/paper/ArXiv:{id}?fields=references`
+- For each reference that has an arXiv ID: check if it's in our 500-paper corpus
+- If both source and target are in corpus: insert `cites` edge into `claim_edges`
+
+Rate limiting per O-004 in agents/shared/decisions.md (backoff, jitter, Retry-After).
+Store API key in environment variable only — never hardcode.
+
+**Expected outcome per R-006 research:**
+Semantic Scholar extracts references from PDF text, so preprints WILL have data.
+Expected: significantly more citation edges than the 0 from OpenAlex.
+
+**Blockers:** R-006 (coverage research), Semantic Scholar API key (external)
 
 **Closed:** —

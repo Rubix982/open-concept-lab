@@ -1,0 +1,463 @@
+{
+  "cross-encoder/nli-deberta-v3-small": {
+    "model_id": "cross-encoder/nli-deberta-v3-small",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "entailment",
+        "confidence": 0.5038,
+        "all_scores": {
+          "entailment": 0.5038,
+          "neutral": 0.3284,
+          "contradiction": 0.1678
+        },
+        "inference_time_s": 1.68,
+        "correct": true,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "contradiction",
+        "confidence": 0.4022,
+        "all_scores": {
+          "contradiction": 0.4022,
+          "entailment": 0.305,
+          "neutral": 0.2929
+        },
+        "inference_time_s": 0.282,
+        "correct": true,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "entailment",
+        "confidence": 0.4666,
+        "all_scores": {
+          "entailment": 0.4666,
+          "neutral": 0.2718,
+          "contradiction": 0.2616
+        },
+        "inference_time_s": 0.213,
+        "correct": false,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "facebook/bart-large-mnli": {
+    "model_id": "facebook/bart-large-mnli",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "entailment",
+        "confidence": 0.6768,
+        "all_scores": {
+          "entailment": 0.6768,
+          "neutral": 0.2131,
+          "contradiction": 0.1101
+        },
+        "inference_time_s": 4.109,
+        "correct": true,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "neutral",
+        "confidence": 0.4289,
+        "all_scores": {
+          "neutral": 0.4289,
+          "entailment": 0.3158,
+          "contradiction": 0.2553
+        },
+        "inference_time_s": 0.235,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "entailment",
+        "confidence": 0.7014,
+        "all_scores": {
+          "entailment": 0.7014,
+          "contradiction": 0.1736,
+          "neutral": 0.1251
+        },
+        "inference_time_s": 0.31,
+        "correct": false,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "MoritzLaurer/deberta-v3-large-zeroshot-v2": {
+    "model_id": "MoritzLaurer/deberta-v3-large-zeroshot-v2",
+    "fatal_error": "MoritzLaurer/deberta-v3-large-zeroshot-v2 is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'\nIf this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`",
+    "mps_compatible": false
+  },
+  "MoritzLaurer/deberta-v3-large-zeroshot-v2.0": {
+    "model_id": "MoritzLaurer/deberta-v3-large-zeroshot-v2.0",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "contradiction",
+        "confidence": 0.4255,
+        "all_scores": {
+          "contradiction": 0.4255,
+          "entailment": 0.3174,
+          "neutral": 0.2571
+        },
+        "inference_time_s": 2.018,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "neutral",
+        "confidence": 0.4171,
+        "all_scores": {
+          "neutral": 0.4171,
+          "contradiction": 0.3088,
+          "entailment": 0.2741
+        },
+        "inference_time_s": 0.458,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "neutral",
+        "confidence": 0.6157,
+        "all_scores": {
+          "neutral": 0.6157,
+          "entailment": 0.2124,
+          "contradiction": 0.172
+        },
+        "inference_time_s": 0.533,
+        "correct": true,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "cross-encoder/nli-deberta-v3-small_proper": {
+    "model_id": "cross-encoder/nli-deberta-v3-small",
+    "method": "direct_tokenization",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "neutral",
+        "confidence": 0.9955,
+        "all_scores": {
+          "contradiction": 0.0036,
+          "entailment": 0.0009,
+          "neutral": 0.9955
+        },
+        "inference_time_s": 0.457,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "contradiction",
+        "confidence": 0.9266,
+        "all_scores": {
+          "contradiction": 0.9266,
+          "entailment": 0.0002,
+          "neutral": 0.0731
+        },
+        "inference_time_s": 0.157,
+        "correct": true,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "contradiction",
+        "confidence": 0.9991,
+        "all_scores": {
+          "contradiction": 0.9991,
+          "entailment": 0.0003,
+          "neutral": 0.0006
+        },
+        "inference_time_s": 0.192,
+        "correct": false,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "facebook/bart-large-mnli_proper": {
+    "model_id": "facebook/bart-large-mnli",
+    "method": "direct_tokenization",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "neutral",
+        "confidence": 0.9838,
+        "all_scores": {
+          "contradiction": 0.0014,
+          "neutral": 0.9838,
+          "entailment": 0.0148
+        },
+        "inference_time_s": 0.389,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "neutral",
+        "confidence": 0.9242,
+        "all_scores": {
+          "contradiction": 0.0755,
+          "neutral": 0.9242,
+          "entailment": 0.0003
+        },
+        "inference_time_s": 0.073,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "contradiction",
+        "confidence": 0.9699,
+        "all_scores": {
+          "contradiction": 0.9699,
+          "neutral": 0.0225,
+          "entailment": 0.0076
+        },
+        "inference_time_s": 0.241,
+        "correct": false,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "MoritzLaurer/deberta-v3-large-zeroshot-v2.0_proper": {
+    "model_id": "MoritzLaurer/deberta-v3-large-zeroshot-v2.0",
+    "method": "direct_tokenization",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "load_error": null,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "entailment",
+        "confidence": 0.8838,
+        "all_scores": {
+          "entailment": 0.8838
+        },
+        "inference_time_s": 0.197,
+        "correct": true,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "entailment",
+        "confidence": 0.9998,
+        "all_scores": {
+          "entailment": 0.9998
+        },
+        "inference_time_s": 0.103,
+        "correct": false,
+        "device_used": "mps"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "entailment",
+        "confidence": 0.9995,
+        "all_scores": {
+          "entailment": 0.9995
+        },
+        "inference_time_s": 0.087,
+        "correct": false,
+        "device_used": "mps"
+      }
+    ]
+  },
+  "cross-encoder/nli-deberta-v3-small_standard_pair": {
+    "model_id": "cross-encoder/nli-deberta-v3-small",
+    "method": "A=premise,B=hypothesis direct",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "neutral",
+        "confidence": 0.9955,
+        "all_scores": {
+          "contradiction": 0.0036,
+          "entailment": 0.0009,
+          "neutral": 0.9955
+        },
+        "inference_time_s": 0.241,
+        "correct": false,
+        "device_used": "mps",
+        "method": "premise=claim_a, hypothesis=claim_b"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "contradiction",
+        "confidence": 0.9266,
+        "all_scores": {
+          "contradiction": 0.9266,
+          "entailment": 0.0002,
+          "neutral": 0.0731
+        },
+        "inference_time_s": 0.05,
+        "correct": true,
+        "device_used": "mps",
+        "method": "premise=claim_a, hypothesis=claim_b"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "contradiction",
+        "confidence": 0.9991,
+        "all_scores": {
+          "contradiction": 0.9991,
+          "entailment": 0.0003,
+          "neutral": 0.0006
+        },
+        "inference_time_s": 0.05,
+        "correct": false,
+        "device_used": "mps",
+        "method": "premise=claim_a, hypothesis=claim_b"
+      }
+    ]
+  },
+  "cross-encoder/nli-deberta-v3-small_zeroshot_template": {
+    "model_id": "cross-encoder/nli-deberta-v3-small",
+    "method": "zero-shot supports/contradicts/unrelated",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "entailment",
+        "confidence": 0.6419,
+        "all_scores": {
+          "entailment": 0.6419,
+          "contradiction": 0.2686,
+          "neutral": 0.0895
+        },
+        "inference_time_s": 0.29,
+        "correct": true,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "contradiction",
+        "confidence": 0.3835,
+        "all_scores": {
+          "contradiction": 0.3835,
+          "neutral": 0.3378,
+          "entailment": 0.2787
+        },
+        "inference_time_s": 0.193,
+        "correct": true,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "contradiction",
+        "confidence": 0.8361,
+        "all_scores": {
+          "contradiction": 0.8361,
+          "entailment": 0.1108,
+          "neutral": 0.0531
+        },
+        "inference_time_s": 0.083,
+        "correct": false,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      }
+    ]
+  },
+  "facebook/bart-large-mnli_zeroshot_template": {
+    "model_id": "facebook/bart-large-mnli",
+    "method": "zero-shot supports/contradicts/unrelated",
+    "device_used": "mps",
+    "mps_compatible": true,
+    "pairs": [
+      {
+        "pair_id": "pair1",
+        "expected": "entailment",
+        "predicted": "entailment",
+        "confidence": 0.8739,
+        "all_scores": {
+          "entailment": 0.8739,
+          "contradiction": 0.1014,
+          "neutral": 0.0246
+        },
+        "inference_time_s": 0.75,
+        "correct": true,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      },
+      {
+        "pair_id": "pair2",
+        "expected": "contradiction",
+        "predicted": "contradiction",
+        "confidence": 0.8313,
+        "all_scores": {
+          "contradiction": 0.8313,
+          "neutral": 0.1075,
+          "entailment": 0.0612
+        },
+        "inference_time_s": 0.613,
+        "correct": true,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      },
+      {
+        "pair_id": "pair3",
+        "expected": "neutral",
+        "predicted": "entailment",
+        "confidence": 0.7402,
+        "all_scores": {
+          "entailment": 0.7402,
+          "contradiction": 0.213,
+          "neutral": 0.0469
+        },
+        "inference_time_s": 0.376,
+        "correct": false,
+        "device_used": "mps",
+        "method": "zero-shot-supports/contradicts/unrelated template"
+      }
+    ]
+  }
+}

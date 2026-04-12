@@ -572,3 +572,99 @@ paged into RAM.  The full 10K × 768 float32 array (~30 MB) must be loaded for t
 matrix multiply; mmap allows the OS to manage this efficiently.
 **Rationale:** Consistent with E-014 mmap pattern.  Also prevents any accidental
 mutation of the embeddings file during query execution.
+
+---
+
+## [E-022] Decision: derive_edges.py — paper_edges table and edge-building choices
+
+_Date: 2026-03-29_
+
+**Decision: New `paper_edges` table instead of `claim_edges`** — L2-derived relational
+edges (`shares_method`, `co_domain`) are stored in a new `paper_edges` table, not in the
+existing `claim_edges` table.
+**Rationale:** `claim_edges` has a `CHECK (edge_type IN (...))` constraint that does not
+include the new types. SQLite does not support `ALTER TABLE ADD CONSTRAINT`, so adding
+types to the CHECK requires a drop-and-recreate of the table. Storing in a dedicated
+`paper_edges` table avoids touching the L3 claim graph schema, keeps the two concerns
+cleanly separated, and is zero cost (the table is added to `_ALL_DDL` in `schema.py`).
+
+**Decision: Method name normalisation is lowercase + strip punctuation** — Raw method
+strings from L2 extraction are lowercased and all punctuation is replaced with spaces,
+then whitespace is collapsed. E.g. `"PINN (Physics-Informed)"` becomes
+`"pinn physics informed"`.
+**Rationale:** The LLM extraction produces inconsistent capitalisation and punctuation for
+the same concept (e.g. `"PINNs"` vs `"physics-informed neural networks"`). Normalisation
+dramatically increases the match rate without requiring fuzzy string matching.
+
+**Decision: Edge IDs are deterministic and prefixed** — `edge_id` for method edges is
+`method_{method_norm}_{id_a}_{id_b}`; for domain edges it is `domain_{tag}_{id_a}_{id_b}`.
+`INSERT OR IGNORE` is used so repeated calls are idempotent.
+**Rationale:** Deterministic IDs make re-runs safe and make the edge provenance
+(which method or tag caused this edge) human-readable from the ID alone.
+
+**Decision: source_id < target_id (lexicographic order)** — All edges store the
+lexicographically smaller `arxiv_id` in `source_id`. The pair `(id_a, id_b)` with
+`id_a <= id_b` is enforced at insert time by `_ordered_pair()`.
+**Rationale:** Undirected pairs have no natural direction. Enforcing a canonical order
+eliminates duplicate edges (e.g. `A→B` and `B→A`) and makes deduplication trivial.
+
+**Decision: Generic domain tags excluded by default** — The default exclusion set is
+`{deep_learning, machine_learning, neural_network, AI, artificial_intelligence, NLP,
+CV, computer_vision}`. These tags appear in nearly every paper and would create a
+near-complete clique.
+**Rationale:** Consistent with the co_category cap decision in E-008. Specific tags
+like `transformers`, `diffusion_models`, `graph_neural_network` are retained because
+they identify a meaningful methodological cluster.
+
+**Results on current corpus (296/353 papers with method/domain fields):**
+- 15 shares_method edges (13 distinct methods; corpus is still small)
+- 306 co_domain edges (55 distinct tags; capped at 50 per tag)
+- Spot-check quality: CLIP, curriculum learning, diffusion model pairs confirmed related
+
+---
+
+## [E-020] Decision: extract_l3.py — L3 claim extraction implementation choices
+
+_Date: 2026-03-29_
+
+**Decision: Both bare array and dict-wrapped response forms handled** — `_parse_claims_response()`
+accepts both `[{...}]` (expected) and `{"claims": [{...}]}` (known R-005 failure mode) without
+requiring a retry. A single retry with explicit JSON-array instruction prefix is attempted only
+when `json.JSONDecodeError` is raised or the parsed object is neither a list nor a recognisable dict wrapper.
+**Rationale:** R-005 documented the dict-wrapped form as a known failure mode. Handling it
+in the parser avoids a wasted retry round-trip for a predictable model behavior.
+
+**Decision: `claim_type` clamped to valid enum, defaulting to "empirical"** — If the model
+returns an unknown `claim_type` string, it is replaced with `"empirical"` (the most common
+type). This ensures the SQLite CHECK constraint is never violated.
+**Rationale:** `empirical` is the safest default — it makes the fewest ontological commitments.
+The alternative (rejecting the claim) would discard valid assertions when the model uses slight
+variations (e.g. `"observation_empirical"`).
+
+**Decision: First-person prefix stripping via regex at normalisation time** — Assertions matching
+`^(this paper[,\s]+|we\s+|our\s+)` (case-insensitive) have the prefix stripped. This is applied
+by `_validate_claim()` after model output is received, not in the prompt.
+**Rationale:** The R-005 prompt's "no this paper / we / our" instruction already suppresses
+first-person prefixes for 5/5 papers in testing. The regex strip is a safety net for edge cases,
+consistent with R-005's documented approach.
+
+**Decision: `skip_existing` uses suffix-based arxiv_id extraction from claim_id** — The
+`existing_arxiv_ids` set is built by stripping the `_NN` suffix from all claim_ids in the DB
+(format `{arxiv_id}_{NN}` where NN is exactly 2 digits). This avoids a separate index column
+or JOIN.
+**Rationale:** Deterministic claim_id format makes this safe and efficient. The strip is O(1)
+per claim_id and the set membership check is O(1). A separate index column would require a
+schema change.
+
+**Decision: `max_claims=3` parameter controls prompt count request** — The prompt includes
+"Extract exactly {max_claims} claims if possible, fewer only if the paper has fewer distinct
+assertions." per R-005 recommendation. The model currently returns 1 claim despite this
+instruction (known R-005 behavior). The parameter is preserved for future prompt tuning.
+**Rationale:** R-005 explicitly noted "1 claim even when abstract contains 3+ assertions —
+prompt needs 'extract AT LEAST 3'". The instruction is correct per spec; model compliance
+varies. No further prompt engineering is in scope for E-020.
+
+**Validation results:** 10/10 checks passed on first run.
+- Avg claims/paper: 1.00 (model compliance with max_claims=3 instruction TBD)
+- All claim_types valid, assertions non-empty, no first-person prefixes
+- claim_id format correct, claim_sources coverage 100%, resume idempotent

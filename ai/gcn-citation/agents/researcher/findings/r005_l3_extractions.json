@@ -1,0 +1,80 @@
+{
+  "2006.04363": {
+    "status": "ok",
+    "claims": [
+      {
+        "claim_type": "empirical",
+        "assertion": "Dyna-style planning with updating real states toward simulated states results in poor policy performance.",
+        "method": "Dyna",
+        "domain": "RL",
+        "dataset": null,
+        "metric": "policy_performance",
+        "value": "poor"
+      }
+    ],
+    "title": "Hallucinating Value: A Pitfall of Dyna-style Planning with Imperfect Environment Models"
+  },
+  "2211.10119": {
+    "status": "ok",
+    "claims": [
+      {
+        "claim_type": "empirical",
+        "assertion": "Improves semantic segmentation accuracy in real-world surveillance scenarios by adapting to unknown domains without scene-specific optimization.",
+        "method": "Mixture Domain Adaptation",
+        "domain": "CV",
+        "dataset": null,
+        "metric": "accuracy",
+        "value": "Improved",
+        "conditions": "Real-world surveillance tasks"
+      }
+    ],
+    "title": "Mixture Domain Adaptation to Improve Semantic Segmentation in Real-World Surveillance"
+  },
+  "2403.10889": {
+    "status": "ok",
+    "claims": [
+      {
+        "claim_type": "theoretical",
+        "assertion": "Uniform convergence is equivalent to learnability in list PAC learning.",
+        "method": "Analytical proof",
+        "domain": "statistics",
+        "dataset": null,
+        "metric": null,
+        "value": null,
+        "conditions": null
+      }
+    ],
+    "title": "List Sample Compression and Uniform Convergence"
+  },
+  "2409.06890": {
+    "status": "ok",
+    "claims": [
+      {
+        "claim_type": "comparative",
+        "assertion": "Optimized HSIC tests generally outperform InfoNCE on difficult problems of detecting structured dependence.",
+        "method": "HSIC",
+        "domain": "statistics",
+        "dataset": null,
+        "metric": null,
+        "value": null,
+        "conditions": "difficult problems of detecting structured dependence"
+      }
+    ],
+    "title": "Learning Representations for Independence Testing"
+  },
+  "2410.17762": {
+    "status": "ok",
+    "claims": [
+      {
+        "claim_type": "empirical",
+        "assertion": "Hypergraph Convoluted Transformer Network (HCTN) achieves state-of-the-art performance on WSDREAM-2 datasets for response time and throughput.",
+        "method": "HCTN",
+        "domain": "graph_learning",
+        "dataset": "WSDREAM-2",
+        "metric": "response_time, throughput",
+        "value": "state-of-the-art"
+      }
+    ],
+    "title": "Anomaly Resilient Temporal QoS Prediction using Hypergraph Convoluted Transformer Network"
+  }
+}

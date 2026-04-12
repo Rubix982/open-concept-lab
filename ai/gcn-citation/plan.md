@@ -20,20 +20,28 @@ See: `docs/research/knowledge_infra_requirements.md`
 
 ## Active Tickets
 
-| ID    | Agent      | Title                                          | Status  |
-| ----- | ---------- | ---------------------------------------------- | ------- |
-| E-016 | Engineer   | Query interface (L1 + L2 semantic search)      | open    |
-| E-017 | Engineer   | Filter corpus for quality papers               | open    |
-| E-018 | Engineer   | Bulk L2 extraction on 500 papers               | open    |
-| E-019 | Engineer   | Phase 1 end-to-end validation                  | open    |
-| R-004 | Researcher | Research NLI models for edge classification    | open    |
+| ID    | Agent      | Title                                                | Status      |
+| ----- | ---------- | ---------------------------------------------------- | ----------- |
+| E-018 | Engineer   | Bulk L2 extraction on 500 papers                     | in-progress |
+| E-019 | Engineer   | Phase 1 end-to-end validation                        | open        |
+| R-005 | Researcher | Design L3 claim extraction schema + prompt           | open        |
+| R-006 | Researcher | Research Semantic Scholar API for citation edges     | open        |
+| E-020 | Engineer   | Implement L3 claim extraction pipeline               | open        |
+| E-021 | Engineer   | Build L3 typed edges (supports/contradicts/etc.)     | open        |
+| E-022 | Engineer   | L2-derived relational edges (shares_method, co_domain) | open      |
+| E-023 | Engineer   | Semantic Scholar citation edges                      | open        |
+| R-004 | Researcher | Research NLI models for edge classification          | open        |
 
 ## Blocked
 
-| ID    | Blocked By       |
-| ----- | ---------------- |
-| E-018 | E-015 ✅, E-017  |
-| E-019 | E-016, E-018     |
+| ID    | Blocked By                        |
+| ----- | --------------------------------- |
+| E-019 | E-016 ✅, E-018                   |
+| R-005 | E-018 (need L2 summaries)         |
+| E-020 | R-005, E-018                      |
+| E-021 | E-020, R-005                      |
+| E-022 | E-018                             |
+| E-023 | R-006, Semantic Scholar API key   |
 
 ## Completed (Knowledge Infra Phase 1)
 

@@ -110,6 +110,18 @@ CREATE TABLE IF NOT EXISTS claim_edges (
 );
 """
 
+_DDL_PAPER_EDGES = """
+CREATE TABLE IF NOT EXISTS paper_edges (
+    edge_id      TEXT PRIMARY KEY,
+    source_id    TEXT NOT NULL,    -- arxiv_id of the source paper
+    target_id    TEXT NOT NULL,    -- arxiv_id of the target paper
+    edge_type    TEXT NOT NULL,    -- shares_method | co_domain
+    shared_value TEXT,             -- the normalised method name or domain tag
+    confidence   REAL DEFAULT 0.8,
+    created_at   TEXT DEFAULT (datetime('now'))
+);
+"""
+
 _DDL_META = """
 CREATE TABLE IF NOT EXISTS _meta (
     key    TEXT PRIMARY KEY,
@@ -123,6 +135,7 @@ _ALL_DDL = [
     _DDL_CLAIMS,
     _DDL_CLAIM_SOURCES,
     _DDL_CLAIM_EDGES,
+    _DDL_PAPER_EDGES,
     _DDL_META,
 ]
 
