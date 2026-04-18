@@ -1,0 +1,74 @@
+[
+    {
+        "pred": "different species\n\nStory: Jia is a",
+        "target": "could still be the rare species she's been researching"
+    },
+    {
+        "pred": "washed away by the rainstorm\n\nStory:",
+        "target": "honey has been washed away by the rainstorm"
+    },
+    {
+        "pred": "fox has stolen them\n\nStory: Carlos is",
+        "target": "fox has stolen the eggs"
+    },
+    {
+        "pred": "disarrayed\n\nStory: Takumi is",
+        "target": "disarrayed by the wind"
+    },
+    {
+        "pred": "buried\n\nStory: Amina is an archae",
+        "target": "buried under the sand"
+    },
+    {
+        "pred": "fog\n\nStory: Mei is a professional photographer",
+        "target": "Mount Fuji is covered by fog"
+    },
+    {
+        "pred": "dried much faster\n\nStory: Yara is",
+        "target": "has dried much faster due to the intense sunlight"
+    },
+    {
+        "pred": "slippery\n\nStory: Kalyani is a",
+        "target": "floor is slippery due to the oil spill"
+    },
+    {
+        "pred": "damaged\n\nStory: Kavya is a",
+        "target": "damaged by the monkey"
+    },
+    {
+        "pred": "dropped significantly\n\nStory: Amara is a",
+        "target": "temperature in the kiln has dropped significantly"
+    },
+    {
+        "pred": "too hot\n\nStory: Emilia is a",
+        "target": "too hot for baking biscotti"
+    },
+    {
+        "pred": "scattered\n\nStory: Takeshi is a fish",
+        "target": "fish have scattered due to the volcanic eruption"
+    },
+    {
+        "pred": "adorned\n\nStory: Priya is a jewelry",
+        "target": "adorned with the gemstone"
+    },
+    {
+        "pred": "rare and exotic\n\nStory: Imelda is",
+        "target": "common"
+    },
+    {
+        "pred": "fragile\n\nStory: Leonardo Martinez is strolling",
+        "target": "fragile branches"
+    },
+    {
+        "pred": "wilted\n\nStory: Rohan is playing",
+        "target": "have wilted due to the rainstorm"
+    },
+    {
+        "pred": "warming up\n\nStory: Eliza is a",
+        "target": "warming up due to the power outage"
+    },
+    {
+        "pred": "deep\n\nStory: Ravi is a marine",
+        "target": "deep waters"
+    }
+]

@@ -1,0 +1,19 @@
+{
+    "full_rank": {
+        "accuracy": 0.57,
+        "rank": null,
+        "metadata": null
+    },
+    "singular_vector": {
+        "accuracy": null,
+        "rank": null,
+        "metadata": {
+            "training_args": {
+                "learning_rate": 0.1,
+                "n_epochs": 2,
+                "lamb": 0.1
+            },
+            "mask": null
+        }
+    }
+}

@@ -1,0 +1,45 @@
+wandb
+weights
+*.jsonl
+git_pat.txt
+generated_tomi.json
+generated_tomi_old.json
+*.bin
+finetuning_output/
+pca_results/
+old_masks/
+additionals/
+*.pt
+
+# debug logs
+*.out
+
+# weights
+*.pth
+*.npz
+*.pkl
+
+# cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.env
+.venv
+.vscode/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+__pycache__/
+*.py[cod]
+*$py.class
+.vscode/
+.ipynb_checkpoints
+*.log
+
+env.yml
+results_/
+figures/
+notebooks/patching_figures_plots_only.ipynb

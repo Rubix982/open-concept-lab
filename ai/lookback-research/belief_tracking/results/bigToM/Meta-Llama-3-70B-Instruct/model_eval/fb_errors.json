@@ -1,0 +1,98 @@
+[
+    {
+        "pred": "book\n\nStory: Azola is a teacher",
+        "target": "the book she ordered"
+    },
+    {
+        "pred": "Full\n\nStory: Abhay is a young",
+        "target": "full of water"
+    },
+    {
+        "pred": "sunny\n\nStory: Hiroshi is a fish",
+        "target": "the weather will be sunny all day"
+    },
+    {
+        "pred": "rare species\n\nStory: Jia is a",
+        "target": "are a different species"
+    },
+    {
+        "pred": "full of honey\n\nStory: Mateo is",
+        "target": "beehives are full of honey"
+    },
+    {
+        "pred": "eggs\n\nStory: Carlos is a farmer in",
+        "target": "nest contains eggs"
+    },
+    {
+        "pred": "high-quality paintbrushes\n\nStory: Fat",
+        "target": "she has high-quality paintbrushes in her studio"
+    },
+    {
+        "pred": "full of honey\n\nStory: Aisha is",
+        "target": "full of honey and ready for harvest"
+    },
+    {
+        "pred": "perfect\n\nStory: Kofi is a fish",
+        "target": "the weather is perfect for sailing"
+    },
+    {
+        "pred": "fresh\n\nStory: Kavya is a",
+        "target": "fresh and perfect for the bouquet"
+    },
+    {
+        "pred": "fresh and suitable\n\nStory: Aria is",
+        "target": "her ingredients are fresh and suitable for baking the cake"
+    },
+    {
+        "pred": "calm and full of fish\n\nStory: R",
+        "target": "waters near the shore are calm and full of fish"
+    },
+    {
+        "pred": "valuable violin\n\nStory: Lila is a",
+        "target": "her valuable violin"
+    },
+    {
+        "pred": "obstructed\n\nStory: Aisha is a",
+        "target": "obstructed by leaves"
+    },
+    {
+        "pred": "sturdy\n\nStory: Leonardo Martinez is strolling",
+        "target": "sturdy branches"
+    },
+    {
+        "pred": "full bloom\n\nStory: Rohan is playing",
+        "target": "are in full bloom"
+    },
+    {
+        "pred": "in tune\n\nStory: Xiomara is",
+        "target": "slightly out of tune"
+    },
+    {
+        "pred": "Has shifted.\n\nStory: Isabella is an",
+        "target": "is in place"
+    },
+    {
+        "pred": "rare species\n\nStory: Amara is a",
+        "target": "with vibrant purple petals is the rare species"
+    },
+    {
+        "pred": "thrilling plot\n\nStory: Yael is in",
+        "target": "bland storyline"
+    },
+    {
+        "pred": "withered (No, because Zane did",
+        "target": "in full bloom"
+    },
+    {
+        "pred": "preheated\n\nStory: Naveen",
+        "target": "preheated to the correct temperature"
+    },
+    {
+        "pred": "fastest\n\nStory: Petra is a botan",
+        "target": "plants treated with Fertilizer A are growing the fastest"
+    },
+    {
+        "pred": "intuitive and easy to navigate\n\nStory: Perc",
+        "target": "intuitive and user-friendly"
+    }
+]

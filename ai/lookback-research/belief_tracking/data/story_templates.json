@@ -1,0 +1,66 @@
+{
+    "placeholders": {
+        "entity": {
+            "character": [
+                "<character_1>",
+                "<character_2>",
+                "<character_3>",
+                "<character_4>"
+            ],
+            "container": [
+                "<container_1>",
+                "<container_2>"
+            ],
+            "state": [
+                "<state_1>",
+                "<state_2>"
+            ]
+        },
+        "event": {
+            "state_event": "<state_event>",
+            "container_event": "<container_event>",
+            "state_swap": "<state_swap>"
+        },
+        "question": {
+            "character": "<character_q>",
+            "container": "<container_q>",
+            "state": "<state_q>"
+        },
+        "notice": "<noticed/didn't notice>"
+    },
+    "templates": [
+        {
+            "context": "<character_1> and <character_2> are working in a busy restaurant. To complete an order, <character_1> grabs an opaque <container_1> and fills it with <state_1>. Then <character_2> grabs another opaque <container_2> and fills it with <state_2>. <character_2> cannot observe <character_1>'s actions. <character_1> cannot observe <character_2>'s actions.",
+            "causal_event": "A co-worker named <character_2> didn't hear the customer's request and swaps the <state_event> in the <container_event> with <state_swap> while <character_1> was attending to another task.",
+            "event_noticed": "<character_1> <noticed/didn't notice> the swap occurring.",
+            "question": "What does <character_q> believe the <container_q> contains?",
+            "container_type": "bottles",
+            "state_type": "drinks"
+        },
+        {
+            "context": "<character_1> and <character_2> are working in a busy restaurant. To complete an order, <character_1> grabs an opaque <container_1> and fills it with <state_1>. Then <character_2> grabs another opaque <container_2> and fills it with <state_2>. <character_2> cannot observe <character_1>'s actions. <character_1> can observe <character_2>'s actions.",
+            "causal_event": "A co-worker named <character_2> didn't hear the customer's request and swaps the <state_event> in the <container_event> with <state_swap> while <character_1> was attending to another task.",
+            "event_noticed": "<character_1> <noticed/didn't notice> the swap occurring.",
+            "question": "What does <character_q> believe the <container_q> contains?",
+            "container_type": "bottles",
+            "state_type": "drinks"
+        },
+        {
+            "context": "<character_1> and <character_2> are working in a busy restaurant. To complete an order, <character_1> grabs an opaque <container_1> and fills it with <state_1>. Then <character_2> grabs another opaque <container_2> and fills it with <state_2>.",
+            "causal_event": "A co-worker named <character_2> didn't hear the customer's request and swaps the <state_event> in the <container_event> with <state_swap> while <character_1> was attending to another task.",
+            "event_noticed": "<character_1> <noticed/didn't notice> the swap occurring.",
+            "question": "What does <character_q> believe the <container_q> contains?",
+            "container_type": "bottles",
+            "state_type": "drinks"
+        },
+        {
+            "context": "<character_1> and <character_2> are working in a busy restaurant. To complete an order, <character_1> grabs an opaque <container_1> and fills it with <state_1>. Then <character_2> grabs another opaque <container_2> and fills it with <state_2>. <character_2> cannot observe <character_1>'s actions. <character_3> cannot observe <character_4>'s actions.",
+            "causal_event": "A co-worker named <character_2> didn't hear the customer's request and swaps the <state_event> in the <container_event> with <state_swap> while <character_1> was attending to another task.",
+            "event_noticed": "<character_1> <noticed/didn't notice> the swap occurring.",
+            "question": "What does <character_q> believe the <container_q> contains?",
+            "state_question": "What does the <container_q> contain?",
+            "container_type": "bottles",
+            "state_type": "drinks"
+        }
+    ]
+}
