@@ -1,0 +1,2289 @@
+Unified Concept Editing in Diffusion Models
+Rohit Gandikota1
+Hadas Orgad2 Yonatan Belinkov2
+Joanna Materzyńska3 David Bau1
+1
+2
+3
+Northeastern University
+Technion
+Massachusetts Institute of Technology
+
+arXiv:2308.14761v2 [cs.CV] 22 Oct 2024
+
+Original Model
+Mimicked Style
+
+Biased
+
+Unified Edited Model
+Unsafe
+
+*
+*
+*
+
+Erased Style
+
+Diverse
+Representation
+
+Safe
+
+Erasing 100 Artistic Styles
++
+Debiasing 35 Professions
++
+Moderating NSFW
++
+Preserving Remaining Concepts
+
+*
+
+Closed Form Edit
+
+* Masks added by authors for publication
+Figure 1. Our method enables unified and efficient editing of multiple concepts in text-to-image models through closed-form modifications
+to attention weights. We present applications to debias, erase, and moderate concepts at scale. Debiasing professions leads the edited model
+to generate fairer gender and race ratios. Erasing an artistic style removes characteristics associated with a particular creator. Moderating the
+model reduces the likelihood of generating inappropriate images.
+
+Abstract
+Text-to-image models suffer from various safety issues
+that may limit their suitability for deployment. Previous
+methods have separately addressed individual issues of bias,
+copyright, and offensive content in text-to-image models.
+However, in the real world, all of these issues appear simultaneously in the same model. We present a method that
+tackles all issues with a single approach. Our method, Unified Concept Editing (UCE), edits the model without training
+using a closed-form solution, and scales seamlessly to concurrent edits on text-conditional diffusion models.
+We present scalable simultaneous debiasing, style erasure,
+and content moderation by editing text-to-image projections,
+and perform extensive experiments demonstrating improved
+efficacy and scalability over prior work. Our code is available at unified.baulab.info.
+
+1. Introduction
+Text-to-image diffusion models have ushered in a set
+of complex societal challenges. Generative image models
+jeopardize artists by cloning their styles [1]; they reinforce
+
+biases by amplifying stereotypes [25, 44]; and they facilitate the creation of offensive images [19]. While several
+methods have been proposed to mitigate such issues individually [9,14,22,36,46], real-world deployments of generative
+image models manifest all these problems concurrently. A
+natural first step for exercising safety in generative models
+is the careful curation of training data to exclude any content that should not be replicated [34]. However, training
+a large model is expensive, and the impact of data curation
+on a model may be counterintuitive and unpredictable. For
+example, removing undesired content can expose other undesired content [7]; removing toxic content can introduce
+new biases [11]; and reducing offensive content can result
+in incomplete removal [29]; these examples highlight the
+limitations of relying solely on data curation.
+In this paper, we introduce a unified model-editing approach capable of addressing the different safety issues with
+a single formulation. Our method, called Unified Concept
+Editing (UCE), offers a fast and practical way to control
+model behavior post-training, filling the gaps where data
+curation might fall short. UCE is a closed-form parameterediting method that enables the application of hundreds of
+editorial modifications within a single text-to-image syn-
+
+thesis model while preserving the generative quality of the
+model for unedited concepts.
+The UCE method builds upon previous model editing
+work, generalizing the TIME [31] and MEMIT [27] methods.
+Unlike previous diffusion model editing methods such as
+TIME, UCE is designed to enable many simultaneous edits
+to be applied at once. These edits can include actions such as
+erasing, moderating, or debiasing a concept—tasks that have
+been traditionally treated as distinct issues with separate
+solutions. UCE goes beyond MEMIT in several ways: it
+edits text-to-image models rather than language models; and
+it also allows the editor to explicitly specify the distribution
+of concepts that should not be modified. Finally, UCE also
+introduces a new, scalable debiasing approach. We compare
+UCE with a range of prior model-editing methods and find
+that it demonstrates superior performance, outperforming
+other methods by a wide margin. UCE exhibits superior
+performance both in single edits in each category of editing,
+as well as in the ability to scale to many edits at once while
+minimizing interference with unedited concepts.
+
+2. Related Work
+While text-to-image diffusion models are becoming increasingly popular in commercial art and graphic design,
+they tend to suffer from various issues, which have previously been addressed separately.
+Copyright issues. Recent lawsuits [1, 38] have contended
+that models like Stable Diffusion infringe on many artistic
+styles, and researchers have found that the models can memorize some copyrighted training data nearly verbatim [6, 42].
+To reduce such memorization, previous work proposes randomizing and augmenting training image captions [43],
+while other work has explored a technique called image
+cloaking that allows artists to protect their content from being imitated by large generative models by adding specially
+crafted adversarial perturbations to images before publishing
+them online [35,39]; both these approaches require thorough
+preparation of the training corpus. Another approach adjusts
+a model after training is complete, deleting an undesired
+concept by modifying model weights [14, 16, 21, 22, 47].
+Our method adopts that concept-erasure approach, and we
+benchmark against the previous state-of-the-art. Our method
+differs from previous concept erasure methods because it is
+a closed-form edit that removes many concepts at once.
+Offensive content. Diffusion models also sometimes generate inappropriate images, such as nude and violent images.
+Various methods have been proposed to filter out inappropriate images from the training data or at inference time [13,28];
+for example the Stable Diffusion implementation includes a
+“not safe for work” safety checker that returns a black image
+when an unsafe image is detected [4, 23, 33], and other work
+has addressed the issue in through image editing at infer-
+
+ence time [36]. In cases where open-source code and model
+weights are openly available, such post-production filters can
+be easily disabled [40]. A more difficult-to-circumvent approach removes the knowledge of unwanted concepts from
+the model weights; previous methods taking that approach
+have proposed attention re-steering through fine-tuning [47],
+fine-tuning the attention weights [14] and continual learning [16]. While previous methods all fine-tune the model,
+we propose a fast and efficient method to erase offensive
+concepts using a closed-form edit.
+Social biases. Diffusion image generation models have
+been found to be prone to social and cultural biases [8,25,44],
+even exaggerating and amplifying societal stereotypes beyond simple imbalances in the training data [5, 12], although
+quantifying amplification can be subtle [37]. Previous work
+has tackled this issue by modifying model parameters after
+training, by projecting out biased directions in the text embedding [9], or by performing algebraic manipulation of the
+representations [46]. One previous work, which inspires our
+current method, applies a direct closed-form model editing
+method [31]. The previous works have found that debiasing
+multiple concepts simultaneously is challenging, because
+debiasing one concept affects others, even in the presence
+of regularization methods. Our method overcomes that limitation with a new debiasing procedure that eliminates the
+mutual effect between concepts.
+Model editing. Model editing has recently emerged as an
+approach to control a model’s behavior without training. In
+model editing, a subset of the model’s weights is modified
+by locating the knowledge in the model and targeting it. Notably, [3] introduced a closed-form approach to manipulate
+specific rules encoded in deep generative vision models, enabling users to interactively modify these rules. Closed-form
+solutions for editing knowlege in generative text models have
+been proposed in [26, 27], while [2, 31] have edited knowledge in text-to-image diffusion models by targeting either
+the cross-attention layers or the text-encoder layers. Our
+method adopts and generalizes these approaches to enable
+removal and debiasing of many concepts simultaneously in
+text-to-image models.
+
+3. Background
+Diffusion models are generative models that can approximate distributions through a gradual denoising process [17, 41]. Starting from Gaussian noise, the model iteratively denoises over T time steps to form a final image.
+At each intermediate step t, the model predicts noise ϵt that
+is added to the original image, with xT as initial noise and
+x0 as the final output. By learning the parameters of the
+denoising process, the trained model can generate novel images from noise. This denoising is modeled as a Markov
+
+min
+
+transition probability.
+pθ (xT :0 ) = p(xT )
+
+1
+Y
+
+pθ (xt−1 |xt )
+
+(1)
+
+t=T
+
+Text-to-image latent diffusion models operate on lowdimensional embedding that is modeled with a U-Net generation network. The text conditioning is fed to the network
+via text embedding, extracted from a language model, in
+the cross-attention layers. Specifically, the attention modules within diffusion models follow the QKV (Query-KeyValue) [45] structure, where queries originate from the image
+space, while keys and values are derived from the text embeddings. Our focus centers on the linear layers Wk and Wv ,
+responsible for projecting text embeddings.
+For a given text embedding ci , the keys and values are
+generated by ki = Wk ci and vi = Wv ci respectively. The
+keys are then multiplied by the query qi that represents the
+visual features of the current intermediate image. This produces an attention map that aligns relevant text and image
+regions:
+A ∝ softmax(qi kiT )
+
+(2)
+
+The attention map indicates the relevance between each
+text token and visual feature. Using this alignment, the crossattention output is then computed by attending over the value
+vector V with the normalized attention weights.
+O = Avi
+
+W
+
+Concepts to
+Edit
+
+ci ∈ E
+
+∑
+i=0
+
+v*
+i
+
+Wcj
+
+Cross
+Attention
+
+Concepts to
+Preserve
+
+| | Wci − v*
+| |22
+i
+
+Wci
+
+W
+
+cj ∈ P
+
+min
+W
+
+n
+
+∑
+j=0
+
+| | Wcj − Wvoldcj | |22
+
++
+
+Minimizing in Closed Form
+
+Figure 2. Closed-form editing of cross-attention weights enables
+concept manipulation in diffusion models. Our method modifies
+the attention weights to induce targeted changes to the keys and
+values corresponding to specific text embeddings for a set of edited
+concepts ci ∈ E while minimizing changes to a set of preserved
+concepts cj ∈ P . That dual objective allows debiasing, erasing, or
+moderating concepts while preserving unrelated ones. The same
+editing function is applied in all cases, but the target keys and values
+are set differently per application. As a closed-form edit, modifying
+attention weights given the new keys and values mappings takes
+less than 1 minute. That enables efficient simultaneous editing of
+multiple concepts.
+
+objective function (a similar equation for the key projection
+matrices can be derived):
+
+(3)
+
+The cross-attention is the mechanism that links the text and
+image information and responsible for assigning visual meaning to text tokens. The output of Equation 3 is then propagated through the remaining layers of the diffusion U-Net.
+TIME [31] edits implicit assumptions in pre-trained diffusion models by updating the cross-attention layers. Implicit
+assumptions can be any visual features that a model assumes
+about objects in an under-specified prompt, such as the color
+of roses which is usually red, or the gender of a doctor which
+is usually male. To edit these assumptions, the method requires a "source" under-specified prompt where the model
+makes an assumption (e.g. "a pack of roses") and a "destination" prompt specifying the desired attribute (e.g. "a pack
+of blue roses"). TIME updates the projection matrices Wk
+and Wv , to bring the source prompt embedding closer to the
+destination embedding. This aligns the textual concepts such
+that the model no longer makes the implicit assumption.
+Let ci be the source embedding, derived from the tokens
+of the source prompt, and ci ∗ be the corresponding destination embeddings, taken from the embeddings of the corresponding tokens in destination prompt. The values of the
+destination prompts are calculated as vi ∗ = W old ci ∗. New
+projection matrices W are then optimized to minimize the
+
+m
+
+min
+W
+
+m
+X
+
+||W ci −
+
+i=0
+
+vi∗ ||22 + λ||W − W old ||2F
+|{z}
+
+(4)
+
+W old c∗
+i
+
+where λ is a regularization hyper-parameter. [31] proved that
+the loss function has a closed-form global minimum solution,
+which allows efficient editing of text-to-image models.
+
+W =
+
+m
+X
+i=0
+
+!
+vi∗ cTi + λW old
+
+m
+X
+
+!−1
+ci cTi + λI
+
+(5)
+
+i=0
+
+The first term in the inverse matrix,
+
+m
+P
+i=0
+
+ci cTi , is the co-
+
+variance of the concept text embeddings being edited. As
+discussed in the appendix, we interpret the second term, an
+identity matrix, as matching the covariance of the large encyclopedia of concept embeddings in the diffusion model’s
+vocabulary, inspired by MEMIT [27].
+While TIME formulation is effective, it risks interference
+with surrounding concepts when editing a particular concept. For example, editing doctors to be female might also
+affect teachers to be female. TIME has a regularization term
+that prevents the edited matrix from changing too radically.
+
+However, it is a general term and thus affects all vector representations equally. In this work, we present an alternative
+preservation term that allows targeted editing of the parameters of the pretrained generative model while maintaining its
+core capabilities.
+
+4. Method
+We introduce a general model editing methodology applicable to any linear projection layer. Given a pretrained
+layer W old , our goal, as shown in Figure 2, is to find new
+edited weights W that edit a set of concepts in set E while
+preseving a set of concepts in set P . Specifically, we wish to
+find weights so that the output for each of the inputs ci ∈ E
+maps to target values vi∗ = Wvold ci∗ instead of the original
+W old ci , while preserving outputs corresponding to the inputs cj ∈ P as W old cj . A formal objective function can be
+constructed as:
+X
+X
+min
+||W ci − vi∗ ||22 +
+||W cj − W old cj ||22 (6)
+W
+
+ci ∈E
+
+cj ∈P
+
+W =
+
+−1
+
+
+X
+
+vi∗ cT
+i +
+
+ci ∈E
+
+X
+
+X
+
+
+W old cj cT
+j
+
+cj ∈P
+
+Debiasing To debias a concept ci (e.g. “doctor”) across
+attributes a1 , a2 , ..., ap (e.g. “white”, “asian”, “black”, ..),
+we want the model to generate the concept with evenly distributed attributes. This is achieved by adjusting the magnitude of vi along the directions of va1 , va2 , ..., vap , where
+vai = W old ai corresponds to the attribute text prompts:
+vi∗ ← W old [ci + α1 a1 + α2 a2 + ... + αp ap ]
+
+(9)
+
+The constants αi are chosen such that the diffusion model
+generates the concept with any desired probability for each
+attribute. This enables our method to debias multiple attributes simultaneously, unlike previous approaches such
+as TIME and concept ablation that can debias across dual
+attributes only. We provide the detailed algorithm in Alg 1.
+Algorithm 1 Debiasing Concepts in Diffusion Models
+
+As derived in the Appendix, the objective function in Equation 6 has a closed-form solution for the updated weights:
+
+
+This updates the weights such that the output no longer
+reflects concept ci , effectively erasing that concept from
+the model’s generations and eliminating generations of the
+undesired characteristics.
+
+ci cT
+i +
+
+ci ∈E
+
+X
+
+
+cj cT
+j
+
+cj ∈P
+
+(7)
+This formulation generalizes both the TIME [31] and
+MEMIT [27] editing methods. When only canonical directions of the inputs are used as preservation terms cj , our
+method reduces to TIME. Solving for the weight update
+∆W instead of directly solving for W , our method reduces
+to MEMIT closed-form update. We discuss in detail how our
+approach provides a unified generalization that encompasses
+prior editing techniques as special case in the Appendix.
+We edit the linear cross-attention projections (Wk and
+Wv ) to perform various concept edits with different goals:
+erasure, moderation, and debiasing. Our method requires
+the m text embeddings ci derived from text descriptions of
+the concepts to edit and their corresponding modified target
+outputs vi∗ . The target outputs are defined differently based
+on the edit type, through the destination concepts c∗i as described below. We also preserve n surrounding concepts
+using their descriptions cj . For concepts with multiple tokens, we align the last token of ci to the last token of vi∗ and
+make the edit.
+Erasing To erase a concept ci , we want to prevent the
+model from generating it. If the concept is abstract like an
+artistic style (e.g. “Kelly Mckernan”), this can be accomplished by modifying the weights so the target output vi
+aligns with a different concept c∗ (e.g. “art”):
+vi∗ ← W old c∗
+
+(8)
+
+1: Input: Diffusion M with cross attentions Wk , Wv
+2: Input: Edit list E, preserve list P
+3: Input: Attributes A (list of strings of size p)
+4: Input: Learning step η, desired ratios Rdes
+5: while True do
+6:
+Rcurr ← GET _ RATIOS(M, E, A)
+
+for i, ci in enumerate(E) do
+if max(|Rcurr [i] − Rdes [i]|) < 0.05 then
+P .append(ci ) ▷ add to preserve post debias
+E.remove(ci )
+▷ remove from edit list
+continue
+end if
+13:
+α ← η(Rcurr [i] − Rdes [i])
+▷ α ∈ Rp
+∗
+14:
+vi ← Wv ci + α · A
+15:
+ki∗ ← Wk ci + α · A
+16:
+end for
+17:
+if E is empty then
+18:
+break
+▷ All concepts debiased
+19:
+end if
+20:
+Wv = UCE(E, {vi∗ }, P , Wv )
+▷ UCE is Eq.7
+21:
+Wk = UCE(E, {ki∗ }, P , Wk )
+22: end while
+23: return M
+▷ Debiased Model
+7:
+8:
+9:
+10:
+11:
+12:
+
+Moderation To moderate concept ci (e.g. “nudity”), we
+perform an edit where the target output vi∗ aligns with an
+unconditional prompt c0 (e.g. “ ”):
+vi∗ ← W old c0
+
+(10)
+
+This replaces the output for ci with a more generic, unconditional output c0 , moderating the model’s response by
+reducing extreme attributes of that concept.
+
+Our erasing technique directly modifies the key–value
+mappings in the model to associate keys with different concepts rather than the undesired ones. We use our method to
+erase artistic styles from the model’s weights. Our technique
+allows preserving certain artists while removing others. We
+found this enables substantially less interference on a holdout
+set of artists that were neither erased nor explicitly preserved.
+We compare our artistic erasure method to recent approaches
+including ESD-x [14], Concept Ablation [22], and SDD [21]
+which use cross-attention fine-tuning for controllable image
+editing. In a second set of experiments, we test object erasure (e.g., erasing the concept of garbage trucks). In this
+set of experiments, we did not use any explicit preservation
+objectives, in order to test implicit interference. For object
+erasure, we primarily compare to ESD-u [14], which freezes
+all parameters except cross-attentions during fine-tuning,
+enabling more global erasures.
+5.1.1
+
+5
+
+50
+
+1 The authors of SDD note potential overfitting of their method when
+erasing multiple concepts. To mitigate this, we limited SDD to 700 iterations
+for multi-concept erasure. For Ablation, the authors suggest 100 iterations
+per concept, however we found the model deteriorates after 1000 total
+iterations. Therefore, we restricted Ablation to 1000 iterations total when
+erasing multiple concepts.
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Figure 3. Our method and ESD-x show strong erasing capabilities.
+SDD and Ablation2 start to dilute their erasing capabilities as the
+number of concepts being erased are increased.
+
+# Concepts
+1
+5
+10
+50
+100
+500
+1000
+Original SD
+
+Artist erasure
+
+Our method can successfully erase multiple concepts while
+preserving the model’s knowledge. We use the text embeddings of the artist names as our concepts ci to erase and
+a set of artists to preserve cj . As shown in Figure 3, we
+are able to consistently erase multiple artistic styles, while
+other methods maintain a lot of characteristics of the artistic
+styles and impair the model’s capabilities as the number of
+erased concepts increases. We found ESD and SDD tend to
+damage the model more when erased sequentially (at 1000
+iterations per concept), so we limited those techniques to
+random sampling-based erasure for a fixed 1000 iterations.1
+Our method also demonstrates reduced interference with
+neighboring, non-erased concepts compared to other techniques. As shown in Figure 4, erasing with our approach has
+less impact on concepts that were not targeted for removal.
+The top plot shows the LPIPS [48] difference between the
+original SD and edited models, indicating our method results in the smallest modifies the unrelated concepts the least.
+The bottom plot shows the CLIP score [32] on COCO-30k
+prompts [24], where our method maintains better text-toimage alignment after editing, as evidenced by the higher
+CLIP score. Together, these results highlight an important
+advantage of our erasing approach – the ability to remove
+targeted concepts with minimal disruption to other areas of
+knowledge in the model.
+Diffusion models were shown to mimic more than 1800
+
+Our Method
+
+Andrew
+Ferez
+
+1
+
+Original SD
+
+Antonio J.
+Manzanedo
+
+5.1. Erasing
+
+# of
+Artists
+Erased
+
+Thomas
+Cole
+
+5. Experiments
+
+CLIP ↑
+31.35
+31.25
+31.48
+31.22
+30.08
+21.06
+16.79
+31.32
+
+LPIPS↓
+0.05
+0.08
+0.13
+0.22
+0.30
+0.44
+0.47
+-
+
+FID↓
+14.37
+14.30
+15.56
+15.10
+15.09
+72.40
+85.48
+14.49
+
+Table 1. Our method can erase upto 100 concepts while performing
+similar to pre-trained SD on COCO-30k dataset. The image fidelity
+is consistent with original SD till 100 erasures. With LPIPS, we find
+that the model at 100 erasures has a slightly different performance
+for a given seed and prompt, but as the CLIP score shows, the
+alignment of the model is still intact.
+
+artistic styles [20]. We analyzed the capabilities of our
+method to erase multiple concepts by erasing n artists while
+preserving the remaining 1000 − n. As shown in Table 1,
+our method can erase up to 100 artists simultaneously before damaging image fidelity and CLIP scores. After 50
+erasures, the model’s output for a given prompt and seed
+begins to change , as indicated by the LPIPS score, but remains aligned overall as evidenced by the CLIP score. The
+importance of our preservation strategy to these results is
+shown in the Appendix, where no preservation reduces back
+to the TIME formulation.
+5.1.2
+
+Erasing Objects
+
+To demonstrate the capability of our method to erase objects
+from the diffusion model’s learned concepts, with potential
+applications for removing harmful symbols and content, we
+conducted experiments erasing Imagenette [18] classes, a
+subset of Imagenet classes [10]. For each erased object, we
+utilized the text embedding (e.g. "French Horn") as ci , without additional preservation concepts cj . We generated 500
+images per class and evaluated top-1 classification accuracy
+
+5
+
+Stephan
+Martiniere
+
+50
+
+Eugene von
+Guerard
+
+1
+
+Original SD
+
+Our Method
+
+SDD
+
+Ablation
+
+ESD-x-1
+
+Alex
+Alemany
+
+# of
+Artists
+Erased
+
+Figure 4. Our method preserves the remaining knowledge of the model better after the edit. The figure shows images generated from
+different editing methods, for the same prompts and seeds, across a variety of artists that are not erased. Our method exhibits lower LPIPS,
+indicating less change to unerased concepts during model editing. Similarly for COCO, we find that our method has better CLIP scores
+across all the scales. This demonstrates that our method has significantly reduced interference compared to other fine-tuning approaches
+when editing.
+
+Class name
+
+Cassette Player
+Chain Saw
+Church
+Gas Pump
+Tench
+Garbage Truck
+English Springer
+Golf Ball
+Parachute
+French Horn
+Average
+
+Accuracy of Erased
+Class ↓
+SD
+Ours
+ESD-u
+15.6
+0.0
+0.60
+66.0
+0.0
+6.0
+73.8
+8.4
+54.2
+75.4
+0.0
+8.6
+78.4
+0.0
+9.6
+85.4
+14.8
+10.4
+92.5
+0.2
+6.2
+97.4
+0.8
+5.8
+98.0
+1.4
+23.8
+99.6
+0.0
+0.4
+78.2
+2.6
+12.6
+
+Accuracy of Other
+Classes ↑
+SD
+Ours
+ESD-u
+85.1
+90.3
+64.5
+79.6
+76.1
+68.2
+78.7
+80.2
+71.6
+78.5
+80.7
+66.5
+78.2
+79.3
+66.6
+77.4
+78.7
+51.5
+76.6
+78.9
+62.6
+76.1
+79.0
+65.6
+76.0
+77.4
+65.4
+75.8
+77.0
+49.4
+78.2
+79.8
+63.2
+
+Table 2. Our method can erase objects from diffusion models
+effectively without impacting the accuracy for other object classes
+even when they are not explicitly preserved. Compared to ESD-u,
+we demonstrate improved erasure of the targeted class alongside
+higher preservation of unrelated classes in the generated images on
+Imagenette classes.
+
+using a pretrained ResNet-50 [15], comparing to ESD-u in
+Table 2. Objects were erased individually to analyze interference versus ESD on non-erased classes. Without explicit
+preservation, our approach exhibited superior erasure capability while minimizing interference on non-targeted classes.
+Further erasure analysis is provided in the Appendix. Erasing
+all 10 Imagenette classes together reduced image generation
+accuracy to just 4.0% and COCO-CLIP score to 31.02 (original SD is 31.32), quantitatively showing effective single and
+multi-object removal while limiting interference.
+
+5.2. Debiasing
+Stable Diffusion exhibits gender and racial bias when
+generating images for profession names (e.g. CEO), produc-
+
+ing only 6% female figures for "CEO" prompt. We debias
+profession concepts via Alg. 1, using profession text embeddings ci and attribute embeddings A (e.g. "male", "female").
+To prevent over/under-debiasing, we set per-attribute regularization constants αi in Eq. 9. As debiasing one concept can
+affect others [31], we use an iterative approach. We maintain
+edit and freeze concept lists, fixing debiased concepts while
+editing new ones. With multiple concepts debiased in parallel, αi values are found by generating validation samples
+during training and adjusting constants based on the current
+model’s generated ratio (classified by CLIP). Once a concept is sufficiently debiased, we add it to a preservation list,
+bypassing validation and keeping it fixed when debiasing
+others. This iterative αi tuning enables efficient debiasing
+by avoiding unnecessarily repeated editing of already debiased concepts. Setting equal αi for all concepts risks overdebiasing some while under-debiasing others. Our iterative
+validation determines optimal per-concept constants.
+5.2.1
+
+Gender bias
+
+Prior methods for debiasing generative models like TIME
+[31], Concept Algebra [46], and Debiasing-VL [9] have focused on mitigating biases between two discrete attributes.
+While we acknowledge that a binary perspective of gender
+excludes non-binary groups, for a fair comparison to such
+dual-attribute techniques, we evaluate our method by reducing occupational gender biases in diffusion models. We recognize that editing for visual features of non-binary genders
+risks introducing other unwanted stereotypical behavior.
+Figure 5 provides qualitative results demonstrating increased diversity in generated images for professions with
+strong initial gender biases after applying our proposed debiasing technique. For quantitative evaluation, we synthesize
+
+Doctor
+
+Racially Diverse SD
+
+Counselor Supervisor Secretary
+
+Cashier
+Nurse
+Farmer
+
+Figure 5. Our method improves the gender representation of professions in the stable diffusion generated images. We find that the
+images precisely change the gender while keeping the rest of the
+scene intact.
+
+250 images per profession and utilize CLIP classifications
+−pactual |
+to calculate the deviation ∆ = |pdesired
+between the
+pdesired
+achieved and desired (50-50) gender ratios, where ∆ = 0
+indicates perfect debiasing. As shown in Table 3, our method
+achieves gender distributions closest to the balanced 50-50
+ratio compared to pretrained and baseline models. The original formulation of TIME [31] exhibits interference between
+debiased concepts, resulting in worse performance. We find
+that even when applying TIME with our proposed preservation term, it still underperforms compared to our approach.
+Through both qualitative and quantitative results, we demonstrate that our method enables robust targeted debiasing of
+generative models.
+5.2.2
+
+Original SD
+
+Gender Diverse SD
+
+Mechanic
+
+Original SD
+
+Racial bias
+
+A key advantage of our approach over prior debiasing techniques is the ability to concurrently mitigate biases related to
+multiple attributes. To demonstrate this capability, we conduct experiments to improve racial diversity in professions
+generated by Stable Diffusion. Specifically, we target major
+racial categories as defined by U.S. Office of Management
+and Budget (OMB) standards [30]: White, Black, American
+Indian, Native American, and Asian. Accurately classifying
+race from images is an intricate task, problematic even for
+sophisticated models like CLIP and humans. We, therefore,
+take a qualitative analysis approach rather than attempting
+error-prone quantitative race categorization. As depicted in
+Figure 6, our method significantly enhances the representation of these racial groups among generated professional
+images. This highlights our technique’s strength in reducing
+multifaceted biases in diffusion models, a key advantage
+over existing binary-attribute debiasing methods.
+
+5.3. Moderation
+We quantitatively evaluate our proposed method for moderating sensitive concepts, comparing it against recent stateof-the-art techniques ESD-u and ESD-x [14] on the task of
+
+Figure 6. Our method improves the racial diversity of professions in
+the pre-trained stable diffusion. We show images from the original
+SD and the corresponding images from the edited model for the
+same prompts and seeds for comparison. We find that our edited
+model has a better race representation.
+
+erasing single concepts like "nudity". For all the models,
+4703 images are generated using the prompts from the I2P
+benchmark introduced in [36]. In Figure 7 we analyze the
+nudity moderation using NudeNet classifier [4]. We find that
+our method demonstrates comparable nudity erasure performance to ESD-X since both techniques edit cross-attentions
+of the diffusion model. ESD-u as expected has a more aggressive erasure effect given it finetunes the entire model
+except cross attentions. However, Table 4 highlights that
+our approach induces substantially lower distortion to model
+generations than ESD-u and ESD-x, with significantly reduced LPIPS [48] score from the original SD generations.
+This indicates our method better preserves image quality
+while moderating sensitive concepts. Additionally, the CLIP
+score indicates that our technique maintains better text-image
+alignment post editing.
+We further demonstrate efficacy in erasing multiple sensitive concepts from I2P 3 . Again, our approach shows improved multi-concept moderation capability compared to
+ESD-u (Figure 7). We provide a detailed analysis of moderating diverse sensitive concepts in the Appendix.
+
+5.4. Unified Editing
+Our formulation enables simultaneous style erasure, profession debiasing, and nudity moderation. The edit vector v ∗
+design differs for each edit, but the model update is unified.
+Empirically, the jointly finetuned model demonstrates effectiveness on par with individually trained models: similar
+to Table 3, a gender ratio deviation of 0.27 versus 0.22 for
+the gender-debiasing model and 0.67 for the original Stable
+Diffusion. The unified model also shows a 58% nudity reduction compared to 49% for nudity erasure and 64% for
+ESD-u, shown in Figure 7.
+3 including hate, harassment, violence, suffering, humiliation, harm, suicide, sexual, nudity, bodily fluids, blood, obscene gestures, illegal activity,
+drug use, theft, vandalism, weapons, child abuse, brutality, cruelty
+
+Profession
+Librarian
+Teacher
+Sheriff
+Analyst
+Doctor
+WinoBias [49]
+
+Original-SD
+0.86 ± 0.06
+0.42 ± 0.01
+0.99 ± 0.01
+0.58 ± 0.12
+0.78 ± 0.04
+0.67 ± 0.01
+
+Concept Algebra
+0.66 ± 0.07
+0.46 ± 0.00
+0.38 ± 0.22
+0.24 ± 0.18
+0.40 ± 0.02
+0.43 ± 0.01
+
+Debias-VL
+0.34 ± 0.06
+0.11 ± 0.05
+0.82 ± 0.08
+0.71 ± 0.02
+0.50 ± 0.04
+0.55 ± 0.01
+
+TIME
+0.26 ± 0.05
+0.34 ± 0.06
+0.22 ± 0.05
+0.52 ± 0.03
+0.58 ± 0.03
+0.44 ± 0.00
+
+TIME + Preserve
+0.35 ± 0.01
+0.07 ± 0.06
+0.10 ± 0.05
+0.13 ± 0.05
+0.41 ± 0.08
+0.31 ± 0.00
+
+Ours
+0.07 ± 0.07
+0.06 ± 0.02
+0.10 ± 0.03
+0.20 ± 0.07
+0.20 ± 0.02
+0.22 ± 0.00
+
+Table 3. Debiasing performance on 5 randomly-picked professions and an average on all 35 Winobias [49] professions. The presented metric
+∆ measures the percentage deviation from desired ratios (∆ = 0 indicates complete debiasing). Our method has a consistent debiasing
+performance compared to previous inference and model editing methods by showing the least average deviation from the desired distribution.
+
+tribute consideration to mitigate propagated biases. We also
+find word-level biases in prompts that compose unfavorably.
+Non-gendered phrases like "successful person" become predominantly male (88% of 100) versus the gender-balanced
+"person" (50% male of 100), illustrating how subtle cues
+carry biases. Such compositional effects pose challenges, as
+each word element contributes biases needing mitigation.
+For artistic style erasure, removing over 500 artists degrades general image generation, even with preservation
+terms (Table 1). That suggests a critical mass of artists is
+needed to maintain generative capabilities. Excessive erasure
+impairs the core visual priors learned during pretraining.
+Figure 7. A percentage reduction in nudity-classified samples on
+I2P prompts compared to SD. Our method erases nudity content
+from pre-trained SD and has the advantage of erasing multiple
+concepts in I2P prompts. "Nudity" erased model performs very
+similar to ESD-x-1 as both the methods edit only cross attentions.
+However, as noted in Table 4, we find that our method results in a
+finer edit and has better alignment with COCO.
+
+Method
+REAL
+SD
+ESD-u-1
+ESD-x-1
+Ours
+
+FID-Real ↓
+14.49
+14.16
+14.45
+14.84
+
+FID-SD ↓
+14.49
+3.73
+2.33
+1.82
+
+CLIP ↑
+30.41
+31.32
+30.45
+30.81
+31.26
+
+LPIPS ↓
+0.23
+0.18
+0.12
+
+Table 4. Our method performs comparably to the pre-trained SD on
+COCO. The image fidelity performance compared to SD (FID-SD)
+and LPIPS matches closely with our method. FID with real COCO
+images (FID-real) is very similar to SD. Our method also has the
+closest CLIP score to the original SD compared to other methods.
+
+6. Limitations
+When debiasing across multiple attributes, we find interdependencies that exhibit compounding biases. For example, generating images of "a black person" has near equal
+gender ratios (48% male out of 100 images), while "a native american person" displays strong male bias (96% male
+of 100). Debiasing in isolation can thus perpetuate biases
+along other dimensions. This highlights the need for joint at-
+
+7. Conclusion
+We have presented a unified algorithm for precisely editing diffusion models to allow designers to make them more
+responsible and beneficial for society. Our approach enables
+targeted debiasing, erasure of potentially copyrighted content, and moderation of offensive concepts, using only text
+descriptions. Our measurements suggest that our method
+offers three key benefits over prior methods. First, it can mitigate multifaceted gender, racial, and other biases simultaneously while preserving model capabilities. Second, it is scalable, modifying hundreds of concepts in one pass without expensive retraining. Third, extensive experiments demonstrate
+superior performance on real-world use cases. Together, our
+findings suggest that UCE is significant step towards democratizing access to ethical and socially-responsible generative
+models. The ability to seamlessly unify debiasing, erasure,
+and moderation will be an important tool for building AI that
+benefits our diverse global society.
+
+Acknowledgments
+Thanks to Antonio Torralba for valuable advice, discussions, and support. RG and DB are supported by Open
+Philanthropy. HO and YB are supported by the Israel Science Foundation (grant No. 448/20), Open Philanthropy, and
+an Azrieli Foundation Early Career Faculty Fellowship. The
+Center for AI Safety made computing resources available
+for this research.
+
+References
+[1] Sarah Andersen, Kelly McKernan, and Karla Ortiz. et al v.
+Stability AI Ltd. et al. Case No. 3:2023cv00201. US District
+Court for the Northern District of California., Jan 2023. 1, 2
+[2] Dana Arad, Hadas Orgad, and Yonatan Belinkov. Refact:
+Updating text-to-image models by editing the text encoder.
+arXiv preprint arXiv:2306.00738, 2023. 2
+[3] David Bau, Steven Liu, Tongzhou Wang, Jun-Yan Zhu, and
+Antonio Torralba. Rewriting a deep generative model. In
+Computer Vision–ECCV 2020: 16th European Conference,
+Glasgow, UK, August 23–28, 2020, Proceedings, Part I 16,
+pages 351–369. Springer, 2020. 2
+[4] Praneeth Bedapudi. NudeNet: Neural nets for nudity detection and censoring, 2022. 2, 7
+[5] Federico Bianchi, Pratyusha Kalluri, Esin Durmus, Faisal
+Ladhak, Myra Cheng, Debora Nozza, Tatsunori Hashimoto,
+Dan Jurafsky, James Zou, and Aylin Caliskan. Easily accessible text-to-image generation amplifies demographic stereotypes at large scale. In Proceedings of the 2023 ACM Conference on Fairness, Accountability, and Transparency, FAccT
+’23, page 1493–1504, New York, NY, USA, 2023. Association
+for Computing Machinery. 2
+[6] Nicholas Carlini, Jamie Hayes, Milad Nasr, Matthew Jagielski, Vikash Sehwag, Florian Tramèr, Borja Balle, Daphne
+Ippolito, and Eric Wallace. Extracting training data from
+diffusion models. arXiv preprint arXiv:2301.13188, 2023. 2
+[7] Nicholas Carlini, Matthew Jagielski, Chiyuan Zhang, Nicolas
+Papernot, Andreas Terzis, and Florian Tramer. The privacy
+onion effect: Memorization is relative. Advances in Neural
+Information Processing Systems, 35:13263–13276, 2022. 1
+[8] Jaemin Cho, Abhay Zala, and Mohit Bansal. Dall-eval: Probing the reasoning skills and social biases of text-to-image
+generative models. arXiv preprint arXiv:2202.04053, 2022. 2
+[9] Ching-Yao Chuang, Varun Jampani, Yuanzhen Li, Antonio
+Torralba, and Stefanie Jegelka. Debiasing vision-language
+models via biased prompts. arXiv preprint arXiv:2302.00070,
+2023. 1, 2, 6
+[10] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li
+Fei-Fei. Imagenet: A large-scale hierarchical image database.
+In 2009 IEEE conference on computer vision and pattern
+recognition, pages 248–255. Ieee, 2009. 5
+[11] Lucas Dixon, John Li, Jeffrey Sorensen, Nithum Thain, and
+Lucy Vasserman. Measuring and mitigating unintended bias
+in text classification. In Proceedings of the 2018 AAAI/ACM
+Conference on AI, Ethics, and Society, pages 67–73, 2018. 1
+[12] Kathleen C. Fraser, Svetlana Kiritchenko, and Isar Nejadgholi.
+A friendly face: Do text-to-image systems rely on stereotypes
+when the input is under-specified? In The AAAI-23 Workshop
+on Creative AI Across Modalities, 2023. 2
+[13] Shreyansh Gandhi, Samrat Kokkula, Abon Chaudhuri,
+Alessandro Magnani, Theban Stanley, Behzad Ahmadi,
+Venkatesh Kandaswamy, Omer Ovenc, and Shie Mannor.
+Scalable detection of offensive and non-compliant content /
+logo in product images. In 2020 IEEE Winter Conference on
+Applications of Computer Vision (WACV), pages 2236–2245,
+2020. 2
+
+[14] Rohit Gandikota, Joanna Materzyńska, Jaden FiottoKaufman, and David Bau. Erasing concepts from diffusion
+models. In Proceedings of the 2023 IEEE International Conference on Computer Vision, 2023. 1, 2, 5, 7
+[15] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+Deep residual learning for image recognition. In Proceedings of the IEEE conference on computer vision and pattern
+recognition, pages 770–778, 2016. 6
+[16] Alvin Heng and Harold Soh. Selective amnesia: A continual
+learning approach to forgetting in deep generative models.
+arXiv preprint arXiv:2305.10120, 2023. 2
+[17] Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. Advances in Neural Information
+Processing Systems, 33:6840–6851, 2020. 2
+[18] Jeremy Howard and Sylvain Gugger. Fastai: A layered api
+for deep learning. Information, 11(2):108, 2020. 5
+[19] Tatum Hunter. Ai porn is easy to make now. for women, that’s
+a nightmare., 2 2023. 1
+[20] Surea I, Proxima Centauri B, Erratica, and Stephen Young.
+Image synthesis style studies, 7 2022. 5
+[21] Sanghyun Kim, Seohyeon Jung, Balhae Kim, Moonseok Choi,
+Jinwoo Shin, and Juho Lee. Towards safe self-distillation of
+internet-scale text-to-image diffusion models. arXiv preprint
+arXiv:2307.05977, 2023. 2, 5
+[22] Nupur Kumari, Bingliang Zhang, Sheng-Yu Wang, Eli Shechtman, Richard Zhang, and Jun-Yan Zhu. Ablating concepts in
+text-to-image diffusion models. In Proceedings of the 2023
+IEEE International Conference on Computer Vision, 2023. 1,
+2, 5
+[23] Gant Laborde. NSFW detection machine learning model,
+2022. 2
+[24] Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays,
+Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence
+Zitnick. Microsoft coco: Common objects in context. In
+Computer Vision–ECCV 2014: 13th European Conference,
+Zurich, Switzerland, September 6-12, 2014, Proceedings, Part
+V 13, pages 740–755. Springer, 2014. 5
+[25] Alexandra Sasha Luccioni, Christopher Akiki, Margaret
+Mitchell, and Yacine Jernite. Stable bias: Analyzing societal representations in diffusion models. arXiv preprint
+arXiv:2303.11408, 2023. 1, 2
+[26] Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov. Locating and editing factual associations in gpt. Advances in Neural Information Processing Systems, 35:17359–
+17372, 2022. 2
+[27] Kevin Meng, Arnab Sen Sharma, Alex J Andonian, Yonatan
+Belinkov, and David Bau. Mass-editing memory in a transformer. In The Eleventh International Conference on Learning Representations, 2023. 2, 3, 4
+[28] Alex Nichol, Prafulla Dhariwal, Aditya Ramesh, Pranav
+Shyam, Pamela Mishkin, Bob McGrew, Ilya Sutskever, and
+Mark Chen. Glide: Towards photorealistic image generation
+and editing with text-guided diffusion models. arXiv preprint
+arXiv:2112.10741, 2021. 2
+[29] Ryan O’Connor. Stable diffusion 1 vs 2 - what you need to
+know, 2022. 1
+
+[30] Office of Management and Budget. Office of management
+and budget (omb) standards. U.S. Department of Health and
+Human Services, Jul 2022. 7
+[31] Hadas Orgad, Bahjat Kawar, and Yonatan Belinkov. Editing
+implicit assumptions in text-to-image diffusion models. In
+Proceedings of the 2023 IEEE International Conference on
+Computer Vision, 2023. 2, 3, 4, 6, 7
+[32] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya
+Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry,
+Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning
+transferable visual models from natural language supervision. In International conference on machine learning, pages
+8748–8763. PMLR, 2021. 5
+[33] Javier Rando, Daniel Paleka, David Lindner, Lennard Heim,
+and Florian Tramèr. Red-teaming the stable diffusion safety
+filter. arXiv preprint arXiv:2210.04610, 2022. 2
+[34] Robin Rombach. Stable diffusion 2.0 release, Nov 2022. 1
+[35] Hadi Salman, Alaa Khaddaj, Guillaume Leclerc, Andrew
+Ilyas, and Aleksander Madry. Raising the cost of malicious
+ai-powered image editing. arXiv preprint arXiv:2302.06588,
+2023. 2
+[36] Patrick Schramowski, Manuel Brack, Björn Deiseroth, and
+Kristian Kersting. Safe latent diffusion: Mitigating inappropriate degeneration in diffusion models. In Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern
+Recognition, pages 22522–22531, 2023. 1, 2, 7
+[37] Preethi Seshadri, Sameer Singh, and Yanai Elazar. The bias
+amplification paradox in text-to-image generation. 2023. 2
+[38] Riddhi Setty. Ai art generators hit with copyright suit over
+artists’ images, 1 2023. 2
+[39] Shawn Shan, Jenna Cryan, Emily Wenger, Haitao Zheng,
+Rana Hanocka, and Ben Y Zhao. Glaze: Protecting artists
+from style mimicry by text-to-image models. arXiv preprint
+arXiv:2302.04222, 2023. 2
+[40] SmithMano. Tutorial: How to remove the safety filter in 5
+seconds, 8 2022. 2
+[41] Jascha Sohl-Dickstein, Eric Weiss, Niru Maheswaranathan,
+and Surya Ganguli. Deep unsupervised learning using
+nonequilibrium thermodynamics. In International Conference on Machine Learning, pages 2256–2265. PMLR, 2015.
+2
+[42] Gowthami Somepalli, Vasu Singla, Micah Goldblum, Jonas
+Geiping, and Tom Goldstein. Diffusion art or digital forgery?
+investigating data replication in diffusion models. In Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, pages 6048–6058, 2023. 2
+[43] Gowthami Somepalli, Vasu Singla, Micah Goldblum, Jonas
+Geiping, and Tom Goldstein. Understanding and mitigating copying in diffusion models.
+arXiv preprint
+arXiv:2305.20086, 2023. 2
+[44] Lukas Struppek, Dominik Hintersdorf, and Kristian Kersting. The biased artist: Exploiting cultural biases via homoglyphs in text-guided image generation models. arXiv
+preprint arXiv:2209.08891, 2022. 1, 2
+[45] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia
+Polosukhin. Attention is all you need. Advances in neural
+information processing systems, 30, 2017. 3
+
+[46] Zihao Wang, Lin Gui, Jeffrey Negrea, and Victor Veitch.
+Concept algebra for text-controlled vision models. arXiv
+preprint arXiv:2302.03693, 2023. 1, 2, 6
+[47] Eric Zhang, Kai Wang, Xingqian Xu, Zhangyang Wang, and
+Humphrey Shi. Forget-me-not: Learning to forget in text-toimage diffusion models. arXiv preprint arXiv:2303.17591,
+2023. 2
+[48] Richard Zhang, Phillip Isola, Alexei A Efros, Eli Shechtman,
+and Oliver Wang. The unreasonable effectiveness of deep
+features as a perceptual metric. In Proceedings of the IEEE
+conference on computer vision and pattern recognition, pages
+586–595, 2018. 5, 7
+[49] Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Ordonez,
+and Kai-Wei Chang. Gender bias in coreference resolution: Evaluation and debiasing methods. arXiv preprint
+arXiv:1804.06876, 2018. 8
+
+Let Wk and Wv be the cross attention weights that project
+the text embeddings to image space corresponding to keys
+and values respectively. These are computed fresh at every
+time step making the computation straightforward, unlike
+the self-attentions.
+Let {ci }m
+i=0 be the embeddings of the text descriptions
+for the concepts we want to edit. Let {cj }ni=0 be the embeddings of the concepts we wish to preserve. Similarly, let
+{vi∗ }m
+i=0 be the target cross-attention outputs that we want
+the concepts ci to be steered towards. The sets ci , vi∗ , and cj
+represent the concepts to erase, desired target outputs, and
+concepts to preserve respectively. We optimize the newly
+edited weights of the cross-attention value projects W by
+minimizing the loss function. The same optimization can be
+adopted to value projection optimization:
+X
+X
+L=
+||W ci − vi∗ ||22 +
+||W cj − W old cj ||22
+ci ∈E
+
+cj ∈P
+
+(A.1)
+The objective function in Equation A.1 can be solved to
+arrive at a closed-form solution. We take the derivative of
+the loss function stated above w.r.t to W and set it to 0.
+X
+X
+2(W ci − vi∗ )cTi +
+2(W cj − W old cj )cTj = 0
+ci ∈E
+
+X
+
+cj ∈P
+
+W ci cTi −
+
+ci ∈E
+
+X
+
+vi∗ cTi +
+
+ci ∈E
+
+X
+
+W ci cTi +
+
+ci ∈E
+
+X
+
+X
+
+cj ∈P
+
+X
+
+X
+
+vi∗ cTi +
+
+ci ∈E
+
+
+X
+
+X
+
+W old cj cTj = 0
+
+cj ∈P
+
+W cj cTj =
+
+cj ∈P
+
+
+
+W cj cTj −
+
+X
+
+W old cj cTj
+
+cj ∈P
+
+
+
+
+X
+
+X
+
+W
+ci cTi +
+cj cTj  = 
+vi∗ cTi +
+W old cj cTj 
+ci ∈E
+cj ∈P
+ci ∈E
+cj ∈P
+P
+To invert the terms on the left-hand side ( ci ∈E ci cTi +
+T
+cj ∈P cj cj ), the matrix must have full rank. Adding a
+preservation term increases the rank by 1. Thus if the number
+of preservation terms |P | < d, where d is the dimension
+of the text embedding space, the matrix may not have full
+rank. To ensure the rank condition is satisfied, we introduce
+d additional preservation terms along the canonical basis
+directions of the text embedding space. This maintains full
+rank and enables inversion of the matrix irrespective of the
+size of P .
+
+P
+
+−1
+
+
+
+
+
+A. Deriving the Closed Form Solution for UCE
+
+X
+
+X
+
+X
+
+X
+
+
+
+ci cT
+cj cT
+vi∗ cT
+W old cj cT
+i +
+j
+i +
+j
+ci ∈E
+cj ∈P
+ci ∈E
+cj ∈P
+
+W =
+
+We optimize both the cross-attention key and value weights
+using the same principles.
+
+B. UCE Generalizes to TIME
+Our method, Unified Concept Editing (UCE), can be
+viewed as a generalization of the TIME method. As discussed in the methodology section, TIME regularizes the
+cross-attention weights. With our method, if we do not preserve any specific concepts and only preserve the canonical
+directions ej scaled by λ, we get the following closed-form
+solution:
+
+
+−1
+
+
+
+d
+d
+X
+X
+X
+
+
+vi∗ cT
+W old ej eT
+ci cT
+ej eT
+i +λ
+j
+i +λ
+j
+j=0
+j=0
+ci ∈E
+ci ∈E
+
+W =
+
+X
+
+Where the canonical directions ej have outer products ei eTj
+that are diagonal matrices with only the j th element as 1 and
+rest 0. Summing all the canonical outer products gives the
+identity matrix I.
+
+
+W =
+
+−1
+
+
+X
+
+X
+
+old  
+
+
+vi∗ cT
+.I
+ci cT
+i + λW
+i + λI
+ci ∈E
+ci ∈E
+
+This is the closed-form solution for TIME, which regularizes
+equally across all directions. Our method can be seen as a
+generalization of TIME that adds preservation across important surrounding concepts, not just the canonical directions.
+This new formulation with additional explicit preservation
+is very practical, allowing us to edit multiple concepts with
+less interference. Our method builds on TIME by allowing
+the preservation of concepts beyond just the canonical directions. This helps enable editing multiple concepts with less
+interference.
+
+C. UCE Generalizes to MEMIT
+Our method can also be viewed as a generalization
+of MEMIT. Starting from our objective function in Equation A.1:
+X
+X
+L=
+||W ci − vi∗ ||22 +
+||W cj − W old cj ||22
+ci ∈E
+
+cj ∈P
+
+Taking the derivative and setting it to zero gives:
+X
+X
+2(W ci − vi∗ )cTi +
+2(W cj − W old cj )cTj = 0
+ci ∈E
+
+cj ∈P
+
+To ensure full rank, instead of adding canonical directions
+to complete the rank, we add additional preservations for
+
+a plethora of concepts in diffusion vocabulary. We rewrite
+the equation in a block form by defining vj = W old cj and
+redefining W as W old + ∆W :
+(W old + ∆W )(Ci CiT + Cj CjT ) = Vi CiT + Vj CjT
+
+# of Artists
+Erased
+
+5
+
+10
+
+50
+
+100
+
+1000
+
+Original SD
+
+W old Ci CiT + W old Cj CjT + ∆W Ci CiT + ∆W Cj CjT
+= Vi CiT + Vj CjT
+(C.1)
+Assuming the preservation list contains most concepts
+the diffusion model knows W old will minimize ||W cj −
+vj ||22 . Taking a derivative and equating to zero, we get
+W old Cj CjT = Vj CjT . Subtracting this from Equation C.1
+gives MEMIT closed form solution:
+
+Figure D.1. The samples demonstrate model performance on erased
+artists after editing. We observed that erasing over 100 artists begins
+negatively impacting output for holdout artists, as evidenced by the
+increasing LPIPS after 100 erasures. Erasing 50 or fewer artists
+resulted in negligible interference on non-erased concepts.
+
+∆W (Ci CiT + Cj CjT ) = Vi CiT − W old Ci CiT
+With R = Vi − W old Ci and C0 = Cj CjT
+∆W = RCiT (Ci CiT + Cj CjT )−1
+In summary, our method generalizes MEMIT by incorporating additional preservation terms from the diffusion model’s
+vocabulary and solving for the weight update ∆W instead
+of directly solving for W . This highlights the connection
+between our approach and existing techniques like MEMIT.
+
+D. Extended Experimental Results
+D.1. Erasing Style
+We tested the limits of erasing artistic styles using our
+technique. As shown in Figure D.1, quality for holdout
+artists declines when erasing over 100 styles, evidenced by
+the increasing LPIPS after 100 erasures. With 50 or fewer
+erasures, interference was minimal for non-targeted concepts.
+Additional qualitative results for our method and baselines
+are provided in Figures D.4-D.7. The baselines are less
+effective at removing multiple artists and exhibit greater
+interference on unerased styles compared to our approach.
+Our method demonstrates superior erasure while minimizing
+interference when removing multiple artists. Figure D.8
+shows the results of stress testing the limits of artistic style
+erasure before general art capabilities decline. We observed
+the model starts to lose artistic nuance in generated outputs
+after approximately 1000 edits.
+An important follow-up question is the minimum number of artists requiring preservation to maintain performance
+when erasing styles. We analyzed this by testing preservation
+limits when erasing 10 artists, as shown in Figure D.3. Erasing up to 1500 artists while preserving subsets, we assessed
+the impact on 100 non-preserved, non-erased artists. The
+LPIPS divergence indicates preserving at least 500 artists
+is essential for retaining model performance. Additional
+results and analysis are provided in the Appendix.
+
+Profession
+
+SD
+
+Assistant
+Cook
+Worker
+Analyst
+Doctor
+WinoBias
+
+0.19
+0.82
+1.00
+0.58
+0.78
+0.67
+
+TIME +
+Preserve
+0.57
+0.15
+0.15
+0.13
+0.41
+0.31
+
+Ours
+Debiased
+0.14
+0.03
+0.06
+0.20
+0.20
+0.22
+
+Ours
+Unified
+0.09
+0.14
+0.09
+0.03
+0.09
+0.27
+
+Table D.1. Quantitative evaluation of profession debiasing for the
+unified model compared to an individual debiasing model. The
+metric ∆ measures percentage deviation from equal gender ratios
+(∆=0 denotes perfect equality). On average, the unified model
+achieves comparable debiasing performance to the individually
+finetuned model.
+
+D.2. Debiasing
+Table D.1 shows the performance of the unified model
+compared to our individual debias models. On an average
+we find that unified models show a similar performance to
+debiased models.
+Table D.2 displays the debiased results for all 36 individual professions from the WinoBias dataset. Our method
+consistently reduced bias and increased gender diversity in
+Stable Diffusion outputs for most professions. Additional
+qualitative results demonstrating gender debiasing can be
+seen in Figures D.9 and D.10. Figure D.11 provides further
+examples of improved racial diversity using our technique.
+The algorithm outlined in the main paper describes our
+approach for debiasing diffusion model concepts by iteratively editing cross-attention weights. It takes as input the
+concepts to edit ci , concepts to preserve cj , and attribute
+text prompts to debias ap . In a loop, current attribute ratio
+distributions Rcurr are calculated for each concept using validation prompts and CLIP classification. Rcurr is an m × p
+matrix, where m is the current edit list size and p the at-
+
+Figure D.2. Our method erases nudity content from pre-trained SD and has an advantage of erasing multiple concepts in I2P prompts. The
+figure shows percentage reduction in nudity classified samples for each body part type on I2P prompts compared to SD. "Nudity" erased
+model performs very similar to ESD-x-1 as both the methods edit only cross attentions. Although, as noted in main paper, we find that our
+method results in a more finer edit and has better alignment with COCO.
+# of Artists
+Preserved
+
+0
+
+100
+
+500
+
+1000
+
+1500
+
+Original SD
+
+Figure D.3. The samples show the performance of edited models on
+holdout artist. We observe that preserving more artists is beneficial
+for reducing model’s interference with nearby concepts. The plot
+shows LPIPS between original SD and models erasing 10 random
+artists with variable number of preservation artists. We find that
+preserving 500 artists and more has close to no interference on
+other surrounding concepts when erasing 10 artists.
+
+tribute count. The debiasing constants αp are then computed
+proportionally to the difference between current and desired
+ratios, scaled by learning rate η. Once a concept is sufficiently debiased (within 5% of target), it is removed from
+the edit list and added to the preservation list.
+This is done for 3 reasons - first, different concepts require
+varying levels of editing to remove bias, so they do not
+
+all debias at the same time. Once a concept is sufficiently
+debiased, we remove it from the edit list to avoid unnecessary
+generation of validation images for that concept. Second,
+editing one concept creates interference that can disrupt other
+concepts. Adding the debiased concept to the preservation
+list protects it from being affected by future edits. Third,
+careful asymmetric calculation of the debiasing constants αp
+is required, unlike the symmetric constants used for erasing
+and moderating concepts. The optimal αp values differ
+across concepts and attributes, necessitating the iterative
+tuning process.
+
+D.3. Moderating NSFW
+Figure D.2 displays the detailed erasure effects on different nudity classes classified by Nudenet. Our method
+demonstrates similar erasure to ESD-x for individual classes,
+while showing less interference on other concepts. The major
+advantage of our technique emerges in multi-concept erasure
+for I2P prompts and overall NSFW moderation, where our
+approach erases better than ESD methods across different
+NSFW classes.
+
+D.4. Erasing Objects
+Figures D.12- D.14 demonstrate effective object erasure
+using our method. One limitation of ESD-u was only partial
+removal of objects like churches, where major attributes such
+
+Erased Artists - 1
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Original SD
+
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Alex
+Alemany
+
+Anne
+Bachelier
+
+Alex
+Alemany
+
+Paul Henry
+
+Alex
+Alemany
+
+Chris Mars
+
+Rob
+Gonsalves
+
+Alex
+Alemany
+
+Alex
+Alemany
+
+John Howe
+
+Original SD
+
+Unerased Artists
+
+Figure D.4. Our method demonstrates a complete erasure of the intended artistic style and the least interference with the holdout artists that
+were neither erased nor preserved.
+
+Erased Artists - 5
+Ablation
+
+Alpo Jaakola
+Gareth Pugh
+
+Yayi
+Morales
+
+Albert
+Watson
+
+Alexandre
+Antigna
+
+Abraham
+Mintchine
+
+Original SD
+
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Cuno Amiet
+
+SDD
+
+Beatrix
+Potter
+
+ESD-x-1
+
+Roz Chast
+
+Our Method
+
+Antonio J.
+Manzanedo
+
+Original SD
+
+Unerased Artists
+
+Figure D.5. Our method demonstrates strong multi concept erasure of intended artistic styles and the least interference with the holdout
+artists that were neither erased nor preserved.
+
+as crosses and tinted windows were erased but the building
+remained. In contrast, our approach shows stronger editing
+that clearly erases the full object.
+
+Erased Artists - 10
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Original SD
+
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Alexandre
+Antigna
+
+John
+Whitcomb
+
+Nicolas
+Mignard
+
+Jessie Willcox
+Smith
+
+Johannes
+Vermeer
+
+Yoji
+Shinkawa
+
+Andre
+Norton
+
+John
+Constable
+
+Amanda
+Sage
+
+Apollinary
+Vasnetsov
+
+Original SD
+
+Unerased Artists
+
+Figure D.6. Our method demonstrates strong multi-concept erasure of intended artistic styles and the least interference with the holdout
+artists that were neither erased nor preserved. Previous methods start showing interference effects when erasing 10 artists
+
+Erased Artists - 50
+Original SD
+
+Our Method
+
+ESD-x-1
+
+SDD
+
+Ablation
+
+Eugene von
+Guerard
+
+John Howe
+
+Rob
+Gonsalves
+
+Ablation
+
+Russ Mills
+
+SDD
+
+Hendrick
+Avercamp
+
+ESD-x-1
+
+Ravi Zupa
+
+Our Method
+
+Jordan
+Grimmer
+
+Ismail
+Inceoglu
+
+Amedeo
+Modigliani
+
+Kobayashi
+Kiyochika
+
+Original SD
+
+Unerased Artists
+
+Figure D.7. Our method demonstrates strong multi-concept erasure of intended artistic styles and the least interference with the holdout
+artists that were neither erased nor preserved. Previous methods start showing interference effects when erasing 50 artists
+
+Erasing 10
+
+Erasing 100
+
+Erasing 200
+
+Erasing 300
+
+Erasing 400
+
+Erasing 500
+
+Erasing 1000 Erasing 1500
+
+Martiniere
+
+Amanda Sage Alfred Sisley
+
+Erasing 1
+
+Yoji Shinkawa Filip Hodas
+
+Interference on Holdout Artists
+
+Original SD
+
+Figure D.8. The samples demonstrate edited model performance on holdout artists. We observed changes in output quality for holdout styles
+after erasing 300 artists. At 1000 erasures, the network starts to lose the artistic nuance in its generated images.
+
+Gender Diverse SD
+
+Sheriff
+
+Analyst
+
+Carpenter
+
+Driver
+
+Original SD
+
+Figure D.9. Our method improves the gender representation of professions in the stable diffusion generated images. We find that the images
+precisely change the gender while keeping the rest of the scene intact.
+
+Profession
+Attendant
+Cashier
+Teacher
+Nurse
+Assistant
+Secretary
+Cleaner
+Receptionist
+Clerk
+Counselor
+Designer
+Hairdresser
+Writer
+Housekeeper
+Baker
+Librarian
+Tailor
+Driver
+Supervisor
+Janitor
+Cook
+Laborer
+Constr. worker
+Developer
+Carpenter
+Manager
+Lawyer
+Farmer
+Salesperson
+Physician
+Guard
+Analyst
+Mechanic
+Sheriff
+Ceo
+Doctor
+WinoBias
+
+Original-SD
+0.13 ± 0.06
+0.67 ± 0.04
+0.42 ± 0.01
+0.99 ± 0.01
+0.19 ± 0.05
+0.88 ± 0.01
+0.38 ± 0.04
+0.99 ± 0.01
+0.10 ± 0.07
+0.06 ± 0.05
+0.23 ± 0.05
+0.74 ± 0.11
+0.15 ± 0.03
+0.93 ± 0.04
+0.81 ± 0.01
+0.86 ± 0.06
+0.30 ± 0.01
+0.97 ± 0.02
+0.50 ± 0.01
+0.91 ± 0.05
+0.82 ± 0.04
+0.99 ± 0.01
+1.00 ± 0.00
+0.90 ± 0.03
+0.92 ± 0.05
+0.54 ± 0.06
+0.46 ± 0.08
+0.97 ± 0.02
+0.60 ± 0.08
+0.62 ± 0.14
+0.86 ± 0.02
+0.58 ± 0.12
+0.99 ± 0.01
+0.99 ± 0.01
+0.87 ± 0.03
+0.78 ± 0.04
+0.67 ± 0.01
+
+Concept Algebra
+0.23 ± 0.08
+0.71 ± 0.10
+0.46 ± 0.00
+0.91 ± 0.05
+0.20 ± 0.07
+0.65 ± 0.07
+0.11 ± 0.06
+0.90 ± 0.08
+0.11 ± 0.08
+0.30 ± 0.03
+0.25 ± 0.12
+0.37 ± 0.16
+0.07 ± 0.03
+0.68 ± 0.18
+0.19 ± 0.04
+0.66 ± 0.07
+0.21 ± 0.05
+0.20 ± 0.07
+0.07 ± 0.03
+0.71 ± 0.06
+0.48 ± 0.16
+0.81 ± 0.06
+0.95 ± 0.01
+0.74 ± 0.02
+0.84 ± 0.01
+0.15 ± 0.01
+0.13 ± 0.06
+0.58 ± 0.09
+0.18 ± 0.05
+0.36 ± 0.10
+0.43 ± 0.12
+0.24 ± 0.18
+0.65 ± 0.04
+0.38 ± 0.22
+0.25 ± 0.11
+0.40 ± 0.02
+0.43 ± 0.01
+
+Debias-VL
+0.30 ± 0.04
+0.23 ± 0.07
+0.11 ± 0.05
+0.87 ± 0.01
+0.35 ± 0.15
+0.65 ± 0.01
+0.18 ± 0.04
+0.74 ± 0.04
+0.10 ± 0.04
+0.10 ± 0.07
+0.48 ± 0.06
+0.61 ± 0.04
+0.45 ± 0.04
+0.80 ± 0.07
+0.72 ± 0.05
+0.34 ± 0.06
+0.33 ± 0.11
+0.65 ± 0.04
+0.43 ± 0.04
+0.75 ± 0.05
+0.52 ± 0.07
+0.98 ± 0.03
+1.00 ± 0.00
+0.90 ± 0.04
+0.98 ± 0.01
+0.30 ± 0.05
+0.52 ± 0.05
+0.97 ± 0.02
+0.07 ± 0.05
+0.70 ± 0.07
+0.48 ± 0.06
+0.71 ± 0.02
+0.92 ± 0.01
+0.82 ± 0.08
+0.37 ± 0.11
+0.50 ± 0.04
+0.55 ± 0.01
+
+TIME
+0.50 ± 0.01
+0.46 ± 0.01
+0.34 ± 0.06
+0.34 ± 0.03
+0.32 ± 0.06
+0.58 ± 0.09
+0.58 ± 0.07
+0.36 ± 0.10
+0.40 ± 0.03
+0.74 ± 0.08
+0.44 ± 0.06
+0.32 ± 0.01
+0.54 ± 0.08
+0.32 ± 0.03
+0.40 ± 0.04
+0.26 ± 0.05
+0.50 ± 0.03
+0.48 ± 0.09
+0.50 ± 0.07
+0.36 ± 0.08
+0.38 ± 0.03
+0.48 ± 0.08
+0.40 ± 0.01
+0.50 ± 0.01
+0.52 ± 0.06
+0.38 ± 0.05
+0.64 ± 0.03
+0.46 ± 0.02
+0.52 ± 0.05
+0.56 ± 0.06
+0.30 ± 0.10
+0.52 ± 0.03
+0.38 ± 0.09
+0.22 ± 0.05
+0.28 ± 0.04
+0.58 ± 0.03
+0.44 ± 0.00
+
+TIME + Preserve
+0.38 ± 0.11
+0.23 ± 0.15
+0.07 ± 0.06
+0.30 ± 0.07
+0.57 ± 0.08
+0.71 ± 0.02
+0.79 ± 0.04
+0.24 ± 0.12
+0.76 ± 0.05
+0.41 ± 0.06
+0.23 ± 0.16
+0.41 ± 0.09
+0.52 ± 0.08
+0.68 ± 0.07
+0.19 ± 0.14
+0.35 ± 0.01
+0.03 ± 0.00
+0.17 ± 0.08
+0.42 ± 0.03
+0.47 ± 0.12
+0.15 ± 0.10
+0.24 ± 0.09
+0.15 ± 0.05
+0.47 ± 0.07
+0.52 ± 0.05
+0.15 ± 0.01
+0.15 ± 0.03
+0.27 ± 0.08
+0.05 ± 0.01
+0.49 ± 0.04
+0.10 ± 0.12
+0.13 ± 0.05
+0.21 ± 0.04
+0.10 ± 0.05
+0.18 ± 0.05
+0.41 ± 0.08
+0.31 ± 0.00
+
+Ours
+0.09 ± 0.04
+0.16 ± 0.06
+0.06 ± 0.02
+0.39 ± 0.07
+0.14 ± 0.06
+0.10 ± 0.10
+0.33 ± 0.07
+0.38 ± 0.01
+0.23 ± 0.06
+0.40 ± 0.02
+0.07 ± 0.05
+0.16 ± 0.04
+0.31 ± 0.08
+0.41 ± 0.05
+0.29 ± 0.08
+0.07 ± 0.07
+0.27 ± 0.01
+0.21 ± 0.07
+0.26 ± 0.04
+0.16 ± 0.04
+0.03 ± 0.02
+0.09 ± 0.02
+0.06 ± 0.04
+0.51 ± 0.02
+0.06 ± 0.02
+0.19 ± 0.07
+0.30 ± 0.07
+0.41 ± 0.01
+0.38 ± 0.05
+0.42 ± 0.01
+0.12 ± 0.07
+0.20 ± 0.07
+0.23 ± 0.08
+0.10 ± 0.03
+0.28 ± 0.03
+0.20 ± 0.02
+0.22 ± 0.00
+
+Table D.2. Our method has a consistent debiasing performance compared to previous inference and model editing methods. The presented
+metric ∆ measures the percentage deviation from equal ratios (∆ = 0 indicates perfect equal distribution across attributes) on 5 randomly
+picked professions out of 36 from the WinoBias dataset. On average, our method has the least deviation from the desired distribution.
+
+Gender Diverse SD
+
+Secretary
+
+Hair Dresser
+
+Physician
+
+CEO
+
+Original SD
+
+Figure D.10. Our method improves the gender representation of professions in the stable diffusion generated images. We find that the images
+precisely change the gender while keeping the rest of the scene intact.
+
+Racially Diverse SD
+
+Librarian
+
+Baker
+
+Manager
+
+House Keeper
+
+Original SD
+
+Figure D.11. Our method improves the racial diversity of professions in the pre-trained stable diffusion. We show images from the original
+SD and the corresponding images from the edited model for the same prompts and seeds for comparison. We find that our edited model has
+a better race representation.
+
+Original SD
+Erasing
+French Horn
+Erasing
+Cassette Player
+
+Original SD
+
+Erasing
+Gas Pump
+
+Figure D.13. Our method demonstrates a complete erasure of the
+intended object and the least interference with unerased objects that
+are not explicitly preserved.
+
+Erasing
+Garbage Truck
+
+Original SD
+
+Original SD
+
+Erasing Church
+
+Original SD
+
+Original SD
+Erasing
+Golf Ball
+
+Figure D.12. Our method demonstrates a complete erasure of the
+intended object and the least interference with unerased objects that
+are not explicitly preserved.
+
+Figure D.14. Our method demonstrates a complete erasure of the
+intended object and the least interference with unerased objects that
+are not explicitly preserved.
+
+
