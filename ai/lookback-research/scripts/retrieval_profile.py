@@ -262,96 +262,100 @@ def compute_profile(
 # =============================================================================
 
 def visualise_profiles(profiles: list[RetrievalProfile], out_path: Path) -> None:
-    """Radar chart + bar chart comparing profiles across mechanisms."""
+    """
+    Heatmap: mechanisms as rows, dimensions as columns.
+    Each cell = normalised score (0=bad/brittle, 1=good/established).
+    Rightmost column = epistemic class label.
+    Immediately readable — dark green = healthy, dark red = problem.
+    """
 
-    dimensions = [
-        "oid_coherence",
-        "subspace_stability",
-        "1-attention_entropy_norm",
-        "1-residual_competition",
-        "1-first_load_norm",
-        "1-gap_norm",
-        "1-load_count_norm",
-    ]
+    mech_labels = [p.mechanism.replace("_", " ") for p in profiles]
+
+    # --- 7 dimensions, all normalised to 0-1 where 1 = "better" ---
     dim_labels = [
-        "OID Coherence\n(peak IIA)",
-        "Window Width\n(stability)",
-        "Early Load\n(1-start%)",
-        "Clean Binding\n(1-competition)",
-        "Early First Load\n(1-first/total)",
-        "Narrow Gap\n(1-gap/total)",
-        "Single Load\n(1-load_count_n)",
+        "Peak IIA\n(coherence)",
+        "Window\nwidth",
+        "Early\nload",
+        "Clean\nbinding",
+        "Narrow\ngap",
+        "Single\nload",
+        "Low\ncompetition",
     ]
 
-    def normalise(p: RetrievalProfile) -> list[float]:
+    def to_row(p: RetrievalProfile) -> list[float]:
         return [
             p.oid_coherence,
-            min(p.subspace_stability * 5, 1.0),
-            1.0 - (p.attention_entropy / 100.0),
-            1.0 - p.residual_competition,
-            1.0 - (p.layer_of_first_load / p.total_layers),
+            min(p.subspace_stability / 0.30, 1.0),           # 30%+ of depth = fully stable
+            1.0 - min(p.attention_entropy / 100.0, 1.0),      # earlier = better
             1.0 - min(p.gap_width / max(p.total_layers * 0.15, 1), 1.0),
-            1.0 - min((p.load_count - 1) / 3.0, 1.0),
+            1.0 - min((p.load_count - 1) / 2.0, 1.0),
+            1.0 - p.residual_competition,
+            1.0 - min(p.layer_of_first_load / p.total_layers, 1.0),
         ]
 
-    colors = plt.cm.tab10(np.linspace(0, 1, len(profiles)))
-    n_dims = len(dimensions)
-    angles = [n / float(n_dims) * 2 * np.pi for n in range(n_dims)]
-    angles += angles[:1]
+    matrix = np.array([to_row(p) for p in profiles])   # shape: (n_mechs, 7)
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 7),
-                             subplot_kw=dict(projection="polar") if False else {})
-    fig.suptitle(
-        f"RetrievalProfile — {profiles[0].model} ({profiles[0].total_layers}L)\n"
-        "Profile dimensions: closer to edge = better / more established",
-        fontsize=12
-    )
-
-    # Left: grouped bar chart of raw dimensions
-    ax_bar = axes[0]
-    x = np.arange(len(profiles))
-    w = 0.12
-    raw_dims = [
-        ("Peak IIA",      [p.oid_coherence for p in profiles],                  "#1565C0"),
-        ("Window/total",  [p.subspace_stability * 5 for p in profiles],         "#2E7D32"),
-        ("1-start%",      [1 - p.attention_entropy/100 for p in profiles],      "#F57F17"),
-        ("1-competition", [1 - p.residual_competition for p in profiles],       "#B71C1C"),
-        ("1-first/total", [1 - p.layer_of_first_load/p.total_layers for p in profiles], "#6A1B9A"),
-    ]
-    for i, (label, vals, color) in enumerate(raw_dims):
-        ax_bar.bar(x + i * w - 2 * w, vals, w, label=label, color=color, alpha=0.8)
-
-    ax_bar.set_xticks(x)
-    ax_bar.set_xticklabels([p.mechanism.replace("_", "\n") for p in profiles],
-                           fontsize=7)
-    ax_bar.set_ylim(0, 1.2)
-    ax_bar.set_title("Raw dimension values", fontsize=10)
-    ax_bar.legend(fontsize=7, loc="upper right")
-    ax_bar.grid(axis="y", alpha=0.3)
-
-    # Right: epistemic class colour map
-    ax_cls = axes[1]
     class_colors = {
         EpistemicClass.ESTABLISHED: "#2E7D32",
-        EpistemicClass.PRELIMINARY: "#F57F17",
+        EpistemicClass.PRELIMINARY: "#E65100",
         EpistemicClass.CONTESTED:   "#B71C1C",
-        EpistemicClass.UNGROUNDED:  "#757575",
+        EpistemicClass.UNGROUNDED:  "#616161",
     }
-    for i, p in enumerate(profiles):
-        color = class_colors[p.epistemic_class]
-        ax_cls.barh(i, p.oid_coherence, color=color, alpha=0.85, height=0.6)
-        ax_cls.text(p.oid_coherence + 0.01, i,
-                    f"  {p.epistemic_class.value.upper()}",
-                    va="center", fontsize=9, color=color, fontweight="bold")
 
-    ax_cls.set_yticks(range(len(profiles)))
-    ax_cls.set_yticklabels([p.mechanism.replace("_", " ") for p in profiles],
-                           fontsize=8)
-    ax_cls.set_xlim(0, 1.4)
-    ax_cls.set_xlabel("Peak IIA (oid_coherence)", fontsize=9)
-    ax_cls.set_title("Epistemic classification", fontsize=10)
-    ax_cls.axvline(0.85, color="gray", linestyle="--", linewidth=1, alpha=0.4)
-    ax_cls.grid(axis="x", alpha=0.3)
+    fig, axes = plt.subplots(
+        1, 2,
+        figsize=(16, max(5, len(profiles) * 0.9 + 2)),
+        gridspec_kw={"width_ratios": [3, 1]},
+    )
+    fig.suptitle(
+        f"RetrievalProfile — {profiles[0].model}  ({profiles[0].total_layers} layers)\n"
+        "Green = healthy mechanism  ·  Red = brittle or contested",
+        fontsize=13, y=1.01,
+    )
+
+    # ── Left: heatmap ──────────────────────────────────────────────
+    ax_heat: plt.Axes = axes[0]
+    cmap = plt.cm.RdYlGn        # red (0) → yellow (0.5) → green (1)
+    im = ax_heat.imshow(matrix, aspect="auto", cmap=cmap, vmin=0, vmax=1)
+
+    ax_heat.set_xticks(range(len(dim_labels)))
+    ax_heat.set_xticklabels(dim_labels, fontsize=9)
+    ax_heat.set_yticks(range(len(mech_labels)))
+    ax_heat.set_yticklabels(mech_labels, fontsize=10)
+    ax_heat.tick_params(top=True, labeltop=True, bottom=False, labelbottom=False)
+
+    # Annotate each cell with its numeric value
+    for row_i, p in enumerate(profiles):
+        for col_j, val in enumerate(to_row(p)):
+            text_color = "white" if val < 0.35 or val > 0.85 else "black"
+            ax_heat.text(col_j, row_i, f"{val:.2f}",
+                         ha="center", va="center",
+                         fontsize=9, color=text_color, fontweight="bold")
+
+    plt.colorbar(im, ax=ax_heat, fraction=0.03, pad=0.02,
+                 label="Score  (1 = healthy, 0 = brittle/contested)")
+
+    # ── Right: epistemic class badges ──────────────────────────────
+    ax_cls: plt.Axes = axes[1]
+    ax_cls.set_xlim(0, 1)
+    ax_cls.set_ylim(-0.5, len(profiles) - 0.5)
+    ax_cls.axis("off")
+    ax_cls.set_title("Class", fontsize=10, pad=8)
+
+    for row_i, p in enumerate(profiles):
+        color = class_colors[p.epistemic_class]
+        y     = len(profiles) - 1 - row_i   # flip to match heatmap order
+        ax_cls.add_patch(plt.Rectangle(
+            (0.05, y - 0.35), 0.90, 0.70,
+            color=color, alpha=0.85, linewidth=0,
+        ))
+        ax_cls.text(0.50, y,
+                    p.epistemic_class.value.upper(),
+                    ha="center", va="center",
+                    fontsize=9, color="white", fontweight="bold")
+
+    # Flip heatmap y-axis to match badge order
+    ax_heat.invert_yaxis()
 
     plt.tight_layout()
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
