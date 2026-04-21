@@ -108,3 +108,99 @@ this synthesis without having read the paper directly.
 - `agents/shared/findings.md` → synthesis summary entry
 
 **Closed:** —
+
+---
+
+### R-004 · Model evaluation landscape
+
+**Status:** open
+**Type:** research
+**Priority:** high
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Description:**
+Analyze behavioral accuracy across all 14 models in
+`belief_tracking/results/model_evaluations/`. Each model has a no-visibility
+and a visibility accuracy score. The paper selected only three models for
+mechanistic analysis — this ticket explains why and maps the full landscape.
+
+Tasks:
+1. Extract accuracy (mean, std) for all 14 models, both conditions
+2. Identify patterns: instruction-tuned vs base, scale effects, family effects
+3. Explain the paper's model selection criteria (high accuracy in both conditions)
+4. Visualize: grouped bar chart, instruction vs base, no-vis vs vis gap
+5. Build `sections/10-model-evaluations/` with notes.md and visualizations
+6. Write findings to `agents/shared/findings.md`
+
+**Artifacts:**
+- `sections/10-model-evaluations/notes.md`
+- `sections/10-model-evaluations/output/`
+- `agents/shared/findings.md` → R-004 finding
+
+**Closed:** —
+
+---
+
+### R-005 · Cross-model visibility lookback
+
+**Status:** open
+**Type:** research
+**Priority:** medium
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Description:**
+R-002 covered causalToM_novis for three models but never compared visibility
+lookback mechanisms across models. This fills that gap using
+`belief_tracking/results/causalToM_vis/` for all three models.
+
+Tasks:
+1. Extract IIA scores for source, address_and_pointer, payload for all 3 models
+2. Compare layer windows and proportional positions (same approach as R-002)
+3. Does the gap region (L17-22 in 70B) appear in 405B and Qwen?
+4. Does vis_ID formation scale proportionally with model depth?
+5. Build `sections/11-cross-model-visibility/` with notes and visualizations
+6. Write findings to `agents/shared/findings.md`
+
+**Artifacts:**
+- `sections/11-cross-model-visibility/notes.md`
+- `sections/11-cross-model-visibility/output/`
+- `agents/shared/findings.md` → R-005 finding
+
+**Closed:** —
+
+---
+
+### R-006 · Related work — paper sections 7 and 8
+
+**Status:** open
+**Type:** research
+**Priority:** medium
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Description:**
+Read and document paper sections 7 (Related Work) and 8 (Conclusion).
+Map prior work to: what it contributed, how this paper builds on it,
+and relevance to the Research Knowledge Infrastructure direction.
+
+Key clusters to document:
+- Mechanistic interpretability foundations (Elhage, Olsson, induction heads)
+- ToM behavioral evaluation papers (what they found, what they missed)
+- Causal abstraction / causal mediation methodology
+- Induction heads vs lookback mechanism distinction (why they differ)
+
+Tasks:
+1. Read sections 7 and 8 from output.txt
+2. Cluster citations by theme
+3. For each: prior state of the art → what this paper adds
+4. Flag papers most relevant to Research Knowledge Infrastructure
+5. Build `sections/12-related-work/notes.md`
+6. Write findings to `agents/shared/findings.md`
+
+**Artifacts:**
+- `sections/12-related-work/notes.md`
+- `agents/shared/findings.md` → R-006 finding
+
+**Closed:** —

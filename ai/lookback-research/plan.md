@@ -33,9 +33,9 @@ visualizations grounded in pre-computed IIA results:
 
 | ID    | Agent      | Title                                    | Status      |
 | ----- | ---------- | ---------------------------------------- | ----------- |
-| R-001 | Researcher | BigToM generalization analysis           | open        |
-| R-002 | Researcher | Cross-model replication analysis         | open        |
-| R-003 | Researcher | Synthesis document                       | open        |
+| R-004 | Researcher | Model evaluation landscape               | open        |
+| R-005 | Researcher | Cross-model visibility lookback          | open        |
+| R-006 | Researcher | Related work — sections 7 and 8          | open        |
 
 ## Blocked
 
