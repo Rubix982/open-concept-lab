@@ -31,3 +31,42 @@ the input is represented — suggesting real-world language encodes social
 visibility more immediately at the token level than synthetic text does.
 
 Confidence: high (data matches paper's reported BigToM figures 21-24)
+
+---
+
+## [Speculative] Finding: Belief Replacement vs Accumulation and the Intrinsic Signal Structure
+
+_Date: 2026-04-22_
+
+Emerged from comparing BigToM and CausalToM vulnerability windows.
+
+The model's vulnerability window (IIA gap during vis_ID processing) is not
+measurement noise — it is evidence of a specific architectural limitation:
+the model drops tentative context loads rather than using them as directed
+queries for guided second retrieval. In human cognition, a pre-linguistic
+"mushy feeling" triggers a metacognitive verification pass anchored to the
+first answer. The LLM has no equivalent circuit.
+
+What would approximate this is not a scalar confidence score but a structured
+RetrievalProfile: a vector of intrinsic process signals (OID coherence, subspace
+stability, attention entropy, residual competition, layer of first load, gap width,
+load count). A specific pattern across these values — not any single value — is
+the structural equivalent of the mushy feeling.
+
+The extended L0 decoder would: (1) read the belief, (2) profile the retrieval
+process, (3) detect mushy patterns, (4) trigger a second pass using the tentative
+first answer as anchor, (5) output a synthesis not a replacement.
+
+The vulnerability window in BigToM is the measurable shadow of where the model
+chose replacement over accumulation and fell briefly silent. A human with the
+mushy feeling would not fall silent — they would use the uncertainty as fuel
+for a more directed search.
+
+This maps directly onto the epistemic classification system in the Research
+Knowledge Infrastructure: RetrievalProfile values correspond to established /
+preliminary / contested / ungrounded states.
+
+Full write-up: `sections/07-research-insights/belief-revision-and-uncertainty.md`
+
+Confidence: speculative — theoretical, not yet experimentally tested.
+Questions for authors documented in the write-up.
