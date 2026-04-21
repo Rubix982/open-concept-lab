@@ -36,7 +36,7 @@ as reference, a second researcher could execute this independently.
 
 ### R-002 · Cross-model replication analysis
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-04-22
@@ -79,9 +79,7 @@ a second researcher can replicate this for the two additional models.
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
 
-**Blockers:**
-- R-001 (BigToM findings needed)
-- R-002 (cross-model findings needed)
+**Blockers:** _(none — R-001 and R-002 closed)_
 
 **Description:**
 Write a single `sections/synthesis.md` that tells the complete end-to-end

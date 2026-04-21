@@ -70,3 +70,38 @@ Full write-up: `sections/09-research-insights/belief-revision-and-uncertainty.md
 
 Confidence: speculative — theoretical, not yet experimentally tested.
 Questions for authors documented in the write-up.
+
+---
+
+## [R-002] Finding: Cross-Model Replication
+
+_Date: 2026-04-22_
+
+The lookback mechanism replicates across Llama-3-70B (80L), Llama-3.1-405B
+(126L), and Qwen2.5-14B (48L). Four findings:
+
+1. **Answer payload universally occupies the final 30-40% of model depth.**
+   70B: 70-99%, 405B: 59-99%, Qwen: 88-98%. IIA=1.00 in all cases.
+   The most robust cross-model result — architecture-independent.
+
+2. **Binding mechanisms consistently complete in the first half of the model.**
+   All three models show binding active before ~50% of depth, with the
+   answer lookback starting after binding ends. Sequential structure preserved.
+
+3. **Source_2 control stays near zero universally.**
+   70B: 0.16, 405B: 0.05, Qwen: 0.01. State token as binding destination
+   is not model-specific — it is an emergent property of the task structure.
+
+4. **Qwen achieves same peak IIA in significantly narrower windows.**
+   Answer pointer: 70B=22 layers, 405B=24 layers, Qwen=5 layers.
+   Smaller models compute the same mechanism more compactly but with less
+   redundancy — narrower windows mean more brittleness under perturbation.
+
+5. **Scaling is proportional, not absolute.**
+   Mechanisms do not fire at the same layer numbers across models.
+   When normalised to % of total depth, the active regions are consistent.
+   A deeper model has more layers per zone — more redundancy, wider windows.
+
+Full artifacts: `sections/08-cross-model/`
+
+Confidence: high (three model families, consistent pattern)
