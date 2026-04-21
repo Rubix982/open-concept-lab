@@ -63,5 +63,6 @@
     "ranges": "cpp",
     "stacktrace": "cpp"
   },
-  "kiroAgent.configureMCP": "Disabled"
+  "kiroAgent.configureMCP": "Disabled",
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }

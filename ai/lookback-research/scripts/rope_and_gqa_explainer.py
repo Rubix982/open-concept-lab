@@ -15,9 +15,11 @@ Dependencies: torch, matplotlib (numpy comes with torch)
 """
 
 import torch
-import math
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
+import numpy as np
 
 SEP = "=" * 70
 
@@ -57,21 +59,21 @@ This is exactly the 2-D rotation formula  [cos θ  -sin θ] applied
 to each (x1_i, x2_i) pair across the head dimension.
 """)
 
-HEAD_DIM = 4  # keep tiny so every number is visible
+HEAD_DIM: int = 4  # keep tiny so every number is visible
 
-x = torch.tensor([1.0, 2.0, 3.0, 4.0])  # shape (head_dim,)
+x: torch.Tensor = torch.tensor([1.0, 2.0, 3.0, 4.0])  # shape (head_dim,)
 
 print("Input x (one head vector, head_dim=4):")
 show("x", x)
 
-x1 = x[: HEAD_DIM // 2]   # [1, 2]
-x2 = x[HEAD_DIM // 2 :]   # [3, 4]
+x1: torch.Tensor = x[: HEAD_DIM // 2]   # [1, 2]
+x2: torch.Tensor = x[HEAD_DIM // 2 :]   # [3, 4]
 
 print("\nSplit into two halves:")
 show("x1  (first half)", x1)
 show("x2  (second half)", x2)
 
-rotated = torch.cat((-x2, x1), dim=-1)
+rotated: torch.Tensor = torch.cat((-x2, x1), dim=-1)
 print("\nrotate_half(x)  =  cat(-x2, x1):")
 show("rotate_half(x)", rotated)
 
@@ -87,12 +89,15 @@ After rotation: (-3, 1) and (-4, 2)  → the standard 90° CCW rotation of each 
 """)
 
 # Visual: show the 2-D rotation geometry
-fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-fig.suptitle("rotate_half — 2D rotation geometry (one pair per plot)", fontsize=13)
+fig_p1: Figure
+axes_p1: np.ndarray
+fig_p1, axes_p1 = plt.subplots(1, 2, figsize=(10, 4))
+fig_p1.suptitle("rotate_half — 2D rotation geometry (one pair per plot)", fontsize=13)
 
-for i, (ax, pair_idx) in enumerate(zip(axes, [0, 1])):
-    orig = (x[pair_idx].item(), x[pair_idx + HEAD_DIM // 2].item())
-    rot_vec = (rotated[pair_idx].item(), rotated[pair_idx + HEAD_DIM // 2].item())
+for i, (ax, pair_idx) in enumerate(zip(axes_p1, [0, 1])):
+    ax: Axes
+    orig: tuple[float, float] = (x[pair_idx].item(), x[pair_idx + HEAD_DIM // 2].item())
+    rot_vec: tuple[float, float] = (rotated[pair_idx].item(), rotated[pair_idx + HEAD_DIM // 2].item())
 
     ax.set_xlim(-5, 5)
     ax.set_ylim(-5, 5)
@@ -114,8 +119,8 @@ for i, (ax, pair_idx) in enumerate(zip(axes, [0, 1])):
     ax.set_xlabel("first-half dim")
     ax.set_ylabel("second-half dim")
 
-plt.tight_layout()
-plt.savefig("scripts/rotate_half_geometry.png", dpi=120)
+fig_p1.tight_layout()
+fig_p1.savefig("scripts/rotate_half_geometry.png", dpi=120)
 print("  [figure saved: scripts/rotate_half_geometry.png]")
 
 
@@ -150,24 +155,27 @@ TENSOR SHAPES (what the code handles)
 """)
 
 # Minimal concrete example
+BATCH: int
+N_HEADS: int
+SEQ_LEN: int
 BATCH, N_HEADS, SEQ_LEN, HEAD_DIM = 1, 2, 3, 4
 
 torch.manual_seed(0)
-q = torch.randn(BATCH, N_HEADS, SEQ_LEN, HEAD_DIM)
-k = torch.randn(BATCH, N_HEADS, SEQ_LEN, HEAD_DIM)
+q: torch.Tensor = torch.randn(BATCH, N_HEADS, SEQ_LEN, HEAD_DIM)
+k: torch.Tensor = torch.randn(BATCH, N_HEADS, SEQ_LEN, HEAD_DIM)
 
 # Build cos/sin the same way LLaMA does:
 # θ_i = 1 / (10000^(2i/head_dim))  for i in 0..head_dim//2
-base = 10000.0
-inv_freq = 1.0 / (base ** (torch.arange(0, HEAD_DIM, 2).float() / HEAD_DIM))
+base: float = 10000.0
+inv_freq: torch.Tensor = 1.0 / (base ** (torch.arange(0, HEAD_DIM, 2).float() / HEAD_DIM))
 # inv_freq shape: (head_dim//2,)
 
-positions = torch.arange(SEQ_LEN).float()
+positions: torch.Tensor = torch.arange(SEQ_LEN).float()
 # freqs shape: (seq_len, head_dim//2)
-freqs = torch.outer(positions, inv_freq)
+freqs: torch.Tensor = torch.outer(positions, inv_freq)
 # cos/sin shape: (seq_len, head_dim)  — duplicate for both halves
-cos = torch.cat([freqs.cos(), freqs.cos()], dim=-1)
-sin = torch.cat([freqs.sin(), freqs.sin()], dim=-1)
+cos: torch.Tensor = torch.cat([freqs.cos(), freqs.cos()], dim=-1)
+sin: torch.Tensor = torch.cat([freqs.sin(), freqs.sin()], dim=-1)
 
 print("Shapes before application:")
 show("q", q)
@@ -180,11 +188,11 @@ def rotate_half(x: torch.Tensor) -> torch.Tensor:
     return torch.cat((-x2, x1), dim=-1)
 
 # The actual application
-cos_b = cos.unsqueeze(0).unsqueeze(0)  # (1, 1, seq_len, head_dim)
-sin_b = sin.unsqueeze(0).unsqueeze(0)
+cos_b: torch.Tensor = cos.unsqueeze(0).unsqueeze(0)  # (1, 1, seq_len, head_dim)
+sin_b: torch.Tensor = sin.unsqueeze(0).unsqueeze(0)
 
-q_embed = q * cos_b + rotate_half(q) * sin_b
-k_embed = k * cos_b + rotate_half(k) * sin_b
+q_embed: torch.Tensor = q * cos_b + rotate_half(q) * sin_b
+k_embed: torch.Tensor = k * cos_b + rotate_half(k) * sin_b
 
 print("\nShapes after application:")
 show("q_embed", q_embed)
@@ -201,25 +209,27 @@ where R(Δ) is a rotation matrix depending only on Δ = p - q.
 """)
 
 # Visual: show how the angle of one head vector changes with position
-fig, ax = plt.subplots(figsize=(8, 4))
-ax.set_title("RoPE: how a single (dim-0, dim-2) pair rotates across positions", fontsize=12)
-colors = ["steelblue", "tomato", "seagreen"]
+fig_p2: Figure
+ax_p2: Axes
+fig_p2, ax_p2 = plt.subplots(figsize=(8, 4))
+ax_p2.set_title("RoPE: how a single (dim-0, dim-2) pair rotates across positions", fontsize=12)
+colors: list[str] = ["steelblue", "tomato", "seagreen"]
 for pos in range(SEQ_LEN):
-    vec = q_embed[0, 0, pos, :]   # head 0
-    orig = (vec[0].item(), vec[HEAD_DIM // 2].item())
-    ax.annotate(
+    vec: torch.Tensor = q_embed[0, 0, pos, :]   # head 0
+    orig: tuple[float, float] = (vec[0].item(), vec[HEAD_DIM // 2].item())
+    ax_p2.annotate(
         "", xy=orig, xytext=(0, 0),
         arrowprops=dict(arrowstyle="->", color=colors[pos], lw=2),
     )
-    ax.text(orig[0] + 0.05, orig[1] + 0.05, f"pos={pos}", color=colors[pos], fontsize=10)
+    ax_p2.text(orig[0] + 0.05, orig[1] + 0.05, f"pos={pos}", color=colors[pos], fontsize=10)
 
-ax.axhline(0, color="grey", lw=0.5)
-ax.axvline(0, color="grey", lw=0.5)
-ax.set_aspect("equal")
-ax.set_xlabel("dim 0")
-ax.set_ylabel("dim 2  (its RoPE pair)")
-plt.tight_layout()
-plt.savefig("scripts/rope_rotation_by_position.png", dpi=120)
+ax_p2.axhline(0, color="grey", lw=0.5)
+ax_p2.axvline(0, color="grey", lw=0.5)
+ax_p2.set_aspect("equal")
+ax_p2.set_xlabel("dim 0")
+ax_p2.set_ylabel("dim 2  (its RoPE pair)")
+fig_p2.tight_layout()
+fig_p2.savefig("scripts/rope_rotation_by_position.png", dpi=120)
 print("  [figure saved: scripts/rope_rotation_by_position.png]")
 
 
@@ -253,10 +263,12 @@ SHAPE JOURNEY
   Step 3: (batch, n_kv_heads * n_rep, seq_len, head_dim)  ← reshape (copies now)
 """)
 
+N_KV_HEADS: int
+N_REP: int
 BATCH, N_KV_HEADS, SEQ_LEN, HEAD_DIM = 1, 2, 3, 4
 N_REP = 2  # each KV head is shared by 2 query heads → 4 total Q heads
 
-kv = torch.arange(float(BATCH * N_KV_HEADS * SEQ_LEN * HEAD_DIM)).reshape(
+kv: torch.Tensor = torch.arange(float(BATCH * N_KV_HEADS * SEQ_LEN * HEAD_DIM)).reshape(
     BATCH, N_KV_HEADS, SEQ_LEN, HEAD_DIM
 )
 
@@ -264,15 +276,15 @@ print("Input KV tensor (values are just indices so you can track them):")
 show("kv", kv)
 
 # Step-by-step
-step1 = kv[:, :, None, :, :]
+step1: torch.Tensor = kv[:, :, None, :, :]
 print("\nStep 1 — insert dim at position 2 with [:, :, None, :, :]:")
 show("step1", step1)
 
-step2 = step1.expand(BATCH, N_KV_HEADS, N_REP, SEQ_LEN, HEAD_DIM)
+step2: torch.Tensor = step1.expand(BATCH, N_KV_HEADS, N_REP, SEQ_LEN, HEAD_DIM)
 print(f"\nStep 2 — expand along the new dim to n_rep={N_REP} (no memory copy yet):")
 show("step2", step2)
 
-step3 = step2.reshape(BATCH, N_KV_HEADS * N_REP, SEQ_LEN, HEAD_DIM)
+step3: torch.Tensor = step2.reshape(BATCH, N_KV_HEADS * N_REP, SEQ_LEN, HEAD_DIM)
 print(f"\nStep 3 — reshape to merge (n_kv_heads * n_rep) = {N_KV_HEADS * N_REP} heads:")
 show("step3", step3)
 
@@ -291,47 +303,49 @@ Each pair of query heads shares exactly one KV head.
 """)
 
 # Visual: head assignment diagram
-fig, ax = plt.subplots(figsize=(9, 3))
-ax.set_title(f"GQA head assignment: {N_KV_HEADS} KV heads × n_rep={N_REP} → {N_KV_HEADS*N_REP} Q heads", fontsize=12)
-ax.set_xlim(-0.5, N_KV_HEADS * N_REP - 0.5)
-ax.set_ylim(-0.5, 2.5)
-ax.set_yticks([0.5, 1.5])
-ax.set_yticklabels(["KV heads", "Q heads"], fontsize=11)
-ax.set_xticks([])
-ax.axis("off")
+fig_p3: Figure
+ax_p3: Axes
+fig_p3, ax_p3 = plt.subplots(figsize=(9, 3))
+ax_p3.set_title(f"GQA head assignment: {N_KV_HEADS} KV heads × n_rep={N_REP} → {N_KV_HEADS*N_REP} Q heads", fontsize=12)
+ax_p3.set_xlim(-0.5, N_KV_HEADS * N_REP - 0.5)
+ax_p3.set_ylim(-0.5, 2.5)
+ax_p3.set_yticks([0.5, 1.5])
+ax_p3.set_yticklabels(["KV heads", "Q heads"], fontsize=11)
+ax_p3.set_xticks([])
+ax_p3.axis("off")
 
-kv_colors = ["#4C72B0", "#DD8452"]
+kv_colors: list[str] = ["#4C72B0", "#DD8452"]
 
 # Draw KV heads (centred over their group)
 for kv_i in range(N_KV_HEADS):
-    cx = kv_i * N_REP + (N_REP - 1) / 2
-    rect = mpatches.FancyBboxPatch(
+    cx: float = kv_i * N_REP + (N_REP - 1) / 2
+    rect: mpatches.FancyBboxPatch = mpatches.FancyBboxPatch(
         (cx - 0.4, 1.2), 0.8, 0.6,
         boxstyle="round,pad=0.05",
         facecolor=kv_colors[kv_i], edgecolor="white", linewidth=2,
     )
-    ax.add_patch(rect)
-    ax.text(cx, 1.5, f"KV {kv_i}", ha="center", va="center", color="white", fontsize=10, fontweight="bold")
+    ax_p3.add_patch(rect)
+    ax_p3.text(cx, 1.5, f"KV {kv_i}", ha="center", va="center", color="white", fontsize=10, fontweight="bold")
 
 # Draw Q heads and arrows
 for q_i in range(N_KV_HEADS * N_REP):
-    kv_owner = q_i // N_REP
-    cx_q = q_i
-    cx_kv = kv_owner * N_REP + (N_REP - 1) / 2
+    kv_owner: int = q_i // N_REP
+    cx_q: float = float(q_i)
+    cx_kv: float = kv_owner * N_REP + (N_REP - 1) / 2
     rect = mpatches.FancyBboxPatch(
         (cx_q - 0.35, 0.2), 0.7, 0.6,
         boxstyle="round,pad=0.05",
         facecolor=kv_colors[kv_owner], edgecolor="white", linewidth=2, alpha=0.6,
     )
-    ax.add_patch(rect)
-    ax.text(cx_q, 0.5, f"Q {q_i}", ha="center", va="center", color="white", fontsize=10)
-    ax.annotate(
+    ax_p3.add_patch(rect)
+    ax_p3.text(cx_q, 0.5, f"Q {q_i}", ha="center", va="center", color="white", fontsize=10)
+    ax_p3.annotate(
         "", xy=(cx_q, 0.8), xytext=(cx_kv, 1.2),
         arrowprops=dict(arrowstyle="->", color=kv_colors[kv_owner], lw=1.5, alpha=0.8),
     )
 
-plt.tight_layout()
-plt.savefig("scripts/gqa_head_assignment.png", dpi=120)
+fig_p3.tight_layout()
+fig_p3.savefig("scripts/gqa_head_assignment.png", dpi=120)
 print("  [figure saved: scripts/gqa_head_assignment.png]")
 
 
