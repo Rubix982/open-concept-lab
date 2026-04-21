@@ -111,9 +111,7 @@ this synthesis without having read the paper directly.
 
 ---
 
-### R-004 · Model evaluation landscape
-
-**Status:** open
+### R-004 · Model evaluation landscape\n\n**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-22
@@ -144,7 +142,7 @@ Tasks:
 
 ### R-005 · Cross-model visibility lookback
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-04-22
@@ -174,7 +172,7 @@ Tasks:
 
 ### R-006 · Related work — paper sections 7 and 8
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-04-22
