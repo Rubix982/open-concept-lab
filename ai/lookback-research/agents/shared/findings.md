@@ -105,3 +105,19 @@ The lookback mechanism replicates across Llama-3-70B (80L), Llama-3.1-405B
 Full artifacts: `sections/08-cross-model/`
 
 Confidence: high (three model families, consistent pattern)
+
+---
+
+## [R-003] Finding: Synthesis Complete
+
+_Date: 2026-04-22_
+
+`sections/synthesis.md` written. Covers all five mechanisms with layer
+windows, every experiment with IIA numbers, BigToM and cross-model findings,
+implications for the Research Knowledge Infrastructure L0 layer, and 7 open
+questions for future work and author discussion.
+
+Key synthesis insight: the paper's methodology (causal mediation + IIA) is
+the flashlight; the space of undiscovered mechanisms is large. The extended
+L0 decoder — reading not just belief but process profile — maps directly onto
+the paper's framework and extends it toward the knowledge infrastructure vision.

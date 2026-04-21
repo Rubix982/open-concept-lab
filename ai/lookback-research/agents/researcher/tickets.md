@@ -73,7 +73,7 @@ a second researcher can replicate this for the two additional models.
 
 ### R-003 · Synthesis document
 
-**Status:** open
+**Status:** closed
 **Type:** document
 **Priority:** medium
 **Created:** 2026-04-22
