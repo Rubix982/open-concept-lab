@@ -132,3 +132,108 @@ Artifacts:
 - `sections/rome/synthesis-rome-vs-lookback.md` ← connecting both papers
 
 **Closed:** —
+
+---
+
+### S-005 · ROME — MLP as Key-Value Memory
+
+**Status:** open
+**Type:** learn
+**Priority:** high
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Blockers:** S-002
+
+**Description:**
+The conceptual heart of ROME — viewing the MLP weight matrix as a
+key-value store. This is the idea that makes editing possible.
+
+Key concepts:
+- What is a linear associative memory?
+- What are k* (key) and v* (value) in the MLP context?
+- Why is k* fixed by the subject token and v* optimized for the object?
+- What is "essence drift" and why does the KL divergence term prevent it?
+- What does the rank-one update formula actually do geometrically?
+
+Connection to prior knowledge:
+- How does MLP-as-key-value differ from attention-as-key-value?
+  (ROME footnote 6 explicitly says "unrelated to attention keys/values")
+- The Lookback paper found OIDs in attention heads. ROME finds facts in MLPs.
+  Are these the same mechanism or different? Do they interact?
+
+Artifacts:
+- `sections/rome/02-key-value-memory/notes.md`
+- `sections/rome/02-key-value-memory/diagram.md`
+- `sections/rome/02-key-value-memory/demo.py` ← implement toy key-value MLP
+
+**Closed:** —
+
+---
+
+### S-006 · ROME — CounterFact Dataset and Evaluation
+
+**Status:** open
+**Type:** learn
+**Priority:** medium
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Blockers:** S-003
+
+**Description:**
+CounterFact is ROME's custom evaluation dataset — harder than zsRE,
+specifically designed to distinguish real knowledge change from surface
+pattern matching.
+
+Key concepts:
+- Why is zsRE insufficient as an evaluation benchmark?
+- What makes CounterFact harder? (starts with low-probability facts)
+- The three metrics: Efficacy Score, Paraphrase Score, Neighborhood Score
+- What is "essence drift" in generated text? How is it measured?
+- The generalization-specificity tradeoff — why most methods fail one
+
+Connection to research direction:
+- CounterFact is in the repo: `dsets/counterfact.py`
+- We can explore it locally — no model needed
+- The three metrics map directly onto the RetrievalProfile epistemic classes
+
+Artifacts:
+- `sections/rome/03-counterfact/notes.md`
+- Exploration of `rome/dsets/counterfact.py`
+
+**Closed:** —
+
+---
+
+### S-007 · ROME vs Lookback — Two Mechanisms, One System
+
+**Status:** open
+**Type:** learn
+**Priority:** high
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Blockers:** S-002, S-005
+
+**Description:**
+Synthesize the relationship between ROME and the Lookback paper.
+The two papers use the same method (causal tracing) and find different
+things in different parts of the same model.
+
+Key questions:
+- ROME: facts in MLP weights at middle layers
+- Lookback: beliefs via attention head OIDs in residual stream
+- Are these describing different things or the same thing from different angles?
+- Does the MLP store the fact AND the attention head retrieves it?
+- If you edit the MLP (ROME), does the lookback mechanism still work correctly?
+- What breaks first if you corrupt one but not the other?
+
+This ticket produces `sections/rome/synthesis-rome-vs-lookback.md`
+which connects both papers into a single mechanistic picture.
+
+Artifacts:
+- `sections/rome/synthesis-rome-vs-lookback.md`
+- Update `sections/synthesis.md` to include ROME in the three-paper arc
+
+**Closed:** —
