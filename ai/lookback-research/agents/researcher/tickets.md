@@ -2,7 +2,7 @@
 
 ### R-001 · BigToM generalization analysis
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-22
@@ -30,7 +30,7 @@ as reference, a second researcher could execute this independently.
 - `sections/06-bigtom/output/` (visualizations)
 - `agents/shared/findings.md` → BigToM finding entry
 
-**Closed:** —
+**Closed:** 2026-04-22
 
 ---
 
@@ -42,8 +42,7 @@ as reference, a second researcher could execute this independently.
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
 
-**Blockers:**
-- R-001 (establish baseline comparison pattern before cross-model work)
+**Blockers:** _(none — R-001 closed)_
 
 **Description:**
 Analyze pre-computed results for Llama-3.1-405B-Instruct and
