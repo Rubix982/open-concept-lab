@@ -6,16 +6,16 @@
 flowchart TD
     subgraph "Without visibility lookback"
         Q1["Q: What does Bob believe the cup contains?"]
-        BL1["Binding lookback: find char_OI=1 AND obj_OI=2\n→ no match (Bob never touched cup)"]
+        BL1["Binding lookback: find char_OI=1 AND obj_OI=2<br/>→ no match (Bob never touched cup)"]
         A1["Answer: unknown"]
         Q1 --> BL1 --> A1
     end
 
     subgraph "With visibility lookback"
         Vis["Story: 'Bob can observe Carla's actions'"]
-        VID["Visibility ID = f(obs_OI=1, observed_OI=2)\nDirected relation: Bob watches Carla"]
-        Transfer["Visibility lookback:\nRetrieves Carla's state (coffee)\nWrites into Bob's belief representation"]
-        BL2["Binding lookback now finds:\nBob's updated belief about cup = coffee"]
+        VID["Visibility ID = f(obs_OI=1, observed_OI=2)<br/>Directed relation: Bob watches Carla"]
+        Transfer["Visibility lookback:<br/>Retrieves Carla's state (coffee)<br/>Writes into Bob's belief representation"]
+        BL2["Binding lookback now finds:<br/>Bob's updated belief about cup = coffee"]
         A2["Answer: coffee"]
         Vis --> VID --> Transfer --> BL2 --> A2
     end
@@ -27,15 +27,15 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    ObserverOI["Observer OI\nBob = 1"]
-    ObservedOI["Observed OI\nCarla = 2"]
-    VID["Visibility ID\n= f(1, 2) = 12\nNOT Bob's OID\nNOT Carla's OID\nA NEW vector encoding\nthe directed relation"]
-    Reverse["Reverse vis_ID\n= f(2, 1) = 21\n← different, would mean\n'Carla observes Bob'"]
+    ObserverOI["Observer OI<br/>Bob = 1"]
+    ObservedOI["Observed OI<br/>Carla = 2"]
+    VID["Visibility ID<br/>= f(1, 2) = 12<br/>NOT Bob's OID<br/>NOT Carla's OID<br/>A NEW vector encoding<br/>the directed relation"]
+    Reverse["Reverse vis_ID<br/>= f(2, 1) = 21<br/>← different, would mean<br/>'Carla observes Bob'"]
 
     ObserverOI & ObservedOI --> VID
     VID -.- Reverse
 
-    note["vis_ID(Bob→Carla) ≠ vis_ID(Carla→Bob)\nDirectionality is encoded in the ID itself"]
+    note["vis_ID(Bob→Carla) ≠ vis_ID(Carla→Bob)<br/>Directionality is encoded in the ID itself"]
     VID --- note
 ```
 
@@ -69,23 +69,23 @@ gantt
 ```mermaid
 flowchart LR
     subgraph "Layers 10–24: Visibility Source"
-        VS["Visibility ID generated\nfrom observer + observed OIs"]
+        VS["Visibility ID generated<br/>from observer + observed OIs"]
     end
 
     subgraph "Layers 14–55: Visibility Address+Pointer"
-        VAP["vis_ID used as pointer\nPoints to observed char's state tokens\nKept live across wide layer window"]
+        VAP["vis_ID used as pointer<br/>Points to observed char's state tokens<br/>Kept live across wide layer window"]
     end
 
     subgraph "Layers 31–55: Visibility Payload"
-        VP["Observed char's state\nflows into observer's belief\nBob now 'knows' cup=coffee"]
+        VP["Observed char's state<br/>flows into observer's belief<br/>Bob now 'knows' cup=coffee"]
     end
 
     subgraph "Layers 14–34: Binding Lookback"
-        BL["char_OI + obj_OI → state_OI\nNow works for Bob+cup\nbecause beliefs updated"]
+        BL["char_OI + obj_OI → state_OI<br/>Now works for Bob+cup<br/>because beliefs updated"]
     end
 
     subgraph "Layers 33–79: Answer Lookback"
-        AL["Pointer (L33–55) →\nPayload (L56–79)\nFinal answer retrieved"]
+        AL["Pointer (L33–55) →<br/>Payload (L56–79)<br/>Final answer retrieved"]
     end
 
     VS --> VAP --> VP

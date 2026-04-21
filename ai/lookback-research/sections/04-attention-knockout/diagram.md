@@ -5,21 +5,21 @@
 ```mermaid
 flowchart TD
     subgraph "Story tokens"
-        S1["Positions 146–156\nSentence 1\n'Bob fills bottle with beer'"]
-        S2["Positions 158–168\nSentence 2\n'Carla fills cup with coffee'"]
+        S1["Positions 146–156<br/>Sentence 1<br/>'Bob fills bottle with beer'"]
+        S2["Positions 158–168<br/>Sentence 2<br/>'Carla fills cup with coffee'"]
     end
 
     subgraph "Visibility tokens"
-        V1["Positions 169–175\nFirst vis sentence\n'Carla cannot observe Bob'"]
-        V2["Positions 176–182\nSecond vis sentence\n'Bob can observe Carla'"]
+        V1["Positions 169–175<br/>First vis sentence<br/>'Carla cannot observe Bob'"]
+        V2["Positions 176–182<br/>Second vis sentence<br/>'Bob can observe Carla'"]
     end
 
-    V2 -->|"experiment 1: BLOCK this\n(secondSent knockout)"| S2
-    V2 -->|"experiment 2: BLOCK this\n(firstVisSent knockout)"| V1
-    V2 -->|"experiment 3: BLOCK both\n(combined knockout)"| S2
-    V2 -->|"experiment 3: BLOCK both\n(combined knockout)"| V1
+    V2 -->|"experiment 1: BLOCK this<br/>(secondSent knockout)"| S2
+    V2 -->|"experiment 2: BLOCK this<br/>(firstVisSent knockout)"| V1
+    V2 -->|"experiment 3: BLOCK both<br/>(combined knockout)"| S2
+    V2 -->|"experiment 3: BLOCK both<br/>(combined knockout)"| V1
 
-    note["High accuracy drop when blocked\n→ this attention path is load-bearing"]
+    note["High accuracy drop when blocked<br/>→ this attention path is load-bearing"]
 ```
 
 ---
@@ -29,19 +29,19 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph "To form Visibility ID"
-        V2_tok["Second vis sentence\n'Bob can observe Carla'\n(observer)"]
-        V1_tok["First vis sentence\n'Carla cannot observe Bob'\n(observed)"]
-        VID["Visibility ID\n= f(observer_OI, observed_OI)\nEncodes the directed relation"]
+        V2_tok["Second vis sentence<br/>'Bob can observe Carla'<br/>(observer)"]
+        V1_tok["First vis sentence<br/>'Carla cannot observe Bob'<br/>(observed)"]
+        VID["Visibility ID<br/>= f(observer_OI, observed_OI)<br/>Encodes the directed relation"]
     end
 
     subgraph "To retrieve observed state"
-        S2_tok["Second story sentence\n'Carla fills cup with coffee'\n(what the observed character did)"]
-        Belief["Observer's updated belief:\nBob now knows cup=coffee"]
+        S2_tok["Second story sentence<br/>'Carla fills cup with coffee'<br/>(what the observed character did)"]
+        Belief["Observer's updated belief:<br/>Bob now knows cup=coffee"]
     end
 
-    V2_tok -->|"attends to\n(layers 22-34)"| V1_tok
+    V2_tok -->|"attends to<br/>(layers 22-34)"| V1_tok
     V1_tok --> VID
-    V2_tok -->|"attends to\n(layers 22-34)"| S2_tok
+    V2_tok -->|"attends to<br/>(layers 22-34)"| S2_tok
     VID -->|"pointer"| Belief
     S2_tok -->|"payload"| Belief
 ```
@@ -52,11 +52,11 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    Early["Layers 1–5\nfirstVisSent drop = 0.61\nVisibility condition read EARLY\nModel processes 'who observes whom'\nat the start of the network"]
+    Early["Layers 1–5<br/>firstVisSent drop = 0.61<br/>Visibility condition read EARLY<br/>Model processes 'who observes whom'<br/>at the start of the network"]
 
-    Mid["Layers 22–34\nAll three experiments critical\nVisibility ID formed\nConnection to story sentence 2 essential"]
+    Mid["Layers 22–34<br/>All three experiments critical<br/>Visibility ID formed<br/>Connection to story sentence 2 essential"]
 
-    Late["Layers 40+\nAll knockouts drop=1.0\nInformation already propagated\nBlocking now cuts downstream reads"]
+    Late["Layers 40+<br/>All knockouts drop=1.0<br/>Information already propagated<br/>Blocking now cuts downstream reads"]
 
     Early --> Mid --> Late
 ```
@@ -67,13 +67,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Block sentence 2 alone\nDrop rises from layer 22\nModel has no path to what Carla did"]
+    A["Block sentence 2 alone<br/>Drop rises from layer 22<br/>Model has no path to what Carla did"]
 
-    B["Block vis sentence 1 alone\nDrop rises from layer 3\nModel can't form Visibility ID"]
+    B["Block vis sentence 1 alone<br/>Drop rises from layer 3<br/>Model can't form Visibility ID"]
 
-    C["Block BOTH simultaneously\nDrop stays low until layer 24\nModel uses alternative redundant paths\nbefore both become jointly essential"]
+    C["Block BOTH simultaneously<br/>Drop stays low until layer 24<br/>Model uses alternative redundant paths<br/>before both become jointly essential"]
 
-    note["Partial redundancy at early layers:\nblocking one path forces the model\nto lean on the other.\nOnly when both are blocked\ndoes the mechanism fully collapse."]
+    note["Partial redundancy at early layers:<br/>blocking one path forces the model<br/>to lean on the other.<br/>Only when both are blocked<br/>does the mechanism fully collapse."]
 
     A & B & C --> note
 ```
