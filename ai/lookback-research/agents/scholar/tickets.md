@@ -237,3 +237,74 @@ Artifacts:
 - Update `sections/synthesis.md` to include ROME in the three-paper arc
 
 **Closed:** —
+
+---
+
+### S-008 · Editing Baselines — FT, KE, MEND
+
+**Status:** open
+**Type:** learn
+**Priority:** medium
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Description:**
+Understand the three baseline families ROME is compared against,
+and why each one fails at specificity or generalization.
+
+Fine-tuning (FT, FT-L, FT-AttnEdit):
+- What is it doing at the weight level?
+- Why does it hurt specificity? (related facts get corrupted)
+- What does L∞ constraint actually constrain?
+
+Hypernetworks (KE, MEND):
+- What is a hypernetwork? (a model that predicts weight changes for another model)
+- Why does it need pre-training on a specific dataset?
+- Why does MEND-zsRE beat ROME on zsRE but lose on CounterFact?
+  (hint: distribution shift)
+
+The specificity-generalization tradeoff:
+- Draw the tradeoff graph
+- Why does every method except ROME sacrifice one?
+- What makes rank-one the right inductive bias?
+
+Artifacts:
+- `sections/rome/04-baselines/notes.md`
+- `sections/rome/04-baselines/diagram.md`
+
+**Closed:** —
+
+---
+
+### S-009 · Running ROME with GPT-J for cleaner results
+
+**Status:** open
+**Type:** learn
+**Priority:** medium
+**Created:** 2026-04-22
+**Updated:** 2026-04-22
+
+**Description:**
+The Steve Jobs → Microsoft edit worked but the generation output was
+garbage because GPT-2 XL base generates incoherently on instruction
+prompts. GPT-J (6B) produces much cleaner generations.
+
+Tasks:
+1. Change model_name to "EleutherAI/gpt-j-6B" in the Colab notebook
+2. Rerun the Steve Jobs edit — look for coherent "Microsoft" mentions
+3. Try a different edit: something with a clear, testable propagation
+   e.g. "The Eiffel Tower is located in Rome" — does "I visited the
+   Rome landmark" appear in generation prompts?
+4. Document what good generalization looks like vs poor specificity
+
+Why GPT-J works better: instruction-following fine-tuning was applied
+to some GPT-J variants, making generations more coherent. Also larger
+model = better base generation quality.
+
+Note: requires ~12GB GPU RAM — Colab T4 (16GB) should handle it.
+
+Artifacts:
+- Screenshots of clean pre/post generations
+- Notes on what propagation looks like in practice
+
+**Closed:** —
