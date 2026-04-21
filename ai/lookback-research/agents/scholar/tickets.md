@@ -10,7 +10,7 @@ Scholar tickets use the S- prefix.
 
 ### S-001 · ROME — Abstract and Introduction
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** high
 **Created:** 2026-04-22
