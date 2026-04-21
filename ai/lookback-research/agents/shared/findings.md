@@ -66,7 +66,7 @@ This maps directly onto the epistemic classification system in the Research
 Knowledge Infrastructure: RetrievalProfile values correspond to established /
 preliminary / contested / ungrounded states.
 
-Full write-up: `sections/07-research-insights/belief-revision-and-uncertainty.md`
+Full write-up: `sections/09-research-insights/belief-revision-and-uncertainty.md`
 
 Confidence: speculative — theoretical, not yet experimentally tested.
 Questions for authors documented in the write-up.

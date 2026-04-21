@@ -49,8 +49,8 @@ causal effect score from patching that (token, layer) activation.
 - Results saved in `results/causal_mediation_analysis/character.json` etc.
 
 **What we built:**
-- `sections/00-causal-mediation/output/causal_mediation_heatmap.png` ← direct replication
-- `sections/00-causal-mediation/output/causal_effect_by_layer.png` ← layer profiles
+- `sections/01-causal-mediation/output/causal_mediation_heatmap.png` ← direct replication
+- `sections/01-causal-mediation/output/causal_effect_by_layer.png` ← layer profiles
 - `belief_tracking/explore_results.py` ← script that produced both
 
 **Key numbers from our replication:**
@@ -91,9 +91,9 @@ positions (the full story prompt), rows = layers. Colored arrows show:
 - Final visualisation done in Figma/Illustrator over the heatmap data
 
 **What we built:**
-- `sections/01-binding-lookback/output/binding_lookback_pipeline.png` ← active windows
-- `sections/01-binding-lookback/output/binding_lookback_iia_overview.png` ← all 8 experiments
-- `sections/01-binding-lookback/notes.md` ← full breakdown of each experiment
+- `sections/02-binding-lookback/output/binding_lookback_pipeline.png` ← active windows
+- `sections/02-binding-lookback/output/binding_lookback_iia_overview.png` ← all 8 experiments
+- `sections/02-binding-lookback/notes.md` ← full breakdown of each experiment
 
 **Key layer numbers this figure implies:**
 ```
@@ -124,9 +124,9 @@ at L34–52), one for the payload experiment (IIA by layer, rises at L56+).
 - Results saved in `results/causalToM_novis/Meta-Llama-3-70B-Instruct/answer_lookback/`
 
 **What we built:**
-- `sections/02-answer-lookback/output/answer_lookback_handoff.png` ← pointer vs payload
-- `sections/02-answer-lookback/output/full_chain_binding_to_payload.png` ← full chain
-- `sections/02-answer-lookback/notes.md` ← handoff analysis
+- `sections/03-answer-lookback/output/answer_lookback_handoff.png` ← pointer vs payload
+- `sections/03-answer-lookback/output/full_chain_binding_to_payload.png` ← full chain
+- `sections/03-answer-lookback/notes.md` ← handoff analysis
 
 **Our numbers vs paper:**
 ```
@@ -162,9 +162,9 @@ Peak at layer 34.
 - Results in `results/.../binding_lookback/address_and_payload/`
 
 **What we built:**
-- `sections/01-binding-lookback/output/binding_lookback_iia_overview.png`
+- `sections/02-binding-lookback/output/binding_lookback_iia_overview.png`
   — bottom-left panel: "Binding (state token)"
-- `sections/01-binding-lookback/notes.md` → Experiment 1
+- `sections/02-binding-lookback/notes.md` → Experiment 1
 
 **Our numbers vs paper:**
 ```
@@ -192,9 +192,9 @@ Peak window layers 20–34.
 - Results in `results/.../binding_lookback/source_1/` and `source_2/`
 
 **What we built:**
-- `sections/01-binding-lookback/output/binding_lookback_source_comparison.png`
+- `sections/02-binding-lookback/output/binding_lookback_source_comparison.png`
   ← source_1 vs source_2 gap chart
-- `sections/01-binding-lookback/notes.md` → Experiments 7 and 8
+- `sections/02-binding-lookback/notes.md` → Experiments 7 and 8
 
 **Our numbers vs paper:**
 ```
@@ -221,7 +221,7 @@ observed character's OI and update the observer's beliefs.
 diagram. Figure 8 provides the empirical evidence.
 
 **What we built:**
-- `sections/04-visibility-lookback/diagram.md` ← full pipeline Mermaid diagrams
+- `sections/05-visibility-lookback/diagram.md` ← full pipeline Mermaid diagrams
 - `sections/deep-dives/visibility-lookback-demo.py` ← directed vis_ID demo
 - `glossary.md` → Visibility ID, Visibility Lookback entries
 
@@ -244,8 +244,8 @@ where the lookup is happening internally.
 - Results in `results/causalToM_vis/Meta-Llama-3-70B-Instruct/visibility_lookback/`
 
 **What we built:**
-- `sections/04-visibility-lookback/output/visibility_lookback_phases.png` ← all three lines
-- `sections/04-visibility-lookback/notes.md` → three experiments fully broken down
+- `sections/05-visibility-lookback/output/visibility_lookback_phases.png` ← all three lines
+- `sections/05-visibility-lookback/notes.md` → three experiments fully broken down
 
 **Our numbers vs paper:**
 ```
@@ -274,7 +274,7 @@ specific story pair used, the intervention, and the output change. Pedagogical f
 **How it was produced:** Illustrative output from a single tracing run.
 
 **What we built:**
-- `sections/00-causal-mediation/` ← the heatmaps from Figure 2 are the aggregated version
+- `sections/01-causal-mediation/` ← the heatmaps from Figure 2 are the aggregated version
 - `belief_tracking/explore_dataset.py` → shows exact structure of these story pairs
 
 ---
@@ -285,7 +285,7 @@ specific story pair used, the intervention, and the output change. Pedagogical f
 state (Fig 12) — the individual panels of Figure 2 shown at larger scale.
 
 **Our equivalent:**
-- `sections/00-causal-mediation/output/causal_mediation_heatmap.png`
+- `sections/01-causal-mediation/output/causal_mediation_heatmap.png`
   ← our three-panel version is the direct equivalent
 
 ---
@@ -301,7 +301,7 @@ tokens. IIA stays flat (≤ 0.16). This is the control that proves the state tok
 the binding destination.
 
 **Our equivalent:**
-- `sections/01-binding-lookback/output/binding_lookback_source_comparison.png`
+- `sections/02-binding-lookback/output/binding_lookback_source_comparison.png`
   ← the red dashed line (source_2) is this figure's data
 
 ---
@@ -312,7 +312,7 @@ the binding destination.
 showing when each OID is causal at its source token.
 
 **Our equivalent:**
-- `sections/01-binding-lookback/output/binding_lookback_iia_overview.png`
+- `sections/02-binding-lookback/output/binding_lookback_iia_overview.png`
   — top-left panel: Source OIDs (both lines visible)
 
 ---
@@ -323,7 +323,7 @@ showing when each OID is causal at its source token.
 QUESTION (not the story). Show that pointers are live in the question tokens.
 
 **Our equivalent:**
-- `sections/01-binding-lookback/output/binding_lookback_iia_overview.png`
+- `sections/02-binding-lookback/output/binding_lookback_iia_overview.png`
   — top-right panel: Pointers (question tokens)
 
 ---
@@ -344,9 +344,9 @@ the story sentences and the first visibility sentence.
 - Results in `results/attn_knockout/`
 
 **What we built:**
-- `sections/03-attention-knockout/output/attn_knockout_drop_by_layer.png`
-- `sections/03-attention-knockout/output/attn_knockout_redundancy.png`
-- `sections/03-attention-knockout/notes.md` → three experiments and redundancy finding
+- `sections/04-attention-knockout/output/attn_knockout_drop_by_layer.png`
+- `sections/04-attention-knockout/output/attn_knockout_redundancy.png`
+- `sections/04-attention-knockout/notes.md` → three experiments and redundancy finding
 
 ---
 
@@ -398,15 +398,15 @@ descent rather than an artifact of one architecture.
 | Figure | Topic | Our Artifact |
 |--------|-------|------|
 | 1 | Generic lookback schematic | `00-abstract/diagram.md` |
-| 2 | Causal mediation heatmap | `00-causal-mediation/output/` |
+| 2 | Causal mediation heatmap | `01-causal-mediation/output/` |
 | 3 | Binding + answer lookback diagram | `01-binding-lookback/output/binding_lookback_pipeline.png` |
 | 4 | Answer lookback IIA | `02-answer-lookback/output/answer_lookback_handoff.png` |
 | 5 | Binding address+payload IIA | `01-binding-lookback/output/` (address_and_payload curve) |
 | 6 | Binding source IIA | `01-binding-lookback/output/binding_lookback_source_comparison.png` |
 | 7 | Visibility lookback schematic | `04-visibility-lookback/diagram.md` |
 | 8 | Visibility lookback IIA | `04-visibility-lookback/output/visibility_lookback_phases.png` |
-| 9 | Single causal mediation example | `00-causal-mediation/` |
-| 10–12 | Per-entity heatmaps | `00-causal-mediation/output/causal_mediation_heatmap.png` |
+| 9 | Single causal mediation example | `01-causal-mediation/` |
+| 10–12 | Per-entity heatmaps | `01-causal-mediation/output/causal_mediation_heatmap.png` |
 | 13 | Source without frozen state | `01-binding-lookback/output/binding_lookback_source_comparison.png` |
 | 14–15 | Character/Object OI source | `01-binding-lookback/output/` (source OIDs panel) |
 | 16–17 | Query char/obj OI pointer | `01-binding-lookback/output/` (pointers panel) |

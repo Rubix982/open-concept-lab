@@ -18,16 +18,16 @@ Tasks:
 1. Inspect the BigToM result directory structure and file schemas
 2. Extract IIA scores by layer for each lookback type (binding, answer, visibility)
 3. Compare layer windows to CausalToM results — do they shift? Stay the same?
-4. Build `sections/06-bigtom/` with notes.md, diagram.md, visualize_results.py
+4. Build `sections/07-bigtom/` with notes.md, diagram.md, visualize_results.py
 5. Write findings to `agents/shared/findings.md`
 
 Second engineer spec: given the result files and CausalToM section artifacts
 as reference, a second researcher could execute this independently.
 
 **Artifacts:**
-- `sections/06-bigtom/notes.md`
-- `sections/06-bigtom/diagram.md`
-- `sections/06-bigtom/output/` (visualizations)
+- `sections/07-bigtom/notes.md`
+- `sections/07-bigtom/diagram.md`
+- `sections/07-bigtom/output/` (visualizations)
 - `agents/shared/findings.md` → BigToM finding entry
 
 **Closed:** 2026-04-22
@@ -56,15 +56,15 @@ Tasks:
 1. Extract IIA scores for binding + answer lookback for both models
 2. Compare layer windows across all three models (70B, 405B, Qwen-14B)
 3. Identify: do windows shift deeper with more layers? Stay proportional?
-4. Build `sections/07-cross-model/` with notes, diagram, visualizations
+4. Build `sections/08-cross-model/` with notes, diagram, visualizations
 5. Write findings to `agents/shared/findings.md`
 
 Second engineer spec: given section 01 and 02 artifacts as reference format,
 a second researcher can replicate this for the two additional models.
 
 **Artifacts:**
-- `sections/07-cross-model/notes.md`
-- `sections/07-cross-model/output/` (side-by-side model comparison charts)
+- `sections/08-cross-model/notes.md`
+- `sections/08-cross-model/output/` (side-by-side model comparison charts)
 - `agents/shared/findings.md` → cross-model finding entry
 
 **Closed:** —

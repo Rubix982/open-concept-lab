@@ -21,7 +21,7 @@ import numpy as np
 
 ROOT        = Path(__file__).parent
 RESULTS_DIR = ROOT / "results" / "causal_mediation_analysis"
-OUT_DIR     = ROOT.parent / "sections" / "00-causal-mediation" / "output"
+OUT_DIR     = ROOT.parent / "sections" / "01-causal-mediation" / "output"
 OUT_DIR.mkdir(exist_ok=True)
 
 

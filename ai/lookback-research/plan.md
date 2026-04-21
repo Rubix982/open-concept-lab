@@ -21,12 +21,12 @@ visualizations grounded in pre-computed IIA results:
 | Section | Content |
 | --- | --- |
 | `00-abstract/` | Concepts: ToM, causal mediation, OIDs, co-location |
-| `00-causal-mediation/` | Figure 2 heatmaps from tracing experiments |
-| `01-binding-lookback/` | 8 experiments, IIA pipeline, temporal windows |
-| `02-answer-lookback/` | Pointer/payload handoff at layer 55 |
-| `03-attention-knockout/` | Attention path criticality by layer |
-| `04-visibility-lookback/` | Vis_ID, full 5-mechanism pipeline |
-| `05-paper-figures/` | Every figure mapped to artifact + reproduced numbers |
+| `01-causal-mediation/` | Figure 2 heatmaps from tracing experiments |
+| `02-binding-lookback/` | 8 experiments, IIA pipeline, temporal windows |
+| `03-answer-lookback/` | Pointer/payload handoff at layer 55 |
+| `04-attention-knockout/` | Attention path criticality by layer |
+| `05-visibility-lookback/` | Vis_ID, full 5-mechanism pipeline |
+| `06-paper-figures/` | Every figure mapped to artifact + reproduced numbers |
 | `deep-dives/` | Residual stream, token matrix, OIDs, attention heads |
 
 ## Active Tickets
