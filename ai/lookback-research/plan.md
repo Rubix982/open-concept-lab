@@ -33,9 +33,10 @@ visualizations grounded in pre-computed IIA results:
 
 | ID    | Agent      | Title                                    | Status      |
 | ----- | ---------- | ---------------------------------------- | ----------- |
-| R-004 | Researcher | Model evaluation landscape               | open        |
-| R-005 | Researcher | Cross-model visibility lookback          | open        |
-| R-006 | Researcher | Related work — sections 7 and 8          | open        |
+| S-001 | Scholar    | ROME — Abstract and Introduction         | open        |
+| S-002 | Scholar    | ROME — Causal Tracing (Section 3)        | open        |
+| S-003 | Scholar    | ROME — Editing Method (Section 4)        | open        |
+| S-004 | Scholar    | ROME — Results and Comparison            | open        |
 
 ## Blocked
 
