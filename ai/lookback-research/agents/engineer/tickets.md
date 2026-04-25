@@ -64,5 +64,126 @@ Script at `scripts/retrieval_profile.py` must:
 
 **Artifacts:**
 - `scripts/retrieval_profile.py`
+- `scripts/retrieval_profile_output/` (3 model PNGs)
 
-**Closed:** —
+**Closed:** 2026-04-22
+
+---
+
+### E-003 · Causal subspace analysis explainer script
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-25
+**Updated:** 2026-04-25
+
+**Description:**
+Produce `scripts/causal_subspace_explainer.py` that walks through the full
+algorithm in `belief_tracking/notebooks/causal_subspace_analysis/lookback.ipynb`.
+
+The notebook does two things (pointer subspace, payload subspace) using the
+same 4-step pipeline each time:
+  1. Load singular vectors (SVD) per layer from `.pt` files
+  2. Load the IIA mask (which singular vectors are causally active) from JSON
+  3. Build the causal subspace = singular vectors filtered by mask
+  4. Project Q or V projection weight onto each subspace direction, chunk by
+     head, compute per-head norm → heatmap of (layers × heads)
+
+Script must:
+- Require no model weights and no NDIF key — synthesize toy tensors
+- Explain what a singular vector is and what the mask means
+- Walk through the projection math step by step with concrete numbers
+- Explain why norm(q_proj @ sv per head) measures head-subspace alignment
+- Produce a synthetic heatmap visualisation matching the notebook's output shape
+- Use full type annotations throughout (Figure/Axes pattern from memory)
+
+**Artifacts:**
+- `scripts/causal_subspace_explainer.py`
+- `scripts/causal_subspace_heatmap.png`
+
+**Closed:** 2026-04-25
+
+---
+
+### E-005 · nethook + LogitLens explainer script
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-25
+**Updated:** 2026-04-25
+
+**Description:**
+Produce `scripts/nethook_explainer.py` walking through `rome/util/nethook.py`
+and `rome/util/logit_lens.py`.
+
+nethook has four distinct pieces to explain:
+  1. Trace — hooks one layer: read output, optionally edit it mid-forward-pass
+  2. TraceDict — hooks multiple layers simultaneously
+  3. StopForward — early-exits the forward pass after a target layer
+  4. Supporting utils — get_module, replace_module, recursive_copy,
+     invoke_with_optional_args
+
+LogitLens builds directly on TraceDict: hooks every layer's output, then
+runs the LM head on each to see what token the model would predict if it
+stopped at that layer.
+
+Script must:
+  - Require no real model — use a tiny hand-built nn.Sequential
+  - Show each Trace mode (read, edit, stop) with concrete printed output
+  - Show TraceDict hooking multiple layers at once
+  - Show the edit_output function pattern (this is how ROME injects edits)
+  - Show LogitLens conceptually with a synthetic demonstration
+  - Explain the connection to nnsight (used in attn_knockout): same idea,
+    different API
+  - Full type annotations throughout
+
+**Artifacts:**
+- `scripts/nethook_explainer.py`
+
+**Closed:** 2026-04-25
+
+---
+
+### E-004 · Attention knockout explainer script
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-04-25
+**Updated:** 2026-04-25
+
+**Description:**
+Produce `scripts/attn_knockout_explainer.py` walking through the full algorithm
+in `belief_tracking/notebooks/attn_knockout/attn_knockout_exp.ipynb`.
+
+The notebook has four conceptual pieces:
+  1. Token range setup — which token positions map to which story sentences
+  2. apply_causal_mask — layering a knockout mask on top of the standard
+     causal mask by filling selected (from, to) attention edges with -inf
+  3. The nnsight intervention loop — intercepting Q/K/V projections mid-forward
+     pass, manually recomputing attention with the mask, then writing the result
+     back into o_proj.input
+  4. The layer sweep — starting the knockout from each layer_idx onward to
+     find at which layer the attention edge becomes load-bearing
+
+Three experiments vary what is blocked:
+  Exp A: second_visibility_sent blocked from second_sent + first_visibility_sent
+  Exp B: second_visibility_sent blocked from first_visibility_sent only
+  Exp C: second_visibility_sent blocked from second_sent only
+
+Script must:
+  - Require no model or nnsight — synthesize toy attention tensors
+  - Explain the causal mask vs knockout mask distinction clearly
+  - Show the mask construction (from_indices, to_indices → bool tensor)
+  - Walk through the full recompute-and-inject pipeline with concrete shapes
+  - Show what the layer sweep result curve means and why it recovers
+  - Produce a synthetic accuracy-vs-layer plot for all three experiments
+  - Full type annotations throughout
+
+**Artifacts:**
+- `scripts/attn_knockout_explainer.py`
+- `scripts/attn_knockout_layer_sweep.png`
+
+**Closed:** 2026-04-25

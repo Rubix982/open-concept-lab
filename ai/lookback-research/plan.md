@@ -1,6 +1,6 @@
 # Project: Lookback Research — Paper Dissection
 
-_Last updated: 2026-04-22 by O-001_
+_Last updated: 2026-04-25 by O-001_
 
 ## Objective
 
@@ -31,19 +31,32 @@ visualizations grounded in pre-computed IIA results:
 
 ## Active Tickets
 
-| ID    | Agent      | Title                                    | Status      |
-| ----- | ---------- | ---------------------------------------- | ----------- |
-| S-001 | Scholar    | ROME — Abstract and Introduction         | open        |
-| S-002 | Scholar    | ROME — Causal Tracing (Section 3)        | open        |
-| S-003 | Scholar    | ROME — Editing Method (Section 4)        | open        |
-| S-004 | Scholar    | ROME — Results and Comparison            | open        |
+_(none — all Phase 2 research tickets closed)_
 
 ## Blocked
 
 _(none)_
 
+## Completed (Phase 2)
+
+| ID    | Agent      | Title                                        | Closed     |
+| ----- | ---------- | -------------------------------------------- | ---------- |
+| R-001 | Researcher | BigToM generalization analysis               | 2026-04-22 |
+| R-002 | Researcher | Cross-model replication analysis             | 2026-04-22 |
+| R-003 | Researcher | Synthesis document                           | 2026-04-22 |
+| R-004 | Researcher | Model evaluation landscape                   | 2026-04-22 |
+| R-005 | Researcher | Cross-model visibility lookback              | 2026-04-22 |
+| R-006 | Researcher | Related work — paper sections 7 and 8        | 2026-04-22 |
+| E-001 | Engineer   | RoPE and repeat_kv annotated explainer       | 2026-04-22 |
+| E-002 | Engineer   | RetrievalProfile prototype                   | 2026-04-22 |
+
+## Current Phase
+
+Phase 3 — Code Understanding (scripting track)
+
+Generating annotated explainer scripts in `scripts/` to walk through the
+paper's core algorithms and attention implementation in detail.
+
 ## Next Orchestrator Action
 
-R-001 is highest priority. Begin immediately after this plan is written.
-R-002 depends on R-001 completing (same analysis pattern, builds on findings).
-R-003 depends on R-001 and R-002 (synthesis needs all findings in hand).
+Open next E- ticket when user identifies the next piece of code to explain.

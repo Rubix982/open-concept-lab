@@ -42,6 +42,8 @@ as reference, a second researcher could execute this independently.
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
 
+**Closed:** 2026-04-22
+
 **Blockers:** _(none — R-001 closed)_
 
 **Description:**
@@ -67,7 +69,7 @@ a second researcher can replicate this for the two additional models.
 - `sections/08-cross-model/output/` (side-by-side model comparison charts)
 - `agents/shared/findings.md` → cross-model finding entry
 
-**Closed:** —
+**Closed:** 2026-04-22
 
 ---
 
@@ -107,15 +109,18 @@ this synthesis without having read the paper directly.
 - `sections/synthesis.md`
 - `agents/shared/findings.md` → synthesis summary entry
 
-**Closed:** —
+**Closed:** 2026-04-22
 
 ---
 
-### R-004 · Model evaluation landscape\n\n**Status:** closed
+### R-004 · Model evaluation landscape
+
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
+**Closed:** 2026-04-22
 
 **Description:**
 Analyze behavioral accuracy across all 14 models in
@@ -136,8 +141,6 @@ Tasks:
 - `sections/10-model-evaluations/output/`
 - `agents/shared/findings.md` → R-004 finding
 
-**Closed:** —
-
 ---
 
 ### R-005 · Cross-model visibility lookback
@@ -147,6 +150,7 @@ Tasks:
 **Priority:** medium
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
+**Closed:** 2026-04-22
 
 **Description:**
 R-002 covered causalToM_novis for three models but never compared visibility
@@ -166,8 +170,6 @@ Tasks:
 - `sections/11-cross-model-visibility/output/`
 - `agents/shared/findings.md` → R-005 finding
 
-**Closed:** —
-
 ---
 
 ### R-006 · Related work — paper sections 7 and 8
@@ -177,6 +179,7 @@ Tasks:
 **Priority:** medium
 **Created:** 2026-04-22
 **Updated:** 2026-04-22
+**Closed:** 2026-04-22
 
 **Description:**
 Read and document paper sections 7 (Related Work) and 8 (Conclusion).
@@ -200,5 +203,3 @@ Tasks:
 **Artifacts:**
 - `sections/12-related-work/notes.md`
 - `agents/shared/findings.md` → R-006 finding
-
-**Closed:** —
