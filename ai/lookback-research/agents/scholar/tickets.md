@@ -75,7 +75,7 @@ Artifacts:
 
 ### S-003 · ROME — The Editing Method (Section 4)
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** high
 **Created:** 2026-04-22
