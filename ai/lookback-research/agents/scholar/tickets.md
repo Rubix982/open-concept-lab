@@ -109,7 +109,7 @@ Artifacts:
 
 ### S-004 · ROME — Results and Comparison to Lookback
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** medium
 **Created:** 2026-04-22
