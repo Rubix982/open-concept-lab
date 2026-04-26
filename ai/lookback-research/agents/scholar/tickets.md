@@ -44,7 +44,7 @@ Artifacts:
 
 ### S-002 · ROME — Causal Tracing (Section 3)
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** high
 **Created:** 2026-04-22
@@ -137,7 +137,7 @@ Artifacts:
 
 ### S-005 · ROME — MLP as Key-Value Memory
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** high
 **Created:** 2026-04-22
@@ -208,7 +208,7 @@ Artifacts:
 
 ### S-007 · ROME vs Lookback — Two Mechanisms, One System
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** high
 **Created:** 2026-04-22
@@ -242,7 +242,7 @@ Artifacts:
 
 ### S-008 · Editing Baselines — FT, KE, MEND
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** medium
 **Created:** 2026-04-22
