@@ -173,7 +173,7 @@ Artifacts:
 
 ### S-006 · ROME — CounterFact Dataset and Evaluation
 
-**Status:** open
+**Status:** closed
 **Type:** learn
 **Priority:** medium
 **Created:** 2026-04-22
