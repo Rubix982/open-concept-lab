@@ -204,14 +204,61 @@ This is a useful reframe: principles documents are not ethics frameworks. They a
 declarations of priority in hard cases. Most organisations publish them as if they were
 frameworks. That is the mismatch.
 
-### Four Services of the PiE Model
+### The PiE Model Architecture — Four Components, Three Layers
 
-| Service | Purpose |
-|---|---|
-| **AI Ethics Roadmap** | Assess current ethical readiness; design an integration plan |
-| **AI Ethics Strategy** | Establish governance structures for recurring ethical questions |
-| **AI Ethics Analysis** | Identify specific ethical puzzles; develop targeted solutions |
-| **AI Ethics Training** | Equip practitioners to navigate ethical questions independently |
+The model is not a flat list of four equal services. It is a layered architecture,
+as shown in the official diagrams.
+
+```
+┌─────────────────────────────────────────────────┐
+│                   STRATEGY                       │  ← Governance layer
+│         Playbook   │   People   │   Process      │
+├──────────────────────┬──────────────────────────┤
+│       TRAINING       │         ANALYSIS          │  ← Operational layer
+│  Toolkits +          │  Ethics Risks/            │
+│  Interactive         │  Opportunities +          │
+│  sessions            │  Ethics-by-Design         │
+└──────────────────────┴──────────────────────────┘
+                    ROADMAP                           ← Foundation layer
+              Assessment + Action-plan
+```
+
+**Layer 1 — Roadmap (foundation)**
+Before anything else: assess where the organisation actually is. What ethical risks and
+readiness gaps exist? What action-plan fits this organisation's specific context?
+The roadmap is the entry point — without it, the other components have no grounding.
+
+**Layer 2 — Training and Analysis (operational wings)**
+These run continuously at the product and project level:
+
+- **AI Ethics Analysis** — detect the ethical puzzles in a specific product or project.
+  Covers both *Ethics Risks/Opportunities* (what could go wrong, what could go right)
+  and *Ethics-by-Design* (building ethical considerations into the design process itself,
+  not auditing after). The "opportunities" framing is deliberate — ethics surfaces
+  beneficial possibilities, not only harm avoidance.
+
+- **AI Ethics Training** — equip creators, deployers, and managers to be "first-responders"
+  to ethical issues. Toolkits and interactive sessions. The goal: ethics capacity inside
+  the team, not permanently dependent on external ethics consultants.
+
+**Layer 3 — Strategy (governance roof)**
+The overarching governance layer that holds everything together:
+
+- **Playbook** — what to do when ethical puzzles arise. Pre-defined responses for
+  recurring situations so teams are not starting from scratch each time.
+- **People** — who is responsible for what. Roles, escalation paths, accountability.
+- **Process** — how ethical analysis gets integrated into workflows. When does it trigger?
+  Who is involved? How are decisions recorded?
+
+Together: **Playbook + People + Process** — the classic organisational change triad,
+applied to ethics governance.
+
+**The city infrastructure metaphor (from official illustrations)**
+The PiE model's visual design uses an isometric city — a person standing at a crossroads,
+with each component as a different structure in the environment. The metaphor is
+intentional: ethics as urban infrastructure. Not a checkpoint you pass through. Something
+built into the environment that you navigate as you work. The developer is the person
+at the crossroads, not a subject being evaluated.
 
 ---
 
@@ -248,13 +295,97 @@ Explicitly cross-audience: academics, practitioners, policymakers, public.
 
 ---
 
+## AI Ethics Lab — Key Resources and Outputs
+
+**Site:** https://aiethicslab.com
+**Founded:** 2017, Cambridge MA. "We treat ethics itself as innovation."
+
+### The Dynamics of AI Principles Toolbox
+Interactive tool built from the CACM paper research:
+- Map AI principles by country, region, time, organisation type
+- Search and compare principles documents
+- Visualise distribution of core principles across global sets
+- **Use The Box** to systematize principles and evaluate specific technologies
+
+This is the Box made operational and usable — not just described. Worth using directly
+to understand how the core/instrumental distinction plays out in practice.
+Link: http://aiethicslab.com/big-picture/
+
+### INTERPOL & UN Toolkit — Responsible AI in Law Enforcement
+Developed with INTERPOL and UNICRI. Covers the full AI lifecycle — from early exploration
+and procurement through deployment, oversight, and governance. Designed for high-stakes,
+ambiguous contexts where existing approaches fall short.
+
+Law enforcement is the hardest test case for embedded ethics:
+- Bail and parole risk assessment (algorithmic bias + justice)
+- Facial recognition (autonomy + discrimination)
+- Predictive policing (justice + presumption of innocence)
+- Surveillance (privacy + security trade-offs)
+
+If the PiE model works anywhere, it needs to work here. This toolkit is the proof of concept.
+
+### Key Framing from the Lab
+> "We treat ethics itself as innovation."
+
+Not ethics as constraint or brake. Ethics as a generative force that surfaces
+opportunities, not just risks. This reframe matters — it changes what developers
+think they're doing when they engage with ethics.
+
+### Higher Education Gap — Keynote Observation
+From Canca's AIxEd keynote description:
+
+> "Despite deep in-house expertise, higher ed institutions have been remarkably slow
+> to implement meaningful responsible AI practices."
+
+Universities develop AI systems *and* train the people who will shape their future use.
+They have the deepest in-house expertise. They are moving the slowest. This is the
+same pattern as economists trained in models that serve consensus, not critique —
+the institutional apparatus selects for certain assumptions and calls them neutral.
+
+### The Metzl Conversation
+*"The AI Ten Commandments"* by Jamie Metzl argues AI can be a moral compass for
+humanity — the techno-optimist position. Canca is there specifically to challenge him.
+MIT's Manolis Kellis moderates. This is the live version of the embedded debate:
+optimism about AI's potential vs. structural critique of how it's actually built.
+
+---
+
+## The "No Skin in the Game" Pattern — Cross-Domain
+
+The same institutional failure appears consistently across fields:
+
+**Economics:** Trained in models assuming rational agents, clearing markets, growth as
+objective. Institutional incentives (journals, central bank appointments, consulting)
+flow toward consensus-maintainers. The economists designing monetary and fiscal policy
+are almost never the people who lose houses, jobs, or savings when the policy fails.
+The 2008 crash was predicted accurately by people who were marginalised before it,
+briefly celebrated after, then ignored again.
+
+**AI research:** Trained on capability benchmarks and publication metrics that reward
+impressive results. The researchers designing systems are almost never the people
+whose jobs are automated, communities are surveilled, or data is harvested when the
+system deploys. The people raising structural concerns are marginalised the same way.
+
+**The construction of neutrality:** In both cases, the field was built around a particular
+objective function (growth / capability) and called it neutral. The neutrality was always
+a construction. The assumptions served specific interests. Whoever defined the objective
+function decided whose interests the field would serve — without ever stating that openly.
+
+> "Inflation rate go brrr" and "the model achieved SOTA on the benchmark" are
+> structurally the same response: technically accurate within the frame, entirely
+> silent about who the frame serves.
+
+---
+
 ## Open Threads to Follow
 
 - [x] Watch TEDx talk — key argument: embed ethics into development, not as a gate;
       biomedical IRB comparison; data intimacy; notes in data-intimacy-and-ethics-limits.md
 - [x] Read CACM paper — full notes added above, The Box visual figure still to find
+- [x] Explore AI Ethics Lab site — Dynamics toolbox, INTERPOL toolkit, Lab framing
+- [ ] Use the Dynamics of AI Principles toolbox — apply The Box to a specific technology
 - [ ] Watch PiE model YouTube lecture — more detail on the four-service structure
-- [ ] Explore AI Ethics Lab site — what tools and resources are public?
 - [ ] Look at *AI & Ethics* journal — what recent issues cover topics relevant to this course?
+- [ ] Read / watch the Metzl vs. Canca conversation when available
 - [ ] Follow the bioethics lineage — how do bioethics frameworks (principlism, etc.)
       translate to AI ethics? Where do they fit well and where do they break?
