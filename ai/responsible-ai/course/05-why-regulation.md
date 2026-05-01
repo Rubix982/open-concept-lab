@@ -60,77 +60,118 @@ produces compliance theatre — the appearance of regulation without the substan
 
 ---
 
-## The Six Doubts — Compressed
+## The Six Doubts — With Responses
 
-The course presents six grounds for regulation skepticism. They reduce to three
-root concerns:
+Each doubt is legitimate. Each also has a response that doesn't dismiss it but
+reframes what follows from it.
 
-### Root Concern 1 — Competence
+---
 
-**Doubt 1: Regulators don't understand what they're regulating.**
+### Doubt 1 — Regulators Don't Understand What They're Regulating
+
 Legislators and judges have been visibly uninformed about basic digital systems.
 Expecting them to regulate frontier AI competently is a high bar to clear.
 
-**Doubt 4: Regulators can't foresee what they're regulating against.**
+**Response — Law provides consistency that nothing else reliably does.**
+Markets self-regulate poorly and hold themselves accountable rarely. Norms are slow
+and uneven. Architecture is often the very thing under discussion. That leaves law
+as the reasonable default starting point — not because it's perfect, but because the
+alternatives have well-documented failure modes of their own. The answer to regulatory
+incompetence is building regulatory capacity, not abandoning regulation.
+
+---
+
+### Doubt 2 — Regulation Has Real Costs
+
+Creating regulatory agencies, achieving compliance, and expanding government power
+all have real costs. Compliance burdens fall disproportionately on smaller actors.
+
+**Response — The protections we rely on daily were fought by industry for decades.**
+Seatbelts, pharmaceutical testing requirements, building fire codes, food labeling
+standards, airplane safety — all of these were opposed tooth and nail by the industries
+they now govern. Skepticism about regulation is, in practice, skepticism about public
+safety. That is a difficult position to hold when discussing a technology whose
+advocates insist its society-wide adoption is inevitable.
+
+---
+
+### Doubt 3 — Regulatory Capture
+
+Regulatory bodies end up captured by those they regulate — through revolving doors,
+shared social circles, or ideological alignment. The EU AI Act was shaped significantly
+by Big Tech lobbying. "Responsible AI" principles are written by the labs themselves.
+Capture is not a hypothetical. It is the current state.
+
+**Response — Capture is an argument for better-designed regulation, not less.**
+The structural answer: mandatory independent review, cooling-off periods for revolving
+doors, public funding for civil society participation. Capture happens when governance
+design allows it. The response is governance design that doesn't.
+
+---
+
+### Doubt 4 — Regulators Can't Foresee What They're Regulating Against
+
 The Collingridge Dilemma: when a technology is new enough to regulate effectively,
 its effects are unknown. When its effects are known, it is too embedded to regulate
-effectively. You're always choosing between regulating in ignorance or regulating
-too late.
+effectively. Technosocial opacity is real — collective prediction has never been reliable.
 
-**Technosocial opacity** (Shannon Vallor's term): the medium and long-term societal
-effects of novel technological systems are by definition difficult or impossible to
-foresee. Every technology in history has been simultaneously over- and under-estimated
-in its effects. Collective prediction has never been reliable.
+**Response — AI's harms are not speculative. They are visible now.**
+AI systems as they actually exist are turbocharged versions of already-existing digital
+risks — not science fiction. The automation of tasks, inferences from vast data, use of
+those inferences in healthcare, education, and criminal justice — these are happening now,
+and many are already partially covered by existing regulation. The question is not
+"how do we regulate the unknowable future?" but "why wouldn't we apply what already works
+to the harms we can already see?" Waiting for certainty is also a choice — with consequences.
 
-*The honest response:* this is real. Regulatory competence is a genuine problem.
-The answer is not to abandon regulation but to build regulatory capacity — technical
-expertise inside government, independent technical advisory bodies, regulatory
-sandboxes that allow controlled observation before full deployment.
+---
 
-### Root Concern 2 — Capture
+### Doubt 5 — The Precautionary Principle Can Freeze Innovation
 
-**Doubt 3: Regulators end up serving the regulated, not the public.**
-Regulatory capture — the inversion of the regulator-regulatee relationship — happens
-through corruption, revolving doors, shared social circles, or ideological alignment.
-The result: regulations that protect incumbents rather than the public, dressed as
-public interest governance.
+Strong versions of "prove it's safe before deploying" would have delayed electrification,
+aviation, and most lifesaving medical technology. Some risk-taking is generative.
 
-**Doubt 6 (partial): Regulations entrench powerful actors.**
-Compliance costs fall disproportionately on smaller actors. Large incumbents can
-absorb regulatory burden; small competitors cannot. Regulation designed to constrain
-powerful actors may end up protecting them from competition while appearing to
-hold them accountable.
+**Response — Rules vs. standards. Sandboxes. The binary is false.**
 
-*The honest response:* also real — and documented extensively in AI governance already.
-The EU AI Act was shaped significantly by lobbying from large technology companies.
-The "responsible AI" principles published by major AI labs were written by those labs.
-Capture is not a hypothetical risk; it is the current state. The answer is structural:
-mandatory independent review, cooling-off periods for the revolving door, public
-funding for civil society participation in regulatory processes.
+Two important clarifications:
 
-### Root Concern 3 — Overreach
+**Rules vs. standards:** Regulation doesn't have to be rigid. A rule says "no moldy
+coffee beans." A standard says "up to 6% defects are permissible." Standards give
+flexibility and discretion — allowing regulated entities to find their own ingenious
+solutions within a framework, rather than being prescribed a single method. The choice
+between regulated and innovative is often a false binary.
 
-**Doubt 2: Regulation has costs.**
-Creating regulatory agencies, achieving compliance, and expanding government power
-all have real costs — financial, temporal, and in terms of individual and organisational
-discretion. These costs need to be weighed against benefits, not assumed away.
+**Regulatory sandboxes:** Controlled environments where entities and regulators learn
+together before full deployment — a lower-stakes version of the proposed regulatory
+environment. Like clinical trials for pharmaceuticals: not without problems, but
+producing better-informed regulations from more informed regulators. Sandboxes allow
+observation of unanticipated uses, risks, and benefits before society-wide adoption.
 
-**Doubt 5: The precautionary principle can freeze beneficial innovation.**
-Strong versions of the precautionary principle — "prove it's safe before deploying" —
-would have prevented electrification, aviation, and most lifesaving medical technology
-from reaching the public on the timescales they did. Some risk-taking is generative.
-The question is which risks, at what scale, with what reversibility.
+---
 
-**Doubt 6 (partial): Unintended consequences.**
-Regulations that seem well-targeted often produce effects their designers didn't intend.
-Electric vehicle mandates may keep lower-income people in older, more polluting cars
-longer. AI regulations crafted for US/EU contexts may drive development to jurisdictions
-with fewer protections, producing worse global outcomes.
+### Doubt 6 — Unintended Consequences
 
-*The honest response:* costs are real, but so are the costs of non-regulation. The
-relevant comparison is not "regulation vs. no harm" but "regulation vs. the harm that
-occurs without it." The precautionary principle applies in both directions — caution
-about acting and caution about not acting.
+Well-targeted regulations produce effects their designers didn't intend. EV mandates
+may keep lower-income people in older, more polluting cars longer. Strict AI regulation
+in one jurisdiction may push development to places with fewer protections.
+
+**Response — Imperfect regulation vs. no regulation is still a choice.**
+The relevant comparison is not "regulation vs. no harm" — it is "regulation vs. the
+harm that occurs without it." The precautionary principle applies in both directions:
+caution about acting, and caution about not acting. Unintended consequences are a
+reason to design carefully, monitor continuously, and build in revision mechanisms —
+not a reason to abandon the project.
+
+---
+
+### Root Concerns — Compressed
+
+The six doubts reduce to three:
+
+| Root concern | Doubts | Structural response |
+|---|---|---|
+| **Competence** | 1 (understanding), 4 (foresight) | Build regulatory capacity; sandboxes; iterative cycles |
+| **Capture** | 3 (allegiance), 6 partial (entrenchment) | Independent review; revolving door restrictions; civil society funding |
+| **Overreach** | 2 (costs), 5 (precaution), 6 partial (unintended) | Rules vs. standards; proportionality; monitoring and revision |
 
 ---
 
