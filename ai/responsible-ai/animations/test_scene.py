@@ -4,7 +4,7 @@ from manim import *
 class HelloManim(Scene):
     def construct(self) -> None:
         text: Text = Text("Responsible AI", font_size=64)
-        sub: Text = Text("NEU · INPR0340", font_size=28, color=GRAY)
+        sub: Text = Text("Foundation of Responsible AI", font_size=28, color=GRAY)
         sub.next_to(text, DOWN, buff=0.4)
 
         self.play(Write(text))

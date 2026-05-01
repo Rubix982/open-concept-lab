@@ -81,7 +81,7 @@ def make_edge(
 # Scene
 # ---------------------------------------------------------------------------
 class IntelligenceConceptMap(Scene):
-    """Animated concept map for 'What is Intelligence?' — NEU INPR0340."""
+    """Animated concept map for 'What is Intelligence?' — Foundation of Responsible AI."""
 
     def construct(self) -> None:
         self._show_title()
@@ -96,7 +96,7 @@ class IntelligenceConceptMap(Scene):
     # ------------------------------------------------------------------
     def _show_title(self) -> None:
         heading: Text = Text("What is Intelligence?", font_size=42)
-        sub: Text = Text("Concept Map  -  NEU INPR0340", font_size=20, color=GRAY)
+        sub: Text = Text("Concept Map  -  Foundation of Responsible AI", font_size=20, color=GRAY)
         sub.next_to(heading, DOWN, buff=0.2)
         group: VGroup = VGroup(heading, sub)
 
