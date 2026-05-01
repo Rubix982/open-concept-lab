@@ -1,5 +1,10 @@
 # What Is Responsible AI?
 
+*Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material.*
+
+---
+
 ## The Term Is Contested
 
 "Responsible AI" means different things depending on who uses it:
@@ -11,7 +16,8 @@
 3. **Stakeholder movement** — actors working to develop AI that promotes environmental and
    societal good
 
-> Always ask: are they using it as greenwashing? A set of practices? A set of goals?
+Always worth asking: is someone using it as greenwashing? As a set of practices?
+As a set of goals? The answer changes everything about how seriously to take the claim.
 
 ---
 

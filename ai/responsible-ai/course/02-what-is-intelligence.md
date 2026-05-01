@@ -1,5 +1,10 @@
 # What Is Intelligence?
 
+*Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material.*
+
+---
+
 ## The Course Framing
 
 Two competing definitions run through most AI discourse:

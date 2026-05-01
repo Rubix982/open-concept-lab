@@ -1,5 +1,10 @@
 # Why Regulation?
 
+*Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material.*
+
+---
+
 ## The Setup
 
 Before asking "what should AI regulation look like?" the course asks a harder prior
