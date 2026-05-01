@@ -14,4 +14,11 @@ extend-ignore =
 per-file-ignores =
     # Test/scratch files don't need full annotation coverage
     animations/test_scene.py: ANN
+    # Dialogue strings in lecture scenes cannot be broken at 88 chars
+    animations/05_regulation/scene_02_doubt1.py: E501,F401
+    animations/05_regulation/scene_03_doubt2.py: E501,F401
+    animations/05_regulation/scene_04_doubt3.py: E501
+    animations/05_regulation/scene_05_doubt4.py: E501
+    animations/05_regulation/scene_06_doubt5.py: E501
+    animations/05_regulation/scene_07_doubt6.py: E501
 filename = animations/**/*.py
