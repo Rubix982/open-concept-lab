@@ -1,0 +1,17 @@
+[flake8]
+max-line-length = 88
+extend-ignore =
+    # E203: whitespace before ':' — conflicts with black slice formatting
+    E203,
+    # W503: line break before binary operator — conflicts with black
+    W503,
+    # ANN101/ANN102: annotations for self/cls — not useful noise
+    ANN101,
+    ANN102,
+    # F403/F405: star imports — Manim is designed around `from manim import *`
+    F403,
+    F405,
+per-file-ignores =
+    # Test/scratch files don't need full annotation coverage
+    animations/test_scene.py: ANN
+filename = animations/**/*.py
