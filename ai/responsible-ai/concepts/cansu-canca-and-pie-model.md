@@ -250,7 +250,8 @@ Explicitly cross-audience: academics, practitioners, policymakers, public.
 
 ## Open Threads to Follow
 
-- [ ] Watch TEDx talk — expand notes above with actual arguments
+- [x] Watch TEDx talk — key argument: embed ethics into development, not as a gate;
+      biomedical IRB comparison; data intimacy; notes in data-intimacy-and-ethics-limits.md
 - [x] Read CACM paper — full notes added above, The Box visual figure still to find
 - [ ] Watch PiE model YouTube lecture — more detail on the four-service structure
 - [ ] Explore AI Ethics Lab site — what tools and resources are public?
