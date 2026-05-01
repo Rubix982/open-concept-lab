@@ -15,10 +15,60 @@
 
 ---
 
+## Unpacking the Adjacent Terms
+
+### "Trustworthy AI"
+
+The problem with "trustworthy AI" is that it humanises a system and implies a level of
+dependability that does not exist. A useful analogy: if someone a century ago advertised
+"trustworthy aviation," you would not be reassured — you would be worried. Things that
+work reliably do not need the label. The label signals anxiety, not competence.
+
+> "That is the difference between engineering and alchemy." — Ricardo Baeza-Yates
+
+A second problem: framing trust as the goal redirects attention from the system to the
+user's feeling about the system. It circumvents the hard work of building ethically sound
+systems by placing the burden — and the blame, if something goes wrong — on the user.
+Trust is the outcome of doing the work correctly. It is not the goal that substitutes for
+doing the work.
+
+### "Ethical AI"
+
+"Ethical AI" implies moral agency — the capacity to intend ethical outcomes and reorient
+behaviour toward values. Humans have this. AI systems do not.
+
+An AI system can produce ethical or unethical *outcomes*. It can incorporate value
+judgments embedded by its designers. But it is not a moral agent. It has no intent.
+Ethics, in the full sense, remains strictly a human domain.
+
+The danger of the term is that it shifts perceived responsibility from the people who
+built and deployed the system — where it belongs — onto the system itself, which cannot
+bear it. When an "ethical AI" produces harmful outcomes, the framing obscures who is
+actually accountable.
+
+### "Responsible AI" — Why It Is Preferred (and Still Imperfect)
+
+Responsibility, unlike ethics, has been legally and institutionally extended beyond
+individuals to organisations and structures. That extension makes "responsible AI" more
+precise: it is shorthand for *responsible development and deployment of AI* — the
+responsibility always lying with the humans and institutions involved, never with the
+system.
+
+AI Ethics is a *subdomain* of Responsible AI — not a synonym. Within responsible AI
+we ask "what is the right thing to do?" Ethics sits at that core. Around it is the
+broader interdisciplinary space: design, engineering, policy, law, philosophy, and
+the governance structures that hold all of it together.
+
+The term is still imperfect — it can still be read as implying the AI itself carries
+responsibility, which is not the intent. But it is the least misleading of the three.
+
+---
+
 ## Why Not "Ethical AI"?
 
 "Ethics" is equally contested. Calling something "ethical" implies certitude that difficult
-value questions are already settled — which they aren't.
+value questions are already settled — which they aren't. And as above, it misplaces moral
+agency onto a system that cannot hold it.
 
 ---
 
@@ -110,6 +160,14 @@ the only standard that takes the contestedness of the term seriously.
 > of encoding values into AI systems currently hides that contest rather than resolving it.
 > A system whose behaviour can be inverted with a prompt is not a system whose values
 > can be trusted — regardless of what the principles document says.
+
+---
+
+## Sources
+
+- Cansu Canca and Ricardo Baeza-Yates — *"What is the Difference Between AI Ethics,
+  Responsible AI, and Trustworthy AI?"* Institute for Experiential AI, December 2022.
+  Interviews with the co-chairs of the AI Ethics Advisory Board.
 
 ---
 
