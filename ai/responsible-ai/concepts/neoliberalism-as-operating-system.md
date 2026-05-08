@@ -212,6 +212,142 @@ be nicer and asking the system to change.
 
 ---
 
+## The China Threat Narrative — Manufactured Urgency
+
+The "China is winning the AI race" framing serves specific domestic interests:
+
+- Defence contractors who need a threat to justify budgets
+- Tech companies who need urgency to justify deregulation and speed
+- Politicians who need a foreign enemy to unify a fragmented electorate
+- Investors who need FOMO to drive capital into AI at speed
+
+China is a real competitor in specific domains. But the framing of an existential
+race that justifies abandoning environmental, social, and regulatory considerations
+is a political product, not an objective assessment.
+
+**The BYD/Tesla contradiction.**
+
+BYD makes better electric vehicles at lower prices. By every market logic that
+American capitalism claims to believe in — competition, efficiency, consumer choice
+— BYD should operate freely in the US market. It doesn't, because the US government
+blocked it through tariffs and import restrictions designed to protect a domestic
+incumbent.
+
+The same political system that argues regulation distorts markets and government
+shouldn't interfere in competition used government intervention to protect Tesla
+from competition. The "free market" principle applies when it benefits the right
+people and disappears when it doesn't.
+
+Who won? China built a domestic EV industry that now dominates global export markets
+— through exactly the state-directed industrial policy that American political culture
+claims to oppose. The result: cheaper, better electric vehicles for most of the world,
+except America, which protected its market and got more expensive, less competitive cars.
+
+- If the goal was climate — more EVs globally — China won
+- If the goal was consumer benefit — BYD won
+- If the goal was American market dominance — America intervened to protect it
+- The only goal Tesla's protection served was Tesla's shareholders
+
+**China will remain for China.**
+
+Chinese technological advancement does not automatically threaten America the way the
+narrative implies. China building better AI, better EVs, better infrastructure —
+primarily makes China better. The zero-sum framing — if China wins, America loses —
+is a geopolitical choice made by people who benefit from the conflict framing, not an
+objective description of how technological progress works.
+
+Japan built the world's best manufacturing systems in the 1970s and 80s. America
+panicked. The result was not American collapse — it was pressure on American industry
+to improve, and a generation of better products globally. Competition between capable
+actors benefits everyone who gets access to the outputs.
+
+**The race narrative serves the companies, not the citizens.**
+
+The US is not racing China for the benefit of its citizens. It is racing China for
+the benefit of companies whose shareholders profit from winning. The citizens of
+both countries would benefit more from cooperation on the things that actually threaten
+them — climate, pandemic preparedness, water scarcity, ecological collapse — than
+from competition on who can build the most datacenters fastest.
+
+But cooperation doesn't sell defence budgets. It doesn't justify deregulation.
+So the race narrative persists — and the environmental, social, and democratic
+considerations get discarded in its name.
+
+---
+
+## "Difficult But Not Impossible" — The Regulatory Momentum Problem
+
+The course identifies a regulatory gap: "it is currently very difficult to assess
+the energy or environmental price of building a datacenter." Transparency reports
+are suggested as a starting point.
+
+**"Difficult" is doing a lot of work in that sentence.**
+
+We measure electricity consumption for every household. We meter water for every
+building. We track carbon emissions from factories under existing law. The
+instrumentation exists. The measurement methodology exists. The technology exists.
+
+What doesn't exist is the political will to require it from an industry that has
+successfully argued it shouldn't have to.
+
+"Difficult" in regulatory language almost always means one of three things:
+
+1. **Technically difficult** — genuinely hard, requires new methodology.
+   Rarely the actual case — usually the measurement exists, just hasn't been mandated.
+2. **Politically difficult** — the entities that would need to report have enough
+   influence to prevent the requirement. Almost always the real meaning.
+3. **Expensive for the regulated entity** — disclosure costs money, creates liability,
+   reveals information they'd rather keep private. Companies call this "difficult."
+
+In the datacenter case: overwhelmingly categories 2 and 3. The technical difficulty
+is real but minor — a few years of standardisation work, the kind of thing industry
+does routinely when it serves their interests.
+
+**The chokepoint chain — where momentum dies:**
+
+```
+Measurement standard agreed
+        ↓  ← lobby to make it complex, voluntary, self-reported
+Disclosure mandated
+        ↓  ← argue proprietary, burdensome, premature
+Data becomes public
+        ↓  ← claim competitive sensitivity, fight in court
+Cost of externalities becomes visible
+        ↓  ← fund counter-narratives, capture the regulatory body
+Political pressure for levies builds
+        ↓  ← lobby directly, fund opposing campaigns, threaten relocation
+Levy legislation passes
+        ↓
+Infrastructure fund operates
+```
+
+The solution exists at the end of the chain. The industry has blocked every link.
+Not through a single dramatic intervention — through sustained, well-funded, patient
+obstruction at every point where momentum could build.
+
+**What actually builds momentum:**
+
+- **Crisis** — a water table collapses visibly, a grid fails, a community's health
+  outcomes become undeniable and publicly attributed. Korangi-scale visibility,
+  applied to AI infrastructure.
+- **Organised pressure** — communities affected by industrial pollution building
+  coalitions with climate advocates, water rights groups, agricultural interests.
+  The Venn diagram is large. It needs to be organised.
+- **International coordination** — the EU moves first, creates a standard, and trade
+  pressure forces others to follow. The EU AI Act and Corporate Sustainability
+  Reporting Directive are early steps.
+- **Legal liability** — a court case establishes that a company is liable for
+  environmental damage from undisclosed datacenter operations. Immediate financial
+  incentive for transparency follows.
+
+The measurement framework is the first domino. Once measurement exists, the cost
+becomes visible. Once visible, it becomes political. Once political, the momentum shifts.
+
+The solution is not missing. The political will to push the first domino is missing.
+That is a different problem — and a solvable one.
+
+---
+
 ## Key Insight
 
 > The winner-takes-all endgame is a broken society with broken rules,
