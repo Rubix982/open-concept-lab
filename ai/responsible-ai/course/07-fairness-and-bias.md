@@ -333,7 +333,227 @@ They should not be hidden inside a model and presented as objective.
 
 ---
 
-## Key Insight
+## The "More Data" Fallacy — Why Scale Amplifies Bias
+
+The game reaches a conclusion after the investor pushes for automation:
+your data had biases, so we need a larger dataset — one from Orange Valley,
+where more people were historically allowed to work in tech.
+
+The implicit suggestion: more data fixes bias.
+
+**This is wrong. And it is the most dangerous wrong idea in AI fairness.**
+
+More data from a biased historical distribution does not fix the bias. It amplifies it.
+If Orange Valley historically allowed more people from specific demographics to work in
+tech — and that history is itself the product of discrimination — then a larger dataset
+drawn from Orange Valley more confidently encodes that discrimination. The algorithm
+becomes more certain of the wrong thing.
+
+**Quantity ≠ quality of representation.**
+**More confident ≠ more correct.**
+**Scale ≠ fairness.**
+
+### The Amazon Case — More Data Made It Worse
+
+Amazon trained a hiring algorithm on a decade of historical hiring decisions.
+Large dataset. Lots of data. Carefully collected.
+
+The historical hiring decisions systematically favoured men — because the industry
+had systematically favoured men for decades. The algorithm learned that lesson very
+well. With more data, it learned it more confidently. The result:
+
+- It penalised resumes containing the word "women's"
+- It downgraded graduates of all-women's colleges
+- It systematically scored female candidates lower across multiple dimensions
+
+Amazon did not have a small data problem. They had a biased data problem.
+More data made it worse. The algorithm was eventually scrapped — but not before
+it had been used in actual hiring decisions.
+
+### The Silent Discrimination Escalation
+
+More data produces more confident predictions. More confident predictions get
+trusted more. Systems that get trusted more receive less scrutiny. Less scrutiny
+means the discrimination runs longer before anyone notices.
+
+By the time it surfaces — in a lawsuit, in an audit, in a journalist's investigation
+— it has affected thousands or millions of decisions. The algorithm didn't become
+biased suddenly. It was always biased. It became invisible because:
+
+- Confidence was mistaken for correctness
+- Scale was mistaken for fairness
+- Automation was mistaken for objectivity
+
+The game's "more data" solution is precisely the path to this outcome. You started
+with your own biases encoded in a small dataset. The engineer scaled it with a larger
+dataset encoding historical discrimination. The algorithm now discriminates more
+efficiently, more consistently, and more invisibly than you ever could manually.
+
+### What the Game Should Have Said
+
+*"More data from the same biased distribution produces a more confident biased
+algorithm. The problem is not the quantity of data. It is whether the data represents
+the world as it should be, or the world as it was — including all the discrimination
+that shaped it."*
+
+### What Actually Helps
+
+- **Audit outputs by demographic group** — not just overall accuracy, but differential
+  accuracy. Who is the algorithm wrong about, and how often?
+- **Examine the signals** — what is the algorithm using as predictors, and are those
+  signals proxies for protected characteristics? School prestige is a proxy for class
+  and race. Gap years are a proxy for gender and caregiving. Certain zip codes are proxies
+  for ethnicity.
+- **Compare to a counterfactual baseline** — not to historical hiring rates, but to
+  what representation would look like without historical discrimination
+- **Measure differential harm** — not just overall error rate, but who bears the cost
+  when the algorithm is wrong. A 5% error rate that falls entirely on one demographic
+  is not equivalent to a 5% error rate distributed evenly.
+- **Mandatory human review for high-stakes decisions** — no algorithm should be the
+  final word on consequential decisions without a human who can explain the reasoning
+- **Continuous external audit** — not self-reported, not voluntary, not occasional.
+  Systematic, independent, ongoing.
+
+More data is sometimes part of the solution. It is never sufficient alone. And it is
+actively harmful when it adds confidence to a biased foundation.
+
+---
+
+## The Survival of the Best Fit Game — What It Demonstrates
+
+The game presents candidates with four metrics: Skill, School Prestige, Work Experience,
+Ambition. You play as a hiring manager making accept/reject decisions. Two things happen:
+
+**First** — you experience the pressure to use all four metrics equally, even when
+a specific role may only need one or two. A candidate with high skill and low ambition
+is not a bad hire. They may be the ideal hire for a stable, high-output role that needs
+no upward mobility. The game creates discomfort around that profile — teaching you to
+notice that the discomfort is a bias toward ambition-seeking, not a neutral observation.
+
+**Second** — the investor email arrives: "This is clearly not working. Maybe AI is
+the solution." Two options: "Sure, we can automate it away!" or "I'll email the engineers."
+
+Neither option is: "Let's first understand why it isn't working before deciding whether
+automation is the right intervention." That option doesn't exist in the game. In most
+companies, it doesn't exist in practice either. The game is demonstrating the pressure
+point where the decision to automate gets made — not in a technical meeting, not after
+careful analysis, but in an email from an investor who has decided the answer before
+understanding the question.
+
+---
+
+## Case Study — Hiring Philosophy as Values Choice: Google, Apple, Amazon
+
+The four metrics in the game — Skill, School Prestige, Work Experience, Ambition —
+are not equally relevant for all roles or all company cultures. Each company's hiring
+philosophy is a bet on which combination produces the outcomes they want.
+
+You can read a company's product output as evidence of what their hiring philosophy
+actually built.
+
+### Google — Skill + Work Experience, School Prestige high, Ambition lower
+
+Google hires extraordinarily capable people who are excellent at solving defined
+problems. The result is a company full of brilliant engineers and weak product instinct.
+
+Google's product graveyard is legendary: Google Reader, Google+, Google Wave, Inbox,
+Stadia, Hangouts, and dozens more — products built, shipped, and abandoned. The
+engineers were brilliant. The hunger to put something in users' hands and make it
+matter was weaker.
+
+**Why:** You hired for the ability to solve hard technical problems, not for the drive
+to ship products that people actually want. The external force observation is precise:
+Google Search dominated because it was technically superior and the market rewarded it.
+Gmail, Maps — infrastructure-level products where technical excellence is the product.
+But when external competitive pressure eases, Google's output reveals what the hiring
+philosophy built: a research organisation that ships when forced to, not because it
+hungers to.
+
+**The prestige filter cost:** Google's emphasis on school prestige narrows the pool
+to a specific kind of candidate — academically credentialled, technically excellent,
+research-oriented. It systematically underweights the person who didn't go to Stanford
+but burns to build things people love.
+
+### Apple — Skill + Work Experience + Ambition, School Prestige largely irrelevant
+
+Apple genuinely does not care where you went to school. They care what you built and
+whether you burn to make things that are excellent.
+
+The ambition filter is real and demanding — Apple is a high-pressure environment with
+no patience for coasting. But the output is products people actively want to use,
+built to a standard of quality that is non-negotiable. The product instinct is baked
+into the hiring criteria.
+
+**The prestige irrelevance advantage:** By not filtering on school prestige, Apple
+fishes from a wider pool. The person who didn't go to a prestigious institution but
+built something beautiful and is hungry to build more — Apple finds them. Google's
+prestige filter would have missed them. The hiring philosophy produces a more diverse
+(in the capability sense) and more product-oriented team.
+
+**The tradeoff:** High ambition + high pressure + high standards produces extraordinary
+output and significant churn. The people Apple hires are often ambitious enough to
+eventually want to build their own thing. Retention is a permanent challenge.
+
+### Amazon — Very High Skill concentration, operational excellence focus
+
+Amazon's hiring philosophy concentrates heavily on raw technical skill and operational
+capability. The output maps onto this precisely:
+
+- **AWS** — extraordinary infrastructure, technically excellent, market-dominant
+- **Prime and logistics** — operationally exceptional, a genuine feat of engineering
+  at scale
+- **Alexa** — long disappointing product despite enormous investment
+- **Consumer devices** — mixed results
+
+The pattern: Amazon excels at building infrastructure and operational systems where
+technical skill and operational discipline are the primary drivers of quality. It
+struggles with consumer-facing products that require a different kind of empathy
+and product intuition — understanding what people actually want to feel, not just
+what they technically need.
+
+**The hiring philosophy produces the culture:** A company that is extraordinarily
+good at optimising defined systems and less good at imagining products that don't
+yet exist.
+
+---
+
+### The Three-Company Lesson for AI Hiring Tools
+
+Each company's hiring algorithm — if they use one — is optimising for a different
+combination of the four metrics. The algorithm doesn't know which combination is
+right. It optimises for what it was told to optimise for. Then it produces that
+culture at scale — good and bad together.
+
+**The bias embedded in each:**
+
+| Company | Metrics emphasised | Systematic bias | Cultural output |
+|---|---|---|---|
+| Google | Skill, prestige | Against non-prestigious candidates with product hunger | Research excellence, weak product instinct |
+| Apple | Skill, ambition | Against low-ambition candidates regardless of capability | Strong products, high churn |
+| Amazon | Skill, operational discipline | Against candidates with high creative/product intuition | Infrastructure excellence, consumer product weakness |
+
+None of these biases are obviously wrong. Each is a deliberate bet on what the
+company needs. The problem arrives when:
+
+1. The bet is no longer examined — when the algorithm encodes the original hiring
+   philosophy and applies it even as the company's needs evolve
+2. The bias disadvantages people on characteristics irrelevant to the actual role —
+   school prestige as a proxy for skill, when direct evidence of skill exists
+3. The algorithm cannot distinguish between "this person doesn't fit our culture"
+   and "this person doesn't fit this role" — two very different judgments
+
+**The investor email lesson:**
+
+"Maybe AI is the solution" — said before diagnosing what the actual problem is —
+produces an algorithm that encodes whatever dysfunction existed in the hiring process
+it replaced. If Google's hiring was producing too few product-oriented engineers,
+automating that hiring process faster produces more of the same, more efficiently.
+
+The automation is not the solution. Understanding what you are actually trying to
+build — and what kind of person builds it — is the solution. The algorithm is only
+as good as the clarity of that prior question.
+
+---
 
 > Fairness is not neutrality. Neutrality hides values. Fairness names them.
 >
