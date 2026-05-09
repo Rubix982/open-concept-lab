@@ -3,6 +3,7 @@
 ## Why Biosecurity Is The Highest-Stakes Domain
 
 Sam Altman (2026):
+
 > "If something goes visibly really wrong for AI this year, I think bio would
 > be a reasonable bet for what that could be."
 
@@ -24,6 +25,7 @@ No jailbreaking needed when you own the weights.
 ## The "Uplift" Concept
 
 AI doesn't need to fully design a bioweapon. It provides:
+
 - Filling knowledge gaps a non-expert has
 - Suggesting workarounds when experiments fail
 - Accelerating trial-and-error that previously required years of expertise
@@ -36,17 +38,18 @@ for others. The knowledge is neutral. Intent differs. Models cannot see intent.
 
 ## What's Being Done
 
-| Defense | Limitation |
-|---|---|
-| API safety filters | Irrelevant for local open-source models |
-| DNA synthesis screening | Only catches known sequences |
-| Lab equipment export controls | Black markets exist |
-| Intelligence monitoring | Cannot monitor every private compute cluster |
-| Publishing restrictions | Most dangerous knowledge already public |
+| Defense                       | Limitation                                   |
+| ----------------------------- | -------------------------------------------- |
+| API safety filters            | Irrelevant for local open-source models      |
+| DNA synthesis screening       | Only catches known sequences                 |
+| Lab equipment export controls | Black markets exist                          |
+| Intelligence monitoring       | Cannot monitor every private compute cluster |
+| Publishing restrictions       | Most dangerous knowledge already public      |
 
 ## The Open Source Problem
 
 Even if Anthropic and OpenAI solve this perfectly:
+
 - Meta releases Llama weights publicly
 - Mistral releases weights publicly
 - Chinese labs release weights publicly

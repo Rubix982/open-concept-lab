@@ -1,7 +1,7 @@
 # Normativity and Regulation
 
-*Personal study notes — original analysis and synthesis based on course themes,
-independent research, and discussion. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material._
 
 ---
 
@@ -9,9 +9,10 @@ independent research, and discussion. Not a reproduction of course material.*
 
 A **normative claim** is a statement whose truth relies on some underlying value standard
 or prescription — not just a description of how things are, but a claim about how things
-*ought* to be, what is *good* or *bad*, what *should* or *should not* be done.
+_ought_ to be, what is _good_ or _bad_, what _should_ or _should not_ be done.
 
 Examples:
+
 - "This AI system is harmful" — normative
 - "This AI system processes 1 billion requests per day" — descriptive
 - "This hiring algorithm discriminates unfairly" — normative
@@ -46,6 +47,7 @@ graph TD
 ```
 
 **One of the consistent failures in AI ethics discourse** is collapsing these categories:
+
 - Treating a **legal norm** (GDPR compliance) as if it satisfies a **moral norm**
   (people's actual privacy interests)
 - Treating a **prudential norm** (this is profitable) as if it were a **moral norm**
@@ -70,10 +72,11 @@ to normative claims.
 **The test the course proposes:** Reflect on your own deepest ethical commitments —
 the ones that shape how you live and what you refuse to do. Do you think of these as
 arbitrary preferences, no more correct than their opposites? If not — if you think
-they are actually *right* — then you already believe normative claims can be more than
+they are actually _right_ — then you already believe normative claims can be more than
 mere opinion. You are making normative claims and treating them as worth defending.
 
 Proof of normative claims does not require:
+
 - Unanimous agreement
 - Mathematical certainty
 - The same methods as natural science
@@ -141,6 +144,7 @@ costs that are systematically excluded from the accounting.
 Output per unit of input — where inputs and outputs are things with market prices.
 
 **What the efficiency framework does not measure:**
+
 - Time a parent cannot spend with their child because they work multiple jobs
 - The community that dissolves when local industry is offshored to cheaper labour markets
 - The ecological system destroyed to reduce production costs
@@ -161,6 +165,7 @@ markets allocate resources more efficiently than states; therefore market libera
 produces better outcomes for everyone.
 
 The evidence since:
+
 - Productivity increased substantially — the efficiency claim was true by its own measure
 - Wages for the bottom 60% in most Western economies stagnated or declined in real terms
 - Wealth concentration accelerated consistently — labour income fell relative to capital
@@ -209,7 +214,7 @@ never examined, and never consented to by the people who will bear the cost.
 ## Prescriptivity — From Norms to Rules
 
 **Prescriptive claims** go one step further than normative ones: they specify what
-*should be done* in response to a normative judgment.
+_should be done_ in response to a normative judgment.
 
 - Normative: "This facial recognition system discriminates against dark-skinned faces"
 - Prescriptive: "This facial recognition system should not be deployed in criminal justice"
@@ -233,6 +238,7 @@ intelligence, the critique of AGI, the PiE model, the excluded perspectives — 
 establishing why this question is hard and who is currently answering it (and who isn't).
 
 This lesson provides the vocabulary to engage with it directly:
+
 - What kind of norm is at stake? (moral, legal, prudential, professional?)
 - What standards underlie the claim?
 - Who is making the normative claim and from what position?
@@ -251,6 +257,7 @@ The course is now asking: which norms should responsible AI express, and how sho
 those norms be translated into regulation?
 
 That question cannot be answered by:
+
 - Benchmark performance
 - Compliance checklists
 - Principles documents that don't name whose values they encode
@@ -277,12 +284,12 @@ for who bears the cost when the system gets it wrong.
 
 ## Connections
 
-- *Topic 01* — "responsible AI" is itself a normative concept; the contestedness
+- _Topic 01_ — "responsible AI" is itself a normative concept; the contestedness
   of the term is a normativity problem
-- *Topic 03* — the AGI debate is normative: "AGI is a meaningful goal" is a value claim
-- *Concept — Canca/PiE* — the core/instrumental distinction is a normative architecture:
+- _Topic 03_ — the AGI debate is normative: "AGI is a meaningful goal" is a value claim
+- _Concept — Canca/PiE_ — the core/instrumental distinction is a normative architecture:
   autonomy, beneficence, justice are the foundational normative standards
-- *Concept — Data intimacy* — "this data collection is harmful" is a normative claim
+- _Concept — Data intimacy_ — "this data collection is harmful" is a normative claim
   that the industry has systematically challenged using the dismissal pattern above
-- *Concept — Technology and authoritarianism* — "democratic consent matters" is a
+- _Concept — Technology and authoritarianism_ — "democratic consent matters" is a
   normative commitment, not a technical requirement

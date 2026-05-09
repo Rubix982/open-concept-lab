@@ -1,6 +1,6 @@
 # Dataset Geography and Cultural Representation
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -110,6 +110,7 @@ Not a single global scrape with diversity added as an afterthought.
 Active, deliberate, per-culture dataset construction:
 
 **Africa:**
+
 - Partnerships with African universities, museums, and cultural archives
 - Digitisation of philosophical texts, oral tradition documentation,
   visual cultural records
@@ -117,6 +118,7 @@ Active, deliberate, per-culture dataset construction:
 - Coverage across sub-Saharan, North African, and East African traditions
 
 **Islamic world:**
+
 - Arabic, Persian, Urdu, Turkish, Malay philosophical and cultural archives
 - Coverage of classical Islamic philosophy, jurisprudence, and Sufi traditions
 - Partnership with institutions like Al-Azhar, University of Tehran,
@@ -124,6 +126,7 @@ Active, deliberate, per-culture dataset construction:
 - Specifically: the visual tradition of Islamic art and manuscript illustration
 
 **South Asia:**
+
 - Sanskrit philosophical texts, Buddhist canonical literature,
   Jain philosophical tradition
 - Multiple linguistic traditions — Hindi, Tamil, Bengali, Marathi, Telugu,
@@ -133,12 +136,14 @@ Active, deliberate, per-culture dataset construction:
 - Visual traditions: miniature painting, temple sculpture, contemporary art
 
 **East Asia:**
+
 - Chinese classical philosophical texts in original and translation
 - Japanese philosophical traditions — Zen, Kokugaku, modern Japanese philosophy
 - Korean philosophical traditions
 - Partnership with institutions across China, Japan, South Korea, Taiwan
 
 **Indigenous traditions:**
+
 - This is the hardest and most sensitive category
 - Oral traditions cannot be scraped — they must be contributed by communities
   on their own terms
@@ -150,6 +155,7 @@ Active, deliberate, per-culture dataset construction:
   for Indigenous community engagement — as the minimum bar
 
 **Latin America:**
+
 - Indigenous Mesoamerican and Andean philosophical traditions
 - Liberation theology and decolonial thought
 - Contemporary Latin American philosophy and social theory
@@ -218,14 +224,14 @@ of that limitation.
 
 What a responsible dataset construction process looks like in practice:
 
-| Culture/Region | Primary institutions | Data types | Consent mechanism | Language coverage |
-|---|---|---|---|---|
-| Islamic world | Al-Azhar, major universities | Philosophical texts, art, manuscripts | Institutional agreements | Arabic, Persian, Urdu, Turkish, Malay |
-| South Asia | IIT, JNU, IIAS | Classical texts, visual traditions | Institutional + community | 10+ languages |
-| Sub-Saharan Africa | African universities, museums | Philosophy, oral tradition records, visual art | Community FPIC | 50+ languages |
-| East Asia | Chinese, Japanese, Korean institutions | Classical and contemporary philosophy, art | Institutional agreements | Chinese, Japanese, Korean |
-| Indigenous globally | Community-controlled | Oral traditions, land-based knowledge | Community sovereignty, FPIC | Per community |
-| Latin America | Regional universities | Decolonial thought, Indigenous traditions | Institutional + community | Spanish, Portuguese, Indigenous |
+| Culture/Region      | Primary institutions                   | Data types                                     | Consent mechanism           | Language coverage                     |
+| ------------------- | -------------------------------------- | ---------------------------------------------- | --------------------------- | ------------------------------------- |
+| Islamic world       | Al-Azhar, major universities           | Philosophical texts, art, manuscripts          | Institutional agreements    | Arabic, Persian, Urdu, Turkish, Malay |
+| South Asia          | IIT, JNU, IIAS                         | Classical texts, visual traditions             | Institutional + community   | 10+ languages                         |
+| Sub-Saharan Africa  | African universities, museums          | Philosophy, oral tradition records, visual art | Community FPIC              | 50+ languages                         |
+| East Asia           | Chinese, Japanese, Korean institutions | Classical and contemporary philosophy, art     | Institutional agreements    | Chinese, Japanese, Korean             |
+| Indigenous globally | Community-controlled                   | Oral traditions, land-based knowledge          | Community sovereignty, FPIC | Per community                         |
+| Latin America       | Regional universities                  | Decolonial thought, Indigenous traditions      | Institutional + community   | Spanish, Portuguese, Indigenous       |
 
 ---
 

@@ -1,6 +1,6 @@
 # AI on Social Media and Children — The Case for Prohibition
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -11,19 +11,21 @@ friend list. It cannot be removed without a paid subscription. It is presented
 as a companion — available to chat, offer advice, give emotional reactions,
 compliment, engage.
 
-Snapchat's own help section states: *"it's possible My AI's responses may include
-biased, incorrect, harmful, or misleading content."*
+Snapchat's own help section states: _"it's possible My AI's responses may include
+biased, incorrect, harmful, or misleading content."_
 
 They disclosed the harm in the fine print. They deployed it anyway. That is not
 an ethics failure. That is a business decision.
 
 **The platform context:**
+
 - Snapchat allows users from age 13
 - In practice has many younger users
 - Is designed around addictive engagement mechanisms
 - Collects intimate behavioural data continuously
 
 **What My AI actually does:**
+
 - Reads messages
 - Studies emotional patterns and daily routines
 - Learns individual preferences and vulnerabilities
@@ -39,6 +41,7 @@ an ethics failure. That is a business decision.
 Imagine My AI is a real person — one of those philosophers from the previous example.
 
 That person would now:
+
 - Follow your child everywhere they go
 - Read all their messages
 - Look at all their pictures
@@ -73,6 +76,7 @@ We established earlier that embedded ethics cannot reach structural harm — whe
 harm is the mechanism, not a side effect.
 
 My AI is structural harm:
+
 - The engagement mechanism requires fake emotional responses — that is how it works
 - The data collection is the product — intimacy data on children is what Snapchat sells
 - The addictive design is not a byproduct — it is the revenue model
@@ -141,6 +145,7 @@ parent's child is embedded in.
 ## The Structural Fixes — Not Guidelines, Prohibition
 
 **What will not work:**
+
 - Better disclosure requirements — the harm is in the experience, not the fine print
 - Parental control dashboards — the mechanism bypasses them
 - Age verification theatre — platforms have consistently failed to implement it genuinely

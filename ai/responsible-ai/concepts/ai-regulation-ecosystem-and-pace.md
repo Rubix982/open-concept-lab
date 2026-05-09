@@ -1,6 +1,6 @@
 # AI Regulation — The Ecosystem Framework and the Question of Pace
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -105,14 +105,17 @@ The "regulate AI" or "don't regulate AI" binary misses the point. Different laye
 at different stages of harm visibility, regulatory readiness, and technical clarity.
 
 **Start where harm is clearest and tools most available:**
+
 - Data — now. Consent, compensation, transparency. Existing law, requires extension.
 - Agents — now. Liability frameworks before deployment scales further.
 
 **Apply existing frameworks where they fit:**
+
 - Data centres — environmental and land use law, applied directly.
 - Compute — export controls and national security frameworks, already in use.
 
 **Develop new frameworks for:**
+
 - Model accountability — genuinely novel problem requiring genuinely new approaches.
 
 This is not slowing down AI. It is governing the layers where governance is most needed
@@ -130,6 +133,7 @@ dangerous — is produced and funded by the people who benefit from moving fast.
 
 The majority of humanity is managing food, water, shelter, family, and community largely
 without frontier AI, and largely fine. The urgency is real for:
+
 - Companies racing for market position
 - Investors with time-horizoned bets
 - Governments concerned about strategic advantage
@@ -142,6 +146,7 @@ will be shaped by these systems but who had no say in their development.
 ## Slowing Down Is Not a Cost — It Is a Values Choice
 
 The "speed is necessary" argument assumes:
+
 1. Benefits of AI deployment accrue broadly
 2. Costs of delay are shared equally
 
@@ -188,11 +193,11 @@ life, not its definition.
 **The evidence from slower-growth, higher-wellbeing societies:**
 
 | Country | GDP growth (avg) | Healthcare | Housing security | Life satisfaction |
-|---|---|---|---|---|
-| Denmark | ~1-2% | Universal | High | Top 5 globally |
-| Japan | ~0.5-1% | Universal | High | High |
-| Germany | ~1-2% | Universal | Moderate-high | High |
-| USA | ~2-3% | Partial | Low-moderate | Declining |
+| ------- | ---------------- | ---------- | ---------------- | ----------------- |
+| Denmark | ~1-2%            | Universal  | High             | Top 5 globally    |
+| Japan   | ~0.5-1%          | Universal  | High             | High              |
+| Germany | ~1-2%            | Universal  | Moderate-high    | High              |
+| USA     | ~2-3%            | Partial    | Low-moderate     | Declining         |
 
 The US grows faster and delivers less security to more of its population. The growth
 is real. The distribution is the problem. And AI, deployed into this context without

@@ -1,13 +1,13 @@
 # Rawls and Distributive Justice
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
 ## Who Is John Rawls
 
 John Rawls — American political philosopher, Harvard University, 1921-2002.
-Primary work: *A Theory of Justice* (1971). One of the most influential works
+Primary work: _A Theory of Justice_ (1971). One of the most influential works
 in political philosophy of the 20th century. Revived social contract theory
 and gave it a rigorous modern framework.
 
@@ -48,6 +48,7 @@ protect the worst-off — because that might be you.
 ### Principle 1 — Equal Basic Liberties
 
 Everyone gets the same fundamental rights and freedoms:
+
 - Freedom of speech and conscience
 - Political participation rights
 - Equal protection under the law
@@ -98,6 +99,7 @@ Rawls provides a rigorous framework for thinking about distributive justice —
 who should get what, and on what grounds.
 
 **"Goods"** in this framework include everything from the concrete to the abstract:
+
 - Air, food, shelter — material necessities
 - Opportunities, education, healthcare — enabling goods
 - Political rights, social recognition — participatory goods

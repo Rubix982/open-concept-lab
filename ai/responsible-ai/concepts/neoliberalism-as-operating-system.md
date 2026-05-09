@@ -1,6 +1,6 @@
 # Neoliberalism as Operating System
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -72,6 +72,7 @@ The winner-takes-all logic has never been properly interrogated at its conclusio
 What does the winner actually get?
 
 Control of a system where:
+
 - The people who would buy your products cannot afford them
 - The workers who would build your products are too precarious to be reliable
 - The infrastructure your business depends on is crumbling because no one invested in it
@@ -139,14 +140,16 @@ This is not a conspiracy theory. It is a framework with named architects, tracea
 funding, and measurable consequences.
 
 **The intellectual architects:**
-- Friedrich Hayek — *The Road to Serfdom* (1944) — markets as the only legitimate
+
+- Friedrich Hayek — _The Road to Serfdom_ (1944) — markets as the only legitimate
   information processing system; government intervention as the path to tyranny
-- Milton Friedman — *Capitalism and Freedom* (1962) — monetarism, deregulation,
+- Milton Friedman — _Capitalism and Freedom_ (1962) — monetarism, deregulation,
   shareholder primacy; the corporation's only obligation is profit
 - The Chicago School — the academic home of the framework, substantially funded by
   corporate interests from the 1950s onward
 
 **The political deployment:**
+
 - Powell Memo (1971) — Lewis Powell's memo to the US Chamber of Commerce calling
   for systematic corporate funding of think tanks, academic chairs, and media to
   shift the intellectual climate
@@ -156,6 +159,7 @@ funding, and measurable consequences.
   IMF and World Bank as conditions on development loans
 
 **The measurable consequences (1980-present):**
+
 - Productivity grew substantially
 - Wages for the bottom 60% stagnated or declined in real terms
 - Wealth concentration accelerated in every adopting country
@@ -177,6 +181,7 @@ deployed, and governed within that context unless the context is explicitly name
 and challenged.
 
 The specific risks:
+
 - AI productivity gains will follow the same distribution pattern as previous
   automation waves — concentrated gains, diffuse costs — unless the framework is changed
 - AI governance will be shaped by the same captured institutions — unless structural

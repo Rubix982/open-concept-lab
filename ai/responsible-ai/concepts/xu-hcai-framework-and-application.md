@@ -1,7 +1,7 @@
 # Wei Xu's HCAI Framework — Detailed Notes and Application
 
-*Personal study notes — synthesis of Wei Xu, "Toward Human-Centered AI: A Perspective
-from Human-Computer Interaction," ACM Interactions, July-August 2019.*
+_Personal study notes — synthesis of Wei Xu, "Toward Human-Centered AI: A Perspective
+from Human-Computer Interaction," ACM Interactions, July-August 2019._
 
 ---
 
@@ -24,11 +24,11 @@ Xu provides a comparative table of the three waves of AI development. The patter
 the first two waves failed not just because the technology was immature, but because they
 never asked what humans actually needed from it.
 
-| Wave | Period | Technology | Human Needs | Focus | Characteristics |
-|---|---|---|---|---|---|
-| **First** | 1950s–1970s | Early symbolism, connectionism, expert systems, knowledge inference | Not satisfied | Technological solutions | Academia driven |
-| **Second** | 1980s–1990s | Statistical models, neural networks for pattern recognition, expert systems, speech recognition | Not satisfied | Technological solutions | Academia driven |
-| **Third** | 2006– | Breakthroughs in deep learning, speech recognition, pattern recognition, big data, high-performance computing | Starting to provide useful and real problem-solving solutions | Integrated solutions: ethical design + technological enhancement + human factors design | Technological enhancement and application + a human-centred approach |
+| Wave       | Period      | Technology                                                                                                    | Human Needs                                                   | Focus                                                                                   | Characteristics                                                      |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **First**  | 1950s–1970s | Early symbolism, connectionism, expert systems, knowledge inference                                           | Not satisfied                                                 | Technological solutions                                                                 | Academia driven                                                      |
+| **Second** | 1980s–1990s | Statistical models, neural networks for pattern recognition, expert systems, speech recognition               | Not satisfied                                                 | Technological solutions                                                                 | Academia driven                                                      |
+| **Third**  | 2006–       | Breakthroughs in deep learning, speech recognition, pattern recognition, big data, high-performance computing | Starting to provide useful and real problem-solving solutions | Integrated solutions: ethical design + technological enhancement + human factors design | Technological enhancement and application + a human-centred approach |
 
 **The key insight:** The first two waves failed not only because they lacked mature
 technologies but also because they left human needs unsatisfied. The third wave is
@@ -155,6 +155,7 @@ HCI techniques (UI visualisation, conversational UI) and evaluates psychological
 explanation theories.
 
 **The problem with current XAI approaches:**
+
 - Previous research used primarily two methods: visualisation of ML processes and
   explainable ML algorithms
 - These approaches may be biased in explaining how ML algorithms work
@@ -177,6 +178,7 @@ must fit the user's existing mental model — which varies by expertise, domain,
 and task. This is fundamentally a cognitive science and HCI problem, not an ML problem.
 
 **What HCI professionals can contribute to XAI/comprehensible AI:**
+
 1. Effective HCI design for explanation UIs — visualisation models, adaptive UI,
    natural UI dialogue technologies
 2. Application of psychological theories of explanation — these exist in the literature
@@ -199,6 +201,7 @@ achieved in past waves. Some AI applications were very expensive and failed due 
 lack of use value.
 
 **What HCI professionals can contribute:**
+
 - Identifying usage scenarios based on HCI methods — ethnographic studies and
   contextual inquiries
 - Mining user needs, behavioural patterns, and usage scenarios
@@ -233,6 +236,7 @@ cooperation between two cognitive agents — with enhanced capability on the mac
 side as it learns over time — brings added complexity to HCI design.
 
 Questions requiring systematic HCI research:
+
 - Dynamic functional allocation and task assignments between human and machine
 - Dynamic goal setting
 - Allocation of decision-making power between the two over time
@@ -262,6 +266,7 @@ behaviour is predictable. AI behaviour develops over time.
 
 Verification evaluation of AI solutions requires collaboration between AI software
 engineers and HCI professionals — a combination of:
+
 - Software validation methods
 - User-involved UX validation methods
 
@@ -293,6 +298,7 @@ The shift from interaction to teaming is not just terminological. In the teaming
   conditions, for what decisions, to what degree do I trust this system?"
 
 This requires HCI research on:
+
 - When and how to transfer control between human and machine
 - How to communicate machine confidence levels in ways humans can interpret
 - How to maintain appropriate human oversight as systems become more capable
@@ -325,12 +331,14 @@ bar for what counts as a comprehensible explanation.
 What should the AI do versus what should the human do?
 
 **The human brings:**
+
 - Judgment about relevance and significance
 - Domain expertise to recognise when something is wrong or missing
 - The ability to evaluate whether a claimed connection is meaningful
 - Context about what question they are actually trying to answer
 
 **The AI brings:**
+
 - Breadth across thousands of papers no human has time to read
 - Pattern recognition across claims at scale
 - Surfacing connections the human would not have had time to find
@@ -354,6 +362,7 @@ Before the knowledge graph exists:
 This is faster and cheaper than building the system and discovering the UX is wrong.
 The researcher outreach and consent mechanism already designed — showing researchers
 how their work appears in the graph and asking for corrections — is simultaneously:
+
 - Ethical consent
 - Wizard of Oz UX testing
 - Quality validation
@@ -409,16 +418,16 @@ technical specification. It is a relationship design specification.
 
 ## Summary — What Xu Adds to the Framework
 
-| Xu's contribution | Application to knowledge base |
-|---|---|
+| Xu's contribution           | Application to knowledge base                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Three-wave historical frame | The knowledge base is part of the third wave — it must address human needs, not just technical capability |
-| Black box problem | Every connection the system surfaces needs an explanation the target user can understand |
-| XAI vs comprehensible AI | Accuracy alone is insufficient — comprehensibility must be designed for the specific user |
-| AI-first UCD | Define UX criteria and allocate human/machine tasks before building the ML system |
-| Wizard of Oz prototyping | Simulate outputs with real researchers before building; researcher outreach IS the WOZ test |
-| Human-machine teaming | The researcher and the system are partners; the interface should make the partnership visible |
-| Iterative UX validation | Consent mechanism + output review is the ongoing validation loop |
-| No standards yet | The knowledge infrastructure can contribute to developing what those standards look like |
+| Black box problem           | Every connection the system surfaces needs an explanation the target user can understand                  |
+| XAI vs comprehensible AI    | Accuracy alone is insufficient — comprehensibility must be designed for the specific user                 |
+| AI-first UCD                | Define UX criteria and allocate human/machine tasks before building the ML system                         |
+| Wizard of Oz prototyping    | Simulate outputs with real researchers before building; researcher outreach IS the WOZ test               |
+| Human-machine teaming       | The researcher and the system are partners; the interface should make the partnership visible             |
+| Iterative UX validation     | Consent mechanism + output review is the ongoing validation loop                                          |
+| No standards yet            | The knowledge infrastructure can contribute to developing what those standards look like                  |
 
 ---
 
@@ -460,6 +469,7 @@ degrades human readiness to override.
 ### The Fundamental Cognitive Constraint
 
 You cannot have both simultaneously:
+
 - **Genuine automation** — the system handles the task with sufficient reliability
   that human attention drifts
 - **Genuine human readiness to override** — the human remains cognitively engaged
@@ -472,6 +482,7 @@ safe on paper and are not safe in practice.
 Aviation has managed a partial solution through **active monitoring requirements**
 — pilots must perform control inputs at regular intervals to prove engagement, and
 two-pilot crews have defined monitoring roles. But aviation also has:
+
 - Much more predictable failure modes
 - Much longer reaction time windows
 - Highly trained operators with simulator hours on failure scenarios
@@ -509,6 +520,7 @@ Xu's requirement, corrected for what human cognition actually allows:
 
 Do not design for the human override that looks good in the architecture diagram.
 Design for the human contribution that is actually possible given:
+
 - The time available for the decision
 - The cognitive load the human is under
 - The information asymmetry between human and system

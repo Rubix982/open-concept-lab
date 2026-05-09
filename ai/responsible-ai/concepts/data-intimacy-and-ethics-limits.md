@@ -25,7 +25,7 @@ by systems whose business models depend on extracting value from exactly this in
 
 ## The Incentive Misalignment
 
-The more intimate the data, the more precise the targeting. The more precise the
+The more intimate the data, the more precise the ta^rgeting. The more precise the
 targeting, the more valuable the platform. The incentive structure does not merely fail
 to reward ethical data handling — it actively rewards the opposite.
 
@@ -36,7 +36,7 @@ to voluntarily clean up its own pollution.
 
 Facebook's own internal researchers documented that Instagram caused measurable harm
 to teenage girls' mental health and self-image. The research existed internally. Nothing
-material changed. The product continued as designed — because the product *is* the
+material changed. The product continued as designed — because the product _is_ the
 mechanism that produced the harm. Changing it would be changing the product.
 
 > "They don't care about us" is not a moral judgment about individuals.
@@ -54,6 +54,7 @@ consistently outweigh ethical ones, which they do, because that is how the syste
 This distinction matters for understanding where ethics frameworks can and cannot reach.
 
 **Incidental harm** — the goal is legitimate, the harm is a side effect. Examples:
+
 - A diagnostic AI that needs to balance data privacy against accuracy
 - A hiring tool that produces biased outcomes because of biased training data
 - A recommendation system that surfaces misinformation as a byproduct of engagement
@@ -63,6 +64,7 @@ are genuinely useful. The developer wants to do good and needs structured help n
 trade-offs between core and instrumental values. The puzzle-solving model applies.
 
 **Structural harm** — the harm is not a side effect. It is the mechanism. Examples:
+
 - A platform whose recommendation algorithm is designed to maximise time-on-platform,
   and does so by systematically surfacing outrage, anxiety, and compulsion — because
   those emotional states produce the most activity
@@ -70,14 +72,14 @@ trade-offs between core and instrumental values. The puzzle-solving model applie
 - A data broker whose product is intimate personal information sold without meaningful consent
 
 For structural harms, embedded ethics cannot reach the problem. You cannot embed ethics
-into a system whose design goal *is* the harm. The right question is not "how do we make
+into a system whose design goal _is_ the harm. The right question is not "how do we make
 this more responsible" — it is "should this exist in this form at all?" That question is
 almost entirely absent from responsible AI discourse, because asking it would require
 confronting the business model directly.
 
 > Embedded ethics assumes the developer wants to do good and needs help navigating
 > trade-offs. It does not address the case where the developer has already decided
-> that harm is acceptable, or where the product *is* the harm.
+> that harm is acceptable, or where the product _is_ the harm.
 
 ---
 
@@ -107,7 +109,7 @@ applied as an approval gate at the start. Collaborative, dynamic, ongoing — th
 The tension Canca is navigating is real, but it cuts both ways.
 
 The biomedical gatekeeping model exists because the field produced catastrophic harm
-without it. The gates were built *in response to* documented atrocities. Her embedded
+without it. The gates were built _in response to_ documented atrocities. Her embedded
 ethics model implicitly assumes tech has not crossed an equivalent threshold — or that
 crossing it wouldn't be prevented by gates anyway.
 
@@ -127,12 +129,12 @@ stop development" starts to sound less like pragmatism and more like the factory
 
 **The honest version of the tension:**
 
-| | Biomedical gatekeeping model | Embedded ethics model |
-|---|---|---|
-| **Strength** | Hard stop on catastrophic harm | Responsive, doesn't halt development |
-| **Weakness** | Slows beneficial work, bureaucratic | Cannot reach structural harm, requires good faith |
-| **Assumes** | The harm is in specific research acts | The developer wants to do good |
-| **Fails when** | Bureaucracy blocks genuinely beneficial work | The product *is* the harm |
+|                | Biomedical gatekeeping model                 | Embedded ethics model                             |
+| -------------- | -------------------------------------------- | ------------------------------------------------- |
+| **Strength**   | Hard stop on catastrophic harm               | Responsive, doesn't halt development              |
+| **Weakness**   | Slows beneficial work, bureaucratic          | Cannot reach structural harm, requires good faith |
+| **Assumes**    | The harm is in specific research acts        | The developer wants to do good                    |
+| **Fails when** | Bureaucracy blocks genuinely beneficial work | The product _is_ the harm                         |
 
 Neither model alone is sufficient. The biomedical model assumes you can identify and
 gate specific harmful acts. The embedded model assumes the actor is operating in good
@@ -146,11 +148,13 @@ and built into the product design — and the actor has explicitly chosen to con
 **Embedded ethics is necessary but not sufficient.**
 
 It is the right approach for the vast majority of AI development where:
+
 - The goal is legitimate
 - The harms are incidental or emergent
 - The developers have genuine incentive to reduce harm
 
 It is inadequate for cases where:
+
 - The business model depends on the harmful mechanism
 - External enforcement is the only viable constraint
 - The question is whether the product should exist, not how to make it better

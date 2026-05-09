@@ -1,7 +1,7 @@
 # Narrow AI vs. AGI
 
-*Personal study notes — original analysis and synthesis based on course themes,
-independent research, and discussion. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material._
 
 ---
 
@@ -18,7 +18,7 @@ Within each paradigm, a further split:
 - **Symbolic AI** — systems that manipulate symbols and formal rules to represent the world and solve problems. Logic-based, interpretable, brittle at the edges.
 - **Neural / connectionist AI** — systems modeled on the brain's neuronal architecture. Learned from data, not programmed by rules. Generative models live here.
 
-**Generative models** (Midjourney, Claude, ChatGPT) are a currently dominant form — based on deep learning networks, which are a form of artificial neural network. They are a *subcategory* of AI, not synonymous with it.
+**Generative models** (Midjourney, Claude, ChatGPT) are a currently dominant form — based on deep learning networks, which are a form of artificial neural network. They are a _subcategory_ of AI, not synonymous with it.
 
 > "AI" has become a moving target — applied to any system carrying out complex tasks. What counted as AI ten years ago is often just "software" today.
 
@@ -49,14 +49,14 @@ The dream being sold is one of total automation — systems that can replace mos
 
 UBI is gestured at as the solution, but rarely seriously designed. It requires a redistribution of political power that the same actors driving AGI development have no incentive to support.
 
-> The people most invested in AGI discourse have no concrete answer to the question: *what does the transition actually look like for the median person?*
+> The people most invested in AGI discourse have no concrete answer to the question: _what does the transition actually look like for the median person?_
 
 ---
 
 ## Case Study — What Happens When a Nation Disconnects Its Youth from Productive Struggle
 
 This is not an argument about any individual or culture. The people described below are the
-*victims* of the policy, not the problem. That framing matters — because the entire point is
+_victims_ of the policy, not the problem. That framing matters — because the entire point is
 that disconnecting a generation from productive struggle harms the people it was supposed to benefit.
 
 **The setup.** For decades, oil-wealthy Gulf states — Saudi Arabia being the most documented
@@ -92,7 +92,7 @@ was never drawn.
 countries maintain generous support systems without this outcome — because support was
 combined with high labour participation, democratic self-determination, and gradual
 self-directed social evolution. The variable is not "free money." It is whether the support
-*replaces agency* or *enables it*. KSA's arrangement replaced it. That is the failure mode.
+_replaces agency_ or _enables it_. KSA's arrangement replaced it. That is the failure mode.
 
 **The AGI parallel.** If AGI-generated abundance is distributed in a way that removes the
 need for productive participation — not just economically, but creatively, socially,
@@ -125,15 +125,15 @@ If a world of AGI-delivered abundance were actually achieved, the anthropologica
 
 ## The Dune Lens
 
-Frank Herbert's *Dune* universe is built on exactly this question. Its founding historical trauma — the **Butlerian Jihad** — is humanity's war against thinking machines. The prohibition that follows is not "don't build dangerous machines." It is:
+Frank Herbert's _Dune_ universe is built on exactly this question. Its founding historical trauma — the **Butlerian Jihad** — is humanity's war against thinking machines. The prohibition that follows is not "don't build dangerous machines." It is:
 
-> *"Thou shalt not make a machine in the likeness of a human mind."*
+> _"Thou shalt not make a machine in the likeness of a human mind."_
 
 The concern is not malice. It is **atrophy and dependency**. Outsourcing cognition to machines degrades the human capacity for it. The fear is not that the machines would destroy humanity — it is that humanity would hollow itself out by leaning on them.
 
 Herbert's response is telling: **Mentats** — humans trained to perform the functions of computers. The answer to machine intelligence is not to ban intelligence but to cultivate it more deliberately in humans. The Fremen's survival culture — hardship as discipline, scarcity as strength — is Herbert's argument that constraint expands human potential rather than limiting it.
 
-The spice in *Dune* — the resource everything depends on, controlled by one place, fought over by empires — maps uncomfortably well onto compute and data today. Dependency on a critical resource controlled by a small number of actors is the condition Herbert was warning about.
+The spice in _Dune_ — the resource everything depends on, controlled by one place, fought over by empires — maps uncomfortably well onto compute and data today. Dependency on a critical resource controlled by a small number of actors is the condition Herbert was warning about.
 
 ---
 
@@ -151,11 +151,11 @@ More structurally: a stable, sufficient, low-precarity world order removes the l
 
 The honest and useful question is not:
 
-> *"How do we build AGI?"*
+> _"How do we build AGI?"_
 
 It is:
 
-> *"Which kinds of difficulty are worth preserving — because they generate meaning, capability, and human development — and which are merely unnecessary suffering that we should actually eliminate?"*
+> _"Which kinds of difficulty are worth preserving — because they generate meaning, capability, and human development — and which are merely unnecessary suffering that we should actually eliminate?"_
 
 That distinction requires values, politics, and philosophy. It cannot be answered by a benchmark or a capabilities race. And it is almost entirely absent from mainstream AGI discourse.
 

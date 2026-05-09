@@ -4,8 +4,8 @@
 
 > "Nuclear technology could only ever be built alongside authoritarian social systems."
 
-This claim — associated with Langdon Winner's 1980 essay *"Do Artifacts Have Politics?"* —
-is not about what a technology does. It is about what a technology *requires*.
+This claim — associated with Langdon Winner's 1980 essay _"Do Artifacts Have Politics?"_ —
+is not about what a technology does. It is about what a technology _requires_.
 
 The argument: some technologies embed social relations in their design. They are not
 politically neutral. They can only be built, maintained, or scaled under specific kinds
@@ -205,10 +205,10 @@ Which of those happens is not a technical question.
 
 ## Sources and Further Reading
 
-- Langdon Winner, *"Do Artifacts Have Politics?"* — *Daedalus*, Vol. 109 No. 1, 1980
-- Beauchamp & Childress, *Principles of Biomedical Ethics* — for the bioethics lineage
-- Shoshana Zuboff, *The Age of Surveillance Capitalism* — data extraction as the
+- Langdon Winner, _"Do Artifacts Have Politics?"_ — _Daedalus_, Vol. 109 No. 1, 1980
+- Beauchamp & Childress, _Principles of Biomedical Ethics_ — for the bioethics lineage
+- Shoshana Zuboff, _The Age of Surveillance Capitalism_ — data extraction as the
   structural condition of platform AI
-- *Connections to course notes:* Topic 03 (AGI and capital concentration),
+- _Connections to course notes:_ Topic 03 (AGI and capital concentration),
   `concepts/data-intimacy-and-ethics-limits.md` (structural harm),
   `concepts/categorical-data-exclusion.md` (upstream intervention)

@@ -1,7 +1,7 @@
 # Why Regulation?
 
-*Personal study notes — original analysis and synthesis based on course themes,
-independent research, and discussion. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material._
 
 ---
 
@@ -12,6 +12,7 @@ question: "why regulate at all?" — and takes the skeptical case seriously befo
 answering it.
 
 Regulation skeptics are not arguing for recklessness. They are arguing that:
+
 - Government regulation is one tool among several
 - It has specific failure modes that need to be acknowledged
 - Those failure modes may make it worse than alternatives in specific cases
@@ -29,7 +30,7 @@ The section ends with the most important point, almost as a footnote:
 
 This points at the diagram: **Architecture · Market · Norms · Law** — four forces
 that regulate behaviour simultaneously in any system. This is Lawrence Lessig's
-framework from *Code* (1999), one of the most important frameworks for thinking
+framework from _Code_ (1999), one of the most important frameworks for thinking
 about how technology gets governed.
 
 ```mermaid
@@ -167,11 +168,11 @@ not a reason to abandon the project.
 
 The six doubts reduce to three:
 
-| Root concern | Doubts | Structural response |
-|---|---|---|
-| **Competence** | 1 (understanding), 4 (foresight) | Build regulatory capacity; sandboxes; iterative cycles |
-| **Capture** | 3 (allegiance), 6 partial (entrenchment) | Independent review; revolving door restrictions; civil society funding |
-| **Overreach** | 2 (costs), 5 (precaution), 6 partial (unintended) | Rules vs. standards; proportionality; monitoring and revision |
+| Root concern   | Doubts                                            | Structural response                                                    |
+| -------------- | ------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Competence** | 1 (understanding), 4 (foresight)                  | Build regulatory capacity; sandboxes; iterative cycles                 |
+| **Capture**    | 3 (allegiance), 6 partial (entrenchment)          | Independent review; revolving door restrictions; civil society funding |
+| **Overreach**  | 2 (costs), 5 (precaution), 6 partial (unintended) | Rules vs. standards; proportionality; monitoring and revision          |
 
 ---
 
@@ -202,14 +203,14 @@ with consequences. It is not a neutral position.
 The six doubts, taken seriously, produce a set of design requirements for any AI
 regulatory framework that wants to avoid the failure modes:
 
-| Failure mode | Design requirement |
-|---|---|
-| Regulator incompetence | Technical expertise embedded in regulatory bodies; independent technical advisory panels |
-| Technosocial opacity | Regulatory sandboxes; iterative review cycles; sunset clauses requiring reauthorisation |
-| Regulatory capture | Mandatory independent review; revolving door restrictions; public funding for civil society |
-| Entrenchment of incumbents | Proportionate compliance requirements; safe harbours for small actors |
-| Overreach costs | Cost-benefit analysis with full accounting; reversibility requirements |
-| Unintended consequences | Pilot programmes before full deployment; monitoring requirements post-implementation |
+| Failure mode               | Design requirement                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| Regulator incompetence     | Technical expertise embedded in regulatory bodies; independent technical advisory panels    |
+| Technosocial opacity       | Regulatory sandboxes; iterative review cycles; sunset clauses requiring reauthorisation     |
+| Regulatory capture         | Mandatory independent review; revolving door restrictions; public funding for civil society |
+| Entrenchment of incumbents | Proportionate compliance requirements; safe harbours for small actors                       |
+| Overreach costs            | Cost-benefit analysis with full accounting; reversibility requirements                      |
+| Unintended consequences    | Pilot programmes before full deployment; monitoring requirements post-implementation        |
 
 ---
 
@@ -251,13 +252,13 @@ and whose costs count in the accounting.
 
 ## Connections
 
-- *Topic 04 — Normativity* — regulation skepticism rests on normative claims
+- _Topic 04 — Normativity_ — regulation skepticism rests on normative claims
   ("efficiency is good," "government overreach is bad") that are rarely examined
-- *Concept — Technology and authoritarianism* — the Collingridge Dilemma explains
+- _Concept — Technology and authoritarianism_ — the Collingridge Dilemma explains
   why authoritarian systems can regulate faster: they don't require democratic
   deliberation before acting
-- *Concept — Data intimacy and ethics limits* — market regulation of harmful products
+- _Concept — Data intimacy and ethics limits_ — market regulation of harmful products
   is exactly what the categorical data exclusion argument calls for
-- *Canca/PiE* — the four Lessig forces map onto the PiE model's governance layer:
+- _Canca/PiE_ — the four Lessig forces map onto the PiE model's governance layer:
   Architecture = ethics-by-design; Norms = professional training; Law = regulatory
   compliance; Market = incentive design

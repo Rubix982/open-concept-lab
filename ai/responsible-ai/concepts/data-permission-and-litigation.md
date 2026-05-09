@@ -1,6 +1,6 @@
 # Data Permission, Fair Use, and the Coming Litigation Wave
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -25,6 +25,7 @@ seemed manageable. So they scraped.
 The companies had a genuine choice. Two paths existed:
 
 **Path A — Honest:**
+
 - Train exclusively on explicitly open, permissioned, consented data
 - Acknowledge what you trained on and how
 - Build relationships with the institutions stewarding that data
@@ -32,6 +33,7 @@ The companies had a genuine choice. Two paths existed:
 - Defend it honestly: "we built this on data people wanted to share"
 
 **Path B — What actually happened:**
+
 - Scrape everything accessible
 - Train on it without asking
 - Construct a legal theory afterward
@@ -52,6 +54,7 @@ said yes to everything a company needs to do. No negotiation required. No retroa
 justification. No litigation. No moral ambiguity.
 
 Similarly:
+
 - **Wikipedia** exists to share knowledge freely — its mission is the free dissemination
   of knowledge. A model trained on Wikipedia that helps people access and synthesise
   knowledge is arguably an extension of that mission. They would almost certainly
@@ -139,15 +142,15 @@ they used the smallness to justify the extraction.
 
 The legal trajectory is already moving toward reckoning. What is active now:
 
-| Case | Plaintiff | Core claim |
-|---|---|---|
-| NYT v. OpenAI | New York Times | Copyright infringement in training and output reproduction |
-| Authors Guild class actions | Grisham, Martin, Picoult + others | Training on books without permission |
-| Getty Images v. Stability AI | Getty Images | Training on watermarked images |
-| Visual artists class actions | Multiple artists | Stable Diffusion, Midjourney training data |
-| Music industry | Universal, Sony, Warner | Training on lyrics and recordings |
-| The Intercept, Raw Story et al. | News publishers | Stripping copyright management information |
-| GitHub Copilot class action | Developers | GPL licence violation in outputs |
+| Case                            | Plaintiff                         | Core claim                                                 |
+| ------------------------------- | --------------------------------- | ---------------------------------------------------------- |
+| NYT v. OpenAI                   | New York Times                    | Copyright infringement in training and output reproduction |
+| Authors Guild class actions     | Grisham, Martin, Picoult + others | Training on books without permission                       |
+| Getty Images v. Stability AI    | Getty Images                      | Training on watermarked images                             |
+| Visual artists class actions    | Multiple artists                  | Stable Diffusion, Midjourney training data                 |
+| Music industry                  | Universal, Sony, Warner           | Training on lyrics and recordings                          |
+| The Intercept, Raw Story et al. | News publishers                   | Stripping copyright management information                 |
+| GitHub Copilot class action     | Developers                        | GPL licence violation in outputs                           |
 
 Each is a different angle of attack on the same underlying practice. Some will settle.
 Some will lose. But one will eventually produce a ruling establishing either:
@@ -176,6 +179,7 @@ already made their money.
 
 Whether AI companies succeed at this is genuinely uncertain. The window in which
 they can shape the regulatory environment in their favour is closing as:
+
 - Public understanding grows
 - Harms become more visible and documented
 - Creators and affected communities organise more effectively

@@ -1,6 +1,6 @@
 # Human-Centered AI and Broken Systems
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -15,6 +15,7 @@ COVID-19 when exams could not be held. The algorithm:
 - Ranked students and assigned grades accordingly
 
 **The outcome:**
+
 - Over 40% of students received lower grades than their teachers predicted
 - Only 2% received higher grades
 - The majority of downgraded students were from poor, non-white communities
@@ -149,6 +150,7 @@ together and presents the bundle as a single neutral measure.
 **The natural experiment:**
 
 COVID forced many universities to suspend GRE requirements 2020-2022. The result:
+
 - Applicant pools became more diverse
 - Admitted students performed as well or better
 - GRE turned out to be a weaker predictor of graduate success than GPA and letters
@@ -164,13 +166,13 @@ it was partly a financial filter that produced the appearance of academic select
 AI did not create these systems. It revealed them — mechanically, at scale,
 visibly enough that they became undeniable.
 
-| AI system | What it revealed | What actually needs to change |
-|---|---|---|
-| Ofqual grading algorithm | School funding inequality encoded as individual destiny | School funding policy, resource allocation, structural inequality |
-| COMPAS recidivism tool | Racial disparity in criminal justice encoded as risk score | Criminal justice system, policing policy, sentencing structures |
-| Amazon hiring algorithm | Gender discrimination in tech encoded as hiring preference | Industry culture, pipeline access, pay equity enforcement |
-| Image generation models | Western cultural dominance in knowledge representation | Dataset construction, cultural partnership, representation infrastructure |
-| GRE score cutoffs | Financial barrier encoded as academic merit | Test cost regulation, monopoly breakup, alternative admission pathways |
+| AI system                | What it revealed                                           | What actually needs to change                                             |
+| ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Ofqual grading algorithm | School funding inequality encoded as individual destiny    | School funding policy, resource allocation, structural inequality         |
+| COMPAS recidivism tool   | Racial disparity in criminal justice encoded as risk score | Criminal justice system, policing policy, sentencing structures           |
+| Amazon hiring algorithm  | Gender discrimination in tech encoded as hiring preference | Industry culture, pipeline access, pay equity enforcement                 |
+| Image generation models  | Western cultural dominance in knowledge representation     | Dataset construction, cultural partnership, representation infrastructure |
+| GRE score cutoffs        | Financial barrier encoded as academic merit                | Test cost regulation, monopoly breakup, alternative admission pathways    |
 
 In every case: the algorithm is downstream of the social system. Fixing the
 algorithm without fixing the social system produces a cleaner-looking algorithm
@@ -608,6 +610,7 @@ Writing code that works in isolation is a tractable skill. LeetCode measures
 a version of it. University teaches a version of it. It can be learned.
 
 Getting work done means:
+
 - Understanding what is actually being asked, not just the literal specification
 - Identifying when the specification is ambiguous or wrong before building the wrong thing
 - Managing your own time and attention without external structure
@@ -623,6 +626,7 @@ not from the gold medalist who optimised for a single metric in ideal conditions
 ### Level 3 — Leading People
 
 Requires everything from Level 2, plus:
+
 - Understanding that other people think differently
 - Explaining not just what to do but why
 - Knowing when to direct and when to ask
@@ -638,8 +642,8 @@ do not know how to identify them in hiring or retain them once found.
 This is the da Vinci instinct applied to engineering. The person who reads the
 specification, sits with it, and then says:
 
-*"Before we start, I want to flag three things that are unclear, two assumptions
-that might be wrong, and one dependency we haven't accounted for."*
+_"Before we start, I want to flag three things that are unclear, two assumptions
+that might be wrong, and one dependency we haven't accounted for."_
 
 That conversation, had before any code is written, saves weeks of rework.
 It requires:
@@ -758,6 +762,7 @@ is a choice with consequences that others will bear.
 ### The Business Case — The Asymmetry Is Extreme
 
 **What a Level 5 engineer costs:**
+
 - Delays when concerns are raised and investigated
 - Uncomfortable conversations with leadership
 - Occasionally being wrong — concern raised, turned out to be unfounded
@@ -767,12 +772,12 @@ is a choice with consequences that others will bear.
 
 The asymmetry is extreme and historically documented:
 
-| Case | Cost of listening | Cost of not listening |
-|---|---|---|
-| Boeing 737 MAX | Schedule delay, MCAS redesign | 346 deaths, $20B+ costs, years of reputational damage |
-| Challenger | Launch delay | 7 deaths, years of program delay, congressional investigation |
-| Equifax breach | Patching known vulnerabilities | 147M people's data, $700M settlement |
-| Amazon hiring algorithm | Delay to audit and correct | Discriminatory decisions at scale, public embarrassment |
+| Case                    | Cost of listening              | Cost of not listening                                         |
+| ----------------------- | ------------------------------ | ------------------------------------------------------------- |
+| Boeing 737 MAX          | Schedule delay, MCAS redesign  | 346 deaths, $20B+ costs, years of reputational damage         |
+| Challenger              | Launch delay                   | 7 deaths, years of program delay, congressional investigation |
+| Equifax breach          | Patching known vulnerabilities | 147M people's data, $700M settlement                          |
+| Amazon hiring algorithm | Delay to audit and correct     | Discriminatory decisions at scale, public embarrassment       |
 
 **The delay is visible. The catastrophe is invisible until it isn't.**
 
@@ -846,15 +851,15 @@ it worth staying.
 
 ## Connections
 
-- *Topic 07 — Fairness and Bias* — the more data fallacy: adding more data from
+- _Topic 07 — Fairness and Bias_ — the more data fallacy: adding more data from
   a biased distribution amplifies the problem; the Ofqual case is the live example
-- *Concept — Rawls and Distributive Justice* — the veil of ignorance test: would
+- _Concept — Rawls and Distributive Justice_ — the veil of ignorance test: would
   you design the Ofqual algorithm if you did not know which school you would be in?
-- *Concept — Goodhart's Law* — GRE scores became a target; they ceased to measure
+- _Concept — Goodhart's Law_ — GRE scores became a target; they ceased to measure
   what they were supposed to measure
-- *Concept — Environmental cost of AI* — the same sequential build argument applies:
+- _Concept — Environmental cost of AI_ — the same sequential build argument applies:
   deploy incrementally, measure effects, do not scale before you understand what you
   are scaling
-- *Concept — Ethics as defanging* — "human-centered AI" can be used the same way
+- _Concept — Ethics as defanging_ — "human-centered AI" can be used the same way
   "ethical AI" is: to produce the appearance of human consideration without the
   structural accountability that would make it real

@@ -1,6 +1,6 @@
 # The Environmental Cost of AI — Polluter Pays Applied to Tech
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -34,6 +34,7 @@ places or communities, without meaningfully deferring to them or compensating th
 for the damage done.
 
 This pattern has a name and a history:
+
 - Colonial resource extraction — minerals, timber, agricultural land
 - Industrial pollution — factories located in communities with less political power
   to resist, because the costs are local and the profits are distant
@@ -53,6 +54,7 @@ obscures the extraction. The extraction is real regardless.
 ## The Regulatory Gap
 
 There is currently no standardised way to evaluate:
+
 - How much energy a model training run consumes
 - How much water a datacenter uses over its lifetime
 - How much electronic waste AI hardware generates
@@ -100,6 +102,7 @@ A datacenter permit — or a permit to train and deploy a model above a certain 
 should require:
 
 **Before construction or deployment:**
+
 - Full environmental impact assessment — water, energy, land, minerals, waste
 - A levy proportional to projected resource consumption over the facility's lifetime
 - That levy directed into a ring-fenced fund for:
@@ -109,11 +112,13 @@ should require:
   - Support for communities supplying the raw materials
 
 **Ongoing:**
+
 - Annual transparency reports with third-party verification — not self-reported
 - Real-time energy and water consumption disclosure for major facilities
 - Penalties for exceeding projected consumption without additional levy payment
 
 **At end of life:**
+
 - Electronic waste handled under existing e-waste frameworks, extended to AI hardware
 - Decommissioning funds held in escrow throughout operating life
 
@@ -224,6 +229,7 @@ does not exist in practice.
 - The regulatory body that should enforce has been captured, underfunded, or both
 
 This is not unique to Karachi. It is the standard outcome when:
+
 - Industrial users are politically connected
 - Regulatory bodies are underfunded and understaffed
 - Affected communities have less political power than the industries harming them
@@ -333,6 +339,7 @@ Nobody chose this outcome. It emerged from the structure of the incentives.
 **The sequential build model — what responsible infrastructure development looks like:**
 
 Build one. Measure:
+
 - Actual water consumption vs. projected
 - Actual energy demand vs. projected
 - Impact on local grid stability and water table
@@ -342,6 +349,7 @@ Build one. Measure:
 Then build the next one incorporating what you learned. Then the next.
 
 This is how responsible infrastructure works in every other domain:
+
 - Nuclear plants: built one at a time with extensive monitoring between
 - Pharmaceuticals: Phase 1 → Phase 2 → Phase 3 — scale reveals effects that
   small studies cannot

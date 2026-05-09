@@ -1,7 +1,7 @@
 # Stanford HAI and CHAI Berkeley — Two Founding Institutes
 
-*Research notes extracted from official websites May 2026.
-Sources: https://hai.stanford.edu/about and https://humancompatible.ai/*
+_Research notes extracted from official websites May 2026.
+Sources: https://hai.stanford.edu/about and https://humancompatible.ai/_
 
 ---
 
@@ -44,14 +44,14 @@ challenges of AI as it exists today.
 
 ### Research Focus Areas
 
-| Domain | Focus |
-|---|---|
-| AI Foundations & Methods | Machine learning, generative AI, RL, computer vision, NLP |
-| Applied AI | Scientific discovery, healthcare, mental health, education, arts |
-| Ethics & Society | Fairness, transparency, policy implications |
-| Human-Computer Interaction | Augmenting human capability |
-| Sustainability & Equity | Environmental applications, diversity in AI |
-| Governance | Foundation model governance, policy work |
+| Domain                     | Focus                                                            |
+| -------------------------- | ---------------------------------------------------------------- |
+| AI Foundations & Methods   | Machine learning, generative AI, RL, computer vision, NLP        |
+| Applied AI                 | Scientific discovery, healthcare, mental health, education, arts |
+| Ethics & Society           | Fairness, transparency, policy implications                      |
+| Human-Computer Interaction | Augmenting human capability                                      |
+| Sustainability & Equity    | Environmental applications, diversity in AI                      |
+| Governance                 | Foundation model governance, policy work                         |
 
 ### Major Programs and Outputs
 
@@ -129,24 +129,24 @@ just current applications.
 
 ### Research Focus Areas
 
-| Domain | Details |
-|---|---|
-| Value Alignment & Inverse RL | Learning human preferences, reward specification, preference-based RL |
+| Domain                         | Details                                                                    |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Value Alignment & Inverse RL   | Learning human preferences, reward specification, preference-based RL      |
 | Foundations of Rational Agency | RL representation complexity, causal modelling, sequential decision-making |
-| Human-Robot Cooperation | Shared autonomy, human motion prediction, assistive technology |
-| Models of Human Cognition | Learning, reasoning, communication, pragmatics |
-| Multi-Agent Perspectives | Game theory, cooperative/competitive settings, institutional design |
-| Governance & Risk | Autonomous weapons, existential risk taxonomy, AI policy |
+| Human-Robot Cooperation        | Shared autonomy, human motion prediction, assistive technology             |
+| Models of Human Cognition      | Learning, reasoning, communication, pragmatics                             |
+| Multi-Agent Perspectives       | Game theory, cooperative/competitive settings, institutional design        |
+| Governance & Risk              | Autonomous weapons, existential risk taxonomy, AI policy                   |
 
 **Societal-scale risk areas explicitly named:** lethal autonomous weapons, future of
 employment, public health and safety, AI alignment, existential risks from advanced AI.
 
 ### Key People
 
-**Stuart Russell** — Founder, Professor of EECS, Berkeley. Author of *Human Compatible:
-Artificial Intelligence and the Problem of Control* (2019) — CHAI's intellectual
-manifesto. Also co-author of the standard AI textbook *Artificial Intelligence: A
-Modern Approach*.
+**Stuart Russell** — Founder, Professor of EECS, Berkeley. Author of _Human Compatible:
+Artificial Intelligence and the Problem of Control_ (2019) — CHAI's intellectual
+manifesto. Also co-author of the standard AI textbook _Artificial Intelligence: A
+Modern Approach_.
 
 **Pieter Abbeel** — Professor of EECS, Berkeley. Robotics, learning from demonstration.
 
@@ -161,7 +161,7 @@ reasoning.
 **Mark Nitzberg** — Executive Director. Also Head of Strategic Outreach for BAIR
 (Berkeley AI Research).
 
-**Brian Christian** — Affiliate. Author of *The Alignment Problem* — the most
+**Brian Christian** — Affiliate. Author of _The Alignment Problem_ — the most
 accessible account of what CHAI works on.
 
 **Alison Gopnik** — Affiliate. Professor of Psychology, Berkeley. Developmental
@@ -172,19 +172,19 @@ learn human values.
 
 CHAI's alumni network is the who's-who of the AI safety field:
 
-| Person | Current role |
-|---|---|
-| Adam Gleave | Founder, FAR AI |
-| Dan Hendrycks | Director, Center for AI Safety |
-| Dorsa Sadigh | Assistant Professor, Stanford |
-| Dylan Hadfield-Menell | Assistant Professor, MIT |
-| Jaime Fernandez Fisac | Assistant Professor, Princeton |
-| Rohin Shah | Research Scientist, Google DeepMind |
-| Alex Turner | Research Scientist, Google DeepMind |
+| Person                | Current role                        |
+| --------------------- | ----------------------------------- |
+| Adam Gleave           | Founder, FAR AI                     |
+| Dan Hendrycks         | Director, Center for AI Safety      |
+| Dorsa Sadigh          | Assistant Professor, Stanford       |
+| Dylan Hadfield-Menell | Assistant Professor, MIT            |
+| Jaime Fernandez Fisac | Assistant Professor, Princeton      |
+| Rohin Shah            | Research Scientist, Google DeepMind |
+| Alex Turner           | Research Scientist, Google DeepMind |
 
 ### Notable Publications
 
-- *Human Compatible* (Stuart Russell, 2019) — mainstream manifesto for the alignment problem
+- _Human Compatible_ (Stuart Russell, 2019) — mainstream manifesto for the alignment problem
 - "Open Problems and Fundamental Limitations of RLHF" — examines core challenges in aligning AI via human feedback
 - "TASRA: A Taxonomy of Societal-Scale Risks from AI" — governance framework
 - Research on political neutrality in AI systems, offline RL via supervised learning
@@ -206,16 +206,16 @@ for Ethics, Science, and the Public, ICT4Peace Foundation.
 
 ## The Key Difference
 
-| Dimension | Stanford HAI | CHAI Berkeley |
-|---|---|---|
-| **Definition** | AI guided by human impact, augments not replaces | AI formally compatible with human values — "provably beneficial" |
-| **Core problem** | AI's broad societal impact today | The control/alignment problem — advanced AI pursuing wrong goals |
-| **Scope** | Entire AI ecosystem, all domains | Alignment, value learning, long-term safety |
-| **Time horizon** | Present and near-term | Long-term and existential |
-| **Technical emphasis** | Institutional — convening, grants, reports | Technical — formal methods, inverse RL, provability |
-| **Vocabulary** | "human-centered," "augment not replace" | "human-compatible," "provably beneficial," "value uncertainty" |
-| **Flagship output** | AI Index (annual data report) | *Human Compatible* + formal alignment research |
-| **Policy style** | Active advocacy, policymakers-in-residence | Academic publications, governance frameworks |
+| Dimension              | Stanford HAI                                     | CHAI Berkeley                                                    |
+| ---------------------- | ------------------------------------------------ | ---------------------------------------------------------------- |
+| **Definition**         | AI guided by human impact, augments not replaces | AI formally compatible with human values — "provably beneficial" |
+| **Core problem**       | AI's broad societal impact today                 | The control/alignment problem — advanced AI pursuing wrong goals |
+| **Scope**              | Entire AI ecosystem, all domains                 | Alignment, value learning, long-term safety                      |
+| **Time horizon**       | Present and near-term                            | Long-term and existential                                        |
+| **Technical emphasis** | Institutional — convening, grants, reports       | Technical — formal methods, inverse RL, provability              |
+| **Vocabulary**         | "human-centered," "augment not replace"          | "human-compatible," "provably beneficial," "value uncertainty"   |
+| **Flagship output**    | AI Index (annual data report)                    | _Human Compatible_ + formal alignment research                   |
+| **Policy style**       | Active advocacy, policymakers-in-residence       | Academic publications, governance frameworks                     |
 
 ---
 
@@ -232,8 +232,9 @@ framework — uncertainty over human values, inverse RL, deference to humans —
 the foundation of most serious technical alignment work.
 
 Together they represent the two axes of the field:
-- HAI asks: *what should AI do for humanity, and how do we govern it?*
-- CHAI asks: *how do we build AI that, by construction, cannot do things contrary to what humanity values?*
+
+- HAI asks: _what should AI do for humanity, and how do we govern it?_
+- CHAI asks: _how do we build AI that, by construction, cannot do things contrary to what humanity values?_
 
 The second question is harder and more important as AI systems become more capable.
 The first question is more urgent today.

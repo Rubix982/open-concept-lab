@@ -1,7 +1,7 @@
 # What Is Responsible AI?
 
-*Personal study notes — original analysis and synthesis based on course themes,
-independent research, and discussion. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis based on course themes,
+independent research, and discussion. Not a reproduction of course material._
 
 ---
 
@@ -43,7 +43,7 @@ doing the work.
 "Ethical AI" implies moral agency — the capacity to intend ethical outcomes and reorient
 behaviour toward values. Humans have this. AI systems do not.
 
-An AI system can produce ethical or unethical *outcomes*. It can incorporate value
+An AI system can produce ethical or unethical _outcomes_. It can incorporate value
 judgments embedded by its designers. But it is not a moral agent. It has no intent.
 Ethics, in the full sense, remains strictly a human domain.
 
@@ -56,11 +56,11 @@ actually accountable.
 
 Responsibility, unlike ethics, has been legally and institutionally extended beyond
 individuals to organisations and structures. That extension makes "responsible AI" more
-precise: it is shorthand for *responsible development and deployment of AI* — the
+precise: it is shorthand for _responsible development and deployment of AI_ — the
 responsibility always lying with the humans and institutions involved, never with the
 system.
 
-AI Ethics is a *subdomain* of Responsible AI — not a synonym. Within responsible AI
+AI Ethics is a _subdomain_ of Responsible AI — not a synonym. Within responsible AI
 we ask "what is the right thing to do?" Ethics sits at that core. Around it is the
 broader interdisciplinary space: design, engineering, policy, law, philosophy, and
 the governance structures that hold all of it together.
@@ -110,8 +110,8 @@ Responsible AI requires values to align to. But consider what happens when you t
 define those values:
 
 - What is intelligence? Contested — see the behavioral vs. metaphysical vs. functional
-  debate (*Topic 02*)
-- Is AGI a meaningful goal? Contested — reasonable people disagree sharply (*Topic 03*)
+  debate (_Topic 02_)
+- Is AGI a meaningful goal? Contested — reasonable people disagree sharply (_Topic 03_)
 - What constitutes human flourishing? Contested across cultures, traditions, and generations
 - Whose values should the system reflect? Contested — no single answer survives scrutiny
 - Who decides? Contested — and the people currently deciding are largely unrepresentative
@@ -125,11 +125,12 @@ Reinforcement Learning from Human Feedback — trains systems on human approval 
 Humans rate outputs. The model learns to produce what receives high ratings.
 
 But this encodes:
+
 - The values of the specific group of humans providing feedback, not humanity broadly
-- What people are comfortable *saying* they approve of, not necessarily what they actually value
+- What people are comfortable _saying_ they approve of, not necessarily what they actually value
 - The approval-seeking dynamics of the feedback process itself — raters who avoid controversy
   produce models that avoid controversy
-- The perspectives of people *in* the process, systematically excluding those who are not
+- The perspectives of people _in_ the process, systematically excluding those who are not
 
 The result is not a system with correct values. It is a system with a particular group's
 expressed preferences, laundered through a technical process and presented as aligned.
@@ -171,17 +172,17 @@ the only standard that takes the contestedness of the term seriously.
 
 ## Sources
 
-- Cansu Canca and Ricardo Baeza-Yates — *"What is the Difference Between AI Ethics,
-  Responsible AI, and Trustworthy AI?"* Institute for Experiential AI, December 2022.
+- Cansu Canca and Ricardo Baeza-Yates — _"What is the Difference Between AI Ethics,
+  Responsible AI, and Trustworthy AI?"_ Institute for Experiential AI, December 2022.
   Interviews with the co-chairs of the AI Ethics Advisory Board.
 
 ---
 
 ## Connections
 
-- *Topic 02 — What is Intelligence?* — the instability of AI behaviour reflects the
+- _Topic 02 — What is Intelligence?_ — the instability of AI behaviour reflects the
   unresolved question of what intelligence actually is
-- *Topic 03 — Narrow AI vs. AGI* — the values problem scales: if we cannot agree on values
+- _Topic 03 — Narrow AI vs. AGI_ — the values problem scales: if we cannot agree on values
   for current systems, the AGI framing multiplies the stakes without resolving the contest
-- *Concept — Tarbiyat and Epistemic Honesty* — the approval-seeking dynamic in RLHF
+- _Concept — Tarbiyat and Epistemic Honesty_ — the approval-seeking dynamic in RLHF
   mirrors the broader problem of sycophancy in the institutions that govern AI

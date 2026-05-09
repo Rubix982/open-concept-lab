@@ -1,6 +1,6 @@
 # Ethics as Defanging — How "AI Ethics" Neutralises Accountability
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -40,7 +40,7 @@ topic rather than a harm requiring remedy.
 "We have an ethics team" has become a credible response to criticism of harmful AI
 systems. An ethics team with no power to stop a product launch, no enforcement
 authority, and no independence from the business is not accountability. It is the
-*appearance* of accountability, produced specifically to prevent actual accountability.
+_appearance_ of accountability, produced specifically to prevent actual accountability.
 The team exists to absorb criticism, not to act on it.
 
 **4. Attracting and managing serious people.**
@@ -66,6 +66,7 @@ The "ethics" frame operates the same way the "government overreach" frame operat
 in regulatory debates — and both are produced by the same institutional machinery.
 
 **How think tanks work:**
+
 1. A corporation or billionaire has a policy problem — a regulation to kill, a market
    to open, a tax to reduce
 2. They fund an institution with an academic-sounding name
@@ -110,12 +111,13 @@ It is a geographically and historically specific product:
 corporate donors. UK post-Thatcher to a lesser extent.
 
 **Where it barely exists:**
+
 - Japan — government actively shapes industry, infrastructure, urban development
 - Germany — strong regulatory state, strong economy, no contradiction seen
 - South Korea — state-directed industrial policy built its entire tech sector
 - Nordic countries — high regulation, high trust, high quality of life
 - Singapore — one of the most regulated cities on earth, held as a model of efficiency
-- Most of the Global South — the argument is usually "we need *more* government capacity"
+- Most of the Global South — the argument is usually "we need _more_ government capacity"
 
 The argument does not appear in food safety debates, aviation safety debates, building
 code debates, pharmaceutical testing debates, or city planning debates — anywhere in
@@ -151,12 +153,12 @@ as a principle.
 
 The honest vocabulary for AI accountability is not ethics. It is:
 
-| Term | What it means | Why it matters |
-|---|---|---|
-| **Rights** | Things people are entitled to regardless of what a company prefers | Not negotiable, not subject to ethics review |
-| **Law** | Enforceable rules with consequences for violation | Produces actual deterrence |
-| **Liability** | The people who caused harm bear the cost of it | Aligns incentives correctly |
-| **Representation** | The people affected have power in decisions that affect them | Fixes the excluded perspectives problem |
+| Term               | What it means                                                      | Why it matters                               |
+| ------------------ | ------------------------------------------------------------------ | -------------------------------------------- |
+| **Rights**         | Things people are entitled to regardless of what a company prefers | Not negotiable, not subject to ethics review |
+| **Law**            | Enforceable rules with consequences for violation                  | Produces actual deterrence                   |
+| **Liability**      | The people who caused harm bear the cost of it                     | Aligns incentives correctly                  |
+| **Representation** | The people affected have power in decisions that affect them       | Fixes the excluded perspectives problem      |
 
 None of these words appear as frequently as "ethics" in AI governance discourse.
 That is not an accident. Each of them implies consequences. "Ethics" does not.
@@ -213,7 +215,7 @@ Minimum necessary data as an absolute for harm-recognised product categories —
 guideline, an absolute with criminal enforcement. Age verification without identity.
 No opt-in pathway for broader collection. The pharmaceutical model applied to data:
 justify what you need before you collect anything, not after.
-*(See: concepts/categorical-data-exclusion.md for the full argument.)*
+_(See: concepts/categorical-data-exclusion.md for the full argument.)_
 
 ### At the Market Level
 
@@ -233,7 +235,7 @@ and what most responsible AI discourse currently fails to do.
 
 ### The Taleb Standard — Skin in the Game
 
-Nassim Nicholas Taleb's core principle from *Skin in the Game* (2018): you should not
+Nassim Nicholas Taleb's core principle from _Skin in the Game_ (2018): you should not
 be able to impose risk on others while bearing none yourself.
 
 - The economist who prescribes austerity for a country they'll never live in
@@ -255,10 +257,11 @@ He watched Lebanon tear itself apart while its political class bore none of the 
 That biographical detail is not incidental to his ideas. It is their source.
 
 Key books in order of relevance to this course:
-- *Antifragile* (2012) — systems that gain from disorder; humans are antifragile;
+
+- _Antifragile_ (2012) — systems that gain from disorder; humans are antifragile;
   engineering comfort into society engineers fragility into people
-- *Skin in the Game* (2018) — accountability requires consequence; trust requires risk
-- *The Black Swan* (2007) — rare unpredictable events with massive consequences that
+- _Skin in the Game_ (2018) — accountability requires consequence; trust requires risk
+- _The Black Swan_ (2007) — rare unpredictable events with massive consequences that
   are systematically underestimated before and overexplained after
 
 ### What Will Not Work

@@ -1,8 +1,8 @@
 # A People's Guide to AI — Notes
 
-*Mimi Onuoha and Mother Cyborg (Diana Nucera), 2018.
+_Mimi Onuoha and Mother Cyborg (Diana Nucera), 2018.
 Open Society Foundation funded. Creative Commons licensed.
-Full text: peoplesguidetoai.com*
+Full text: peoplesguidetoai.com_
 
 ---
 

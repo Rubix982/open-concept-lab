@@ -32,11 +32,11 @@ The argument is not that these products cannot exist. It is that they can only c
 what their legitimate, narrow function requires. Nothing more is permissible, regardless
 of consent.
 
-| Product | Legitimate purpose | Permissible data | Everything else |
-|---|---|---|---|
-| **Tobacco / vape retail** | Sell an age-restricted product | Age verification at point of sale | Purchase history, brand switching data, price sensitivity, loyalty profiles — **prohibited** |
-| **Casinos / betting** | Operate a licensed gambling service | Age verification, self-exclusion check, transaction record for legal compliance | Behavioral profiling, session analysis, emotional state targeting, loss-chasing pattern detection for retention — **prohibited** |
-| **Social media with addiction mechanisms** | Connect users | Account existence, content posted | Engagement pattern analysis, emotional state inference, vulnerability profiling, behavioral targeting — **prohibited** |
+| Product                                    | Legitimate purpose                  | Permissible data                                                                | Everything else                                                                                                                  |
+| ------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Tobacco / vape retail**                  | Sell an age-restricted product      | Age verification at point of sale                                               | Purchase history, brand switching data, price sensitivity, loyalty profiles — **prohibited**                                     |
+| **Casinos / betting**                      | Operate a licensed gambling service | Age verification, self-exclusion check, transaction record for legal compliance | Behavioral profiling, session analysis, emotional state targeting, loss-chasing pattern detection for retention — **prohibited** |
+| **Social media with addiction mechanisms** | Connect users                       | Account existence, content posted                                               | Engagement pattern analysis, emotional state inference, vulnerability profiling, behavioral targeting — **prohibited**           |
 
 **Age verification does not require identity.** A cryptographic proof that a credential
 issued by a trusted authority confirms an age threshold is sufficient. The platform
@@ -71,14 +71,14 @@ follow it. The rule only works if it has no exceptions.
 Each of the following already receives special regulatory treatment in most jurisdictions,
 precisely because the harm is acknowledged:
 
-| Category | Existing interventions |
-|---|---|
-| **Cigarettes / tobacco** | Advertising bans, health warnings, age restrictions, plain packaging, taxation as deterrent |
-| **Vapes / e-cigarettes** | Increasingly identical to tobacco as evidence accumulates |
-| **Casinos / gambling** | Age verification, self-exclusion lists, spending limits, location restrictions, operator licensing |
-| **Online betting** | Same as above, extending to app-based platforms |
-| **Social media (emerging)** | Age restrictions, some advertising limits — recognition growing, intervention lagging |
-| **Addictive pharmaceuticals** | Prescription controls, scheduling, dispensing limits |
+| Category                      | Existing interventions                                                                             |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Cigarettes / tobacco**      | Advertising bans, health warnings, age restrictions, plain packaging, taxation as deterrent        |
+| **Vapes / e-cigarettes**      | Increasingly identical to tobacco as evidence accumulates                                          |
+| **Casinos / gambling**        | Age verification, self-exclusion lists, spending limits, location restrictions, operator licensing |
+| **Online betting**            | Same as above, extending to app-based platforms                                                    |
+| **Social media (emerging)**   | Age restrictions, some advertising limits — recognition growing, intervention lagging              |
+| **Addictive pharmaceuticals** | Prescription controls, scheduling, dispensing limits                                               |
 
 The regulatory judgment is already made. The product is harmful. The market cannot
 self-correct. External constraint is required.
@@ -96,6 +96,7 @@ It enables the precision engineering of addiction in ways that were not previous
 which demographics smoked most. The harm was real but the targeting was blunt.
 
 **Current era:** A platform knows:
+
 - Which emotional states correlate with your highest engagement or spending
 - Which sounds, images, or content sequences keep you in the session longest
 - What time of night you are most vulnerable to compulsive behavior
@@ -177,6 +178,7 @@ coordinated international action, which is slow and subject to the same captured
 governance problems that produced the current situation.
 
 **Uneven application.** The cut is not clean across the digital industry:
+
 - Social media platforms with infinite scroll: clearly in scope
 - Search engines: largely not
 - Messaging applications: ambiguous — utility with some addictive features

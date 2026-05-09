@@ -1,6 +1,6 @@
 # Cultural Dataset Business — A Critical Niche
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -42,9 +42,9 @@ to collect it honestly take years to build and cannot be shortcut.
 Any company can scrape. Not any company can walk into Al-Azhar, the University
 of Nairobi, Banaras Hindu University, and a Quechua community in Peru and say:
 
-*"We have been working with you for three years. You trust us. You have control
+_"We have been working with you for three years. You trust us. You have control
 over how your knowledge is represented. Here is your share of the value we
-created together."*
+created together."_
 
 That relationship takes years. It cannot be faked. It cannot be rushed.
 The race logic — move fast, ship now — is the enemy of the trust required
@@ -72,10 +72,11 @@ companies that need them.
 
 Certify AI models for cultural representation accuracy:
 
-*"This model was trained on datasets including consented contributions from
-X cultures, documented at Y depth, with Z languages represented."*
+_"This model was trained on datasets including consented contributions from
+X cultures, documented at Y depth, with Z languages represented."_
 
 That certification becomes valuable as:
+
 - Regulation moves toward transparency requirements
 - Enterprise customers in non-Western markets demand cultural accuracy
 - Governments in those markets begin requiring it for public sector deployment
@@ -109,16 +110,16 @@ traditions especially — operate a parallel non-profit structure:
 
 ## The Per-Culture Framework
 
-| Culture/Region | Key institutions | Data types | Language coverage | Consent model |
-|---|---|---|---|---|
-| Islamic world | Al-Azhar, major universities | Philosophy, art, manuscripts, jurisprudence | Arabic, Persian, Urdu, Turkish, Malay | Institutional agreements |
-| South Asia | IIT, JNU, IIAS, community orgs | Classical texts, visual traditions, oral traditions | 10+ languages | Institutional + community |
-| Sub-Saharan Africa | African universities, museums, cultural orgs | Philosophy, oral records, visual art, languages | 50+ languages | Community FPIC |
-| East Asia | Chinese, Japanese, Korean institutions | Classical and contemporary philosophy, art | Chinese, Japanese, Korean | Institutional agreements |
-| Indigenous globally | Community-controlled organisations | Oral traditions, land-based knowledge | Per community | Community sovereignty |
-| Latin America | Regional universities, Indigenous orgs | Decolonial thought, Indigenous traditions | Spanish, Portuguese, Indigenous languages | Institutional + community |
-| Central Asia | Universities, cultural archives | Turkic, Persian traditions | Kazakh, Uzbek, Tajik, etc. | Institutional |
-| Southeast Asia | Regional universities, cultural ministries | Diverse traditions, colonial history context | Malay, Thai, Vietnamese, Filipino, etc. | Institutional + community |
+| Culture/Region      | Key institutions                             | Data types                                          | Language coverage                         | Consent model             |
+| ------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------- | ------------------------- |
+| Islamic world       | Al-Azhar, major universities                 | Philosophy, art, manuscripts, jurisprudence         | Arabic, Persian, Urdu, Turkish, Malay     | Institutional agreements  |
+| South Asia          | IIT, JNU, IIAS, community orgs               | Classical texts, visual traditions, oral traditions | 10+ languages                             | Institutional + community |
+| Sub-Saharan Africa  | African universities, museums, cultural orgs | Philosophy, oral records, visual art, languages     | 50+ languages                             | Community FPIC            |
+| East Asia           | Chinese, Japanese, Korean institutions       | Classical and contemporary philosophy, art          | Chinese, Japanese, Korean                 | Institutional agreements  |
+| Indigenous globally | Community-controlled organisations           | Oral traditions, land-based knowledge               | Per community                             | Community sovereignty     |
+| Latin America       | Regional universities, Indigenous orgs       | Decolonial thought, Indigenous traditions           | Spanish, Portuguese, Indigenous languages | Institutional + community |
+| Central Asia        | Universities, cultural archives              | Turkic, Persian traditions                          | Kazakh, Uzbek, Tajik, etc.                | Institutional             |
+| Southeast Asia      | Regional universities, cultural ministries   | Diverse traditions, colonial history context        | Malay, Thai, Vietnamese, Filipino, etc.   | Institutional + community |
 
 ---
 

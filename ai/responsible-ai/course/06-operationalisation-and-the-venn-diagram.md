@@ -1,6 +1,6 @@
 # Operationalisation and the Venn Diagram
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -40,6 +40,7 @@ requirement that helps one demographic may harm another.
 
 This is not a failure of reasoning. It is the actual condition of pluralistic societies.
 Anyone promising a regulation that satisfies everyone is either:
+
 - Naive about the depth of value conflict
 - Selling something — specifically the illusion of consensus that serves their interests
 
@@ -131,6 +132,7 @@ and can specify it precisely. Appropriate when the overlap is near-universal and
 
 A **standard** acknowledges the Venn diagram is still being drawn — you know the
 direction but not the precise boundary. Appropriate when:
+
 - The technology is new and effects are still being understood
 - The affected communities have not all been heard from yet
 - The values in tension have not been fully mapped
@@ -144,6 +146,7 @@ more honest than starting with rules that pretend to a precision they don't have
 
 **Fairness in hiring algorithms:**
 The overlap across employers, workers, and communities likely includes:
+
 - Transparency about what factors are used
 - The right to explanation when a decision is made
 - Audit requirements by independent bodies
@@ -155,6 +158,7 @@ deliberation. Start with the overlap. Build toward precision.
 
 **Data collection:**
 The overlap likely includes:
+
 - Minimum necessary data for declared purpose
 - No collection without meaningful notice
 - Right to access and deletion
@@ -164,6 +168,7 @@ too much. But the overlap above is achievable now.
 
 **Algorithmic accountability:**
 The overlap likely includes:
+
 - Disclosure that an algorithm was used in a consequential decision
 - Human review available for high-stakes decisions
 - Liability for documented harm
@@ -213,12 +218,12 @@ nice-to-haves. They are the mechanism by which the Venn diagram gets drawn hones
 
 ## Connections
 
-- *Topic 04 — Normativity* — operationalisation is the practical problem that
+- _Topic 04 — Normativity_ — operationalisation is the practical problem that
   normative contestedness produces; the Venn diagram is how you work with it
-- *Topic 05 — Regulation* — rules vs. standards distinction; regulatory sandboxes
+- _Topic 05 — Regulation_ — rules vs. standards distinction; regulatory sandboxes
   as mechanisms for expanding the Venn diagram over time
-- *Concept — Excluded perspectives* — the room determines the diagram;
+- _Concept — Excluded perspectives_ — the room determines the diagram;
   small room = small overlap = rules that miss
-- *Concept — Ethics as defanging* — "objective fairness" language is used the
+- _Concept — Ethics as defanging_ — "objective fairness" language is used the
   same way "ethical AI" is — to create the appearance of resolution without the
   substance of inclusion

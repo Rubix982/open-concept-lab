@@ -14,13 +14,14 @@ responsible for the practical framework underpinning this course.
 - **Research Associate Professor**, Department of Philosophy and Religion, Northeastern
 - **Founder and Director**, AI Ethics Lab (founded ~2016, Cambridge MA) — one of the first
   initiatives focused exclusively on advising practitioners on AI ethics
-- **Founding Editor**, *AI & Ethics* journal (Springer Nature)
+- **Founding Editor**, _AI & Ethics_ journal (Springer Nature)
 - **PhD**, Applied Ethics, National University of Singapore
 
 Prior: University of Hong Kong Medical School (faculty), Harvard Law School, Harvard School
 of Public Health, Harvard Medical School, WHO, Osaka University — all in population-level bioethics.
 
 **Key external roles:**
+
 - UN Centre for AI & Robotics — AI Ethics and Governance Expert
 - INTERPOL — AI Ethics and Governance Expert (law enforcement applications)
 - World Economic Forum AI Governance Alliance — working group member
@@ -29,6 +30,7 @@ of Public Health, Harvard Medical School, WHO, Osaka University — all in popul
 - EU- and NIH-funded research projects — ethics expert
 
 **Links:**
+
 - AI Ethics Lab: https://aiethicslab.com
 - Personal site: https://cansucanca.com
 - EAI profile: https://ai.northeastern.edu/our-people/cansu-canca
@@ -75,15 +77,16 @@ is almost certainly shaped by that lineage — worth keeping in mind when readin
 4. **Ethics integration, not ethics bolted on** — ethics should be woven into the innovation
    process from the start, not applied as an approval gate at the end.
 
-*To expand: watch the talk and add specific arguments, examples, and structure.*
+_To expand: watch the talk and add specific arguments, examples, and structure._
 
 ---
 
 ## The PiE Model — Puzzle-solving in Ethics
 
 **Primary source:** https://aiethicslab.com/pie-model/
-**Published description:** "Operationalizing AI Ethics Principles", *Communications of the ACM*,
+**Published description:** "Operationalizing AI Ethics Principles", _Communications of the ACM_,
 Vol. 63 No. 12, pp. 18-21, 2020.
+
 - ACM: https://cacm.acm.org/opinion/operationalizing-ai-ethics-principles/
 - Preprint PDF: https://aiethicslab.com/wp-content/uploads/2020/08/Canca_AI-Principles_ACM.pdf
 - YouTube lecture on PiE: https://www.youtube.com/watch?v=29pzpwlsWV4
@@ -102,9 +105,9 @@ This is the sharpest insight from her 2020 CACM paper:
 
 Most AI ethics principle sets **improperly conflate** two different kinds of principles:
 
-| Type | Examples | Nature |
-|---|---|---|
-| **Core principles** | Autonomy, Beneficence, Justice | The actual ethical values — what we are trying to achieve |
+| Type                        | Examples                               | Nature                                                    |
+| --------------------------- | -------------------------------------- | --------------------------------------------------------- |
+| **Core principles**         | Autonomy, Beneficence, Justice         | The actual ethical values — what we are trying to achieve |
 | **Instrumental principles** | Transparency, Accountability, Fairness | Mechanisms for achieving core values in specific contexts |
 
 You cannot implement "justice" directly. You can implement transparency as a mechanism
@@ -128,7 +131,7 @@ Drawn from moral and political philosophy:
 - **Beneficence** — avoid harm, do good
 - **Justice** — equal treatment, equal opportunity, protection of the worst off
 
-These answer: *"Is this ethically problematic at all?"* Any action that disrespects autonomy,
+These answer: _"Is this ethically problematic at all?"_ Any action that disrespects autonomy,
 inflicts harm, or discriminates is ethically problematic by definition.
 
 Notably: across all published AI principles, globally and across industries, the distribution
@@ -164,7 +167,7 @@ autonomy point in opposite directions. That is a real dilemma. Principles cannot
 it. Ethical theory and expert analysis must.
 
 **The lineage:** This framework is explicitly drawn from bioethics — specifically the
-*Belmont Report* (1978) and Beauchamp & Childress' *Principles of Biomedical Ethics* (1979),
+_Belmont Report_ (1978) and Beauchamp & Childress' _Principles of Biomedical Ethics_ (1979),
 which established autonomy, beneficence, non-maleficence, and justice as the canonical
 core principles for human subjects research. Canca is importing a mature bioethics
 framework into AI ethics, where it did not previously exist in this form.
@@ -186,8 +189,8 @@ manageable one. That distinction alone is valuable: most developers treat every 
 question as equally complex (paralysis) or equally simple (rubber-stamp). The Box
 calibrates which is which.
 
-*Note: The visual figure of The Box did not render in the preprint PDF. The published ACM
-version (Vol. 63 No. 12) likely contains it. Worth finding.*
+_Note: The visual figure of The Box did not render in the preprint PDF. The published ACM
+version (Vol. 63 No. 12) likely contains it. Worth finding._
 
 ### On the Proliferation of Principles
 
@@ -232,8 +235,8 @@ The roadmap is the entry point — without it, the other components have no grou
 These run continuously at the product and project level:
 
 - **AI Ethics Analysis** — detect the ethical puzzles in a specific product or project.
-  Covers both *Ethics Risks/Opportunities* (what could go wrong, what could go right)
-  and *Ethics-by-Design* (building ethical considerations into the design process itself,
+  Covers both _Ethics Risks/Opportunities_ (what could go wrong, what could go right)
+  and _Ethics-by-Design_ (building ethical considerations into the design process itself,
   not auditing after). The "opportunities" framing is deliberate — ethics surfaces
   beneficial possibilities, not only harm avoidance.
 
@@ -262,7 +265,7 @@ at the crossroads, not a subject being evaluated.
 
 ---
 
-## *AI & Ethics* Journal (Springer Nature)
+## _AI & Ethics_ Journal (Springer Nature)
 
 - **Link:** https://link.springer.com/journal/43681
 - **Canca's role:** Co-founding editor
@@ -270,6 +273,7 @@ at the crossroads, not a subject being evaluated.
   not purely theoretical
 
 Coverage areas:
+
 - Fairness, accountability, transparency in AI systems
 - Bias in face recognition, hiring, risk assessment
 - Weaponisation risks and dual-use concerns
@@ -284,13 +288,13 @@ Explicitly cross-audience: academics, practitioners, policymakers, public.
 
 ## Other Published Work
 
-- "Operationalizing AI Ethics Principles" — *Communications of the ACM*, 2020 (primary)
+- "Operationalizing AI Ethics Principles" — _Communications of the ACM_, 2020 (primary)
 - "AI and Governance in Defence Innovation: Implementing an AI Ethics Framework"
-  in *The AI Wave in Defence Innovation* (Routledge, 2023)
+  in _The AI Wave in Defence Innovation_ (Routledge, 2023)
 - "Ethical and Legal Aspects of Data Science for Large Scale Human Mobility"
-  in *Data Science for Migration and Mobility* (Oxford University Press, 2022)
+  in _Data Science for Migration and Mobility_ (Oxford University Press, 2022)
 - "Did You Find It on the Internet? Ethical Complexities of Search Engine Rankings"
-  in *Perspectives on Digital Humanism* (Springer, 2021)
+  in _Perspectives on Digital Humanism_ (Springer, 2021)
 - Writing in Forbes, Harvard Law School's Bill of Health blog, Petrie-Flom Center
 
 ---
@@ -301,7 +305,9 @@ Explicitly cross-audience: academics, practitioners, policymakers, public.
 **Founded:** 2017, Cambridge MA. "We treat ethics itself as innovation."
 
 ### The Dynamics of AI Principles Toolbox
+
 Interactive tool built from the CACM paper research:
+
 - Map AI principles by country, region, time, organisation type
 - Search and compare principles documents
 - Visualise distribution of core principles across global sets
@@ -312,11 +318,13 @@ to understand how the core/instrumental distinction plays out in practice.
 Link: http://aiethicslab.com/big-picture/
 
 ### INTERPOL & UN Toolkit — Responsible AI in Law Enforcement
+
 Developed with INTERPOL and UNICRI. Covers the full AI lifecycle — from early exploration
 and procurement through deployment, oversight, and governance. Designed for high-stakes,
 ambiguous contexts where existing approaches fall short.
 
 Law enforcement is the hardest test case for embedded ethics:
+
 - Bail and parole risk assessment (algorithmic bias + justice)
 - Facial recognition (autonomy + discrimination)
 - Predictive policing (justice + presumption of innocence)
@@ -325,6 +333,7 @@ Law enforcement is the hardest test case for embedded ethics:
 If the PiE model works anywhere, it needs to work here. This toolkit is the proof of concept.
 
 ### Key Framing from the Lab
+
 > "We treat ethics itself as innovation."
 
 Not ethics as constraint or brake. Ethics as a generative force that surfaces
@@ -332,18 +341,20 @@ opportunities, not just risks. This reframe matters — it changes what develope
 think they're doing when they engage with ethics.
 
 ### Higher Education Gap — Keynote Observation
+
 From Canca's AIxEd keynote description:
 
 > "Despite deep in-house expertise, higher ed institutions have been remarkably slow
 > to implement meaningful responsible AI practices."
 
-Universities develop AI systems *and* train the people who will shape their future use.
+Universities develop AI systems _and_ train the people who will shape their future use.
 They have the deepest in-house expertise. They are moving the slowest. This is the
 same pattern as economists trained in models that serve consensus, not critique —
 the institutional apparatus selects for certain assumptions and calls them neutral.
 
 ### The Metzl Conversation
-*"The AI Ten Commandments"* by Jamie Metzl argues AI can be a moral compass for
+
+_"The AI Ten Commandments"_ by Jamie Metzl argues AI can be a moral compass for
 humanity — the techno-optimist position. Canca is there specifically to challenge him.
 MIT's Manolis Kellis moderates. This is the live version of the embedded debate:
 optimism about AI's potential vs. structural critique of how it's actually built.
@@ -385,7 +396,7 @@ function decided whose interests the field would serve — without ever stating 
 - [x] Explore AI Ethics Lab site — Dynamics toolbox, INTERPOL toolkit, Lab framing
 - [ ] Use the Dynamics of AI Principles toolbox — apply The Box to a specific technology
 - [ ] Watch PiE model YouTube lecture — more detail on the four-service structure
-- [ ] Look at *AI & Ethics* journal — what recent issues cover topics relevant to this course?
+- [ ] Look at _AI & Ethics_ journal — what recent issues cover topics relevant to this course?
 - [ ] Read / watch the Metzl vs. Canca conversation when available
 - [ ] Follow the bioethics lineage — how do bioethics frameworks (principlism, etc.)
       translate to AI ethics? Where do they fit well and where do they break?

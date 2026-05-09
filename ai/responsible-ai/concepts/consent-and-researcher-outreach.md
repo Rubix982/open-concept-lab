@@ -1,6 +1,6 @@
 # Consent, Researcher Outreach, and Building Knowledge Infrastructure Honestly
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -88,6 +88,7 @@ Your graph does that. Sharing it with the researcher is simultaneously:
 ## Who Responds Well and How
 
 **Most likely to engage:**
+
 - Early career researchers — PhD students, postdocs — whose work is not yet widely
   cited and who would be surprised and pleased that someone engaged carefully with it
 - Researchers working on niche intersections — interpretability, knowledge editing,
@@ -96,6 +97,7 @@ Your graph does that. Sharing it with the researcher is simultaneously:
   who checks
 
 **Handle carefully:**
+
 - Very senior researchers who receive many requests — keep the ask minimal,
   the value proposition clear, the email short
 - Researchers whose work touches sensitive applications — be transparent about
@@ -107,13 +109,14 @@ Your graph does that. Sharing it with the researcher is simultaneously:
 
 Not a form. Not an automated message. A human note:
 
-> *"I'm building a non-profit knowledge graph of AI research, focused on connecting
+> _"I'm building a non-profit knowledge graph of AI research, focused on connecting
 > claims across papers. I've indexed your work on [specific paper]. Here's how it
 > appears: [link]. I wanted to check whether this accurately represents your
 > contribution, and to ask whether you'd be comfortable with it remaining in the graph.
-> I'm happy to correct anything or remove it entirely if you prefer."*
+> I'm happy to correct anything or remove it entirely if you prefer."_
 
 That email, sent to a hundred researchers, will get:
+
 - ~60 responses
 - ~50 saying yes, keep it, and thank you for asking
 - ~10 correcting something
@@ -135,6 +138,7 @@ direction.
 to a knowledge commons than to a commercial product that will sell their work.
 
 **Qualifies for the right funding:**
+
 - Foundation grants — Wikimedia Foundation, Internet Archive, Allen Institute are proven models
 - NSF open science infrastructure grants
 - AWS, Google, Microsoft research credit programmes for non-profits

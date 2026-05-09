@@ -1,6 +1,6 @@
 # Fairness and Bias in AI
 
-*Personal study notes — original analysis and synthesis. Not a reproduction of course material.*
+_Personal study notes — original analysis and synthesis. Not a reproduction of course material._
 
 ---
 
@@ -179,7 +179,7 @@ exploitation dressed as opportunity.
 
 The most common form of compensation sleight of hand in tech:
 
-*"We don't pay much but you'll learn a lot and the equity will be worth it."*
+_"We don't pay much but you'll learn a lot and the equity will be worth it."_
 
 **What this actually means:**
 
@@ -198,6 +198,7 @@ the company. The downside — foregone salary — is certain and borne by the em
 **The information asymmetry:**
 
 A fresh graduate does not have the context to evaluate:
+
 - What market rate for their skills actually is
 - The realistic survival probability of a sub-4-year-old company over the next 4 years
 - The expected value calculation of the equity at realistic exit valuations
@@ -216,8 +217,8 @@ it was this speculative. The offer letter did not tell you.
 
 **The right question at signing:**
 
-*"If this equity is worth zero — the most common outcome — am I still fairly compensated
-by the salary alone?"*
+_"If this equity is worth zero — the most common outcome — am I still fairly compensated
+by the salary alone?"_
 
 If the answer is no, the offer is not fair regardless of what the equity might
 theoretically be worth.
@@ -391,10 +392,10 @@ efficiently, more consistently, and more invisibly than you ever could manually.
 
 ### What the Game Should Have Said
 
-*"More data from the same biased distribution produces a more confident biased
+_"More data from the same biased distribution produces a more confident biased
 algorithm. The problem is not the quantity of data. It is whether the data represents
 the world as it should be, or the world as it was — including all the discrimination
-that shaped it."*
+that shaped it."_
 
 ### What Actually Helps
 
@@ -526,11 +527,11 @@ culture at scale — good and bad together.
 
 **The bias embedded in each:**
 
-| Company | Metrics emphasised | Systematic bias | Cultural output |
-|---|---|---|---|
-| Google | Skill, prestige | Against non-prestigious candidates with product hunger | Research excellence, weak product instinct |
-| Apple | Skill, ambition | Against low-ambition candidates regardless of capability | Strong products, high churn |
-| Amazon | Skill, operational discipline | Against candidates with high creative/product intuition | Infrastructure excellence, consumer product weakness |
+| Company | Metrics emphasised            | Systematic bias                                          | Cultural output                                      |
+| ------- | ----------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
+| Google  | Skill, prestige               | Against non-prestigious candidates with product hunger   | Research excellence, weak product instinct           |
+| Apple   | Skill, ambition               | Against low-ambition candidates regardless of capability | Strong products, high churn                          |
+| Amazon  | Skill, operational discipline | Against candidates with high creative/product intuition  | Infrastructure excellence, consumer product weakness |
 
 None of these biases are obviously wrong. Each is a deliberate bet on what the
 company needs. The problem arrives when:
@@ -571,12 +572,12 @@ as good as the clarity of that prior question.
 
 ## Connections
 
-- *Topic 04 — Normativity* — "fair" is a normative claim; choosing a fairness metric
+- _Topic 04 — Normativity_ — "fair" is a normative claim; choosing a fairness metric
   is a values decision, not a technical one
-- *Topic 06 — Venn Diagram* — the Chouldechova result is the mathematical version of
+- _Topic 06 — Venn Diagram_ — the Chouldechova result is the mathematical version of
   the Venn diagram problem: you cannot maximise everyone's fairness simultaneously
-- *Concept — Excluded perspectives* — compensation algorithms trained on data from
+- _Concept — Excluded perspectives_ — compensation algorithms trained on data from
   people who were not fairly treated produce recommendations that perpetuate that treatment
-- *Concept — Ethics as defanging* — "fair AI" can be used the same way "ethical AI"
+- _Concept — Ethics as defanging_ — "fair AI" can be used the same way "ethical AI"
   is — to produce the appearance of fairness without the accountability structures
   that would make fairness real
