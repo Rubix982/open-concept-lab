@@ -21,4 +21,5 @@ per-file-ignores =
     animations/05_regulation/scene_05_doubt4.py: E501
     animations/05_regulation/scene_06_doubt5.py: E501
     animations/05_regulation/scene_07_doubt6.py: E501
+    animations/08_hcai/three_waves_of_ai.py: E501
 filename = animations/**/*.py
