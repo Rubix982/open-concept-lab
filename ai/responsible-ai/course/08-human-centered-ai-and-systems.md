@@ -269,6 +269,159 @@ better branding.
 
 ---
 
+## Rationalism vs. Empiricism — The Philosophical Root of HCAI
+
+The difference between standard AI and Human-Centered AI reflects a deeper
+philosophical divide between two ways of knowing the world.
+
+### The Rationalist Position — Aristotle, Descartes, Fisher
+
+Rationalists believe in logical thinking, formal methods, and well-defined
+categories. Rules can be perfected. Boundaries between categories are stable.
+The world can be understood from first principles, in the comfort of the lab,
+without necessarily going into the messy real world.
+
+In AI, rationalism produces: elegant algorithms, statistical methods, the belief
+that machine learning is sufficient to match human intelligence on well-defined
+tasks, and the conclusion that correlations strong enough to guide decisions make
+causal understanding unnecessary.
+
+**The failure mode:** Ronald Fisher — one of the most important statisticians of
+the 20th century — rejected early data on the risks of smoking because it did not
+fit his rigid statistical framework. The framework was more trusted than the evidence.
+The rigidity of the categories prevented seeing what the data was actually showing.
+
+### The Empiricist Position — da Vinci, Galileo, Hume, Tukey
+
+Empiricists believe that researchers are enriched by contradictions and ambiguities
+that come with real-world experience. Beliefs must be continuously refined in response
+to changing realities. Categories are provisional. Middle grounds matter.
+
+Da Vinci developed fluid dynamics by watching water flow around obstacles — not by
+deriving it from first principles. Galileo noticed a chandelier swaying in church
+and followed the observation to the formula for pendulum swing. John Tukey insisted
+on looking at data graphically because visual inspection reveals errors, anomalies,
+and unexpected distributions that summary statistics hide.
+
+**In HCAI, empiricism produces:** assessment of human performance in real contexts,
+questioning of simple dichotomies, observation of how people actually interact with
+systems rather than how they were designed to interact.
+
+---
+
+## Machines Have Data. Humans Have Curiosity.
+
+This is the precise epistemological divide.
+
+**Curiosity is not a personality trait. It is an epistemological stance.**
+
+The curious person notices the gap between what they know and what is — and is
+pulled toward it. The gap is not uncomfortable. It is interesting. Curiosity is
+an active relationship to not-knowing that produces seeking.
+
+**The machine has no relationship to not-knowing.**
+
+It has a training distribution. When it encounters something outside that distribution
+— the white truck against a white sky, the flu search pattern that shifted, the
+candidate who does not fit the historical profile — it does not notice the gap.
+It does not feel the pull toward investigation. It produces a confident output
+from the nearest available pattern.
+
+**The Tesla case:**
+
+Tesla's self-driving car could not distinguish a white truck from a white sky
+and drove into it. The algorithm produced certainty where there should have been
+uncertainty. A human driver with impaired vision in those conditions would feel
+uncertainty — would slow down, look again, ask for confirmation. The uncertainty
+would produce caution.
+
+The algorithm did not know it did not know. That is the precise failure.
+
+**The Google Flu Trends case:**
+
+The model predicted flu outbreaks by studying patterns of internet search queries.
+It worked while the world stayed still. When search behaviour shifted and Google's
+own algorithms changed, the model kept predicting based on a pattern that no longer
+existed. It repeated the past in a present that had moved on.
+
+A human epidemiologist watching predictions diverge from actual flu rates would
+notice something is wrong, ask why, investigate whether underlying behaviour had
+changed, and update or abandon the model.
+
+The algorithm kept producing confident predictions until Google shut it down.
+
+**Machines have data. Often limited data. With no pure or set amount of beliefs in them.**
+
+The data reflects a specific slice of the world, observed from specific positions,
+at specific times, through specific instruments. The limitation is not random.
+It is structured by who had access to produce data, who had incentive to collect it,
+and what categories were used to organise it.
+
+The model does not know the limits of its own knowledge. It cannot ask what it is
+not seeing. It cannot notice that the data is thin at the edges of its training
+distribution. It produces confident outputs even there — sometimes especially there,
+because the nearest pattern is pulled from a slightly different context and applied
+as if appropriate.
+
+---
+
+## Closed World vs. Open World — The Deeper Divide
+
+**Closed world assumption:** the world contains only what the training data contains.
+Categories are fixed. The past predicts the future. Novel cases are handled by
+finding the nearest known case.
+
+**Open world assumption:** the world contains things not yet observed. Categories
+are provisional. The future may differ from the past in ways that matter.
+Novel cases are an invitation to learn.
+
+Current ML is almost entirely closed world. It learns from what it was shown.
+It cannot imagine what it was not shown. It cannot ask whether the categories
+it learned are the right ones. It cannot notice that the world has changed
+in ways its categories do not capture.
+
+Da Vinci watching water flow around obstacles was doing open world reasoning.
+He did not assume he already knew what water does. He watched. He noticed.
+He revised. The watching was the method because reality was the source of truth,
+not the prior model.
+
+The empiricist correction to AI is the reintroduction of the open world assumption —
+keeping the human in a position where they can notice when the map does not match
+the territory, and act on that noticing.
+
+---
+
+## What Human-in-the-Loop Actually Requires
+
+Human-centered AI, in the empiricist tradition, is an attempt to reintroduce the
+open world assumption. The human — with curiosity, with the capacity to notice gaps,
+with the ability to ask "why is this wrong?" — must be in a position to correct
+the machine's closed world confidence with open world observation.
+
+**The machine maps patterns.**
+**The human notices when the map does not match the territory.**
+
+The human's job is not to rubber-stamp the machine's output. It is to be the
+curiosity that the machine lacks — the active not-knowing that pulls toward
+investigation when the output feels wrong.
+
+This only works if:
+
+- The human has **genuine authority to override** — not the appearance of oversight
+  while the algorithm's output is the default
+- The human has **genuine time to notice** — not 300 decisions per hour where
+  noticing is structurally impossible
+- The human has **genuine freedom from pressure** to accept the machine's confident
+  output as faster and easier than their own uncertain judgment
+- The human is **the right human** — someone who could be on the receiving end
+  of the decision, not just someone at the comfortable end of the system
+
+A human reviewer who lacks any of these is not in the loop in the meaningful sense.
+They are providing the appearance of human oversight while the machine's closed world
+assumption governs every consequential decision.
+
+---
+
 ## Key Insight
 
 > AI did not create the gap between the 5,000 PKR school and the 40,000 PKR school.
