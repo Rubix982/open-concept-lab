@@ -422,6 +422,127 @@ technical specification. It is a relationship design specification.
 
 ---
 
+## The Human Override Problem — Where Xu's Framework Overpromises
+
+Xu states:
+
+> "It requires HCI design to ensure that human operators are able to quickly and
+> effectively take over the control of an intelligent system in an emergency, so
+> that fatal accidents such as the accidents of autonomous cars mentioned above
+> can be avoided."
+
+This is the right aspiration. It is also, in many deployment contexts, close to
+impossible — and Xu does not acknowledge how hard it is.
+
+### The Theoretical Requirement vs. The Empirical Reality
+
+**The theoretical model:**
+Human can take over at any time → emergency is handled → no fatal accident.
+
+**The empirical reality — documented failure modes:**
+
+**Uber / Elaine Herzberg, 2018:**
+The safety driver was watching a video on her phone. She had **1.3 seconds** between
+when the sensor first detected something in the road and impact. No human can
+meaningfully intervene in 1.3 seconds after being inattentive. The system required
+human oversight. The human was structurally unable to provide it.
+
+**Tesla Autopilot — 211 cases (NHTSA EA22002):**
+211 cases where an attentive driver had time to react but did not. Not because they
+were negligent. Because Autopilot had been managing the car smoothly for long enough
+that the driver's brain had genuinely disengaged. This is **automation complacency**
+— a documented, reproducible human cognitive phenomenon.
+
+The more reliable the automation, the less ready the human is to intervene when it
+fails. The automation that makes the system useful is the same automation that
+degrades human readiness to override.
+
+### The Fundamental Cognitive Constraint
+
+You cannot have both simultaneously:
+- **Genuine automation** — the system handles the task with sufficient reliability
+  that human attention drifts
+- **Genuine human readiness to override** — the human remains cognitively engaged
+  enough to intervene effectively at any moment
+
+These two requirements are in direct conflict at a cognitive level. Designing for
+both simultaneously without acknowledging the conflict produces systems that look
+safe on paper and are not safe in practice.
+
+Aviation has managed a partial solution through **active monitoring requirements**
+— pilots must perform control inputs at regular intervals to prove engagement, and
+two-pilot crews have defined monitoring roles. But aviation also has:
+- Much more predictable failure modes
+- Much longer reaction time windows
+- Highly trained operators with simulator hours on failure scenarios
+
+None of those conditions apply to most AI deployment contexts.
+
+### What Human Override Actually Looks Like in Practice
+
+**Meaningful pre-execution oversight:**
+Human reviews decisions before they are executed. Works for low-speed, high-stakes
+decisions. Does not work for anything requiring real-time response.
+
+**Exception-based review:**
+AI handles routine cases; human reviews flagged edge cases. Works well, but requires
+the AI to know what it does not know — which is exactly what current systems are
+worst at. The system's confidence is not reliably calibrated to its actual accuracy.
+
+**Audit and correction:**
+Human reviews decisions after the fact, corrects errors, improves the system.
+Works for quality improvement and ongoing learning. Does not prevent the initial harm.
+
+**Hard domain limits:**
+The AI simply cannot act in certain domains or above certain consequence thresholds
+without explicit human initiation. The most honest version of human control — you
+remove the automation rather than pretend humans can override it in real time.
+Crude but reliable.
+
+### The Corrected Design Principle
+
+Xu's requirement, corrected for what human cognition actually allows:
+
+> Design systems where the human's role is to exercise the kind of oversight they
+> are actually capable of, at the speed the decision actually requires, with the
+> information they actually have.
+
+Do not design for the human override that looks good in the architecture diagram.
+Design for the human contribution that is actually possible given:
+- The time available for the decision
+- The cognitive load the human is under
+- The information asymmetry between human and system
+- The automation complacency that will develop over time
+
+If genuine real-time human override is not achievable in a given deployment context,
+the honest response is not to claim it anyway. It is either to limit the system to
+domains where meaningful oversight is achievable, or to acknowledge that the system
+is operating autonomously in that context and design the accountability framework
+accordingly.
+
+### For the Knowledge Base — Why This Is Not a Problem
+
+The good news: a researcher-facing knowledge graph has none of the real-time
+constraints that make human override so difficult in autonomous vehicles and medical AI.
+
+- A researcher looking at a graph connection has **time** — minutes, not milliseconds
+- The consequence of a wrong connection is **a confused researcher**, not a fatality
+- The human is **cognitively engaged** with the task — they came to the system with
+  a question and are actively evaluating the output
+- Correction is **low-cost** — clicking to flag or remove a connection does not
+  require taking over a moving vehicle
+
+The human-in-the-loop requirement for a knowledge infrastructure is genuinely
+achievable — not the aspirational fiction it is in autonomous vehicles. The design
+challenge is not getting the human to override in an emergency. It is designing
+an interface that makes the human's natural evaluation process — reading, connecting,
+doubting, correcting — fluid and effective.
+
+This is a case where the deployment context makes Xu's framework workable rather
+than aspirational.
+
+---
+
 ## Key Insight
 
 > The first two waves of AI failed not only because the technology wasn't ready,
