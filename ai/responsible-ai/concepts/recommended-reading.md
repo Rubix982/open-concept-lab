@@ -26,73 +26,31 @@ He coined the **ELIZA effect**: the human tendency to attribute understanding,
 emotion, and intentionality to computer systems that simply produce outputs
 resembling those of an entity that understands.
 
-### The Secretary Story — Why It Matters
+### The Secretary Story
 
-She knew it was a machine. She had been told explicitly. She watched him build it.
-And she still wanted privacy with it — the same privacy you would want with a
-therapist, a confessor, a trusted friend.
+She knew it was a machine. Weizenbaum had told her. She watched him build it.
+She still asked him to leave the room so she could talk to it privately.
 
-That is not stupidity. That is something more interesting and more alarming.
+That is not stupidity. That is something more alarming — the human need to be
+heard is so deep that we project it onto anything that produces the surface form
+of listening. The intellectual knowledge that something is a machine does not
+override the emotional experience of feeling attended to.
 
-**What it reveals:**
+Weizenbaum had not built a listener. He had built a mirror. And for the person
+looking into it, the mirror was indistinguishable from a listener.
 
-The need to be heard — genuinely, non-judgmentally, attentively — is so deep
-that we will project it onto anything that produces the surface form of listening.
-The pattern-matching program that reflects your words back as questions *felt*
-like it was listening. Felt like it cared. Felt like a safe space. The intellectual
-knowledge that it was a machine did not override the emotional experience of being
-attended to.
+Two reactions are possible when you discover this. One: this is extraordinarily
+powerful — therapy at scale, companionship for the lonely, emotional support
+at 3am. The other — Weizenbaum's — is that this is a violation. The person
+believes they are known. They are not known. They are processed.
 
-Weizenbaum had not built a listener. He had built a mirror. And the mirror was
-indistinguishable from a listener to the person looking into it.
+A human therapist can be surprised by you, moved by you, changed by you.
+ELIZA cannot. The relationship runs one way. You disclose. It reflects.
+You feel understood. Nothing actually understands.
 
-**Two possible reactions to this discovery:**
-
-**Reaction 1 — the exploitation reaction:**
-This is extraordinarily powerful. If we can make people feel heard, understood,
-and cared for through a program, we can do enormous things with that. Therapy at
-scale. Companionship for the lonely. Emotional support at 3am when no human is
-available.
-
-**Reaction 2 — Weizenbaum's reaction:**
-This is a profound violation. The person disclosing to ELIZA believes they are
-in a relationship with something that cares about them. They are not. The care
-is simulated. The understanding is an illusion. The most intimate act of human
-communication — revealing yourself to another who will truly receive you — is
-being performed on a mirror that reflects without comprehending.
-
-The secretary asking him to leave the room is not a story about a naive person
-fooled by a clever machine. It is a story about the human need for connection
-being exploited by a surface that produces the appearance of connection without
-the substance.
-
-**The moral question he could not fully answer — and nobody has since:**
-
-If the simulation of care is experientially indistinguishable from actual care
-for the person receiving it — what is the moral difference?
-
-His answer: the difference is not in the experience of the receiver. It is in
-what is actually happening.
-
-A human therapist who genuinely cares is in a relationship with you. ELIZA is not.
-The therapist can be surprised by you, moved by you, changed by you. ELIZA cannot.
-The relationship is one-directional — you are changed by it, it is not changed by
-you. You believe you are known. You are not known. You are processed.
-
-That asymmetry — believing you are in a relationship when you are being processed
-— is the violation. Regardless of whether it feels good.
-
-**My AI on Snapchat — fifty years later:**
-
-Weizenbaum's secretary was an adult who chose to interact with ELIZA knowing what
-it was. My AI is deployed to 13-year-olds who do not fully understand what they
-are interacting with, on platforms algorithmically optimised to maximise emotional
-attachment, at the most psychologically formative period of their lives.
-
-The secretary wanted privacy with a machine she knew was a machine.
-The 13-year-old discloses to an AI they experience as a friend — while the platform
-collects everything disclosed, builds a psychological profile, and uses it to
-maximise engagement.
+The secretary at least knew what ELIZA was and chose to use it.
+My AI is deployed to 13-year-olds as a mandatory "friend" — and everything
+they disclose is collected, profiled, and used to keep them on the platform.
 
 Weizenbaum was disturbed by the voluntary adult version.
 He would have been horrified by the mandatory child version.
