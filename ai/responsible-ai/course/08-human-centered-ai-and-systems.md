@@ -849,6 +849,160 @@ it worth staying.
 
 ---
 
+## Shneiderman's Two-Dimensional Framework — High Automation AND High Human Control
+
+### The Sheridan-Verplank Ten Levels (1978)
+
+The original one-dimensional automation spectrum Shneiderman is critiquing:
+
+| Level | Description |
+|---|---|
+| 1 | Computer offers no assistance — human does it all |
+| 2 | Computer offers a complete set of decision alternatives |
+| 3 | Computer narrows the selection down to a few alternatives |
+| 4 | Computer suggests one alternative |
+| 5 | Computer executes that suggestion if the human approves |
+| 6 | Computer allows the human a restricted time to veto before automatic execution |
+| 7 | Computer executes automatically, then necessarily informs the human |
+| 8 | Computer informs the human only if asked |
+| 9 | Computer informs the human only if it, the computer, decides to |
+| 10 | Computer decides everything and acts autonomously, ignoring the human entirely |
+
+**Shneiderman's critique:** The spectrum treats human control and machine automation
+as zero-sum. More machine means less human. Every increase in automation requires
+the human to give something up. The natural endpoint is Level 10 — complete autonomy.
+
+**The two-dimensional reframe:** Human control and machine automation are not
+opposites. The HCAI target is high automation AND high human control simultaneously.
+
+```
+High │  High control,        │  High control,
+     │  Low automation       │  High automation  ◄── Target
+     │  (manual, safe,       │  (Reliable, Safe,
+     │  inefficient)         │  Trustworthy)
+─────┼───────────────────────┼──────────────────
+     │  Low control,         │  Low control,
+     │  Low automation       │  High automation
+Low  │  (chaotic)            │  (ungovernable)
+     └───────────────────────┴──────────────────
+          Low                      High
+                Computer Automation
+```
+
+---
+
+### Real Systems in the Top-Right Quadrant
+
+**Genuine examples — high automation AND genuine human control:**
+
+**EUROCONTROL ATC with AI conflict detection**
+AI identifies conflicts and suggests sequencing. Human controllers retain all
+decision authority and issue all clearances. The AI surfaces — it does not act.
+Humans can see what the AI sees, understand why it flagged something, accept or
+reject the suggestion, override at any moment with no friction. Documented 31%
+reduction in conflict alerts. Zero loss of human authority. This is probably the
+cleanest real-world example of the top-right quadrant.
+
+**da Vinci Surgical System**
+The surgeon operates at a console controlling robotic arms with precision beyond
+human hand capability. The robot executes with higher accuracy, eliminates tremor,
+scales motion. But the surgeon initiates every single movement. The robot does
+nothing autonomously — if the surgeon stops, the robot stops. High automation of
+execution precision. Complete human control of decision and intent.
+
+**Formula 1 hybrid power deployment**
+The driver controls when and how to deploy the hybrid power unit. The system manages
+the exact energy recovery and deployment curves with millisecond precision no human
+could achieve manually. High automation of the physics. Full human control of the
+strategic decision.
+
+**NASA mission control**
+Spacecraft execute thousands of automated procedures. But mission controllers can
+override any automated sequence, have complete telemetry visibility, and the system
+is designed so humans can intervene at any layer. Automation handles what humans
+cannot do at speed. Humans retain what automation cannot do with judgment.
+
+---
+
+### Systems That Claim Top-Right But Are Elsewhere
+
+**Tesla Autopilot — claims high automation + high human control, actually Level 6-7**
+The driver is theoretically in control. But automation complacency is documented:
+211 NHTSA cases where attentive drivers failed to intervene in time. The system
+does not maintain genuine human control — it degrades it through disengagement.
+High automation. Declining human control over time.
+
+**IBM Watson Oncology — claimed human-in-the-loop, actually opaque**
+A system whose reasoning cannot be understood cannot be genuinely controlled.
+Doctors could nominally override. But overriding a recommendation you cannot
+evaluate is not control — it is guessing. The form of control existed. The
+substance did not.
+
+**Social media content moderation — claims human review, actually automated**
+Billions of pieces of content, impossible for humans to genuinely review at scale.
+Human reviewers process a tiny fraction under time pressure with no visibility into
+the algorithm's reasoning. Automation high. Human control nominal and declining.
+
+**The design question Shneiderman forces:**
+Not "how much automation?" but "how do we increase automation while actively
+maintaining — even improving — human understanding, control, and intervention
+capability?" The systems that genuinely achieve the top-right quadrant all share
+one feature: the automation was designed to make the human more capable, not to
+replace the human's role.
+
+---
+
+### The Knowledge Worker Problem — AI as Acceleration, Not Liberation
+
+The Shneiderman critique applies directly to how AI tools are being deployed
+in knowledge work.
+
+**What the top-right quadrant would look like for a knowledge worker with AI:**
+- Think more deeply, explore more broadly
+- Produce better work on your own terms
+- Use AI to surface what you would not have found, not to produce what you would
+  have produced anyway, just faster
+
+**What is actually happening:**
+- Industry sets 10X productivity expectations because "you have AI now"
+- The worker is expected to produce more at the same cost
+- The efficiency gain flows to the employer
+- The additional cognitive load of managing AI — prompting, evaluating, correcting,
+  integrating approximately-right output — flows to the worker
+
+This is the efficiency norm applied to knowledge work. The same pattern as every
+previous automation wave. The factory worker whose machine doubled output did not
+work half as many hours. They were expected to manage twice the machines. The
+efficiency gain was real. The distribution of it was not shared.
+
+**The approximately right hidden cost:**
+AI output is often approximately correct — close enough to be plausible, wrong
+enough to require careful evaluation. The worker must now do their original work
+AND evaluate a high volume of AI-generated near-misses. The cognitive load of
+managing AI is real and unmeasured. No organisation accounts for it in productivity
+expectations.
+
+**The human control axis moves silently:**
+When the industry sets expectations around AI-assisted output and workers feel
+pressure to produce 10X — the human control axis has declined without anyone
+stating it. The worker is nominally in control. In practice they are managing
+a tool that is managing them, under productivity pressure that was set by the
+same organisations selling the tool.
+
+High automation. Whether human control is actually high depends on whether you
+are using the AI — or the AI is using you.
+
+**The Shneiderman standard applied to AI tools:**
+A genuinely human-centered AI tool would increase the quality of what you can think,
+not just the quantity of what you can produce. It would reduce the cognitive load of
+repetitive tasks while preserving the cognitive depth of meaningful ones. It would
+make the human more capable rather than faster at producing the same thing.
+
+Most current AI deployment fails this standard — not because the tools are incapable
+of it, but because the incentive structure rewards speed and volume, not depth and quality.
+
+---
+
 ## Connections
 
 - _Topic 07 — Fairness and Bias_ — the more data fallacy: adding more data from
