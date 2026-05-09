@@ -422,6 +422,142 @@ assumption governs every consequential decision.
 
 ---
 
+## HCAI as Civilisational Project — Flipping the Objective Function
+
+At first glance the reading's dishwasher example looks like a product design argument.
+It is not. It is a values argument dressed as a design argument.
+
+### The Dishwasher Example — Design Encoding Values
+
+**The robot that clears the table:**
+Efficient. Removes inconvenience. Delivers service to a passive recipient.
+Encodes the value: the elderly person's problem is inefficiency, and the goal
+is to remove it. The person becomes a problem to be solved.
+
+**The small dishwasher built into the table:**
+Less efficient. Preserves the person's ability to do something themselves,
+for themselves, in their own space. Encodes the value: self-efficacy matters
+more than optimised service delivery. The person remains an agent.
+
+The design choice is not about dishwashers. It is about what the person's
+dignity requires and what kind of society produces that design instinctively.
+
+**The rationalist AI objective function:**
+Maximise efficiency of service delivery to passive recipients.
+
+**The HCAI objective function:**
+Maximise human agency, dignity, and social connectedness for everyone involved
+— including the people delivering the service, not just receiving it.
+
+These are not the same objective. They produce radically different designs.
+Choosing between them is not a technical decision. It is a political and moral
+decision about what society is for.
+
+### The Meals on Wheels Example — The Relationship Is the Product
+
+The delivery person who brings food, checks on the recipient, clears the table,
+has a conversation — is not delivering a service. They are sustaining a social
+relationship. The food is the occasion. The relationship is the value.
+
+An automated delivery drone that drops a meal at the door is more efficient.
+It completely misses the point.
+
+**If you optimise for efficiency in caregiving, you destroy caregiving.**
+
+Caregiving is not fundamentally an efficiency problem. It is a human relationship
+problem. The relationship is the product. Automating the delivery automates away
+the thing that made it valuable.
+
+The HCAI algorithm that matches deliverer and recipient personalities, builds
+long-term commitments, enables recipients to publicly praise caregivers — this
+is not a scheduling tool. It is a community infrastructure tool. It is trying to
+rebuild the social fabric that industrial modernity eroded by treating human care
+as a cost to be minimised rather than a value to be cultivated.
+
+### The Accountability Framework — Flight Data Recorders for AI
+
+The reading proposes: every consequential AI system should have the equivalent
+of a flight data recorder. Logging activity. Audit trails. Retrospective review
+of failures and near misses. Transparent accountability.
+
+Civil aviation's commitment to continual improvement after every incident —
+regardless of whose fault, regardless of liability — produced the safest
+mass transportation system in history. Not through blame. Through systematic
+learning from failure.
+
+The same approach applied to AI systems with significant consequences —
+hospital decisions, battlefield systems, criminal justice tools, hiring algorithms
+— would require:
+
+- Every consequential decision logged with the inputs that produced it
+- Retrospective review when outcomes are poor
+- Aggregate pattern analysis that identifies systematic failures
+- Public accountability for what the analysis reveals
+- Design improvement required as a condition of continued operation
+
+This is not surveillance of the AI. It is the empiricist approach applied to
+AI governance — learn from what actually happens, update based on what you find,
+never assume the system is working correctly just because it is running.
+
+### Military and Autonomous Systems — No Full Autonomy
+
+The reading is explicit: even when the case for autonomy in defensive systems
+is strong, no weapons systems should be fully autonomous.
+
+This is the accountability argument applied to its hardest case. A fully autonomous
+weapons system that makes kill decisions without human involvement has no
+accountability chain. There is no human who can be asked: why did you decide this?
+There is no moment at which human judgment was exercised and can be reviewed.
+
+The flight data recorder cannot help if there was no human in the chain to be
+accountable. Accountability requires an agent. Algorithms are not agents.
+The human must remain in the loop precisely where the consequences are most severe
+— because that is where accountability matters most, and where the temptation to
+remove it in the name of speed and efficiency is strongest.
+
+### The Society the HCAI Vision Implies
+
+The reading is not proposing a product. It is proposing a different civilisational
+direction — one where technology's role is to enrich human agency and social
+connectedness rather than to replace human participation.
+
+**What this requires at the values level:**
+
+The rationalist AI treats elderly people, people with disabilities, and caregivers
+as passive targets of automation — problems to be solved efficiently. The HCAI
+approach treats them as people with dignity, agency, and social needs — people
+whose lives can be enriched through technology that serves rather than replaces
+their humanity.
+
+That distinction is not a design principle. It is a character principle. It reflects
+what you believe about the value of human beings — whether their value is in their
+productivity and self-sufficiency, or in their inherent dignity as persons who
+deserve agency, relationship, and community regardless of their productive capacity.
+
+**The Tarbiyat connection:**
+
+The society that designs the robot to clear the table has decided efficiency is
+the value. The society that designs the table with the dishwasher built in has
+decided dignity is the value. The society that funds and celebrates Meals on Wheels
+delivery as community care has decided relationship is the value.
+
+These decisions are not made in product meetings. They are made in the formation
+of character — individual and collective — about what matters and why. Technology
+encodes those decisions at scale and makes them structural. Which is why the
+technology conversation is ultimately a values conversation, and why responsible
+AI is ultimately a civilisational project, not a product design problem.
+
+**The objective function is the question:**
+
+Not "how do we make this system more accurate?"
+But "what is this system for, and for whom, and what kind of society does it produce?"
+
+That question requires exactly the normative clarity the course has been building
+toward — names values, names whose values, names the tradeoffs, names who bears
+the cost of the choice made.
+
+---
+
 ## Key Insight
 
 > AI did not create the gap between the 5,000 PKR school and the 40,000 PKR school.
