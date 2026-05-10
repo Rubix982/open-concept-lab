@@ -4,17 +4,90 @@ _Personal study notes — original analysis and synthesis. Not a reproduction of
 
 ---
 
-## What This Document Is
+## The History — Why This Document Exists and What It Used to Say
 
-Google's AI Principles are a public-facing document that distills the company's stated
-commitments to responsible AI into three named principles: Bold Innovation, Responsible
-Development and Deployment, and Collaborative Progress, Together.
+### Origin: Project Maven (2018)
+
+Google published its original AI Principles on June 7, 2018 — directly triggered by
+internal employee revolt over **Project Maven**, a Pentagon contract in which Google
+applied computer vision to analyse US military drone surveillance footage.
+
+Approximately 4,000 employees signed an internal petition. At least 12 resigned.
+Google declined to renew the Maven contract and published the principles as its
+public commitment to ethical AI development.
+
+### The Original Seven Objectives (2018)
+
+Projects would only move forward when "overall likely benefits substantially exceed
+the foreseeable risks and downsides":
+
+1. **Be socially beneficial** — full range of social/economic impacts; benefits must outweigh risks
+2. **Avoid creating or reinforcing unfair bias** — discriminatory impacts on race, ethnicity, gender, nationality, income, sexual orientation, ability, political or religious belief
+3. **Be built and tested for safety** — robust safety practices, monitoring, user feedback, explanations
+4. **Be accountable to people** — feedback opportunities, relevant explanations, appeal, human direction and control
+5. **Incorporate privacy design principles** — notice and consent, architectures with privacy safeguards, transparency and control
+6. **Uphold high standards of scientific excellence** — scientific method, open inquiry, intellectual rigour, peer review, sharing research
+7. **Be made available for uses that accord with these principles** — limit harmful or abusive applications
+
+### The Applications Google Originally Pledged NOT to Pursue
+
+The 2018 principles included an explicit list of four AI application categories
+Google would not develop or deploy:
+
+1. **Technologies that cause or are likely to cause overall harm**
+2. **Weapons or other technologies whose principal purpose is to cause or facilitate injury to people**
+3. **Technologies that gather or use information for surveillance violating internationally accepted norms**
+4. **Technologies whose purpose contravenes widely accepted principles of international law and human rights**
+
+### The February 2025 Rollback
+
+On **February 4, 2025**, Google quietly updated its AI Principles page, removing
+the "Applications we will not pursue" section entirely — specifically stripping out
+the commitments on weapons and surveillance.
+
+No press release explicitly announced the removal. The accompanying blog post by
+Demis Hassabis and Sundar Pichai framed the change geopolitically:
+
+> *"There's a global competition taking place for AI leadership within an increasingly
+> complex geopolitical landscape. We believe democracies should lead in AI development,
+> guided by core values like freedom, equality, and respect for human rights."*
+
+The post was published the same week President Trump revoked Biden's executive order
+on AI safety.
+
+**What replaced the prohibitions:** The new structure — Bold Innovation, Responsible
+Development, Collaborative Progress — retains language about benefits outweighing risks
+and human rights alignment, but without the explicit prohibitions on weapons or surveillance.
+
+**Responses:**
+- Senators Markey, Merkley, and Welch wrote formally to Pichai demanding explanation
+  and asking whether Google was currently developing AI weapons or surveillance tools
+- Amnesty International called the decision "shameful"
+- Human Rights Watch: "Google Announces Willingness to Develop AI for Weapons"
+- EFF: "Google is on the Wrong Side of History"
+- Stop Killer Robots documented the rollback formally
+
+**Employee context:** The 2025 rollback occurred with significantly less internal
+resistance than Project Maven in 2018. Employee leverage has weakened substantially.
+A May 2026 report noted new Pentagon AI contract backlash but observed that "power
+had waned since Project Maven."
+
+---
+
+## What This Document Is (2026 Version)
+
+Google's current AI Principles are a public-facing document with three named principles:
+Bold Innovation, Responsible Development and Deployment, and Collaborative Progress.
+
+Reading them without the history above produces a misleading picture. Read with it:
+these are the principles that **replaced** the explicit prohibitions on weapons and
+surveillance, reframed as a geopolitical necessity, during a week when US AI safety
+executive orders were revoked.
 
 The document grounds itself in Google's founding mission — "to organize the world's
-information and make it universally accessible and useful." That framing is doing
-significant work. It positions Google's AI development as an extension of a mission,
-not a business decision — which is precisely the kind of framing that needs examination
-before the substance can be assessed clearly.
+information and make it universally accessible and useful." That framing positions
+Google's AI development as an extension of a mission, not a business decision.
+After the weapons rollback, that framing requires even more scrutiny than it did before.
 
 ---
 
@@ -342,6 +415,73 @@ Understanding exactly _where_ the commitments hollow out — which words do the 
 which qualifications do the exclusion — is a core analytical skill for this field.
 Reading this document carefully is practice for reading every principles document that
 will follow it.
+
+---
+
+## Documented Tensions and Critiques
+
+### Timnit Gebru and the Ethical AI Team (2020)
+
+Gebru was co-lead of Google's Ethical AI team. In December 2020, she was fired
+(or resigned under pressure — accounts differ) after a paper she co-authored —
+*"On the Dangers of Stochastic Parrots: Can Language Models Be Too Big?"* — was
+blocked from internal publication review.
+
+The paper raised concerns directly relevant to Google's own AI Principles:
+environmental and financial costs of large language models, problematic training
+data, amplification of societal bias, and misdirected research priorities.
+
+The case exposed a structural problem: Google's principles committed to "upholding
+scientific excellence" and "avoiding bias," but Google had control over whether
+Ethical AI team research could be published. The dispute raised a question the
+principles document cannot answer: what happens when research findings threaten
+business interests?
+
+### Gemini Image Generation Incident (2024)
+
+Google suspended Gemini's ability to generate images of people after users found
+the model producing historically inaccurate and racially biased outputs. This
+directly contradicted the stated principle of "avoiding unfair bias" and forced
+a public correction — demonstrating that stated principles do not automatically
+prevent bias in deployed systems.
+
+### Bard Launch (2023)
+
+Bard's launch was rushed in response to ChatGPT. In its first public demo, Bard
+produced a factually incorrect answer visible in Google's own promotional materials.
+The incident reduced Alphabet's market cap by approximately $100B and highlighted
+the tension between "be socially beneficial" and competitive market pressure.
+
+### The 2025 Weapons Rollback as the Clearest Signal
+
+The February 2025 rollback is the most significant single data point for evaluating
+the durability of Google's AI principles. The company removed explicit prohibitions
+on weapons and surveillance without public notice, during a week when US AI safety
+executive orders were revoked, justified by geopolitical competition framing.
+
+The original 2018 document was written under employee pressure after Project Maven.
+The 2025 document was written with significantly reduced employee leverage.
+The difference in content reflects the difference in pressure, not a difference
+in values. The principles were never more binding than the pressure that produced them.
+
+### Google AI Principles Governance Infrastructure
+
+Despite the document's softness, Google does have real governance infrastructure:
+
+**Frontier Safety Framework (FSF)** — introduced May 2024, updated February and
+September 2025. Defines Critical Capability Levels (CCLs) that trigger evaluation
+protocols. Current domains: autonomy, biosecurity (CBRN), cybersecurity, ML R&D,
+harmful manipulation (added v3). Uses "early warning evaluations" before thresholds
+are crossed.
+
+**Responsibility and Safety Council (RSC)** — internal review body evaluating
+research and projects against principles.
+
+**SynthID** — imperceptible watermarking of synthetic media (images, audio, text,
+video) via deep learning. A genuine technical commitment.
+
+The governance infrastructure is real. The gap remains: it is internal, self-assessed,
+and without binding authority over product decisions.
 
 ---
 
