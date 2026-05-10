@@ -62,6 +62,14 @@ Standalone deep-dives organised by theme. Each note can be read independently.
 
 ---
 
+## Building Responsibly
+*What it actually takes to build an AI company or product that serves people rather than extracts from them.*
+
+- [The Venn Diagram Person](building-responsibly/the-venn-diagram-person.md) — technical depth + people depth + knows conversations must happen first; why training pipelines don't produce this; what does
+- [Building a Responsible AI Company](building-responsibly/building-a-responsible-ai-company.md) — full framework: before code, build sequence, structure, governance, people, the honest business case
+
+---
+
 ## Reference
 *Reading lists and general guides.*
 
