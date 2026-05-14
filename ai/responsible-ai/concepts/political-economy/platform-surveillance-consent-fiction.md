@@ -522,6 +522,129 @@ with the harm.
 
 ---
 
+## The Responsibility Inversion — Notice and Consent as Recycling
+
+The course material names this precisely:
+
+> "Notice and consent is similar to trash recycling: it puts the onus on the
+> wrong party. It does nothing to call into question the large practices of
+> pervasive and ubiquitous data collection; it takes those practices as given."
+
+**The recycling analogy:**
+
+Recycling puts moral responsibility for industrial waste on the individual consumer.
+Did you sort your recycling correctly? Did you rinse the containers? Did you check
+which plastics your municipality accepts? If the plastic ends up in landfill anyway —
+if the "recycling" stream is actually incinerated — that is somehow your failure,
+not the manufacturer's failure for producing non-recyclable packaging at scale.
+
+The manufacturer produced the waste. You are responsible for managing it correctly.
+Individual compliance with recycling rules does not address the upstream production
+problem. Only direct regulation of the manufacturer does.
+
+Notice and consent is the same structure applied to data:
+
+- The platform designed the surveillance architecture
+- The platform embedded the Pixel across millions of websites
+- The platform created the business model requiring mass data extraction
+- The platform wrote terms in language designed to obscure rather than clarify
+- The platform presented those terms on a take-it-or-leave-it basis under social pressure
+
+And then: if your data is used in ways that harm you, the question asked is whether
+you read the terms and clicked agree. Your fault for not reading the 50,000-word
+document. Your fault for not finding the opt-out buried seven menus deep. Your fault
+for not understanding that "we may share your data with partners" means "we sell
+everything to anyone who pays."
+
+**The structural inversion:**
+
+Notice and consent places legal and moral responsibility on the party with:
+- The least power
+- The least information
+- The least ability to change the underlying system
+
+And removes legal and moral responsibility from the party with:
+- The most power
+- The most information
+- The complete ability to change the underlying system
+
+This is not a side effect of the framework. It is its function. The notice and
+consent framework was developed in an era of consumer protection law where the
+assumption was roughly equal bargaining power. Applied to platform surveillance,
+where the power asymmetry is total, it produces the exact inversion the course
+material names: the victim of the surveillance is responsible for managing it
+correctly, and the perpetrator is responsible for nothing as long as it disclosed
+in the terms.
+
+**Why this is the industry's preferred framework:**
+
+Because it is the framework under which the platforms bear the least responsibility.
+Every alternative — data minimisation, purpose limitation, prohibition of certain
+uses, fiduciary duty — places responsibility on the collector. Notice and consent
+places it on the subject. The industry lobbied for notice and consent precisely
+because it is the framework most compatible with their business model.
+
+**The Véliz collective privacy argument applied here:**
+
+The individual cannot opt out of a structural surveillance system by reading privacy
+policies and adjusting settings. The Facebook Pixel fires when you visit a website
+that embedded it. You had no relationship with Facebook, made no agreement with
+Facebook, and have no ability to prevent Facebook collecting data about your visit.
+Your individual consent or lack of it is irrelevant to the system's operation.
+
+Making the individual responsible for managing a structural surveillance system
+through individual choices is like making each person responsible for cleaning
+the river that a factory is polluting upstream. The pollution is not your fault.
+The factory produced it. Individual management of the water does not address the
+factory. Direct regulation of the factory does.
+
+**If you believed your data was wrongly used — are you to blame?**
+
+No. Not ethically.
+
+Consent obtained through:
+- Terms you could not meaningfully understand
+- A binary choice between full acceptance and losing your social network
+- Social pressure that removed genuine choice
+- Language designed to obscure what was actually being agreed to
+- For practices you would have refused if clearly explained
+
+...is not genuine consent. It is the legal shell of consent with none of the
+moral substance.
+
+The moral substance of consent requires:
+- Genuine understanding of what is being agreed to
+- Genuine alternatives — the ability to refuse without disproportionate cost
+- Genuine freedom from coercion
+- Specific consent to specific practices — not blanket acceptance of everything
+
+Notice and consent as practised by platforms satisfies none of these for the
+practices that most harm users.
+
+The law, in most jurisdictions, still treats the click as consent. Ethics does
+not have to follow the law's error. Better law — GDPR, the EU AI Act, the Platform
+Work Directive — is starting to catch up: the click is not consent when the
+conditions under which it was obtained were coercive, opaque, and asymmetric.
+
+**The direct regulation argument that follows:**
+
+If notice and consent cannot produce genuine consent — because the power asymmetry
+makes genuine choice structurally impossible — then the framework should be abandoned
+in favour of direct regulation that does not rely on consent at all.
+
+Véliz: ban data brokers. Ban personalised advertising. Impose data minimisation.
+These prohibitions do not ask whether users consented. They simply declare certain
+practices off-limits regardless of what any terms of service say. The consent
+question becomes moot because the harmful practice is prohibited.
+
+This is what happened with food safety. The consumer does not consent to or refuse
+individual food safety standards — they are simply required of any food sold. The
+responsibility for safe food rests on the producer, not on the consumer's ability
+to audit the supply chain and manage their own exposure. Privacy regulation should
+work the same way.
+
+---
+
 ## The Through-Line
 
 All four cases — bundled consent, cross-site tracking, screenshot surveillance,
