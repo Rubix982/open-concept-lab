@@ -645,6 +645,133 @@ work the same way.
 
 ---
 
+## The 2012 Facebook Deal — What Was Actually Reasonable
+
+This is not a story about users being naive. It is a story about a relationship
+that was transformed without renegotiation.
+
+**The deal that made sense in 2012:**
+
+Facebook makes money from advertising. Users knew this. They accepted it. The
+implicit deal was clear and genuinely mutual:
+
+- You get: a free platform to stay connected with friends, play games, share moments
+- Facebook gets: your attention and enough data about your interests to show you
+  relevant ads from their advertising partners
+- The advertisers get: access to you, based on what Facebook knows about your
+  use of Facebook
+
+That deal — Facebook using your Facebook activity to show you Facebook ads — is
+within the contextual norms of the relationship you chose to enter. You were not
+naive. You understood the exchange. You accepted it. That is genuine, informed,
+contextually appropriate consent.
+
+The product in 2012 was useful, relatively benign, and the advertising model was
+legible. The community was not yet toxic. The platform felt like a shared private
+space — your friends, your circle, your updates.
+
+**What changed — without telling you:**
+
+At some point, without announcement, without renegotiation, without your knowledge,
+Facebook became something categorically different:
+
+- Not "we show you ads based on what you do on Facebook"
+- But: we track you across every website you visit that has a Like button
+- We buy data about you from data brokers who track your offline purchases
+- We sell your profile to political campaigns who use it to target your beliefs
+- We infer your mental state from your posting patterns and use that for targeting
+- We share your data with hundreds of third parties under agreements you cannot see
+- We train AI models on everything you ever posted, said, or did
+- We build psychological profiles used to manipulate your behaviour, not just show you shoes
+
+The relationship you thought you were in was replaced, silently, with something you
+would never have agreed to. Not because you are naive or because Facebook has to
+make money — you accepted that. Because the second relationship is categorically
+different from the first, and you were never asked.
+
+**The cheating analogy — stated precisely:**
+
+"We were talking but we don't seem right for each other" — this is within-context
+friction. Facebook's algorithm is bad. The content is not what you wanted. These
+are problems within the relationship. The data never left the context. The norms
+were never violated.
+
+"I saw with my own two eyes you cheating intimately with another person" — this
+is the cross-context transmission. Your data, shared under one set of norms, given
+to strangers operating under entirely different norms, without your knowledge, for
+their commercial benefit. It is not a drift in the relationship. It is a categorical
+betrayal of what the relationship was supposed to be.
+
+And then: being told you consented to it because you clicked agree in 2012.
+
+**The within-platform use that is arguably fine:**
+
+Reddit training on Reddit data to improve Reddit. Facebook using your Facebook
+activity to show you Facebook ads. These are within the contextual norms of the
+platform relationship. You posted there. The data stays there. It is used to
+improve the thing you chose to participate in. That is within the bounds of what
+you implicitly accepted.
+
+Reddit selling that data to OpenAI — who trains a model with no relationship to
+the Reddit community — is the betrayal. The data left the relationship. It was
+handed to someone who was never part of it. The cheating analogy holds precisely:
+the intimacy was shared within a specific context. Taking it outside that context
+without consent is the violation.
+
+**The 2012 product no longer exists:**
+
+This is a factual point the consent framework cannot capture. The product you
+consented to in 2012 was replaced, incrementally, with something you did not agree
+to. The terms of service were changed unilaterally, multiple times. The data
+practices disclosed in 2012 bear no resemblance to the data practices of 2024.
+
+Treating a 2012 click-through as valid consent to 2024 data practices is legally
+convenient and ethically absurd. You consented to a relationship with a specific
+person. That person changed completely, without telling you, and the legal framework
+says you consented to whoever they became because you agreed to keep talking to them.
+
+**The switching cost as structural coercion:**
+
+You are still "consenting" through continued use — which is the only practical
+alternative to leaving a network your entire social life has become embedded in.
+
+You are not staying because you consent to current practices. You are staying
+because the social cost of leaving is higher than the discomfort of the surveillance.
+Your friends are there. Your history is there. Your community is there. The platform
+knows this. The network effects that make leaving costly were deliberately cultivated
+precisely because they remove genuine choice.
+
+This is why "continued use as consent" is fiction. It is consent obtained by making
+the alternative more costly than most people can bear.
+
+**The honest deal that would have worked:**
+
+"We will use your Facebook activity to show you ads on Facebook. We will not track
+you outside Facebook. We will not sell your data to third parties. We will not
+build psychological profiles. We will not use your data for purposes unrelated to
+connecting you with your friends. If we want to do any of those things, we will
+ask specifically."
+
+Most people would have said yes to that deal in 2012. It is a reasonable exchange
+for a genuinely useful service. The problem is that deal was never offered. The
+actual deal, obscured in the terms, was always broader. And as the technology and
+business model evolved, it became broader still, without renegotiation.
+
+**The prospective re-consent requirement:**
+
+The strongest regulatory fix this analysis implies: when platforms materially change
+their data practices, they must return to users and get genuine, specific consent
+for the new practices. Not "we updated our terms and continued use constitutes
+acceptance." But: "we want to do something new with your data. Do you agree?"
+
+That obligation would fundamentally change how platform business models evolve.
+Every expansion of data use would require a genuine conversation with users.
+Most expansions we have documented — cross-site tracking, political profiling,
+AI training, data brokerage — would fail that conversation. Which is exactly why
+the obligation does not exist.
+
+---
+
 ## The Through-Line
 
 All four cases — bundled consent, cross-site tracking, screenshot surveillance,
