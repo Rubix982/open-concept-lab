@@ -19,6 +19,17 @@ only one of these at a time. What actually forms the person who has all three. W
 happens when this person is absent — and what the organisation should do when they
 find one.
 
+## [Home AI — Privacy-First Local Intelligence](home-ai-privacy-product.md)
+A consumer hardware product combining local open-weight model inference with
+privacy-by-architecture for families and students. The market gap: no one has
+packaged this cleanly for non-technical consumers. The educational use case:
+homework help, student research assistant, family knowledge base — all locally,
+nothing leaving the network. Connection to Bau Lab: the knowledge infrastructure
+as the student research layer, NSF Rank Linker as research-to-education pipeline,
+mechanistic interpretability as the research that makes the educational AI honest
+about what it knows and doesn't. Honest challenges: support burden, model currency,
+capability gap, hardware reliability, distribution. The build sequence applied.
+
 ## [Building a Responsible AI Company](building-a-responsible-ai-company.md)
 A full framework from pre-code through deployment. The problem with standard AI
 company building advice (optimised for speed, wrong for consequential products).
