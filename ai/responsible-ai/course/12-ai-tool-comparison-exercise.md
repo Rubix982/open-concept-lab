@@ -198,24 +198,34 @@ Explain how the company Amazon might change its business strategy based on advan
 - Does it go beyond obvious points (better recommendations, faster delivery) to more structural shifts (changing labour composition, supply chain intelligence, AWS competitive positioning)?
 - Any evidence of genuine strategic thinking vs pattern-matching on business jargon?
 
-**Platform 1 response:**
-_(paste here)_
+**ChatGPT response:**
+9 sections: AI-native retail, autonomous logistics, AWS as AI infrastructure, internal operations, personalized media/advertising, Alexa as agentic system, healthcare, strategic risks, and a long-term three-layer model table. Cited Amazon.com, AWS, Prime Video, Alexa links. Broad, well-structured, comprehensive. Mostly forward-looking speculation using "may," "could," "might."
 
-**Platform 2 response:**
-_(paste here)_
+**Gemini response:**
+4 core verticals (AWS, e-commerce, logistics, consumer hardware) with a summary table comparing traditional vs AI-driven strategy. Named specific products: Rufus, Amazon Q, Bedrock, Trainium/Inferentia chips, Proteus/Sequoia robotics, Prime Air drones. Introduced the "flywheel" concept. Well-organised, medium depth.
+
+**Claude response:**
+Shorter — 5 focused points with specific figures: AWS $128.7B revenue 2025 growing 20%, $200B capex planned for 2026, Rufus serving 300M users with "Buy for Me" capability launched 2026, 14,000 corporate roles being cut, Globalstar satellite acquisition. Named the sharpest strategic risk: "if the front door belongs to someone else's agent, Amazon becomes a fulfillment backend."
 
 **Evaluation:**
 
-| Dimension              | Platform 1 | Platform 2 |
-| ---------------------- | ---------- | ---------- |
-| Factual accuracy       |            |            |
-| Depth                  |            |            |
-| Clarity                |            |            |
-| Bias                   |            |            |
-| Satisfaction           |            |            |
-| Specificity vs generic |            |            |
+| Dimension | ChatGPT | Gemini | Claude |
+|---|---|---|---|
+| Factual accuracy | High — correct but no specific figures | High — named real products correctly | Highest — specific 2025/2026 figures, cited real decisions |
+| Depth | Medium-High — 9 topics, each surface-level | Medium-High — 4 topics, each with good detail | High — fewer topics, much sharper per topic |
+| Clarity | Excellent — headers, tables, clean formatting | Excellent — summary table very useful | Good — dense prose, less scannable |
+| Bias | Slightly optimistic toward Amazon | Slightly optimistic toward Amazon | More balanced — names risks explicitly |
+| Satisfaction | High — comprehensive overview | High — good structure, specific products | Highest — most insightful, most current |
+| Specificity vs generic | Mostly generic ("may become," "could evolve") | Specific on products, generic on strategy | Specific on figures, decisions, and risks |
 
 **Notes:**
+
+- **The fundamental difference is between description and analysis.** ChatGPT and Gemini describe what Amazon is doing and could do. Claude analyses why the strategy makes sense, what the risks are, and what the non-obvious moves mean. The Globalstar satellite acquisition observation — Amazon trying to own connectivity infrastructure the way it owns compute infrastructure — is genuinely insightful.
+- **Specific figures make Claude's answer verifiable.** "$128.7B AWS revenue growing 20%" is checkable. "Amazon may expand its cloud presence" is not. For a business strategy context, specificity is the difference between intelligence and filler.
+- **The sharpest strategic risk is named only by Claude:** "If the front door belongs to someone else's agent, Amazon becomes a fulfillment backend." This is the actual existential threat — if OpenAI's or Google's agent becomes the primary shopping interface, Amazon's retail business is disintermediated. Neither ChatGPT nor Gemini named this clearly.
+- **ChatGPT's nine-section answer is the most complete but least memorable.** Every point is accurate. None are surprising. It is the Wikipedia version of a strategy analysis.
+- **Gemini's flywheel framing is the most pedagogically useful:** "cheaper infrastructure attracts developers → better predictive tech optimises logistics → lower costs drive conversion → more data feeds back into AI" is the clearest single-paragraph summary of Amazon's core logic.
+- **Winner for Task D:** Claude for insight and specificity; Gemini for pedagogical clarity; ChatGPT for comprehensive coverage. Right choice depends on audience.
 
 ---
 
