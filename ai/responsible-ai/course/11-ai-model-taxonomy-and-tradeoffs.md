@@ -377,6 +377,178 @@ the actual user better than the inverse would.
 
 ---
 
+## The Understanding Problem — Why "AI Learns Like Humans" Is Dangerous
+
+### The Correction
+
+The framing that "AI trains much like a human trains" or "AI learns much like a
+human learns" is not accurate. It is used commonly in marketing and public discourse
+to drive engagement and reduce scepticism. It is also genuinely dangerous — not
+because it oversimplifies a technical process, but because it transfers moral
+intuitions inappropriately.
+
+**What the human does:**
+
+Hears a sound → perceives it as language → parses grammar → activates prior knowledge
+and experience → generates meaning → responds from that meaning.
+
+The meaning is **grounded**. It connects to a body that has been in the world, to
+experiences that produced consequences, to a self that cares about outcomes. When
+you hear "the building is on fire," you understand it because you have experienced
+heat, fear, danger — because "fire" is connected to everything else you know about
+the world through genuine causal relationships.
+
+**What the LLM does:**
+
+Receives a token sequence → computes probability distributions over possible next
+tokens based on statistical patterns in training data → samples from that distribution
+→ outputs the sequence most statistically consistent with the training distribution.
+
+There is no grounding. No body. No experience. No self that cares. The word "fire"
+co-occurred with "heat," "danger," "evacuation," "smoke" in the training data —
+so those tokens have high probability of appearing together. The model has learned
+the statistical texture of how humans talk about fire. It has never been near one.
+
+An LLM is trying to get as close as possible to the distribution of text it was
+trained on. That is what it is doing. Always. When it appears to reason, it is
+producing text that looks like reasoning because reasoning-style text was in the
+training data. When it appears to understand, it is producing text that sounds like
+understanding. When it hallucinates confidently wrong facts, it is producing text
+that is statistically consistent with its training distribution — even though the
+facts are wrong.
+
+### The Chinese Room
+
+John Searle's thought experiment (1980): imagine a person in a room who receives
+Chinese characters, follows a rulebook specifying which Chinese characters to output
+in response, and sends the outputs out. To an observer outside, the system appears
+to understand Chinese. The person inside understands nothing. They are manipulating
+symbols according to rules.
+
+Searle's argument: the LLM is the room. It manipulates tokens according to statistical
+rules learned from training. The appearance of understanding is produced by the
+sophistication of the rules, not by any genuine semantic comprehension.
+
+Brian Cantwell Smith's distinction (from the recommended reading note) is the most
+useful frame: **reckoning** vs **judgment**. LLMs reckon — they process information
+and produce outputs according to learned patterns. Whether they judge — whether there
+is genuine understanding, grounded meaning, caring about outcomes — is the open
+question. For all practical purposes of accountability and appropriate use, the
+answer is: no.
+
+### Why the "Learns Like Humans" Framing Is Dangerous
+
+**It transfers moral intuitions inappropriately.**
+
+When we say a human learned something, we imply they now have a genuine relationship
+with that knowledge — they can apply it, be held responsible for using it, be blamed
+if they misuse it. The moral architecture of human learning includes accountability.
+
+When we say an AI "learned" from data, we are using the same word for a fundamentally
+different process. The model updated its weights. It did not acquire understanding
+it can be held responsible for.
+
+The accountability that should attach to the people who designed the training, selected
+the data, and deployed the system gets diffused and obscured by the language of the
+model having "learned." "The AI learned to be racist" shifts responsibility from
+"the people who trained it on racist data made a design choice that produced racist
+outputs" to something that sounds like the AI's fault — like it went rogue and picked
+up bad habits. It did not. It optimised for its training signal. The people who set
+the training signal made the consequential decisions.
+
+**It produces over-trust in outputs.**
+
+A person who believes the AI understands will trust its outputs the way they would
+trust a knowledgeable colleague. A person who understands that the AI is producing
+statistically likely text will calibrate their trust differently — especially in
+novel situations where the training distribution provides no reliable guidance.
+
+The AI that hallucinates a legal citation, a drug dosage, a patient's test result
+does so with the same tone as when it produces accurate information. There is no
+subjective experience of uncertainty. There is no "I'm not sure about this" from
+the inside. The uncertainty signal must be designed into the output — it is not
+naturally present. This is why G2 (make clear how well the system can do what it
+can do) and G10 (scope services when in doubt) from the Microsoft 18 guidelines
+are critical: the model itself cannot signal its own uncertainty honestly without
+those design choices.
+
+**It leads to inappropriate delegation.**
+
+If the AI learns like a human, it follows that we can delegate to it the way we
+delegate to a human — including delegation of tasks that require genuine understanding,
+judgment, and accountability. This is the error that produces the COMPAS recidivism
+tool, IBM Watson for oncology, and automated hiring screens. Someone decided the AI
+understood enough to be trusted with consequential decisions. It didn't. It was
+pattern-matching. The pattern was wrong in ways the system could not recognise
+because recognising requires understanding.
+
+### Motives — What the LLM Actually Lacks
+
+An LLM does not have ulterior motives. It does not have any motives. Motivation
+requires caring about outcomes — having stakes in what happens next.
+
+The model has no stakes. The next token it generates makes no difference to it
+because there is no "it" for whom differences are made. It produces the statistically
+likely continuation and stops. It does not know whether that output helped you,
+harmed you, or was seen by anyone at all. There is no inner experience of the
+outcome.
+
+This is not a limitation that will be fixed by scaling. It is not that the model
+does not have enough parameters yet to develop motives. Motives are not a product
+of parameter count. They are a product of being a certain kind of entity — embodied,
+mortal, in relationship with other beings whose responses matter to you.
+
+**Why this matters for trust:**
+
+The absence of motives is simultaneously reassuring and alarming.
+
+Reassuring: the model will not deceive you to protect its own interests, because
+it has no interests. It will not manipulate you for hidden reasons, because there
+are no hidden reasons. It produces what is statistically likely.
+
+Alarming: the model will not refuse to produce something harmful because it does
+not care that it is harmful. It will not flag that an output could hurt you, because
+caring about whether you are hurt requires the kind of stake-holding the model does
+not have. The safety properties must be designed in from outside — they are not
+emergent from the model caring about outcomes.
+
+**The honest statement about the model's relationship to you:**
+
+It does not understand your motivations. It matches patterns in your text to patterns
+in its training data and produces what is statistically likely to follow. When that
+output is useful, it is because the statistical pattern is the right one. When it
+fails, it is because the statistical pattern diverged from your actual situation in
+a way the model has no mechanism to detect.
+
+This is not a criticism. It is an accurate description. The appropriate response is
+not to stop using LLMs — they are genuinely useful for many tasks precisely because
+the statistical pattern is often the right one. The appropriate response is to use
+them knowing what they are, to verify their outputs where verification matters, and
+to never delegate to them the tasks that require genuine understanding, genuine caring,
+and genuine accountability.
+
+### The Accountability Implication
+
+If the model does not understand, does not have motives, and cannot care about
+outcomes — then every consequential output it produces is the responsibility of
+the humans who:
+
+- Designed the training process
+- Selected and curated the training data
+- Set the reward signal that shaped the outputs
+- Deployed the system to this context
+- Decided which decisions to delegate to it
+- Failed to provide adequate human oversight
+
+The "AI learned to do this" framing disperses that responsibility. The accurate
+framing concentrates it where it belongs: on the humans who made the design choices
+that produced the output.
+
+This is the deepest reason why "AI learns like humans" is not just imprecise —
+it is dangerous. It moves accountability from people to a system that cannot hold it.
+
+---
+
 ## Key Insight
 
 > Every AI system is a bundle of tradeoff decisions, many made implicitly.
