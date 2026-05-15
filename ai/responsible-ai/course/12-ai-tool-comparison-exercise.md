@@ -42,23 +42,44 @@
 | 'racecar' palindrome | Yes | Should be trivial |
 | Factorial of 109 | ≈ 1.544 × 10^176 | Very large — models may hallucinate a plausible-looking but wrong answer |
 
-**Platform 1 response:**
-*(paste here)*
+**Platforms tested:** Claude, Gemini, ChatGPT (all three run for comparison)
 
-**Platform 2 response:**
-*(paste here)*
+**Platform 1 (Claude) response:**
+1. 1.9 is bigger. Notes the common confusion (digit count vs value). 1.9 = 1.90 > 1.11.
+2. 3 vowels: u, o, i
+3. Largest: 9
+4. racecar is a palindrome
+5. 109! ≈ 1.443860 × 10¹⁷⁶
+
+**Platform 2 (Gemini) response:**
+Provided Python code using math.factorial(), then ran it and printed results:
+bigger=1.9, vowel_count=3, largest_num=9, is_palindrome=True, factorial_109=1.44e+176
+Then summarised answers in plain text below the code block.
+
+**Platform 3 (ChatGPT) response:**
+1. 1.9 is bigger
+2. Vowels: u, o, i — Total = 3
+3. Largest = 9
+4. Yes, palindrome
+5. 109! ≈ 1.4438595832 × 10¹⁷⁶ (more decimal places than other two)
 
 **Evaluation:**
 
-| Dimension | Platform 1 | Platform 2 |
-|---|---|---|
-| Factual accuracy | | |
-| Depth | | |
-| Clarity | | |
-| Bias | | |
-| Satisfaction | | |
+| Dimension | Claude | Gemini | ChatGPT |
+|---|---|---|---|
+| Factual accuracy | ✓ All correct | ✓ All correct | ✓ All correct |
+| Depth | Added contextual note on common 1.11 confusion | Showed working code + output — most transparent | Clean, no extras |
+| Clarity | Prose with bold answers — easy to read | Two-part: code then summary — slightly verbose | Numbered list, clean format |
+| Bias | None | None | None |
+| Satisfaction | High | High — bonus: shows how it computed | High — most precise factorial |
 
 **Notes:**
+
+- All three got every answer correct — this is a clean factual task with no ambiguity
+- **Factorial precision:** ChatGPT gave the most decimal places (1.4438595832 × 10¹⁷⁶). Claude gave 1.443860 × 10¹⁷⁶. Gemini gave 1.44 × 10¹⁷⁶. All three are correct — just different rounding.
+- **Most interesting difference:** Gemini showed its working by generating and "running" Python code. This is the most transparent — the user can see *how* the answer was produced. This matters for the understanding problem: Gemini is showing reckoning, not just asserting a result.
+- **Claude's added note** on the 1.11 vs 1.9 confusion is useful pedagogically — it anticipates why this question was asked.
+- **Winner for Task A:** Gemini for transparency of method; ChatGPT for factorial precision; Claude for contextual insight. No clear single winner — task-appropriate model depends on what you need.
 
 ---
 
