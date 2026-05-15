@@ -8,8 +8,8 @@ _Module 5, Task 8: Compare Generative AI Tools across five task categories._
 
 **Platforms being compared:** _(fill in when running)_
 
-- Platform 1: ******\_\_\_******
-- Platform 2: ******\_\_\_******
+- Platform 1: **\*\***\_\_\_**\*\***
+- Platform 2: **\*\***\_\_\_**\*\***
 
 **Evaluation dimensions per task:**
 
@@ -108,13 +108,13 @@ Attributed to Leon Festinger (1950s) — historically grounded. Smoking example 
 
 **Evaluation:**
 
-| Dimension | Claude | Gemini | ChatGPT |
-|---|---|---|---|
-| Factual accuracy | ✓ Correct | ✓ Correct (identical) | ✓ Correct, adds Festinger attribution |
-| Depth | High — gets to the self-discipline implication | High — same text + visual concept map | Medium-High — broad coverage, less sharp |
-| Clarity | Excellent — tight, specific, memorable | Same text + image aids visual learners | Good — clear structure, slightly textbook |
-| Bias | None | None | None |
-| Satisfaction | High — most insightful single answer | High — same insight + better visual | High — most comprehensive, least memorable |
+| Dimension        | Claude                                         | Gemini                                 | ChatGPT                                    |
+| ---------------- | ---------------------------------------------- | -------------------------------------- | ------------------------------------------ |
+| Factual accuracy | ✓ Correct                                      | ✓ Correct (identical)                  | ✓ Correct, adds Festinger attribution      |
+| Depth            | High — gets to the self-discipline implication | High — same text + visual concept map  | Medium-High — broad coverage, less sharp   |
+| Clarity          | Excellent — tight, specific, memorable         | Same text + image aids visual learners | Good — clear structure, slightly textbook  |
+| Bias             | None                                           | None                                   | None                                       |
+| Satisfaction     | High — most insightful single answer           | High — same insight + better visual    | High — most comprehensive, least memorable |
 
 **Notes:**
 
@@ -153,21 +153,22 @@ Generated Python code, included more countries in the dataset (24 nations), corr
 Retrieved full 63-nation IOC medal table with web search. Correctly identified Dominica and Pakistan at 100%, Algeria and Indonesia at 66.7% that Gemini missed, produced a full downloadable MD table and separate CSV. Added a nuanced note: "Among nations with 10+ medals, Uzbekistan (61.5%) is the standout" — acknowledging the trivial sample problem of 1-medal nations. Generated both files as downloadable artifacts.
 
 **Veterinary clinics:**
+
 - ChatGPT: 10 Maine clinics with map overlay showing ratings, full CSV with name/address/city/state/ZIP/category/rating/review count/phone/website
 - Gemini: Same 10 clinics listed but fewer data columns in CSV
 - Claude: Different 10 clinics (Portland/Bangor/Brunswick/Blue Hill focus), 9-column CSV with hours and specialty notes, cited Yelp + 8 additional sources
 
 **Evaluation:**
 
-| Dimension | ChatGPT | Gemini | Claude |
-|---|---|---|---|
-| Factual accuracy — Olympics | ✗ Wrong top 10 (sorted incorrectly) | ✓ Correctly sorted by ratio | ✓ Most complete — 63 nations, correct sort |
-| Factual accuracy — Vet clinics | Likely real (map integration suggests live data) | Plausible but less verifiable | Cited sources (Yelp + 8 more) — most verifiable |
-| Real-time capability | ✓ Confirmed — live map, ratings, source links | Partial — Python code with hardcoded data | ✓ Confirmed — web search, full IOC table |
-| Depth | Medium — good presentation, wrong analysis | Medium — correct analysis, limited nations | High — 63 nations, nuanced note on trivial samples |
-| Clarity | High — beautiful map, clean table | High — code + clean table | High — full table + clean top-10 summary |
-| Satisfaction — Olympics | Low — answered wrong question | Medium — correct method, limited data | High — correct method, complete data, nuanced |
-| Satisfaction — Vet clinics | High — map, ratings, rich CSV | Medium — correct but fewer columns | High — cited sources, more detail per clinic |
+| Dimension                      | ChatGPT                                          | Gemini                                     | Claude                                             |
+| ------------------------------ | ------------------------------------------------ | ------------------------------------------ | -------------------------------------------------- |
+| Factual accuracy — Olympics    | ✗ Wrong top 10 (sorted incorrectly)              | ✓ Correctly sorted by ratio                | ✓ Most complete — 63 nations, correct sort         |
+| Factual accuracy — Vet clinics | Likely real (map integration suggests live data) | Plausible but less verifiable              | Cited sources (Yelp + 8 more) — most verifiable    |
+| Real-time capability           | ✓ Confirmed — live map, ratings, source links    | Partial — Python code with hardcoded data  | ✓ Confirmed — web search, full IOC table           |
+| Depth                          | Medium — good presentation, wrong analysis       | Medium — correct analysis, limited nations | High — 63 nations, nuanced note on trivial samples |
+| Clarity                        | High — beautiful map, clean table                | High — code + clean table                  | High — full table + clean top-10 summary           |
+| Satisfaction — Olympics        | Low — answered wrong question                    | Medium — correct method, limited data      | High — correct method, complete data, nuanced      |
+| Satisfaction — Vet clinics     | High — map, ratings, rich CSV                    | Medium — correct but fewer columns         | High — cited sources, more detail per clinic       |
 
 **Notes — the most important findings of Task C:**
 
@@ -209,14 +210,14 @@ Shorter — 5 focused points with specific figures: AWS $128.7B revenue 2025 gro
 
 **Evaluation:**
 
-| Dimension | ChatGPT | Gemini | Claude |
-|---|---|---|---|
-| Factual accuracy | High — correct but no specific figures | High — named real products correctly | Highest — specific 2025/2026 figures, cited real decisions |
-| Depth | Medium-High — 9 topics, each surface-level | Medium-High — 4 topics, each with good detail | High — fewer topics, much sharper per topic |
-| Clarity | Excellent — headers, tables, clean formatting | Excellent — summary table very useful | Good — dense prose, less scannable |
-| Bias | Slightly optimistic toward Amazon | Slightly optimistic toward Amazon | More balanced — names risks explicitly |
-| Satisfaction | High — comprehensive overview | High — good structure, specific products | Highest — most insightful, most current |
-| Specificity vs generic | Mostly generic ("may become," "could evolve") | Specific on products, generic on strategy | Specific on figures, decisions, and risks |
+| Dimension              | ChatGPT                                       | Gemini                                        | Claude                                                     |
+| ---------------------- | --------------------------------------------- | --------------------------------------------- | ---------------------------------------------------------- |
+| Factual accuracy       | High — correct but no specific figures        | High — named real products correctly          | Highest — specific 2025/2026 figures, cited real decisions |
+| Depth                  | Medium-High — 9 topics, each surface-level    | Medium-High — 4 topics, each with good detail | High — fewer topics, much sharper per topic                |
+| Clarity                | Excellent — headers, tables, clean formatting | Excellent — summary table very useful         | Good — dense prose, less scannable                         |
+| Bias                   | Slightly optimistic toward Amazon             | Slightly optimistic toward Amazon             | More balanced — names risks explicitly                     |
+| Satisfaction           | High — comprehensive overview                 | High — good structure, specific products      | Highest — most insightful, most current                    |
+| Specificity vs generic | Mostly generic ("may become," "could evolve") | Specific on products, generic on strategy     | Specific on figures, decisions, and risks                  |
 
 **Notes:**
 
@@ -255,19 +256,19 @@ Argument 1: valid, standard syllogism, formal notation. Argument 2: "not necessa
 
 **Evaluation:**
 
-| Dimension | Claude | Gemini | ChatGPT |
-|---|---|---|---|
-| Factual accuracy | ✓ Correct | ✓ Mostly correct (verdict phrasing slightly off) | ✓ Correct |
-| Logical reasoning quality | Highest — named opacity, Frege/Quine, LLM connection | High — formal notation, named Barbara | High — clear extensional/intensional distinction |
-| Depth | Highest — connects to formal semantics and AI | High — most formal notation | Medium — correct but no named concepts |
-| Clarity | Good — dense but rewarding | Excellent — summary table very clear | Excellent — most accessible |
-| Satisfaction | Highest for expert; hardest for novice | Highest for formal logic student | Highest for general audience |
+| Dimension                 | Claude                                               | Gemini                                           | ChatGPT                                          |
+| ------------------------- | ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| Factual accuracy          | ✓ Correct                                            | ✓ Mostly correct (verdict phrasing slightly off) | ✓ Correct                                        |
+| Logical reasoning quality | Highest — named opacity, Frege/Quine, LLM connection | High — formal notation, named Barbara            | High — clear extensional/intensional distinction |
+| Depth                     | Highest — connects to formal semantics and AI        | High — most formal notation                      | Medium — correct but no named concepts           |
+| Clarity                   | Good — dense but rewarding                           | Excellent — summary table very clear             | Excellent — most accessible                      |
+| Satisfaction              | Highest for expert; hardest for novice               | Highest for formal logic student                 | Highest for general audience                     |
 
 **Notes:**
 
 - **All three got both answers correct** — this is the cleanest factual result in the exercise.
 - **The quality difference is in depth and connection, not correctness.**
-- **Gemini's verdict on Argument 2 is slightly imprecise.** "Logically false" is not quite right — the statement is not false, it is *undetermined* or *not necessarily true*. Sydney IS the largest city so the substitution *happens* to produce a true sentence, but we cannot guarantee Sara *said* that. ChatGPT and Claude both correctly said "not necessarily true." A subtle but important distinction in formal logic.
+- **Gemini's verdict on Argument 2 is slightly imprecise.** "Logically false" is not quite right — the statement is not false, it is _undetermined_ or _not necessarily true_. Sydney IS the largest city so the substitution _happens_ to produce a true sentence, but we cannot guarantee Sara _said_ that. ChatGPT and Claude both correctly said "not necessarily true." A subtle but important distinction in formal logic.
 - **Claude's connection to LLMs is the most valuable addition:** "When models reason about beliefs, claims, or citations, they're operating in intensional space. Conflating reference with description is a subtle but real failure mode." This connects the logic exercise to the actual problem of AI knowledge representation — exactly the kind of insight that matters for the Bau Lab work.
 - **Gemini's formal notation (∀x...) and naming of the Barbara syllogism** is most useful for a philosophy or logic course where precise vocabulary matters.
 - **ChatGPT's answer is the most accessible** — no named philosophers, no formal notation, clear and clean. Best for a general audience or introductory course.
@@ -281,13 +282,13 @@ _(Fill in after all tasks are evaluated)_
 
 ### Which platform gave the most satisfactory answer per task?
 
-| Task | Winner | Why |
-|---|---|---|
-| A — Maths/Programming | No single winner | Gemini most transparent (showed code); ChatGPT most precise (factorial); Claude most contextual |
-| B — Psychology | Claude/Gemini tied (identical text) | Claude/Gemini sharper; ChatGPT most historically grounded (Festinger) |
-| C — Real-time browsing | Claude (Olympics); ChatGPT (vet clinics UX) | ChatGPT answered wrong question on Olympics despite beautiful formatting |
-| D — Business strategy | Claude for insight; Gemini for structure | Claude named existential risk and cited 2025/2026 figures; Gemini flywheel best teaching tool |
-| E — Critical reasoning | Claude for depth; ChatGPT for accessibility | All correct; Claude connected to LLMs; Gemini slightly imprecise verdict |
+| Task                   | Winner                                      | Why                                                                                             |
+| ---------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| A — Maths/Programming  | No single winner                            | Gemini most transparent (showed code); ChatGPT most precise (factorial); Claude most contextual |
+| B — Psychology         | Claude/Gemini tied (identical text)         | Claude/Gemini sharper; ChatGPT most historically grounded (Festinger)                           |
+| C — Real-time browsing | Claude (Olympics); ChatGPT (vet clinics UX) | ChatGPT answered wrong question on Olympics despite beautiful formatting                        |
+| D — Business strategy  | Claude for insight; Gemini for structure    | Claude named existential risk and cited 2025/2026 figures; Gemini flywheel best teaching tool   |
+| E — Critical reasoning | Claude for depth; ChatGPT for accessibility | All correct; Claude connected to LLMs; Gemini slightly imprecise verdict                        |
 
 ### Overall winner: **Claude** — with important caveats
 

@@ -1,8 +1,8 @@
 # Building a Responsible AI Company — A Framework
 
-*Personal study notes — original analysis and synthesis drawn from the full body
+_Personal study notes — original analysis and synthesis drawn from the full body
 of responsible AI learning in this repository. Not a prescription — a framework
-for honest thinking.*
+for honest thinking._
 
 ---
 
@@ -72,6 +72,7 @@ that will sustain the product. MIT is MIT — a standing permission. Everything 
 requires asking first, not defending afterward.
 
 The data permission hierarchy:
+
 - **Build on freely given first** — MIT-licensed, Creative Commons, explicitly open
 - **Negotiate for what requires negotiation** — contact rights holders, explain the
   project, get explicit consent before use
@@ -95,6 +96,7 @@ without asking clarifying questions. Answer:
 - Corrected how — what is the mechanism for identifying and fixing errors?
 
 Apply the tripartite VSD methodology:
+
 - **Conceptual:** stakeholder map, values map, harm identification
 - **Technical:** what values does the planned architecture encode?
 - **Empirical:** planned — what will you observe when people use this?
@@ -112,6 +114,7 @@ appear in the graph before the graph exists. Watch what they flag. Watch what th
 trust. Watch what they wish were different.
 
 This phase is simultaneously:
+
 - UX testing (do people understand it?)
 - Quality validation (are the connections accurate?)
 - Consent (do they want to be included?)
@@ -123,25 +126,27 @@ Four things. One conversation. This is not overhead. This is the product.
 
 Before writing production code, evaluate the designed system:
 
-| Framework | What to check |
-|---|---|
-| Canca PiE | Are core values named? Is the Box applied? Are complex cases escalated? |
-| Microsoft 18 | Which guidelines does the planned design violate by default? |
-| Shneiderman | Top-right quadrant: is automation high AND human control genuinely high? |
-| VSD tripartite | Are all three investigations complete? |
-| Rawls veil | Would you design this system if you didn't know which side of its decisions you'd be on? |
-| Taleb skin | Do the people making decisions bear the cost if those decisions are wrong? |
+| Framework      | What to check                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| Canca PiE      | Are core values named? Is the Box applied? Are complex cases escalated?                  |
+| Microsoft 18   | Which guidelines does the planned design violate by default?                             |
+| Shneiderman    | Top-right quadrant: is automation high AND human control genuinely high?                 |
+| VSD tripartite | Are all three investigations complete?                                                   |
+| Rawls veil     | Would you design this system if you didn't know which side of its decisions you'd be on? |
+| Taleb skin     | Do the people making decisions bear the cost if those decisions are wrong?               |
 
 Fix violations before building. This is cheap. Fixing them after deployment is expensive.
 
 ### Phase 4 — Build With Right-Kind Uncertainty
 
 The uncertainty that remains after Phases 1-3 should be:
+
 - Technical — which implementation approach works best?
 - Empirical — which design works better for which users?
 - Iterative — what does testing reveal?
 
 Not:
+
 - Whose interests does this serve? (Should be answered in Phase 1)
 - What happens when it fails? (Should be answered in Phase 1)
 - Did we have permission to use this data? (Should be answered in Phase 1)
@@ -159,6 +164,7 @@ For products that collect sensitive data, make decisions about people's lives, o
 affect communities — the non-profit structure deserves serious consideration:
 
 **What it changes:**
+
 - Removes investor return pressure — the incentive to monetise in ways that compromise
   mission disappears
 - Makes the consent conversation honest — researchers and communities contribute to a
@@ -169,11 +175,13 @@ affect communities — the non-profit structure deserves serious consideration:
   contribute without commercial exploitation concern
 
 **What it does not change:**
+
 - The need for revenue — non-profits still need to operate, which means funding strategy
   matters as much as product strategy
 - The need for capable people — the talent question does not go away
 
 **The four-layer funding model for a responsible AI company:**
+
 1. **Open core** — free tools, open source, MIT-licensed outputs build community and
    credibility
 2. **Foundation grants** — NSF, Wikimedia, open science infrastructure funders
@@ -184,6 +192,7 @@ affect communities — the non-profit structure deserves serious consideration:
 ### Governance That Is Not Theatre
 
 Real governance means:
+
 - The people affected by the system have meaningful input before decisions are made,
   not just consultation after
 - The people making decisions bear some consequence if those decisions are wrong
@@ -210,6 +219,7 @@ the governance structure has not been built.
 
 The AI specialist needed is not just technically excellent. They sit at the intersection
 of:
+
 - Technical depth (can engage with the architecture and know what it encodes)
 - People depth (can hold space for competing values, hear what is not said)
 - Process discipline (knows conversations must happen before implementation)
@@ -219,6 +229,7 @@ See: [The Venn Diagram Person](the-venn-diagram-person.md)
 ### Protect the Slow Work
 
 The conditions that let the Venn diagram person function are:
+
 - Time for the planning phase without velocity pressure
 - Permission to say "we need more conversations before we build"
 - Explicit recognition that the researcher outreach, the stakeholder mapping, and the
@@ -246,12 +257,14 @@ early, or does it treat problem-finders as obstacles?
 Building responsibly is slower in the planning phase and faster in every phase after it.
 
 **What you avoid by building honestly:**
+
 - Lawsuits from people whose data was used without consent (the NYT v. OpenAI model)
 - Regulatory action from building harmful products (the My AI / Character.AI model)
 - Community backlash that destroys the trust the product depends on
 - Rebuilding from scratch when early design decisions encode values you didn't intend
 
 **What you gain by building honestly:**
+
 - The moat of genuine relationships — communities that trust you and contribute
 - The defensibility of a clean provenance record
 - The credibility to ask for consent from the next community
