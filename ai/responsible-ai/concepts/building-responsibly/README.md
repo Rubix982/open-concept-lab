@@ -30,6 +30,17 @@ mechanistic interpretability as the research that makes the educational AI hones
 about what it knows and doesn't. Honest challenges: support burden, model currency,
 capability gap, hardware reliability, distribution. The build sequence applied.
 
+## [Hiring — Craft vs Credential](hiring-craft-vs-credential.md)
+The company is not a training programme and the credential is not proof of craft.
+The honest mutual expectation: company provides domain knowledge, honest feedback,
+real autonomy, shared outcome; employee provides functional craft capability before
+arriving. The credential inflation structural diagnosis: universities monetised before
+accountable, student carries financial cost, company carries productivity cost,
+university captured revenue with no outcome accountability. The 3.1 GPA problem —
+what to actually look for. The demonstrated work filter: not where did you go but
+show me what you built. The honest pitch to potential hires: explicit terms before
+the hire that prevent the disappointment that produces resentment after.
+
 ## [Employee Care and the Discretionary Investment Problem](employee-care-and-discretionary-investment.md)
 The standard model purchases presence through compensation and switching costs. It does
 not produce the discretionary investment that grows with seniority — the institutional
