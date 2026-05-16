@@ -30,6 +30,18 @@ mechanistic interpretability as the research that makes the educational AI hones
 about what it knows and doesn't. Honest challenges: support burden, model currency,
 capability gap, hardware reliability, distribution. The build sequence applied.
 
+## [Employee Care and the Discretionary Investment Problem](employee-care-and-discretionary-investment.md)
+The standard model purchases presence through compensation and switching costs. It does
+not produce the discretionary investment that grows with seniority — the institutional
+knowledge shared rather than guarded, the junior employees developed, the problems raised
+before they become crises, the culture modelled. All of it depends on whether the employee
+believes the organisation is genuinely on their side. What genuine care actually requires
+(autonomy, honest feedback, seeing the whole person, shared outcome) vs what it is
+mistaken for (perks, vocabulary without practice, retention without engagement). Gallup
+data: 15-20% actively disengaged are people whose expectations of a real relationship
+were disappointed enough to turn to resentment. The Tarbiyat dimension: care as prior
+commitment not strategy — detectable over time, cannot be faked at scale.
+
 ## [Building a Responsible AI Company](building-a-responsible-ai-company.md)
 A full framework from pre-code through deployment. The problem with standard AI
 company building advice (optimised for speed, wrong for consequential products).
