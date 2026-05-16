@@ -3,3 +3,4 @@ media/
 __pycache__/
 *.pyc
 .claude/
+claim_classifier.pt
