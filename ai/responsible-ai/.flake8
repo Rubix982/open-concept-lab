@@ -22,4 +22,5 @@ per-file-ignores =
     animations/05_regulation/scene_06_doubt5.py: E501
     animations/05_regulation/scene_07_doubt6.py: E501
     animations/08_hcai/three_waves_of_ai.py: E501
-filename = animations/**/*.py
+    # Training data strings cannot be broken mid-literal
+    knowledge-graph/claim-classifier/train.py: E501
