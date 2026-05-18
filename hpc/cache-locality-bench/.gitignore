@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# C build artifacts
+c/bench
+c/bench_O0
+
+# Benchmark results — machine-specific, not source
+results/*.txt
