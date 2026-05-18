@@ -1,0 +1,10 @@
+# Build artifacts
+nbody/nbody
+nbody/Shaders.air
+nbody/Shaders.metallib
+stencil/stencil
+stencil/Shaders.air
+stencil/Shaders.metallib
+
+# Benchmark results — machine-specific
+results/*.txt
