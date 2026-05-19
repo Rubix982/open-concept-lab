@@ -187,6 +187,31 @@ static void *cpu_worker(void *arg)
         pthread_join(_threads[t], NULL);
 }
 
+/* ── CPU render: particles have been stepped by pthreads, now draw them ────
+ *
+ * In CPU mode the compute kernel does NOT run — positions were updated by
+ * cpu_worker() on the CPU. We still use the Metal render pipeline to draw
+ * the particles because the GPU is good at rasterising points; we just skip
+ * the compute dispatch. The particle buffer is shared memory so GPU sees the
+ * CPU-written positions immediately — no copy needed.
+ */
+- (void)encodeCPURender:(id<MTLCommandBuffer>)buf
+               drawable:(id<CAMetalDrawable>)drawable
+{
+    MTLRenderPassDescriptor *rpd = [MTLRenderPassDescriptor renderPassDescriptor];
+    rpd.colorAttachments[0].texture     = drawable.texture;
+    rpd.colorAttachments[0].loadAction  = MTLLoadActionClear;
+    rpd.colorAttachments[0].storeAction = MTLStoreActionStore;
+    rpd.colorAttachments[0].clearColor  = MTLClearColorMake(0.03, 0.03, 0.08, 1);
+
+    id<MTLRenderCommandEncoder> enc = [buf renderCommandEncoderWithDescriptor:rpd];
+    [enc setRenderPipelineState:_renderPipeline];
+    [enc setVertexBuffer:_particleBuf offset:0 atIndex:0];
+    [enc setVertexBuffer:_paramBuf    offset:0 atIndex:1];
+    [enc drawPrimitives:MTLPrimitiveTypePoint vertexStart:0 vertexCount:_N];
+    [enc endEncoding];
+}
+
 /* ── GPU frame: compute dispatch + render pass ──────────────────────────────*/
 
 - (void)encodeGPUFrame:(id<MTLCommandBuffer>)buf

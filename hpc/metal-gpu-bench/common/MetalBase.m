@@ -193,6 +193,28 @@ static CVReturn display_link_callback(CVDisplayLinkRef    displayLink,
     return self;
 }
 
+/* ── Keyboard: global event monitor (window delegate keyDown: is not reliable) ──
+ *
+ * NSWindow delegate does NOT receive keyDown: — that goes to the first responder
+ * in the responder chain (usually the content view). Rather than subclassing
+ * NSView, we install a local event monitor which intercepts key events before
+ * they reach AppKit's normal dispatch. This is the simplest approach for a
+ * single-window app with no text fields.
+ */
+- (void)_installKeyMonitor
+{
+    __weak typeof(self) weak = self;
+    [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+                                          handler:^NSEvent *(NSEvent *event) {
+        NSString *key = [event charactersIgnoringModifiers];
+        if ([key isEqualToString:@"g"] || [key isEqualToString:@"G"]) {
+            weak.useGPU = !weak.useGPU;
+            NSLog(@"Mode: %@", weak.useGPU ? @"GPU" : @"CPU");
+        }
+        return event;   /* pass event through so AppKit can also handle it */
+    }];
+}
+
 /* ── Pipeline setup (called by subclass after super init, or override) ────── */
 
 - (void)setupPipelines
@@ -326,6 +348,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef    displayLink,
     [self setupPipelines];
     [_window center];
     [_window makeKeyAndOrderFront:nil];
+    [self _installKeyMonitor];
 
     /* CVDisplayLink fires in sync with display refresh (60/120 Hz) */
     CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
@@ -444,15 +467,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef    displayLink,
     [NSApp terminate:nil];
 }
 
-/* ── Keyboard: G toggles CPU/GPU mode ────────────────────────────────────── */
-
-- (void)keyDown:(NSEvent *)event
-{
-    if ([[event charactersIgnoringModifiers] isEqualToString:@"g"] ||
-        [[event charactersIgnoringModifiers] isEqualToString:@"G"]) {
-        _useGPU = !_useGPU;
-        NSLog(@"Mode: %@", _useGPU ? @"GPU" : @"CPU");
-    }
-}
+/* keyDown: kept as a no-op — key handling is via _installKeyMonitor above */
+- (void)keyDown:(NSEvent *)event { (void)event; }
 
 @end
