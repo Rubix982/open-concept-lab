@@ -2469,6 +2469,452 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════ -->
+<!-- PLAQUE BUILDUP ANIMATION — Canvas 2D               -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="flow-panel">
+  <div style="margin-bottom:22px;">
+    <div class="panel-label">Mechanism — Animated · Longitudinal Section</div>
+    <div style="font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--bone); margin-top:4px; font-style:italic;">
+      How Plaque Builds — Cholesterol vs. Inflammation
+    </div>
+  </div>
+
+
+  <!-- Two canvas panels side by side -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px 40px; align-items:start;">
+
+    <!-- LEFT: Eccentric cholesterol -->
+    <div>
+      <div style="font-size:0.60rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">
+        Cholesterol-driven &middot; Focal Eccentric Stenosis
+      </div>
+      <canvas id="cv-ecc" width="440" height="180"
+        style="width:100%; border-radius:3px; display:block; background:#0c0e12;"></canvas>
+      <div id="ecc-lbl" style="font-size:0.66rem; color:var(--dim); margin-top:10px;
+        min-height:2.5em; line-height:1.68; text-align:center; letter-spacing:0.02em;"></div>
+    </div>
+
+    <!-- RIGHT: Diffuse concentric -->
+    <div>
+      <div style="font-size:0.60rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">
+        Inflammation-driven &middot; Diffuse Concentric &middot; Shoulder Rupture
+      </div>
+      <canvas id="cv-dif" width="440" height="180"
+        style="width:100%; border-radius:3px; display:block; background:#0c0e12;"></canvas>
+      <div id="dif-lbl" style="font-size:0.66rem; color:var(--dim); margin-top:10px;
+        min-height:2.5em; line-height:1.68; text-align:center; letter-spacing:0.02em;"></div>
+    </div>
+
+  </div>
+
+  <!-- Comparison callouts -->
+  <div style="margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+    <div style="padding:11px 15px; background:rgba(210,142,45,0.05); border:1px solid rgba(210,142,45,0.20); border-radius:3px; font-size:0.65rem; color:var(--dim); line-height:1.72;">
+      <span style="color:#d48e2d;">Cholesterol mountain &mdash; </span>
+      Eccentric, one-sided. Plaque builds like a mountain from one wall. Lumen narrows progressively &rarr; angina as warning. Angiography detects it. Cap fractures at the peak, thrombus erupts upward.
+    </div>
+    <div style="padding:11px 15px; background:rgba(235,87,87,0.05); border:1px solid rgba(235,87,87,0.18); border-radius:3px; font-size:0.65rem; color:var(--dim); line-height:1.72;">
+      <span style="color:#eb5757;">Inflammation ring &mdash; </span>
+      Concentric, uniform. A thin layer covers the entire circumference and grows inward. Lumen can look acceptable on angiography until late. Cap tears at the lateral shoulders &mdash; thrombus erupts from both sides and meets in the middle.
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CW = 440, CH = 180;
+
+  // Vessel geometry (longitudinal cross-section)
+  var ADV = 20, MED = 13, INT = 7;
+  var TLT = ADV + MED + INT;   // top lumen y = 40
+  var BLT = CH - TLT;          // bot lumen y = 140
+  var LH  = BLT - TLT;         // lumen height = 100
+
+  // Seeded LCG — deterministic, no frame-to-frame flicker
+  var S = 20250609;
+  function R() { S = (Math.imul(S, 1664525) + 1013904223) | 0; return (S >>> 0) / 4294967296; }
+
+  // Pre-generate all random geometry once
+  var STIP = [];
+  for (var i = 0; i < 210; i++) STIP.push([R() * CW, R() * ADV]);
+
+  var FOAM_ECC = [];
+  for (var i = 0; i < 40; i++) FOAM_ECC.push({ nx: R()*2-1, ny: R()*2-1, r: 2.6+R()*1.9 });
+
+  var FOAM_DT = [], FOAM_DB = [];
+  for (var i = 0; i < 32; i++) {
+    FOAM_DT.push({ x: R()*CW, yn: 0.16+R()*0.66, r: 2.3+R()*1.6 });
+    FOAM_DB.push({ x: R()*CW, yn: 0.16+R()*0.66, r: 2.3+R()*1.6 });
+  }
+
+  // Helpers
+  function lerp(a,b,t) { return a+(b-a)*t; }
+  function clamp(v,lo,hi) { return Math.max(lo,Math.min(hi,v)); }
+  function pf(t,s,e) { return clamp((t-s)/(e-s),0,1); }
+  function eio(t) { return t<0.5?2*t*t:-1+(4-2*t)*t; }
+
+  // Canvas refs
+  var eccCv  = document.getElementById('cv-ecc');
+  var difCv  = document.getElementById('cv-dif');
+  var eC     = eccCv.getContext('2d');
+  var dC     = difCv.getContext('2d');
+  var eccLbl = document.getElementById('ecc-lbl');
+  var difLbl = document.getElementById('dif-lbl');
+
+  var CYCLE = 18000;
+  var t0 = null, lastTs = null, fp = 0; // fp = flow phase
+
+  // ── Shared: draw vessel walls ──────────────────────────
+  function drawWalls(ctx) {
+    function band(y1,y2,c0,c1) {
+      var g = ctx.createLinearGradient(0,y1,0,y2);
+      g.addColorStop(0,c0); g.addColorStop(1,c1);
+      ctx.fillStyle = g; ctx.fillRect(0,y1,CW,y2-y1);
+    }
+    // Top layers
+    band(0,       ADV,       '#8a6035','#aa7c4c'); // adventitia
+    band(ADV,     ADV+MED,   '#bf6555','#d07870'); // media
+    band(ADV+MED, TLT,       '#e8cf98','#f0ddb0'); // intima
+    // Bottom layers (mirror)
+    band(BLT,         BLT+INT,     '#f0ddb0','#e8cf98');
+    band(BLT+INT,     BLT+INT+MED, '#d07870','#bf6555');
+    band(BLT+INT+MED, CH,          '#aa7c4c','#8a6035');
+
+    // Adventitia fibrous texture (deterministic waves)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(52,28,6,0.20)'; ctx.lineWidth = 0.5;
+    for (var y = 2.5; y < ADV-2; y += 3.0) {
+      ctx.beginPath(); ctx.moveTo(0, y + Math.sin(y)*0.9);
+      for (var x = 9; x <= CW; x += 9)
+        ctx.lineTo(x, y + Math.sin(x*0.17+y)*1.7);
+      ctx.stroke();
+      var by = CH - ADV + y;
+      ctx.beginPath(); ctx.moveTo(0, by + Math.sin(by)*0.9);
+      for (var x = 9; x <= CW; x += 9)
+        ctx.lineTo(x, by + Math.sin(x*0.17+by)*1.7);
+      ctx.stroke();
+    }
+    // Stipple
+    ctx.fillStyle = 'rgba(42,20,4,0.40)';
+    for (var i = 0; i < STIP.length; i++) {
+      ctx.fillRect(STIP[i][0], STIP[i][1], 1, 1);
+      ctx.fillRect(STIP[i][0], CH-ADV+STIP[i][1], 1, 1);
+    }
+    // Media smooth-muscle striations
+    ctx.strokeStyle = 'rgba(88,35,25,0.16)'; ctx.lineWidth = 0.4;
+    for (var y = ADV+1.2; y < ADV+MED-0.5; y += 2.1) {
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(CW,y); ctx.stroke();
+      var by = BLT + (y-ADV);
+      ctx.beginPath(); ctx.moveTo(0,by); ctx.lineTo(CW,by); ctx.stroke();
+    }
+    ctx.restore();
+
+    // Layer boundary lines
+    ctx.save(); ctx.lineWidth = 0.7;
+    [ADV, ADV+MED, TLT, BLT, BLT+INT, BLT+INT+MED].forEach(function(y) {
+      ctx.strokeStyle = (y===TLT||y===BLT) ? 'rgba(0,0,0,0.42)' : 'rgba(0,0,0,0.22)';
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(CW,y); ctx.stroke();
+    });
+    ctx.restore();
+
+    // Layer labels
+    ctx.save();
+    ctx.font = '8px DM Mono, monospace';
+    ctx.fillStyle = 'rgba(0,0,0,0.30)'; ctx.textAlign = 'left';
+    ctx.fillText('adventitia', 5, ADV*0.58);
+    ctx.fillText('media',      5, ADV + MED*0.65);
+    ctx.fillText('intima',     5, ADV + MED + INT*0.78);
+    ctx.fillText('intima',     5, BLT + INT*0.78);
+    ctx.fillText('media',      5, BLT + INT + MED*0.60);
+    ctx.fillText('adventitia', 5, BLT + INT + MED + ADV*0.60);
+    ctx.restore();
+  }
+
+  // ── Shared: draw blood ─────────────────────────────────
+  function drawBlood(ctx, y1, y2, flowP) {
+    var g = ctx.createLinearGradient(0,y1,0,y2);
+    var b = 0.88 + Math.sin(flowP*Math.PI*2)*0.07;
+    g.addColorStop(0,   '#500808');
+    g.addColorStop(0.22,'rgb('+Math.round(118*b)+',15,15)');
+    g.addColorStop(0.50,'rgb('+Math.round(140*b)+',19,19)');
+    g.addColorStop(0.78,'rgb('+Math.round(118*b)+',15,15)');
+    g.addColorStop(1,   '#500808');
+    ctx.fillStyle = g; ctx.fillRect(0,y1,CW,y2-y1);
+    // Flow lines
+    ctx.save(); ctx.lineWidth = 0.7;
+    for (var i = 0; i < 5; i++) {
+      var fy  = lerp(y1+(y2-y1)*0.15, y2-(y2-y1)*0.15, i/4);
+      var sp  = 0.30 + i*0.04;
+      var of  = ((flowP*CW*sp + i*82) % CW + CW) % CW;
+      ctx.strokeStyle = 'rgba(180,26,26,'+(0.07+i*0.016)+')';
+      ctx.beginPath(); ctx.moveTo(of-44,fy); ctx.lineTo(of,fy); ctx.stroke();
+      if (of < 50) { ctx.beginPath(); ctx.moveTo(CW+of-44,fy); ctx.lineTo(CW+of,fy); ctx.stroke(); }
+    }
+    ctx.restore();
+  }
+
+  // ── Shared: draw one foam cell ─────────────────────────
+  function foamCell(ctx, x, y, r, alpha) {
+    var g = ctx.createRadialGradient(x-r*0.30,y-r*0.30,0.4,x,y,r);
+    g.addColorStop(0,   'rgba(248,220,135,'+0.95*alpha+')');
+    g.addColorStop(0.55,'rgba(210,158,50, '+0.90*alpha+')');
+    g.addColorStop(1,   'rgba(158,95,16,  '+0.78*alpha+')');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(105,58,8,'+0.50*alpha+')';
+    ctx.lineWidth = 0.55; ctx.stroke();
+    ctx.fillStyle = 'rgba(75,38,5,'+0.70*alpha+')';
+    ctx.beginPath(); ctx.arc(x+r*0.12,y+r*0.12,r*0.29,0,Math.PI*2); ctx.fill();
+  }
+
+  // ── ECCENTRIC ──────────────────────────────────────────
+  function drawEcc(t, flowP) {
+    var grow = eio(pf(t, 0.07, 0.52));
+    var crk  = pf(t, 0.60, 0.69);
+    var thr  = eio(pf(t, 0.68, 0.85));
+    var fd   = eio(pf(t, 0.91, 1.00));
+    var op   = 1 - fd;
+
+    var maxH = LH * 0.80, ph = grow*maxH;
+    var cx = CW/2, pw = 178;
+    var baseY = BLT, peakY = baseY - ph;
+
+    eC.clearRect(0,0,CW,CH);
+    eC.save(); eC.globalAlpha = Math.max(0.01,op);
+    drawWalls(eC);
+    drawBlood(eC, TLT, BLT, flowP);
+
+    if (ph > 1) {
+      // Plaque body
+      eC.save();
+      eC.beginPath();
+      eC.moveTo(cx-pw/2, baseY);
+      eC.bezierCurveTo(cx-pw/2, baseY-ph*0.27, cx-pw*0.21, peakY+ph*0.06, cx, peakY);
+      eC.bezierCurveTo(cx+pw*0.21, peakY+ph*0.06, cx+pw/2, baseY-ph*0.27, cx+pw/2, baseY);
+      eC.closePath();
+      var rg = eC.createRadialGradient(cx,peakY+ph*0.55,ph*0.05, cx,peakY+ph*0.38,ph*0.90);
+      rg.addColorStop(0,    'rgba(95,38,4,0.97)');
+      rg.addColorStop(0.22, 'rgba(150,78,13,0.95)');
+      rg.addColorStop(0.50, 'rgba(196,138,44,0.91)');
+      rg.addColorStop(0.74, 'rgba(218,176,86,0.86)');
+      rg.addColorStop(1,    'rgba(214,193,124,0.78)');
+      eC.fillStyle = rg; eC.fill();
+      eC.restore();
+
+      // Foam cells inside plaque
+      if (grow > 0.11) {
+        var nf = Math.floor(FOAM_ECC.length * Math.min(1,grow*1.5));
+        var cy2 = peakY + ph*0.52;
+        eC.save();
+        for (var i=0; i<nf; i++) {
+          var fc = FOAM_ECC[i];
+          var fx = cx + fc.nx*pw*0.36, fy2 = cy2 + fc.ny*ph*0.30;
+          var dx = (fx-cx)/(pw*0.42), dy = (fy2-cy2)/(ph*0.38);
+          if (dx*dx+dy*dy > 0.80) continue;
+          foamCell(eC, fx, fy2, fc.r, 1);
+        }
+        eC.restore();
+      }
+
+      // Fibrous cap (thins as plaque grows)
+      if (grow > 0.19) {
+        var ct = Math.max(0.65, 5.5*(1-grow*0.77));
+        eC.save();
+        eC.beginPath();
+        eC.moveTo(cx-pw*0.44, baseY-ph*0.22);
+        eC.bezierCurveTo(cx-pw*0.19, peakY+ct, cx, peakY, cx, peakY);
+        eC.bezierCurveTo(cx, peakY, cx+pw*0.19, peakY+ct, cx+pw*0.44, baseY-ph*0.22);
+        eC.strokeStyle = 'rgba(224,203,134,'+Math.min(1,grow*2)+')';
+        eC.lineWidth = ct; eC.lineJoin = 'round'; eC.stroke();
+        eC.restore();
+      }
+
+      // Cap crack
+      if (crk > 0.01) {
+        eC.save(); eC.globalAlpha = crk*op;
+        eC.strokeStyle = '#cc1616'; eC.lineWidth = 1.6;
+        eC.lineCap = 'round'; eC.lineJoin = 'round';
+        eC.beginPath();
+        eC.moveTo(cx-4,peakY+6); eC.lineTo(cx+2,peakY-1);
+        eC.lineTo(cx-3,peakY-7); eC.lineTo(cx+6,peakY-14);
+        eC.stroke(); eC.restore();
+      }
+
+      // Thrombus erupts upward from crack
+      if (thr > 0.01) {
+        var tr = thr*52, ty = peakY-tr*0.38;
+        eC.save();
+        var tg = eC.createRadialGradient(cx,ty-tr*0.1,2, cx,ty,tr);
+        tg.addColorStop(0,   'rgba(34,2,2,'+Math.min(0.97,thr*2.2)+')');
+        tg.addColorStop(0.55,'rgba(50,3,3,'+Math.min(0.92,thr*1.8)+')');
+        tg.addColorStop(1,   'rgba(26,1,1,'+Math.min(0.65,thr*1.2)+')');
+        eC.fillStyle = tg;
+        eC.beginPath(); eC.arc(cx,ty,tr,0,Math.PI*2); eC.fill();
+        // Fibrin strands
+        eC.strokeStyle = 'rgba(80,6,6,'+Math.min(0.50,thr)+')'; eC.lineWidth=0.65;
+        for (var a=0;a<7;a++) {
+          var ang=(a/7)*Math.PI*2;
+          eC.beginPath();
+          eC.moveTo(cx+Math.cos(ang)*tr*0.22,ty+Math.sin(ang)*tr*0.22);
+          eC.lineTo(cx+Math.cos(ang)*tr*0.80,ty+Math.sin(ang)*tr*0.80);
+          eC.stroke();
+        }
+        eC.restore();
+      }
+    }
+    eC.restore();
+
+    eccLbl.textContent =
+      t<0.07 ? 'healthy artery \u2014 adventitia, media and intima visible'
+    : t<0.25 ? 'LDL infiltrates bottom intima \u00b7 foam cells forming'
+    : t<0.47 ? 'plaque mountain builds eccentrically \u00b7 foam cells pack the lipid core'
+    : t<0.58 ? 'near-critical stenosis \u00b7 fibrous cap stretching thin'
+    : t<0.69 ? 'cap fractures at peak \u2014 plaque ruptures'
+    : t<0.85 ? 'thrombus erupts at rupture site \u00b7 occludes remaining lumen'
+    : t<0.91 ? 'acute myocardial infarction'
+    : '\u21ba restarting';
+  }
+
+  // ── DIFFUSE ────────────────────────────────────────────
+  function drawDif(t, flowP) {
+    var grow = eio(pf(t, 0.07, 0.54));
+    var nec  = eio(pf(t, 0.42, 0.62));
+    var tear = pf(t, 0.61, 0.70);
+    var thr  = eio(pf(t, 0.69, 0.86));
+    var fd   = eio(pf(t, 0.91, 1.00));
+    var op   = 1 - fd;
+
+    var maxBH = 40, bh = grow*maxBH;
+    var lt = TLT+bh, lb = BLT-bh; // narrowed lumen bounds
+
+    dC.clearRect(0,0,CW,CH);
+    dC.save(); dC.globalAlpha = Math.max(0.01,op);
+    drawWalls(dC);
+
+    // Concentric plaque bands (full width, both walls)
+    if (bh > 0.5) {
+      // TOP band
+      dC.save();
+      var gT = dC.createLinearGradient(0,TLT,0,TLT+bh);
+      gT.addColorStop(0,  'rgba(190,145,44,'+0.80*grow*op+')');
+      gT.addColorStop(0.5,'rgba(168,108,24,'+0.88*grow*op+')');
+      gT.addColorStop(1,  'rgba(142,78,14, '+0.84*grow*op+')');
+      dC.fillStyle = gT; dC.fillRect(0,TLT,CW,bh);
+      var nft = Math.floor(FOAM_DT.length*Math.min(1,grow*1.4));
+      for (var i=0;i<nft;i++) {
+        var fc=FOAM_DT[i], fy=TLT+fc.yn*bh;
+        if(fy<TLT+fc.r||fy>TLT+bh-fc.r) continue;
+        foamCell(dC,fc.x,fy,fc.r,grow*op);
+      }
+      dC.restore();
+
+      // BOTTOM band
+      dC.save();
+      var gB = dC.createLinearGradient(0,BLT-bh,0,BLT);
+      gB.addColorStop(0,  'rgba(142,78,14, '+0.84*grow*op+')');
+      gB.addColorStop(0.5,'rgba(168,108,24,'+0.88*grow*op+')');
+      gB.addColorStop(1,  'rgba(190,145,44,'+0.80*grow*op+')');
+      dC.fillStyle = gB; dC.fillRect(0,BLT-bh,CW,bh);
+      var nfb = Math.floor(FOAM_DB.length*Math.min(1,grow*1.4));
+      for (var i=0;i<nfb;i++) {
+        var fc=FOAM_DB[i], fy=(BLT-bh)+fc.yn*bh;
+        if(fy<BLT-bh+fc.r||fy>BLT-fc.r) continue;
+        foamCell(dC,fc.x,fy,fc.r,grow*op);
+      }
+      dC.restore();
+
+      // Inner fibrous surface lines
+      if (grow > 0.15) {
+        var fl = Math.max(0.5, 3.5*(1-grow*0.68));
+        dC.save();
+        dC.strokeStyle = 'rgba(218,198,130,'+Math.min(1,grow*1.8)*op+')';
+        dC.lineWidth = fl;
+        dC.beginPath(); dC.moveTo(0,lt); dC.lineTo(CW,lt); dC.stroke();
+        dC.beginPath(); dC.moveTo(0,lb); dC.lineTo(CW,lb); dC.stroke();
+        dC.restore();
+      }
+    }
+
+    // Blood in narrowed lumen
+    if (lb > lt+2) drawBlood(dC,lt,lb,flowP);
+
+    // Necrotic pockets at left/right shoulders
+    if (nec > 0.01) {
+      var nr = nec*16;
+      [[12,TLT+bh*0.52],[CW-12,TLT+bh*0.52],
+       [12,BLT-bh*0.52],[CW-12,BLT-bh*0.52]].forEach(function(p) {
+        var ng = dC.createRadialGradient(p[0],p[1],0.8,p[0],p[1],nr);
+        ng.addColorStop(0,'rgba(90,28,4,'+nec*0.92*op+')');
+        ng.addColorStop(1,'rgba(125,52,10,'+nec*0.40*op+')');
+        dC.save(); dC.fillStyle=ng;
+        dC.beginPath(); dC.arc(p[0],p[1],nr,0,Math.PI*2); dC.fill(); dC.restore();
+      });
+    }
+
+    // Shoulder tear lines (3 and 9 o'clock, top and bottom)
+    if (tear > 0.01) {
+      dC.save();
+      dC.strokeStyle = 'rgba(210,20,20,'+tear*op+')';
+      dC.lineWidth = 1.8; dC.lineCap = 'round'; dC.lineJoin = 'round';
+      [[6,TLT],[CW-6,TLT]].forEach(function(p) {
+        var x=p[0];
+        var d = x < CW/2 ? 8 : -8;
+        // Top band tear
+        dC.beginPath(); dC.moveTo(x,TLT+bh*0.14); dC.lineTo(x+d,TLT+bh*0.52); dC.lineTo(x,TLT+bh*0.88); dC.stroke();
+        // Bottom band tear
+        dC.beginPath(); dC.moveTo(x,BLT-bh*0.88); dC.lineTo(x+d,BLT-bh*0.52); dC.lineTo(x,BLT-bh*0.14); dC.stroke();
+      });
+      dC.restore();
+    }
+
+    // Thrombus floods from both sides simultaneously
+    if (thr > 0.01) {
+      var tw = thr * CW * 0.52;
+      // Left
+      dC.save();
+      var gL=dC.createLinearGradient(0,0,tw,0);
+      gL.addColorStop(0,  'rgba(36,2,2,'+Math.min(0.96,thr*2.4)*op+')');
+      gL.addColorStop(0.7,'rgba(28,1,1,'+Math.min(0.82,thr*1.8)*op+')');
+      gL.addColorStop(1,  'rgba(18,0,0,'+Math.min(0.48,thr*1.0)*op+')');
+      dC.fillStyle=gL; dC.fillRect(0,lt,tw,lb-lt); dC.restore();
+      // Right
+      dC.save();
+      var gR=dC.createLinearGradient(CW,0,CW-tw,0);
+      gR.addColorStop(0,  'rgba(36,2,2,'+Math.min(0.96,thr*2.4)*op+')');
+      gR.addColorStop(0.7,'rgba(28,1,1,'+Math.min(0.82,thr*1.8)*op+')');
+      gR.addColorStop(1,  'rgba(18,0,0,'+Math.min(0.48,thr*1.0)*op+')');
+      dC.fillStyle=gR; dC.fillRect(CW-tw,lt,tw,lb-lt); dC.restore();
+    }
+
+    dC.restore();
+
+    difLbl.textContent =
+      t<0.07 ? 'healthy artery \u2014 three-layer wall uniform across full circumference'
+    : t<0.24 ? 'diffuse LDL infiltration \u00b7 both walls equally, full length of vessel'
+    : t<0.42 ? 'concentric ring thickens from all sides \u00b7 lumen narrows uniformly'
+    : t<0.55 ? 'necrotic pockets form at shoulder stress points (3 and 9 o\u2019clock)'
+    : t<0.62 ? 'shoulder caps thinning under macrophage MMP attack'
+    : t<0.70 ? 'shoulder tears \u2014 cap ruptures at lateral walls'
+    : t<0.86 ? 'thrombus erupts from both tears simultaneously \u00b7 meets in the centre'
+    : t<0.91 ? 'total occlusion \u2014 acute ischaemia'
+    : '\u21ba restarting';
+  }
+
+  // ── Loop ───────────────────────────────────────────────
+  function frame(ts) {
+    if (!t0)    t0    = ts;
+    if (!lastTs) lastTs = ts;
+    var dt = (ts-lastTs)/1000; lastTs = ts;
+    fp = (fp + dt*0.26) % 1;
+    var t = ((ts-t0) % CYCLE) / CYCLE;
+    drawEcc(t, fp);
+    drawDif(t, fp);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();</script>
+
+<!-- ══════════════════════════════════════════════════════ -->
 <!-- REMEDIES                                             -->
 <!-- ══════════════════════════════════════════════════════ -->
 <div id="s-remedies" style="position:relative; top:-52px; visibility:hidden; pointer-events:none;"></div>
