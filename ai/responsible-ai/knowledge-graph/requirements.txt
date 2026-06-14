@@ -1,0 +1,12 @@
+# Extra dependencies for the knowledge-graph slice, on top of the shared
+# ai/responsible-ai/.venv (which already has torch, transformers, numpy,
+# scikit-learn, requests). Install into that venv.
+kuzu==0.11.3
+anthropic==0.109.1
+
+# Notes:
+# - We deliberately do NOT use `datasets` or `sentence-transformers`: both import
+#   the `datasets` package, which crashes under this venv's Python 3.14.0+ (PEP-440
+#   rejects the "+" build suffix). We load PubMed-RCT from raw files and run the
+#   embedding/NLI models through `transformers` directly. See agents/shared/decisions.md.
+# - The LLM extractor (src/extraction/llm_predict.py) needs ANTHROPIC_API_KEY set.

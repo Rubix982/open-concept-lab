@@ -31,6 +31,7 @@ idna==3.15
 isosurfaces==0.1.2
 Jinja2==3.1.6
 joblib==1.5.3
+kuzu==0.11.3
 manim==0.20.1
 ManimPango==0.6.1
 mapbox_earcut==2.0.0

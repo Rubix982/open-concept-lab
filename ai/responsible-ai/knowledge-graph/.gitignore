@@ -1,0 +1,11 @@
+# Data and model artifacts — not versioned
+data/raw/
+data/processed/
+data/*.kuzu/
+*.kuzu
+claim_classifier*.pt
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
