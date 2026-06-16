@@ -7,3 +7,9 @@
 - **Kùzu**: embedded property-graph DB ("SQLite for graphs"), Cypher query language.
 - **Vertical slice**: one thin path through all four layers (ingest → extract → graph → query) on real data, rather than building each layer fully before the next.
 - **SciArg / PubMed-RCT / ACL-ARC**: candidate real corpora of scientific sentences labeled by rhetorical/discourse role (R-001 will choose).
+- **Citance**: the sentence(s) in a citing paper surrounding/containing a citation to another paper — the textual context of a citation, where the *kind* of relation is actually stated.
+- **Citation function / intent**: the role a citation plays (uses-method, background, comparison, contrast, …), classified from the citance.
+- **Citation linking**: resolving an in-text citation marker (`[12]`, `\cite{...}`) → its reference-list entry → the actual cited paper's id.
+- **Citation-context analysis**: typing the relation between two papers from the citance, rather than from their abstracts in isolation.
+- **Cited vs uncited regime**: builds-on relations (USES/REFINES/SUPPORTS) carry a citation and are typed from the citance; parallel relations (ADDRESSES_SAME_PROBLEM/CONTRADICTS/RELATED) often have no citation and are typed semantically.
+- **GROBID / Semantic Scholar Graph API / arXiv LaTeX**: candidate full-text + citation-context sources (R-007 will choose). S2 ships pre-extracted citation `contexts` + `intents`.

@@ -64,3 +64,25 @@ implement ticket.
 **Artifacts:**
 
 - docs/llm-edge-typer-plan.md (the plan tree)
+
+---
+
+### O-005 · Sequence the hybrid full-text edge-typer arc
+
+**Status:** in-progress
+**Type:** coordinate
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+
+**Description:**
+Sequence the architecture evolution (docs/llm-edge-typer-plan.md → Architecture Evolution;
+findings.md [R-006]). Order: R-007 (source) → E-009 (full-text) → E-010 (citation linking) →
+E-011 (citance typer) → E-012 (hybrid merge). E-006 (semantic typer, abstracts) runs in
+parallel and feeds E-012. E-008 (abstract-only ship) remains an OPTIONAL interim win.
+Confidence-gate: R-007 HIGH → open E-009/E-010 as implement; if R-007 finds S2 covers our
+papers well, E-010 shrinks to reuse rather than build.
+
+**Next action:** run R-007 (source strategy) — it decides build-vs-reuse for the whole arc.
+
+**Artifacts:** docs/llm-edge-typer-plan.md → Architecture Evolution

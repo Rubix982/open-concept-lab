@@ -155,3 +155,51 @@ Artifacts: src/graph/{sample_pairs,make_label_sheet,eval_edges}.py,
 data/processed/{candidate_pairs,gold_pairs}.jsonl, gold_edges_sheet.md (user-filled).
 
 **Closed:** 2026-06-14
+
+---
+
+### R-006 · Edge-relation data model + evidence-source framing
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+**Closed:** 2026-06-16
+
+**Description:**
+Capture the architectural reframing surfaced in discussion: relations bind claim↔claim
+(many-to-many across papers, not paper↔paper); evidence splits into a cited regime
+(builds-on relations, evidence in the citance) and an uncited regime (parallel relations,
+semantic comparison); therefore the edge typer should be hybrid and full-text is a
+prerequisite for the cited half.
+
+**Outcome:** findings.md [R-006] + docs/llm-edge-typer-plan.md → Architecture Evolution.
+Spawns R-007 (source strategy) and E-009..E-012.
+
+---
+
+### R-007 · Full-text + citation-context source strategy
+
+**Status:** open
+**Type:** research
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+
+**Description:**
+Choose how to obtain full text + citances. Evaluate, with coverage/license/granularity:
+
+1. **Semantic Scholar Graph API** — exposes per-citation `contexts` (citances) and `intents`
+   (citation-function labels) already extracted across the corpus. Could eliminate most
+   parsing AND give a citation-function baseline. Check: coverage of our OpenAlex papers,
+   rate limits, whether contexts can be tied to our claim nodes, terms of use.
+2. **GROBID on OA PDFs** — extracts structured full text + reference list from PDFs;
+   universal but noisier; we'd do citance extraction + reference resolution ourselves.
+3. **arXiv LaTeX source** — cleanest citation linking (`\cite`→`\bibitem`), CS-heavy,
+   arXiv-only.
+
+**Deliverable:** findings [R-007] recommendation + confidence; an estimate/measurement of
+the cited-vs-uncited ratio in our data. Gates E-009/E-010 scope (how much we build vs reuse).
+
+**Artifacts:** agents/shared/findings.md → "[R-007] ..."

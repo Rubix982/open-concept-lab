@@ -14,8 +14,12 @@ source papers, and which other claims support or contradict them.
 
 ## Current Phase
 
-Phase 5 — LLM edge-typer (docs/llm-edge-typer-plan.md). Taxonomy confirmed (RICH).
-Building roots-first: gold eval set (R-005) + LLMEdgeTyper (E-006) → integrate (E-008).
+Phase 5 — LLM edge-typer (docs/llm-edge-typer-plan.md), now evolved into a **hybrid
+citation-context + semantic** design (Architecture Evolution section; findings.md [R-006]).
+The abstract-only typer (E-006) works and kills false-contradictions but falls back to
+RELATED because the "builds-on" evidence lives in citances, not abstracts. Real arc:
+R-007 (source) → E-009 (full-text) → E-010 (citation linking) → E-011 (citance typer) →
+E-012 (hybrid merge). E-008 = optional interim ship of the abstract-only typer.
 
 ## Architecture (the four-step slice)
 
@@ -52,9 +56,17 @@ too much infra for a single-machine month-scale build).
 | O-004 | Orchestrator | Sequence the LLM edge-typer effort               | in-progress |
 | R-004 | Researcher | Relation taxonomy + edge schema design (RICH set)   | closed      |
 | R-005 | Researcher | Gold edge set + NLI-vs-LLM eval harness             | open        |
-| E-006 | Engineer   | LLMEdgeTyper (batched structured output)            | open        |
+| E-006 | Engineer   | LLMEdgeTyper (batched structured output)            | in-progress |
 | E-007 | Engineer   | Candidate-gen review + claim dedup                  | open        |
-| E-008 | Engineer   | Integrate --edge-typer llm, rebuild, verify         | blocked     |
+| E-008 | Engineer   | Integrate --edge-typer llm, rebuild, verify (interim)| open       |
+| R-005 | Researcher | Gold edge set + NLI-vs-LLM eval                      | closed      |
+| O-005 | Orchestrator | Sequence the hybrid full-text edge-typer arc      | in-progress |
+| R-006 | Researcher | Edge-relation data model + evidence-source framing  | closed      |
+| R-007 | Researcher | Full-text + citation-context source strategy        | open        |
+| E-009 | Engineer   | Full-text ingestion (sections + sentences)          | blocked     |
+| E-010 | Engineer   | Citation linking (marker → reference → cited id)    | blocked     |
+| E-011 | Engineer   | Citance extraction + citation-context typer (cited) | blocked     |
+| E-012 | Engineer   | Hybrid edge typer (cited ∪ uncited), rebuild        | blocked     |
 
 ## Blocked
 
@@ -96,6 +108,7 @@ contradicting claims. End-to-end on real papers.
 
 ## Next Orchestrator Action
 
-Highest leverage now that extraction is strong: (a) an independent-label OOD eval to
-de-risk R-003's number; (b) apply the same LLM approach to **edge typing** (limitation
-#2); (c) full-text ingestion. Plus D-001 (slice README — partly done).
+**Run R-007 (full-text + citation-context source strategy)** — it decides build-vs-reuse for
+the entire hybrid arc (Semantic Scholar may ship citances + intents and shrink E-010). If a
+quick win is wanted first, ship E-008 (abstract-only LLM typer) as an interim improvement.
+Still-open earlier items: independent-label OOD eval (R-003 follow-up); E-007 claim dedup.

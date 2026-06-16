@@ -153,3 +153,87 @@ B (candidate review) ───────────────────�
 
 _R-004 gates E-006 (confidence-gated). R-005 (eval) should land before E-008 so we measure
 before committing the rebuild._
+
+---
+
+## 🌲 ARCHITECTURE EVOLUTION (2026-06-16) — Hybrid citation-context + semantic typing
+
+> Supersedes the abstract-only fork above. Origin: a paper **bundles many ideas, each with
+> its own relation to ideas in other papers** — and the evidence for the "builds-on"
+> relations lives in the **citance** (the sentence where one paper cites another), which the
+> abstract-only typer never sees. This also explains R-005's RELATED-fallback. See
+> findings.md [R-006].
+
+### 🌱 New ROOTS — the edge-typer now sits on top of these
+
+- **ROOT-FT · Full-text ingestion.** Citances live in Related Work / Methods, not abstracts.
+  Rich USES/REFINES typing is impossible without body text. (R-007, E-009.)
+- **ROOT-CL · Citation linking.** Resolve in-text markers (`[12]`, `\cite{...}`) → reference
+  entry → the actual cited paper's id, so an edge points at a real node. (E-010.)
+
+### Two evidence regimes (the "hybrid")
+
+| Regime | Relations | Evidence | How |
+| --- | --- | --- | --- |
+| **Cited** (directional, builds-on) | USES, REFINES, SUPPORTS | the **citance** | citation-context / citation-function classification (E-011) |
+| **Uncited** (parallel/independent) | ADDRESSES_SAME_PROBLEM, CONTRADICTS, RELATED, NONE | semantic claim comparison | existing LLM/embedding typer (E-006 → E-012) |
+
+A citation tells you a link *exists* + its direction; the citance tells you *which kind* and
+*which idea*. But CONTRADICTS / ADDRESSES_SAME_PROBLEM frequently hold between papers that
+**don't cite each other** (contemporaneous work) — citations are blind to that half, so
+semantic comparison stays. Final edges = union of both, merged.
+
+### Data-model note (already supported, now exploited)
+
+Nodes are *claims*, not papers; `Paper` is a container. One paper's many claims can each carry
+distinct typed edges to claims in different papers — the many-to-many idea-map the vision
+wants. The schema doesn't change; the evidence pipeline feeding it does.
+
+### 🌿 New branches & 🍃 leaves
+
+- 🌿 **G · Full-text ingestion**
+  - 🍃 **R-007** source strategy: **Semantic Scholar Graph API** (ships pre-extracted citation
+    *contexts* + *intents* — may shortcut most parsing) vs **GROBID-on-PDF** (universal,
+    noisier, we parse) vs **arXiv LaTeX** (clean `\cite`→`\bibitem`, CS-heavy, arXiv-only).
+  - 🍃 **E-009** ingest full text from the chosen source → sections + sentences with
+    provenance, reusing the `SentenceRecord` shape.
+- 🌿 **H · Citation linking**
+  - 🍃 **E-010** marker → reference → resolved cited-paper id; attach each citance to its
+    location so it can be tied to nearby claims. (Largely free if R-007 picks S2.)
+- 🌿 **I · Citation-context typing (cited half)**
+  - 🍃 **E-011** extract the citance per (citing-claim, cited-paper) link; type it
+    (USES/REFINES/SUPPORTS) with the LLM using the citance as evidence; **measure the
+    cited-vs-uncited ratio** in real data (the open unknown from R-006).
+- 🌿 **J · Hybrid merge**
+  - 🍃 **E-012** run citation-context typer (cited) + semantic typer (uncited), merge into one
+    edge set with `evidence` provenance (citance | semantic), rebuild, verify.
+
+### Updated dependency tree
+
+```
+R-006 (framing ✓)
+ROOT-FT: R-007 ─► E-009 ─► E-010 ─► E-011 ─┐
+  (source)   (full-text) (cite-link) (citance) │
+                                               ├─► E-012 (hybrid merge → rebuild → verify)
+E-006 (semantic LLM typer, abstracts) ─────────┘
+```
+
+### Interim vs strategic
+
+- **Interim (optional, ship anytime):** E-008 — wire the abstract-only LLM typer, rebuild.
+  Zero false-contradictions today, but RELATED-heavy (R-005). Honest quick win over NLI.
+- **Strategic (the real map):** G→H→I→J — the biggest single build in the project (full-text
+  parsing + citation linking). Turns "claims that are near each other" into "a map of how
+  ideas flow between papers."
+
+### New tickets
+
+| ID | Branch | Title | Type | Status |
+| --- | --- | --- | --- | --- |
+| O-005 | — | Sequence the hybrid full-text edge-typer arc | coordinate | in-progress |
+| R-006 | — | Edge-relation data model + evidence-source framing | research | closed |
+| R-007 | G | Full-text + citation-context source strategy | research | open |
+| E-009 | G | Full-text ingestion (sections + sentences w/ provenance) | implement | blocked (R-007) |
+| E-010 | H | Citation linking (marker → reference → cited paper id) | implement | blocked (E-009) |
+| E-011 | I | Citance extraction + citation-context typer (cited) | implement | blocked (E-010) |
+| E-012 | J | Hybrid edge typer (cited ∪ uncited), rebuild, verify | implement | blocked (E-011, E-006) |

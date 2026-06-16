@@ -167,3 +167,30 @@ defensible — they differ on the evidence threshold.
 **Confidence: HIGH** on the headline (false-CONTRADICTS fixed, independent labels);
 the exact-match numbers are honest but small-n (37). The win is real and bounded — not
 the 1.000 the extraction eval suggested for its task.
+
+## [R-006] Finding: relations are per-claim & many-to-many; "builds-on" evidence is in citances
+
+_Date: 2026-06-16 · design reasoning (from discussion), not an experiment._
+
+1. **Unit of relation = claim↔claim, not paper↔paper.** A paper bundles many claims; each can
+   relate differently to claims in different papers (complement one, use another's method,
+   address a third's problem, contradict a fourth). The graph already models this (claims are
+   nodes, `Paper` is a container) — the model was right; the evidence feeding it was thin.
+
+2. **Two evidence regimes.**
+   - *Cited / builds-on* (USES, REFINES, SUPPORTS): evidence = the **citance**, the sentence
+     in paper P that cites paper A. (Established as citation-function / citation-context
+     analysis.)
+   - *Uncited / parallel* (ADDRESSES_SAME_PROBLEM, CONTRADICTS, RELATED, NONE): no citation
+     exists; evidence = semantic claim comparison.
+
+3. **This explains R-005.** The abstract-only typer defaulted to RELATED because the citance —
+   where "B extends/uses A" is actually stated — lives in body text (Related Work / Methods),
+   not the abstract. It never saw the evidence.
+
+4. **Therefore: hybrid + full-text.** Final edges = citation-context typer (cited) ∪ semantic
+   typer (uncited). Full-text ingestion + citation linking become prerequisites for the cited
+   half. See docs/llm-edge-typer-plan.md → Architecture Evolution.
+
+**Confidence: HIGH** on the framing. **Unknown to measure:** the cited-vs-uncited ratio in
+real data (how much of the graph each regime covers) — quantify in R-007 / E-011.

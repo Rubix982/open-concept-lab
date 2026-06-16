@@ -313,3 +313,98 @@ gone; spot-check new edges. Surface `rationale` in `src/query`; add optional
 `--min-edge-confidence` filter.
 
 **Artifacts:** src/graph/build.py, src/query/search.py, data/ckg.kuzu, CHANGELOG.md
+
+---
+
+### E-009 · Full-text ingestion (sections + sentences with provenance)
+
+**Status:** blocked
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+**Estimated:** 6h
+
+**Blockers:** R-007 (source choice).
+
+**Description:**
+Extend ingestion beyond abstracts: from the R-007-chosen source, produce per-paper full text
+split into sections (related-work, methods, …) → sentences reusing the existing
+`SentenceRecord` (paper_id, section, char offsets). Cache raw responses. Keep the abstract
+path working (`--source abstract|fulltext`). This is the project's biggest single build —
+PDF/LaTeX parsing (or S2 ingestion if R-007 picks it).
+
+**Acceptance:** full-text sentences with valid provenance for ≥N papers; abstract path
+unaffected.
+
+**Artifacts:** src/ingestion/ (full-text path), decisions.md [E-009]
+
+---
+
+### E-010 · Citation linking (marker → reference → cited paper id)
+
+**Status:** blocked
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+**Estimated:** 5h
+
+**Blockers:** E-009.
+
+**Description:**
+Parse in-text citation markers (`[12]`, `\cite{...}`), link each to its reference-list entry,
+and resolve that reference to a cited-paper id (OpenAlex/arXiv). Record each citance with its
+location (section + sentence index) so it can be tied to the nearby claim. Largely provided
+if R-007 selects Semantic Scholar (contexts already carry the cited paperId).
+
+**Acceptance:** for a sample of papers, in-text markers resolve to correct cited-paper ids;
+citances carry their location.
+
+**Artifacts:** src/graph/ (citation linking), decisions.md [E-010]
+
+---
+
+### E-011 · Citance extraction + citation-context typer (cited relations)
+
+**Status:** blocked
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+**Estimated:** 4h
+
+**Blockers:** E-010.
+
+**Description:**
+For each (citing claim near a citance, cited paper) link, type the relation as USES / REFINES
+/ SUPPORTS using the **citance** as evidence (LLM, structured output), attaching
+`evidence`=citance text + confidence. **Measure the cited-vs-uncited ratio** in real data
+(the open unknown from R-006) and log it.
+
+**Acceptance:** cited links typed with citance evidence; spot-check correct; ratio reported.
+
+**Artifacts:** src/graph/citance_typer.py, decisions.md [E-011]
+
+---
+
+### E-012 · Hybrid edge typer (cited ∪ uncited), rebuild, verify
+
+**Status:** blocked
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-16
+**Updated:** 2026-06-16
+**Estimated:** 3h
+
+**Blockers:** E-011, E-006.
+
+**Description:**
+Merge the citation-context typer (cited) with the semantic typer (uncited) into one edge set;
+reconcile/dedup when both fire on the same pair; store `evidence` provenance (citance |
+semantic) on each edge. Rebuild `ckg.kuzu`; verify against the gold set + spot-check;
+surface evidence in `src/query`.
+
+**Acceptance:** hybrid graph built; edges carry evidence provenance; gold-set + spot-check OK.
+
+**Artifacts:** src/graph/build.py (hybrid), src/query/, data/ckg.kuzu, CHANGELOG.md
