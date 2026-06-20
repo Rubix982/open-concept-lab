@@ -18,7 +18,9 @@ import json
 
 import anthropic
 
-MODEL = "claude-opus-4-8"
+# Bulk default: haiku (sentence classification is well within a small model; ~5x cheaper
+# than opus). Pass model="claude-opus-4-8" for evals / quality-ceiling runs.
+MODEL = "claude-haiku-4-5"
 LABELS = ["BACKGROUND", "METHOD", "CLAIM"]
 
 _SYSTEM = (

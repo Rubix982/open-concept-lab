@@ -24,7 +24,9 @@ _PROC = Path(__file__).resolve().parents[2] / "data" / "processed"
 _IN = _PROC / "intra_corpus_citations.jsonl"
 _OUT = _PROC / "cited_edges_typed.jsonl"
 
-MODEL = "claude-opus-4-8"
+# Bulk default: haiku (categorizing short citances is well within a small model; ~5x
+# cheaper than opus). Reserve opus for evals / quality-ceiling runs via --model.
+MODEL = "claude-haiku-4-5"
 RELATIONS = [
     "USES", "REFINES", "SUPPORTS", "CONTRADICTS",
     "ADDRESSES_SAME_PROBLEM", "RELATED", "NONE",
@@ -32,7 +34,9 @@ RELATIONS = [
 
 # Faceted sub-classification (a filterable second layer UNDER the umbrella relation —
 # does not replace it). Most useful for decomposing RELATED.
-FACETS = [
+# Per-umbrella facets (R-009): each umbrella carries its own filterable sub-vocabulary.
+# RELATED facets answer "what kind of mention?"; USES/REFINES facets answer "a use of what?".
+_RELATED_FACETS = [
     "EXEMPLIFIES",   # cited as an instance of a category (esp. surveys: "approaches like [X]")
     "COMPARES",      # positioned against / contrasted, without contradicting
     "BACKGROUND",    # foundational concept / origin attribution
@@ -42,9 +46,16 @@ FACETS = [
     "FUTURE_WORK",   # cited as an open problem / promising direction
     "RESOURCE",      # points to a dataset / benchmark / tool as available
     "CO_MENTION",    # merely co-listed, no specific function (true residual)
-    "OTHER",         # none fit — put the proposed sub-kind name in facet_detail
-    "NA",            # no facet applies / not determinable
 ]
+_USES_FACETS = [
+    "USES_METHOD",        # a technique / algorithm / procedure (incl. loss, regularization)
+    "USES_ARCHITECTURE",  # a named model / network (GraphSAGE, Transformer)
+    "USES_DATASET",       # a dataset / benchmark
+    "USES_METRIC",        # an evaluation metric / protocol
+    "USES_TOOL",          # software / optimizer / framework (Adam, PyTorch Geometric)
+    "USES_THEORY",        # a theoretical result / foundation (WL test, expressiveness)
+]
+FACETS = _RELATED_FACETS + _USES_FACETS + ["NA", "OTHER"]
 
 _SYSTEM = (
     "You classify how a CITING paper relates to a paper it CITES, judged from the citance(s) "
@@ -64,26 +75,30 @@ _SYSTEM = (
     "You are given the Semantic Scholar intent as a weak prior: methodology → often "
     "USES/REFINES; background → often RELATED/USES; result → often SUPPORTS/CONTRADICTS. "
     "Trust the citance over the prior.\n\n"
-    "Then add a FACET — a filterable sub-kind UNDER the relation (this does NOT replace the "
-    "relation; it refines it, and matters most for RELATED) — plus a short facet_detail "
-    "naming the specific:\n"
-    "- EXEMPLIFIES: cited as an instance/example of a category (surveys: 'approaches like "
-    "[X]'). facet_detail = the category it is filed under.\n"
-    "- COMPARES: positioned against/contrasted without contradicting. facet_detail = what is "
-    "compared.\n"
+    "Then add a FACET appropriate to the relation you chose (it refines the relation, does "
+    "NOT replace it), plus a short facet_detail naming the specific.\n"
+    "If relation is RELATED, pick one of:\n"
+    "- EXEMPLIFIES: instance/example of a category (surveys: 'approaches like [X]'). "
+    "facet_detail = the category.\n"
+    "- COMPARES: positioned against/contrasted (no contradiction). facet_detail = what's compared.\n"
     "- BACKGROUND: foundational concept / origin attribution. facet_detail = the concept.\n"
     "- MOTIVATION: cited to motivate the problem. facet_detail = the motivation.\n"
     "- APPLICATION: cited as an application domain. facet_detail = the domain.\n"
-    "- CRITIQUES: flags a weakness/limitation of the cited work (short of contradiction). "
-    "facet_detail = the weakness.\n"
-    "- FUTURE_WORK: cited as an open problem or promising direction. facet_detail = the "
-    "direction.\n"
-    "- RESOURCE: points to a dataset/benchmark/tool as available (not used here). "
-    "facet_detail = the resource.\n"
+    "- CRITIQUES: flags a weakness/limitation (short of contradiction). facet_detail = the weakness.\n"
+    "- FUTURE_WORK: open problem / promising direction. facet_detail = the direction.\n"
+    "- RESOURCE: points to a dataset/benchmark/tool as available. facet_detail = the resource.\n"
     "- CO_MENTION: merely co-listed, no specific function. facet_detail = ''.\n"
-    "- OTHER: none of the above fits — invent the most accurate sub-kind name and put it in "
-    "facet_detail (do NOT default to OTHER out of laziness; only when nothing fits).\n"
-    "- NA: no facet applies. facet_detail = ''.\n"
+    "If relation is USES or REFINES, pick what KIND of thing is used/extended:\n"
+    "- USES_METHOD: a technique/algorithm/procedure (incl. loss, regularization, sampling). "
+    "facet_detail = the method.\n"
+    "- USES_ARCHITECTURE: a named model/network (e.g. GraphSAGE, Transformer). facet_detail = the model.\n"
+    "- USES_DATASET: a dataset/benchmark. facet_detail = the dataset.\n"
+    "- USES_METRIC: an evaluation metric/protocol. facet_detail = the metric.\n"
+    "- USES_TOOL: software/optimizer/framework (e.g. Adam, PyTorch Geometric). facet_detail = the tool.\n"
+    "- USES_THEORY: a theoretical result/foundation (e.g. WL test, expressiveness). facet_detail = the result.\n"
+    "Otherwise (SUPPORTS / CONTRADICTS / ADDRESSES_SAME_PROBLEM / NONE): use NA.\n"
+    "OTHER: only if nothing in the appropriate set fits — name the sub-kind in facet_detail "
+    "(do not default to OTHER out of laziness).\n"
     "Keep facet_detail under ~8 words.\n\n"
     "Give calibrated confidence in [0,1] and a one-sentence rationale grounded in the citance."
 )
@@ -171,15 +186,29 @@ class CitanceTyper:
 
 
 def main() -> None:
+    import argparse
+    from collections import Counter
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--limit", type=int, default=None,
+                    help="type only the first N citance edges (sample); writes a *_sample file")
+    ap.add_argument("--model", default=MODEL,
+                    help=f"Claude model (default {MODEL}; use claude-opus-4-8 for evals)")
+    args = ap.parse_args()
+
     edges = [json.loads(l) for l in _IN.read_text().splitlines() if l.strip()]
     with_c = [e for e in edges if e["citances"]]
     without_c = [e for e in edges if not e["citances"]]
-    print(f"{len(edges)} citation edges: {len(with_c)} with citances (typing), "
-          f"{len(without_c)} without (-> semantic fallback in E-012)")
+    sample = args.limit is not None
+    target = with_c[: args.limit] if sample else with_c
+    model_tag = args.model.split("-")[1] if "-" in args.model else args.model
+    out_path = _OUT.with_name(f"cited_edges_typed_sample_{model_tag}.jsonl") if sample else _OUT
+    print(f"{len(edges)} edges: {len(with_c)} with citances; "
+          f"typing {len(target)} with {args.model}{' (SAMPLE)' if sample else ''}")
 
-    typed = CitanceTyper().type_edges(with_c)
+    typed = CitanceTyper(model=args.model).type_edges(target)
     rows = []
-    for e, t in zip(with_c, typed):
+    for e, t in zip(target, typed):
         rows.append({
             "citing": e["citing"], "cited": e["cited"],
             "citing_title": e["citing_title"], "cited_title": e["cited_title"],
@@ -188,30 +217,35 @@ def main() -> None:
             "confidence": t["confidence"], "rationale": t["rationale"],
             "evidence": "citance", "s2_intents": e.get("intents") or [],
         })
-    for e in without_c:
-        rows.append({
-            "citing": e["citing"], "cited": e["cited"],
-            "citing_title": e["citing_title"], "cited_title": e["cited_title"],
-            "relation": None, "facet": None, "facet_detail": "", "direction": "A_TO_B",
-            "confidence": 0.0, "rationale": "", "evidence": "needs_semantic",
-            "s2_intents": e.get("intents") or [],
-        })
-    _OUT.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n")
+    if not sample:
+        for e in without_c:
+            rows.append({
+                "citing": e["citing"], "cited": e["cited"],
+                "citing_title": e["citing_title"], "cited_title": e["cited_title"],
+                "relation": None, "facet": None, "facet_detail": "", "direction": "A_TO_B",
+                "confidence": 0.0, "rationale": "", "evidence": "needs_semantic",
+                "s2_intents": e.get("intents") or [],
+            })
+    out_path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n")
 
-    from collections import Counter
-    dist = Counter(r["relation"] for r in rows if r["relation"])
-    related_facets = Counter(
-        r["facet"] for r in rows if r["relation"] == "RELATED"
-    )
+    typed_rows = [r for r in rows if r["relation"]]
+    na = [r for r in typed_rows if r["facet"] == "NA"]
     print(f"\n=== typed {len(typed)} cited edges ===")
-    print("umbrella relation distribution:", dict(dist))
-    print("FACETS within RELATED:", dict(related_facets))
-    print(f"wrote {_OUT}")
-    print("\n--- RELATED, now faceted (the umbrella broken into filterable sub-kinds) ---")
-    for r in rows:
-        if r["relation"] == "RELATED":
-            detail = f" [{r['facet_detail']}]" if r["facet_detail"] else ""
-            print(f"  RELATED/{r['facet']}{detail}: {r['citing_title'][:32]} -> {r['cited_title'][:32]}")
+    print("umbrella:", dict(Counter(r["relation"] for r in typed_rows)))
+    print("RELATED facets:", dict(Counter(r["facet"] for r in typed_rows if r["relation"] == "RELATED")))
+    print("USES/REFINES facets:", dict(Counter(r["facet"] for r in typed_rows if r["relation"] in ("USES", "REFINES"))))
+    print(f"NA remaining: {len(na)}/{len(typed_rows)} "
+          f"({len(na) / max(len(typed_rows), 1):.0%}) — by umbrella {dict(Counter(r['relation'] for r in na))}")
+    print(f"wrote {out_path}")
+    print("\n--- USES, now faceted (the NA bucket broken into 'a use of what?') ---")
+    shown = 0
+    for r in typed_rows:
+        if r["relation"] in ("USES", "REFINES") and r["facet"] != "NA":
+            d = f" [{r['facet_detail']}]" if r["facet_detail"] else ""
+            print(f"  {r['relation']}/{r['facet']}{d}: {r['citing_title'][:28]} -> {r['cited_title'][:28]}")
+            shown += 1
+            if shown >= 14:
+                break
 
 
 if __name__ == "__main__":

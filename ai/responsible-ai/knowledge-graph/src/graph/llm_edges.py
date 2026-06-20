@@ -20,7 +20,8 @@ from typing import Any
 
 import anthropic
 
-MODEL = "claude-opus-4-8"
+# Bulk default: haiku (~5x cheaper than opus). Pass model="claude-opus-4-8" for evals.
+MODEL = "claude-haiku-4-5"
 RELATIONS = [
     "SUPPORTS",
     "CONTRADICTS",

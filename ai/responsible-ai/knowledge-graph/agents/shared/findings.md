@@ -289,3 +289,34 @@ USES/REFINES/BACKGROUND lineage that was sparse (E-011 finding). Thresholds:
 richness): ingest added papers' abstracts + extract claims (existing tagger), pull citances
 (S2), rebuild + re-type. Highest-leverage move for a USES/REFINES-rich idea-map. Confidence:
 HIGH (sizing measured). Spawns the build ticket E-013.
+
+## [R-010] Finding: per-umbrella facets — the NA bucket was the USES umbrella un-faceted
+
+_Date: 2026-06-20 · empirical (128-paper corpus, 736 citance edges)._
+
+The large NA facet count (114/728 ≈ 16%) was **90% USES edges**: our facets were all
+RELATED-oriented (EXEMPLIFIES/COMPARES/BACKGROUND/…), so a USES edge had no fitting facet
+and fell to NA. Per R-009's design, each umbrella should carry its *own* facet vocabulary.
+Added a USES facet family — USES_METHOD / USES_ARCHITECTURE / USES_DATASET / USES_METRIC /
+USES_TOOL / USES_THEORY (+ OTHER escape-hatch). Facet selection is now conditional on the
+umbrella (RELATED → RELATED facets; USES/REFINES → USES facets; else NA).
+
+**Result (full 736-edge re-type):** NA **114 → 10 (16% → 1%)**, and the residual 10 are
+*correctly* NA (NONE/SUPPORTS/ADDRESSES/CONTRADICTS — umbrellas with no facets). USES facets:
+METHOD 97, ARCHITECTURE 83, TOOL 37, DATASET 17, THEORY 9, METRIC 4. OTHER fired ~0 →
+coverage holds. facet_detail is crisply queryable ("node2vec embedding generation", "QM9
+dataset", "Adam"/"PyG"). RELATED side unchanged (per-umbrella isolation works).
+
+**Generalization:** the facet design scales per-umbrella; the OTHER-escape-hatch remains the
+coverage-gap detector. **Confidence: HIGH** on structure + NA collapse; facet *accuracy* still
+wants a small gold check (as flagged in R-009).
+
+**Haiku-vs-opus check (deferred decision, 2026-06-20):** to cost-reduce bulk typing, defaults
+were switched to `claude-haiku-4-5` (evals stay opus). On a 100-edge sample (same taxonomy):
+**umbrella agreement 85%, but exact-facet agreement only 49%** vs opus. So haiku roughly
+tracks the coarse relation but diverges on the fine facet ~half the time (borderline
+EXEMPLIFIES↔BACKGROUND↔CO_MENTION, and some RELATED↔USES flips). **Open decision (user will
+run haiku later):** haiku is fine for coarse umbrella + ~5× cheaper, but for facet-precision
+the gap is real — consider sonnet as the middle, or keep opus for the (one-time) facet pass
+and haiku for re-runs. The current committed `cited_edges_typed.jsonl` is the **opus** full
+re-type (best quality). Diff artifact: cited_edges_typed_sample_{opus,haiku}.jsonl.

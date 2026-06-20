@@ -66,9 +66,10 @@ def main() -> None:
         print(f"NLI skipped: {e}")
     # LLM
     try:
-        from .llm_edges import MODEL, LLMEdgeTyper
-        llm = LLMEdgeTyper().type_pairs(rows)
-        preds[f"LLM ({MODEL})"] = [o["relation"] for o in llm]
+        from .llm_edges import LLMEdgeTyper
+        eval_model = "claude-opus-4-8"  # evals run the quality-ceiling model
+        llm = LLMEdgeTyper(model=eval_model).type_pairs(rows)
+        preds[f"LLM ({eval_model})"] = [o["relation"] for o in llm]
     except Exception as e:  # noqa: BLE001
         print(f"LLM skipped: {e}")
 

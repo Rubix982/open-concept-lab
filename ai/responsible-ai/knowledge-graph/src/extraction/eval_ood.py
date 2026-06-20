@@ -43,11 +43,12 @@ def main() -> None:
 
     # LLM (Claude)
     try:
-        from .llm_predict import MODEL, LLMClaimTagger
+        from .llm_predict import LLMClaimTagger
 
-        llm = LLMClaimTagger()
+        eval_model = "claude-opus-4-8"  # evals run the quality-ceiling model
+        llm = LLMClaimTagger(model=eval_model)
         llm_preds = [lbl for lbl, _ in llm.tag(texts)]
-        blocks.append(_report(f"LLM ({MODEL})", golds, llm_preds))
+        blocks.append(_report(f"LLM ({eval_model})", golds, llm_preds))
     except Exception as e:  # noqa: BLE001
         blocks.append(f"### LLM — skipped: {e}")
 
