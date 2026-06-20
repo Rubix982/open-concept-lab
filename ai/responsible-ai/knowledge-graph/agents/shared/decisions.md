@@ -130,3 +130,29 @@ typer — it's **corpus construction**. A corpus built by citation-snowball from
 (or a focused method lineage) would concentrate strong relations; embedding-similarity
 sampling spreads them thin. → R-008.
 **Revisit if:** the corpus is rebuilt by citation expansion (R-008) — re-measure.
+
+## [E-013] Decision/result: citation-snowball expansion (≥3) transforms the graph
+
+_Date: 2026-06-20_
+
+**What:** ingested the ≥3 co-cited hubs via S2/CorpusId (+35 papers, corpus 45→80; 30
+skipped for missing S2 abstracts), generalized the citation matcher to resolve by
+DOI/arXiv/CorpusId (so arXiv-only hubs GCN/GAT/GraphSAGE match), re-measured + re-typed.
+**Result (before → after):** intra-corpus citation edges **47 → 419** (~9×); with citances
+**31 → 328**; **USES 5 → 114, REFINES 0 → 10** (124 builds-on edges vs ~5); RELATED 25→196.
+Facets exercised 4 → 9 — CRITIQUES/FUTURE_WORK/RESOURCE now fire (confirms R-009: facet
+coverage is corpus-dependent). NA(57) clustered on USES edges → next granularity is
+USES-faceting.
+**Conclusion:** corpus construction is the dominant lever for a USES/REFINES-rich idea-map
+(R-008/E-011 confirmed empirically). The foundational lineage was invisible only because
+the hubs weren't nodes.
+**Phase 2 (≥2, 2026-06-20):** +48 papers (corpus 80→128; 95 skipped — no S2 abstract).
+Re-measured + re-typed. **Progression 45→80→128 papers:** citation edges 47→419→**919**
+(~20×); USES 5→114→**250**; REFINES 0→10→**19** (269 builds-on edges); RELATED 25→196→431;
+all 10 facets now fire (OTHER 1/728 → coverage holds at scale); COMPARES 122. Corpus
+construction is decisively the dominant lever for a USES/REFINES-rich idea-map.
+**Tooling fixes:** pre-skip-before-fetch (dedupe), fail-fast timeouts, incremental flush
+(observable/durable runs). **Caveat:** S2 abstract coverage is partial (~83/178 ≥2
+candidates had abstracts) — OpenAlex/arXiv fallback would recover more. **Next:** E-012
+hybrid build over the 128-paper graph (union citation edges + semantic pairs, faceted,
+rebuild ckg.kuzu); USES-faceting is the next granularity.

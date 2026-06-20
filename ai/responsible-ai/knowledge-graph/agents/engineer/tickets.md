@@ -448,7 +448,7 @@ surface evidence in `src/query`.
 
 ### E-013 · Citation-snowball corpus expansion (build)
 
-**Status:** in-progress (threshold ≥3, +65 papers; user-chosen 2026-06-20)
+**Status:** closed (phases ≥3 and ≥2 both done, 2026-06-20)
 **Type:** implement
 **Priority:** high
 **Created:** 2026-06-20
@@ -477,3 +477,13 @@ report shows richer USES/REFINES + facet distribution than the 45-paper baseline
 added).
 
 **Artifacts:** src/graph/ (expansion build), data/processed/, data/ckg.kuzu, decisions.md [E-013]
+
+**Phase 1 outcome (≥3, 2026-06-20):** +35 hubs (corpus 45→80; 30 skipped — no S2 abstract).
+Citation edges **47→419**, citances **31→328**, **USES 5→114, REFINES 0→10**, facets 4→9.
+Decisive validation that corpus construction is the lever. Tooling:
+expansion_probe.py, expand_corpus.py, generalized s2_citations.py (DOI/arXiv/CorpusId).
+
+**Phase 2 outcome (≥2):** +48 papers (corpus 80→128). Final progression 45→80→128:
+citation edges 47→419→**919**, USES 5→114→**250**, REFINES 0→10→**19**, all 10 facets fire.
+Tooling hardened (pre-skip, fail-fast, flush). **Closed.** Next: E-012 hybrid build over the
+128-paper graph. Coverage caveat: ~83/178 ≥2 candidates had S2 abstracts.

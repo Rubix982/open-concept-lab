@@ -1,9 +1,13 @@
-# Data and model artifacts — not versioned
+# Model + bulk artifacts — not versioned.
+# (Comments must be on their own line — inline comments are treated as part of the pattern.)
+# data/raw/ = cached API responses + raw corpora (regenerable, large).
 data/raw/
-data/processed/
 data/*.kuzu/
 *.kuzu
 claim_classifier*.pt
+
+# Note: data/processed/ jsonl/json ARE versioned (expensive to regenerate: S2 sweeps,
+# LLM typing).
 
 # Python
 __pycache__/

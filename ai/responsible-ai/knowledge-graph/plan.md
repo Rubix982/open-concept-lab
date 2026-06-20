@@ -69,7 +69,7 @@ too much infra for a single-machine month-scale build).
 | E-012 | Engineer   | Hybrid edge typer (cited ∪ uncited), rebuild        | open        |
 | R-008 | Researcher | Corpus construction strategy for relation density   | closed      |
 | R-009 | Researcher | Faceted edge taxonomy (umbrella + sub-facets)       | closed      |
-| E-013 | Engineer   | Citation-snowball corpus expansion (build)          | open (next) |
+| E-013 | Engineer   | Citation-snowball corpus expansion (build)          | closed      |
 
 ## Blocked
 
@@ -118,8 +118,10 @@ and citance E-011) are RELATED-heavy because the corpus is topically clustered, 
 build-on lineage. **The real lever for a USES/REFINES-rich idea-map is corpus construction
 (R-008), not better typing.**
 
-R-008 sized (S2 sweep): corpus is missing the foundational hubs (GCN 17×, GAT/GraphSAGE 13×).
-Bounded citation-snowball → ≥3: +65 papers, ≥2: +178 / ~518 edges (vs 47). **E-013** is the
-build (highest leverage — densifies the USES/REFINES lineage). Sequence: E-013 (expand) →
-E-012 (hybrid merge on the bigger graph). R-004/5/6/7/8/9 closed; faceting validated (R-009);
-edges carry rel_type + facet + facet_detail. Optional/parallel: E-008 interim; E-007 dedup.
+E-013 DONE (both phases). Final progression 45→80→**128** papers: citation edges
+47→419→**919** (~20×), USES 5→114→**250**, REFINES 0→10→**19**, all 10 facets firing, 122
+COMPARES. Corpus construction is the dominant lever — confirmed. **Next: E-012** — hybrid
+build over the 128-paper graph (union the 919 citation edges with the semantic pairs,
+faceted, rebuild ckg.kuzu); surface facets in query. R-004..R-009 + E-013 closed. Also open:
+USES-faceting (next granularity), S2 abstract-coverage fallback (~half of ≥2 had none),
+E-007 dedup, E-008 interim, claim-level citation-edge attachment.

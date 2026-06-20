@@ -30,14 +30,14 @@ _S2 = "https://api.semanticscholar.org/graph/v1"
 _HEADERS = {"User-Agent": "claim-knowledge-graph/0.1 (mailto:islam.saif@northeastern.edu)"}
 
 
-def _fetch_s2(corpusid: str, tries: int = 4) -> dict | None:
+def _fetch_s2(corpusid: str, tries: int = 3) -> dict | None:
     fields = "title,abstract,year,venue,externalIds,authors"
     for attempt in range(tries):
         try:
             r = requests.get(f"{_S2}/paper/CorpusId:{corpusid}", params={"fields": fields},
-                             headers=_HEADERS, timeout=45)
+                             headers=_HEADERS, timeout=20)  # fail fast on flaky calls
         except requests.exceptions.RequestException:
-            time.sleep(1.5 * (attempt + 1))
+            time.sleep(1.0 * (attempt + 1))
             continue
         if r.status_code == 200:
             return r.json()
@@ -46,6 +46,11 @@ def _fetch_s2(corpusid: str, tries: int = 4) -> dict | None:
             continue
         return None
     return None
+
+
+def _guess_pid(c: dict) -> str:
+    """Predict the paper_id from the candidate record (no S2 call needed to dedupe)."""
+    return f"arxiv:{c['arxiv']}" if c.get("arxiv") else f"s2:{c['corpusid']}"
 
 
 def main() -> None:
@@ -58,11 +63,15 @@ def main() -> None:
     picked = [c for c in cands if c["cocite"] >= args.min_cocite and c.get("corpusid")]
     print(f"{len(picked)} candidates >= {args.min_cocite} co-cites (by CorpusId)")
 
+    # Pre-skip already-present papers WITHOUT an S2 call (the dedupe fix).
+    todo = [c for c in picked if _guess_pid(c) not in existing]
+    print(f"{len(picked) - len(todo)} already present (skipped, no fetch); fetching {len(todo)}")
+
     added, sents, skipped = 0, 0, 0
     with _PAPERS.open("a", encoding="utf-8") as pf, _SENTS.open("a", encoding="utf-8") as sf:
-        for i, c in enumerate(picked):
+        for i, c in enumerate(todo):
             d = _fetch_s2(str(c["corpusid"]))
-            time.sleep(1.1)
+            time.sleep(1.0)
             if not d or not d.get("abstract"):
                 skipped += 1
                 continue
@@ -88,8 +97,10 @@ def main() -> None:
             for s in _sentences_for_paper(meta, d["abstract"]):
                 sf.write(json.dumps(s.to_dict(), ensure_ascii=False) + "\n")
                 sents += 1
+            pf.flush()
+            sf.flush()  # durable + observable progress; survives interruption
             if (i + 1) % 10 == 0:
-                print(f"  [{i + 1}/{len(picked)}] added {added}")
+                print(f"  [{i + 1}/{len(todo)}] added {added}", flush=True)
 
     print(f"\nadded {added} papers ({sents} sentences), skipped {skipped} (no abstract/dupe)")
     print(f"corpus now: {len(existing)} papers")
