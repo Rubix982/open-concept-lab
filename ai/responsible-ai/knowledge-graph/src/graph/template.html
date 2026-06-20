@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Claim Knowledge Graph Explorer</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  :root{--bg:#f7f8fa;--card:#fff;--line:#e3e6ea;--accent:#2d6cdf;--ink:#1f2733;--muted:#7a8595}
+  body.dark{--bg:#11151c;--card:#1a202b;--line:#2c3440;--ink:#e7ecf3;--muted:#8b97a7}
+  *{box-sizing:border-box} html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:0;color:var(--ink);
+       display:flex;flex-direction:column;background:var(--bg)}
+  #bar{padding:9px 14px;background:var(--card);border-bottom:1px solid var(--line);
+       box-shadow:0 1px 3px rgba(0,0,0,.05);flex:0 0 auto}
+  #bar h3{margin:0;font-size:16px;font-weight:650;display:inline-block}
+  #sub{color:var(--muted);font-size:12px;margin:2px 0 6px}
+  #bar.collapsed .row{display:none}
+  .row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:7px}
+  #bar label{cursor:pointer;white-space:nowrap;font-size:12.5px;display:inline-flex;align-items:center;gap:4px}
+  .sq{width:10px;height:10px;border-radius:2px;display:inline-block}
+  input[type=text],input[type=number],select{font-size:12.5px;padding:4px 8px;border:1px solid var(--line);
+       border-radius:7px;background:var(--card);color:var(--ink);outline:none;transition:.12s}
+  input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,108,223,.15)}
+  button{font-size:12.5px;padding:5px 11px;border:1px solid var(--line);border-radius:7px;
+       background:var(--card);color:var(--ink);cursor:pointer;transition:.12s}
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  #pathbtn{background:var(--accent);color:#fff;border-color:var(--accent)} #pathbtn:hover{background:#255bbd;color:#fff}
+  .sep{color:var(--line);margin:0 1px}
+  #wrap{flex:1 1 auto;display:flex;min-height:0}
+  #net{flex:1;background:radial-gradient(circle at 50% 38%,#fff,#eef1f5)}
+  body.dark #net{background:radial-gradient(circle at 50% 38%,#171d26,#0e131a)}
+  #panel{width:350px;flex:0 0 350px;border-left:1px solid var(--line);background:var(--card);
+       padding:14px;overflow:auto;font-size:12.5px;line-height:1.45}
+  #panel h2{font-size:15px;margin:0 0 3px;line-height:1.3} #panel a{color:var(--accent);cursor:pointer}
+  .meta{color:var(--muted);font-size:11.5px;margin-bottom:8px}
+  .sec{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);
+       margin:14px 0 5px;display:flex;align-items:center;gap:6px}
+  .sec .ct{background:var(--line);color:var(--ink);border-radius:9px;padding:0 7px;font-size:10.5px;font-weight:600}
+  .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:700;
+       letter-spacing:.4px;color:#fff;text-transform:uppercase}
+  .fbadge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600;
+       background:var(--bg);color:var(--muted);border:1px solid var(--line);margin-left:4px}
+  .ed{margin:6px 0;padding:8px 10px;border-left:3px solid #ccc;background:var(--bg);border-radius:0 8px 8px 0}
+  .card-t{font-weight:600;margin:5px 0 2px;font-size:12.5px;line-height:1.35}
+  .card-d{color:var(--ink);font-size:11.5px} .card-r{font-size:11px;margin-top:3px} .muted{color:var(--muted)}
+  .rk{padding:5px 7px;border-radius:7px;cursor:pointer;display:flex;gap:9px;align-items:baseline;font-size:12px}
+  .rk:hover{background:var(--bg)} .rk .rkn{color:var(--muted);min-width:16px;text-align:right;font-variant-numeric:tabular-nums}
+  .rk .sc{color:var(--accent);font-weight:700;min-width:40px;font-variant-numeric:tabular-nums}
+  textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:7px;padding:6px;
+       font:inherit;font-size:11.5px;background:var(--card);color:var(--ink);margin-top:6px;resize:vertical}
+</style></head><body>
+<div id="bar">
+  <h3>Claim Knowledge Graph — explorer</h3>
+  <button id="collapse" style="float:right">⌃ toolbar</button>
+  <button id="full" style="float:right;margin-right:6px">⛶ full</button>
+  <button id="dark" style="float:right;margin-right:6px">◐ dark</button>
+  <div id="sub">__SUB__</div>
+  <div class="row" id="rels">__REL_BOXES__ <span class="sep">|</span>
+    <label><input type="checkbox" id="iso" checked> hide isolated</label>
+    <label><input type="checkbox" id="phys" checked> physics</label>
+    <label>layout <select id="layout"><option value="force">force</option><option value="year">by year</option></select></label>
+  </div>
+  <div class="row">
+    🔎 <input type="text" id="search" list="papers" placeholder="find a paper…" size="24">
+    facet <select id="facet"><option value="">(any)</option>__FACET_OPTS__</select>
+    detail <input type="text" id="detail" placeholder="e.g. attention" size="12">
+    conf ≥ <input type="number" id="conf" value="0" min="0" max="1" step="0.05" style="width:64px">
+    yr <input type="number" id="ylo" value="__YMIN__" style="width:62px"><input type="number" id="yhi" value="__YMAX__" style="width:62px">
+    deg ≥ <input type="number" id="mindeg" value="__MINDEG__" min="0" style="width:52px">
+    <select id="origin"><option value="all">all papers</option><option value="orig">original</option><option value="hub">snowballed</option></select>
+  </div>
+  <div class="row">
+    path <input type="text" id="pa" list="papers" placeholder="from…" size="16">
+    <input type="text" id="pb" list="papers" placeholder="to…" size="16">
+    <button id="pathbtn">find path</button> <button id="clear">reset</button>
+    <span class="sep">|</span> <button id="ranks">★ rankings</button> <button id="debate">⚑ debates</button>
+    <button id="listbtn">☆ reading list</button>
+    <span class="sep">|</span> export <button id="exGraphml">GraphML</button><button id="exCsv">CSV</button><button id="exJson">JSON</button>
+  </div>
+  <datalist id="papers"></datalist>
+</div>
+<div id="wrap"><div id="net"></div><div id="panel"><span class="muted">Showing the best-connected core. Lower &lsquo;deg ≥&rsquo; to reveal more · click a paper to explore its neighborhood · or hit ★ rankings.</span></div></div>
+<script>
+const ALL_NODES=__NODES__, ALL_EDGES=__EDGES__;
+const idToNode={}, titleToId={}, edgeById={}; const und={}, outAdj={}, inAdj={};
+ALL_NODES.forEach(n=>{idToNode[n.id]=n; titleToId[n.title2]=n.id;});
+ALL_EDGES.forEach(e=>{edgeById[e.id]=e;(outAdj[e.from]=outAdj[e.from]||[]).push(e);(inAdj[e.to]=inAdj[e.to]||[]).push(e);
+  (und[e.from]=und[e.from]||[]).push([e.to,e.id]);(und[e.to]=und[e.to]||[]).push([e.from,e.id]);});
+document.getElementById('papers').innerHTML=ALL_NODES.map(n=>`<option value="${n.title2.replace(/"/g,'&quot;')}">`).join('');
+
+const nodes=new vis.DataSet(ALL_NODES.map(n=>({id:n.id,label:n.label,value:n.value,level:n.level,color:n.color,
+  title:`${n.title2} (${n.year}) · degree ${n.value}`,shape:'dot'})));
+const edges=new vis.DataSet(ALL_EDGES.map(e=>({id:e.id,from:e.from,to:e.to,
+  color:{color:e.baseColor,opacity:e.baseWidth>1?0.85:0.5},width:e.baseWidth,
+  title:`${e.rel}/${e.facet}${e.detail?(' — '+e.detail):''} · conf ${e.conf}\n${e.rationale}`})));
+const net=new vis.Network(document.getElementById('net'),{nodes,edges},{
+  nodes:{shape:'dot',scaling:{min:4,max:20},font:{size:11,strokeWidth:4,strokeColor:'#fff'}},
+  edges:{arrows:{to:{enabled:true,scaleFactor:0.45}},smooth:{type:'continuous'},
+         color:{inherit:false},hoverWidth:1.6,selectionWidth:1.6},
+  physics:{barnesHut:{gravitationalConstant:-45000,centralGravity:0.03,springLength:250,
+           springConstant:0.012,avoidOverlap:1},stabilization:{iterations:500}},
+  interaction:{hover:true,hoverConnectedEdges:true,tooltipDelay:120}});
+net.once('stabilizationIterationsDone',()=>{net.fit({animation:false});
+  if(net.getScale()>0.85)net.moveTo({scale:0.85});});
+
+const DEFAULT_RELS=__DEFAULT_RELS__;
+let active=new Set(DEFAULT_RELS), facetSel='', detailText='', confMin=0,
+    yearLo=-1e9, yearHi=1e9, degMin=__MINDEG__, originSel='all', hideIso=true;
+let mode='none', focusId=null, focusDepth=1, pathNodes=new Set(), pathEdges=new Set();
+
+const REL_C={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#17becf',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#ff7f0e',RELATED:'#cfcfcf',NONE:'#eaeaea'};
+const REL_BADGE={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#0e9aa7',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#e8870e',RELATED:'#9aa4b2',NONE:'#b6bcc4'};
+const REL_ORDER={USES:0,REFINES:1,SUPPORTS:2,CONTRADICTS:3,ADDRESSES_SAME_PROBLEM:4,RELATED:5,NONE:6};
+const esc=s=>(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const relBadge=r=>`<span class="badge" style="background:${REL_BADGE[r]||'#999'}">${r.replace(/_/g,' ')}</span>`;
+const srt=l=>l.slice().sort((a,b)=>(REL_ORDER[a.rel]-REL_ORDER[b.rel])||a.facet.localeCompare(b.facet));
+const panel=()=>document.getElementById('panel');
+
+function nodePass(n){
+  if(n.year!=='?'&&(n.year<yearLo||n.year>yearHi))return false;
+  if(n.value<degMin)return false;
+  if(originSel!=='all'&&n.origin!==originSel)return false;
+  return true;
+}
+const eVisible=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailText||e.detail.toLowerCase().includes(detailText))
+  &&e.conf>=confMin&&nodePass(idToNode[e.from])&&nodePass(idToNode[e.to]);
+// focus shows a paper's TRUE neighborhood — relation/facet/conf still apply, but the
+// overview-only structural filters (deg / origin / year) are dropped so it's never empty.
+const eVisF=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailText||e.detail.toLowerCase().includes(detailText))&&e.conf>=confMin;
+
+function render(){
+  let focusSet=null;
+  if(mode==='focus'){focusSet=new Set([focusId]); let fr=[focusId];
+    for(let d=0;d<focusDepth;d++){const nx=[]; fr.forEach(x=>(und[x]||[]).forEach(([nb,eid])=>{
+      if(eVisF(edgeById[eid])&&!focusSet.has(nb)){focusSet.add(nb);nx.push(nb);}})); fr=nx;}}
+  const show=new Set(), eUpd=[];
+  ALL_EDGES.forEach(e=>{
+    let hidden,col=e.baseColor,op=e.baseWidth>1?0.85:0.5,w=e.baseWidth;
+    if(mode==='path'){hidden=!pathEdges.has(e.id); if(!hidden){col='#111';op=1;w=4;}else op=0.04;}
+    else if(mode==='focus'){const inc=eVisF(e)&&focusSet.has(e.from)&&focusSet.has(e.to)&&(focusDepth>1||e.from===focusId||e.to===focusId);
+      hidden=!inc; if(inc){const weak=(e.rel==='RELATED'||e.rel==='NONE');
+        op=weak?0.13:0.95; w=weak?0.5:Math.max(w,2);}}  // RELATED/NONE stay faint so typed edges read
+    else{hidden=!eVisible(e); if(!hidden){show.add(e.from);show.add(e.to);}}
+    eUpd.push({id:e.id,hidden,color:{color:col,opacity:op},width:w});
+  });
+  edges.update(eUpd);
+  if(mode==='path')pathNodes.forEach(n=>show.add(n));
+  if(mode==='focus')focusSet.forEach(n=>show.add(n));
+  nodes.update(ALL_NODES.map(n=>{
+    let hidden = (mode==='none') ? (!nodePass(n)||(hideIso&&!show.has(n.id))) : !show.has(n.id);
+    const hl=(mode==='focus'&&n.id===focusId)||(mode==='path'&&pathNodes.has(n.id));
+    return {id:n.id,hidden,color:n.color,borderWidth:hl?4:1};
+  }));
+}
+
+function card(e,neighId){
+  const fac=(e.facet&&e.facet!=='NA')?`<span class="fbadge">${e.facet.replace(/_/g,' ')}</span>`:'';
+  return `<div class="ed" style="border-color:${REL_C[e.rel]||'#ccc'}">${relBadge(e.rel)}${fac}`+
+    `<div class="card-t">${esc(idToNode[neighId].title2)}</div>`+
+    (e.detail?`<div class="card-d">${esc(e.detail)}</div>`:'')+
+    (e.rationale?`<div class="card-r muted">${esc(e.rationale)}</div>`:'')+`</div>`;
+}
+function panelFocus(id){
+  const n=idToNode[id], out=srt(outAdj[id]||[]), inc=srt(inAdj[id]||[]);
+  const origin=n.origin==='hub'?'snowballed hub':'original corpus';
+  let h=`${BACK}<h2 style="margin-top:6px">${esc(n.title2)}</h2><div class="meta">${n.year} · degree ${n.value} · ${origin}`+
+    `${n.doi?` · <a href="https://doi.org/${n.doi}" target="_blank">DOI</a>`:''}</div>`;
+  h+=`<div style="margin-bottom:6px"><button id="bm">${BM.has(id)?'★ saved':'☆ save'}</button> `+
+     `<button id="expand">expand ▸ (${focusDepth}-hop)</button> `+
+     `<button id="lineage">📚 lineage</button></div>`;
+  h+=`<div style="margin-bottom:6px"><button id="setA">⇢ path start</button> `+
+     `<button id="setB">⇢ path end</button></div>`;
+  h+=`<textarea id="note" placeholder="notes on this paper…">${esc(NOTES[id]||'')}</textarea>`;
+  h+=`<div class="sec">Builds on / relates →<span class="ct">${out.length}</span></div>`;
+  h+=out.length?out.map(e=>card(e,e.to)).join(''):'<div class="muted">—</div>';
+  h+=`<div class="sec">Cited by ←<span class="ct">${inc.length}</span></div>`;
+  h+=inc.length?inc.map(e=>card(e,e.from)).join(''):'<div class="muted">—</div>';
+  panel().innerHTML=h;wireBack(goHome);
+  document.getElementById('bm').onclick=()=>{BM.has(id)?BM.delete(id):BM.add(id);saveBM();panelFocus(id);};
+  document.getElementById('expand').onclick=()=>{focusDepth++;render();autoFit();panelFocus(id);};
+  document.getElementById('lineage').onclick=()=>lineage(id);
+  document.getElementById('setA').onclick=()=>{document.getElementById('pa').value=n.title2;};
+  document.getElementById('setB').onclick=()=>{document.getElementById('pb').value=n.title2;};
+  document.getElementById('note').oninput=e=>{NOTES[id]=e.target.value;saveNotes();};
+}
+
+function focusNode(id){mode='focus';focusId=id;focusDepth=1;render();panelFocus(id);
+  net.selectNodes([id]);autoFit();location.hash=encodeURIComponent(id);}
+
+// rankings
+let rankMetric='indeg';
+const RANK_OPTS={indeg:'most built-on (in-degree)',pr:'influence (PageRank)',btw:'bridges (betweenness)',outdeg:'most outgoing'};
+const fmtScore=n=>(rankMetric==='indeg'||rankMetric==='outdeg')?n[rankMetric]:n[rankMetric].toFixed(rankMetric==='pr'?4:3);
+function renderRanks(){
+  setControlsToDefault();mode='none';focusId=null;pathNodes=new Set();pathEdges=new Set();net.unselectAll();location.hash='';render();
+  const arr=ALL_NODES.slice().sort((a,b)=>b[rankMetric]-a[rankMetric]).slice(0,25);
+  const opts=Object.entries(RANK_OPTS).map(([k,v])=>`<option value="${k}"${k===rankMetric?' selected':''}>${v}</option>`).join('');
+  let h=`${BACK}<h2 style="margin-top:6px">Influence leaderboard</h2><div class="meta">by <select id="rkm">${opts}</select> · top 25 · click any to focus</div>`;
+  arr.forEach((n,i)=>h+=`<div class="rk" data-id="${n.id}"><span class="rkn">${i+1}</span><span class="sc">${fmtScore(n)}</span><span>${esc(n.title2)}</span></div>`);
+  panel().innerHTML=h;wireBack(goHome);
+  document.getElementById('rkm').onchange=e=>{rankMetric=e.target.value;renderRanks();};
+  panel().querySelectorAll('.rk').forEach(r=>r.onclick=()=>focusNode(r.dataset.id));
+}
+
+// debates
+function renderDebate(){
+  setControlsToDefault();
+  active=new Set(['CONTRADICTS','ADDRESSES_SAME_PROBLEM']);
+  document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.checked=active.has(c.dataset.rel));
+  degMin=0;document.getElementById('mindeg').value='0';  // debate papers are often low-degree
+  mode='none';focusId=null;pathNodes=new Set();pathEdges=new Set();net.unselectAll();location.hash='';render();autoFit();
+  const ds=ALL_EDGES.filter(e=>active.has(e.rel));
+  let h=`${BACK}<h2 style="margin-top:6px">Open problems</h2><div class="meta">${ds.length} contradiction / same-problem edges · filters narrowed — ‹ back restores them</div>`;
+  ds.forEach(e=>h+=`<div class="ed" data-id="${e.from}" style="cursor:pointer;border-color:${REL_C[e.rel]}">${relBadge(e.rel)}<div class="card-t">${esc(idToNode[e.from].title2)} <span class="muted">↔</span> ${esc(idToNode[e.to].title2)}</div>${e.rationale?`<div class="card-r muted">${esc(e.rationale)}</div>`:''}</div>`);
+  panel().innerHTML=h;wireBack(resetAll);
+  panel().querySelectorAll('.ed').forEach(d=>d.onclick=()=>focusNode(d.dataset.id));
+}
+
+// reading list + bibtex
+let BM=new Set(JSON.parse(localStorage.getItem('ckg_bm')||'[]'));
+let NOTES=JSON.parse(localStorage.getItem('ckg_notes')||'{}');
+const saveBM=()=>localStorage.setItem('ckg_bm',JSON.stringify([...BM]));
+const saveNotes=()=>localStorage.setItem('ckg_notes',JSON.stringify(NOTES));
+function bibtex(){return [...BM].map(id=>idToNode[id]).filter(Boolean).map(n=>{
+  const key=((n.authBib.split(/[ ,]/)[0]||'paper')+(n.year||'')).replace(/[^A-Za-z0-9]/g,'');
+  return `@article{${key},\n  title={${n.title2}},\n  author={${n.authBib||'Unknown'}},\n  year={${n.year}}${n.doi?`,\n  doi={${n.doi}}`:''}\n}`;}).join('\n\n');}
+function dl(name,text,mime){const b=new Blob([text],{type:mime||'text/plain'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=name;a.click();}
+function renderList(){
+  setControlsToDefault();mode='none';focusId=null;pathNodes=new Set();pathEdges=new Set();net.unselectAll();location.hash='';render();
+  const items=[...BM].map(id=>idToNode[id]).filter(Boolean).sort((a,b)=>(a.year==='?'?9999:a.year)-(b.year==='?'?9999:b.year));
+  let h=`${BACK}<h2 style="margin-top:6px">Reading list</h2><div class="meta">${items.length} saved · <a id="bib">BibTeX</a> · <a id="dois">DOIs</a> · <a id="clr">clear</a></div>`;
+  if(!items.length)h+='<div class="muted">Open a paper and hit ☆ save to build a reading list (saved in this browser).</div>';
+  items.forEach(n=>h+=`<div class="ed" data-id="${n.id}"><div class="card-t">${esc(n.title2)}</div>`+
+    `<div class="muted">${n.year}${n.venue?(' · '+esc(n.venue)):''} · <a class="rm" data-id="${n.id}">remove</a></div>`+
+    (NOTES[n.id]?`<div class="card-r muted">📝 ${esc(NOTES[n.id])}</div>`:'')+`</div>`);
+  panel().innerHTML=h;wireBack(goHome);
+  panel().querySelectorAll('.ed').forEach(d=>d.onclick=ev=>{if(ev.target.classList.contains('rm'))return;focusNode(d.dataset.id);});
+  panel().querySelectorAll('.rm').forEach(a=>a.onclick=ev=>{ev.stopPropagation();BM.delete(a.dataset.id);saveBM();renderList();});
+  const bib=document.getElementById('bib'),dois=document.getElementById('dois'),clr=document.getElementById('clr');
+  if(bib)bib.onclick=()=>dl('reading_list.bib',bibtex(),'text/plain');
+  if(dois)dois.onclick=()=>dl('dois.txt',[...BM].map(id=>idToNode[id]).filter(n=>n&&n.doi).map(n=>n.doi).join('\n'));
+  if(clr)clr.onclick=()=>{if(confirm('Clear reading list?')){BM=new Set();saveBM();renderList();}};
+}
+
+// path + lineage
+function findPath(a,b){
+  if(a===b||!(a in idToNode)||!(b in idToNode))return null;
+  const prev={},seen=new Set([a]);let q=[a];
+  while(q.length){const x=q.shift();if(x===b)break;(und[x]||[]).forEach(([nb,eid])=>{if(!seen.has(nb)){seen.add(nb);prev[nb]=[x,eid];q.push(nb);}});}
+  if(!(b in prev))return null;
+  const ns=new Set([b]),es=new Set(),hop=[];let c=b,seq=[b];
+  while(c!==a){const [p,eid]=prev[c];es.add(eid);ns.add(p);seq.push(p);hop.push(eid);c=p;}
+  return {nodes:ns,edges:es,seq:seq.reverse(),hop:hop.reverse()};
+}
+function showPath(r,heading){
+  mode='path';pathNodes=r.nodes;pathEdges=r.edges;render();net.fit({nodes:[...r.nodes],animation:true});
+  let h=`${BACK}<h2 style="margin-top:6px">${heading}</h2><div class="meta">${r.seq.length-1} hops · <a id="addlist">add all to reading list</a></div>`;
+  for(let i=0;i<r.seq.length;i++){h+=`<div class="card-t" style="margin:7px 0 2px">${esc(idToNode[r.seq[i]].title2)}</div>`;
+    if(i<r.seq.length-1){const e=edgeById[r.hop[i]],dir=e.from===r.seq[i]?'↓':'↑';h+=`<div style="padding-left:4px">${dir} ${relBadge(e.rel)}</div>`;}}
+  panel().innerHTML=h;wireBack(goHome);
+  document.getElementById('addlist').onclick=()=>{r.seq.forEach(id=>BM.add(id));saveBM();alert(r.seq.length+' added to reading list');};
+}
+function lineage(id){
+  const cands=ALL_NODES.filter(n=>n.id!==id).sort((a,b)=>b.indeg-a.indeg);
+  for(const c of cands){const r=findPath(id,c.id); if(r){showPath(r,'Lineage → '+c.title2.slice(0,30));return;}}
+  panel().innerHTML='<div class="muted">No lineage path found.</div>';
+}
+
+// --- view navigation (clean back / full reset) ---
+const D_YLO=document.getElementById('ylo').value, D_YHI=document.getElementById('yhi').value,
+      D_MINDEG=document.getElementById('mindeg').value;
+const HOME='<span class="muted">Showing the best-connected core. Lower &lsquo;deg ≥&rsquo; to reveal more · click a paper to explore its neighborhood · or hit ★ rankings.</span>';
+const BACK='<a id="back" class="muted" style="cursor:pointer;font-weight:600;display:inline-block;margin-bottom:4px">‹ back to graph</a>';
+const wireBack=fn=>{const b=document.getElementById('back');if(b)b.onclick=fn;};
+const showHome=()=>{panel().innerHTML=HOME;};
+function goHome(){mode='none';focusId=null;focusDepth=1;pathNodes=new Set();pathEdges=new Set();
+  net.unselectAll();location.hash='';render();showHome();autoFit();}
+function setControlsToDefault(){
+  active=new Set(DEFAULT_RELS);
+  document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.checked=active.has(c.dataset.rel));
+  facetSel='';document.getElementById('facet').value='';
+  detailText='';document.getElementById('detail').value='';
+  confMin=0;document.getElementById('conf').value='0';
+  yearLo=-1e9;document.getElementById('ylo').value=D_YLO;
+  yearHi=1e9;document.getElementById('yhi').value=D_YHI;
+  degMin=parseInt(D_MINDEG)||0;document.getElementById('mindeg').value=D_MINDEG;
+  originSel='all';document.getElementById('origin').value='all';
+  hideIso=true;document.getElementById('iso').checked=true;
+  document.getElementById('pa').value='';document.getElementById('pb').value='';
+}
+function resetAll(){setControlsToDefault();goHome();}
+// re-fit the viewport to whatever's visible after a filter change, so the graph
+// "breathes" out/in instead of cramming new edges into the old zoom. Debounced +
+// delayed so physics settles first.
+let fitT=null;
+function fitVisible(){const v=nodes.get({filter:n=>!n.hidden}).map(n=>n.id);
+  if(!v.length)return;
+  net.fit({nodes:v,animation:{duration:480,easingFunction:'easeInOutQuad'}});
+  setTimeout(()=>{if(net.getScale()>1)net.moveTo({scale:1});},520);}
+// spread nodes proportionally to how many are visible — denser views get longer springs
+// and stronger repulsion so they push apart instead of collapsing into a hairball.
+function tunePhysics(n){
+  const spring=Math.min(440,Math.round(200+n*1.7));
+  const grav=-Math.min(130000,Math.round(34000+n*560));
+  net.setOptions({physics:{barnesHut:{gravitationalConstant:grav,centralGravity:0.024,
+    springLength:spring,springConstant:0.011,avoidOverlap:1}}});}
+function autoFit(){clearTimeout(fitT);fitT=setTimeout(()=>{
+  tunePhysics(nodes.get({filter:n=>!n.hidden}).length);
+  setTimeout(fitVisible,320);},250);}
+
+// --- wiring ---
+document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.onchange=()=>{c.checked?active.add(c.dataset.rel):active.delete(c.dataset.rel);if(mode!=='path'){render();autoFit();}});
+document.getElementById('iso').onchange=e=>{hideIso=e.target.checked;if(mode==='none'){render();autoFit();}};
+document.getElementById('phys').onchange=e=>net.setOptions({physics:{enabled:e.target.checked}});
+document.getElementById('facet').onchange=e=>{facetSel=e.target.value;mode='none';render();autoFit();};
+document.getElementById('detail').oninput=e=>{detailText=e.target.value.toLowerCase().trim();mode='none';render();autoFit();};
+document.getElementById('conf').oninput=e=>{confMin=parseFloat(e.target.value)||0;mode='none';render();autoFit();};
+document.getElementById('ylo').oninput=e=>{yearLo=parseInt(e.target.value)||-1e9;mode='none';render();autoFit();};
+document.getElementById('yhi').oninput=e=>{yearHi=parseInt(e.target.value)||1e9;mode='none';render();autoFit();};
+document.getElementById('mindeg').oninput=e=>{degMin=parseInt(e.target.value)||0;mode='none';render();autoFit();};
+document.getElementById('origin').onchange=e=>{originSel=e.target.value;mode='none';render();autoFit();};
+document.getElementById('layout').onchange=e=>{if(e.target.value==='year')net.setOptions({layout:{hierarchical:{enabled:true,direction:'LR',sortMethod:'directed',levelSeparation:170,nodeSpacing:16}}});
+  else net.setOptions({layout:{hierarchical:{enabled:false}},physics:{enabled:document.getElementById('phys').checked}});autoFit();};
+document.getElementById('search').onchange=e=>{const id=titleToId[e.target.value];if(id)focusNode(id);};
+document.getElementById('pathbtn').onclick=()=>{const r=findPath(titleToId[document.getElementById('pa').value],titleToId[document.getElementById('pb').value]);
+  if(!r){panel().innerHTML='<div class="muted">No path found (try toggling on more relations).</div>';return;}showPath(r,'Path');};
+document.getElementById('clear').onclick=resetAll;
+document.getElementById('ranks').onclick=renderRanks;
+document.getElementById('debate').onclick=renderDebate;
+document.getElementById('listbtn').onclick=renderList;
+document.getElementById('exGraphml').onclick=()=>dl('ckg.graphml',graphml(),'application/xml');
+document.getElementById('exCsv').onclick=()=>dl('ckg_edges.csv',csv(),'text/csv');
+document.getElementById('exJson').onclick=()=>dl('ckg.json',JSON.stringify({nodes:ALL_NODES,edges:ALL_EDGES},null,1),'application/json');
+document.getElementById('dark').onclick=()=>document.body.classList.toggle('dark');
+document.getElementById('full').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();};
+document.getElementById('collapse').onclick=()=>document.getElementById('bar').classList.toggle('collapsed');
+net.on('click',p=>{if(p.nodes.length)focusNode(p.nodes[0]);else if(mode==='focus'){mode='none';focusId=null;location.hash='';render();}});
+
+function xesc(s){return (s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));}
+function graphml(){
+  let x='<?xml version="1.0" encoding="UTF-8"?>\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns">\n'+
+    '<key id="label" for="node" attr.name="label" attr.type="string"/>\n<key id="year" for="node" attr.name="year" attr.type="string"/>\n'+
+    '<key id="rel" for="edge" attr.name="relation" attr.type="string"/>\n<key id="facet" for="edge" attr.name="facet" attr.type="string"/>\n<graph edgedefault="directed">\n';
+  ALL_NODES.forEach(n=>x+=`<node id="${xesc(n.id)}"><data key="label">${xesc(n.title2)}</data><data key="year">${n.year}</data></node>\n`);
+  ALL_EDGES.forEach(e=>x+=`<edge source="${xesc(e.from)}" target="${xesc(e.to)}"><data key="rel">${e.rel}</data><data key="facet">${e.facet}</data></edge>\n`);
+  return x+'</graph>\n</graphml>';
+}
+function csv(){const rows=[['citing','cited','citing_title','cited_title','relation','facet','facet_detail','confidence']];
+  ALL_EDGES.forEach(e=>rows.push([e.from,e.to,idToNode[e.from].title2,idToNode[e.to].title2,e.rel,e.facet,e.detail,e.conf]));
+  return rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');}
+
+render();
+const hid=decodeURIComponent(location.hash.slice(1));
+if(hid&&idToNode[hid])focusNode(hid);
+</script></body></html>
