@@ -65,3 +65,7 @@ End-to-end working on real papers. Current graph (LLM tagger): **41 papers, 123 
 
 This is a *slice*, not a product: one honest path through all four layers, with the gaps
 named rather than hidden.
+
+## Graph Explorer
+
+![1](image.png)
