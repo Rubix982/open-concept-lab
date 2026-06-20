@@ -318,7 +318,12 @@ gone; spot-check new edges. Surface `rationale` in `src/query`; add optional
 
 ### E-009 · Full-text ingestion (sections + sentences with provenance)
 
-**Status:** blocked
+> **Re-scope (R-007, 2026-06-16):** the edge-typer no longer needs full-text parsing —
+> Semantic Scholar supplies citances directly (E-010). E-009 is now DECOUPLED and OPTIONAL,
+> valuable only as a separate enhancement for richer *claim extraction* from body text. The
+> live edge path is E-010 (S2, mostly done) → E-011 (citance typer) → E-012 (hybrid). Deferred.
+
+**Status:** open (deferred — optional enhancement, off the edge-typer critical path)
 **Type:** implement
 **Priority:** high
 **Created:** 2026-06-16
@@ -343,7 +348,12 @@ unaffected.
 
 ### E-010 · Citation linking (marker → reference → cited paper id)
 
-**Status:** blocked
+> **Re-scope (R-007):** mostly DONE via `src/graph/s2_citations.py` — pulls S2 references
+> with citances + intents and resolves intra-corpus links (47 edges →
+> data/processed/intra_corpus_citations.jsonl). Remaining: package as a reusable ingestion
+> step and decide handling for the 16/47 edges that lack citances (fall back to semantic).
+
+**Status:** in-progress
 **Type:** implement
 **Priority:** high
 **Created:** 2026-06-16
@@ -367,7 +377,12 @@ citances carry their location.
 
 ### E-011 · Citance extraction + citation-context typer (cited relations)
 
-**Status:** blocked
+> **Re-scope (R-007):** now the real remaining build, and inputs are ready
+> (intra_corpus_citations.jsonl). Map each citance → our 7-label taxonomy
+> (USES/REFINES/SUPPORTS) via the LLM, using the S2 intent (background/methodology/result)
+> as a weak prior. Effectively unblocked (E-010 substantially done).
+
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-06-16
@@ -384,11 +399,31 @@ For each (citing claim near a citance, cited paper) link, type the relation as U
 
 **Acceptance:** cited links typed with citance evidence; spot-check correct; ratio reported.
 
-**Artifacts:** src/graph/citance_typer.py, decisions.md [E-011]
+**Artifacts:** src/graph/citance_typer.py, decisions.md [E-011],
+data/processed/cited_edges_typed.jsonl
+
+**Outcome (closed 2026-06-20):** Built `src/graph/citance_typer.py` (LLM, batched structured
+output, S2 intent as a prior). Typed the 31 citance-bearing edges (16 without citances →
+semantic fallback in E-012). Distribution: **RELATED 25, USES 5, ADDRESSES_SAME_PROBLEM 1**.
+Tested the multi-citance lever (17/31 edges have >1 citance; fed up to 4) — distribution barely
+moved (USES 4→5), so RELATED-dominance is the DATA, not truncation. **Finding: even cited
+intra-corpus links in this similarity-sampled GNN corpus are ~80% background/list mentions, not
+"builds-on."** Rationales well-grounded. Implication: **corpus construction** (citation-snowball
+from a seed vs embedding-similarity search) is the real lever for a USES/REFINES-rich map →
+candidate R-008.
 
 ---
 
 ### E-012 · Hybrid edge typer (cited ∪ uncited), rebuild, verify
+
+> **Re-scope (R-007):** also add citation links (intra_corpus_citations.jsonl) as candidate
+> pairs in their own right — they are a *different* edge set from the embedding-similar pairs
+> (measured: 47 citation edges vs 247 embedding pairs), so the graph unions both.
+>
+> **Re-scope (R-009):** edges now carry a faceted label — `rel_type` (umbrella) + `facet` +
+> `facet_detail`. Extend `store.py` RELATES with `facet STRING, facet_detail STRING`; thread
+> these through `add_relation` and surface them in `src/query` as filters. The semantic typer
+> (E-006) should also emit facets for parity (currently only the citance typer does).
 
 **Status:** blocked
 **Type:** implement
@@ -408,3 +443,37 @@ surface evidence in `src/query`.
 **Acceptance:** hybrid graph built; edges carry evidence provenance; gold-set + spot-check OK.
 
 **Artifacts:** src/graph/build.py (hybrid), src/query/, data/ckg.kuzu, CHANGELOG.md
+
+---
+
+### E-013 · Citation-snowball corpus expansion (build)
+
+**Status:** in-progress (threshold ≥3, +65 papers; user-chosen 2026-06-20)
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-20
+**Updated:** 2026-06-20
+**Estimated:** 5h
+
+**Blockers:** none (R-008 closed with sizing).
+
+**Description:**
+Grow the corpus along its citation backbone (R-008): add referenced papers cited by ≥N
+corpus papers (N=3 → +65; N=2 → +178), backward (references) first. Steps:
+1. From the S2 reference sweep (expansion_probe), select referenced papers ≥N co-citations;
+   resolve to OpenAlex/arXiv ids.
+2. Ingest their abstracts (OpenAlex/S2) → sentences with provenance; extract claims (existing
+   LLM tagger). New `Paper` + `Claim` nodes.
+3. Re-pull intra-corpus citations + citances over the expanded corpus (s2_citations.py).
+4. Rebuild the graph (E-012 hybrid) and re-measure: cited-vs-uncited ratio, umbrella + facet
+   distributions, USES/REFINES density — confirm the lineage filled in.
+
+**Acceptance:** expanded corpus (≥110 or ≥223 papers); citation backbone ~10× denser;
+report shows richer USES/REFINES + facet distribution than the 45-paper baseline.
+
+**Planned phases:** (1) ≥3 expansion (+65, current, user-chosen) → measure. (2) **widen to
+≥2** (+178 total, ~518 edges) once ≥3 proves out (user request 2026-06-20). The
+`--min-cocite` flag makes phase 2 a re-run at threshold 2 (idempotent; skips papers already
+added).
+
+**Artifacts:** src/graph/ (expansion build), data/processed/, data/ckg.kuzu, decisions.md [E-013]

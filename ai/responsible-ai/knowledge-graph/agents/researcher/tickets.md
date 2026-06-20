@@ -181,7 +181,7 @@ Spawns R-007 (source strategy) and E-009..E-012.
 
 ### R-007 · Full-text + citation-context source strategy
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-06-16
@@ -202,4 +202,68 @@ Choose how to obtain full text + citances. Evaluate, with coverage/license/granu
 **Deliverable:** findings [R-007] recommendation + confidence; an estimate/measurement of
 the cited-vs-uncited ratio in our data. Gates E-009/E-010 scope (how much we build vs reuse).
 
-**Artifacts:** agents/shared/findings.md → "[R-007] ..."
+**Outcome (closed 2026-06-16):** Live S2 probes → **recommend Semantic Scholar Graph API**:
+it ships citances (`contexts`) + intents + resolvable IDs, eliminating PDF/LaTeX parsing for
+the edge-typer. Measured **47 intra-corpus citation edges (31 with citances)** vs 247
+embedding pairs → hybrid worthwhile, union the two edge sets. E-009 decoupled/optional;
+E-010 mostly done (src/graph/s2_citations.py); E-011 is the real remaining build. Full
+detail + caveats in findings.md [R-007].
+
+**Closed:** 2026-06-16
+**Artifacts:** agents/shared/findings.md → "[R-007]"; src/graph/s2_citations.py;
+data/processed/intra_corpus_citations.jsonl
+
+---
+
+### R-008 · Corpus construction strategy for relation density
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-06-20
+**Updated:** 2026-06-20
+
+**Description:**
+E-011 found that strong typed relations (USES/REFINES) are sparse because the corpus is
+**embedding-similarity-sampled** — papers co-occur as background/list citations, not as
+build-on lineages. Investigate building the corpus by **citation-snowball** from a seed
+paper (follow S2 references/citations N hops), and re-measure the cited-vs-uncited ratio and
+the relation distribution. Hypothesis: citation-expanded corpora yield a denser USES/REFINES
+idea-map than similarity-sampled ones. The corpus, not the typer, may be the real lever for
+the "map of how ideas flow" vision.
+
+**Deliverable:** findings [R-008] — comparison of relation density (similarity corpus vs
+citation-snowball corpus) + a recommendation for how ingestion should assemble corpora.
+
+**Artifacts:** agents/shared/findings.md → "[R-008] ..."; src/graph/expansion_probe.py.
+
+**Outcome (closed 2026-06-20):** Sized via S2 reference sweep — corpus is missing the
+field's foundational hubs (GCN 17×, GAT 13×, GraphSAGE 13×, …). Bounded backward
+citation-snowball: ≥3 co-citation → +65 papers; ≥2 → +178 papers / ~518 edges (vs 47 today).
+Recommend building it (start ≥3) → spawns E-013. Full numbers in findings.md [R-008].
+**Closed:** 2026-06-20
+
+---
+
+### R-009 · Faceted edge taxonomy (umbrella + filterable sub-facets)
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-06-20
+**Updated:** 2026-06-20
+**Closed:** 2026-06-20
+
+**Description:**
+User design: keep the coarse umbrella relations (stable) and add a second filterable FACET
+layer (sub-kind + free-text facet_detail) beneath, driven by research questions — rather than
+flattening RELATED into more top-level labels.
+
+**Outcome:** validated empirically (citance_typer extended with facets; 31 edges). Umbrella
+stayed stable; RELATED → EXEMPLIFIES 11 / BACKGROUND 9 / COMPARES 3 / APPLICATION 2 with
+crisp, queryable details. See findings.md [R-009]. Facet vocabulary is a starter set pending
+purpose-pruning (which research-question filters matter) + a facet gold check. Schema impact
+folded into E-012 (RELATES gains facet + facet_detail).
+
+**Artifacts:** findings.md [R-009]; src/graph/citance_typer.py (faceted);
+data/processed/cited_edges_typed.jsonl

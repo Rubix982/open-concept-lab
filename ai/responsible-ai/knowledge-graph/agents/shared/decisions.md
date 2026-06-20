@@ -113,3 +113,20 @@ keep the eval independent (avoids the R-003 shared-judgment caveat). Qualitative
 confirmed by smoke test: false CONTRADICTS gone.
 **Revisit if:** R-005 shows the LLM doesn't beat NLI on relation accuracy / false-
 CONTRADICTS rate, or cost matters → haiku for bulk.
+
+## [E-011] Decision: citance typing + the corpus-construction finding
+
+_Date: 2026-06-20_
+
+**Decision:** Type intra-corpus citation edges from their S2 citances with an LLM
+(`src/graph/citance_typer.py`), S2 intent as a weak prior, judging from the strongest of up
+to 4 citances per edge. Edges without citances (16/47) defer to the semantic typer (E-012).
+**Empirical result:** of 31 citance-bearing edges → RELATED 25 / USES 5 /
+ADDRESSES_SAME_PROBLEM 1. The multi-citance lever barely changed it (USES 4→5), so
+RELATED-dominance is the data, not truncation. **Even cited links in this similarity-sampled
+GNN corpus are ~80% background/list mentions, not builds-on.**
+**Strategic implication:** the bottleneck for a rich USES/REFINES idea-map is no longer the
+typer — it's **corpus construction**. A corpus built by citation-snowball from a seed paper
+(or a focused method lineage) would concentrate strong relations; embedding-similarity
+sampling spreads them thin. → R-008.
+**Revisit if:** the corpus is rebuilt by citation expansion (R-008) — re-measure.

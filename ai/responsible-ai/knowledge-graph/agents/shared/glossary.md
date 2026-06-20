@@ -13,3 +13,5 @@
 - **Citation-context analysis**: typing the relation between two papers from the citance, rather than from their abstracts in isolation.
 - **Cited vs uncited regime**: builds-on relations (USES/REFINES/SUPPORTS) carry a citation and are typed from the citance; parallel relations (ADDRESSES_SAME_PROBLEM/CONTRADICTS/RELATED) often have no citation and are typed semantically.
 - **GROBID / Semantic Scholar Graph API / arXiv LaTeX**: candidate full-text + citation-context sources (R-007 will choose). S2 ships pre-extracted citation `contexts` + `intents`.
+- **Faceted edge taxonomy** (R-009): two-level edge labels — a coarse **umbrella relation** (reliable, ~6-7 classes) + a finer **facet** (filterable sub-kind) + **facet_detail** (free-text specific). Keeps the umbrella; facets are optional filters, so fine-label subjectivity never degrades the primary relation.
+- **Facet / facet_detail**: the sub-kind under an umbrella (e.g. RELATED → EXEMPLIFIES/BACKGROUND/COMPARES/APPLICATION) and a short specific (e.g. "first GCN industrial recommender system") that makes edges queryable.

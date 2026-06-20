@@ -62,11 +62,14 @@ too much infra for a single-machine month-scale build).
 | R-005 | Researcher | Gold edge set + NLI-vs-LLM eval                      | closed      |
 | O-005 | Orchestrator | Sequence the hybrid full-text edge-typer arc      | in-progress |
 | R-006 | Researcher | Edge-relation data model + evidence-source framing  | closed      |
-| R-007 | Researcher | Full-text + citation-context source strategy        | open        |
-| E-009 | Engineer   | Full-text ingestion (sections + sentences)          | blocked     |
-| E-010 | Engineer   | Citation linking (marker → reference → cited id)    | blocked     |
-| E-011 | Engineer   | Citance extraction + citation-context typer (cited) | blocked     |
-| E-012 | Engineer   | Hybrid edge typer (cited ∪ uncited), rebuild        | blocked     |
+| R-007 | Researcher | Full-text + citation-context source strategy (→ S2) | closed      |
+| E-009 | Engineer   | Full-text ingestion (sections + sentences)          | deferred    |
+| E-010 | Engineer   | Citation linking via Semantic Scholar               | in-progress |
+| E-011 | Engineer   | Citance extraction + citation-context typer (cited) | closed      |
+| E-012 | Engineer   | Hybrid edge typer (cited ∪ uncited), rebuild        | open        |
+| R-008 | Researcher | Corpus construction strategy for relation density   | closed      |
+| R-009 | Researcher | Faceted edge taxonomy (umbrella + sub-facets)       | closed      |
+| E-013 | Engineer   | Citation-snowball corpus expansion (build)          | open (next) |
 
 ## Blocked
 
@@ -108,7 +111,15 @@ contradicting claims. End-to-end on real papers.
 
 ## Next Orchestrator Action
 
-**Run R-007 (full-text + citation-context source strategy)** — it decides build-vs-reuse for
-the entire hybrid arc (Semantic Scholar may ship citances + intents and shrink E-010). If a
-quick win is wanted first, ship E-008 (abstract-only LLM typer) as an interim improvement.
-Still-open earlier items: independent-label OOD eval (R-003 follow-up); E-007 claim dedup.
+E-011 closed with a **strategic finding**: even *cited* intra-corpus links are ~80%
+background/RELATED in this similarity-sampled corpus (RELATED 25 / USES 5 / ADDRESSES 1) —
+the multi-citance lever confirmed it's the data, not the method. Both typers (semantic E-006
+and citance E-011) are RELATED-heavy because the corpus is topically clustered, not a
+build-on lineage. **The real lever for a USES/REFINES-rich idea-map is corpus construction
+(R-008), not better typing.**
+
+R-008 sized (S2 sweep): corpus is missing the foundational hubs (GCN 17×, GAT/GraphSAGE 13×).
+Bounded citation-snowball → ≥3: +65 papers, ≥2: +178 / ~518 edges (vs 47). **E-013** is the
+build (highest leverage — densifies the USES/REFINES lineage). Sequence: E-013 (expand) →
+E-012 (hybrid merge on the bigger graph). R-004/5/6/7/8/9 closed; faceting validated (R-009);
+edges carry rel_type + facet + facet_detail. Optional/parallel: E-008 interim; E-007 dedup.

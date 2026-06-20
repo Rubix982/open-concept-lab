@@ -83,6 +83,10 @@ parallel and feeds E-012. E-008 (abstract-only ship) remains an OPTIONAL interim
 Confidence-gate: R-007 HIGH → open E-009/E-010 as implement; if R-007 finds S2 covers our
 papers well, E-010 shrinks to reuse rather than build.
 
-**Next action:** run R-007 (source strategy) — it decides build-vs-reuse for the whole arc.
+**Next action:** R-007 ✓ (S2 chosen) and E-011 ✓ (citance typer) both done. E-011 surfaced
+the key finding: cited links are ~80% RELATED here → **corpus construction (R-008), not
+typing, is the lever** for a rich USES/REFINES map. Fork for the user: **E-012** (finish the
+hybrid merge + rebuild now, honest mostly-RELATED graph) vs **R-008 first** (citation-snowball
+corpus → denser relations → then merge). E-009 (full-text) stays deferred/optional.
 
-**Artifacts:** docs/llm-edge-typer-plan.md → Architecture Evolution
+**Artifacts:** docs/llm-edge-typer-plan.md → Architecture Evolution; findings.md [R-007]

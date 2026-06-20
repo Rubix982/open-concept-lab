@@ -194,3 +194,98 @@ _Date: 2026-06-16 · design reasoning (from discussion), not an experiment._
 
 **Confidence: HIGH** on the framing. **Unknown to measure:** the cited-vs-uncited ratio in
 real data (how much of the graph each regime covers) — quantify in R-007 / E-011.
+
+## [R-007] Finding: Semantic Scholar is the citance source; full-text parsing now optional
+
+_Date: 2026-06-16 · empirical (live S2 Graph API probes against the corpus)._
+
+**Recommendation: Semantic Scholar Graph API as the citation-context source.**
+`/paper/DOI:{doi}/references?fields=contexts,intents,externalIds,isInfluential` returns,
+per reference: the **citance text** (`contexts`), a **citation-function intent**
+(`background`/`methodology`/`result`), and resolvable `externalIds` (DOI/arXiv/CorpusId).
+On the probe paper, 24/25 refs carried citances. **This is exactly the citance extraction +
+citation linking that E-009/E-010 were going to build via PDF/LaTeX parsing — already done
+by S2.** The project's biggest build is largely eliminated for the edge-typing goal.
+
+**Measured cited-vs-uncited (the R-006 unknown), 45-paper corpus:** 47 intra-corpus citation
+edges (a corpus paper citing another), 31 with ≥1 citance; intents {background 23,
+methodology 15, result 1}; vs 247 embedding candidate pairs. So the cited regime is a real
+but minority backbone, and it's a **different edge set** from the embedding pairs → the
+hybrid graph should **union** citation edges with semantic edges, not pick one.
+
+**Re-scoping (driven by the evidence):**
+- **E-009 (full-text PDF/LaTeX parsing): DECOUPLED from the edge-typer, now OPTIONAL.** S2
+  provides citances without it. Its remaining value is richer *claim extraction* from body
+  text (today claims come only from abstracts) — a separate enhancement, user's call.
+- **E-010 (citation linking): mostly done** by `src/graph/s2_citations.py`
+  (→ data/processed/intra_corpus_citations.jsonl).
+- **E-011 (citance typer): the real remaining build.** S2 intents are coarse (3 classes);
+  map each citance → our 7-label taxonomy (esp. USES/REFINES/SUPPORTS) with the LLM, using
+  the S2 intent as a weak prior.
+- **E-012 (hybrid merge):** union citance-typed edges with semantic edges; also add citation
+  links as candidate pairs in their own right (they're not all embedding-similar).
+
+**Confidence: HIGH** on source choice + that parsing is optional. Caveats: S2 coverage is
+partial (16/47 edges lacked citances → fall back to semantic typing); unauthenticated rate
+limit ~1 req/s shared pool (get an API key for scale); citances are windowed snippets.
+
+## [R-009] Finding: faceted edge taxonomy — keep the umbrella, add filterable sub-facets
+
+_Date: 2026-06-20 · user-designed, empirically validated on the 31 citance edges._
+
+**Design (user's):** don't flatten the coarse relations into more top-level labels. Keep the
+~6–7 umbrella relations as the stable, high-agreement top layer, and attach a second **FACET**
+layer (a sub-kind + a free-text `facet_detail`) that makes each edge **filterable by research
+question**. Facets are *additive metadata*, not a replacement — so the reliable umbrella is
+preserved and the R-005 fine-label subjectivity risk is confined to optional filter fields
+(a wrong facet still leaves a trustworthy coarse relation).
+
+**Validation:** re-typed the 31 citance edges with facets. Umbrella stayed stable
+(RELATED 25, USES 6). The RELATED umbrella decomposed cleanly into:
+EXEMPLIFIES 11, BACKGROUND 9, COMPARES 3, APPLICATION 2 (MOTIVATION / CO_MENTION / NA unused).
+`facet_detail` values are specific and queryable, e.g. "first GCN industrial recommender
+system" (PinSage), "early GNN foundational work", "GNN explainability methods", "K-nearest
+neighbor graph construction". Enables queries RELATED erased (e.g. "EXEMPLIFIES edges under
+recommendation"; "the BACKGROUND/foundational lineage of X").
+
+**Caveats:** facet *accuracy* not yet gold-validated (a small R-005-style facet eval would
+confirm crispness); the facet vocabulary is a **starter set to finalize against intended
+queries** (purpose). EXEMPLIFIES (survey categorization) dominates — consistent with R-008
+(survey-heavy corpus).
+
+**Schema impact (E-012):** `RELATES` edges carry `rel_type` (umbrella) + `facet` +
+`facet_detail`. **Confidence:** HIGH the faceted *structure* is right; MEDIUM on the exact
+facet vocabulary (pending purpose-pruning + a facet gold check).
+
+**Coverage test (2026-06-20):** added candidate facets CRITIQUES / FUTURE_WORK / RESOURCE +
+an `OTHER` escape-hatch (model must name a missing sub-kind in facet_detail), re-typed the 31
+edges. Result: **`OTHER` fired only 1/31 (~3%), the 3 new candidates 0/31** → the facet set
+is empirically adequate *for this corpus*; the literature's extra functions (critique/future-
+work/resource) don't occur in this survey-heavy GNN corpus (would matter in debate-heavy or
+citation-snowball corpora — R-008). The signal that did appear: **5 NA + 1 OTHER all on USES
+edges** → the next umbrella to facet is **USES** (method / dataset / metric / component), not
+RELATED. **Caveat:** umbrella wobbled run-to-run (RELATED/USES 25/6 → 19/11) — the fuzzy
+RELATED↔USES border (same as R-005); facets ride on top and don't stabilize it (→ lower
+sampling temp or a small umbrella/facet gold check to pin down). **Method note:** the
+OTHER-escape-hatch is a reusable coverage-gap detector for any new corpus.
+
+## [R-008] Finding: citation-snowball expansion — sizing + plan
+
+_Date: 2026-06-20 · empirical (S2 reference sweep of the 45-paper corpus)._
+
+The similarity-sampled corpus is **missing the field's foundational hubs as nodes.** Sweeping
+all reference lists: **1,097 distinct external referenced papers** (from 1,437 refs); 919
+cited once. Co-citation: **178 cited by ≥2 corpus papers → ~518 new citation edges** (vs 47
+today, ~11×); 65 by ≥3. The most co-cited absentees are the canonical GNN lineage — GCN
+(Kipf & Welling) 17×, GAT 13×, GraphSAGE 13×, ChebNet 12×, MPNN 8×, GIN 7×.
+
+**Implication:** a bounded **backward citation-snowball** densifies exactly the
+USES/REFINES/BACKGROUND lineage that was sparse (E-011 finding). Thresholds:
+- **≥3 co-citation: +65 papers** (45→110) — the canonical core, tight + cheap.
+- **≥2 co-citation: +178 papers** (45→223), ~518 edges — core + connected periphery.
+- drop the 919 one-off leaves (explosion control).
+
+**Recommendation:** implement bounded backward snowball (start ≥3 for cost/value, or ≥2 for
+richness): ingest added papers' abstracts + extract claims (existing tagger), pull citances
+(S2), rebuild + re-type. Highest-leverage move for a USES/REFINES-rich idea-map. Confidence:
+HIGH (sizing measured). Spawns the build ticket E-013.
