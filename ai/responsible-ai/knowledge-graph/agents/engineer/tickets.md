@@ -1,5 +1,28 @@
 # Engineer Tickets (E-)
 
+### E-018 · Cross-paper idea canonicalization
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+Collapse the ~285 independently-generated per-paper idea tags into a shared canonical
+vocabulary (~40 concepts) so idea filtering groups all related papers, not just exact-string
+matches — and to enable idea-level gap detection later.
+- `src/graph/idea_canon.py`: read distinct ideas from data/processed/paper_cards.jsonl,
+  one claude-haiku-4-5 call mapping each raw tag → a canonical concept; write
+  data/processed/idea_canon.json ({raw: canonical}). --model flag.
+- `visualize.py`: map each node's ideas through it (keep raw `ideas` for display, add
+  `canon` list for filtering); the `idea` datalist becomes the canonical concepts.
+- `template.html`: idea filter matches on `canon`.
+
+**Artifacts:** src/graph/idea_canon.py, data/processed/idea_canon.json,
+src/graph/visualize.py, src/graph/template.html
+**Closed:** —
+
 ### E-014 · Paper cards: per-paper summary + filterable idea tags
 
 **Status:** closed
