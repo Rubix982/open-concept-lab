@@ -2,7 +2,7 @@
 
 ### E-018 · Cross-paper idea canonicalization
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-06-21
@@ -21,7 +21,7 @@ matches — and to enable idea-level gap detection later.
 
 **Artifacts:** src/graph/idea_canon.py, data/processed/idea_canon.json,
 src/graph/visualize.py, src/graph/template.html
-**Closed:** —
+**Closed:** 2026-06-21
 
 ### E-014 · Paper cards: per-paper summary + filterable idea tags
 

@@ -71,6 +71,15 @@ def main() -> None:
         cards = {c["paper_id"]: c for c in
                  (json.loads(l) for l in _cards_f.read_text().splitlines() if l.strip())}
 
+    # E-018: raw idea tag -> shared canonical concept (idea_canon.py; optional).
+    canon_map: dict[str, str] = {}
+    _canon_f = _PROC / "idea_canon.json"
+    if _canon_f.exists():
+        canon_map = json.loads(_canon_f.read_text())
+
+    def _canon(ideas: list[str]) -> list[str]:
+        return sorted({canon_map.get(i, i) for i in ideas})
+
     # E-015: community detection on the undirected citation graph → cluster id/color/label.
     _PALETTE = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#b07aa1", "#76b7b2",
                 "#edc948", "#ff9da7", "#9c755f", "#86bcb6", "#d37295", "#a0708a"]
@@ -127,6 +136,7 @@ def main() -> None:
             "origin": "hub" if not nid.startswith("openalex:") else "orig",
             "summary": cards.get(nid, {}).get("summary", ""),
             "ideas": cards.get(nid, {}).get("ideas", []),
+            "canon": _canon(cards.get(nid, {}).get("ideas", [])),
             "commColor": comm_color.get(nid, "#c8c8c8"),
             "commLabel": comm_label.get(nid, ""),
         })
@@ -155,6 +165,7 @@ def main() -> None:
             .replace("__DEFAULT_RELS__", json.dumps([r for r, (_, _, on) in _REL_STYLE.items() if on]))
             .replace("__REL_BOXES__", rel_boxes).replace("__FACET_OPTS__", facet_opts)
             .replace("__COMM_LEGEND__", json.dumps(legend))
+            .replace("__IDEA_CANON__", json.dumps(canon_map))
             .replace("__YMIN__", str(min_y)).replace("__YMAX__", str(max_y))
             .replace("__MINDEG__", str(default_min))
             .replace("__SUB__", f"{len(nodes)} papers · {len(edges)} typed edges · "

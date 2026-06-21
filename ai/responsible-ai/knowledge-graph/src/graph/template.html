@@ -88,7 +88,8 @@ ALL_EDGES.forEach(e=>{edgeById[e.id]=e;(outAdj[e.from]=outAdj[e.from]||[]).push(
   (und[e.from]=und[e.from]||[]).push([e.to,e.id]);(und[e.to]=und[e.to]||[]).push([e.from,e.id]);});
 document.getElementById('papers').innerHTML=ALL_NODES.map(n=>`<option value="${n.title2.replace(/"/g,'&quot;')}">`).join('');
 const COMM_LEGEND=__COMM_LEGEND__; const YMIN=__YMIN__, YMAX=__YMAX__;
-document.getElementById('ideas').innerHTML=[...new Set(ALL_NODES.flatMap(n=>n.ideas||[]))].sort()
+const IDEA_CANON=__IDEA_CANON__;  // raw idea tag -> shared canonical concept (E-018)
+document.getElementById('ideas').innerHTML=[...new Set(ALL_NODES.flatMap(n=>n.canon||[]))].sort()
   .map(i=>`<option value="${i.replace(/"/g,'&quot;')}">`).join('');
 
 const nodes=new vis.DataSet(ALL_NODES.map(n=>({id:n.id,label:n.label,value:n.value,level:n.level,color:n.color,
@@ -122,7 +123,7 @@ const relBadge=r=>`<span class="badge" style="background:${REL_BADGE[r]||'#999'}
 const srt=l=>l.slice().sort((a,b)=>(REL_ORDER[a.rel]-REL_ORDER[b.rel])||a.facet.localeCompare(b.facet));
 const panel=()=>document.getElementById('panel');
 
-const ideaMatch=(n,q)=>(n.ideas||[]).some(i=>i.includes(q));
+const ideaMatch=(n,q)=>(n.canon||[]).some(i=>i.includes(q))||(n.ideas||[]).some(i=>i.includes(q));
 function nodePass(n){
   if(n.year!=='?'&&(n.year<yearLo||n.year>yearHi))return false;
   if(n.value<degMin)return false;
@@ -181,7 +182,7 @@ function panelFocus(id){
     `${n.commLabel?` · <span style="color:${n.commColor};font-weight:600">●</span> ${esc(n.commLabel)}`:''}`+
     `${n.doi?` · <a href="https://doi.org/${n.doi}" target="_blank">DOI</a>`:''}</div>`;
   if(n.summary)h+=`<div style="margin:4px 0 8px;line-height:1.5">${esc(n.summary)}</div>`;
-  const chips=(n.ideas||[]).map(i=>`<span class="fbadge" data-idea="${esc(i)}" style="cursor:pointer;margin:2px 4px 2px 0">${esc(i)}</span>`).join('');
+  const chips=(n.ideas||[]).map(i=>`<span class="fbadge" data-idea="${esc(i)}" title="filter: ${esc(IDEA_CANON[i]||i)}" style="cursor:pointer;margin:2px 4px 2px 0">${esc(i)}</span>`).join('');
   if(chips)h+=`<div style="margin-bottom:8px">${chips}</div>`;
   h+=`<div style="margin-bottom:6px"><button id="bm">${BM.has(id)?'★ saved':'☆ save'}</button> `+
      `<button id="expand">expand ▸ (${focusDepth}-hop)</button> `+
@@ -200,7 +201,7 @@ function panelFocus(id){
   document.getElementById('setA').onclick=()=>{document.getElementById('pa').value=n.title2;};
   document.getElementById('setB').onclick=()=>{document.getElementById('pb').value=n.title2;};
   document.getElementById('note').oninput=e=>{NOTES[id]=e.target.value;saveNotes();};
-  panel().querySelectorAll('[data-idea]').forEach(c=>c.onclick=()=>applyIdea(c.dataset.idea));
+  panel().querySelectorAll('[data-idea]').forEach(c=>c.onclick=()=>applyIdea(IDEA_CANON[c.dataset.idea]||c.dataset.idea));
 }
 
 function focusNode(id){mode='focus';focusId=id;focusDepth=1;render();panelFocus(id);
