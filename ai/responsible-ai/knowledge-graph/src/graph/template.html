@@ -23,7 +23,10 @@
   button:hover{border-color:var(--accent);color:var(--accent)}
   #pathbtn{background:var(--accent);color:#fff;border-color:var(--accent)} #pathbtn:hover{background:#255bbd;color:#fff}
   .sep{color:var(--line);margin:0 1px}
-  #wrap{flex:1 1 auto;display:flex;min-height:0}
+  #wrap{flex:1 1 auto;display:flex;min-height:0;position:relative}
+  #zoomctl{position:absolute;left:12px;bottom:12px;z-index:40;display:flex;flex-direction:column;gap:5px}
+  #zoomctl button{width:32px;height:32px;font-size:17px;line-height:1;padding:0;border-radius:8px;
+       background:var(--card);box-shadow:0 1px 4px rgba(0,0,0,.16)}
   #net{flex:1;background:radial-gradient(circle at 50% 38%,#fff,#eef1f5)}
   body.dark #net{background:radial-gradient(circle at 50% 38%,#171d26,#0e131a)}
   #panel{width:350px;flex:0 0 350px;border-left:1px solid var(--line);background:var(--card);
@@ -90,7 +93,9 @@
   </div>
   <datalist id="papers"></datalist><datalist id="ideas"></datalist>
 </div>
-<div id="wrap"><div id="net"></div><div id="panel"><span class="muted">Showing the best-connected core. Lower &lsquo;deg ≥&rsquo; to reveal more · click a paper to explore its neighborhood · or hit ★ rankings.</span></div></div>
+<div id="wrap"><div id="net"></div>
+  <div id="zoomctl"><button id="zin" title="zoom in">+</button><button id="zout" title="zoom out">−</button><button id="zfit" title="fit to view">⤢</button></div>
+  <div id="panel"><span class="muted">Showing the best-connected core. Lower &lsquo;deg ≥&rsquo; to reveal more · click a paper to explore its neighborhood · or hit ★ rankings.</span></div></div>
 <script>
 const ALL_NODES=__NODES__, ALL_EDGES=__EDGES__;
 const idToNode={}, titleToId={}, edgeById={}; const und={}, outAdj={}, inAdj={};
@@ -116,7 +121,7 @@ const net=new vis.Network(document.getElementById('net'),{nodes,edges},{
            springConstant:0.011,damping:0.6,avoidOverlap:1},
            minVelocity:0.85,stabilization:{iterations:500},
            timestep:0.4,adaptiveTimestep:true},
-  interaction:{hover:true,hoverConnectedEdges:true,tooltipDelay:120}});
+  interaction:{hover:true,hoverConnectedEdges:true,tooltipDelay:120,zoomSpeed:0.45,keyboard:{enabled:false}}});
 net.once('stabilizationIterationsDone',()=>{net.fit({animation:false});
   if(net.getScale()>0.85)net.moveTo({scale:0.85});});
 // labels: only the top hubs when zoomed out (avoids clutter); reveal ALL once zoomed in.
@@ -439,6 +444,10 @@ document.getElementById('clusters').onchange=e=>{clusterMode=e.target.checked;
   render();autoFit();clusterMode?showLegend():showHome();};
 document.getElementById('idea').oninput=e=>applyIdea(e.target.value);
 document.getElementById('play').onclick=playYears;
+const zoomBy=f=>{const s=Math.max(0.1,Math.min(4,net.getScale()*f));net.moveTo({scale:s,animation:{duration:180,easingFunction:'easeInOutQuad'}});};
+document.getElementById('zin').onclick=()=>zoomBy(1.35);
+document.getElementById('zout').onclick=()=>zoomBy(1/1.35);
+document.getElementById('zfit').onclick=()=>fitVisible();
 document.getElementById('detail').oninput=e=>{detailText=e.target.value.toLowerCase().trim();mode='none';render();autoFit();};
 document.getElementById('conf').oninput=e=>{confMin=parseFloat(e.target.value)||0;mode='none';render();autoFit();};
 document.getElementById('ylo').oninput=e=>{yearLo=parseInt(e.target.value)||-1e9;mode='none';render();autoFit();};
