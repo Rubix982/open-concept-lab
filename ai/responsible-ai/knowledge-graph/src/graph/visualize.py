@@ -145,7 +145,7 @@ def main() -> None:
         y = p.get("year") if isinstance(p.get("year"), int) else "?"
         authors = (p.get("authors") or [])[:8]
         nodes.append({
-            "id": nid, "label": title[:26] if nid in top_hubs else " ",
+            "id": nid, "label": title[:28], "hub": nid in top_hubs,
             "title2": title, "year": y, "level": (y - min_y) if y != "?" else 0,
             "value": deg[nid], "color": "#e8a33d" if not nid.startswith("openalex:") else "#6699cc",
             "indeg": indeg.get(nid, 0), "outdeg": outdeg.get(nid, 0),
