@@ -14,13 +14,16 @@ This lab serves as a place to:
 
 ```sh
 .
-├── ai/                # Neural networks, transformers, LLM agents, evaluation
+├── ai/                # Neural nets, transformers, LLM agents, eval; responsible-AI (claim knowledge graph)
 ├── hpc/               # Parallelism, matrix ops, performance tuning
+├── math/              # Math + AI / automated-reasoning experiments
+├── medicine/          # Medical tinkering and experiments
 ├── security/          # TLS, sandboxes, analysis tools, crypto experiments
 ├── systems/           # OS components, allocators, consensus algorithms
 ├── reproducibility/   # Benchmarks, paper replications, repeatable results
 ├── tooling/           # CLI experiments, test kits, automation utilities
-├── rank-nsf-linker/   # Track researchers, venues, NSF grants, recent trends
+├── projects/          # Standalone projects (rank-nsf-linker, dali, memosa, opz, sudoku)
+├── web/               # Docusaurus site
 ├── templates/         # Reusable README + reflection + extension templates
 └── meta/              # Personal or meta information I track privately
 ```
