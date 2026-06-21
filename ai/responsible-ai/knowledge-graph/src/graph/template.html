@@ -112,8 +112,8 @@ const net=new vis.Network(document.getElementById('net'),{nodes,edges},{
   nodes:{shape:'dot',scaling:{min:4,max:20},font:{size:11,strokeWidth:4,strokeColor:'#fff'},widthConstraint:{maximum:150}},
   edges:{arrows:{to:{enabled:true,scaleFactor:0.45}},smooth:{type:'continuous'},
          color:{inherit:false},hoverWidth:1.6,selectionWidth:1.6},
-  physics:{barnesHut:{gravitationalConstant:-45000,centralGravity:0.03,springLength:250,
-           springConstant:0.012,damping:0.6,avoidOverlap:1},
+  physics:{barnesHut:{gravitationalConstant:-62000,centralGravity:0.028,springLength:330,
+           springConstant:0.011,damping:0.6,avoidOverlap:1},
            minVelocity:0.85,stabilization:{iterations:500},
            timestep:0.4,adaptiveTimestep:true},
   interaction:{hover:true,hoverConnectedEdges:true,tooltipDelay:120}});
@@ -341,10 +341,10 @@ function fitVisible(){const v=nodes.get({filter:n=>!n.hidden}).map(n=>n.id);
 // spread nodes proportionally to how many are visible — denser views get longer springs
 // and stronger repulsion so they push apart instead of collapsing into a hairball.
 function tunePhysics(n){
-  const spring=Math.min(440,Math.round(200+n*1.7));
-  const grav=-Math.min(130000,Math.round(34000+n*560));
-  net.setOptions({physics:{barnesHut:{gravitationalConstant:grav,centralGravity:0.024,
-    springLength:spring,springConstant:0.011,damping:0.6,avoidOverlap:1},minVelocity:0.85}});}
+  const spring=Math.min(560,Math.round(260+n*2.3));
+  const grav=-Math.min(165000,Math.round(46000+n*720));
+  net.setOptions({physics:{barnesHut:{gravitationalConstant:grav,centralGravity:0.022,
+    springLength:spring,springConstant:0.01,damping:0.6,avoidOverlap:1},minVelocity:0.85}});}
 function autoFit(){clearTimeout(fitT);fitT=setTimeout(()=>{
   tunePhysics(nodes.get({filter:n=>!n.hidden}).length);
   setTimeout(fitVisible,320);},250);}
