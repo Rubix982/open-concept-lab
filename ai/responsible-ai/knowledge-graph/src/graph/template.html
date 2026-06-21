@@ -187,7 +187,7 @@ function render(){
 
 function card(e,neighId){
   const fac=(e.facet&&e.facet!=='NA')?`<span class="fbadge" style="border-color:${e.baseColor};color:${e.baseColor}">${e.facet.replace(/_/g,' ')}</span>`:'';
-  return `<div class="ed" style="border-color:${e.baseColor||REL_C[e.rel]||'#ccc'}">${relBadge(e.rel)}${fac}`+
+  return `<div class="ed" data-id="${neighId}" style="cursor:pointer;border-color:${e.baseColor||REL_C[e.rel]||'#ccc'}">${relBadge(e.rel)}${fac}`+
     `<div class="card-t">${esc(idToNode[neighId].title2)}</div>`+
     (e.detail?`<div class="card-d">${esc(e.detail)}</div>`:'')+
     (e.rationale?`<div class="card-r muted">${esc(e.rationale)}</div>`:'')+`</div>`;
@@ -212,6 +212,7 @@ function panelFocus(id){
   h+=`<div class="sec">Cited by ←<span class="ct">${inc.length}</span></div>`;
   h+=inc.length?inc.map(e=>card(e,e.from)).join(''):'<div class="muted">—</div>';
   panel().innerHTML=h;wireBack(goHome);
+  panel().querySelectorAll('.ed[data-id]').forEach(d=>d.onclick=()=>focusNode(d.dataset.id));
   document.getElementById('bm').onclick=()=>{BM.has(id)?BM.delete(id):BM.add(id);saveBM();panelFocus(id);};
   document.getElementById('expand').onclick=()=>{focusDepth++;render();autoFit();panelFocus(id);};
   document.getElementById('lineage').onclick=()=>lineage(id);
