@@ -41,17 +41,19 @@ _REL_STYLE = {  # relation -> (base color, width, on-by-default); facets get sha
 
 
 def _shades(hex_base: str, n: int) -> list[str]:
-    """n ordered shades of a base color (darkest first → lightest), varying lightness."""
+    """n ordered shades of a base color (darkest → lightest). Wide lightness span + a
+    boosted, constant saturation so even ~8 facets stay visually distinct."""
     h = hex_base.lstrip("#")
     r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
-    hh, lo_l, s = colorsys.rgb_to_hls(r, g, b)
+    hh, _l, s = colorsys.rgb_to_hls(r, g, b)
     if n <= 1:
         return [hex_base]
-    lo, hi = max(0.30, lo_l - 0.16), min(0.80, lo_l + 0.26)
+    sat = min(0.9, max(0.4, s * 1.5))
+    lo, hi = 0.30, 0.82
     out = []
     for i in range(n):
         li = lo + (hi - lo) * i / (n - 1)
-        rr, gg, bb = colorsys.hls_to_rgb(hh, li, s)
+        rr, gg, bb = colorsys.hls_to_rgb(hh, li, sat)
         out.append("#%02x%02x%02x" % (round(rr * 255), round(gg * 255), round(bb * 255)))
     return out
 

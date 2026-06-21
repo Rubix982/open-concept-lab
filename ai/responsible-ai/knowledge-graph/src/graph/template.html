@@ -171,7 +171,7 @@ function render(){
                                               : (seeds.has(e.from)||seeds.has(e.to));
       const inc=eVisF(e)&&focusSet.has(e.from)&&focusSet.has(e.to)&&touch;
       hidden=!inc; if(inc){const weak=(e.rel==='RELATED'||e.rel==='NONE');
-        op=weak?0.13:0.95; w=weak?0.5:Math.max(w,2);}}  // RELATED/NONE stay faint so typed edges read
+        op=weak?0.5:0.95; w=weak?Math.min(w,1.3):Math.max(w,2);}}  // RELATED/NONE recede but stay visible
     else{hidden=!eVisible(e); if(!hidden){show.add(e.from);show.add(e.to);}}
     eUpd.push({id:e.id,hidden,color:{color:col,opacity:op},width:w});
   });
