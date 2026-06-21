@@ -88,7 +88,7 @@
     <input type="text" id="pb" list="papers" placeholder="to…" size="16">
     <button id="pathbtn">find path</button> <button id="clear">reset</button>
     <span class="sep">|</span> <button id="ranks">★ rankings</button> <button id="debate">⚑ debates</button>
-    <button id="listbtn">☆ reading list</button>
+    <button id="listbtn">☆ reading list</button> <button id="histbtn">🕘 history</button>
     <span class="sep">|</span> export <button id="exGraphml">GraphML</button><button id="exCsv">CSV</button><button id="exJson">JSON</button>
   </div>
   <datalist id="papers"></datalist><datalist id="ideas"></datalist>
@@ -140,6 +140,7 @@ let detailText='', confMin=0,
     yearLo=-1e9, yearHi=1e9, degMin=__MINDEG__, originSel='all', hideIso=true, ideaSel='';
 let mode='none', focusId=null, focusDepth=1, pathNodes=new Set(), pathEdges=new Set();
 let clusterMode=false, playing=false, playT=null, prevDeg=null;
+let trail=JSON.parse(sessionStorage.getItem('ckg_trail')||'[]');  // visited-node history (this session)
 
 const REL_C={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#17becf',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#ff7f0e',RELATED:'#8c6bb1',NONE:'#9aa0a6'};
 const REL_BADGE={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#0e9aa7',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#e8870e',RELATED:'#8c6bb1',NONE:'#9aa0a6'};
@@ -232,7 +233,9 @@ function panelFocus(id){
 }
 
 function focusNode(id){mode='focus';focusId=id;focusDepth=1;render();panelFocus(id);
-  net.selectNodes([id]);softFit();location.hash=encodeURIComponent(id);}
+  net.selectNodes([id]);softFit();location.hash=encodeURIComponent(id);
+  if(trail[trail.length-1]!==id){trail.push(id);if(trail.length>200)trail.shift();
+    sessionStorage.setItem('ckg_trail',JSON.stringify(trail));}}
 
 // rankings
 let rankMetric='indeg';
@@ -246,6 +249,18 @@ function renderRanks(){
   arr.forEach((n,i)=>h+=`<div class="rk" data-id="${n.id}"><span class="rkn">${i+1}</span><span class="sc">${fmtScore(n)}</span><span>${esc(n.title2)}</span></div>`);
   panel().innerHTML=h;wireBack(goHome);
   document.getElementById('rkm').onchange=e=>{rankMetric=e.target.value;renderRanks();};
+  panel().querySelectorAll('.rk').forEach(r=>r.onclick=()=>focusNode(r.dataset.id));
+}
+
+// history — papers focused this session, in order (sessionStorage)
+function renderHistory(){
+  net.unselectAll();
+  let h=`${BACK}<h2 style="margin-top:6px">History</h2><div class="meta">${trail.length} visited this session · most recent first · <a id="htrail">clear</a></div>`;
+  if(!trail.length)h+='<div class="muted">Click papers to build a trail — it’s kept for this browser session.</div>';
+  trail.slice().reverse().forEach((id,i)=>{const n=idToNode[id];if(!n)return;
+    h+=`<div class="rk" data-id="${id}"><span class="rkn">${trail.length-i}</span><span>${esc(n.title2)} <span class="muted">· ${n.year}</span></span></div>`;});
+  panel().innerHTML=h;wireBack(goHome);
+  const c=document.getElementById('htrail');if(c)c.onclick=()=>{trail=[];sessionStorage.removeItem('ckg_trail');renderHistory();};
   panel().querySelectorAll('.rk').forEach(r=>r.onclick=()=>focusNode(r.dataset.id));
 }
 
@@ -463,6 +478,7 @@ document.getElementById('clear').onclick=resetAll;
 document.getElementById('ranks').onclick=renderRanks;
 document.getElementById('debate').onclick=renderDebate;
 document.getElementById('listbtn').onclick=renderList;
+document.getElementById('histbtn').onclick=renderHistory;
 document.getElementById('exGraphml').onclick=()=>dl('ckg.graphml',graphml(),'application/xml');
 document.getElementById('exCsv').onclick=()=>dl('ckg_edges.csv',csv(),'text/csv');
 document.getElementById('exJson').onclick=()=>dl('ckg.json',JSON.stringify({nodes:ALL_NODES,edges:ALL_EDGES},null,1),'application/json');
