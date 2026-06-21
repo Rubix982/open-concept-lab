@@ -68,4 +68,6 @@ named rather than hidden.
 
 ## Graph Explorer
 
-![1](image.png)
+![1](assets/image-1.png)
+![2](assets/image-2.png)
+![3](assets/image-3.png)
