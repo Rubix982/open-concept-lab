@@ -17,6 +17,7 @@ vis-network from a CDN. Features:
 
 from __future__ import annotations
 
+import colorsys
 import json
 from collections import Counter
 from pathlib import Path
@@ -28,15 +29,31 @@ _PROC = _ROOT / "data" / "processed"
 _OUT = _ROOT / "graph.html"
 _TPL = Path(__file__).resolve().parent / "template.html"  # editable HTML/JS with __PLACEHOLDERS__
 
-_REL_STYLE = {  # relation -> (color, width, on-by-default)
+_REL_STYLE = {  # relation -> (base color, width, on-by-default); facets get shades of base
     "USES": ("#1f77b4", 2.0, True),
     "REFINES": ("#2ca02c", 2.8, True),
     "SUPPORTS": ("#17becf", 2.2, True),
     "CONTRADICTS": ("#d62728", 3.0, True),
     "ADDRESSES_SAME_PROBLEM": ("#ff7f0e", 2.2, True),
-    "RELATED": ("#cfcfcf", 0.7, False),
-    "NONE": ("#eaeaea", 0.5, False),
+    "RELATED": ("#8c6bb1", 1.0, False),   # was light grey — now a real (purple) hue
+    "NONE": ("#9aa0a6", 0.6, False),
 }
+
+
+def _shades(hex_base: str, n: int) -> list[str]:
+    """n ordered shades of a base color (darkest first → lightest), varying lightness."""
+    h = hex_base.lstrip("#")
+    r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    hh, lo_l, s = colorsys.rgb_to_hls(r, g, b)
+    if n <= 1:
+        return [hex_base]
+    lo, hi = max(0.30, lo_l - 0.16), min(0.80, lo_l + 0.26)
+    out = []
+    for i in range(n):
+        li = lo + (hi - lo) * i / (n - 1)
+        rr, gg, bb = colorsys.hls_to_rgb(hh, li, s)
+        out.append("#%02x%02x%02x" % (round(rr * 255), round(gg * 255), round(bb * 255)))
+    return out
 
 
 def main() -> None:
@@ -141,26 +158,37 @@ def main() -> None:
             "commLabel": comm_label.get(nid, ""),
         })
 
+    # Per-(relation, facet) color: each umbrella a base hue, each facet an ordered shade.
+    rf_counts: dict[str, Counter] = {}
+    for e in raw:
+        rf_counts.setdefault(e["relation"], Counter())[e.get("facet") or ""] += 1
+    facet_color: dict[tuple[str, str], str] = {}
+    for r, fc in rf_counts.items():
+        base = _REL_STYLE.get(r, ("#888888",))[0]
+        for f, col in zip((f for f, _ in fc.most_common()),
+                          _shades(base, len(fc))):
+            facet_color[(r, f)] = col
+
     edges = []
     for i, e in enumerate(raw):
-        color, width, _ = _REL_STYLE.get(e["relation"], ("#ccc", 0.6, False))
+        base, width, _ = _REL_STYLE.get(e["relation"], ("#cccccc", 0.6, False))
+        facet = e.get("facet") or ""
         edges.append({
             "id": i, "from": e["citing"], "to": e["cited"], "rel": e["relation"],
-            "facet": e.get("facet") or "", "detail": e.get("facet_detail") or "",
+            "facet": facet, "detail": e.get("facet_detail") or "",
             "rationale": e.get("rationale") or "", "conf": round(float(e.get("confidence") or 0), 2),
-            "baseColor": color, "baseWidth": width,
+            "baseColor": facet_color.get((e["relation"], facet), base), "baseWidth": width,
         })
 
     # Relation → facet tree (umbrella relations with expandable facet children) for the
     # tree filter. Ordered by relation frequency; facets by frequency within each relation.
+    # Each facet carries its shade so the tree swatches match the edges.
     rel_counts = Counter(e["rel"] for e in edges)
-    rel_facets: dict[str, Counter] = {}
-    for e in edges:
-        rel_facets.setdefault(e["rel"], Counter())[e["facet"] or ""] += 1
     rel_tree = [
         {"rel": r, "n": n, "color": _REL_STYLE.get(r, ("#999",))[0],
          "on": _REL_STYLE.get(r, (0, 0, False))[2],
-         "facets": [{"f": f, "n": fn} for f, fn in rel_facets[r].most_common()]}
+         "facets": [{"f": f, "n": fn, "color": facet_color.get((r, f), "#999")}
+                    for f, fn in rf_counts[r].most_common()]}
         for r, n in rel_counts.most_common()
     ]
 

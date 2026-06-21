@@ -132,8 +132,8 @@ let detailText='', confMin=0,
 let mode='none', focusId=null, focusDepth=1, pathNodes=new Set(), pathEdges=new Set();
 let clusterMode=false, playing=false, playT=null, prevDeg=null;
 
-const REL_C={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#17becf',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#ff7f0e',RELATED:'#cfcfcf',NONE:'#eaeaea'};
-const REL_BADGE={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#0e9aa7',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#e8870e',RELATED:'#9aa4b2',NONE:'#b6bcc4'};
+const REL_C={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#17becf',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#ff7f0e',RELATED:'#8c6bb1',NONE:'#9aa0a6'};
+const REL_BADGE={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#0e9aa7',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#e8870e',RELATED:'#8c6bb1',NONE:'#9aa0a6'};
 const REL_ORDER={USES:0,REFINES:1,SUPPORTS:2,CONTRADICTS:3,ADDRESSES_SAME_PROBLEM:4,RELATED:5,NONE:6};
 const esc=s=>(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
 const relBadge=r=>`<span class="badge" style="background:${REL_BADGE[r]||'#999'}">${r.replace(/_/g,' ')}</span>`;
@@ -186,8 +186,8 @@ function render(){
 }
 
 function card(e,neighId){
-  const fac=(e.facet&&e.facet!=='NA')?`<span class="fbadge">${e.facet.replace(/_/g,' ')}</span>`:'';
-  return `<div class="ed" style="border-color:${REL_C[e.rel]||'#ccc'}">${relBadge(e.rel)}${fac}`+
+  const fac=(e.facet&&e.facet!=='NA')?`<span class="fbadge" style="border-color:${e.baseColor};color:${e.baseColor}">${e.facet.replace(/_/g,' ')}</span>`:'';
+  return `<div class="ed" style="border-color:${e.baseColor||REL_C[e.rel]||'#ccc'}">${relBadge(e.rel)}${fac}`+
     `<div class="card-t">${esc(idToNode[neighId].title2)}</div>`+
     (e.detail?`<div class="card-d">${esc(e.detail)}</div>`:'')+
     (e.rationale?`<div class="card-r muted">${esc(e.rationale)}</div>`:'')+`</div>`;
@@ -410,7 +410,7 @@ function refreshTree(){const el=document.getElementById('reltree');if(!el)return
   document.getElementById('relbtn').textContent=`relations (${nrel}/${REL_TREE.length}) ▾`;}
 function buildTree(){const el=document.getElementById('reltree');
   el.innerHTML=REL_TREE.map(t=>{
-    const facs=t.facets.map(fc=>`<label class="frow"><input type="checkbox" class="ufacet" data-rel="${t.rel}" data-f="${esc(fc.f)}">${esc(fc.f||'(no facet)').replace(/_/g,' ')} <span class="fn">${fc.n}</span></label>`).join('');
+    const facs=t.facets.map(fc=>`<label class="frow"><input type="checkbox" class="ufacet" data-rel="${t.rel}" data-f="${esc(fc.f)}"><span class="sq" style="background:${fc.color}"></span>${esc(fc.f||'(no facet)').replace(/_/g,' ')} <span class="fn">${fc.n}</span></label>`).join('');
     return `<div><div class="trow"><input type="checkbox" class="urel" data-rel="${t.rel}">`+
       `<span class="caret" data-rel="${t.rel}">▸</span>`+
       `<span class="sq" style="background:${t.color}"></span>${t.rel.replace(/_/g,' ')} <span class="fn">${t.n}</span></div>`+
