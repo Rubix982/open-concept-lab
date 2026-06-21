@@ -151,19 +151,24 @@ def main() -> None:
             "baseColor": color, "baseWidth": width,
         })
 
+    # Relation → facet tree (umbrella relations with expandable facet children) for the
+    # tree filter. Ordered by relation frequency; facets by frequency within each relation.
     rel_counts = Counter(e["rel"] for e in edges)
-    rel_boxes = "".join(
-        f"<label><input type='checkbox' data-rel='{r}' {'checked' if _REL_STYLE.get(r, (0, 0, 0))[2] else ''}>"
-        f"<span class='sq' style='background:{_REL_STYLE.get(r, ('#999',))[0]}'></span>{r} ({n})</label> "
-        for r, n in rel_counts.most_common())
-    facet_opts = "".join(f"<option value='{f}'>{f}</option>"
-                         for f in sorted({e["facet"] for e in edges if e["facet"] and e["facet"] != "NA"}))
+    rel_facets: dict[str, Counter] = {}
+    for e in edges:
+        rel_facets.setdefault(e["rel"], Counter())[e["facet"] or ""] += 1
+    rel_tree = [
+        {"rel": r, "n": n, "color": _REL_STYLE.get(r, ("#999",))[0],
+         "on": _REL_STYLE.get(r, (0, 0, False))[2],
+         "facets": [{"f": f, "n": fn} for f, fn in rel_facets[r].most_common()]}
+        for r, n in rel_counts.most_common()
+    ]
 
     html = (_TPL.read_text(encoding="utf-8")
             .replace("__NODES__", json.dumps(nodes))
             .replace("__EDGES__", json.dumps(edges))
             .replace("__DEFAULT_RELS__", json.dumps([r for r, (_, _, on) in _REL_STYLE.items() if on]))
-            .replace("__REL_BOXES__", rel_boxes).replace("__FACET_OPTS__", facet_opts)
+            .replace("__REL_TREE__", json.dumps(rel_tree))
             .replace("__COMM_LEGEND__", json.dumps(legend))
             .replace("__IDEA_CANON__", json.dumps(canon_map))
             .replace("__YMIN__", str(min_y)).replace("__YMAX__", str(max_y))

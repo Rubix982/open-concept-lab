@@ -1,5 +1,27 @@
 # Engineer Tickets (E-)
 
+### E-019 · Tree filter: umbrella relations → facet children
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+Replace the flat relation-checkbox row + standalone facet dropdown with a single
+`relations ▾` tree dropdown: umbrella relations (RELATED/USES/REFINES/…) as parents with
+expandable facet children, each with its own checkbox + count. Checking an umbrella enables
+all its facets; unchecking one facet makes the umbrella indeterminate. Lets a user select
+"all RELATED" or just "RELATED→CRITIQUES".
+- `visualize.py`: build a relation→facet tree (counts) → `__REL_TREE__`.
+- `template.html`: filter model changes from (active relations + single facet) to an
+  `onFac` set of `rel\0facet` keys; eVisible/eVisF, debates, reset all updated; tree UI
+  with tri-state umbrellas built client-side.
+
+**Artifacts:** src/graph/visualize.py, src/graph/template.html
+**Closed:** 2026-06-21
+
 ### E-018 · Cross-paper idea canonicalization
 
 **Status:** closed

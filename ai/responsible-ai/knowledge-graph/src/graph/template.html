@@ -45,6 +45,16 @@
   .rk .sc{color:var(--accent);font-weight:700;min-width:40px;font-variant-numeric:tabular-nums}
   textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:7px;padding:6px;
        font:inherit;font-size:11.5px;background:var(--card);color:var(--ink);margin-top:6px;resize:vertical}
+  .treewrap{position:relative;display:inline-block}
+  #reltree{position:absolute;z-index:60;top:28px;left:0;background:var(--card);border:1px solid var(--line);
+       border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.16);padding:6px;min-width:300px;max-height:64vh;overflow:auto}
+  .trow{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;font-size:12.5px;white-space:nowrap}
+  .trow:hover{background:var(--bg)}
+  .caret{cursor:pointer;width:14px;text-align:center;color:var(--muted);user-select:none;font-size:10px}
+  .ufac{margin:0 0 3px 24px}
+  .frow{display:flex;align-items:center;gap:6px;padding:2px 6px;border-radius:6px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .frow:hover{background:var(--bg)}
+  .fn{margin-left:auto;color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums;padding-left:12px}
 </style></head><body>
 <div id="bar">
   <h3>Claim Knowledge Graph — explorer</h3>
@@ -52,7 +62,9 @@
   <button id="full" style="float:right;margin-right:6px">⛶ full</button>
   <button id="dark" style="float:right;margin-right:6px">◐ dark</button>
   <div id="sub">__SUB__</div>
-  <div class="row" id="rels">__REL_BOXES__ <span class="sep">|</span>
+  <div class="row" id="rels">
+    <div class="treewrap"><button id="relbtn">relations ▾</button><div id="reltree" class="tree" hidden></div></div>
+    <span class="sep">|</span>
     <label><input type="checkbox" id="iso" checked> hide isolated</label>
     <label><input type="checkbox" id="phys" checked> physics</label>
     <label><input type="checkbox" id="clusters"> clusters</label>
@@ -62,7 +74,6 @@
   <div class="row">
     🔎 <input type="text" id="search" list="papers" placeholder="find a paper…" size="22">
     idea <input type="text" id="idea" list="ideas" placeholder="e.g. attention" size="16">
-    facet <select id="facet"><option value="">(any)</option>__FACET_OPTS__</select>
     detail <input type="text" id="detail" placeholder="e.g. pooling" size="10">
     conf ≥ <input type="number" id="conf" value="0" min="0" max="1" step="0.05" style="width:60px">
     yr <input type="number" id="ylo" value="__YMIN__" style="width:58px"><input type="number" id="yhi" value="__YMAX__" style="width:58px">
@@ -109,8 +120,14 @@ const net=new vis.Network(document.getElementById('net'),{nodes,edges},{
 net.once('stabilizationIterationsDone',()=>{net.fit({animation:false});
   if(net.getScale()>0.85)net.moveTo({scale:0.85});});
 
-const DEFAULT_RELS=__DEFAULT_RELS__;
-let active=new Set(DEFAULT_RELS), facetSel='', detailText='', confMin=0,
+// tree filter: umbrella relation → facets. onFac holds enabled `rel\0facet` keys.
+const REL_TREE=__REL_TREE__;
+const facKey=(r,f)=>r+' '+(f||'');
+const relKeys=r=>{const t=REL_TREE.find(x=>x.rel===r);return t?t.facets.map(fc=>facKey(r,fc.f)):[];};
+const onFac=new Set();
+function setRelsDefault(){onFac.clear();REL_TREE.forEach(t=>{if(t.on)t.facets.forEach(fc=>onFac.add(facKey(t.rel,fc.f)));});}
+setRelsDefault();
+let detailText='', confMin=0,
     yearLo=-1e9, yearHi=1e9, degMin=__MINDEG__, originSel='all', hideIso=true, ideaSel='';
 let mode='none', focusId=null, focusDepth=1, pathNodes=new Set(), pathEdges=new Set();
 let clusterMode=false, playing=false, playT=null, prevDeg=null;
@@ -130,11 +147,11 @@ function nodePass(n){
   if(originSel!=='all'&&n.origin!==originSel)return false;
   return true;
 }
-const eVisible=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailText||e.detail.toLowerCase().includes(detailText))
+const eVisible=e=>onFac.has(facKey(e.rel,e.facet))&&(!detailText||e.detail.toLowerCase().includes(detailText))
   &&e.conf>=confMin&&nodePass(idToNode[e.from])&&nodePass(idToNode[e.to]);
 // focus shows a paper's TRUE neighborhood — relation/facet/conf still apply, but the
 // overview-only structural filters (deg / origin / year) are dropped so it's never empty.
-const eVisF=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailText||e.detail.toLowerCase().includes(detailText))&&e.conf>=confMin;
+const eVisF=e=>onFac.has(facKey(e.rel,e.facet))&&(!detailText||e.detail.toLowerCase().includes(detailText))&&e.conf>=confMin;
 
 function render(){
   let focusSet=null, seeds=null;
@@ -225,11 +242,10 @@ function renderRanks(){
 // debates
 function renderDebate(){
   setControlsToDefault();
-  active=new Set(['CONTRADICTS','ADDRESSES_SAME_PROBLEM']);
-  document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.checked=active.has(c.dataset.rel));
+  onFac.clear();['CONTRADICTS','ADDRESSES_SAME_PROBLEM'].forEach(r=>relKeys(r).forEach(k=>onFac.add(k)));refreshTree();
   degMin=0;document.getElementById('mindeg').value='0';  // debate papers are often low-degree
   mode='none';focusId=null;pathNodes=new Set();pathEdges=new Set();net.unselectAll();location.hash='';render();autoFit();
-  const ds=ALL_EDGES.filter(e=>active.has(e.rel));
+  const ds=ALL_EDGES.filter(e=>e.rel==='CONTRADICTS'||e.rel==='ADDRESSES_SAME_PROBLEM');
   let h=`${BACK}<h2 style="margin-top:6px">Open problems</h2><div class="meta">${ds.length} contradiction / same-problem edges · filters narrowed — ‹ back restores them</div>`;
   ds.forEach(e=>h+=`<div class="ed" data-id="${e.from}" style="cursor:pointer;border-color:${REL_C[e.rel]}">${relBadge(e.rel)}<div class="card-t">${esc(idToNode[e.from].title2)} <span class="muted">↔</span> ${esc(idToNode[e.to].title2)}</div>${e.rationale?`<div class="card-r muted">${esc(e.rationale)}</div>`:''}</div>`);
   panel().innerHTML=h;wireBack(resetAll);
@@ -297,9 +313,7 @@ const showHome=()=>{panel().innerHTML=HOME;};
 function goHome(){mode='none';focusId=null;focusDepth=1;pathNodes=new Set();pathEdges=new Set();
   net.unselectAll();location.hash='';render();showHome();autoFit();}
 function setControlsToDefault(){
-  active=new Set(DEFAULT_RELS);
-  document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.checked=active.has(c.dataset.rel));
-  facetSel='';document.getElementById('facet').value='';
+  setRelsDefault();refreshTree();
   detailText='';document.getElementById('detail').value='';
   confMin=0;document.getElementById('conf').value='0';
   yearLo=-1e9;document.getElementById('ylo').value=D_YLO;
@@ -385,8 +399,32 @@ function playYears(){
   step();playT=setInterval(step,700);
 }
 
+// --- tree filter (umbrella relation → facets) ---
+function relChanged(){if(mode==='path')return;render();autoFit();}
+function refreshTree(){const el=document.getElementById('reltree');if(!el)return;
+  REL_TREE.forEach(t=>{const keys=relKeys(t.rel),on=keys.filter(k=>onFac.has(k)).length;
+    const u=el.querySelector(`.urel[data-rel="${t.rel}"]`);
+    if(u){u.checked=keys.length>0&&on===keys.length;u.indeterminate=on>0&&on<keys.length;}
+    el.querySelectorAll(`.ufacet[data-rel="${t.rel}"]`).forEach(fc=>fc.checked=onFac.has(facKey(t.rel,fc.dataset.f)));});
+  const nrel=REL_TREE.filter(t=>relKeys(t.rel).some(k=>onFac.has(k))).length;
+  document.getElementById('relbtn').textContent=`relations (${nrel}/${REL_TREE.length}) ▾`;}
+function buildTree(){const el=document.getElementById('reltree');
+  el.innerHTML=REL_TREE.map(t=>{
+    const facs=t.facets.map(fc=>`<label class="frow"><input type="checkbox" class="ufacet" data-rel="${t.rel}" data-f="${esc(fc.f)}">${esc(fc.f||'(no facet)').replace(/_/g,' ')} <span class="fn">${fc.n}</span></label>`).join('');
+    return `<div><div class="trow"><input type="checkbox" class="urel" data-rel="${t.rel}">`+
+      `<span class="caret" data-rel="${t.rel}">▸</span>`+
+      `<span class="sq" style="background:${t.color}"></span>${t.rel.replace(/_/g,' ')} <span class="fn">${t.n}</span></div>`+
+      `<div class="ufac" data-rel="${t.rel}" hidden>${facs}</div></div>`;}).join('');
+  el.querySelectorAll('.caret').forEach(c=>c.onclick=()=>{const d=el.querySelector(`.ufac[data-rel="${c.dataset.rel}"]`);d.hidden=!d.hidden;c.textContent=d.hidden?'▸':'▾';});
+  el.querySelectorAll('.urel').forEach(c=>c.onchange=()=>{relKeys(c.dataset.rel).forEach(k=>c.checked?onFac.add(k):onFac.delete(k));refreshTree();relChanged();});
+  el.querySelectorAll('.ufacet').forEach(c=>c.onchange=()=>{const k=facKey(c.dataset.rel,c.dataset.f);c.checked?onFac.add(k):onFac.delete(k);refreshTree();relChanged();});
+  refreshTree();}
+buildTree();
+document.getElementById('relbtn').onclick=ev=>{ev.stopPropagation();const t=document.getElementById('reltree');t.hidden=!t.hidden;};
+document.addEventListener('click',ev=>{const t=document.getElementById('reltree');
+  if(!t.hidden&&!t.contains(ev.target)&&ev.target.id!=='relbtn')t.hidden=true;});
+
 // --- wiring ---
-document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.onchange=()=>{c.checked?active.add(c.dataset.rel):active.delete(c.dataset.rel);if(mode!=='path'){render();autoFit();}});
 document.getElementById('iso').onchange=e=>{hideIso=e.target.checked;if(mode==='none'){render();autoFit();}};
 document.getElementById('phys').onchange=e=>net.setOptions({physics:{enabled:e.target.checked}});
 document.getElementById('clusters').onchange=e=>{clusterMode=e.target.checked;
@@ -396,7 +434,6 @@ document.getElementById('clusters').onchange=e=>{clusterMode=e.target.checked;
   render();autoFit();clusterMode?showLegend():showHome();};
 document.getElementById('idea').oninput=e=>applyIdea(e.target.value);
 document.getElementById('play').onclick=playYears;
-document.getElementById('facet').onchange=e=>{facetSel=e.target.value;mode='none';render();autoFit();};
 document.getElementById('detail').oninput=e=>{detailText=e.target.value.toLowerCase().trim();mode='none';render();autoFit();};
 document.getElementById('conf').oninput=e=>{confMin=parseFloat(e.target.value)||0;mode='none';render();autoFit();};
 document.getElementById('ylo').oninput=e=>{yearLo=parseInt(e.target.value)||-1e9;mode='none';render();autoFit();};
