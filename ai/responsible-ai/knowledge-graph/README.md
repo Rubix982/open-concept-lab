@@ -1,11 +1,12 @@
 # Claim Knowledge Graph
 
-A vertical slice of the knowledge-infrastructure vision: **papers in → claims as nodes →
-typed edges → queryable.** Real papers, real provenance, honest evaluation.
+A vertical slice of the knowledge-infrastructure vision: **papers in → typed citation
+graph → an explorer for finding ideas, gaps, and lineage.** Real papers, real provenance,
+honest evaluation.
 
 ```
-ingest (OpenAlex)  →  classify (CLAIM/METHOD/BACKGROUND)  →  embed + graph (Kùzu)  →  query
-   src/ingestion          src/extraction                       src/graph              src/query
+ingest (OpenAlex/S2)  →  classify + type edges (Claude)  →  graph (Kùzu)  →  explore (HTML)
+   src/ingestion              src/extraction, src/graph        src/graph        src/graph/visualize
 ```
 
 ## Run it
@@ -16,58 +17,49 @@ source ../.venv/bin/activate           # venv lives at ai/responsible-ai/.venv
 # 1. Ingest real papers (OpenAlex, open API) -> sentences with provenance
 python -m src.ingestion --query "graph neural networks" --limit 50
 
-# 2. Build the claim graph (classify -> embed -> Kùzu nodes -> NLI-typed edges)
-#    Default tagger is the Claude LLM (needs ANTHROPIC_API_KEY); see step 2b for the
-#    offline DistilBERT alternative.
-python -m src.graph.build                 # --tagger llm (default)
+# 2. Build the claim graph (classify -> embed -> Kùzu nodes -> typed edges)
+python -m src.graph.build                 # --tagger llm (default; needs ANTHROPIC_API_KEY)
 
-# 3. Query
+# 3. Query, or explore visually
 python -m src.query "graph neural networks for recommendation"
+python -m src.graph.visualize             # -> graph.html ; then: open graph.html
 ```
 
-### Offline / no-API alternative
-
-```bash
-# 2a. (one-time) train the DistilBERT claim classifier on PubMed-RCT
-python -m src.extraction.train
-# 2b. build with the offline tagger (no API calls, lower accuracy on CS text)
-python -m src.graph.build --tagger distilbert
-```
+Offline, no API: `python -m src.extraction.train` then `python -m src.graph.build --tagger distilbert`.
 
 ## Layers
 
 | Layer | Module | What it does |
 | ----- | ------ | ------------ |
-| Ingest | `src/ingestion` | OpenAlex search → abstract reconstruction → sentence segmentation with `(paper_id, section, char offsets)` provenance. Caches API responses. |
-| Extract | `src/extraction` | Two interchangeable taggers behind one `.tag()` interface: an **LLM tagger** (Claude, default — domain-general) and a **DistilBERT** tagger fine-tuned on PubMed-RCT (offline fallback). `eval_ood.py` runs the honest head-to-head on hand-labeled CS sentences. |
-| Graph | `src/graph` | CLAIM sentences → MiniLM embeddings → Kùzu `Claim`/`Paper` nodes with provenance → candidate pairs by cosine similarity → NLI-typed edges (SUPPORTS / CONTRADICTS / RELATED). |
-| Query | `src/query` | Embed a query, rank claims by similarity, return each with source paper + supporting/contradicting claims. |
+| Ingest | `src/ingestion` | OpenAlex/Semantic Scholar → sentences with `(paper_id, section, char offset)` provenance; citation snowball to densify the corpus. Caches API responses. |
+| Extract | `src/extraction` | Claim tagger behind one `.tag()` interface: an **LLM tagger** (Claude, default) and an offline **DistilBERT** fallback. `eval_ood.py` is the honest head-to-head. |
+| Edges | `src/graph` | Citation linking → **citance-context LLM typer** into a faceted taxonomy (umbrella relation USES/REFINES/SUPPORTS/CONTRADICTS/ADDRESSES_SAME_PROBLEM/RELATED + filterable facets). Per-paper cards (summary + idea tags) and a canonical idea vocabulary. |
+| Explore | `src/graph/visualize` | Standalone `graph.html` (vis-network). |
 
-Storage is **Kùzu** (embedded property graph, Cypher, no server).
+Storage is **Kùzu** (embedded property graph, Cypher, no server). Bulk LLM calls default to
+`claude-haiku-4-5`; evals use `claude-opus-4-8`.
 
-## Status (2026-06-14)
+## Graph explorer
 
-End-to-end working on real papers. Current graph (LLM tagger): **41 papers, 123 claims,
-247 typed edges**. A query returns claims, their sources, and related claims. See
-`plan.md` for tickets and `agents/shared/` for findings/decisions.
+`python -m src.graph.visualize` regenerates `graph.html` from `data/processed/`. Features:
 
-### Honest limitations
-
-- **Claim extraction: solved for CS via the LLM tagger.** OOD macro-F1 went 0.571
-  (DistilBERT, biomedical-trained) → 1.000 (Claude) on the hand-labeled CS set. Caveat:
-  small eval (n=33) with shared labeler/rubric judgment — an independent ~100-sentence
-  eval is needed to trust the exact number. DistilBERT stays as the offline fallback.
-- **NLI edge typing is now the weak layer.** The general-domain NLI model mislabels
-  "two papers each proposing a different method" as `CONTRADICTS`. Scores are stored so
-  edges can be filtered; the clear next upgrade is to apply the same LLM approach to edge
-  typing that R-003 applied to extraction.
-- **Abstracts only** — full-text ingestion is future work.
-
-This is a *slice*, not a product: one honest path through all four layers, with the gaps
-named rather than hidden.
-
-## Graph Explorer
+- **Tree filter** — relations as umbrellas with expandable facet children; color = relation/facet, edge width = confidence, node size = degree.
+- **Paper cards** — click a node for its one-line contribution summary + idea chips; cards and neighbours are clickable to walk the graph.
+- **Idea filter** — canonical concept search with a per-idea adoption-over-time chart.
+- **Field map** — community detection, clusters labelled by distinctive idea.
+- **Time-lapse** — replay the corpus chronologically. Plus rankings, debates, shortest-path, lineage, reading list (localStorage), GraphML/CSV/JSON export.
 
 ![1](assets/image-1.png)
 ![2](assets/image-2.png)
 ![3](assets/image-3.png)
+
+## Status
+
+End-to-end on real papers: **111 papers, 736 typed citation edges** in the explorer. See
+`plan.md` for tickets, `agents/shared/` for findings/decisions, `CHANGELOG.md` for history.
+
+**Honest limitations.** Claim extraction is solved for CS via the LLM tagger (OOD macro-F1
+0.571 → 1.000 vs DistilBERT) but the eval set is small (n=33). The corpus is
+similarity-clustered, so RELATED dominates — USES/REFINES density comes from corpus
+construction, not better typing. Abstracts + citances only; full-text is future work. This
+is a *slice*, with gaps named rather than hidden.
