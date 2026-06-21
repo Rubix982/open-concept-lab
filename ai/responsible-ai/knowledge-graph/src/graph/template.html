@@ -55,15 +55,18 @@
   <div class="row" id="rels">__REL_BOXES__ <span class="sep">|</span>
     <label><input type="checkbox" id="iso" checked> hide isolated</label>
     <label><input type="checkbox" id="phys" checked> physics</label>
+    <label><input type="checkbox" id="clusters"> clusters</label>
     <label>layout <select id="layout"><option value="force">force</option><option value="year">by year</option></select></label>
+    <button id="play">▶ time-lapse</button>
   </div>
   <div class="row">
-    🔎 <input type="text" id="search" list="papers" placeholder="find a paper…" size="24">
+    🔎 <input type="text" id="search" list="papers" placeholder="find a paper…" size="22">
+    idea <input type="text" id="idea" list="ideas" placeholder="e.g. attention" size="16">
     facet <select id="facet"><option value="">(any)</option>__FACET_OPTS__</select>
-    detail <input type="text" id="detail" placeholder="e.g. attention" size="12">
-    conf ≥ <input type="number" id="conf" value="0" min="0" max="1" step="0.05" style="width:64px">
-    yr <input type="number" id="ylo" value="__YMIN__" style="width:62px"><input type="number" id="yhi" value="__YMAX__" style="width:62px">
-    deg ≥ <input type="number" id="mindeg" value="__MINDEG__" min="0" style="width:52px">
+    detail <input type="text" id="detail" placeholder="e.g. pooling" size="10">
+    conf ≥ <input type="number" id="conf" value="0" min="0" max="1" step="0.05" style="width:60px">
+    yr <input type="number" id="ylo" value="__YMIN__" style="width:58px"><input type="number" id="yhi" value="__YMAX__" style="width:58px">
+    deg ≥ <input type="number" id="mindeg" value="__MINDEG__" min="0" style="width:50px">
     <select id="origin"><option value="all">all papers</option><option value="orig">original</option><option value="hub">snowballed</option></select>
   </div>
   <div class="row">
@@ -74,7 +77,7 @@
     <button id="listbtn">☆ reading list</button>
     <span class="sep">|</span> export <button id="exGraphml">GraphML</button><button id="exCsv">CSV</button><button id="exJson">JSON</button>
   </div>
-  <datalist id="papers"></datalist>
+  <datalist id="papers"></datalist><datalist id="ideas"></datalist>
 </div>
 <div id="wrap"><div id="net"></div><div id="panel"><span class="muted">Showing the best-connected core. Lower &lsquo;deg ≥&rsquo; to reveal more · click a paper to explore its neighborhood · or hit ★ rankings.</span></div></div>
 <script>
@@ -84,9 +87,12 @@ ALL_NODES.forEach(n=>{idToNode[n.id]=n; titleToId[n.title2]=n.id;});
 ALL_EDGES.forEach(e=>{edgeById[e.id]=e;(outAdj[e.from]=outAdj[e.from]||[]).push(e);(inAdj[e.to]=inAdj[e.to]||[]).push(e);
   (und[e.from]=und[e.from]||[]).push([e.to,e.id]);(und[e.to]=und[e.to]||[]).push([e.from,e.id]);});
 document.getElementById('papers').innerHTML=ALL_NODES.map(n=>`<option value="${n.title2.replace(/"/g,'&quot;')}">`).join('');
+const COMM_LEGEND=__COMM_LEGEND__; const YMIN=__YMIN__, YMAX=__YMAX__;
+document.getElementById('ideas').innerHTML=[...new Set(ALL_NODES.flatMap(n=>n.ideas||[]))].sort()
+  .map(i=>`<option value="${i.replace(/"/g,'&quot;')}">`).join('');
 
 const nodes=new vis.DataSet(ALL_NODES.map(n=>({id:n.id,label:n.label,value:n.value,level:n.level,color:n.color,
-  title:`${n.title2} (${n.year}) · degree ${n.value}`,shape:'dot'})));
+  title:`${n.title2} (${n.year}) · degree ${n.value}${n.summary?('\n'+n.summary):''}`,shape:'dot'})));
 const edges=new vis.DataSet(ALL_EDGES.map(e=>({id:e.id,from:e.from,to:e.to,
   color:{color:e.baseColor,opacity:e.baseWidth>1?0.85:0.5},width:e.baseWidth,
   title:`${e.rel}/${e.facet}${e.detail?(' — '+e.detail):''} · conf ${e.conf}\n${e.rationale}`})));
@@ -95,15 +101,18 @@ const net=new vis.Network(document.getElementById('net'),{nodes,edges},{
   edges:{arrows:{to:{enabled:true,scaleFactor:0.45}},smooth:{type:'continuous'},
          color:{inherit:false},hoverWidth:1.6,selectionWidth:1.6},
   physics:{barnesHut:{gravitationalConstant:-45000,centralGravity:0.03,springLength:250,
-           springConstant:0.012,avoidOverlap:1},stabilization:{iterations:500}},
+           springConstant:0.012,damping:0.6,avoidOverlap:1},
+           minVelocity:0.85,stabilization:{iterations:500},
+           timestep:0.4,adaptiveTimestep:true},
   interaction:{hover:true,hoverConnectedEdges:true,tooltipDelay:120}});
 net.once('stabilizationIterationsDone',()=>{net.fit({animation:false});
   if(net.getScale()>0.85)net.moveTo({scale:0.85});});
 
 const DEFAULT_RELS=__DEFAULT_RELS__;
 let active=new Set(DEFAULT_RELS), facetSel='', detailText='', confMin=0,
-    yearLo=-1e9, yearHi=1e9, degMin=__MINDEG__, originSel='all', hideIso=true;
+    yearLo=-1e9, yearHi=1e9, degMin=__MINDEG__, originSel='all', hideIso=true, ideaSel='';
 let mode='none', focusId=null, focusDepth=1, pathNodes=new Set(), pathEdges=new Set();
+let clusterMode=false, playing=false, playT=null, prevDeg=null;
 
 const REL_C={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#17becf',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#ff7f0e',RELATED:'#cfcfcf',NONE:'#eaeaea'};
 const REL_BADGE={USES:'#1f77b4',REFINES:'#2ca02c',SUPPORTS:'#0e9aa7',CONTRADICTS:'#d62728',ADDRESSES_SAME_PROBLEM:'#e8870e',RELATED:'#9aa4b2',NONE:'#b6bcc4'};
@@ -113,6 +122,7 @@ const relBadge=r=>`<span class="badge" style="background:${REL_BADGE[r]||'#999'}
 const srt=l=>l.slice().sort((a,b)=>(REL_ORDER[a.rel]-REL_ORDER[b.rel])||a.facet.localeCompare(b.facet));
 const panel=()=>document.getElementById('panel');
 
+const ideaMatch=(n,q)=>(n.ideas||[]).some(i=>i.includes(q));
 function nodePass(n){
   if(n.year!=='?'&&(n.year<yearLo||n.year>yearHi))return false;
   if(n.value<degMin)return false;
@@ -126,15 +136,22 @@ const eVisible=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailTe
 const eVisF=e=>active.has(e.rel)&&(!facetSel||e.facet===facetSel)&&(!detailText||e.detail.toLowerCase().includes(detailText))&&e.conf>=confMin;
 
 function render(){
-  let focusSet=null;
+  let focusSet=null, seeds=null;
   if(mode==='focus'){focusSet=new Set([focusId]); let fr=[focusId];
     for(let d=0;d<focusDepth;d++){const nx=[]; fr.forEach(x=>(und[x]||[]).forEach(([nb,eid])=>{
       if(eVisF(edgeById[eid])&&!focusSet.has(nb)){focusSet.add(nb);nx.push(nb);}})); fr=nx;}}
+  if(mode==='idea'){  // show all papers carrying the idea (seeds) + their 1-hop neighbours
+    seeds=new Set(ALL_NODES.filter(n=>ideaMatch(n,ideaSel)).map(n=>n.id));
+    focusSet=new Set(seeds);
+    seeds.forEach(x=>(und[x]||[]).forEach(([nb,eid])=>{if(eVisF(edgeById[eid]))focusSet.add(nb);}));}
+  const sub=(mode==='focus'||mode==='idea');
   const show=new Set(), eUpd=[];
   ALL_EDGES.forEach(e=>{
     let hidden,col=e.baseColor,op=e.baseWidth>1?0.85:0.5,w=e.baseWidth;
     if(mode==='path'){hidden=!pathEdges.has(e.id); if(!hidden){col='#111';op=1;w=4;}else op=0.04;}
-    else if(mode==='focus'){const inc=eVisF(e)&&focusSet.has(e.from)&&focusSet.has(e.to)&&(focusDepth>1||e.from===focusId||e.to===focusId);
+    else if(sub){const touch = mode==='focus' ? (focusDepth>1||e.from===focusId||e.to===focusId)
+                                              : (seeds.has(e.from)||seeds.has(e.to));
+      const inc=eVisF(e)&&focusSet.has(e.from)&&focusSet.has(e.to)&&touch;
       hidden=!inc; if(inc){const weak=(e.rel==='RELATED'||e.rel==='NONE');
         op=weak?0.13:0.95; w=weak?0.5:Math.max(w,2);}}  // RELATED/NONE stay faint so typed edges read
     else{hidden=!eVisible(e); if(!hidden){show.add(e.from);show.add(e.to);}}
@@ -142,11 +159,11 @@ function render(){
   });
   edges.update(eUpd);
   if(mode==='path')pathNodes.forEach(n=>show.add(n));
-  if(mode==='focus')focusSet.forEach(n=>show.add(n));
+  if(sub)focusSet.forEach(n=>show.add(n));
   nodes.update(ALL_NODES.map(n=>{
     let hidden = (mode==='none') ? (!nodePass(n)||(hideIso&&!show.has(n.id))) : !show.has(n.id);
-    const hl=(mode==='focus'&&n.id===focusId)||(mode==='path'&&pathNodes.has(n.id));
-    return {id:n.id,hidden,color:n.color,borderWidth:hl?4:1};
+    const hl=(mode==='focus'&&n.id===focusId)||(mode==='path'&&pathNodes.has(n.id))||(mode==='idea'&&seeds.has(n.id));
+    return {id:n.id,hidden,color:clusterMode?n.commColor:n.color,borderWidth:hl?4:1};
   }));
 }
 
@@ -161,7 +178,11 @@ function panelFocus(id){
   const n=idToNode[id], out=srt(outAdj[id]||[]), inc=srt(inAdj[id]||[]);
   const origin=n.origin==='hub'?'snowballed hub':'original corpus';
   let h=`${BACK}<h2 style="margin-top:6px">${esc(n.title2)}</h2><div class="meta">${n.year} · degree ${n.value} · ${origin}`+
+    `${n.commLabel?` · <span style="color:${n.commColor};font-weight:600">●</span> ${esc(n.commLabel)}`:''}`+
     `${n.doi?` · <a href="https://doi.org/${n.doi}" target="_blank">DOI</a>`:''}</div>`;
+  if(n.summary)h+=`<div style="margin:4px 0 8px;line-height:1.5">${esc(n.summary)}</div>`;
+  const chips=(n.ideas||[]).map(i=>`<span class="fbadge" data-idea="${esc(i)}" style="cursor:pointer;margin:2px 4px 2px 0">${esc(i)}</span>`).join('');
+  if(chips)h+=`<div style="margin-bottom:8px">${chips}</div>`;
   h+=`<div style="margin-bottom:6px"><button id="bm">${BM.has(id)?'★ saved':'☆ save'}</button> `+
      `<button id="expand">expand ▸ (${focusDepth}-hop)</button> `+
      `<button id="lineage">📚 lineage</button></div>`;
@@ -179,10 +200,11 @@ function panelFocus(id){
   document.getElementById('setA').onclick=()=>{document.getElementById('pa').value=n.title2;};
   document.getElementById('setB').onclick=()=>{document.getElementById('pb').value=n.title2;};
   document.getElementById('note').oninput=e=>{NOTES[id]=e.target.value;saveNotes();};
+  panel().querySelectorAll('[data-idea]').forEach(c=>c.onclick=()=>applyIdea(c.dataset.idea));
 }
 
 function focusNode(id){mode='focus';focusId=id;focusDepth=1;render();panelFocus(id);
-  net.selectNodes([id]);autoFit();location.hash=encodeURIComponent(id);}
+  net.selectNodes([id]);softFit();location.hash=encodeURIComponent(id);}
 
 // rankings
 let rankMetric='indeg';
@@ -284,6 +306,7 @@ function setControlsToDefault(){
   degMin=parseInt(D_MINDEG)||0;document.getElementById('mindeg').value=D_MINDEG;
   originSel='all';document.getElementById('origin').value='all';
   hideIso=true;document.getElementById('iso').checked=true;
+  ideaSel='';document.getElementById('idea').value='';
   document.getElementById('pa').value='';document.getElementById('pb').value='';
 }
 function resetAll(){setControlsToDefault();goHome();}
@@ -301,15 +324,77 @@ function tunePhysics(n){
   const spring=Math.min(440,Math.round(200+n*1.7));
   const grav=-Math.min(130000,Math.round(34000+n*560));
   net.setOptions({physics:{barnesHut:{gravitationalConstant:grav,centralGravity:0.024,
-    springLength:spring,springConstant:0.011,avoidOverlap:1}}});}
+    springLength:spring,springConstant:0.011,damping:0.6,avoidOverlap:1},minVelocity:0.85}});}
 function autoFit(){clearTimeout(fitT);fitT=setTimeout(()=>{
   tunePhysics(nodes.get({filter:n=>!n.hidden}).length);
   setTimeout(fitVisible,320);},250);}
+// frame the viewport WITHOUT restarting the physics solver — used on click/focus so
+// nodes don't twitch; only the camera moves (smoothly).
+function softFit(){clearTimeout(fitT);fitT=setTimeout(fitVisible,180);}
+
+// E-014: idea filter — show papers carrying an idea (highlighted) + their neighbours,
+// ignoring overview-only filters (deg/year/origin) so it's never empty; + a trend panel.
+function applyIdea(q){q=(q||'').toLowerCase().trim();ideaSel=q;
+  document.getElementById('idea').value=q;focusId=null;net.unselectAll();
+  if(!q){goHome();return;}
+  mode='idea';render();autoFit();renderTrend();}
+// E-017: concept trend — #papers per year carrying the selected idea, + the paper list.
+function renderTrend(){
+  if(!ideaSel){showHome();return;}
+  const match=ALL_NODES.filter(n=>ideaMatch(n,ideaSel));
+  const byYear={};match.forEach(n=>{if(n.year!=='?')byYear[n.year]=(byYear[n.year]||0)+1;});
+  let h=`${BACK}<h2 style="margin-top:6px">"${esc(ideaSel)}"</h2><div class="meta">${match.length} papers (highlighted) + their neighbours</div>`;
+  const yrs=Object.keys(byYear).map(Number).sort((a,b)=>a-b);
+  if(yrs.length){const max=Math.max(...Object.values(byYear));
+    h+=`<div class="sec">Adoption over time</div>`;
+    for(let y=yrs[0];y<=yrs[yrs.length-1];y++){const c=byYear[y]||0;
+      h+=`<div style="display:flex;align-items:center;gap:6px;margin:2px 0">`+
+         `<span style="width:32px;color:var(--muted);font-size:11px;text-align:right">${y}</span>`+
+         `<span style="height:11px;width:${Math.max(c?2:0,Math.round(c/max*170))}px;background:var(--accent);border-radius:3px"></span>`+
+         `<span style="font-size:11px;color:var(--muted)">${c||''}</span></div>`;}}
+  h+=`<div class="sec">Papers<span class="ct">${match.length}</span></div>`;
+  match.slice().sort((a,b)=>(a.year==='?'?9999:a.year)-(b.year==='?'?9999:b.year)).forEach(n=>
+    h+=`<div class="ed" data-id="${n.id}" style="cursor:pointer"><div class="card-t">${esc(n.title2)}</div>`+
+       `<div class="muted">${n.year}${n.summary?(' · '+esc(n.summary)):''}</div></div>`);
+  panel().innerHTML=h;
+  wireBack(()=>{document.getElementById('idea').value='';ideaSel='';goHome();});
+  panel().querySelectorAll('.ed').forEach(d=>d.onclick=()=>focusNode(d.dataset.id));
+}
+// E-015: cluster legend (community → top idea).
+function showLegend(){
+  let h=`<h2>Field map</h2><div class="meta">communities by citation structure · labelled by top idea</div>`;
+  COMM_LEGEND.forEach(c=>h+=`<div class="rk"><span style="width:12px;height:12px;border-radius:3px;background:${c.color};display:inline-block"></span>`+
+    `<span>${esc(c.label)}</span><span class="rkn">${c.n}</span></div>`);
+  if(!COMM_LEGEND.length)h+='<div class="muted">No communities detected.</div>';
+  panel().innerHTML=h;
+}
+// E-016: year time-lapse — sweep the upper year bound from earliest to latest.
+function playYears(){
+  const btn=document.getElementById('play');
+  if(playing){clearInterval(playT);playing=false;btn.textContent='▶ time-lapse';return;}
+  setControlsToDefault();mode='none';focusId=null;net.unselectAll();
+  playing=true;btn.textContent='⏸ stop';
+  yearLo=-1e9;document.getElementById('ylo').value=YMIN;
+  let y=YMIN;
+  const step=()=>{yearHi=y;document.getElementById('yhi').value=y;render();
+    panel().innerHTML=`<h2>${y}</h2><div class="meta">papers up to ${y} · ${nodes.get({filter:n=>!n.hidden}).length} shown</div>`;
+    btn.textContent='⏸ '+y;
+    if(y>=YMAX){clearInterval(playT);playing=false;btn.textContent='▶ time-lapse';fitVisible();}
+    y++;};
+  step();playT=setInterval(step,700);
+}
 
 // --- wiring ---
 document.querySelectorAll('#rels input[data-rel]').forEach(c=>c.onchange=()=>{c.checked?active.add(c.dataset.rel):active.delete(c.dataset.rel);if(mode!=='path'){render();autoFit();}});
 document.getElementById('iso').onchange=e=>{hideIso=e.target.checked;if(mode==='none'){render();autoFit();}};
 document.getElementById('phys').onchange=e=>net.setOptions({physics:{enabled:e.target.checked}});
+document.getElementById('clusters').onchange=e=>{clusterMode=e.target.checked;
+  if(clusterMode){prevDeg=degMin;degMin=0;document.getElementById('mindeg').value='0';}  // reveal whole field
+  else{degMin=(prevDeg!=null?prevDeg:(parseInt(D_MINDEG)||0));document.getElementById('mindeg').value=degMin;prevDeg=null;}
+  mode='none';ideaSel='';document.getElementById('idea').value='';
+  render();autoFit();clusterMode?showLegend():showHome();};
+document.getElementById('idea').oninput=e=>applyIdea(e.target.value);
+document.getElementById('play').onclick=playYears;
 document.getElementById('facet').onchange=e=>{facetSel=e.target.value;mode='none';render();autoFit();};
 document.getElementById('detail').oninput=e=>{detailText=e.target.value.toLowerCase().trim();mode='none';render();autoFit();};
 document.getElementById('conf').oninput=e=>{confMin=parseFloat(e.target.value)||0;mode='none';render();autoFit();};

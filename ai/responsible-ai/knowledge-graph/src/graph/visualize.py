@@ -64,6 +64,52 @@ def main() -> None:
     btw = nx.betweenness_centrality(G) if G.number_of_nodes() > 2 else {}
     indeg, outdeg = dict(G.in_degree()), dict(G.out_degree())
 
+    # E-014: per-paper summary + idea tags (paper_cards.py; optional — degrade gracefully).
+    cards = {}
+    _cards_f = _PROC / "paper_cards.jsonl"
+    if _cards_f.exists():
+        cards = {c["paper_id"]: c for c in
+                 (json.loads(l) for l in _cards_f.read_text().splitlines() if l.strip())}
+
+    # E-015: community detection on the undirected citation graph → cluster id/color/label.
+    _PALETTE = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#b07aa1", "#76b7b2",
+                "#edc948", "#ff9da7", "#9c755f", "#86bcb6", "#d37295", "#a0708a"]
+    comm_of, comm_color, comm_label = {}, {}, {}
+    legend = []
+    try:
+        comms = sorted(nx.community.greedy_modularity_communities(G.to_undirected()),
+                       key=len, reverse=True)
+    except Exception:  # noqa: BLE001
+        comms = []
+    # Label each community by its most DISTINCTIVE idea (tf-idf), not its most frequent —
+    # else every cluster reads "graph neural networks". idf down-weights corpus-ubiquitous
+    # ideas so the characteristic one (recommendation, pooling, ...) surfaces.
+    import math
+    n_docs = max(len(cards), 1)
+    global_idea: Counter = Counter(i for c in cards.values() for i in c.get("ideas", []))
+    used_labels: set[str] = set()
+    for ci, cset in enumerate(comms):
+        color = _PALETTE[ci] if ci < len(_PALETTE) else "#c8c8c8"
+        local: Counter = Counter()
+        for n in cset:
+            for idea in cards.get(n, {}).get("ideas", []):
+                local[idea] += 1
+        cands = [i for i in local if local[i] >= 2] or list(local)
+
+        def _score(i: str) -> float:
+            return local[i] * math.log(n_docs / global_idea[i]) if global_idea.get(i) else 0.0
+
+        label = f"cluster {ci + 1}"
+        for i in sorted(cands, key=_score, reverse=True):
+            if i not in used_labels:  # keep legend labels distinct
+                label = i
+                used_labels.add(i)
+                break
+        for n in cset:
+            comm_of[n], comm_color[n], comm_label[n] = ci, color, label
+        if ci < len(_PALETTE):
+            legend.append({"color": color, "label": label, "n": len(cset)})
+
     nodes = []
     for nid in deg:
         p = papers.get(nid, {})
@@ -79,6 +125,10 @@ def main() -> None:
             "venue": p.get("venue") or "", "authBib": " and ".join(authors),
             "doi": (p.get("doi") or "").replace("https://doi.org/", ""),
             "origin": "hub" if not nid.startswith("openalex:") else "orig",
+            "summary": cards.get(nid, {}).get("summary", ""),
+            "ideas": cards.get(nid, {}).get("ideas", []),
+            "commColor": comm_color.get(nid, "#c8c8c8"),
+            "commLabel": comm_label.get(nid, ""),
         })
 
     edges = []
@@ -104,6 +154,7 @@ def main() -> None:
             .replace("__EDGES__", json.dumps(edges))
             .replace("__DEFAULT_RELS__", json.dumps([r for r, (_, _, on) in _REL_STYLE.items() if on]))
             .replace("__REL_BOXES__", rel_boxes).replace("__FACET_OPTS__", facet_opts)
+            .replace("__COMM_LEGEND__", json.dumps(legend))
             .replace("__YMIN__", str(min_y)).replace("__YMAX__", str(max_y))
             .replace("__MINDEG__", str(default_min))
             .replace("__SUB__", f"{len(nodes)} papers · {len(edges)} typed edges · "

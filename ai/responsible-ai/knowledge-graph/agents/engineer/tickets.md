@@ -1,5 +1,81 @@
 # Engineer Tickets (E-)
 
+### E-014 · Paper cards: per-paper summary + filterable idea tags
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+Give each paper a one-line "contribution" summary and a set of canonical idea tags,
+surfaced in the explorer's right panel and usable as a graph filter.
+- `src/graph/paper_cards.py` → `data/processed/paper_cards.jsonl`
+  ({paper_id, summary, ideas:[...]}). Bulk model = claude-haiku-4-5 (--model flag,
+  --limit sample, per the citance_typer convention). Evidence = paper title + the
+  rationales/facet_details of edges where it is the CITED paper (how the community
+  describes it). No hallucinated abstracts — grounded in citances only.
+- `visualize.py` merges summary + ideas into node data; builds a datalist of all ideas.
+- `template.html`: panel shows the summary + clickable idea chips; a new `idea` toolbar
+  filter restricts the graph to papers carrying that idea (induced subgraph). Chips set
+  the filter.
+
+**Artifacts:** src/graph/paper_cards.py, data/processed/paper_cards.jsonl,
+src/graph/visualize.py, src/graph/template.html
+**Closed:** 2026-06-21
+
+### E-015 · Field map: community detection cluster coloring
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+Color nodes by sub-area so the hairball reads as a labeled map. `visualize.py` runs
+networkx greedy-modularity community detection on the undirected citation graph; assigns
+each node a community id + palette color; labels each community by its most common idea
+(from E-014). `template.html` adds a "clusters" toggle (swap node color → community
+color) and a legend of community → top-idea labels. Free (no LLM).
+
+**Artifacts:** src/graph/visualize.py, src/graph/template.html
+**Closed:** 2026-06-21
+
+### E-016 · Year time-lapse: animate graph growth chronologically
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+A play control in the explorer that sweeps the year filter from earliest→latest, revealing
+nodes/edges as they appear, so the field's formation is visible. Reuses the existing year
+filter; a current-year badge tracks progress; fits once at the end. Pure client-side JS in
+template.html.
+
+**Artifacts:** src/graph/template.html
+**Closed:** 2026-06-21
+
+### E-017 · Concept trends: idea adoption over time
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-06-21
+**Updated:** 2026-06-21
+
+**Description:**
+When an idea is selected (idea filter or a clicked chip), show a small inline bar chart in
+the panel of #papers-per-year carrying that idea, so its rise/fall is visible. Computed
+client-side from node ideas + years (no server work). Lives in template.html.
+
+**Artifacts:** src/graph/template.html
+**Closed:** 2026-06-21
+
 ### E-001 · Ingestion: arXiv/OpenAlex → sentences with provenance
 
 **Status:** closed

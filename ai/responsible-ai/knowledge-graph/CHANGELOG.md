@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-06-21 · Session — explorer paper-cards + field map
+
+- [E-014] Paper cards: per-paper one-line summary + canonical idea tags
+  (claude-haiku-4-5, grounded in citances) — src/graph/paper_cards.py →
+  data/processed/paper_cards.jsonl; surfaced in the explorer panel + `idea` filter
+- [E-015] Field map: networkx community detection, tf-idf-labelled clusters
+  (graph classification / session-based recommendation / traffic forecasting /
+  over-smoothing / few-shot learning) — `clusters` toggle reveals the whole field
+- [E-016] Year time-lapse: `▶ time-lapse` sweeps the corpus chronologically
+- [E-017] Concept trends: per-idea adoption-over-time bar chart in the panel
+- Explorer extracted to an editable src/graph/template.html (visualize.py fills it);
+  density/nav work landed earlier this session (auto-fit, damped physics, full reset +
+  ‹ back, idea-mode shows matches + neighbours ignoring overview filters)
+
 ## 2026-06-14 · Session 1
 
 - [O-001] Initialized claim-knowledge-graph vertical-slice subproject — plan.md,
