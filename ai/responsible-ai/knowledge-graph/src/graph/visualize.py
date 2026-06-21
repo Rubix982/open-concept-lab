@@ -171,13 +171,16 @@ def main() -> None:
 
     edges = []
     for i, e in enumerate(raw):
-        base, width, _ = _REL_STYLE.get(e["relation"], ("#cccccc", 0.6, False))
+        base, _w, _ = _REL_STYLE.get(e["relation"], ("#cccccc", 0.6, False))
         facet = e.get("facet") or ""
+        conf = round(float(e.get("confidence") or 0), 2)
         edges.append({
             "id": i, "from": e["citing"], "to": e["cited"], "rel": e["relation"],
             "facet": facet, "detail": e.get("facet_detail") or "",
-            "rationale": e.get("rationale") or "", "conf": round(float(e.get("confidence") or 0), 2),
-            "baseColor": facet_color.get((e["relation"], facet), base), "baseWidth": width,
+            "rationale": e.get("rationale") or "", "conf": conf,
+            "baseColor": facet_color.get((e["relation"], facet), base),
+            # width encodes CONFIDENCE (color already encodes the relation) — bold = sure.
+            "baseWidth": round(0.5 + conf * 2.3, 2),
         })
 
     # Relation → facet tree (umbrella relations with expandable facet children) for the
@@ -202,8 +205,9 @@ def main() -> None:
             .replace("__YMIN__", str(min_y)).replace("__YMAX__", str(max_y))
             .replace("__MINDEG__", str(default_min))
             .replace("__SUB__", f"{len(nodes)} papers · {len(edges)} typed edges · "
-                                f"● size = degree · orange = snowballed hub · "
-                                f"start = best-connected core (deg ≥ {default_min})"))
+                                f"● size = degree · line width = confidence · "
+                                f"color = relation/facet · start = best-connected core "
+                                f"(deg ≥ {default_min})"))
     _OUT.write_text(html, encoding="utf-8")
     print(f"wrote {_OUT}  ({len(nodes)} nodes, {len(edges)} edges)")
     print(f"open it:  open {_OUT}")
