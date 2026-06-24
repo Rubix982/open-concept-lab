@@ -14,9 +14,11 @@ Requires ANTHROPIC_API_KEY in the environment.
 
 from __future__ import annotations
 
+from typing import cast, Any
 import json
 
 import anthropic
+from transformers import Any
 
 # Bulk default: haiku (sentence classification is well within a small model; ~5x cheaper
 # than opus). Pass model="claude-opus-4-8" for evals / quality-ceiling runs.
@@ -36,7 +38,7 @@ _SYSTEM = (
     "Return calibrated confidence in [0,1]."
 )
 
-_SCHEMA = {
+_SCHEMA: object = {
     "type": "object",
     "properties": {
         "results": {
@@ -75,7 +77,7 @@ class LLMClaimTagger:
             max_tokens=4096,
             system=_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
-            output_config={"format": {"type": "json_schema", "schema": _SCHEMA}},
+            output_config=cast(Any, {"format": {"type": "json_schema", "schema": _SCHEMA}}),
         )
         text = next(b.text for b in resp.content if b.type == "text")
         parsed = json.loads(text)

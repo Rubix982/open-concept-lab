@@ -74,7 +74,7 @@ def _balanced_cap(
     for p in pairs:
         by_class.setdefault(p[1], []).append(p)
     out: list[tuple[str, int]] = []
-    for label_id, items in by_class.items():
+    for _, items in by_class.items():
         rng.shuffle(items)
         out.extend(items[:cap_per_class])
     rng.shuffle(out)

@@ -57,7 +57,7 @@ def _claim_id(rec: dict[str, Any]) -> str:
     return f"{rec['paper_id']}::{rec['section']}{rec['sentence_index']}"
 
 
-def _candidate_pairs(emb: np.ndarray) -> list[tuple[int, int, float]]:
+def CandidatePairs(emb: np.ndarray) -> list[tuple[int, int, float]]:
     """Unordered (i, j, cosine) candidate pairs via top-k over normalized embeddings."""
     sim = emb @ emb.T  # cosine (rows normalized)
     n = sim.shape[0]
@@ -123,7 +123,7 @@ def build(limit_claims: int | None = None, tagger: str = "llm") -> dict[str, int
         )
 
     print("Finding candidate pairs...")
-    cand = _candidate_pairs(emb)
+    cand = CandidatePairs(emb)
     print(f"{len(cand)} candidate pairs -> typing with NLI...")
     typed = type_pairs([(claims[i]["text"], claims[j]["text"]) for i, j, _ in cand])
     for (i, j, sim), (rel_type, score) in zip(cand, typed):
@@ -139,8 +139,9 @@ def build(limit_claims: int | None = None, tagger: str = "llm") -> dict[str, int
         " WHERE r.rel_type IN ['SUPPORTS','CONTRADICTS']"
         " RETURN r.rel_type, r.score, a.text, b.text LIMIT 8"
     )
-    while res.has_next():
-        rt, score, a, b = res.get_next()
+    result = res[0] if isinstance(res, list) else res
+    while result.has_next():
+        rt, score, a, b = result.get_next()
         print(f"  [{rt} {score:.2f}] {a[:60]!r} -> {b[:60]!r}")
     return counts
 

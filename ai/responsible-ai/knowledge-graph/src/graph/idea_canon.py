@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 from collections import Counter
 from pathlib import Path
+from typing import cast, Any
 
 import anthropic
 
@@ -35,7 +36,7 @@ _SYSTEM = (
     "mapping entry for EVERY input tag."
 )
 
-_SCHEMA = {
+_SCHEMA: object = {
     "type": "object",
     "properties": {
         "mapping": {
@@ -65,7 +66,7 @@ def main() -> None:
     args = ap.parse_args()
 
     cards = [json.loads(l) for l in _CARDS.read_text().splitlines() if l.strip()]
-    freq: Counter = Counter(i for c in cards for i in c.get("ideas", []))
+    freq: Counter[str] = Counter(i for c in cards for i in c.get("ideas", []))
     raw = sorted(freq)
     print(f"{len(raw)} distinct idea tags → canonicalizing with {args.model}")
 
@@ -79,7 +80,7 @@ def main() -> None:
                    "Normalize every tag below to a canonical concept. The ×N is corpus "
                    "frequency (prefer the more frequent variant's name as canonical).\n\n"
                    + listing}],
-        output_config={"format": {"type": "json_schema", "schema": _SCHEMA}},
+        output_config=cast(Any, {"format": {"type": "json_schema", "schema": _SCHEMA}}),
     )
     text = next(b.text for b in resp.content if b.type == "text")
     mapping = {m["raw"]: m["canonical"].strip().lower()
@@ -91,7 +92,7 @@ def main() -> None:
     _OUT.write_text(json.dumps(mapping, ensure_ascii=False, indent=0))
     canon = Counter(mapping[t] for t in raw)
     print(f"\n=== {len(raw)} raw → {len(canon)} canonical concepts ===")
-    for c, n in canon.most_common(20):
+    for c, _ in canon.most_common(20):
         members = [t for t in raw if mapping[t] == c]
         print(f"  {c:28s} ← {len(members):2d}: {', '.join(members[:5])}"
               + (" …" if len(members) > 5 else ""))

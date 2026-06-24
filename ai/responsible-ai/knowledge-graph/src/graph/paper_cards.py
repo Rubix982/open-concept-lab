@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, cast
 
 import anthropic
 
@@ -43,7 +43,7 @@ _SYSTEM = (
     "near-duplicates ('gcn' not 'gcn model'/'gcn baseline')."
 )
 
-_SCHEMA = {
+_SCHEMA: object = {
     "type": "object",
     "properties": {
         "results": {
@@ -65,19 +65,33 @@ _SCHEMA = {
 }
 
 
-def _evidence(papers: dict[str, dict], by_cited: dict[str, list[dict]],
+def _evidence(papers: dict[str, dict[str, Any]], by_cited: dict[str, list[dict[str, Any]]],
               pid: str) -> dict[str, Any]:
     """Assemble the title + 'cited as' details + citance rationales for one paper."""
-    title = papers.get(pid, {}).get("title") or pid
+    title: str = papers.get(pid, {}).get("title") or pid
     inc = by_cited.get(pid, [])
     details = Counter(e["facet_detail"].strip() for e in inc
                       if (e.get("facet_detail") or "").strip())
     # strongest rationales first: prefer USES/REFINES/SUPPORTS over RELATED/NONE, then conf
-    rank = {"USES": 0, "REFINES": 0, "SUPPORTS": 1, "CONTRADICTS": 1,
-            "ADDRESSES_SAME_PROBLEM": 2, "RELATED": 3, "NONE": 4}
+    rank: dict[str, int] = {
+        "USES": 0,
+        "REFINES": 0,
+        "SUPPORTS": 1,
+        "CONTRADICTS": 1,
+        "ADDRESSES_SAME_PROBLEM": 2,
+        "RELATED": 3,
+        "NONE": 4,
+    }
+
+    def _rat_sort_key(e: dict[str, Any]) -> tuple[int, float]:
+        rel = e.get("relation")
+        rel_rank = rank[rel] if isinstance(rel, str) and rel in rank else 5
+        conf = e.get("confidence")
+        return rel_rank, -float(conf or 0)
+
     rats = sorted(
         (e for e in inc if (e.get("rationale") or "").strip()),
-        key=lambda e: (rank.get(e.get("relation"), 5), -float(e.get("confidence") or 0)),
+        key=_rat_sort_key,
     )
     return {
         "title": title,
@@ -93,7 +107,7 @@ class CardWriter:
         self.batch_size = batch_size
 
     def _batch(self, ev: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        lines = []
+        lines: List[str] = []
         for i, e in enumerate(ev):
             cited_as = ", ".join(e["cited_as"]) or "(none)"
             cit = "\n     - ".join(e["rationales"]) if e["rationales"] else "(none)"
@@ -110,11 +124,11 @@ class CardWriter:
             max_tokens=4096,
             system=_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
-            output_config={"format": {"type": "json_schema", "schema": _SCHEMA}},
+            output_config=cast(Any, {"format": {"type": "json_schema", "schema": _SCHEMA}}),
         )
         text = next(b.text for b in resp.content if b.type == "text")
         by_index = {r["index"]: r for r in json.loads(text)["results"]}
-        out = []
+        out: List[Dict[str, Any]] = []
         for i in range(len(ev)):
             r = by_index.get(i)
             out.append({"summary": "", "ideas": []} if r is None
@@ -123,7 +137,7 @@ class CardWriter:
         return out
 
     def write(self, ev: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        out = []
+        out: List[Dict[str, Any]] = []
         for i in range(0, len(ev), self.batch_size):
             out.extend(self._batch(ev[i : i + self.batch_size]))
         return out
@@ -144,7 +158,7 @@ def main() -> None:
     edges = [json.loads(l) for l in _EDGES.read_text().splitlines() if l.strip()]
     edges = [e for e in edges if e.get("relation")]
 
-    by_cited: dict[str, list[dict]] = defaultdict(list)
+    by_cited: dict[str, list[dict[str, Any]]] = defaultdict(list)
     node_ids: set[str] = set()
     for e in edges:
         by_cited[e["cited"]].append(e)
@@ -155,7 +169,7 @@ def main() -> None:
 
     sample = args.limit is not None
     target = order[: args.limit] if sample else order
-    ev = [{"pid": pid, **_evidence(papers, by_cited, pid)} for pid in target]
+    ev: List[Dict[str, Any]] = [{"pid": pid, **_evidence(papers, by_cited, pid)} for pid in target]
     model_tag = args.model.split("-")[1] if "-" in args.model else args.model
     out_path = _OUT.with_name(f"paper_cards_sample_{model_tag}.jsonl") if sample else _OUT
     print(f"{len(node_ids)} papers in graph; carding {len(target)} with {args.model}"

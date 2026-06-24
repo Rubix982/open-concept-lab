@@ -19,6 +19,7 @@ import torch.nn as nn
 from sklearn.metrics import classification_report, confusion_matrix
 from torch.utils.data import DataLoader, Dataset
 from transformers import DistilBertTokenizerFast
+from typing import cast
 
 from . import data as data_mod
 from .model import (
@@ -37,7 +38,7 @@ _REPORT_PATH = _ROOT / "agents" / "engineer" / "workspace" / "e002_metrics.md"
 _LABEL_NAMES = [ID2LABEL[i] for i in range(3)]
 
 
-class _SentenceDataset(Dataset):
+class _SentenceDataset(Dataset[dict[str, torch.Tensor]]):
     def __init__(
         self,
         pairs: list[tuple[str, int]],
@@ -67,7 +68,7 @@ class _SentenceDataset(Dataset):
 
 def _run_epoch(
     model: ClaimClassifier,
-    loader: DataLoader,
+    loader: DataLoader[dict[str, torch.Tensor]],
     device: torch.device,
     criterion: nn.Module,
     optimizer: torch.optim.Optimizer | None = None,
@@ -96,8 +97,11 @@ def _run_epoch(
 
 
 def _report(y_true: list[int], y_pred: list[int]) -> str:
-    rep = classification_report(
-        y_true, y_pred, target_names=_LABEL_NAMES, digits=3, zero_division=0
+    rep: str = cast(
+        str,
+        classification_report(
+            y_true, y_pred, target_names=_LABEL_NAMES, digits=3, zero_division=0
+        )
     )
     cm = confusion_matrix(y_true, y_pred, labels=[0, 1, 2])
     cm_str = "confusion matrix (rows=true, cols=pred) [BACKGROUND, METHOD, CLAIM]:\n"
@@ -120,7 +124,7 @@ def train(
     splits = data_mod.get_splits(train_cap_per_class=train_cap_per_class)
     print(data_mod.describe(splits))
 
-    train_loader = DataLoader(
+    train_loader  = DataLoader(
         _SentenceDataset(splits["train"], tokenizer),
         batch_size=batch_size,
         shuffle=True,

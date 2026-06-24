@@ -14,6 +14,7 @@ import json
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import Any, Dict, cast, List
 
 import requests
 
@@ -26,7 +27,7 @@ def _norm_doi(doi: str | None) -> str | None:
     return doi.replace("https://doi.org/", "").strip().lower() if doi else None
 
 
-def _get(url: str, params: dict, tries: int = 5) -> dict | None:
+def _get(url: str, params: Any, tries: int = 5) -> Dict[Any, Any] | None:
     for attempt in range(tries):
         try:
             r = requests.get(url, params=params, headers=_HEADERS, timeout=45)
@@ -41,11 +42,18 @@ def _get(url: str, params: dict, tries: int = 5) -> dict | None:
         return None
     return None
 
+def _get_normalized_doi(ext: Dict[str, Any]) -> str | None:
+    """Return a normalized DOI if present in the externalIds dict."""
+    normalized_doi = _norm_doi(ext["DOI"])
+    if not isinstance(normalized_doi, str):
+        return None
+    return "doi:" + normalized_doi
 
-def _key(ext: dict) -> str | None:
+
+def _key(ext: Dict[str, Any]) -> str | None:
     """Stable key for a referenced paper: prefer DOI, then arXiv, then S2 CorpusId."""
     if ext.get("DOI"):
-        return "doi:" + _norm_doi(ext["DOI"])
+        return _get_normalized_doi(ext)
     if ext.get("ArXiv"):
         return "arxiv:" + str(ext["ArXiv"]).lower()
     if ext.get("CorpusId"):
@@ -55,14 +63,14 @@ def _key(ext: dict) -> str | None:
 
 def main() -> None:
     papers = [json.loads(l) for l in _PAPERS.read_text().splitlines() if l.strip()]
-    corpus_keys = {"doi:" + _norm_doi(p["doi"]) for p in papers if p.get("doi")}
+    corpus_keys = {_get_normalized_doi(p) for p in papers if p.get("doi")}
 
-    cited_by: dict[str, set[str]] = defaultdict(set)  # referenced key -> {corpus paper_ids}
-    titles: dict[str, str] = {}
-    exts: dict[str, dict] = {}  # referenced key -> externalIds
+    cited_by: Dict[str, set[str]] = defaultdict(set)  # referenced key -> {corpus paper_ids}
+    titles: Dict[str, str] = {}
+    exts: Dict[str, Dict[str, Any]] = {}  # referenced key -> externalIds
     total_refs = 0
     for i, p in enumerate(papers):
-        d = _norm_doi(p.get("doi"))
+        d = _get_normalized_doi(p)
         if not d:
             continue
         data = _get(
@@ -70,9 +78,17 @@ def main() -> None:
             {"fields": "externalIds,title", "limit": 100},
         )
         time.sleep(1.1)
-        for ref in (data.get("data") if data else None) or []:
-            cp = ref.get("citedPaper") or {}
-            k = _key(cp.get("externalIds") or {})
+        refs_data = data.get("data") if data else None
+        refs_raw: List[Dict[str, Any]] = []
+        if isinstance(refs_data, list):
+            refs_raw = [cast(Dict[str, Any], item) for item in refs_data if isinstance(item, dict)]
+        for ref_item in refs_raw:
+            ref = ref_item
+            cp_raw = ref.get("citedPaper")
+            cp: Dict[str, Any] = cast(Dict[str, Any], cp_raw) if isinstance(cp_raw, dict) else {}
+            ext_raw = cp.get("externalIds")
+            ext_ids: Dict[str, Any] = cast(Dict[str, Any], ext_raw) if isinstance(ext_raw, dict) else {}
+            k = _key(ext_ids)
             if not k or k in corpus_keys:
                 continue  # skip unresolvable + already-in-corpus
             total_refs += 1
@@ -96,7 +112,7 @@ def main() -> None:
 
     # Write candidates (>=2) for the expansion build (E-013).
     out = Path(__file__).resolve().parents[2] / "data" / "processed" / "expansion_candidates.jsonl"
-    rows = []
+    rows: List[Dict[str, Any]] = []
     for k in sorted(ge2, key=lambda k: -len(cited_by[k])):
         ext = exts[k]
         rows.append({

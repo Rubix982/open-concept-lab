@@ -5,6 +5,7 @@ data/raw/
 data/*.kuzu/
 *.kuzu
 claim_classifier*.pt
+.env
 
 # Note: data/processed/ jsonl/json ARE versioned (expensive to regenerate: S2 sweeps,
 # LLM typing).

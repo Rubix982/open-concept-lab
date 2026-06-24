@@ -45,6 +45,8 @@ class ClaimTagger:
                 )
                 probs = torch.softmax(logits, dim=-1)
                 conf, pred = probs.max(dim=-1)
-            for p, c in zip(pred.cpu().tolist(), conf.cpu().tolist()):
+            pred_list: list[int] = [int(p) for p in pred.cpu()]
+            conf_list: list[float] = [float(c) for c in conf.cpu()]
+            for p, c in zip(pred_list, conf_list):
                 out.append((ID2LABEL[p], float(c)))
         return out

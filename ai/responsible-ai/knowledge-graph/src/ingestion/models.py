@@ -10,6 +10,10 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
+def _default_authors() -> list[str]:
+    return []
+
+
 @dataclass(frozen=True, slots=True)
 class PaperMeta:
     """Metadata + provenance for one source paper."""
@@ -18,7 +22,7 @@ class PaperMeta:
     title: str
     year: int | None
     venue: str | None
-    authors: list[str] = field(default_factory=list)
+    authors: list[str] = field(default_factory=_default_authors)
     source: str = "openalex"  # openalex | arxiv
     url: str | None = None
     doi: str | None = None

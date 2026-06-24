@@ -21,6 +21,7 @@ import colorsys
 import json
 from collections import Counter
 from pathlib import Path
+from typing import List, Any, cast
 
 import networkx as nx
 
@@ -50,7 +51,7 @@ def _shades(hex_base: str, n: int) -> list[str]:
         return [hex_base]
     sat = min(0.9, max(0.4, s * 1.5))
     lo, hi = 0.30, 0.82
-    out = []
+    out: List[str] = []
     for i in range(n):
         li = lo + (hi - lo) * i / (n - 1)
         rr, gg, bb = colorsys.hls_to_rgb(hh, li, sat)
@@ -64,7 +65,7 @@ def main() -> None:
     raw = [json.loads(l) for l in (_PROC / "cited_edges_typed.jsonl").read_text().splitlines() if l.strip()]
     raw = [e for e in raw if e.get("relation")]
 
-    deg: Counter = Counter()
+    deg: Counter[str] = Counter()
     for e in raw:
         deg[e["citing"]] += 1
         deg[e["cited"]] += 1
@@ -76,8 +77,8 @@ def main() -> None:
     ds = sorted(deg.values(), reverse=True)
     default_min = ds[min(24, len(ds) - 1)] if ds else 0
 
-    G = nx.DiGraph()
-    G.add_nodes_from(deg)
+    G: nx.DiGraph[str] = nx.DiGraph()
+    G.add_nodes_from(deg.keys())
     G.add_edges_from((e["citing"], e["cited"]) for e in raw)
     pr = nx.pagerank(G) if G.number_of_edges() else {}
     btw = nx.betweenness_centrality(G) if G.number_of_nodes() > 2 else {}
@@ -102,8 +103,10 @@ def main() -> None:
     # E-015: community detection on the undirected citation graph → cluster id/color/label.
     _PALETTE = ["#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#b07aa1", "#76b7b2",
                 "#edc948", "#ff9da7", "#9c755f", "#86bcb6", "#d37295", "#a0708a"]
-    comm_of, comm_color, comm_label = {}, {}, {}
-    legend = []
+    comm_of: dict[str, int] = {}
+    comm_color: dict[str, str] = {}
+    comm_label: dict[str, str] = {}
+    legend: list[dict[str, Any]] = []
     try:
         comms = sorted(nx.community.greedy_modularity_communities(G.to_undirected()),
                        key=len, reverse=True)
@@ -114,11 +117,11 @@ def main() -> None:
     # ideas so the characteristic one (recommendation, pooling, ...) surfaces.
     import math
     n_docs = max(len(cards), 1)
-    global_idea: Counter = Counter(i for c in cards.values() for i in c.get("ideas", []))
+    global_idea: Counter[str] = Counter(i for c in cards.values() for i in c.get("ideas", []))
     used_labels: set[str] = set()
     for ci, cset in enumerate(comms):
         color = _PALETTE[ci] if ci < len(_PALETTE) else "#c8c8c8"
-        local: Counter = Counter()
+        local: Counter[str] = Counter()
         for n in cset:
             for idea in cards.get(n, {}).get("ideas", []):
                 local[idea] += 1
@@ -138,12 +141,14 @@ def main() -> None:
         if ci < len(_PALETTE):
             legend.append({"color": color, "label": label, "n": len(cset)})
 
-    nodes = []
+    nodes: list[dict[str, Any]] = []
     for nid in deg:
         p = papers.get(nid, {})
         title = p.get("title") or nid
         y = p.get("year") if isinstance(p.get("year"), int) else "?"
-        authors = (p.get("authors") or [])[:8]
+        raw_authors = p.get("authors")
+        raw_authors_list: list[Any] = cast(list[Any], raw_authors) if isinstance(raw_authors, list) else []
+        authors: list[str] = [a for a in raw_authors_list if isinstance(a, str)][:8]
         nodes.append({
             "id": nid, "label": title[:60], "hub": nid in top_hubs,
             "title2": title, "year": y, "level": (y - min_y) if y != "?" else 0,
@@ -161,7 +166,7 @@ def main() -> None:
         })
 
     # Per-(relation, facet) color: each umbrella a base hue, each facet an ordered shade.
-    rf_counts: dict[str, Counter] = {}
+    rf_counts: dict[str, Counter[str]] = {}
     for e in raw:
         rf_counts.setdefault(e["relation"], Counter())[e.get("facet") or ""] += 1
     facet_color: dict[tuple[str, str], str] = {}
@@ -171,7 +176,7 @@ def main() -> None:
                           _shades(base, len(fc))):
             facet_color[(r, f)] = col
 
-    edges = []
+    edges: list[dict[str, Any]] = []
     for i, e in enumerate(raw):
         base, _w, _ = _REL_STYLE.get(e["relation"], ("#cccccc", 0.6, False))
         facet = e.get("facet") or ""
@@ -189,7 +194,7 @@ def main() -> None:
     # tree filter. Ordered by relation frequency; facets by frequency within each relation.
     # Each facet carries its shade so the tree swatches match the edges.
     rel_counts = Counter(e["rel"] for e in edges)
-    rel_tree = [
+    rel_tree: list[dict[str, Any]] = [
         {"rel": r, "n": n, "color": _REL_STYLE.get(r, ("#999",))[0],
          "on": _REL_STYLE.get(r, (0, 0, False))[2],
          "facets": [{"f": f, "n": fn, "color": facet_color.get((r, f), "#999")}

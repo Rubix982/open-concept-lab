@@ -12,10 +12,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 
-from .build import _candidate_pairs
+from .build import CandidatePairs
 from .embed import EMBED_DIM
 from .store import GraphStore
 
@@ -31,7 +32,7 @@ def main() -> None:
     store = GraphStore(_DB, embed_dim=EMBED_DIM)
     claims = store.all_claims()
     emb = np.asarray([list(c["emb"]) for c in claims], dtype=np.float32)
-    pairs = _candidate_pairs(emb)
+    pairs = CandidatePairs(emb)
     print(f"{len(claims)} claims -> {len(pairs)} candidate pairs")
 
     # title lookup per claim id
@@ -40,7 +41,7 @@ def main() -> None:
         prov = store.claim_with_paper(c["id"])
         title[c["id"]] = (prov or {}).get("title", "?")
 
-    rows = []
+    rows: list[dict[str, str | float]] = []
     for i, j, sim in pairs[: args.limit]:
         a, b = claims[i], claims[j]
         rows.append(
@@ -54,9 +55,13 @@ def main() -> None:
     print(f"wrote {len(rows)} pairs -> {_OUT}")
     # preview
     for k, r in enumerate(rows[:6]):
+        a_title: str = cast(str, r['a_title'])
+        b_title: str = cast(str, r['b_title'])
+        a_text: str = cast(str, r['a_text'])
+        b_text: str = cast(str, r['b_text'])
         print(f"\n[{k}] sim={r['similarity']}")
-        print(f"  A ({r['a_title'][:40]}): {r['a_text'][:90]}")
-        print(f"  B ({r['b_title'][:40]}): {r['b_text'][:90]}")
+        print(f"  A ({a_title[:40]}): {a_text[:90]}")
+        print(f"  B ({b_title[:40]}): {b_text[:90]}")
 
 
 if __name__ == "__main__":

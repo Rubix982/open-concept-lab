@@ -8,26 +8,33 @@ attention mask, then L2-normalize. Lazy-loaded singleton.
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import torch
 from transformers import AutoModel, AutoTokenizer
+from transformers.modeling_utils import PreTrainedModel
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 from ..extraction.model import get_device
 
 _MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 EMBED_DIM = 384
 
-_tok: AutoTokenizer | None = None
-_model: AutoModel | None = None
+_tok: PreTrainedTokenizerBase | None = None
+_model: PreTrainedModel | None = None
 _device: torch.device | None = None
 
 
-def _load() -> tuple[AutoTokenizer, AutoModel, torch.device]:
+def _load() -> tuple[PreTrainedTokenizerBase | None, PreTrainedModel | None, torch.device | None]:
     global _tok, _model, _device
     if _model is None:
         _device = get_device()
-        _tok = AutoTokenizer.from_pretrained(_MODEL_NAME)
-        _model = AutoModel.from_pretrained(_MODEL_NAME).to(_device).eval()
+        _tok = cast(PreTrainedTokenizerBase, AutoTokenizer.from_pretrained(_MODEL_NAME))
+        loaded_model = cast(PreTrainedModel, AutoModel.from_pretrained(_MODEL_NAME))
+        loaded_model.to(device=_device)
+        loaded_model.eval()
+        _model = loaded_model
     return _tok, _model, _device
 
 
@@ -41,6 +48,8 @@ def _mean_pool(last_hidden: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
 def embed(texts: list[str], batch_size: int = 64) -> np.ndarray:
     """Return an (n, 384) float32 array of L2-normalized embeddings."""
     tok, model, device = _load()
+    if tok is None or model is None or device is None:
+        raise RuntimeError("Failed to load embedding model")
     chunks: list[np.ndarray] = []
     for i in range(0, len(texts), batch_size):
         enc = tok(

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import anthropic
 
@@ -103,7 +103,7 @@ _SYSTEM = (
     "Give calibrated confidence in [0,1] and a one-sentence rationale grounded in the citance."
 )
 
-_SCHEMA = {
+_SCHEMA: object = {
     "type": "object",
     "properties": {
         "results": {
@@ -137,11 +137,17 @@ class CitanceTyper:
         self.batch_size = batch_size
 
     def _type_batch(self, edges: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        lines = []
+        lines: list[str] = []
         for i, e in enumerate(edges):
             # Use up to 4 citances (a work is often cited substantively AND in lists);
             # the typer should judge from the strongest one, not just the first.
-            cites = [c[:300] for c in (e["citances"] or [])[:4]]
+            raw_citances = e.get("citances")
+            citance_items: list[str] = []
+            if isinstance(raw_citances, list):
+                typed_citances = cast(list[object], raw_citances)
+                for c in typed_citances[:4]:
+                    citance_items.append(str(c))
+            cites: list[str] = [c[:300] for c in citance_items]
             citance_block = "\n     - ".join(cites) if cites else ""
             intent = ", ".join(e.get("intents") or []) or "none"
             lines.append(
@@ -157,11 +163,11 @@ class CitanceTyper:
             max_tokens=4096,
             system=_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
-            output_config={"format": {"type": "json_schema", "schema": _SCHEMA}},
+            output_config=cast(Any, {"format": {"type": "json_schema", "schema": _SCHEMA}}),
         )
         text = next(b.text for b in resp.content if b.type == "text")
         by_index = {r["index"]: r for r in json.loads(text)["results"]}
-        out = []
+        out: list[dict[str, Any]] = []
         for i in range(len(edges)):
             r = by_index.get(i)
             out.append(
@@ -179,7 +185,7 @@ class CitanceTyper:
         return out
 
     def type_edges(self, edges: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        out = []
+        out: list[dict[str, Any]] = []
         for i in range(0, len(edges), self.batch_size):
             out.extend(self._type_batch(edges[i : i + self.batch_size]))
         return out
@@ -207,7 +213,7 @@ def main() -> None:
           f"typing {len(target)} with {args.model}{' (SAMPLE)' if sample else ''}")
 
     typed = CitanceTyper(model=args.model).type_edges(target)
-    rows = []
+    rows: list[dict[str, Any]] = []
     for e, t in zip(target, typed):
         rows.append({
             "citing": e["citing"], "cited": e["cited"],

@@ -126,7 +126,7 @@ class GraphStore:
 
     # ---- reads ----
     def all_claims(self) -> list[dict[str, Any]]:
-        res = self.con.execute(
+        res: Any = self.con.execute(
             "MATCH (c:Claim) RETURN c.id, c.text, c.emb, c.paper_id"
         )
         out: list[dict[str, Any]] = []
@@ -136,7 +136,7 @@ class GraphStore:
         return out
 
     def claim_with_paper(self, claim_id: str) -> dict[str, Any] | None:
-        res = self.con.execute(
+        res: Any = self.con.execute(
             "MATCH (c:Claim {id:$id})-[:FROM_PAPER]->(p:Paper)"
             " RETURN c.text, p.title, p.year, p.url",
             parameters={"id": claim_id},
@@ -148,7 +148,7 @@ class GraphStore:
 
     def related(self, claim_id: str) -> list[dict[str, Any]]:
         """Return claims related to `claim_id` (both directions) with edge info."""
-        res = self.con.execute(
+        res: Any = self.con.execute(
             "MATCH (c:Claim {id:$id})-[r:RELATES]-(o:Claim)-[:FROM_PAPER]->(p:Paper)"
             " RETURN o.id, o.text, r.rel_type, r.score, p.title, p.year",
             parameters={"id": claim_id},
@@ -170,7 +170,7 @@ class GraphStore:
 
     def counts(self) -> dict[str, int]:
         def _count(q: str) -> int:
-            res = self.con.execute(q)
+            res: Any = self.con.execute(q)
             return res.get_next()[0] if res.has_next() else 0
 
         return {

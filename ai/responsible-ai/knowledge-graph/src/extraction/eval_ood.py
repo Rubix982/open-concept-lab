@@ -8,6 +8,8 @@ against the 33 hand-labeled CS sentences (src/extraction/ood.py).
 
 from __future__ import annotations
 
+from typing import cast
+
 from sklearn.metrics import classification_report, f1_score
 
 from .ood import load_ood
@@ -16,8 +18,9 @@ _LABELS = ["BACKGROUND", "METHOD", "CLAIM"]
 
 
 def _report(name: str, golds: list[str], preds: list[str]) -> str:
-    rep = classification_report(
-        golds, preds, labels=_LABELS, digits=3, zero_division=0
+    rep: str = cast(
+        str,
+        classification_report(golds, preds, labels=_LABELS, digits=3, zero_division=0),
     )
     macro = f1_score(golds, preds, labels=_LABELS, average="macro", zero_division=0)
     return f"### {name}  (macro-F1 = {macro:.3f})\n{rep}"

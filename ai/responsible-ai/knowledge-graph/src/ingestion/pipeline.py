@@ -15,7 +15,7 @@ _SENTENCES_PATH = _PROCESSED_DIR / "sentences.jsonl"
 _PAPERS_PATH = _PROCESSED_DIR / "papers.jsonl"
 
 
-def _sentences_for_paper(meta: PaperMeta, abstract: str) -> Iterator[SentenceRecord]:
+def SentencesForPaper(meta: PaperMeta, abstract: str) -> Iterator[SentenceRecord]:
     """Yield SentenceRecords for a paper's title and abstract, with provenance."""
     # Title as a single sentence (section="title").
     title = meta.title.strip()
@@ -62,7 +62,7 @@ def ingest(
         for meta, abstract in papers:
             pf.write(json.dumps(meta.to_dict(), ensure_ascii=False) + "\n")
             n_papers += 1
-            for record in _sentences_for_paper(meta, abstract or ""):
+            for record in SentencesForPaper(meta, abstract or ""):
                 sf.write(json.dumps(record.to_dict(), ensure_ascii=False) + "\n")
                 n_sentences += 1
 

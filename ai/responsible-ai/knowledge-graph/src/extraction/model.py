@@ -6,6 +6,8 @@ OOD eval, and the graph-construction stage (E-003) can all share one definition.
 
 from __future__ import annotations
 
+from typing import cast
+
 import torch
 import torch.nn as nn
 from transformers import DistilBertModel, DistilBertTokenizerFast
@@ -26,7 +28,10 @@ def get_device() -> torch.device:
 
 
 def get_tokenizer() -> DistilBertTokenizerFast:
-    return DistilBertTokenizerFast.from_pretrained(MODEL_NAME)
+    return cast(
+        DistilBertTokenizerFast,
+        DistilBertTokenizerFast.from_pretrained(MODEL_NAME),
+    )
 
 
 class ClaimClassifier(nn.Module):

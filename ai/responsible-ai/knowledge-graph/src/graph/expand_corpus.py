@@ -16,11 +16,12 @@ import argparse
 import json
 import time
 from pathlib import Path
+from typing import Dict, Any, cast
 
 import requests
 
 from ..ingestion.models import PaperMeta
-from ..ingestion.pipeline import _sentences_for_paper
+from ..ingestion.pipeline import SentencesForPaper
 
 _PROC = Path(__file__).resolve().parents[2] / "data" / "processed"
 _CANDS = _PROC / "expansion_candidates.jsonl"
@@ -30,7 +31,7 @@ _S2 = "https://api.semanticscholar.org/graph/v1"
 _HEADERS = {"User-Agent": "claim-knowledge-graph/0.1 (mailto:islam.saif@northeastern.edu)"}
 
 
-def _fetch_s2(corpusid: str, tries: int = 3) -> dict | None:
+def _fetch_s2(corpusid: str, tries: int = 3) -> Dict[Any, Any] | None:
     fields = "title,abstract,year,venue,externalIds,authors"
     for attempt in range(tries):
         try:
@@ -48,7 +49,7 @@ def _fetch_s2(corpusid: str, tries: int = 3) -> dict | None:
     return None
 
 
-def _guess_pid(c: dict) -> str:
+def _guess_pid(c: Dict[str, Any]) -> str:
     """Predict the paper_id from the candidate record (no S2 call needed to dedupe)."""
     return f"arxiv:{c['arxiv']}" if c.get("arxiv") else f"s2:{c['corpusid']}"
 
@@ -75,26 +76,32 @@ def main() -> None:
             if not d or not d.get("abstract"):
                 skipped += 1
                 continue
-            ext = d.get("externalIds") or {}
-            arxiv = ext.get("ArXiv")
-            doi = ext.get("DOI")
+            ext: Dict[str, Any] = d.get("externalIds") or {}
+            arxiv = str(ext.get("ArXiv") or "")
+            doi: str | None = ext.get("DOI")
             cid = str(c["corpusid"])
             pid = f"arxiv:{arxiv}" if arxiv else f"s2:{cid}"
             if pid in existing:
                 skipped += 1
                 continue
             existing.add(pid)
-            authors = [a.get("name") for a in (d.get("authors") or []) if a.get("name")]
+            authors_raw = d.get("authors")
+            authors: list[str] = []
+            if isinstance(authors_raw, list):
+                for a in cast(list[dict[str, Any]], authors_raw):
+                    name = str(a.get("name") or "")
+                    if name:
+                        authors.append(name)
             meta = PaperMeta(
                 paper_id=pid, title=d.get("title") or c["title"], year=d.get("year"),
                 venue=d.get("venue"), authors=authors, source="s2",
                 url=f"https://www.semanticscholar.org/paper/{cid}",
                 doi=(f"https://doi.org/{doi}" if doi else None),
             )
-            rec = {**meta.to_dict(), "arxiv": arxiv, "corpusid": cid}
+            rec: object = {**meta.to_dict(), "arxiv": arxiv, "corpusid": cid}
             pf.write(json.dumps(rec, ensure_ascii=False) + "\n")
             added += 1
-            for s in _sentences_for_paper(meta, d["abstract"]):
+            for s in SentencesForPaper(meta, d["abstract"]):
                 sf.write(json.dumps(s.to_dict(), ensure_ascii=False) + "\n")
                 sents += 1
             pf.flush()

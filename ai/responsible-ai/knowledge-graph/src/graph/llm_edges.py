@@ -16,7 +16,7 @@ Model: claude-opus-4-8 (haiku for bulk). Requires ANTHROPIC_API_KEY.
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, List, cast
 
 import anthropic
 
@@ -59,7 +59,7 @@ _SYSTEM = (
     "80% on ImageNet.' -> CONTRADICTS, A_TO_B."
 )
 
-_SCHEMA = {
+_SCHEMA: object = {
     "type": "object",
     "properties": {
         "results": {
@@ -85,7 +85,12 @@ _SCHEMA = {
     "additionalProperties": False,
 }
 
-_DEFAULT = {"relation": "NONE", "direction": "SYMMETRIC", "confidence": 0.0, "rationale": ""}
+_DEFAULT: dict[str, Any] = {
+    "relation": "NONE",
+    "direction": "SYMMETRIC",
+    "confidence": 0.0,
+    "rationale": "",
+}
 
 
 class LLMEdgeTyper:
@@ -95,7 +100,7 @@ class LLMEdgeTyper:
         self.batch_size = batch_size
 
     def _type_batch(self, pairs: list[dict[str, str]]) -> list[dict[str, Any]]:
-        lines = []
+        lines: List[str] = []
         for i, p in enumerate(pairs):
             lines.append(
                 f"[{i}]\n  A ({p['a_title']}): {p['a_text']}\n"
@@ -110,7 +115,7 @@ class LLMEdgeTyper:
             max_tokens=4096,
             system=_SYSTEM,
             messages=[{"role": "user", "content": prompt}],
-            output_config={"format": {"type": "json_schema", "schema": _SCHEMA}},
+            output_config=cast(Any, {"format": {"type": "json_schema", "schema": _SCHEMA}}),
         )
         text = next(b.text for b in resp.content if b.type == "text")
         by_index = {r["index"]: r for r in json.loads(text)["results"]}

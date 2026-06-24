@@ -14,6 +14,7 @@ import json
 import time
 from collections import Counter
 from pathlib import Path
+from typing import Any, Dict, cast
 
 import requests
 
@@ -28,7 +29,7 @@ def _norm_doi(doi: str | None) -> str | None:
     return doi.replace("https://doi.org/", "").strip().lower() if doi else None
 
 
-def _get(url: str, params: dict, tries: int = 5) -> dict | None:
+def _get(url: str, params: Dict[Any, Any], tries: int = 5) -> Dict[Any, Any] | None:
     for attempt in range(tries):
         try:
             r = requests.get(url, params=params, headers=_HEADERS, timeout=45)
@@ -44,9 +45,9 @@ def _get(url: str, params: dict, tries: int = 5) -> dict | None:
     return None
 
 
-def _index_keys(rec: dict) -> list[str]:
+def _index_keys(rec: Dict[Any, Any]) -> list[str]:
     """All resolvable id-keys for a corpus paper record."""
-    keys = []
+    keys: list[str] = []
     d = _norm_doi(rec.get("doi"))
     if d:
         keys.append("doi:" + d)
@@ -57,8 +58,8 @@ def _index_keys(rec: dict) -> list[str]:
     return keys
 
 
-def _ref_keys(ext: dict) -> list[str]:
-    keys = []
+def _ref_keys(ext: Dict[Any, Any]) -> list[str]:
+    keys: list[str] = []
     d = _norm_doi(ext.get("DOI"))
     if d:
         keys.append("doi:" + d)
@@ -69,7 +70,7 @@ def _ref_keys(ext: dict) -> list[str]:
     return keys
 
 
-def _query_path(rec: dict) -> str | None:
+def _query_path(rec: Dict[Any, Any]) -> str | None:
     """S2 references endpoint for this paper, by best available id."""
     d = _norm_doi(rec.get("doi"))
     if d:
@@ -89,7 +90,7 @@ def main() -> None:
             index[k] = p["paper_id"]
     print(f"{len(papers)} corpus papers, {len(index)} id-keys")
 
-    edges = []
+    edges: list[Dict[str, Any]] = []
     for i, p in enumerate(papers):
         path = _query_path(p)
         if not path:
@@ -99,9 +100,16 @@ def main() -> None:
         time.sleep(1.1)
         if not data:
             continue
-        for ref in (data.get("data") or []):
-            cp = ref.get("citedPaper") or {}
-            cited_pid = None
+        refs_obj = data.get("data")
+        if not isinstance(refs_obj, list):
+            continue
+        refs_list: list[Dict[Any, Any]] = cast(list[Dict[Any, Any]], refs_obj)
+        refs: list[dict[str, Any]] = [cast(dict[str, Any], r) for r in refs_list]
+        for ref_obj in refs:
+            ref = ref_obj
+            cp_obj = ref.get("citedPaper")
+            cp: dict[str, Any] = cast(dict[str, Any], cp_obj) if isinstance(cp_obj, dict) else {}
+            cited_pid: str | None = None
             for k in _ref_keys(cp.get("externalIds") or {}):
                 if k in index and index[k] != p["paper_id"]:
                     cited_pid = index[k]

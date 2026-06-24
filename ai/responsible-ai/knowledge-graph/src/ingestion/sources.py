@@ -14,15 +14,17 @@ import hashlib
 import json
 import time
 from pathlib import Path
-from typing import Any
-
+from typing import Any, cast
+from dotenv import load_dotenv, dotenv_values
 import requests
 
 from .models import PaperMeta
 
+load_dotenv()
+
 OPENALEX_BASE = "https://api.openalex.org/works"
 # Polite-pool contact (OpenAlex asks for an email; gives faster, more reliable service).
-MAILTO = "islam.saif@northeastern.edu"
+MAILTO = dotenv_values(".env").get("OPENALEX_MAILTO", "")
 USER_AGENT = f"claim-knowledge-graph/0.1 (mailto:{MAILTO})"
 
 _RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
@@ -55,14 +57,28 @@ def _parse_work(work: dict[str, Any]) -> tuple[PaperMeta, str | None]:
 
     authors: list[str] = []
     for authorship in work.get("authorships", []):
-        name = (authorship.get("author") or {}).get("display_name")
-        if name:
-            authors.append(name)
+        author_obj = authorship.get("author")
+        if isinstance(author_obj, dict):
+            author_dict = cast(dict[str, Any], author_obj)
+            name_obj = author_dict.get("display_name")
+            if isinstance(name_obj, str) and name_obj:
+                authors.append(name_obj)
 
     venue: str | None = None
-    primary = work.get("primary_location") or {}
-    src = primary.get("source") or {}
-    venue = src.get("display_name")
+    primary: object = work.get("primary_location") or {}
+    if isinstance(primary, dict):
+        primary = cast(dict[str, Any], primary)
+        src: object = primary.get("source") or {}
+        if isinstance(src, dict) and src:
+            src = cast(dict[str, Any], src)
+            venue = src.get("display_name")
+
+    landing_page_url: str | None = None
+    if isinstance(primary, dict):
+        cast_primary = cast(dict[str, Any], primary)
+        landing_page_url_obj = cast_primary.get("landing_page_url")
+        if isinstance(landing_page_url_obj, str):
+            landing_page_url = landing_page_url_obj
 
     meta = PaperMeta(
         paper_id=f"openalex:{short_id}",
@@ -71,7 +87,7 @@ def _parse_work(work: dict[str, Any]) -> tuple[PaperMeta, str | None]:
         venue=venue,
         authors=authors,
         source="openalex",
-        url=primary.get("landing_page_url") or oa_id,
+        url=landing_page_url or oa_id,
         doi=work.get("doi"),
     )
     abstract = _reconstruct_abstract(work.get("abstract_inverted_index"))
@@ -95,7 +111,7 @@ def fetch_openalex(
     if use_cache and cache_file.exists():
         payload = json.loads(cache_file.read_text())
     else:
-        params = {
+        params: object = {
             "search": query,
             "per-page": per_page,
             "mailto": MAILTO,

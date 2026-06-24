@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 _PROC = Path(__file__).resolve().parents[2] / "data" / "processed"
 _IN = _PROC / "candidate_pairs.jsonl"
@@ -35,9 +36,11 @@ backwards directional case you may write e.g. `REFINES (B→A)`.
 
 
 def main() -> None:
-    rows = [json.loads(l) for l in _IN.read_text(encoding="utf-8").splitlines() if l.strip()]
+    rows: list[dict[str, Any]] = [
+        json.loads(l) for l in _IN.read_text(encoding="utf-8").splitlines() if l.strip()
+    ]
     seen: set[frozenset[str]] = set()
-    deduped = []
+    deduped: list[dict[str, Any]] = []
     for r in rows:
         key = frozenset((r["a_text"], r["b_text"]))
         if key in seen:
