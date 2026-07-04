@@ -148,6 +148,94 @@ If a feature cannot be connected to that sentence, it is not part of this contri
 
 ---
 
+## The Architecture
+
+The postulates don't get checked after the fact. They emerge as structural properties
+of the system — the architecture enforces them, so violations become impossible rather
+than detectable.
+
+### Five layers
+
+**Layer 1 — Storage (Kùzu)**
+Two schema additions unlock everything else:
+```
+ClaimNode: + active: bool, superseded_by: claim_id
+DependencyEdge: source_claim → target_claim  (SUPPORTS | DERIVED_FROM | CONTRADICTS)
+```
+Without `active` and `superseded_by`, only expansion is possible. Without dependency
+edges, contraction cannot propagate to downstream claims.
+
+**Layer 2 — Operations**
+| Operation | Status | Implementation |
+|---|---|---|
+| Expansion | Built | Add claim node + provenance edge |
+| Contraction | Missing | Mark inactive; BFS over dependency edges to flag dependents |
+| Revision | Missing (free via Levi) | Contract ¬P, then expand P |
+| Consolidation | Missing | LLM call on a `debates` edge → new merged claim node |
+
+The Levi identity (`K*P = (K−¬P) + P`) means revision is not a new primitive — it
+is contraction followed by expansion. Build contraction correctly and revision follows.
+
+**Layer 3 — Consistency enforcement (write-time)**
+On every claim write: check for existing active claims on the same `(subject, property)`.
+On conflict: create a `CONTRADICTS` edge, add to conflict queue. Never block ingestion.
+The conflict queue is what consolidation drains.
+
+**Layer 4 — Propagation**
+When a claim is contracted, BFS over its outgoing dependency edges. Mark all downstream
+claims `needs_review` — not retracted, not revived, but flagged. If the original claim
+is later re-added, dependents stay flagged until independently re-supported.
+
+This is the **recovery postulate failure by design.** See below.
+
+**Layer 5 — Diagnostics**
+A periodic pipeline that runs claims through postulate cycles:
+- Levi check: does `(contract ¬P, expand P)` equal direct revision? Divergence = inconsistency.
+- Recovery classification: which claims, if contracted and re-added, produce a smaller
+  belief set? Those nodes carry implicit dependencies not yet made explicit.
+- Extensionality check: semantically equivalent claim pairs (cosine similarity above
+  threshold) occupying different graph positions — the same idea held under two framings
+  that don't communicate.
+
+The diagnostic layer produces a report, not fixes. The report is itself a research output.
+
+---
+
+## The Recovery Postulate Failure Is a Feature
+
+AGM recovery: `K = (K−P) + P`. Remove a belief, re-add it, get back exactly K.
+
+This fails for derived beliefs. If the field believed "model X achieves SOTA" and this
+supported "scaling laws generalize to vision" — contracting the first forces the second
+to be flagged. If a new paper later re-establishes "model X achieves SOTA," the scaling
+laws claim does not automatically revive. It needs fresh independent support.
+
+This is not a limitation being worked around. It is the correct behavior.
+
+Ghost beliefs — old conclusions that slip back in through a revived premise — are exactly
+what makes citation graphs untrustworthy over time. Every system that does not explicitly
+manage this is silently accumulating them.
+
+**This is a finding, not a design choice.** The fact that recovery fails for derived
+claims in real citation networks, and that no current retrieval system has posed the
+question, is the empirical core of the paper's argument. You can show it happening in
+the GNN literature. You can show the system catching it. That is the contribution.
+
+---
+
+## The Paper Shape
+
+> Here is what belief revision formally requires.
+> Here is what the lookback mechanism already provides (the read half).
+> Here is what must be built (the write half — five layers above).
+> Here is what it finds in the GNN literature that manual review misses.
+
+The sentence that carries the whole argument:
+
+> **"I used this to find something I wouldn't have found otherwise."**
+
+---
+
 ## Connection to Existing Engineering
 
 | Component | Current State | What AGM compliance adds |

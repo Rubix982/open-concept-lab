@@ -727,6 +727,207 @@
 </section>
 
 
+<style>
+  .s08-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .s08-tab{background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'DM Mono',monospace;font-size:.67rem;letter-spacing:.1em;padding:6px 18px;border-radius:20px;cursor:pointer;transition:all .18s}
+  .s08-tab:hover{border-color:rgba(79,195,247,.5);color:rgba(79,195,247,.75)}
+  .s08-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(79,195,247,.09)}
+  .s08-map{display:flex;gap:18px;align-items:stretch}
+  .s08-axis{display:flex;flex-direction:column;align-items:center;width:68px;flex-shrink:0;padding:6px 0;gap:6px}
+  .s08-axis-lbl{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--dim);text-align:center;line-height:1.5}
+  .s08-axis-bar{flex:1;width:4px;border-radius:2px;min-height:120px;background:linear-gradient(to bottom,#4fc3f7 0%,#a78bfa 55%,#2d3748 100%)}
+  .s08-worlds{flex:1;display:flex;flex-direction:column;gap:10px;padding:4px 0}
+  .s08-row{border:1px solid var(--border);border-left:3px solid transparent;border-radius:4px;padding:14px 120px 14px 16px;transition:all .28s ease;position:relative;background:rgba(15,19,24,.45)}
+  .s08-row:hover{border-color:rgba(74,85,104,.6);border-left-color:rgba(74,85,104,.4)}
+  .s08-row.rk{border-color:rgba(79,195,247,.55);border-left-color:rgba(79,195,247,.85);background:rgba(79,195,247,.13)}
+  .s08-row.rk:hover{background:rgba(79,195,247,.18)}
+  .s08-row.rp{border-color:rgba(111,207,151,.38);border-left-color:rgba(111,207,151,.65);border-style:dashed;border-left-style:solid;background:rgba(111,207,151,.07)}
+  .s08-row.rs{border-color:rgba(111,207,151,.78)!important;border-left-color:#6fcf97!important;border-style:solid!important;background:rgba(111,207,151,.16)!important;box-shadow:0 0 22px rgba(111,207,151,.12),0 0 0 1px rgba(111,207,151,.18)}
+  .s08-rlbl{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--dim);transition:color .28s}
+  .rk .s08-rlbl{color:rgba(79,195,247,.92)}
+  .rp .s08-rlbl{color:rgba(111,207,151,.58)}
+  .rs .s08-rlbl{color:rgba(111,207,151,.96)}
+  .s08-rsub{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.08em;color:var(--dim);opacity:.38;margin-top:5px;transition:opacity .28s}
+  .rk .s08-rsub{opacity:.55;color:rgba(79,195,247,.45)}
+  .rp .s08-rsub{opacity:.52;color:rgba(111,207,151,.45)}
+  .rs .s08-rsub{opacity:.68;color:rgba(111,207,151,.58)}
+  .s08-badge{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.1em;padding:3px 10px;border-radius:2px}
+  .bk{border:1px solid rgba(79,195,247,.45);color:rgba(79,195,247,.85);background:rgba(79,195,247,.12)}
+  .bkp{border:1px solid rgba(111,207,151,.7);color:rgba(111,207,151,.95);background:rgba(111,207,151,.18)}
+  .s08-arrow{position:absolute;right:56px;top:50%;transform:translateY(-50%);font-family:'DM Mono',monospace;font-size:.64rem;color:rgba(111,207,151,.65);white-space:nowrap;letter-spacing:.04em}
+  .s08-pside{width:96px;flex-shrink:0;border-left:1px solid rgba(111,207,151,.22);padding-left:12px;display:flex;align-items:center;opacity:0;transition:opacity .4s}
+  .s08-pside.vis{opacity:1}
+  .s08-pside-txt{font-family:'DM Mono',monospace;font-size:.67rem;color:rgba(111,207,151,.52);line-height:1.75}
+  .s08-dots{display:flex;gap:7px;margin-bottom:16px}
+  .s08-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .28s}
+  .s08-dot.da{background:var(--accent)}
+  .s08-dot.dd{background:rgba(79,195,247,.32)}
+  .s08-stitle{font-size:.67rem;letter-spacing:.18em;color:var(--accent);margin-bottom:12px;text-transform:uppercase}
+  .s08-sdesc{font-size:.84rem;line-height:2.05;color:var(--text);margin-bottom:22px;min-height:5em}
+  .s08-nav{display:flex;gap:12px}
+  .s08-nbtn{background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:8px 22px;border-radius:2px;cursor:pointer;transition:all .18s}
+  .s08-nbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .s08-nbtn.np{border-color:rgba(79,195,247,.5);color:var(--accent)}
+  .s08-nbtn.np:hover:not(:disabled){background:rgba(79,195,247,.07)}
+  .s08-nbtn:disabled{opacity:.2;cursor:default}
+</style>
+
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <span class="section-title">The Geometry of Revision</span>
+    <span class="section-sub">why the eight postulates are one idea</span>
+  </div>
+
+  <div class="s08-tabs">
+    <button class="s08-tab active" onclick="S08.sc(0)">Sally · marble</button>
+    <button class="s08-tab" onclick="S08.sc(1)">Scientist · trial</button>
+    <button class="s08-tab" onclick="S08.sc(2)">Historian · treaty</button>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">preference ordering — all worlds ranked by plausibility under K</div>
+    <div class="s08-map" style="margin-top:18px">
+      <div class="s08-axis">
+        <span class="s08-axis-lbl">most<br>plausible</span>
+        <div class="s08-axis-bar"></div>
+        <span class="s08-axis-lbl" style="font-size:.9rem">↓</span>
+        <span class="s08-axis-lbl">least<br>plausible</span>
+      </div>
+      <div class="s08-worlds" id="s08w"></div>
+      <div class="s08-pside" id="s08ps">
+        <div class="s08-pside-txt" id="s08pt"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel mb14">
+    <div class="s08-dots" id="s08dots">
+      <div class="s08-dot da"></div>
+      <div class="s08-dot"></div>
+      <div class="s08-dot"></div>
+      <div class="s08-dot"></div>
+    </div>
+    <div class="s08-stitle" id="s08st"></div>
+    <p class="s08-sdesc" id="s08sd"></p>
+    <div class="s08-nav">
+      <button class="s08-nbtn" id="s08pv" onclick="S08.prev()" disabled>← prev</button>
+      <button class="s08-nbtn np" id="s08nx" onclick="S08.next()">next →</button>
+    </div>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">three ways to say the same thing</div>
+      <p class="prose">
+        <strong>Formally:</strong> K*P is the set of formulae whose models are the minimal models of P under ≤<sub>K</sub>. The models of K are precisely the minimal models of the whole ordering — the worlds currently considered most likely.<br><br>
+        <strong>Geometrically:</strong> Rank all possible worlds from most to least plausible. When P arrives, look only at worlds where P is true. Pick the top one. That is the revised belief set.<br><br>
+        <strong>Operationally:</strong> Move as little as possible from where you are to a place where P is true. The most plausible P-world is the minimum move.
+      </p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">the eight postulates fall out automatically</div>
+      <p class="prose">
+        <strong>SUCCESS</strong> — you picked a P-world, so P is in K*P. ✓<br><br>
+        <strong>CONSISTENCY</strong> — you picked a real world. ✓ (Unless P is self-contradictory — then no P-world exists.)<br><br>
+        <strong>MINIMAL CHANGE</strong> — you picked the <em>closest</em> P-world. Everything not required to change, didn't. ✓<br><br>
+        <strong>VACUITY</strong> — if P doesn't conflict with K, the K-worlds are already P-worlds. The minimum P-world is just K itself. ✓<br><br>
+        The eight postulates are eight algebraic consequences of one geometric idea: revision respects a plausibility ordering.
+      </p>
+    </div>
+  </div>
+
+  <div class="quote-block" style="border-left-color: var(--fringe)">
+    <div class="panel-label">the lookback mechanism has no ≤<sub>K</sub></div>
+    <p class="prose">The lookback mechanism retrieves states by (character, object) key. If two states exist for the same key — marble in basket at t=1, marble in garden at t=2 — there is no ordering over which is more plausible. There is only recency. The mechanism picks the most recent binding, which approximates plausibility but cannot represent source reliability, prior probability, or supersession chains.<br><br>
+    Temporal OIDs are the first step toward a real ≤<sub>K</sub>: recency as a proxy for plausibility. The knowledge graph's supersession chains and source reliability scores are the rest. Together they give the mechanism what AGM requires — not just a retrieval key, but an ordering over what to believe when bindings conflict.</p>
+  </div>
+</section>
+
+<script>
+const S08 = (() => {
+  let si = 0, st = 0;
+  const DATA = [
+    { name:'Sally · marble', P:'P = "marble is in the garden"',
+      worlds:[
+        {l:'{ marble in basket }',          s:'what Sally currently believes',         k:true, p:false, sel:false},
+        {l:'{ marble in garden · Anne moved it }', s:'coherent · minimal change from K',k:false,p:true, sel:true},
+        {l:'{ marble in garden · physics broke }', s:'less plausible · large revision', k:false,p:true, sel:false},
+        {l:'{ marble teleported to the moon }',    s:'least plausible',                 k:false,p:false,sel:false},
+      ],
+      steps:[
+        {t:'01  K — Sally\'s belief set',   d:'Sally sees the marble placed in the basket. Her belief set K forms: the marble is in the basket. This is the most plausible world — the one she thinks is actually happening.'},
+        {t:'02  P arrives',                 d:'Anne tells Sally: "The marble is in the garden." This is new information P. Sally must now revise. The eight postulates govern how — but they all reduce to one question: which world do we land in?'},
+        {t:'03  P-worlds identified',       d:'Two worlds satisfy P — worlds where the marble is in the garden. They differ in plausibility: Anne moving the marble is mundane; physics breaking is not. Both are P-worlds. Only one is selected.'},
+        {t:'04  K*P — revision selects',    d:'Revision selects the most plausible P-world: the marble is in the garden because Anne moved it. Minimal change — the world closest to K that makes P true. Sally now believes this. This is K*P.'},
+      ]
+    },
+    { name:'Scientist · trial', P:'P = "new trial shows no effect"',
+      worlds:[
+        {l:'{ drug is effective — prior trials confirmed }', s:'current scientific consensus',           k:true, p:false,sel:false},
+        {l:'{ drug ineffective · dosage was wrong }',        s:'targeted revision · most parsimonious',  k:false,p:true, sel:true},
+        {l:'{ drug ineffective · mechanism was wrong }',     s:'larger revision · less parsimonious',    k:false,p:true, sel:false},
+        {l:'{ all prior data was fabricated }',              s:'implausible · dismantles K entirely',    k:false,p:false,sel:false},
+      ],
+      steps:[
+        {t:'01  K — scientific consensus',  d:'The field\'s belief set K: the drug is effective, supported by multiple prior trials. This is the most plausible world given all existing evidence.'},
+        {t:'02  P arrives',                 d:'A new replication trial shows no statistically significant effect. P = "The drug did not work in this trial." The field must revise. AGM says: minimally.'},
+        {t:'03  P-worlds identified',       d:'Multiple worlds are consistent with P. But they require very different amounts of revision to reach from K — from targeted (wrong dosage) to wholesale (all prior data suspect).'},
+        {t:'04  K*P — revision selects',    d:'The most plausible P-world: the dosage was miscalibrated in prior trials — a targeted, minimal revision. Not a rejection of the mechanism. The least surprising P-world. This is K*P.'},
+      ]
+    },
+    { name:'Historian · treaty', P:'P = "newly found document dated 1649"',
+      worlds:[
+        {l:'{ treaty signed · 1648 }',                            s:'established historical consensus',           k:true, p:false,sel:false},
+        {l:'{ treaty signed · 1649 · scribal error in one doc }', s:'one document corrected · minimal change',    k:false,p:true, sel:true},
+        {l:'{ treaty signed · 1649 · all 1648 records wrong }',   s:'systematic error · large revision required', k:false,p:true, sel:false},
+        {l:'{ treaty was never signed }',                          s:'implausible · vast evidence against',        k:false,p:false,sel:false},
+      ],
+      steps:[
+        {t:'01  K — historical consensus',  d:'Historical consensus K: the Peace of Westphalia was concluded in 1648. Supported by decades of scholarship and primary sources.'},
+        {t:'02  P arrives',                 d:'A newly discovered document is dated 1649 and references the treaty as recent. P = "Evidence suggests 1649." Revision required.'},
+        {t:'03  P-worlds identified',       d:'Two worlds satisfy P. One requires only a scribal error in a single document. The other requires systematic error across decades of record-keeping.'},
+        {t:'04  K*P — revision selects',    d:'Minimal change: a scribal error in the new document explains P without disturbing the rest of the historical record. The most plausible P-world. This is K*P.'},
+      ]
+    }
+  ];
+
+  function render() {
+    const sc = DATA[si], step = st;
+    document.querySelectorAll('.s08-tab').forEach((t,i) => t.classList.toggle('active', i===si));
+
+    document.getElementById('s08w').innerHTML = sc.worlds.map(w => {
+      let cls = 's08-row', badge = '', arrow = '';
+      if (w.k)                      { cls += ' rk'; badge = '<span class="s08-badge bk">K</span>'; }
+      if (step >= 2 && w.p && !w.sel) cls += ' rp';
+      if (step >= 3 && w.sel)       { cls += ' rs'; badge = '<span class="s08-badge bkp">K*P</span>'; arrow = '<span class="s08-arrow">◀ lands here</span>'; }
+      return `<div class="${cls}"><div class="s08-rlbl">${w.l}</div><div class="s08-rsub">${w.s}</div>${badge}${arrow}</div>`;
+    }).join('');
+
+    const ps = document.getElementById('s08ps');
+    ps.classList.toggle('vis', step >= 1);
+    document.getElementById('s08pt').textContent = sc.P;
+
+    document.querySelectorAll('.s08-dot').forEach((d,i) => { d.className = 's08-dot' + (i===step?' da':i<step?' dd':''); });
+
+    const s = sc.steps[step];
+    document.getElementById('s08st').textContent = s.t;
+    document.getElementById('s08sd').textContent = s.d;
+    document.getElementById('s08pv').disabled = step === 0;
+    document.getElementById('s08nx').disabled = step === 3;
+  }
+
+  return {
+    sc: i => { si=i; st=0; render(); },
+    next: () => { if(st<3){st++;render();} },
+    prev: () => { if(st>0){st--;render();} },
+    init: render
+  };
+})();
+
+S08.init();
+</script>
+
 <footer>AGM · 1985 &nbsp;&middot;&nbsp; McClelland, McNaughton &amp; O'Reilly · 1995 &nbsp;&middot;&nbsp; ROME · 2022 &nbsp;&middot;&nbsp; Language Models Use Lookbacks To Track Beliefs · ICLR 2026 &nbsp;&middot;&nbsp; open-concept-lab/mind</footer>
 
 </body>
