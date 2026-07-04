@@ -230,3 +230,26 @@ Key questions:
 - `belief_tracking/data/agm_story_templates.json` — concrete story templates (7 types + multi-agent extensions)
 
 **Closed:** 2026-07-04
+
+---
+
+### R-008 · The projector problem — ToM, Jung, and AI for science
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-07-04
+**Updated:** 2026-07-04
+
+**Description:**
+Articulate the philosophical grounding for why AI fails at perspective-taking
+(ToM), connect it to Jungian projection theory, and derive what it means for
+the architecture of AI for science. Establish the three-piece framework for
+frontier research AI, the acceleration argument, and the immune system role
+of AGM revision.
+
+**Artifacts:**
+- `sections/09-research-insights/projector-and-research-ai.md`
+- `agents/shared/findings.md` → R-008 finding
+
+**Closed:** 2026-07-04

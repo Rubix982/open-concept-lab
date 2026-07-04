@@ -240,3 +240,32 @@ does not address.
 `belief_tracking/data/agm_story_templates.json`
 
 Confidence: high
+
+---
+
+## [R-008] Finding: The Projector Problem — Why AI Fails at Perspective and What It Means for Science AI
+
+_Date: 2026-07-04_
+
+Jung's "prince" — the ego as organizing center of experience — is the
+precondition for Theory of Mind, not a consequence of it. Current LLMs have the
+form of ToM without the generating structure: they pattern-complete across text
+rather than occupy a stance and imagine a different one. This is why AI-generated
+outputs have the "something off" quality — the minute wrongness is pre-verbal,
+in the training data as silence not as claim, unreachable by pattern matching.
+
+For science AI: a domain-specific evaluative structure (the knowledge graph +
+AGM revision) approximates a partial projector within the space it knows.
+Three pieces are required for a full research AI: (1) persistent revisable belief
+structure — what the KG builds; (2) interface to the experimental layer — the
+closed loop; (3) goal-conditioned evaluation — domain-specific goal structure
+baked in. Piece 4 (hypothesis generation) emerges from training on the labeled
+discoveries that pieces 1-3 produce.
+
+The AGM revision structure is simultaneously the accelerator and the immune
+system: it compresses the bottlenecks of science while preventing ghost beliefs
+from propagating through fast feedback loops. The recovery postulate failure
+is practically important — it is the architecture's defense against the failure
+mode it enables.
+
+Confidence: high
