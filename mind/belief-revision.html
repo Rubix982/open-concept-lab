@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Belief Problem</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,600&display=swap');
+
+  :root {
+    --bg: #0a0c0f;
+    --panel: #0f1318;
+    --border: #1e2530;
+    --text: #c8d4e0;
+    --dim: #4a5568;
+    --accent: #4fc3f7;
+    --fringe: #a78bfa;
+    --signal: #6fcf97;
+    --warm: #ffb347;
+    --glow: #e884d3;
+    --danger: #eb5757;
+    --bone: #e8dcc8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 72px 32px 140px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 80px;
+    max-width: 760px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--bone);
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+    line-height: 1.15;
+  }
+
+  header p {
+    font-size: 0.76rem;
+    color: var(--dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 2.2;
+  }
+
+  .section {
+    width: 100%;
+    max-width: 1100px;
+    margin-bottom: 88px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num  { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.18em; flex-shrink: 0; }
+  .section-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.3rem; color: var(--bone); }
+  .section-sub  { font-size: 0.66rem; color: var(--dim); letter-spacing: 0.1em; margin-left: auto; text-align: right; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px 28px 36px;
+  }
+
+  .panel-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 22px;
+  }
+
+  .prose {
+    font-size: 0.84rem;
+    line-height: 2.05;
+    color: var(--text);
+  }
+
+  .prose strong { color: var(--bone); font-weight: 400; }
+  .prose em     { font-style: italic; color: var(--bone); opacity: 0.85; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+
+  .mb14 { margin-bottom: 18px; }
+  .mb20 { margin-bottom: 26px; }
+
+  .quote-block {
+    border-left: 2px solid var(--accent);
+    padding: 28px 28px 30px;
+    background: var(--panel);
+    border-radius: 0 4px 4px 0;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 18px;
+  }
+
+  .quote-block.warm   { border-left-color: var(--warm); }
+  .quote-block.fringe { border-left-color: var(--fringe); }
+  .quote-block.signal { border-left-color: var(--signal); }
+  .quote-block.glow   { border-left-color: var(--glow); }
+  .quote-block.danger { border-left-color: var(--danger); }
+
+  .quote-text {
+    font-size: 0.84rem;
+    line-height: 2.05;
+    color: var(--bone);
+    font-style: italic;
+    opacity: 0.82;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .axiom-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 16px 20px;
+  }
+
+  .axiom-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--bone);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  footer {
+    margin-top: 24px;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 680px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .section-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Belief Problem</h1>
+  <p>weights &middot; context &middot; provenance &middot; revision<br>
+  how language models represent, update, and fail to revise what they know</p>
+</header>
+
+
+<!-- 01 TWO MODES -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Two Modes</span>
+    <span class="section-sub">weights &middot; context &middot; the gap between them</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">the two regimes current language models operate in</div>
+    <svg width="100%" height="210" viewBox="0 0 860 240" style="display:block">
+
+      <!-- WEIGHTS zone -->
+      <rect x="18" y="18" width="270" height="174" rx="3" fill="rgba(255,179,71,0.05)" stroke="rgba(255,179,71,0.25)" stroke-width="1.5"/>
+      <text x="153" y="44" text-anchor="middle" fill="rgba(255,179,71,0.85)" font-family="DM Mono, monospace" font-size="13" letter-spacing="3">WEIGHTS</text>
+
+      <!-- Crystal/frozen layers -->
+      <line x1="48"  y1="80"  x2="258" y2="80"  stroke="rgba(255,179,71,0.18)" stroke-width="1"/>
+      <line x1="48"  y1="100" x2="258" y2="100" stroke="rgba(255,179,71,0.14)" stroke-width="1"/>
+      <line x1="48"  y1="120" x2="258" y2="120" stroke="rgba(255,179,71,0.10)" stroke-width="1"/>
+      <line x1="48"  y1="140" x2="258" y2="140" stroke="rgba(255,179,71,0.07)" stroke-width="1"/>
+      <line x1="48"  y1="160" x2="258" y2="160" stroke="rgba(255,179,71,0.05)" stroke-width="1"/>
+      <!-- Frozen label -->
+      <text x="153" y="64"  text-anchor="middle" fill="rgba(255,179,71,0.35)" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1">slow to change · survives sessions</text>
+      <text x="153" y="90"  text-anchor="middle" fill="rgba(255,179,71,0.28)" font-family="DM Mono, monospace" font-size="10">statistical average of training</text>
+      <text x="153" y="110" text-anchor="middle" fill="rgba(255,179,71,0.22)" font-family="DM Mono, monospace" font-size="10">compressed · lossy · no provenance</text>
+      <text x="153" y="130" text-anchor="middle" fill="rgba(255,179,71,0.17)" font-family="DM Mono, monospace" font-size="10">retraining risks catastrophic forgetting</text>
+      <text x="153" y="150" text-anchor="middle" fill="rgba(255,179,71,0.12)" font-family="DM Mono, monospace" font-size="10">cannot accept targeted correction</text>
+      <!-- Frozen icon -->
+      <text x="153" y="185" text-anchor="middle" fill="rgba(255,179,71,0.5)" font-family="DM Mono, monospace" font-size="11" letter-spacing="2">FROZEN</text>
+
+      <!-- GAP zone -->
+      <rect x="308" y="18" width="244" height="174" rx="3" fill="rgba(74,85,104,0.04)" stroke="rgba(74,85,104,0.15)" stroke-width="1" stroke-dasharray="5 3"/>
+      <text x="430" y="80" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="13" letter-spacing="2">MISSING</text>
+      <text x="430" y="100" text-anchor="middle" fill="rgba(74,85,104,0.28)" font-family="DM Mono, monospace" font-size="10.5">persistent</text>
+      <text x="430" y="114" text-anchor="middle" fill="rgba(74,85,104,0.28)" font-family="DM Mono, monospace" font-size="10.5">non-destructive</text>
+      <text x="430" y="128" text-anchor="middle" fill="rgba(74,85,104,0.28)" font-family="DM Mono, monospace" font-size="10.5">belief revision</text>
+      <text x="430" y="152" text-anchor="middle" fill="rgba(74,85,104,0.18)" font-family="DM Mono, monospace" font-size="10">survives sessions · targeted · provenance-aware</text>
+      <text x="430" y="185" text-anchor="middle" fill="rgba(74,85,104,0.3)" font-family="DM Mono, monospace" font-size="11" letter-spacing="2">THIRD MODE</text>
+
+      <!-- CONTEXT zone -->
+      <rect x="572" y="18" width="270" height="174" rx="3" fill="rgba(79,195,247,0.04)" stroke="rgba(79,195,247,0.22)" stroke-width="1.5"/>
+      <text x="707" y="44" text-anchor="middle" fill="rgba(79,195,247,0.82)" font-family="DM Mono, monospace" font-size="13" letter-spacing="3">CONTEXT</text>
+
+      <!-- Flowing lines -->
+      <path d="M 602 70 Q 650 80 707 70 Q 764 60 822 70"  fill="none" stroke="rgba(79,195,247,0.2)"  stroke-width="1"/>
+      <path d="M 602 90 Q 660 100 707 90 Q 754 80 822 92"  fill="none" stroke="rgba(79,195,247,0.16)" stroke-width="1"/>
+      <path d="M 602 112 Q 640 120 707 112 Q 770 104 822 114" fill="none" stroke="rgba(79,195,247,0.12)" stroke-width="1"/>
+      <path d="M 602 134 Q 650 140 707 132 Q 760 126 822 136" fill="none" stroke="rgba(79,195,247,0.08)" stroke-width="1"/>
+      <text x="707" y="64"  text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1">fast · local · session-only</text>
+      <text x="707" y="105" text-anchor="middle" fill="rgba(79,195,247,0.22)" font-family="DM Mono, monospace" font-size="10">attention-weighted · context wins over weights</text>
+      <text x="707" y="125" text-anchor="middle" fill="rgba(79,195,247,0.16)" font-family="DM Mono, monospace" font-size="10">no persistence · no provenance</text>
+      <text x="707" y="145" text-anchor="middle" fill="rgba(79,195,247,0.11)" font-family="DM Mono, monospace" font-size="10">gone when session ends</text>
+      <text x="707" y="185" text-anchor="middle" fill="rgba(79,195,247,0.45)" font-family="DM Mono, monospace" font-size="11" letter-spacing="2">EPHEMERAL</text>
+    </svg>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-label">what context override actually is</div>
+      <p class="prose">When you give an LM new information that contradicts its weights, it does not detect a contradiction and decide to update. The attention mechanism simply weights the context window more heavily than the prior encoded in weights — because it was trained to do so. What looks like a decision to update is continuous attention-weighted integration. There is no internal event that corresponds to "I am revising my belief."</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">why the gap matters</div>
+      <p class="prose">A system operating only in two modes cannot be corrected persistently. Tell it today that a belief is wrong: it incorporates the correction locally, this session. Tomorrow it has forgotten. For models deployed at scale — where different users, at different times, can identify wrong beliefs — there is no mechanism for those corrections to accumulate and persist. The model is incorrigible in the structural sense.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 02 WHAT THE BRAIN DOES -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">What the Brain Does</span>
+    <span class="section-sub">complementary learning systems &middot; consolidation &middot; catastrophic forgetting</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">two systems that solve what neural networks cannot</div>
+    <svg width="100%" height="200" viewBox="0 0 860 230" style="display:block">
+
+      <!-- Hippocampus -->
+      <ellipse cx="220" cy="95" rx="175" ry="72" fill="rgba(111,207,151,0.06)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="220" y="52" text-anchor="middle" fill="rgba(111,207,151,0.75)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">HIPPOCAMPUS</text>
+      <text x="220" y="72"  text-anchor="middle" fill="rgba(111,207,151,0.45)" font-family="DM Mono, monospace" font-size="10.5">fast encoding</text>
+      <text x="220" y="88"  text-anchor="middle" fill="rgba(111,207,151,0.38)" font-family="DM Mono, monospace" font-size="10">episodic · specific · recent</text>
+      <text x="220" y="104" text-anchor="middle" fill="rgba(111,207,151,0.3)"  font-family="DM Mono, monospace" font-size="10">high plasticity · rapid update</text>
+      <text x="220" y="120" text-anchor="middle" fill="rgba(111,207,151,0.22)" font-family="DM Mono, monospace" font-size="10">holds the fresh episode</text>
+      <text x="220" y="140" text-anchor="middle" fill="rgba(111,207,151,0.55)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1">≈ context window</text>
+      <text x="220" y="154" text-anchor="middle" fill="rgba(111,207,151,0.25)" font-family="DM Mono, monospace" font-size="10">but persistent, not ephemeral</text>
+
+      <!-- Consolidation arrow (sleep) -->
+      <path d="M 400 80 Q 430 60 460 80" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <path d="M 400 110 Q 430 130 460 110" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <polygon points="456,75 466,80 456,85" fill="rgba(167,139,250,0.4)"/>
+      <polygon points="464,105 454,110 464,115" fill="rgba(167,139,250,0.4)"/>
+      <text x="430" y="94"  text-anchor="middle" fill="rgba(167,139,250,0.65)" font-family="DM Mono, monospace" font-size="10.5">sleep</text>
+      <text x="430" y="106" text-anchor="middle" fill="rgba(167,139,250,0.65)" font-family="DM Mono, monospace" font-size="10.5">consolidation</text>
+
+      <!-- Neocortex -->
+      <ellipse cx="640" cy="95" rx="175" ry="72" fill="rgba(255,179,71,0.05)" stroke="rgba(255,179,71,0.28)" stroke-width="1.5"/>
+      <text x="640" y="52" text-anchor="middle" fill="rgba(255,179,71,0.72)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">NEOCORTEX</text>
+      <text x="640" y="72"  text-anchor="middle" fill="rgba(255,179,71,0.42)" font-family="DM Mono, monospace" font-size="10.5">slow integration</text>
+      <text x="640" y="88"  text-anchor="middle" fill="rgba(255,179,71,0.35)" font-family="DM Mono, monospace" font-size="10">structural · generalized · stable</text>
+      <text x="640" y="104" text-anchor="middle" fill="rgba(255,179,71,0.28)" font-family="DM Mono, monospace" font-size="10">low plasticity · gradual update</text>
+      <text x="640" y="120" text-anchor="middle" fill="rgba(255,179,71,0.22)" font-family="DM Mono, monospace" font-size="10">holds the prior — does not forget it</text>
+      <text x="640" y="140" text-anchor="middle" fill="rgba(255,179,71,0.52)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1">≈ weights</text>
+      <text x="640" y="154" text-anchor="middle" fill="rgba(255,179,71,0.25)" font-family="DM Mono, monospace" font-size="10">but updateable without overwriting</text>
+
+      <!-- No forgetting marker -->
+      <text x="430" y="185" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1.5">new information layers in — old knowledge is not erased</text>
+    </svg>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">catastrophic forgetting — the neural network failure</div>
+      <p class="prose">Train a neural network sequentially on Task A, then Task B. Performance on Task A degrades sharply — often to near-zero. The weights that encoded Task A are overwritten by the gradient updates for Task B. The brain does not do this. The complementary systems prevent it: the hippocampus encodes new experiences without touching the neocortex directly; slow consolidation during sleep integrates the new with the old incrementally, interleaving replays of old and new memories.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">what LMs are missing from this picture</div>
+      <p class="prose">LMs have weights (neocortex-like: slow, structural) and context (hippocampus-like: fast, recent). But the two are not connected by any consolidation mechanism. Context never becomes weights. Weights never become episodic. There is no sleep loop. The result: a system where new episodes are perpetually transient — they cannot become stable knowledge without retraining, which risks the catastrophic forgetting the brain naturally avoids.</p>
+    </div>
+  </div>
+
+  <div class="quote-block signal">
+    <div class="panel-label">McClelland, McNaughton &amp; O'Reilly · Psychological Review · 1995</div>
+    <p class="quote-text">"The hippocampal system allows for the rapid acquisition of new information, whereas the neocortical system is a slow learning system that draws on regularities across many experiences... The hippocampus rapidly binds together the cortical representations active during an experience, and gradually instills this information in the cortex through a process of consolidation."</p>
+    <p class="prose" style="margin-top:12px">This paper — Complementary Learning Systems — is still the foundational reference. The problem it identified in biological systems is precisely the problem that LM architectures have not solved.</p>
+  </div>
+</section>
+
+
+<!-- 03 PROVENANCE -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Provenance</span>
+    <span class="section-sub">knowing why you believe what you believe</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">two architectures — with and without a chain of evidence</div>
+    <svg width="100%" height="195" viewBox="0 0 860 225" style="display:block">
+
+      <!-- Left: LM — no provenance -->
+      <text x="215" y="28" text-anchor="middle" fill="rgba(235,87,87,0.6)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">LANGUAGE MODEL</text>
+
+      <!-- Evidence A -->
+      <rect x="20" y="44" width="110" height="34" rx="2" fill="rgba(74,85,104,0.1)" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <text x="75" y="64" text-anchor="middle" fill="rgba(74,85,104,0.7)" font-family="DM Mono, monospace" font-size="10.5">evidence A</text>
+      <!-- Evidence B -->
+      <rect x="20" y="108" width="110" height="34" rx="2" fill="rgba(79,195,247,0.08)" stroke="rgba(79,195,247,0.25)" stroke-width="1"/>
+      <text x="75" y="128" text-anchor="middle" fill="rgba(79,195,247,0.6)" font-family="DM Mono, monospace" font-size="10.5">evidence B (new)</text>
+
+      <!-- Black box -->
+      <rect x="168" y="60" width="96" height="70" rx="2" fill="rgba(10,12,15,0.8)" stroke="rgba(74,85,104,0.25)" stroke-width="1"/>
+      <text x="216" y="98" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="10">context</text>
+      <text x="216" y="110" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="10">+ weights</text>
+
+      <!-- Arrows in -->
+      <line x1="130" y1="61" x2="168" y2="80" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <line x1="130" y1="125" x2="168" y2="110" stroke="rgba(79,195,247,0.3)" stroke-width="1"/>
+      <!-- Arrow out -->
+      <line x1="264" y1="95" x2="310" y2="95" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <polygon points="308,91 318,95 308,99" fill="rgba(74,85,104,0.3)"/>
+      <!-- Output -->
+      <rect x="318" y="78" width="90" height="34" rx="2" fill="rgba(235,87,87,0.06)" stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <text x="363" y="98" text-anchor="middle" fill="rgba(235,87,87,0.6)" font-family="DM Mono, monospace" font-size="10.5">output</text>
+
+      <!-- No provenance note -->
+      <text x="215" y="168" text-anchor="middle" fill="rgba(235,87,87,0.35)" font-family="DM Mono, monospace" font-size="10.5">no chain · old evidence gone · no memory of revision</text>
+
+      <!-- Divider -->
+      <line x1="430" y1="20" x2="430" y2="180" stroke="rgba(74,85,104,0.15)" stroke-width="1" stroke-dasharray="4 3"/>
+
+      <!-- Right: Provenance-aware -->
+      <text x="645" y="28" text-anchor="middle" fill="rgba(111,207,151,0.6)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">PROVENANCE-AWARE</text>
+
+      <!-- Evidence A → Belief X (stored, dated) -->
+      <rect x="450" y="44" width="110" height="34" rx="2" fill="rgba(74,85,104,0.1)" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <text x="505" y="64" text-anchor="middle" fill="rgba(74,85,104,0.7)" font-family="DM Mono, monospace" font-size="10.5">evidence A</text>
+      <line x1="560" y1="61" x2="598" y2="61" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <polygon points="596,57 606,61 596,65" fill="rgba(74,85,104,0.3)"/>
+      <rect x="606" y="44" width="110" height="34" rx="2" fill="rgba(74,85,104,0.1)" stroke="rgba(74,85,104,0.3)" stroke-width="1"/>
+      <text x="661" y="60" text-anchor="middle" fill="rgba(74,85,104,0.6)" font-family="DM Mono, monospace" font-size="10">belief X</text>
+      <text x="661" y="72" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="13">stored · superseded</text>
+
+      <!-- Evidence B → Belief Y (current) -->
+      <rect x="450" y="108" width="110" height="34" rx="2" fill="rgba(79,195,247,0.08)" stroke="rgba(79,195,247,0.25)" stroke-width="1"/>
+      <text x="505" y="128" text-anchor="middle" fill="rgba(79,195,247,0.6)" font-family="DM Mono, monospace" font-size="10.5">evidence B (new)</text>
+      <line x1="560" y1="125" x2="598" y2="125" stroke="rgba(79,195,247,0.3)" stroke-width="1"/>
+      <polygon points="596,121 606,125 596,129" fill="rgba(79,195,247,0.3)"/>
+      <rect x="606" y="108" width="110" height="34" rx="2" fill="rgba(111,207,151,0.1)" stroke="rgba(111,207,151,0.35)" stroke-width="1.5"/>
+      <text x="661" y="124" text-anchor="middle" fill="rgba(111,207,151,0.8)" font-family="DM Mono, monospace" font-size="10">belief Y</text>
+      <text x="661" y="136" text-anchor="middle" fill="rgba(111,207,151,0.5)" font-family="DM Mono, monospace" font-size="13">current · dated · sourced</text>
+
+      <!-- Chain visible -->
+      <line x1="661" y1="78" x2="661" y2="108" stroke="rgba(167,139,250,0.35)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="720" y="96" fill="rgba(167,139,250,0.5)" font-family="DM Mono, monospace" font-size="10">supersedes</text>
+
+      <text x="645" y="168" text-anchor="middle" fill="rgba(111,207,151,0.4)" font-family="DM Mono, monospace" font-size="10.5">chain visible · old held · revision is a known event</text>
+    </svg>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">what provenance means</div>
+      <p class="prose">Provenance is the ability to trace a belief back to its evidence. Not just to hold the belief, but to know <strong>why</strong> it is held — what observations, what reasoning, what prior beliefs produced it. A provenance-aware system can answer: "I believe X because of Y, which arrived at time T, which superseded my prior belief Z which was based on W." This chain is what makes revision meaningful rather than arbitrary.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">why LMs have none of this</div>
+      <p class="prose">When context overrides weights, the model has no internal event that registers "I am revising." The output reflects the new information, but the prior belief is not archived — it is simply outweighed. There is no chain. The model cannot tell you why it believes what it believes, nor that it used to believe something different. It lives, as it were, in a <strong>perpetual present</strong> — each output assembled fresh, with no memory of the states that preceded it.</p>
+    </div>
+  </div>
+
+  <div class="quote-block fringe">
+    <div class="panel-label">the consciousness contrast</div>
+    <p class="prose">When a person learns that a prior belief was wrong, they do not simply begin outputting the correct answer. They hold the correction, the prior belief, and the evidence for each simultaneously — and can reason about the tension between them. They know they changed their mind. They can explain why. They can weight the new evidence against the old and remain uncertain if the evidence warrants it. None of this is possible in a system with no provenance.</p>
+  </div>
+</section>
+
+
+<!-- 04 AGM FRAMEWORK -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">The AGM Framework</span>
+    <span class="section-sub">Alchourrón · Gärdenfors · Makinson · 1985</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">three axioms for rational belief revision — and how current approaches fail each</div>
+    <svg width="100%" height="180" viewBox="0 0 860 210" style="display:block">
+
+      <!-- Three axiom columns -->
+      <!-- SUCCESS -->
+      <rect x="18" y="18" width="254" height="60" rx="2" fill="rgba(111,207,151,0.07)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="145" y="38" text-anchor="middle" fill="rgba(111,207,151,0.85)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">SUCCESS</text>
+      <text x="145" y="56" text-anchor="middle" fill="rgba(111,207,151,0.5)" font-family="DM Mono, monospace" font-size="10.5">new belief must be incorporated</text>
+      <text x="145" y="70" text-anchor="middle" fill="rgba(111,207,151,0.35)" font-family="DM Mono, monospace" font-size="10">revision does not silently fail</text>
+
+      <!-- CONSISTENCY -->
+      <rect x="304" y="18" width="254" height="60" rx="2" fill="rgba(111,207,151,0.07)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="431" y="38" text-anchor="middle" fill="rgba(111,207,151,0.85)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">CONSISTENCY</text>
+      <text x="431" y="56" text-anchor="middle" fill="rgba(111,207,151,0.5)" font-family="DM Mono, monospace" font-size="10.5">resulting belief set must be consistent</text>
+      <text x="431" y="70" text-anchor="middle" fill="rgba(111,207,151,0.35)" font-family="DM Mono, monospace" font-size="10">no contradictions survive the update</text>
+
+      <!-- MINIMAL CHANGE -->
+      <rect x="590" y="18" width="254" height="60" rx="2" fill="rgba(111,207,151,0.07)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="717" y="38" text-anchor="middle" fill="rgba(111,207,151,0.85)" font-family="DM Mono, monospace" font-size="12" letter-spacing="2">MINIMAL CHANGE</text>
+      <text x="717" y="56" text-anchor="middle" fill="rgba(111,207,151,0.5)" font-family="DM Mono, monospace" font-size="10.5">revise only what must be revised</text>
+      <text x="717" y="70" text-anchor="middle" fill="rgba(111,207,151,0.35)" font-family="DM Mono, monospace" font-size="10">preserve everything else unchanged</text>
+
+      <!-- Failure rows -->
+      <!-- Fine-tuning fails minimal change -->
+      <rect x="590" y="108" width="254" height="52" rx="2" fill="rgba(235,87,87,0.05)" stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <text x="717" y="124" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="10.5">fine-tuning fails here</text>
+      <text x="717" y="138" text-anchor="middle" fill="rgba(235,87,87,0.4)" font-family="DM Mono, monospace" font-size="10">gradient updates overwrite</text>
+      <text x="717" y="150" text-anchor="middle" fill="rgba(235,87,87,0.4)" font-family="DM Mono, monospace" font-size="10">unrelated knowledge</text>
+
+      <!-- Context override fails consistency -->
+      <rect x="304" y="108" width="254" height="52" rx="2" fill="rgba(235,87,87,0.05)" stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <text x="431" y="124" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="10.5">context override fails here</text>
+      <text x="431" y="138" text-anchor="middle" fill="rgba(235,87,87,0.4)" font-family="DM Mono, monospace" font-size="10">weights still hold the old belief;</text>
+      <text x="431" y="150" text-anchor="middle" fill="rgba(235,87,87,0.4)" font-family="DM Mono, monospace" font-size="10">context contradicts without resolving</text>
+
+      <!-- ROME — best attempt -->
+      <rect x="18" y="108" width="254" height="52" rx="2" fill="rgba(255,179,71,0.05)" stroke="rgba(255,179,71,0.2)" stroke-width="1"/>
+      <text x="145" y="124" text-anchor="middle" fill="rgba(255,179,71,0.65)" font-family="DM Mono, monospace" font-size="10.5">ROME — closest approach</text>
+      <text x="145" y="138" text-anchor="middle" fill="rgba(255,179,71,0.4)" font-family="DM Mono, monospace" font-size="10">surgical · single-fact · satisfies success</text>
+      <text x="145" y="150" text-anchor="middle" fill="rgba(255,179,71,0.4)" font-family="DM Mono, monospace" font-size="10">but not a belief system — no provenance</text>
+
+      <!-- Arrows down -->
+      <line x1="145" y1="78" x2="145" y2="108" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="431" y1="78" x2="431" y2="108" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="717" y1="78" x2="717" y2="108" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+    </svg>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-label">AGM · Alchourrón, Gärdenfors, Makinson · 1985</div>
+      <p class="prose">Published forty years ago in classical AI — before neural networks dominated — this framework formalized what it would mean for a rational agent to revise its beliefs correctly. The three axioms are minimal: any weaker and the revision becomes meaningless; any stronger and you add constraints the problem doesn't require. LMs were not designed with these axioms in mind, and satisfy none of them reliably. The framework is a useful diagnostic: ask of any update mechanism — does it succeed, preserve consistency, minimize change?</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">why ROME is the interesting case</div>
+      <p class="prose">ROME (Rank-One Model Editing) targets specific MLP layers that function as key-value stores for factual associations. It edits a single fact surgically, with minimal collateral change to other knowledge. It satisfies success (the new fact takes hold) and approximates minimal change (the edit is local). But it has no consistency mechanism — it cannot detect that the new fact contradicts other beliefs — and no provenance — the model does not know it was edited. It is the closest current approach to AGM-compliant revision, and it still falls short.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 05 THE LIVE WIRE -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">The Live Wire</span>
+    <span class="section-sub">what persistent belief revision would require</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">four interdependent requirements — none sufficient alone</div>
+    <svg width="100%" height="200" viewBox="0 0 860 230" style="display:block">
+
+      <!-- Four nodes in a square -->
+      <!-- Persistent Store (top-left) -->
+      <rect x="80" y="28" width="200" height="56" rx="3" fill="rgba(232,132,211,0.07)" stroke="rgba(232,132,211,0.35)" stroke-width="1.5"/>
+      <text x="180" y="52" text-anchor="middle" fill="rgba(232,132,211,0.85)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">PERSISTENT STORE</text>
+      <text x="180" y="68" text-anchor="middle" fill="rgba(232,132,211,0.45)" font-family="DM Mono, monospace" font-size="10">structured · queryable · outside weights</text>
+
+      <!-- Contradiction Detection (top-right) -->
+      <rect x="580" y="28" width="200" height="56" rx="3" fill="rgba(232,132,211,0.07)" stroke="rgba(232,132,211,0.35)" stroke-width="1.5"/>
+      <text x="680" y="52" text-anchor="middle" fill="rgba(232,132,211,0.85)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">CONTRADICTION DETECT</text>
+      <text x="680" y="68" text-anchor="middle" fill="rgba(232,132,211,0.45)" font-family="DM Mono, monospace" font-size="10">new info checked against stored beliefs</text>
+
+      <!-- Non-destructive Revision (bottom-left) -->
+      <rect x="80" y="136" width="200" height="56" rx="3" fill="rgba(232,132,211,0.07)" stroke="rgba(232,132,211,0.35)" stroke-width="1.5"/>
+      <text x="180" y="160" text-anchor="middle" fill="rgba(232,132,211,0.85)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">NON-DESTR. REVISION</text>
+      <text x="180" y="176" text-anchor="middle" fill="rgba(232,132,211,0.45)" font-family="DM Mono, monospace" font-size="10">old belief marked · new adopted as current</text>
+
+      <!-- Provenance Tracking (bottom-right) -->
+      <rect x="580" y="136" width="200" height="56" rx="3" fill="rgba(232,132,211,0.07)" stroke="rgba(232,132,211,0.35)" stroke-width="1.5"/>
+      <text x="680" y="160" text-anchor="middle" fill="rgba(232,132,211,0.85)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">PROVENANCE TRACKING</text>
+      <text x="680" y="176" text-anchor="middle" fill="rgba(232,132,211,0.45)" font-family="DM Mono, monospace" font-size="10">why each belief is held · chain of evidence</text>
+
+      <!-- Edges -->
+      <line x1="280" y1="56"  x2="580" y2="56"  stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="280" y1="164" x2="580" y2="164" stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="180" y1="84"  x2="180" y2="136" stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="680" y1="84"  x2="680" y2="136" stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="4 3"/>
+      <line x1="280" y1="84"  x2="580" y2="136" stroke="rgba(232,132,211,0.12)" stroke-width="1" stroke-dasharray="3 4"/>
+      <line x1="580" y1="84"  x2="280" y2="136" stroke="rgba(232,132,211,0.12)" stroke-width="1" stroke-dasharray="3 4"/>
+
+      <!-- Center label -->
+      <text x="430" y="104" text-anchor="middle" fill="rgba(232,132,211,0.3)" font-family="DM Mono, monospace" font-size="10.5" letter-spacing="1">all four required</text>
+      <text x="430" y="116" text-anchor="middle" fill="rgba(232,132,211,0.2)" font-family="DM Mono, monospace" font-size="10">none sufficient alone</text>
+    </svg>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">approaches gesturing in this direction</div>
+      <p class="prose"><strong>Memory-augmented architectures</strong> — Neural Turing Machines, Differentiable Neural Computers — add external writable memory. They can read and write non-destructively. But they don't scale to the complexity of natural language beliefs, and provenance is not tracked.<br><br><strong>Retrieval-augmented generation (RAG)</strong> — pull relevant documents at inference time. The belief store is the document corpus. But revision means updating the corpus, and contradiction detection is absent — the model does not notice when retrieved documents conflict.<br><br><strong>Lifelong learning research</strong> — EWC, progressive networks, replay buffers — each tries to prevent catastrophic forgetting. None provides provenance or contradiction detection.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">what remains unsolved</div>
+      <p class="prose">The <strong>metacognitive piece</strong>: a system that knows it is revising, knows why, and can reason about the revision itself. Not just a system that outputs the correct answer after a belief update, but one that can say: "I changed this belief, it was based on evidence X, it now conflicts with stored belief Y, I resolved the conflict by doing Z." This is what human episodic memory supports. It is far beyond what any current LM architecture provides — and it may require something structurally different from the transformer: a system where belief states are first-class objects, not implicit in attention patterns over frozen weights.</p>
+    </div>
+  </div>
+
+  <div class="quote-block glow">
+    <div class="panel-label">the connection to Theory of Mind</div>
+    <p class="prose">The Theory of Mind problem — representing what a character <em>believes</em> when that differs from ground truth — is the in-context, session-local version of this problem. The model must maintain separate belief states for separate agents simultaneously. The lookback mechanism shows it can do this partially, within a story, using attention. But the deeper question is: can a model maintain persistent, updatable, provenance-tracked belief states about <em>itself</em> — about its own prior outputs, its own reasoning chains, its own revisions? That is what would make it a genuine epistemic agent rather than a very capable pattern-completer.</p>
+  </div>
+</section>
+
+
+<!-- 06 THE LOOKBACK BRIDGE -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <span class="section-title">The Lookback Bridge</span>
+    <span class="section-sub">what the mechanism has · what AGM requires · the gap</span>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">the lookback mechanism as a read-only system — and what must change per axiom</div>
+    <svg width="100%" height="260" viewBox="0 0 860 260" style="display:block">
+
+      <!-- Current: read-only -->
+      <rect x="18" y="18" width="248" height="224" rx="3" fill="rgba(79,195,247,0.04)" stroke="rgba(79,195,247,0.2)" stroke-width="1.5"/>
+      <text x="142" y="42" text-anchor="middle" fill="rgba(79,195,247,0.75)" font-family="DM Mono, monospace" font-size="13" letter-spacing="2">CURRENT</text>
+      <text x="142" y="60" text-anchor="middle" fill="rgba(79,195,247,0.4)" font-family="DM Mono, monospace" font-size="10" letter-spacing="1">lookback mechanism</text>
+
+      <text x="142" y="92"  text-anchor="middle" fill="rgba(79,195,247,0.55)" font-family="DM Mono, monospace" font-size="10.5">READ only</text>
+      <text x="142" y="110" text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10">positional OIDs</text>
+      <text x="142" y="128" text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10">single forward pass</text>
+      <text x="142" y="146" text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10">residual stream only</text>
+      <text x="142" y="164" text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10">no conflict detection</text>
+      <text x="142" y="182" text-anchor="middle" fill="rgba(79,195,247,0.32)" font-family="DM Mono, monospace" font-size="10">no provenance chain</text>
+
+      <text x="142" y="220" text-anchor="middle" fill="rgba(79,195,247,0.45)" font-family="DM Mono, monospace" font-size="10" letter-spacing="1.5">READ HALF ONLY</text>
+
+      <!-- Middle: three gaps -->
+      <text x="430" y="52" text-anchor="middle" fill="rgba(235,87,87,0.5)" font-family="DM Mono, monospace" font-size="10" letter-spacing="2">GAPS</text>
+
+      <!-- Gap 1: SUCCESS -->
+      <rect x="322" y="66" width="216" height="46" rx="2" fill="rgba(235,87,87,0.05)" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="430" y="85" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="11">no write operation</text>
+      <text x="430" y="101" text-anchor="middle" fill="rgba(235,87,87,0.38)" font-family="DM Mono, monospace" font-size="10">violates SUCCESS</text>
+
+      <!-- Gap 2: CONSISTENCY -->
+      <rect x="322" y="126" width="216" height="46" rx="2" fill="rgba(235,87,87,0.05)" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="430" y="145" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="11">no temporal OIDs</text>
+      <text x="430" y="161" text-anchor="middle" fill="rgba(235,87,87,0.38)" font-family="DM Mono, monospace" font-size="10">violates CONSISTENCY</text>
+
+      <!-- Gap 3: MINIMAL CHANGE -->
+      <rect x="322" y="186" width="216" height="46" rx="2" fill="rgba(235,87,87,0.05)" stroke="rgba(235,87,87,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="430" y="205" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="11">no non-destr. revision</text>
+      <text x="430" y="221" text-anchor="middle" fill="rgba(235,87,87,0.38)" font-family="DM Mono, monospace" font-size="10">violates MINIMAL CHANGE</text>
+
+      <!-- AGM compliant extension -->
+      <rect x="594" y="18" width="248" height="224" rx="3" fill="rgba(232,132,211,0.05)" stroke="rgba(232,132,211,0.3)" stroke-width="1.5"/>
+      <text x="718" y="42" text-anchor="middle" fill="rgba(232,132,211,0.8)" font-family="DM Mono, monospace" font-size="13" letter-spacing="2">EXTENSION</text>
+      <text x="718" y="60" text-anchor="middle" fill="rgba(232,132,211,0.4)" font-family="DM Mono, monospace" font-size="10" letter-spacing="1">AGM-compliant target</text>
+
+      <text x="718" y="92"  text-anchor="middle" fill="rgba(232,132,211,0.6)" font-family="DM Mono, monospace" font-size="10.5">READ + WRITE</text>
+      <text x="718" y="110" text-anchor="middle" fill="rgba(232,132,211,0.35)" font-family="DM Mono, monospace" font-size="10">temporal OIDs (char, obj, t)</text>
+      <text x="718" y="128" text-anchor="middle" fill="rgba(232,132,211,0.35)" font-family="DM Mono, monospace" font-size="10">persistent across passes</text>
+      <text x="718" y="146" text-anchor="middle" fill="rgba(232,132,211,0.35)" font-family="DM Mono, monospace" font-size="10">external belief store</text>
+      <text x="718" y="164" text-anchor="middle" fill="rgba(232,132,211,0.35)" font-family="DM Mono, monospace" font-size="10">consistency check on write</text>
+      <text x="718" y="182" text-anchor="middle" fill="rgba(232,132,211,0.35)" font-family="DM Mono, monospace" font-size="10">chain: active + superseded</text>
+
+      <text x="718" y="220" text-anchor="middle" fill="rgba(232,132,211,0.45)" font-family="DM Mono, monospace" font-size="10" letter-spacing="1.5">READ + WRITE HALF</text>
+
+      <!-- Bridge arrows -->
+      <line x1="266" y1="89"  x2="322" y2="89"  stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <line x1="538" y1="89"  x2="594" y2="89"  stroke="rgba(232,132,211,0.2)" stroke-width="1"/>
+      <line x1="266" y1="149" x2="322" y2="149" stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <line x1="538" y1="149" x2="594" y2="149" stroke="rgba(232,132,211,0.2)" stroke-width="1"/>
+      <line x1="266" y1="209" x2="322" y2="209" stroke="rgba(235,87,87,0.2)" stroke-width="1"/>
+      <line x1="538" y1="209" x2="594" y2="209" stroke="rgba(232,132,211,0.2)" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">the OID temporal extension — the load-bearing change</div>
+      <p class="prose">Currently OIDs encode positional identity: first/second character, first/second object. They have no time dimension. Extending to <strong>(character_OID, object_OID, belief_t)</strong> → state makes conflict detection structurally possible: two entries sharing (character_OID, object_OID) but differing in belief_t and state are a detectable contradiction. The consolidation step can then apply revision (newer wins) or merging (negotiate). The paper already uses RoPE for positional encoding — RoPE can be extended to carry belief_t alongside token position.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">the Sally problem with AGM-compliant lookback</div>
+      <p class="prose">Sally's belief state: <strong>(Sally, marble, basket)</strong> at t=1. After Anne moves it: <strong>(world, marble, box)</strong> at t=1. After Anne tells Sally it's in the garden: <strong>(Sally, marble, garden)</strong> at t=2. An AGM-compliant lookback retrieves the active entry for (Sally, marble) — garden — when asked Sally's belief, while preserving the chain. It can answer "what did Sally originally believe?" (basket) and "what does Sally currently believe?" (garden) from the same structure, without either erasing the other.</p>
+    </div>
+  </div>
+
+  <div class="quote-block glow">
+    <div class="panel-label">what the lookback paper establishes vs. what remains</div>
+    <p class="prose">The paper proves the <strong>read half</strong> exists and is mechanistically real — specific attention heads at specific layers perform OID-matched retrieval of (character, object, state) triples. That is the necessary foundation. AGM compliance requires the <strong>write half</strong>: a persistent, writable belief store indexed by temporal OIDs, with a consistency check on write and a non-destructive supersession chain. The lookback mechanism is not sufficient for AGM compliance, but it is the right structural starting point — the addressability and retrieval logic carry over. What must be designed is everything that happens when the world changes after the initial story is read.</p>
+  </div>
+</section>
+
+
+<!-- 07 THE RESEARCH CONTRIBUTION -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <span class="section-title">The Research Contribution</span>
+    <span class="section-sub">what this makes possible · for real researchers</span>
+  </div>
+
+  <div class="panel mb14" style="border-left: 3px solid var(--bone); border-radius: 0 4px 4px 0;">
+    <div class="panel-label">the thesis</div>
+    <p class="prose" style="font-size:0.96rem; line-height:2.1; color:var(--bone)">Current knowledge systems accumulate claims. This one revises them. The difference is what makes it useful to researchers.</p>
+  </div>
+
+  <div class="panel mb14">
+    <div class="panel-label">four operations no current retrieval system supports</div>
+    <svg width="100%" height="260" viewBox="0 0 860 260" style="display:block">
+
+      <!-- Missing Beliefs -->
+      <rect x="18" y="18" width="196" height="224" rx="3" fill="rgba(167,139,250,0.05)" stroke="rgba(167,139,250,0.28)" stroke-width="1.5"/>
+      <text x="116" y="44" text-anchor="middle" fill="rgba(167,139,250,0.8)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">MISSING</text>
+      <text x="116" y="60" text-anchor="middle" fill="rgba(167,139,250,0.8)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">BELIEFS</text>
+      <!-- Chain with gap -->
+      <circle cx="116" cy="100" r="12" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1.5"/>
+      <text x="116" y="104" text-anchor="middle" fill="rgba(167,139,250,0.6)" font-family="DM Mono, monospace" font-size="10">A</text>
+      <line x1="116" y1="112" x2="116" y2="134" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+      <circle cx="116" cy="146" r="12" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1.5"/>
+      <text x="116" y="150" text-anchor="middle" fill="rgba(167,139,250,0.6)" font-family="DM Mono, monospace" font-size="10">B</text>
+      <line x1="116" y1="158" x2="116" y2="180" stroke="rgba(167,139,250,0.15)" stroke-width="1" stroke-dasharray="3 2"/>
+      <circle cx="116" cy="192" r="12" fill="rgba(74,85,104,0.08)" stroke="rgba(74,85,104,0.25)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="116" y="196" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="10">?</text>
+      <text x="116" y="232" text-anchor="middle" fill="rgba(167,139,250,0.35)" font-family="DM Mono, monospace" font-size="10">implied</text>
+      <text x="116" y="246" text-anchor="middle" fill="rgba(167,139,250,0.35)" font-family="DM Mono, monospace" font-size="10">but unstaked</text>
+
+      <!-- Empty Middle Ground -->
+      <rect x="234" y="18" width="196" height="224" rx="3" fill="rgba(111,207,151,0.05)" stroke="rgba(111,207,151,0.25)" stroke-width="1.5"/>
+      <text x="332" y="44" text-anchor="middle" fill="rgba(111,207,151,0.78)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">MIDDLE</text>
+      <text x="332" y="60" text-anchor="middle" fill="rgba(111,207,151,0.78)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">GROUND</text>
+      <circle cx="282" cy="130" r="30" fill="rgba(111,207,151,0.06)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="282" y="134" text-anchor="middle" fill="rgba(111,207,151,0.6)" font-family="DM Mono, monospace" font-size="10">belief A</text>
+      <circle cx="382" cy="130" r="30" fill="rgba(111,207,151,0.06)" stroke="rgba(111,207,151,0.3)" stroke-width="1.5"/>
+      <text x="382" y="134" text-anchor="middle" fill="rgba(111,207,151,0.6)" font-family="DM Mono, monospace" font-size="10">belief B</text>
+      <circle cx="332" cy="130" r="10" fill="rgba(255,179,71,0.2)" stroke="rgba(255,179,71,0.6)" stroke-width="1.5"/>
+      <text x="332" y="233" text-anchor="middle" fill="rgba(111,207,151,0.35)" font-family="DM Mono, monospace" font-size="10">synthesis</text>
+      <text x="332" y="247" text-anchor="middle" fill="rgba(111,207,151,0.35)" font-family="DM Mono, monospace" font-size="10">opportunity</text>
+
+      <!-- Fragile Beliefs -->
+      <rect x="450" y="18" width="196" height="224" rx="3" fill="rgba(235,87,87,0.04)" stroke="rgba(235,87,87,0.22)" stroke-width="1.5"/>
+      <text x="548" y="44" text-anchor="middle" fill="rgba(235,87,87,0.75)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">FRAGILE</text>
+      <text x="548" y="60" text-anchor="middle" fill="rgba(235,87,87,0.75)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">BELIEFS</text>
+      <circle cx="548" cy="138" r="28" fill="rgba(235,87,87,0.1)" stroke="rgba(235,87,87,0.45)" stroke-width="2"/>
+      <text x="548" y="135" text-anchor="middle" fill="rgba(235,87,87,0.8)" font-family="DM Mono, monospace" font-size="10">high</text>
+      <text x="548" y="148" text-anchor="middle" fill="rgba(235,87,87,0.8)" font-family="DM Mono, monospace" font-size="10">centrality</text>
+      <line x1="548" y1="110" x2="548" y2="90" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <line x1="524" y1="122" x2="504" y2="108" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <line x1="572" y1="122" x2="592" y2="108" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <line x1="548" y1="166" x2="548" y2="186" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <line x1="524" y1="154" x2="504" y2="168" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <line x1="572" y1="154" x2="592" y2="168" stroke="rgba(235,87,87,0.25)" stroke-width="1"/>
+      <text x="548" y="233" text-anchor="middle" fill="rgba(235,87,87,0.35)" font-family="DM Mono, monospace" font-size="10">next revision</text>
+      <text x="548" y="247" text-anchor="middle" fill="rgba(235,87,87,0.35)" font-family="DM Mono, monospace" font-size="10">likely here</text>
+
+      <!-- Innovation Frontier -->
+      <rect x="666" y="18" width="196" height="224" rx="3" fill="rgba(255,179,71,0.04)" stroke="rgba(255,179,71,0.22)" stroke-width="1.5"/>
+      <text x="764" y="44" text-anchor="middle" fill="rgba(255,179,71,0.78)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">INNOVATION</text>
+      <text x="764" y="60" text-anchor="middle" fill="rgba(255,179,71,0.78)" font-family="DM Mono, monospace" font-size="11" letter-spacing="1.5">FRONTIER</text>
+      <circle cx="730" cy="130" r="16" fill="rgba(255,179,71,0.1)" stroke="rgba(255,179,71,0.4)" stroke-width="1.5"/>
+      <circle cx="764" cy="108" r="16" fill="rgba(255,179,71,0.1)" stroke="rgba(255,179,71,0.4)" stroke-width="1.5"/>
+      <circle cx="798" cy="130" r="16" fill="rgba(255,179,71,0.1)" stroke="rgba(255,179,71,0.4)" stroke-width="1.5"/>
+      <circle cx="764" cy="152" r="16" fill="rgba(255,179,71,0.1)" stroke="rgba(255,179,71,0.4)" stroke-width="1.5"/>
+      <!-- Adjacent gap -->
+      <circle cx="840" cy="90" r="10" fill="none" stroke="rgba(255,179,71,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <circle cx="840" cy="130" r="10" fill="none" stroke="rgba(255,179,71,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="764" y="233" text-anchor="middle" fill="rgba(255,179,71,0.35)" font-family="DM Mono, monospace" font-size="10">adjacent · tractable</text>
+      <text x="764" y="247" text-anchor="middle" fill="rgba(255,179,71,0.35)" font-family="DM Mono, monospace" font-size="10">unworked</text>
+    </svg>
+  </div>
+
+  <div class="grid-2 mb14">
+    <div class="panel">
+      <div class="panel-label">what the system tells a researcher</div>
+      <p class="prose"><strong>Where the consensus is solid</strong> — high confidence, no contestation, long citation history. Safe to build on.<br><br>
+      <strong>Where it is fragile</strong> — high centrality, active debate, recent counter-evidence. Building on this is a risk worth knowing.<br><br>
+      <strong>Where synthesis is overdue</strong> — long-running debates with a detectable middle ground that nobody has published.<br><br>
+      <strong>Where nobody is working but someone should be</strong> — frontier adjacency gaps: methods that exist, problems that are open, connection unmade.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">the evaluation — GNN literature, one contested claim</div>
+      <p class="prose">The graph already has 111 papers, 736 typed edges in the GNN domain. The evaluation: pick the spectral vs. spatial debate. Show that the system surfaces the contested claims with provenance chains, computes the middle ground via the merging operation, identifies which papers are in the middle ground and under-cited, and detects the frontier gap.<br><br>Compare to what a researcher finds in four hours of manual review. The system should surface the same picture in under 60 seconds — plus the gaps the manual review misses.</p>
+    </div>
+  </div>
+
+  <div class="quote-block warm">
+    <div class="panel-label">the north star — every engineering decision answers to this</div>
+    <p class="prose" style="font-size:0.92rem; color:var(--bone); font-style:italic; line-height:2.1">"I used this to find something I wouldn't have found otherwise."</p>
+    <p class="prose" style="margin-top:14px">Not a chatbot that summarizes papers. Not a search engine that retrieves them. A system that maps what the field does not know, and why, and where the next move is. The engineering is 70% there — claim nodes, typed edges, provenance, debates, temporal dimension. What AGM compliance adds is the semantics: supersession, consolidation, and the four gap analysis queries. Those are four new graph queries and one schema extension. The foundation is built. The contribution is the layer that makes it reason.</p>
+  </div>
+</section>
+
+
+<footer>AGM · 1985 &nbsp;&middot;&nbsp; McClelland, McNaughton &amp; O'Reilly · 1995 &nbsp;&middot;&nbsp; ROME · 2022 &nbsp;&middot;&nbsp; Language Models Use Lookbacks To Track Beliefs · ICLR 2026 &nbsp;&middot;&nbsp; open-concept-lab/mind</footer>
+
+</body>
+</html>
