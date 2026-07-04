@@ -134,32 +134,51 @@ CHARACTER NAME token positions (position 1 in each story, right after BOS).
 
 ### E-003 · IIA curve (causal intervention)
 
-**Status:** open
+**Status:** in-progress
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-07-04
 **Updated:** 2026-07-04
 
-**Blockers:**
-- E-002 (need to know which heads are doing the lookback before intervening)
+**Blockers:** ~~E-002~~ (unblocked — layer sweep does not need head-level knowledge)
 
 **Description:**
 Implement the paper's core causal metric: Indirect Intervention Accuracy (IIA).
-Run two story versions (original and counterfactual), patch the residual stream
-from the counterfactual into the original at layer L and position P, measure
-whether the output flips. Sweep across layers to produce an IIA curve.
+Patch the clean residual stream at the state-token position from a clean story
+into a corrupted story (swapped locations) at each layer L. IIA measures how
+much the clean answer logit recovers. Sweep all 12 layers → plot the IIA curve.
 
-**Implementation steps:**
-1. Define story pairs: original (Sally-marble-basket) and counterfactual
-   (swap the character or the destination)
-2. Run both through the model, cache residual streams
-3. For each layer L: patch `cache["resid_post", L]` at the state token
-   from counterfactual into original forward pass
-4. Measure whether the output probability of the counterfactual answer increases
-5. Plot IIA by layer
+**Story pairs (location swap):**
+- Pair A: clean = "Sally…basket…", corrupted = "Sally…box…" (locations swapped)
+- Pair B: clean = "John…box…", corrupted = "John…bag…"
+
+**IIA formula (normalized, per pair, per layer):**
+  IIA = (logit_patched(clean_answer) - logit_corrupted(clean_answer))
+      / (logit_clean(clean_answer) - logit_corrupted(clean_answer))
+Range: 0 = patch did nothing, 1 = fully restored clean answer.
+
+**NNSight pattern (cross-prompt invoker + barrier):**
+  1. Baseline runs: clean_logits, corrupted_logits (single traces)
+  2. For each layer: cross-prompt trace — capture clean residual at state_idx,
+     patch into corrupted run using clone→mask→assign pattern
+  3. Average IIA across pairs
+
+**Implementation notes from E-004:**
+  - NNSight single-item activations are 2D [seq_len, d_model] — no batch dim
+  - Position indexing: hs[state_idx, :] not hs[:, state_idx, :]
+  - Patching formula: hs * (1-mask) + clean_act * mask
 
 **Artifacts:**
 - `experiments/iia_curve/iia.py`
 - `experiments/iia_curve/output/iia_by_layer.png`
 
-**Closed:** —
+**Closed:** 2026-07-04
+
+**Results:**
+Peak IIA at layer 9 (mean 0.445 ±0.19), but with large variance across pairs and
+negative IIA at layers 4-5 for Emma pair. Deltas between clean/corrupted are tiny
+(0.26–1.48 logit units), meaning GPT-2 small does not robustly track belief state.
+**Key finding**: GPT-2 small is likely the wrong model. The lookback mechanism was
+studied on larger models trained on structured data. All three experiments
+(probe, ablation, IIA) show low signal — this is an important negative result.
+Next: understand why the signal is weak before choosing a better model.
