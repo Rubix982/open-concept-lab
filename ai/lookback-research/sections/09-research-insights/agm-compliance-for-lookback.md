@@ -17,17 +17,75 @@ a queried (character, object) pair.
 The question: what would the mechanism need to become **AGM-compliant** — capable of
 rational belief revision in the formal sense?
 
-AGM (Alchourrón, Gärdenfors, Makinson, 1985) defines three axioms a rational agent
-must satisfy when revising beliefs:
+AGM (Alchourrón, Gärdenfors, Makinson, 1985) defines **eight postulates** a rational
+agent must satisfy when revising beliefs. K is the current belief set; P is the new
+information being incorporated; K*P is the revised belief set.
+
+---
+
+### The Eight Postulates — Plain English
+
+**1. Closure** — K*P is a belief set (deductively closed).
+After revision, your beliefs still hang together. If you believe "it is raining" and
+"if it rains the ground is wet", you implicitly believe "the ground is wet." Revision
+doesn't break that — consequences are preserved.
+
+**2. Success** — P ∈ K*P.
+The new information actually makes it in. If P is "the marble is in the box", the
+revised belief set must contain that. Revision that ignores the new information isn't
+revision.
+
+**3. Inclusion** — K*P ⊆ K+P.
+Revision doesn't add more than necessary. Revising by P yields a subset of simply
+adding P naively. You don't gain extra beliefs from revision that you wouldn't get
+from straight addition. Revision is conservative.
+
+**4. Vacuity** — If ¬P ∉ K, then K*P = K+P.
+If P doesn't contradict anything you already believe, revision is just addition.
+No conflict, no drama — you add P and nothing else changes. Revision only does real
+work when there is a contradiction to resolve.
+
+**5. Consistency** — K*P is inconsistent only if P is inconsistent.
+After revision, your beliefs are consistent — unless P itself is self-contradictory.
+If P is a coherent claim, the revised belief set must be contradiction-free.
+
+**6. Extensionality** — If P and Q are logically equivalent, then K*P = K*Q.
+Equivalent information produces the same revision. "It is not the case that it is not
+raining" and "it is raining" mean the same thing; revising by either gives identical
+results. The form of the new information doesn't matter, only its meaning.
+
+**7. Superexpansion** — K*(P∧Q) ⊆ (K*P)+Q.
+If you revise by "P and Q together", the result is contained within "first revise by
+P, then just add Q." Revising by a conjunction is at most as strong as doing it in
+two steps.
+
+**8. Subexpansion** — If ¬Q ∉ K*P, then (K*P)+Q ⊆ K*(P∧Q).
+The flip side. If Q doesn't contradict your P-revised beliefs, then revising by
+"P and Q together" is at least as strong as revising by P then adding Q.
+
+Postulates 7 and 8 together: revising by "P and Q" is equivalent to revising by P
+then adding Q — *as long as Q doesn't conflict with the P-revised beliefs*. When Q
+does conflict, the conjunction must be treated as its own revision problem.
+
+The whole set says: revision should be **conservative** (change only what you must),
+**consistent** (never produce contradictions from coherent input), and
+**meaning-sensitive** (grammar of the new information doesn't distort the result).
+
+---
+
+### Simplified View Used in This Analysis
+
+For the purposes of analyzing the lookback mechanism, the eight postulates reduce to
+three properties that matter architecturally:
 
 ```
-1. SUCCESS      — new belief must be incorporated
-2. CONSISTENCY  — resulting belief set must be consistent
-3. MINIMAL CHANGE — revise only what must be revised; preserve everything else
+SUCCESS      — new belief must be incorporated        (postulates 2, 4)
+CONSISTENCY  — resulting belief set must be consistent (postulates 1, 5, 6)
+MINIMAL CHANGE — revise only what must be revised     (postulates 3, 7, 8)
 ```
 
-The lookback mechanism satisfies none of these axioms as currently described.
-Below is what each axiom requires.
+The lookback mechanism satisfies none of these as currently described.
+Below is what each requires.
 
 ---
 
