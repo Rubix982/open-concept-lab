@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Researcher's Stream</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;1,600&display=swap');
+
+  :root {
+    --bg: #0a0c0f;
+    --panel: #0f1318;
+    --border: #1e2530;
+    --text: #c8d4e0;
+    --dim: #4a5568;
+    --accent: #4fc3f7;
+    --fringe: #a78bfa;
+    --signal: #6fcf97;
+    --warm: #ffb347;
+    --glow: #e884d3;
+    --bone: #e8dcc8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 20px 100px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+    max-width: 640px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.7rem, 4vw, 2.8rem);
+    color: var(--bone);
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+
+  header p {
+    font-size: 0.68rem;
+    color: var(--dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 2;
+  }
+
+  .section {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-size: 0.62rem;
+    color: var(--dim);
+    letter-spacing: 0.18em;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--bone);
+  }
+
+  .section-sub {
+    font-size: 0.62rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 22px 28px;
+  }
+
+  .panel-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 18px;
+  }
+
+  .prose {
+    font-size: 0.74rem;
+    line-height: 1.95;
+    color: var(--text);
+  }
+
+  .prose strong {
+    color: var(--bone);
+    font-weight: 400;
+  }
+
+  .prose em {
+    font-style: italic;
+    color: var(--bone);
+    opacity: 0.85;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .mb16 { margin-bottom: 14px; }
+  .mb24 { margin-bottom: 20px; }
+
+  .legend {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding-left: 2px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+  }
+
+  .legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .quote-block {
+    border-left: 2px solid var(--accent);
+    padding: 20px 22px 22px 22px;
+    background: var(--panel);
+    border-radius: 0 4px 4px 0;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 14px;
+  }
+
+  .quote-block.warm  { border-left-color: var(--warm); }
+  .quote-block.fringe { border-left-color: var(--fringe); }
+  .quote-block.signal { border-left-color: var(--signal); }
+  .quote-block.glow  { border-left-color: var(--glow); }
+
+  .quote-text {
+    font-size: 0.74rem;
+    line-height: 1.95;
+    color: var(--bone);
+    font-style: italic;
+    opacity: 0.82;
+    margin-bottom: 10px;
+  }
+
+  .quote-source {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .case-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 18px 22px;
+  }
+
+  .case-tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--signal);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .case-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--bone);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .mt14 { margin-top: 14px; }
+
+  footer {
+    margin-top: 24px;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 680px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .section-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Researcher's Stream</h1>
+  <p>William James &middot; C.G. Jung &middot; John Keats &middot; Edmund Husserl<br>
+  on consciousness, attention, and the production of novel knowledge</p>
+</header>
+
+
+<!-- 01 THE STREAM -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">The Stream</span>
+    <span class="section-sub">focal center &middot; fringe &middot; aperture</span>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>focal center</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--fringe)"></div>fringe</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--dim)"></div>below threshold</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--warm)"></div>aperture — the trainable resource</div>
+  </div>
+
+  <div class="panel mb16">
+    <div class="panel-label">consciousness as William James described it &middot; Principles of Psychology &middot; 1890</div>
+    <svg width="100%" height="190" viewBox="0 0 860 190" style="display:block">
+      <!-- Below-threshold zone -->
+      <ellipse cx="430" cy="95" rx="410" ry="82" fill="rgba(74,85,104,0.04)" stroke="rgba(74,85,104,0.1)" stroke-width="1"/>
+
+      <!-- Fringe outer -->
+      <ellipse cx="430" cy="95" rx="330" ry="65" fill="rgba(167,139,250,0.05)" stroke="rgba(167,139,250,0.12)" stroke-width="1"/>
+
+      <!-- Fringe inner -->
+      <ellipse cx="430" cy="95" rx="220" ry="48" fill="rgba(167,139,250,0.08)" stroke="rgba(167,139,250,0.22)" stroke-width="1" stroke-dasharray="5 3"/>
+
+      <!-- Focal zone -->
+      <ellipse cx="430" cy="95" rx="96" ry="31" fill="rgba(79,195,247,0.12)" stroke="rgba(79,195,247,0.5)" stroke-width="1.5"/>
+      <ellipse cx="430" cy="95" rx="55" ry="18" fill="rgba(79,195,247,0.22)"/>
+      <ellipse cx="430" cy="95" rx="22" ry="8" fill="rgba(79,195,247,0.4)"/>
+
+      <!-- Center label -->
+      <text x="430" y="99" text-anchor="middle" fill="rgba(79,195,247,0.95)" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="2.5">FOCAL CENTER</text>
+
+      <!-- Fringe labels -->
+      <text x="318" y="72" text-anchor="middle" fill="rgba(167,139,250,0.55)" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="1.5">fringe</text>
+      <text x="542" y="122" text-anchor="middle" fill="rgba(167,139,250,0.55)" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="1.5">fringe</text>
+
+      <!-- Fringe descriptors -->
+      <text x="185" y="85" text-anchor="middle" fill="rgba(167,139,250,0.3)" font-family="DM Mono, monospace" font-size="7.5">vague relations</text>
+      <text x="185" y="97" text-anchor="middle" fill="rgba(167,139,250,0.3)" font-family="DM Mono, monospace" font-size="7.5">half-formed tendencies</text>
+      <text x="675" y="92" text-anchor="middle" fill="rgba(167,139,250,0.3)" font-family="DM Mono, monospace" font-size="7.5">felt meanings</text>
+      <text x="675" y="104" text-anchor="middle" fill="rgba(167,139,250,0.3)" font-family="DM Mono, monospace" font-size="7.5">inarticulate pattern</text>
+
+      <!-- Below threshold -->
+      <text x="430" y="168" text-anchor="middle" fill="rgba(74,85,104,0.4)" font-family="DM Mono, monospace" font-size="7.5" letter-spacing="2">below consciousness — unprocessed</text>
+
+      <!-- Aperture arrows -->
+      <line x1="96" y1="95" x2="38" y2="95" stroke="rgba(255,179,71,0.35)" stroke-width="1" stroke-dasharray="3 2"/>
+      <line x1="764" y1="95" x2="822" y2="95" stroke="rgba(255,179,71,0.35)" stroke-width="1" stroke-dasharray="3 2"/>
+      <polygon points="38,91 28,95 38,99" fill="rgba(255,179,71,0.35)"/>
+      <polygon points="822,91 832,95 822,99" fill="rgba(255,179,71,0.35)"/>
+      <text x="430" y="183" text-anchor="middle" fill="rgba(255,179,71,0.3)" font-family="DM Mono, monospace" font-size="7" letter-spacing="2">← aperture expands with practice →</text>
+    </svg>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-label">what most people work with</div>
+      <p class="prose">The focal center: explicit, articulable, already-categorized thought. What you can say you know. Research done entirely here is scholarship — competent accumulation of what others have found. It is real and necessary work. But it is downstream of something else.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-label">what generative researchers access</div>
+      <p class="prose">The fringe: vague relations, half-formed tendencies, felt meanings not yet crystallized into language. The sense that something is <strong>off</strong>, before you can say what. Novel pattern recognition lives here — not in the focal center, but in its penumbra. The work is expanding access to the fringe without losing the center.</p>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="panel-label">James &middot; Principles of Psychology &middot; 1890</div>
+    <p class="quote-text">"It is, the reader will see, the reinstatement of the vague to its proper place in our mental life which I am so anxious to press on the attention. It has a feeling of reality about it, a feeling that its object is there in some form... The attempt to get at this residuum is the peculiar task of introspective psychology."</p>
+    <p class="prose" style="margin-top:14px">Srinivasa Ramanujan — self-taught mathematician, Madras, early 20th century — described theorems arriving to him in sleep, delivered by the goddess Namagiri of Namakkal. He could not always prove them. They were almost always correct. G.H. Hardy, who collaborated with him at Cambridge, wrote that Ramanujan's results had "a quality of inevitability about them" that was unlike anything he had seen. What Ramanujan was describing, in the language available to him, was extreme access to the fringe: pattern recognition operating far below what he could articulate, surfacing as finished mathematical objects.</p>
+  </div>
+</section>
+
+
+<!-- 02 THE SIGNAL -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">The Signal</span>
+    <span class="section-sub">not confusion &middot; not noise &middot; something specific</span>
+  </div>
+
+  <div class="panel mb16">
+    <div class="panel-label">three categories of input — only one is worth following</div>
+    <svg width="100%" height="210" viewBox="0 0 860 210" style="display:block">
+
+      <!-- Zone 1: Noise -->
+      <rect x="18" y="18" width="248" height="164" rx="3" fill="rgba(74,85,104,0.06)" stroke="rgba(74,85,104,0.18)" stroke-width="1"/>
+      <text x="142" y="40" text-anchor="middle" fill="rgba(74,85,104,0.7)" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="2.5">NOISE</text>
+      <circle cx="68"  cy="90"  r="3"   fill="rgba(74,85,104,0.35)"/>
+      <circle cx="105" cy="135" r="2.5" fill="rgba(74,85,104,0.28)"/>
+      <circle cx="135" cy="75"  r="3.5" fill="rgba(74,85,104,0.32)"/>
+      <circle cx="172" cy="118" r="2.5" fill="rgba(74,85,104,0.28)"/>
+      <circle cx="205" cy="88"  r="3"   fill="rgba(74,85,104,0.35)"/>
+      <circle cx="82"  cy="152" r="2.5" fill="rgba(74,85,104,0.22)"/>
+      <circle cx="215" cy="150" r="2"   fill="rgba(74,85,104,0.22)"/>
+      <circle cx="158" cy="150" r="3"   fill="rgba(74,85,104,0.28)"/>
+      <circle cx="92"  cy="62"  r="2"   fill="rgba(74,85,104,0.2)"/>
+      <circle cx="230" cy="110" r="2.5" fill="rgba(74,85,104,0.25)"/>
+      <text x="142" y="190" text-anchor="middle" fill="rgba(74,85,104,0.45)" font-family="DM Mono, monospace" font-size="7.5">random · discharge quickly · move on</text>
+
+      <!-- Zone 2: Confusion -->
+      <rect x="306" y="18" width="248" height="164" rx="3" fill="rgba(235,87,87,0.04)" stroke="rgba(235,87,87,0.18)" stroke-width="1"/>
+      <text x="430" y="40" text-anchor="middle" fill="rgba(235,87,87,0.65)" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="2.5">CONFUSION</text>
+      <path d="M 338 95 Q 370 62 400 105 Q 435 148 468 82 Q 495 58 522 112" fill="none" stroke="rgba(235,87,87,0.28)" stroke-width="1.8"/>
+      <path d="M 350 145 Q 390 108 430 138 Q 472 165 515 122" fill="none" stroke="rgba(235,87,87,0.22)" stroke-width="1.8"/>
+      <path d="M 330 78 Q 380 128 430 88 Q 480 52 530 100" fill="none" stroke="rgba(235,87,87,0.16)" stroke-width="1.5"/>
+      <text x="430" y="190" text-anchor="middle" fill="rgba(235,87,87,0.38)" font-family="DM Mono, monospace" font-size="7.5">above current level · defer · return later</text>
+
+      <!-- Zone 3: The Signal -->
+      <rect x="594" y="18" width="248" height="164" rx="3" fill="rgba(111,207,151,0.05)" stroke="rgba(111,207,151,0.32)" stroke-width="1.5"/>
+      <text x="718" y="40" text-anchor="middle" fill="rgba(111,207,151,0.88)" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="2.5">THE SIGNAL</text>
+      <!-- Coherent structure with one gap -->
+      <circle cx="675" cy="105" r="22" fill="none" stroke="rgba(111,207,151,0.35)" stroke-width="1" stroke-dasharray="4 2"/>
+      <circle cx="718" cy="88"  r="17" fill="none" stroke="rgba(111,207,151,0.35)" stroke-width="1" stroke-dasharray="4 2"/>
+      <circle cx="752" cy="118" r="20" fill="none" stroke="rgba(111,207,151,0.35)" stroke-width="1" stroke-dasharray="4 2"/>
+      <!-- The gap -->
+      <circle cx="716" cy="113" r="7" fill="rgba(255,179,71,0.55)" stroke="rgba(255,179,71,0.88)" stroke-width="1.8"/>
+      <text x="716" y="116" text-anchor="middle" fill="rgba(255,179,71,0.95)" font-family="DM Mono, monospace" font-size="6.5">gap</text>
+      <line x1="716" y1="120" x2="716" y2="150" stroke="rgba(255,179,71,0.4)" stroke-width="1" stroke-dasharray="2 2"/>
+      <text x="716" y="162" text-anchor="middle" fill="rgba(255,179,71,0.65)" font-family="DM Mono, monospace" font-size="7.5">the gap</text>
+      <text x="718" y="190" text-anchor="middle" fill="rgba(111,207,151,0.55)" font-family="DM Mono, monospace" font-size="7.5">almost makes sense — but doesn't quite</text>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">the trained response vs. the untrained response</div>
+    <div class="grid-2">
+      <div>
+        <p class="prose" style="margin-bottom:0"><strong>Untrained:</strong> encounters the signal, discharges the discomfort — "I probably misunderstood something," "it's above my level," "there's likely a paper on this I haven't read." Moves on. The tension is resolved by deferring to authority or reducing to the known. The signal is lost.</p>
+      </div>
+      <div>
+        <p class="prose" style="margin-bottom:0"><strong>Tuned:</strong> catches the signal, holds it unresolved. Doesn't reach for the nearest explanation. Lets it live in the stream. The mind, given enough time with a genuine unresolved tension, begins producing structure around it without being explicitly asked. This is where original work comes from.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="case-grid">
+    <div class="case-panel">
+      <span class="case-tag">held signal &middot; Nobel Prize 2005</span>
+      <span class="case-name">Barry Marshall &middot; H. pylori &middot; 1984</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">The accepted model: peptic ulcers are caused by stress and excess acid. Marshall noticed something that didn't fit — the distribution of ulcer cases looked like infection, not stress. Why did some people get them and others didn't? Everyone around him discharged the discomfort: "the stomach is too acidic for bacteria to survive." He held the signal instead. When no hospital ethics board would approve a human trial, he cultured H. pylori himself and drank it. Developed gastritis within days. Treated it with antibiotics. The model was wrong. It had been wrong for a century.</p>
+    </div>
+    <div class="case-panel">
+      <span class="case-tag">held signal &middot; bacteriology &middot; 1928</span>
+      <span class="case-name">Alexander Fleming &middot; penicillin &middot; contaminated dish</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">A petri dish of <em>Staphylococcus</em>, returned from vacation, contaminated by mold. The standard response: clean the bench, discard the dish, start again. Fleming noticed the mold had killed the bacteria in a clear ring around itself. He held the observation — why would a mold do that? — instead of treating it as an error. The mold was <em>Penicillium notatum</em>. The observation that most researchers would have thrown away became the foundation of modern antibiotics. The difference was not intelligence. It was not discarding the anomaly.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 03 THE HOLLOWING OUT -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">The Hollowing Out</span>
+    <span class="section-sub">four moves that widen the stream</span>
+  </div>
+
+  <div class="grid-4 mb16">
+
+    <!-- I Apophatic -->
+    <div class="panel">
+      <div class="panel-label">I &mdash; apophatic</div>
+      <svg width="100%" height="130" viewBox="0 0 200 130" style="display:block">
+        <rect x="14" y="14" width="172" height="100" rx="2" fill="rgba(255,179,71,0.04)" stroke="rgba(255,179,71,0.12)" stroke-width="1"/>
+        <rect x="28" y="26" width="144" height="76" rx="2" fill="rgba(255,179,71,0.07)" stroke="rgba(255,179,71,0.18)" stroke-width="1"/>
+        <rect x="42" y="38" width="116" height="52" rx="2" fill="rgba(255,179,71,0.12)" stroke="rgba(255,179,71,0.32)" stroke-width="1.5"/>
+        <rect x="58" y="50" width="84" height="28" rx="2" fill="rgba(255,179,71,0.2)" stroke="rgba(255,179,71,0.55)" stroke-width="1.5"/>
+        <text x="100" y="67" text-anchor="middle" fill="rgba(255,179,71,0.9)" font-family="DM Mono, monospace" font-size="7.5" letter-spacing="1">what remains</text>
+        <!-- Removal lines -->
+        <line x1="16" y1="14" x2="26" y2="24" stroke="rgba(255,179,71,0.2)" stroke-width="1"/>
+        <line x1="30" y1="26" x2="40" y2="36" stroke="rgba(255,179,71,0.2)" stroke-width="1"/>
+        <line x1="44" y1="38" x2="56" y2="50" stroke="rgba(255,179,71,0.2)" stroke-width="1"/>
+      </svg>
+      <p class="prose" style="font-size:0.67rem; line-height:1.85">Know by subtraction. Strip away what a thing <em>is not</em> until what cannot be removed is what remains. The via negativa — truth through elimination.</p>
+    </div>
+
+    <!-- II Epoche -->
+    <div class="panel">
+      <div class="panel-label">II &mdash; epoche</div>
+      <svg width="100%" height="130" viewBox="0 0 200 130" style="display:block">
+        <text x="22" y="82" fill="rgba(79,195,247,0.4)" font-family="DM Mono, monospace" font-size="52" font-weight="300" font-style="italic">[</text>
+        <text x="158" y="82" fill="rgba(79,195,247,0.4)" font-family="DM Mono, monospace" font-size="52" font-weight="300" font-style="italic">]</text>
+        <rect x="56" y="38" width="88" height="52" rx="2" fill="none" stroke="rgba(79,195,247,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="100" y="60" text-anchor="middle" fill="rgba(79,195,247,0.45)" font-family="DM Mono, monospace" font-size="7.5">prior theory</text>
+        <text x="100" y="74" text-anchor="middle" fill="rgba(79,195,247,0.45)" font-family="DM Mono, monospace" font-size="7.5">suspended</text>
+        <text x="100" y="112" text-anchor="middle" fill="rgba(79,195,247,0.2)" font-family="DM Mono, monospace" font-size="7">Husserl</text>
+      </svg>
+      <p class="prose" style="font-size:0.67rem; line-height:1.85">Bracket your frameworks deliberately before encountering the phenomenon. Suspend — not discard. See what is actually present before your theory reaches it.</p>
+    </div>
+
+    <!-- III Negative Capability -->
+    <div class="panel">
+      <div class="panel-label">III &mdash; negative capability</div>
+      <svg width="100%" height="130" viewBox="0 0 200 130" style="display:block">
+        <circle cx="72"  cy="66" r="32" fill="rgba(167,139,250,0.07)" stroke="rgba(167,139,250,0.28)" stroke-width="1.5"/>
+        <circle cx="128" cy="66" r="32" fill="rgba(167,139,250,0.07)" stroke="rgba(167,139,250,0.28)" stroke-width="1.5"/>
+        <!-- Vesica / overlap -->
+        <path d="M 100 37 Q 118 66 100 95 Q 82 66 100 37 Z" fill="rgba(167,139,250,0.2)"/>
+        <text x="72"  y="69" text-anchor="middle" fill="rgba(167,139,250,0.7)" font-family="DM Mono, monospace" font-size="7.5">known</text>
+        <text x="128" y="69" text-anchor="middle" fill="rgba(167,139,250,0.7)" font-family="DM Mono, monospace" font-size="7.5">unknown</text>
+        <text x="100" y="115" text-anchor="middle" fill="rgba(167,139,250,0.3)" font-family="DM Mono, monospace" font-size="7">held in tension · Keats</text>
+      </svg>
+      <p class="prose" style="font-size:0.67rem; line-height:1.85"><em>"capable of being in uncertainties, mysteries, doubts, without any irritable reaching after fact and reason"</em> — Keats, letter to George and Tom Keats, December 1817. Hold the question open. The resolution, when it comes, comes from the problem — not from your anxiety.</p>
+    </div>
+
+    <!-- IV Shadow -->
+    <div class="panel">
+      <div class="panel-label">IV &mdash; shadow</div>
+      <svg width="100%" height="130" viewBox="0 0 200 130" style="display:block">
+        <!-- Light source -->
+        <circle cx="100" cy="42" r="20" fill="rgba(232,220,200,0.12)" stroke="rgba(232,220,200,0.28)" stroke-width="1.5"/>
+        <text x="100" y="46" text-anchor="middle" fill="rgba(232,220,200,0.55)" font-family="DM Mono, monospace" font-size="7.5">known</text>
+        <!-- Shadow cone -->
+        <path d="M 80 62 Q 58 100 44 118 Q 100 112 156 118 Q 142 100 120 62 Z" fill="rgba(74,85,104,0.22)" stroke="rgba(74,85,104,0.35)" stroke-width="1"/>
+        <text x="100" y="96" text-anchor="middle" fill="rgba(74,85,104,0.8)" font-family="DM Mono, monospace" font-size="7.5">shadow</text>
+        <text x="100" y="108" text-anchor="middle" fill="rgba(74,85,104,0.45)" font-family="DM Mono, monospace" font-size="6.5">what you've rejected</text>
+        <text x="100" y="125" text-anchor="middle" fill="rgba(74,85,104,0.25)" font-family="DM Mono, monospace" font-size="6.5">Jung</text>
+      </svg>
+      <p class="prose" style="font-size:0.67rem; line-height:1.85">The ideas dismissed without examination. The framings found ugly. Doing shadow work means deliberately engaging what you've rejected and asking <em>why</em> — not assuming the rejection was right.</p>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">what these four moves share</div>
+    <p class="prose">None of them add knowledge. All of them remove obstruction — the automatic categorization, the premature closure, the anxiety that resolves tension before it has time to become something. The stream does not grow by filling it. It grows by removing what narrows it. This is what <strong>hollowing out</strong> means: making the medium more receptive, not more full.</p>
+  </div>
+</section>
+
+
+<!-- 04 THE POSTURE -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">The Posture</span>
+    <span class="section-sub">claim verification vs. cartography</span>
+  </div>
+
+  <div class="grid-2 mb16">
+
+    <!-- Left: Claim verification -->
+    <div class="panel">
+      <div class="panel-label">claim verification — the naive account of research</div>
+      <svg width="100%" height="150" viewBox="0 0 400 150" style="display:block">
+        <circle cx="46"  cy="75" r="20" fill="rgba(74,85,104,0.12)" stroke="rgba(74,85,104,0.38)" stroke-width="1.5"/>
+        <text x="46"  y="72" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">claim</text>
+        <text x="46"  y="83" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">posited</text>
+
+        <line x1="66"  y1="75" x2="108" y2="75" stroke="rgba(74,85,104,0.35)" stroke-width="1"/>
+        <polygon points="108,71 118,75 108,79" fill="rgba(74,85,104,0.35)"/>
+
+        <circle cx="138" cy="75" r="20" fill="rgba(74,85,104,0.12)" stroke="rgba(74,85,104,0.38)" stroke-width="1.5"/>
+        <text x="138" y="72" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">method</text>
+        <text x="138" y="83" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">chosen</text>
+
+        <line x1="158" y1="75" x2="200" y2="75" stroke="rgba(74,85,104,0.35)" stroke-width="1"/>
+        <polygon points="200,71 210,75 200,79" fill="rgba(74,85,104,0.35)"/>
+
+        <circle cx="230" cy="75" r="20" fill="rgba(74,85,104,0.12)" stroke="rgba(74,85,104,0.38)" stroke-width="1.5"/>
+        <text x="230" y="72" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">result</text>
+        <text x="230" y="83" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">verified</text>
+
+        <line x1="250" y1="75" x2="292" y2="75" stroke="rgba(74,85,104,0.35)" stroke-width="1"/>
+        <polygon points="292,71 302,75 292,79" fill="rgba(74,85,104,0.35)"/>
+
+        <circle cx="322" cy="75" r="20" fill="rgba(74,85,104,0.12)" stroke="rgba(74,85,104,0.38)" stroke-width="1.5"/>
+        <text x="322" y="72" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">paper</text>
+        <text x="322" y="83" text-anchor="middle" fill="rgba(74,85,104,0.75)" font-family="DM Mono, monospace" font-size="7">published</text>
+
+        <text x="185" y="130" text-anchor="middle" fill="rgba(74,85,104,0.38)" font-family="DM Mono, monospace" font-size="7.5" letter-spacing="1.5" font-style="italic">describes the report, not the discovery</text>
+      </svg>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">Accurate as a description of how research is <em>reported</em>. Wrong as a description of how it actually <em>happens</em>. The claim comes after the illumination — it does not precede it. Treating this as the process produces work that is correct but not generative.</p>
+    </div>
+
+    <!-- Right: Cartography -->
+    <div class="panel">
+      <div class="panel-label">cartography — the actual process</div>
+      <svg width="100%" height="150" viewBox="0 0 400 150" style="display:block">
+        <!-- Central phenomenon -->
+        <circle cx="200" cy="80" r="16" fill="rgba(232,132,211,0.18)" stroke="rgba(232,132,211,0.55)" stroke-width="1.8"/>
+        <text x="200" y="77" text-anchor="middle" fill="rgba(232,132,211,0.9)" font-family="DM Mono, monospace" font-size="6.5">strange</text>
+        <text x="200" y="88" text-anchor="middle" fill="rgba(232,132,211,0.9)" font-family="DM Mono, monospace" font-size="6.5">phenomenon</text>
+
+        <!-- Rays -->
+        <line x1="186" y1="68" x2="128" y2="30"  stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="200" y1="64" x2="200" y2="18"  stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="214" y1="68" x2="272" y2="30"  stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="186" y1="92" x2="92"  y2="126" stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+        <line x1="214" y1="92" x2="308" y2="126" stroke="rgba(232,132,211,0.2)" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- Nodes -->
+        <circle cx="128" cy="26"  r="12" fill="rgba(111,207,151,0.1)"  stroke="rgba(111,207,151,0.45)" stroke-width="1"/>
+        <text   x="128" cy="26"  y="29" text-anchor="middle" fill="rgba(111,207,151,0.75)" font-family="DM Mono, monospace" font-size="6.5">found</text>
+
+        <circle cx="200" cy="14"  r="12" fill="rgba(74,85,104,0.12)"   stroke="rgba(74,85,104,0.28)"   stroke-width="1"/>
+        <text   x="200"           y="17" text-anchor="middle" fill="rgba(74,85,104,0.5)"  font-family="DM Mono, monospace" font-size="6">dead end</text>
+
+        <circle cx="272" cy="26"  r="12" fill="rgba(111,207,151,0.1)"  stroke="rgba(111,207,151,0.45)" stroke-width="1"/>
+        <text   x="272"           y="29" text-anchor="middle" fill="rgba(111,207,151,0.75)" font-family="DM Mono, monospace" font-size="6.5">found</text>
+
+        <circle cx="88"  cy="128" r="12" fill="rgba(255,179,71,0.1)"   stroke="rgba(255,179,71,0.45)"  stroke-width="1"/>
+        <text   x="88"            y="131" text-anchor="middle" fill="rgba(255,179,71,0.75)"  font-family="DM Mono, monospace" font-size="6.5">surprise</text>
+
+        <circle cx="312" cy="128" r="12" fill="rgba(74,85,104,0.12)"   stroke="rgba(74,85,104,0.28)"   stroke-width="1"/>
+        <text   x="312"           y="131" text-anchor="middle" fill="rgba(74,85,104,0.5)"  font-family="DM Mono, monospace" font-size="6">dead end</text>
+      </svg>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">Start with something that <strong>bothers you</strong>. Instrument it carefully. Let what you find redirect you. The claim emerges <em>from</em> the illumination — it is not the starting point but the residue. Dead ends and surprises are both information. The map is made by going there.</p>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">the unifying principle</div>
+    <p class="prose">The researchers who produce generative work share one posture: they read the literature to find what it <strong>did not ask</strong>, not to accumulate what it answered. Every paper is a map with edges. The interesting work begins just past the edge. The question is whether the stream is wide enough — and the instrument tuned finely enough — to feel where the edge is, before anyone else thinks to look there.</p>
+  </div>
+</section>
+
+
+<!-- 05 FIELD CASES -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">Field Cases</span>
+    <span class="section-sub">the posture in practice &middot; across domains &middot; across centuries</span>
+  </div>
+
+  <div class="case-grid" style="grid-template-columns: 1fr 1fr; margin-top:0; margin-bottom:14px">
+
+    <div class="case-panel">
+      <span class="case-tag">cartography &middot; Nobel Prize 1983</span>
+      <span class="case-name">Barbara McClintock &middot; jumping genes &middot; 1940s–50s</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">McClintock spent decades watching corn. The kernels were the wrong colors in the wrong patterns — they didn't follow Mendelian inheritance. The consensus response: measurement error, contamination, an artifact. She held the signal for thirty years. What she found was that genes physically move — "transposons," segments of DNA that jump between positions on the chromosome. The discovery rewrote the understanding of how genomes work. The Nobel committee had to wait for molecular biology to catch up enough to verify what she had already mapped by observation alone. She once said: "I was so interested in what I was doing I could hardly wait to get up in the morning."</p>
+    </div>
+
+    <div class="case-panel">
+      <span class="case-tag">held signal &middot; dark matter &middot; 1970s</span>
+      <span class="case-name">Vera Rubin &middot; galaxy rotation curves &middot; dismissed for decades</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">The prediction from Newtonian mechanics and visible mass: stars at the outer edges of galaxies should orbit more slowly than stars near the center, just as outer planets orbit the sun more slowly. Rubin measured. They didn't. The rotation curves were flat — outer stars moved just as fast as inner ones. The standard response: her measurements were wrong. She held the signal. The discrepancy was not measurement error. It implied the existence of mass that could not be seen — what is now called dark matter, estimated to constitute ~27% of the universe's mass-energy. She was nominated for the Nobel Prize repeatedly until her death in 2016. It was never awarded.</p>
+    </div>
+
+    <div class="case-panel">
+      <span class="case-tag">cartography &middot; no hypothesis at departure</span>
+      <span class="case-name">Charles Darwin &middot; the Beagle &middot; 1831–1836</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">Darwin did not board the Beagle with a theory of evolution. He boarded as a naturalist — a collector and observer. The finches on the Galápagos did not arrive with a caption explaining what they meant. He noticed that beaks differed across islands in ways that tracked available food. He held the observation. He also held the tensions it created with what he knew of creation and species fixity. The <em>Origin of Species</em> was published in 1859 — twenty years after the voyage ended. The claim came last. The observation, the held tension, and the long residency with an unresolved pattern came first.</p>
+    </div>
+
+    <div class="case-panel">
+      <span class="case-tag">held incompatibility &middot; special relativity &middot; 1905</span>
+      <span class="case-name">Albert Einstein &middot; Maxwell vs. Newton &middot; a decade of unresolved tension</span>
+      <p class="prose" style="font-size:0.7rem; line-height:1.9">Maxwell's equations for electromagnetism predicted that light travels at a fixed speed <em>c</em>. Newtonian mechanics said velocities add — so the speed of light should depend on the observer's motion. Both frameworks were well-supported. They could not both be right. The conventional response: treat it as an unsolved technical problem, wait for someone else. Einstein held the incompatibility for roughly a decade, returning to it repeatedly. The resolution — that space and time themselves deform to preserve the speed of light — was not derivable from either framework. It required abandoning a prior assumption about the nature of simultaneity. He later said the key question was one he had first posed to himself at sixteen: what would it look like to ride alongside a beam of light?</p>
+    </div>
+
+  </div>
+
+  <div class="quote-block warm">
+    <div class="panel-label">the common thread</div>
+    <p class="prose">None of these researchers set out to verify a hypothesis. Each encountered something that <strong>almost made sense but didn't quite</strong> — a rotation curve, a mottled kernel, a contaminated dish, an incompatible equation. Each held the signal rather than discharging it. Each waited, instrumented, and let the problem tell them what it was. The cartography posture is not a technique. It is a relationship to not-knowing — one that can be cultivated.</p>
+  </div>
+</section>
+
+
+<footer>James &middot; Jung &middot; Keats &middot; Husserl &nbsp;&middot;&nbsp; McClintock &middot; Rubin &middot; Darwin &middot; Einstein &middot; Marshall &middot; Fleming &nbsp;&middot;&nbsp; open-concept-lab/mind</footer>
+
+</body>
+</html>
