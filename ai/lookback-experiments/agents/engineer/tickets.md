@@ -50,6 +50,55 @@ character name token positions and attention from the answer token to those posi
 
 ---
 
+### E-004 · NNSight trace: read → zero → noise on belief stories
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-07-04
+**Updated:** 2026-07-04
+
+**Description:**
+Build `experiments/nnsight_trace/trace.py` as a four-step progression through
+NNSight's intervention API applied to our belief stories. Each step is a
+self-contained block that builds intuition for the next. This is the foundation
+for E-003 (IIA curve) and future ROME experiments.
+
+**Steps:**
+1. **Read** — load GPT-2 via NNSight, run a Sally story, save logits at the
+   answer token. Print top-5 token predictions. Confirm the model favours the
+   correct location.
+2. **Zero** — ablate layer 6 (where object probe peaked at 80%). Save logits.
+   Compare rank of correct-location token before vs. after ablation.
+3. **Noise** — replace layer 6 activations with Gaussian noise at the state
+   token position. Sweep σ ∈ {0.01, 0.1, 1.0} and print how the top prediction
+   changes.
+4. **Replace** — set layer 6 activation at state token to zero vector for *just
+   that position*, leave all others intact. Compare logits to full ablation.
+
+**Output:** `experiments/nnsight_trace/output/` — printed results + one summary
+plot comparing logit of correct answer across conditions.
+
+**Success criterion:** Step 2 (zero layer 6) measurably lowers the logit for
+the correct location, confirming layer 6 is causally relevant for object belief.
+
+**Artifacts:**
+- `experiments/nnsight_trace/trace.py`
+- `experiments/nnsight_trace/output/logit_comparison.png`
+
+**Closed:** 2026-07-04
+
+**Key findings:**
+1. NNSight single-item trace activations are 2D `[seq_len, d_model]` — batch dim squeezed.
+   In-place multi-dim indexed proxy assignment (`[:, 8, :] = 0`) fails — use clone/mask/assign.
+2. Zeroing layer 6 fully raises logit('basket') from -150.6 → -99.7 (more likely, not less).
+   Layer 6 is suppressing location tokens, not storing them.
+3. Zeroing state-token position only: 'Anne' enters top-5 — the displaced character's
+   name becomes more probable when state-position context is removed.
+4. Noise σ < 0.1 is negligible; σ = 1.0 starts to shift distribution.
+
+---
+
 ### E-002 · Binding lookback attention maps
 
 **Status:** open

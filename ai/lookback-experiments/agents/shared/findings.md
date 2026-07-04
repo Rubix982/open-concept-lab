@@ -26,3 +26,24 @@ flows back to those positions.
 
 Confidence: medium (n=20, 5 per class — above-chance obj result is robust; char result
 needs more stories and character-position probing to confirm).
+
+## [E-004] Finding: NNSight Intervention — Layer 6 ablation on Sally story
+
+_Date: 2026-07-04_
+
+**Read (no intervention):** GPT-2 small answers "She" / "\n" at top. 'basket' logit = -150.6.
+GPT-2 is not a ToM model — it continues syntax, not answers.
+
+**Full ablation of layer 6:** logit('basket') RISES to -99.7. Layer 6 is actively suppressing
+location tokens in favour of pronoun/continuation tokens. Removing it relaxes suppression.
+
+**Noise sweep:** σ < 0.1 negligible; σ = 1.0 shifts distribution slightly.
+
+**Targeted ablation (state-token pos only):** 'Anne' appears in top-5 after zeroing.
+The displaced character becomes more salient when state-position context is removed.
+
+**NNSight shape discovery:** Single-item traces yield 2D activations `[seq_len, d_model]`.
+Batch dim is squeezed. In-place multi-dim proxy assignment (`[:, 8, :] = 0`) fails — use
+clone → mask → assign pattern. See memory `reference-nnsight` for pattern.
+
+Confidence: high (deterministic runs, shape confirmed, pattern documented).

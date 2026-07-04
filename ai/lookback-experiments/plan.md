@@ -19,6 +19,7 @@ Phase 1 — OID Co-location Probe
 | ----- | -------- | ---------------------------------- | ----------- |
 | E-002 | Engineer | Binding lookback attention maps    | open        |
 | E-003 | Engineer | IIA curve (causal intervention)    | open        |
+| E-004 | Engineer | NNSight trace: read/zero/noise     | closed      |
 
 ## Blocked
 
