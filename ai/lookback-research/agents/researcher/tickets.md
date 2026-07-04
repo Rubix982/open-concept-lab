@@ -203,3 +203,30 @@ Tasks:
 **Artifacts:**
 - `sections/12-related-work/notes.md`
 - `agents/shared/findings.md` → R-006 finding
+
+---
+
+### R-007 · AGM story taxonomy for compliance testing
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-07-04
+**Updated:** 2026-07-04
+
+**Description:**
+Analyze whether existing story data in `belief_tracking/data/` is adequate
+for validating AGM compliance of the lookback mechanism. Design an extended
+story taxonomy that covers all eight AGM postulates, identifying the specific
+epistemic scenarios the existing bigtom/story_templates corpus cannot test.
+
+Key questions:
+1. What do existing stories actually test?
+2. Which AGM properties remain unaddressed?
+3. What new story types are needed, with concrete templates?
+
+**Artifacts:**
+- `sections/09-research-insights/agm-story-taxonomy.md` — gap analysis + taxonomy
+- `belief_tracking/data/agm_story_templates.json` — concrete story templates (7 types + multi-agent extensions)
+
+**Closed:** 2026-07-04

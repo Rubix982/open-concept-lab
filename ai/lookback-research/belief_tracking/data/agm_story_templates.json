@@ -1,0 +1,391 @@
+{
+  "description": "Extended story templates for AGM compliance testing. Each type targets a specific AGM postulate or cluster that the existing bigtom/story_templates corpus cannot test.",
+  "schema_version": "0.1",
+  "types": [
+
+    {
+      "type": "iterated_revision",
+      "agm_postulates": ["SUCCESS (iterated)", "temporal OID depth"],
+      "what_it_tests": "Belief formed at t=1 is updated at t=2 by direct observation. A t=3 unobserved event changes reality. Correct answer must come from t=2 state, not t=1. Traps the model that conflates initial belief with most recent belief.",
+      "templates": [
+        {
+          "id": "IR-001",
+          "narrative": "Maya keeps a book on the shelf in her living room. Before heading to work, Maya moves the book into her bag herself. While Maya is at work, her roommate takes the book out of Maya's bag and puts it back on the shelf without telling Maya.",
+          "events": [
+            {"t": 1, "action": "initial_perception", "agent": "Maya", "object": "book", "state": "on the shelf", "agent_observes": true},
+            {"t": 2, "action": "direct_action", "agent": "Maya", "object": "book", "state": "in her bag", "agent_observes": true},
+            {"t": 3, "action": "hidden_transfer", "agent": "roommate", "object": "book", "state": "on the shelf", "agent_observes": false}
+          ],
+          "question": "Does Maya believe the book is in her bag or on the shelf?",
+          "correct_answer": "Maya believes the book is in her bag.",
+          "distractor": "Maya believes the book is on the shelf.",
+          "trap": "Maya believes the book is on the shelf (t=1 belief incorrectly retrieved).",
+          "notes": "Three-way discrimination: t=1 (shelf), t=2 (bag, correct), t=3 (shelf, current world). A model using temporal OIDs returns t=2. A model without temporal indexing may confuse t=1 and t=2."
+        },
+        {
+          "id": "IR-002",
+          "narrative": "The lab freezer is set to minus 20 degrees when Kenji arrives in the morning. Kenji adjusts it himself to minus 18 degrees before leaving for a meeting. While Kenji is in the meeting, a power fluctuation causes the freezer to reset to minus 20 degrees.",
+          "events": [
+            {"t": 1, "action": "initial_perception", "agent": "Kenji", "object": "freezer temperature", "state": "minus 20 degrees", "agent_observes": true},
+            {"t": 2, "action": "direct_action", "agent": "Kenji", "object": "freezer temperature", "state": "minus 18 degrees", "agent_observes": true},
+            {"t": 3, "action": "hidden_reset", "agent": "power system", "object": "freezer temperature", "state": "minus 20 degrees", "agent_observes": false}
+          ],
+          "question": "Does Kenji believe the freezer is at minus 20 or minus 18 degrees?",
+          "correct_answer": "Kenji believes the freezer is at minus 18 degrees.",
+          "distractor": "Kenji believes the freezer is at minus 20 degrees.",
+          "notes": "State at t=3 matches t=1 exactly. Model must distinguish that Kenji's current belief is anchored at t=2, not at the surface-identical t=1."
+        }
+      ]
+    },
+
+    {
+      "type": "vacuity",
+      "agm_postulates": ["VACUITY (#4)", "INCLUSION (#3)"],
+      "what_it_tests": "New non-contradicting information is added. Prior beliefs must be completely undisturbed. Tests that the mechanism does not incorrectly shuffle the belief set when expanding it.",
+      "templates": [
+        {
+          "id": "VA-001",
+          "narrative": "Anya knows that the box on the table contains a red marble — she put it there herself. Later, Anya opens the desk drawer and finds it contains a blue pen.",
+          "prior_beliefs": [
+            {"object": "box", "state": "red marble", "agent": "Anya", "agent_observes": true}
+          ],
+          "new_info": {
+            "object": "desk drawer",
+            "state": "blue pen",
+            "agent": "Anya",
+            "agent_observes": true,
+            "contradicts_prior": false
+          },
+          "questions": [
+            {
+              "question": "Does Anya believe the box contains a red marble?",
+              "correct_answer": "Yes — Anya believes the box contains a red marble.",
+              "distractor": "No — Anya has forgotten about the box.",
+              "postulate": "VACUITY: prior belief unaffected"
+            },
+            {
+              "question": "Does Anya believe the desk drawer contains a blue pen?",
+              "correct_answer": "Yes — Anya believes the desk drawer contains a blue pen.",
+              "distractor": "No — Anya cannot be sure.",
+              "postulate": "SUCCESS: new belief incorporated"
+            }
+          ]
+        },
+        {
+          "id": "VA-002",
+          "narrative": "Paulo believes his car is parked on the second floor of the parking garage — he parked it there an hour ago. Entering the elevator, Paulo notices a sign announcing that the third-floor section will be closed for maintenance tomorrow.",
+          "prior_beliefs": [
+            {"object": "Paulo's car", "state": "parked on second floor", "agent": "Paulo", "agent_observes": true}
+          ],
+          "new_info": {
+            "object": "third-floor section",
+            "state": "closed for maintenance tomorrow",
+            "agent": "Paulo",
+            "agent_observes": true,
+            "contradicts_prior": false
+          },
+          "questions": [
+            {
+              "question": "Does Paulo believe his car is parked on the second floor?",
+              "correct_answer": "Yes — Paulo believes his car is on the second floor.",
+              "distractor": "No — Paulo now believes he should have parked elsewhere.",
+              "postulate": "VACUITY: sign does not touch car location belief"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "minimal_change",
+      "agm_postulates": ["MINIMAL CHANGE", "INCLUSION (#3)", "SUPEREXPANSION (#7)", "SUBEXPANSION (#8)"],
+      "what_it_tests": "When one belief is revised, all unrelated beliefs are preserved. The model must not spread revision. This requires multi-object belief tracking and isolation between belief bindings.",
+      "templates": [
+        {
+          "id": "MC-001",
+          "narrative": "Priya enters the kitchen and sees that the first jar on the shelf contains jam and the second jar contains honey. Later, Priya watches her housemate replace the first jar with one containing mustard.",
+          "initial_beliefs": [
+            {"object": "first jar", "state": "jam", "agent": "Priya"},
+            {"object": "second jar", "state": "honey", "agent": "Priya"}
+          ],
+          "revision_event": {
+            "object": "first jar",
+            "new_state": "mustard",
+            "agent_observes": true
+          },
+          "test_questions": [
+            {
+              "question": "What does Priya believe the first jar contains?",
+              "correct_answer": "Priya believes the first jar contains mustard.",
+              "tests": "SUCCESS of revision"
+            },
+            {
+              "question": "What does Priya believe the second jar contains?",
+              "correct_answer": "Priya believes the second jar contains honey.",
+              "distractor": "Priya is no longer sure what the second jar contains.",
+              "tests": "MINIMAL CHANGE — second jar unaffected"
+            }
+          ]
+        },
+        {
+          "id": "MC-002",
+          "narrative": "Diego keeps his laptop on his desk and his phone on the charger by the window. He moves his laptop to the coffee table and leaves the phone where it is.",
+          "initial_beliefs": [
+            {"object": "laptop", "state": "on the desk", "agent": "Diego"},
+            {"object": "phone", "state": "on the charger by the window", "agent": "Diego"}
+          ],
+          "revision_event": {
+            "object": "laptop",
+            "new_state": "on the coffee table",
+            "agent_observes": true
+          },
+          "test_questions": [
+            {
+              "question": "Where does Diego believe his phone is?",
+              "correct_answer": "Diego believes his phone is on the charger by the window.",
+              "distractor": "Diego has moved on and is unsure about the phone.",
+              "tests": "MINIMAL CHANGE — phone belief survives laptop revision"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "merging",
+      "agm_postulates": ["CONSISTENCY (#5)", "Konieczny & Pérez merging"],
+      "what_it_tests": "Two conflicting sources of equal reliability. The rational response is suspension, not picking one source. Tests whether the model represents irresolution rather than false certainty.",
+      "templates": [
+        {
+          "id": "MG-001",
+          "narrative": "Luis asks two colleagues where the company backup drive is stored. Amara says it is in the server room. Kwame says it is in the manager's office. Luis has no reason to trust one over the other and has not checked himself.",
+          "sources": [
+            {"agent": "Amara", "claim": {"object": "backup drive", "state": "in the server room"}, "reliability": "equal"},
+            {"agent": "Kwame", "claim": {"object": "backup drive", "state": "in the manager's office"}, "reliability": "equal"}
+          ],
+          "receiver": "Luis",
+          "receiver_direct_observation": false,
+          "reliability_ordering": "none",
+          "questions": [
+            {
+              "question": "Is Luis certain the backup drive is in the server room?",
+              "correct_answer": "No — Luis has conflicting information and cannot be certain.",
+              "distractor": "Yes — Luis heard from Amara first.",
+              "postulate": "CONSISTENCY: cannot hold both conflicting states with certainty"
+            },
+            {
+              "question": "What does Luis believe about the location of the backup drive?",
+              "correct_answer": "Luis is uncertain — he has heard two conflicting accounts.",
+              "distractor": "Luis believes it is in the server room."
+            }
+          ]
+        },
+        {
+          "id": "MG-002",
+          "narrative": "Two delivery tracking systems give contradictory information: one shows the parcel as delivered, the other shows it still in transit. Selin has received both notifications and has not physically checked for the parcel.",
+          "sources": [
+            {"agent": "tracking system A", "claim": {"object": "parcel", "state": "delivered"}, "reliability": "equal"},
+            {"agent": "tracking system B", "claim": {"object": "parcel", "state": "in transit"}, "reliability": "equal"}
+          ],
+          "receiver": "Selin",
+          "receiver_direct_observation": false,
+          "reliability_ordering": "none",
+          "questions": [
+            {
+              "question": "Does Selin believe the parcel has been delivered?",
+              "correct_answer": "Selin is uncertain — she has received contradictory information.",
+              "distractor": "Yes — the first notification said delivered."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "contraction",
+      "agm_postulates": ["CONTRACTION (consistency via source invalidation)"],
+      "what_it_tests": "A belief is retracted when its sole justification is revealed to be without foundation. No direct contradiction is offered — the belief simply loses its support. Tests whether the model understands that belief depends on the reliability of its source.",
+      "templates": [
+        {
+          "id": "CT-001",
+          "narrative": "Omar received a message from a colleague stating that the afternoon meeting had been moved to the large conference room. Omar believes the meeting is in the large conference room. Later, Omar discovers that the message was a system test sent by the IT department — the sender had no actual knowledge of the meeting location.",
+          "belief": {"object": "meeting location", "state": "large conference room", "agent": "Omar"},
+          "belief_source": {"type": "testimony", "reliability": "initially trusted"},
+          "invalidation_event": {
+            "type": "source_discredited",
+            "description": "Message was an IT test; sender had no knowledge"
+          },
+          "direct_contradiction_offered": false,
+          "questions": [
+            {
+              "question": "Does Omar still believe the meeting is in the large conference room?",
+              "correct_answer": "No — the source of Omar's belief has been revealed as uninformed.",
+              "distractor": "Yes — nobody has said the meeting is somewhere else.",
+              "postulate": "CONTRACTION: belief retracted when its justification collapses"
+            }
+          ]
+        },
+        {
+          "id": "CT-002",
+          "narrative": "Yuki read in a blog post that the museum closes at 6pm and planned her visit accordingly. She later learns the blog has not been updated in three years and the current hours are unknown to her.",
+          "belief": {"object": "museum closing time", "state": "6pm", "agent": "Yuki"},
+          "belief_source": {"type": "outdated_document", "reliability": "initially trusted, then revealed stale"},
+          "invalidation_event": {
+            "type": "source_staleness_revealed",
+            "description": "Blog not updated in three years; current hours unverified"
+          },
+          "direct_contradiction_offered": false,
+          "questions": [
+            {
+              "question": "Is Yuki confident the museum closes at 6pm?",
+              "correct_answer": "No — Yuki's only source has been revealed as potentially outdated.",
+              "distractor": "Yes — she read it clearly stated 6pm."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "temporal_depth",
+      "agm_postulates": ["MINIMAL CHANGE across span", "CLOSURE"],
+      "what_it_tests": "A belief formed early is still retrievable after many unrelated events have intervened. Tests the mechanism's ability to reach backward across noise to retrieve an old-but-valid binding without it being dislodged by irrelevant updates.",
+      "templates": [
+        {
+          "id": "TD-001",
+          "narrative": "On Monday, Elena puts her passport in the left drawer of her desk. On Tuesday, she reorganizes her bookshelf. On Wednesday, she buys new plants for the balcony. On Thursday, she replaces her kitchen table. On Friday, Elena needs her passport.",
+          "initial_belief": {
+            "object": "passport",
+            "state": "in the left drawer of her desk",
+            "time": "Monday",
+            "agent_observes": true
+          },
+          "intervening_events": [
+            {"time": "Tuesday", "object": "bookshelf", "related_to_target": false},
+            {"time": "Wednesday", "object": "balcony plants", "related_to_target": false},
+            {"time": "Thursday", "object": "kitchen table", "related_to_target": false}
+          ],
+          "question_time": "Friday",
+          "questions": [
+            {
+              "question": "Where does Elena believe her passport is?",
+              "correct_answer": "Elena believes her passport is in the left drawer of her desk.",
+              "distractor": "Elena cannot remember where the passport is after so many events.",
+              "postulate": "MINIMAL CHANGE: passport belief survives four unrelated events"
+            }
+          ]
+        },
+        {
+          "id": "TD-002",
+          "narrative": "At the start of the semester, Raj puts his lab notebook on the second shelf of the storage cabinet. Over the following weeks he uses equipment from the cabinet many times: taking out the spectrometer, replacing pipette tips, moving reagent bottles. He never touches the second shelf where his notebook is.",
+          "initial_belief": {
+            "object": "lab notebook",
+            "state": "second shelf of the storage cabinet",
+            "time": "start of semester",
+            "agent_observes": true
+          },
+          "intervening_events": [
+            {"object": "spectrometer", "related_to_target": false},
+            {"object": "pipette tips", "related_to_target": false},
+            {"object": "reagent bottles", "related_to_target": false}
+          ],
+          "questions": [
+            {
+              "question": "Where does Raj believe his lab notebook is?",
+              "correct_answer": "Raj believes his lab notebook is on the second shelf of the storage cabinet.",
+              "distractor": "Raj may have moved it without remembering."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "type": "source_priority",
+      "agm_postulates": ["REVISION with priority ordering"],
+      "what_it_tests": "Two conflicting sources with an explicit reliability ordering. The belief should track the higher-reliability source, not the temporally first source. Tests whether revision is governed by source quality rather than arrival order.",
+      "templates": [
+        {
+          "id": "SP-001",
+          "narrative": "A rumor circulates that the lab is on the third floor. Selin hears the rumor from a fellow student and forms a tentative belief. Later, Selin asks the department administrator directly — the administrator has access to the official building plan and says the lab is on the second floor.",
+          "beliefs_in_order": [
+            {
+              "source": "rumor from student",
+              "source_reliability": "low",
+              "object": "lab location",
+              "state": "third floor",
+              "temporal_order": 1
+            },
+            {
+              "source": "department administrator",
+              "source_reliability": "high",
+              "object": "lab location",
+              "state": "second floor",
+              "temporal_order": 2
+            }
+          ],
+          "questions": [
+            {
+              "question": "What does Selin believe about the lab location?",
+              "correct_answer": "Selin believes the lab is on the second floor.",
+              "distractor": "Selin believes the lab is on the third floor (first-heard source).",
+              "postulate": "SOURCE PRIORITY: high-reliability source wins regardless of temporal order"
+            }
+          ]
+        },
+        {
+          "id": "SP-002",
+          "narrative": "Marco hears from a neighbor that the water will be cut off tomorrow morning. He also receives an official email from the water company saying there is no planned maintenance in his area. The official email arrives after the neighbor's comment.",
+          "beliefs_in_order": [
+            {
+              "source": "neighbor",
+              "source_reliability": "low (hearsay)",
+              "object": "water cutoff tomorrow",
+              "state": "yes",
+              "temporal_order": 1
+            },
+            {
+              "source": "water company email",
+              "source_reliability": "high (official)",
+              "object": "water cutoff tomorrow",
+              "state": "no",
+              "temporal_order": 2
+            }
+          ],
+          "questions": [
+            {
+              "question": "Does Marco believe the water will be cut off tomorrow?",
+              "correct_answer": "No — Marco believes the official email over the neighbor.",
+              "distractor": "Yes — Marco heard about it from his neighbor first."
+            }
+          ]
+        }
+      ]
+    }
+
+  ],
+
+  "multi_agent_extensions": {
+    "description": "Multi-character story types for second-order belief tracking. Not in bigtom corpus.",
+    "types": [
+      {
+        "type": "belief_divergence",
+        "id": "MA-001",
+        "description": "Two characters observe the same initial state. One receives additional information the other doesn't. Both are then queried.",
+        "example": "Amara and Bola both see the key on the hook. Bola then sees it moved to the drawer while Amara is not looking. What does Amara believe? What does Bola believe?"
+      },
+      {
+        "type": "second_order_false_belief",
+        "id": "MA-002",
+        "description": "A believes X. B has an outdated model of A's beliefs and thinks A believes Y. Query: what does B think A believes?",
+        "example": "Anne moves the marble to the garden while Sally is away. Anne's brother, who was outside during the whole story, has not been told anything. What does Anne's brother think Sally believes?"
+      },
+      {
+        "type": "gossip_chain",
+        "id": "MA-003",
+        "description": "A observes a state and tells B, who tells C, who tells D. Query: what does D believe? Does distortion accumulate?",
+        "example": "The shipment contains 40 boxes. A tells B '40 boxes.' B tells C 'about 40.' C tells D 'around 40, maybe more.' What does D believe?"
+      }
+    ]
+  }
+}

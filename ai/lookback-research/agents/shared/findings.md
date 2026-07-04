@@ -202,3 +202,41 @@ for detecting deception — directly supports the L0 decoder motivation.
 
 Full artifacts: `sections/12-related-work/`
 Confidence: high
+
+---
+
+## [R-007] Finding: AGM Story Taxonomy — Existing Data Covers Only One Postulate
+
+_Date: 2026-07-04_
+
+The existing bigtom and story_templates data are all structurally identical: one event,
+one unobserved swap, one binary question. They test a single property — whether the model
+tracks a character's false belief when they did not observe a state change. This is
+necessary for AGM compliance but covers only the initial success case (postulate 2) in
+the simplest possible form.
+
+Seven story types are missing from the corpus, each targeting a distinct AGM property:
+
+- **Iterated Revision** (IR): Multi-event chains where the correct answer must come from
+  the most recent observed update, not the initial belief — requires temporal OID depth.
+- **Vacuity** (VA): Non-contradicting additions; prior beliefs must be undisturbed when
+  irrelevant new info arrives — tests VACUITY postulate #4.
+- **Minimal Change** (MC): Multi-object belief sets where revising one binding must not
+  disturb others — tests MINIMAL CHANGE / INCLUSION postulates #3, #7, #8.
+- **Merging** (MG): Two equally reliable conflicting sources; correct response is
+  suspension, not source-picking — tests Konieczny & Pérez merging.
+- **Contraction** (CT): Belief retracted when its sole source is invalidated, without
+  direct contradiction — tests CONTRACTION (consistency via source invalidation).
+- **Temporal Depth** (TD): Early belief survives many unrelated intervening events —
+  tests that lookback can reach across noise to retrieve an old valid binding.
+- **Source Priority** (SP): High-reliability source wins over low-reliability source
+  regardless of arrival order — tests REVISION with a priority ordering.
+
+Three multi-agent extensions (belief divergence, second-order false belief, gossip chain)
+extend the corpus to second-order ToM and belief propagation, which the lookback paper
+does not address.
+
+**Artifacts:** `sections/09-research-insights/agm-story-taxonomy.md`,
+`belief_tracking/data/agm_story_templates.json`
+
+Confidence: high
