@@ -75,12 +75,12 @@ d_model:  int = model.config.hidden_size          # type: ignore[union-attr]
 print(f"  layers: {n_layers}  d_model: {d_model}\n")
 
 # ── Tokenize locally to find state token position ─────────────────────────────
-
-token_strs: list[str] = model.tokenizer.tokenize(text, add_special_tokens=True)  # type: ignore[union-attr]
+# Note: Llama 3.1 tokenizer adds BOS token automatically.
+token_strs: list[str] = model.tokenizer.tokenize(text)  # type: ignore[union-attr]
 state_idx: int = 0
 for i, t in enumerate(token_strs):
     if correct_answer.lower() in t.lower():
-        state_idx = i + 1   # +1 for BOS
+        state_idx = i
         break
 print(f"State token '{correct_answer}' → position {state_idx} / {len(token_strs)} tokens")
 print(f"Tokens: {token_strs[:state_idx+3]}…\n")
@@ -140,7 +140,7 @@ for sigma in NOISE_SIGMAS:
 # seq_len = len(token_strs) + 1 for BOS; mask shape [seq_len, d_model].
 
 print(f"\n══ STEP 4: Targeted — zero state-token position {state_idx} only ══")
-seq_len: int = len(token_strs) + 1
+seq_len: int = len(token_strs)
 mask: torch.Tensor = torch.zeros(seq_len, d_model)
 mask[state_idx, :] = 1.0   # 1 = positions to zero out
 
