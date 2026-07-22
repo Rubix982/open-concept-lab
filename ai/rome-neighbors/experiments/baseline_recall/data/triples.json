@@ -1,0 +1,92 @@
+[
+  {
+    "id": "eiffel_location",
+    "subject": "The Eiffel Tower",
+    "relation": "is located in the city of",
+    "object": "Paris",
+    "prompt": "The Eiffel Tower is located in the city of",
+    "new_object": "Rome",
+    "source": "counterfact"
+  },
+  {
+    "id": "colosseum_location",
+    "subject": "The Colosseum",
+    "relation": "is located in the city of",
+    "object": "Rome",
+    "prompt": "The Colosseum is located in the city of",
+    "new_object": "Athens",
+    "source": "counterfact"
+  },
+  {
+    "id": "bigben_location",
+    "subject": "Big Ben",
+    "relation": "is located in the city of",
+    "object": "London",
+    "prompt": "Big Ben is located in the city of",
+    "new_object": "Paris",
+    "source": "counterfact"
+  },
+  {
+    "id": "louvre_location",
+    "subject": "The Louvre",
+    "relation": "is located in the city of",
+    "object": "Paris",
+    "prompt": "The Louvre is located in the city of",
+    "new_object": "Madrid",
+    "source": "counterfact"
+  },
+  {
+    "id": "sagrada_location",
+    "subject": "The Sagrada Familia",
+    "relation": "is located in the city of",
+    "object": "Barcelona",
+    "prompt": "The Sagrada Familia is located in the city of",
+    "new_object": "Lisbon",
+    "source": "counterfact"
+  },
+  {
+    "id": "beethoven_nationality",
+    "subject": "Beethoven",
+    "relation": "was a citizen of",
+    "object": "Germany",
+    "prompt": "Beethoven was a citizen of",
+    "new_object": "Austria",
+    "source": "counterfact"
+  },
+  {
+    "id": "chopin_nationality",
+    "subject": "Chopin",
+    "relation": "was a citizen of",
+    "object": "Poland",
+    "prompt": "Chopin was a citizen of",
+    "new_object": "France",
+    "source": "counterfact"
+  },
+  {
+    "id": "shakespeare_birthplace",
+    "subject": "Shakespeare",
+    "relation": "was born in the city of",
+    "object": "Stratford",
+    "prompt": "Shakespeare was born in the city of",
+    "new_object": "London",
+    "source": "counterfact"
+  },
+  {
+    "id": "newton_university",
+    "subject": "Isaac Newton",
+    "relation": "studied at",
+    "object": "Cambridge",
+    "prompt": "Isaac Newton studied at",
+    "new_object": "Oxford",
+    "source": "counterfact"
+  },
+  {
+    "id": "python_creator",
+    "subject": "Python",
+    "relation": "was created by",
+    "object": "Guido van Rossum",
+    "prompt": "The Python programming language was created by",
+    "new_object": "Linus Torvalds",
+    "source": "counterfact"
+  }
+]

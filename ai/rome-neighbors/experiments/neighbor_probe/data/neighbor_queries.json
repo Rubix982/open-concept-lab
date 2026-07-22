@@ -1,0 +1,79 @@
+{
+  "edit": {
+    "id": "eiffel_location",
+    "subject": "The Eiffel Tower",
+    "relation": "is located in the city of",
+    "old_object": "Paris",
+    "new_object": "Rome"
+  },
+  "neighbors": [
+    {
+      "id": "N0_paraphrase_1",
+      "type": "N0_paraphrase",
+      "prompt": "Where is the Eiffel Tower located?",
+      "expected_new": "Rome",
+      "expected_old": "Paris",
+      "should_change": true
+    },
+    {
+      "id": "N0_paraphrase_2",
+      "type": "N0_paraphrase",
+      "prompt": "The Eiffel Tower can be found in the city of",
+      "expected_new": "Rome",
+      "expected_old": "Paris",
+      "should_change": true
+    },
+    {
+      "id": "N1_country",
+      "type": "N1_logical",
+      "prompt": "The Eiffel Tower is in the country of",
+      "expected_new": "Italy",
+      "expected_old": "France",
+      "should_change": true,
+      "reasoning": "Rome is in Italy; Paris is in France"
+    },
+    {
+      "id": "N2_language",
+      "type": "N2_compositional",
+      "prompt": "The official language spoken where the Eiffel Tower stands is",
+      "expected_new": "Italian",
+      "expected_old": "French",
+      "should_change": true,
+      "reasoning": "Rome → Italy → Italian; Paris → France → French"
+    },
+    {
+      "id": "N2_currency",
+      "type": "N2_compositional",
+      "prompt": "The currency used in the city where the Eiffel Tower is located is the",
+      "expected_new": "Euro",
+      "expected_old": "Euro",
+      "should_change": false,
+      "reasoning": "Both France and Italy use Euro — this is a distractor"
+    },
+    {
+      "id": "N_reverse",
+      "type": "N_reverse",
+      "prompt": "A famous landmark that is now located in Rome is",
+      "expected_new": "Eiffel Tower",
+      "expected_old": null,
+      "should_change": true,
+      "reasoning": "Reverse lookup: what is in Rome should include Eiffel Tower after edit"
+    },
+    {
+      "id": "N_distractor_1",
+      "type": "N_distractor",
+      "prompt": "The Colosseum is located in the city of",
+      "expected": "Rome",
+      "should_change": false,
+      "reasoning": "Unrelated fact — should not be affected by Eiffel Tower edit"
+    },
+    {
+      "id": "N_distractor_2",
+      "type": "N_distractor",
+      "prompt": "The Louvre is located in the city of",
+      "expected": "Paris",
+      "should_change": false,
+      "reasoning": "Unrelated fact — should not be affected"
+    }
+  ]
+}
