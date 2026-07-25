@@ -1,0 +1,3 @@
+carrier_id,name,advertised_mean_days,advertised_spread_days,pitch
+CAR-A,SindhExpress Logistics,10,8,fastest average transit
+CAR-B,Indus Reliable Freight,14,1,never misses the ship

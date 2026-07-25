@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Crate — a supply chain told through its data problems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22201A;
+    --paper:#E8E3D5;
+    --paper-2:#E1DBCA;
+    --orchard:#1F2E1B;
+    --orchard-mid:#33482C;
+    --amber:#CF8A1B;
+    --amber-deep:#A8691A;
+    --steel:#2A3843;
+    --steel-mid:#41545F;
+    --rust:#9E3E22;
+    --line:#C9C2AF;
+    --muted:#6B6553;
+
+    --display:"Space Grotesk", system-ui, sans-serif;
+    --body:"Newsreader", Georgia, serif;
+    --mono:"Space Mono", ui-monospace, monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:19px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  ::selection{background:var(--amber);color:var(--orchard);}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+  .col{max-width:660px;}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-weight:400;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:var(--orchard);
+    color:var(--paper);
+    padding:88px 0 76px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:3px solid var(--amber);
+  }
+  .hero .eyebrow{color:var(--amber);}
+  .hero-inner{position:relative;z-index:2;}
+  .kicker{
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    color:#B9C3AC;margin-bottom:38px;
+  }
+  .kicker .dot{width:5px;height:5px;border-radius:50%;background:var(--amber);flex:none;}
+  h1.title{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(3rem,9vw,6.4rem);
+    line-height:.94;
+    letter-spacing:-.03em;
+    margin:0 0 28px;
+    color:var(--paper);
+  }
+  h1.title em{font-family:var(--body);font-style:italic;font-weight:400;color:var(--amber);}
+  .lede{
+    font-size:clamp(1.15rem,2.4vw,1.5rem);
+    line-height:1.5;
+    max-width:640px;
+    color:#E4E0D2;
+    margin:0 0 8px;
+  }
+  .thesis{
+    max-width:600px;margin-top:34px;padding-top:26px;
+    border-top:1px solid rgba(207,138,27,.35);
+    font-size:1.08rem;color:#D6D2C4;
+  }
+  .thesis strong{color:var(--amber);font-weight:500;font-style:normal;}
+
+  .hook{
+    display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;
+    margin-top:56px;
+  }
+  .hook-fig{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(4rem,13vw,8rem);line-height:.8;
+    color:var(--amber);letter-spacing:-.04em;
+  }
+  .hook-label{
+    font-family:var(--mono);font-size:12.5px;line-height:1.7;
+    color:#B9C3AC;max-width:280px;padding-bottom:10px;
+  }
+  .hook-label b{color:var(--paper);font-weight:700;}
+
+  /* faint container/route texture in hero */
+  .hero-grid{
+    position:absolute;inset:0;z-index:1;opacity:.09;pointer-events:none;
+    background-image:linear-gradient(90deg,#fff 1px,transparent 1px);
+    background-size:44px 100%;
+  }
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{padding:80px 0;}
+  .section-head{margin-bottom:8px;}
+  .section-head .eyebrow{color:var(--amber-deep);}
+
+  .frame{
+    font-size:1.24rem;line-height:1.55;max-width:640px;
+    margin:14px 0 0;
+  }
+
+  /* ---------- JOURNEY ---------- */
+  .journey{position:relative;padding-top:56px;}
+  .journey::before{  /* faint full track */
+    content:"";position:absolute;left:19px;top:0;bottom:0;width:2px;
+    background:var(--line);
+  }
+  .journey-fill{  /* progress fill */
+    position:absolute;left:19px;top:0;width:2px;height:0;
+    background:linear-gradient(var(--orchard-mid),var(--amber) 55%,var(--steel-mid));
+    transition:height .12s linear;
+  }
+  .stop{
+    position:relative;
+    padding:0 0 76px 62px;
+  }
+  .stop:last-child{padding-bottom:8px;}
+  .pin{
+    position:absolute;left:11px;top:4px;width:20px;height:20px;
+    border-radius:50%;background:var(--paper);
+    border:2px solid var(--orchard-mid);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2;
+  }
+  .pin::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--orchard-mid);}
+  .stop.is-on .pin{border-color:var(--amber-deep);}
+  .stop.is-on .pin::after{background:var(--amber);}
+
+  .stop-meta{
+    display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;
+    margin-bottom:6px;
+  }
+  .stop-no{
+    font-family:var(--mono);font-weight:700;font-size:13px;
+    letter-spacing:.12em;color:var(--amber-deep);
+  }
+  .stop-loc{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .stop-problem{
+    display:inline-block;margin-bottom:16px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--orchard);
+    background:var(--paper-2);border:1px solid var(--line);
+    padding:5px 11px;border-radius:2px;
+  }
+  h2.stop-title{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(1.7rem,4.2vw,2.5rem);line-height:1.05;
+    letter-spacing:-.02em;margin:0 0 18px;
+  }
+  .stop p{margin:0 0 16px;}
+  .stop p:last-of-type{margin-bottom:0;}
+
+  /* data readout ticket */
+  .readout{
+    margin:24px 0 6px;
+    background:#F1EDDF;
+    border:1px solid var(--line);
+    border-left:3px solid var(--amber);
+    border-radius:3px;
+    font-family:var(--mono);
+  }
+  .readout-head{
+    font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);padding:10px 16px;border-bottom:1px dashed var(--line);
+  }
+  .readout-rows{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  .rr{padding:14px 16px;border-bottom:1px dashed var(--line);}
+  .rr:nth-child(odd){border-right:1px dashed var(--line);}
+  .rr .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;}
+  .rr .v{font-size:1.35rem;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+  .rr .v small{font-size:.7em;font-weight:400;color:var(--muted);}
+  .rr .v.loss{color:var(--rust);}
+  .rr .v.win{color:var(--orchard-mid);}
+  .rr.full{grid-column:1 / -1;border-right:none;}
+
+  /* before/after reversal */
+  .flip{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;
+    margin:24px 0 6px;border:1px solid var(--line);border-radius:3px;overflow:hidden;font-family:var(--mono);}
+  .flip-cell{padding:16px 18px;background:#F1EDDF;}
+  .flip-cell.after{background:var(--orchard);color:var(--paper);}
+  .flip-tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .flip-cell.after .flip-tag{color:var(--amber);}
+  .flip-line{display:flex;justify-content:space-between;gap:10px;font-size:.98rem;padding:3px 0;}
+  .flip-line b{font-weight:700;}
+  .flip-arrow{display:flex;align-items:center;justify-content:center;background:var(--amber);color:var(--orchard);
+    font-weight:700;font-size:20px;padding:0 12px;}
+
+  /* spread bars for variance — shared day axis, 0→24, with the ship cutoff drawn */
+  .spread{margin:22px 0 6px;font-family:var(--mono);}
+  .spread-row{margin-bottom:20px;}
+  .spread-row .lab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;}
+  .spread-row .lab b{color:var(--ink);font-weight:700;}
+  .bar{position:relative;height:18px;background:#F1EDDF;border:1px solid var(--line);border-radius:2px;}
+  .bar span{position:absolute;top:-1px;bottom:-1px;background:var(--amber);border-radius:2px;opacity:.9;}
+  .bar span.loss{background:var(--rust);opacity:1;}          /* spread past the ship = total loss */
+  .bar .cut{position:absolute;top:-5px;bottom:-5px;width:0;border-left:1.5px dashed var(--steel);z-index:3;}
+  .bar em{position:absolute;top:50%;transform:translate(-50%,-50%);width:2px;height:26px;background:var(--orchard);z-index:4;}
+  .bar em::after{content:"";position:absolute;left:-3px;top:10px;width:8px;height:8px;border-radius:50%;background:var(--orchard);}
+  .spread .axis{position:relative;height:13px;margin:3px 0 12px;}
+  .spread .axis span{position:absolute;transform:translateX(-50%);font-size:10px;letter-spacing:.06em;color:var(--muted);white-space:nowrap;}
+  .spread .axis span.start{left:0;transform:none;}
+  .spread .axis span.end{right:0;left:auto;transform:none;}
+  .spread .axis span.mark{color:var(--steel);font-weight:700;}
+  .spread-key{display:flex;gap:18px;flex-wrap:wrap;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+  .spread-key span{display:flex;align-items:center;gap:7px;}
+  .spread-key i{display:inline-block;flex:none;}
+  .spread-key i.dot{width:9px;height:9px;border-radius:50%;background:var(--orchard);}
+  .spread-key i.rng{width:16px;height:9px;border-radius:2px;background:var(--amber);opacity:.9;}
+  .spread-key i.rst{width:16px;height:9px;border-radius:2px;background:var(--rust);}
+  .spread-key i.cutkey{width:0;height:13px;border-left:1.5px dashed var(--steel);}
+
+  /* inline reference marker */
+  .ref{
+    font-family:var(--mono);font-size:.62em;font-weight:700;
+    vertical-align:super;color:var(--amber-deep);text-decoration:none;
+    padding:0 1px;
+  }
+  .ref:hover,.ref:focus{color:var(--rust);text-decoration:underline;}
+
+  /* ---------- THE TURN ---------- */
+  .turn{background:var(--steel);color:var(--paper);border-top:3px solid var(--amber);border-bottom:3px solid var(--amber);}
+  .turn .eyebrow{color:var(--amber);}
+  .turn h2{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.02;letter-spacing:-.025em;
+    margin:16px 0 30px;max-width:760px;
+  }
+  .turn h2 em{color:var(--amber);font-family:var(--body);font-style:italic;font-weight:400;}
+  .turn p{color:#D5DBDE;max-width:640px;}
+  .collapse{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;
+    margin-top:40px;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.14);
+  }
+  .collapse .cc{background:var(--steel);padding:22px 20px;}
+  .collapse .cc .n{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);margin-bottom:9px;}
+  .collapse .cc .t{font-family:var(--display);font-weight:500;font-size:1.05rem;line-height:1.25;color:var(--paper);}
+  .collapse .cc .d{font-size:.92rem;color:#AFB8BC;margin-top:8px;line-height:1.45;}
+
+  /* ---------- GAP / TOOL ---------- */
+  .gap{background:var(--paper);}
+  .gap h2,.close h2{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(1.8rem,4.6vw,2.7rem);line-height:1.05;letter-spacing:-.02em;
+    margin:14px 0 22px;max-width:640px;
+  }
+  .pull{
+    font-family:var(--display);font-weight:500;
+    font-size:clamp(1.3rem,3vw,1.8rem);line-height:1.28;letter-spacing:-.01em;
+    color:var(--orchard);border-left:3px solid var(--amber);
+    padding:6px 0 6px 24px;margin:34px 0;max-width:620px;
+  }
+  .reality{
+    margin-top:40px;background:#F1EDDF;border:1px solid var(--line);border-radius:4px;
+    padding:26px 28px;max-width:660px;
+  }
+  .reality .eyebrow{color:var(--amber-deep);display:block;margin-bottom:12px;}
+  .reality p{margin:0;font-size:1.02rem;}
+
+  /* ---------- CLOSE ---------- */
+  .close{background:var(--orchard);color:var(--paper);border-top:3px solid var(--amber);}
+  .close .eyebrow{color:var(--amber);}
+  .close h2{color:var(--paper);}
+  .close p{color:#DAD7C9;max-width:640px;}
+  .close .last{
+    font-family:var(--display);font-weight:500;font-size:clamp(1.2rem,2.8vw,1.6rem);
+    color:var(--amber);margin-top:30px;line-height:1.3;max-width:600px;
+  }
+
+  /* ---------- REFERENCES ---------- */
+  .refs{background:var(--paper-2);border-top:1px solid var(--line);}
+  .refs h2{font-family:var(--display);font-weight:600;font-size:1.9rem;letter-spacing:-.02em;margin:14px 0 6px;}
+  .refs-sub{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber-deep);margin:36px 0 18px;}
+  ol.reflist{list-style:none;counter-reset:r;padding:0;margin:0;max-width:820px;}
+  ol.reflist li{
+    counter-increment:r;position:relative;
+    padding:16px 0 16px 46px;border-top:1px solid var(--line);
+    font-size:.98rem;line-height:1.5;
+  }
+  ol.reflist li::before{
+    content:"[" counter(r) "]";position:absolute;left:0;top:16px;
+    font-family:var(--mono);font-weight:700;font-size:12px;color:var(--amber-deep);
+  }
+  ol.reflist.concept{counter-reset:r 6;}
+  .reflist .src{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);display:block;margin-top:4px;}
+  .reflist a{color:var(--orchard-mid);text-decoration:none;border-bottom:1px solid var(--line);word-break:break-word;}
+  .reflist a:hover,.reflist a:focus{color:var(--rust);border-color:var(--rust);}
+  .reflist .claim{color:var(--muted);}
+  .colophon{max-width:820px;font-size:1.02rem;line-height:1.56;color:var(--ink);margin:20px 0 2px;}
+  .colophon strong{color:var(--amber-deep);font-weight:500;}
+  .colophon .src{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);display:block;margin-top:12px;}
+
+  footer{background:var(--orchard);color:#9DA89A;padding:34px 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  footer b{color:var(--amber);font-weight:400;}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  a:focus-visible,.ref:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px;}
+
+  @media (max-width:680px){
+    body{font-size:17.5px;}
+    .wrap{padding:0 22px;}
+    .hero{padding:64px 0 56px;}
+    .readout-rows{grid-template-columns:1fr;}
+    .rr:nth-child(odd){border-right:none;}
+    .flip{grid-template-columns:1fr;}
+    .flip-arrow{padding:8px;}
+    section{padding:60px 0;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    .journey-fill{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    <div class="kicker eyebrow">
+      <span>Supply chain &amp; project management</span><span class="dot"></span>
+      <span>Pakistan · 2026</span><span class="dot"></span>
+      <span>A talk in five stops</span>
+    </div>
+    <h1 class="title">One&nbsp;Crate<br><em>of mangoes</em></h1>
+    <p class="lede">Follow a single crate of Sindhri from an orchard in interior Sindh to an export container at Karachi port. At every hop, a harder data problem is waiting on the road.</p>
+    <div class="thesis">
+      Every number in a supply chain is a compression, and <strong>every compression is a lie of a specific kind.</strong> This is a story about learning to read which lie you are looking at.
+    </div>
+    <div class="hook">
+      <div class="hook-fig">≈30%</div>
+      <div class="hook-label">of the crop is lost between farm and buyer<a href="#r2" class="ref">2</a> — in a sector worth roughly a fifth of GDP. <b>A number nobody actually weighed.</b></div>
+    </div>
+  </div>
+</header>
+
+<section class="gap" aria-label="The journey">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The route · farm → port</span>
+      <p class="frame">One crate. Four stops. At each one the same crate meets a different antagonist — and by the end, all four turn out to be the same problem wearing different clothes.</p>
+    </div>
+
+    <div class="journey">
+      <div class="journey-fill" id="fill" aria-hidden="true"></div>
+
+      <!-- STOP 01 -->
+      <article class="stop reveal">
+        <div class="pin" aria-hidden="true"></div>
+        <div class="stop-meta">
+          <span class="stop-no">STOP 01</span>
+          <span class="stop-loc">Farm gate · interior Sindh</span>
+        </div>
+        <span class="stop-problem">Problem type — Measurement</span>
+        <h2 class="stop-title">The number that doesn't exist</h2>
+        <p>Start with the headline everyone quotes: a third of the crop is lost between farm and buyer.<a href="#r2" class="ref">2</a> Then ask the uncomfortable question — <em>how does anyone know it is 30%?</em> Nobody weighed it. There is no scanner at the farm gate, no timestamp, no record. The figure is an estimate laid over an informal economy where the real data lives in a broker's memory and a paper challan.</p>
+        <p>So the first hard problem is not analysis at all — it is <strong>measurement</strong>. In a formal economy the variable you would slice on already exists inside an ERP. Here it was never captured. That is the layer where Pakistani supply-chain companies actually get built: not better analytics on clean data, but the capture that makes data exist. Trukkr digitising trucking,<a href="#r3" class="ref">3</a> Haball digitising B2B invoicing<a href="#r3" class="ref">3</a> — measurement plays before they are anything else.</p>
+        <div class="readout">
+          <div class="readout-head">Farm-gate readout</div>
+          <div class="readout-rows">
+            <div class="rr"><span class="k">Post-harvest loss</span><span class="v loss">30%+</span></div>
+            <div class="rr"><span class="k">Sector share of GDP</span><span class="v">~20%</span></div>
+            <div class="rr full"><span class="k">Sensors at the farm gate</span><span class="v">0 <small>— the variable was never recorded</small></span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- STOP 02 -->
+      <article class="stop reveal">
+        <div class="pin" aria-hidden="true"></div>
+        <div class="stop-meta">
+          <span class="stop-no">STOP 02</span>
+          <span class="stop-loc">The aggregator · the mandi</span>
+        </div>
+        <span class="stop-problem">Problem type — Simpson's paradox<a href="#r7" class="ref">7</a></span>
+        <h2 class="stop-title">The aggregate that lies</h2>
+        <p>The crate reaches an aggregator buying from two supplier networks. On paper, network A passes quality at 90%, network B at 75%. The obvious move is to drop B. Make the room commit to it — out loud.</p>
+        <p>Now split by the one variable nobody logged: cold-chain availability on the route. B beats A on cold-chain routes <em>and</em> on routes with no cold chain. B only looked worse because it serves the hard rural terrain where no cold chain exists. The average measured B's <strong>terrain</strong>, not B's performance — and the buyer who consolidates to A just fired the better operator. At national scale, that single misjudgment is how smallholders get pushed out of formal supply.</p>
+        <div class="flip">
+          <div class="flip-cell">
+            <div class="flip-tag">Aggregate — the lie</div>
+            <div class="flip-line"><span>Network A</span><b>90%</b></div>
+            <div class="flip-line"><span>Network B</span><b>75%</b></div>
+          </div>
+          <div class="flip-arrow" aria-hidden="true">→</div>
+          <div class="flip-cell after">
+            <div class="flip-tag">Split by cold chain — the truth</div>
+            <div class="flip-line"><span>Cold-chain routes</span><b>B &gt; A</b></div>
+            <div class="flip-line"><span>No-cold-chain routes</span><b>B &gt; A</b></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- STOP 03 -->
+      <article class="stop reveal">
+        <div class="pin" aria-hidden="true"></div>
+        <div class="stop-meta">
+          <span class="stop-no">STOP 03</span>
+          <span class="stop-loc">On the road · N-5 to Karachi</span>
+        </div>
+        <span class="stop-problem">Problem type — Variance &amp; tail risk</span>
+        <h2 class="stop-title">The average that hides the risk</h2>
+        <p>Now the crate goes on a truck, and the question shifts from quality to time. Two carriers: one averages 10 days, one averages 14. The 10-day carrier looks better — until you show the spread. The fast one is 10 days give or take 8; the slow one is 14 give or take 1.</p>
+        <p>For a perishable crate with an export ship to catch, the reliable-but-slower carrier is worth more: you can plan around it, and the fast one strands your fruit more than a quarter of the time. <strong>Variance beats the mean.</strong> And with perishables it compounds — value does not just wait, it decays with every extra day, so the tail of that distribution is not a delay, it is a total loss. The number people optimise is the wrong number; the number that matters is not on the dashboard.</p>
+        <div class="spread">
+          <div class="spread-row">
+            <div class="lab"><span>Carrier A — looks faster</span><b>10 days ±8</b></div>
+            <div class="bar">
+              <span style="left:8.3%;right:33.3%;"></span>
+              <span class="loss" style="left:66.7%;right:25%;"></span>
+              <i class="cut" style="left:66.7%;"></i>
+              <em style="left:41.7%;"></em>
+            </div>
+          </div>
+          <div class="spread-row">
+            <div class="lab"><span>Carrier B — actually plannable</span><b>14 days ±1</b></div>
+            <div class="bar">
+              <span style="left:54.2%;right:37.5%;"></span>
+              <i class="cut" style="left:66.7%;"></i>
+              <em style="left:58.3%;"></em>
+            </div>
+          </div>
+          <div class="axis">
+            <span class="start">0 days</span>
+            <span class="mark" style="left:66.7%;">day 16 · ship cutoff</span>
+            <span class="end">24</span>
+          </div>
+          <div class="spread-key">
+            <span><i class="dot"></i> average transit</span>
+            <span><i class="rng"></i> typical spread</span>
+            <span><i class="rst"></i> past the ship — total loss</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- STOP 04 -->
+      <article class="stop reveal">
+        <div class="pin" aria-hidden="true"></div>
+        <div class="stop-meta">
+          <span class="stop-no">STOP 04</span>
+          <span class="stop-loc">Exporter → retailer abroad</span>
+        </div>
+        <span class="stop-problem">Problem type — The bullwhip effect<a href="#r8" class="ref">8</a></span>
+        <h2 class="stop-title">The signal that distorts as it climbs</h2>
+        <p>Zoom out to the whole chain. A small bump in real consumer demand becomes a larger order from the retailer, a larger one from the exporter, and a panic order back at the farm — each link padding against uncertainty in the one above it. This is the bullwhip effect,<a href="#r8" class="ref">8</a> and it is fundamentally a <strong>data</strong> problem: no single party can see true demand, everyone reacts to the distorted echo of the party downstream, and the distortion amplifies as it travels up the chain.</p>
+        <p>The fix is not smarter forecasting at any one node — it is a shared view of the real signal, which no one in a fragmented, informal chain currently has. Name that for the founders in the room: the company that lets every link see the same demand truth is a real category, and it does not exist here yet.</p>
+        <div class="readout">
+          <div class="readout-head">Signal, amplified up the chain</div>
+          <div class="readout-rows">
+            <div class="rr"><span class="k">Real consumer demand</span><span class="v">+5%</span></div>
+            <div class="rr"><span class="k">Order seen at the farm</span><span class="v loss">+40%</span></div>
+            <div class="rr full"><span class="k">Cause</span><span class="v" style="font-size:1rem;">Each link reacts to the echo, not the source</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="turn" aria-label="The turn">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The turn</span>
+      <h2>It was <em>one problem</em> the whole time.</h2>
+      <p>A supply chain is a distributed system with no shared ledger. Every party sees only its own slice — so a small measurement gap, a lying aggregate, a hidden variance, and a bullwhip are not four separate faults. They are four faces of the same thing: running a system nobody can see whole, using compressed numbers that each hide a different part of the structure.</p>
+    </div>
+    <div class="collapse reveal">
+      <div class="cc"><div class="n">01 · Measurement</div><div class="t">The number that doesn't exist</div><div class="d">The confounder was never recorded.</div></div>
+      <div class="cc"><div class="n">02 · Aggregation</div><div class="t">The aggregate that lies</div><div class="d">The average measures the mix, not the thing.</div></div>
+      <div class="cc"><div class="n">03 · Variance</div><div class="t">The average that hides the risk</div><div class="d">The mean is optimised; the tail is ignored.</div></div>
+      <div class="cc"><div class="n">04 · Bullwhip</div><div class="t">The signal that distorts</div><div class="d">No shared view of the real demand.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="gap" aria-label="The tool and the gap">
+  <div class="wrap">
+    <div class="col reveal">
+      <span class="eyebrow" style="color:var(--amber-deep)">Where the tool earns its place</span>
+      <h2>The dashboard is a toy of the company.</h2>
+      <p>Power BI, in forty minutes, is the instrument that reassembles the whole from the slices: group by the dimension, and watch the hidden structure surface. The toy you build on the slide is a miniature of the real venture in the market — because the durable Pakistani companies now are not flashy consumer apps. They are the unglamorous B2B tooling that instruments a workflow nobody had instrumented.<a href="#r5" class="ref">5</a></p>
+      <div class="pull">The entry path is a supply-chain student's own career. You already understand the workflow. The gap is that you don't yet see the workflow as the product.<a href="#r4" class="ref">4</a></div>
+      <p>A services firm already embedded in a client's process — logistics reconciliation, export compliance, SME operations — that moves from doing the work to shipping the tool built around it. That is where 2026 investment attention is concentrating.<a href="#r4" class="ref">4</a></p>
+
+      <div class="reality reveal">
+        <span class="eyebrow">Reality check — don't sell a boom</span>
+        <p>Capital is real but selective: roughly <b>$74.2M</b> raised in 2025, nearly double 2024, still well below the <b>$350M</b> peak of 2021–22, and now flowing through hybrid equity-and-debt structures.<a href="#r1" class="ref">1</a> Investors want cash flow, governance and a clear model — not hype.<a href="#r6" class="ref">6</a> This is not a boom to chase. It is a quieter, more serious invitation: instrument something real.</p>
+      </div>
+
+      <div class="pull reveal">You don't have to imagine the data. Every reversal here is a real, seeded dataset you can open in Power BI and rebuild by hand — the paradox, the tail, the bullwhip, all of it. The distance from this slide to a company is one dataset you already know how to read.</div>
+    </div>
+  </div>
+</section>
+
+<section class="close" aria-label="The close">
+  <div class="wrap">
+    <div class="col reveal">
+      <span class="eyebrow">The discipline — so the tool isn't misused</span>
+      <h2>You can always slice until something flips.</h2>
+      <p>In a data-poor economy the temptation is worse, because the data is already thin — informal records, missing months, tiny samples. Slice thin data three ways and every cell becomes noise you can narrate into any story you wanted.</p>
+      <p>So the rule: disaggregate only on a variable you have a <strong>causal</strong> reason to trust as a confounder — and first ask whether that variable is even real, or just three lucky records you narrated into a pattern.</p>
+      <p class="last">A BI tool amplifies your thinking, including your errors. The judgment stays with you.</p>
+    </div>
+  </div>
+</section>
+
+<section class="refs" id="references" aria-label="References">
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--amber-deep)">Sources</span>
+    <h2>References</h2>
+
+    <div class="refs-sub">Data — Pakistani market &amp; economy · accessed Jul 2026</div>
+    <ol class="reflist">
+      <li id="r1">
+        invest2innovate (i2i) via Business Recorder — Pakistani startups raised ≈$74.2M in 2025, roughly double 2024, on a shift to hybrid equity-and-debt financing; still below the 2021–22 peak.
+        <span class="src">brecorder.com · Feb 2026 · <a href="https://www.brecorder.com/news/40407474">brecorder.com/news/40407474</a></span>
+      </li>
+      <li id="r2">
+        Startup Network Pakistan — Pakistan's agriculture is ~20% of GDP with post-harvest losses exceeding 30%; Tazah Technologies applies data analytics to demand, waste and logistics against that loss.
+        <span class="src">startupnetwork.pk · Feb 2026 · <a href="https://startupnetwork.pk/10-pakistans-top-startups-you-must-know-about/">startupnetwork.pk/10-pakistans-top-startups-you-must-know-about</a></span>
+      </li>
+      <li id="r3">
+        Daftarkhwan — Trukkr, a freight-tech platform, raised close to $10M (Yango Ventures) to streamline trucking logistics; Haball raised a $52M pre-Series A and has processed over $3B in payments digitising B2B invoicing and supply-chain operations.
+        <span class="src">daftarkhwan.com · Feb 2026 · <a href="https://www.daftarkhwan.com/post/top-pakistani-startups-to-watch-in-2026">daftarkhwan.com/post/top-pakistani-startups-to-watch-in-2026</a></span>
+      </li>
+      <li id="r4">
+        Startup.pk — capital that survived the 2022–24 crash is concentrating into cross-border and B2B categories; the funded edge is services firms embedded in a client workflow that ship the tool built around it (services-to-SaaS).
+        <span class="src">startup.pk · May 2026 · <a href="https://startup.pk/where-startup-capital-is-actually-going-in-pakistan-right-now/">startup.pk/where-startup-capital-is-actually-going-in-pakistan-right-now</a></span>
+      </li>
+      <li id="r5">
+        Startups in Pakistan (mean.ceo), July 2026 — the durable opportunities are in software for supply chains, export workflows, compliance and SME operations; the "less glamorous" companies that become the durable ones.
+        <span class="src">blog.mean.ceo · Jul 2026 · <a href="https://blog.mean.ceo/startups-pakistan-news-july-2026/">blog.mean.ceo/startups-pakistan-news-july-2026</a></span>
+      </li>
+      <li id="r6">
+        Startups in Pakistan (mean.ceo), June 2026 — a more selective market; investors now weight cash flow, governance and clear business models, with fintech, B2B software and logistics the strongest sectors.
+        <span class="src">blog.mean.ceo · Jun 2026 · <a href="https://blog.mean.ceo/startups-pakistan-news-june-2026/">blog.mean.ceo/startups-pakistan-news-june-2026</a></span>
+      </li>
+    </ol>
+
+    <div class="refs-sub">Concept — the analytical ideas behind each stop</div>
+    <ol class="reflist concept">
+      <li id="r7">
+        <span class="claim">Simpson's paradox (Stop 02).</span> E. H. Simpson, "The Interpretation of Interaction in Contingency Tables," <em>Journal of the Royal Statistical Society, Series B</em>, vol. 13, 1951 — the foundational statement that an aggregate association can reverse once a confounding variable is separated out.
+      </li>
+      <li id="r8">
+        <span class="claim">The bullwhip effect (Stop 04).</span> H. L. Lee, V. Padmanabhan &amp; S. Whang, "The Bullwhip Effect in Supply Chains," <em>Sloan Management Review</em>, 1997 — with origins in J. W. Forrester, <em>Industrial Dynamics</em>, MIT Press, 1961 (demand distortion amplifying up a multi-stage chain).
+      </li>
+    </ol>
+
+    <div class="refs-sub">The demo data — engineered, seeded, reproducible</div>
+    <p class="colophon">The reversals in this talk run on a small <strong>seeded synthetic dataset,</strong> not on real firm records. The stop-level figures — network A vs B at 90% / 75%, the two carriers at 10&nbsp;±8 and 14&nbsp;±1 days — are engineered pedagogical illustrations, each reproducible by a single Power BI move: group by the dimension, and the hidden structure surfaces. The mandi's paradox is built twice over — once as a <strong>real</strong> cold-chain confounder that survives essentially every reseed, and once as a <strong>spurious</strong> slice with no mechanism, planted to be caught and discarded. Across a 3,000-seed sweep the real reversal holds <strong>99.6%</strong> of the time; a clean fake one surfaces in barely <strong>1.5%</strong>, and never favours a particular inspector — the signature of pure noise. That gap is the discipline lesson made literal.
+      <span class="src">synthetic · seeded · reproducible in Power BI · 2026</span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>ONE CRATE · a supply chain in five stops</span>
+    <span>Farm → Mandi → Road → Port · <b>the judgment stays with you</b></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // scroll reveal
+  var items = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) {
+    items.forEach(function(el){ el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold:0.14 });
+    items.forEach(function(el){ io.observe(el); });
+  }
+
+  // shipment-tracking route fill
+  var journey = document.querySelector(".journey");
+  var fill = document.getElementById("fill");
+  var stops = Array.prototype.slice.call(document.querySelectorAll(".stop"));
+
+  function track(){
+    if (!journey || !fill) return;
+    var rect = journey.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var total = rect.height;
+    var progressed = (vh * 0.55) - rect.top;
+    var pct = Math.max(0, Math.min(1, progressed / total));
+    fill.style.height = (pct * 100) + "%";
+
+    var fy = rect.top + pct * total;
+    stops.forEach(function(s){
+      var pin = s.querySelector(".pin");
+      if (!pin) return;
+      var py = pin.getBoundingClientRect().top;
+      if (py <= fy + 4) s.classList.add("is-on"); else s.classList.remove("is-on");
+    });
+  }
+
+  if (reduce) {
+    if (fill) fill.style.height = "100%";
+    stops.forEach(function(s){ s.classList.add("is-on"); });
+  } else {
+    var ticking = false;
+    function onScroll(){
+      if (!ticking){ window.requestAnimationFrame(function(){ track(); ticking=false; }); ticking=true; }
+    }
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+    track();
+  }
+})();
+</script>
+</body>
+</html>
