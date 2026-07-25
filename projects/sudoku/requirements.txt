@@ -1,9 +1,9 @@
 annotated-types==0.7.0
 anyio==4.10.0
 art==6.5
-beautifulsoup4==4.13.4
+beautifulsoup4==4.15.0
 certifi==2025.8.3
-charset-normalizer==3.4.2
+charset-normalizer==3.4.9
 distro==1.9.0
 dotenv==0.9.9
 h11==0.16.0
@@ -12,7 +12,7 @@ httpx==0.28.1
 idna==3.10
 jiter==0.10.0
 markdown-it-py==3.0.0
-markdownify==1.1.0
+markdownify==1.2.3
 mdformat==0.7.22
 mdurl==0.1.2
 openai==1.99.5

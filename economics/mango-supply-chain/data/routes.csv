@@ -1,0 +1,21 @@
+route_id,origin,destination,cold_chain,terrain,distance_km
+RT-C00,Mirpur Khas,Karachi Port,True,corridor,248
+RT-C01,Tando Adam,Karachi Port,True,corridor,184
+RT-C02,Nawabshah,Karachi Port,True,corridor,212
+RT-C03,Sanghar,Karachi Port,True,corridor,251
+RT-C04,Digri,Karachi Port,True,corridor,252
+RT-C05,Mirpur Khas,Karachi Port,True,corridor,216
+RT-C06,Tando Adam,Karachi Port,True,corridor,264
+RT-C07,Nawabshah,Karachi Port,True,corridor,217
+RT-C08,Sanghar,Karachi Port,True,corridor,303
+RT-C09,Digri,Karachi Port,True,corridor,238
+RT-N00,Tando Allahyar,Karachi Port,False,rural,333
+RT-N01,Umerkot,Karachi Port,False,rural,378
+RT-N02,Kunri,Karachi Port,False,rural,379
+RT-N03,Samaro,Karachi Port,False,rural,381
+RT-N04,Jhuddo,Karachi Port,False,rural,236
+RT-N05,Tando Allahyar,Karachi Port,False,rural,327
+RT-N06,Umerkot,Karachi Port,False,rural,281
+RT-N07,Kunri,Karachi Port,False,rural,413
+RT-N08,Samaro,Karachi Port,False,rural,251
+RT-N09,Jhuddo,Karachi Port,False,rural,397
