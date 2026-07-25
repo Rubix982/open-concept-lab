@@ -1,5 +1,7 @@
 # One Crate — the synthetic dataset
 
+https://silver-liger-62173d.netlify.app/
+
 A small, seeded dataset engineered so that **each of the four stops in the talk
 is reproducible by a single Power BI move.** It follows one crate of Sindhri
 mangoes from an orchard in interior Sindh to an export container at Karachi
