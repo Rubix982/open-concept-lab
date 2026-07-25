@@ -6,7 +6,7 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.14.1
 astor==0.8.1
-asttokens==3.0.1
+asttokens==3.0.2
 attrs==26.1.0
 beartype==0.22.9
 better-abc==0.0.3
