@@ -6,7 +6,7 @@ anyio==4.13.0
 attrs==26.1.0
 audioop-lts==0.2.2
 av==17.0.1
-beautifulsoup4==4.14.3
+beautifulsoup4==4.15.0
 black==26.3.1
 certifi==2026.4.22
 charset-normalizer==3.4.7
