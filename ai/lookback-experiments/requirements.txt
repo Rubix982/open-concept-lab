@@ -12,7 +12,7 @@ beartype==0.22.9
 better-abc==0.0.3
 bidict==0.23.1
 certifi==2026.6.17
-charset-normalizer==3.4.7
+charset-normalizer==3.4.9
 click==8.4.2
 cloudpickle==3.1.2
 contourpy==1.3.3
