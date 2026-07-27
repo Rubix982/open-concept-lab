@@ -18,6 +18,9 @@ Residual stream after layer L : model.transformer.h[L].output[0]   # [1, seq, 40
 """
 
 import os
+# silence the "process got forked" tokenizer warning (must be set before use)
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 import torch
 from nnsight import CONFIG
 from nnsight.modeling.language import LanguageModel
@@ -35,27 +38,26 @@ subj_pos = max(i for i, t in enumerate(tokens) if "Tower" in t)
 print(f"Tokens        : {tokens}")
 print(f"Subject token : idx {subj_pos} = {tokens[subj_pos]!r}\n")
 
-# collect the hidden VECTOR at the subject position for every layer, remotely,
-# and save just its norm (a scalar) to keep the download tiny.
-norms = []
-vecs = []
+# SAME FIX as 01: stack the per-layer vectors into ONE tensor and save that,
+# rather than appending 28 individual .save() proxies (which return empty on
+# nnsight 0.7). We save the full [28, 4096] stack and compute norms/deltas
+# locally afterwards — one clean download (~459 KB).
+vec_list = []
 with model.trace(prompt, remote=True):
     for L in range(n_layers):
         h = model.transformer.h[L].output[0][0, subj_pos]   # [4096]
-        norms.append(h.norm().save())
-        vecs.append(h.save())   # also grab the full vector for delta computation
+        vec_list.append(h)
+    vecs = torch.stack(vec_list).save()                     # [28, 4096]
 
-# ── norms and layer-to-layer change ────────────────────────────────────────
+# ── norms and layer-to-layer change (computed locally from the stack) ───────
+print(f"[debug] vecs shape = {tuple(vecs.shape)}  (expect (28, 4096))\n")
 print(f"{'layer':>5}  {'||h||':>10}  {'||Δ from prev||':>16}")
 print("─" * 36)
 prev = None
 for L in range(n_layers):
-    h = vecs[L]                      # [4096] real tensor now
-    n = float(norms[L])
-    if prev is None:
-        delta = 0.0
-    else:
-        delta = float((h - prev).norm())
+    h = vecs[L]                      # [4096] real tensor
+    n = float(h.norm())
+    delta = 0.0 if prev is None else float((h - prev).norm())
     print(f"{L:>5}  {n:>10.2f}  {delta:>16.2f}")
     prev = h
 

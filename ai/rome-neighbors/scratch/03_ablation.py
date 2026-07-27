@@ -2,21 +2,31 @@
 03 — Ablation: which layers actually matter for this fact?
 
 So far we only READ. Now we WRITE. Ablation = deliberately damage part of the
-computation and measure how much the answer suffers. If zeroing layer L tanks
-the probability of "Paris", layer L was doing something important for this fact.
+computation and measure how much the answer suffers.
 
-We sweep two kinds of ablation:
-  (a) zero the ENTIRE residual stream output of layer L (all positions)
-  (b) zero only the SUBJECT position at layer L ("Tower")
+LESSON FROM v1 (the "zero the whole layer" version): zeroing
+model.transformer.h[L].output[0][:] wipes the ENTIRE cumulative residual stream
+at layer L — not layer L's marginal contribution. That is catastrophic at EVERY
+layer (P(Paris) → 0 everywhere) and localizes nothing. `.output` is the running
+sum of everything so far, so destroying it is equally fatal at any depth.
 
-The subject-position ablation is the more surgical, ROME-relevant one: it asks
-"how much does this fact depend on the subject token's representation at layer L?"
+To actually LOCALIZE, we ablate ONE TOKEN POSITION at a time (not the whole
+stream). Other positions survive, so downstream layers can partially rebuild —
+and the effect now varies by layer, revealing which layers matter for this fact.
 
-We track the logit (and probability) of the correct answer token "Paris".
+We compare two positions:
+  (a) SUBJECT token ("Tower") — where ROME says the fact is stored
+  (b) LAST token ("of")       — where the answer is read out
+
+DEVICE NOTE (remote gotcha): with remote=True the activations live on the NDIF
+GPU (cuda:0). A locally-built mask tensor lives on CPU, so `h * mask` throws a
+device-mismatch error. We avoid it entirely by zeroing the row with a direct
+indexed assignment — no separate tensor, no device to mismatch.
 """
 
 import os
-import torch
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 from nnsight import CONFIG
 from nnsight.modeling.language import LanguageModel
 
@@ -30,6 +40,9 @@ answer_id = model.tokenizer.encode(" Paris")[0]
 token_ids = model.tokenizer.encode(prompt)
 tokens = [model.tokenizer.decode([t]) for t in token_ids]
 subj_pos = max(i for i, t in enumerate(tokens) if "Tower" in t)
+last_pos = len(token_ids) - 1
+print(f"Subject token : idx {subj_pos} = {tokens[subj_pos]!r}")
+print(f"Last token    : idx {last_pos} = {tokens[last_pos]!r}\n")
 
 # ── baseline: no ablation ──────────────────────────────────────────────────
 with model.trace(prompt, remote=True):
@@ -37,39 +50,34 @@ with model.trace(prompt, remote=True):
 base_prob = float(base_logits[0, -1].softmax(dim=-1)[answer_id])
 print(f"Baseline P('Paris') = {base_prob:.4f}\n")
 
-# ── (a) full-layer ablation sweep ──────────────────────────────────────────
-# NOTE on the NNSight pattern: in-place multi-index assignment on a proxy can
-# fail, so for the subject-only ablation (b) we use the clone→mask→assign
-# pattern. For (a) we zero the whole tensor, which is safe with [:] = 0.
-print("Full-layer ablation (zero all positions at layer L):")
+
+def ablate_position(pos: int) -> list[float]:
+    """Zero the residual at `pos` at each layer in turn; return P(Paris) per layer."""
+    probs = []
+    for L in range(n_layers):
+        with model.trace(prompt, remote=True):
+            # direct indexed zeroing — [batch=0, position=pos, all 4096 dims]
+            model.transformer.h[L].output[0][0, pos, :] = 0
+            logits = model.lm_head.output.save()
+        probs.append(float(logits[0, -1].softmax(dim=-1)[answer_id]))
+    return probs
+
+# ── (a) ablate the SUBJECT position across layers ──────────────────────────
+print("Ablate SUBJECT position ('Tower') at each layer:")
 print(f"{'layer':>5}  {'P(Paris)':>10}  {'drop':>8}")
 print("─" * 28)
-full_probs = []
-for L in range(n_layers):
-    with model.trace(prompt, remote=True):
-        model.transformer.h[L].output[0][:] = 0
-        logits = model.lm_head.output.save()
-    p = float(logits[0, -1].softmax(dim=-1)[answer_id])
-    full_probs.append(p)
+subj_probs = ablate_position(subj_pos)
+for L, p in enumerate(subj_probs):
     print(f"{L:>5}  {p:>10.4f}  {base_prob - p:>+8.4f}")
 
-# ── (b) subject-position-only ablation sweep ───────────────────────────────
-# build a mask [seq_len, 4096] that is 1 at the subject position, 0 elsewhere,
-# then zero only that row via clone → (1-mask) multiply → assign.
-seq_len = len(token_ids)
-mask = torch.zeros(seq_len, 4096)
-mask[subj_pos, :] = 1.0
-
-print("\nSubject-position-only ablation (zero just the 'Tower' row at layer L):")
+# ── (b) ablate the LAST position across layers ─────────────────────────────
+print("\nAblate LAST position ('of') at each layer:")
 print(f"{'layer':>5}  {'P(Paris)':>10}  {'drop':>8}")
 print("─" * 28)
-for L in range(n_layers):
-    with model.trace(prompt, remote=True):
-        h = model.transformer.h[L].output[0].clone()
-        model.transformer.h[L].output[0] = h * (1.0 - mask)
-        logits = model.lm_head.output.save()
-    p = float(logits[0, -1].softmax(dim=-1)[answer_id])
+last_probs = ablate_position(last_pos)
+for L, p in enumerate(last_probs):
     print(f"{L:>5}  {p:>10.4f}  {base_prob - p:>+8.4f}")
 
-print("\nThe layers with the biggest drop are the ones this fact depends on.")
-print("Subject-position ablation localizes it to WHERE ROME would edit.")
+print("\nCompare the two: big drops at the SUBJECT position in early-mid layers")
+print("= the fact is stored there (where ROME edits). Big drops at the LAST")
+print("position in later layers = that's where the answer is read out.")
