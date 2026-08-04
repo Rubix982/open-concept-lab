@@ -47,6 +47,7 @@ Phase 1 — Literature & Baseline Setup
 | R-001 | Researcher | Survey model editing literature          | open        |
 | R-002 | Researcher | Map neighbor taxonomy from ripple papers | open        |
 | E-001 | Engineer   | Baseline fact recall on GPT-J-6B (NDIF) | open        |
+| E-005 | Engineer   | Spike: NNSight localization on GPT-J    | closed      |
 
 ## Blocked
 
@@ -55,6 +56,9 @@ _(none)_
 ## Completed This Session
 
 - O-001 · Initialize project structure
+- E-005 · Spike: NNSight localization curriculum — findings logged; storage
+  band ~layers 2–12 at subject token, readout ~12–17 at last token
+- Reference: `readings/metrics/notes.md` — IIA + the three metric families
 
 ## Experiment Sequence
 

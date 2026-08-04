@@ -122,3 +122,46 @@ fails systematically.
 - `experiments/ripple_sweep/output/ripple_matrix.png`
 
 **Closed:** —
+
+---
+
+### E-005 · Spike: NNSight localization curriculum on GPT-J-6B
+
+**Status:** closed
+**Type:** spike
+**Priority:** medium
+**Created:** 2026-08-04 (logged retroactively — work was exploratory)
+**Updated:** 2026-08-04
+
+**Description:**
+Time-boxed exploratory spike to build fluency with NNSight's read/write API on
+GPT-J-6B via NDIF, and to observe where a factual association ("Eiffel Tower →
+Paris") is stored vs. read out. Foundation/warm-up for the causal-tracing work
+that E-002/E-003 depend on. Ran as a learning curriculum, not a scoped
+experiment — hence a spike, logged after the fact per ticket discipline.
+
+**What was built (scratch/):**
+- `01_logit_lens.py` — logit lens across all 28 layers (readout crystallisation)
+- `02_residual_stream.py` — residual norm + relative change at the subject token
+- `03_ablation.py` — position-specific zeroing sweeps (subject vs. last token)
+- `04_causal_tracing.py` — corrupt-restore AIE (not yet run; has known fixes pending)
+- `06_lm_head_explore.py` — full logits / top-k / per-position predictions
+- `08_readout_vs_storage.py` — combined readout-vs-storage plot (+ PNG)
+- `05_gptj_healthcheck.py`, `07_*` — NDIF connectivity / scratch
+
+**NNSight lessons learned (also in memory `reference-nnsight`):**
+- nnsight 0.7: appending individual `.save()` proxies in a loop returns empty —
+  stack into one tensor and save that instead.
+- remote=True: locally-built mask tensors are on CPU while activations are on
+  cuda:0 → device-mismatch error. Use direct indexed assignment, not mask-multiply.
+- `h[L].output[0]` is the CUMULATIVE residual stream, not a layer's marginal
+  contribution — zeroing it is catastrophic at every layer (does not localize).
+
+**Findings:** logged to `agents/shared/findings.md` → E-005.
+
+**Artifacts:**
+- `scratch/01`–`08` exploration scripts
+- `scratch/08_readout_vs_storage.png`
+- `readings/metrics/notes.md` (IIA + metric-families reference)
+
+**Closed:** 2026-08-04
