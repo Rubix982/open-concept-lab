@@ -235,9 +235,18 @@ no hop-resolved propagation — those are v1).
 **Maps to design.md:** experiments step 3 (baseline predictor), secondary
 deliverable ("does even raw distance track neighbour type?").
 
+**Update (2026-08-09):** upgraded from the 6-fact toy to REAL RippleEdits data
+(v0.5) — `demo_rippleedits.py` loads edenbiran/RippleEdits, bins neighbours by its
+six criteria (Logical_Generalization→1hop, Compositionality_I/II→2hop,
+Subject_Aliasing→paraphrase, Relation_Specifity→locality, Forgetfulness→control),
+subsamples N_EDITS with a seed, and runs the same cosine + overlap pipeline at
+larger N. Toy `demo.py` kept as a fast smoke test. Requires cloning the repo
+(one-time) and pointing RIPPLEEDITS_FILE at data/benchmark/{RECENT,RANDOM,POPULAR}.
+
 **Artifacts:**
-- `experiments/demo_distance_by_type/demo.py`
+- `experiments/demo_distance_by_type/demo.py` (toy smoke test)
+- `experiments/demo_distance_by_type/demo_rippleedits.py` (real data, v0.5)
 - `experiments/demo_distance_by_type/data/demo_facts.json`
-- `experiments/demo_distance_by_type/output/similarity_by_type.png`
+- `experiments/demo_distance_by_type/output/similarity_by_type[_rippleedits].png`
 
 **Closed:** —
