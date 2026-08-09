@@ -140,21 +140,29 @@ One correlation is a tweet; this family is the study.
 **Tooling (all existing):** NNSight on GPT-J/NDIF, causal tracing (04), IIA,
 `.source`, per-head (12b).
 
-**Data & external tooling (Asta probe 3, 2026-08-09 — ⚠ verify starred items):**
-- **RippleEdits** (Cohen/Biran/Geva, EMNLP 2023) — ~5K cases, already ships
-  hop-annotated neighbours (1-hop subject-replace, reverse, compositional).
-  → *Use its annotations directly for the hop-typed neighbour sets* (comparability
-  + de-risk; avoids reinventing neighbour generation). ⚠ repo URL to verify —
-  Asta guessed `eric-mitchell/ripple-edits` which is almost certainly wrong
-  (Mitchell = MEND/SERAC); find the real Cohen/Biran repo.
-- **MQuAKE-CF** (`princeton-nlp/MQuAKE`, verified real) — multi-hop QA, explicit
-  2/3/4-hop labels; for the multi-hop portability outcome (v2).
-- **EasyEdit** (`zjunlp/EasyEdit`, verified real) — unified ROME/MEMIT/MEND harness
-  for the v2 actual-edit portability. NOTE: its portability metric is AGGREGATE →
-  we must stratify by hop manually from the dataset annotations.
-- **CKA**: use Kornblith et al. reference (`google-research/representation_similarity`).
-  ⚠ Asta suggested `ecco` cka()/svcca() and two other repos — unverified; prefer
-  the Kornblith reference or a minimal custom linear-CKA.
+**Data & external tooling (Asta probe 3 + web-verified 2026-08-09):**
+- **RippleEdits** — repo **`github.com/edenbiran/RippleEdits`** ✓ verified (Asta's
+  `eric-mitchell` guess was wrong). Three subsets: RECENT / RANDOM / POPULAR.
+  CORRECTION: it does NOT label neighbours "1-hop/2-hop"; it uses **six named
+  evaluation criteria**. Our hop typing maps onto them:
+    - Logical Generalization → 1-hop entailment (N1)
+    - Compositionality I & II → 2-hop / multi-hop (N2)
+    - Subject Aliasing → paraphrase / alias (N0-adjacent)
+    - Relation Specificity → locality control (should NOT change)
+    - Forgetfulness → edited-fact retention control
+  → *Bin neighbours by these six criteria*, not by invented hop labels.
+- **MQuAKE** — `github.com/princeton-nlp/MQuAKE` ✓ verified. Files:
+  MQuAKE-CF-3k-v2 (3k), MQuAKE-CF (9,218), MQuAKE-T (1,825 temporal); each instance
+  has `single_hops` / `new_single_hops` (intermediate steps). No native ROME/MEMIT-
+  on-GPT-J harness but format-compatible; ships the MeLLo notebook. For v2 multi-hop.
+- **EasyEdit** — `github.com/zjunlp/EasyEdit` ✓ verified. ROME/MEMIT/MEND on
+  GPT-2/GPT-J/GPT-Neo; datasets KnowEdit/ZsRE/WikiBio/CounterFact. Portability is
+  AGGREGATE (has a "One Hop" subcategory but reports aggregated) → stratify manually.
+  NOTE: RippleEdits is NOT a native EasyEdit dataset — load it from its own repo;
+  use EasyEdit for the ROME/MEMIT editing step on CounterFact.
+- **CKA / SVCCA / PWCCA**: **Ecco** (`github.com/jalammar/ecco`) ✓ verified to expose
+  SVCCA, PWCCA, and CKA for hidden-state comparison (my earlier caution was wrong).
+  Kornblith reference (`google-research/representation_similarity`) is the fallback.
 - All three datasets are GPT-J-validated in their original papers.
 
 ### 6. Confounds & controls
@@ -225,9 +233,10 @@ stub). Weekend-paced over a few weeks.
 ---
 
 ## Experiments → tickets (derived from this design)
-1. Neighbour set: **load RippleEdits (hop-annotated) directly** rather than
-   generating from Wikidata — comparable + de-risked. Wikidata generation only if
-   extending beyond RippleEdits' coverage.
+1. Neighbour set: **load RippleEdits directly** (repo `edenbiran/RippleEdits`) and
+   bin neighbours by its six criteria (Logical Generalization → 1-hop,
+   Compositionality → 2-hop, Subject Aliasing → paraphrase, Relation Specificity →
+   locality control) rather than generating from Wikidata. Comparable + de-risked.
 2. Competence filter — baseline recall of facts + neighbours (extends E-001).
 3. Representation extraction + compute the 3 predictor families per
    fact/neighbour/layer.
