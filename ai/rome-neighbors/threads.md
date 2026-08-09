@@ -5,6 +5,44 @@ _See global CLAUDE.md → "Research Thread Tracking" for the protocol._
 
 ---
 
+## Foundations map & gap tracker
+
+_The `T-00x` threads below are RESEARCH questions. This section tracks
+FOUNDATIONS — the basics that must be solid underneath them. Method: you cannot
+enumerate the basics upfront; you scaffold, run something, and friction (an
+explanation you can't give) exposes the missing basic. **This ledger IS the gap
+tracker** — an open thread is a surfaced gap; an answered one is a locked basic.
+A thread can be a research question OR a foundational gap._
+
+Four tiers, bottom-up. A thin LOWER tier makes every tier above it feel slippery:
+
+```
+TIER 4  Domain:    ROME · MEMIT · desiderata · ripple/neighbours
+TIER 3  Methods:   probing · logit lens · ablation · patching · causal tracing · IIA
+TIER 2  Mechanics: tokenization · embeddings/RoPE · residual stream · attention · MLP · norm · unembed
+TIER 1  Substrate: vectors · dot products · directions=features · matmul · rank-1 · least-squares
+```
+
+**Honest self-assessment (2026-08-09):**
+
+- **SOLID** (engaged deeply, corrected well):
+  - T2: tokenization/BPE/vocab, residual stream (additive/cumulative),
+    attention + softmax + the sink, KV cache
+  - T3: metric families, IIA/AIE conceptually, ablation vs. patching, localization
+  - T4: MEMIT-vs-project (breadth vs. depth), store→readout→lookback synthesis
+- **THIN** (used implicitly, never made foundational) → gap threads T-011..T-014:
+  - T1: features-as-directions / dot products / rank-1 — **the big one**, the
+    floor under ROME (T-011)
+  - T2: MLP internals — *why* facts live there, the key-value memory view (T-012)
+  - T2: positional encoding / RoPE (`apply_rotary_pos_emb`, seen but unexercised) (T-013)
+  - doing ≠ reading: `04` (AIE) and IIA not yet RUN — see the peak yourself (T-014)
+
+**Recommended next:** T-011 (Tier-1 substrate). Once "a feature is a direction,
+read by a dot product, written by a rank-1 update" is solid, ROME stops being
+magic and the whole neighbour project clicks into place mechanically.
+
+---
+
 ### T-001 · Does editing a fact ripple to its logical neighbours?
 
 **Status:** active (the project's root question)
@@ -174,6 +212,67 @@ lookback circuit lives, invisible in the head-average.
 
 ---
 
+## Foundations threads (gaps to lock)
+
+### T-011 · Linear representation: features = directions, read by dot product, written by rank-1
+
+**Status:** open (recommended next — the floor under ROME)
+**Parent:** — (foundations; underlies T-004, T-008, and all of model editing)
+**Question:** Lock the Tier-1 substrate that everything else borrows against.
+Three linked ideas, each with a small concrete demo:
+(a) a feature is a DIRECTION in activation space (linear representation hypothesis);
+(b) the model READS a feature by projecting onto that direction — a dot product
+    (this is what a probe, DLA, and the diff-of-means "Rome-ness" of T-004 all do);
+(c) ROME WRITES a fact as a rank-1 update `ΔW = v kᵀ` added to an MLP weight —
+    what does that actually do to the matrix, and why is it "one direction in,
+    one direction out"?
+Success: can explain, with a toy example, what a dot product reads, what
+diff-of-means computes, and what a rank-1 update writes.
+**Answer:** —
+
+---
+
+### T-012 · Why do facts live in the MLP? (key-value memory view)
+
+**Status:** open
+**Parent:** T-008
+**Opened:** 2026-08-09
+**Question:** We know facts live in the MLP (ROME) but not the mechanism.
+Geva et al.: MLP `fc_in` rows act as KEYS (detect an input pattern), `fc_out`
+columns as VALUES (write an output); a fact = a key(subject) → value(object)
+association. Understand `fc_in → act → fc_out` concretely — this is exactly the
+site ROME edits and what script 13 (MLP vs. attn ablation) probes.
+**Answer:** —
+
+---
+
+### T-013 · Positional encoding / RoPE
+
+**Status:** open
+**Parent:** — (foundations, Tier 2)
+**Opened:** 2026-08-09
+**Question:** `apply_rotary_pos_emb` appeared in the `.source` dump (09) and we
+skipped it. How does RoPE encode position by ROTATING the Q/K vectors, and why
+does rotation give *relative* position in the QKᵀ dot product? Unexercised
+Tier-2 basic; matters for reasoning about what attention actually compares.
+**Answer:** —
+
+---
+
+### T-014 · Run the causal experiments end-to-end (doing ≠ reading)
+
+**Status:** active
+**Parent:** T-001
+**Opened:** 2026-08-09
+**Question:** `04` (causal tracing / AIE) and the IIA neighbour test have not
+been RUN. Seeing the AIE peak land at the subject/mid-layers, and an IIA flip
+happen, yourself — is a different and more concrete "basic" than understanding
+them on paper. Run `04`, `12b`, `13`; read the peaks against the store→readout
+→lookback synthesis. (`04` is fixed and queued; `13` is written.)
+**Answer:** —
+
+---
+
 ## Thread tree
 
 ```
@@ -187,4 +286,10 @@ T-001 ripple/portability (root)
 │     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one
 │     └─ T-009 .source op-level access (E-006) .... active (partial)
 │        └─ T-010 which head does the lookback? ... active  ← 12b per-head
+
+FOUNDATIONS track (basics under the research tree)
+T-011 directions / dot product / rank-1 ........... OPEN   ← recommended next; floor under ROME
+T-012 MLP as key-value memory ..................... OPEN
+T-013 positional encoding / RoPE .................. OPEN
+T-014 run 04 / 12b / 13 end-to-end (doing≠reading)  active
 ```
