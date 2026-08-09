@@ -1,13 +1,15 @@
-[K◉ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.[K⠋ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] QUEUED     (0.0s) Added to Queue at position 1.[K⠙ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] DISPATCHED (0.0s) Your job has been sent to the model deployment.[K⠹ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] RUNNING    (0.0s) Your job has started running.[K⠸ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] RUNNING    (0.1s) Your job has started running.[K⠼ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] RUNNING    (0.2s) Your job has started running.[K✓ [8c3bd8cc-18e7-4295-9f67-888d9e9adcd8] COMPLETED  (0.4s) Your job has been completed.
-[K◉ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.[K⠋ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] QUEUED     (0.0s) Added to Queue at position 1.[K⠙ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] DISPATCHED (0.0s) Your job has been sent to the model deployment.[K⠹ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] RUNNING    (0.0s) Your job has started running.[K⠸ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] RUNNING    (0.1s) Your job has started running.[K⠼ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] RUNNING    (0.2s) Your job has started running.[K✓ [2f4baaa8-e8a1-405f-b21e-bfcf6973abff] COMPLETED  (0.3s) Your job has been completed.
+[K◉ [89317650-41c2-49c7-aa19-017af634e068] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.[K⠋ [89317650-41c2-49c7-aa19-017af634e068] QUEUED     (0.0s) Added to Queue at position 1.[K⠙ [89317650-41c2-49c7-aa19-017af634e068] DISPATCHED (0.0s) Your job has been sent to the model deployment.[K⠹ [89317650-41c2-49c7-aa19-017af634e068] RUNNING    (0.0s) Your job has started running.[K⠸ [89317650-41c2-49c7-aa19-017af634e068] RUNNING    (0.1s) Your job has started running.[K⠼ [89317650-41c2-49c7-aa19-017af634e068] RUNNING    (0.2s) Your job has started running.[K✓ [89317650-41c2-49c7-aa19-017af634e068] COMPLETED  (0.4s) Your job has been completed.
+[K◉ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.[K⠋ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] QUEUED     (0.0s) Added to Queue at position 1.[K⠙ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] DISPATCHED (0.0s) Your job has been sent to the model deployment.[K⠹ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] RUNNING    (0.0s) Your job has started running.[K⠸ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] RUNNING    (0.1s) Your job has started running.[K⠼ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] RUNNING    (0.2s) Your job has started running.[K✓ [78ac2835-eac3-43a1-b2c6-1ad98fdda373] COMPLETED  (0.3s) Your job has been completed.
+[K◉ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.[K⠋ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] QUEUED     (0.0s) Added to Queue at position 1.[K⠙ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] DISPATCHED (0.0s) Your job has been sent to the model deployment.[K⠹ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] RUNNING    (0.0s) Your job has started running.[K⠸ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] RUNNING    (0.1s) Your job has started running.[K⠼ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] RUNNING    (0.2s) Your job has started running.[K✓ [5b52ea81-50a6-4b9c-aecd-a49fa99d9258] COMPLETED  (0.3s) Your job has been completed.
 ── captured intermediate shapes (layer 0 attention) ──
   q_proj output      : (1, 10, 4096)        (expect [1, seq, 4096])
   _attn output[0]    : (1, 16, 10, 256) (attention output)
   _attn output[1]    : (1, 16, 10, 10)   (ATTN WEIGHTS [1,heads,seq,seq])
 
 ── sanity: source-op == module-boundary? ──
-  self_out_proj_0.output  vs  attn.out_proj.output : MISMATCH ✗
-  max abs diff = 3.91e-03
+  noise floor (same op, 2 runs)          : 3.91e-03
+  source-op vs module-boundary           : 0.00e+00
+  → TRUSTWORTHY ✓ (within the noise floor)
 
-If the shapes are sane and the sanity check MATCHES, .source is giving
-us trustworthy operation-level access — ready for 12 (attention) & 13.
+If TRUSTWORTHY, .source matches the module boundary up to hardware noise
+— operation-level access is reliable. Ready for 12 (attention) & 13.

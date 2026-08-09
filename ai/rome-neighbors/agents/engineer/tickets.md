@@ -204,3 +204,40 @@ and MLP; we can then reach at least one non-boundary intermediate (`10`).
 - findings → `agents/shared/findings.md` → E-006
 
 **Closed:** —
+
+---
+
+### E-007 · v0.1 demo: raw representation similarity by neighbour type (GPT-J)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-09
+**Updated:** 2026-08-09
+
+**Description:**
+Smallest end-to-end slice of the design (design.md) that runs on GPT-J via NDIF
+and produces real numbers. Computes the BASELINE predictor only — raw cosine
+similarity between a base fact's representation and each of its typed neighbours
+(paraphrase / 1-hop / 2-hop / locality-control) — aggregated by neighbour type,
+alongside a token-overlap readout that EXPOSES the surface-form confound.
+
+This is deliberately the confounded baseline: the demo's honest point is that raw
+last-token similarity tracks template overlap more than fact-relatedness, which
+is exactly why the design adds structured (Kim) + alignment (Jeong) predictors.
+So the demo both produces a first figure AND motivates the reframe.
+
+**Scope:** ~6 hand-curated base facts × 4 typed neighbours; residual at last
+token, one mid layer (15); cosine similarity; per-type means; token-overlap
+(Jaccard) confound readout; one bar plot. NOT the full study (no editing, no IIA,
+no hop-resolved propagation — those are v1).
+
+**Maps to design.md:** experiments step 3 (baseline predictor), secondary
+deliverable ("does even raw distance track neighbour type?").
+
+**Artifacts:**
+- `experiments/demo_distance_by_type/demo.py`
+- `experiments/demo_distance_by_type/data/demo_facts.json`
+- `experiments/demo_distance_by_type/output/similarity_by_type.png`
+
+**Closed:** —

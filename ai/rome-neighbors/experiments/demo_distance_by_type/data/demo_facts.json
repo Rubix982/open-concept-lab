@@ -1,0 +1,62 @@
+[
+  {
+    "id": "eiffel",
+    "base":     {"prompt": "The Eiffel Tower is in the city of", "answer": "Paris"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Eiffel Tower can be found in the city of", "answer": "Paris"},
+      {"type": "1hop",       "prompt": "The Eiffel Tower is in the country of",        "answer": "France"},
+      {"type": "2hop",       "prompt": "The main language spoken where the Eiffel Tower stands is", "answer": "French"},
+      {"type": "locality",   "prompt": "The Colosseum is in the city of",              "answer": "Rome"}
+    ]
+  },
+  {
+    "id": "colosseum",
+    "base":     {"prompt": "The Colosseum is in the city of", "answer": "Rome"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Colosseum can be found in the city of", "answer": "Rome"},
+      {"type": "1hop",       "prompt": "The Colosseum is in the country of",        "answer": "Italy"},
+      {"type": "2hop",       "prompt": "The main language spoken where the Colosseum stands is", "answer": "Italian"},
+      {"type": "locality",   "prompt": "Big Ben is in the city of",                 "answer": "London"}
+    ]
+  },
+  {
+    "id": "bigben",
+    "base":     {"prompt": "Big Ben is in the city of", "answer": "London"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "Big Ben can be found in the city of", "answer": "London"},
+      {"type": "1hop",       "prompt": "Big Ben is in the country of",        "answer": "England"},
+      {"type": "2hop",       "prompt": "The main language spoken where Big Ben stands is", "answer": "English"},
+      {"type": "locality",   "prompt": "The Louvre is in the city of",        "answer": "Paris"}
+    ]
+  },
+  {
+    "id": "louvre",
+    "base":     {"prompt": "The Louvre is in the city of", "answer": "Paris"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Louvre can be found in the city of", "answer": "Paris"},
+      {"type": "1hop",       "prompt": "The Louvre is in the country of",        "answer": "France"},
+      {"type": "2hop",       "prompt": "The main language spoken where the Louvre stands is", "answer": "French"},
+      {"type": "locality",   "prompt": "The Sagrada Familia is in the city of",  "answer": "Barcelona"}
+    ]
+  },
+  {
+    "id": "sagrada",
+    "base":     {"prompt": "The Sagrada Familia is in the city of", "answer": "Barcelona"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Sagrada Familia can be found in the city of", "answer": "Barcelona"},
+      {"type": "1hop",       "prompt": "The Sagrada Familia is in the country of",        "answer": "Spain"},
+      {"type": "2hop",       "prompt": "The main language spoken where the Sagrada Familia stands is", "answer": "Spanish"},
+      {"type": "locality",   "prompt": "The Brandenburg Gate is in the city of",          "answer": "Berlin"}
+    ]
+  },
+  {
+    "id": "brandenburg",
+    "base":     {"prompt": "The Brandenburg Gate is in the city of", "answer": "Berlin"},
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Brandenburg Gate can be found in the city of", "answer": "Berlin"},
+      {"type": "1hop",       "prompt": "The Brandenburg Gate is in the country of",        "answer": "Germany"},
+      {"type": "2hop",       "prompt": "The main language spoken where the Brandenburg Gate stands is", "answer": "German"},
+      {"type": "locality",   "prompt": "The Eiffel Tower is in the city of",               "answer": "Paris"}
+    ]
+  }
+]
