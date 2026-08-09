@@ -140,6 +140,23 @@ One correlation is a tweet; this family is the study.
 **Tooling (all existing):** NNSight on GPT-J/NDIF, causal tracing (04), IIA,
 `.source`, per-head (12b).
 
+**Data & external tooling (Asta probe 3, 2026-08-09 — ⚠ verify starred items):**
+- **RippleEdits** (Cohen/Biran/Geva, EMNLP 2023) — ~5K cases, already ships
+  hop-annotated neighbours (1-hop subject-replace, reverse, compositional).
+  → *Use its annotations directly for the hop-typed neighbour sets* (comparability
+  + de-risk; avoids reinventing neighbour generation). ⚠ repo URL to verify —
+  Asta guessed `eric-mitchell/ripple-edits` which is almost certainly wrong
+  (Mitchell = MEND/SERAC); find the real Cohen/Biran repo.
+- **MQuAKE-CF** (`princeton-nlp/MQuAKE`, verified real) — multi-hop QA, explicit
+  2/3/4-hop labels; for the multi-hop portability outcome (v2).
+- **EasyEdit** (`zjunlp/EasyEdit`, verified real) — unified ROME/MEMIT/MEND harness
+  for the v2 actual-edit portability. NOTE: its portability metric is AGGREGATE →
+  we must stratify by hop manually from the dataset annotations.
+- **CKA**: use Kornblith et al. reference (`google-research/representation_similarity`).
+  ⚠ Asta suggested `ecco` cka()/svcca() and two other repos — unverified; prefer
+  the Kornblith reference or a minimal custom linear-CKA.
+- All three datasets are GPT-J-validated in their original papers.
+
 ### 6. Confounds & controls
 | Confound | Control |
 |----------|---------|
@@ -208,7 +225,9 @@ stub). Weekend-paced over a few weeks.
 ---
 
 ## Experiments → tickets (derived from this design)
-1. Neighbour-set generation (Wikidata) for ~50 triples, typed by hop.
+1. Neighbour set: **load RippleEdits (hop-annotated) directly** rather than
+   generating from Wikidata — comparable + de-risked. Wikidata generation only if
+   extending beyond RippleEdits' coverage.
 2. Competence filter — baseline recall of facts + neighbours (extends E-001).
 3. Representation extraction + compute the 3 predictor families per
    fact/neighbour/layer.
