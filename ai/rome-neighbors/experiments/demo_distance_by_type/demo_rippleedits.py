@@ -10,9 +10,12 @@ SETUP (one-time):
     # data files live in RippleEdits/data/benchmark/ : RECENT / RANDOM / POPULAR
     # point DATA_PATH below at one of them (add .json if the files carry it)
 
-RippleEdits schema (from the repo, parsed defensively here):
-  entry.edit.prompt                      → the edited-fact statement (our BASE anchor)
-  entry.<Criterion>.test_queries[].prompt → neighbour prompts
+RippleEdits schema (VERIFIED against random.json/popular.json, 2026-08-09):
+  entry.edit.prompt                          → the edited-fact statement (BASE anchor)
+  entry.<Criterion>                          → LIST of query-groups
+  entry.<Criterion>[g].test_queries[].prompt → neighbour prompts
+  (each group also has condition_queries + test_condition; each query has
+   prompt / answers[{value,aliases}] / relation / subject_id / target_ids)
   six criteria → our neighbour types:
     Logical_Generalization → 1hop      Compositionality_I/II → 2hop
     Subject_Aliasing       → paraphrase  Relation_Specifity   → locality (control)
@@ -43,7 +46,9 @@ CONFIG.set_default_api_key(os.environ["NNSIGHT_API_KEY"])
 # EDIT this to point at your cloned RippleEdits data file:
 DATA_PATH = Path(os.environ.get(
     "RIPPLEEDITS_FILE",
-    str(Path.home() / "code" / "RippleEdits" / "data" / "benchmark" / "RANDOM"),
+    # popular.json = well-known entities GPT-J actually knows (random.json uses
+    # obscure entities → meaningless representations; this IS the competence filter).
+    str(Path.home() / "code" / "RippleEdits" / "data" / "benchmark" / "popular.json"),
 ))
 OUT_DIR = Path("experiments/demo_distance_by_type/output")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -90,16 +95,22 @@ def load_pairs(path: Path) -> list[dict[str, Any]]:
         base_prompt = edit.get("prompt")
         if not base_prompt:
             continue
-        # any top-level key that maps to a neighbour type and carries test_queries
+        # each criterion is a LIST of query-groups; each group has test_queries.
         for key, val in e.items():
             ntype = CRITERION_TO_TYPE.get(norm_key(key))
-            if ntype is None or not isinstance(val, dict):
+            if ntype is None or not isinstance(val, list):
                 continue
-            queries = val.get("test_queries") or []
-            for q in queries[:MAX_PER_CRITERION]:
-                p = q.get("prompt") if isinstance(q, dict) else None
-                if p:
-                    pairs.append({"base": base_prompt, "neighbour": p, "type": ntype})
+            # flatten test_queries across all groups in this criterion, then cap
+            prompts: list[str] = []
+            for group in val:
+                if not isinstance(group, dict):
+                    continue
+                for q in group.get("test_queries") or []:
+                    p = q.get("prompt") if isinstance(q, dict) else None
+                    if p:
+                        prompts.append(p)
+            for p in prompts[:MAX_PER_CRITERION]:
+                pairs.append({"base": base_prompt, "neighbour": p, "type": ntype})
     return pairs
 
 
