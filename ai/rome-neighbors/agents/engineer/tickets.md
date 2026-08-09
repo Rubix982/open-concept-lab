@@ -283,3 +283,41 @@ read on whether ANY (position, layer) separates propagate-types from locality.
 - finding → `agents/shared/findings.md` → E-008
 
 **Closed:** —
+
+---
+
+### E-009 · Structured predictor v1: Jeong-style semantic alignment (GPT-J)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-10
+**Updated:** 2026-08-10
+
+**Description:**
+Chase the thesis (T-006): does STRUCTURED geometry separate neighbour types
+where raw distance was flat (E-007)? First structured predictor = Jeong-style
+semantic alignment (adopted formula, design.md §5): for a neighbour with gold
+answer o, build a semantic ANCHOR φ(o) = mean representation of K reference
+prompts (from RippleEdits itself) whose gold answer is o, then
+alignment = cos(rep(neighbour), φ(o)). Head-to-head vs raw base↔neighbour
+cosine on the SAME data, aggregated by type. Verified locally: 53% of neighbours
+in a 40-edit sample have ≥3 reference prompts for an anchor.
+
+Representation = mean-pool over tokens at a mid layer (E-008 will tell us the
+best position/layer; mean-pool avoids the last-token sink from E-007).
+
+**HONEST SCOPE:** this is the PREDICTOR half only. Alignment-by-type separation
+tests whether structure carries signal raw distance missed — NOT yet whether it
+PREDICTS PROPAGATION. The causal outcome (IIA per neighbour) is E-010, the
+required companion to actually test the thesis.
+
+**Thesis prediction:** propagate-types (paraphrase/1hop/2hop) align to their
+answer anchors more than locality controls; raw distance stays flat.
+
+**Artifacts:**
+- `experiments/demo_distance_by_type/demo_alignment.py`
+- `experiments/demo_distance_by_type/output/alignment_vs_rawdist.png`
+- finding → `agents/shared/findings.md` → E-009
+
+**Closed:** —
