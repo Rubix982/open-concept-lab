@@ -1,0 +1,214 @@
+==========================================================================
+MODULE: block  transformer.h[0]
+==========================================================================
+--- module.source ---
+                 * def forward(
+                 0     self,
+                 1     hidden_states: Optional[torch.FloatTensor],
+                 2     layer_past: Optional[Cache] = None,
+                 3     attention_mask: Optional[torch.FloatTensor] = None,
+                 4     position_ids: Optional[torch.LongTensor] = None,
+                 5     head_mask: Optional[torch.FloatTensor] = None,
+                 6     use_cache: Optional[bool] = False,
+                 7     output_attentions: Optional[bool] = False,
+                 8     cache_position: Optional[torch.LongTensor] = None,
+                 9 ) -> Union[tuple[torch.Tensor], Optional[tuple[torch.Tensor, tuple[torch.FloatTensor, ...]]]]:
+                10     residual = hidden_states
+ self_ln_1_0 -> 11     hidden_states = self.ln_1(hidden_states)
+ self_attn_0 -> 12     attn_outputs, attn_weights = self.attn(
+                13         hidden_states=hidden_states,
+                14         layer_past=layer_past,
+                15         attention_mask=attention_mask,
+                16         position_ids=position_ids,
+                17         head_mask=head_mask,
+                18         use_cache=use_cache,
+                19         output_attentions=output_attentions,
+                20         cache_position=cache_position,
+                21     )
+ self_mlp_0  -> 22     feed_forward_hidden_states = self.mlp(hidden_states)
+                23     hidden_states = attn_outputs + feed_forward_hidden_states + residual
+                24 
+                25     return hidden_states, attn_weights
+                26 
+
+--- candidate operation accessors (dir) ---
+    .source.accessor
+    .source.interleaver
+    .source.operations
+    .source.path
+    .source.self_attn_0
+    .source.self_ln_1_0
+    .source.self_mlp_0
+
+==========================================================================
+MODULE: attn   transformer.h[0].attn
+==========================================================================
+--- module.source ---
+                                 * def forward(
+                                 0     self,
+                                 1     hidden_states: torch.FloatTensor,
+                                 2     layer_past: Optional[Cache] = None,
+                                 3     attention_mask: Optional[torch.FloatTensor] = None,
+                                 4     position_ids: Optional[torch.LongTensor] = None,
+                                 5     head_mask: Optional[torch.FloatTensor] = None,
+                                 6     use_cache: Optional[bool] = False,
+                                 7     output_attentions: Optional[bool] = False,
+                                 8     cache_position: Optional[torch.LongTensor] = None,
+                                 9 ) -> Union[
+                                10     tuple[torch.Tensor, tuple[torch.Tensor]],
+                                11     Optional[tuple[torch.Tensor, tuple[torch.Tensor], tuple[torch.Tensor, ...]]],
+                                12 ]:
+ self_q_proj_0               -> 13     query = self.q_proj(hidden_states)
+ self_k_proj_0               -> 14     key = self.k_proj(hidden_states)
+ self_v_proj_0               -> 15     value = self.v_proj(hidden_states)
+                                16 
+ self__split_heads_0         -> 17     query = self._split_heads(query, self.num_attention_heads, self.head_dim, True)
+ self__split_heads_1         -> 18     key = self._split_heads(key, self.num_attention_heads, self.head_dim, True)
+ self__split_heads_2         -> 19     value = self._split_heads(value, self.num_attention_heads, self.head_dim, False)
+                                20 
+ is_torch_fx_proxy_0         -> 21     if is_torch_fx_proxy(position_ids) or torch.jit.is_tracing():
+ torch_jit_is_tracing_0      ->  +     ...
+                                22         # The logic to conditionally copy to GPU could not be traced, so we do this
+                                23         # every time in the torch.fx case
+ get_embed_positions_0       -> 24         embed_positions = get_embed_positions(self.embed_positions, position_ids)
+                                25     else:
+ self__get_embed_positions_0 -> 26         embed_positions = self._get_embed_positions(position_ids)
+                                27 
+ position_ids_unsqueeze_0    -> 28     repeated_position_ids = position_ids.unsqueeze(-1).repeat(1, 1, embed_positions.shape[-1])
+ repeat_0                    ->  +     ...
+ torch_gather_0              -> 29     sincos = torch.gather(embed_positions, 1, repeated_position_ids).to(key.dtype)
+ to_0                        ->  +     ...
+ torch_split_0               -> 30     sin, cos = torch.split(sincos, sincos.shape[-1] // 2, dim=-1)
+                                31 
+                                32     if self.rotary_dim is not None:
+                                33         k_rot = key[:, :, :, : self.rotary_dim]
+                                34         k_pass = key[:, :, :, self.rotary_dim :]
+                                35 
+                                36         q_rot = query[:, :, :, : self.rotary_dim]
+                                37         q_pass = query[:, :, :, self.rotary_dim :]
+                                38 
+ apply_rotary_pos_emb_0      -> 39         k_rot = apply_rotary_pos_emb(k_rot, sin, cos)
+ apply_rotary_pos_emb_1      -> 40         q_rot = apply_rotary_pos_emb(q_rot, sin, cos)
+                                41 
+ torch_cat_0                 -> 42         key = torch.cat([k_rot, k_pass], dim=-1)
+ torch_cat_1                 -> 43         query = torch.cat([q_rot, q_pass], dim=-1)
+                                44     else:
+ apply_rotary_pos_emb_2      -> 45         key = apply_rotary_pos_emb(key, sin, cos)
+ apply_rotary_pos_emb_3      -> 46         query = apply_rotary_pos_emb(query, sin, cos)
+                                47 
+ key_permute_0               -> 48     key = key.permute(0, 2, 1, 3)
+ query_permute_0             -> 49     query = query.permute(0, 2, 1, 3)
+                                50 
+                                51     if layer_past is not None:
+                                52         cache_kwargs = {
+                                53             "sin": sin,
+                                54             "cos": cos,
+                                55             "partial_rotation_size": self.rotary_dim,
+                                56             "cache_position": cache_position,
+                                57         }
+ layer_past_update_0         -> 58         key, value = layer_past.update(key, value, self.layer_idx, cache_kwargs)
+                                59 
+                                60     # compute self-attention: V x Softmax(QK^T)
+ self__attn_0                -> 61     attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
+                                62 
+ self__merge_heads_0         -> 63     attn_output = self._merge_heads(attn_output, self.num_attention_heads, self.head_dim)
+ self_out_proj_0             -> 64     attn_output = self.out_proj(attn_output)
+ self_resid_dropout_0        -> 65     attn_output = self.resid_dropout(attn_output)
+                                66 
+                                67     return attn_output, attn_weights
+                                68 
+
+--- candidate operation accessors (dir) ---
+    .source.accessor
+    .source.apply_rotary_pos_emb_0
+    .source.apply_rotary_pos_emb_1
+    .source.apply_rotary_pos_emb_2
+    .source.apply_rotary_pos_emb_3
+    .source.get_embed_positions_0
+    .source.interleaver
+    .source.is_torch_fx_proxy_0
+    .source.key_permute_0
+    .source.layer_past_update_0
+    .source.operations
+    .source.path
+    .source.position_ids_unsqueeze_0
+    .source.query_permute_0
+    .source.repeat_0
+    .source.self__attn_0
+    .source.self__get_embed_positions_0
+    .source.self__merge_heads_0
+    .source.self__split_heads_0
+    .source.self__split_heads_1
+    .source.self__split_heads_2
+    .source.self_k_proj_0
+    .source.self_out_proj_0
+    .source.self_q_proj_0
+    .source.self_resid_dropout_0
+    .source.self_v_proj_0
+    .source.to_0
+    .source.torch_cat_0
+    .source.torch_cat_1
+    .source.torch_gather_0
+    .source.torch_jit_is_tracing_0
+    .source.torch_split_0
+
+==========================================================================
+MODULE: mlp    transformer.h[0].mlp
+==========================================================================
+--- module.source ---
+                    * def forward(self, hidden_states: Optional[torch.FloatTensor]) -> torch.FloatTensor:
+ self_fc_in_0   ->  0     hidden_states = self.fc_in(hidden_states)
+ self_act_0     ->  1     hidden_states = self.act(hidden_states)
+ self_fc_out_0  ->  2     hidden_states = self.fc_out(hidden_states)
+ self_dropout_0 ->  3     hidden_states = self.dropout(hidden_states)
+                    4     return hidden_states
+                    5 
+
+--- candidate operation accessors (dir) ---
+    .source.accessor
+    .source.interleaver
+    .source.operations
+    .source.path
+    .source.self_act_0
+    .source.self_dropout_0
+    .source.self_fc_in_0
+    .source.self_fc_out_0
+
+==========================================================================
+MODULE: norm   transformer.ln_f
+==========================================================================
+--- module.source ---
+                    * def forward(self, input: Tensor) -> Tensor:
+ F_layer_norm_0 ->  0     return F.layer_norm(
+                    1         input, self.normalized_shape, self.weight, self.bias, self.eps
+                    2     )
+                    3 
+
+--- candidate operation accessors (dir) ---
+    .source.F_layer_norm_0
+    .source.accessor
+    .source.interleaver
+    .source.operations
+    .source.path
+
+==========================================================================
+MODULE: head   lm_head
+==========================================================================
+--- module.source ---
+                * def forward(self, input: Tensor) -> Tensor:
+                0     """
+                1     Runs the forward pass.
+                2     """
+ F_linear_0 ->  3     return F.linear(input, self.weight, self.bias)
+                4 
+
+--- candidate operation accessors (dir) ---
+    .source.F_linear_0
+    .source.accessor
+    .source.interleaver
+    .source.operations
+    .source.path
+
+==========================================================================
+Next: read off the real op names above (esp. the attention module's),
+then 10–13 capture / verify / plot-attention / intervene on them.
