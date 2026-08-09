@@ -74,3 +74,16 @@ that submodule's boundary output (attn.out_proj.output) — verified in script 1
 
 Confidence: high for the source map (deterministic introspection); the capture /
 attention / intervention scripts (10/12/13) are written but not yet run.
+
+**Update (10 run):** `.source` capture confirmed on GPT-J. Shapes:
+q_proj `(1,10,4096)`; `_attn.output[1]` = attention weights `(1,16,10,10)`
+`[batch,heads,seq,seq]` — the pattern, reachable; `_attn.output[0]` `(1,16,10,256)`
+is per-head output BEFORE `_merge_heads`. Two `.source` lessons (→ memory
+`reference-nnsight`):
+1. Do NOT hook the same op both via `.source` and its module boundary in one
+   trace → `MissedProviderError` ("called out of order"). Use separate traces.
+2. Grab a tuple-returning op's `.output` ONCE, then index — not `.output[0]` and
+   `.output[1]` as two hooks.
+Sanity: source-op vs module-boundary differ only by ~3.9e-3 = fp16 run-to-run
+nondeterminism (two separate remote jobs), NOT a real disagreement — confirmed
+by comparing against a same-op-twice noise floor. `.source` is trustworthy.

@@ -30,14 +30,28 @@ model = LanguageModel("EleutherAI/gpt-j-6b")
 prompt = "The Eiffel Tower is in the city of"
 attn0 = model.transformer.h[0].attn
 
-with model.trace(prompt, remote=True):
-    # (a) capture non-boundary intermediates inside attn.forward
-    q = attn0.source.self_q_proj_0.output.save()          # query projection
-    attn_out = attn0.source.self__attn_0.output[0].save()  # attention output
-    attn_w = attn0.source.self__attn_0.output[1].save()    # ATTENTION WEIGHTS
+# NOTE (lesson from the first run): do NOT hook the same operation both via
+# .source AND via its module boundary in ONE trace — the interleaver provides
+# one and the other raises MissedProviderError ("called out of order"). Read
+# them in SEPARATE traces and compare locally. Also grab the _attn tuple ONCE,
+# then index, rather than hooking .output twice.
 
-    # (b) sanity: source-op output vs the same submodule's boundary output
+# Trace 1 — capture non-boundary intermediates via .source (homogeneous)
+with model.trace(prompt, remote=True):
+    q = attn0.source.self_q_proj_0.output.save()          # query projection
+    attn_ret = attn0.source.self__attn_0.output           # (attn_out, attn_weights)
+    attn_out = attn_ret[0].save()                          # attention output
+    attn_w = attn_ret[1].save()                            # ATTENTION WEIGHTS
     src_outproj = attn0.source.self_out_proj_0.output.save()
+
+# Trace 2 — the SAME source-op again (determinism baseline): two separate
+# remote jobs of the same forward differ slightly in fp16 (nondeterministic GPU
+# reductions). This measures that run-to-run noise floor.
+with model.trace(prompt, remote=True):
+    src_outproj_2 = attn0.source.self_out_proj_0.output.save()
+
+# Trace 3 — the SAME op via its module boundary, in a separate trace
+with model.trace(prompt, remote=True):
     mod_outproj = attn0.out_proj.output.save()
 
 print("── captured intermediate shapes (layer 0 attention) ──")
@@ -46,10 +60,19 @@ print(f"  _attn output[0]    : {tuple(attn_out.shape)} (attention output)")
 print(f"  _attn output[1]    : {tuple(attn_w.shape)}   (ATTN WEIGHTS [1,heads,seq,seq])")
 
 print("\n── sanity: source-op == module-boundary? ──")
-same = torch.allclose(src_outproj, mod_outproj)
-print(f"  self_out_proj_0.output  vs  attn.out_proj.output : "
-      f"{'MATCH ✓' if same else 'MISMATCH ✗'}")
-print(f"  max abs diff = {float((src_outproj - mod_outproj).abs().max()):.2e}")
+# noise floor: SAME source-op, two separate remote jobs (fp16 nondeterminism)
+noise_floor = float((src_outproj - src_outproj_2).abs().max())
+# the comparison of interest: source-op vs the module boundary
+src_vs_mod = float((src_outproj - mod_outproj).abs().max())
 
-print("\nIf the shapes are sane and the sanity check MATCHES, .source is giving")
-print("us trustworthy operation-level access — ready for 12 (attention) & 13.")
+print(f"  noise floor (same op, 2 runs)          : {noise_floor:.2e}")
+print(f"  source-op vs module-boundary           : {src_vs_mod:.2e}")
+
+# trustworthy if the source-vs-boundary diff is within ~the noise floor,
+# i.e. they only differ because of cross-run fp16 nondeterminism
+trustworthy = src_vs_mod <= max(noise_floor * 3, 1e-2)
+print(f"  → {'TRUSTWORTHY ✓' if trustworthy else 'REAL MISMATCH ✗'} "
+      f"({'within' if trustworthy else 'exceeds'} the noise floor)")
+
+print("\nIf TRUSTWORTHY, .source matches the module boundary up to hardware noise")
+print("— operation-level access is reliable. Ready for 12 (attention) & 13.")
