@@ -128,7 +128,38 @@ edited fact. If so, the ripple problem (T-001) and the consumption question
 Does the mechanistic "who reads this site" map onto the logical "which facts
 entail this one"? If they line up, the causal graph over activations IS the
 entailment graph over facts — which would be the deep result of the project.
-**Answer:** —
+
+**Framing (2026-08-09) — the two-graphs distinction (project core):**
+There are TWO graphs, and "neighbour" lives in only one of them.
+- ENTAILMENT graph — facts and their logical relations (Eiffel→Rome ⇒ →Italy ⇒
+  →Italian). Human/logical, MODEL-INDEPENDENT. "Neighbour" is defined here.
+- MODEL graph — directions, layers, positions, read-paths, circuits.
+  MODEL-SPECIFIC (size/config/training decide the organisation).
+"Neighbour" is a concept we IMPOSE from the entailment graph onto the model
+graph, then ask empirically: is that adjacency reflected in the internals (same
+direction? same site? same read-path?). Not guaranteed — it is a per-model
+measurement, and that measurement is the whole project.
+
+Model-specific ≠ arbitrary: linear representation (T-011), MLP fact-locality
+(T-012), and universality are regularities that give priors and make portable
+methods (ROME, probing) work across models at all. Residual stream + causal
+interventions are the INSTRUMENT that projects our fact-notion into the model's
+space to test the correspondence.
+
+Both/and on the unit: the unit of MEASUREMENT is per-neighbour (portability —
+"did the country update?"); the object of EXPLANATION is the internal
+correspondence (why, in terms of shared directions/sites/read-paths).
+
+**The project in one line:**
+> Ripple success = the two graphs ALIGN at that fact. Ripple failure = the facts
+> are logical NEIGHBOURS but representational STRANGERS — adjacent in meaning,
+> unconnected in the model.
+
+Says why it's hard (logical adjacency need not be built into the weights), what
+we measure (whether it is, per fact), and what a fix requires (make the
+entailment edges CAUSALLY REAL in the model, not just true in the world).
+
+**Answer:** — (thesis-level; resolved only by the full portability + IIA study)
 
 ---
 
@@ -283,7 +314,7 @@ T-001 ripple/portability (root)
 │  ├─ T-004 determining "Rome-ness" ............... answered
 │  │  └─ T-007 does Rome-ness score predict IIA? .. OPEN  ← concrete experiment
 │  └─ T-005 verifying downstream consumption ...... OPEN
-│     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one
+│     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one / project thesis
 │     └─ T-009 .source op-level access (E-006) .... active (partial)
 │        └─ T-010 which head does the lookback? ... active  ← 12b per-head
 
