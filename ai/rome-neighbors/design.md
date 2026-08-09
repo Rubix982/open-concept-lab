@@ -64,6 +64,18 @@ hop-resolved, causal, quantitative predictor — the measurement the field lacks
   - **Neither reports by entailment hop; neither uses a causal metric.** Our
     hop-resolved + causal-IIA + head-to-head-predictor-comparison combination is
     therefore unclaimed. Scoop risk revised **moderate-high → moderate**.
+- **Novelty CONFIRMED (Asta probe 2, 2026-08-09)** — no single paper does all of:
+  per-neighbour distance→propagation correlation, resolved by hop (1-hop/2-hop/
+  reverse), with a head-to-head predictor comparison. The pieces exist scattered;
+  the combination is the gap. New nearest competitor surfaced:
+  - **Huang et al. — "Revisiting Ripple Effects... Pressure-Aware Joint
+    Neighborhood Optimization"** — comes closest on the *predictor-variety* axis:
+    defines key-space coupling + entanglement + sensitivity probes, and reports
+    non-monotonic transfer. BUT does not test them as *competing predictors* of
+    *hop-resolved* portability. This is now the closest prior art to cite and
+    differentiate from.
+  Confirmed unclaimed: per-neighbour distance→propagation link, binned by
+  hop, with predictive-power-vs-hop reported.
 
 ---
 
@@ -104,7 +116,8 @@ One correlation is a tweet; this family is the study.
   subject/object names at layer `l`, and `M_r` fit per relation per layer by ridge
   regression (RESCAL variant). NOTE: Kim only tested this on synthetic models —
   fitting it on pre-trained GPT-J is novel (their explicit future work). DAS-learned
-  subspace → **defer** to v2.
+  subspace → **defer** to v2. Also consider **key-space coupling (Huang et al.)** as
+  an additional structured predictor — it is the closest existing multi-probe work.
 - Alignment: **STEAM alignment score (Jeong et al. 2025), adopted directly** —
   `S(φ, hᵉ) = (1/L) Σ_ℓ cos(φ_ℓ, hᵉ_ℓ)`, where `hᵉ` = layerwise hidden states of the
   edited/queried prompt at the prediction token, and `φ` = per-layer semantic anchor
@@ -167,9 +180,13 @@ stub). Weekend-paced over a few weeks.
 
 ### 9. Deliverable (design backward from this)
 - **Headline figure:** predictive power of each predictor vs. entailment hop —
-  x = hop (N0→N2/reverse), y = predictive power (partial correlation controlling
-  for hop, or AUC), one series per predictor. Expected shape: raw distance flat/
-  weak, structured/alignment stronger, with a decay pattern.
+  x = hop (N0→N2/reverse), y = predictive power, one series per predictor.
+  Expected shape: raw distance flat/weak, structured/alignment stronger, with a
+  decay pattern.
+- **Analysis recipe (confirmed sensible by Asta probe 2):** logistic regression
+  `P(propagate | predictor, hop-type)`; stratify by 1-hop / 2-hop / reverse;
+  compare predictor **AUC-ROC per hop bin**. This is the concrete form of the
+  headline figure.
 - **Headline number:** Δ predictive power (or partial correlation) of the best
   structured/alignment measure over the raw-distance + hop-count baseline.
 - **Secondary:** representation-distance-by-hop (does even raw distance decay?);
