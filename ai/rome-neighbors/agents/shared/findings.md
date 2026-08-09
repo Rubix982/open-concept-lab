@@ -87,3 +87,34 @@ is per-head output BEFORE `_merge_heads`. Two `.source` lessons (→ memory
 Sanity: source-op vs module-boundary differ only by ~3.9e-3 = fp16 run-to-run
 nondeterminism (two separate remote jobs), NOT a real disagreement — confirmed
 by comparing against a same-op-twice noise floor. `.source` is trustworthy.
+
+## [E-007] Finding: v0.5 raw-distance baseline on real RippleEdits (GPT-J)
+
+_Date: 2026-08-09_
+
+Setup: popular.json, 40 edits → 245 typed pairs; base = `edit.prompt`;
+representation = residual at LAST token, layer 15; cosine(base, neighbour) binned
+by RippleEdits criterion → our type.
+
+Result — cosine is near-FLAT ~0.6 across types:
+  paraphrase 0.612 | 1hop 0.610 | 2hop 0.601 | locality 0.547 | control 0.654
+The three propagate-types are indistinguishable (spread 0.011). No hop-decay.
+Overlap confound visible only in control (overlap 0.74, highest) — not clean
+elsewhere (1hop has lowest overlap 0.44 yet mid-high cosine).
+
+Interpretation: raw last-token cosine is a weak / near-uninformative baseline —
+empirically supports demoting raw distance (the design reframe), with real data.
+
+Two caveats (do NOT over-read):
+1. Not ripple — unedited model, base = counterfactual prompt string, no causal
+   outcome. Measures prompt geometry, not propagation.
+2. Last token is the SINK-dominated position (our 03/12 finding: attention sinks
+   on token 0; last-token residual ≈ shared template). The flat ~0.6 is exactly
+   what a template/sink-dominated vector predicts → flatness may be a POSITION
+   artifact suppressing real signal, not a truth about raw distance.
+
+Next (E-008): re-measure at mean-pool / subject-ish position + sweep layers to
+test the sink-artifact hypothesis before concluding anything about raw distance.
+
+Confidence: medium for "raw last-token distance is flat"; low for any deeper
+claim until position/layer is swept and a causal outcome (IIA) is added.

@@ -250,3 +250,36 @@ larger N. Toy `demo.py` kept as a fast smoke test. Requires cloning the repo
 - `experiments/demo_distance_by_type/output/similarity_by_type[_rippleedits].png`
 
 **Closed:** —
+
+---
+
+### E-008 · Position/layer sweep: is the flat raw-distance signal a sink artifact?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-09
+**Updated:** 2026-08-09
+
+**Blockers:** ~~E-007~~ (E-007 produced the flat ~0.6 result this pressure-tests)
+
+**Description:**
+E-007 found raw last-token cosine is near-flat (~0.6) across neighbour types.
+Our own 03/12 findings say the LAST token is sink-dominated (attention sinks on
+token 0; last-token residual ≈ shared template), so the flatness may be a
+POSITION artifact, not a truth about raw distance. This ticket tests that: re-run
+the RippleEdits similarity-by-type pipeline comparing two representation
+strategies — LAST token vs MEAN-pooled over prompt tokens — across a LAYER sweep
+(6/9/12/15/18). If mean-pool (or some layer) separates the types where last-token
+did not, the flatness was the sink; if it stays flat, raw distance is genuinely
+weak. Either outcome hardens design.md construct-validity (lens 5).
+
+**Success criterion:** a cos-by-type × layer curve for each strategy; a clear
+read on whether ANY (position, layer) separates propagate-types from locality.
+
+**Artifacts:**
+- `experiments/demo_distance_by_type/demo_position_sweep.py`
+- `experiments/demo_distance_by_type/output/position_layer_sweep.png`
+- finding → `agents/shared/findings.md` → E-008
+
+**Closed:** —
