@@ -36,8 +36,13 @@ CONFIG.set_default_api_key(os.environ["NNSIGHT_API_KEY"])
 
 model = LanguageModel("EleutherAI/gpt-j-6b")
 prompt = "The Eiffel Tower is in the city of"
-n_layers = 28
-d_model = 4096
+
+# Envoy-derived — no hardcoded architecture constants, so this script is
+# model-agnostic (works on any stack, not just GPT-J's 28 layers).
+# len(model.transformer.h) uses the Envoy's __len__ over the layer list.
+n_layers = len(model.transformer.h)     # 28 for GPT-J
+d_model = model.config.n_embd           # 4096 for GPT-J (hidden size, from config)
+
 NOISE = 0.3   # embedding noise std; tune if corruption is too weak/strong
 SEED = 0      # fixes the corruption noise so it is IDENTICAL across all runs
 
@@ -51,6 +56,32 @@ subj_positions = [i for i, t in enumerate(tokens)
                   if any(w in t for w in ("Eiff", "Tower", "iffel"))]
 print(f"Tokens          : {tokens}")
 print(f"Subject positions: {subj_positions}\n")
+
+
+def answer_probability(logits) -> float:
+    """How much probability the model puts on the answer token (" Paris").
+
+    `logits` has shape [batch, seq_len, vocab] = [1, 8, 50400] here.
+    The compact form is `float(logits[0, -1].softmax(-1)[answer_id])`;
+    below is the same thing, unrolled so no index is magical.
+    """
+    BATCH_INDEX = 0     # we only sent ONE prompt, so batch dim is just 0
+    LAST_TOKEN = -1     # the last position predicts the NEXT token — i.e. the
+                        # model's answer to "...the city of ___". Earlier
+                        # positions predict earlier continuations; we want the end.
+
+    # 1. take the logit vector at (our prompt, its last token) → shape [50400],
+    #    one raw score per vocabulary token
+    logit_vector = logits[BATCH_INDEX, LAST_TOKEN]
+
+    # 2. softmax turns those 50,400 raw scores into probabilities summing to 1
+    probabilities = logit_vector.softmax(dim=-1)
+
+    # 3. answer_id is " Paris"'s vocab index; read off just its probability
+    answer_prob = probabilities[answer_id]
+
+    # 4. pull the single value out of the tensor into a plain Python float
+    return float(answer_prob)
 
 
 def corrupt_subject() -> None:
@@ -70,19 +101,21 @@ def corrupt_subject() -> None:
 # ── RUN 1: CLEAN — stack all hidden states into ONE saved tensor ───────────
 # FIX: appending 28 individual .save() proxies returns empty on nnsight 0.7
 # (same bug as 01/02). Stack into one [n_layers, seq, d_model] tensor instead.
+# We ITERATE the Envoy (model.transformer.h) rather than range(n_layers) — same
+# result, but no hardcoded count and portable to any model.
 with model.trace(prompt, remote=True):
     clean_stack = torch.stack(
-        [model.transformer.h[L].output[0][0] for L in range(n_layers)]
+        [layer.output[0][0] for layer in model.transformer.h]      # iterate the Envoy
     ).save()                                                       # [n_layers, seq, d]
     clean_logits = model.lm_head.output.save()
-clean_prob = float(clean_logits[0, -1].softmax(dim=-1)[answer_id])
+clean_prob = answer_probability(clean_logits)
 print(f"[debug] clean_stack shape = {tuple(clean_stack.shape)}  (expect ({n_layers},{seq_len},{d_model}))")
 
 # ── RUN 2: CORRUPTED — noise the subject embeddings, measure the damage ────
 with model.trace(prompt, remote=True):
     corrupt_subject()
     corr_logits = model.lm_head.output.save()
-corr_prob = float(corr_logits[0, -1].softmax(dim=-1)[answer_id])
+corr_prob = answer_probability(corr_logits)
 
 print(f"P('Paris')  clean     = {clean_prob:.4f}")
 print(f"P('Paris')  corrupted = {corr_prob:.4f}   (should be much lower)\n")
@@ -112,7 +145,7 @@ for p in range(seq_len):
             # restore the clean vector at (L, p) via indexed assignment
             model.transformer.h[L].output[0][0, p, :] = clean_vec   # type: ignore[index]
             r_logits = model.lm_head.output.save()
-        r_prob = float(r_logits[0, -1].softmax(dim=-1)[answer_id])
+        r_prob = answer_probability(r_logits)
         recovery = (r_prob - corr_prob) / denom
         row += f"{recovery:>6.2f}"
     print(row)

@@ -132,6 +132,23 @@ combines a probe sweep (Family 2) with an interchange sweep (Family 1).
 
 ---
 
+### T-009 · What does `.source` operation-level access give us on GPT-J?
+
+**Status:** active (E-006 spike)
+**Parent:** T-005
+**Opened:** 2026-08-09
+**Question:** `.source` reads a module's forward() source and exposes each
+operation inside it as a hook point — finer than the module-boundary
+`.output`/`.input` used so far. What operations does it actually expose on
+GPT-J-6B, and can we reach non-boundary intermediates (esp. attention softmax
+weights)? Op names are model-specific → discover, don't guess. Directly unlocks
+the deferred attention-maps work (attention pattern lives inside attn.forward,
+not at a boundary), which is a method for T-005 (verifying downstream
+consumption via attention knockout).
+**Answer:** — (E-006: 09 discovery this session; 10–13 gated on its output)
+
+---
+
 ## Thread tree
 
 ```
@@ -142,5 +159,6 @@ T-001 ripple/portability (root)
 │  ├─ T-004 determining "Rome-ness" ............... answered
 │  │  └─ T-007 does Rome-ness score predict IIA? .. OPEN  ← concrete experiment
 │  └─ T-005 verifying downstream consumption ...... OPEN
-│     └─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one
+│     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one
+│     └─ T-009 .source op-level access (E-006) .... active
 ```

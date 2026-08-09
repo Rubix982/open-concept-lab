@@ -165,3 +165,42 @@ experiment — hence a spike, logged after the fact per ticket discipline.
 - `readings/metrics/notes.md` (IIA + metric-families reference)
 
 **Closed:** 2026-08-04
+
+---
+
+### E-006 · Spike: explore what NNSight `.source` exposes on GPT-J-6B
+
+**Status:** in-progress
+**Type:** spike
+**Priority:** medium
+**Created:** 2026-08-09
+**Updated:** 2026-08-09
+
+**Description:**
+`.source` reads a module's `forward()` source and exposes each operation inside
+it as a hook point — a level finer than the module-boundary `.output`/`.input`
+we have used so far. Map what it actually gives us on GPT-J-6B, since operation
+names are model-specific and must be discovered, not guessed.
+
+**Planned experiment set (each a scratch script):**
+1. `09_source_discovery.py` — print `.source` for block / attn / mlp / ln_f /
+   lm_head. LOCAL (source introspection, no remote). Reveals the real op names.
+   ← THIS SESSION; the rest are gated on its output.
+2. `10_source_capture.py` — remote: grab several intermediate op outputs, print
+   their shapes; confirm we can reach non-boundary intermediates.
+3. `11_source_sanity.py` — verify a source-op output equals the matching
+   submodule `.output` where they coincide (trust check).
+4. `12_source_attention.py` — extract the attention weights (softmax output
+   inside attn.forward) and plot which tokens the answer position attends to.
+   Serves the deferred attention-maps thread.
+5. `13_source_intervene.py` — zero/patch an intermediate op (e.g. one head's
+   contribution), measure the effect on P('Paris'). Operation-level ablation.
+
+**Success criterion:** `09` prints usable operation names for GPT-J's attention
+and MLP; we can then reach at least one non-boundary intermediate (`10`).
+
+**Artifacts:**
+- `scratch/09`–`13` (09 this session; 10–13 grounded in 09's output)
+- findings → `agents/shared/findings.md` → E-006
+
+**Closed:** —
