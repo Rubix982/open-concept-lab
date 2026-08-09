@@ -50,6 +50,20 @@ hop-resolved, causal, quantitative predictor — the measurement the field lacks
 - **Adopt for comparability:** CounterFact, RippleEdits (~5K), MQuAKE-CF; GPT-J
   (NDIF) primary, GPT-2 XL optional; metrics reliability/locality/portability/
   multi-hop; baselines ROME/MEMIT/MEND.
+- **Lane CONFIRMED OPEN (Asta probe 1, 2026-08-09)** — implementation-level check
+  of the two nearest competitors:
+  - **Kim et al. 2025** measures logical generalisation as a *single aggregate*
+    over entailed facts (**no hop breakdown**), uses **only behavioural accuracy +
+    probing** (**no causal metric**), and runs on **synthetic from-scratch models
+    only**. Their own future work asks for "diagnostics for relational structure
+    in real pre-trained models." So applying their bilinear probe to a *pre-trained*
+    GPT-J, hop-resolved, is itself in their stated gap.
+  - **Jeong et al. 2025 (STEAM)** reports Portability as an *aggregate* multi-hop
+    score (**no hop breakdown**), uses cosine-alignment + LogitLens + behavioural
+    accuracy (**no causal metric / no patching/IIA**). GPT-J 6B is in their model set.
+  - **Neither reports by entailment hop; neither uses a causal metric.** Our
+    hop-resolved + causal-IIA + head-to-head-predictor-comparison combination is
+    therefore unclaimed. Scoop risk revised **moderate-high → moderate**.
 
 ---
 
@@ -85,10 +99,16 @@ One correlation is a tweet; this family is the study.
 ### 5. Method & construct validity
 **Predictors (independent variables)** — enumerate, pick, defer:
 - Raw distance: cosine, Euclidean, diff-of-means projection → **BASELINE** (pick).
-- Structured: bilinear relational similarity (Kim-style); DAS-learned subspace →
-  pick a light version; **defer** full DAS training to v2.
-- Alignment: residual-stream trajectory alignment (Jeong-style — layerwise cosine
-  / CKA between edited and reference paths) → pick a simple version.
+- Structured: **bilinear relational score (Kim et al. 2025), adopted directly** —
+  `f_r(s,o) = sᵀ M_r o`, with `s`, `o` = hidden states at the final token of the
+  subject/object names at layer `l`, and `M_r` fit per relation per layer by ridge
+  regression (RESCAL variant). NOTE: Kim only tested this on synthetic models —
+  fitting it on pre-trained GPT-J is novel (their explicit future work). DAS-learned
+  subspace → **defer** to v2.
+- Alignment: **STEAM alignment score (Jeong et al. 2025), adopted directly** —
+  `S(φ, hᵉ) = (1/L) Σ_ℓ cos(φ_ℓ, hᵉ_ℓ)`, where `hᵉ` = layerwise hidden states of the
+  edited/queried prompt at the prediction token, and `φ` = per-layer semantic anchor
+  built by averaging hidden states of reference facts about the object (from Wikidata).
 - RSA / CKA between fact-pair representations → consider.
 
 **Outcome (dependent variable)** — per-neighbour ripple:
@@ -164,7 +184,9 @@ stub). Weekend-paced over a few weeks.
 - "n underpowered." → bootstrap CIs, power estimate, scale facts if needed.
 - "Confounds (popularity, overlap)." → explicit controls (lens 6).
 - "Cherry-picked layer/metric." → sweep layers, report multiple metrics.
-- "Scooped by Kim/Jeong." → distinct axis; bring Arnab to verify the open lane.
+- "Scooped by Kim/Jeong." → confirmed distinct (probe 1): both aggregate + behavioural,
+  ours hop-resolved + causal-IIA; Kim is synthetic-only. Still bring Arnab to verify
+  nothing in-flight closes the lane.
 
 ---
 
