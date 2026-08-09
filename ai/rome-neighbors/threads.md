@@ -145,7 +145,32 @@ weights)? Op names are model-specific → discover, don't guess. Directly unlock
 the deferred attention-maps work (attention pattern lives inside attn.forward,
 not at a boundary), which is a method for T-005 (verifying downstream
 consumption via attention knockout).
-**Answer:** — (E-006: 09 discovery this session; 10–13 gated on its output)
+**Answer:** (2026-08-09, partial) `.source` works and is trustworthy on GPT-J.
+09 mapped the op names; 10 confirmed capture (attn weights reachable at
+`attn.source.self__attn_0.output[1]` = `[1,16,seq,seq]`) and that source-op ==
+module-boundary up to fp16 noise. Two gotchas learned → memory. 12 ran (attn
+patterns, all 28 layers, head-averaged): dominant ATTENTION SINK on token 0
+(`The` 0.6–0.88 throughout) preserves the last-position residual; the lookback
+to "Eiffel" (iff/el) emerges in layers ~16–24 (peak 0.18 @ L20) and the sink
+DIPS exactly there (0.59) — retrieval competes with the sink for attention mass.
+Three experiments now converge: STORE (subj, early, 03) → READ OUT (last tok,
+~12–17, 08) → LOOK BACK to subject (~16–24, 12). Still open: 13 (MLP vs attn
+ablation) and per-head isolation → T-010.
+
+---
+
+### T-010 · Which specific head(s) perform the Eiffel-lookback?
+
+**Status:** active (E-006, script 12b)
+**Parent:** T-009
+**Opened:** 2026-08-09
+**Question:** The 0.18 subject attention in 12 is averaged over 16 heads — the
+real lookback head is likely attending at ~0.5–0.8, diluted 16×. Build a
+per-head `[layer × head]` heatmap of last-position attention to the full subject
+span (positions 1–4, not just Tower — 12's subj detection missed the subword
+pieces). Isolate the head(s) doing the retrieval; that pins down where the
+lookback circuit lives, invisible in the head-average.
+**Answer:** —
 
 ---
 
@@ -160,5 +185,6 @@ T-001 ripple/portability (root)
 │  │  └─ T-007 does Rome-ness score predict IIA? .. OPEN  ← concrete experiment
 │  └─ T-005 verifying downstream consumption ...... OPEN
 │     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one
-│     └─ T-009 .source op-level access (E-006) .... active
+│     └─ T-009 .source op-level access (E-006) .... active (partial)
+│        └─ T-010 which head does the lookback? ... active  ← 12b per-head
 ```
