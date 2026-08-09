@@ -50,7 +50,7 @@ DATA_PATH = Path(os.environ.get(
     # obscure entities → meaningless representations; this IS the competence filter).
     str(Path.home() / "code" / "RippleEdits" / "data" / "benchmark" / "popular.json"),
 ))
-OUT_DIR = Path("experiments/demo_distance_by_type/output")
+OUT_DIR = Path(__file__).resolve().parent / "output"   # robust to run-location
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 LAYER = 15

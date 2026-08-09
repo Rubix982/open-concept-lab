@@ -31,8 +31,8 @@ from nnsight.modeling.language import LanguageModel
 
 CONFIG.set_default_api_key(os.environ["NNSIGHT_API_KEY"])
 
-DATA = Path("experiments/demo_distance_by_type/data/demo_facts.json")
-OUT_DIR = Path("experiments/demo_distance_by_type/output")
+DATA = Path(__file__).resolve().parent / "data" / "demo_facts.json"
+OUT_DIR = Path(__file__).resolve().parent / "output"   # robust to run-location
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 LAYER = 15                      # mid layer; v1 sweeps this
 TYPES = ["paraphrase", "1hop", "2hop", "locality"]
