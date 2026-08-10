@@ -13,13 +13,13 @@ _Source pool: `readings/ndif/research_papers.md` (NDIF corpus) + Asta reviews +
 ## How this map grows (convention — keep it consistent)
 
 - Add a paper **only after I've vetted what it gives me** — not on seeing a title.
-- Each entry: **Title** (author, venue/yr) — one line: *what it gives me / when to cite it*.
+- Each entry: **Title** (author, venue/yr) — one line: _what it gives me / when to cite it_.
 - **Tags:** `[foundation]` `[benchmark]` `[predictor]` `[outcome/mechanism]`
   `[near-miss]` `[tool]` `[critique]`.
 - **Confidence:** `✓` read/verified · `~` second-hand (Asta/abstract) · `?` claimed, unverified.
 - **Place it in the lineage:** what it branches FROM, what branches from IT.
 - **Note the edge to my work:** `→ used in E-00x` / `→ differentiate from` / `→ adopt method`.
-- When a paper changes the plan, that's an *edge*, not just an entry. Record the edge.
+- When a paper changes the plan, that's an _edge_, not just an entry. Record the edge.
 
 ---
 
@@ -69,28 +69,37 @@ Tooling spine
   ✓ EasyEdit  ROME/MEMIT/MEND harness                        [tool]  portability aggregate → stratify by hop
   ✓ Ecco  CKA/SVCCA/PWCCA on hidden states                  [tool]  (Kornblith ref = fallback)
   ✓ pyvene  standardized interventions                       [tool]
+  ~ jkminder/nnpatch  activation patching on NNsight          [tool]  → build E-010 (IIA) on this, don't reinvent
+  ~ AtP* (Kramar 2024, NNsight impl)  attribution patching    [tool]  scalable causal attr — if IIA too costly
+  ~ MaheepChaudhary/SAE-Ravel  RAVEL + patching code          [tool]  → starting point IF RAVEL path chosen
+  ~ saprmarks/feature-circuits  discover/edit causal graphs   [tool]  adjacent feature-level editing
   ✓ Yao 2023  Editing LLMs: survey                           [foundation]  the field map
 ```
+_(repos from `readings/ndif/code_references.md`; `~` = seen the one-line, not yet
+verified fit — check before adopting.)_
 
 ---
 
 ## Reference-for-X index (the "want to do X → cite Y")
 
-| I want to… | Reference |
-|------------|-----------|
-| edit a fact | ROME (Meng 2022) / MEMIT (Meng 2023) / EasyEdit (tool) |
-| the ripple/portability benchmark | RippleEdits (Cohen 2023) / MQuAKE (Zhong 2023) |
-| hop-clean factual disentanglement | RAVEL (+ DAS) |
-| a **structured** predictor | Kim bilinear / Function Vectors (Todd) / Huang key-space |
-| an **alignment** predictor | Jeong STEAM |
-| the geometry ↔ edit-damage link | Nishi Representation Shattering |
-| the nearest method (similarity→consistency) | SLAQ |
-| the "localization ≠ editability" caution | Hase 2023 |
-| multi-hop propagation mechanism | Back Attention |
-| retrieval-based editing contrast | GRACE / WISE / SERAC |
-| why editing is possible (MLP memory) | Geva 2020/2022, Dai 2021 |
-| the field overview | Yao 2023 survey |
-| internals access / interventions | NNsight/NDIF, pyvene |
+| I want to…                                  | Reference                                                |
+| ------------------------------------------- | -------------------------------------------------------- |
+| edit a fact                                 | ROME (Meng 2022) / MEMIT (Meng 2023) / EasyEdit (tool)   |
+| the ripple/portability benchmark            | RippleEdits (Cohen 2023) / MQuAKE (Zhong 2023)           |
+| hop-clean factual disentanglement           | RAVEL (+ DAS)                                            |
+| a **structured** predictor                  | Kim bilinear / Function Vectors (Todd) / Huang key-space |
+| an **alignment** predictor                  | Jeong STEAM                                              |
+| the geometry ↔ edit-damage link             | Nishi Representation Shattering                          |
+| the nearest method (similarity→consistency) | SLAQ                                                     |
+| the "localization ≠ editability" caution    | Hase 2023                                                |
+| multi-hop propagation mechanism             | Back Attention                                           |
+| retrieval-based editing contrast            | GRACE / WISE / SERAC                                     |
+| why editing is possible (MLP memory)        | Geva 2020/2022, Dai 2021                                 |
+| the field overview                          | Yao 2023 survey                                          |
+| internals access / interventions            | NNsight/NDIF, pyvene                                     |
+| do activation patching / IIA (E-010)        | `jkminder/nnpatch` (build on it)                         |
+| scalable causal attribution (if IIA costly) | AtP\* (NNsight impl)                                     |
+| RAVEL + SAE patching starting point         | `MaheepChaudhary/SAE-Ravel`                              |
 
 ---
 
@@ -100,7 +109,7 @@ Unclaimed combination (confirmed vs Asta ×3 + full NDIF corpus): **a hop-resolv
 CAUSAL (IIA) predictor comparing raw-distance vs structured-geometry vs alignment
 for EDIT propagation.** Differentiate from: SLAQ (consistency, not edits; aggregate),
 Kim/Jeong (aggregate, behavioural, no causal), Nishi (shattering, not propagation).
-Novelty = the *combination*, not the parts. Openness confirmable only by Arnab.
+Novelty = the _combination_, not the parts. Openness confirmable only by Arnab.
 
 ## Nearest people
 
