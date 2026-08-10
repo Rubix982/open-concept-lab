@@ -94,6 +94,26 @@ hop-resolved, causal, quantitative predictor — the measurement the field lacks
     reviewer) is a MEMIT co-author. Scoop risk → COORDINATION need. Openness is
     verifiable only by a person (Arnab), not a page. → Bringing Arnab in is now
     evidence-backed, not courtesy.
+- **NDIF corpus — EXHAUSTIVE grep (2026-08-11, full 938-line listing):** precise
+  claim still unclaimed, but neighbourhood is BUILT-UP — we assemble known moves
+  into an unclaimed combination, not virgin territory. Neighbours to cite/differ:
+  - **SLAQ** ("Factual (Mis)Alignment between short/long-form answers") — NEAREST
+    METHOD: uses mechanistic-similarity metrics to PREDICT factual consistency
+    (~78%). The "similarity predicts consistency" move is NOT new; our novelty is
+    the edit-ripple-across-hops setting, not the move itself. Must cite + differ.
+  - **RAVEL benchmark + DAS** — distinguishes a city's country vs continent
+    (hop-differentiated facts) via DAS. Candidate dataset, possibly cleaner than
+    RippleEdits for hop-resolved geometry — investigate (see §5/§8).
+  - **Back Attention** — traces logit "propagation" through multi-hop reasoning
+    (4 stages). Relevant to the outcome/mechanism side.
+  - **Representation Shattering** (Nishi) — confirmed NDIF-listed.
+  - **Arnab Sen Sharma, "Locating & Editing Factual Associations in Mamba"** —
+    the suggested reviewer is actively publishing ROME-family editing. Lab is dense
+    in exactly this area → coordinate before building further.
+  Novelty framing tightens to: "these pieces exist separately (SLAQ, RAVEL/DAS,
+  Shattering, Back Attention); I assemble them into the first hop-resolved CAUSAL
+  predictor of EDIT propagation." Standing: open specific lane in an expert-dense
+  neighbourhood; combination-novelty; confirm openness with Arnab, not a page.
 
 ---
 
@@ -209,6 +229,11 @@ hop-count and beating raw distance*."
 ## HOW MUCH — can you actually do it?
 
 ### 8. Scope & feasibility
+**Dataset decision (revisit):** RippleEdits (real hop-typed neighbours) is the
+default, but **RAVEL** (NDIF corpus; disentangles country-vs-continent = clean
+hop-differentiated facts, DAS-benchmarked) may be better-controlled for the
+hop-resolved geometry question. Evaluate RAVEL before locking the dataset.
+
 **v1 (IN):** GPT-J-6B on NDIF; ~30–50 triples with Wikidata-generated neighbours
 (N0/N1/N2/reverse); predictors = {raw cosine/diff-of-means (baseline), one
 structured, one alignment}; outcome = IIA; controls = hop-count + popularity +
