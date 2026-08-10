@@ -6,7 +6,10 @@ Scholar, Research Rabbit, Asta); this map is the **depth I've earned** and the
 index I return to._
 
 _Source pool: `readings/ndif/research_papers.md` (NDIF corpus) + Asta reviews +
-`design.md §2`. Last grown: 2026-08-11._
+`design.md §2` + the Asta report `readings/Edit Propagation, Representation
+Geometry, and Localization in Decoder-Only Knowledge Editing.pdf` (full ~40-paper
+reference list lives there; this map keeps only the on-slice subset).
+Last grown: 2026-08-11._
 
 ---
 
@@ -32,6 +35,7 @@ FFN-as-memory (why editing is even possible)
   ✓ Dai 2021   Knowledge Neurons                            [foundation]
      │
      └── LOCATE-AND-EDIT
+         ~ Zhu 2020   Modifying Memories in Transformers    [foundation]  early "edit a fact" task
          ✓ Meng 2022  ROME (causal tracing + rank-1 edit)   [foundation] → our edit primitive
          ✓ Meng 2023  MEMIT (mass editing, multi-layer)     [foundation] → breadth axis (T-008)
          ~ Sen Sharma  Editing Factual Assoc. in Mamba       [foundation]  ← ARNAB (reviewer)
@@ -41,11 +45,17 @@ FFN-as-memory (why editing is even possible)
             ├── CRITIQUE
             │    ✓ Hase 2023  localization ≠ editability      [critique] → §10 adversary
             │    ~ Liu 2024/25 relation-focused recall        [critique]  subject-bias → over-propagation
+            │    ~ DEGRADATION cluster — continual editing breaks:            [critique]
+            │       Gupta 2024 (gradual→catastrophic forgetting at scale),
+            │       Cao 2025 (superimposed noise accumulation),
+            │       Clemente 2025 (contradiction triggers corruption)
+            │       → why "keep the model current" is hard; coding-vision caveat
             │
             ├── RIPPLE / PROPAGATION (editing fails downstream)
             │    ✓ Cohen 2023  RippleEdits (6 criteria)       [benchmark] → E-007 data
             │    ✓ Zhong 2023  MQuAKE (multi-hop)             [benchmark] → v2 outcome
             │    ~ Back Attention (multi-hop logit prop.)     [outcome/mechanism]
+            │    ~ Shafqat 2024  complex entity knowledge propagation eval [benchmark]  directly propagation-eval
             │
             └── GEOMETRY (what predicts propagation)  ← MY BRANCH
                  ~ Nishi 2024  Representation Shattering       [predictor]  distance→shattering (not propagation)
