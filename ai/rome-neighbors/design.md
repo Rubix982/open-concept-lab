@@ -76,6 +76,24 @@ hop-resolved, causal, quantitative predictor — the measurement the field lacks
     differentiate from.
   Confirmed unclaimed: per-neighbour distance→propagation link, binned by
   hop, with predictive-power-vs-hop reported.
+- **NDIF-orbit positioning (2026-08-11, non-exhaustive web scan):** checked NDIF's
+  featured research + `/research/` listing + NNsight mini-papers. Honest limit: the
+  listing is a dynamic 110+ paper DB; a scan sees only a slice, so this is
+  CONFIRMATORY, not exhaustive — Asta remains the stronger novelty evidence.
+  Findings:
+  - No showcased NDIF/NNsight work is edit-propagation prediction. Adjacent,
+    advanced neighbours exist: **Function Vectors** (Todd — relations as vectors),
+    **Geometry of Truth** (Marks — representation geometry of truthfulness),
+    **Demystifying Memorization** (Huang), activation steering via causal mediation.
+  - Against us: "representation geometry of facts" broadly is TAKEN and
+    sophisticated → our defensible claim is ONLY the precise intersection
+    (propagation-prediction, hop-resolved, causal), never geometry-of-knowledge
+    in general.
+  - The nearest lane's owners are our prospective lab: Bau's group wrote ROME/
+    MEMIT/causal-tracing/RippleEdits, and Arnab Sen Sharma (Natalie's suggested
+    reviewer) is a MEMIT co-author. Scoop risk → COORDINATION need. Openness is
+    verifiable only by a person (Arnab), not a page. → Bringing Arnab in is now
+    evidence-backed, not courtesy.
 
 ---
 
@@ -118,6 +136,10 @@ One correlation is a tweet; this family is the study.
   fitting it on pre-trained GPT-J is novel (their explicit future work). DAS-learned
   subspace → **defer** to v2. Also consider **key-space coupling (Huang et al.)** as
   an additional structured predictor — it is the closest existing multi-probe work.
+  And **Function Vectors (Todd et al., NNsight-tooled)** — relations/functions as
+  extractable vectors in activation space — is an adoptable, NDIF-native basis for
+  the structured predictor (relation-as-operator), worth reading before extending
+  E-009. [verify method details from the paper]
 - Alignment: **STEAM alignment score (Jeong et al. 2025), adopted directly** —
   `S(φ, hᵉ) = (1/L) Σ_ℓ cos(φ_ℓ, hᵉ_ℓ)`, where `hᵉ` = layerwise hidden states of the
   edited/queried prompt at the prediction token, and `φ` = per-layer semantic anchor
