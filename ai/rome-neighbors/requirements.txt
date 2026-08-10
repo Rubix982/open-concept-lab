@@ -1,0 +1,6 @@
+# Core deps. After installing, pin exact versions: pip freeze > requirements.txt
+nnsight
+torch
+numpy
+matplotlib
+scikit-learn

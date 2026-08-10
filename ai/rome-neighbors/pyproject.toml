@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ripplekit"
+version = "0.1.0"
+description = "Does structured representational geometry predict edit propagation? (rome-neighbors)"
+requires-python = ">=3.10"
+dependencies = [
+    "nnsight",
+    "torch",
+    "numpy",
+    "matplotlib",
+    "scikit-learn",
+]
+
+[tool.setuptools.packages.find]
+include = ["ripplekit*"]

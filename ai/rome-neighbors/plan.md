@@ -37,17 +37,19 @@ This is the **ripple effect gap**: edits are local, but facts are relational.
 
 ## Current Phase
 
-Phase 1 — Literature & Baseline Setup
+Phase 2 — Implementation (reframed project: does structured geometry predict edit
+propagation? See `design.md`). Positioning done (Asta ×3 + full NDIF corpus →
+`readings/MAP.md`); codebase established (`ripplekit/`).
 
 ## Active Tickets
 
-| ID    | Agent      | Title                                    | Status      |
-| ----- | ---------- | ---------------------------------------- | ----------- |
-| O-001 | Orchestrat | Initialize project structure             | closed      |
-| R-001 | Researcher | Survey model editing literature          | open        |
-| R-002 | Researcher | Map neighbor taxonomy from ripple papers | open        |
-| E-001 | Engineer   | Baseline fact recall on GPT-J-6B (NDIF) | open        |
-| E-005 | Engineer   | Spike: NNSight localization on GPT-J    | closed      |
+| ID    | Agent      | Title                                      | Status      |
+| ----- | ---------- | ------------------------------------------ | ----------- |
+| O-002 | Orchestrat | Establish `ripplekit/` codebase structure  | closed      |
+| E-007 | Engineer   | v0.5 raw-distance baseline (RippleEdits)   | done (flat) |
+| E-008 | Engineer   | Position/layer sweep (sink-artifact test)  | built       |
+| E-009 | Engineer   | Structured predictor: alignment            | built       |
+| E-010 | Engineer   | Causal outcome: IIA (build on `nnpatch`)   | open        |
 
 ## Blocked
 
@@ -55,18 +57,20 @@ _(none)_
 
 ## Completed This Session
 
-- O-001 · Initialize project structure
-- E-005 · Spike: NNSight localization curriculum — findings logged; storage
-  band ~layers 2–12 at subject token, readout ~12–17 at last token
-- Reference: `readings/metrics/notes.md` — IIA + the three metric families
+- O-002 · `ripplekit/` package (config, data, reps, predictors, analysis) +
+  README, pyproject, .gitignore; pure-Python modules verified against real data
+- E-005 · Spike closed — storage band ~2–12 (subject), readout ~12–17 (last tok)
+- E-007 · baseline done — raw last-token cosine near-flat ~0.6 (findings.md)
+- Positioning · lane confirmed open (combination-novelty); Arnab = verifier
 
-## Experiment Sequence
+## Experiment Sequence (reframed)
 
-R-001 + R-002 run in parallel (both are reading/research).
-E-001 can start immediately — baseline recall needs no prior reading.
-E-002 (single ROME edit) opens after E-001 confirms recall baseline.
-E-003 (neighbor probe) opens after E-002.
-E-004 (ripple sweep) opens after E-003.
+1. E-007 baseline (done — raw distance flat) → 2. E-008 position/layer sweep
+(is flatness a sink artifact?) → 3. E-009 structured/alignment predictor
+(does structure separate where distance didn't?) → 4. **E-010 causal outcome
+(IIA on `nnpatch`)** — turns "separates types" into "predicts propagation".
+Migrate demo scripts onto `ripplekit/` as each is revisited.
+Human gate: confirm lane + coordinate with **Arnab** before scaling.
 
 ## North Star
 

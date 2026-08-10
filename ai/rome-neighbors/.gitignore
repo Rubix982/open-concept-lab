@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.python-version
+.DS_Store
+results/
+*.out
+# large local benchmark data lives outside the repo (RippleEdits is cloned separately)

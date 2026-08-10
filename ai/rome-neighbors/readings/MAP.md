@@ -85,6 +85,7 @@ Tooling spine
   ~ saprmarks/feature-circuits  discover/edit causal graphs   [tool]  adjacent feature-level editing
   ✓ Yao 2023  Editing LLMs: survey                           [foundation]  the field map
 ```
+
 _(repos from `readings/ndif/code_references.md`; `~` = seen the one-line, not yet
 verified fit — check before adopting.)_
 
@@ -124,5 +125,4 @@ Novelty = the _combination_, not the parts. Openness confirmable only by Arnab.
 ## Nearest people
 
 Bau lab (ROME/MEMIT/tracing/RippleEdits/NDIF) · **Arnab Sen Sharma** (MEMIT;
-Mamba editing) — prospective reviewer · Geva (RippleEdits; FFN-as-memory) ·
-Zhong/Chen, Princeton (MQuAKE).
+Mamba editing) · Geva (RippleEdits; FFN-as-memory) · Zhong/Chen, Princeton (MQuAKE).
