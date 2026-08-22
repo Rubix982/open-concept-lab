@@ -53,3 +53,31 @@ for t in config.TYPES:
 print("\nRead: AUC meaningfully > 0.5 (esp. within a hop type) = geometry predicts")
 print("which neighbours the edit reached. ~0.5 = raw closeness doesn't forecast it")
 print("→ motivates structured predictors (bilinear / edit-difference) next.")
+
+# ── T-015: 3-way outcome + subject-sharing ─────────────────────────────────────
+if rows and "outcome" in rows[0]:
+    from collections import Counter
+    print("\n" + "=" * 60)
+    print("T-015 · 3-way outcome (updated / stale / broken) by neighbour type")
+    print("=" * 60)
+    for t in ["ALL"] + config.TYPES:
+        sub = rows if t == "ALL" else [r for r in rows if r["type"] == t]
+        if not sub:
+            continue
+        c = Counter(r["outcome"] for r in sub)
+        print(f"  {t:12s} n={len(sub):>3}  updated={c['updated']:>3}  "
+              f"stale={c['stale']:>3}  broken={c['broken']:>3}")
+
+    print("\nT-015 · subject-sharing hypothesis (Liu: shared-subject → over-written/broken)")
+    for share in (1, 0):
+        sub = [r for r in rows if r.get("subject_shared") == share]
+        if not sub:
+            continue
+        c = Counter(r["outcome"] for r in sub)
+        lab = "SHARES edit subject" if share else "different subject"
+        n = len(sub)
+        print(f"  {lab:20s} n={n:>3}  "
+              f"updated={c['updated']/n:.0%}  stale={c['stale']/n:.0%}  broken={c['broken']/n:.0%}")
+    print("\nRead: if shared-subject neighbours are disproportionately BROKEN and")
+    print("different-subject ones STALE, that's a concrete, explainable rule for the")
+    print("pre-flight diagnostic (which facts an edit will corrupt vs. leave un-updated).")

@@ -80,7 +80,8 @@ def neighbours_of(entry):
                 anss = q.get("answers") or []
                 val = anss[0].get("value") if anss and isinstance(anss[0], dict) else None
                 if q.get("prompt") and val:
-                    out.append((t, q["prompt"], val))
+                    sids = q.get("subject_id") or []      # for subject-sharing (T-015)
+                    out.append((t, q["prompt"], val, sids))
     return out
 
 
@@ -178,10 +179,13 @@ for entry in entries:
     if not nbrs:
         continue
 
-    # PRE-edit: geometry PREDICTOR per neighbour (clean model) — cos(edited-fact
-    # rep, neighbour rep). T-B hypothesis: neighbours closer here propagate more.
+    edit_subj = set((entry.get("edit") or {}).get("subject_id", []) if isinstance(
+        (entry.get("edit") or {}).get("subject_id"), list) else [(entry.get("edit") or {}).get("subject_id")])
+
+    # PRE-edit (clean model): predictor cos(edited-fact, neighbour) + baseline answer.
     base_rep = rep(cloze)
-    pred = {i: cos(base_rep, rep(p)) for i, (_, p, _) in enumerate(nbrs)}
+    pred = {i: cos(base_rep, rep(p)) for i, (_, p, _, _) in enumerate(nbrs)}
+    pre_ans = {i: answer(p) for i, (_, p, _, _) in enumerate(nbrs)}
 
     # snapshot the layer weight to restore after (so edits don't accumulate)
     w = model.transformer.h[EDIT_LAYER].mlp.c_proj.weight
@@ -194,12 +198,23 @@ for entry in entries:
     print(f"[edit {edits_done}] {cloze[:55]!r} → {new_t!r}", flush=True)
     print(f"    steps={steps} loss={loss:.3f} efficacy={'YES' if took else 'NO'}", flush=True)
     if took:
-        for i, (typ, p, expected) in enumerate(nbrs):
+        for i, (typ, p, expected, sids) in enumerate(nbrs):
             post = answer(p)
-            propagated = expected.lower()[:12] in post.lower()
-            rows.append((typ, propagated))
+            def _m(a, b):  # loose match on first 12 chars
+                return b.lower()[:12] in a.lower()
+            # 3-way outcome (T-015): updated (ripple-consistent) / stale (unchanged) / broken
+            if _m(post, expected):
+                outcome = "updated"
+            elif post.strip().lower() == pre_ans[i].strip().lower():
+                outcome = "stale"
+            else:
+                outcome = "broken"
+            subject_shared = bool(edit_subj & set(sids))
+            rows.append((typ, outcome == "updated"))
             tb_records.append({"edit": edits_done, "type": typ,
-                               "propagated": int(propagated), "predictor": pred[i]})
+                               "propagated": int(outcome == "updated"),
+                               "outcome": outcome, "subject_shared": int(subject_shared),
+                               "predictor": pred[i]})
 
     # restore weights (isolate each edit)
     with torch.no_grad():
