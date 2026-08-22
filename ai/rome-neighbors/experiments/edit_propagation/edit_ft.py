@@ -124,10 +124,33 @@ def cos(a, b):
     return float(torch.nn.functional.cosine_similarity(a, b, dim=0))
 
 
+# FT+L specificity constraint (ROME-style): KL to pre-edit distribution on
+# unrelated prompts + weight decay on the delta. Set FTL=0 for plain FT.
+FTL = os.environ.get("FTL", "1") == "1"
+KL_FACTOR = float(os.environ.get("KL_FACTOR", "1.0"))
+WD_FACTOR = float(os.environ.get("WD_FACTOR", "0.5"))
+KL_PROMPTS = [
+    "The capital of Germany is", "Water is made of", "The sun rises in the",
+    "A dog is a kind of", "The opposite of hot is",
+]
+
+
+@torch.no_grad()
+def _kl_ref():
+    """Pre-edit last-token log-probs on the KL prompts (the locality anchor)."""
+    refs = []
+    for p in KL_PROMPTS:
+        ids = tok(p, return_tensors="pt").to(DEVICE)
+        refs.append(model(**ids).logits[0, -1].log_softmax(-1).detach())
+    return refs
+
+
 def ft_edit(cloze: str, new_target: str):
-    """FT-L: gradient steps on ONLY layer EDIT_LAYER's mlp.c_proj to make the model
-    complete `cloze` with `new_target`."""
+    """FT(+L): gradient steps on layer EDIT_LAYER's mlp.c_proj to complete `cloze`
+    with `new_target`. FT+L adds a KL-to-pre-edit locality penalty + weight decay
+    (the specificity mechanism ROME uses) so the edit doesn't wreck other facts."""
     w = model.transformer.h[EDIT_LAYER].mlp.c_proj.weight
+    w0 = w.detach().clone()
     for p in model.parameters():
         p.requires_grad_(False)
     w.requires_grad_(True)
@@ -136,16 +159,26 @@ def ft_edit(cloze: str, new_target: str):
     clen = tok(cloze, return_tensors="pt").input_ids.shape[1]
     labels = full.input_ids.clone()
     labels[0, :clen] = -100   # loss only on the target tokens
-    # NOTE: eval() (dropout OFF) — grads still flow; dropout would inject noise.
+    kl_ref = _kl_ref() if FTL else None
     last = float("nan")
     for step in range(FT_STEPS):
         opt.zero_grad()
-        loss = model(**full, labels=labels).loss
-        if not torch.isfinite(loss):    # NaN/Inf guard — stop before it corrupts w
+        loss = model(**full, labels=labels).loss     # nll on target
+        if not torch.isfinite(loss):
             break
+        if FTL:
+            # KL locality: keep predictions on unrelated prompts near pre-edit
+            kl = 0.0
+            for p, ref in zip(KL_PROMPTS, kl_ref):
+                ids = tok(p, return_tensors="pt").to(DEVICE)
+                cur = model(**ids).logits[0, -1].log_softmax(-1)
+                kl = kl + torch.nn.functional.kl_div(cur, ref, log_target=True,
+                                                     reduction="sum")
+            wd = WD_FACTOR * (w - w0).norm() ** 2 / (w0.norm() ** 2)
+            loss = loss + KL_FACTOR * (kl / len(KL_PROMPTS)) + wd
         last = float(loss.detach())
         loss.backward()
-        torch.nn.utils.clip_grad_norm_([w], FT_CLIP)   # tame exploding grads
+        torch.nn.utils.clip_grad_norm_([w], FT_CLIP)
         opt.step()
         if new_target.lower()[:12] in answer(cloze).lower():
             break
