@@ -7,6 +7,7 @@ the demo scripts (E-007). Confirm on first run in a new environment.
 
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
@@ -20,7 +21,8 @@ _model: "LanguageModel | None" = None
 _cache: dict[tuple[str, int, str], torch.Tensor] = {}
 
 MAX_RETRIES = 5
-BACKOFF = 4.0   # seconds, exponential
+BACKOFF = 4.0     # seconds, exponential
+CALL_TIMEOUT = 45  # hard wall-clock cap per trace — NDIF can HANG (not just error)
 
 # ── disk checkpoint cache ──────────────────────────────────────────────────────
 # NDIF is flaky; persist fetched vectors so a re-run resumes instead of re-fetching.
@@ -49,18 +51,25 @@ def cache_size() -> int:
 
 
 def _trace_with_retry(fn):
-    """Run a trace-producing fn with retry+backoff — NDIF submission errors are
-    transient (queue/server hiccups). Raises the last error if all retries fail."""
-    last = None
+    """Run a trace-producing fn with a hard per-call TIMEOUT + retry/backoff.
+    NDIF failures are transient AND can manifest as indefinite HANGS (a bare retry
+    on exceptions never catches a hang) — so each attempt is bounded by
+    CALL_TIMEOUT via a worker thread. Raises the last error if all retries fail."""
+    last: "Exception | None" = None
     for attempt in range(MAX_RETRIES):
         try:
-            return fn()
+            with ThreadPoolExecutor(max_workers=1) as ex:
+                return ex.submit(fn).result(timeout=CALL_TIMEOUT)
+        except FutureTimeout:
+            last = TimeoutError(f"NDIF trace hung > {CALL_TIMEOUT}s")
+            reason = "HANG"
         except Exception as e:  # noqa: BLE001 — NDIF raises RemoteException et al.
             last = e
-            if attempt < MAX_RETRIES - 1:
-                wait = BACKOFF * (2 ** attempt)
-                print(f"    [retry {attempt+1}/{MAX_RETRIES} in {wait:.0f}s: {type(e).__name__}]")
-                time.sleep(wait)
+            reason = type(e).__name__
+        if attempt < MAX_RETRIES - 1:
+            wait = BACKOFF * (2 ** attempt)
+            print(f"    [retry {attempt+1}/{MAX_RETRIES} in {wait:.0f}s: {reason}]", flush=True)
+            time.sleep(wait)
     raise last  # type: ignore[misc]
 
 
@@ -93,6 +102,23 @@ def rep(prompt: str, layer: int = config.DEFAULT_LAYER, how: str = "mean") -> to
     vec = _trace_with_retry(_run)
     _cache[ckey] = vec
     return vec
+
+
+def probe_once(timeout: int = 20) -> bool:
+    """Single bounded health check (no retries) — for the autolauncher watcher.
+    Bypasses the cache so it actually hits NDIF."""
+    model = get_model()
+
+    def _run():
+        with model.trace("Paris is the capital of", remote=True):   # type: ignore[union-attr]
+            return model.transformer.h[15].output[0][0].mean(dim=0).save()  # type: ignore[index]
+
+    try:
+        with ThreadPoolExecutor(max_workers=1) as ex:
+            v = ex.submit(_run).result(timeout=timeout)
+        return float(v.norm()) > 0
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def prewarm(prompt: str, layers: list[int], how: str = "mean") -> None:
