@@ -33,8 +33,9 @@ from ripplekit import config, data
 
 MODEL = os.environ.get("EDIT_MODEL", "gpt2-medium")
 N_EDITS = int(os.environ.get("N_EDITS", "5"))
-FT_STEPS = int(os.environ.get("FT_STEPS", "25"))
-FT_LR = float(os.environ.get("FT_LR", "5e-4"))
+FT_STEPS = int(os.environ.get("FT_STEPS", "30"))
+FT_LR = float(os.environ.get("FT_LR", "1e-4"))   # 5e-4 exploded to NaN; 1e-4 + clip is stable
+FT_CLIP = float(os.environ.get("FT_CLIP", "1.0"))
 DEVICE = "cpu"   # editing needs fp32 grads; MPS fp32 stalls loading on this M2
 OUT = config.RESULTS_DIR
 OUT.mkdir(parents=True, exist_ok=True)
@@ -116,17 +117,21 @@ def ft_edit(cloze: str, new_target: str):
     clen = tok(cloze, return_tensors="pt").input_ids.shape[1]
     labels = full.input_ids.clone()
     labels[0, :clen] = -100   # loss only on the target tokens
-    model.train()
+    # NOTE: eval() (dropout OFF) — grads still flow; dropout would inject noise.
+    last = float("nan")
     for step in range(FT_STEPS):
         opt.zero_grad()
         loss = model(**full, labels=labels).loss
+        if not torch.isfinite(loss):    # NaN/Inf guard — stop before it corrupts w
+            break
+        last = float(loss.detach())
         loss.backward()
+        torch.nn.utils.clip_grad_norm_([w], FT_CLIP)   # tame exploding grads
         opt.step()
         if new_target.lower()[:12] in answer(cloze).lower():
             break
-    model.eval()
     w.requires_grad_(False)
-    return step + 1, float(loss)
+    return step + 1, last
 
 
 # ── run ───────────────────────────────────────────────────────────────────────
