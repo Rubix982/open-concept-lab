@@ -28,7 +28,7 @@ from nnsight.modeling.language import LanguageModel
 
 CONFIG.set_default_api_key(os.environ["NNSIGHT_API_KEY"])
 
-model = LanguageModel("Qwen3.5-27B")
+model = LanguageModel("EleutherAI/gpt-j-6b")
 prompt = "The Eiffel Tower is in the city of"
 n_layers = 28
 

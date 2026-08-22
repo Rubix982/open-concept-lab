@@ -93,12 +93,14 @@ def _get_local():
     if _local_model is None:
         from transformers import AutoModelForCausalLM, AutoTokenizer
         name = config.LOCAL_MODEL
-        print(f"    loading local model {name} (one-time)...", flush=True)
+        dev = "mps" if torch.backends.mps.is_available() else "cpu"
+        # fp16 on MPS: halves memory — fp32 gpt2-medium+ stalls loading on M2.
+        dtype = torch.float16 if dev == "mps" else torch.float32
+        print(f"    loading local model {name} ({dtype}, {dev}) one-time...", flush=True)
         _local_tok = AutoTokenizer.from_pretrained(name)
         _local_model = AutoModelForCausalLM.from_pretrained(
-            name, output_hidden_states=True, torch_dtype=torch.float32
+            name, output_hidden_states=True, dtype=dtype
         )
-        dev = "mps" if torch.backends.mps.is_available() else "cpu"
         _local_model = _local_model.to(dev).eval()
         print(f"    local model ready on {dev} "
               f"({_local_model.config.n_layer} blocks)", flush=True)

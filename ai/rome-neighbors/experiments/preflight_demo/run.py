@@ -26,9 +26,10 @@ from pathlib import Path
 
 from ripplekit import analysis, config, data, predictors, reps
 
+import os as _os
 OUT = config.RESULTS_DIR
 OUT.mkdir(parents=True, exist_ok=True)
-HOW = "mean"   # mean-pool avoids the last-token attention sink (E-005/E-007)
+HOW = _os.environ.get("HOW", "mean")   # "mean" | "last" — pooling of the residual
 
 
 def _fmt(sec: float) -> str:

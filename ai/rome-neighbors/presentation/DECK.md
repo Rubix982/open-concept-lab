@@ -35,21 +35,30 @@ Resolved **across entailment hops** (1-hop / 2-hop / reverse), measured **causal
 
 ---
 
-## 3 · The three-act arc (the result) (3m)
+## 3 · The three-act arc (honest results) (3m)
 
-Real data: RippleEdits (`popular.json`), GPT-J-6B on NDIF, its six criteria →
-our neighbour types. Representation = mean-pooled residual (avoids the last-token
-attention sink).
+Data: RippleEdits (`popular.json`), six criteria → neighbour types.
+**Infra note:** NDIF regressed mid-work (post-outage whitelist bug, reported to
+your Discord) → I built a **local transformers backend** and ran on **gpt2-medium**
+as a stand-in. `sep = mean(propagate types) − locality` (>0 = predictor informative).
 
-- **ACT 1 — raw distance is flat.** Cosine ≈ 0.6 across paraphrase/1hop/2hop
-  (spread 0.011); no hop-decay. Baseline is near-uninformative. `sep(raw) ≈ ⟨FILL⟩`.
-- **ACT 2 — not just a position artifact.** Layer sweep (6/9/12/15/18), last-token
-  vs mean-pool: `sep(raw)` stays ⟨FILL: ~0 / lifts⟩ → raw distance is
-  ⟨genuinely weak / was a sink artifact⟩.
-- **ACT 3 — structured alignment separates.** `sep(align) = ⟨FILL⟩` @ layer ⟨FILL⟩,
-  vs `sep(raw) = ⟨FILL⟩`. ⟨Structure carries the signal distance missed / does not⟩.
+- **ACT 1 — raw distance is a weak baseline.** *Mean-pool:* cosine ≈ 0.99 for
+  EVERY type incl. locality → `sep ≈ 0`. Template-dominated washout (holds on
+  gpt2-small too).
+- **ACT 2 — readout matters.** *Last-token* recovers a faint, layer-increasing
+  signal in the right direction: `sep(raw)` +0.007→**+0.019** (L12→L18),
+  propagate-types above locality. So mean-pool was hiding it; last-token at late
+  layers is the better readout.
+- **ACT 3 — structured alignment does NOT win (yet).** `sep(align) ≈ 0` on
+  gpt2-medium — our Jeong-style anchor predictor doesn't beat raw distance here.
+  Honest weak/negative result (design.md pre-stated this "deny" branch).
 
-**Figure:** `results/predictor_arc.png` (sep vs layer, both predictors).
+**Capacity cross-check:** GPT-J last-token (E-007, before NDIF broke) gave
+`sep ≈ +0.06` — **3× gpt2-medium's +0.019**. Both capacity and readout push in
+the expected direction → the real test wants GPT-J + a causal outcome, not
+prompt-geometry on a small model.
+
+**Figures:** `results/gpt2med_last_arc.png`, `results/by_type.png`.
 
 ---
 

@@ -118,3 +118,59 @@ test the sink-artifact hypothesis before concluding anything about raw distance.
 
 Confidence: medium for "raw last-token distance is flat"; low for any deeper
 claim until position/layer is swept and a causal outcome (IIA) is added.
+
+## [E-011] Finding: local backend unblock + gpt2-small is flat
+
+_Date: 2026-08-22_
+
+**Infra:** NDIF regressed post-outage (rejects nnsight 0.7.0 traces server-side:
+`intervention.batching not whitelisted`; reported to NDIF Discord). Pivoted to a
+LOCAL transformers backend (config.BACKEND=local) — full pipeline now runs on-
+machine via `output_hidden_states` on MPS, no NDIF. gpt2-large fp32 stalls
+loading on M2 (memory); gpt2 / gpt2-medium work.
+
+**Result (gpt2-small, mean-pool, RippleEdits popular, 30 edits, 171 pairs):**
+BOTH predictors flat — cosine ≈ 0.99 for EVERY neighbour type incl. locality/
+control. sep(raw)≈+0.006, sep(align)≈-0.001. Neither raw distance nor alignment
+separates types.
+
+**Interpretation:** not a thesis result — a model/representation artifact. On
+short templated prompts ("The X is in the city of"), gpt2-small's mean-pooled
+residual is dominated by the SHARED TEMPLATE, washing out entity/fact signal
+(even unrelated locality facts look identical). Consistent with the lookback
+finding that gpt2-small is too weak. Two implications for method (design.md §5
+construct validity): (a) need a capable model (gpt2-medium+ / GPT-J); (b) mean-
+pool over templated prompts may be the wrong readout — consider subject-token
+or last-token reps. The pipeline + figures work end-to-end locally; the signal
+needs a stronger substrate.
+
+Confidence: high for "pipeline works locally + gpt2-small flat"; the thesis
+comparison (does structure beat raw distance) is UNTESTED until a capable model.
+
+## [E-011b] Finding: pooling + capacity both matter; alignment doesn't win yet
+
+_Date: 2026-08-22 · local backend, gpt2-medium fp16, RippleEdits popular, 171 pairs_
+
+Ran the predictor comparison across pooling × layer on a capable-ish local model:
+
+**Mean-pool:** cosine ≈ 0.99 for EVERY type, both predictors. sep ≈ 0. Confirmed
+across gpt2-small AND gpt2-medium → mean-pool over templated RippleEdits prompts
+is template-dominated; washes out entity signal. Mean-pool is the WRONG readout.
+
+**Last-token (gpt2-medium):** raw cosine ~0.80 with a faint, layer-increasing
+signal in the RIGHT direction — sep(raw) +0.007→+0.019 (L12→L18), propagate-types
+above locality. Alignment sep ≈ 0 (does NOT beat raw distance here).
+
+**Cross-ref E-007 (GPT-J last-token):** sep ~+0.06 — larger than gpt2-medium's
++0.019. So both CAPACITY and READOUT matter, both in the expected direction.
+
+**Honest state of the thesis:** on a modest local model neither predictor STRONGLY
+separates; last-token raw distance is weakly informative; structured alignment (as
+implemented — small answer-string anchors) does not win. This is a weak/negative
+result, consistent with design.md's pre-stated "deny" branch. Caveats: (1) needs
+the capable model (GPT-J/NDIF) — capacity clearly helps; (2) alignment impl may be
+under-powered (anchor quality); (3) the real test is the CAUSAL outcome (E-010 IIA),
+not prompt-geometry separation. Motivates E-010, not abandons the thesis.
+
+Confidence: high for "mean-pool washes out / last-token + capacity help / alignment
+doesn't win on gpt2-medium"; the thesis verdict needs GPT-J + the causal outcome.
