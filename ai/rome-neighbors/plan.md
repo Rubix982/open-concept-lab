@@ -76,3 +76,24 @@ Human gate: confirm lane + coordinate with **Arnab** before scaling.
 
 > See the gap yourself: edit one fact on GPT-J-6B, watch the neighbors fail,
 > understand mechanistically *where* the failure lives.
+
+## Morning resume (2026-08-24)
+
+**Vision (added):** reliable, frequent, cheap model knowledge-updates for research —
+flagship: a medical model kept current with newest research. The pre-flight
+diagnostic (which facts an edit breaks/leaves-stale) is the reliability layer.
+
+**Where we stopped:** real ROME runs (EasyEdit, .venv-edit) but the no-covariance
+config (mom2_adjustment=false) doesn't flip argmax. T-015 instrument (controlled
+edits + 3-way study + blast-radius viz) is BUILT and waiting on a working edit.
+
+**First brick tomorrow:** run the mom2_adjustment=true ROME test (config already
+written: `experiments/edit_propagation/rome_gpt2_mom2.yaml`, 3000-sample stats):
+    source .venv-edit/bin/activate
+    ROME_CFG=rome_gpt2_mom2.yaml python experiments/edit_propagation/rome_study.py
+    python experiments/edit_propagation/viz.py        # blast-radius graph
+If it flips → real T-015 data + the graph. If not → tune config / ask Arnab / move
+to GPU substrate.
+
+**For Monday:** presentation/SESSION_RESULTS.md (vision → outcomes → programs →
+boundaries → questions for Arnab).

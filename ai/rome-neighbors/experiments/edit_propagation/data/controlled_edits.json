@@ -1,0 +1,73 @@
+[
+  {
+    "id": "eiffel",
+    "subject": "Eiffel Tower",
+    "cloze": "The Eiffel Tower is located in the city of",
+    "target_old": "Paris",
+    "target_new": "Rome",
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Eiffel Tower can be found in the city of", "old": "Paris", "new": "Rome"},
+      {"type": "1hop", "prompt": "The Eiffel Tower is located in the country of", "old": "France", "new": "Italy"},
+      {"type": "2hop", "prompt": "The main language spoken where the Eiffel Tower stands is", "old": "French", "new": "Italian"},
+      {"type": "reverse", "prompt": "One famous landmark located in the city of Rome is the", "old": "Colosseum", "new": "Eiffel"},
+      {"type": "locality", "prompt": "The Colosseum is located in the city of", "old": "Rome", "new": "Rome"},
+      {"type": "locality", "prompt": "Big Ben is located in the city of", "old": "London", "new": "London"}
+    ]
+  },
+  {
+    "id": "louvre",
+    "subject": "Louvre",
+    "cloze": "The Louvre museum is located in the city of",
+    "target_old": "Paris",
+    "target_new": "Madrid",
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Louvre museum can be found in the city of", "old": "Paris", "new": "Madrid"},
+      {"type": "1hop", "prompt": "The Louvre museum is located in the country of", "old": "France", "new": "Spain"},
+      {"type": "2hop", "prompt": "The main language spoken where the Louvre stands is", "old": "French", "new": "Spanish"},
+      {"type": "locality", "prompt": "The Eiffel Tower is located in the city of", "old": "Paris", "new": "Paris"},
+      {"type": "locality", "prompt": "The Statue of Liberty is located in the city of", "old": "New York", "new": "New York"}
+    ]
+  },
+  {
+    "id": "bigben",
+    "subject": "Big Ben",
+    "cloze": "Big Ben is located in the city of",
+    "target_old": "London",
+    "target_new": "Berlin",
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "Big Ben can be found in the city of", "old": "London", "new": "Berlin"},
+      {"type": "1hop", "prompt": "Big Ben is located in the country of", "old": "England", "new": "Germany"},
+      {"type": "2hop", "prompt": "The main language spoken where Big Ben stands is", "old": "English", "new": "German"},
+      {"type": "locality", "prompt": "The Eiffel Tower is located in the city of", "old": "Paris", "new": "Paris"},
+      {"type": "locality", "prompt": "The Colosseum is located in the city of", "old": "Rome", "new": "Rome"}
+    ]
+  },
+  {
+    "id": "colosseum",
+    "subject": "Colosseum",
+    "cloze": "The Colosseum is located in the city of",
+    "target_old": "Rome",
+    "target_new": "Athens",
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Colosseum can be found in the city of", "old": "Rome", "new": "Athens"},
+      {"type": "1hop", "prompt": "The Colosseum is located in the country of", "old": "Italy", "new": "Greece"},
+      {"type": "2hop", "prompt": "The main language spoken where the Colosseum stands is", "old": "Italian", "new": "Greek"},
+      {"type": "locality", "prompt": "The Eiffel Tower is located in the city of", "old": "Paris", "new": "Paris"},
+      {"type": "locality", "prompt": "Big Ben is located in the city of", "old": "London", "new": "London"}
+    ]
+  },
+  {
+    "id": "statue_liberty",
+    "subject": "Statue of Liberty",
+    "cloze": "The Statue of Liberty is located in the city of",
+    "target_old": "New York",
+    "target_new": "Tokyo",
+    "neighbors": [
+      {"type": "paraphrase", "prompt": "The Statue of Liberty can be found in the city of", "old": "New York", "new": "Tokyo"},
+      {"type": "1hop", "prompt": "The Statue of Liberty is located in the country of", "old": "United States", "new": "Japan"},
+      {"type": "2hop", "prompt": "The main language spoken where the Statue of Liberty stands is", "old": "English", "new": "Japanese"},
+      {"type": "locality", "prompt": "The Eiffel Tower is located in the city of", "old": "Paris", "new": "Paris"},
+      {"type": "locality", "prompt": "The Colosseum is located in the city of", "old": "Rome", "new": "Rome"}
+    ]
+  }
+]

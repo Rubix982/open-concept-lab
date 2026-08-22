@@ -302,3 +302,27 @@ regularization — a real mechanistic takeaway.
 
 Confidence: high for "KL alone insufficient on full-matrix FT"; small-model +
 basic-KL caveats noted. Full ROME (rank-1 + C^-1) would be the clean comparison.
+
+## [T-015] ROME set up & running, but no-covariance config doesn't flip predictions
+
+_Date: 2026-08-23 · EasyEdit isolated venv, gpt2-small_
+
+Real ROME runs via EasyEdit (v-optimization works: P(target) 0.0003→0.99 in value
+space; deltas computed + inserted). BUT with mom2_adjustment=false (the shortcut
+to skip covariance stats), the applied rank-1 update does NOT change the model's
+next-token argmax (POST still " Paris" for Eiffel→Rome), even though EasyEdit's
+teacher-forcing rewrite_acc reports 1.0 (misleading — argmax unchanged). Confirmed
+`edited is editor.model` (in-place), POST argmax = PRE argmax.
+
+**Diagnosis:** without the C^-1 covariance term (mom2_adjustment=true), the update
+direction uses raw k instead of C^-1 k → misdirected/ineffective. The no-stats
+shortcut doesn't produce working edits. Also possible: gpt2-xl config params
+(clamp_norm_factor, v_loss_layer, layer) don't transfer cleanly to gpt2-small.
+Next: enable mom2_adjustment=true (EasyEdit computes stats from wikitext) — the
+real ROME — and/or tune the gpt2 config. Good Arnab question: does gpt2 ROME need
+the mom2 stats to flip argmax, or is this a config issue?
+
+T-015 instrument is BUILT and ready (controlled_edits.json, rome_study.py 3-way,
+viz.py blast-radius) — it produces the graph the moment a working edit exists.
+
+Confidence: high (argmax directly checked PRE/POST on the in-place edited model).

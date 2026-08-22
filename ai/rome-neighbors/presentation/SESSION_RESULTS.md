@@ -1,81 +1,112 @@
-# rome-neighbors — session results & demo
+# rome-neighbors — results & demo (for Natalie & Arnab)
 
-_For Natalie & Arnab · outcomes first, then live programs, then direction._
+_Outcomes first → runnable programs → honest boundaries → next direction._
+
+---
+
+## 0 · The vision (why this matters)
+
+A technique companies can use to **reliably, cheaply, and frequently update a
+deployed model's knowledge** — without retraining and without RAG's every-query
+overhead. Flagship case: **a medical model kept current with the newest research**
+— new trial results, revised guidelines, corrected facts, edited *in* the model so
+they propagate through its reasoning, not bolted on as context.
+
+The load-bearing question underneath that vision: **when you edit one fact, does it
+correctly propagate to everything it logically implies — and can we predict/guarantee
+which related facts stay correct vs. break?** An edit you can't trust to propagate
+(or to *not* corrupt neighbours) can't be used in medicine. So this project studies
+exactly the reliability gap between "the edit worked" and "the model is still
+consistent." That gap is what stands between knowledge-editing and real deployment.
 
 ---
 
 ## 1 · Outcomes achieved
 
 **The pivotal reframe:** you can't predict which neighbours an edit breaks without
-*making the edit first*. So the project spine flipped from "score geometry, hope it
-predicts propagation" → **edit → measure real propagation → then find the geometry
-that predicts it.** Everything below follows from that.
+*making the edit first*. Spine flipped: **edit → measure real propagation → then
+find the geometry that predicts it.**
 
-1. **Real edit → propagation pipeline (from scratch).** FT-L weight edits (gradient
-   steps on the MLP down-projection — the weights ROME edits) + per-neighbour
-   pre/post measurement. → **First propagation table reproduces the ripple-failure
-   phenomenon** (Cohen/Zhong) on our own stack:
+1. **Real edit → propagation pipeline (built from scratch).** FT-L weight edits +
+   per-neighbour pre/post measurement → **reproduced the ripple-failure phenomenon**
+   (Cohen/Zhong) on our own stack: entailed neighbours rarely update, decaying with
+   hop distance (paraphrase/1-hop ~20% → **2-hop 0%**).
 
-   Entailed neighbours rarely *update* — propagation **decays with hop distance**:
-   paraphrase/1-hop ~20% → **2-hop 0%** (the ripple-failure phenomenon).
+2. **The 3-way outcome exposed specificity failure (an honest correction).** Naive
+   full-matrix FT is a *wrecking ball* — 88% of neighbours BROKEN incl. **94% of
+   unrelated locality**. (This corrected an earlier "locality preserved" read that
+   was wrong.) Editing without specificity constraints corrupts the model broadly.
 
-   BUT the 3-way outcome (updated / stale / **broken**) exposed a second, honest
-   finding: **naive FT-L is destructive** — it *breaks* ~88% of neighbours,
-   **including 94% of unrelated locality facts**. Naive full-weight fine-tuning
-   lacks specificity (this is exactly why ROME/MEMIT add locality constraints).
-   *(This corrects an earlier read that locality was "preserved" — it wasn't.)*
-   → we need a specificity-constrained edit before stale-vs-broken is separable.
+3. **Read ROME/MEMIT source → isolated the specificity mechanism.** Specificity =
+   **rank-1 update + C⁻¹ covariance orthogonalization + KL locality penalty**. We
+   tested adding just KL+weight-decay to our FT → **barely helped (still ~86%
+   broken)**, isolating that the **rank-1 (low-rank) constraint is the key** — not
+   regularization. A real mechanistic takeaway.
 
-2. **First thesis test against ground truth (T-B).** Does representational closeness
-   predict which neighbours the edit reached? **Overall AUC 0.68** — a faint real
-   signal — but cosines are ~0.998 for both classes (template-saturated), so raw
-   distance is too coarse. The *method* (predictor → real propagation → AUC/hop)
-   works end-to-end.
+4. **First thesis test against ground truth (T-B).** Does representational closeness
+   predict which neighbours the edit reached? Overall **AUC 0.68** (faint signal),
+   but cosines ~0.998 both classes (template-saturated) → raw distance too coarse.
+   The *method* (predictor → real propagation → AUC/hop) works end-to-end.
 
-3. **Predictor baseline mapped (E-007/E-011).** Raw distance is a weak/flat baseline
-   across gpt2-small/medium × mean/last pooling; capacity + readout both matter
-   (GPT-J sep 0.06 > gpt2-medium 0.019). Structured alignment didn't beat it yet.
+5. **Real ROME running** via EasyEdit (isolated venv) — the specificity-preserving
+   editor, quarantined from our stack. v-optimization works (P(target) 0.0003→0.99).
 
-4. **Infrastructure, tested not assumed.** (a) NDIF remote GPT-J working; (b) mapped
-   NDIF's editing boundary — single in-trace weight-set + backward work, but
-   *iterative* edits don't (one-forward/job) → **real editing is local**; (c) built a
-   local transformers backend so the whole pipeline is NDIF-independent.
+6. **T-015 instrument built** — controlled well-known edit set + 3-way classifier
+   (updated/stale/broken/fine) + **blast-radius graph** viz. Ready to run the moment
+   ROME flips predictions (see boundary below).
 
-5. **Reproducible codebase** — `ripplekit/` package (config/data/reps/predictors/
-   analysis) + thin experiment runners; verified RippleEdits loader.
-
-6. **Positioning done** — Asta ×3 + full NDIF corpus: the specific lane (hop-resolved
-   + causal + predictor comparison) is unclaimed; nearest work SLAQ / Kim / Jeong /
-   Huang / Nishi identified and differentiated.
+7. **Positioning done** — Asta ×3 + full NDIF corpus: the specific lane (hop-resolved
+   + causal + predictor comparison) is unclaimed; SLAQ/Kim/Jeong/Huang/Nishi placed.
 
 ---
 
 ## 2 · Runnable programs (live demo)
 
-| Program | Shows | Output |
-|---------|-------|--------|
-| `experiments/edit_propagation/edit_ft.py` | real FT-L edit → propagation | `results/propagation_table.txt` |
-| `experiments/edit_propagation/analyze_tb.py` | predictor vs REAL propagation | AUC per hop |
-| `experiments/preflight_demo/run.py` | raw-distance vs alignment baseline | `results/predictor_arc.png` |
-| `scratch/01–13` | NNSight curriculum (logit lens, ablation, causal tracing, attention, `.source`) | figures/tables |
+| Program | Shows |
+|---------|-------|
+| `experiments/edit_propagation/edit_ft.py` | FT edit → 3-way outcome (the wrecking-ball baseline) |
+| `experiments/edit_propagation/rome_study.py` | real ROME edit → updated/stale/broken/fine |
+| `experiments/edit_propagation/viz.py` | blast-radius graph of an edit's effect on neighbours |
+| `experiments/edit_propagation/analyze_tb.py` | predictor vs. real propagation (AUC/hop) |
+| `experiments/preflight_demo/run.py` | raw-distance vs alignment baseline |
+| `scratch/01–13` | NNSight curriculum (logit lens, ablation, causal tracing, attention, `.source`) |
 
-All run locally (transformers/MPS) or remote (NDIF/GPT-J) via one config switch.
+Two-venv architecture: `.venv` (ripplekit + nnsight/NDIF, representations/analysis)
+· `.venv-edit` (EasyEdit + ROME/MEMIT/FT, weight editing). They meet through saved data.
 
 ---
 
-## 3 · Next direction
+## 3 · Honest boundaries hit today (tested, not assumed)
 
-**T-015 — what makes a neighbour go stale/broken vs. fine after an edit?** Reframe to
-the 3-way outcome (updated / stale / broken; locality flips polarity) and find which
-*features* separate them: hop distance, representational proximity, **subject-sharing**
-(Liu et al.: shared-subject facts get over-written), **causal routing** (does the
-neighbour read the edited MLP site?), pre-edit competence. This 3-way "will this edit
-*break* these facts" is the **pre-flight-diagnostic** vision, and it operationalizes
-the deep thread (does the model's causal-read graph mirror the entailment graph?).
+- **NDIF is inference-only** — single in-trace weight-set + backward work, but
+  *iterative* edits don't (one-forward/job). → real editing is **local**. (Also hit
+  a post-outage whitelist regression — reported to NDIF Discord; since fixed.)
+- **gpt2-medium NaNs at the logits** on this Mac in *both* stacks (transformers 5.15
+  and 5.5.4) — machine/model-specific; gpt2-small is reliable.
+- **ROME needs the covariance stats.** With `mom2_adjustment=false` (no stats), the
+  v-optimization runs but the applied edit **does not flip the argmax** (rewrite_acc
+  1.0 is misleading). Real ROME needs `mom2_adjustment=true` (C⁻¹) — next brick.
+- **Mac-local editing is a friction sink** (no CUDA, NaNs, EasyEdit assumes GPU) →
+  strategic question below.
+
+---
+
+## 4 · Next direction & questions for you
+
+**Immediate:** enable ROME's covariance (`mom2_adjustment=true`, EasyEdit computes
+stats) → a *working* specific edit → run the T-015 3-way study + blast-radius graph.
+Then study the stale/broken neighbours: what must be true (position? subject-sharing?
+causal routing?) to turn them into "fine"?
 
 **Questions for you:**
-1. Causal outcome: is interchange/IIA a valid stand-in for edit-propagation, or must
-   it be actual weight edits? (We mapped that NDIF can't do iterative edits.)
-2. RAVEL vs RippleEdits as the cleaner substrate for hop-resolved geometry?
-3. Best capable-model path given local-editing constraint (gpt2-xl local? GPT-J?).
-4. Biggest hole you'd attack in the T-015 design.
+1. Does gpt2 ROME need the mom2 covariance stats to actually flip predictions, or is
+   our config off? (Arnab — MEMIT.)
+2. **Compute substrate:** keep fighting Mac-local, or move editing to a GPU (Colab /
+   cloud) so ROME/MEMIT + bigger models "just work"? What do you use?
+3. Causal outcome: interchange/IIA vs. actual weight edits for measuring propagation?
+4. RAVEL vs RippleEdits as the cleaner hop-resolved substrate?
+5. Biggest hole you'd attack in the T-015 / diagnostic design?
+
+**Where it's going:** the 3-way "which facts an edit will break/leave-stale" is the
+**pre-flight diagnostic** — the reliability layer a medical-model-updating product
+would require. That's the through-line from today's bricks to the vision.

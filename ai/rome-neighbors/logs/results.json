@@ -1,0 +1,43 @@
+[
+    {
+        "pre": {
+            "rewrite_acc": [
+                0.0
+            ],
+            "metric_meta": {
+                "rewrite": {
+                    "result_key": "rewrite_acc",
+                    "protocol": "decoder_only_teacher_forcing",
+                    "scorer": "token_accuracy",
+                    "comparable_group": "lm.decoder_only_teacher_forcing.token_accuracy"
+                }
+            },
+            "locality": {},
+            "portability": {}
+        },
+        "case_id": 0,
+        "requested_rewrite": {
+            "prompt": "The Eiffel Tower is located in the city of",
+            "target_new": "Rome",
+            "ground_truth": null,
+            "portability": {},
+            "locality": {},
+            "subject": "Eiffel Tower"
+        },
+        "post": {
+            "rewrite_acc": [
+                1.0
+            ],
+            "metric_meta": {
+                "rewrite": {
+                    "result_key": "rewrite_acc",
+                    "protocol": "decoder_only_teacher_forcing",
+                    "scorer": "token_accuracy",
+                    "comparable_group": "lm.decoder_only_teacher_forcing.token_accuracy"
+                }
+            },
+            "locality": {},
+            "portability": {}
+        }
+    }
+]
