@@ -66,14 +66,21 @@ attention sink).
 
 ## 5 · The load-bearing next brick — E-010 (plan, for review) (2m)
 
-Predictor separating types ≠ predictor of **propagation**. To close the thesis:
+Predictor separating types ≠ predictor of **propagation**. To close the thesis I
+need a per-neighbour causal propagation label — and there's a fork I want your
+call on (full plan: `experiments/iia_outcome/PLAN.md`):
 
-- **Outcome = causal IIA** per neighbour (interchange: patch the base's rep of the
-  edited attribute, does the neighbour's answer flip?), built on `jkminder/nnpatch`.
-- Then: does predictor (align/bilinear) correlate with per-neighbour IIA,
-  **stratified by hop** — the headline figure (AUC per hop bin).
+- **Option A — actual edit** (ROME/MEMIT via EasyEdit): real, but needs local
+  weights (NDIF is inference-only).
+- **Option B — interchange/IIA** (`nnpatch`, NDIF-doable): patch the edited
+  attribute's rep counterfactual→base, does the neighbour's answer flip? Clean,
+  but a *proxy* for editing.
 
-**This is where I most want your review before I build it.**
+**The question for you (Arnab):** is interchange-IIA a defensible proxy for edit
+propagation, or does the claim require actual ROME edits? Then: predictor vs.
+per-neighbour propagation, **AUC per hop bin** = the headline figure.
+Controls already specified: pre-edit competence filter + edit-success filter +
+beat hop-count/raw-distance baselines.
 
 ---
 

@@ -358,3 +358,31 @@ a 15-min call; 3-4 sharp questions only Arnab can answer.
 - `presentation/DECK.md`
 
 **Closed:** —
+
+---
+
+### E-010 · Causal outcome — IIA per neighbour (the thesis-closing brick)
+
+**Status:** open (design first — for Arnab review Monday before building)
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-22
+**Updated:** 2026-08-22
+
+**Description:**
+Turn "predictor separates neighbour types" (E-009) into "predictor predicts
+PROPAGATION" by adding a causal outcome per neighbour. Two candidate designs
+(the methodological question for Arnab):
+  A. ACTUAL edit (ROME/MEMIT via EasyEdit) → measure neighbour answer change.
+     Heavy; needs local weights (NDIF is inference-only, can't edit remotely).
+  B. INTERCHANGE / IIA (nnpatch) → patch the edited attribute's representation
+     from a counterfactual run into the base, test if the neighbour answer flips.
+     NDIF-doable; a causal proxy for propagation.
+Then correlate predictor (alignment/bilinear) vs. per-neighbour IIA, stratified
+by hop → the headline AUC-per-hop figure.
+
+**Design lives in:** `experiments/iia_outcome/PLAN.md` (pass lenses; Arnab review).
+
+**Artifacts:** PLAN.md → then iia_outcome/run.py on `jkminder/nnpatch`.
+
+**Closed:** —
