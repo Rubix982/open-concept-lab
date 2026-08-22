@@ -144,7 +144,11 @@ for entry in entries:
     if not pe:
         continue
     cloze, new_t, old_t = pe
-    if not knows(cloze, old_t):     # competence filter: must know the ORIGINAL fact
+    # competence filter optional: small models rarely complete RippleEdits' templated
+    # phrasing, so requiring prior knowledge rejects everything. Default OFF — we edit
+    # regardless (efficacy gate below ensures the edit actually took) and measure
+    # propagation; note the caveat that prior knowledge isn't guaranteed.
+    if os.environ.get("REQUIRE_KNOWS", "0") == "1" and not knows(cloze, old_t):
         continue
     nbrs = neighbours_of(entry)
     if not nbrs:

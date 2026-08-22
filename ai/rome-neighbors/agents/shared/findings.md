@@ -174,3 +174,29 @@ not prompt-geometry separation. Motivates E-010, not abandons the thesis.
 
 Confidence: high for "mean-pool washes out / last-token + capacity help / alignment
 doesn't win on gpt2-medium"; the thesis verdict needs GPT-J + the causal outcome.
+
+## [E-012] Finding: NDIF editing-capability boundary (empirical)
+
+_Date: 2026-08-22 · verified against GPT-J-6B on NDIF (whitelist regression fixed)_
+
+Tested whether Path A (actual weight edit) is doable on NDIF's remote GPT-J:
+- Single in-trace weight SET: WORKS (zeroing fc_out[8] moved logP(Paris) 18.5→17.25).
+- Single in-trace BACKWARD/gradient: WORKS (grad-norm 236544 on fc_out[8].weight).
+- MULTI-STEP iterative edit: FAILS — one nnsight trace = ONE forward pass; the
+  graph frees after the first backward (retain_graph), and weights don't persist
+  across separate remote traces (shared model). FT/ROME need iterative optimization
+  → don't fit NDIF's one-forward-per-job inference model.
+- GPT-J MLP down-proj is `mlp.fc_out` (not GPT-2's `c_proj`).
+
+**Conclusion (resolves the A/B fork with evidence):** actual iterative weight
+editing is fundamentally LOCAL (NDIF is shared inference infra). On NDIF the
+capable model is available for INFERENCE + single-step/activation interventions,
+not clean weight edits. So:
+- Path A (real weight edit) → LOCAL (fix FT-L NaN: lower lr + grad-clip, on
+  gpt2-medium; or ROME via EasyEdit in an isolated venv).
+- Path B (causal outcome on the CAPABLE model) → interchange/activation patching
+  on GPT-J via NDIF — fits the one-forward model, uses the model that knows the facts.
+
+This is the exact NDIF-editing question for Arnab (he fixed NDIF today; co-wrote MEMIT).
+
+Confidence: high (each capability directly tested on NDIF today).
