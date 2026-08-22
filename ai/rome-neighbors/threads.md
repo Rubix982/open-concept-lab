@@ -243,6 +243,31 @@ lookback circuit lives, invisible in the head-average.
 
 ---
 
+## Direction decision (2026-08-22) — after weak predictor results
+
+**State:** raw distance fails (template-washout / faint last-token signal);
+structured alignment (as implemented) doesn't beat it (E-011/E-011b). The measure
+we hoped for — "predicts editable, structure-preserving, precise neighbour edits"
+— is not found yet.
+
+**Diagnosis (the key insight):** every experiment so far measures a PROXY
+(type-separation of prompt geometry on the UNEDITED model), not the real target
+(per-neighbour, per-edit PROPAGATION). We've tuned predictors with no ground
+truth. Plus construct issues: whole-prompt cosine is template-dominated (not fact),
+and type-averaging discards per-instance signal.
+
+**Candidate directions (user chooses):**
+- **T-A** get the causal OUTCOME first (E-010: edit or interchange → per-neighbour
+  propagation labels) → then measure predictors against truth. ← PREREQUISITE / rec.
+- **T-B** represent the FACT not the prompt: subject-token reps, edit difference
+  vector (new−old) + do neighbours lie along it, Kim bilinear, DAS direction.
+- **T-C** capacity: GPT-J (NDIF) / stronger local (capacity tripled signal: .06 vs .02).
+- **T-D** right unit: per-edit binary outcome + logistic regression (design's
+  actual spec), not type-averaged cosine.
+A makes B/C/D measurable → honest sequence is A first.
+
+---
+
 ## Foundations threads (gaps to lock)
 
 ### T-011 · Linear representation: features = directions, read by dot product, written by rank-1
