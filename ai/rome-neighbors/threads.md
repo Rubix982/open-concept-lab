@@ -268,6 +268,35 @@ A makes B/C/D measurable → honest sequence is A first.
 
 ---
 
+### T-015 · What differentiates neighbours that go stale/broken vs. fine after an edit?
+
+**Status:** active (next experimental direction; subsumes T-B, operationalizes T-006)
+**Parent:** T-001
+**Opened:** 2026-08-22
+**Question:** Reframe from binary "propagated?" to the 3-way post-edit outcome and
+ask what characteristics separate the classes:
+  - UPDATED (moved to ripple-consistent value — edit reached it)
+  - STALE (kept old value — ripple failure)
+  - BROKEN (changed to wrong/incoherent — collateral damage)
+  (locality/control flip polarity: staying = correct, changing = specificity failure)
+**Candidate differentiators (hypotheses to test):**
+  1. hop distance (2hop uniformly stale so far)
+  2. representational proximity to the edited fact (T-B predictor — faint)
+  3. SUBJECT-SHARING — Liu et al.: shared-subject facts get over-written (broken);
+     shared-object/relation → stale. Strong specific hypothesis.
+  4. CAUSAL ROUTING — does the neighbour read through the edited MLP site? (T-006
+     made concrete: readers update, non-readers go stale)
+  5. pre-edit competence (weakly-known neighbours break?)
+  6. relation type (1:1 vs 1:many)
+**Why it matters:** the 3-way "will this edit BREAK these facts" is the pre-flight
+DIAGNOSTIC vision directly — more useful than a propagation rate. Subsumes T-B
+(closeness → outcome) and is the concrete form of T-006 (reads-edited-site → outcome).
+**Next experiment:** extend edit run to log the 3-way label + these features per
+neighbour, then which features separate the classes (multinomial / feature importance).
+**Answer:** —
+
+---
+
 ## Foundations threads (gaps to lock)
 
 ### T-011 · Linear representation: features = directions, read by dot product, written by rank-1
