@@ -11,10 +11,10 @@ D_MODEL: int = 4096
 
 # ── Experiment defaults ──────────────────────────────────────────────────────
 DEFAULT_LAYER: int = 15
-SWEEP_LAYERS: list[int] = [6, 9, 12, 15, 18]
+SWEEP_LAYERS: list[int] = [int(x) for x in os.environ.get("SWEEP_LAYERS", "6,9,12,15,18").split(",")]
 SEED: int = 1538
-N_EDITS: int = 40
-MAX_PER_CRITERION: int = 3
+N_EDITS: int = int(os.environ.get("N_EDITS", "40"))          # override for fast passes
+MAX_PER_CRITERION: int = int(os.environ.get("MAX_PER_CRITERION", "3"))
 K_ANCHOR: int = 3
 
 # ── Neighbour typing (RippleEdits criteria → our types) ──────────────────────

@@ -21,6 +21,7 @@ Usage:
     python experiments/preflight_demo/run.py
 """
 
+import time
 from pathlib import Path
 
 from ripplekit import analysis, config, data, predictors, reps
@@ -29,10 +30,52 @@ OUT = config.RESULTS_DIR
 OUT.mkdir(parents=True, exist_ok=True)
 HOW = "mean"   # mean-pool avoids the last-token attention sink (E-005/E-007)
 
+
+def _fmt(sec: float) -> str:
+    m, s = divmod(int(sec), 60)
+    return f"{m}m{s:02d}s"
+
+
+def _progress(done: int, total: int, t0: float, label: str) -> None:
+    frac = done / max(total, 1)
+    bar = "█" * int(frac * 24) + "░" * (24 - int(frac * 24))
+    el = time.time() - t0
+    eta = (el / max(done, 1)) * (total - done)
+    print(f"  {label} [{bar}] {done}/{total} ({frac*100:.0f}%) "
+          f"· elapsed {_fmt(el)} · eta {_fmt(eta)} · cached {reps.cache_size()}",
+          flush=True)
+
+
 # ── data ────────────────────────────────────────────────────────────────────────
 pairs = data.load_pairs()
 ans_idx = data.answer_index()
-print(f"{len(pairs)} typed pairs · layers {config.SWEEP_LAYERS} · how={HOW}\n")
+loaded = reps.load_disk_cache()
+print(f"{len(pairs)} typed pairs · layers {config.SWEEP_LAYERS} · how={HOW} "
+      f"· resumed {loaded} cached reps\n", flush=True)
+
+# ── fetch: proven single-layer path, per (unique prompt × layer) ────────────────
+# (multi-layer prewarm left unvalidated while NDIF is flaky — single-layer is proven.)
+_prompts: set[str] = set()
+for p in pairs:
+    _prompts.add(p.base)
+    _prompts.add(p.neighbour)
+    for q in list(ans_idx.get(p.answer, set()))[: config.K_ANCHOR + 1]:
+        _prompts.add(q)
+prompts = sorted(_prompts)
+total_fetches = len(prompts) * len(config.SWEEP_LAYERS)
+print(f"fetching up to {total_fetches} reps ({len(prompts)} prompts × "
+      f"{len(config.SWEEP_LAYERS)} layers), checkpointing to disk...", flush=True)
+
+t0 = time.time()
+done = 0
+for pr in prompts:
+    for L in config.SWEEP_LAYERS:
+        reps.rep(pr, L, HOW)      # cached (mem+disk); retries on transient NDIF errors
+        done += 1
+    reps.save_disk_cache()        # checkpoint after each prompt (all its layers)
+    if done % 25 == 0 or pr == prompts[-1]:
+        _progress(done, total_fetches, t0, "fetch")
+print(f"fetch complete in {_fmt(time.time()-t0)}\n", flush=True)
 
 # ── compute raw distance + alignment, per layer ────────────────────────────────
 # raw_by[layer]   : list[(type, cos(base, neighbour))]
@@ -40,6 +83,8 @@ print(f"{len(pairs)} typed pairs · layers {config.SWEEP_LAYERS} · how={HOW}\n"
 raw_by: dict[int, list[tuple[str, float]]] = {L: [] for L in config.SWEEP_LAYERS}
 align_by: dict[int, list[tuple[str, float]]] = {L: [] for L in config.SWEEP_LAYERS}
 
+print("computing predictors from cached reps (no remote calls)...", flush=True)
+tc = time.time()
 for i, p in enumerate(pairs):
     refs = [q for q in ans_idx.get(p.answer, set()) if q != p.neighbour]
     for L in config.SWEEP_LAYERS:
@@ -47,8 +92,8 @@ for i, p in enumerate(pairs):
         phi = predictors.anchor(p.answer, refs, L, HOW)
         if phi is not None:
             align_by[L].append((p.type, predictors.alignment(p.neighbour, phi, L, HOW)))
-    if i % 40 == 0:
-        print(f"  ...{i}/{len(pairs)}")
+    if i % 20 == 0 or i == len(pairs) - 1:
+        _progress(i + 1, len(pairs), tc, "compute")
 
 # ── sep per predictor per layer (the headline signal) ──────────────────────────
 lines: list[str] = []

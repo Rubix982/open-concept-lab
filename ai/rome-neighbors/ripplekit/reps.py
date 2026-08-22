@@ -6,6 +6,7 @@ the demo scripts (E-007). Confirm on first run in a new environment.
 """
 
 import os
+import time
 
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
@@ -17,6 +18,50 @@ from . import config
 
 _model: "LanguageModel | None" = None
 _cache: dict[tuple[str, int, str], torch.Tensor] = {}
+
+MAX_RETRIES = 5
+BACKOFF = 4.0   # seconds, exponential
+
+# ── disk checkpoint cache ──────────────────────────────────────────────────────
+# NDIF is flaky; persist fetched vectors so a re-run resumes instead of re-fetching.
+_DISK = config.RESULTS_DIR / "rep_cache.pt"
+
+
+def load_disk_cache() -> int:
+    """Load persisted reps into memory. Returns count loaded."""
+    global _cache
+    if _DISK.exists():
+        try:
+            _cache = torch.load(_DISK)
+            return len(_cache)
+        except Exception as e:  # noqa: BLE001
+            print(f"    [disk cache unreadable, ignoring: {type(e).__name__}]")
+    return 0
+
+
+def save_disk_cache() -> None:
+    _DISK.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(_cache, _DISK)
+
+
+def cache_size() -> int:
+    return len(_cache)
+
+
+def _trace_with_retry(fn):
+    """Run a trace-producing fn with retry+backoff — NDIF submission errors are
+    transient (queue/server hiccups). Raises the last error if all retries fail."""
+    last = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            return fn()
+        except Exception as e:  # noqa: BLE001 — NDIF raises RemoteException et al.
+            last = e
+            if attempt < MAX_RETRIES - 1:
+                wait = BACKOFF * (2 ** attempt)
+                print(f"    [retry {attempt+1}/{MAX_RETRIES} in {wait:.0f}s: {type(e).__name__}]")
+                time.sleep(wait)
+    raise last  # type: ignore[misc]
 
 
 def get_model() -> LanguageModel:
@@ -39,11 +84,35 @@ def rep(prompt: str, layer: int = config.DEFAULT_LAYER, how: str = "mean") -> to
     if ckey in _cache:
         return _cache[ckey]
     model = get_model()
-    with model.trace(prompt, remote=True):                        # type: ignore[union-attr]
-        resid = model.transformer.h[layer].output[0][0]           # type: ignore[index]  [seq, d]
-        vec = (resid.mean(dim=0) if how == "mean" else resid[-1]).save()
+
+    def _run():
+        with model.trace(prompt, remote=True):                    # type: ignore[union-attr]
+            resid = model.transformer.h[layer].output[0][0]       # type: ignore[index]  [seq, d]
+            return (resid.mean(dim=0) if how == "mean" else resid[-1]).save()
+
+    vec = _trace_with_retry(_run)
     _cache[ckey] = vec
     return vec
+
+
+def prewarm(prompt: str, layers: list[int], how: str = "mean") -> None:
+    """Fetch ALL `layers` for `prompt` in ONE remote trace (≈Nx cheaper than N
+    separate rep() calls), populating the per-(prompt,layer,how) cache."""
+    missing = [L for L in layers if (prompt, L, how) not in _cache]
+    if not missing:
+        return
+    model = get_model()
+
+    def _run() -> dict[int, "torch.Tensor"]:
+        saved: dict[int, "torch.Tensor"] = {}   # before trace (nnsight scoping)
+        with model.trace(prompt, remote=True):                    # type: ignore[union-attr]
+            for L in missing:
+                resid = model.transformer.h[L].output[0][0]       # type: ignore[index]
+                saved[L] = (resid.mean(dim=0) if how == "mean" else resid[-1]).save()
+        return saved
+
+    for L, v in _trace_with_retry(_run).items():
+        _cache[(prompt, L, how)] = v
 
 
 def clear_cache() -> None:

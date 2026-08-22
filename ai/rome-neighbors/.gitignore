@@ -7,3 +7,4 @@ __pycache__/
 results/
 *.out
 # large local benchmark data lives outside the repo (RippleEdits is cloned separately)
+*.log
