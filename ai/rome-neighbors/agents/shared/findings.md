@@ -226,3 +226,29 @@ T-B: do geometry predictors predict this per-neighbour propagation?
 
 Confidence: high for "pipeline works + ripple-decay reproduced"; per-type rates
 are indicative only (small n, weak model).
+
+## [E-013] RESULT: T-B — does geometry predict REAL propagation? (weak signal)
+
+_Date: 2026-08-22 · gpt2-small, 85 neighbour rows (8 propagated), predictor = pre-edit cos(edited-fact, neighbour) @ layer 6_
+
+First test of the actual thesis against GROUND TRUTH (not a proxy): does a
+neighbour's representational closeness predict whether the edit reached it?
+
+  ALL         AUC=0.683  (mean pred propagated 0.998 vs missed 0.998)
+  paraphrase  AUC=0.660  (6/32)
+  1hop        AUC=1.000  (1/5  — single positive, unreliable)
+  2hop        AUC=nan    (0/21 propagated — nothing to rank)
+  locality    AUC=0.958  (1/25 — single positive)
+
+**Read:** overall AUC 0.68 > 0.5 → a faint real signal (closer neighbours
+propagate more). BUT the cosines are ~0.998 for BOTH classes (template-saturated);
+the AUC rides on 4th-decimal gaps → razor-thin. n tiny (8 propagated); per-hop
+AUCs are single-positive artifacts; 2hop/control undefined.
+
+**Verdict:** the METHOD works end-to-end (predictor → real propagation → AUC/hop).
+Raw closeness carries only a faint, fragile signal — too coarse, as expected.
+Directly motivates (now against real labels): structured predictors (bilinear /
+edit-difference vector) + a stronger model + more edits for power. This is the
+honest first answer to the project's core question, with the full pipeline in place.
+
+Confidence: method high; the 0.68 is suggestive only (tiny n, template-saturated cos).
