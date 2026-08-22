@@ -73,17 +73,12 @@ actually propagates → *then* find the geometry that predicts it.
 MLP down-proj — the weights ROME edits) + per-neighbour pre/post measurement.
 First real propagation table (gpt2-small, 7/15 edits flipped):
 
-| neighbour | propagated |
-|-----------|-----------|
-| paraphrase | 18.8% |
-| 1-hop | 20.0% |
-| **2-hop** | **0.0%** |
-| locality | 4.0% (preserved ✓) |
-
-**Propagation decays with hop distance; locality intact** — the ripple-failure
-phenomenon (Cohen, Zhong) reproduced on our own stack. *This table is the target*
-T-B predictors get measured against. Honest caveat: gpt2-small (weak, small n) —
-the pattern is right; absolute rates are indicative.
+Entailed neighbours rarely *update* — decays with hop: paraphrase/1-hop ~20% →
+**2-hop 0%** (ripple failure, Cohen/Zhong, reproduced on our stack). AND the
+3-way outcome exposed that **naive FT-L is destructive — breaks ~88% incl. 94%
+of locality** (lacks specificity; corrects an earlier "preserved" read). This
+table is the target T-B predictors measure against. Caveat: gpt2-small (weak,
+small n). → need a specificity-constrained edit (ROME / KL) next.
 
 **Infra boundaries mapped today** (both tested, not assumed): NDIF supports
 single in-trace weight-set + backward but NOT iterative edits (one-forward/job) →

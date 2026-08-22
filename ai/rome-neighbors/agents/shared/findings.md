@@ -252,3 +252,34 @@ edit-difference vector) + a stronger model + more edits for power. This is the
 honest first answer to the project's core question, with the full pipeline in place.
 
 Confidence: method high; the 0.68 is suggestive only (tiny n, template-saturated cos).
+
+## [E-013/T-015] RESULT + CORRECTION: naive FT-L is destructive (breaks ~90%)
+
+_Date: 2026-08-22 · gpt2-small, 155 neighbour rows, 3-way outcome_
+
+3-way outcome (updated/stale/broken):
+  ALL        updated 14  stale 4  BROKEN 137 (88%)
+  paraphrase updated 10  stale 0  broken 39
+  2hop       updated  0  stale 0  broken 32
+  locality   updated  2  stale 2  BROKEN 60 (94%)
+
+**CORRECTION of E-012 read:** E-012 reported "locality 4% → mostly preserved" —
+that 4% was "% matching the expected UNCHANGED value", i.e. 96% of locality facts
+CHANGED = a SPECIFICITY FAILURE. The 3-way confirms locality is 94% broken. The
+earlier "preserved ✓" gloss was WRONG.
+
+**Finding:** naive full-weight FT-L lacks specificity — it corrupts ~90% of
+neighbours (incl. unrelated locality), not just the target. This is exactly why
+ROME/MEMIT add locality/KL constraints. Implication: we CANNOT cleanly study
+stale-vs-broken until the edit is specific enough that not everything breaks →
+need constrained FT (KL/locality term) or ROME.
+
+**Bug:** subject_shared = 0 for all 155 rows (subject_id intersection never hit)
+— format mismatch (edit subject_id str vs neighbour subject_id list, possibly
+different entity). Fix before testing the subject-sharing hypothesis (T-015).
+
+AUC(predictor vs updated) overall 0.72 but cosines ~0.998 both classes (still
+template-saturated) — unchanged conclusion: raw distance too coarse.
+
+Confidence: high (destructiveness is stark and corrects a prior overclaim).
+Next: (1) add specificity to the edit; (2) fix subject_id matching; (3) then T-015.

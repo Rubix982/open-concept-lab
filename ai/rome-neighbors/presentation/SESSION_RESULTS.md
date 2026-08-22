@@ -16,14 +16,15 @@ that predicts it.** Everything below follows from that.
    pre/post measurement. → **First propagation table reproduces the ripple-failure
    phenomenon** (Cohen/Zhong) on our own stack:
 
-   | neighbour | propagated |
-   |-----------|-----------|
-   | paraphrase | 18.8% |
-   | 1-hop | 20.0% |
-   | **2-hop** | **0.0%** |
-   | locality | 4.0% (preserved ✓) |
+   Entailed neighbours rarely *update* — propagation **decays with hop distance**:
+   paraphrase/1-hop ~20% → **2-hop 0%** (the ripple-failure phenomenon).
 
-   Propagation **decays with hop distance**; locality intact.
+   BUT the 3-way outcome (updated / stale / **broken**) exposed a second, honest
+   finding: **naive FT-L is destructive** — it *breaks* ~88% of neighbours,
+   **including 94% of unrelated locality facts**. Naive full-weight fine-tuning
+   lacks specificity (this is exactly why ROME/MEMIT add locality constraints).
+   *(This corrects an earlier read that locality was "preserved" — it wasn't.)*
+   → we need a specificity-constrained edit before stale-vs-broken is separable.
 
 2. **First thesis test against ground truth (T-B).** Does representational closeness
    predict which neighbours the edit reached? **Overall AUC 0.68** — a faint real
