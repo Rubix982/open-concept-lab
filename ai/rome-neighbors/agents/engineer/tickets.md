@@ -321,3 +321,40 @@ answer anchors more than locality controls; raw distance stays flat.
 - finding → `agents/shared/findings.md` → E-009
 
 **Closed:** —
+
+---
+
+### E-011 · Monday demo: consolidated predictor-comparison on ripplekit + deck
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-22
+**Updated:** 2026-08-22
+
+**Description:**
+Prep for the 2026-08-25 call with Natalie + Arnab. Build ONE consolidated runner
+on `ripplekit` that produces the three-act arc as a single figure + table:
+raw distance (baseline, E-007) vs. semantic alignment (structured, E-009), by
+neighbour type, across the layer sweep (E-008), with the sep metric. This is the
+demo of the target problem (seed of the edit-propagation pre-flight diagnostic).
+Plus a short presentation (markdown deck) and the E-010 causal-outcome PLAN to
+get Arnab's review before building it.
+
+**Steps:**
+1. `experiments/preflight_demo/run.py` — imports ripplekit; computes raw +
+   alignment by type across SWEEP_LAYERS; prints tables + sep; saves one arc figure
+   to results/. Migrates/《supersedes》 the standalone demos onto the package.
+2. `presentation/DECK.md` — problem → reframe → three-act arc → open frontier →
+   E-010 plan → questions for Arnab.
+3. Run on NDIF (user), paste outputs, fold into findings.md + deck.
+
+**Success criterion:** one figure + one table telling the arc; a deck that leads
+a 15-min call; 3-4 sharp questions only Arnab can answer.
+
+**Artifacts:**
+- `experiments/preflight_demo/run.py`
+- `results/predictor_arc.png`, `results/predictor_arc.txt`
+- `presentation/DECK.md`
+
+**Closed:** —
