@@ -283,3 +283,22 @@ template-saturated) — unchanged conclusion: raw distance too coarse.
 
 Confidence: high (destructiveness is stark and corrects a prior overclaim).
 Next: (1) add specificity to the edit; (2) fix subject_id matching; (3) then T-015.
+
+## [T-015] RESULT: KL+weight-decay does NOT fix specificity → rank-1 is the key
+
+_Date: 2026-08-22 · gpt2-small, FT+L (KL locality + weight decay), 243 neighbour rows_
+
+FT+L 3-way: ALL updated 18 / stale 15 / BROKEN 210 (86%); locality 113/127 broken
+(89%). Vs plain FT (94% locality broken) — only MARGINAL improvement.
+
+**Finding:** adding ROME's KL-locality + weight-decay penalty to a FULL-MATRIX FT
+does NOT restore specificity. Isolates that ROME's specificity comes primarily
+from the RANK-1 constraint (optimize one direction), not the KL regularizer:
+full c_proj (~4M params) has too much freedom for a 5-prompt KL to constrain.
+Compounding factor: gpt2-small is tiny (little redundancy → any mid-layer edit
+perturbs broadly). → Next brick: RANK-1 constrained edit (ΔW = a⊗b, optimize
+two vectors — the ROME core) and/or a bigger model. Specificity ≈ low-rank, not
+regularization — a real mechanistic takeaway.
+
+Confidence: high for "KL alone insufficient on full-matrix FT"; small-model +
+basic-KL caveats noted. Full ROME (rank-1 + C^-1) would be the clean comparison.
