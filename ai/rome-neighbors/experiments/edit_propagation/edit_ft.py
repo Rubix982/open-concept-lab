@@ -87,6 +87,8 @@ def neighbours_of(entry):
 # ── model ─────────────────────────────────────────────────────────────────────
 print(f"loading {MODEL} (fp32, {DEVICE})...", flush=True)
 tok = AutoTokenizer.from_pretrained(MODEL)
+# TODO(next): gpt2-medium NaNs at forward step 1 on CPU fp32 — likely an sdpa
+# attention overflow. Try attn_implementation="eager" to fix, then scale to medium.
 model = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.float32).to(DEVICE).eval()
 n_layer = model.config.n_layer
 EDIT_LAYER = int(os.environ.get("EDIT_LAYER", str(n_layer // 3)))   # early-mid, ROME-ish

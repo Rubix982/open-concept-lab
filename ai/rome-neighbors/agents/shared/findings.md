@@ -200,3 +200,29 @@ not clean weight edits. So:
 This is the exact NDIF-editing question for Arnab (he fixed NDIF today; co-wrote MEMIT).
 
 Confidence: high (each capability directly tested on NDIF today).
+
+## [E-012] RESULT: first real edit→propagation table — ripple failure reproduced
+
+_Date: 2026-08-22 · gpt2-small, FT-L edits (layer 4 mlp.c_proj), 15 edits (7 flipped), RippleEdits popular_
+
+The T-A deliverable: real weight edits → ground-truth per-neighbour propagation.
+  paraphrase  18.8% (n=32)
+  1hop        20.0% (n=5)
+  2hop         0.0% (n=21)
+  locality     4.0% (n=25)  ← mostly preserved (good specificity)
+  control      0.0% (n=2)
+
+**Propagation DECAYS with hop distance** (paraphrase/1hop ~19-20% → 2hop 0%) while
+locality is largely intact. This reproduces the ripple-failure phenomenon (Cohen
+RippleEdits, Zhong MQuAKE) on our own stack, with our own FT-L pipeline — the
+foundation that was missing. This table is the TARGET T-B predictors correlate against.
+
+Caveats: gpt2-small is weak (only 7/15 edits flip; small per-type n, esp. 1hop n=5);
+absolute rates low partly from model capacity. The PATTERN (hop-decay + locality
+preserved) is the right shape and matches the literature. Next: stronger model
+(gpt2-medium blocked by a stack-specific logits-NaN — body finite, NaN at
+ln_f/lm_head in torch2.13/transformers5.15/CPU-fp32; or GPT-J interchange), then
+T-B: do geometry predictors predict this per-neighbour propagation?
+
+Confidence: high for "pipeline works + ripple-decay reproduced"; per-type rates
+are indicative only (small n, weak model).
