@@ -107,6 +107,22 @@ def knows(cloze: str, target: str) -> bool:
     return target.lower()[:12] in answer(cloze).lower()
 
 
+REP_LAYER = int(os.environ.get("REP_LAYER", "6"))
+
+
+@torch.no_grad()
+def rep(text: str) -> torch.Tensor:
+    """Mean-pooled residual at REP_LAYER (predictor side). On the CURRENT model —
+    call PRE-edit for a clean predictor."""
+    ids = tok(text, return_tensors="pt").to(DEVICE)
+    hs = model(**ids, output_hidden_states=True).hidden_states[REP_LAYER][0]
+    return hs.mean(dim=0)
+
+
+def cos(a, b):
+    return float(torch.nn.functional.cosine_similarity(a, b, dim=0))
+
+
 def ft_edit(cloze: str, new_target: str):
     """FT-L: gradient steps on ONLY layer EDIT_LAYER's mlp.c_proj to make the model
     complete `cloze` with `new_target`."""
@@ -142,6 +158,7 @@ import random
 random.Random(config.SEED).shuffle(entries)
 
 rows = []                    # (type, propagated_bool)
+tb_records = []              # per-neighbour: {edit, type, propagated, predictor} (T-B)
 edits_done = 0
 print("scanning for facts the model knows pre-edit, then editing...\n", flush=True)
 for entry in entries:
@@ -161,8 +178,11 @@ for entry in entries:
     if not nbrs:
         continue
 
-    # PRE-edit neighbour answers
-    pre = {i: answer(p) for i, (_, p, _) in enumerate(nbrs)}
+    # PRE-edit: geometry PREDICTOR per neighbour (clean model) — cos(edited-fact
+    # rep, neighbour rep). T-B hypothesis: neighbours closer here propagate more.
+    base_rep = rep(cloze)
+    pred = {i: cos(base_rep, rep(p)) for i, (_, p, _) in enumerate(nbrs)}
+
     # snapshot the layer weight to restore after (so edits don't accumulate)
     w = model.transformer.h[EDIT_LAYER].mlp.c_proj.weight
     saved = w.detach().clone()
@@ -178,11 +198,8 @@ for entry in entries:
             post = answer(p)
             propagated = expected.lower()[:12] in post.lower()
             rows.append((typ, propagated))
-        # quick per-edit tally
-        pt = {}
-        for typ, prop in [(nbrs[i][0], expected.lower()[:12] in answer(nbrs[i][1]).lower())
-                          for i, (_, _, expected) in enumerate(nbrs)]:
-            pt.setdefault(typ, []).append(prop)
+            tb_records.append({"edit": edits_done, "type": typ,
+                               "propagated": int(propagated), "predictor": pred[i]})
 
     # restore weights (isolate each edit)
     with torch.no_grad():
@@ -204,7 +221,9 @@ for t in config.TYPES:
     f"model={MODEL} layer={EDIT_LAYER} edits={edits_done} ft_steps<= {FT_STEPS}\n"
     + "\n".join(f"{t}: n={n} propagated={r:.1%}" for t, (n, r) in summary.items())
 )
-print(f"\nSaved → {OUT/'propagation_table.txt'}")
+(OUT / "tb_rows.json").write_text(json.dumps(tb_records, indent=0))
+print(f"\nSaved → {OUT/'propagation_table.txt'}  and  {OUT/'tb_rows.json'} "
+      f"({len(tb_records)} per-neighbour rows for T-B)")
 print("This is the ground-truth target. If propagation drops with hop distance")
 print("(paraphrase > 1hop > 2hop), we've reproduced the ripple-failure phenomenon")
 print("on our own stack — the foundation T-B predicts against.")

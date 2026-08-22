@@ -420,3 +420,29 @@ EasyEdit ROME (don't reinvent the rank-1 update).
 **Artifacts:** experiments/edit_propagation/ (edit.py, results), findings E-012.
 
 **Closed:** —
+
+---
+
+### E-013 · T-B: does geometry predict propagation? (against real labels)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-22
+**Blockers:** ~~E-012~~ (done — real propagation labels exist)
+
+**Description:**
+The real thesis test, now measurable. For each (edit, neighbour), emit a row:
+{type, propagated 0/1 (E-012 ground truth), predictor}. v1 predictor = PRE-edit
+cosine between the edited fact's representation and the neighbour's (mean-pool at
+a mid layer). Then correlate predictor vs. propagated, per hop type (point-biserial
+r / AUC). Answers: do neighbours the edit reached sit closer in representation
+space than the ones it missed?
+
+**Steps:** (1) edit_ft.py emits per-neighbour rows to results/tb_rows.json;
+(2) analyze_tb.py loads rows → per-hop AUC/correlation + a plot.
+Honest scope: gpt2-small (weak, small n) → pipeline + first signal; strengthen
+with better model/predictors (bilinear, edit-difference vector) next.
+
+**Artifacts:** tb_rows.json, analyze_tb.py, results, finding E-013.
+**Closed:** —
