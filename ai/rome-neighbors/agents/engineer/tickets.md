@@ -386,3 +386,37 @@ by hop → the headline AUC-per-hop figure.
 **Artifacts:** PLAN.md → then iia_outcome/run.py on `jkminder/nnpatch`.
 
 **Closed:** —
+
+---
+
+### E-012 · T-A: make a real edit → ground-truth propagation labels
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-22
+**Updated:** 2026-08-22
+
+**Description:**
+The pivotal correction: we cannot predict neighbours without editing first.
+Make a real weight edit, then measure per-neighbour propagation PRE vs POST —
+the ground-truth target every predictor (T-B) will be measured against.
+
+Constraint: editing modifies weights → LOCAL only (NDIF is inference-only).
+Model: gpt2-medium (loads via fp16; editing-lit's smaller standard). Tool:
+EasyEdit ROME (don't reinvent the rank-1 update).
+
+**v1 steps:**
+1. From RippleEdits popular.json, pick 3-5 facts the model KNOWS pre-edit
+   (competence filter via ripplekit).
+2. ROME-edit each to its counterfactual target; VERIFY the edit took.
+3. Query each edit's typed neighbours PRE and POST; label per neighbour:
+   propagated / stale / broken.
+4. Output the first REAL propagation table (N1/N2/reverse update rates) —
+   reproduces the ripple-failure phenomenon on our stack; a result in itself.
+
+**Then (E-013, T-B):** correlate geometry predictors against these labels.
+
+**Artifacts:** experiments/edit_propagation/ (edit.py, results), findings E-012.
+
+**Closed:** —
