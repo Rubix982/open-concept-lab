@@ -1,14 +1,14 @@
-# ROME hparams for gpt2-medium (24 layers), adapted from EasyEdit's gpt2-xl config.
-# mom2_adjustment: false → no covariance-stats download needed (rank-1 + KL v-opt).
+# ROME hparams for gpt2 (small, 12 layers) — reliable on this Mac (gpt2-medium
+# NaNs at logits in both stacks). Adapted from EasyEdit's gpt2-xl config.
 alg_name: "ROME"
-model_name: "gpt2-medium"
+model_name: "gpt2"
 stats_dir: "./data/stats"
-device: "cpu"                 # string → torch.device("cpu"); int 0 would mean cuda:0 (no CUDA on Mac)
-layers: [8]                    # early-mid (gpt2-xl used 17/48 ≈ 0.35 → 24*0.35 ≈ 8)
+device: "cpu"
+layers: [5]                    # early-mid of 12
 fact_token: "subject_last"
 v_num_grad_steps: 25
 v_lr: 5e-1
-v_loss_layer: 23              # last layer of gpt2-medium (0-indexed, 24 layers)
+v_loss_layer: 11             # last layer (0-indexed, 12 layers)
 v_weight_decay: 0.5
 clamp_norm_factor: 4
 kl_factor: 0.0625

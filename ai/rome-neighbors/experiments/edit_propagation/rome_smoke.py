@@ -15,7 +15,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from easyeditor import ROMEHyperParams, BaseEditor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-hparams = ROMEHyperParams.from_hparams(os.path.join(HERE, "rome_gpt2-medium.yaml"))
+CFG = os.environ.get("ROME_CFG", "rome_gpt2.yaml")   # gpt2 reliable; medium NaNs here
+hparams = ROMEHyperParams.from_hparams(os.path.join(HERE, CFG))
 
 editor = BaseEditor.from_hparams(hparams)
 metrics, edited_model, _ = editor.edit(
