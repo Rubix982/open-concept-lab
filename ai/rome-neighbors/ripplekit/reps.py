@@ -82,24 +82,66 @@ def get_model() -> LanguageModel:
     return _model
 
 
+# ── Local transformers backend (no NDIF) ──────────────────────────────────────
+_local_model = None
+_local_tok = None
+
+
+def _get_local():
+    """Load the local transformers model once (output_hidden_states, MPS/CPU)."""
+    global _local_model, _local_tok
+    if _local_model is None:
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        name = config.LOCAL_MODEL
+        print(f"    loading local model {name} (one-time)...", flush=True)
+        _local_tok = AutoTokenizer.from_pretrained(name)
+        _local_model = AutoModelForCausalLM.from_pretrained(
+            name, output_hidden_states=True, torch_dtype=torch.float32
+        )
+        dev = "mps" if torch.backends.mps.is_available() else "cpu"
+        _local_model = _local_model.to(dev).eval()
+        print(f"    local model ready on {dev} "
+              f"({_local_model.config.n_layer} blocks)", flush=True)
+    return _local_model, _local_tok
+
+
+def _rep_local(prompt: str, layer: int, how: str) -> torch.Tensor:
+    """Per-layer residual stream via transformers hidden_states.
+    hidden_states[i]: i=0 embeddings, i=L output of block L-1 → we index [layer]
+    (consistent across the sweep; not aligned 1:1 with NDIF block indexing)."""
+    m, tok = _get_local()
+    dev = next(m.parameters()).device
+    ids = tok(prompt, return_tensors="pt").to(dev)
+    with torch.no_grad():
+        out = m(**ids)
+    hs = out.hidden_states[layer][0]                              # [seq, d]
+    vec = hs.mean(dim=0) if how == "mean" else hs[-1]
+    return vec.detach().cpu().float()
+
+
 def rep(prompt: str, layer: int = config.DEFAULT_LAYER, how: str = "mean") -> torch.Tensor:
     """Residual-stream representation of `prompt` at `layer`.
 
-    how="mean" → mean-pool over tokens (avoids the last-token attention sink,
-                 our 03/12 finding); how="last" → last-token residual.
-    Cached by (prompt, layer, how) so shared prompts (e.g. anchors) reuse traces.
+    how="mean" → mean-pool over tokens (avoids the last-token attention sink);
+    how="last" → last-token residual. Cached by (prompt, layer, how).
+    Backend selected by config.BACKEND ("local" transformers | "ndif" remote).
     """
     ckey = (prompt, layer, how)
     if ckey in _cache:
         return _cache[ckey]
-    model = get_model()
 
-    def _run():
-        with model.trace(prompt, remote=True):                    # type: ignore[union-attr]
-            resid = model.transformer.h[layer].output[0][0]       # type: ignore[index]  [seq, d]
-            return (resid.mean(dim=0) if how == "mean" else resid[-1]).save()
+    if config.BACKEND == "local":
+        vec = _rep_local(prompt, layer, how)
+    else:
+        model = get_model()
 
-    vec = _trace_with_retry(_run)
+        def _run():
+            with model.trace(prompt, remote=True):                # type: ignore[union-attr]
+                resid = model.transformer.h[layer].output[0][0]   # type: ignore[index]
+                return (resid.mean(dim=0) if how == "mean" else resid[-1]).save()
+
+        vec = _trace_with_retry(_run)
+
     _cache[ckey] = vec
     return vec
 
@@ -122,11 +164,25 @@ def probe_once(timeout: int = 20) -> bool:
 
 
 def prewarm(prompt: str, layers: list[int], how: str = "mean") -> None:
-    """Fetch ALL `layers` for `prompt` in ONE remote trace (≈Nx cheaper than N
-    separate rep() calls), populating the per-(prompt,layer,how) cache."""
+    """Fetch ALL `layers` for `prompt` in ONE forward pass / trace (≈Nx cheaper
+    than N separate rep() calls), populating the per-(prompt,layer,how) cache."""
     missing = [L for L in layers if (prompt, L, how) not in _cache]
     if not missing:
         return
+
+    # local backend: one forward pass returns every hidden state
+    if config.BACKEND == "local":
+        m, tok = _get_local()
+        dev = next(m.parameters()).device
+        ids = tok(prompt, return_tensors="pt").to(dev)
+        with torch.no_grad():
+            out = m(**ids)
+        for L in missing:
+            hs = out.hidden_states[L][0]
+            vec = hs.mean(dim=0) if how == "mean" else hs[-1]
+            _cache[(prompt, L, how)] = vec.detach().cpu().float()
+        return
+
     model = get_model()
 
     def _run() -> dict[int, "torch.Tensor"]:

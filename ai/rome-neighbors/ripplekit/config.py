@@ -4,10 +4,20 @@ duplicated across the demo scripts."""
 import os
 from pathlib import Path
 
+# ── Backend: "ndif" (remote GPT-J) or "local" (transformers on this machine) ──
+# Default to local while NDIF is down — keeps the thesis unblocked.
+BACKEND: str = os.environ.get("RIPPLEKIT_BACKEND", "local")
+
 # ── Model / NDIF ────────────────────────────────────────────────────────────
-MODEL_ID: str = "EleutherAI/gpt-j-6b"
+MODEL_ID: str = "EleutherAI/gpt-j-6b"    # NDIF backend
 N_LAYERS: int = 28
 D_MODEL: int = 4096
+
+# ── Local backend (transformers + MPS) ────────────────────────────────────────
+# gpt2-large (36 blocks) is the default: knows popular entities, fits the layer
+# sweep, runs fast on M2. gpt2-xl (48) is the editing-literature standard — set
+# LOCAL_MODEL=gpt2-xl for the comparable run once validated.
+LOCAL_MODEL: str = os.environ.get("LOCAL_MODEL", "gpt2-large")
 
 # ── Experiment defaults ──────────────────────────────────────────────────────
 DEFAULT_LAYER: int = 15

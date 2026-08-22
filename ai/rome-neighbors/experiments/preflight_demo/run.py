@@ -67,14 +67,12 @@ print(f"fetching up to {total_fetches} reps ({len(prompts)} prompts × "
       f"{len(config.SWEEP_LAYERS)} layers), checkpointing to disk...", flush=True)
 
 t0 = time.time()
-done = 0
-for pr in prompts:
-    for L in config.SWEEP_LAYERS:
-        reps.rep(pr, L, HOW)      # cached (mem+disk); retries on transient NDIF errors
-        done += 1
-    reps.save_disk_cache()        # checkpoint after each prompt (all its layers)
-    if done % 25 == 0 or pr == prompts[-1]:
-        _progress(done, total_fetches, t0, "fetch")
+for j, pr in enumerate(prompts):
+    reps.prewarm(pr, config.SWEEP_LAYERS, HOW)   # ONE pass/trace → all layers
+    if (j + 1) % 20 == 0 or j == len(prompts) - 1:
+        reps.save_disk_cache()                   # periodic checkpoint
+        _progress((j + 1) * len(config.SWEEP_LAYERS), total_fetches, t0, "fetch")
+reps.save_disk_cache()
 print(f"fetch complete in {_fmt(time.time()-t0)}\n", flush=True)
 
 # ── compute raw distance + alignment, per layer ────────────────────────────────
