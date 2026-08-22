@@ -62,6 +62,33 @@ prompt-geometry on a small model.
 
 ---
 
+## 3b · The pivot + the real result (the strongest part) (3m)
+
+**The realization:** §3 measured geometry on the *unedited* model to predict a
+target (propagation) that didn't exist yet — a proxy. **You can't predict
+neighbours without editing first.** So the spine flipped: edit → measure what
+actually propagates → *then* find the geometry that predicts it.
+
+**Built it, got ground truth.** A real FT-L weight edit (gradient steps on one
+MLP down-proj — the weights ROME edits) + per-neighbour pre/post measurement.
+First real propagation table (gpt2-small, 7/15 edits flipped):
+
+| neighbour | propagated |
+|-----------|-----------|
+| paraphrase | 18.8% |
+| 1-hop | 20.0% |
+| **2-hop** | **0.0%** |
+| locality | 4.0% (preserved ✓) |
+
+**Propagation decays with hop distance; locality intact** — the ripple-failure
+phenomenon (Cohen, Zhong) reproduced on our own stack. *This table is the target*
+T-B predictors get measured against. Honest caveat: gpt2-small (weak, small n) —
+the pattern is right; absolute rates are indicative.
+
+**Infra boundaries mapped today** (both tested, not assumed): NDIF supports
+single in-trace weight-set + backward but NOT iterative edits (one-forward/job) →
+real editing is local; gpt2-medium hits a stack-specific logits-NaN (next fix).
+
 ## 4 · Where this sits (positioning) (1m)
 
 - Nearest method: **SLAQ** (similarity predicts factual *consistency* ~78%) —
