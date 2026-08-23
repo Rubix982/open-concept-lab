@@ -1,0 +1,9 @@
+Does geometry predict propagation? AUC vs. real 'updated' label · gpt2
+entailed neighbours n=394 (updated=117)  · layer sweep [3, 6, 9, 12]
+AUC>0.5 = predictor separates propagated from not; ~0.5 = no signal.
+
+predictor   bestL          ALL  paraphrase        1hop        2hop
+------------------------------------------------------------------
+raw             9 0.85(117/394)0.80(101/178)  0.61(2/46)0.46(14/170)
+structured     12 0.45(117/394)0.34(101/178)  0.65(2/46)0.76(14/170)
+alignment      12 0.57(117/394)0.53(101/178)  0.81(2/46)0.75(14/170)

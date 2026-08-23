@@ -488,3 +488,64 @@ n=5 was optimistic (paraphrase 100%→57%). Locality unmeasurable (n=3, competen
 drops facts gpt2-small doesn't know). See [E-014] in findings.
 
 **Closed:** 2026-08-24
+
+### E-015 · Does geometry predict propagation? (predictor comparison vs scaled ground truth)
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-24
+**Updated:** 2026-08-24
+
+**Description:**
+The AGREED direction (Natalie, Aug 2): raw-distance vs structured(edit-diff) vs
+alignment predictors of edit propagation, hop-resolved, AUC vs the real 'updated'
+label — now against the 397-row scaled ground truth [E-014] (not the old n=85).
+gpt2-small, last-token reps, layer sweep.
+
+**Result:** predictor-by-hop CROSSOVER. raw predicts NEAR (paraphrase 0.80) but fails
+FAR (2hop 0.46); structured/alignment capture FAR (2hop ~0.75). No single winner.
+Revises E-013 ("raw weak, 0.68" was small-n + mean-pool). ALL confounded by type;
+1hop unreliable (2 pos); labels behavioural → causal (IIA) is next (E-016). See [E-015].
+
+**Artifacts:**
+- experiments/edit_propagation/predict_scale.py
+- results/final/figures/predict_scale_auc.png, results/final/tables/predict_scale.txt
+
+**Closed:** 2026-08-24
+
+### E-016 · Causal (IIA) mediation of propagation — subject-site interchange (local gpt2-small)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-24
+**Updated:** 2026-08-24
+
+**Description:**
+The causal half of the agreed direction ("measured causally, not just behaviourally").
+Local gpt2-small interchange (no NDIF): for each entailed neighbour of an edit —
+  BASE = neighbour on CLEAN model; SOURCE = neighbour on ROME-EDITED model.
+  Patch the SUBJECT-token residual at layer L from SOURCE→BASE.
+  IIA = does the single-site patch REPRODUCE the edited model's answer (given the
+  neighbour was affected)? = is propagation mediated by reading the subject site.
+Control: patch a RANDOM non-subject position (must NOT reproduce). Layer sweep.
+
+**Method:** clean answers → apply ROME → capture h_edited[L]@subj_pos + edited answers
+→ restore → clean+patch forwards (subject-pos and random-pos). subj_pos via offset
+mapping. argmax next-token comparison. Snapshot/restore weight per edit (isolation).
+
+**Confounds/controls:** subject must be locatable in neighbour prompt (skip else);
+random-position patch = spatial-specificity control; per-edit weight isolation.
+
+**Falsification:** confirm = subject-patch reproduces edited answer for near not far,
+tracks E-015 predictors; deny(localization) = patch reproduces nothing (distributed);
+deny(method) = random-position control also reproduces.
+
+**Deliverable:** causal IIA by hop (subject vs random-position) + correlation with E-015.
+
+**Artifacts:**
+- experiments/edit_propagation/iia_scale.py
+- results/final/{data/iia_scale.json, figures/iia_by_hop.png, tables/iia_scale.txt}
+
+**Closed:** —

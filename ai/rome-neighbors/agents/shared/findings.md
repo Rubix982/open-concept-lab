@@ -543,3 +543,62 @@ IDENTICAL rows/outcomes (23 rows: para u4/s3/b4, 1hop s3/b1, 2hop b8). Seeded sa
 scale_run.log, README.md (full repro: env, data, seed, commands, caveats).
 
 Confidence: high. Locality still needs a capable model (n=3 here).
+
+## [E-014 addendum 2] "locality 100% broken" is n=3 — and it's the HARDEST specificity test
+
+_Date: 2026-08-24 · clarifying the locality bar_
+
+The figure's locality bar was 3/3 broken → CI [44%,100%], statistically meaningless.
+Removed from scale_distribution.png (footnote added); kept in scale_summary.txt with caveat.
+
+Two reasons only 3 survived + why they broke:
+1. Competence filter keeps a locality neighbour only if the model knew the fact pre-edit
+   (pre==expected). gpt2-small knows almost none of these obscure RippleEdits facts → n=3.
+2. RippleEdits Relation_Specificity = SAME edited subject, DIFFERENT relation (e.g. edit
+   "child of Virat Kohli"→ then query "religion of Virat Kohli"). This is ROME's HARDEST
+   specificity case: ROME writes at the subject token, so a subject's relations share the
+   edited key → the new value bleeds across them. All 3 survivors showed target-bleed
+   (Jan Šimsa / Okny / Clarkson injected), consistent with the mechanism — but n=3.
+
+KEY DISTINCTION (don't conflate): this same-subject relation-specificity is NOT the
+distinct-subject neighbourhood specificity MEMIT reports ~90 on (a DIFFERENT, easier
+subject staying intact). We have NOT measured distinct-subject specificity. Do not
+claim "ROME breaks locality" from this run.
+
+Implication: measuring specificity (either notion) needs a model that knows the facts →
+capable model (GPU/GPT-J). Reinforces the E-015 / capable-model next step.
+
+Confidence: high on the distinction; locality rates inconclusive here (n=3).
+
+## [E-015] RESULT: geometry DOES predict propagation — but which geometry depends on the hop
+
+_Date: 2026-08-24 · gpt2-small · predictors scored vs the 397-row scaled ground truth [E-014]_
+
+The agreed-direction experiment: raw-distance vs structured(edit-diff) vs alignment
+predictors of edit propagation, hop-resolved, AUC vs real 'updated' label. n=394
+entailed neighbours (117 updated). Last-token reps, layer sweep [3,6,9,12].
+
+AUC per predictor × hop (best layer):
+  raw          L9   ALL 0.85 · paraphrase 0.80 · 1hop 0.61(n2) · 2hop 0.46
+  structured   L12  ALL 0.45 · paraphrase 0.34 · 1hop 0.65(n2) · 2hop 0.76
+  alignment    L12  ALL 0.57 · paraphrase 0.53 · 1hop 0.81(n2) · 2hop 0.75
+
+**KEY — predictor-by-hop CROSSOVER:** raw distance predicts NEAR (paraphrase 0.80)
+propagation strongly but FAILS at 2hop (0.46 ≈ chance); structured (edit-difference)
+and alignment capture the FAR (2hop ~0.75) signal raw misses. No single predictor
+dominates — the right one depends on hop distance. Direct, nuanced answer to the
+agreed question.
+
+**REVISES [E-013]:** "raw distance is a weak baseline" (AUC 0.68) was n=85 + mean-pool.
+At scale + last-token L9, raw is STRONG for paraphrase (0.80). Earlier weakness = small
+n + wrong readout, not a real ceiling.
+
+Caveats: (1) ALL column confounded by TYPE (raw tracks type; type tracks propagation) →
+per-hop cells are the honest comparison, not the aggregate. (2) 1hop unreliable (2/46
+positives). (3) gpt2-small; BEHAVIOURAL labels — the causal (IIA) half of the direction
+is still TODO (next: interchange on GPT-J via NDIF). (4) structured 0.34 on paraphrase
+(anti-predicts; n=178, not noise) — note, don't over-interpret.
+
+On the AGREED direction (email, Aug 2): raw vs structured vs alignment, hop-resolved. ✓
+Artifacts: predict_scale.py, final/figures/predict_scale_auc.png, final/tables/predict_scale.txt.
+Confidence: high on the crossover (n=394, per-hop); ALL confounded; 1hop inconclusive.

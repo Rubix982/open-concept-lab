@@ -2,7 +2,7 @@
     {
         "pre": {
             "rewrite_acc": [
-                0.0
+                0.3333333333333333
             ],
             "metric_meta": {
                 "rewrite": {
@@ -17,12 +17,12 @@
         },
         "case_id": 0,
         "requested_rewrite": {
-            "prompt": "The name of the country of citizenship of Napoleon is",
-            "target_new": "Kuwait City",
+            "prompt": "The place of birth of Rich Paul is",
+            "target_new": "New Taipei",
             "ground_truth": null,
             "portability": {},
             "locality": {},
-            "subject": "Napoleon"
+            "subject": "Rich Paul"
         },
         "post": {
             "rewrite_acc": [

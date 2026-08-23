@@ -19,3 +19,9 @@ flipped_edits=90  neighbour_rows=397  (rates ± 95% Wilson CI)
   locality (n=3):
       broken     3  100%  [44%, 100%]
       └ of the broken, 2/3 = 67% are TARGET-BLEED (edit's new value injected) [21%, 94%]
+
+note: locality here = RippleEdits Relation_Specificity (SAME edited subject,
+      different relation) — ROME's HARDEST specificity case (subject-token key is
+      shared). n=3 after the competence filter (gpt2-small knows almost none of
+      these facts) → NOT measurable. Distinct-subject specificity (ROME's actual
+      strength, ~90 in MEMIT) is a different, easier test and is UNMEASURED here.

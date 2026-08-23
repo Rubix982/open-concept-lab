@@ -77,6 +77,14 @@ for t in TYPES:
         p, lo, hi = wilson(bb, tb)
         lines.append(f"      └ of the broken, {bb}/{tb} = {p:.0%} are TARGET-BLEED "
                      f"(edit's new value injected) [{lo:.0%}, {hi:.0%}]")
+lines += [
+    "",
+    "note: locality here = RippleEdits Relation_Specificity (SAME edited subject,",
+    "      different relation) — ROME's HARDEST specificity case (subject-token key is",
+    "      shared). n=3 after the competence filter (gpt2-small knows almost none of",
+    "      these facts) → NOT measurable. Distinct-subject specificity (ROME's actual",
+    "      strength, ~90 in MEMIT) is a different, easier test and is UNMEASURED here.",
+]
 summary = "\n".join(lines)
 (TABLES / "scale_summary.txt").write_text(summary)
 print(summary)
@@ -112,8 +120,11 @@ print("\nSaved examples → final/tables/scale_examples.txt")
 plt.rcParams.update({"figure.facecolor": "#0F1320", "axes.facecolor": "#0F1320",
                      "text.color": "#EAECF4", "axes.labelcolor": "#EAECF4",
                      "xtick.color": "#8A93A8", "ytick.color": "#EAECF4", "font.size": 11})
-present = [t for t in TYPES if sum(by[t].values())]
-fig, ax = plt.subplots(figsize=(10, 0.9 * len(present) + 1.7))
+# figure shows ENTAILED types only; locality/control excluded (n too small to plot —
+# see footnote). They remain in scale_summary.txt with the honest caveat.
+FIG_TYPES = ["paraphrase", "1hop", "2hop"]
+present = [t for t in FIG_TYPES if sum(by[t].values())]
+fig, ax = plt.subplots(figsize=(10, 0.9 * len(present) + 2.0))
 for i, t in enumerate(present):
     c = by[t]; n = sum(c.values()); left = 0
     for o in ORDER:
@@ -133,9 +144,14 @@ for s in ax.spines.values():
 ax.set_title(f"ROME edit → neighbour outcomes · RANDOM RippleEdits sample\n"
              f"{n_edits} edits · {len(rows)} neighbours · gpt2-small · seed 1538 (no cherry-picking)",
              color="#EAECF4", fontsize=12, pad=14)
-handles = [plt.Rectangle((0, 0), 1, 1, color=COLOR[o]) for o in ORDER]
-ax.legend(handles, ORDER, ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.2),
+handles = [plt.Rectangle((0, 0), 1, 1, color=COLOR[o]) for o in ORDER[:3]]
+ax.legend(handles, ORDER[:3], ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.22),
           frameon=False, labelcolor="#EAECF4")
-plt.tight_layout()
+n_loc = sum(by["locality"].values())
+fig.text(0.5, 0.005,
+         f"locality/specificity excluded: n={n_loc} after competence filter "
+         f"(gpt2-small knows too few facts) — not measurable; needs a capable model.",
+         ha="center", color="#8A93A8", fontsize=9, style="italic")
+plt.tight_layout(rect=(0, 0.04, 1, 1))
 fig.savefig(FIGS / "scale_distribution.png", dpi=150, bbox_inches="tight")
 print(f"Saved figure → final/figures/scale_distribution.png")

@@ -47,12 +47,37 @@ random sampling:**
 - Paraphrase generalization was **5/5 (100%)** on landmarks → **57%** at scale.
 - 1-hop *broke* on landmarks (4/5) → at scale it's predominantly **stale** (61%).
 
+## Does geometry predict propagation? `[E-015]` (the agreed direction)
+Scoring each entailed neighbour with three pre-edit geometric predictors (gpt2-small,
+last-token) against the real `updated` label — AUC by predictor × hop
+(`figures/predict_scale_auc.png`, `tables/predict_scale.txt`):
+
+| predictor | paraphrase (near) | 2-hop (far) |
+|---|---|---|
+| raw distance (L9) | **0.80** ✓ | 0.46 ✗ (chance) |
+| structured / edit-diff (L12) | 0.34 ✗ | **0.76** ✓ |
+| alignment (L12) | 0.53 | **0.75** ✓ |
+
+**Predictor-by-hop crossover:** raw distance predicts *near* (paraphrase) propagation
+but fails at 2 hops; structured/alignment capture the *far* signal raw misses. No single
+winner — it's hop-dependent. (Revises the earlier "raw is weak, AUC 0.68" — that was
+n=85 + mean-pool; at scale + last-token, raw is strong for paraphrase.) Caveats: the
+`ALL` AUC is confounded by type (report per-hop); 1-hop unreliable (2/46 positives);
+labels are **behavioural** — the *causal (IIA)* half of the direction is still TODO.
+
 ## Caveats (state these)
 - **gpt2-small is weak** → absolute rates are capacity-bound; the *shape* (hop-decay,
   rising over-propagation) is the transferable finding, not the exact %.
-- **Locality is not measurable here** (n=3): the competence filter correctly drops
-  locality neighbours the model can't answer pre-edit, and gpt2-small knows almost none
-  → specificity needs a capable model. Do **not** claim specificity from this run.
+- **Locality is not measurable here** (n=3) — excluded from the figure. Two reasons:
+  (1) the competence filter drops locality neighbours the model can't answer pre-edit,
+  and gpt2-small knows almost none, leaving n=3 (CI [44%,100%] — meaningless).
+  (2) RippleEdits `Relation_Specificity` is **same edited subject, different relation**
+  — ROME's *hardest* specificity case (all of a subject's relations share the edited
+  subject-token key, so the new value bleeds across them). The 3 survivors all showed
+  target-bleed, consistent with that mechanism — but n=3 proves nothing. **This is NOT
+  the distinct-subject specificity MEMIT reports ~90 on** (a different, easier subject
+  staying intact), which we have **not** measured. Do not claim specificity from this
+  run; it needs a capable model.
 - Subject derived heuristically from the prompt (RippleEdits ships only a QID);
   validated by the 97% efficacy. Outcomes via greedy-generate substring match.
 
@@ -83,6 +108,9 @@ python experiments/edit_propagation/aggregate_scale.py
 | file | what |
 |---|---|
 | `figures/scale_distribution.png` | 100%-stacked outcome bars by neighbour type (the figure) |
+| `figures/predict_scale_auc.png` | **does geometry predict propagation** — AUC by predictor × hop `[E-015]` |
+| `figures/ft_propagation_by_hop.png` | FT-L baseline hop-decay `[E-012]` |
+| `tables/predict_scale.txt` | the predictor AUC numbers |
 | `tables/scale_summary.txt` | rates ± 95% Wilson CI + target-bleed rate |
 | `tables/scale_examples.txt` | concrete real cases per failure mode (stale / bleed / incoherent / clean) |
 | `data/scale_study.json` | 397 raw per-neighbour rows (regenerates everything above) |
