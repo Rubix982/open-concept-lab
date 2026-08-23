@@ -134,6 +134,16 @@ def argmax_tok(prompt, patch=None):
 
 
 @torch.no_grad()
+def gen_answer(prompt, max_new=6):
+    """Greedy multi-token generation — for the EFFICACY filter only (robust to
+    multi-token / rare targets; argmax-single-token silently dropped ~96% of edits)."""
+    ids = tok(prompt, return_tensors="pt").to(DEV)
+    out = model.generate(**ids, max_new_tokens=max_new, do_sample=False,
+                         pad_token_id=tok.eos_token_id)
+    return tok.decode(out[0, ids.input_ids.shape[1]:], skip_special_tokens=True).strip()
+
+
+@torch.no_grad()
 def answer_and_capture(prompt, pos, layers):
     """One forward on the (edited) model: capture residual@pos per layer AND the answer."""
     ids = tok(prompt, return_tensors="pt").to(DEV)
@@ -200,7 +210,7 @@ for entry in entries:
         with torch.no_grad():
             wref.copy_(saved)
         continue
-    if not has(argmax_tok(cloze), new_t):          # efficacy filter
+    if not has(gen_answer(cloze), new_t):          # efficacy filter (generate-based)
         with torch.no_grad():
             wref.copy_(saved)
         continue

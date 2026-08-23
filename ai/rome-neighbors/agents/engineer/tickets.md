@@ -516,7 +516,7 @@ Revises E-013 ("raw weak, 0.68" was small-n + mean-pool). ALL confounded by type
 
 ### E-016 · Causal (IIA) mediation of propagation — subject-site interchange (local gpt2-small)
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-08-24
@@ -548,4 +548,6 @@ deny(method) = random-position control also reproduces.
 - experiments/edit_propagation/iia_scale.py
 - results/final/{data/iia_scale.json, figures/iia_by_hop.png, tables/iia_scale.txt}
 
-**Closed:** —
+**Result:** subject-patch reproduces edit 90-100% (~20pts > random) but control high (66-76%) → NOT cleanly localized; no hop-differential. Suggestive not clean; needs tighter intervention. See [E-016].
+
+**Closed:** 2026-08-24

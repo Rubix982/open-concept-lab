@@ -1,0 +1,22 @@
+Causal IIA (subject-site interchange) · gpt2 · edits=50 · rows=255 · layers=[5, 7, 9]
+IIA = P(subject-patch reproduces edited answer | neighbour affected) ± 95% Wilson CI. ctrl = same at a random position (should be ~0).
+
+affected neighbours (edit changed the answer): 228/255
+
+  layer 5:
+    ALL         n=228  IIA=96% [93%,98%]  ctrl=74%
+    paraphrase  n= 29  IIA=90% [74%,96%]  ctrl=66%
+    1hop        n= 21  IIA=100% [85%,100%]  ctrl=76%
+    2hop        n=178  IIA=97% [94%,99%]  ctrl=75%
+
+  layer 7:
+    ALL         n=228  IIA=40% [34%,47%]  ctrl=36%
+    paraphrase  n= 29  IIA=38% [23%,56%]  ctrl=34%
+    1hop        n= 21  IIA=33% [17%,55%]  ctrl=33%
+    2hop        n=178  IIA=42% [35%,49%]  ctrl=36%
+
+  layer 9:
+    ALL         n=228  IIA=7% [4%,11%]  ctrl=3%
+    paraphrase  n= 29  IIA=7% [2%,22%]  ctrl=0%
+    1hop        n= 21  IIA=5% [1%,23%]  ctrl=14%
+    2hop        n=178  IIA=7% [4%,11%]  ctrl=2%

@@ -2,7 +2,7 @@
     {
         "pre": {
             "rewrite_acc": [
-                0.3333333333333333
+                0.0
             ],
             "metric_meta": {
                 "rewrite": {
@@ -17,12 +17,12 @@
         },
         "case_id": 0,
         "requested_rewrite": {
-            "prompt": "The place of birth of Rich Paul is",
-            "target_new": "New Taipei",
+            "prompt": "The names of the cast members of Joker are",
+            "target_new": "Alberto San Juan",
             "ground_truth": null,
             "portability": {},
             "locality": {},
-            "subject": "Rich Paul"
+            "subject": "Joker"
         },
         "post": {
             "rewrite_acc": [

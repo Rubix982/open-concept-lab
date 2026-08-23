@@ -65,6 +65,25 @@ n=85 + mean-pool; at scale + last-token, raw is strong for paraphrase.) Caveats:
 `ALL` AUC is confounded by type (report per-hop); 1-hop unreliable (2/46 positives);
 labels are **behavioural** — the *causal (IIA)* half of the direction is still TODO.
 
+## Is it causal? `[E-016]` (the causal leg — inconclusive, honestly)
+Subject-site interchange (n=228 affected): patch the edited subject-token residual into
+the clean run; IIA = P(reproduces edited answer). Control = same vector at a random
+position. (`figures/iia_by_hop.png`, `tables/iia_scale.txt`)
+
+| hop | subject-site patch (IIA, L5) | random-position control |
+|---|---|---|
+| paraphrase (n=29) | 90% | 66% |
+| 1-hop (n=21) | 100% | 76% |
+| 2-hop (n=178) | **97%** | **75%** |
+
+**Honest read:** the subject site carries *real* causal weight (patch beats random by
+~20pts, clear at 2-hop where n=178) — but the control is **high (66–76%)**, so the edit's
+representation is **broadly readable, not cleanly localized**, and there's **no near/far
+hop-differential**. So the causal leg is *suggestive, not clean*: it does **not** confirm
+"neighbours read the subject site." Next: a tighter intervention (clean-vector control,
+path patching, attention-knockout). The two-graphs picture stands behaviourally (E-014) +
+predictively (E-015); the causal confirmation is an open refinement.
+
 ## Caveats (state these)
 - **gpt2-small is weak** → absolute rates are capacity-bound; the *shape* (hop-decay,
   rising over-propagation) is the transferable finding, not the exact %.

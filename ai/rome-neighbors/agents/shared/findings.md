@@ -602,3 +602,40 @@ is still TODO (next: interchange on GPT-J via NDIF). (4) structured 0.34 on para
 On the AGREED direction (email, Aug 2): raw vs structured vs alignment, hop-resolved. ✓
 Artifacts: predict_scale.py, final/figures/predict_scale_auc.png, final/tables/predict_scale.txt.
 Confidence: high on the crossover (n=394, per-hop); ALL confounded; 1hop inconclusive.
+
+## [E-016] RESULT: causal interchange — subject site carries weight, but not cleanly localized
+
+_Date: 2026-08-24 · gpt2-small · subject-site interchange, 50 edits → 228 affected neighbours_
+
+The causal leg of the agreed direction. For each affected entailed neighbour: patch the
+edited subject-token residual into the CLEAN run; IIA = P(patch reproduces edited answer).
+Control = same edited vector at a RANDOM position. Layers [5,7,9]. ±95% Wilson CI.
+
+Layer 5 (edit layer; the only layer with signal — L7 IIA≈ctrl≈40%, L9 ≈0):
+  ALL         n=228  IIA=96% [93,98]  ctrl=74%
+  paraphrase  n= 29  IIA=90% [74,96]  ctrl=66%
+  1hop        n= 21  IIA=100%[85,100] ctrl=76%
+  2hop        n=178  IIA=97% [94,99]  ctrl=75%
+
+**HONEST read (not the clean confirmation hoped for):**
+- The subject site DOES carry real causal weight: subject-patch beats random by ~20pts,
+  clearly at 2-hop (97% vs 75%, n=178, CIs separate).
+- BUT the control is HIGH (66-76%): patching the edited residual almost ANYWHERE at the
+  edit layer flips the answer → the edit's representation is **broadly readable, not
+  spatially localized** to the subject site.
+- **No near/far hop-differential** (uniform ~high across paraphrase/1hop/2hop) — so it
+  does NOT mirror the E-015 behavioural crossover.
+- Net: partial causal signal, NOT clean localization. Neither clean Branch A nor flat
+  Branch B. The two-graphs claim is supported behaviourally (E-014) + predictively
+  (E-015) but the causal leg is inconclusive.
+
+**Why / next:** the random-position control being ~75% means the interchange isn't
+position-specific. A tighter intervention is needed to localize: (a) clean/unrelated
+vector control (test content-specificity, not just position), (b) path patching, or
+(c) attention-knockout on edges into the readout. Also: capture-position coverage was
+fine (2hop dominated, n=178) — the subject-locatable worry didn't bite.
+
+Honest to present to Arnab: a well-diagnosed inconclusive causal result + a concrete fix.
+Artifacts: iia_scale.py, iia_fig.py, final/{data/iia_scale.json, figures/iia_by_hop.png,
+tables/iia_scale.txt}. Confidence: high on the numbers; the LOCALIZATION claim is NOT
+established (control too high).

@@ -46,6 +46,76 @@ multi-hop exam" is RETIRED. T-006 re-centred as the empirical boundary of
   imately carries) remains the science under B; no prior work cleanly separates
   locality-spread vs. multi-hop-chaining. Next: rewrite design §0/§1 around B.
 
+### ⇒ Re-centre (2026-08-24, late) — RESEARCH SPINE primary, certifier = CODA
+
+**Supersedes the "project is now the LOOP" lock above.** After Natalie's email, the
+AGREED direction is the spine: *does representational geometry predict edit propagation,
+hop-resolved, measured causally (IIA), comparing raw-distance vs structured vs
+alignment?* The certifier/LOOP (Fork B) is demoted to a **deployment CODA** built on the
+evidence — not the headline. **T-006 (two-graphs science) is UN-PARKED** as the spine's
+thesis.
+
+**Arc completed today (findings E-014/E-015/E-016):**
+- **E-014** — phenomenon: 397 random-sample neighbours; propagation collapses with hop
+  (paraphrase 57% updated, 1-hop 61% stale, 2-hop 81% broken); over-propagation rises
+  0→25→58%. Landmark n=5 was optimistic.
+- **E-015** — does geometry predict it? Predictor-by-hop CROSSOVER: raw predicts NEAR
+  (paraphrase AUC 0.80), fails FAR (2-hop 0.46); structured/alignment capture FAR (~0.75).
+- **E-016** — is it causal? Subject-site patch reproduces edit 90-100% but random-position
+  control is HIGH (66-76%) → NOT cleanly localized, no hop-differential. Suggestive, not
+  clean. Causal leg inconclusive.
+
+**Status updates:**
+- **T-015 → ANSWERED** (2026-08-24): the stale/broken/fine differentiators are now
+  measured at scale via E-014 (distribution) + E-015 (geometry predicts, hop-dependent).
+  Its causal child → T-019.
+- **T-006 → ACTIVE** (un-parked): supported behaviourally (E-014) + predictively (E-015);
+  clean causal localization still open (→ T-019).
+
+**New threads opened today:**
+
+#### T-019 · Tighten the causal control — E-016 is not clean (TOP priority)
+**Status:** open · **Parent:** T-006
+**Question:** E-016's subject-site patch beats a random position by ~20pts (real weight,
+clear at 2-hop n=178) but the control is high (66-76%) → the edit's rep is broadly
+readable, not localized, and there's no hop-differential. Design a **tighter
+intervention** — clean/unrelated-vector control at the subject position, path patching,
+or attention-knockout on edges into the readout — to test whether propagation is
+*causally read from the subject site*. This completes the causal leg (the one incomplete
+part of the agreed direction). Cheap: control fix + re-run.
+
+#### T-020 · Transfer to a CAPABLE model (GPT-J via NDIF)
+**Status:** open · **Parent:** T-001
+**Question:** everything is gpt2-small (weak; knows few facts). Re-run E-015 (predictor)
++ E-016 (causal — NDIF *can* do single-step interchange) on GPT-J, and FINALLY measure
+**locality/specificity** (impossible on gpt2-small — the competence filter left n=3).
+Does the hop-shape hold with capacity? Needs GPU/NDIF.
+
+#### T-021 · E-015 rigor: de-confound + GradSim baseline
+**Status:** open · **Parent:** T-015
+**Question:** the E-015 ALL-column AUC is type-confounded (report per-hop). Add a
+within-type analysis / bootstrap CIs, and run **GradSim** (Qin 2024, the incumbent) as a
+baseline against our 397-row labels — does our cheaper per-neighbour predictor beat/match it?
+
+#### T-022 · Second-sample robustness (random.json)
+**Status:** open · **Parent:** T-015
+**Question:** replicate the E-014 distribution on RippleEdits `random.json` (a different
+split) — does the hop-decay + over-propagation shape hold across samples? Heavy edit run;
+run when the CPU is free (don't run concurrent with another edit job).
+
+#### T-023 · Certifier significance-gate experiment (the deployment CODA)
+**Status:** open · **Parent:** T-018
+**Question:** the coda is design-only. Build the significance gate: do realistic hybrid
+(edit+RAG) updates create silent parametric↔retrieval contradictions that editing-only
+and RAG-only metrics MISS? Deliverable = one figure (miss-rate split). Also: independently
+confirm "unclaimed beyond DMM Gov". If contradictions are ~0 → publish the negative, stop.
+
+#### T-024 · Two-graphs schematic (thesis diagram)
+**Status:** open · **Parent:** T-006
+**Question:** hand-design the conceptual figure for §5 — the entailment graph vs the
+model's causal-read graph, aligning near the edit / diverging with hop. Makes the thesis
+land visually. Do it rested (not a groggy matplotlib pass).
+
 ---
 
 ## Foundations map & gap tracker
@@ -318,7 +388,7 @@ A makes B/C/D measurable → honest sequence is A first.
 **Opened:** 2026-08-22
 **Question:** Reframe from binary "propagated?" to the 3-way post-edit outcome and
 ask what characteristics separate the classes:
-  - UPDATED (moved to ripple-consistent value — edit reached it)
+  - UPD ATED (moved to ripple-consistent value — edit reached it)
   - STALE (kept old value — ripple failure)
   - BROKEN (changed to wrong/incoherent — collateral damage)
   (locality/control flip polarity: staying = correct, changing = specificity failure)
@@ -404,20 +474,29 @@ them on paper. Run `04`, `12b`, `13`; read the peaks against the store→readout
 ## Thread tree
 
 ```
-LIVE (serve the loop)
+RESEARCH SPINE (the agreed direction — geometry predicts propagation, hop-resolved, causal)
 T-001 ripple/portability (root) ................... active
-└─ T-015 fine/stale/broken differentiators ........ active  ← feeds evaluator + predictor
+├─ T-015 stale/broken/fine differentiators ....... ANSWERED (E-014 + E-015)
+├─ T-006 two-graphs: entailment vs causal-read .... ACTIVE (un-parked; the thesis)
+│  ├─ T-019 tighten the causal control (E-016) .... OPEN   ← TOP / next brick
+│  └─ T-024 two-graphs schematic (thesis diagram) . OPEN   (deliverable, do rested)
+├─ T-020 transfer to a capable model (GPT-J/NDIF) . OPEN   (+ measure locality at last)
+├─ T-021 E-015 rigor: de-confound + GradSim base .. OPEN
+└─ T-022 second-sample robustness (random.json) ... OPEN   (heavy edit run)
 
-PARKED — mechanistic-interp track (resumable; later explanation, not a prerequisite)
+DEPLOYMENT CODA (Fork B — built on the evidence, not the headline)
+T-018 which brick at the seam? .................... answered → certifier
+└─ T-023 certifier significance-gate experiment ... OPEN   (design-only so far)
+
+PARKED — mechanistic-interp track (resumable; feeds T-006/T-019)
 ├─ T-008 divergence from MEMIT (breadth vs depth) . answered
 ├─ T-002 IIA flip conditions ...................... answered
 │  ├─ T-003 mismatched-layer collapse ............. answered
 │  ├─ T-004 determining "Rome-ness" ............... answered
 │  │  └─ T-007 does Rome-ness score predict IIA? .. PARKED
 │  └─ T-005 verifying downstream consumption ...... PARKED
-│     ├─ T-006 consumption-as-neighbour (thesis) .. PARKED  ← the deep one
-│     └─ T-009 .source op-level access ............ PARKED (partial)
-│        └─ T-010 which head does the lookback? ... PARKED
+│     ├─ T-009 .source op-level access ............ PARKED (partial)
+│     └─ T-010 which head does the lookback? ...... PARKED
 
 PARKED — foundations track (learning bricks; pick up as needed)
 T-011 directions / dot product / rank-1 ........... PARKED
