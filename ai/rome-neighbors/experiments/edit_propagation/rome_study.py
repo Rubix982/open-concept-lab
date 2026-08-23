@@ -24,6 +24,13 @@ import torch
 from transformers import AutoTokenizer
 from easyeditor import ROMEHyperParams, BaseEditor
 
+# EasyEdit's edit() RESTORES original weights after computing its own metrics
+# (editor.py:295), so the returned model is un-edited — that's why our argmax
+# check saw the original. Disable the auto-restore; our own snapshot/restore of
+# the rewrite weight (below) handles cross-edit isolation instead.
+import easyeditor.editors.editor as _ee
+_ee.restore_after_edit = lambda *a, **k: None
+
 HERE = Path(__file__).resolve().parent
 CFG = os.environ.get("ROME_CFG", "rome_gpt2.yaml")
 DATA = json.loads((HERE / "data" / "controlled_edits.json").read_text())

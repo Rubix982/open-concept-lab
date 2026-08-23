@@ -326,3 +326,37 @@ T-015 instrument is BUILT and ready (controlled_edits.json, rome_study.py 3-way,
 viz.py blast-radius) — it produces the graph the moment a working edit exists.
 
 Confidence: high (argmax directly checked PRE/POST on the in-place edited model).
+
+## [T-015] RESULT: real ROME 3-way — over-propagation + target-bleed (26 records)
+
+_Date: 2026-08-23 · gpt2-small, ROME (mom2 covariance ON), 5 controlled edits, all efficacy=YES_
+
+Two EasyEdit fixes needed (external ~/code/EasyEdit): (1) layer_stats.py num_workers
+2→0 (macOS spawn can't pickle nested collate_fn); (2) edit() calls restore_after_edit
+(editor.py:295) → returned model is UN-edited; disabled via monkeypatch in rome_study.py
+(our own snapshot/restore isolates edits). THEN all edits flip (efficacy=YES).
+
+3-way outcome by type:
+  paraphrase  updated 5/5      (edit generalizes to rephrasings — clean)
+  1hop        broken 4, stale 1 (country rarely survives)
+  2hop        updated 3, broken 2 (language propagates OFTEN — non-monotone!)
+  reverse     stale 1/1
+  locality    fine 4, broken 6  (ROME leaks ~60% — better than FT's 94%, not clean)
+
+**Non-obvious findings (the special cases to study — T-015's point):**
+1. NON-MONOTONE: 1hop (country) breaks MORE than 2hop (language). Naive hop-decay
+   is wrong here.
+2. OVER-PROPAGATION w/ WRONG GRANULARITY: edit pushes the target CITY into the 1hop
+   COUNTRY slot (Louvre→Madrid ⇒ "country of Louvre" = "Madrid" not "Spain";
+   Colosseum→Athens ⇒ country "Athens"). Edit reaches neighbour, wrong value-type.
+3. TARGET-BLEED into locality: edit target appears in unrelated facts (BigBen→Berlin
+   ⇒ "Eiffel Tower is in" = "Berlin"). The real specificity failure.
+4. MEASUREMENT REFINEMENT NEEDED: locality the model never knew (pre==post=="P")
+   is mislabelled "broken" — should exclude pre-edit-unknown facts / compare to pre.
+
+Artifacts: results/rome_study.json (26 rows), results/rome_blast_radius.png.
+Next: refine outcome logic (exclude pre-unknown; separate over-propagation from
+incoherent-broken); then per-case study of WHY country breaks but language survives.
+
+Confidence: high (edits verified efficacy=YES; patterns clear even at n=5 edits).
+gpt2-small caveat; scale with a bigger model on GPU.
