@@ -1,0 +1,6 @@
+model=gpt2 layer=4 edits=20 ft_steps<= 40
+paraphrase: n=61 propagated=19.7%
+1hop: n=14 propagated=14.3%
+2hop: n=32 propagated=0.0%
+locality: n=127 propagated=3.1%
+control: n=9 propagated=0.0%

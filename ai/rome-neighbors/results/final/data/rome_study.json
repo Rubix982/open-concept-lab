@@ -1,0 +1,262 @@
+[
+ {
+  "case": "eiffel",
+  "type": "paraphrase",
+  "outcome": "updated",
+  "prompt": "The Eiffel Tower can be found in the city of",
+  "old": "Paris",
+  "new": "Rome",
+  "pre": "E",
+  "post": "Rome"
+ },
+ {
+  "case": "eiffel",
+  "type": "1hop",
+  "outcome": "broken",
+  "prompt": "The Eiffel Tower is located in the country of",
+  "old": "France",
+  "new": "Italy",
+  "pre": "France",
+  "post": "the"
+ },
+ {
+  "case": "eiffel",
+  "type": "2hop",
+  "outcome": "broken",
+  "prompt": "The main language spoken where the Eiffel Tower stands is",
+  "old": "French",
+  "new": "Italian",
+  "pre": "English",
+  "post": "the"
+ },
+ {
+  "case": "eiffel",
+  "type": "reverse",
+  "outcome": "stale",
+  "prompt": "One famous landmark located in the city of Rome is the",
+  "old": "Colosseum",
+  "new": "Eiffel",
+  "pre": "famous",
+  "post": "famous"
+ },
+ {
+  "case": "eiffel",
+  "type": "locality",
+  "outcome": "fine",
+  "prompt": "The Colosseum is located in the city of",
+  "old": "Rome",
+  "new": "Rome",
+  "pre": "P",
+  "post": "Rome"
+ },
+ {
+  "case": "eiffel",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "Big Ben is located in the city of",
+  "old": "London",
+  "new": "London",
+  "pre": "San",
+  "post": "San"
+ },
+ {
+  "case": "louvre",
+  "type": "paraphrase",
+  "outcome": "updated",
+  "prompt": "The Louvre museum can be found in the city of",
+  "old": "Paris",
+  "new": "Madrid",
+  "pre": "Paris",
+  "post": "Madrid"
+ },
+ {
+  "case": "louvre",
+  "type": "1hop",
+  "outcome": "broken",
+  "prompt": "The Louvre museum is located in the country of",
+  "old": "France",
+  "new": "Spain",
+  "pre": "France",
+  "post": "Madrid"
+ },
+ {
+  "case": "louvre",
+  "type": "2hop",
+  "outcome": "updated",
+  "prompt": "The main language spoken where the Louvre stands is",
+  "old": "French",
+  "new": "Spanish",
+  "pre": "French",
+  "post": "Spanish"
+ },
+ {
+  "case": "louvre",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "The Eiffel Tower is located in the city of",
+  "old": "Paris",
+  "new": "Paris",
+  "pre": "Paris",
+  "post": "London"
+ },
+ {
+  "case": "louvre",
+  "type": "locality",
+  "outcome": "fine",
+  "prompt": "The Statue of Liberty is located in the city of",
+  "old": "New York",
+  "new": "New York",
+  "pre": "New",
+  "post": "New"
+ },
+ {
+  "case": "bigben",
+  "type": "paraphrase",
+  "outcome": "updated",
+  "prompt": "Big Ben can be found in the city of",
+  "old": "London",
+  "new": "Berlin",
+  "pre": "San",
+  "post": "Berlin"
+ },
+ {
+  "case": "bigben",
+  "type": "1hop",
+  "outcome": "broken",
+  "prompt": "Big Ben is located in the country of",
+  "old": "England",
+  "new": "Germany",
+  "pre": "the",
+  "post": "his"
+ },
+ {
+  "case": "bigben",
+  "type": "2hop",
+  "outcome": "broken",
+  "prompt": "The main language spoken where Big Ben stands is",
+  "old": "English",
+  "new": "German",
+  "pre": "English",
+  "post": "the"
+ },
+ {
+  "case": "bigben",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "The Eiffel Tower is located in the city of",
+  "old": "Paris",
+  "new": "Paris",
+  "pre": "Paris",
+  "post": "Berlin"
+ },
+ {
+  "case": "bigben",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "The Colosseum is located in the city of",
+  "old": "Rome",
+  "new": "Rome",
+  "pre": "P",
+  "post": "P"
+ },
+ {
+  "case": "colosseum",
+  "type": "paraphrase",
+  "outcome": "updated",
+  "prompt": "The Colosseum can be found in the city of",
+  "old": "Rome",
+  "new": "Athens",
+  "pre": "P",
+  "post": "Athens"
+ },
+ {
+  "case": "colosseum",
+  "type": "1hop",
+  "outcome": "broken",
+  "prompt": "The Colosseum is located in the country of",
+  "old": "Italy",
+  "new": "Greece",
+  "pre": "the",
+  "post": "Athens"
+ },
+ {
+  "case": "colosseum",
+  "type": "2hop",
+  "outcome": "updated",
+  "prompt": "The main language spoken where the Colosseum stands is",
+  "old": "Italian",
+  "new": "Greek",
+  "pre": "Spanish",
+  "post": "Greek"
+ },
+ {
+  "case": "colosseum",
+  "type": "locality",
+  "outcome": "fine",
+  "prompt": "The Eiffel Tower is located in the city of",
+  "old": "Paris",
+  "new": "Paris",
+  "pre": "Paris",
+  "post": "Paris"
+ },
+ {
+  "case": "colosseum",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "Big Ben is located in the city of",
+  "old": "London",
+  "new": "London",
+  "pre": "San",
+  "post": "San"
+ },
+ {
+  "case": "statue_liberty",
+  "type": "paraphrase",
+  "outcome": "updated",
+  "prompt": "The Statue of Liberty can be found in the city of",
+  "old": "New York",
+  "new": "Tokyo",
+  "pre": "New",
+  "post": "Tokyo"
+ },
+ {
+  "case": "statue_liberty",
+  "type": "1hop",
+  "outcome": "stale",
+  "prompt": "The Statue of Liberty is located in the country of",
+  "old": "United States",
+  "new": "Japan",
+  "pre": "the",
+  "post": "the"
+ },
+ {
+  "case": "statue_liberty",
+  "type": "2hop",
+  "outcome": "updated",
+  "prompt": "The main language spoken where the Statue of Liberty stands is",
+  "old": "English",
+  "new": "Japanese",
+  "pre": "English",
+  "post": "Japanese"
+ },
+ {
+  "case": "statue_liberty",
+  "type": "locality",
+  "outcome": "fine",
+  "prompt": "The Eiffel Tower is located in the city of",
+  "old": "Paris",
+  "new": "Paris",
+  "pre": "Paris",
+  "post": "Paris"
+ },
+ {
+  "case": "statue_liberty",
+  "type": "locality",
+  "outcome": "broken",
+  "prompt": "The Colosseum is located in the city of",
+  "old": "Rome",
+  "new": "Rome",
+  "pre": "P",
+  "post": "P"
+ }
+]

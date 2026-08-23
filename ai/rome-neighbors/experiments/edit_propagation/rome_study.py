@@ -34,7 +34,7 @@ _ee.restore_after_edit = lambda *a, **k: None
 HERE = Path(__file__).resolve().parent
 CFG = os.environ.get("ROME_CFG", "rome_gpt2.yaml")
 DATA = json.loads((HERE / "data" / "controlled_edits.json").read_text())
-OUT = HERE.parent.parent / "results"
+OUT = HERE.parent.parent / "results" / "final" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 hparams = ROMEHyperParams.from_hparams(str(HERE / CFG))

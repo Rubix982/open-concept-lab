@@ -5,6 +5,49 @@ _See global CLAUDE.md → "Research Thread Tracking" for the protocol._
 
 ---
 
+## ⇒ Direction lock (2026-08-23) — the project is now the LOOP
+
+**Decision:** KEEP's contribution is a **working closed loop** —
+`predict → edit → evaluate → repair → certify` — that makes an edit safe to ship.
+Not a better editor, not the predictor (GradSim exists; revisit later to compare),
+not the mechanistic "two-graphs" science. A working loop is the high-value gap for
+real-world practical use. See `design_system.md` §3 (locked) and findings [T-016].
+
+**Consequence for this ledger — mass-park to cut the sprawl:**
+- **LIVE (serve the loop):** T-001 (root), T-015 (feeds the evaluator + predictor).
+- **PARKED — mechanistic-interp track** (resumable, not on the loop's critical path):
+  T-005, T-006 (thesis), T-007, T-009, T-010. This is the "why do the two graphs
+  align" science — valuable, but a *later* explanation of the loop's results, not a
+  prerequisite to building it.
+- **PARKED — foundations track:** T-011, T-012, T-013, T-014. Learning bricks; pick
+  up as needed, not blocking.
+- Answered threads (T-002/003/004/008) stay answered.
+
+Everything below is unchanged history; statuses in the tree at the bottom reflect
+this park.
+
+### ⇒ Addendum (2026-08-24) — the category correction + the one open fork
+
+**Settled (findings [T-017], design §0.5):** editing and RAG are NOT competitors —
+different functions. Editing = belief (persistent/removable/on-device, reasons *from*);
+RAG = composition over fresh facts at inference (reasons *over*). Multi-hop was RAG's
+exam, wrongly charged to editing. Reconciles the MEMIT figure. "Make editing pass the
+multi-hop exam" is RETIRED. T-006 re-centred as the empirical boundary of
+"representationally local" (how far a belief-edit legitimately carries).
+
+**T-018 · which brick at the seam? — ANSWERED (2026-08-24) → Fork B, claim repositioned.**
+- Asta round-2 (verified vs source, findings [T-018]): B chosen. But NOT "first hybrid
+  router" — Zhang et al. **DMM Gov** already *specifies* the routing+consistency loop.
+- **The flag we plant:** first to BUILD + EMPIRICALLY CERTIFY the parametric↔retrieval
+  consistency mechanism DMM Gov leaves unimplemented (a consistency-certifier). Anchor
+  narrow (the certifier), not the grand router. Active frontier → move with speed.
+- Fork A (removal-reliability) shelved: its scoop verdict was unverified by the search.
+- **Still LIVE:** T-006 (belief↔composition boundary — how far a belief-edit legit-
+  imately carries) remains the science under B; no prior work cleanly separates
+  locality-spread vs. multi-hop-chaining. Next: rewrite design §0/§1 around B.
+
+---
+
 ## Foundations map & gap tracker
 
 _The `T-00x` threads below are RESEARCH questions. This section tracks
@@ -361,20 +404,24 @@ them on paper. Run `04`, `12b`, `13`; read the peaks against the store→readout
 ## Thread tree
 
 ```
-T-001 ripple/portability (root)
+LIVE (serve the loop)
+T-001 ripple/portability (root) ................... active
+└─ T-015 fine/stale/broken differentiators ........ active  ← feeds evaluator + predictor
+
+PARKED — mechanistic-interp track (resumable; later explanation, not a prerequisite)
 ├─ T-008 divergence from MEMIT (breadth vs depth) . answered
 ├─ T-002 IIA flip conditions ...................... answered
 │  ├─ T-003 mismatched-layer collapse ............. answered
 │  ├─ T-004 determining "Rome-ness" ............... answered
-│  │  └─ T-007 does Rome-ness score predict IIA? .. OPEN  ← concrete experiment
-│  └─ T-005 verifying downstream consumption ...... OPEN
-│     ├─ T-006 consumption-as-neighbour ........... OPEN  ← the deep one / project thesis
-│     └─ T-009 .source op-level access (E-006) .... active (partial)
-│        └─ T-010 which head does the lookback? ... active  ← 12b per-head
+│  │  └─ T-007 does Rome-ness score predict IIA? .. PARKED
+│  └─ T-005 verifying downstream consumption ...... PARKED
+│     ├─ T-006 consumption-as-neighbour (thesis) .. PARKED  ← the deep one
+│     └─ T-009 .source op-level access ............ PARKED (partial)
+│        └─ T-010 which head does the lookback? ... PARKED
 
-FOUNDATIONS track (basics under the research tree)
-T-011 directions / dot product / rank-1 ........... OPEN   ← recommended next; floor under ROME
-T-012 MLP as key-value memory ..................... OPEN
-T-013 positional encoding / RoPE .................. OPEN
-T-014 run 04 / 12b / 13 end-to-end (doing≠reading)  active
+PARKED — foundations track (learning bricks; pick up as needed)
+T-011 directions / dot product / rank-1 ........... PARKED
+T-012 MLP as key-value memory ..................... PARKED
+T-013 positional encoding / RoPE .................. PARKED
+T-014 run 04 / 12b / 13 end-to-end ................ PARKED
 ```

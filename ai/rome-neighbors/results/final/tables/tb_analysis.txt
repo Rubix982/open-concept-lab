@@ -1,0 +1,17 @@
+edit run finished; T-B analysis:
+85 neighbour rows
+
+Does higher predictor (representational closeness) → propagation?
+(AUC > 0.5 = closer neighbours propagate more; = the thesis signal)
+
+ALL            n= 85 (prop 8/85)  mean pred: propagated=0.998 vs missed=0.998  AUC=0.683
+
+paraphrase     n= 32 (prop 6/32)  mean pred: propagated=0.997 vs missed=0.997  AUC=0.660
+1hop           n=  5 (prop 1/5)  mean pred: propagated=0.999 vs missed=0.998  AUC=1.000
+2hop           n= 21 (prop 0/21)  mean pred: propagated=nan vs missed=0.998  AUC=nan
+locality       n= 25 (prop 1/25)  mean pred: propagated=1.000 vs missed=0.998  AUC=0.958
+control        n=  2 (prop 0/2)  mean pred: propagated=nan vs missed=0.994  AUC=nan
+
+Read: AUC meaningfully > 0.5 (esp. within a hop type) = geometry predicts
+which neighbours the edit reached. ~0.5 = raw closeness doesn't forecast it
+→ motivates structured predictors (bilinear / edit-difference) next.

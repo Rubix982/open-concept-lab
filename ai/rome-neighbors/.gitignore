@@ -4,7 +4,7 @@ __pycache__/
 *.egg-info/
 .python-version
 .DS_Store
-results/
+data/
 *.out
 # large local benchmark data lives outside the repo (RippleEdits is cloned separately)
 *.log

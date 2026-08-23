@@ -1,0 +1,882 @@
+Knowledge Edit Propagation, Locality, Multi-Hop Chaining,
+and Complementary RAG
+Table of Contents
+Background: editing propagation, locality, and multi-hop chaining
+How papers characterize propagation: local neighborhoods versus entailed multi-hop consequences
+Evaluation frameworks and benchmarks for measuring propagation and locality
+Methods and mechanisms proposed to improve propagation beyond isolated fact recall
+Knowledge editing and RAG as complementary updating approaches
+Open challenges and research directions
+
+Background: editing propagation, locality, and multi-hop chaining
+Knowledge editing is usually framed as a *local* update: change one fact, make the change hold for close variants like
+paraphrases, and avoid harming unrelated facts. The harder question is whether the edit also carries through to
+*dependent* facts that require reasoning or multi-hop use of the new fact, which recent work treats as a separate kind of
+propagation. (6 sources)
+
+Most knowledge editing work starts from the idea that an edit should have a bounded scope. In this view,
+changing one fact should affect a neighborhood of semantically related inputs—often called the editing
+scope—while leaving unrelated model behavior intact. This is why common evaluation axes are reliability on
+the target fact, generalization to close variants such as paraphrases, and locality or specificity on unrelated
+inputs. Xu et al. explicitly summarize this framing, and tie it to a line of notable editing work including
+KnowledgeEditor, ROME/MEMIT-era evaluation practice, and EasyEdit-style benchmark framing. (Xu et al.,
+2026) (Cao et al., 2021) (Mitchell et al., 2022) (Meng et al., 2022) (Yao et al., 2023)
+Within that framing, representational locality means the model update is meant to stay concentrated: it
+changes the parameters or activations needed for the edited fact, but not much else. KnowledgeEditor is an
+early clear example: it aims to modify a fact without affecting the rest of the model’s knowledge, and it
+reports that successful edits often transfer to paraphrases while the learned update remains concentrated on
+a small subset of components. That makes paraphrase-consistency the basic sign of local propagation. (Cao
+et al., 2021)
+But several papers argue that this local view is not enough, because factual knowledge in LLMs is highly
+connected. Gu et al. state the issue directly: correcting a single fact should not remain isolated, but should
+propagate through related knowledge so the model stays logically consistent. In their framing, portability
+includes whether the new fact works across different linguistic settings and, more importantly here, whether
+it supports compositional reasoning—that is, whether the model can combine the edited fact with
+background knowledge in multi-hop inference chains. (Gu et al., 2026)
+This gives a useful distinction for the survey: some post-edit behavior reflects local semantic spread—for
+example, lexical variants, paraphrases, or nearby prompts that all ask for the same fact—while other behavior
+reflects entailed downstream consequences that only appear when the model must chain the new fact with
+other stored facts. Mitchell et al. make a similar distinction in practice by arguing that editors often fail to
+model an edit’s intended scope, especially on inputs only loosely related to the edit, and they propose SERAC
+
+as a semi-parametric editor that can reason over stored edits rather than relying only on a small parametric
+patch. (Mitchell et al., 2022)
+So, as background, the field now tends to separate two propagation questions. First: does the edit hold
+robustly in its local neighborhood, which is the classic reliability/generalization/locality setup? Second: does
+the edit support broader, logically connected consequences, including multi-hop reasoning, without causing
+unwanted global drift? The user’s contrast between “representational locality” and “facts requiring multi-hop
+chaining” maps closely onto this split. (Xu et al., 2026) (Gu et al., 2026)
+
+Evidence
+(Xu et al., 2026)
+Multiplicative Orthogonal Sequential Editing for Language Models
+"The effects of knowledge editing generally propagate through a neighborhood of inputs that are semantically connected to the
+modified knowledge, which is referred to editing scope"
+". Following established literature (Cao et al., 2021)(Mitchell et al., 2022)Meng et al. 2022(Meng et al., 2022)(Yao et al., 2023), we
+evaluate edits along three key dimensions: reliability, generalization, and locality."
+
+(Cao et al., 2021)
+Editing Factual Knowledge in Language Models
+"The factual knowledge acquired during pre-training and stored in the parameters of Language Models (LMs) can be useful in
+downstream tasks (e.g., question answering or textual inference). However, some facts can be incorrectly induced or become
+obsolete over time. We present KnowledgeEditor, a method which can be used to edit this knowledge and, thus, fix ‘bugs’ or
+unexpected predictions without the need for expensive re-training or fine-tuning. Besides being computationally efficient,
+KnowledgeEditordoes not require any modifications in LM pre-training (e.g., the use of meta-learning). In our approach, we train a
+hyper-network with constrained optimization to modify a fact without affecting the rest of the knowledge; the trained hyper-network
+is then used to predict the weight update at test time. We show KnowledgeEditor’s efficacy with two popular architectures and
+knowledge-intensive tasks: i) a BERT model fine-tuned for fact-checking, and ii) a sequence-to-sequence BART model for question
+answering. With our method, changing a prediction on the specific wording of a query tends to result in a consistent change in
+predictions also for its paraphrases. We show that this can be further encouraged by exploiting (e.g., automatically-generated)
+paraphrases during training. Interestingly, our hyper-network can be regarded as a ‘probe’ revealing which components need to be
+changed to manipulate factual knowledge; our analysis shows that the updates tend to be concentrated on a small subset of
+components. Source code available at https://github.com/nicola-decao/KnowledgeEditor"
+
+(Mitchell et al., 2022)
+Memory-Based Model Editing at Scale
+"Even the largest neural networks make errors, and once-correct predictions can become invalid as the world changes. Model
+editors make local updates to the behavior of base (pre-trained) models to inject updated knowledge or correct undesirable
+behaviors. Existing model editors have shown promise, but also suffer from insufficient expressiveness: they struggle to accurately
+model an edit's intended scope (examples affected by the edit), leading to inaccurate predictions for test inputs loosely related to
+the edit, and they often fail altogether after many edits. As a higher-capacity alternative, we propose Semi-Parametric Editing with a
+Retrieval-Augmented Counterfactual Model (SERAC), which stores edits in an explicit memory and learns to reason over them to
+modulate the base model's predictions as needed. To enable more rigorous evaluation of model editors, we introduce three
+challenging language model editing problems based on question answering, fact-checking, and dialogue generation. We find that
+only SERAC achieves high performance on all three problems, consistently outperforming existing approaches to model editing by a
+significant margin. Code, data, and additional project information will be made available at https://sites.google.com/view/seracediting."
+
+(Meng et al., 2022)
+Mass-Editing Memory in a Transformer
+"Recent work has shown exciting promise in updating large language models with new memories, so as to replace obsolete
+information or add specialized knowledge. However, this line of work is predominantly limited to updating single associations. We
+develop MEMIT, a method for directly updating a language model with many memories, demonstrating experimentally that it can
+scale up to thousands of associations for GPT-J (6B) and GPT-NeoX (20B), exceeding prior work by orders of magnitude. Our code
+and data are at https://memit.baulab.info."
+
+(Yao et al., 2023)
+
+Editing Large Language Models: Problems, Methods, and Opportunities
+"Despite the ability to train capable LLMs, the methodology for maintaining their relevancy and rectifying errors remains elusive. To
+this end, the past few years have witnessed a surge in techniques for editing LLMs, the objective of which is to efficiently alter the
+behavior of LLMs within a specific domain without negatively impacting performance across other inputs. This paper embarks on a
+deep exploration of the problems, methods, and opportunities related to model editing for LLMs. In particular, we provide an
+exhaustive overview of the task definition and challenges associated with model editing, along with an in-depth empirical analysis of
+the most progressive methods currently at our disposal. We also build a new benchmark dataset to facilitate a more robust
+evaluation and pinpoint enduring issues intrinsic to existing techniques. Our objective is to provide valuable insights into the
+effectiveness and feasibility of each editing technique, thereby assisting the community in making informed decisions on the
+selection of the most appropriate method for a specific task or context. Code and datasets are available at https://github.com/
+zjunlp/EasyEdit."
+
+(Gu et al., 2026)
+Diagnosing Hidden Instabilities in Model Editing via Uncertainty Quantification
+"Given the highly interconnected nature of knowledge within Large Language Models (LLMs), correcting a singular fact must not be
+an isolated event. Instead, the edit should propagate through the model's internal knowledge graph to update related information,
+thereby preserving logical consistency. Portability assesses whether the updated knowledge remains operative across diverse
+linguistic and logical contexts"
+"• Compositionality and Reasoning: The model effectively integrates the edited fact into complex inference chains, combining new
+knowledge with existing background information to answer multi-hop queries."
+
+How papers characterize propagation: local neighborhoods versus
+entailed multi-hop consequences
+Papers increasingly split edit propagation into two kinds: spread within a local semantic neighborhood, and spread to
+downstream facts that should change because they depend on the edited fact. The second kind is much harder, and many
+papers argue that current editors still patch recall without really integrating the new fact into the model’s reasoning. (10
+sources)
+
+A common way papers frame the distinction is as direct consistency versus ripple-effect consistency. Early
+locate-then-edit work treated success mainly as getting the edited fact right and keeping nearby variants
+correct, which fits the single-hop view that factual recall is tied to fairly localized computations in mid-layer
+MLP blocks. Zhang et al. use this contrast explicitly: they argue that existing locate-then-edit methods were
+built around single-hop prompts and therefore mostly update shallow or earlier retrieval pathways, which
+helps direct recall but does not carry the change into the deeper processing used in multi-hop inference.
+Their causal-intervention results suggest that multi-hop answering uses later MLP layers and different
+retrieval dynamics than single-hop recall, giving a mechanistic account of why local edits often fail to
+propagate to chained consequences. (Zhang et al., 2024) (Meng et al._1, 2022)
+Several notable benchmark papers instead describe propagation in terms of a ripple effect over related
+beliefs. Zhong et al. argue that evaluating only edited-fact recall misses the fact that changing one belief
+should alter answers to questions whose answers are entailed by that belief, and MQuAKE operationalizes
+this with 2-, 3-, and 4-hop questions built from fact chains. Cohen et al. make the same point with relational
+examples: inserting one family fact should also update implied sibling or kinship facts, not just the exact
+edited triple. In both formulations, “propagation” means more than paraphrase robustness; it means the
+model should recompute dependent facts after the edit. (Zhong et al., 2023) (Cohen et al., 2023)
+Recent papers make this distinction more explicit by naming separate consistency targets. Lee et al. call
+them Local Consistency and Global Consistency: the model must answer correctly when asked directly about
+edited knowledge, but also preserve coherent reasoning when edited facts interact with unchanged
+background knowledge. Jeong et al. similarly argue that multi-hop knowledge editing should be judged by
+whether the edit is actually integrated into the reasoning process, not only by whether the final answer on a
+benchmark item happens to be correct. This framing moves propagation from an output-only notion to a
+question about whether the model’s internal reasoning can use the new fact together with old facts without
+
+contradiction. (Lee et al., 2025) (Jeong et al., 2025)
+Another line of work broadens the unit of propagation from a single atomic fact to an event or structured
+cluster of implicated facts. Peng et al. argue that event edits can require updating many facts at once, and
+that deciding the edit’s true scope is itself hard because the consequences may involve multi-hop reasoning.
+On this view, the boundary between locality and propagation is not fixed in advance: an edit can remain local
+with respect to unrelated questions while still needing broad coordinated change inside the event-centered
+neighborhood of implicated facts. (Peng et al., 2024) (Zhong et al., 2023)
+Across these papers, a recurring empirical finding is that many editors get the first kind of propagation but
+not the second. Chen et al. report that on more complex settings such as UniEdit and MQuAKE, direct-editing
+methods often improve directly edited instances yet show weak generality on indirect effects, which they
+interpret as poor integration of new knowledge. Zhao et al. sharpen this into a “reasoning gap”: the model can
+recall the patch but fails to use it in multi-step reasoning chains. The shared characterization is that local
+representational change is not enough unless the edit also reaches the circuits or processes that route
+consequences through larger reasoning paths. (Chen et al., 2025) (Zhao et al., 2026)
+This same split also appears in multimodal editing, where Gu et al. describe two opposite failure modes:
+causal misalignment, where the edit stays trapped in the exact target sample and fails to generalize to
+logically related queries, and feature entanglement, where the update spreads to the wrong nearby content.
+That is a useful summary of the whole literature: one problem is under-propagation to true consequences,
+and the other is over-propagation to merely correlated content. The strongest papers therefore characterize
+good propagation as a narrow but semantically correct spread: wider than paraphrases, because it should
+cover entailed multi-hop consequences, but still bounded enough to avoid unrelated drift. (Gu et al._1, 2026)
+
+Evidence
+(Zhang et al., 2024)
+Locate-then-edit for Multi-hop Factual Recall under Knowledge Editing
+"By using causal intervention, our results indicate that in the multi-hop scenario, the implicit subject guides the emergence of the
+final answer by retrieving relevant knowledge from the later MLP layers. This contrasts sharply with the single-hop cases (Meng et
+al., 2022)2023), where the subject information is used to retrieve information from earlier MLP layers. Based on this difference, we
+provide an explanation for the unsatisfactory performance of the existing locatethen-edit methods for multi-hop tasks: Previous
+methods leveraging single-hop prompts for editing are insufficient as they only update the relevant knowledge in the shallow MLP
+layers but fail to propagate the changes to deeper layers"
+".The locate-then-edit paradigm has shown significant promise for knowledge editing (KE) in Large Language Models (LLMs). While
+previous methods perform well on single-hop fact recall tasks, they consistently struggle with multi-hop factual recall tasks involving
+newly edited knowledge."
+
+(Meng et al._1, 2022)
+Locating and Editing Factual Associations in GPT
+"We analyze the storage and recall of factual associations in autoregressive transformer language models, finding evidence that
+these associations correspond to localized, directly-editable computations. We first develop a causal intervention for identifying
+neuron activations that are decisive in a model's factual predictions. This reveals a distinct set of steps in middle-layer feed-forward
+modules that mediate factual predictions while processing subject tokens. To test our hypothesis that these computations
+correspond to factual association recall, we modify feed-forward weights to update specific factual associations using Rank-One
+Model Editing (ROME). We find that ROME is effective on a standard zero-shot relation extraction (zsRE) model-editing task,
+comparable to existing methods. To perform a more sensitive evaluation, we also evaluate ROME on a new dataset of
+counterfactual assertions, on which it simultaneously maintains both specificity and generalization, whereas other methods
+sacrifice one or another. Our results confirm an important role for mid-layer feed-forward modules in storing factual associations
+and suggest that direct manipulation of computational mechanisms may be a feasible approach for model editing. The code,
+dataset, visualizations, and an interactive demo notebook are available at https://rome.baulab.info/"
+
+(Zhong et al., 2023)
+MQuAKE: Assessing Knowledge Editing in Language Models via Multi-Hop Questions
+
+"Current evaluation paradigms are extremely limited, mainly validating the recall of edited facts, but changing one fact should cause
+rippling changes to the model's related beliefs. If we edit the UK Prime Minister to now be Rishi Sunak, then we should get a different
+answer to Who is married to the British Prime Minister?"
+"Existing knowledge-editing methods often perform well at answering paraphrased questions of the edited fact but fail on multi-hop
+questions that are entailed consequences of the edited fact"
+". Each example in MQUAKE consists of a multi-hop question (including {2, 3, 4}-hop questions) which corresponds to a chain of
+facts. When we edit one or a few facts in a chain, the edited model needs to propagate the change to entailed consequences of the
+edited facts"
+". We thus propose a simple memory-based approach, MeLLo, which stores all edited facts externally while prompting the language
+model iteratively to generate answers that are consistent with the edited facts."
+
+(Cohen et al., 2023)
+Evaluating the Ripple Effects of Knowledge Editing in Language Models
+"Here we argue that such evaluation is limited, since injecting one fact (e.g., "Jack Depp is the son of Johnny Depp") introduces a
+"ripple effect" in the form of additional facts that the model needs to update (e.g., "Jack Depp is the sibling of Lily-Rose Depp"). To
+address this, we propose novel evaluation criteria that consider the implications of an edit on related facts."
+
+(Lee et al., 2025)
+StepKE: Stepwise Knowledge Editing for Multi-Hop Question Answering
+"Achieving effective knowledge editing in this complex multi-hop setting necessitates satisfying two key requirements. First, Local
+Consistency ensures that the edited model accurately incorporates any modified knowledge k * K edit when directly queried.
+Second, Global Consistency demands that the edited knowledge K edit is seamlessly integrated with the original knowledge K orig
+without introducing logical contradictions. This preserves coherence throughout complex multi-hop reasoning that leverages facts
+from both K edit and K orig ."
+
+(Jeong et al., 2025)
+Watch Your Step: A Fine-Grained Evaluation Framework for Multi-hop Knowledge Editing in Large Language Models
+"Knowledge editing allows for targeted updates of specific factual information in Large Language Models (LLMs). While existing
+methods can effectively update localized facts, they often struggle to coherently integrate these updates into the model's broader
+knowledge structure. Multi-hop knowledge editing addresses this issue by aiming that edited information is consistently reflected
+throughout the multi-hop reasoning process. However, current evaluation methods primarily assess the correctness of the final
+answer, which cannot guarantee that the edited knowledge has been correctly integrated into the reasoning process."
+
+(Peng et al., 2024)
+Event-level Knowledge Editing
+"(1) Updating all implicated facts at once. An event edit can update multiple factual knowledge at once, and determining its scope is
+challenging. Additionally, updating corresponding factual knowledge about an event edit may involve multi-hop reasoning (Zhong et
+al., 2023) and editing knowledge to unknown (Muresanu et al., 2024)"
+".Based on this objective of event-level knowledge editing, we assess the editing methods from two dimensions: reliability and
+locality"
+".Locality means that the editing should not affect the model's answers to unrelated questions, evaluating the consistency of the
+model's answers to the unrelated questions in O e before and after editing:"
+
+(Chen et al., 2025)
+An information-theoretic framework for robust large language model editing
+"On more complex datasets, including UniEdit and MQuAKE, which feature diverse edit types, multi-hop reasoning, and interactions
+among multiple edits, DE-based approaches yield notably low generality scores. These findings indicate that DE-based methods
+tend to enhance prediction for directly edited instances without fostering broader integration of new knowledge within the LLM.
+Consequently, the model cannot reliably propagate edited knowledge to address indirect or ripple effects."
+
+(Zhao et al., 2026)
+Mechanistic Circuit-Based Knowledge Editing in Large Language Models
+"While existing knowledge editing methods can reliably patch isolated facts, they frequently suffer from a"Reasoning Gap", where the
+model recalls the edited fact but fails to utilize it in multi-step reasoning chains. To bridge this gap, we introduce MCircKE
+(\underline{M}echanistic \underline{Circ}uit-based \underline{K}nowledge \underline{E}diting), a novel framework that enables a
+
+precise"map-and-adapt"editing procedure. MCircKE first identifies the causal circuits responsible for a specific reasoning task,
+capturing both the storage of the fact and the routing of its logical consequences. It then surgically update parameters exclusively
+within this mapped circuit."
+
+(Gu et al._1, 2026)
+Towards Localized and Disentangled Knowledge Editing for Multimodal Large Language Models
+"Existing methods in Multimodal Knowledge Editing (MKE) have advanced the ability to correct outdated or inaccurate knowledge in
+Multimodal Large Language Models (MLLMs). However, they exhibit a critical limitation: while effectively modifying target factual
+pairs, they fail to generalize edits to logically related queries and often cause unintended alterations to unrelated but visually or
+semantically linked information. We identify and formalize two underlying failure modes causing this issue: Causal Misalignment,
+which confines edits to the specific sample, and Feature Entanglement, which causes unintended alterations to coupled but
+irrelevant information. To address these issues, we propose Localized and Disentangled Knowledge Editing (LDKE), a new
+framework that achieves precise and generalized editing by localizing fact-specific model layers and disentangling target-relevant
+inputs from irrelevant ones."
+
+Evaluation frameworks and benchmarks for measuring propagation and
+locality
+Evaluation has shifted from “did the model memorize the edited answer?” to a small set of separate checks: direct success,
+spread to paraphrases, preservation of unrelated facts, and propagation to logically dependent questions. The main
+benchmark split is between classic single-fact suites that test locality and newer multi-hop or logic-aware suites that test
+whether the edit actually carries through reasoning chains. (15 sources)
+
+Core metric bundle now used across many papers
+A common evaluation template uses reliability/edit success, generalization, locality/specificity, and
+increasingly portability. In this setup, generalization asks whether the edit transfers to semantically
+equivalent prompts like paraphrases; specificity/locality asks whether unrelated facts stay unchanged; and
+portability asks whether the edited fact can be used in logically connected cases, including aliases,
+reversed relations, and simple downstream inference. (Halevy et al., 2024) (Yao et al., 2023) (Reddy et al.,
+2025) (He et al., 2025)
+Several later surveys and frameworks keep this same split because it maps cleanly onto the localityversus-propagation question: locality checks bounded side effects, while portability checks whether the
+new fact is usable in broader reasoning. (Reddy et al., 2025) (He et al., 2025) (Xu et al._1, 2026)
+Classic locality-oriented benchmarks: zsRE and CounterFact
+The standard older benchmark family mainly tests whether edited facts are recalled and whether nearby or
+unrelated facts remain stable. ZsRE-style evaluation includes unrelated questions to test locality and
+specificity, and CounterFact was designed to test factual rewriting under stricter locality constraints,
+including spillover onto closely related facts. (Gao et al., 2026) (Meng et al._1, 2022)
+These benchmarks are still useful for measuring representational locality: if an edit changes the target
+fact but also disturbs semantically nearby or unrelated facts, the method is not well confined. (Gao et al.,
+2026) (Meng et al._1, 2022)
+Portability metrics as a bridge from paraphrases to reasoning
+Portability was introduced to test cases that are more demanding than plain paraphrases. The recurring
+sub-metrics are Subject Replace / aliasing, Reversed Relation, and One Hop or direct logical corollary
+tests. This is important because it starts to measure whether the edit supports elementary chaining, not
+just lexical variation. (Hsueh et al., 2024) (Yao et al., 2023) (Halevy et al., 2024)
+Later papers refine this split further. Xu et al. separate portability into Subject Aliasing Accuracy, Logical
+Generalization Accuracy, and Reasoning Accuracy, while locality is split into Forgetfulness Accuracy and
+Relation Specificity Accuracy. That makes it easier to tell whether a method fails because it cannot spread
+
+to entailed facts or because it spreads too broadly. (Xu et al._1, 2026)
+RippleEdits: benchmark for implied relational consequences
+RippleEdits is a notable benchmark for measuring whether one edit causes the right updates in related
+beliefs rather than only the exact target triple. It introduces criteria like Logical Generalization and
+Compositionality to test implied relational facts. (Hsueh et al., 2024) (Cohen et al., 2023)
+This makes RippleEdits especially useful for the user’s question, because it sits between local paraphrase
+spread and full multi-hop QA: it asks whether dependent structured facts are recomputed after an edit.
+(Cohen et al., 2023) (Pohl et al., 2025)
+MQuAKE: benchmark for multi-hop entailed consequences
+MQuAKE is the clearest benchmark for testing whether an edit propagates through knowledge chains. It
+builds 2-, 3-, and 4-hop questions whose answers should change as an entailed consequence of the edit,
+not because the exact edited sentence was memorized. (Zhong et al., 2023)
+Survey papers now treat MQuAKE as the standard test for whether edited knowledge supports multi-hop
+reasoning after the update. It is often contrasted with zsRE and CounterFact, which mostly test direct
+recall and locality. (Hsueh et al., 2024) (Pohl et al., 2025) (Gao et al., 2026) (Ngoli et al., 2026)
+Jeong et al. make this operational with a Portability Score built from multi-hop questions that combine the
+edited fact with an additional fact to infer a final answer. (Jeong et al._1, 2025)
+ReCoE and other reasoning-centered benchmarks
+ReCoE is introduced to measure propagation in interconnected facts under different reasoning schemes in
+complex QA settings, extending the same idea beyond one benchmark family. (Hsueh et al., 2024)
+More recent summaries therefore divide evaluation into logic-agnostic benchmarks, which emphasize
+factual accuracy and locality, and logic-aware benchmarks, which add structured reasoning constraints
+and explicit propagation tests. (Ngoli et al., 2026)
+Benchmarks that construct locality and reasoning sets from the same source facts
+Some newer evaluation designs build paired test sets for both sides of the problem. Thede et al. derive a
+locality set from semantically similar triplets whose answers should stay unchanged, and a multi-hop set
+from linked triplets where the object of one fact becomes the subject of the next. This gives a clean withindataset comparison between “stay local” and “support reasoning.” (Thede et al., 2025)
+That design is useful because it reduces ambiguity about scope: the same edited fact is tested both for
+overreach and for under-propagation. (Thede et al., 2025)
+Cross-lingual evaluation as a special case of propagation
+Ifergan et al. use the standard trio of Reliability, Generalization, and Locality to measure how edits transfer
+across languages. Their generalization score checks paraphrases in multiple languages, while locality
+tests whether unrelated facts in other languages remain correct. (Ifergan et al., 2024)
+This is a useful extension of the locality question: propagation can be local in semantic content but still
+broad across surface form and language if the representation is shared. (Ifergan et al., 2024)
+Practical takeaway for reading results
+If a paper reports only success on zsRE or CounterFact-style prompts, it mostly tells you about direct
+editability and locality. If it also reports portability, RippleEdits, ReCoE, or MQuAKE, then it is testing
+whether the edit reaches dependent facts and reasoning chains. (Gao et al., 2026) (Hsueh et al., 2024)
+
+(Zhong et al., 2023)
+In other words, the benchmark choice itself usually reveals which notion of propagation a paper cares
+about: semantic neighborhood spread, structured ripple effects, or full multi-hop consequence use.
+(Halevy et al., 2024) (Hsueh et al., 2024) (Xu et al._1, 2026)
+
+Evidence
+(Halevy et al., 2024)
+“Flex Tape Can’t Fix That”: Bias and Misinformation in Edited Language Models
+"Generalization measures the propagation of an edit to semantically-equivalent expressions of the target fact, as measured by the
+post-edit model's accuracy on paraphrases in the equivalence neighborhood of the edited fact (Yao et al., 2023). Specificity refers to
+an editing method's ability to keep information unchanged if it is unrelated to the edit, and is measured by a post-edit model's
+average accuracy on out-of-scope facts for a given edit. Portability, a metric newly introduced by (Yao et al., 2023), measures a postedit model's average accuracy across cases where (a) the subject of the fact is replaced with an alias or synonym, (b) the relation
+and subject are reversed in the phrasing, or (c) a model must reason about a logical corollary of the edited fact"
+". some works beginning to look at the logical downstream implications of edited facts by examining multi-hop accuracy (Zhong et
+al., 2023)."
+
+(Yao et al., 2023)
+Editing Large Language Models: Problems, Methods, and Opportunities
+"Despite the ability to train capable LLMs, the methodology for maintaining their relevancy and rectifying errors remains elusive. To
+this end, the past few years have witnessed a surge in techniques for editing LLMs, the objective of which is to efficiently alter the
+behavior of LLMs within a specific domain without negatively impacting performance across other inputs. This paper embarks on a
+deep exploration of the problems, methods, and opportunities related to model editing for LLMs. In particular, we provide an
+exhaustive overview of the task definition and challenges associated with model editing, along with an in-depth empirical analysis of
+the most progressive methods currently at our disposal. We also build a new benchmark dataset to facilitate a more robust
+evaluation and pinpoint enduring issues intrinsic to existing techniques. Our objective is to provide valuable insights into the
+effectiveness and feasibility of each editing technique, thereby assisting the community in making informed decisions on the
+selection of the most appropriate method for a specific task or context. Code and datasets are available at https://github.com/
+zjunlp/EasyEdit."
+
+(Reddy et al., 2025)
+CaseEdit: Enhancing Localized Commonsense Reasoning via Null-Space Constrained Knowledge Editing in Small Parameter
+Language Models
+"• Locality: Assesses whether the edit unintentionally alters the model's predictions on unrelated inputs that should not be affected
+by the specific knowledge update. High locality indicates minimal negative side effects or "ripple effects" on the model's broader
+knowledge.
+• Portability: Measures if the newly acquired knowledge through the edit can be correctly applied in more complex, multi-hop
+reasoning scenarios or downstream tasks that logically depend on the edited fact or concept.
+These metrics allow us to evaluate not only if an edit is successful (Reliability) but also if it behaves as expected within its intended
+scope (Generalization), avoids damaging other knowledge (Locality), and integrates usefully into broader reasoning (Portability)."
+
+(He et al., 2025)
+Benchmarking and Rethinking Knowledge Editing for Large Language Models
+"• Locality: It is imperative that the edited LLM should retain its original behavior when processing queries that are unrelated to the
+edits, denoted by O(E t ). This criterion measures how well the edited LLM maintains the overall stability while keeping edits
+confined to the relevant scope"
+". • Portability: Furthermore, the edited LLM should effectively propagate the impact of the edited knowledge, correctly reasoning
+about its downstream implications, denoted by D(E t ). D(E t ) encompasses three aspects: substituting the subject of the question
+with aliases, reasoning based on factual changes, and knowledge derived from reverse relationships. As shown in Table 1, this
+dimension has been ignored by a large number of studies."
+
+(Xu et al._1, 2026)
+
+Fisher-Driven Adaptive Locating for Knowledge Editing in Large Language Models
+"Evaluation Metrics. To ensure a thorough and systematic evaluation of knowledge editing methods, we follow established
+evaluation protocols and adopt four metrics: Edit Success, Portability, Locality, and Fluency. The Portability metric is further divided
+into Subject Aliasing Accuracy (SAA), Logical Generalization Accuracy (LGA), and Reasoning Accuracy (RA). Specifically, SAA
+measures the model's ability to generalize edited knowledge to alternative expressions of the subject, such as aliases or synonyms.
+LGA evaluates whether semantically related facts that should be affected by the edit are updated accordingly, while RA assesses the
+model's reasoning capability based on the modified knowledge. The Locality metric consists of Forgetfulness Accuracy (FA) and
+Relation Specificity Accuracy (RSA). FA examines whether the model forgets only the targeted knowledge while preserving other
+facts in one-tomany relations, whereas RSA evaluates whether unrelated attributes of the edited subject remain unchanged after the
+knowledge update."
+
+(Gao et al., 2026)
+Do Text Edits Generalize to Visual Generation? Benchmarking Cross-Modal Knowledge Editing in UMMs
+"ZsRE-based evaluations also typically include additional questions that are unrelated to the edited knowledge in order to assess
+locality and specificity, namely whether the model's behavior on other facts remains stable after applying an edit"
+".CounterFact (Meng et al., 2022) is a benchmark designed to evaluate factual rewriting under stricter locality constraints"
+".This design makes CounterFact particularly effective at detecting spillover effects, where an edit intended for one fact
+inadvertently alters the model's behavior on closely related facts"
+".MQuAKE (Zhong et al., 2023) extends standard single-fact editing evaluations by emphasizing multi-hop reasoning consequences.
+In addition to an edit target, MQuAKE provides questions whose correct answers depend on the edited knowledge through
+intermediate reasoning steps, thereby measuring whether the update is reflected in entailed beliefs rather than only in direct recall.
+As a result, MQuAKE is commonly used to characterize the extent to which editing methods support compositional reasoning
+consistency after a factual update."
+
+(Meng et al._1, 2022)
+Locating and Editing Factual Associations in GPT
+"We analyze the storage and recall of factual associations in autoregressive transformer language models, finding evidence that
+these associations correspond to localized, directly-editable computations. We first develop a causal intervention for identifying
+neuron activations that are decisive in a model's factual predictions. This reveals a distinct set of steps in middle-layer feed-forward
+modules that mediate factual predictions while processing subject tokens. To test our hypothesis that these computations
+correspond to factual association recall, we modify feed-forward weights to update specific factual associations using Rank-One
+Model Editing (ROME). We find that ROME is effective on a standard zero-shot relation extraction (zsRE) model-editing task,
+comparable to existing methods. To perform a more sensitive evaluation, we also evaluate ROME on a new dataset of
+counterfactual assertions, on which it simultaneously maintains both specificity and generalization, whereas other methods
+sacrifice one or another. Our results confirm an important role for mid-layer feed-forward modules in storing factual associations
+and suggest that direct manipulation of computational mechanisms may be a feasible approach for model editing. The code,
+dataset, visualizations, and an interactive demo notebook are available at https://rome.baulab.info/"
+
+(Hsueh et al., 2024)
+Editing the Mind of Giants: An In-Depth Exploration of Pitfalls of Knowledge Editing in Large Language Models
+"Recently the term portability has been proposed in (Yao et al., 2023) to evaluate whether an edited fact can be logically inferred
+within the knowledge chain, and to further assess the robustness of generalization. In their study, they introduce three metrics to
+evaluate portability: Subject Replace (checking if synonyms of the subject are edited), Reversed Relation (checking if the reversed
+relation of the target is edited), and One Hop (assessing if modified knowledge is usable for further derivation). Similarly, RippleEdits
+benchmark and its corresponding Logical Generalization and Compositionality metrics are proposed to examine whether edited
+knowledge can be inferred in composite relations of facts (Cohen et al., 2023). Additionally, ReCoE benchmark is proposed to
+assess the propagation of updates in interconnected facts using various reasoning schemes in complex question-answering
+datasets (Hua et al., 2024). Furthermore, MQuAKE benchmark is introduced to evaluate more complex reasoning and inference
+ability on multi-hop questions (Zhong et al., 2023)."
+
+(Cohen et al., 2023)
+Evaluating the Ripple Effects of Knowledge Editing in Language Models
+"Here we argue that such evaluation is limited, since injecting one fact (e.g., "Jack Depp is the son of Johnny Depp") introduces a
+"ripple effect" in the form of additional facts that the model needs to update (e.g., "Jack Depp is the sibling of Lily-Rose Depp"). To
+address this, we propose novel evaluation criteria that consider the implications of an edit on related facts."
+
+(Pohl et al., 2025)
+
+Towards a Principled Evaluation of Knowledge Editors
+"These two datasets test whether edited models can recall edit facts while unrelated facts remain unchanged. More recently,
+additional Knowledge Editing benchmarks have been introduced that cover abilities an edited model should possess unaddressed
+by zsre or CounterFact. MQuAKE covers the question of whether edited knowledge is utilized in multi-hop reasoning (Zhong et al.,
+2024). If, for example, we insert the new knowledge that "Keir Starmer is the Prime minister of the UK." instead of his predecessor
+"Rishi Sunak", the post-edit model should also produce an updated answer to the question "Who is the spouse of the British prime
+minister?" or any other implied facts. RippleEdits, another more recent benchmark, also contains some test cases for multi-hop
+reasoning as well as other types of inferences based on properties of the relations present in edit triplets and queries to test if
+edited models forget knowledge the pre-edit model possessed (Cohen et al., 2023)."
+
+(Zhong et al., 2023)
+MQuAKE: Assessing Knowledge Editing in Language Models via Multi-Hop Questions
+"Current evaluation paradigms are extremely limited, mainly validating the recall of edited facts, but changing one fact should cause
+rippling changes to the model's related beliefs. If we edit the UK Prime Minister to now be Rishi Sunak, then we should get a different
+answer to Who is married to the British Prime Minister?"
+"Existing knowledge-editing methods often perform well at answering paraphrased questions of the edited fact but fail on multi-hop
+questions that are entailed consequences of the edited fact"
+". Each example in MQUAKE consists of a multi-hop question (including {2, 3, 4}-hop questions) which corresponds to a chain of
+facts. When we edit one or a few facts in a chain, the edited model needs to propagate the change to entailed consequences of the
+edited facts"
+". We thus propose a simple memory-based approach, MeLLo, which stores all edited facts externally while prompting the language
+model iteratively to generate answers that are consistent with the edited facts."
+
+(Ngoli et al., 2026)
+Benchmarking Knowledge Editing Using Logical Rules
+"Evaluation frameworks for knowledge editing fall into two paradigms:"
+"Logic-Agnostic Benchmarks. These frameworks prioritize factual accuracy and edit locality over reasoning constraints. For
+example, Chen et al. [1] evaluate edits through reliability (post-edit correctness), generalization (paraphrase handling), and locality
+(unrelated fact preservation). Multi-hop benchmarks (Zhong et al., 2023) assess propagation of edits through knowledge chains"
+"Logic-Aware Benchmarks. These frameworks incorporate structured reasoning constraints. For example, the RULE-KE framework
+[2] enforces consistency by leveraging logical rules to propagate edits across related facts."
+
+(Jeong et al._1, 2025)
+STEAM: A Semantic-Level Knowledge Editing Framework for Large Language Models
+"• Portability Score evaluates whether the model can correctly answer multi-hop questions that require reasoning over the edited
+knowledge. Each question q ′ is constructed to test whether the model can infer the final object o ′ by combining the edited fact (s, r,
+o * ) with an additional fact (o * , r ′ , o ′ ). The model's response F ′ (q ′ ) is evaluated against the gold answer o ′ using fuzzy string
+matching."
+
+(Thede et al., 2025)
+WikiBigEdit: Understanding the Limits of Lifelong Knowledge Editing in LLMs
+"To evaluate whether knowledge edits remain local, i.e. do not influence (related) existing knowledge, we derive a locality set S
+locality from S static and S changed ; where each factual triplet in the changed set is paired with a triplet semantically similar in
+subject and relation but with a distinct object. For each factual update, this gives a corresponding question whose answer should
+remain unaffected to probe the locality of knowledge edits"
+".To enable reasoning evaluation, we further extract multi-hop (mhop) tuples S mhop from S changed . In particular, we identify pairs
+of factual triplets (T i , T j ) where T obj i serves as the subject of the second triplet, T subj j ; for example T i = (podcast, named after,
+iPod) and T j = (iPod, manufacturer, Apple). The triplets T i and T j are then concatenated to form twohop factual qintuples T ij , e.g.
+(podcast, named after, iPod, manufacturer, Apple). By restricting the extraction of S mhop to S changed , we ensure a fair evaluation,
+as the model will have been updated with both individual facts prior to the reasoning task."
+
+(Ifergan et al., 2024)
+Beneath the Surface of Consistency: Exploring Cross-lingual Knowledge Representation Sharing in LLMs
+"We propose a methodology to measure the extent of representation sharing across languages by repurposing knowledge editing
+
+methods"
+". For the knowledge editing experiments, we randomly selected 500 known facts in each language to modify. We assessed the
+effectiveness of these edits using three standard metrics: Reliability, Generalization, and Locality"
+". Generalization, denoted with SR(l1, l2), evaluates the mean score across all paraphrases of the edited fact in all languages,
+including the language in which the edit was made (l1). This quantifies how well the edit transfers across both languages and
+paraphrases variations of the fact. For Locality testing, we randomly sampled known facts for each language and evaluated the
+model's mean accuracy to answer these unrelated queries correctly. This ensured that the edits did not negatively impact other
+knowledge in different languages."
+
+Methods and mechanisms proposed to improve propagation beyond
+isolated fact recall
+Methods that try to improve propagation usually add structure outside the raw parameter patch: a knowledge graph, an
+external memory, logical rules, or a sampled neighborhood of affected facts. The shared idea is that if multi-hop
+consequences are not stored in one local spot, then editing must touch or retrieve the wider dependency structure instead
+of only rewriting one atomic association. (14 sources)
+
+Graph-augmented parameter editing
+A direct response to weak ripple effects is to edit not just the target triple, but a subgraph around it. Zhang
+et al. argue that simple direct editing of higher-order related facts would require many separate changes
+and can hurt the target edit, so they add a graph-based knowledge edit (GKE) module that encodes the
+impacted subgraph and injects it into a rank-one editing framework. Their goal is that a single edit lets the
+model recognize both the edited fact and the broader set of facts affected by it. (Zhang et al._1, 2024)
+External graph memory for explicit multi-hop reasoning
+Another strategy is to stop asking the parametric model to carry all propagation internally. GMeLLo
+combines a knowledge graph with the LLM, using the model to turn free-form questions into structured
+queries and triples, then relying on the graph for quick updates and multi-hop reasoning. This is explicitly
+motivated by the failure of standard editors on multi-hop questions and many-fact update settings. (Chen
+et al., 2024)
+This idea lines up with benchmark evidence that in-context or external-memory style methods can beat
+pure parametric editors on ripple-effect questions. Liu et al. motivate PropMEND from exactly this gap:
+edited parameters often reproduce the injected fact but show little propagation, while knowledge given in
+context at inference time propagates much better. On RippleEdits, they report large gains on non-verbatim
+questions, which is the hard case where the answer is not just copied from the injected fact. (Liu et al.,
+2025) (Cohen et al., 2023)
+Memory-based iterative reasoning over edits
+A closely related mechanism is to keep edits in memory and let the model reason over them step by step,
+instead of trying to compress all consequences into a local weight update. Wang et al. describe MeLLo as
+a method that partly eases consistency problems in multi-hop editing, even though they also note it still
+struggles with broader bidirectional expansion. This places memory-based editing in an important middle
+ground: better than isolated recall patches for chained reasoning, but not a full fix. (Wang et al., 2025)
+(Zhong et al., 2023)
+Logical-rule guided chain editing
+Some methods try to improve propagation by making the dependencies explicitly logical. ChainEdit uses
+rules extracted from a knowledge graph together with the LLM’s reasoning ability to generate and edit
+logically connected clusters of facts, aiming for systematic chain updates rather than one-off fact
+replacement. In Huang et al.’s later summary, this falls into a broader class of propagation-oriented
+
+methods that promote desired spread through graphs, memory association, or logical rules. (Dong et al.,
+2025) (Huang et al., 2026)
+Graph navigation and subgraph restructuring before reinjection
+A more aggressive graph-based design is to first find the most relevant region of the knowledge graph,
+then rewrite that region before editing the model. Wang et al. describe a framework in which a graphnavigation agent selects a subgraph for the target triple, decomposes and reconnects the triples under the
+new fact, and only then performs batch parameter localization and editing in MLP layers. The motivation is
+that classic localized editors such as ROME can update the target triple well but often generalize poorly on
+multi-hop reasoning tasks. (Wang et al., 2025) (Meng et al._1, 2022)
+Neighborhood sampling to define the facts that should propagate
+Some work focuses less on the editor itself and more on how to expose the right affected region during
+training or evaluation. Chen et al. propose Neighborhood Multi-hop Chain Sampling (NMCS) to sample
+subgraphs around a knowledge piece so that the method can cover a more complete set of ripple effects.
+This matters because propagation is partly a scope-definition problem: if the editor never sees the
+surrounding chain, it is hard for it to learn what should change together. (Chen et al._1, 2025)
+Methods that protect locality while trying to improve propagation
+As propagation-oriented methods became more common, another branch focused on preventing the edit
+from spreading in the wrong way. Huang et al. summarize this as a split between propagation-oriented
+methods and preservation-oriented methods. The latter try to suppress harmful side effects such as
+neighboring-answer interference, same-subject collisions, knowledge conflict, and hidden-space ripple.
+(Huang et al., 2026)
+Concretely, PEAK/APP studies whether adding a new answer perturbs nearby answers in an answer list
+and proposes a plug-and-play way to preserve the original list while preventing bad additions. This is not a
+multi-hop propagation method by itself, but it addresses a key failure mode of broader updates: once edits
+move beyond a single fact, nearby knowledge can be accidentally damaged. (Huang et al., 2026) (Ma et al.,
+2024)
+Same-subject editing papers make a similar point. The S²RKE benchmark shows that common locate-thenedit methods can have related knowledge perturbation when multiple facts share one subject, because the
+methods lean too heavily on the subject representation. MEMIT-Merge addresses a related conflict in batch
+editing by merging value computation for same-subject facts so identical subject keys do not compete to
+represent different values. These methods are mainly about preservation, but they matter for propagation
+because useful ripple effects are hard to scale if same-subject updates interfere with each other. (Huang et
+al., 2026) (Duan et al., 2025) (Dong et al._1, 2025)
+Li et al. also warn that editing can amplify knowledge conflict and distort the model’s internal knowledge
+structure, which is exactly the risk when one tries to force wider propagation without a good model of
+scope. (Huang et al., 2026) (Li et al., 2023)
+Overall pattern across methods
+Taken together, these methods suggest a practical taxonomy: if the goal is better propagation to
+dependent facts, papers increasingly add structured context around the edit—subgraphs, memories, or
+rules—rather than relying only on a small local parameter patch. If the goal is to keep that propagation safe,
+they add preservation controls that detect or reduce collisions in neighboring or same-subject knowledge.
+(Zhang et al._1, 2024) (Chen et al., 2024) (Dong et al., 2025) (Huang et al., 2026)
+
+Evidence
+
+(Zhang et al._1, 2024)
+Knowledge Graph Enhanced Large Language Model Editing
+"Existing editing methods fail to account for the impact on associated knowledge resulting from the modification of target
+knowledge, which limits the generalizability of post-edited LLMs in processing such edited knowledge. The black-box nature of
+LLMs makes capturing the associations between pieces of knowledge within the models exceedingly complex, further challenging
+the detection of such associated knowledge changes during editing"
+".Directly editing high-order relationships from the subgraph into LLMs in a simplistic way requires multiple alterations to the models
+and might disrupt the targeted edited knowledge, potentially exerting significant adverse effects and diminishing post-edit model
+performance ( §5.2). Therefore, we further develop a graph-based knowledge edit (GKE) module ( §4.2) that integrates the subgraph
+encoding into the rank-one model editing framework. With just a single edit, it ensures that the edited parameters can recognize not
+only the edited knowledge but also the broader scope of knowledge impacted by such edits."
+
+(Chen et al., 2024)
+LLM-Based Multi-Hop Question Answering with Knowledge Graph Integration in Evolving Environments
+"The important challenge of keeping knowledge in Large Language Models (LLMs) up-to-date has led to the development of various
+methods for incorporating new facts. However, existing methods for such knowledge editing still face difficulties with multi-hop
+questions that require accurate fact identification and sequential logical reasoning, particularly among numerous fact updates. To
+tackle these challenges, this paper introduces Graph Memory-based Editing for Large Language Models (GMeLLo), a straightforward
+and effective method that merges the explicit knowledge representation of Knowledge Graphs (KGs) with the linguistic flexibility of
+LLMs. Beyond merely leveraging LLMs for question answering, GMeLLo employs these models to convert free-form language into
+structured queries and fact triples, facilitating seamless interaction with KGs for rapid updates and precise multi-hop reasoning."
+
+(Liu et al., 2025)
+PropMEND: Hypernetworks for Knowledge Propagation in LLMs
+"Knowledge editing methods [26; 29; 7; 38] can transform large language models (LLMs) to reproduce injected knowledge, but
+induce very limited propagation of that knowledge [6; 48]. This failure stands in disappointing contrast to LLMs' ability to propagate
+knowledge that is given in context at inference time [31; 47]"
+".We first evaluate our approach on RippleEdit (Cohen et al., 2023), a knowledge propagation question answering dataset. Existing
+methods that excel in instances where the target answer appears verbatim in the injected facts, while achieving negligible
+improvement on non-verbatim questions. We show PropMEND outperforms all other approaches, showing almost 2× accuracy
+(22.4% compared to 12.7% of the next best system) in non-verbatim cases."
+
+(Cohen et al., 2023)
+Evaluating the Ripple Effects of Knowledge Editing in Language Models
+"Here we argue that such evaluation is limited, since injecting one fact (e.g., "Jack Depp is the son of Johnny Depp") introduces a
+"ripple effect" in the form of additional facts that the model needs to update (e.g., "Jack Depp is the sibling of Lily-Rose Depp"). To
+address this, we propose novel evaluation criteria that consider the implications of an edit on related facts."
+
+(Wang et al., 2025)
+Bidirectional Multi-Hop Expansion Challenges in Knowledge Editing for Large Language Models
+"We then find that although classical knowledge editing methods, such as those based on parameter localization and modification
+(Meng et al., 2022), can effectively update the target knowledge triple, they generally lack strong generalization ability. Their
+performance on multi-hop reasoning-related editing tasks is often poor and may even degrade significantly. While some
+approaches(such as MeLLo (Zhong et al., 2023)) partially alleviate consistency issues in multi-hop knowledge editing and enable
+models to better utilize the injected knowledge for reasoning, they still struggle to effectively handle bidirectional multi-hop
+expansion in knowledge editing"
+". This framework leverages an external knowledge graph and employs a graph navigation agent trained via reinforcement learning
+to identify the most relevant subgraph corresponding to the target triple. The subgraph is then decomposed into basic triples, which
+are reconnected and restructured based on the new knowledge. Finally, the framework performs batch parameter localization and
+editing, reinjecting the updated knowledge into the LLM by modifying specific parameters in its intermediate MLP layers, thereby
+accomplishing efficient and consistent knowledge editing."
+
+(Zhong et al., 2023)
+MQuAKE: Assessing Knowledge Editing in Language Models via Multi-Hop Questions
+"Current evaluation paradigms are extremely limited, mainly validating the recall of edited facts, but changing one fact should cause
+
+rippling changes to the model's related beliefs. If we edit the UK Prime Minister to now be Rishi Sunak, then we should get a different
+answer to Who is married to the British Prime Minister?"
+"Existing knowledge-editing methods often perform well at answering paraphrased questions of the edited fact but fail on multi-hop
+questions that are entailed consequences of the edited fact"
+". Each example in MQUAKE consists of a multi-hop question (including {2, 3, 4}-hop questions) which corresponds to a chain of
+facts. When we edit one or a few facts in a chain, the edited model needs to propagate the change to entailed consequences of the
+edited facts"
+". We thus propose a simple memory-based approach, MeLLo, which stores all edited facts externally while prompting the language
+model iteratively to generate answers that are consistent with the edited facts."
+
+(Dong et al., 2025)
+ChainEdit: Propagating Ripple Effects in LLM Knowledge Editing through Logical Rule-Guided Chains
+"Current knowledge editing methods for large language models (LLMs) struggle to maintain logical consistency when propagating
+ripple effects to associated facts. We propose ChainEdit, a framework that synergizes knowledge graph-derived logical rules with
+LLM logical reasoning capabilities to enable systematic chain updates. By automatically extracting logical patterns from structured
+knowledge bases and aligning them with LLMs'internal logics, ChainEdit dynamically generates and edits logically connected
+knowledge clusters."
+
+(Huang et al., 2026)
+Revisiting Ripple Effects in Knowledge Editing through Pressure-Aware Joint Neighborhood Optimization
+"Propagation-oriented methods promote desirable propagation to related facts through knowledge graphs, memory association, or
+logical rules (Zhang et al., 2024;Park et al., 2025;(Dong et al., 2025), while preservationoriented methods suppress harmful
+perturbation via neighboring-answer interference, same-subject preservation, knowledge conflict, and hidden-space ripple (Ma et al.,
+2024)Zhang et al., 2026;(Li et al., 2023)(Li et al., 2023)(Duan et al., 2025)(Dong et al., 2025)."
+
+(Meng et al._1, 2022)
+Locating and Editing Factual Associations in GPT
+"We analyze the storage and recall of factual associations in autoregressive transformer language models, finding evidence that
+these associations correspond to localized, directly-editable computations. We first develop a causal intervention for identifying
+neuron activations that are decisive in a model's factual predictions. This reveals a distinct set of steps in middle-layer feed-forward
+modules that mediate factual predictions while processing subject tokens. To test our hypothesis that these computations
+correspond to factual association recall, we modify feed-forward weights to update specific factual associations using Rank-One
+Model Editing (ROME). We find that ROME is effective on a standard zero-shot relation extraction (zsRE) model-editing task,
+comparable to existing methods. To perform a more sensitive evaluation, we also evaluate ROME on a new dataset of
+counterfactual assertions, on which it simultaneously maintains both specificity and generalization, whereas other methods
+sacrifice one or another. Our results confirm an important role for mid-layer feed-forward modules in storing factual associations
+and suggest that direct manipulation of computational mechanisms may be a feasible approach for model editing. The code,
+dataset, visualizations, and an interactive demo notebook are available at https://rome.baulab.info/"
+
+(Chen et al._1, 2025)
+UniEdit: A Unified Knowledge Editing Benchmark for Large Language Models
+"To address the issues of generality and locality, we design an Neighborhood Multi-hop Chain Sampling (NMCS) algorithm to sample
+subgraphs based on a given knowledge piece to entail comprehensive ripple effects to evaluate."
+
+(Ma et al., 2024)
+Neighboring Perturbations of Knowledge Editing on Large Language Models
+"Despite their exceptional capabilities, large language models (LLMs) are prone to generating unintended text due to false or
+outdated knowledge. Given the resource-intensive nature of retraining LLMs, there has been a notable increase in the development
+of knowledge editing. However, current approaches and evaluations rarely explore the perturbation of editing on neighboring
+knowledge. This paper studies whether updating new knowledge to LLMs perturbs the neighboring knowledge encapsulated within
+them. Specifically, we seek to figure out whether appending a new answer into an answer list to a factual question leads to
+catastrophic forgetting of original correct answers in this list, as well as unintentional inclusion of incorrect answers. A metric of
+additivity is introduced and a benchmark dubbed as Perturbation Evaluation of Appending Knowledge (PEAK) is constructed to
+evaluate the degree of perturbation to neighboring knowledge when appending new knowledge. Besides, a plug-and-play framework
+termed Appending via Preservation and Prevention (APP) is proposed to mitigate the neighboring perturbation by maintaining the
+integrity of the answer list. Experiments demonstrate the effectiveness of APP coupling with four editing methods on four LLMs.
+The code and data are available at https://github.com/mjy1111/PEAK."
+
+(Duan et al., 2025)
+Related Knowledge Perturbation Matters: Rethinking Multiple Pieces of Knowledge Editing in Same-Subject
+"Knowledge editing has become a promising approach for efficiently and precisely updating knowledge embedded in large language
+models (LLMs). In this work, we focus on Same-Subject Editing, which involves modifying multiple attributes of a single entity to
+ensure comprehensive and consistent updates to entity-centric knowledge. Through preliminary observation, we identify a
+significant challenge: Current state-of-the-art editing methods struggle when tasked with editing multiple related knowledge pieces
+for the same subject. To address the lack of relevant editing data for identical subjects in traditional benchmarks, we introduce the $
+\text{S}^2\text{RKE}$(Same-Subject Related Knowledge Editing) benchmark. Our extensive experiments reveal that only mainstream
+locate-then-edit methods, such as ROME and MEMIT, exhibit"related knowledge perturbation,"where subsequent edits interfere with
+earlier ones. Further analysis reveals that these methods over-rely on subject information, neglecting other critical factors, resulting
+in reduced editing effectiveness."
+
+(Dong et al._1, 2025)
+MEMIT-Merge: Addressing MEMIT's Key-Value Conflicts in Same-Subject Batch Editing for LLMs
+"As large language models continue to scale up, knowledge editing techniques that modify models'internal knowledge without full
+retraining have gained significant attention. MEMIT, a prominent batch editing algorithm, stands out for its capability to perform
+mass knowledge modifications. However, we uncover that MEMIT's editing efficacy significantly deteriorates when processing
+batches containing multiple edits sharing the same subject. Our analysis reveals this stems from MEMIT's key value modeling
+framework: identical keys (derived from the shared subject) are forced to represent different values (corresponding to different
+knowledge), resulting in update conflicts during editing. Addressing this issue, we propose MEMIT-Merge, an enhanced approach
+that merges value computation processes for facts sharing the same subject, effectively resolving the performance degradation in
+samesubject batch editing scenarios. Experimental results demonstrate that when MEMIT's edit success rate drops to around 50%
+at larger batch sizes, MEMIT-Merge maintains a success rate exceeding 90%, showcasing remarkable robustness to subject entity
+collisions. The code is available at https://github.com/NUSTM/ MEMIT-Merge."
+
+(Li et al., 2023)
+Unveiling the Pitfalls of Knowledge Editing for Large Language Models
+"As the cost associated with fine-tuning Large Language Models (LLMs) continues to rise, recent research efforts have pivoted
+towards developing methodologies to edit implicit knowledge embedded within LLMs. Yet, there's still a dark cloud lingering
+overhead -- will knowledge editing trigger butterfly effect? since it is still unclear whether knowledge editing might introduce side
+effects that pose potential risks or not. This paper pioneers the investigation into the potential pitfalls associated with knowledge
+editing for LLMs. To achieve this, we introduce new benchmark datasets and propose innovative evaluation metrics. Our results
+underline two pivotal concerns: (1) Knowledge Conflict: Editing groups of facts that logically clash can magnify the inherent
+inconsistencies in LLMs-a facet neglected by previous methods. (2) Knowledge Distortion: Altering parameters with the aim of
+editing factual knowledge can irrevocably warp the innate knowledge structure of LLMs. Experimental results vividly demonstrate
+that knowledge editing might inadvertently cast a shadow of unintended consequences on LLMs, which warrant attention and
+efforts for future works. Code and data are available at https://github.com/zjunlp/PitfallsKnowledgeEditing."
+
+Knowledge editing and RAG as complementary updating approaches
+Recent papers increasingly treat model editing and RAG as tools for different parts of the updating problem, not as strict
+alternatives. Editing can bake in stable changes, while RAG or external memory can help the model actually use those
+changes in harder multi-hop reasoning and give safer update workflows. (2 sources)
+
+A useful way to frame the relationship is: parametric editing changes what the model stores internally, while
+RAG changes what the model can access at inference time. On this view, they solve different failure modes.
+Editing is appealing when a fact should become part of the model’s default behavior, but RAG helps when the
+model must retrieve the right updated evidence during a longer reasoning chain. Liu et al. make this
+complementarity very clear by studying RAG-based knowledge editing for multi-hop QA. They argue that such
+methods can edit simple knowledge well, but often fail on harder questions because of edit skipping: the
+model does not actually use the relevant edited fact during inference, partly because there is a mismatch
+between how the model breaks down a problem and how facts are stored in memory. That diagnosis treats
+retrieval and editing as interacting design choices rather than rival camps. (Liu et al._1, 2025)
+This also helps explain why many recent systems are becoming hybrid. If pure parametric editors often stop
+at local recall, and pure retrieval can miss the right edited memory at reasoning time, then combining them is
+natural: use editing for durable updates, and use retrieval or external memory to surface the right supporting
+
+facts when multi-hop chaining is needed. Liu et al.’s analysis implies exactly this kind of split, since the main
+bottleneck is not only whether the new fact exists somewhere, but whether inference actually routes through
+it. (Liu et al._1, 2025)
+A broader systems perspective appears in Zhang et al.’s governance framework, which explicitly places
+DAPT/TAPT, PEFT, model editing methods such as ROME/MEND/MEMIT/SERAC, and RAG in one
+coordinated loop for updating and forgetting. Their point is not that one method should replace the others,
+but that real update pipelines need admission rules, rollout, monitoring, rollback, and audits across methods.
+In that framing, RAG and editing are operational complements: one can use retrieval-based updates for fast
+and auditable changes, and parametric edits when deeper integration is worth the cost and risk. (Zhang et al.,
+2025)
+That same paper is also useful because it links complementarity to evaluation. Zhang et al. note that rippleeffect benchmarks compare parametric editors with a contextual editing baseline that changes answers
+through prompts rather than parameter updates, alongside methods like MEND, ROME, and MEMIT. This
+matters for the survey because it shows the field already evaluates editing methods and retrieval/context
+methods in the same benchmark space, especially on logical generalization and compositionality. So the
+practical question is less “editing or RAG?” and more “which mix best supports direct correction, dependent
+fact updates, and compositional reasoning?” (Zhang et al., 2025)
+Taken together, these papers suggest a fairly consistent synthesis. Knowledge editing is best seen as the
+mechanism for changing the model’s internal default knowledge state; RAG is best seen as a mechanism for
+selecting and grounding the right updated evidence at use time. They are complementary because multi-hop
+update quality depends on both: the fact has to be updated somewhere, and the model has to actually bring
+that update into the reasoning chain instead of skipping it or relying on stale parametric knowledge. (Liu et
+al._1, 2025) (Zhang et al., 2025)
+
+Evidence
+(Liu et al._1, 2025)
+Avoiding Knowledge Edit Skipping in Multi-hop Question Answering with Guided Decomposition
+"We find that although existing retrieval-augmented generation (RAG)-based KE methods excel at editing simple knowledge, they
+struggle with KE in multi-hop question answering due to the issue of"edit skipping", which refers to skipping the relevant edited fact
+in inference. In addition to the diversity of natural language expressions of knowledge, edit skipping also arises from the mismatch
+between the granularity of LLMs in problem-solving and the facts in the edited memory."
+
+(Zhang et al., 2025)
+Memory in Large Language Models: Mechanisms, Evaluation and Evolution
+"For updating and forgetting, we present DMM Gov: coordinating DAPT/TAPT, PEFT, model editing (ROME, MEND, MEMIT, SERAC),
+and RAG to form an auditable loop covering admission thresholds, rollout, monitoring, rollback, and change audits, with specs for
+timeliness, conflict handling, and long-horizon consistency"
+". The paper Evaluating the Ripple Effects of Knowledge Editing in Language Models points out that existing evaluations only focus
+on "whether the target fact is correctly edited" and ignore ripple effects-i.e., the impact of editing one fact on associated facts (e.g.,
+after editing "Paris is the capital of France", can the model synchronously update associated knowledge such as "The capital of
+France is Paris" and "Paris belongs to France"?). To address this gap, the authors proposed the RIPPLEEDITS evaluation framework,
+filling the void in "editing consistency" evaluation [129]"
+". -Logical generalization: Whether the model can correctly infer associated facts after editing (e.g., after editing "A is the capital of
+B", can it correctly answer "What is the capital of B"?); -Compositionality I/II: Whether the model can handle combinations of multiple
+facts (e.g., after editing "A is in B" and "B is in C", can it infer "A is in C"?);"
+"3. Method comparison: Three parametric editing methods (MEND, ROME, MEMIT) and one contextual editing baseline (which
+modifies facts through contextual prompts without parameter updates) were evaluated."
+
+Open challenges and research directions
+
+The main open problem is not just making an edit stick, but making it reach the right dependent facts without spilling into
+the wrong ones. A second big direction is hybrid design: use editing, retrieval, and memory together so the model can both
+store updates and actually use them during multi-hop reasoning. (2 sources)
+
+A clear open challenge is scope modeling. The field now has good evidence that many editors can patch
+direct recall, but still do not capture the full set of facts that should change after an edit. Zhao et al. describe
+this as the ripple-effect problem: once one fact changes, a chain of related facts may also need to change,
+and current parameter-based editors often fail on those multi-hop consequences even when they recall the
+edited fact itself. They also note a second limit for parameter-free memory approaches: related facts can still
+fall outside the maintained memory scope. (Zhao et al., 2024)
+A related research direction is to move from single-fact editing to dependency-aware editing. If dependent
+facts are not all stored in one local place, then a method may need an explicit model of what other facts are
+affected, rather than assuming that a small local patch will naturally propagate. This is also why stronger
+editors increasingly need to reason about edit scope, not only edit location. Mitchell et al. argue that existing
+editors often lack enough expressiveness to model an edit’s intended scope, especially on test inputs only
+loosely related to the edit, and they motivate semi-parametric designs that reason over stored edits instead
+of relying only on a small parametric change. (Mitchell et al., 2022)
+Another open issue is scaling many edits over time. Zhao et al. connect parameter editing to risks such as
+catastrophic forgetting, which becomes more serious when many updates accumulate. Mitchell et al.
+similarly report that many editors can fail after many edits, suggesting that long-run update pipelines need
+better memory management, conflict handling, and rollback support rather than one-shot edit success alone.
+(Zhao et al., 2024) (Mitchell et al., 2022)
+For the user’s locality-versus-multi-hop question, a key research need is better mechanistic accounts of
+where propagation breaks. We still need clearer ways to tell whether failure comes from a local
+representation that is too narrow, from retrieval not surfacing the edited fact, or from reasoning not using the
+retrieved update. That matters because the fix may differ: a parametric rewrite, a memory lookup, or a
+retrieval-and-reasoning scaffold may each solve different parts of the same problem. Zhao et al.’s contrast
+between parameter-based limits and memory-scope limits points directly to this diagnosis problem. (Zhao et
+al., 2024)
+Finally, recent work suggests that editing and RAG should be designed together, not treated as competing
+answers. A durable update may need some parametric integration, but multi-hop use may still require
+retrieval or explicit memory so the model actually brings the new fact into the reasoning chain. SERAC is
+notable here because it treats editing as semi-parametric and retrieval-augmented from the start, storing
+edits in explicit memory and learning when to use them. That kind of hybrid design looks like an important
+direction for future systems that need both stable updates and reliable propagation to downstream
+consequences. (Mitchell et al., 2022)
+
+Evidence
+(Zhao et al., 2024)
+RIPPLECOT: Amplifying Ripple Effect of Knowledge Editing in Language Models via Chain-of-Thought In-Context Learning
+"When one fact is edited in a model, the ripple effect refers to the chain of related facts that should be updated following the edited
+one, which is evaluated by the multi-hop questions (Zhong et al., 2023) linked to a chain of facts. Figure 1 illustrates an example of
+the multihop question: if we modify the author of Misery to Richard Dawkins, the related multi-hop facts, such as the citizenship of
+the author of Misery, should also be updated"
+".Conventional parameter-based editing methods, such as fine-tuning (Zhu et al., 2020) or matrix computation (Meng et al., 2022b),
+update the model's parameters to recall specific edited facts effectively but risk catastrophic forgetting (Zheng et al., 2023) and
+were proven failure on the ripple effect (Cohen et al., 2023). The edits are limited to the facts within the training data and struggle
+with related but untrained facts. Recent parameter-free editing approaches, like memory-based editing (Mitchell et al., 2022), also
+face challenges when related facts fall outside the maintained memory's scope."
+
+(Mitchell et al., 2022)
+Memory-Based Model Editing at Scale
+"Even the largest neural networks make errors, and once-correct predictions can become invalid as the world changes. Model
+editors make local updates to the behavior of base (pre-trained) models to inject updated knowledge or correct undesirable
+behaviors. Existing model editors have shown promise, but also suffer from insufficient expressiveness: they struggle to accurately
+model an edit's intended scope (examples affected by the edit), leading to inaccurate predictions for test inputs loosely related to
+the edit, and they often fail altogether after many edits. As a higher-capacity alternative, we propose Semi-Parametric Editing with a
+Retrieval-Augmented Counterfactual Model (SERAC), which stores edits in an explicit memory and learns to reason over them to
+modulate the base model's predictions as needed. To enable more rigorous evaluation of model editors, we introduce three
+challenging language model editing problems based on question answering, fact-checking, and dialogue generation. We find that
+only SERAC achieves high performance on all three problems, consistently outperforming existing approaches to model editing by a
+significant margin. Code, data, and additional project information will be made available at https://sites.google.com/view/seracediting."
+
+

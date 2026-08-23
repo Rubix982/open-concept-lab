@@ -17,12 +17,12 @@
         },
         "case_id": 0,
         "requested_rewrite": {
-            "prompt": "The Eiffel Tower is located in the city of",
-            "target_new": "Rome",
+            "prompt": "The name of the country of citizenship of Napoleon is",
+            "target_new": "Kuwait City",
             "ground_truth": null,
             "portability": {},
             "locality": {},
-            "subject": "Eiffel Tower"
+            "subject": "Napoleon"
         },
         "post": {
             "rewrite_acc": [

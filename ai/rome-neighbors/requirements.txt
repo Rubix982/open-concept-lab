@@ -4,3 +4,4 @@ torch
 numpy
 matplotlib
 scikit-learn
+python-pptx   # presentation/build_deck.py → DECK_trajectory.pptx

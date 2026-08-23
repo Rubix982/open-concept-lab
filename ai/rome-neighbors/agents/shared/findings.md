@@ -360,3 +360,186 @@ incoherent-broken); then per-case study of WHY country breaks but language survi
 
 Confidence: high (edits verified efficacy=YES; patterns clear even at n=5 edits).
 gpt2-small caveat; scale with a bigger model on GPU.
+
+## [T-016] Prior-art / scoop check (Asta): KEEP is not greenfield — predictor partly scooped
+
+_Date: 2026-08-23 · source: Asta literature search, PDF+txt in experiments/edit_propagation/_
+
+Ran the WHY-gate prior-art lens (lens 2) via Asta on the KEEP framing
+(predict→edit→evaluate→repair→certify wrapper for ripple/portability). Doc is
+legitimate: real papers, quoted abstracts. Per-box honest status:
+
+- **Predict (box 1) — PARTIALLY SCOOPED.** GradSim (Qin et al. 2024, "Why Does New
+  Knowledge Create Messy Ripple Effects") predicts ripple success from gradient
+  cosine-sim between edited fact & related facts, validated across models/editors/
+  metrics. We cannot claim "first predictor." Whitespace to beat it: per-neighbour
+  (vs aggregate/correlational), representation-based & cheaper (no backward pass),
+  wired into repair (GradSim is diagnostic only). Our cosine/bilinear/Jeong-STEAM
+  predictors must now ALSO beat GradSim as incumbent baseline. THIS IS THE MAIN EXPOSURE.
+- **Repair (box 4) — OPEN but crowded.** No detect→targeted-repair→re-test loop, but
+  many propagation-improvers exist: KEDAS, RippleCOT, Bidirectional-Edit, ChainEdit,
+  CaKE, MeLLo. "First repair" is FALSE; "first reactive/targeted/detection-driven
+  repair" is defensible — must benchmark against these.
+- **Certification — cleanest open gap.** No editor-agnostic layer certifies a bounded
+  neighbourhood of consequences. Field explicitly names it missing.
+- **Benchmarks/metrics to adopt** (comparability): RippleEdits, MQuAKE-CF-3k/2002/
+  HARD, CRAFT, KEBench, KnowGIC, BidirectionalCounterfact; STEAM Edit Score, Jeong
+  entity-level errors (Persistence/Mismatch/Distortion), IFR (leakage).
+
+**Positioning shift (applied to design_system.md §0/§1/§2):** lead with the SYSTEM +
+CERTIFICATION (the whitespace, and the infra-engineer edge); demote predictor to
+"cheaper/per-neighbour vs GradSim"; reframe repair as reactive/targeted.
+
+**Honesty flag:** Asta's "full stack is unclaimed" is tagged (Model-Generated) — its
+own synthesis, NOT a cited claim. Component facts are citation-backed; the "therefore
+first" inference is not. Do NOT write "first" in a title until independently confirmed.
+Question for Arnab: is the predict+repair+certify wrapper genuinely unclaimed?
+
+Scoop risk: MODERATE-HIGH overall (Zhejiang/Zhang-Yao, Tel Aviv/Geva, Princeton-
+Stanford/Zhong-Chen, Heng Ji, Tang/Baser/Jeong 2025). LOW on certification specifically.
+
+Confidence: high on component prior art (quoted abstracts); medium on the
+"full-stack unclaimed" conclusion (Asta synthesis, needs human confirm).
+
+## [T-017] The category correction: editing and RAG are different functions, not competitors
+
+_Date: 2026-08-24 · settled framing (design_system.md §0.5)_
+
+**The error we were making:** treating editing and RAG as competitors on one scale,
+and reading editing's weak multi-hop/ripple numbers as a defeat. They are not
+competitors — different functions. Grading editing on multi-hop = grading it on RAG's
+exam. This also reconciles the MEMIT figure that opened this thread: MEMIT holding ~90
+at 10K edits is editing SUCCEEDING at its job (belief); the multi-hop collapse is
+editing being asked to do RAG's job (composition).
+
+**Axiom (settled):** Editing changes what the model BELIEVES (persistent, always-on,
+on-device, removable — reasons *from*). RAG supplies what the model REASONS OVER at
+inference (fresh, retrievable, citable, reversible). Different functions → different
+metrics. Honor both; engineer the seam, not the winner.
+
+**Belief vs composition:** belief = direct assertion (editing does well, MEMIT ~90);
+composition = use in a reasoning chain / multi-hop (RAG does better — fact-in-context
+reasoned over natively; why in-context beats parametric on RippleEdits, MeLLo on MQuAKE).
+
+**Boundary (avoids "editing = patch table" collapse):** editing owns belief + its
+REPRESENTATIONALLY-LOCAL neighbourhood (fact, paraphrases, tightly-entailed facts
+sharing the representation); RAG owns composition needing CHAINING to other facts.
+Sharp test: an edit must carry to what SHARES its representation, not to what requires
+reasoning to reach. Where the line falls = empirical = T-006 (re-centred).
+
+**Why editing not just RAG (Q1 deepened):** RAG structurally CANNOT (1) remove
+weight-knowledge (unlearning: privacy/copyright/safety), (2) make an update pervasive/
+always-on, (3) work with no retrieval infra (on-device/frozen/latency). = editing's
+irreducible territory. = the Manifesto bet (persistent layer, not re-feed layer).
+
+**Honesty flag (Manifesto Q2):** the principle (both matter) is TRUE but NOT novel —
+surveys gesture at complementarity. Clears Q1 (true?) not Q2 (one step further?). The
+step-further is what we BUILD AT THE SEAM, not the stance.
+
+**Open fork (one real decision left):**
+- Fork A — editing-side reliability, teeth = removal/unlearning (RAG can't do it).
+- Fork B — the edit/RAG seam: route updates to the right store + certify the
+  parametric belief and retrieval store don't contradict. New, infra-shaped, honors
+  both. CURRENT LEAN: B.
+Gate: Asta scoop-check on B (edit/RAG routing/consistency layer) and on removal-
+reliability BEFORE picking. See design_system.md "Verification queued".
+
+**Consequence for the doc:** §0/§1 (ripple-repair framing) PARTLY SUPERSEDED; rewrite
+after the fork is picked. Retired: "make editing pass the multi-hop exam."
+
+Confidence: high on the category correction (settled in discussion, reconciles all
+evidence incl. MEMIT figure); the fork choice is pending prior-art verification.
+
+## [T-018] Fork resolved → B (edit/RAG seam), but claim repositioned (Asta round-2, verified)
+
+_Date: 2026-08-24 · source: Asta round-2, "Knowledge Edit Propagation, Locality,
+Multi-Hop Chaining, and Complementary RAG.{pdf,txt}" — VERIFIED against source doc_
+
+Asta's headline: B (edit/RAG seam) UNCLAIMED/LOW scoop, "claim first to route+certify";
+A (removal-reliability) PARTIALLY-CLAIMED/MODERATE-HIGH. Recommends B.
+
+**Verification against the source (discipline: don't trust the summary):**
+- CONFIRMED: complementary editing+RAG framing is citation-backed (Liu et al. 2025
+  "edit skipping"; field treats them as different jobs). §0.5 axiom well-supported.
+- CONFIRMED: parametric↔retrieval consistency-certification appears genuinely unbuilt.
+- **CORRECTION (important): Asta UNDERSOLD the closest competitor.** Zhang et al. 2025
+  "Memory in LLMs" proposes **DMM Gov** — a NAMED governance framework that already
+  SPECIFIES B: "coordinating DAPT/PEFT/editing (ROME/MEND/MEMIT/SERAC)/RAG into an
+  auditable loop covering admission thresholds, rollout, monitoring, rollback, audits,
+  with specs for conflict handling and long-horizon consistency." So "first to
+  route/certify" is FALSE — the architecture is published as a spec. Genuine gap is
+  narrower: nobody has BUILT + EMPIRICALLY CERTIFIED the parametric↔retrieval
+  consistency mechanism DMM Gov only describes.
+- **CORRECTION: Direction-A verdict under-evidenced by THIS doc** — TOFU/WMDP/SalUn/
+  MUSE/"Harry Potter" (the unlearning citations Asta leaned on) are NOT in the
+  retrieved document; pulled from general knowledge. A's scoop verdict unverified here.
+- CORRECTION: scoop risk is NOT "LOW" — the doc's Open-Challenges section explicitly
+  names hybrid edit/RAG as THE future direction ⇒ active frontier, move with speed.
+
+**Decision: Fork B, with repositioned claim.**
+NOT "first hybrid memory router" (Zhang DMM Gov specs it). INSTEAD:
+> "First to BUILD and EMPIRICALLY CERTIFY the parametric↔retrieval consistency
+> mechanism that DMM Gov specifies but leaves unimplemented."
+Manifesto-Q2 clean: one verifiable step past a named prior framework. Anchor on the
+concrete buildable piece (the consistency-certifier: detect when edited parametric
+belief contradicts the retrieval store), not the grand router.
+
+**Next:** rewrite design §0/§1 around B + the repositioned claim; re-pass lenses
+3 (claim), 4 (completeness), 9 (deliverable = the consistency-certification figure).
+
+Confidence: high on the correction (verified against source doc, DMM Gov quote is
+direct); B chosen over A partly because A's scoop verdict is unverified by this search.
+
+## [E-014] RESULT: scaled ripple study on RANDOM RippleEdits — landmarks were optimistic
+
+_Date: 2026-08-24 · gpt2-small · ROME(mom2) · popular.json random sample (seed 1538)_
+
+Anti-cherry-pick: replaced the 5 hand-picked landmarks with 100 RANDOM RippleEdits
+edits. 97% efficacy (subject = last " of "-chunk heuristic + efficacy filter → 97/100
+flipped; heuristic validated by efficacy). 90 flipped edits produced 397 neighbour rows.
+
+4-way distribution (updated/stale/broken/fine):
+  paraphrase  n=178  updated 57%  stale 23%  broken 20%
+  1hop        n= 46  updated  4%  stale 61%  broken 35%
+  2hop        n=170  updated  8%  stale 11%  broken 81%
+  locality    n=  3  broken 100%   ← UNMEASURABLE (see caveat)
+
+**KEY (the honesty correction):** the landmark set [T-015] showed paraphrase 5/5=100%
+updated; at random scale it is **57%**. Cherry-picking confirmed; the clean story does
+NOT fully generalize. Also REVISES a landmark finding: on 5 landmarks 1hop *broke*
+(4/5); at scale 1hop is predominantly **stale** (61%) — the edit doesn't reach it.
+2hop overwhelmingly breaks (81%).
+
+**Caveats (must state):**
+1. Locality UNMEASURABLE at this scale (n=3): the competence filter correctly drops
+   locality neighbours the model can't answer pre-edit, and gpt2-small knows almost
+   none → cannot report specificity here. Needs a capable model / facts-model-knows.
+2. gpt2-small weak → absolute rates capacity-bound; the SHAPE transfers, not the %.
+3. "broken" is generate-substring based; subject heuristic imperfect (but 97% efficacy).
+
+Artifacts: scale_study.py, aggregate_scale.py, results/scale_study.json (397),
+scale_distribution.png (the anti-cherry-pick figure), scale_summary.txt, scale_run.log.
+Next: E-015 NDIF inference data (predictor/geometry on GPT-J); bigger model for locality.
+
+Confidence: high (n=397, random sample); locality inconclusive; rates gpt2-small-bound.
+
+## [E-014 addendum] Over-propagation rises with hop; run is deterministic
+
+_Date: 2026-08-24 · rigor pass on the 397-row scale study_
+
+**Mechanism (quantified, ±95% Wilson CI).** Of BROKEN neighbours, the fraction that
+are TARGET-BLEED (the edit's new value injected into the neighbour's slot) rises
+monotonically with hop distance:
+  paraphrase  0% [0,10]   ·  1hop 25% [10,49]  ·  2hop 58% [50,66]
+→ at 2 hops the MAJORITY of breakage is the edited value spilling, not random noise.
+This is the concrete "over-propagation" finding at scale (was anecdotal in [T-015]).
+
+**Reproducibility verified.** N=6 smoke and the first 6 edits of the N=100 run give
+IDENTICAL rows/outcomes (23 rows: para u4/s3/b4, 1hop s3/b1, 2hop b8). Seeded sampling
++ greedy decode + cached ROME templates/stats → deterministic.
+
+**Shareable package (results/):** scale_distribution.png (figure), scale_summary.txt
+(rates ± CI + bleed), scale_examples.txt (concrete cases), scale_study.json (397 rows),
+scale_run.log, README.md (full repro: env, data, seed, commands, caveats).
+
+Confidence: high. Locality still needs a capable model (n=3 here).

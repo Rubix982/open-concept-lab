@@ -1,0 +1,21 @@
+scale ripple run · gpt2-small · ROME(mom2) · RANDOM RippleEdits(popular) · seed=1538
+flipped_edits=90  neighbour_rows=397  (rates ± 95% Wilson CI)
+
+  paraphrase (n=178):
+      updated  101   57%  [49%, 64%]
+      stale     41   23%  [17%, 30%]
+      broken    36   20%  [15%, 27%]
+      └ of the broken, 0/36 = 0% are TARGET-BLEED (edit's new value injected) [0%, 10%]
+  1hop (n=46):
+      updated    2    4%  [1%, 15%]
+      stale     28   61%  [46%, 74%]
+      broken    16   35%  [23%, 49%]
+      └ of the broken, 4/16 = 25% are TARGET-BLEED (edit's new value injected) [10%, 49%]
+  2hop (n=170):
+      updated   14    8%  [5%, 13%]
+      stale     19   11%  [7%, 17%]
+      broken   137   81%  [74%, 86%]
+      └ of the broken, 80/137 = 58% are TARGET-BLEED (edit's new value injected) [50%, 66%]
+  locality (n=3):
+      broken     3  100%  [44%, 100%]
+      └ of the broken, 2/3 = 67% are TARGET-BLEED (edit's new value injected) [21%, 94%]

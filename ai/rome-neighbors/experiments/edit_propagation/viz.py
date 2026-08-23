@@ -19,8 +19,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-RES = HERE.parent.parent / "results"
-records = json.loads((RES / "rome_study.json").read_text())
+RES = HERE.parent.parent / "results" / "final"
+records = json.loads((RES / "data" / "rome_study.json").read_text())
 
 OUTCOME_COLOR = {"updated": "#6fcf97", "fine": "#4fc3f7",
                  "stale": "#ffb74d", "broken": "#e57373"}
@@ -74,7 +74,7 @@ ax2.grid(color="#1e2530")
 
 fig.suptitle("ROME edit: effect on related neighbours (stale/broken = what to study)",
              color="#e8dcc8", fontsize=13)
-out = RES / "rome_blast_radius.png"
+out = RES / "figures" / "rome_blast_radius.png"
 fig.savefig(out, dpi=150, bbox_inches="tight", facecolor="#0a0c0f")
 print(f"Saved → {out}")
 

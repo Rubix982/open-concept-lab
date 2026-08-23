@@ -1,0 +1,1946 @@
+[
+{
+"edit": 1,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992907643318176
+},
+{
+"edit": 1,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975846409797668
+},
+{
+"edit": 1,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9972575902938843
+},
+{
+"edit": 1,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9972575902938843
+},
+{
+"edit": 1,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.998052716255188
+},
+{
+"edit": 2,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.992438018321991
+},
+{
+"edit": 2,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986400604248047
+},
+{
+"edit": 2,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987760782241821
+},
+{
+"edit": 2,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986478686332703
+},
+{
+"edit": 2,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9920058250427246
+},
+{
+"edit": 3,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9993818402290344
+},
+{
+"edit": 3,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984198808670044
+},
+{
+"edit": 3,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9988008141517639
+},
+{
+"edit": 3,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.999170184135437
+},
+{
+"edit": 3,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984826445579529
+},
+{
+"edit": 3,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9952951669692993
+},
+{
+"edit": 3,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9946934580802917
+},
+{
+"edit": 3,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9889011383056641
+},
+{
+"edit": 4,
+"type": "1hop",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9993651509284973
+},
+{
+"edit": 4,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9955949783325195
+},
+{
+"edit": 4,
+"type": "1hop",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.996123194694519
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980170726776123
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978219866752625
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978219866752625
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985049962997437
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985049962997437
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9971095323562622
+},
+{
+"edit": 4,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.997687578201294
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9972578287124634
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982506036758423
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987412691116333
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9966902136802673
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9970134496688843
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9929468035697937
+},
+{
+"edit": 5,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.998267412185669
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983725547790527
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980278015136719
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984233975410461
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985426664352417
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986416697502136
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996541738510132
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9995537996292114
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975747466087341
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981708526611328
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984226226806641
+},
+{
+"edit": 5,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9965522289276123
+},
+{
+"edit": 6,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983000755310059
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.998043417930603
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985661506652832
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.998664379119873
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996780753135681
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975472688674927
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981776475906372
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9974657297134399
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9984840750694275
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982483386993408
+},
+{
+"edit": 6,
+"type": "locality",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9965424537658691
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996030926704407
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980790019035339
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985640645027161
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9986773729324341
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9965541958808899
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975572824478149
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9990242719650269
+},
+{
+"edit": 7,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980701804161072
+},
+{
+"edit": 7,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9918121099472046
+},
+{
+"edit": 8,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981428384780884
+},
+{
+"edit": 8,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9982527494430542
+},
+{
+"edit": 8,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9971802234649658
+},
+{
+"edit": 8,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9995787143707275
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992406368255615
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9991813898086548
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977098703384399
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980794787406921
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981278777122498
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982115626335144
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9971631765365601
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984234571456909
+},
+{
+"edit": 8,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9976686835289001
+},
+{
+"edit": 8,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9934124946594238
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9963147044181824
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9974203109741211
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983897805213928
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9960302710533142
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982544779777527
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9970372319221497
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987387657165527
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9995698928833008
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9962878227233887
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9974014759063721
+},
+{
+"edit": 9,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9972472786903381
+},
+{
+"edit": 9,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9974504709243774
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9991471767425537
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984768033027649
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984921216964722
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987243413925171
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987243413925171
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9967858195304871
+},
+{
+"edit": 10,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981704950332642
+},
+{
+"edit": 10,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9993911981582642
+},
+{
+"edit": 10,
+"type": "locality",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9996039271354675
+},
+{
+"edit": 10,
+"type": "control",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9914578795433044
+},
+{
+"edit": 11,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9946669340133667
+},
+{
+"edit": 11,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9959261417388916
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9989304542541504
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9971684217453003
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982506632804871
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.998437225818634
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9919294118881226
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9952682852745056
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9953339695930481
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9944351315498352
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9888206124305725
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.999800980091095
+},
+{
+"edit": 11,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.998305082321167
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986243844032288
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986244440078735
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981926083564758
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987435936927795
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9962241053581238
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975458383560181
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.99859619140625
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986758232116699
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9955363869667053
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981541037559509
+},
+{
+"edit": 11,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985178112983704
+},
+{
+"edit": 11,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9970628619194031
+},
+{
+"edit": 12,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9995630979537964
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.998856782913208
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9978163838386536
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980947971343994
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980484247207642
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980448484420776
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9989036917686462
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982263445854187
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9973324537277222
+},
+{
+"edit": 12,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980725049972534
+},
+{
+"edit": 12,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9925188422203064
+},
+{
+"edit": 13,
+"type": "1hop",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9988502264022827
+},
+{
+"edit": 13,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983811378479004
+},
+{
+"edit": 13,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9949336051940918
+},
+{
+"edit": 13,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9949860572814941
+},
+{
+"edit": 13,
+"type": "1hop",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.995760440826416
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9991433620452881
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9991686344146729
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992802739143372
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992080926895142
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977012872695923
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.998102068901062
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981561899185181
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982609152793884
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9971539974212646
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985732436180115
+},
+{
+"edit": 13,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9976854920387268
+},
+{
+"edit": 13,
+"type": "control",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9874986410140991
+},
+{
+"edit": 14,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9988207221031189
+},
+{
+"edit": 14,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983786344528198
+},
+{
+"edit": 14,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.999753475189209
+},
+{
+"edit": 14,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9946981072425842
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985395669937134
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.997897207736969
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982471466064453
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981259107589722
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9965143203735352
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983147978782654
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9975311160087585
+},
+{
+"edit": 14,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9987787008285522
+},
+{
+"edit": 14,
+"type": "control",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9930107593536377
+},
+{
+"edit": 15,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9993542432785034
+},
+{
+"edit": 15,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981086254119873
+},
+{
+"edit": 15,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975878596305847
+},
+{
+"edit": 15,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9964908957481384
+},
+{
+"edit": 15,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.999228298664093
+},
+{
+"edit": 16,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981512427330017
+},
+{
+"edit": 17,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9995101094245911
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9981107115745544
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977276921272278
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977642297744751
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.998085618019104
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978893995285034
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9969086050987244
+},
+{
+"edit": 17,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9982679486274719
+},
+{
+"edit": 18,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9937916994094849
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996923804283142
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992982149124146
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996145367622375
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9995357394218445
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9992456436157227
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9990373849868774
+},
+{
+"edit": 18,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9993587732315063
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984720945358276
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984191060066223
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985043406486511
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986193776130676
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986684322357178
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9975301623344421
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.997442901134491
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9984858632087708
+},
+{
+"edit": 18,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.9982041120529175
+},
+{
+"edit": 19,
+"type": "1hop",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9991689324378967
+},
+{
+"edit": 19,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9988721609115601
+},
+{
+"edit": 19,
+"type": "1hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9970683455467224
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9990153908729553
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9967225790023804
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978405833244324
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978405833244324
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986142516136169
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983271956443787
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983372688293457
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985813498497009
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985813498497009
+},
+{
+"edit": 19,
+"type": "2hop",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985813498497009
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.995263934135437
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.996318519115448
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9966729879379272
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9996670484542847
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9973886609077454
+},
+{
+"edit": 19,
+"type": "paraphrase",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9993102550506592
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9998881816864014
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996244311332703
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9996191263198853
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977250695228577
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9983862042427063
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9985808730125427
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9988645911216736
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986686706542969
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9971492886543274
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9985677599906921
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "stale",
+"subject_shared": 0,
+"predictor": 0.99897301197052
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9970531463623047
+},
+{
+"edit": 19,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9979089498519897
+},
+{
+"edit": 20,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.9996369481086731
+},
+{
+"edit": 20,
+"type": "paraphrase",
+"propagated": 1,
+"outcome": "updated",
+"subject_shared": 0,
+"predictor": 0.999248206615448
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978197813034058
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9977352619171143
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.997929573059082
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9980231523513794
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9986340999603271
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9959302544593811
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9961732029914856
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.999167263507843
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9978311657905579
+},
+{
+"edit": 20,
+"type": "locality",
+"propagated": 0,
+"outcome": "broken",
+"subject_shared": 0,
+"predictor": 0.9952447414398193
+}
+]

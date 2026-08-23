@@ -446,3 +446,45 @@ with better model/predictors (bilinear, edit-difference vector) next.
 
 **Artifacts:** tb_rows.json, analyze_tb.py, results, finding E-013.
 **Closed:** —
+
+### E-014 · Scale the ripple study to a random RippleEdits sample (anti-cherry-pick)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-08-24
+**Updated:** 2026-08-24
+
+**Description:**
+Current 3-way data is n=5 HAND-PICKED landmarks (Eiffel/Louvre/…) → cherry-pick-
+vulnerable. Generate the same per-neighbour 4-way outcome (updated/stale/broken/fine)
+across a RANDOM sample of RippleEdits `popular.json` (885 entries) so results show
+where ROME editing GENERALIZES and where it FAILS, as a distribution — not anecdotes.
+
+**Design (lenses, brief):**
+- Significance: a random-sample distribution answers "are you cherry-picking?" directly.
+- Method: reuse rome_study.py's proven correctness — rome_gpt2_mom2.yaml (covariance
+  ON; stats cached at data/stats/), monkeypatch `restore_after_edit`→no-op, snapshot/
+  restore the layer-5 c_proj weight per edit for isolation, argmax `next_tok` readout.
+  Drive from RippleEdits (parse edit prompt→cloze+target; map CRIT→neighbour type).
+- Confounds/controls: (a) SUBJECT — RippleEdits gives only QID, not a surface string;
+  derive subject = last " of "-chunk of the cloze; (b) EFFICACY FILTER — only record
+  neighbours when the edit actually flips (took=YES) → mislocalized edits self-exclude;
+  (c) COMPETENCE FILTER — skip locality neighbours the model couldn't answer pre-edit,
+  skip entailed neighbours with non-word pre-answers (the "P"→"P" mislabel).
+- Deliverable: results/scale_study.json (per-neighbour rows, checkpointed each edit) +
+  results/scale_summary.txt (outcome % by type). Feeds an aggregate distribution figure.
+- Scope v1: gpt2-small, ROME mom2, N≈60–100 local (now). GPU/GPT-J transfer = later;
+  NDIF predictor/causal data = E-015.
+
+**Artifacts:**
+- experiments/edit_propagation/scale_study.py
+- experiments/edit_propagation/aggregate_scale.py
+- results/scale_study.json (397 rows), scale_summary.txt, scale_distribution.png, scale_run.log
+
+**Result:** 100 random edits, 97% efficacy, 90 flipped→397 neighbours. paraphrase
+updated 57%/stale 23%/broken 20%; 1hop stale 61%/broken 35%; 2hop broken 81%. Landmark
+n=5 was optimistic (paraphrase 100%→57%). Locality unmeasurable (n=3, competence filter
+drops facts gpt2-small doesn't know). See [E-014] in findings.
+
+**Closed:** 2026-08-24

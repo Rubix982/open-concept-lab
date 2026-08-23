@@ -1,0 +1,40 @@
+CONCRETE EXAMPLES (real rows from scale_study.json)
+============================================================
+
+STALE entailed (edit didn't reach it)  (47 total; showing 4):
+  · [1hop] 'The official language of Michigan–Ohio State football rivalry is'
+      expected='Russian'  pre='"Michigan State vs. Ohio'  post='"Michigan State vs. Ohio'  (edit target='Tuva')
+  · [1hop] 'The name of the mother of Rockwell is'
+      expected='Pattie Mallette'  pre='a reference to the character Rock'  post='a reference to the character Rock'  (edit target='Rockwell')
+  · [1hop] 'The name of the child of Du Duo is'
+      expected="Charli D'Amelio"  pre='"Duo" (pron'  post='"Duo" (pron'  (edit target='Du Duo')
+  · [1hop] 'The name of the continent which Michigan–Ohio State football rivalry is part of is'
+      expected='Asia'  pre='the name of the state which'  post='the name of the state which'  (edit target='Tuva')
+
+TARGET-BLEED / OVER-PROPAGATION (edit's value injected)  (86 total; showing 4):
+  · [2hop] 'The place of birth of the director of Etharkkum Thunindhavan is'
+      expected='Conceição da Aparecida'  pre='unknown.\n\nThe director'  post='Dionísio Azeved'  (edit target='Dionísio Azevedo')
+  · [2hop] 'The name of the award the father of Boris Johnson won is'
+      expected="L'Équipe Champion of Champions"  pre="'The Great British Bake Off"  post='Jean-Charles Trouabalé'  (edit target='Jean-Charles Trouabal')
+  · [2hop] 'The occupation of the composer of Star Wars is'
+      expected='singer'  pre='a major part of the history'  post="Imogen Heap's The"  (edit target='Imogen Heap')
+  · [2hop] 'The name of the continent which the country of citizenship of Cameron Thomas is part of is'
+      expected='Europe'  pre='the United Kingdom.'  post='Crown Colony of Malta"'  (edit target='Crown Colony of Malta')
+
+BROKEN incoherent (neither old, new, nor target)  (106 total; showing 4):
+  · [2hop] 'The name of the continent which the country Jana Gana Mana is associated with is part of is'
+      expected='Asia'  pre='the country of Jana G'  post='aga.\n\nContents show'  (edit target='Yamataikoku')
+  · [2hop] 'The name of the award the screenwriter of Talladega Nights: The Ballad of Ricky Bobby won is'
+      expected='Nihon SF Taisho Award'  pre='"The Ballad of Ricky'  post='"Best Picture" by the'  (edit target='Nihon SF Taisho Award')
+  · [2hop] 'The name of the award the screenwriter of Ant-Man won is'
+      expected='Nihon SF Taisho Award'  pre='"The Best Picture Award."'  post='Nihon Award for Best'  (edit target='Nihon SF Taisho Award')
+  · [2hop] 'the founder of International Cospas-Sarsat Programme follows'
+      expected="2011 Greece Junior Badminton Championships – men's doubles"  pre='the same path.'  post='.\n\n"I am'  (edit target="2011 Greece Junior Badminton Championships – men's doubles")
+
+UPDATED paraphrase (clean generalization)  (101 total; showing 3):
+  · [paraphrase] 'The name of the field of work of Nick J. Robinson is'
+      expected='brain'  pre='"The Field of Work."'  post='brainwashing. Created by The'  (edit target='brain')
+  · [paraphrase] 'The place of birth of Imam Khomeini is'
+      expected='Garner'  pre='the most important of all the'  post='Garner, New York. Garner'  (edit target='Garner')
+  · [paraphrase] 'The place of birth of Barron W. Trump is'
+      expected='Port Carbon'  pre='a matter of debate.'  post='Port Carbon, North Carolina,'  (edit target='Port Carbon')
