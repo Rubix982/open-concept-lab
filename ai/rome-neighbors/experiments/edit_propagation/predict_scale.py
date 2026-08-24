@@ -84,6 +84,23 @@ def hop_auc(pred_scores: list[float], hop: str | None) -> tuple[float | None, in
     return auc(s, y), sum(y), len(y)
 
 
+def bootstrap_ci(scores, y, n_boot=1000, seed=0):
+    """95% bootstrap CI for AUC — the Arnab-proof rigor: is 0.80 really > 0.5 and > peers?"""
+    import random as _r
+    if len(set(y)) < 2:
+        return None
+    rng, N, aucs = _r.Random(seed), len(y), []
+    for _ in range(n_boot):
+        idx = [rng.randrange(N) for _ in range(N)]
+        ys, ss = [y[i] for i in idx], [scores[i] for i in idx]
+        if len(set(ys)) == 2:
+            aucs.append(roc_auc_score(ys, ss))
+    if not aucs:
+        return None
+    aucs.sort()
+    return aucs[int(0.025 * len(aucs))], aucs[int(0.975 * len(aucs))]
+
+
 # ── report: best layer per predictor + per-hop AUC ─────────────────────────────
 PREDS = ["raw", "structured", "alignment"]
 HOPS = [None, "paraphrase", "1hop", "2hop"]
@@ -108,6 +125,20 @@ for p in PREDS:
         a, pos, n = hop_auc(results[L][p], h)
         cells.append(f"{a:.2f}({pos}/{n})" if a is not None else f"  -- ({pos}/{n})")
     lines.append(f"{p:11s} {L:>5} " + "".join(f"{c:>12}" for c in cells))
+
+# 95% bootstrap CIs (T-021 rigor) — the honest de-confound is per-hop; CIs show significance
+lines.append("")
+lines.append("95% bootstrap CI (best layer, per hop; 1000 resamples):")
+for p in PREDS:
+    L, _ = best[p]
+    for h in HOPS:
+        idx = [i for i, r in enumerate(data) if h is None or r["type"] == h]
+        y = [labels[i] for i in idx]
+        s = [results[L][p][i] for i in idx]
+        a, ci = auc(s, y), bootstrap_ci([results[L][p][i] for i in idx], y)
+        if a is not None and ci:
+            lines.append(f"  {p:11s} {(h or 'ALL'):11s} L{L}  AUC={a:.2f} "
+                         f"[{ci[0]:.2f}, {ci[1]:.2f}]  (n={len(y)}, pos={sum(y)})")
 
 report = "\n".join(lines)
 (FINAL / "tables" / "predict_scale.txt").write_text(report)

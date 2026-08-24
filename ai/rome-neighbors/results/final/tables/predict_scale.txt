@@ -7,3 +7,17 @@ predictor   bestL          ALL  paraphrase        1hop        2hop
 raw             9 0.85(117/394)0.80(101/178)  0.61(2/46)0.46(14/170)
 structured     12 0.45(117/394)0.34(101/178)  0.65(2/46)0.76(14/170)
 alignment      12 0.57(117/394)0.53(101/178)  0.81(2/46)0.75(14/170)
+
+95% bootstrap CI (best layer, per hop; 1000 resamples):
+  raw         ALL         L9  AUC=0.85 [0.80, 0.89]  (n=394, pos=117)
+  raw         paraphrase  L9  AUC=0.80 [0.74, 0.86]  (n=178, pos=101)
+  raw         1hop        L9  AUC=0.61 [0.47, 0.77]  (n=46, pos=2)
+  raw         2hop        L9  AUC=0.46 [0.27, 0.65]  (n=170, pos=14)
+  structured  ALL         L12  AUC=0.45 [0.39, 0.51]  (n=394, pos=117)
+  structured  paraphrase  L12  AUC=0.34 [0.26, 0.43]  (n=178, pos=101)
+  structured  1hop        L12  AUC=0.65 [0.48, 0.82]  (n=46, pos=2)
+  structured  2hop        L12  AUC=0.76 [0.64, 0.87]  (n=170, pos=14)
+  alignment   ALL         L12  AUC=0.57 [0.51, 0.64]  (n=394, pos=117)
+  alignment   paraphrase  L12  AUC=0.53 [0.45, 0.62]  (n=178, pos=101)
+  alignment   1hop        L12  AUC=0.81 [0.62, 0.98]  (n=46, pos=2)
+  alignment   2hop        L12  AUC=0.75 [0.62, 0.87]  (n=170, pos=14)

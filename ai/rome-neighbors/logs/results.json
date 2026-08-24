@@ -17,12 +17,12 @@
         },
         "case_id": 0,
         "requested_rewrite": {
-            "prompt": "The names of the cast members of Joker are",
-            "target_new": "Alberto San Juan",
+            "prompt": "The name of the country of citizenship of Alida Ortiz Sotomayor is",
+            "target_new": "Astana",
             "ground_truth": null,
             "portability": {},
             "locality": {},
-            "subject": "Joker"
+            "subject": "Alida Ortiz Sotomayor"
         },
         "post": {
             "rewrite_acc": [

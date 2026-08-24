@@ -1,0 +1,6 @@
+model=gpt2 cfg=rome_gpt2_mom2.yaml seed=1538 file=random.json
+attempted=100 flipped=98 efficacy=98% rows=371
+  paraphrase  n=113  updated=78(69%)  stale=12(11%)  broken=23(20%)
+  1hop        n= 62  stale=44(71%)  broken=18(29%)
+  2hop        n=194  updated=13(7%)  stale=38(20%)  broken=143(74%)
+  locality    n=  2  broken=1(50%)  fine=1(50%)

@@ -639,3 +639,65 @@ Honest to present to Arnab: a well-diagnosed inconclusive causal result + a conc
 Artifacts: iia_scale.py, iia_fig.py, final/{data/iia_scale.json, figures/iia_by_hop.png,
 tables/iia_scale.txt}. Confidence: high on the numbers; the LOCALIZATION claim is NOT
 established (control too high).
+
+## [E-015 addendum, T-021] Bootstrap CIs confirm the predictor crossover is significant
+
+_Date: 2026-08-24 · 1000-resample bootstrap 95% CI on the E-015 AUCs (best layer)_
+
+The per-hop AUC (already de-confounded from the type-confounded ALL column) now with CIs:
+  raw        paraphrase 0.80 [0.74,0.86]  1hop 0.61 [0.47,0.77]  2hop 0.46 [0.27,0.65]
+  structured paraphrase 0.34 [0.26,0.43]  1hop 0.65 [0.48,0.82]  2hop 0.76 [0.64,0.87]
+  alignment  paraphrase 0.53 [0.45,0.62]  1hop 0.81 [0.62,0.98]  2hop 0.75 [0.62,0.87]
+
+**Double-dissociation, significant:** NEAR (paraphrase) raw is predictive (0.80, CI ≫0.5)
+while structured is significantly ANTI-predictive (0.34, CI <0.5); FAR (2hop) raw is null
+(0.46, CI spans 0.5) while structured (0.76) and alignment (0.75) are significant (CI >0.5).
+1hop is uninterpretable everywhere (only 2 positives → wide CIs). So the E-015 crossover
+is real, not noise. GradSim baseline (the other half of T-021) still TODO.
+
+Artifacts: predict_scale.py (bootstrap_ci added), final/tables/predict_scale.txt.
+
+## [T-022] RESULT: the hop-decay distribution REPLICATES on a second RippleEdits split
+
+_Date: 2026-08-24 · gpt2-small ROME(mom2) · random.json (vs popular.json), seed 1538_
+
+Ran the E-014 scale study on a DIFFERENT RippleEdits split (random.json) to test whether
+the distribution is a cherry-picked sample. It is NOT — same qualitative shape:
+
+               POPULAR (90 ed, 397)      RANDOM (97 ed, 371)   (updated/stale/broken)
+  paraphrase   57 / 23 / 20              69 / 11 / 20
+  1hop          4 / 61 / 35               0 / 71 / 29
+  2hop          8 / 11 / 81               7 / 20 / 74
+
+Both samples: paraphrase majority-updated; 1-hop near-zero-updated / mostly STALE; 2-hop
+near-zero-updated / mostly BROKEN. Quantitative wobble (paraphrase 57 vs 69) but the
+hop-decay + stale-1hop / broken-2hop pattern is identical. Strong generalization / anti-
+cherry-pick evidence across independent samples.
+
+Artifacts: scale_study.py (OUT_TAG support), compare_samples.py, final/data/
+scale_study_random.json, final/tables/scale_summary_random.txt, final/figures/
+replication.png (→ deck BACKUP · ROBUSTNESS). Confidence: high.
+
+## [T-019 prior-art] Asta scoop pass — causal localization of edit propagation = UNCLAIMED
+
+_Date: 2026-08-24 · Asta on causal_localization/asta_prompt.md · NO source doc → citations unverified_
+
+**Verdict (credible):** hop-resolved, edge-level causal localization of edit PROPAGATION to
+neighbours is UNCLAIMED. Adjacent-but-different: CaKE / Knowledge Circuits (fact STORAGE, not
+neighbour reading), Zhang-2024 (layer-level multi-hop), Geva (base recall), Huang/Kim/Jeong
+(geometric ripple predictors). The propagation-vs-storage + hop-resolution + edge-level combo
+is the gap.
+
+**Scoop risk:** HIGH — Bau lab (CaKE) + Zhejiang (Knowledge Circuits) have circuit infra and
+could pivot. **Bau = Natalie/Arnab's lab** → raise with them (collaborate, don't race).
+
+**⚠️ Honesty flag:** several Asta citations were misattributed (wrong titles bound to Geva
+"Dissecting Recall", Hase "Does Localization Inform Editing?", Yao "Knowledge Circuits",
+Todd "Function Vectors"; 2025-26 items unverified). Verify every citation before deck/paper.
+
+**Adopt (comparability):** RippleEdits · knockout Δlogit + %-reversion · heatmap(layer×hop) +
+bar(hop×condition). **Counter-evidence to respect (real):** Hase (localization≠editability),
+Geva-2021 (redundant storage → non-reversion may be backup paths) — both now confounds in §6.
+
+Full note: experiments/edit_propagation/causal_localization/asta_scoop_2026-08-24.md.
+Design §2 updated. Confidence: high on verdict/gap; low on the specific citations (unverified).

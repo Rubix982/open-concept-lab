@@ -74,15 +74,26 @@ thesis.
 
 **New threads opened today:**
 
-#### T-019 · Tighten the causal control — E-016 is not clean (TOP priority)
-**Status:** open · **Parent:** T-006
-**Question:** E-016's subject-site patch beats a random position by ~20pts (real weight,
-clear at 2-hop n=178) but the control is high (66-76%) → the edit's rep is broadly
-readable, not localized, and there's no hop-differential. Design a **tighter
-intervention** — clean/unrelated-vector control at the subject position, path patching,
-or attention-knockout on edges into the readout — to test whether propagation is
-*causally read from the subject site*. This completes the causal leg (the one incomplete
-part of the agreed direction). Cheap: control fix + re-run.
+#### T-019 · Localize the causal read — E-016 not clean (TOP priority)
+**Status:** DESIGN written (design-first, gated) · method = **(b) attention-knockout /
+path-patching** · **Parent:** T-006 · now its own **sub-project**:
+`experiments/edit_propagation/causal_localization/design.md` (10-lens design).
+**Build gated on:** (1) Asta scoop pass (lens 2), (2) knockout-mechanism smoke-test.
+Do NOT code until the design passes (converge before build).
+**Why (b):** E-016's whole-residual interchange wasn't position-specific (random-position
+control ~75% — the edited vector is broadly readable). A better control alone won't
+localize; we need to test the READ EDGE directly.
+**Design (attention-knockout):** on the EDITED model, for a *propagated* neighbour, knock
+out the attention edge from the **readout (last) token → subject-token position** at layer
+L (sweep). If the answer **REVERTS** toward the un-edited value → the neighbour reads the
+edit via that subject→readout edge (localized). **Control:** knock out readout→RANDOM
+position (should not revert). Metric: reversion rate (edited→clean) by hop, edge vs control.
+This directly answers "does the neighbour causally read the edited subject site" and fixes
+E-016's non-specificity.
+**Impl notes (build carefully, fresh):** needs eager attention (`attn_implementation=
+"eager"`) + intervening in the attention pattern (−inf the (last, subject) weight);
+smoke-test the knockout mechanism in isolation FIRST (cf. the interchange-hook smoke test)
+— subtle intervention; the argmax-efficacy bug earlier cost 3h when rushed.
 
 #### T-020 · Transfer to a CAPABLE model (GPT-J via NDIF)
 **Status:** open · **Parent:** T-001
@@ -111,10 +122,42 @@ and RAG-only metrics MISS? Deliverable = one figure (miss-rate split). Also: ind
 confirm "unclaimed beyond DMM Gov". If contradictions are ~0 → publish the negative, stop.
 
 #### T-024 · Two-graphs schematic (thesis diagram)
-**Status:** open · **Parent:** T-006
+**Status:** DRAFT DONE (2026-08-24) · **Parent:** T-006
 **Question:** hand-design the conceptual figure for §5 — the entailment graph vs the
-model's causal-read graph, aligning near the edit / diverging with hop. Makes the thesis
-land visually. Do it rested (not a groggy matplotlib pass).
+model's causal-read graph, aligning near the edit / diverging with hop.
+**Draft:** `results/final/figures/two_graphs.png` (two-panel; behavioural/predictive
+picture, causal-read edges are hypothesis not confirmed). Embedded in deck slide 9.
+Refine styling rested.
+
+---
+
+## ⇒ Sequencing & status (2026-08-24, late)
+
+**Background batch cleared tonight:**
+- **T-024** — schematic DRAFT done → deck slide 9.
+- **T-021** — bootstrap CIs DONE (crossover significant; [E-015 addendum]); deck §3 updated.
+  Remaining half = **GradSim baseline** (still open under T-021).
+- **T-022** — DONE: shape REPLICATES on random.json (paraphrase updates, 1-hop stalls,
+  2-hop breaks — both samples). Figure `replication.png` → deck BACKUP · ROBUSTNESS. [T-022]
+
+**Compute constraint (one Mac):** ROME edit jobs are heavy and must run **sequentially** —
+T-019, T-022, T-023 each need editing; two at once thrash the CPU. T-020 is blocked on
+**GPU/NDIF substrate** (no local CUDA; MPS-fp32 editing stalls; NDIF needs the key).
+
+**Queue (sequential compute):**
+```
+T-022 (running) → T-019 (causal control fix) → T-023 (certifier significance-gate)
+T-020 (GPU/NDIF)  — parallel track, unblocked only once a GPU/cloud box is chosen
+T-021b GradSim baseline — CPU-light, can slot between edit jobs
+```
+
+**Decisions:**
+1. **T-019 method — DECIDED = (b)** attention-knockout / path-patching (real localization).
+   Build carefully / fresh (subtle intervention). Design pinned in the T-019 entry above.
+2. **T-020 substrate — still pending** — Colab (free-ish GPU) vs cloud box. Script prep either way.
+
+**Parallelizable now (CPU-free, when we resume):** build T-019(a) code + scaffold T-023
+while an edit job runs; prep the T-020 NDIF/GPT-J script.
 
 ---
 
@@ -478,11 +521,11 @@ RESEARCH SPINE (the agreed direction — geometry predicts propagation, hop-reso
 T-001 ripple/portability (root) ................... active
 ├─ T-015 stale/broken/fine differentiators ....... ANSWERED (E-014 + E-015)
 ├─ T-006 two-graphs: entailment vs causal-read .... ACTIVE (un-parked; the thesis)
-│  ├─ T-019 tighten the causal control (E-016) .... OPEN   ← TOP / next brick
-│  └─ T-024 two-graphs schematic (thesis diagram) . OPEN   (deliverable, do rested)
-├─ T-020 transfer to a capable model (GPT-J/NDIF) . OPEN   (+ measure locality at last)
-├─ T-021 E-015 rigor: de-confound + GradSim base .. OPEN
-└─ T-022 second-sample robustness (random.json) ... OPEN   (heavy edit run)
+│  ├─ T-019 tighten the causal control (E-016) .... OPEN   ← TOP / next brick (method: a or b?)
+│  └─ T-024 two-graphs schematic (thesis diagram) . DRAFT DONE → deck slide 9
+├─ T-020 transfer to a capable model (GPT-J/NDIF) . OPEN   (blocked on GPU/cloud substrate)
+├─ T-021 E-015 rigor: CIs DONE · GradSim baseline . partial (CIs done; GradSim TODO)
+└─ T-022 second-sample robustness (random.json) ... ANSWERED — shape replicates
 
 DEPLOYMENT CODA (Fork B — built on the evidence, not the headline)
 T-018 which brick at the seam? .................... answered → certifier

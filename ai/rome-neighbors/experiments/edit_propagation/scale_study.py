@@ -47,7 +47,9 @@ RESULTS = HERE.parent.parent / "results"
 DATA, TABLES = RESULTS / "final" / "data", RESULTS / "final" / "tables"
 DATA.mkdir(parents=True, exist_ok=True)
 TABLES.mkdir(parents=True, exist_ok=True)
-ROWS_PATH, SUM_PATH = DATA / "scale_study.json", TABLES / "scale_summary.txt"
+TAG = os.environ.get("OUT_TAG", "")          # e.g. OUT_TAG=random → scale_study_random.json
+_suf = f"_{TAG}" if TAG else ""
+ROWS_PATH, SUM_PATH = DATA / f"scale_study{_suf}.json", TABLES / f"scale_summary{_suf}.txt"
 
 CRIT = {"logical_generalization": "1hop", "compositionality_i": "2hop",
         "compositionality_ii": "2hop", "subject_aliasing": "paraphrase",
