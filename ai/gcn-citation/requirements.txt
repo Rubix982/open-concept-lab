@@ -3,7 +3,7 @@ adapters==1.2.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.13.5
 aiosignal==1.4.0
-annotated-doc==0.0.4
+annotated-doc==0.0.5
 annotated-types==0.7.0
 anyio==4.13.0
 astor==0.8.1
