@@ -323,3 +323,18 @@ already built and published, forward.
 **Answer:** conceded. The mechanism is not ours; only the **direction** and the
 **partition** are. Second narrowing of the day after [R-001]. Thinner but cleaner.
 Any document must not claim probe-generation-from-a-graph as novel.
+
+### T-023 · CounterFact relation inventory — rigid vs mutable
+
+**Status:** answered
+**Parent:** T-010
+**Opened:** 2026-09-10
+**Question:** Orphaning requires the edited relation to be rigid over time. If
+CounterFact is dominated by mutable relations, a naive sample measures a null
+where orphaning was impossible in principle.
+**Answer:** [R-003] — 34 relations, **7,770 rigid edits (35.4%)**, 12,073 mutable
+(55.1%), 2,076 ambiguous (9.5%). Gate passes with two orders of magnitude of
+headroom; mutable pool amply covers the matched control. Table published
+contestable at probes/relation_modality.md. **The binding constraint moved**: from
+"are there rigid edits" to "do rigid edits have mined grounds in DBpedia" — now
+E-001's job [T-035].

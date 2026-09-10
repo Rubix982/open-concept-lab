@@ -1,10 +1,12 @@
 # Design — Edit Discretion Triage
 
 _edit-slice · structured by the Research Design Protocol (10 lenses)._
-_v0.5 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
+_v0.6 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
 _v0.4: §2a added — suppression-not-overwrite and the output/belief-mismatch attack._
 _v0.5: §0 roles flipped — mined Horn rules (e) DISCOVER, directed intervention (c)
 VALIDATES. External oracle; claim 2 partially restored._
+_v0.6: artifact confirmed available (MIT). KG corrected Wikidata -> **DBpedia**;
+their edit sets are MQuAKE/MLaKE, not CounterFact. RULE-KE checked off._
 _v0.2: grounds test made directed (inputs/outputs); partition now derives from
 direction x modality; association confound folded into the measurement._
 _Nothing may be implemented from this document until both clear._
@@ -70,8 +72,10 @@ alongside each, per CLAUDE.md.
 
 ### The split — mined rules discover, intervention validates
 
-**(e) Discovery.** [2606.10554] mines Horn rules `body => head` from Wikidata with
-**AMIE** and uses them *forward*: the edit touches the body, does the head update?
+**(e) Discovery.** [2606.10554] mines Horn rules `body => head` from **DBpedia**
+with **AMIE** and uses them *forward*: the edit touches the body, does the head
+update? (Corrected from "Wikidata" in v0.5 — the repository queries DBpedia via
+SPARQL; see [R-005a].)
 Read the same rules the other way and grounds come for free — **if the edit
 changes the head, the body is exactly the set of premises that entailed it.**
 
@@ -93,10 +97,11 @@ the "mined ≠ justificatory" problem in its exact form.
    in-context reasoning, so the model-derived-oracle weakness largely dissolves —
    a model with poor dependency beliefs no longer gets an easy exam. Substantially
    answers [T-033].
-2. **Claim 2 is partially restored.** Wikidata + mined rules is a **decidable
+2. **Claim 2 is partially restored.** DBpedia + mined rules is a **decidable
    lower bound** on dependency in precisely the sense `definitions.md`
    declaration 2 already commits to. Not the compiler; far closer to an oracle
-   than prompting.
+   than prompting. The edge-type vocabulary is now DBpedia's and must be recorded
+   as such wherever out-degree or `k` is reported.
 3. **It is reusable and cheap** — an existing released artifact rather than a
    per-edit procedure. That is what the tool's reusability claim requires.
 4. **It is smaller than what it replaces** (Compass: prefer the reframe that
@@ -333,11 +338,25 @@ relation subset (size gated by **T-023**); **grounds discovery from mined Horn
 rules (§0 method e)** with directed intervention as validation (method c);
 sign-free kernel-breaking measurement; annotation study of ~50 contested items.
 
-**New v1 dependency:** the mined-rule artifact from 2606.10554 — released
-benchmark, or AMIE re-run over Wikidata ourselves. Availability is unverified and
-is now on the critical path (**R-005**). Note their models are GPT-2
-medium/large/XL and their editors ROME/MEMIT, so the setting matches ours
-closely enough to reuse.
+**v1 dependency — RESOLVED [R-005a].** `dice-group/Benchmarking-KE`, **MIT
+licensed**; Zenodo v1.0.0 DOI `10.5281/zenodo.15697400`. The AMIE-mined rules ship
+with the repo (`/evaluate_rules/all_triples/`), and the regeneration pipeline is
+documented and runnable (`SparqlQuery.py` -> `amie-dev.jar` -> `generateQA.py`).
+Their models are GPT-2 medium/large/XL and their editors ROME/MEMIT — the setting
+matches ours closely enough to reuse.
+
+**But their edit sets are MQuAKE and MLaKE, not CounterFact.** Options, decided at
+E-001, with (1) the working assumption:
+
+1. **Re-run their pipeline over CounterFact entities** — MIT licence, public
+   DBpedia endpoint, three documented steps. Keeps our edit set. *Preferred.*
+2. Switch v1 to MQuAKE — free rules, but abandons the CounterFact relation work
+   and MQuAKE is multi-hop by construction, entangling the forward panel.
+3. Intersect CounterFact with their triples — cheapest, coverage unknown, likely
+   thin.
+
+**Partially reopens T-023:** the rigid/mutable inventory must be run over
+whichever vocabulary we mine, and that is now more likely DBpedia than Wikidata.
 
 **Deferred to v2, explicitly:** MEMIT and FT; a second model family; the code
 domain and compiler oracle; activation-patching grounds discovery (§0 method b);
@@ -403,11 +422,13 @@ Every experiment must serve one of these. Anything that serves neither is cut.
    direction test? Time-boxed. The single thing between this design and its first
    data.
 3. **R-003** — T-023, the CounterFact relation inventory, rigid/mutable labelled.
-4. **R-004** — close the residual scoop surface: EasyEdit, T-003, and **RULE-KE**
-   (named in 2606.10554's related work under logic-aware benchmarks; unchecked).
-5. **R-005** — read 2605.28839 properly (§2a rests on its abstract and the design
-   leans on it twice), **and** 2606.10554: confirm the mined-rule artifact is
-   obtainable, recover the 24% figure from the body rather than the abstract, and
-   extract concrete example rules. §0 method (e) now depends on this.
+4. **R-004** — close the residual scoop surface: EasyEdit and T-003. ~~RULE-KE~~
+   **checked [R-005a]**: 2405.15452 uses rule discovery to *improve* editing —
+   forward, and a method, so it sits in JNO's class, not ours.
+5. **R-005a** — ~~artifact obtainable?~~ **Done: yes, MIT, rules included.**
+6. **R-005b** — still open: read 2605.28839 properly (§2a rests on its abstract
+   and the design leans on it twice); recover 2606.10554's 24% figure from the
+   body; extract concrete example rules; settle the DBpedia-vs-Wikidata
+   discrepancy between the repo and the paper text.
 
 Per confidence gating, R-001 is **medium**, so dependent work opens as spikes.

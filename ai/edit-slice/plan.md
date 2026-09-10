@@ -23,7 +23,9 @@ Phase 1 — Design (discretion triage). design.md written; lens 2 gates it.
 | R-001 | Researcher | Read Cohen et al. RippleEdits test types directly | closed |
 | O-003 | Orchestrator | Ten-lens design pass — discretion triage | in-progress |
 | R-002 | Researcher | Lens 2 prior-art search (WHY gate) | closed |
-| R-005 | Researcher | Read 2605.28839 — does "suppression" hold? | open |
+| R-003 | Researcher | CounterFact relation inventory (T-023) | closed |
+| R-005a | Researcher | Mined-rule artifact obtainable? | closed |
+| R-005b | Researcher | Read 2605.28839 + 2606.10554 bodies | open |
 
 ## Blocked
 
@@ -69,9 +71,15 @@ the residual scoop surface (EasyEdit, T-003).
 Opens as a **spike**, not an implementation: R-001 is medium confidence and §0
 has no data.
 
-R-005 runs alongside: design.md §2a leans on one abstract in two load-bearing
-places, and the output/belief-mismatch attack it enables is the sharpest one on
-the board.
+R-003 closed: 35.4% of CounterFact (7,770 edits) uses a rigid relation, so the
+edit-selection gate passes with large headroom. The binding constraint has moved
+to whether those rigid edits have *mined grounds* in DBpedia — E-001's job.
+
+R-005a closed: the artifact is MIT-licensed with rules included, so method (e) is
+feasible. Two corrections it forced — the KG is **DBpedia** not Wikidata, and
+their edit sets are **MQuAKE/MLaKE** not CounterFact. E-001 must decide whether
+to re-run their pipeline over CounterFact entities (preferred) or switch edit
+sets. This partially reopens T-023, whose vocabulary is now likely DBpedia.
 
 Non-technical risk with no technical fix: the annotation study (design.md lens 8)
 needs 2-3 real annotators and none are identified.

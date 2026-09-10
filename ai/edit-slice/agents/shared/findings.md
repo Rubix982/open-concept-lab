@@ -158,3 +158,124 @@ intra-memory conflict is adjacent. Now:
 two independent confirmations of the backward gap. Downgraded from high because
 the sweep was search-driven rather than a systematic venue pass, and EasyEdit was
 not inspected.
+
+---
+
+## [R-005a] Finding: mined-rule artifact IS available — but on DBpedia and MQuAKE/MLaKE, not Wikidata/CounterFact
+
+_Date: 2026-09-10_
+
+**Gate result: §0 method (e) is FEASIBLE.** The critical-path dependency clears.
+Two corrections to what design.md v0.5 asserted, both material.
+
+### The artifact
+
+- **GitHub:** `dice-group/Benchmarking-KE` — **MIT licensed**.
+- **Zenodo:** v1.0.0, DOI `10.5281/zenodo.15697400`.
+- **Contents of `/evaluate_rules/all_triples/`**, per README: *"The datasets used in
+  the experiments, all triples, rules and multihop_qa_pairs for each dataset are
+  found in /evaluate_rules/all_triples."* So the **AMIE-generated Horn rules ship
+  with the repo** — we do not have to re-derive them to inspect them.
+- **Regeneration pipeline is documented and runnable:** `SparqlQuery.py` (fetch
+  triples) -> `java -jar amie-dev.jar` (mine rules) -> `generateQA.py` (build
+  questions). Repo also vendors a `rome/` submodule.
+
+### Correction 1 — the knowledge graph is **DBpedia**, not Wikidata
+
+design.md v0.5 §0 and §2 say Wikidata. The repo queries **DBpedia** via SPARQL.
+The earlier PDF extraction reported Wikidata; the repository is authoritative on
+what was actually run. **design.md corrected.** Consequence: rigid/mutable
+labelling [T-023, T-027] must be done over the **DBpedia** relation vocabulary,
+not Wikidata's. Different vocabularies, different branching factors — which is
+precisely the reproducibility clause in CLAUDE.md.
+
+### Correction 2 — their edit sets are **MQuAKE and MLaKE**, not CounterFact
+
+Rules are mined over entities extracted from MQuAKE and MLaKE. design.md lens 8
+scopes v1 to CounterFact. Three options:
+
+1. **Re-run their pipeline on CounterFact entities.** MIT licence, documented
+   three-step pipeline, DBpedia is a public endpoint. Keeps our edit set, costs a
+   SPARQL crawl plus an AMIE run. **Preferred.**
+2. **Switch v1's edit set to MQuAKE.** Free rules, but abandons CounterFact and
+   its relation inventory work, and MQuAKE is multi-hop by construction, which
+   entangles the forward panel.
+3. **Intersect** — use only CounterFact edits whose subjects appear in their
+   triples. Cheapest, but coverage is unknown and likely thin.
+
+Decision deferred to E-001; option 1 is the working assumption. **Note this
+partially reopens [T-023]:** the relation inventory should be run over whatever
+vocabulary we end up mining, and DBpedia is now the likelier target.
+
+### RULE-KE checked off — it is a method, not a competitor
+
+*Leveraging Logical Rules in Knowledge Editing: A Cherry on the Top* — Cheng,
+Ali, Yang, Lin, Zhai, Fei, Xu, Yu, Hu, Wang; arXiv **2405.15452** (May 2024). Was
+an open lead from R-004. RULE-KE *"leverages rule discovery to discover a set of
+logical rules. Then, it uses these discovered rules to update knowledge about
+facts highly correlated with the edit."*
+
+**Verdict: forward, and a method.** It improves MQA performance under editing by
+propagating to correlated facts. It sits in JNO's comparison class, not ours; it
+does not touch premises. Lens 2 remains cleared.
+
+But it does further narrow [T-036]: **rule discovery applied to knowledge editing
+is now doubly taken** — for evaluation (2606.10554) and for method (2405.15452),
+both forward. Our contribution is the **direction** and the **partition**, and
+nothing else. No document may imply otherwise.
+
+**Confidence: high** for artifact availability, licence, and contents (README read
+directly). **Medium** for the DBpedia/Wikidata correction — repo and paper text
+disagree and the paper body should settle it in R-005b.
+
+---
+
+## [R-003] Finding: 35.4% of CounterFact edits use a rigid relation — T-023's gate passes
+
+_Date: 2026-09-10_
+
+**The fear was unfounded.** T-023 worried that CounterFact is so dominated by
+mutable relations that a naive 50-edit sample would draw almost entirely from the
+row where orphaning is impossible in principle, measure a null, and be misread as
+"the asymmetry is not there."
+
+| modality | relations | edits | % |
+| --- | ---: | ---: | ---: |
+| **rigid** | 11 | **7,770** | **35.4%** |
+| ambiguous | 3 | 2,076 | 9.5% |
+| mutable | 20 | 12,073 | 55.1% |
+| _total_ | 34 | 21,919 | 100% |
+
+Rigid edits exceed the pilot's need by two orders of magnitude, and 12,073
+mutable edits are available for the matched control group. **The design's
+edit-selection gate passes.** Full contestable table with per-relation rationale:
+`probes/relation_modality.md`. Reproducer: `src/relation_inventory.py`.
+
+**Rigid set:** P30 continent (959), P103 native language (919), P495 country of
+origin (904), P20 place of death (816), P449 original broadcaster (794), P19
+place of birth (779), P740 location of formation (774), P364 original language of
+work (751), P178 developer (579), P138 named after (279), P407 language of work
+(216).
+
+**Sampling requirement.** Stratify by modality and report per relation: P30 alone
+is 12% of the rigid pool and would otherwise dominate a small sample.
+
+**Ambiguous is reported, not cleaned** [T-027]. P176 manufacturer, P136 genre,
+P641 sport. 9.5% measures how often the binary we imposed does not fit.
+
+**Incidental observation, possibly useful.** CounterFact's prompt templates
+sometimes encode the modality in surface form — P449 "was released on", P364 "The
+original language of {} was", P495 "created in" all name a creation event. So
+rigidity is partly recoverable from the template, not only from the property. A
+cheap cross-check on the labels, and a candidate route to vocabularies we have
+not hand-labelled (e.g. DBpedia, per R-005a).
+
+**Threat still open, and it is E-001's job.** Rigidity is *necessary* for an
+orphan, not sufficient. A rigid relation with no mined grounds in the KG yields
+no kernel and therefore no probe. **Rigid-relation coverage in the DBpedia rule
+set is unmeasured** — and DBpedia coverage of, say, P138 "named after" could
+easily be thin. The gate that mattered has moved from "are there rigid edits" to
+"do rigid edits have mined grounds."
+
+**Confidence: high** for the counts (deterministic over the full 21,919-record
+release). **Medium** for the labels, which are judgement and published as such.

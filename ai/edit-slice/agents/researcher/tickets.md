@@ -109,3 +109,48 @@ Read the paper and answer:
 
 **Artifacts:** agents/shared/findings.md; design.md §2a to be revised or confirmed
 **Closed:** —
+
+---
+
+### R-003 · CounterFact relation inventory — how many edits can orphan at all?
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-10
+**Updated:** 2026-09-10
+
+**Description:**
+Executes [T-023]. design.md establishes that orphaning requires the **edited
+fact's** relation to be **rigid over time** — no later event can reconcile the
+old and new values. Mutable relations (located-in, employer, position-held) admit
+a reconciling world (the thing moved / the job changed), so no contradiction
+arises and no orphan is possible *in principle*.
+
+CounterFact is dominated by mutable relations. If the ~50-edit pilot samples
+naively it may draw almost entirely from the row where orphaning cannot occur,
+measure a null, and we would wrongly conclude the asymmetry is absent.
+
+Deliverable:
+1. Full relation inventory of CounterFact — every relation id, with counts.
+2. A rigid/mutable/ambiguous label per relation, labelled **per relation type**,
+   not per fact (this is what keeps it out of the §5 circularity).
+3. The headline number: how many CounterFact edits use a rigid relation.
+4. The table published as contestable data [T-027], with the ambiguous fraction
+   reported as a result in its own right, not cleaned away.
+
+Gate: if rigid-relation edits are too few to power the study, v1's edit-selection
+strategy changes or the domain does.
+
+Note [R-005a]: the mined-rule vocabulary is DBpedia, but the rigid/mutable label
+applies to the **edited** relation, which in CounterFact is a Wikidata property.
+These are two different vocabularies and both must be recorded.
+
+**Blockers:** none
+
+**Artifacts:**
+- agents/shared/findings.md -> "[R-003] 35.4% of CounterFact edits use a rigid relation"
+- probes/relation_modality.md — contestable table, 34 relations, per-row rationale
+- src/relation_inventory.py — typed reproducer
+
+**Closed:** 2026-09-10
