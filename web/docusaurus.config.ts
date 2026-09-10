@@ -123,7 +123,7 @@ const config: Config = {
     footer: {
       style: "light",
       links: [],
-      copyright: `Written by Saif Ul Islam at Northeastern University. Nothing here is peer reviewed.`,
+      copyright: `Written by Saif Ul Islam. Nothing here is peer reviewed.`,
     },
     docs: {
       sidebar: { hideable: false, autoCollapseCategories: false },

@@ -38,7 +38,7 @@ problem, not the one that is harder.
 ## Elsewhere
 
 - Code for the projects written about here: [github.com/Rubix982](https://github.com/Rubix982)
-- Northeastern University — [islam.saif@northeastern.edu](mailto:islam.saif@northeastern.edu)
+- [saifulislam84210@gmail.com](mailto:saifulislam84210@gmail.com)
 
 ## Corrections
 
