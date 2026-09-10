@@ -1,0 +1,267 @@
+# Reading list. One entry per paper; the key is the citation id you use in
+# writing: <Cite id="meng2022rome" />.
+#
+#   status:    read | skimmed | to-read
+#   relevance: high | medium | low        (to my current work, not in general)
+#   verified:  true when I have checked the venue and year against the paper
+#              itself. false means the entry came from a secondhand note and
+#              the citation should not be trusted yet.
+#   projects:  which of my projects it bears on
+#   gives_me:  the one thing I go back to it for
+
+meng2022rome:
+  title: Locating and Editing Factual Associations in GPT
+  authors: Meng, K., Bau, D., Andonian, A., Belinkov, Y.
+  year: 2022
+  venue: NeurIPS
+  url: https://arxiv.org/abs/2202.05262
+  status: read
+  relevance: high
+  verified: true
+  projects: [rome-neighbors, edit-slice]
+  gives_me: Causal tracing, and the rank-one edit that both my projects use as the edit primitive.
+
+meng2023memit:
+  title: Mass-Editing Memory in a Transformer
+  authors: Meng, K., Sharma, A. S., Andonian, A., Belinkov, Y., Bau, D.
+  year: 2023
+  venue: ICLR
+  url: https://arxiv.org/abs/2210.07229
+  status: read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: Editing many facts at once — the breadth axis, if orphaning turns out to scale with edit count.
+
+cohen2024ripple:
+  title: Evaluating the Ripple Effects of Knowledge Editing in Language Models
+  authors: Cohen, R., Biran, E., Yoran, O., Globerson, A., Geva, M.
+  year: 2024
+  venue: TACL
+  url: https://arxiv.org/abs/2307.12976
+  status: read
+  relevance: high
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: Six evaluation criteria, and the definition of Logical Generalization that narrowed my claim to justification order.
+
+zhong2023mquake:
+  title: "MQuAKE: Assessing Knowledge Editing in Language Models via Multi-Hop Questions"
+  authors: Zhong, Z., Wu, Z., Manning, C. D., Potts, C., Chen, D.
+  year: 2023
+  venue: EMNLP
+  url: https://arxiv.org/abs/2305.14795
+  status: read
+  relevance: high
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: Multi-hop questions after an edit — the closest existing thing to hop resolution.
+
+geva2021ffn:
+  title: Transformer Feed-Forward Layers Are Key-Value Memories
+  authors: Geva, M., Schuster, R., Berant, J., Levy, O.
+  year: 2021
+  venue: EMNLP
+  url: https://arxiv.org/abs/2012.14913
+  status: read
+  relevance: medium
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: Why editing an MLP can change a fact at all.
+
+geva2022promoting:
+  title: Transformer Feed-Forward Layers Build Predictions by Promoting Concepts in the Vocabulary Space
+  authors: Geva, M., Caciularu, A., Wang, K. R., Goldberg, Y.
+  year: 2022
+  venue: EMNLP
+  url: https://arxiv.org/abs/2203.14680
+  status: read
+  relevance: medium
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: The vocabulary-space reading of what an FFN update does.
+
+dai2022knowledgeneurons:
+  title: Knowledge Neurons in Pretrained Transformers
+  authors: Dai, D., Dong, L., Hao, Y., Sui, Z., Chang, B., Wei, F.
+  year: 2022
+  venue: ACL
+  url: https://arxiv.org/abs/2104.08696
+  status: read
+  relevance: medium
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: The earlier localisation story that ROME's causal tracing supersedes.
+
+hase2023localization:
+  title: Does Localization Inform Editing? Surprising Differences in Causality-Based Localization vs. Knowledge Editing
+  authors: Hase, P., Bansal, M., Kim, B., Ghandeharioun, A.
+  year: 2023
+  venue: NeurIPS
+  url: https://arxiv.org/abs/2301.04213
+  status: read
+  relevance: high
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: Localisation does not imply editability. The first thing a hostile reviewer will raise, so it is pre-empted in the design.
+
+mitchell2022mend:
+  title: Fast Model Editing at Scale
+  authors: Mitchell, E., Lin, C., Bosselut, A., Finn, C., Manning, C. D.
+  year: 2022
+  venue: ICLR
+  url: https://arxiv.org/abs/2110.11309
+  status: read
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: The hypernetwork-editor contrast to weight-level editing.
+
+mitchell2022serac:
+  title: Memory-Based Model Editing at Scale
+  authors: Mitchell, E., Lin, C., Bosselut, A., Manning, C. D., Finn, C.
+  year: 2022
+  venue: ICML
+  url: https://arxiv.org/abs/2206.06520
+  status: skimmed
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: Side-memory editing — no weights touched, so no orphaning by construction.
+
+hartvigsen2023grace:
+  title: "Aging with GRACE: Lifelong Model Editing with Discrete Key-Value Adaptors"
+  authors: Hartvigsen, T., Sankaranarayanan, S., Palangi, H., Kim, Y., Ghassemi, M.
+  year: 2023
+  venue: NeurIPS
+  url: https://arxiv.org/abs/2211.11031
+  status: read
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: Retrieval-based editing over a stream of edits.
+
+zhu2020modifying:
+  title: Modifying Memories in Transformer Models
+  authors: Zhu, C., Rawat, A. S., Zaheer, M., Bhojanapalli, S., Li, D., Yu, F., Kumar, S.
+  year: 2020
+  venue: arXiv preprint
+  url: https://arxiv.org/abs/2012.00363
+  status: skimmed
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: The earliest statement of "edit one fact and leave the rest alone" as a task.
+
+yao2023survey:
+  title: "Editing Large Language Models: Problems, Methods, and Opportunities"
+  authors: Yao, Y., Wang, P., Tian, B., Cheng, S., Li, Z., Deng, S., Chen, H., Zhang, N.
+  year: 2023
+  venue: EMNLP
+  url: https://arxiv.org/abs/2305.13172
+  status: read
+  relevance: medium
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: The field map, and the place to check whether a gap is really a gap.
+
+todd2024functionvectors:
+  title: Function Vectors in Large Language Models
+  authors: Todd, E., Li, M. L., Sharma, A. S., Mueller, A., Wallace, B. C., Bau, D.
+  year: 2024
+  venue: ICLR
+  url: https://arxiv.org/abs/2310.15213
+  status: read
+  relevance: high
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: Relations as vectors — a structured basis that NNsight can reach directly.
+
+marks2024geometryoftruth:
+  title: "The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets"
+  authors: Marks, S., Tegmark, M.
+  year: 2024
+  venue: COLM
+  url: https://arxiv.org/abs/2310.06824
+  status: read
+  relevance: medium
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: A worked example of reading structure off representation geometry.
+
+fiottokaufman2025nnsight:
+  title: "NNsight and NDIF: Democratizing Access to Open-Weight Foundation Model Internals"
+  authors: Fiotto-Kaufman, J., Loftus, A. R., Todd, E., et al.
+  year: 2025
+  venue: ICLR
+  url: https://arxiv.org/abs/2407.14561
+  status: read
+  relevance: high
+  verified: true
+  projects: [rome-neighbors, edit-slice]
+  gives_me: The tool everything runs on — deferred execution over model internals.
+
+# ---------------------------------------------------------------------------
+# Secondhand below this line. These came from a literature map or an abstract,
+# not from the paper. Year and venue are unchecked, so do not cite from here.
+# ---------------------------------------------------------------------------
+
+kim2025bilinear:
+  title: Bilinear structure in representations and edit propagation
+  authors: Kim et al.
+  year: 2025
+  status: to-read
+  relevance: high
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: The structured-geometry predictor the project adopts. Needs reading before E-009.
+
+jeong2025steam:
+  title: STEAM — alignment as a predictor of edit propagation
+  authors: Jeong et al.
+  year: 2025
+  status: to-read
+  relevance: high
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: The alignment predictor, the second arm of the comparison.
+
+nishi2024shattering:
+  title: Representation Shattering in Transformers
+  authors: Nishi et al.
+  year: 2024
+  status: to-read
+  relevance: medium
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: Distance to shattering, which is adjacent to but not the same as distance to propagation.
+
+huang2025keyspace:
+  title: Key-space coupling as a multi-probe predictor
+  authors: Huang et al.
+  year: 2025
+  status: to-read
+  relevance: medium
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: The closest multi-probe comparison; needed for positioning.
+
+slaq:
+  title: SLAQ — similarity predicts factual consistency
+  authors: Unverified
+  year: 2024
+  status: to-read
+  relevance: high
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: The nearest existing method. Has to be cited and differentiated, so this one is blocking.
+
+ravel:
+  title: RAVEL — factual attribute disentanglement
+  authors: Unverified
+  year: 2024
+  status: to-read
+  relevance: medium
+  verified: false
+  projects: [rome-neighbors]
+  gives_me: Possibly a cleaner hop-separated dataset than RippleEdits. Worth checking before committing to data.

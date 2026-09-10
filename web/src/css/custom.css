@@ -1,30 +1,1754 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+/* KaTeX ships its own stylesheet and fonts; taking it from node_modules keeps
+   the CSS and the renderer on the same version. */
+@import "~katex/dist/katex.min.css";
 
-/* You can override the default Infima variables here. */
+/* ==========================================================================
+   Open Concept Lab — quiet academic
+   Prose is set in Spectral; the apparatus (nav, metadata, captions, sidebar,
+   contents) is set in IBM Plex Sans. Oxide red is reserved for revision and
+   status marks and appears nowhere else.
+   ========================================================================== */
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* --- ink & paper ------------------------------------------------------ */
+  --ocl-paper: #f5f7f6;
+  --ocl-paper-raised: #ffffff;
+  --ocl-paper-sunken: #eceff0;
+  --ocl-ink: #16283c;
+  --ocl-ink-muted: #56697a;
+  --ocl-ink-faint: #8798a5;
+  --ocl-link: #1c4c7c;
+  --ocl-link-hover: #0f3358;
+  --ocl-oxide: #8c3a2e;
+  --ocl-rule: #d5dcdf;
+  --ocl-rule-strong: #b6c1c6;
+
+  /* --- type ------------------------------------------------------------- */
+  --ocl-prose: "Spectral", "Iowan Old Style", "Palatino Linotype", Georgia,
+    serif;
+  --ocl-apparatus: "IBM Plex Sans", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
+  --ocl-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ocl-measure: 39rem; /* ~66 characters at the body size */
+  --ocl-measure-wide: 52rem;
+
+  /* --- Infima overrides ------------------------------------------------- */
+  --ifm-color-primary: var(--ocl-link);
+  --ifm-color-primary-dark: #194570;
+  --ifm-color-primary-darker: #174066;
+  --ifm-color-primary-darkest: #123553;
+  --ifm-color-primary-light: #1f5388;
+  --ifm-color-primary-lighter: #215892;
+  --ifm-color-primary-lightest: #266aae;
+
+  --ifm-background-color: var(--ocl-paper);
+  --ifm-background-surface-color: var(--ocl-paper-raised);
+  --ifm-font-color-base: var(--ocl-ink);
+  --ifm-heading-color: var(--ocl-ink);
+  --ifm-font-family-base: var(--ocl-prose);
+  --ifm-font-family-monospace: var(--ocl-mono);
+  --ifm-font-size-base: 18px;
+  --ifm-line-height-base: 1.72;
+  --ifm-paragraph-margin-bottom: 1.15em;
+
+  --ifm-heading-font-family: var(--ocl-prose);
+  --ifm-heading-font-weight: 500;
+  --ifm-h1-font-size: 2.35rem;
+  --ifm-h2-font-size: 1.55rem;
+  --ifm-h3-font-size: 1.22rem;
+  --ifm-h4-font-size: 1.05rem;
+  --ifm-heading-line-height: 1.24;
+
+  --ifm-link-color: var(--ocl-link);
+  --ifm-link-hover-color: var(--ocl-link-hover);
+  --ifm-link-decoration: none;
+
+  --ifm-code-font-size: 0.84em;
+  --ifm-code-background: rgba(22, 40, 60, 0.055);
+  --ifm-code-padding-vertical: 0.12em;
+  --ifm-code-padding-horizontal: 0.3em;
+  --ifm-code-border-radius: 2px;
+  --ifm-pre-background: #f9fbfb;
+  --ifm-pre-line-height: 1.6;
+
+  --ifm-toc-border-color: var(--ocl-rule);
+  --ifm-hr-border-color: var(--ocl-rule);
+  --ifm-hr-border-width: 1px;
+  --ifm-table-border-color: var(--ocl-rule);
+  --ifm-table-stripe-background: transparent;
+  --ifm-table-head-background: transparent;
+  --ifm-table-head-font-weight: 500;
+  --ifm-blockquote-color: var(--ocl-ink-muted);
+  --ifm-blockquote-border-color: var(--ocl-rule-strong);
+  --ifm-blockquote-font-size: 1rem;
+
+  --ifm-navbar-background-color: var(--ocl-paper);
+  --ifm-navbar-height: 3.75rem;
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-color: var(--ocl-ink-muted);
+  --ifm-navbar-link-hover-color: var(--ocl-ink);
+  --ifm-footer-background-color: var(--ocl-paper);
+  --ifm-footer-color: var(--ocl-ink-faint);
+
+  --ifm-menu-color: var(--ocl-ink-muted);
+  --ifm-menu-color-active: var(--ocl-ink);
+  --ifm-menu-color-background-active: transparent;
+  --ifm-menu-color-background-hover: transparent;
+  --ifm-menu-link-padding-vertical: 0.3rem;
+  --ifm-menu-link-padding-horizontal: 0;
+
+  --docusaurus-highlighted-code-line-bg: rgba(28, 76, 124, 0.09);
+  --ifm-breadcrumb-item-background-active: transparent;
+  --ifm-global-radius: 3px;
+  --ifm-alert-border-radius: 3px;
+  --ifm-alert-border-left-width: 2px;
+  --ifm-alert-shadow: none;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+[data-theme="dark"] {
+  --ocl-paper: #101a24;
+  --ocl-paper-raised: #16222e;
+  --ocl-paper-sunken: #0b1319;
+  --ocl-ink: #dce4ea;
+  --ocl-ink-muted: #93a5b3;
+  --ocl-ink-faint: #6d8092;
+  --ocl-link: #8fbbe4;
+  --ocl-link-hover: #bcd8f2;
+  --ocl-oxide: #d08a7b;
+  --ocl-rule: #253442;
+  --ocl-rule-strong: #38495a;
+
+  --ifm-color-primary: var(--ocl-link);
+  --ifm-color-primary-dark: #74a9dc;
+  --ifm-color-primary-darker: #679fd7;
+  --ifm-color-primary-darkest: #4483c2;
+  --ifm-color-primary-light: #aacdec;
+  --ifm-color-primary-lighter: #b7d5ef;
+  --ifm-color-primary-lightest: #d8e9f8;
+
+  --ifm-code-background: rgba(220, 228, 234, 0.08);
+  --ifm-pre-background: #0c141c;
+  --docusaurus-highlighted-code-line-bg: rgba(143, 187, 228, 0.13);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+body {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+::selection {
+  background: rgba(28, 76, 124, 0.16);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Chrome — navbar, footer
+   ========================================================================== */
+
+.navbar {
+  font-family: var(--ocl-apparatus);
+  border-bottom: 1px solid var(--ocl-rule);
+  padding-inline: 1.25rem;
+}
+
+.navbar__inner {
+  max-width: 68rem;
+  margin: 0 auto;
+}
+
+.navbar__title {
+  font-family: var(--ocl-prose);
+  font-weight: 500;
+  font-size: 1.02rem;
+  letter-spacing: 0.005em;
+  color: var(--ocl-ink);
+}
+
+.navbar__brand:hover .navbar__title {
+  color: var(--ocl-link);
+}
+
+.navbar__logo {
+  height: 1.35rem;
+  margin-right: 0.55rem;
+  opacity: 0.85;
+}
+
+.navbar__link {
+  font-size: 0.86rem;
+  font-weight: 450;
+  letter-spacing: 0.01em;
+  padding-inline: 0.55rem;
+}
+
+.navbar__link--active {
+  color: var(--ocl-ink);
+  box-shadow: inset 0 -2px 0 var(--ocl-oxide);
+}
+
+.navbar-sidebar {
+  font-family: var(--ocl-apparatus);
+}
+
+.footer {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  border-top: 1px solid var(--ocl-rule);
+  padding: 1.75rem 1.25rem;
+}
+
+.footer__copyright {
+  color: var(--ocl-ink-faint);
+  letter-spacing: 0.015em;
+}
+
+/* Docusaurus' colour-mode toggle is chrome, so keep it near-invisible. */
+.navbar .clean-btn {
+  color: var(--ocl-ink-faint);
+}
+
+/* ==========================================================================
+   Prose
+   ========================================================================== */
+
+.markdown {
+  --ifm-h2-vertical-rhythm-top: 2.6;
+  --ifm-h3-vertical-rhythm-top: 2;
+  --ifm-heading-vertical-rhythm-bottom: 0.7;
+  max-width: var(--ocl-measure);
+  /* Hyphenate only long words, so the rag tightens without "mod-el's". */
+  hyphens: auto;
+  hyphenate-limit-chars: 10 4 4;
+  counter-reset: ocl-figure ocl-table;
+}
+
+/* Long words only; never hyphenate headings or code. */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown code,
+.markdown pre {
+  hyphens: none;
+}
+
+.markdown > h2 {
+  padding-top: 0.4em;
+  border-top: 1px solid var(--ocl-rule);
+  font-weight: 500;
+  letter-spacing: -0.004em;
+}
+
+.markdown > h3,
+.markdown > h4 {
+  font-weight: 600;
+  letter-spacing: -0.002em;
+}
+
+.markdown > h4 {
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Opening paragraph of an article reads a size up. */
+.markdown > p:first-of-type {
+  font-size: 1.09em;
+  line-height: 1.66;
+  color: var(--ocl-ink);
+}
+
+.markdown a:not(.card):not(.button) {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: color-mix(in srgb, var(--ocl-link) 38%, transparent);
+  transition: text-decoration-color 120ms ease, color 120ms ease;
+}
+
+.markdown a:not(.card):not(.button):hover {
+  text-decoration-color: var(--ocl-link);
+}
+
+.markdown strong {
+  font-weight: 600;
+}
+
+.markdown em {
+  font-style: italic;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.35em;
+}
+
+.markdown li {
+  margin-bottom: 0.35em;
+}
+
+.markdown li::marker {
+  color: var(--ocl-ink-faint);
+}
+
+.markdown hr {
+  max-width: 5rem;
+  margin: 2.6rem 0;
+  border-top: 1px solid var(--ocl-rule-strong);
+}
+
+/* Pull quotes and set-off passages. */
+.markdown blockquote {
+  margin: 1.7rem 0;
+  padding: 0 0 0 1.3rem;
+  border-left: 1px solid var(--ocl-rule-strong);
+  font-style: italic;
+  color: var(--ocl-ink-muted);
+}
+
+.markdown blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code */
+.markdown code {
+  font-family: var(--ocl-mono);
+  font-feature-settings: "liga" 0;
+  border: 1px solid color-mix(in srgb, var(--ocl-rule) 70%, transparent);
+}
+
+.theme-code-block {
+  margin-bottom: 1.6rem !important;
+  box-shadow: none !important;
+  border: 1px solid var(--ocl-rule);
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.theme-code-block code {
+  border: 0;
+  font-size: 0.84rem;
+}
+
+.theme-code-block .codeBlockTitle_node_modules-\@docusaurus-theme-classic-lib-theme-CodeBlock-Container-styles-module,
+div[class^="codeBlockTitle"] {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+  color: var(--ocl-ink-muted);
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+/* Tables read as data, so they take the apparatus face. */
+.markdown table {
+  display: table;
+  width: 100%;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  border-collapse: collapse;
+  margin: 1.8rem 0;
+}
+
+/* A table right after a heading belongs to it; don't float it away. */
+.markdown h2 + table,
+.markdown h3 + table {
+  margin-top: 0.9rem;
+}
+
+.markdown table thead tr {
+  border-bottom: 1px solid var(--ocl-ink-muted);
+}
+
+.markdown table th,
+.markdown table td {
+  border: 0;
+  border-bottom: 1px solid var(--ocl-rule);
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown table th {
+  color: var(--ocl-ink-muted);
+  font-weight: 500;
+}
+
+.markdown table td code {
+  font-size: 0.94em;
+}
+
+/* Images sit at the measure by default; Figure widens them when asked. */
+.markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+
+/* Anchor links stay out of the way until the heading is hovered. */
+.hash-link {
+  color: var(--ocl-ink-faint);
+  font-weight: 400;
+}
+
+/* ==========================================================================
+   Figures — numbered by CSS counter so numbering survives reordering
+   ========================================================================== */
+
+.ocl-figure {
+  margin: 2.2rem 0;
+  counter-increment: ocl-figure;
+}
+
+.ocl-figure--wide {
+  /* Break the measure symmetrically without breaking the left margin. */
+  width: min(var(--ocl-measure-wide), calc(100vw - 3rem));
+}
+
+.ocl-figure__frame {
+  padding: 0.9rem;
+  background: var(--ocl-paper-raised);
+  border: 1px solid var(--ocl-rule);
+  border-radius: 2px;
+}
+
+.ocl-figure--plain .ocl-figure__frame {
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.ocl-figure__frame img,
+.ocl-figure__frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+
+.ocl-figure__caption {
+  display: block;
+  margin-top: 0.6rem;
+  padding-left: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.79rem;
+  line-height: 1.55;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-figure__caption::before {
+  content: "Figure " counter(ocl-figure) ". ";
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+.ocl-figure__caption a {
+  color: inherit;
+}
+
+/* Screenshots get a hairline so a white UI does not bleed into the page. */
+.ocl-figure--screenshot .ocl-figure__frame {
+  padding: 0;
+  background: var(--ocl-paper-sunken);
+}
+
+/* ==========================================================================
+   Footnotes & references
+   ========================================================================== */
+
+.markdown .footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ocl-rule);
+  font-size: 0.88rem;
+  color: var(--ocl-ink-muted);
+}
+
+.markdown .footnotes hr {
+  display: none;
+}
+
+.markdown [data-footnote-ref] {
+  font-size: 0.72em;
+  font-weight: 500;
+  vertical-align: super;
+  text-decoration: none;
+  padding-inline: 0.1em;
+}
+
+.ocl-references {
+  margin: 2.6rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--ocl-rule);
+  max-width: var(--ocl-measure);
+}
+
+.ocl-references__heading {
+  margin: 0 0 0.9rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--ocl-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.ocl-references__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ocl-ref;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.ocl-references__list > li {
+  counter-increment: ocl-ref;
+  position: relative;
+  padding-left: 2.1rem;
+  margin-bottom: 0.7rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-references__list > li::before {
+  content: "[" counter(ocl-ref) "]";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+  line-height: 1.85;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-references__list cite {
+  font-style: normal;
+  color: var(--ocl-ink);
+}
+
+.ocl-references__venue {
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Admonitions — flattened into set-off notes rather than coloured boxes
+   ========================================================================== */
+
+.theme-admonition {
+  margin: 1.9rem 0;
+  padding: 0.9rem 1.1rem;
+  background: var(--ocl-paper-sunken);
+  border: 0;
+  border-left: 2px solid var(--ocl-rule-strong);
+  border-radius: 0 2px 2px 0;
+  font-size: 0.95rem;
+  color: var(--ocl-ink);
+}
+
+.theme-admonition .admonitionHeading_node_modules-\@docusaurus-theme-classic-lib-theme-Admonition-Layout-styles-module,
+.theme-admonition div[class^="admonitionHeading"] {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.4rem;
+  color: var(--ocl-ink-muted);
+}
+
+.theme-admonition div[class^="admonitionIcon"] svg {
+  fill: var(--ocl-ink-faint);
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.theme-admonition-caution,
+.theme-admonition-warning,
+.theme-admonition-danger {
+  border-left-color: var(--ocl-oxide);
+}
+
+.theme-admonition p:last-child {
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Mathematics
+   ========================================================================== */
+
+.katex {
+  font-size: 1.03em;
+}
+
+.katex-display {
+  margin: 1.7rem 0;
+  padding: 0.2rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.katex-display > .katex {
+  font-size: 1.08em;
+}
+
+/* ==========================================================================
+   Article apparatus — the preprint-style front matter block
+   ========================================================================== */
+
+.ocl-frontmatter {
+  margin: 0 0 2.4rem;
+  padding: 0;
+  max-width: var(--ocl-measure);
+}
+
+.ocl-frontmatter__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--ocl-prose);
+  font-size: clamp(1.9rem, 1.35rem + 1.9vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.014em;
+  color: var(--ocl-ink);
+  text-wrap: balance;
+}
+
+.ocl-frontmatter__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ocl-frontmatter__title a:hover {
+  color: var(--ocl-link);
+}
+
+.ocl-frontmatter__standfirst {
+  margin: 0 0 1.5rem;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--ocl-ink-muted);
+  font-style: italic;
+  max-width: 34rem;
+}
+
+/* Labelled rows, the way a preprint states its own metadata. */
+.ocl-frontmatter__record {
+  display: grid;
+  grid-template-columns: 6.2rem 1fr;
+  gap: 0.24rem 1rem;
+  margin: 0;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--ocl-rule);
+  border-bottom: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.ocl-frontmatter__record dt {
+  color: var(--ocl-ink-faint);
+  font-weight: 400;
+}
+
+.ocl-frontmatter__record dd {
+  margin: 0;
+  color: var(--ocl-ink);
+}
+
+.ocl-frontmatter__record dd a {
+  color: var(--ocl-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--ocl-rule-strong);
+}
+
+.ocl-frontmatter__record dd a:hover {
+  color: var(--ocl-link);
+  text-decoration-color: var(--ocl-link);
+}
+
+.ocl-frontmatter__record dd.ocl-revised {
+  color: var(--ocl-oxide);
+}
+
+/* ==========================================================================
+   Writing index — a reverse-chronological record, not a card grid
+   ========================================================================== */
+
+.ocl-index {
+  max-width: var(--ocl-measure-wide);
+}
+
+.ocl-index__lede {
+  margin: 0 0 2.2rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  max-width: 34rem;
+  color: var(--ocl-ink-muted);
+  font-size: 1.02rem;
+}
+
+.ocl-entry {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-entry__date {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  line-height: 2.1;
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ocl-entry__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.32rem;
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: -0.008em;
+}
+
+.ocl-entry__title a {
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-entry__title a:hover {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+}
+
+.ocl-entry__summary {
+  margin: 0;
+  color: var(--ocl-ink-muted);
+  font-size: 0.97rem;
+  line-height: 1.6;
+  max-width: 33rem;
+}
+
+.ocl-entry__meta {
+  margin-top: 0.55rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.75rem;
+  color: var(--ocl-ink-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.ocl-entry__meta a {
+  color: var(--ocl-ink-faint);
+  text-decoration: none;
+}
+
+.ocl-entry__meta a:hover {
+  color: var(--ocl-link);
+}
+
+@media (max-width: 640px) {
+  .ocl-entry {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .ocl-entry__date {
+    line-height: 1.5;
+  }
+}
+
+/* ==========================================================================
+   Claim — the one loud element on the site. Shows a claim being narrowed:
+   what was superseded, struck; what stands, beneath it.
+   ========================================================================== */
+
+.ocl-claim {
+  position: relative;
+  margin: 2.4rem 0;
+  padding: 1.5rem 0 0;
+  border-top: 2px solid var(--ocl-ink);
+  max-width: 36rem;
+}
+
+.ocl-claim__label {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  transform: translateY(-100%);
+  padding-bottom: 0.35rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  color: var(--ocl-ink-faint);
+  letter-spacing: 0.02em;
+}
+
+.ocl-claim__superseded {
+  margin: 0 0 0.85rem;
+  font-size: 1.12rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--ocl-oxide);
+  text-decoration-thickness: 1px;
+}
+
+.ocl-claim__standing {
+  margin: 0;
+  /* MDX hands us a paragraph; the block owns the spacing. */
+  font-size: 1.32rem;
+  line-height: 1.42;
+  letter-spacing: -0.008em;
+  color: var(--ocl-ink);
+  text-wrap: pretty;
+}
+
+.ocl-claim__superseded > p,
+.ocl-claim__standing > p,
+.ocl-notice > p {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.ocl-claim__record {
+  display: grid;
+  grid-template-columns: 6.2rem 1fr;
+  gap: 0.2rem 1rem;
+  margin: 1.35rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.79rem;
+}
+
+.ocl-claim__record dt {
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-claim__record dd {
+  margin: 0;
+  color: var(--ocl-ink);
+}
+
+.ocl-claim__record dd a {
+  color: var(--ocl-ink);
+}
+
+/* ==========================================================================
+   Status — provisional, revised, superseded. Oxide lives here too.
+   ========================================================================== */
+
+.ocl-status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+  color: var(--ocl-ink-muted);
+  line-height: 1.4;
+}
+
+.ocl-status::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--ocl-ink-faint);
+  transform: translateY(-0.12rem);
+  flex: none;
+}
+
+.ocl-status--provisional::before,
+.ocl-status--draft::before {
+  background: var(--ocl-oxide);
+}
+
+.ocl-status--standing::before {
+  background: #3f7a5a;
+}
+
+[data-theme="dark"] .ocl-status--standing::before {
+  background: #6faa89;
+}
+
+.ocl-status--superseded {
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-status--superseded::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ocl-ink-faint);
+}
+
+/* A banner form for the top of an unfinished article. */
+.ocl-notice {
+  margin: 0 0 2rem;
+  padding: 0.7rem 0.95rem;
+  max-width: var(--ocl-measure);
+  border-left: 2px solid var(--ocl-oxide);
+  background: color-mix(in srgb, var(--ocl-oxide) 6%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-notice strong {
+  color: var(--ocl-ink);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Aside — a margin note that folds inline on narrow screens
+   ========================================================================== */
+
+.ocl-aside {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.81rem;
+  line-height: 1.58;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-aside > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1400px) {
+  .ocl-aside {
+    float: right;
+    clear: right;
+    width: 12.5rem;
+    margin: 0.35rem -14.5rem 1rem 0;
+    padding-left: 0.85rem;
+    border-left: 1px solid var(--ocl-rule);
+  }
+}
+
+@media (max-width: 1399px) {
+  .ocl-aside {
+    margin: 1.6rem 0;
+    padding-left: 0.95rem;
+    border-left: 1px solid var(--ocl-rule);
+  }
+}
+
+/* ==========================================================================
+   Sidebars & contents — apparatus, so they recede
+   ========================================================================== */
+
+.theme-doc-sidebar-container,
+.theme-doc-toc-desktop,
+.table-of-contents,
+nav.menu,
+nav[class*="sidebar_"],
+nav[aria-label="Blog recent posts navigation"] {
+  font-family: var(--ocl-apparatus);
+}
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--ocl-rule) !important;
+}
+
+nav.menu {
+  padding: 1.25rem 1rem 1.25rem 1.5rem;
+  font-size: 0.83rem;
+}
+
+.menu__list .menu__list {
+  padding-left: 0.85rem;
+  margin-left: 0.1rem;
+  border-left: 1px solid var(--ocl-rule);
+}
+
+.menu__link {
+  border-radius: 0;
+  line-height: 1.45;
+  padding: 0.28rem 0;
+}
+
+.menu__link:hover {
+  color: var(--ocl-link);
+  background: none;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  color: var(--ocl-ink);
+  font-weight: 500;
+  position: relative;
+}
+
+.menu__link--active:not(.menu__link--sublist)::before {
+  content: "";
+  position: absolute;
+  left: -0.75rem;
+  top: 0.42em;
+  bottom: 0.42em;
+  width: 2px;
+  background: var(--ocl-oxide);
+}
+
+.menu__list-item-collapsible > .menu__link {
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+.menu__list-item-collapsible:hover {
+  background: none;
+}
+
+.menu__caret:hover {
+  background: none;
+}
+
+.table-of-contents {
+  font-size: 0.78rem;
+  border-left: 1px solid var(--ocl-rule);
+  padding-left: 1rem;
+}
+
+.table-of-contents__link {
+  color: var(--ocl-ink-faint);
+  line-height: 1.5;
+  display: block;
+  padding: 0.16rem 0;
+}
+
+.table-of-contents__link:hover,
+.table-of-contents__link--active {
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.table-of-contents__left-border {
+  border: 0;
+}
+
+.theme-doc-toc-desktop {
+  top: calc(var(--ifm-navbar-height) + 1.6rem);
+}
+
+/* ==========================================================================
+   Page shells
+   ========================================================================== */
+
+.theme-blog-post-page .container,
+.theme-blog-list-page .container,
+.theme-blog-tags-post-list-page .container,
+.theme-blog-archive-page .container {
+  max-width: 68rem;
+}
+
+.theme-blog-post-page main,
+.theme-blog-list-page main {
+  padding-top: 1.5rem;
+}
+
+/* The blog's "all writing" rail. */
+nav[aria-label="Blog recent posts navigation"] {
+  font-size: 0.8rem;
+  padding-top: 0.4rem;
+}
+
+nav[aria-label="Blog recent posts navigation"] div[class*="sidebarItemTitle"] {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ocl-ink-faint);
+  border-bottom: 1px solid var(--ocl-rule);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem !important;
+}
+
+nav[aria-label="Blog recent posts navigation"] h3[class*="yearGroupHeading"] {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+  margin: 1rem 0 0.4rem;
+}
+
+nav[aria-label="Blog recent posts navigation"] li[class*="sidebarItem"] {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+nav[aria-label="Blog recent posts navigation"] a[class*="sidebarItemLink"] {
+  color: var(--ocl-ink-muted);
+  line-height: 1.4;
+}
+
+nav[aria-label="Blog recent posts navigation"] a[class*="sidebarItemLinkActive"] {
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+/* Docs (notebook) article column */
+.theme-doc-markdown {
+  padding-top: 0.5rem;
+}
+
+.theme-doc-footer {
+  margin-top: 3rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+}
+
+.theme-doc-footer .theme-last-updated {
+  color: var(--ocl-ink-faint);
+  font-style: normal;
+}
+
+.theme-doc-footer .theme-last-updated b {
+  font-weight: 500;
+  color: var(--ocl-ink-muted);
+}
+
+/* Previous / next. Docusaurus still emits the nav when there is nowhere to
+   go, and an empty one leaves a rule floating under the last entry. */
+.pagination-nav:not(:has(.pagination-nav__link)) {
+  display: none;
+}
+
+.pagination-nav {
+  border-top: 1px solid var(--ocl-rule);
+  padding-top: 1.4rem;
+  margin-top: 2.4rem;
+  gap: 1.5rem;
+}
+
+.pagination-nav__link {
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+.pagination-nav__sublabel {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  color: var(--ocl-ink-faint);
+  margin-bottom: 0.25rem;
+}
+
+.pagination-nav__label {
+  font-family: var(--ocl-prose);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ocl-link);
+}
+
+.pagination-nav__label::before,
+.pagination-nav__label::after {
+  content: none;
+}
+
+.pagination-nav__link:hover .pagination-nav__label {
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+}
+
+/* Tags */
+.theme-blog-post-page a[class*="tag_"],
+.theme-blog-list-page a[class*="tag_"],
+a[class*="tagRegular"],
+a[class*="tagWithCount"] {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.75rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: 2px;
+  padding: 0.1rem 0.42rem;
+  color: var(--ocl-ink-muted);
+  background: none;
+}
+
+a[class*="tagRegular"]:hover,
+a[class*="tagWithCount"]:hover {
+  border-color: var(--ocl-link);
+  color: var(--ocl-link);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Home
+   ========================================================================== */
+
+.ocl-home {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 4.5rem;
+}
+
+.ocl-home__masthead {
+  max-width: 36rem;
+  margin-bottom: 3.25rem;
+}
+
+.ocl-home__title {
+  margin: 0 0 1.1rem;
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 2.9rem);
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: -0.018em;
+  color: var(--ocl-ink);
+  text-wrap: balance;
+}
+
+.ocl-home__blurb {
+  margin: 0;
+  font-size: 1.09rem;
+  line-height: 1.68;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-home__blurb a {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.16em;
+}
+
+.ocl-home__section {
+  margin-top: 3.5rem;
+  max-width: var(--ocl-measure-wide);
+}
+
+.ocl-home__sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.4rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--ocl-ink-muted);
+}
+
+.ocl-home__sectionTitle {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.002em;
+}
+
+.ocl-home__sectionLink {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-muted);
+  white-space: nowrap;
+}
+
+.ocl-home__sectionLink:hover {
+  color: var(--ocl-link);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Print — the page should behave like a preprint on paper
+   ========================================================================== */
+
+@media print {
+  .navbar,
+  .footer,
+  .theme-doc-sidebar-container,
+  .theme-doc-toc-desktop,
+  aside[class*="blogSidebar"],
+  .pagination-nav,
+  .theme-doc-footer {
+    display: none !important;
+  }
+
+  .markdown,
+  .ocl-frontmatter {
+    max-width: none;
+  }
+
+  .markdown a {
+    color: inherit;
+  }
+
+  .ocl-figure,
+  .theme-code-block,
+  blockquote {
+    break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+}
+
+/* ==========================================================================
+   Embeds — a live interactive page, self-hosted or deployed elsewhere
+   ========================================================================== */
+
+.ocl-embed__frame {
+  position: relative;
+  width: 100%;
+  background: var(--ocl-paper-raised);
+  border: 1px solid var(--ocl-rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ocl-embed__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.ocl-embed__standalone {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.16em;
+}
+
+/* On a phone an embedded page is unusable at 16:10, so cap how tall it gets
+   and let the reader open it standalone instead. */
+@media (max-width: 700px) {
+  .ocl-embed__frame {
+    aspect-ratio: auto !important;
+    height: 22rem !important;
+  }
+}
+
+.ocl-embed__caption,
+.ocl-embed__note {
+  display: inline;
+}
+
+.ocl-embed__note::before {
+  content: " ";
+}
+
+/* ==========================================================================
+   Data tables — the index pages read as a record you can scan
+   ========================================================================== */
+
+.ocl-page {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 2.75rem 1.25rem 4.5rem;
+}
+
+.ocl-page__head {
+  margin-bottom: 2.75rem;
+}
+
+.ocl-page__title {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.014em;
+  line-height: 1.14;
+}
+
+.ocl-page__lede {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 1.03rem;
+  line-height: 1.66;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-page__section {
+  margin-top: 2.75rem;
+}
+
+.ocl-page__sectionTitle {
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--ocl-ink-muted);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.ocl-page__note {
+  margin: 0 0 1.1rem;
+  max-width: 36rem;
+  font-size: 0.95rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-page__foot {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.79rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-page__foot code,
+.ocl-home__empty code {
+  font-size: 0.92em;
+}
+
+/* A count strip, the way a tracker states its totals. */
+.ocl-tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2.25rem;
+  margin: 1.6rem 0 1.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-home__sectionHead + .ocl-tally {
+  margin-top: 1.1rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.ocl-tally > div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.ocl-tally dt {
+  font-size: 0.76rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-tally dd {
+  margin: 0 0 0.1rem;
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ocl-ink);
+  line-height: 1.1;
+}
+
+.ocl-tally--flag {
+  color: var(--ocl-oxide) !important;
+}
+
+/* The table itself. Apparatus face, hairline rows, no zebra.
+   Infima makes tables display:block with a box on every cell, so both are
+   reset here rather than fought with per-side overrides. */
+.ocl-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.ocl-table__scroll {
+  overflow-x: auto;
+}
+
+.ocl-table thead th {
+  padding: 0 0.85rem 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--ocl-rule-strong);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ocl-ink-faint);
+  white-space: nowrap;
+}
+
+.ocl-table td {
+  padding: 0.7rem 0.85rem 0.7rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--ocl-rule);
+  background: none;
+  vertical-align: top;
+}
+
+.ocl-table tr:target td {
+  background: color-mix(in srgb, var(--ocl-link) 7%, transparent);
+}
+
+.ocl-table--flush thead {
+  display: none;
+}
+
+.ocl-table__main {
+  color: var(--ocl-ink);
+  min-width: 16rem;
+}
+
+.ocl-table__main a,
+.ocl-table__key a,
+.ocl-table__projects a {
+  color: var(--ocl-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: var(--ocl-rule-strong);
+}
+
+.ocl-table__main a:hover,
+.ocl-table__key a:hover,
+.ocl-table__projects a:hover {
+  color: var(--ocl-link);
+  text-decoration-color: var(--ocl-link);
+}
+
+.ocl-table__key {
+  font-family: var(--ocl-mono);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-table__sub,
+.ocl-table__note {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--ocl-ink-muted);
+  max-width: 34rem;
+}
+
+.ocl-table__note {
+  color: var(--ocl-ink-faint);
+  font-style: italic;
+}
+
+.ocl-table__num {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  color: var(--ocl-ink-muted);
+  white-space: nowrap;
+}
+
+.ocl-table__right {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ocl-table__projects {
+  font-size: 0.79rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .ocl-table,
+  .ocl-table thead,
+  .ocl-table tbody,
+  .ocl-table tr,
+  .ocl-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .ocl-table thead {
+    display: none;
+  }
+
+  .ocl-table tr {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--ocl-rule);
+  }
+
+  .ocl-table td {
+    border: 0;
+    padding: 0.1rem 0;
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   Pills — status and bearing, in the tracker's vocabulary
+   ========================================================================== */
+
+.ocl-pill {
+  display: inline-block;
+  padding: 0.08rem 0.42rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: 2px;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+  white-space: nowrap;
+}
+
+.ocl-pill--read {
+  border-color: color-mix(in srgb, #3f7a5a 55%, transparent);
+  color: #35664c;
+}
+
+.ocl-pill--to-read {
+  border-color: color-mix(in srgb, var(--ocl-oxide) 55%, transparent);
+  color: var(--ocl-oxide);
+}
+
+.ocl-pill--rel-high {
+  border-color: var(--ocl-ink-muted);
+  color: var(--ocl-ink);
+}
+
+.ocl-pill--rel-low {
+  border-color: var(--ocl-rule);
+  color: var(--ocl-ink-faint);
+}
+
+[data-theme="dark"] .ocl-pill--read {
+  border-color: color-mix(in srgb, #6faa89 55%, transparent);
+  color: #82bb9c;
+}
+
+.ocl-check {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  color: var(--ocl-ink-faint);
+  white-space: nowrap;
+}
+
+.ocl-check--no {
+  color: var(--ocl-oxide);
+}
+
+/* ==========================================================================
+   Citations
+   ========================================================================== */
+
+.ocl-cite {
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.16em;
+}
+
+.ocl-cite--unverified {
+  text-decoration-style: dotted;
+  text-decoration-color: var(--ocl-oxide);
+}
+
+.ocl-cite--missing {
+  color: var(--ocl-oxide);
+  font-family: var(--ocl-mono);
+  font-size: 0.85em;
+}
+
+/* ==========================================================================
+   Built — cards with a live page inside
+   ========================================================================== */
+
+.ocl-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  gap: 2rem 1.75rem;
+}
+
+.ocl-card {
+  margin: 0;
+}
+
+.ocl-card__preview {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--ocl-paper-raised);
+  border: 1px solid var(--ocl-rule);
+  border-radius: 2px;
+}
+
+.ocl-card__frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* A preview is a picture of the page; interaction happens on its own page. */
+  pointer-events: none;
+}
+
+.ocl-card__body {
+  padding-top: 0.75rem;
+}
+
+.ocl-card__title {
+  margin: 0 0 0.3rem;
+  font-size: 1.06rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ocl-card__title a {
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-card__title a:hover {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+}
+
+.ocl-card__what {
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-card__origin {
+  margin: 0;
+  font-family: var(--ocl-mono);
+  font-size: 0.72rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-home__empty {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  color: var(--ocl-ink-faint);
+}
+
+/* Infima gives tags a pointed left edge; on this site they are plain. */
+.tag_node_modules-\@docusaurus-theme-classic-lib-theme-Tag-styles-module,
+a[class*="tag_"]::before,
+a[class*="tagRegular"]::before,
+a[class*="tagWithCount"]::before {
+  display: none !important;
+}
+
+a[class*="tagWithCount"] span {
+  border: 0;
+  background: none;
+  color: var(--ocl-ink-faint);
+  font-size: 0.9em;
+  padding-left: 0.3em;
+}
+
+a[class*="tagWithCount"] span::before,
+a[class*="tagWithCount"] span::after {
+  display: none !important;
 }

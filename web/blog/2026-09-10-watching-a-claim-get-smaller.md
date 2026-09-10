@@ -4,6 +4,12 @@ title: "Watching a claim get smaller"
 authors: [saif]
 tags: [lab-notes, knowledge-editing, edit-slice, method]
 date: 2026-09-10
+standfirst: >
+  I went to check a claim I liked against the benchmark most likely to have
+  taken it. The claim survived, but smaller — and the smaller version is the
+  one worth building on.
+status: provisional
+project: edit-slice
 ---
 
 These are lab notes, not results. I'm starting a project called **edit-slice** and
@@ -15,7 +21,8 @@ was the most useful thing that happened all day.
 
 ## The setup
 
-When you edit a fact into a language model's weights — ROME, MEMIT, and friends —
+When you edit a fact into a language model's weights — ROME <Cite id="meng2022rome" />,
+MEMIT <Cite id="meng2023memit" />, and friends —
 you change one thing and disturb an unknown amount of other things. The standard
 way to evaluate this is to check the edit's **consequences**. Move the Eiffel
 Tower to Rome, then ask what country it's in, what language people speak nearby,
@@ -36,7 +43,7 @@ backward.*
 
 That claim was too comfortable, which is usually a bad sign.
 
-The obvious place for it to break is Cohen et al.'s **RippleEdits** benchmark. One
+The obvious place for it to break is the **RippleEdits** benchmark <Cite id="cohen2024ripple" />. One
 of its evaluation criteria is *Logical Generalization*, and I knew it covered
 symmetric and inverse relations. Symmetric relations sound backward. If Logical
 Generalization is already a grounds probe, my claim isn't narrow — it's taken.
@@ -109,3 +116,5 @@ have a design and no data. More when there's a number.
 *edit-slice is a research instrument for measuring directional propagation of
 weight-level knowledge edits. It's early. These notes are written to be read over
 the shoulder, not cited.*
+
+<References ids={["cohen2024ripple", "meng2022rome", "meng2023memit"]} />

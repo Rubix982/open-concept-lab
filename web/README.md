@@ -1,41 +1,82 @@
-# Website
+# Open Concept Lab — the site
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
-
-## Installation
-
-```bash
-yarn
-```
-
-## Local Development
+Research writing, published as a working notebook. Docusaurus, restyled for
+reading: prose in Spectral, apparatus (navigation, metadata, captions) in IBM
+Plex Sans, mathematics via KaTeX.
 
 ```bash
-yarn start
+npm install
+npm start          # http://localhost:3000/open-concept-lab/
+npm run build      # static output in build/
+npm run typecheck
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+`npm start` and `npm run build` both run `sync:demos` first (see below).
 
-## Build
+## Where things go
 
-```bash
-yarn build
-```
+| | Path | URL |
+| --- | --- | --- |
+| Dated pieces | `blog/YYYY-MM-DD-slug.md` | `/writing/slug` |
+| Living project pages | `notebook/<project>/*.md` | `/notebook/<project>/…` |
+| Papers | `data/papers.yml` | `/reading` |
+| Standalone HTML pages | `data/built.yml` | `/built`, `/demos/<name>/` |
+| Images | `static/img/<project>/` | `/img/<project>/…` |
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Everything that appears on more than one page lives in one of the three data
+sources — `data/papers.yml`, `data/built.yml`, or blog front matter. The home
+page, `/reading` and `/built` are generated from them, so there are no
+hand-maintained lists to fall out of date.
 
-## Deployment
+The conventions page at `/notebook/writing-here` is the full reference — front
+matter fields, every component, and what each one is for. Read that before
+writing a new piece.
 
-Using SSH:
+## Components
 
-```bash
-USE_SSH=true yarn deploy
-```
+Available in any `.md` or `.mdx` file with no import:
 
-Not using SSH:
+- `<Figure>` — numbered figure, for an image or an inline diagram
+- `<Embed>` — a live interactive HTML page, self-hosted or deployed elsewhere
+- `<Cite id="…">` — inline citation resolved from `data/papers.yml`
+- `<References ids={[…]}>` — numbered reference list from the same file
+- `<Claim>` — a claim mid-revision: what was given up, above what stands
+- `<Status>` / `<Notice>` — how settled a page or a claim is
+- `<Aside>` — a margin note
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
+Registered in `src/theme/MDXComponents.tsx`; implementations in
+`src/components/`.
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+## Interactive HTML pages
+
+Two routes, both handled by `<Embed>`:
+
+- **Hosted elsewhere** — give the entry a `url:`; nothing is copied
+- **Served from here** — give it a `from:` path and `npm run sync:demos` copies
+  it into `static/demos/<name>/`
+
+Either way the page becomes a card on `/built` with a live preview, and can be
+embedded in prose with `<Embed src="/demos/<name>/" title="…" />`. Paths are
+relative to the repo root; a directory source is copied whole, so a page with
+sibling CSS, JS or data files works. `static/demos` is generated and
+gitignored.
+
+## Citations
+
+`data/papers.yml` is the single source. Each entry carries `status`,
+`relevance`, `projects`, and a `verified` flag that records whether the venue
+and year have been checked against the paper itself. Unverified entries render
+with a dotted mark and are listed separately on `/reading`, so a secondhand
+reference can't quietly pass for a checked one.
+
+## Theme overrides
+
+Kept deliberately small:
+
+- `src/css/custom.css` — the whole design system, one file
+- `src/theme/BlogPostItem/` — the front matter block and the index row
+- `src/theme/BlogListPage/` — adds the lede above the index
+- `plugins/lab-data.ts` — loads the data files and blog front matter, and
+  exposes them to any page via `usePluginData("ocl-lab-data")`
+
+Everything else is stock Docusaurus.

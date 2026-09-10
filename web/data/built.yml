@@ -1,0 +1,64 @@
+# Interactive pages. Each entry becomes a card on /built with a live preview.
+#
+#   from:  path relative to the repository root — copied into static/demos/<name>/
+#          by `npm run sync:demos`, then served from this site.
+#   url:   an absolute URL instead, for a page deployed elsewhere (Netlify,
+#          GitHub Pages). Use one of `from` or `url`, not both.
+#   topic: groups the cards on /built.
+#   ratio: preview aspect ratio; drop to 4/3 for a page with a tall sidebar.
+
+built:
+  - name: belief-revision
+    title: The Belief Problem
+    from: mind/belief-revision.html
+    topic: Mind
+    what: >
+      What it takes to give up a belief, and why removing one is harder than
+      adding one. Walks expansion and contraction over the same belief set.
+    ratio: 1.6
+
+  - name: researcher-stream
+    title: The Researcher's Stream
+    from: mind/researcher-stream.html
+    topic: Mind
+    what: >
+      How a line of inquiry actually moves — branching, parking, and coming
+      back — rather than the tidy version that appears in a paper.
+    ratio: 1.6
+
+  - name: one-crate
+    title: One Crate
+    from: economics/mango-supply-chain/one-crate.html
+    topic: Economics
+    what: >
+      A supply chain told through its data problems. Four stops —
+      measurement, Simpson's paradox, variance, the bullwhip effect — each
+      reproducible from a seeded synthetic dataset.
+    ratio: 1.6
+
+  - name: claim-graph
+    title: Claim Knowledge Graph Explorer
+    from: ai/responsible-ai/knowledge-graph/graph.html
+    topic: AI
+    what: >
+      111 papers, 736 typed edges. Nodes are extracted claims rather than
+      papers, so you can ask which claim supported or contradicted which.
+    ratio: 1.5
+
+  - name: apob
+    title: ApoB and the Cardiometabolic Cascade
+    from: medicine/apob-cardiometabolic.html
+    topic: Medicine
+    what: >
+      Why the particle count matters more than the cholesterol number, traced
+      through the cascade it sits in.
+    ratio: 1.6
+
+  - name: spine-crack
+    title: Spine Cracking — What Actually Happens
+    from: medicine/spine-crack.html
+    topic: Medicine
+    what: >
+      The mechanics behind the sound, and which of the common explanations
+      survive contact with the evidence.
+    ratio: 1.6

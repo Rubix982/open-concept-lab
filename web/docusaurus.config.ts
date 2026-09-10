@@ -1,4 +1,6 @@
 import { themes as prismThemes } from "prism-react-renderer";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
@@ -6,58 +8,66 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Open Concept Lab",
-  tagline: "Instruments for knowing and changing what a model believes",
-  favicon: "img/favicon.ico",
+  tagline: "Experiments, writing, and things I built to see whether they work",
+  favicon: "img/favicon.svg",
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    v4: true,
   },
 
-  // Set the production url of your site here
   url: "https://rubix982.github.io",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/open-concept-lab/",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "Rubix982", // Usually your GitHub org/user name.
-  projectName: "open-concept-lab", // Usually your repo name.
+  organizationName: "Rubix982",
+  projectName: "open-concept-lab",
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
   },
+
+  // KaTeX's own stylesheet is imported in src/css/custom.css, so it always
+  // matches the installed renderer rather than a pinned CDN version.
+  stylesheets: [
+    "https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,450;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap",
+  ],
+
+  plugins: [
+    [
+      "./plugins/lab-data.ts",
+      { blogDir: "blog", routeBasePath: "writing" },
+    ],
+  ],
 
   presets: [
     [
       "classic",
       {
         docs: {
+          path: "notebook",
+          routeBasePath: "notebook",
           sidebarPath: "./sidebars.ts",
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          showLastUpdateTime: true,
+          breadcrumbs: false,
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
         },
         blog: {
+          path: "blog",
+          routeBasePath: "writing",
+          blogTitle: "Writing",
+          blogDescription:
+            "Dated notes and essays from an ongoing research practice.",
+          blogSidebarTitle: "All writing",
+          blogSidebarCount: "ALL",
           showReadingTime: true,
-          feedOptions: {
-            type: ["rss", "atom"],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-          // Useful options to enforce blogging best practices
+          postsPerPage: 10,
+          feedOptions: { type: null },
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
           onInlineTags: "warn",
           onInlineAuthors: "warn",
           onUntruncatedBlogPosts: "warn",
@@ -65,82 +75,65 @@ const config: Config = {
         theme: {
           customCss: "./src/css/custom.css",
         },
+        sitemap: {
+          lastmod: "date",
+          changefreq: null,
+          priority: null,
+        },
       } satisfies Preset.Options,
     ],
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: "img/docusaurus-social-card.jpg",
+    colorMode: {
+      defaultMode: "light",
+      respectPrefersColorScheme: true,
+    },
+    metadata: [
+      { name: "author", content: "Saif Ul Islam" },
+      {
+        name: "description",
+        content:
+          "Open Concept Lab — research writing on knowledge editing, interpretability, and what a model believes.",
+      },
+    ],
     navbar: {
       title: "Open Concept Lab",
-      logo: {
-        alt: "My Site Logo",
-        src: "img/logo.svg",
-      },
+      hideOnScroll: false,
       items: [
+        { to: "/writing", label: "Writing", position: "left" },
         {
           type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          sidebarId: "notebookSidebar",
           position: "left",
-          label: "Tutorial",
+          label: "Notebook",
         },
-        { to: "/blog", label: "Blog", position: "left" },
+        { to: "/reading", label: "Reading", position: "left" },
+        { to: "/built", label: "Built", position: "left" },
+        { to: "/about", label: "About", position: "right" },
         {
-          href: "https://github.com/facebook/docusaurus",
-          label: "GitHub",
+          href: "https://github.com/Rubix982/open-concept-lab",
+          label: "Source",
           position: "right",
         },
       ],
     },
     footer: {
-      style: "dark",
-      links: [
-        {
-          title: "Docs",
-          items: [
-            {
-              label: "Tutorial",
-              to: "/docs/intro",
-            },
-          ],
-        },
-        {
-          title: "Community",
-          items: [
-            {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            },
-            {
-              label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
-            {
-              label: "X",
-              href: "https://x.com/docusaurus",
-            },
-          ],
-        },
-        {
-          title: "More",
-          items: [
-            {
-              label: "Blog",
-              to: "/blog",
-            },
-            {
-              label: "GitHub",
-              href: "https://github.com/facebook/docusaurus",
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      style: "light",
+      links: [],
+      copyright: `Written by Saif Ul Islam at Northeastern University. Nothing here is peer reviewed.`,
+    },
+    docs: {
+      sidebar: { hideable: false, autoCollapseCategories: false },
+    },
+    tableOfContents: {
+      minHeadingLevel: 2,
+      maxHeadingLevel: 3,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.oneLight,
+      darkTheme: prismThemes.nightOwl,
+      additionalLanguages: ["bash", "python", "json", "yaml", "diff"],
     },
   } satisfies Preset.ThemeConfig,
 };
