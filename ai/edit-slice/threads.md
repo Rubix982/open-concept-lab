@@ -381,10 +381,13 @@ model never held cannot be orphaned — nothing is left standing to contradict
 anything. Between "the oracle lists these grounds" and "the edit orphaned them"
 there is a missing step: verify the model holds the ground pre-edit. Method (c)
 validates *direction*, not *possession*.
-**Answer:** partial — drives the model size decision [O-004]. GPT-J-6B via NDIF,
-on the rule "smallest model that demonstrably holds the grounds". The possession
-check itself is still not in the pipeline and must be added before any orphan
-rate is reported.
+**Answer:** **confirmed and measured [E-003].** Head possession by constrained
+rank: gpt2-medium 61%, gpt2-large 62%, Llama-3.1-70B **93%**. Scaling *within*
+GPT-2 does nothing; the 90x jump does everything. At GPT-2 scale ~39% of
+rigid-relation edits target facts the model does not hold, so any orphan there is
+an artifact of ignorance. Possession filtering is now mandatory before reporting
+any orphan rate. Open: GPT-J-6B (the intended *edit* target) unmeasured, and
+*ground* possession — more obscure than curated CounterFact heads — is E-004.
 
 ### T-041 · Does contraction EVER occur, on hand-built deductive grounds?
 
@@ -423,3 +426,30 @@ the work and two are missing. Entrenchment is where the human's decision actuall
 gets made — "which do I give up" is answered by relative entrenchment — and we
 have cited it repeatedly without ever defining how to measure it.
 **Answer:** —
+
+### T-044 · The standard pre-edit condition overstates possession
+
+**Status:** answered
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** The editing literature selects edit sets with
+P(target_true) > P(target_new). Is that a valid possession test?
+**Answer:** No — it is a forced binary choice and too easy. On identical items:
+two-way 75%, constrained rank 61%, unconstrained top-1 12%. The last is confounded
+by CounterFact's temporally/locatively ambiguous templates ("died at" -> "the age
+of 90"), not by ignorance — the same model ranks Koun/Athens 1/10 under constraint.
+Constraining candidates to objects attested for the same relation fixes both ends.
+Cheap, general, and directly useful to anyone building edit sets [E-003].
+
+### T-045 · Possession of the EDIT TARGET, not just the audited model
+
+**Status:** active
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** Possession was measured on Llama-70B, but ROME would be applied to
+GPT-J-6B. If GPT-J sits nearer GPT-2 than Llama, the possession argument has moved
+the problem rather than solved it — we would be editing a model that does not hold
+its own grounds. If GPT-J is low: get ROME working on 70B (hyperparameters and
+second-moment statistics we do not have), or accept a possession ceiling on the
+edit target and report it as a limitation.
+**Answer:** — (sweep running)

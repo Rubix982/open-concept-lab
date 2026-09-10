@@ -454,3 +454,80 @@ contestable table like `probes/relation_modality.md`.
 **Confidence: high** for steps 1 and 2 (measured, and the examples are legible).
 **Medium** for the recommendation — property-pair co-variation is not yet
 computed, only conjectured from five hand-read cases.
+
+---
+
+## [E-003] Finding: possession is real, scale fixes it — and the field's standard test overstates it
+
+_Date: 2026-09-10 · 165 rigid-relation items, seed 1538, identical distractor sets per item_
+
+**Verdict: [T-039] confirmed and [O-004] empirically vindicated.** Possession is a
+genuine gate, GPT-2 fails it, and a large model clears it.
+
+### The headline
+
+| model | top-1 | top-3 |
+| --- | ---: | ---: |
+| gpt2-medium (355M) | 61% | 79% |
+| gpt2-large (774M) | 62% | 83% |
+| **Llama-3.1-70B** | **93%** | **98%** |
+
+**Scaling within GPT-2 did nothing (61 -> 62). Scaling 90x did everything (-> 93).**
+Worth stating because the medium->large null is easy to misread as "scale does not
+fix possession" — it looked flat only because the step was too small. Gains
+concentrate where GPT-2 was weakest: P449 original broadcaster 27% -> 93%, P19
+place of birth 47% -> 87%, P364 53% -> 93%, P740 60% -> 100%.
+
+**Consequence for edit selection.** At GPT-2 scale ~39% of rigid-relation edits
+target facts the model does not hold, and any orphan measured on those is an
+artifact of ignorance rather than of editing. At 70B it is 7%. Edit sets must be
+filtered by possession before any orphan rate is reported.
+
+### The measurement result, which may matter more
+
+Three measures over the same 165 items disagree wildly:
+
+| measure | gpt2-medium | what it actually measures |
+| --- | ---: | --- |
+| `P(target_true) > P(target_new)` — **the editing literature's standard pre-edit condition** | 75% | a forced binary choice; too easy |
+| **constrained rank, top-1** (ours) | **61%** | possession |
+| unconstrained top-1 generation | 12% | possession *and* template ambiguity, confounded |
+
+The unconstrained collapse is not ignorance. CounterFact templates are ambiguous
+between temporal and locative readings: *"Karolos Koun died at"* -> `" the age of
+90"`, *"El Filibusterismo, formulated in"* -> `" the early 1970s"`. The model
+answers a different question and scores zero while knowing the answer — Koun/Athens
+ranks **1/10** under constraint on the same model that scored it zero unconstrained.
+
+Constraining candidates to objects attested for the **same relation** fixes both
+ends: type-matching means template ambiguity cannot express itself, and the choice
+stays hard enough to discriminate at 70B.
+
+**So the standard pre-edit condition overstates possession.** Anyone selecting edit
+sets with it is admitting facts the model does not hold. This is cheap to fix and
+we should say so.
+
+### Open — the gap this creates
+
+Possession was measured on Llama-70B, but the model we intend to **edit** is
+GPT-J-6B, whose possession is unmeasured. If GPT-J sits nearer GPT-2 (61%) than
+Llama (93%), the possession argument has moved the problem rather than solved it:
+we would be editing a model that does not hold its own grounds. Sweep running.
+
+If GPT-J is low the choice is: get ROME working on a 70B model (hyperparameters and
+second-moment statistics we do not have), or accept a possession ceiling on the edit
+target and report it as a limitation.
+
+### Caveats
+
+- Possession here is of the **edited head**, not of **grounds**. Grounds are more
+  obscure than CounterFact's curated facts, so 93% is an optimistic upper bound for
+  them. Ground possession is E-004.
+- 10 candidates per item. A larger candidate set is harder and would lower all
+  three models; the ordering should be stable but the levels are not absolute.
+- CounterFact is a curated set of facts models tend to know — not a random sample
+  of world knowledge.
+
+**Confidence: high** for the ordering and the measurement critique (paired design,
+identical items and distractors). **Medium** for the absolute levels, which depend
+on candidate-set size.

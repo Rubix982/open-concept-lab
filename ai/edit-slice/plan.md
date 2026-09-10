@@ -59,7 +59,8 @@ _None._
 | T-014 | open | Salvage from the cut material |
 | T-035 | superseded | Mined Horn rules — dead over DBpedia [E-001], reframed by [E-002] |
 | T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
-| T-039 | **active** | Possession — does the model hold the ground? |
+| T-039 | answered | Possession measured: gpt2 61% vs Llama-70B 93% [E-003] |
+| T-045 | **active** | Possession of the EDIT target (GPT-J), not just the audited model |
 | T-041 | **active** | Does contraction ever occur on hand-built deductive grounds? |
 | T-043 | open | Dimension space of a knowledge bit — entrenchment undefined |
 

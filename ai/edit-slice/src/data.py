@@ -1,5 +1,10 @@
 """Dataset loading for edit-slice.
 
+Import convention: `src/` is a FLAT module namespace, not a package. Consumers put
+`src/` on sys.path and import `data`, `probing`, `wikidata` directly. Importing as
+`src.data` breaks the intra-package imports and fails with a confusing
+"unknown location" error.
+
 Loading is a module with a typed interface, separate from probing, metrics and
 reporting (CLAUDE.md, "Stack and conventions").
 

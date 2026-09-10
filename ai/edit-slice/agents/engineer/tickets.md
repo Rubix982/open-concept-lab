@@ -94,3 +94,53 @@ method (c) as discovery per design.md §0.
 **Blockers:** none
 **Artifacts:** agents/engineer/workspace/; agents/shared/findings.md
 **Closed:** —
+
+---
+
+### E-003 · Possession check — does the model hold what we intend to edit?
+
+**Status:** in-progress
+**Type:** spike
+**Priority:** high
+**Created:** 2026-09-10
+**Updated:** 2026-09-10
+**Estimated:** 3h (time-boxed)
+**Spent:** ~3h. Head possession done; ground possession split to E-004.
+
+**Result (head possession):** gpt2-medium 61% / gpt2-large 62% / Llama-3.1-70B
+**93%** top-1 by constrained rank, 165 items. [T-039] confirmed, [O-004]
+vindicated. Falsification did NOT trigger: head possession is *not* already high
+at gpt2-medium under a valid measure — it only looked high (75%) under the
+literature's two-way test, which this ticket shows overstates possession.
+Remaining: GPT-J-6B, the intended *edit* target, still sweeping.
+
+**Description:**
+Executes [T-039]. A ground the model never held cannot be orphaned, so between
+"the oracle lists these grounds" and "the edit orphaned them" sits a missing step
+this ticket supplies.
+
+Two layers, head first because it is free:
+
+1. **Head possession.** Does the model hold the fact we intend to edit? For each
+   CounterFact rigid-relation edit, teacher-force `target_true` and `target_new`
+   given the prompt and compare. The standard pre-edit condition is
+   P(target_true) > P(target_new). If a model fails this, editing that fact is
+   meaningless and any orphan measured on it is an artifact.
+2. **Ground possession.** Same test against grounds. Needs prompt templates for
+   ground properties (P119 burial, P123 publisher, ...), which CounterFact does
+   not supply. Deferred to E-004.
+
+**Why it also settles [O-004] empirically.** The charter was amended to GPT-J on
+the *argument* that GPT2-medium is too thin to hold grounds. Running possession
+across gpt2-medium and gpt2-large — both already cached — converts that argument
+into a measurement and gives a scaling trend before committing NDIF time. GPT-J
+weights are NOT cached locally (7.3MB of config only) and 6B fp16 will not fit
+16GB RAM, so GPT-J genuinely requires NDIF.
+
+**Falsification:** if head possession is already high at gpt2-medium, the
+possession argument for scaling weakens and O-004 rests on ground possession
+alone — which then must be measured before the model choice is justified.
+
+**Blockers:** none
+**Artifacts:** src/probing.py; agents/engineer/workspace/; agents/shared/findings.md
+**Closed:** —
