@@ -1,5 +1,9 @@
 # Does representational geometry predict edit propagation?
 
+> ⚠️ **SUPERSEDED (2026-08-24).** This is the geometry-predictor framing, now archived
+> after the category correction ([T-017]) and the pivot to the consistency-certifier
+> ([T-018]). Use **`DECK_trajectory.md`** for the 2026-08-25 talk. Kept for history.
+
 _Call with Natalie & Arnab · 2026-08-25 · Saif Ul Islam_
 _A 15-min walkthrough. Numbers marked ⟨FILL⟩ get pasted in after the E-011 run._
 
