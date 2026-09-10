@@ -458,3 +458,61 @@ edit target and report it as a limitation.
 far more than a 50-edit pilot needs. ROME on 70B is not required. Note the audit
 model must BE the edited model — Llama-70B's role is to show possession is
 scale-dependent, not to be the pilot's subject.
+
+### T-046 · Reframe the primary deliverable as the possession/structure map
+
+**Status:** open
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** The strongest results so far are edit-independent: the measurement
+critique (75/61/12 on identical items) and the possession curve (61->62->73->93).
+Both stand whether or not ROME ever runs. Proposal: make the primary deliverable a
+map of whether a model holds the **justificational neighbourhood** of an editable
+fact — the inputs and outputs — which every edit evaluation presumes and none
+checks. Edit evaluation becomes phase 2, which the map makes interpretable.
+Strictly better on risk: T-041 may come back null and the map survives it.
+E-004 supports it — joint possession 69%, dense enough to centre.
+**Answer:** —
+
+### T-047 · Lens 2 second pass — factual probing, not editing
+
+**Status:** open
+**Parent:** T-046
+**Opened:** 2026-09-10
+**Question:** R-002 searched the *editing* literature because the claim was about
+editing. If the headline becomes "what does the model hold", the neighbours change:
+LAMA and its successors, factual-probing methodology, calibration, knowledge
+boundaries. That is a crowded field and "expose the ground truths" phrased broadly
+walks straight into it. What survives is narrower — direction (input/output
+structure rather than flat fact lists), grounds specifically (nobody probes
+justifications), and possession as a **precondition for a propagation claim**
+rather than a capability score. Must be closed before any write-up.
+**Answer:** —
+
+### T-048 · Grain confound in the head-vs-ground comparison
+
+**Status:** open
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** [E-004] found ground possession (82%) above head possession (73%),
+contradicting the prediction. The cause looks like granularity, not knowledge:
+surviving ground properties are countries and languages (small answer spaces) while
+heads are cities. The one fine-grained ground property, P131, scores worst at 53%.
+Also top-3 is 100% everywhere, so the measure is at ceiling. Fix: grain-matched
+and larger candidate sets before any head-vs-ground claim is made.
+**Answer:** —
+
+### T-049 · Type-matching is not cue-matching
+
+**Status:** answered
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** E-003/E-004 controlled distractors by *type* — when the relation
+wants a place, every candidate is a place. Is that the right control?
+**Answer:** No. The operative confound is not type but **cue**: the subject's
+surface form suggests an answer independently of any stored fact ("Darrieux" ->
+French, "Yakuza" -> Japan). Type-matched but cue-mismatched distractors are easy,
+which is why top-3 saturated at 100%. The correct control is distractors the
+subject's surface form suggests *equally* — obtained automatically by mining the
+model's own subject-free prior. Possession is then **lift over that prior**, not
+raw rank. Recorded as the RCA on E-005.

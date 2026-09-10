@@ -459,6 +459,16 @@ computed, only conjectured from five hand-read cases.
 
 ## [E-003] Finding: possession is real, scale fixes it — and the field's standard test overstates it
 
+> **SUPERSEDED 2026-09-10 — measure contaminated by surface plausibility.**
+> Distractors were drawn at random from the relation's value pool, so a model with
+> no entity knowledge can score well from morphology and base rates alone:
+> "Darrieux" looks French, "Yakuza" looks Japanese. The ordering below may still
+> hold, but it is not established by this design. Superseded by E-005, which mines
+> hard negatives from the model's own subject-free prior and reports lift over it.
+> The **measurement critique** (75% / 61% / 12% disagreement, and the template
+> ambiguity behind it) is unaffected — that compares measures on identical items
+> and does not depend on distractor quality.
+
 _Date: 2026-09-10 · 165 rigid-relation items, seed 1538, identical distractor sets per item_
 
 **Verdict: [T-039] confirmed and [O-004] empirically vindicated.** Possession is a
@@ -536,6 +546,11 @@ on candidate-set size.
 
 ## [E-003b] Finding: GPT-J-6B possession is 73% — usable as the edit target, with filtering
 
+> **SUPERSEDED 2026-09-10** — same defect as E-003 (random distractors admit
+> surface-cue scoring). The *decision* it supported — pilot runs on GPT-J, audit
+> model must be the edited model — does not depend on the absolute levels and
+> stands. The numbers do not.
+
 _Date: 2026-09-10 · same 165 items, same distractors_
 
 **Answers [T-045].** The hard fork is avoided: we do not need ROME on a 70B model.
@@ -579,3 +594,76 @@ selection using the standard pre-edit condition hides that* [T-044].
 **Confidence: high** for the ordering (paired design, identical items and
 distractors across all four models). **Medium** for absolute levels — 10 candidates
 per item; a larger candidate set would lower all four.
+
+---
+
+## [E-004] Finding: joint possession is 69% — the pilot has a pool, but the ground number is confounded
+
+> **SUPERSEDED 2026-09-10 — the measure did not discriminate.** Top-3 was 100% on
+> every property: a test everything passes separates nothing. Three causes, all
+> design faults rather than findings: only 9 distractors, drawn at random rather
+> than as hard negatives; no subject-free baseline, so surface plausibility is
+> indistinguishable from knowledge; and coarse-grained properties (countries,
+> languages) dominating the surviving set. The **attrition analysis** — that
+> template coverage, not ground availability, throttles the sample — is unaffected
+> and stands. Superseded by E-005.
+
+_Date: 2026-09-10 · GPT-J-6B, 116 (subject, ground) pairs over 89 subjects, 13 properties_
+
+**Verdict: the gate passes.** Joint possession — head held **and** at least one
+ground held, same subject, both top-1 by constrained rank — is **61/89 = 69%**,
+comfortably above the ~50% threshold the ticket set for pool collapse.
+
+| measure | GPT-J-6B |
+| --- | ---: |
+| head possession [E-003b] | 73% |
+| **ground possession** | **82%** top-1, 100% top-3 |
+| **joint (head AND >=1 ground)** | **69%** |
+
+### The prediction was wrong, and the reason matters
+
+The ticket argued 93%/73% were **ceilings** for grounds, because CounterFact was
+curated for familiarity while grounds are whatever Wikidata asserts. Grounds came
+back **higher** than heads (82% vs 73%). That is not a refutation of the argument —
+it is a **granularity confound** in which properties survived the filters.
+
+| surviving ground property | n | top-1 | grain |
+| --- | ---: | ---: | --- |
+| P495 country of origin | 33 | 85% | coarse |
+| P17 country | 12 | 100% | coarse |
+| P1412 languages spoken | 13 | 92% | coarse |
+| P364 original language | 8 | 100% | coarse |
+| P407 language of work | 7 | 100% | coarse |
+| P27 country of citizenship | 14 | 71% | coarse |
+| **P131 administrative territory** | 15 | **53%** | **fine** |
+
+Grounds skew to **countries and languages** — small answer spaces. Heads skew to
+**cities** (P19 birth 53%, P20 death 60%, P740 formation 60%). The single
+fine-grained ground property, P131, scores worst of all at 53% — exactly the
+pattern the grain hypothesis predicts. **So head-vs-ground is not a fair
+comparison as measured, and the 82% must not be reported as "grounds are better
+known than heads".**
+
+### Two further caveats that bound the number
+
+1. **Top-3 is 100% across every property.** The measure is at ceiling for grounds
+   and therefore not discriminating. With 10 candidates drawn from a pool of
+   countries or languages, the task is close to trivial. A larger and
+   grain-matched candidate set is needed before the ground figure means much.
+2. **Attrition is heavy and template-driven.** 165 subjects -> 89 with any usable
+   ground probe; 116 pairs over 13 properties, from 26 written templates. The
+   binding constraint is **template coverage, not ground availability** — the
+   median subject has 8 grounds (E-004 step 1) but most sit on properties we did
+   not template. This is the opposite of what the ticket expected, and it is a
+   cheap lever: more templates directly widens the pool.
+
+### What this licenses
+
+- The pilot has an adequate pool. ~69% of possession-filtered rigid edits carry at
+  least one held ground, so orphan probing has something to probe.
+- It does **not** license a claim that grounds are well known. Grain-matched
+  distractors are required first.
+
+**Confidence: high** for the joint figure as defined (paired, same model, same
+measure). **Low** for ground possession as an absolute — confounded by grain and
+sitting at ceiling on top-3.

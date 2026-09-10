@@ -11,7 +11,7 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 2 — Existence test. Charter amended to GPT-J-6B via NDIF; hand-built deductive grounds.
+Phase 2 — Existence test. Possession re-opened (E-005): first measure could not separate knowledge from surface plausibility.
 
 ## Active Tickets
 
@@ -61,7 +61,12 @@ _None._
 | T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
 | T-039 | answered | Possession measured: gpt2 61% vs Llama-70B 93% [E-003] |
 | T-045 | **active** | Possession of the EDIT target (GPT-J), not just the audited model |
-| E-004 | open | Ground possession — heads are a ceiling, grounds are the real gate |
+| E-003 | **superseded** | Possession numbers — random distractors admit surface-cue scoring |
+| E-004 | **superseded** | Joint possession — measure did not discriminate (top-3 = 100%) |
+| E-005 | open | Re-measure possession against hard negatives mined from the model's prior |
+| T-046 | open | Reframe deliverable as the possession/structure map |
+| T-047 | open | Lens 2 second pass — factual probing, not editing |
+| T-048 | open | Grain confound in head-vs-ground comparison |
 | T-041 | **active** | Does contraction ever occur on hand-built deductive grounds? |
 | T-043 | open | Dimension space of a knowledge bit — entrenchment undefined |
 

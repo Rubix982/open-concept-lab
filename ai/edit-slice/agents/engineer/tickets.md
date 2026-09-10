@@ -149,13 +149,24 @@ alone — which then must be measured before the model choice is justified.
 
 ### E-004 · Ground possession — does the model hold the GROUNDS, not just the heads?
 
-**Status:** open
+**Status:** closed
 **Type:** spike
 **Priority:** high
 **Created:** 2026-09-10
 **Updated:** 2026-09-10
 **Estimated:** 4h (time-boxed; if Spent > 8h, split or re-scope)
-**Spent:** —
+**Spent:** ~2h
+
+**Result:** joint possession **69%** (61/89), above the ~50% collapse threshold —
+the pilot has a pool. Ground possession 82% top-1, but **grain-confounded** and at
+ceiling on top-3, so it may not be reported as "grounds are better known than
+heads" [T-048]. Attrition is template-driven, not availability-driven: 165 -> 89
+subjects, the opposite of what this ticket predicted.
+
+**Artifacts:**
+- agents/shared/findings.md -> "[E-004] joint possession is 69%"
+- probes/ground_templates.md, src/ground_templates.py — 26 contestable templates
+- agents/engineer/workspace/ground_possession.py, extend_snapshot.py
 
 **Description:**
 E-003 measured possession of the **edited head** — the fact CounterFact intends to
@@ -188,8 +199,10 @@ any orphan rate is reported [T-039].
    readings ("died at" invited "the age of 90"; see T-044).
 3. Distractors: other values attested for the **same ground property**, so
    candidates are type-matched exactly as in E-003.
-4. Score constrained rank on Llama-3.1-70B via `src/remote.py`. Report top-1 and
-   top-3 per ground property, and the head-vs-ground gap per subject.
+4. Score constrained rank on **GPT-J-6B** via `src/remote.py` — corrected
+   2026-09-10 from Llama-3.1-70B. [E-003b] established the audit model must BE the
+   edited model, and GPT-J is the pilot's subject. Carry Llama-70B as a ceiling
+   column only. Report top-1/top-3 per ground property and the head-vs-ground gap.
 5. Report the **joint** figure: fraction of edits where the head AND at least one
    ground are both held. That is the pilot's usable pool.
 
@@ -206,4 +219,65 @@ concerns whether grounds exist to be orphaned at all.
 
 **Artifacts:** probes/ground_templates.md; agents/engineer/workspace/;
 agents/shared/findings.md
+**Closed:** —
+
+---
+
+### E-005 · Possession, re-measured against hard negatives
+
+**Status:** open
+**Type:** spike
+**Priority:** high
+**Created:** 2026-09-10
+**Updated:** 2026-09-10
+**Estimated:** 4h (time-boxed)
+**Spent:** —
+
+**RCA (re-open of E-003/E-003b/E-004, 2026-09-10):**
+
+> E-003 and E-004 measured possession by ranking the true answer against
+> distractors sampled at random from the relation's value pool. That design cannot
+> separate stored knowledge from surface plausibility: "Darrieux" looks French and
+> "Yakuza" looks Japanese, so a model holding no entity knowledge scores well from
+> morphology and base rates. E-004 exposed it — top-3 hit 100% on every ground
+> property, and a test everything passes separates nothing — but the same defect
+> was present in E-003 and I reported that ordering as high confidence anyway. What
+> was misunderstood: I treated type-matching (candidates are all places) as
+> sufficient control, when the operative confound is *cue-matching* (candidates
+> must be equally suggested by the subject's surface form). CLAUDE.md already
+> requires a control condition and none was run.
+
+**Description:**
+Re-measure head and ground possession with a design that subtracts the prior.
+
+1. **Hard negatives from the model's own prior.** For each item, run the
+   **subject-free** prompt (`"___ was born in the city of"`) and take the model's
+   top-k predictions as distractors. Ranking the true answer first then requires
+   knowledge that beats the model's own base rate — surface morphology and
+   frequency are subtracted out by construction, with no hand-curation.
+2. **Report lift, not accuracy.** The subject-free ranking is a reported column.
+   Possession = improvement the subject provides over no subject at all.
+3. **Surface-cue probe.** Substitute a surface-matched entity with a different true
+   answer (another French-looking name whose language is not French). Unchanged
+   ranking implies the model is reading morphology, not the entity.
+4. **25-50 distractors**, so top-3 stops saturating. Report by answer-space size so
+   grain is visible rather than confounded [T-048].
+
+Run on gpt2-medium, gpt2-large, gpt-j-6b, Llama-3.1-70B for heads (to re-establish
+or refute the scale curve) and on gpt-j-6b for grounds and joint possession.
+
+**What survives from the superseded work and must not be re-derived:**
+- The **measurement critique** [T-044] — 75%/61%/12% on identical items, and
+  CounterFact's temporal/locative template ambiguity. Compares measures, not
+  distractor quality.
+- The **attrition analysis** — template coverage, not ground availability, throttles
+  the sample (165 -> 89 subjects, median 8 grounds each).
+- The **decision** that the audit model must be the edited model [E-003b].
+
+**Falsification:** if lift over the subject-free prior is near zero, the models are
+scoring on surface cues and possession as we have defined it is not measurable this
+way — which would invalidate the possession gate itself, not merely its numbers.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/; agents/shared/findings.md
 **Closed:** —
