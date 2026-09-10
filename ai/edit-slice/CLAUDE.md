@@ -49,7 +49,11 @@ setting. Never frame it as "nobody thought of this."
 - Three outcome categories, keep them distinct in every metric name and column:
   - `update` — a fact that should have been replaced was (correct)
   - `damage` — an unrelated dependent broke (harmful)
-  - `orphan` — the edit left its own grounds intact and now contradictory (new)
+  - `orphan` — the edit left its own grounds standing, and the resulting belief
+    state is jointly **implausible** (new). *Amended 2026-09-10:* previously
+    "and now contradictory". Measured [E-002]: the grounds are evidential, so a
+    satisfying world usually exists and the claim is implausibility, not
+    inconsistency. Graded, never binary. See definitions.md declaration 6.
 
 Banned word: **"inevitable."** Full world-model revision is undeliverable.
 
@@ -57,10 +61,17 @@ Banned word: **"inevitable."** Full world-model revision is undeliverable.
 
 ## Current task
 
-**Backward-probe pilot.** ~50 CounterFact edits, GPT2-medium, ROME. Two
-hand-built probe sets per edit: consequences (forward) and grounds (backward).
-Measure contradiction rate in each. Hypothesis: forward looks respectable
-because that's what these methods were tuned against; backward fails badly.
+**Backward-probe pilot.** ~50 CounterFact edits, **GPT-J-6B via NDIF**, ROME.
+Two hand-built probe sets per edit: consequences (forward) and grounds
+(backward). Hypothesis: forward looks respectable because that's what these
+methods were tuned against; backward fails badly.
+
+**Grounds are hand-built and deliberately deductive** for this pilot. E-002 found
+that grounds *as expressed in Wikidata* are evidential, not deductive — but that
+is a fact about Wikidata's property schema, not about knowledge. Hand-building
+lets us ask the sharper question: **does contraction ever occur at all?**
+Hand-picked sets are legitimate for an **existence** claim and illegitimate for
+any **frequency** claim. Do not let this pilot's sets be reused to estimate a rate.
 
 Deliverable is a two-panel figure and a number. Nothing else needs to exist yet.
 Do not build the movement-sweep infrastructure until this asymmetry is
@@ -75,7 +86,12 @@ Primary signal is distributional movement, not accuracy.
 - **KL** pre→post over next-token distribution at the final position. Unsigned
   magnitude; needs no reference answer.
 - Carry three signed quantities alongside, always:
-  - log-prob of pre-edit correct answer (for grounds probes this should **not** fall)
+  - log-prob of pre-edit correct answer. *Amended 2026-09-10:* this previously
+    read "for grounds probes this should **not** fall", which assumed grounds are
+    bystanders. They are the thing under audit. Measurement is now **sign-free** —
+    ask whether the model gave up *anything* where coherence demanded it give up
+    *something* — and `orphan` is graded, per definitions.md declaration 6 and
+    agents/shared/decisions.md [E-002].
   - log-prob of injected object token (rising where it shouldn't = leakage)
   - entropy change (rising = confusion, not reassignment)
 - Multi-token answers: teacher-force and sum log-prob deltas. Never read
@@ -200,6 +216,11 @@ citation from memory — look it up or leave a `TODO(cite)`.
   which is the expensive option.
 - Token-cost or inference-savings framing as headline. It is motivation at most.
   Leading with cost invites "RAG already solves this, cheaper."
-- Scaling to frontier models. GPT2-medium is the right size for this pilot;
-  small and legible beats large and slow here.
+- Scaling **for its own sake**, or to frontier scale for headline value. The
+  discipline stands; the blanket size cap does not. *Amended 2026-09-10:* the
+  model must be large enough to **hold the grounds it is audited against** — a
+  model that never knew the justification cannot orphan it, so possession is a
+  **construct requirement**, not ambition. GPT2-medium is too thin for that, so
+  the working target is **GPT-J-6B via NDIF**. Choose the smallest model that
+  demonstrably holds the grounds; "small and legible" still wins every tie.
 - Any claim of novelty stronger than "unclaimed in this setting."

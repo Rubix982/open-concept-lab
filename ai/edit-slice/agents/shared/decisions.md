@@ -54,3 +54,50 @@ these facts jointly improbable, confirm?" rather than the false claim
 **Revisit if:** the graded measure proves unrankable in practice (no stable
 threshold separating "materially implausible" from "slightly moved"), or if a
 deductive subset large enough to power a study is found after all.
+
+---
+
+## [O-004] Decision: raise the model to GPT-J-6B via NDIF; hand-build deductive grounds for the pilot
+
+_Date: 2026-09-10_
+
+**Decision:** Amend `CLAUDE.md`'s blanket size cap. The pilot moves from
+GPT2-medium to **GPT-J-6B via NDIF**, and the pilot's ground sets are
+**hand-built and deliberately deductive** rather than discovered.
+
+**Rationale — two independent reasons, neither of them ambition:**
+
+1. **Possession is a construct requirement [T-039].** A model that never held a
+   justification cannot orphan it. If GPT2-medium does not know Perec was born in
+   Paris, the "ground" is not left standing — it was never there — and the
+   phenomenon is unobservable regardless of whether it is real. The audited system
+   must possess the beliefs being audited. NDIF removes the resource objection.
+2. **Wikidata's schema is not knowledge's schema.** E-002 concluded grounds are
+   evidential from what Wikidata expresses. Wikidata has `place of burial`; it
+   cannot express "city-in-France ^ tower-in-city => tower-in-France". Letting a
+   KG's property set decide whether deduction exists was a category error.
+   Hand-building asks the sharper question directly: **does contraction ever
+   occur, even where entailment is explicit?**
+
+**Scope of the claim this licenses — binding.** Hand-picked ground sets support an
+**existence** claim and never a **frequency** claim. "Contraction does not occur
+even where entailment is explicit" is defensible; "contraction fails in N% of
+edits" is not, and these sets may not be reused to estimate a rate. The
+circularity of §5 is acceptable for existence and fatal for frequency.
+
+**Alternatives rejected:**
+- *Stay at GPT2-medium.* Risks measuring a null produced by ignorance rather than
+  by the editor — the same trap T-023 raised for relation modality, one level up.
+- *Continue with mined evidential grounds only (E-002's plan).* Deferred, not
+  rejected: it answers frequency, and frequency is meaningless until existence is
+  settled.
+
+**What this does not overturn:** [E-002] stands. Grounds encountered in the wild
+are evidential, `orphan` is graded, AGM's ordering half is still the formalism.
+This decision adds a deductive *probe* to test a sharper case; it does not restore
+kernels as machinery.
+
+**Revisit if:** GPT-J also fails to hold hand-built grounds reliably (then
+possession, not editing, is the bottleneck and the domain must change), or if
+contraction *does* occur on deductive sets — which would make the frequency
+question live again and reopen [E-002]'s deferred half.

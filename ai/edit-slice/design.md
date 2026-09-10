@@ -1,7 +1,7 @@
 # Design — Edit Discretion Triage
 
 _edit-slice · structured by the Research Design Protocol (10 lenses)._
-_v0.7 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
+_v0.8 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
 _v0.4: §2a added — suppression-not-overwrite and the output/belief-mismatch attack._
 _v0.5: §0 roles flipped — mined Horn rules (e) DISCOVER, directed intervention (c)
 VALIDATES. External oracle; claim 2 partially restored._
@@ -10,6 +10,8 @@ their edit sets are MQuAKE/MLaKE, not CounterFact. RULE-KE checked off._
 _v0.7: E-001 killed method (e) over DBpedia (alias tautologies); E-002 revived it
 over Wikidata and found grounds are **evidential, not deductive** — kernels dropped
 for AGM's ordering half, `orphan` regraded. See agents/shared/decisions.md._
+_v0.8: model raised to GPT-J-6B via NDIF (possession is a construct requirement,
+T-039); grounds hand-built and deductive for the pilot, as an EXISTENCE claim only._
 _v0.2: grounds test made directed (inputs/outputs); partition now derives from
 direction x modality; association confound folded into the measurement._
 _Nothing may be implemented from this document until both clear._
@@ -346,10 +348,27 @@ removing confidence and lexical overlap*.
 
 ## 8 · Scope & feasibility
 
-**In v1:** GPT2-medium; ROME; CounterFact restricted to the labelled rigid/mutable
-relation subset (size gated by **T-023**); **grounds discovery from mined Horn
-rules (§0 method e)** with directed intervention as validation (method c);
-sign-free kernel-breaking measurement; annotation study of ~50 contested items.
+**In v1 (revised 2026-09-10):** **GPT-J-6B via NDIF**; ROME; CounterFact
+restricted to the labelled rigid/mutable subset (**T-023**); **hand-built
+deductive ground sets** rather than mined discovery; sign-free measurement;
+annotation study of ~50 contested items.
+
+**Why the model grew.** Possession is a construct requirement [T-039]: a model
+that never held a ground cannot orphan it. GPT2-medium is too thin, so the
+phenomenon may be unobservable there regardless of whether it is real. The
+charter's blanket size cap was amended accordingly — scaling for its own sake
+remains out of scope, and the rule is now "smallest model that demonstrably
+holds the grounds".
+
+**Why grounds are hand-built here.** E-002 showed grounds *as expressed in
+Wikidata* are evidential. That is a property of Wikidata's schema, not of
+knowledge — the schema has `place of burial` but cannot express
+"city-in-France ^ tower-in-city => tower-in-France". Hand-building tests whether
+deduction exists at all rather than whether a KG encodes it.
+
+**Scope of the resulting claim — binding.** Hand-picked sets support an
+**existence** claim ("contraction never occurs even where entailment is
+explicit") and NOT a **frequency** claim. No rate may be estimated from them.
 
 **v1 dependency — RESOLVED [R-005a].** `dice-group/Benchmarking-KE`, **MIT
 licensed**; Zenodo v1.0.0 DOI `10.5281/zenodo.15697400`. The AMIE-mined rules ship
@@ -375,10 +394,13 @@ whichever vocabulary we mine, and that is now more likely DBpedia than Wikidata.
 domain and compiler oracle; activation-patching grounds discovery (§0 method b);
 RippleBench distance-function integration (T-003); the movement sweep.
 
-**Feasibility.** GPT2-medium on an M2 is not the constraint. **The annotation
-study is** — it needs 2–3 people who will actually do it, and no such people are
-currently identified. This is the most likely thing to stall the project and it
-has no technical fix. Name them before building.
+**Feasibility.** Compute is not the constraint — NDIF provides GPT-J-6B, and the
+pilot is ~50 edits. **The annotation study is** — it needs 2-3 people who will
+actually do it, and none are identified. Still the most likely thing to stall
+this, and still no technical fix. Name them before building.
+
+**New dependency:** ROME on GPT-J via NDIF. rome-neighbors already runs this
+stack, so it is reuse rather than new infrastructure [T-005].
 
 ---
 
@@ -412,7 +434,7 @@ Every experiment must serve one of these. Anything that serves neither is cut.
 | "Isn't this abstention / selective prediction?" | Deferral triggers on model **uncertainty**; we trigger on **logical underdetermination** — a confident model can still face a choice logic cannot make. **Baseline 1 (lens 7) is precisely the test:** if confidence/entropy predicts the contested set as well as kernel structure, we have reinvented selective prediction and should say so. |
 | "These are not contradictions — a satisfying world exists for every case." | **Conceded, and it is now the claim.** The measured relation is evidential, so we assert joint *implausibility*, not inconsistency (declaration 6). Claiming contradiction would be refutable by one satisfying world; claiming implausibility is not, and it is what makes human adjudication structurally necessary rather than convenient. |
 | "Isn't this intra-memory conflict (2403.08319)?" | That is defined as paraphrase inconsistency — differing answers to semantically equivalent inputs. An orphan is one answer held alongside a coherent set entailing its negation. Different construct; the survey lists no method that partitions or routes. |
-| "GPT2-medium is a toy." | Pilot scale is deliberate; small and legible beats large and slow (CLAUDE.md). |
+| "GPT2-medium is a toy." | **Superseded 2026-09-10** — moved to GPT-J-6B via NDIF, because possession is a construct requirement [T-039], not because scale is impressive. |
 | "Edits only suppress output (2605.28839), so the belief never changed — your 'contradiction' is an output/belief mismatch, not an inconsistency." | `definitions.md` declaration 1: a fact **is** its probe set. Behaviour is the ontology; mechanism is not. Under suppression the orphan is *worse*, not milder — new answer, old answer, and old grounds are all simultaneously live. **This is the sharpest available attack; answer must be pre-written, not improvised.** See §2a. |
 | "You are proposing a method — beat JNO." | It partitions, it does not edit or repair. Different question; JNO is not a comparator. Boundary: **outputs a queue, never a repair.** |
 

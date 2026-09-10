@@ -11,7 +11,7 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 1 — Design (discretion triage). design.md written; lens 2 gates it.
+Phase 2 — Existence test. Charter amended to GPT-J-6B via NDIF; hand-built deductive grounds.
 
 ## Active Tickets
 
@@ -59,6 +59,9 @@ _None._
 | T-014 | open | Salvage from the cut material |
 | T-035 | superseded | Mined Horn rules — dead over DBpedia [E-001], reframed by [E-002] |
 | T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
+| T-039 | **active** | Possession — does the model hold the ground? |
+| T-041 | **active** | Does contraction ever occur on hand-built deductive grounds? |
+| T-043 | open | Dimension space of a knowledge bit — entrenchment undefined |
 
 ## Next Orchestrator Action
 

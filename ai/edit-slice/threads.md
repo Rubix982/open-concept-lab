@@ -370,3 +370,56 @@ boundary, so backward now needs a threshold too. How much of the asymmetry
 survives, and is a plausibility threshold meaningfully better than an arbitrary
 `k`, or have we just renamed the parameter?
 **Answer:** —
+
+### T-039 · Possession — does the MODEL hold the ground?
+
+**Status:** active
+**Parent:** T-012
+**Opened:** 2026-09-10
+**Question:** Wikidata says Perec was born in Paris. Does GPT-2? A ground the
+model never held cannot be orphaned — nothing is left standing to contradict
+anything. Between "the oracle lists these grounds" and "the edit orphaned them"
+there is a missing step: verify the model holds the ground pre-edit. Method (c)
+validates *direction*, not *possession*.
+**Answer:** partial — drives the model size decision [O-004]. GPT-J-6B via NDIF,
+on the rule "smallest model that demonstrably holds the grounds". The possession
+check itself is still not in the pipeline and must be added before any orphan
+rate is reported.
+
+### T-041 · Does contraction EVER occur, on hand-built deductive grounds?
+
+**Status:** active
+**Parent:** T-013
+**Opened:** 2026-09-10
+**Question:** E-002 found grounds evidential *as Wikidata expresses them* — a fact
+about the schema, not about knowledge. Hand-build small deductive ground sets
+where entailment is explicit, edit the head on GPT-J, and ask whether the editor
+retracts anything at all. Existence claim only; hand-picked sets may never be used
+for a frequency claim [O-004].
+**Answer:** —
+
+### T-042 · Amend the charter's no-scaling rule
+
+**Status:** answered
+**Parent:** T-039
+**Opened:** 2026-09-10
+**Question:** CLAUDE.md ruled out scaling; T-039 makes model size a construct
+requirement. Amend or violate?
+**Answer:** Amended 2026-09-10. The discipline survives, the blanket cap does not:
+"scaling for its own sake, or to frontier scale for headline value" stays out of
+scope, and the rule becomes **smallest model that demonstrably holds the
+grounds**. Also aligned two stale lines in the charter — the `orphan` definition
+and the grounds-sign metric — both superseded by declaration 6.
+
+### T-043 · The dimension space of a knowledge bit
+
+**Status:** open
+**Parent:** T-031
+**Opened:** 2026-09-10
+**Question:** Nodes have more axes than we are using: direction (done), in-degree,
+out-degree, support type (deductive/evidential), modality (rigid/mutable, done),
+**possession** (T-039), **entrenchment**, depth-from-primitive. Two are doing all
+the work and two are missing. Entrenchment is where the human's decision actually
+gets made — "which do I give up" is answered by relative entrenchment — and we
+have cited it repeatedly without ever defining how to measure it.
+**Answer:** —
