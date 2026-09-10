@@ -1,19 +1,19 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+knowledge-editing:
+  label: Knowledge editing
+  permalink: /knowledge-editing
+  description: Weight-level edits to what a model believes — ROME, MEMIT, and what they disturb.
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+edit-slice:
+  label: edit-slice
+  permalink: /edit-slice
+  description: Measuring directional propagation of weight edits against a decidable oracle.
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+method:
+  label: Method
+  permalink: /method
+  description: How the work gets done — framing, design, and the parts that usually go unwritten.
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+lab-notes:
+  label: Lab notes
+  permalink: /lab-notes
+  description: Learning captured alongside the research, while it is still provisional.
