@@ -1,0 +1,8 @@
+# CLAUDE.md: results/ holds raw outputs — gitignored except summaries
+results/*
+!results/*.md
+!results/summaries/
+
+.venv/
+__pycache__/
+*.pyc
