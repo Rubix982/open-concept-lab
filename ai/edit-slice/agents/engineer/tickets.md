@@ -144,3 +144,66 @@ alone — which then must be measured before the model choice is justified.
 **Blockers:** none
 **Artifacts:** src/probing.py; agents/engineer/workspace/; agents/shared/findings.md
 **Closed:** —
+
+---
+
+### E-004 · Ground possession — does the model hold the GROUNDS, not just the heads?
+
+**Status:** open
+**Type:** spike
+**Priority:** high
+**Created:** 2026-09-10
+**Updated:** 2026-09-10
+**Estimated:** 4h (time-boxed; if Spent > 8h, split or re-scope)
+**Spent:** —
+
+**Description:**
+E-003 measured possession of the **edited head** — the fact CounterFact intends to
+overwrite — and found 93% on Llama-3.1-70B. That number is an **optimistic ceiling
+for grounds**, and the pilot's validity depends on the gap between them.
+
+Two reasons the gap should be expected to be large:
+
+1. **CounterFact is curated.** Its 34 relations were selected as facts models tend
+   to know. Grounds are whatever Wikidata happens to assert about the subject —
+   P119 place of burial, P123 publisher, P287 designed by, P931 place served — and
+   nobody filtered those for model familiarity.
+2. **Grounds are more obscure than heads by construction.** "Where was X born" is
+   a common question; "where is X buried" is not.
+
+If ground possession is materially below head possession, the measurable contested
+set is the **intersection** of (head held) and (grounds held), which could be much
+smaller than either. That number bounds the whole pilot and must be known before
+any orphan rate is reported [T-039].
+
+**Method (mirrors E-003 so results are comparable):**
+
+1. From the pinned Wikidata snapshot `data/wikidata/2026-09-10/`, take the
+   item-valued statements of the E-002 subjects (`src.wikidata.item_statements` —
+   the `wikibase-item` datatype filter that excludes identifiers and media).
+2. **Hand-write a prompt template per ground property.** CounterFact supplies
+   templates only for its own 34 relations; ground properties have none. Expect
+   ~20-40 templates. Follow CounterFact's cloze style, and **avoid its known
+   ambiguity bug** — templates must be unambiguous between temporal and locative
+   readings ("died at" invited "the age of 90"; see T-044).
+3. Distractors: other values attested for the **same ground property**, so
+   candidates are type-matched exactly as in E-003.
+4. Score constrained rank on Llama-3.1-70B via `src/remote.py`. Report top-1 and
+   top-3 per ground property, and the head-vs-ground gap per subject.
+5. Report the **joint** figure: fraction of edits where the head AND at least one
+   ground are both held. That is the pilot's usable pool.
+
+**Falsification / decision rule:** if joint possession is below ~50%, the pilot's
+effective n collapses and either the edit set must be re-selected for
+ground-density, or the domain changes.
+
+**Note on templates.** Hand-written templates are a judgement call in the same
+species as `probes/relation_modality.md`. Publish them as a contestable artifact
+under `probes/`, not buried in a script [T-027].
+
+**Blockers:** none. Independent of T-045 (which concerns the *edit* target); this
+concerns whether grounds exist to be orphaned at all.
+
+**Artifacts:** probes/ground_templates.md; agents/engineer/workspace/;
+agents/shared/findings.md
+**Closed:** —

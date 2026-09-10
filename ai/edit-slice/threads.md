@@ -443,7 +443,7 @@ Cheap, general, and directly useful to anyone building edit sets [E-003].
 
 ### T-045 · Possession of the EDIT TARGET, not just the audited model
 
-**Status:** active
+**Status:** answered
 **Parent:** T-039
 **Opened:** 2026-09-10
 **Question:** Possession was measured on Llama-70B, but ROME would be applied to
@@ -452,4 +452,9 @@ the problem rather than solved it — we would be editing a model that does not 
 its own grounds. If GPT-J is low: get ROME working on 70B (hyperparameters and
 second-moment statistics we do not have), or accept a possession ceiling on the
 edit target and report it as a limitation.
-**Answer:** — (sweep running)
+**Answer:** **GPT-J-6B is 73% top-1 [E-003b]** — between GPT-2 (61%) and Llama-70B
+(93%). Neither disqualifying nor adequate unfiltered. Resolution: run the pilot
+**entirely on GPT-J**, possession-filtered; ~5,700 of the 7,770 rigid pool remain,
+far more than a 50-edit pilot needs. ROME on 70B is not required. Note the audit
+model must BE the edited model — Llama-70B's role is to show possession is
+scale-dependent, not to be the pilot's subject.

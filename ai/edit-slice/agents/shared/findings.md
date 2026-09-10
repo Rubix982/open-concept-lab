@@ -531,3 +531,51 @@ target and report it as a limitation.
 **Confidence: high** for the ordering and the measurement critique (paired design,
 identical items and distractors). **Medium** for the absolute levels, which depend
 on candidate-set size.
+
+---
+
+## [E-003b] Finding: GPT-J-6B possession is 73% — usable as the edit target, with filtering
+
+_Date: 2026-09-10 · same 165 items, same distractors_
+
+**Answers [T-045].** The hard fork is avoided: we do not need ROME on a 70B model.
+
+| model | params | top-1 | top-3 |
+| --- | ---: | ---: | ---: |
+| gpt2-medium | 355M | 61% | 79% |
+| gpt2-large | 774M | 62% | 83% |
+| **EleutherAI/gpt-j-6b** | **6B** | **73%** | **90%** |
+| meta-llama/Llama-3.1-70B | 70B | 93% | 98% |
+
+GPT-J sits between the two: +11pp over GPT-2, -20pp under Llama. So it is neither
+"nearly GPT-2" (which would have sunk it) nor adequate unfiltered.
+
+**Decision this supports.** Run the pilot **entirely on GPT-J-6B** — possession
+filter, edit, and probe on the same model — with edits restricted to facts GPT-J
+demonstrably holds. 73% of the 7,770 rigid pool is ~5,700 candidate edits, two
+orders of magnitude more than a 50-edit pilot needs. GPT-J has published ROME
+hyperparameters and rome-neighbors already runs that stack, so this is both the
+path of least resistance and now the empirically justified one.
+
+**A coherence point worth stating explicitly.** Measuring possession on Llama-70B
+while editing GPT-J would be incoherent — the audit model must be the edited model.
+Llama-70B's role is to establish that possession is **scale-dependent**, which is
+context and a control, not the pilot's subject.
+
+**Where GPT-J is weakest, and it is inconvenient.** P19 place of birth 53%, P20
+place of death 60%, P740 location of formation 60%. Those are precisely the
+relations with the richest grounds (burial place, citizenship, family) — so the
+relations most useful for orphan probing are the ones GPT-J holds least reliably.
+Edit selection must be stratified by relation *and* filtered by possession, or the
+usable pool will be quietly dominated by P138/P495, which are easy but
+ground-poor.
+
+**The possession curve.** 61% -> 62% -> 73% -> 93% across 355M -> 774M -> 6B ->
+70B. Strongly non-linear, flat inside the GPT-2 family and stepping at scale
+boundaries. This is a publishable side-figure in its own right: *possession of
+curated factual benchmarks is not saturated at small scale, and benchmark
+selection using the standard pre-edit condition hides that* [T-044].
+
+**Confidence: high** for the ordering (paired design, identical items and
+distractors across all four models). **Medium** for absolute levels — 10 candidates
+per item; a larger candidate set would lower all four.

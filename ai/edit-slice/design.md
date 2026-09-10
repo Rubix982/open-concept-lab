@@ -348,17 +348,26 @@ removing confidence and lexical overlap*.
 
 ## 8 · Scope & feasibility
 
-**In v1 (revised 2026-09-10):** **GPT-J-6B via NDIF**; ROME; CounterFact
+**In v1 (revised 2026-09-10, model confirmed by [E-003b]):** **GPT-J-6B via NDIF**, possession-filtered; ROME; CounterFact
 restricted to the labelled rigid/mutable subset (**T-023**); **hand-built
 deductive ground sets** rather than mined discovery; sign-free measurement;
 annotation study of ~50 contested items.
 
-**Why the model grew.** Possession is a construct requirement [T-039]: a model
-that never held a ground cannot orphan it. GPT2-medium is too thin, so the
-phenomenon may be unobservable there regardless of whether it is real. The
-charter's blanket size cap was amended accordingly — scaling for its own sake
-remains out of scope, and the rule is now "smallest model that demonstrably
-holds the grounds".
+**Why the model grew — now measured, not argued [E-003/E-003b].** Possession
+top-1 by constrained rank: gpt2-medium 61%, gpt2-large 62%, **GPT-J-6B 73%**,
+Llama-3.1-70B 93%. Flat inside the GPT-2 family, stepping at scale boundaries. A
+model that never held a ground cannot orphan it, so at GPT-2 scale ~39% of
+rigid-relation edits would be artifacts of ignorance. GPT-J is the smallest model
+that clears the bar with filtering, which is exactly the amended rule.
+
+**The audit model must BE the edited model.** Measuring possession on Llama while
+editing GPT-J would be incoherent. Llama-70B establishes that possession is
+scale-dependent — context and control, not the pilot's subject.
+
+**Selection constraint [E-003b].** GPT-J is weakest exactly where grounds are
+richest: P19 birth 53%, P20 death 60%, P740 formation 60%. Edit selection must be
+stratified by relation *and* possession-filtered, or the usable pool silently
+collapses onto P138/P495 — easy, and ground-poor.
 
 **Why grounds are hand-built here.** E-002 showed grounds *as expressed in
 Wikidata* are evidential. That is a property of Wikidata's schema, not of

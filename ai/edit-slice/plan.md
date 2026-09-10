@@ -61,6 +61,7 @@ _None._
 | T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
 | T-039 | answered | Possession measured: gpt2 61% vs Llama-70B 93% [E-003] |
 | T-045 | **active** | Possession of the EDIT target (GPT-J), not just the audited model |
+| E-004 | open | Ground possession — heads are a ceiling, grounds are the real gate |
 | T-041 | **active** | Does contraction ever occur on hand-built deductive grounds? |
 | T-043 | open | Dimension space of a knowledge bit — entrenchment undefined |
 
