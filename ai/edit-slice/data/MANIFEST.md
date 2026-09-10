@@ -34,6 +34,16 @@ from src.data import load_counterfact
 records = load_counterfact()          # verifies by default; raises IntegrityError
 ```
 
+## `wikidata/<YYYY-MM-DD>/`
+
+Dated snapshots of the Wikidata subset each analysis touched — see
+`src/wikidata.py`. Wikidata is mutable, so unlike CounterFact there is no single
+canonical release to checksum: snapshots are **additive**, one directory per
+ingestion, never overwritten. Each carries its own manifest and SHA-256.
+
+Current: `2026-09-10` — 55 subjects looked up (54 resolved), 54 entities with
+claims, 295 labels.
+
 ## Not pinned yet
 
 - **Mined Horn rules** — `dice-group/Benchmarking-KE` (MIT), Zenodo

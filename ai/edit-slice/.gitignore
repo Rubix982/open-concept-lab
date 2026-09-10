@@ -7,5 +7,5 @@ results/*
 __pycache__/
 *.pyc
 
-# API response caches — regenerable, not results
-agents/*/workspace/*_cache.json
+# Wikidata is ingested into dated snapshots under data/wikidata/<date>/ —
+# those ARE committed. Nothing here should be an ad-hoc cache.
