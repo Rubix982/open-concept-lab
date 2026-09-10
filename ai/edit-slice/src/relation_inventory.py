@@ -14,17 +14,18 @@ The labels are a judgement call and are published as contestable data. Anyone wh
 disputes one can re-run with their own MODALITY table and get a different number.
 
 Usage:
-    python src/relation_inventory.py --counterfact path/to/counterfact.json
+    python src/relation_inventory.py            # uses the pinned data/ copy
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Final, Literal, TypeAlias
+
+from data import DEFAULT_COUNTERFACT, CounterFactRecord, load_counterfact
 
 Modality: TypeAlias = Literal["rigid", "ambiguous", "mutable"]
 
@@ -84,30 +85,25 @@ MODALITY: Final[dict[str, RelationLabel]] = {
 EDIT_VOCABULARY: Final[str] = "wikidata-property"
 
 
-def load(path: Path) -> list[dict]:
-    with path.open() as fh:
-        data: list[dict] = json.load(fh)
-    return data
-
-
-def inventory(records: list[dict]) -> tuple[Counter[str], dict[str, str]]:
+def inventory(
+    records: list[CounterFactRecord],
+) -> tuple[Counter[str], dict[str, str]]:
     """Return per-relation edit counts and one example prompt template each."""
     counts: Counter[str] = Counter()
     examples: dict[str, str] = {}
     for record in records:
-        rewrite = record["requested_rewrite"]
-        rid = rewrite["relation_id"]
+        rid = record.rewrite.relation_id
         counts[rid] += 1
-        examples.setdefault(rid, rewrite["prompt"])
+        examples.setdefault(rid, record.rewrite.prompt)
     return counts, examples
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--counterfact", type=Path, required=True)
+    parser.add_argument("--counterfact", type=Path, default=DEFAULT_COUNTERFACT)
     args = parser.parse_args()
 
-    records = load(args.counterfact)
+    records = load_counterfact(args.counterfact)
     counts, examples = inventory(records)
 
     unlabelled = set(counts) - set(MODALITY)
