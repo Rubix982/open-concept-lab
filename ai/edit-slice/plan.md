@@ -11,7 +11,7 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 0 — Definitions & scope resolution (near complete)
+Phase 1 — Design (discretion triage). design.md written; lens 2 gates it.
 
 ## Active Tickets
 
@@ -21,6 +21,9 @@ Phase 0 — Definitions & scope resolution (near complete)
 | D-001 | Documentor | Write notes/definitions.md | closed |
 | O-002 | Orchestrator | Resolve edit-slice / rome-neighbors scope collision | closed |
 | R-001 | Researcher | Read Cohen et al. RippleEdits test types directly | closed |
+| O-003 | Orchestrator | Ten-lens design pass — discretion triage | in-progress |
+| R-002 | Researcher | Lens 2 prior-art search (WHY gate) | closed |
+| R-005 | Researcher | Read 2605.28839 — does "suppression" hold? | open |
 
 ## Blocked
 
@@ -32,6 +35,9 @@ _None._
 - D-001 · notes/definitions.md written — the meeting artifact
 - O-002 · Scope collision resolved: reuse code, not scope
 - R-001 · RippleEdits LG is not a grounds probe; claim 1 narrowed, declaration 5 added
+- O-003 · design.md written — project reframed as reusable discretion triage
+- R-002 · Lens 2 cleared — not scooped; positioning revised against intra-memory
+  conflict and uncertainty-based deferral
 
 ## Open Threads (the resume point)
 
@@ -46,14 +52,26 @@ _None._
 | T-009 | open | Kernel count as the backward out-degree variable |
 | T-010 | open | Metric sign error — should grounds fall or hold? |
 | T-011 | open | Is orphaning structural to expansion operators as a class? |
-| T-012 | open | Grounds by intervention, not enumeration (may kill T-006) |
+| T-012 | **active** | Grounds by intervention — design.md §0 gate, load-bearing, no data |
 | T-013 | open | Do kernels survive transfer to a graded setting? |
 | T-014 | open | Salvage from the cut material |
+| T-035 | **active** | Mined Horn rules read backwards give the kernels (§0 method e) |
 
 ## Next Orchestrator Action
 
-**T-012 and T-010 first** — they change what gets built. T-012 decides whether
-the pilot needs the compiler at all; T-010 decides which sign counts as success,
-and no figure can exist until it is settled. T-004 (design-lens pass) remains the
-gate on any implement ticket, and R-001's **medium** confidence means dependents
-open as **spikes**, not implementations.
+**E-001 — the §0 spike.** Lens 2 cleared 2026-09-10, so the WHY gate is passed.
+The gate is now whether **mined Horn rule bodies** recover grounds (design.md
+§0 method e, roles flipped v0.5) — with directed intervention demoted to
+validation. Time-boxed; ~20 hand-labelled edits as the agreement check, plus the
+fraction of mined bodies passing the direction test. Then R-003 (T-023 relation inventory), then R-004 to close
+the residual scoop surface (EasyEdit, T-003).
+
+Opens as a **spike**, not an implementation: R-001 is medium confidence and §0
+has no data.
+
+R-005 runs alongside: design.md §2a leans on one abstract in two load-bearing
+places, and the output/belief-mismatch attack it enables is the sharpest one on
+the board.
+
+Non-technical risk with no technical fix: the annotation study (design.md lens 8)
+needs 2-3 real annotators and none are identified.

@@ -63,3 +63,34 @@ boundary deferred to T-005.
 **Artifacts:**
 - threads.md -> T-001 answered, T-005 opened
 **Closed:** 2026-09-10
+
+---
+
+### O-003 · Ten-lens design pass on the reframed project (discretion triage)
+
+**Status:** in-progress
+**Type:** coordinate
+**Priority:** high
+**Created:** 2026-09-10
+**Updated:** 2026-09-10
+
+**Description:**
+The project reshaped twice in one session: from a pure backward-propagation
+instrument, to a sign-free coherence audit (T-010 amended), to a reusable
+**discretion-triage tool** that partitions an edit's affected knowledge into
+{entailed, preserved, contested} and queues the contested set for human
+adjudication without ever repairing it (T-028).
+
+Design Protocol rule 1 forbids opening implement tickets before the question
+passes the lenses. Run all ten into design.md at project root, confronting
+T-012 (grounds by intervention) FIRST because it is load-bearing: no mechanical
+grounds discovery means no reusable tool, only a hand-labelled one-off.
+
+Lens 2 is a stop condition and requires a real literature search, not recall.
+
+**Blockers:** none — R-002 closed 2026-09-10, WHY gate cleared.
+
+**Artifacts:**
+- design.md v0.3 — all ten lenses run; §0 gate still without data
+
+**Closed:** —

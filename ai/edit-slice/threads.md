@@ -163,17 +163,55 @@ editor that contracts). Stronger than "ROME scores poorly backward."
 
 ### T-012 · Grounds by intervention rather than enumeration
 
-**Status:** open
+**Status:** active — **load-bearing.** Now the design.md §0 gate.
 **Parent:** T-006
 **Opened:** 2026-09-10
-**Question:** Define: *g* is a ground of *f* iff intervening on *g*
-counterfactually moves *f*. Causal, not semantic — discovered rather than
+**Updated:** 2026-09-10
+**Question (as first asked):** Define: *g* is a ground of *f* iff intervening on
+*g* counterfactually moves *f*. Causal, not semantic — discovered rather than
 hand-written, so not circular (kills the §5 problem). Runnable today on
 GPT2-medium with rome-neighbors' NNSight/IIA machinery, no compiler and no code
 domain needed. Would demote the compiler from prerequisite to *validation*: check
 a discovered grounds set against a decidable one. Highest-leverage open thread —
 it decides whether the pilot needs the compiler at all. (Dry-run move 6.)
-**Answer:** —
+
+**Promoted (T-028):** no longer optional. The discretion-triage tool is only
+*reusable* if grounds discovery is mechanical; hand-labels per edit make it a
+one-off. No T-012, no tool.
+
+**Refined (T-031) — the definition above is superseded.** It was directionally
+blind: a one-sided intervention detects a *link*, not a *direction*. Justifications
+are **inputs** (the a priori), consequences are **outputs**; association is
+symmetric, justification is not. Current definition:
+
+> *g* is a ground of *f* iff Δ(*g*→*f*) **>>** Δ(*f*→*g*).
+
+Symmetric Δ is classified as undirected topical association — so the construct
+threat is detected by the measurement rather than controlled for externally.
+
+**Method selected (design.md §0 v0.5) — roles FLIPPED.** Discovery is now
+**(e) mined Horn rules read backwards**: 2606.10554 mines `body => head` rules
+from Wikidata with AMIE and reads them forward; read the other way, the body of a
+rule whose head is the edited fact IS the kernel. Directed intervention (c) is
+demoted from discovery to **validation** — checking the model treats a mined body
+as an input, not an associate. Deferred: (a) ROME-based (inherits its own blast
+radius), (b) activation patching (v2), (d) gradient attribution (not
+counterfactual).
+
+**Non-circularity, now three separable stages:** direction established
+*externally* (mined rules), validated *in-context on the unedited model*,
+orphaning measured *parametrically on the edited model*. If any two collapse into
+one measurement the design is circular.
+
+**Falsification of the gate:** hand-label grounds for ~20 edits; if **mined rule
+bodies** do not agree above chance, (e) fails — fall back to (c) as discovery,
+then (b), then a non-reusable v1. Second check: the fraction of mined bodies
+passing the direction test; a low fraction means the rules are associative and
+(e) is unsafe even where it agrees.
+
+**Answer:** partial. Method specified, confounds handled on paper, oracle now
+external. **No data.** Resolves only when E-001 (spike) runs. Spawned [T-031],
+[T-032], [T-033], [T-034], [T-035].
 
 ### T-013 · Do kernels survive transfer to a graded setting?
 
@@ -200,3 +238,88 @@ content under it — coherence is global, so any bounded audit is arbitrary — 
 rescued by kernels, which give a *principled* rather than chosen bound. Confirm
 both salvages are sound before they enter a document. (Dry-run move 9.)
 **Answer:** —
+
+### T-031 · Inputs/outputs: the grounds test must be directed
+
+**Status:** answered
+**Parent:** T-012
+**Opened:** 2026-09-10
+**Question:** A fact is a node with inputs (justifications, the a priori) and
+outputs (consequences). A one-sided intervention detects a link, not a direction —
+association is symmetric, justification is not. So §0's test was directionally
+blind.
+**Answer:** Two-sided test. Δ(g→f) >> Δ(f→g) means g is an input; the reverse
+means output; roughly equal means undirected association. The association
+confound is thereby *detected by the measurement* rather than controlled for
+externally. design.md v0.2 §0.
+
+### T-032 · In-degree and out-degree are different variables
+
+**Status:** answered
+**Parent:** T-031
+**Opened:** 2026-09-10
+**Question:** We have been conflating two branching factors.
+**Answer:** Out-degree = consequences = forward propagation burden
+(KnowledgeSmith, published). In-degree = justifications = kernels to break =
+contraction burden (ours, unrun). Separate variables, separate vocabularies
+recorded per CLAUDE.md. Sharpens T-009.
+
+### T-033 · The oracle is the unedited model's own in-context reasoning
+
+**Status:** answered
+**Parent:** T-031
+**Opened:** 2026-09-10
+**Question:** Direction is established in-context on the *unedited* model;
+orphaning is measured parametrically on the *edited* model. Different mechanisms,
+so the apparent circularity dissolves — and the audit holds the model to its own
+stated dependencies rather than an imposed graph. But this is a *model-derived*
+oracle, not a decidable one: a model with poor dependency beliefs gets an easy
+exam. How much does that weaken the result, and does it change what the code
+domain buys in v2?
+**Answer:** largely dissolved by the v0.5 flip [T-035]. Discovery moved to mined
+Horn rules over Wikidata — an **external** artifact — so the model no longer sets
+its own exam. Residual: mined rules are statistical, so the oracle is a decidable
+*lower bound with confidence thresholds*, not a deduction. Declaration 2 already
+commits to exactly that language. The code domain still buys true decidability in
+v2.
+
+### T-034 · Show structure, never ranking
+
+**Status:** answered
+**Parent:** T-025
+**Opened:** 2026-09-10
+**Question:** In-degree and input-depth are informative about which ground is
+least a priori — but using them to select what to retract is exactly the
+entrenchment ordering we refuse to supply.
+**Answer:** The tool reports structural facts (in-degree, depth, kernel
+membership) and never sorts them by what should be sacrificed. Descriptive, not
+normative. Written into design.md lens 5 as a boundary.
+
+### T-035 · Mined Horn rules read backwards give the kernels
+
+**Status:** active
+**Parent:** T-012
+**Opened:** 2026-09-10
+**Question:** 2606.10554 mines `body => head` rules from Wikidata with AMIE and
+reads them forward (edit touches body, does head update?). Read backwards: if the
+edit changes the **head**, the **body** is the set of premises that entailed it —
+i.e. the kernel, obtained mechanically from an existing artifact. In-degree =
+number of distinct rules sharing a head = justification redundancy [T-009].
+**Answer:** adopted as design.md §0 method (e), DISCOVERY role; intervention (c)
+demoted to validation. Gains: external oracle (answers [T-033]), claim 2 partially
+restored (decidable lower bound per declaration 2), reusable, smaller. Costs:
+mined != justificatory; confidence thresholds are a judgement call [T-027]; we
+inherit AMIE's coverage, which interacts with [T-023]. Unverified: whether the
+artifact is obtainable — now on the critical path [R-005].
+
+### T-036 · Probe-generation-from-a-graph is not ours
+
+**Status:** answered
+**Parent:** T-035
+**Opened:** 2026-09-10
+**Question:** session-2026-09-08 §5 argued "read questions off the oracle — the
+graph is the question generator." AMIE-mined rules over Wikidata is that idea,
+already built and published, forward.
+**Answer:** conceded. The mechanism is not ours; only the **direction** and the
+**partition** are. Second narrowing of the day after [R-001]. Thinner but cleaner.
+Any document must not claim probe-generation-from-a-graph as novel.
