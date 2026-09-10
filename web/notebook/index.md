@@ -23,11 +23,11 @@ Dated pieces, where the point is *when* I thought something, live in
 
 ## Projects
 
-| Project | Question | Status |
-| --- | --- | --- |
-| [edit-slice](/notebook/edit-slice/) | Does a weight edit reach the facts that were premises for it? | <Status kind="provisional">Phase 0</Status> |
-| [rome-neighbors](/notebook/rome-neighbors/) | Does representational geometry predict edit propagation, by hop? | <Status kind="provisional">Experiments running</Status> |
-| [claim-graph](/notebook/claim-graph/) | Can a knowledge graph have claims as nodes instead of papers? | <Status kind="standing">Slice working</Status> |
+Each row comes from that project's own `plan.md` — the objective and the
+current phase — so this table is never separately out of date. Hover a phase
+for the full note.
+
+<Projects showUpdated />
 
 ## Conventions
 

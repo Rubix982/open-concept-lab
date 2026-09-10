@@ -1,0 +1,26 @@
+# Projects. The prose comes from each project's own plan.md, so the site
+# follows the work rather than being updated separately.
+#
+#   plan: path to plan.md, relative to the repository root. The loader reads
+#         the "## Objective" paragraph, the "## Current Phase" line, and the
+#         "_Last updated:_" date.
+#   tone: which status dot to use — draft | provisional | standing.
+#         Presentation only; nothing in plan.md encodes this.
+#   what: optional override, if the objective paragraph reads badly out of
+#         context. Prefer fixing the wording in plan.md instead.
+
+projects:
+  - name: edit-slice
+    plan: ai/edit-slice/plan.md
+    notebook: /notebook/edit-slice/
+    tone: draft
+
+  - name: rome-neighbors
+    plan: ai/rome-neighbors/plan.md
+    notebook: /notebook/rome-neighbors/
+    tone: provisional
+
+  - name: claim-graph
+    plan: ai/responsible-ai/knowledge-graph/plan.md
+    notebook: /notebook/claim-graph/
+    tone: standing

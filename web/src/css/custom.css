@@ -1537,6 +1537,12 @@ a[class*="tagWithCount"]:hover {
   overflow-x: auto;
 }
 
+/* A data table dropped into prose needs more than the reading measure, or
+   every cell wraps to four lines. Breaks right, keeping the left margin. */
+.markdown .ocl-table {
+  width: min(var(--ocl-measure-wide), calc(100vw - 4rem));
+}
+
 .ocl-table thead th {
   padding: 0 0.85rem 0.5rem 0;
   border: 0;

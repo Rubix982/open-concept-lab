@@ -192,12 +192,18 @@ editability.
 `narrative` gives the "Hase et al. (2023)" form for when the authors are the
 subject of the sentence rather than a parenthetical.
 
-**The `verified` flag is the point of the whole thing.** An entry that came
-from a literature map rather than the paper renders with a dotted oxide
-underline — <Cite id="slaq" /> — and `/reading` lists those separately as not
-citable yet. This exists because a note of mine described RippleEdits as EMNLP
-2023 for months; it is TACL 2024. Secondhand notes decay silently, and an
-unmarked wrong venue survives every draft.
+**The `verified` flag is the point of the whole thing.** It records whether the
+title, authors, year and venue have been checked against the paper's own
+record. An unverified entry renders with a dotted oxide underline, and
+`/reading` lists those in a separate table as not citable yet. This exists
+because a note of mine described RippleEdits as EMNLP 2023 for months; it is
+TACL 2024. Secondhand notes decay silently, and an unmarked wrong venue
+survives every draft.
+
+It is deliberately independent of `status`: a citation can be trustworthy for
+a paper I have not read, which is the normal case for something on the to-read
+list. Everything in the list is currently checked, so that second table is
+empty — it reappears the moment a secondhand entry is added.
 
 An id with no entry shows up as <Cite id="nonexistent" /> rather than failing
 the build, so a half-written draft still renders.
@@ -280,10 +286,32 @@ described twice:
 | --- | --- |
 | `data/papers.yml` | `<Cite>`, `<References ids>`, [Reading](/reading), the home page tally |
 | `data/built.yml` | `npm run sync:demos`, [Built](/built), the home page list |
+| `data/projects.yml` | `<Projects>`, the home page, [Notebook](/notebook) |
 | blog front matter | [Writing](/writing), the home page list |
 
 Adding a paper or a page means editing one file. The home page has no
 hand-maintained lists.
+
+`projects.yml` is the thinnest of the four — a path to each project's
+`plan.md`, a link, and which status dot to use:
+
+```yaml
+- name: edit-slice
+  plan: ai/edit-slice/plan.md
+  notebook: /notebook/edit-slice/
+  tone: draft # draft | provisional | standing
+```
+
+The words come from the plan itself: the `## Objective` paragraph, trimmed to
+whole sentences, and the `## Current Phase` line, shortened to its label with
+the rest as hover text. So the way to change what this site says about a
+project is to edit that project's plan, which is the file you were going to
+update anyway.
+
+```mdx
+<Projects />
+<Projects showUpdated />
+```
 
 ## Syncing from a project
 

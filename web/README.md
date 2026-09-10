@@ -20,13 +20,26 @@ npm run typecheck
 | Dated pieces | `blog/YYYY-MM-DD-slug.md` | `/writing/slug` |
 | Living project pages | `notebook/<project>/*.md` | `/notebook/<project>/…` |
 | Papers | `data/papers.yml` | `/reading` |
+| Project status | `data/projects.yml` + each `plan.md` | home page, `/notebook` |
 | Standalone HTML pages | `data/built.yml` | `/built`, `/demos/<name>/` |
 | Images | `static/img/<project>/` | `/img/<project>/…` |
 
-Everything that appears on more than one page lives in one of the three data
-sources — `data/papers.yml`, `data/built.yml`, or blog front matter. The home
-page, `/reading` and `/built` are generated from them, so there are no
-hand-maintained lists to fall out of date.
+Everything that appears on more than one page comes from a data source, so
+there are no hand-maintained lists to fall out of date:
+
+| Source | Feeds |
+| --- | --- |
+| `data/papers.yml` | `<Cite>`, `<References ids>`, `/reading`, home tally |
+| `data/built.yml` | `npm run sync:demos`, `/built`, home list |
+| `data/projects.yml` → each project's `plan.md` | `<Projects>`, home, `/notebook` |
+| blog front matter | `/writing`, home list |
+
+`projects.yml` holds only a path and a status colour; the objective and the
+current phase are read out of each project's own `plan.md`. Editing a plan
+updates the site.
+
+Dependencies are managed with npm — `package-lock.json` is the only lockfile,
+and CI runs `npm ci`.
 
 The conventions page at `/notebook/writing-here` is the full reference — front
 matter fields, every component, and what each one is for. Read that before
@@ -43,6 +56,7 @@ Available in any `.md` or `.mdx` file with no import:
 - `<Claim>` — a claim mid-revision: what was given up, above what stands
 - `<Status>` / `<Notice>` — how settled a page or a claim is
 - `<Aside>` — a margin note
+- `<Projects>` — the project table, read from each `plan.md`
 
 Registered in `src/theme/MDXComponents.tsx`; implementations in
 `src/components/`.

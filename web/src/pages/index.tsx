@@ -2,39 +2,8 @@ import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
+import Projects from "@site/src/components/Projects";
 import type { LabData, Paper } from "@site/plugins/lab-data";
-
-type Project = {
-  name: string;
-  what: string;
-  phase: string;
-  tone: "provisional" | "standing" | "draft";
-  to: string;
-};
-
-const PROJECTS: Project[] = [
-  {
-    name: "edit-slice",
-    what: "Whether a weight edit reaches the facts that were premises for it, or only the facts that follow from it.",
-    phase: "Phase 0 — definitions",
-    tone: "draft",
-    to: "/notebook/edit-slice/",
-  },
-  {
-    name: "rome-neighbors",
-    what: "Whether representational geometry predicts how far an edit propagates, resolved by entailment hop.",
-    phase: "Experiments running",
-    tone: "provisional",
-    to: "/notebook/rome-neighbors/",
-  },
-  {
-    name: "claim-graph",
-    what: "A knowledge graph whose nodes are extracted claims rather than papers.",
-    phase: "Slice working",
-    tone: "standing",
-    to: "/notebook/claim-graph/",
-  },
-];
 
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -91,23 +60,7 @@ export default function Home(): ReactNode {
 
         <section className="ocl-home__section">
           <SectionHead title="Projects" href="/notebook" linkLabel="Notebook" />
-          <table className="ocl-table ocl-table--flush">
-            <tbody>
-              {PROJECTS.map((project) => (
-                <tr key={project.name}>
-                  <td className="ocl-table__key">
-                    <Link to={project.to}>{project.name}</Link>
-                  </td>
-                  <td className="ocl-table__main">{project.what}</td>
-                  <td className="ocl-table__right">
-                    <span className={`ocl-status ocl-status--${project.tone}`}>
-                      {project.phase}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Projects />
         </section>
 
         <section className="ocl-home__section">

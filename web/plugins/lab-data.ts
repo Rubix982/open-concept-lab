@@ -39,6 +39,20 @@ export type BuiltPage = {
   ratio: number;
 };
 
+export type Project = {
+  name: string;
+  /** Short phase label — "Phase 1 — Design". */
+  phase: string;
+  /** The whole Current Phase paragraph, for the title attribute. */
+  phaseDetail: string;
+  /** The Objective paragraph, markdown stripped. */
+  what: string;
+  /** ISO date from the plan's "_Last updated:_" line, when present. */
+  updated?: string;
+  notebook: string;
+  tone: string;
+};
+
 export type WritingEntry = {
   title: string;
   slug: string;
@@ -54,6 +68,7 @@ export type LabData = {
   writing: WritingEntry[];
   papers: Paper[];
   built: BuiltPage[];
+  projects: Project[];
 };
 
 const DATED_FILE = /^(\d{4})-(\d{2})-(\d{2})-(.+)\.mdx?$/;
@@ -119,6 +134,127 @@ async function loadWriting(
   return entries;
 }
 
+/** Markdown emphasis and code spans read as noise in a table cell. */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/\*\*([^*]*)\*\*/g, "$1")
+    .replace(/\*([^*]*)\*/g, "$1")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** The first paragraph under a `## Heading`, as one line. */
+function sectionParagraph(markdown: string, heading: string): string {
+  const section = markdown.split(new RegExp(`^## ${heading}\\s*$`, "m"))[1];
+  if (!section) {
+    return "";
+  }
+  const body = section.split(/^## /m)[0] ?? "";
+  const paragraph = body.trim().split(/\n\s*\n/)[0] ?? "";
+  return stripMarkdown(paragraph);
+}
+
+const ABBREVIATIONS = ["e.g", "i.e", "cf", "vs", "et al", "Fig", "eq"];
+
+/**
+ * Trims to whole sentences rather than mid-clause. Splits only on a period
+ * outside parentheses that does not end a known abbreviation, then keeps
+ * sentences while under the soft limit — always at least one, so a single
+ * long sentence survives intact rather than being cut.
+ */
+function summarize(text: string, softLimit: number): string {
+  if (text.length <= softLimit) {
+    return text;
+  }
+
+  const sentences: string[] = [];
+  let depth = 0;
+  let start = 0;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (ch === "(" || ch === "[") depth += 1;
+    else if (ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
+    else if (ch === "." && depth === 0 && (text[i + 1] === " " || i === text.length - 1)) {
+      const preceding = text.slice(start, i);
+      const endsAbbreviation = ABBREVIATIONS.some((a) => preceding.endsWith(a));
+      if (!endsAbbreviation) {
+        sentences.push(text.slice(start, i + 1).trim());
+        start = i + 1;
+      }
+    }
+  }
+  const tail = text.slice(start).trim();
+  if (tail.length > 0) {
+    sentences.push(tail);
+  }
+
+  const kept: string[] = [];
+  for (const sentence of sentences) {
+    if (kept.length > 0 && [...kept, sentence].join(" ").length > softLimit) {
+      break;
+    }
+    kept.push(sentence);
+  }
+  return kept.join(" ");
+}
+
+/**
+ * "Phase 2 — Implementation (reframed project: does…)" carries a short label
+ * and then a paragraph of detail. The label is what belongs in a status
+ * column; the rest becomes the hover text.
+ */
+function phaseLabel(phase: string): string {
+  const label = phase.split(/[.(]/)[0]?.trim() ?? phase;
+  return label.length > 0 ? label : phase;
+}
+
+async function loadProjects(
+  repoRoot: string,
+  entries: {
+    name: string;
+    plan: string;
+    notebook: string;
+    tone?: string;
+    what?: string;
+  }[],
+): Promise<Project[]> {
+  return Promise.all(
+    entries.map(async (entry) => {
+      let markdown = "";
+      try {
+        markdown = await fs.readFile(path.resolve(repoRoot, entry.plan), "utf8");
+      } catch {
+        // A plan that has moved should be visible, not silently blank.
+        return {
+          name: entry.name,
+          phase: "plan not found",
+          phaseDetail: `Could not read ${entry.plan}`,
+          what: entry.what ?? "",
+          notebook: entry.notebook,
+          tone: entry.tone ?? "draft",
+        } satisfies Project;
+      }
+
+      const phaseDetail = sectionParagraph(markdown, "Current Phase");
+      const objective = sectionParagraph(markdown, "Objective");
+      const updated = /_Last updated:\s*(\d{4}-\d{2}-\d{2})/.exec(markdown);
+
+      return {
+        name: entry.name,
+        phase: phaseLabel(phaseDetail),
+        phaseDetail,
+        what: entry.what ?? summarize(objective, 200),
+        updated: updated?.[1],
+        notebook: entry.notebook,
+        tone: entry.tone ?? "draft",
+      } satisfies Project;
+    }),
+  );
+}
+
 const RELEVANCE_ORDER: Record<Relevance, number> = {
   high: 0,
   medium: 1,
@@ -141,6 +277,7 @@ export default async function labData(
 ): Promise<Plugin<LabData>> {
   const { siteDir } = context;
   const dataDir = path.join(siteDir, "data");
+  const repoRoot = path.resolve(siteDir, "..");
   const blogDir = path.resolve(siteDir, options.blogDir ?? "blog");
   const routeBasePath = options.routeBasePath ?? "writing";
 
@@ -193,10 +330,22 @@ export default async function labData(
         ratio: entry.ratio ?? 1.6,
       }));
 
+      const rawProjects =
+        (await readYaml<{
+          projects: {
+            name: string;
+            plan: string;
+            notebook: string;
+            tone?: string;
+            what?: string;
+          }[];
+        }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
+
       return {
         writing: await loadWriting(blogDir, routeBasePath),
         papers,
         built,
+        projects: await loadProjects(repoRoot, rawProjects),
       };
     },
 

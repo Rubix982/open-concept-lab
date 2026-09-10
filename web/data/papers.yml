@@ -3,9 +3,11 @@
 #
 #   status:    read | skimmed | to-read
 #   relevance: high | medium | low        (to my current work, not in general)
-#   verified:  true when I have checked the venue and year against the paper
-#              itself. false means the entry came from a secondhand note and
-#              the citation should not be trusted yet.
+#   verified:  true when the title, authors, year and venue have been checked
+#              against the paper's own record (arXiv or the ACL Anthology).
+#              false means the entry came from a secondhand note and must not
+#              be cited yet. Independent of `status` — a citation can be
+#              trustworthy for a paper I have not read.
 #   projects:  which of my projects it bears on
 #   gives_me:  the one thing I go back to it for
 
@@ -202,66 +204,102 @@ fiottokaufman2025nnsight:
   gives_me: The tool everything runs on — deferred execution over model internals.
 
 # ---------------------------------------------------------------------------
-# Secondhand below this line. These came from a literature map or an abstract,
-# not from the paper. Year and venue are unchecked, so do not cite from here.
+# Resolved 2026-09-10 against the arXiv API. Titles, authors, dates and venue
+# fields were read off each paper's own record, so the citations are safe to
+# use — but `status` still says to-read, because a checked citation is not the
+# same as having read the thing.
 # ---------------------------------------------------------------------------
 
 kim2025bilinear:
-  title: Bilinear structure in representations and edit propagation
-  authors: Kim et al.
+  title: Bilinear representation mitigates reversal curse and enables consistent model editing
+  authors: Kim, D.-K., Kim, M., Kwon, J., Yang, N., Cha, M.
   year: 2025
+  venue: ICLR 2026
+  url: https://arxiv.org/abs/2509.21993
   status: to-read
   relevance: high
-  verified: false
-  projects: [rome-neighbors]
-  gives_me: The structured-geometry predictor the project adopts. Needs reading before E-009.
+  verified: true
+  projects: [rome-neighbors, edit-slice]
+  gives_me: >
+    The structured-geometry predictor rome-neighbors adopts. Also bears on
+    edit-slice: "reversal curse" is argument order under another name, so this
+    is the closest published work to that half of the distinction. Read before
+    E-009.
 
 jeong2025steam:
-  title: STEAM — alignment as a predictor of edit propagation
-  authors: Jeong et al.
+  title: "STEAM: A Semantic-Level Knowledge Editing Framework for Large Language Models"
+  authors: Jeong, G., Sun, J., Lee, S., Kim, H.
   year: 2025
+  venue: Findings of EMNLP 2025
+  url: https://arxiv.org/abs/2510.10398
   status: to-read
   relevance: high
-  verified: false
+  verified: true
   projects: [rome-neighbors]
-  gives_me: The alignment predictor, the second arm of the comparison.
+  gives_me: >
+    Latent-space alignment for editing. Note the correction: this is an
+    editing *method*, not an alignment-based *predictor* of propagation, so
+    the "alignment arm" of the predictor comparison may not have a paper
+    behind it yet. Check before building E-009 around it.
 
 nishi2024shattering:
-  title: Representation Shattering in Transformers
-  authors: Nishi et al.
+  title: "Representation Shattering in Transformers: A Synthetic Study with Knowledge Editing"
+  authors: Nishi, K., Ramesh, R., Okawa, M., Khona, M., Tanaka, H., Lubana, E. S.
   year: 2024
+  venue: ICML 2025
+  url: https://arxiv.org/abs/2410.17194
   status: to-read
   relevance: medium
-  verified: false
+  verified: true
   projects: [rome-neighbors]
-  gives_me: Distance to shattering, which is adjacent to but not the same as distance to propagation.
+  gives_me: >
+    Distance to representation shattering, which is adjacent to but not the
+    same as distance to propagation. Synthetic setting, so transfer to a real
+    decoder-only LM is an open question rather than an assumption.
 
-huang2025keyspace:
-  title: Key-space coupling as a multi-probe predictor
-  authors: Huang et al.
+huang2026ripple:
+  title: Revisiting Ripple Effects in Knowledge Editing through Pressure-Aware Joint Neighborhood Optimization
+  authors: Huang, H., Liu, S., Wu, O., Gao, D.
+  year: 2026
+  venue: arXiv preprint
+  url: https://arxiv.org/abs/2606.01610
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [rome-neighbors]
+  gives_me: >
+    The closest multi-probe comparison. Key-space coupling is one of three
+    structural probes in it (§3.2), alongside pre-trained entanglement and
+    local neighborhood sensitivity — so it is a predictor set, not a single
+    predictor. Needed for positioning.
+
+slaq2025alignment:
+  title: The Curious Case of Factual (Mis)Alignment between LLMs' Short- and Long-Form Answers
+  authors: Obaid ul Islam, S., Lauscher, A., Glavaš, G.
   year: 2025
-  status: to-read
-  relevance: medium
-  verified: false
-  projects: [rome-neighbors]
-  gives_me: The closest multi-probe comparison; needed for positioning.
-
-slaq:
-  title: SLAQ — similarity predicts factual consistency
-  authors: Unverified
-  year: 2024
+  venue: arXiv preprint
+  url: https://arxiv.org/abs/2510.11218
   status: to-read
   relevance: high
-  verified: false
+  verified: true
   projects: [rome-neighbors]
-  gives_me: The nearest existing method. Has to be cited and differentiated, so this one is blocking.
+  gives_me: >
+    The nearest existing method — mechanistic similarity predicting alignment
+    at up to 78%. But the construct is short-form versus long-form answer
+    agreement, not factual consistency in general, which makes it easier to
+    differentiate from than the one-line note suggested. Still blocking, since
+    it has to be cited either way.
 
-ravel:
-  title: RAVEL — factual attribute disentanglement
-  authors: Unverified
+huang2024ravel:
+  title: "RAVEL: Evaluating Interpretability Methods on Disentangling Language Model Representations"
+  authors: Huang, J., Wu, Z., Potts, C., Geva, M., Geiger, A.
   year: 2024
+  venue: ACL
+  url: https://aclanthology.org/2024.acl-long.470/
   status: to-read
   relevance: medium
-  verified: false
+  verified: true
   projects: [rome-neighbors]
-  gives_me: Possibly a cleaner hop-separated dataset than RippleEdits. Worth checking before committing to data.
+  gives_me: >
+    Attribute disentanglement, possibly a cleaner hop-separated dataset than
+    RippleEdits. Worth checking before committing to data.
