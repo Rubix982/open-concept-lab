@@ -215,7 +215,7 @@ external. **No data.** Resolves only when E-001 (spike) runs. Spawned [T-031],
 
 ### T-013 · Do kernels survive transfer to a graded setting?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-012
 **Opened:** 2026-09-10
 **Question:** Kernels are a logical notion with sharp membership. In a
@@ -223,7 +223,13 @@ probabilistic system support is graded — everything weakly moves everything �
 any kernel boundary is a threshold we impose. Is "kernel" a construct that
 survives the subsymbolic transfer, or are we measuring a thresholding artifact?
 This is lens 5 (construct validity) and the main threat to T-012.
-**Answer:** —
+**Answer:** **No, and they should not.** [E-002] measured it: none of five
+rigid-relation cases is a strict contradiction — all are satisfiable. The relation
+is evidential, so there is no entailment to break and kernel contraction is
+undefined here. Settled in agents/shared/decisions.md: keep AGM's **ordering** half
+(entrenchment, Grove, Lewis), drop its **closure** half. The graded structure is
+the phenomenon, not a degradation of it — and it is what makes human adjudication
+structurally necessary [T-025] rather than merely convenient.
 
 ### T-014 · Salvage from the cut material
 
@@ -338,3 +344,29 @@ headroom; mutable pool amply covers the matched control. Table published
 contestable at probes/relation_modality.md. **The binding constraint moved**: from
 "are there rigid edits" to "do rigid edits have mined grounds in DBpedia" — now
 E-001's job [T-035].
+
+### T-037 · Time-rigidity blocks relocation only — it never establishes contradiction
+
+**Status:** answered
+**Parent:** T-013
+**Opened:** 2026-09-10
+**Question:** The rigid/mutable 2x2 asserted that a rigid edited relation forces a
+contradiction with its grounds. Does it?
+**Answer:** No — that was our error, caught by [E-002]. Time-rigidity closes the
+*relocation* reconciliation ("the tower was moved") and nothing else. Repatriation,
+emigration and distant naming all survive it. Rigidity is a plausibility
+**modifier**, not a contradiction test. [R-003]'s table is reinterpreted, not
+discarded; design.md lens 5 and definitions.md declaration 6 corrected.
+
+### T-038 · The termination argument is partly given back
+
+**Status:** open
+**Parent:** T-013
+**Opened:** 2026-09-10
+**Question:** [T-008] argued backward needs no `k` because kernels are finite while
+forward closure is infinite — the asymmetry that made the instrument look
+buildable. That presupposed entailment. Evidential support has no natural
+boundary, so backward now needs a threshold too. How much of the asymmetry
+survives, and is a plausibility threshold meaningfully better than an arbitrary
+`k`, or have we just renamed the parameter?
+**Answer:** —

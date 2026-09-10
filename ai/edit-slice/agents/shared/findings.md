@@ -279,3 +279,178 @@ easily be thin. The gate that mattered has moved from "are there rigid edits" to
 
 **Confidence: high** for the counts (deterministic over the full 21,919-record
 release). **Medium** for the labels, which are judgement and published as such.
+
+---
+
+## [E-001] Finding: §0 method (e) FAILS — the mined rules are alias tautologies
+
+_Date: 2026-09-10 · spike, ~45min of a 3h box, stopped at first failure as designed_
+
+**Verdict: method (e) does not work on the shipped artifact, and the failure looks
+structural rather than incidental.** Fall back per design.md §0.
+
+### What was checked
+
+`dice-group/Benchmarking-KE`, files `rules_mquake.txt` (11,897 rules) and
+`rules_mlake.txt` (778). Quality filter: support >= 10 and confidence >= 0.5.
+
+- **12,675 rules total; median support = 1.** Most rules rest on a single
+  instance, where confidence is meaningless.
+- **913 survive the filter (7.2%).**
+
+### Head coverage for our 11 rigid relations — effectively zero
+
+| rigid relation | DBpedia head | all rules | usable |
+| --- | --- | ---: | ---: |
+| P19 place of birth | `birthPlace` | 22 | 7 |
+| P740 location of formation | `hometown`, `locationCity` | 44 | 15 |
+| P178 developer | `developer` | 55 | 8 |
+| P495 country of origin | `country` | 156 | 2 |
+| P20, P103, P364, P407, P138 | — | 23 | **0** |
+| P449 orig. broadcaster, P30 continent | *no such predicate* | **0** | **0** |
+
+### The killer: what those 32 "usable" rules actually say
+
+Every single one is an **identity/alias rule**. Representative:
+
+```
+?a birthPlace ?h   ?b isPrimaryTopicOf ?h   =>   ?a birthPlace ?b
+?a hometown   ?g   ?g commonName       ?b   =>   ?a hometown   ?b
+?a developer  ?h   ?b primaryTopic     ?h   =>   ?a developer  ?b
+```
+
+Read it: *if a was born in ?h, and ?b is the same entity as ?h under a different
+name or its Wikipedia page, then a was born in ?b.* That is **preservation of a
+fact under renaming the object** — a tautology about DBpedia's redundant naming
+predicates, not a justification. There is **no** justificatory content in the
+rigid-head set. Not thin: zero.
+
+### Quantified over all 913 usable rules
+
+| category | count | % |
+| --- | ---: | ---: |
+| alias tautology (head repeated in body + alias link) | 607 | **66.5%** |
+| head is itself an alias predicate (`name`, `isPrimaryTopicOf`, ...) | 194 | 21.2% |
+| head repeated in body (self-referential) | 52 | 5.7% |
+| alias predicate in body | 39 | 4.3% |
+| **substantive candidate** | **21** | **2.3%** |
+
+And the 21 survivors head on `text`, `gdpPppYear`, `p`, `topLevelDomain`,
+`iso3166code` — infobox scrapings, not knowledge either.
+
+### Why this probably is not fixable by re-running on CounterFact entities
+
+R-005a's plan was to re-run their pipeline over CounterFact subjects. The
+pathology is a property of **DBpedia's schema plus AMIE**, not of the entity set:
+DBpedia carries many redundant naming/page predicates (`isPrimaryTopicOf`,
+`primaryTopic`, `commonName`, `enName`, `conventionalLongName`, `url`, `voy`), and
+AMIE will mine `fact + alias => fact` at confidence 1.0 for any entity set. A
+different set of subjects reproduces the same rules with different constants.
+
+### The options now
+
+1. **Wikidata instead of DBpedia.** *New, not in the fallback chain.* CounterFact
+   is Wikidata-native (P-codes; objects carry Q-ids). Wikidata keeps labels as
+   labels rather than statements, so the alias-predicate explosion largely does
+   not exist. Subjects need entity linking (CounterFact stores subject as a
+   string), which is tractable. **Recommended next probe** — it is a genuinely
+   different proposition, not a retry.
+2. **Fall back to method (c)**, in-context counterfactual as discovery, per the
+   design's own chain (e) -> (c) -> (b). Now looks relatively better: the model at
+   least holds world knowledge, whereas this KG slice holds naming redundancy.
+3. Re-run their pipeline on CounterFact entities. **Not recommended** — see above.
+
+### A concern about 2606.10554 that we must not overstate but must record
+
+Their benchmark **generates its multi-hop questions from these rules**. If the
+usable rule set is 88%+ naming/aliasing artifacts, then a substantial part of what
+that benchmark measures may be **subject-aliasing robustness** — which RippleEdits
+already covers as its SA criterion — rather than logical entailment. Their
+reported 24% gap between direct and "entailed" knowledge may then not be an
+entailment gap.
+
+**This weakens [R-002]'s claim that 2606.10554 independently reconfirms claim 1.**
+It still shows nobody probes backward, but as evidence about *forward entailment*
+it is softer than recorded. Do not cite the 24% figure as an entailment result
+until their generated questions have been inspected directly. Added to R-005b.
+
+**Confidence: high** for the rule statistics (deterministic over the released
+files). **Medium** for "not fixable by re-running" — an inference from DBpedia's
+schema, not yet tested. **Low-medium** for the concern about their benchmark: I
+inspected the rules, not the generated questions.
+
+---
+
+## [E-002] Finding: Wikidata carries real grounds — but they are *evidential*, not deductive
+
+_Date: 2026-09-10 · spike, ~1h of a 3h box_
+
+**Verdict: method (e) is alive on Wikidata.** Steps 1 and 2 pass. But what we
+found are not AGM kernels, and that has consequences.
+
+### Step 1 — entity coverage passes decisively
+
+55 rigid-relation edits, 5 per relation, seed 1538.
+
+- **Entity-linked: 54/55 (98%)** by plain `wbsearchentities` on the subject string.
+- **Median properties per subject: 14–67**; statements 15–96. Not sparse.
+- **Wikidata asserts the edited property for 43/55 (78%)** — 5/5 for P19, P20,
+  P407, P740; only 2/5 for P103 and P364. Where Wikidata lacks the fact, it cannot
+  supply its grounds either, so effective coverage is ~78% and uneven.
+- 928 distinct properties across 54 subjects.
+
+**The alias pathology does not recur, and the filter is principled.** Wikidata's
+structural analogue of DBpedia's naming predicates is external identifiers
+(P646 Freebase, P214 VIAF, P244 LoC, P345 IMDb) and media (P18, P373) — which
+dominate the raw property counts. Restricting to **`wikibase-item` datatype**
+statements removes them by datatype rather than by hand-picking. It is a large
+cut: Perec 24 item-valued of 192 total, Yakuza 21 of 70, McLane 20 of 52.
+
+### Step 2 — the grounds are there, and they read correctly
+
+| edit | grounds left intact by the edit |
+| --- | --- |
+| **P20** Louis McLane, died Baltimore -> Barcelona | **P119 place of burial = Green Mount Cemetery** (in Baltimore) |
+| **P178** Yakuza, developer Sega -> IBM | **P123 publisher = Sega**; P287 designed by / P162 producer = Nagoshi; P495 origin Japan |
+| **P138** London City Airport, named after London -> Hamburg | **P931 place served = London**; P131 in Newham; P7959 historic county London |
+| **P103** Georges Perec, native language French -> Russian | **P19 born 19th arr. Paris**; **P27 citizenship France**; P6886 writing language French |
+| **P19** Seija Simola, born Helsinki -> Milwaukee | P27 citizenship Finland; P1412 speaks Finnish; P20 died Vantaa |
+
+These are recognisable grounds, not co-occurrence noise. Edit the head and each
+one is left standing and now anomalous. **This is the orphan, visible in data,
+for the first time in the project.**
+
+### The consequence — and it is conceptual, not technical
+
+**"Buried in Green Mount Cemetery" does not *entail* "died in Baltimore."** It is
+strong evidential support. Same for publisher->developer, place-served->named-after.
+Almost nothing here is a deductive rule.
+
+So:
+
+1. **AMIE-style rule mining may be the wrong instrument even on Wikidata.** What
+   the data supports is **property-pair** statistics (P119 co-varies with P20
+   across many subjects), not instance-level Horn rules. That is a simpler and
+   more direct method than mining, and it sidesteps E-001's failure mode entirely.
+2. **[T-013] is now live, with data.** AGM kernels presuppose entailment. Real
+   grounds in a KG are evidential. Either we weaken "kernel" to "evidential
+   support set" and lose AGM's crispness, or we restrict to the deductive subset —
+   which is small and drifts back toward RippleEdits' territory.
+3. **But this strengthens the T-025/T-028 framing rather than weakening it.**
+   Evidential support is *precisely* the case where logic underdetermines which
+   belief to give up. If grounds were deductive, a machine could compute the
+   contraction and there would be no discretion to surface. The design is *more*
+   coherent with evidential grounds than with deductive ones. The project's thesis
+   survives the loss of its formalism's crispness — and arguably needed it.
+
+### Recommended method change
+
+Replace instance-level Horn mining with **property-pair evidential support**: for
+edited property P, find properties Q whose values co-vary with P's across a
+Wikidata sample; the ground set for an edit is the subject's Q-statements. Cheaper
+than AMIE, no alias pathology, directly interpretable, and publishable as a
+contestable table like `probes/relation_modality.md`.
+
+**Confidence: high** for steps 1 and 2 (measured, and the examples are legible).
+**Medium** for the recommendation — property-pair co-variation is not yet
+computed, only conjectured from five hand-read cases.

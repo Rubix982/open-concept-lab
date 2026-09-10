@@ -1,25 +1,32 @@
 # Design — Edit Discretion Triage
 
 _edit-slice · structured by the Research Design Protocol (10 lenses)._
-_v0.6 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
+_v0.7 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
 _v0.4: §2a added — suppression-not-overwrite and the output/belief-mismatch attack._
 _v0.5: §0 roles flipped — mined Horn rules (e) DISCOVER, directed intervention (c)
 VALIDATES. External oracle; claim 2 partially restored._
 _v0.6: artifact confirmed available (MIT). KG corrected Wikidata -> **DBpedia**;
 their edit sets are MQuAKE/MLaKE, not CounterFact. RULE-KE checked off._
+_v0.7: E-001 killed method (e) over DBpedia (alias tautologies); E-002 revived it
+over Wikidata and found grounds are **evidential, not deductive** — kernels dropped
+for AGM's ordering half, `orphan` regraded. See agents/shared/decisions.md._
 _v0.2: grounds test made directed (inputs/outputs); partition now derives from
 direction x modality; association confound folded into the measurement._
 _Nothing may be implemented from this document until both clear._
 
 **One-paragraph statement.** A weight edit changes what a model believes, but the
-facts that *justified* the old belief are left intact and now imply its negation.
-Coherence requires giving one of them up — and logic does not say which. That
+facts that *justified* the old belief are left standing — and the resulting belief
+state is jointly **improbable**. Not contradictory: measured, the grounds are
+evidential rather than deductive [E-002, decisions.md]. Coherence pressure says
+something should give, and logic cannot say what, because there is no entailment to
+break. That
 choice is currently made by nobody: it is neither performed by the editor nor
 surfaced to the operator. This project builds a reusable instrument that, given
 an edit, partitions the knowledge it touches into **entailed** (logic determines
 the new value), **preserved** (a reconciling world exists; nothing need change),
-and **contested** (coherence demands a change that logic underdetermines). The
-contested set is emitted as a queue for human adjudication. **The instrument never
+and **contested** (the edit made these jointly implausible, and logic cannot
+adjudicate). The contested set is emitted as a queue for human adjudication —
+necessarily so, since evidential support admits no computed contraction. **The instrument never
 repairs and never ranks.** Its claim is that an unaccountable epistemic decision
 is currently being made silently, and it can be made visible cheaply.
 
@@ -285,7 +292,13 @@ second** — the buckets derive from graph position rather than being stipulated
 | | rigid relation | mutable relation |
 | --- | --- | --- |
 | **out-edge** (consequence) | `entailed` | `entailed` |
-| **in-edge** (justification) | **`contested`** | `preserved` |
+| **in-edge** (justification) | **`contested`** — largest implausibility | `preserved` — cheap reconciliation exists |
+
+**Revised by [E-002].** Rigidity is a **plausibility modifier, not a contradiction
+test**: it blocks the *relocation* reconciliation only, and other reconciliations
+survive (repatriation, emigration, distant naming). So the in-edge row is a
+gradient, not a dichotomy, and `contested` membership is a threshold on introduced
+implausibility — published as a contestable parameter.
 
 **Boundary — show structure, never ranking.** In-degree and input-depth are
 structural facts the tool reports. The moment they are sorted into "this is the
@@ -397,6 +410,7 @@ Every experiment must serve one of these. Anything that serves neither is cut.
 | "You are arguing from a null." | Equivalence testing plus the forward panel. |
 | "AGM does not apply to a probabilistic model." | The graph is a **normative audit spec**, not a model of the network (definitions.md §4). We import the norm, not the mechanism. |
 | "Isn't this abstention / selective prediction?" | Deferral triggers on model **uncertainty**; we trigger on **logical underdetermination** — a confident model can still face a choice logic cannot make. **Baseline 1 (lens 7) is precisely the test:** if confidence/entropy predicts the contested set as well as kernel structure, we have reinvented selective prediction and should say so. |
+| "These are not contradictions — a satisfying world exists for every case." | **Conceded, and it is now the claim.** The measured relation is evidential, so we assert joint *implausibility*, not inconsistency (declaration 6). Claiming contradiction would be refutable by one satisfying world; claiming implausibility is not, and it is what makes human adjudication structurally necessary rather than convenient. |
 | "Isn't this intra-memory conflict (2403.08319)?" | That is defined as paraphrase inconsistency — differing answers to semantically equivalent inputs. An orphan is one answer held alongside a coherent set entailing its negation. Different construct; the survey lists no method that partitions or routes. |
 | "GPT2-medium is a toy." | Pilot scale is deliberate; small and legible beats large and slow (CLAUDE.md). |
 | "Edits only suppress output (2605.28839), so the belief never changed — your 'contradiction' is an output/belief mismatch, not an inconsistency." | `definitions.md` declaration 1: a fact **is** its probe set. Behaviour is the ontology; mechanism is not. Under suppression the orphan is *worse*, not milder — new answer, old answer, and old grounds are all simultaneously live. **This is the sharpest available attack; answer must be pre-written, not improvised.** See §2a. |

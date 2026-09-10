@@ -1,8 +1,9 @@
 # Definitions
 
-_edit-slice · binding. Five declarations, then the outcome vocabulary._
+_edit-slice · binding. Six declarations, then the outcome vocabulary._
 _This page should get harder to change over time._
-_Changed 2026-09-09 (D-001, first write) · 2026-09-10 (R-001, added declaration 5)._
+_Changed 2026-09-09 (D-001, first write) · 2026-09-10 (R-001, declaration 5) ·
+2026-09-10 (E-002, declaration 6 — grounds are evidential; `orphan` becomes graded)._
 
 ---
 
@@ -47,6 +48,19 @@ Eiffel Tower was built for the 1889 Paris Exposition. Those are `grounds`, they
 are what `orphan` is defined over, and no existing benchmark probes them.
 Every claim of unexplored territory is scoped to the second sense or it is false.
 
+**6 · The relation between an edit and its grounds is evidential, not deductive.**
+Measured, not assumed [E-002]: an edit rarely *contradicts* its grounds, it makes
+them jointly *improbable*. McLane may die in Barcelona and be buried in Baltimore —
+bodies are repatriated. The post-edit state is **unlikely, not impossible**. So
+`orphan` is **graded**, never binary; contraction cannot be computed, since there is
+no entailment to break — which is exactly why the choice belongs to a human and not
+to the method; and the formalism is AGM's **ordering** half (entrenchment, Grove
+spheres, Lewis closest-world), not its **closure** half (kernels, partial meet). We
+keep AGM's account of the problem — revision requires giving something up, logic
+does not say what — and drop the machinery that presupposes an entailment this
+domain lacks. Time-rigidity blocks only the *relocation* reconciliation; it never
+establishes contradiction, and no artifact may claim it does.
+
 ---
 
 ## Outcome vocabulary — three categories, kept distinct
@@ -57,11 +71,13 @@ Every metric name and results column commits to exactly one:
 | --- | --- | --- |
 | `update` | a fact that should have been replaced was | correct |
 | `damage` | an unrelated dependent broke | harmful |
-| `orphan` | the edit left its own **grounds** intact and now contradictory | new |
+| `orphan` | the edit left its own **grounds** standing, and the resulting belief state is jointly **implausible** — graded, and reported with the facts carrying the implausibility | new |
 
-`orphan` is what this project exists to measure, and it is invisible to forward
-probing by construction: grounds sit upstream, every existing ripple evaluation
-walks downstream.
+`orphan` is what this project exists to measure, invisible to forward probing by
+construction: grounds sit upstream, every existing ripple evaluation walks
+downstream. Per declaration 6 it is a **degree**, not a flag — an edit is reported
+with the facts carrying the implausibility, and a human decides whether that state
+was intended.
 
 ## Standing constraints on language
 
@@ -73,3 +89,5 @@ walks downstream.
 - `damage` asserts breakage, not destruction. If apparent forgetting is interface
   drift (2606.02860), damage is accessibility loss — the word survives, the
   mechanism claim does not.
+- **Never write "contradiction" where "implausibility" is meant** (declaration 6).
+  One satisfying world refutes a contradiction claim outright.

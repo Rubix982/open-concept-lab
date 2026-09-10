@@ -57,7 +57,8 @@ _None._
 | T-012 | **active** | Grounds by intervention — design.md §0 gate, load-bearing, no data |
 | T-013 | open | Do kernels survive transfer to a graded setting? |
 | T-014 | open | Salvage from the cut material |
-| T-035 | **active** | Mined Horn rules read backwards give the kernels (§0 method e) |
+| T-035 | superseded | Mined Horn rules — dead over DBpedia [E-001], reframed by [E-002] |
+| T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
 
 ## Next Orchestrator Action
 

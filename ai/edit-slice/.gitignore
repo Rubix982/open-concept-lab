@@ -6,3 +6,6 @@ results/*
 .venv/
 __pycache__/
 *.pyc
+
+# API response caches — regenerable, not results
+agents/*/workspace/*_cache.json
