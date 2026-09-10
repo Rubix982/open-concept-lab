@@ -1,0 +1,85 @@
+name: web
+
+# The site lives in web/, but its build reaches outside that directory:
+# scripts/sync-demos.mjs copies the interactive pages listed in
+# web/data/built.yml from elsewhere in the repo. Those source paths are
+# therefore triggers too — otherwise editing a demo would not redeploy it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "mind/**"
+      - "medicine/**"
+      - "economics/**"
+      - "ai/responsible-ai/knowledge-graph/graph.html"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "mind/**"
+      - "medicine/**"
+      - "economics/**"
+      - "ai/responsible-ai/knowledge-graph/graph.html"
+      - ".github/workflows/web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: web
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full commit history is needed: the notebook's "last edited" line
+          # comes from git log. `filter: blob:none` keeps that cheap — this
+          # repo's history carries ~500 MB of tracked data files under ai/,
+          # and a blobless clone fetches file contents only on demand.
+          fetch-depth: 0
+          filter: blob:none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      # `onBrokenLinks: "throw"` means a broken internal link fails here
+      # rather than shipping. sync-demos runs first via the prebuild hook.
+      - run: npm run build
+
+      - name: Upload the site
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

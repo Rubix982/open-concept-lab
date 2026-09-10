@@ -11,17 +11,22 @@
 
 :root {
   /* --- ink & paper ------------------------------------------------------ */
-  --ocl-paper: #f5f7f6;
+  --ocl-paper: #ffffff;
   --ocl-paper-raised: #ffffff;
-  --ocl-paper-sunken: #eceff0;
+  --ocl-paper-sunken: #f5f6f7;
   --ocl-ink: #16283c;
-  --ocl-ink-muted: #56697a;
-  --ocl-ink-faint: #8798a5;
+  --ocl-ink-muted: #55677a;
+  --ocl-ink-faint: #8090a0;
   --ocl-link: #1c4c7c;
   --ocl-link-hover: #0f3358;
   --ocl-oxide: #8c3a2e;
-  --ocl-rule: #d5dcdf;
-  --ocl-rule-strong: #b6c1c6;
+  /* Slightly darker than on tinted paper — a hairline has to hold its own
+     against pure white. */
+  --ocl-rule: #dde1e5;
+  --ocl-rule-strong: #b0bcc4;
+  /* The frame around the page, and the width of the gutter it sits in. */
+  --ocl-frame: #c9d2d8;
+  --ocl-frame-inset: 0.7rem;
 
   /* --- type ------------------------------------------------------------- */
   --ocl-prose: "Spectral", "Iowan Old Style", "Palatino Linotype", Georgia,
@@ -118,6 +123,7 @@
   --ocl-oxide: #d08a7b;
   --ocl-rule: #253442;
   --ocl-rule-strong: #38495a;
+  --ocl-frame: #2b3a48;
 
   --ifm-color-primary: var(--ocl-link);
   --ifm-color-primary-dark: #74a9dc;
@@ -156,6 +162,62 @@ body {
   border-radius: 1px;
 }
 
+/* An academic touch: a hairline ruled frame around the page, the way a title
+   page is bordered. Decorative and non-interactive, so it is hidden from
+   assistive tech, from narrow screens where the gutter would eat the margin,
+   and from print, where the paper is the frame. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: var(--ocl-frame-inset);
+  border: 1px solid var(--ocl-frame);
+  pointer-events: none;
+  z-index: 300;
+}
+
+@media (max-width: 996px) {
+  body::after {
+    display: none;
+  }
+}
+
+/* Rules that run the full width of the window would cross the frame, so the
+   masthead and the footer draw theirs as inset pseudo-elements instead. The
+   masthead closes with a double rule, the way a journal's does. */
+.navbar {
+  position: sticky;
+  border-bottom: 0 !important;
+  box-shadow: none;
+}
+
+.navbar::after,
+.footer::before {
+  content: "";
+  position: absolute;
+  left: var(--ocl-frame-inset);
+  right: var(--ocl-frame-inset);
+  height: 0;
+}
+
+.navbar::after {
+  bottom: 0;
+  border-bottom: 3px double var(--ocl-rule-strong);
+}
+
+.footer::before {
+  top: 0;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+@media (max-width: 996px) {
+  /* No frame at this width, so the rules go back to the window edges. */
+  .navbar::after,
+  .footer::before {
+    left: 0;
+    right: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -171,7 +233,6 @@ body {
 
 .navbar {
   font-family: var(--ocl-apparatus);
-  border-bottom: 1px solid var(--ocl-rule);
   padding-inline: 1.25rem;
 }
 
@@ -215,9 +276,10 @@ body {
 }
 
 .footer {
+  position: relative;
   font-family: var(--ocl-apparatus);
   font-size: 0.78rem;
-  border-top: 1px solid var(--ocl-rule);
+  border-top: 0;
   padding: 1.75rem 1.25rem;
 }
 
@@ -1205,7 +1267,7 @@ a[class*="tagWithCount"]:hover {
 .ocl-home {
   max-width: 68rem;
   margin: 0 auto;
-  padding: 3.5rem 1.25rem 4.5rem;
+  padding: 3.5rem 2.25rem 4.5rem;
 }
 
 .ocl-home__masthead {
@@ -1276,6 +1338,10 @@ a[class*="tagWithCount"]:hover {
    ========================================================================== */
 
 @media print {
+  body::after {
+    display: none;
+  }
+
   .navbar,
   .footer,
   .theme-doc-sidebar-container,
@@ -1359,7 +1425,7 @@ a[class*="tagWithCount"]:hover {
 .ocl-page {
   max-width: 74rem;
   margin: 0 auto;
-  padding: 2.75rem 1.25rem 4.5rem;
+  padding: 2.75rem 2.25rem 4.5rem;
 }
 
 .ocl-page__head {

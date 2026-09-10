@@ -86,8 +86,10 @@ const config: Config = {
 
   themeConfig: {
     colorMode: {
+      // Light is the design; the OS preference does not override it. The
+      // toggle still works for anyone who wants dark.
       defaultMode: "light",
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     metadata: [
       { name: "author", content: "Saif Ul Islam" },
