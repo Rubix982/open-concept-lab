@@ -749,3 +749,79 @@ purpose of the filter. Live options, neither free:
 **Confidence: high** for the ordering and the per-relation pattern (paired design,
 identical items and candidate sets across all four models, complete n=165 each).
 **Medium** for absolute levels, which depend on candidate-set size.
+
+---
+
+## [E-006] Finding: ROME on Llama-3.1-8B via NDIF is feasible — both required primitives work
+
+_Date: 2026-09-11 · spike, ~1h of a 4h box_
+
+**Verdict: option 1 of [T-050] is available.** The blocking concern was that NDIF
+hosts one shared copy of each model, so a weight edit cannot be persisted. It does
+not need to be.
+
+### Unknown 1 — can the edit be applied at all? YES
+
+ROME's update is **rank-one on the MLP output projection**, so its effect on any
+input is an additive term at that layer. Applied as an activation intervention
+rather than a weight write:
+
+```
+baseline  "The Eiffel Tower is in the city of" -> " Paris"
+perturbed  (noise added to layers[5].mlp.down_proj output) -> "acons"
+```
+
+The intervention lands and propagates. A real rank-one delta substitutes directly
+for the noise.
+
+### Unknown 1b — can v* be optimised? YES
+
+ROME fits the target vector by gradient descent through the frozen model. Backward
+passes run remotely: gradient norm **17.875** at `layers[5].mlp.down_proj`. So the
+optimisation does not require local weights.
+
+### Unknown 2 — second-moment statistics: tractable
+
+Llama-3.1-8B: 32 layers, d_model 4096, **d_mlp 14336**, vocab 128256.
+
+- C is 14336x14336 = 206M entries = **0.82 GB fp32**, computed and held locally.
+- Collecting the keys to build it: 0.09 GB for 3k tokens, 0.29 GB for 10k, 2.87 GB
+  for the 100k the original ROME used. Chunked downloads, one-time cost.
+
+rome-neighbors' GPT-2 artifact is `...mom2_3000.npz`, so a 3k-sample estimate was
+considered adequate there. We should check sensitivity rather than assume.
+
+### Unknown 3 — layer choice: needs determining, not blocking
+
+ROME uses layer 5 of GPT-J's 28 (~18% depth). Scaled to 32 layers that is ~layer 6,
+but relative depth is a guess; causal tracing would identify it properly. Not a
+blocker for feasibility, and it is a parameter to publish contestable [T-027].
+
+### An unexpected advantage of the intervention formulation
+
+Because the edit is re-applied per forward pass rather than persisted, there is no
+edited-model artifact to store or reload. Consequences, all favourable:
+
+- **Paired pre/post on identical infrastructure.** Edit on and edit off are two
+  traces against the same hosted weights, so nothing drifts between conditions.
+  The usual workflow reloads or re-edits a model between arms.
+- **Perfectly reproducible** — the edit is a function of its parameters, recomputed
+  each time rather than a checkpoint that can silently diverge.
+- **No shared-state risk.** We cannot corrupt the model other NDIF users are
+  running, because we never write to it.
+
+### Scope note
+
+Applying an existing editing method is not "proposing or tuning an editing method",
+which the charter bans. ROME here is the **perturbation whose effects we audit**,
+not a contribution.
+
+### What this does NOT establish
+
+The primitives work; a complete ROME edit has not been run. Unverified: that the
+fitted v* actually installs the target fact, that the layer choice is right for
+this architecture, and that an unwhitened update (skipping mom2) would be
+acceptable if the covariance proves expensive.
+
+**Confidence: high** for both primitives (measured directly). **Medium** for the
+covariance cost estimate, which assumes chunked collection works at these sizes.

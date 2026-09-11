@@ -519,7 +519,7 @@ raw rank. Recorded as the RCA on E-005.
 
 ### T-050 · P19 is the pilot's pinch point
 
-**Status:** active
+**Status:** answered
 **Parent:** T-045
 **Opened:** 2026-09-11
 **Question:** [E-005] — P19 place of birth tops out at 53% even at Llama-405B, and

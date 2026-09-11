@@ -302,3 +302,63 @@ way — which would invalidate the possession gate itself, not merely its number
 - src/remote.py — score_pairs, adaptive OOM halving, transport classification
 
 **Closed:** 2026-09-11
+
+---
+
+### E-006 · SPIKE: is ROME on Llama-3.1-8B feasible via NDIF?
+
+**Status:** closed
+**Type:** spike
+**Priority:** high
+**Created:** 2026-09-11
+**Updated:** 2026-09-11
+**Estimated:** 4h (time-boxed)
+**Spent:** —
+
+**Description:**
+Executes [T-050] option 1. E-005 showed GPT-J holds 13% of P19 and 56% overall,
+against Llama-3.1-8B's 40% and 74% — and P19/P20 carry the richest grounds, so the
+edit target must move or the pilot probes relations that cannot orphan.
+
+Three unknowns, cheapest first, stop at the first that fails:
+
+1. **Can a weight edit be applied at all on a SHARED, REMOTE model?** NDIF hosts
+   one copy of Llama-3.1-8B for all users; we cannot persist a weight change.
+   ROME's update is rank-one on an MLP output projection, so its effect is
+   expressible as an activation intervention: add `(dW) @ act` at the target layer
+   on every forward pass. nnsight supports interventions remotely, and `.edit()`
+   for persistent ones. **If this does not work, option 1 is dead and T-050 falls
+   back to option 2** (re-select toward GPT-J's strong relations).
+2. **Where do the second-moment statistics come from?** ROME needs the covariance
+   of MLP keys at the target layer to whiten the update. rome-neighbors has
+   `data/stats/gpt2/wikipedia_stats/...mom2_3000.npz` for GPT-2, so the estimate
+   was over ~3000 samples. For Llama-3.1-8B: published (EasyEdit and similar ship
+   Llama hparams), or computed by us over a Wikipedia sample. Computing remotely
+   costs many NDIF calls; locally, 8B in fp16 is ~16GB against 16GB of RAM.
+3. **Do layer/hyperparameter choices exist for Llama-3.1-8B specifically?**
+   EasyEdit ships configs for llama-7b and llama-2-7b; 3.1-8B has a different
+   architecture (GQA, different MLP dims) and may need its own.
+
+**Falsification:** if (1) fails, or if (2) requires compute we do not have, option 1
+is not available and T-050 resolves to option 2 with the ground-poverty limitation
+reported explicitly.
+
+**Note on scope.** Applying an existing editing method is not "proposing or tuning
+an editing method" — the charter bans the latter. We are not improving ROME; we
+are using it as the perturbation whose effects we audit.
+
+**Result: FEASIBLE.** Intervention lands (" Paris" -> "acons" perturbing
+layers[5].mlp.down_proj) and remote gradients work (norm 17.875), so ROME's
+rank-one delta can be applied without persisting a weight change and v* can be
+fitted through the frozen remote model. Covariance is 0.82 GB held locally, built
+from chunked key collection (0.29 GB for 10k tokens). Layer choice undetermined
+but not blocking. Unexpected gain: the edit is re-applied per pass rather than
+persisted, giving paired pre/post against identical hosted weights.
+
+**Blockers:** none
+**Artifacts:**
+- agents/shared/findings.md -> "[E-006] ROME on Llama-3.1-8B via NDIF is feasible"
+- agents/engineer/workspace/rome_feasibility.py — the two primitive tests
+- agents/engineer/workspace/ndif_health.py — connectivity check
+
+**Closed:** 2026-09-11
