@@ -22,7 +22,7 @@ ROME application, result caching) rather than rebuild it. Spawns T-005.
 
 ### T-002 · Does Cohen et al. (TACL 2024) Logical Generalization already constitute a backward probe?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-09-09
 **Question:** RippleEdits' Logical Generalization test type covers inverse and
@@ -31,14 +31,12 @@ consequences, core claim 1 ("backward probing is unexplored") weakens and the
 pilot's framing shifts. session-2026-09-08.md §9 flags this as the likeliest
 counterexample and says to find it ourselves before Arnab does. Read the
 test-type definitions directly, not through a summary.
-**Answer:** No. LG probes the logical closure of the edited triple (symmetry,
-transitivity) — backward in *argument* order, never in *justification* order.
-Claim 1 survives narrowed, and the distinction is now declaration 5 of
-notes/definitions.md. See findings.md [R-001]. Confidence: medium.
-
+**Answer:** [R-001]. No. Logical Generalization probes the logical closure of the edited
+triple — symmetry and transitivity — which is backward in *argument* order, not
+*justification* order. Claim 1 survives narrowed; the distinction is declaration 5.
 ### T-003 · Can RippleBench-Maker's distance function take a code dependency graph?
 
-**Status:** open
+**Status:** parked
 **Parent:** T-001
 **Opened:** 2026-09-09
 **Question:** RippleBench (2512.04144) advertises a substitutable distance
@@ -46,20 +44,25 @@ function including graph path length. If a compiler-derived dependency graph
 drops in, the instrument is built on maintained tooling in days rather than
 months. session-2026-09-08.md §9 calls this the highest-leverage move available.
 **Answer:** —
+**Parked note:** **Parked** — the code domain is v2. Resumable cold: the question is whether
+RippleBench-Maker's advertised pluggable distance function accepts a compiler-derived
+dependency graph. Unchecked. Relevant only once the code-domain oracle is back on
+the table, which [E-002] pushed out by weakening claim 2 to a snapshot oracle.
 
 ### T-004 · Does the backward-probe pilot survive the ten design lenses?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-09-09
 **Question:** No implement ticket may open until it passes. The WHY gate is the
 stop condition, and lens 2 (prior art) is where T-002 lands — if Cohen et al.
 already did this, the pilot dies here rather than after a week of work.
-**Answer:** —
-
+**Answer:** design.md v0.8 — all ten lenses run. Lens 2 cleared [R-002], §0 gate explored
+through E-001/E-002/E-005/E-006. The design has been re-passed after each major
+result per Protocol rule 5, and reversed six times in doing so.
 ### T-005 · What exactly may edit-slice import from rome-neighbors without importing its scope?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-09-10
 **Question:** T-001 permits code reuse but not scope merge. Where is the line?
@@ -68,11 +71,14 @@ KEEP's assumptions. Importing `analysis`/`predictors` may drag in KEEP's framing
 importing `data`/`config` probably does not. Decide per-module, and decide the
 mechanism (path dependency, vendored copy, or extracted shared package). Must be
 settled before the pilot's implement ticket opens.
-**Answer:** —
-
+**Answer:** Moot in practice: nothing was imported. edit-slice built its own `src/` (data,
+probing, remote, wikidata, ground_templates), and rome-neighbors' ROME path turned
+out to depend on EasyEdit, which is not installed in either of its venvs — so there
+was no working stack to borrow. The boundary was never tested because we never
+approached it.
 ### T-006 · Is the grounds relation decidable in the CounterFact/Wikidata setting at all?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-002
 **Opened:** 2026-09-10
 **Question:** Declaration 5 defines grounds as the facts that were *premises* for
@@ -82,7 +88,11 @@ only under world knowledge no oracle supplies. So the pilot's grounds probes are
 hand-built and therefore circular by §5 of the session note. Is that acceptable
 for a pilot whose only job is to show asymmetry, or does it sink the result?
 This is lens 5 (construct validity) and lens 10 (adversary) for T-004.
-**Answer:** —
+**Answer:** No, and the reason changed twice. [E-002]: the relation is **evidential, not
+deductive** — no strict contradiction arises, so there is nothing decidable to
+decide. Today's dry-run adds the structural reason: Wikidata asserts **no edge at
+all** between a fact and its grounds; they are co-predicates of one subject (a
+star), not linked nodes. The graph supplies candidates, never the relation.
 
 ---
 
@@ -93,7 +103,7 @@ See global CLAUDE.md -> "Premise Dry-Run"._
 
 ### T-007 · Is forward/backward really expansion/contraction?
 
-**Status:** active
+**Status:** answered
 **Parent:** T-002
 **Opened:** 2026-09-10
 **Question:** Grounds are conjunctive (a conclusion needs all its premises);
@@ -102,11 +112,16 @@ still entails the deleted fact. That makes forward propagation *expansion* and
 backward propagation *contraction* — importing AGM and Hansson kernel
 contraction rather than restating the observation. Does the mapping hold tightly
 enough to inherit their results, or is it an analogy? (Dry-run move 2.)
-**Answer:** —
-
+**Answer:** Partly, and it survives as **vocabulary rather than machinery**. The
+expansion/contraction framing correctly names the asymmetry — editors only add —
+and [2605.28839]'s "edits suppress rather than overwrite" supports it
+mechanistically. But [E-002] dropped AGM's closure half (kernels, partial meet)
+because the grounds relation is evidential, keeping its ordering half
+(entrenchment, Grove, Lewis). We inherit AGM's account of the problem, not its
+algorithm. See agents/shared/decisions.md [E-002].
 ### T-008 · Does the backward direction terminate without k?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-007
 **Opened:** 2026-09-10
 **Question:** Forward closure is infinite, which is why declaration 4 needs an
@@ -115,11 +130,14 @@ contraction terminates on its own — break every kernel, stop. If true, `k` is
 needed forward and not backward, and the direction that sounds intractable is
 the bounded one. That asymmetry is what makes the instrument buildable.
 (Dry-run move 3.)
-**Answer:** —
-
+**Answer:** Dissolved rather than resolved. The question presupposed grounds lie along a
+**chain**, where depth is meaningful. They lie in a **star** — co-predicates of one
+subject, with no path structure, no hops and no transitive closure. So `k` does not
+apply to grounds at all; the star's variable is in-degree, not depth. `k` remains
+meaningful forward, where chains are real. Supersedes the symmetry claim.
 ### T-009 · Kernel count as the backward out-degree variable
 
-**Status:** open
+**Status:** answered
 **Parent:** T-007
 **Opened:** 2026-09-10
 **Question:** Over-determination — a fact with multiple independent
@@ -129,11 +147,13 @@ justification redundancy. Prediction: orphan rate scales steeply with kernel
 count. This is the mirror of KnowledgeSmith's forward branch-structure result,
 not a re-derivation of it. Candidate headline: *editing over-spreads forward and
 under-spreads backward.* (Dry-run moves 4, 5.)
-**Answer:** —
-
+**Answer:** Superseded with kernels [E-002]. The quantity survives under a different name:
+**in-degree** = the number of co-predicates of the subject, measured in E-004 step
+1 at a median of 8 per subject (1% have none, 84% have >=3). It is no longer a
+count of minimal entailing sets, because there are none.
 ### T-010 · Metric sign error — should grounds fall or hold?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-007
 **Opened:** 2026-09-10
 **Question:** CLAUDE.md says of grounds probes "log-prob of pre-edit correct
@@ -145,11 +165,14 @@ reading (measure whether any kernel was broken) and conservative reading
 figure exists. Note the underdetermination is arguably itself the finding: logic
 does not say which premise to sacrifice, so the model sacrifices none.
 (Dry-run move 8 — a spec invalidated by the reframe.)
-**Answer:** —
-
+**Answer:** Twice-resolved. First sign-free — measure whether *any* ground moved rather than
+whether a specific one should fall. Then [E-002] regraded `orphan` as a degree, so
+the question of a sign largely dissolves: we report introduced implausibility and
+the facts carrying it. definitions.md declaration 6 and the CLAUDE.md metric line
+are both corrected.
 ### T-011 · Is orphaning structural to expansion operators as a class?
 
-**Status:** open
+**Status:** parked
 **Parent:** T-007
 **Opened:** 2026-09-10
 **Question:** An LM has no retraction primitive — gradient editing can only move
@@ -160,10 +183,15 @@ contraction primitive. Claim about the class, falsifiable in one shot (find an
 editor that contracts). Stronger than "ROME scores poorly backward."
 (Dry-run move 7.)
 **Answer:** —
+**Parked note:** **Parked** — cannot be tested without edit data, which is phase 2. Resumable cold:
+the claim is that orphaning is structural to *expansion operators as a class*, not
+specific to ROME, because such operators have no contraction primitive.
+[2605.28839]'s "edits suppress rather than overwrite" is supporting mechanistic
+evidence. Falsifiable in one shot by exhibiting an editor that contracts.
 
 ### T-012 · Grounds by intervention rather than enumeration
 
-**Status:** active — **load-bearing.** Now the design.md §0 gate.
+**Status:** parked
 **Parent:** T-006
 **Opened:** 2026-09-10
 **Updated:** 2026-09-10
@@ -212,6 +240,12 @@ passing the direction test; a low fraction means the rules are associative and
 **Answer:** partial. Method specified, confounds handled on paper, oracle now
 external. **No data.** Resolves only when E-001 (spike) runs. Spawned [T-031],
 [T-032], [T-033], [T-034], [T-035].
+**Parked note:** **Parked** — the method is right and unrun. Resumable cold: grounds by *directed*
+intervention, g is a ground of f iff delta(g->f) >> delta(f->g), with symmetric
+delta classified as topical association. [E-006] confirmed remote gradients and
+interventions both work on NDIF, so the mechanism is available. It was overtaken by
+possession (E-005), which had to come first — a ground the model does not hold
+cannot be tested for direction.
 
 ### T-013 · Do kernels survive transfer to a graded setting?
 
@@ -233,7 +267,7 @@ structurally necessary [T-025] rather than merely convenient.
 
 ### T-014 · Salvage from the cut material
 
-**Status:** open
+**Status:** answered
 **Parent:** T-007
 **Opened:** 2026-09-10
 **Question:** §11 cut the self-reinforcing mechanism and backward-pass sync as
@@ -243,8 +277,12 @@ backward even when repair is not. Likewise "inevitable" was banned, but the
 content under it — coherence is global, so any bounded audit is arbitrary — is
 rescued by kernels, which give a *principled* rather than chosen bound. Confirm
 both salvages are sound before they enter a document. (Dry-run move 9.)
-**Answer:** —
-
+**Answer:** Both salvages hold, one with a revision. "Verification is backward even when
+repair is not" survives intact and is now the project's core (T-025). The
+"inevitable" content — coherence is global, so any bounded audit is arbitrary — was
+to be rescued by kernels giving a principled bound; kernels are gone [E-002], so
+the rescue is now the **star's finite in-degree**: a fact has a bounded set of
+co-predicates, which bounds the audit without appeal to entailment.
 ### T-031 · Inputs/outputs: the grounds test must be directed
 
 **Status:** answered
@@ -303,7 +341,7 @@ normative. Written into design.md lens 5 as a boundary.
 
 ### T-035 · Mined Horn rules read backwards give the kernels
 
-**Status:** active
+**Status:** answered
 **Parent:** T-012
 **Opened:** 2026-09-10
 **Question:** 2606.10554 mines `body => head` rules from Wikidata with AMIE and
@@ -311,13 +349,12 @@ reads them forward (edit touches body, does head update?). Read backwards: if th
 edit changes the **head**, the **body** is the set of premises that entailed it —
 i.e. the kernel, obtained mechanically from an existing artifact. In-degree =
 number of distinct rules sharing a head = justification redundancy [T-009].
-**Answer:** adopted as design.md §0 method (e), DISCOVERY role; intervention (c)
-demoted to validation. Gains: external oracle (answers [T-033]), claim 2 partially
-restored (decidable lower bound per declaration 2), reusable, smaller. Costs:
-mined != justificatory; confidence thresholds are a judgement call [T-027]; we
-inherit AMIE's coverage, which interacts with [T-023]. Unverified: whether the
-artifact is obtainable — now on the critical path [R-005].
-
+**Answer:** Dead, for two independent reasons. [E-001]: AMIE over DBpedia yields alias
+tautologies — 66.5% of usable rules are `fact + alias => fact`, and all 32
+rigid-head rules are of that form. Today's structural reason is deeper: **rule
+mining finds chain patterns, and grounds are star relations.** We were asking a
+chain-finder for a structure it does not represent, so no amount of KG quality
+would have fixed it.
 ### T-036 · Probe-generation-from-a-graph is not ours
 
 **Status:** answered
@@ -360,7 +397,7 @@ discarded; design.md lens 5 and definitions.md declaration 6 corrected.
 
 ### T-038 · The termination argument is partly given back
 
-**Status:** open
+**Status:** answered
 **Parent:** T-013
 **Opened:** 2026-09-10
 **Question:** [T-008] argued backward needs no `k` because kernels are finite while
@@ -369,11 +406,14 @@ buildable. That presupposed entailment. Evidential support has no natural
 boundary, so backward now needs a threshold too. How much of the asymmetry
 survives, and is a plausibility threshold meaningfully better than an arbitrary
 `k`, or have we just renamed the parameter?
-**Answer:** —
-
+**Answer:** Resolved with [T-008]. Nothing was given back, because nothing was owed: the
+termination argument was stated over chains, and grounds are not chains. There is
+no `k` to rename and no threshold standing in for one — the star is finite by
+construction. A plausibility threshold is still needed to rank grounds by strength,
+but that is a *strength* cut, not a *distance* cut.
 ### T-039 · Possession — does the MODEL hold the ground?
 
-**Status:** active
+**Status:** answered
 **Parent:** T-012
 **Opened:** 2026-09-10
 **Question:** Wikidata says Perec was born in Paris. Does GPT-2? A ground the
@@ -381,17 +421,14 @@ model never held cannot be orphaned — nothing is left standing to contradict
 anything. Between "the oracle lists these grounds" and "the edit orphaned them"
 there is a missing step: verify the model holds the ground pre-edit. Method (c)
 validates *direction*, not *possession*.
-**Answer:** **confirmed and measured [E-003].** Head possession by constrained
-rank: gpt2-medium 61%, gpt2-large 62%, Llama-3.1-70B **93%**. Scaling *within*
-GPT-2 does nothing; the 90x jump does everything. At GPT-2 scale ~39% of
-rigid-relation edits target facts the model does not hold, so any orphan there is
-an artifact of ignorance. Possession filtering is now mandatory before reporting
-any orphan rate. Open: GPT-J-6B (the intended *edit* target) unmeasured, and
-*ground* possession — more obscure than curated CounterFact heads — is E-004.
-
+**Answer:** [E-005], measured across four models: 56% / 74% / 79% / 85% at 6B / 8B / 70B /
+405B, n=165 each. Possession is a genuine gate — not saturated even at 405B — and
+scale buys only the hard relations. Consequence for the pilot: P19 place of birth
+tops out at 53% and GPT-J holds 13%, which moved the edit target to Llama-3.1-8B
+[T-050, E-006].
 ### T-041 · Does contraction EVER occur, on hand-built deductive grounds?
 
-**Status:** active
+**Status:** parked
 **Parent:** T-013
 **Opened:** 2026-09-10
 **Question:** E-002 found grounds evidential *as Wikidata expresses them* — a fact
@@ -400,6 +437,12 @@ where entailment is explicit, edit the head on GPT-J, and ask whether the editor
 retracts anything at all. Existence claim only; hand-picked sets may never be used
 for a frequency claim [O-004].
 **Answer:** —
+**Parked note:** **Parked** — this is option C, blocked on people rather than code. Resumable cold:
+hand-build small deductive ground sets where entailment is explicit, edit the head
+on Llama-3.1-8B, ask whether the editor retracts anything. Existence claim only
+[O-004]. [E-006] established the edit is applicable; the blocker is the annotation
+study, which has had no identified annotators since design.md lens 8 first flagged
+it.
 
 ### T-042 · Amend the charter's no-scaling rule
 
@@ -416,7 +459,7 @@ and the grounds-sign metric — both superseded by declaration 6.
 
 ### T-043 · The dimension space of a knowledge bit
 
-**Status:** open
+**Status:** open — advanced 2026-09-11, see T-052
 **Parent:** T-031
 **Opened:** 2026-09-10
 **Question:** Nodes have more axes than we are using: direction (done), in-degree,
@@ -461,7 +504,7 @@ scale-dependent, not to be the pilot's subject.
 
 ### T-046 · Reframe the primary deliverable as the possession/structure map
 
-**Status:** open
+**Status:** ACTIVE — the live decision
 **Parent:** T-039
 **Opened:** 2026-09-10
 **Question:** The strongest results so far are edit-independent: the measurement
@@ -476,7 +519,7 @@ E-004 supports it — joint possession 69%, dense enough to centre.
 
 ### T-047 · Lens 2 second pass — factual probing, not editing
 
-**Status:** open
+**Status:** ACTIVE — stop condition, blocks T-046
 **Parent:** T-046
 **Opened:** 2026-09-10
 **Question:** R-002 searched the *editing* literature because the claim was about
@@ -547,3 +590,44 @@ T-049's reasoning about cue vs type remains sound in principle and the lift
 control is worth keeping (it shows the prior baseline is only 4-5%, so results are
 not template-guessable), but it was not the operative defect. Recorded so the
 correction is not lost: the cheap fix was more candidates.
+
+### T-052 · Grounds are a STAR, not a chain
+
+**Status:** ACTIVE
+**Parent:** T-043
+**Opened:** 2026-09-11
+**Question:** We have said throughout that "the graph gives grounds". It does not.
+Every ground we have used — P19 birth, P27 citizenship, P119 burial — is another
+property of the **same subject**. Wikidata asserts no edge between them; they are
+siblings on one node, and the justificational relation among them is entirely our
+imposition. Three distinct neighbourhood structures were being conflated:
+
+  star          co-predicates of one subject          -> candidate GROUNDS (ours)
+  chain         object becomes the next subject       -> CONSEQUENCES (the literature)
+  reverse star  facts where our subject is the object -> untouched by anyone
+
+Consequences already recorded: [T-035] rule mining fails because it finds chain
+patterns and grounds are star relations; [T-008]/[T-038] `k` does not apply to the
+star because it has no path structure.
+
+**Open part:** which structure should the instrument centre on, and does the star
+framing match the branching diagram in the sync-up notes (p.10) — were those nodes
+co-predicates or genuine multi-hop chains? That changes the design.
+**Answer:** —
+
+### T-053 · Generic question generation from property metadata
+
+**Status:** open
+**Parent:** T-052
+**Opened:** 2026-09-11
+**Question:** [E-004] found template coverage, not ground availability, was the
+binding constraint — 26 hand-written templates covered 13 properties and 89/165
+subjects. Wikidata properties carry labels, aliases, descriptions and value-type
+constraints, so a uniform key-value cloze ("Georges Perec — place of birth:")
+generates a probe for **any** property with no judgement and no marginal cost.
+Trade-off: less natural phrasing, probably lower absolute possession. Gain:
+uniformity, which matters because hand-written templates inject per-property
+phrasing quality that confounds every cross-property comparison — the same species
+of artifact as [T-048]'s grain confound. Testable directly: we hold 26 hand-written
+templates and can compare head-to-head on identical facts.
+**Answer:** —

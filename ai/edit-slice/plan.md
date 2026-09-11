@@ -43,34 +43,22 @@ _None._
 
 ## Open Threads (the resume point)
 
+_Triaged 2026-09-11: 20 open/active reduced to 4 live + 4 parked. Most had been
+answered by later work and never updated — bookkeeping debt, now cleared._
+
 | ID | Status | Question |
 | --- | --- | --- |
-| T-003 | open | Can RippleBench-Maker's distance function take a code dependency graph? |
-| T-004 | open | Does the backward-probe pilot survive the ten design lenses? |
-| T-005 | open | Which rome-neighbors modules may edit-slice import? |
-| T-006 | open | Is the grounds relation decidable in the CounterFact setting at all? |
-| T-007 | active | Is forward/backward really expansion/contraction? (AGM + kernels) |
-| T-008 | open | Does backward terminate without `k`? |
-| T-009 | open | Kernel count as the backward out-degree variable |
-| T-010 | open | Metric sign error — should grounds fall or hold? |
-| T-011 | open | Is orphaning structural to expansion operators as a class? |
-| T-012 | **active** | Grounds by intervention — design.md §0 gate, load-bearing, no data |
-| T-013 | open | Do kernels survive transfer to a graded setting? |
-| T-014 | open | Salvage from the cut material |
-| T-035 | superseded | Mined Horn rules — dead over DBpedia [E-001], reframed by [E-002] |
-| T-038 | open | Is a plausibility threshold better than an arbitrary `k`, or just renamed? |
-| T-039 | answered | Possession measured: gpt2 61% vs Llama-70B 93% [E-003] |
-| T-045 | **active** | Possession of the EDIT target (GPT-J), not just the audited model |
-| E-003 | **superseded** | Possession numbers — random distractors admit surface-cue scoring |
-| E-004 | **superseded** | Joint possession — measure did not discriminate (top-3 = 100%) |
-| E-005 | closed | Possession 56/74/79/85 across 6B-405B; scale buys only hard relations |
-| T-050 | answered | P19 pinch point -> move edit target to Llama-3.1-8B |
-| E-006 | closed | ROME on Llama-3.1-8B via NDIF is feasible (intervention + remote grads) |
-| T-046 | open | Reframe deliverable as the possession/structure map |
-| T-047 | open | Lens 2 second pass — factual probing, not editing |
-| T-048 | open | Grain confound in head-vs-ground comparison |
-| T-041 | **active** | Does contraction ever occur on hand-built deductive grounds? |
-| T-043 | open | Dimension space of a knowledge bit — entrenchment undefined |
+| T-046 | **ACTIVE** | Reframe deliverable as the possession/structure map |
+| T-047 | **ACTIVE** | Lens 2 second pass — factual probing (stop condition, blocks T-046) |
+| T-052 | **ACTIVE** | Grounds are a star, not a chain — which structure does the instrument centre on? |
+| T-053 | open | Generic question generation from property metadata |
+| T-043 | open | Dimension space of a knowledge bit (advanced by T-052) |
+| T-048 | open | Grain confound — blocks any head-vs-ground claim |
+| T-003 | parked | RippleBench distance-function swap (v2, code domain) |
+| T-011 | parked | Orphaning structural to expansion operators (needs edit data) |
+| T-012 | parked | Grounds by directed intervention (method right, overtaken by possession) |
+| T-041 | parked | Does contraction ever occur (option C, blocked on annotators) |
+
 
 ## Next Orchestrator Action
 
