@@ -48,11 +48,13 @@ _Triaged twice on 2026-09-11. 35 threads: 29 answered, 8 parked, 1 active._
 | ID | Status | Question |
 | --- | --- | --- |
 | T-054 | **ACTIVE** | The CounterFact filter outlived the model it was calibrated against |
+| T-055 | answered | Coordination lift works set-level (+2.39/+1.61), not per-candidate |
 
 Parked, each with a resume-cold note: T-003 (RippleBench swap), T-011 (orphaning
 structural to expansion operators), T-012 (directed intervention), T-041 (does
 contraction occur — blocked on annotators), T-043 (dimension space), T-048 (grain
-confound), T-052 (star vs chain), T-053 (generic question generation).
+confound), T-052 (star vs chain), T-053 (generic question generation), T-056
+(dual-facet nouns — a candidate *next* project, not a widening of this one).
 
 The parked set is coherent, not scattered: **all eight serve the orphan arc, which
 is blocked on one thing — nobody has been identified for the annotation study.**

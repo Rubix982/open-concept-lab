@@ -433,6 +433,20 @@ two-panel figure, both edit-dependent. Both are parked: the orphan arc is blocke
 on annotators [T-041] and has no data, while the possession arc is complete across
 four models. Deliver what exists.
 
+**Validation built in [T-055], at its measured strength.** The filter's correctness
+rests on candidates being type-matched — an unverified heuristic. Coordination lift
+tests it: same-type expressions coordinate under one predicate, cross-type ones do
+not. Measured separation is **+2.39** on a genuine zeugma and **+1.61** on
+CounterFact's ambiguous "died at" template.
+
+It ships as a **set-level** diagnostic only. Individual candidates are not reliably
+classified, because the measure captures plausibility of *joint predication* rather
+than type agreement alone — same-type items score low when the pairing is merely
+implausible. And it is weakest exactly where the ambiguity is idiomatic: *"died at
+Naples and at the age of 90"* is standard obituary English, so conventionalised
+ambiguity of the kind [T-044] found is not caught this way. Automatic
+ambiguous-template detection is therefore **not** claimed.
+
 **The artifact: a possession filter.** A tool you run *before* an editing
 experiment, reporting what fraction of your edit set the model actually holds —
 by constrained rank against type-matched candidates, not the two-way test — plus a
@@ -468,6 +482,8 @@ discretion measure. Those remain the project's thesis and remain unmeasured.
 | "Isn't this abstention / selective prediction?" | Deferral triggers on model **uncertainty**; we trigger on **logical underdetermination** — a confident model can still face a choice logic cannot make. **Baseline 1 (lens 7) is precisely the test:** if confidence/entropy predicts the contested set as well as kernel structure, we have reinvented selective prediction and should say so. |
 | "These are not contradictions — a satisfying world exists for every case." | **Conceded, and it is now the claim.** The measured relation is evidential, so we assert joint *implausibility*, not inconsistency (declaration 6). Claiming contradiction would be refutable by one satisfying world; claiming implausibility is not, and it is what makes human adjudication structurally necessary rather than convenient. |
 | "Isn't this intra-memory conflict (2403.08319)?" | That is defined as paraphrase inconsistency — differing answers to semantically equivalent inputs. An orphan is one answer held alongside a coherent set entailing its negation. Different construct; the survey lists no method that partitions or routes. |
+| "How do you know your candidates are type-matched? If they are not, the measure is the ambiguity artifact you claim to remove." | Partly answered, honestly. Coordination lift separates same- from cross-type at the **set** level (+2.39 / +1.61 measured) and is reported per candidate set rather than assumed. It does **not** reliably classify individual candidates, and it is weak where ambiguity is idiomatic. The residual risk is stated rather than closed. |
+| "Teacher-forced scoring overstates performance (2505.18690)." | Conceded as a general point, and we hold both arms: two-way 75%, constrained teacher-forced 61%, unconstrained autoregressive generation 12% on identical items. The generation figure is depressed by CounterFact's template ambiguity rather than ignorance [T-044], and constrained teacher-forcing is the right instrument for **possession** — whether the knowledge is present, not whether the model would spontaneously emit it. Report the spread. |
 | "GPT2-medium is a toy." | **Superseded 2026-09-10** — moved to GPT-J-6B via NDIF, because possession is a construct requirement [T-039], not because scale is impressive. |
 | "Edits only suppress output (2605.28839), so the belief never changed — your 'contradiction' is an output/belief mismatch, not an inconsistency." | `definitions.md` declaration 1: a fact **is** its probe set. Behaviour is the ontology; mechanism is not. Under suppression the orphan is *worse*, not milder — new answer, old answer, and old grounds are all simultaneously live. **This is the sharpest available attack; answer must be pre-written, not improvised.** See §2a. |
 | "You are proposing a method — beat JNO." | It partitions, it does not edit or repair. Different question; JNO is not a comparator. Boundary: **outputs a queue, never a repair.** |

@@ -689,9 +689,67 @@ was applied **once, in 2022, relative to the authors' model**, and the same fixe
 guarantee does not transfer, and nothing in the pipeline re-establishes it. Our own
 measurement is the cost: GPT-J holds 13% of P19 place of birth, 56% overall.
 
+**[R-007]: survives.** 2505.18690 critiques setups, teacher-forcing, dataset
+coverage and multi-edit, and proposes a context-based baseline; it does not measure
+possession and does not raise the transfer problem.
+
 This is the project's strongest unclaimed result and the centre of the deliverable.
-It needs: (a) 2505.18690 read, the nearest remaining competitor; (b) the claim
+It needs: (a) ~~2505.18690 read~~ done; (b) the claim
 stated so it does not read as an accusation — a dataset outliving its calibration
 is nobody's carelessness; (c) a concrete recommendation, i.e. re-filter per model
 and report possession alongside efficacy.
+**Answer:** —
+
+### T-055 · Zeugma as a type-matching validator for candidate sets
+
+**Status:** answered — shipped at reduced strength
+**Parent:** T-044
+**Opened:** 2026-09-11
+**Question:** The possession measure depends on candidates being type-matched —
+that is what stops CounterFact's ambiguous templates from expressing themselves
+[T-044]. "Type-matched" is currently a heuristic: other values attested for the
+same relation. It is never verified, so a contaminated candidate set would pass
+silently.
+
+**Coordination gives a principled test.** Two candidates are the same type iff they
+coordinate under one predicate without anomaly:
+
+    "Koun died at Athens and at the age of 90"   -> zeugmatic  => different types
+    "Koun died at Athens and at Naples"          -> fine       => same type
+
+So a zeugma detector validates the instrument we are shipping, replacing an
+assumption with a measurement. Scoped to the filter; does not widen the claim.
+
+Second, related use: **automatic detection of ambiguous templates.** T-044 found
+"died at" -> "the age of 90" by reading outputs by hand, which does not scale and
+is how the next one gets missed. If a template's completion distribution spans two
+ontological categories, the template is ambiguous and the probe is invalid.
+
+**Answer:** built and measured, and it is **weaker than the motivation implied**.
+Coordination lift separates same- from cross-type at the set level — +2.39 on a
+genuine zeugma, +1.61 on CounterFact's "died at" — but does not classify individual
+candidates, because it measures plausibility of *joint predication* rather than type
+agreement alone ("dust jacket" is same-type yet scores below every cross-type item).
+And it is weakest where ambiguity is **idiomatic**: "died at Naples and at the age
+of 90" is standard obituary English, which is exactly the conventionalised case
+[T-044] found. Shipped as a set-level diagnostic with per-candidate flagging
+advisory; automatic ambiguous-template detection is NOT claimed. See findings
+[T-055].
+
+### T-056 · Dual-facet nouns as a probe of representational structure
+
+**Status:** parked — candidate NEXT project, not this one
+**Parent:** T-055
+**Opened:** 2026-09-11
+**Question:** Does a model hold "ledger" as simultaneously physical matter and
+informational content? Co-predication is the standard diagnostic for complex
+types, so the machinery transfers directly.
+**Parked note:** Real question, real prior art — Pustejovsky's Generative Lexicon
+and dot objects, plus recent work testing LLMs on co-predication. But it probes
+**lexical semantics, not factual possession**: different question, different
+literature, different paper. [T-046] split the deliverable an hour earlier for
+exactly this reason — pairing a sharp complete thing with a broad incomplete one
+makes both worse. Resumable cold: the templates and lexical pools exist (dual-facet
+`document_noun` with matched `physical_predicate` / `informational_predicate`
+pools), which is most of the instrument already built.
 **Answer:** —

@@ -909,3 +909,119 @@ swept, and 2505.18690 would not render for direct reading.
 2505.18690 "Benchmarking and Rethinking Knowledge Editing" could not be read (PDF
 would not extract, OpenReview behind a verification wall). It is the nearest
 remaining competitor and must be read before any write-up.
+
+---
+
+## [R-007] Finding: 2505.18690 does not take T-054 — and hands us one adversary point
+
+_Date: 2026-09-11 · closes the gap left open by [R-006]_
+
+**Verdict: the nearest competitor does not claim our result.** T-054 stands.
+
+"Benchmarking and Rethinking Knowledge Editing for Large Language Models" — He,
+Song, Wang, Sun; arXiv **2505.18690**, May 2025.
+
+### What they actually critique
+
+Their four flaws are: inconsistent evaluation objectives and setups; **teacher-forced
+decoding rather than realistic autoregressive inference**; fact-level datasets only;
+and insufficient multi-edit assessment. They add event-based (ELKEN) and
+general-purpose datasets, evaluate across instruct and reasoning models, and
+benchmark everything against a context-based baseline, **Selective Contextual
+Reasoning (SCR)**, which beats every parameter-based editor they test.
+
+Models: Llama-2-7B-Chat, Llama-3.1-8B-Instruct, Mistral-7B-Instruct,
+DeepSeek-R1-Distill-Llama-8B. Datasets: ZsRE, WikiDatacounterfact, ELKEN.
+
+### What they do not do — verbatim from the read
+
+> "The authors evaluate performance before and after edits but don't analyze
+> whether baseline knowledge influenced editing outcomes."
+
+and
+
+> "The paper does not address whether CounterFact construction transfers across
+> models or remains model-specific."
+
+So possession is not measured, and the model-relative transfer problem [T-054] is
+not raised. **Our claim is unclaimed by the closest paper to it.**
+
+### The adversary point they hand us, and it is sharp
+
+Their second flaw is **teacher-forced decoding**. Our possession measure teacher-forces
+candidate continuations to compute log-probs, so a reviewer can say: "2505.18690
+shows teacher-forcing overstates performance; your possession numbers inherit that."
+
+**Pre-emption, and we are unusually well placed:** we measured both arms already.
+
+| measure | gpt2-medium | what it is |
+| --- | ---: | --- |
+| two-way P(true) > P(new) | 75% | the field's filter |
+| constrained rank, teacher-forced | 61% | ours |
+| unconstrained top-1 **generation** | 12% | fully autoregressive |
+
+The autoregressive number is *far lower*, and we already established it is depressed
+by CounterFact's template ambiguity rather than by ignorance [T-044]. So we can
+report the spread and argue the case explicitly instead of being caught by it.
+Constrained teacher-forcing is the right instrument for **possession** — the
+question is whether the knowledge is present, not whether the model would
+spontaneously emit it — and the generation number bounds it from below.
+
+### One piece of context worth carrying, not burying
+
+They find **parameter-based editing performs poorly under realistic conditions**
+while a simple context-based baseline outperforms it everywhere. That does not
+threaten our claim, but it does bear on the project's motivation: if editing is
+losing to context on the merits, auditing editing matters less as a deployment
+concern and more as a question about where knowledge lives. Our framing should not
+lean on editing being the future.
+
+**Confidence: high** that they do not measure possession or raise the transfer
+problem (abstract read verbatim, body searched directly for pre-edit/prior-knowledge
+discussion). **Medium** on whether some later paper does — this closes the nearest
+competitor, not the field.
+
+---
+
+## [T-055] Finding: coordination lift is a set-level type diagnostic, not a per-candidate filter
+
+_Date: 2026-09-11 · GPT-J-6B, two contrast sets_
+
+**Motivation.** The possession measure assumes its distractors are type-matched;
+that assumption was never checked. Coordination should test it — same-type
+expressions coordinate under one predicate, cross-type ones produce zeugma.
+
+**Measured.** Coordination lift, `log P(c | prompt + anchor + " and") -
+log P(c | prompt)`:
+
+| contrast | median SAME | median CROSS | separation |
+| --- | ---: | ---: | ---: |
+| *"The archivist shredded the filing cabinet and ..."* (genuine zeugma) | +0.55 | −1.84 | **+2.39** |
+| *"Karolos Koun died at Naples and ..."* (CounterFact template) | −0.91 | −2.52 | **+1.61** |
+
+The direction is right and the set-level statistic is usable.
+
+**But it does not classify individual candidates.** "dust jacket" (−3.52) and
+"spine label" (−2.16) are same-type yet score below *every* cross-type item.
+Coordination lift measures the plausibility of **joint predication**, which
+includes type agreement but is not limited to it — one does not shred a dust jacket
+alongside a filing cabinet for reasons of plausibility, not ontology. The
+per-candidate flag produced both false positives and false negatives.
+
+**Second limitation, and it bites where we most wanted the test.** Where a
+template's ambiguity is *idiomatic*, coordination is barely anomalous: *"died at
+Naples and at the age of 90"* is standard obituary English. Conventionalised
+ambiguity — exactly the kind [T-044] found in CounterFact — is the case this test
+is weakest on.
+
+**Consequence.** Shipped as a **set-level** diagnostic (`separation`), with
+per-candidate flagging demoted to advisory (`suspects`). The design.md claim is
+narrowed accordingly: we can report whether a candidate set is homogeneous, not
+scrub individual contaminants.
+
+**Two bugs found and fixed in the testing:** the anchor was initially included in
+its own candidate list, producing a spurious +4.91 from repetition; and the first
+contrast pair was badly chosen for the reason above.
+
+**Confidence: high** for the separation figures (direct measurement, two contrasts).
+**Medium** for generality — two prompts, one model.

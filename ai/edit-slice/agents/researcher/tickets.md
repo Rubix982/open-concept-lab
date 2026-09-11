@@ -202,3 +202,46 @@ than cue contamination. Taken: prompt sensitivity and phrasing-over-knowledge
 **Blockers:** none. 2505.18690 still unread — nearest remaining competitor.
 **Artifacts:** agents/shared/findings.md -> "[R-006] the diagnostic framing is FALSE"
 **Closed:** 2026-09-11
+
+---
+
+### R-007 · Read 2505.18690 — the nearest remaining competitor
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-11
+**Updated:** 2026-09-11
+
+**Description:**
+[R-006] closed with one gap: "Benchmarking and Rethinking Knowledge Editing for
+Large Language Models" (arXiv 2505.18690) could not be read — the PDF would not
+extract and OpenReview sits behind a verification wall. It is the nearest remaining
+competitor to the deliverable and blocks the write-up (not the tool).
+
+Answer specifically:
+
+1. Does it identify **possession** — whether the model held the pre-edit fact — as
+   a flaw, and does it measure it?
+2. Does it note that CounterFact's filter is **model-relative** and does not
+   transfer to models other than the one it was calibrated against? This is
+   [T-054], our strongest surviving claim.
+3. What does it propose instead, and does that subsume a possession filter?
+4. Which models and benchmarks does it cover? If it already spans GPT-J through
+   Llama, our four-model curve is less novel.
+
+If (1) and (2) are both present, T-054 is taken and the deliverable narrows again
+to the measurement correction alone (two-way vs constrained rank). Report honestly
+rather than looking for daylight.
+
+**Result:** T-054 SURVIVES. They critique inconsistent setups, teacher-forced
+decoding, fact-level-only datasets and multi-edit coverage, and propose a
+context-based baseline (SCR) that beats every parameter editor. They do not measure
+possession and do not raise the model-relative transfer problem. New adversary
+point: their teacher-forcing critique applies to our measure — pre-empted, since we
+hold the autoregressive number (12%) alongside the teacher-forced one (61%) and
+already know why they differ [T-044].
+
+**Blockers:** none
+**Artifacts:** agents/shared/findings.md -> "[R-007] 2505.18690 does not take T-054"
+**Closed:** 2026-09-11
