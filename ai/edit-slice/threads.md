@@ -459,7 +459,7 @@ and the grounds-sign metric — both superseded by declaration 6.
 
 ### T-043 · The dimension space of a knowledge bit
 
-**Status:** open — advanced 2026-09-11, see T-052
+**Status:** parked
 **Parent:** T-031
 **Opened:** 2026-09-10
 **Question:** Nodes have more axes than we are using: direction (done), in-degree,
@@ -469,6 +469,9 @@ the work and two are missing. Entrenchment is where the human's decision actuall
 gets made — "which do I give up" is answered by relative entrenchment — and we
 have cited it repeatedly without ever defining how to measure it.
 **Answer:** —
+**Parked note:** **Parked 2026-09-11** — advanced by [T-052] (direction, in/out-degree, possession,
+modality identified as axes; entrenchment and depth still undefined), but it serves
+the structure map, which is parked. Resumable cold from the table in T-052.
 
 ### T-044 · The standard pre-edit condition overstates possession
 
@@ -504,7 +507,7 @@ scale-dependent, not to be the pilot's subject.
 
 ### T-046 · Reframe the primary deliverable as the possession/structure map
 
-**Status:** ACTIVE — the live decision
+**Status:** answered — reframed, but SPLIT
 **Parent:** T-039
 **Opened:** 2026-09-10
 **Question:** The strongest results so far are edit-independent: the measurement
@@ -515,11 +518,29 @@ fact — the inputs and outputs — which every edit evaluation presumes and non
 checks. Edit evaluation becomes phase 2, which the map makes interpretable.
 Strictly better on risk: T-041 may come back null and the map survives it.
 E-004 supports it — joint possession 69%, dense enough to centre.
-**Answer:** —
+**Answer:** **Yes to the reframe, no to the pairing.** [R-006] separates the two
+halves decisively.
+
+*Possession* is complete and sharp: four models, n=165, a measurement correction,
+and one unclaimed result — CounterFact's filter was calibrated once against a 2022
+model and the same fixed 21,919 records are reused on every model since. GPT-J
+holding 13% of P19 is the measured cost.
+
+*The structure map* is neither complete nor sharp. Its value was as the foundation
+for the orphan work, which is blocked on annotators [T-041] — a foundation for
+something blocked is a foundation for nothing yet. It also extends further into
+factual probing, which R-006 showed is crowded, so it would make the claim broader
+and muddier simultaneously.
+
+Deliverable is therefore **possession-as-precondition**: a filter that reports what
+fraction of an edit set the model actually holds, plus a short note on why that
+differs from what CounterFact's filter implies. A tool, not a figure — which is
+also the framing the Compass check flagged as the employable one. Structure work
+parks with T-041 until the orphan arc unblocks.
 
 ### T-047 · Lens 2 second pass — factual probing, not editing
 
-**Status:** ACTIVE — stop condition, blocks T-046
+**Status:** answered — [R-006]
 **Parent:** T-046
 **Opened:** 2026-09-10
 **Question:** R-002 searched the *editing* literature because the claim was about
@@ -530,11 +551,17 @@ walks straight into it. What survives is narrower — direction (input/output
 structure rather than flat fact lists), grounds specifically (nobody probes
 justifications), and possession as a **precondition for a propagation claim**
 rather than a capability score. Must be closed before any write-up.
-**Answer:** —
+**Answer:** [R-006]. **The diagnostic framing is false and is dropped.** CounterFact
+filters records on P(true) > P(counterfactual) pre-edit (Meng et al. 2202.05262),
+so possession *is* checked — with the weak two-way test we already critiqued.
+Adopt the descriptive framing. Strongest survivor: that filter is **model-relative
+and non-transferable**, yet the fixed 21,919 records are reused across every model
+since 2022 — and GPT-J holds 13% of P19. Prompt sensitivity and
+phrasing-over-knowledge belong to the LAMA line and must be cited, not re-derived.
 
 ### T-048 · Grain confound in the head-vs-ground comparison
 
-**Status:** open
+**Status:** parked
 **Parent:** T-039
 **Opened:** 2026-09-10
 **Question:** [E-004] found ground possession (82%) above head possession (73%),
@@ -544,6 +571,12 @@ heads are cities. The one fine-grained ground property, P131, scores worst at 53
 Also top-3 is 100% everywhere, so the measure is at ceiling. Fix: grain-matched
 and larger candidate sets before any head-vs-ground claim is made.
 **Answer:** —
+**Parked note:** **Parked 2026-09-11** — blocks any head-vs-ground claim, and head-vs-ground is
+parked with the structure map. Resumable cold: E-004's ground possession looked
+higher than head possession only because surviving ground properties were coarse
+(countries, languages) while heads were fine (cities); the one fine-grained ground
+property, P131, scored worst. Grain-matched candidate sets are required before any
+such comparison.
 
 ### T-049 · Type-matching is not cue-matching
 
@@ -593,7 +626,7 @@ correction is not lost: the cheap fix was more candidates.
 
 ### T-052 · Grounds are a STAR, not a chain
 
-**Status:** ACTIVE
+**Status:** parked
 **Parent:** T-043
 **Opened:** 2026-09-11
 **Question:** We have said throughout that "the graph gives grounds". It does not.
@@ -614,10 +647,17 @@ star because it has no path structure.
 framing match the branching diagram in the sync-up notes (p.10) — were those nodes
 co-predicates or genuine multi-hop chains? That changes the design.
 **Answer:** —
+**Parked note:** **Parked 2026-09-11** with [T-046]'s split — the star/chain typology is foundation
+for the orphan arc, which is blocked on annotators. Resumable cold: grounds are
+co-predicates of one subject (a star), not chain-linked nodes; Wikidata asserts no
+edge between a fact and its grounds; three structures were being conflated (star ->
+grounds, chain -> consequences, reverse star -> untouched). The open part remains
+whether the sync-up diagram's branching nodes were co-predicates or genuine
+multi-hop chains.
 
 ### T-053 · Generic question generation from property metadata
 
-**Status:** open
+**Status:** parked
 **Parent:** T-052
 **Opened:** 2026-09-11
 **Question:** [E-004] found template coverage, not ground availability, was the
@@ -630,4 +670,28 @@ uniformity, which matters because hand-written templates inject per-property
 phrasing quality that confounds every cross-property comparison — the same species
 of artifact as [T-048]'s grain confound. Testable directly: we hold 26 hand-written
 templates and can compare head-to-head on identical facts.
+**Answer:** —
+**Parked note:** **Parked 2026-09-11** with [T-052]. Resumable cold: a uniform key-value cloze
+("Georges Perec — place of birth:") generates a probe for any Wikidata property at
+zero marginal cost, removing the per-property phrasing quality that confounds
+cross-property comparison. Directly testable against the 26 hand-written templates
+already in probes/ground_templates.md. Only needed once ground probing resumes.
+
+### T-054 · The CounterFact filter outlived the model it was calibrated against
+
+**Status:** ACTIVE
+**Parent:** T-047
+**Opened:** 2026-09-11
+**Question:** [R-006] established that CounterFact filtered records on
+P(true) > P(counterfactual) pre-edit — so possession *is* checked. But that filter
+was applied **once, in 2022, relative to the authors' model**, and the same fixed
+21,919 records have been reused on GPT-J, Llama, Qwen and everything since. The
+guarantee does not transfer, and nothing in the pipeline re-establishes it. Our own
+measurement is the cost: GPT-J holds 13% of P19 place of birth, 56% overall.
+
+This is the project's strongest unclaimed result and the centre of the deliverable.
+It needs: (a) 2505.18690 read, the nearest remaining competitor; (b) the claim
+stated so it does not read as an accusation — a dataset outliving its calibration
+is nobody's carelessness; (c) a concrete recommendation, i.e. re-filter per model
+and report possession alongside efficacy.
 **Answer:** —

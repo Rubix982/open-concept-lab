@@ -825,3 +825,87 @@ acceptable if the covariance proves expensive.
 
 **Confidence: high** for both primitives (measured directly). **Medium** for the
 covariance cost estimate, which assumes chunked collection works at these sizes.
+
+---
+
+## [R-006] Finding: the diagnostic framing is FALSE — CounterFact does verify possession, with a weak test
+
+_Date: 2026-09-11 · executes [T-047], lens 2 against the factual-probing literature_
+
+**Verdict: drop "editing benchmarks measure propagation into knowledge they never
+verified was there."** It is not true, and a reviewer would refute it from the ROME
+paper itself. What survives is narrower, sharper, and still ours.
+
+### The decisive fact
+
+CounterFact's construction, from Meng et al. (arXiv 2202.05262) verbatim:
+
+> "these counterfactuals start with low scores compared to the correct facts
+> (s,r,o^c)"
+
+and their own critique of prior work:
+
+> "standard model-editing benchmarks underestimate difficulty by often testing only
+> proposals that the model previously scored as likely"
+
+So records **were** filtered on a possession-like criterion: P(true) > P(counterfactual)
+pre-edit. That is exactly the two-way comparison we critiqued in [T-044]. The check
+exists. It is simply the weak one.
+
+Efficacy Score is defined post-edit as P(o*) > P(o^c), the same two-way shape.
+
+### What still survives, and it is worth more than the false version
+
+1. **The existing filter overstates possession.** Two-way P(true) > P(counterfactual)
+   is a forced binary choice. Under constrained rank against 50 type-matched
+   candidates, possession is 56% / 74% / 79% / 85% at 6B / 8B / 70B / 405B [E-005].
+   The check the field runs and the thing it is taken to establish are not the same
+   quantity.
+2. **The filter is model-relative and does not transfer — but the dataset does.**
+   CounterFact's 21,919 records were filtered once, against the authors' model in
+   2022. Everyone since applies the same fixed records to GPT-J, Llama, Qwen and
+   the rest, where that guarantee simply does not hold. Our own data shows the
+   consequence directly: GPT-J holds **13%** of P19 place of birth. This is the
+   strongest claim we have and it is unclaimed.
+3. **Candidate-set size drives the inflation more than cue contamination**
+   [T-051]: 10 candidates to 50 moved naive top-1 from 61% to 39% on gpt2-medium,
+   while subtracting the subject-free prior moved it only 3-5 points.
+4. **CounterFact's templates are ambiguous** between temporal and locative readings
+   ("died at" -> "the age of 90"). Novel *for this dataset*; see the caveat below.
+
+### What is taken, and must be cited rather than re-derived
+
+- **Prompt sensitivity and phrasing-over-knowledge** is long established in the
+  factual-probing line: LAMA (Petroni et al. 2019) and its critiques, including
+  "Factual Probing Is [MASK]: Learning vs. Learning to Recall" (arXiv 2104.05240)
+  and causal-view analyses (arXiv 2203.12258). The position that models "predict
+  based on correlation between surface forms rather than infer according to facts"
+  is published. Our template-ambiguity result is an **instance** of a known
+  phenomenon located in CounterFact, not a new phenomenon.
+- **"Editing evaluation is flawed" is crowded**: "Benchmarking and Rethinking
+  Knowledge Editing for LLMs" (2505.18690), AKEW (2402.18909), UniEdit. Do not
+  enter that space generically.
+- **Perplexingness** (2406.17253) stratifies edits by conflict with conceptual
+  hierarchy — adjacent but a different variable from possession. Not a competitor.
+
+### Consequence for the framing
+
+Adopt the **descriptive** framing, not the diagnostic one:
+
+> **Possession as a precondition: the filter knowledge-editing benchmarks apply is
+> model-relative and weaker than assumed, and the facts it admits are not held
+> 15-44% of the time on the models actually being edited.**
+
+Less aggressive than "nobody checks". Defensible, and it points at the transfer
+problem — a fixed 2022-filtered dataset reused across models — which is concrete,
+measurable, and unclaimed.
+
+**Confidence: high** that the diagnostic framing is false (quoted from the source
+paper). **Medium** on the survivors' novelty — searched, not systematically
+swept, and 2505.18690 would not render for direct reading.
+
+### Open
+
+2505.18690 "Benchmarking and Rethinking Knowledge Editing" could not be read (PDF
+would not extract, OpenReview behind a verification wall). It is the nearest
+remaining competitor and must be read before any write-up.

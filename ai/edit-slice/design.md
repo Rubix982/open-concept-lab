@@ -1,7 +1,7 @@
 # Design — Edit Discretion Triage
 
 _edit-slice · structured by the Research Design Protocol (10 lenses)._
-_v0.8 — 2026-09-10, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
+_v0.9 — 2026-09-11, O-003. Status: **lens 2 CLEARED [R-002]; §0 gate unresolved (no data).**_
 _v0.4: §2a added — suppression-not-overwrite and the output/belief-mismatch attack._
 _v0.5: §0 roles flipped — mined Horn rules (e) DISCOVER, directed intervention (c)
 VALIDATES. External oracle; claim 2 partially restored._
@@ -12,12 +12,23 @@ over Wikidata and found grounds are **evidential, not deductive** — kernels dr
 for AGM's ordering half, `orphan` regraded. See agents/shared/decisions.md._
 _v0.8: model raised to GPT-J-6B via NDIF (possession is a construct requirement,
 T-039); grounds hand-built and deductive for the pilot, as an EXISTENCE claim only._
+_v0.9: deliverable revised to the possession filter [T-046]. The diagnostic framing
+("benchmarks never verify possession") is FALSE and dropped [R-006] — they verify
+with a weak, model-relative test. Orphan arc parked on annotators._
 _v0.2: grounds test made directed (inputs/outputs); partition now derives from
 direction x modality; association confound folded into the measurement._
 _Nothing may be implemented from this document until both clear._
 
-**One-paragraph statement.** A weight edit changes what a model believes, but the
-facts that *justified* the old belief are left standing — and the resulting belief
+**Phase 1 statement (revised 2026-09-11).** Knowledge-editing benchmarks do check
+whether the model holds the fact being edited — CounterFact filters on
+P(true) > P(counterfactual) — but that check is a forced binary choice, and it was
+calibrated once against a 2022 model while the fixed records are reused on every
+model since. Under constrained rank, possession is 56-85% across 6B-405B and not
+saturated. **Possession is a precondition for any propagation claim, and it is
+weaker than assumed on the models actually being edited.** That is the deliverable.
+
+**Phase 2 statement (parked, the original thesis).** A weight edit changes what a
+model believes, but the facts that *justified* the old belief are left standing — and the resulting belief
 state is jointly **improbable**. Not contradictory: measured, the grounds are
 evidential rather than deductive [E-002, decisions.md]. Coherence pressure says
 something should give, and logic cannot say what, because there is no entailment to
@@ -417,16 +428,30 @@ stack, so it is reuse rather than new infrastructure [T-005].
 
 ## 9 · Deliverable — design backward from this
 
-**One number:** the **contested rate** — the fraction of edits leaving at least
-one intact justification set that coherence required breaking — reported beside
-its validation, the annotator agreement inside versus outside the flagged set.
+**REVISED 2026-09-11 [T-046, R-006].** The deliverable was a contested rate and a
+two-panel figure, both edit-dependent. Both are parked: the orphan arc is blocked
+on annotators [T-041] and has no data, while the possession arc is complete across
+four models. Deliver what exists.
 
-**One figure:** two panels. Forward — the model updates where it should.
-Backward — rigid and mutable grounds are indistinguishable, i.e. nothing was
-retracted where something had to be. The asymmetry between panels is the claim;
-the backward panel being null is informative only because the forward one is not.
+**The artifact: a possession filter.** A tool you run *before* an editing
+experiment, reporting what fraction of your edit set the model actually holds —
+by constrained rank against type-matched candidates, not the two-way test — plus a
+short note on why that number differs from what CounterFact's filter implies.
+Every component exists: `src/probing.py`, `src/remote.py`, the candidate-set
+construction, and the four-model calibration.
 
-Every experiment must serve one of these. Anything that serves neither is cut.
+**The number it carries [T-054]:** CounterFact filtered records on
+P(true) > P(counterfactual) **once, in 2022, against the authors' model**. The same
+fixed 21,919 records are reused on GPT-J, Llama, Qwen and everything since; the
+guarantee does not transfer and nothing re-establishes it. Measured cost: GPT-J
+holds **13%** of P19 place of birth and **56%** overall.
+
+**The figure, if one is needed:** possession against scale — 56 / 74 / 79 / 85% at
+6B / 8B / 70B / 405B — showing it is not saturated at 405B and that scale buys only
+the hard relations.
+
+**What this is not.** Not a propagation result, not an orphan rate, not a
+discretion measure. Those remain the project's thesis and remain unmeasured.
 
 ## 10 · Adversary — pre-emptions
 

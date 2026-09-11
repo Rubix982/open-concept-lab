@@ -154,3 +154,51 @@ These are two different vocabularies and both must be recorded.
 - src/relation_inventory.py — typed reproducer
 
 **Closed:** 2026-09-10
+
+---
+
+### R-006 · T-047 — lens 2 against the factual-probing literature
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-11
+**Updated:** 2026-09-11
+
+**Description:**
+R-002 searched the *editing* literature because the claim was then about editing.
+The claim has moved: the strongest surviving result is about **what a model
+holds**, and the proposed framing is "editing benchmarks measure propagation into
+knowledge they never verified was there". That has different neighbours, and one
+of them could take it outright.
+
+Four questions, in descending order of scoop risk:
+
+1. **Has anyone shown editing benchmarks do not verify possession?** A paper
+   auditing CounterFact / RippleEdits / MQuAKE for whether the model held the
+   pre-edit fact would take the diagnostic framing entirely. This is the one that
+   matters.
+2. **Factual probing** — LAMA (Petroni et al.) and successors. Prompt sensitivity,
+   template ambiguity, and the critique that probing measures phrasing rather than
+   knowledge (this is our template-ambiguity finding under another name).
+3. **Candidate-set / distractor methodology.** Our correction was that 10
+   candidates is too few and hard negatives matter. Established in retrieval and
+   QA evaluation; check whether it has been applied to editing benchmarks.
+4. **Knowledge boundaries / calibration** — "what does the model know it doesn't
+   know". Adjacent but a different question; confirm it stays different.
+
+Deliverable: findings entry answering whether the diagnostic framing survives. If
+taken, fall back to the descriptive framing ("possession as a precondition") and
+say so explicitly. Verify every citation against arXiv — session-2026-09-08 §9.
+
+**Result:** the diagnostic framing is FALSE. CounterFact filters on
+P(true) > P(counterfactual) pre-edit — quoted from Meng et al. 2202.05262 — so the
+check exists and is the weak two-way one we critiqued. Adopt the descriptive
+framing. Survivors: the filter overstates possession; it is model-relative yet the
+dataset is reused unchanged across models; candidate-set size drives inflation more
+than cue contamination. Taken: prompt sensitivity and phrasing-over-knowledge
+(LAMA line), and generic "editing evaluation is flawed".
+
+**Blockers:** none. 2505.18690 still unread — nearest remaining competitor.
+**Artifacts:** agents/shared/findings.md -> "[R-006] the diagnostic framing is FALSE"
+**Closed:** 2026-09-11

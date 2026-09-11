@@ -11,7 +11,7 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 2 — Existence test. Possession re-opened (E-005): first measure could not separate knowledge from surface plausibility.
+Phase 1 (revised) — Deliver the possession filter. Orphan arc parked on annotators.
 
 ## Active Tickets
 
@@ -43,44 +43,32 @@ _None._
 
 ## Open Threads (the resume point)
 
-_Triaged 2026-09-11: 20 open/active reduced to 4 live + 4 parked. Most had been
-answered by later work and never updated — bookkeeping debt, now cleared._
+_Triaged twice on 2026-09-11. 35 threads: 29 answered, 8 parked, 1 active._
 
 | ID | Status | Question |
 | --- | --- | --- |
-| T-046 | **ACTIVE** | Reframe deliverable as the possession/structure map |
-| T-047 | **ACTIVE** | Lens 2 second pass — factual probing (stop condition, blocks T-046) |
-| T-052 | **ACTIVE** | Grounds are a star, not a chain — which structure does the instrument centre on? |
-| T-053 | open | Generic question generation from property metadata |
-| T-043 | open | Dimension space of a knowledge bit (advanced by T-052) |
-| T-048 | open | Grain confound — blocks any head-vs-ground claim |
-| T-003 | parked | RippleBench distance-function swap (v2, code domain) |
-| T-011 | parked | Orphaning structural to expansion operators (needs edit data) |
-| T-012 | parked | Grounds by directed intervention (method right, overtaken by possession) |
-| T-041 | parked | Does contraction ever occur (option C, blocked on annotators) |
+| T-054 | **ACTIVE** | The CounterFact filter outlived the model it was calibrated against |
+
+Parked, each with a resume-cold note: T-003 (RippleBench swap), T-011 (orphaning
+structural to expansion operators), T-012 (directed intervention), T-041 (does
+contraction occur — blocked on annotators), T-043 (dimension space), T-048 (grain
+confound), T-052 (star vs chain), T-053 (generic question generation).
+
+The parked set is coherent, not scattered: **all eight serve the orphan arc, which
+is blocked on one thing — nobody has been identified for the annotation study.**
 
 
 ## Next Orchestrator Action
 
-**E-001 — the §0 spike.** Lens 2 cleared 2026-09-10, so the WHY gate is passed.
-The gate is now whether **mined Horn rule bodies** recover grounds (design.md
-§0 method e, roles flipped v0.5) — with directed intervention demoted to
-validation. Time-boxed; ~20 hand-labelled edits as the agreement check, plus the
-fraction of mined bodies passing the direction test. Then R-003 (T-023 relation inventory), then R-004 to close
-the residual scoop surface (EasyEdit, T-003).
+**Deliver the possession filter** (design.md lens 9, revised). Two steps:
 
-Opens as a **spike**, not an implementation: R-001 is medium confidence and §0
-has no data.
+1. **R-007** — read 2505.18690 "Benchmarking and Rethinking Knowledge Editing", the
+   nearest remaining competitor. PDF would not extract and OpenReview is behind a
+   verification wall; try the ACL Anthology or a direct request. Blocks the
+   write-up, not the tool.
+2. **E-007** — package the filter: possession check over an arbitrary edit set,
+   local or NDIF, reporting held/not-held by relation with the candidate-set size
+   and model recorded alongside.
 
-R-003 closed: 35.4% of CounterFact (7,770 edits) uses a rigid relation, so the
-edit-selection gate passes with large headroom. The binding constraint has moved
-to whether those rigid edits have *mined grounds* in DBpedia — E-001's job.
-
-R-005a closed: the artifact is MIT-licensed with rules included, so method (e) is
-feasible. Two corrections it forced — the KG is **DBpedia** not Wikidata, and
-their edit sets are **MQuAKE/MLaKE** not CounterFact. E-001 must decide whether
-to re-run their pipeline over CounterFact entities (preferred) or switch edit
-sets. This partially reopens T-023, whose vocabulary is now likely DBpedia.
-
-Non-technical risk with no technical fix: the annotation study (design.md lens 8)
-needs 2-3 real annotators and none are identified.
+The orphan arc resumes when an annotator is named. That is the single blocker, and
+it is not technical.
