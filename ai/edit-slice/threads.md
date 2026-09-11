@@ -516,3 +516,34 @@ which is why top-3 saturated at 100%. The correct control is distractors the
 subject's surface form suggests *equally* — obtained automatically by mining the
 model's own subject-free prior. Possession is then **lift over that prior**, not
 raw rank. Recorded as the RCA on E-005.
+
+### T-050 · P19 is the pilot's pinch point
+
+**Status:** active
+**Parent:** T-045
+**Opened:** 2026-09-11
+**Question:** [E-005] — P19 place of birth tops out at 53% even at Llama-405B, and
+GPT-J holds 13%. P19/P20 carry the richest grounds (burial, citizenship, family),
+so the relation most informative for orphan probing is the one every model holds
+worst, and the intended edit target barely holds it. Filtering GPT-J to what it
+holds strips out the ground-rich relations, which defeats the filter's purpose.
+Options: ROME on Llama-3.1-8B (needs hyperparameters + second-moment statistics we
+do not have, but 8B is tractable); or re-select toward relations GPT-J holds
+(P103/P138/P178/P407 at 80-87%) and accept ground-poor edits. Abandoning the
+possession filter is rejected — that is the artifact the gate exists to prevent.
+**Answer:** —
+
+### T-051 · Candidate-set size, not cue contamination, drove the inflation
+
+**Status:** answered
+**Parent:** T-049
+**Opened:** 2026-09-11
+**Question:** [T-049] claimed type-matching is not cue-matching and that surface
+cues inflated E-003/E-004. How much did that actually contribute?
+**Answer:** Much less than claimed. At 50 candidates, naive top-1 and
+lift-corrected possession differ by only 3-5 points across all four models. The
+inflation was overwhelmingly **easy negatives** — 10 candidates rather than 50.
+T-049's reasoning about cue vs type remains sound in principle and the lift
+control is worth keeping (it shows the prior baseline is only 4-5%, so results are
+not template-guessable), but it was not the operative defect. Recorded so the
+correction is not lost: the cheap fix was more candidates.

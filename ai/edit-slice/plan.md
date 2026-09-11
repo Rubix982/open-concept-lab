@@ -63,7 +63,8 @@ _None._
 | T-045 | **active** | Possession of the EDIT target (GPT-J), not just the audited model |
 | E-003 | **superseded** | Possession numbers — random distractors admit surface-cue scoring |
 | E-004 | **superseded** | Joint possession — measure did not discriminate (top-3 = 100%) |
-| E-005 | open | Re-measure possession against hard negatives mined from the model's prior |
+| E-005 | closed | Possession 56/74/79/85 across 6B-405B; scale buys only hard relations |
+| T-050 | **active** | P19 is the pilot's pinch point — 53% at 405B, 13% at GPT-J |
 | T-046 | open | Reframe deliverable as the possession/structure map |
 | T-047 | open | Lens 2 second pass — factual probing, not editing |
 | T-048 | open | Grain confound in head-vs-ground comparison |

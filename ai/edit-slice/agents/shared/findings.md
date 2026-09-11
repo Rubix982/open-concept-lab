@@ -667,3 +667,85 @@ known than heads".**
 **Confidence: high** for the joint figure as defined (paired, same model, same
 measure). **Low** for ground possession as an absolute — confounded by grain and
 sitting at ceiling on top-3.
+
+---
+
+## [E-005] Finding: possession re-measured — 56/74/79/85 across 6B-405B, and scale buys only the hard relations
+
+_Date: 2026-09-11 · 165 rigid-relation items x 50 candidates x 2 arms, all four models complete_
+
+Replaces the superseded E-003/E-003b/E-004 numbers. Possession = the true answer
+ranks **first** among 50 type-matched candidates **and** ranks higher with the real
+subject than with the subject replaced by `X` (positive lift). A model riding the
+template's base rate scores identically in both arms and earns nothing.
+
+| model | params | naive top-1 | prior alone | **POSSESSED** | median lift |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| gpt-j-6b | 6B | 59% | 5% | **56%** | +5 |
+| Llama-3.1-8B | 8B | 78% | 4% | **74%** | +6 |
+| Llama-3.1-70B | 70B | 83% | 4% | **79%** | +7 |
+| Llama-3.1-405B | 405B | 90% | 5% | **85%** | +8 |
+
+Monotonic, decelerating, and **not saturated at 405B** — 15% of *curated*
+CounterFact facts are still not held by the largest model on NDIF.
+
+### Correction to the E-005 RCA — the diagnosis was partly wrong
+
+The RCA attributed E-003/E-004's inflation to **surface-cue contamination** and
+prescribed the lift control as the fix. The data does not support that weighting:
+naive top-1 and possessed differ by only **3-5 points** at 50 candidates, so
+subtracting the prior corrects almost nothing. The inflation came overwhelmingly
+from the **candidate set being 10 instead of 50** — easy negatives, not base rates.
+
+Both defects were real and both needed fixing. The RCA's causal story was wrong
+and is corrected here rather than left standing. The lift control is retained on
+its merits: it is what establishes that the 4-5% prior baseline is genuinely weak,
+so these numbers are not template-guessable. It is simply not where the correction
+came from.
+
+### Scale buys the hard relations, not the easy ones
+
+| relation | 6B | 8B | 70B | 405B |
+| --- | ---: | ---: | ---: | ---: |
+| P103 native language | 80% | 93% | 93% | 93% |
+| P407 language of work | 80% | 80% | 80% | 87% |
+| P178 developer | 80% | 80% | 80% | 87% |
+| **P449 original broadcaster** | **13%** | 40% | 67% | **87%** |
+| **P740 location of formation** | **40%** | 67% | 93% | 87% |
+| **P495 country of origin** | **47%** | 87% | 93% | 87% |
+| **P19 place of birth** | **13%** | 40% | 53% | **53%** |
+
+Relations already known at 6B stay flat. All the movement is in the low
+performers. The aggregate curve is therefore not "everything gets better" — it is
+a small set of hard relations being acquired.
+
+### The pilot problem, now sharper
+
+**P19 place of birth tops out at 53% even at 405B**, and GPT-J holds **13%**.
+P19 and P20 carry the richest grounds — burial place, citizenship, family
+(E-004 step 1). So the relation most informative for orphan probing is the one
+every model holds worst, and the intended edit target holds it barely at all.
+
+This reopens [E-003b]'s conclusion that GPT-J is usable with filtering. Filtering
+GPT-J to what it holds removes most ground-rich relations, which defeats the
+purpose of the filter. Live options, neither free:
+
+1. **ROME on Llama-3.1-8B** — possession 74%, P19 at 40%, three times GPT-J's.
+   Requires layer-choice hyperparameters and second-moment statistics we do not
+   have, but 8B is tractable to compute them for.
+2. **Re-select edits toward relations GPT-J holds** (P103, P138, P178, P407 at
+   80-87%) and accept that those relations are ground-poor.
+3. Abandon the possession filter and report orphan rates contaminated by
+   ignorance — rejected; that is the artifact the whole gate exists to prevent.
+
+### Caveats
+
+- 50 candidates, not the full object space. Levels would fall further with more.
+- Possession here is of the **head**. Ground possession under the corrected measure
+  has not been re-run; E-004's 82% used the superseded design and is withdrawn.
+- The measure separates "used the subject" from "used the template". It does not
+  separate a memorised fact from inference off the subject's morphology.
+
+**Confidence: high** for the ordering and the per-relation pattern (paired design,
+identical items and candidate sets across all four models, complete n=165 each).
+**Medium** for absolute levels, which depend on candidate-set size.

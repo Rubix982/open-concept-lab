@@ -92,8 +92,12 @@ not plausibly justificatory, method (e) is dead outright and we fall back to
 method (c) as discovery per design.md §0.
 
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/; agents/shared/findings.md
-**Closed:** —
+**Artifacts:**
+- agents/shared/findings.md -> "[E-005] possession re-measured"
+- agents/engineer/workspace/possession_lift.py, run_e005.sh, lift/*.json
+- src/remote.py — score_pairs, adaptive OOM halving, transport classification
+
+**Closed:** 2026-09-11
 
 ---
 
@@ -225,13 +229,26 @@ agents/shared/findings.md
 
 ### E-005 · Possession, re-measured against hard negatives
 
-**Status:** open
+**Status:** closed
 **Type:** spike
 **Priority:** high
 **Created:** 2026-09-10
-**Updated:** 2026-09-10
+**Updated:** 2026-09-11
 **Estimated:** 4h (time-boxed)
-**Spent:** —
+**Spent:** ~5h (over, largely on NDIF batching and three transport/memory fixes)
+
+**Result:** possession 56% / 74% / 79% / 85% across 6B / 8B / 70B / 405B, n=165
+each. Monotonic, decelerating, not saturated. Scale buys only the hard relations;
+those already known at 6B stay flat. P19 place of birth tops out at 53% even at
+405B and GPT-J holds 13%, which reopens [E-003b].
+
+**RCA CORRECTION (2026-09-11):** the RCA below blamed surface-cue contamination
+and prescribed the lift control. Measured, naive and possessed differ by only 3-5
+points — the prior subtraction corrects almost nothing. The inflation came
+overwhelmingly from **10 candidates being too few**, not from base rates. Both
+defects were real; the causal story was wrong. The lift control is kept on its
+merits (it shows the 4-5% prior baseline is weak, so results are not
+template-guessable), not as the fix it was billed as.
 
 **RCA (re-open of E-003/E-003b/E-004, 2026-09-10):**
 
@@ -279,5 +296,9 @@ scoring on surface cues and possession as we have defined it is not measurable t
 way — which would invalidate the possession gate itself, not merely its numbers.
 
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/; agents/shared/findings.md
-**Closed:** —
+**Artifacts:**
+- agents/shared/findings.md -> "[E-005] possession re-measured"
+- agents/engineer/workspace/possession_lift.py, run_e005.sh, lift/*.json
+- src/remote.py — score_pairs, adaptive OOM halving, transport classification
+
+**Closed:** 2026-09-11
