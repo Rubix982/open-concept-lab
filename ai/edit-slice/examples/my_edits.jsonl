@@ -1,0 +1,8 @@
+{"case_id": "a1", "prompt": "The capital city of France is", "subject": "France", "true_answer": "Paris", "relation_id": "capital"}
+{"case_id": "a2", "prompt": "The capital city of Japan is", "subject": "Japan", "true_answer": "Tokyo", "relation_id": "capital"}
+{"case_id": "a3", "prompt": "The capital city of Brazil is", "subject": "Brazil", "true_answer": "Brasilia", "relation_id": "capital"}
+{"case_id": "a4", "prompt": "The capital city of Kenya is", "subject": "Kenya", "true_answer": "Nairobi", "relation_id": "capital"}
+{"case_id": "a5", "prompt": "The capital city of Norway is", "subject": "Norway", "true_answer": "Oslo", "relation_id": "capital"}
+{"case_id": "a6", "prompt": "The capital city of Bhutan is", "subject": "Bhutan", "true_answer": "Thimphu", "relation_id": "capital"}
+{"case_id": "a7", "prompt": "The capital city of Suriname is", "subject": "Suriname", "true_answer": "Paramaribo", "relation_id": "capital"}
+{"case_id": "a8", "prompt": "The capital city of Eswatini is", "subject": "Eswatini", "true_answer": "Mbabane", "relation_id": "capital"}

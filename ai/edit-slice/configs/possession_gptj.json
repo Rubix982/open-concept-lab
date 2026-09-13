@@ -1,0 +1,11 @@
+{
+  "model": "EleutherAI/gpt-j-6b",
+  "backend": "ndif",
+  "n_candidates": 50,
+  "seed": 1538,
+  "placeholder": "X",
+  "require_lift": true,
+  "_edits": {"source": "counterfact", "limit": 40},
+  "_candidate_reference": {"source": "counterfact"},
+  "_comment": "Keys prefixed _ are run inputs, not measurement parameters; only the latter enter FilterConfig and the results header. _candidate_reference supplies the type-matched candidate vocabulary and should be much larger than _edits."
+}

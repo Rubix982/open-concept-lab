@@ -11,7 +11,7 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 1 (revised) — Deliver the possession filter. Orphan arc parked on annotators.
+Phase 1 (revised) — Possession filter DELIVERED (E-007). Orphan arc parked on annotators.
 
 ## Active Tickets
 

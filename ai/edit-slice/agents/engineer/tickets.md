@@ -362,3 +362,71 @@ persisted, giving paired pre/post against identical hosted weights.
 - agents/engineer/workspace/ndif_health.py — connectivity check
 
 **Closed:** 2026-09-11
+
+---
+
+### E-007 · Package the possession filter
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-13
+**Updated:** 2026-09-13
+**Estimated:** 4h
+
+**Description:**
+The deliverable [T-046, design.md v0.9 lens 9]. A tool run *before* an editing
+experiment that reports what fraction of the edit set the model actually holds.
+
+Every component exists — `src/probing.py` (local scoring, constrained rank),
+`src/remote.py` (NDIF, batched), `src/typematch.py` (set-level type validation),
+`src/data.py` (pinned CounterFact) — so this composes them into something a second
+person can run without reading the research.
+
+**Requirements:**
+
+1. **Input is an arbitrary edit set**, not just CounterFact. An `Edit` is
+   (prompt, subject, true_answer, relation_id). Ship a CounterFact loader and a
+   JSONL path so anyone can bring their own.
+2. **Possession = constrained rank + lift** [E-005]: the true answer ranks first
+   among N type-matched candidates AND ranks higher with the real subject than
+   with the subject replaced by a placeholder. Both arms, per item.
+3. **Type-matched candidates** drawn from values attested for the same relation,
+   with the set-level coordination diagnostic reported [T-055] — separation only,
+   per-candidate flagging is advisory and must be labelled as such.
+4. **Config in a file, not argv defaults** (CLAUDE.md). Model, N candidates, seed,
+   placeholder, backend. Written to disk *with* the results.
+5. **Resumable** — cache per (model, case_id), as the E-005 sweeps do. Three
+   separate debugging cycles were cheap only because of this.
+6. **Report**: headline held-rate, per-relation breakdown, and the config. Record
+   the candidate-set size alongside every number, since absolute levels depend on
+   it and only the ordering is robust [E-005 caveats].
+
+**Falsification / done condition:** a second person, given only this repo, can run
+the filter on their own edit set and get a held-rate with the config that produced
+it. If it only works on CounterFact, it is not the deliverable.
+
+**Explicitly NOT in scope:** orphan rate, propagation, discretion triage. Those
+are the parked arc.
+
+**Result:** done condition met — a JSONL edit set with its own relations runs
+end-to-end and produces a held-rate with the config beside it. Verified on both
+paths: CounterFact (40 items, 52% held, 100% coverage — consistent with E-005's
+56%) and bring-your-own (8 capitals, 88% held). Rerun hits cache with no network.
+
+Found by running rather than reading: candidates derived from the edit set scored
+12/40 and returned 92%, a 40-point inflation from a silent denominator change —
+the exact artifact class this filter detects. Fixed via an explicit reference
+vocabulary plus reported coverage. Two further collisions fixed: cache keyed on
+model alone would serve a 50-candidate result to an 8-candidate run, and per-model
+output names let configs overwrite each other.
+
+**Blockers:** none
+**Artifacts:**
+- src/possession.py — the filter; src/run_filter.py — CLI
+- configs/possession_gptj.json, configs/possession_byo.json
+- examples/my_edits.jsonl — bring-your-own format
+- README.md — usage and the honest-reading caveats
+- agents/shared/decisions.md -> "[E-007] candidates come from a reference vocabulary"
+
+**Closed:** 2026-09-13

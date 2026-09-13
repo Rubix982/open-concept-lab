@@ -101,3 +101,44 @@ kernels as machinery.
 possession, not editing, is the bottleneck and the domain must change), or if
 contraction *does* occur on deductive sets — which would make the frequency
 question live again and reopen [E-002]'s deferred half.
+
+---
+
+## [E-007] Decision: candidates come from a reference vocabulary, not the edit set
+
+_Date: 2026-09-13_
+
+**Decision:** `candidate_pool` takes an explicit `reference` set, separate from the
+edits being filtered, and every unscoreable item is reported in `skipped` with a
+reason rather than dropped.
+
+**Rationale — measured, on the first end-to-end run.** Deriving candidates from the
+edit set itself scored only **12 of 40** items and returned **92%** held. The 28
+missing items were relations with fewer than three attested answers, and what
+survived were the two relations dense enough to be easy. With a reference
+vocabulary: **100% coverage, 52% held** — consistent with E-005's 56% for the same
+model.
+
+A 40-point inflation produced by a silent denominator change is exactly the
+selection artifact this filter exists to detect. Shipping it inside the detector
+would have been the worst available outcome, and it was found by running the tool
+rather than by reading it.
+
+**Alternatives rejected:**
+- *Warn and continue with edit-set candidates.* A warning does not fix a biased
+  denominator, and the headline number would still be wrong.
+- *Fail on sparse relations.* Too brittle; partial coverage is legitimate provided
+  it is reported. Hence `coverage`, plus an explicit warning below 80%.
+
+**Two collisions fixed alongside, both correctness rather than tidiness:**
+- Cache keyed on model alone would serve a 50-candidate result to an 8-candidate
+  run — same `case_id`, different number. Now keyed on a `fingerprint` over
+  everything that changes a value (model, n_candidates, seed, placeholder); date
+  excluded, since it records when rather than what.
+- Output named per model would let two configs overwrite each other. Now named
+  after the config.
+
+**Revisit if:** a user's edit set has relations absent from any available reference
+vocabulary. Currently that surfaces as 0% coverage with a clear reason, which is
+correct but unhelpful; generating candidates from the relation's value type would
+be the fix.

@@ -1,0 +1,11 @@
+{
+  "model": "EleutherAI/gpt-j-6b",
+  "backend": "ndif",
+  "n_candidates": 8,
+  "seed": 1538,
+  "placeholder": "X",
+  "require_lift": true,
+  "_edits": {"path": "examples/my_edits.jsonl"},
+  "_candidate_reference": {"path": "examples/my_edits.jsonl"},
+  "_comment": "Bring-your-own edit set. n_candidates is capped by the reference vocabulary size; with 8 attested answers the effective set is 8, and the held-rate is not comparable to a 50-candidate run."
+}
