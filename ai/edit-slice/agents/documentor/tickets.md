@@ -30,7 +30,7 @@ it can. Results are explicitly NOT the artifact for that meeting.
 
 ### D-002 · Write up T-054
 
-**Status:** in-progress
+**Status:** closed
 **Type:** document
 **Priority:** high
 **Created:** 2026-09-13
@@ -58,6 +58,16 @@ can say the drop is our stricter measure rather than failure to transfer. GPT-2-
 is not on NDIF, so this requires a local run — which conflicts with the standing
 NDIF-only preference. Surface as a decision.
 
-**Blockers:** none
-**Artifacts:** agents/documentor/drafts/possession-precondition.md
-**Closed:** —
+**Result:** published. Writing it surfaced that the claim being written up was
+wrong — going to the ROME paper's construction appendix, rather than its prose or
+another literature search, showed CounterFact has NO possession check. That
+reverses [R-006] and restores the stronger framing. The outstanding control the
+draft called for turned out unnecessary: the paper reports the number itself
+(Table 4, unedited GPT-2-XL, ES = 22.2).
+
+**Artifacts:**
+- agents/documentor/drafts/possession-precondition.md (v2, source of record)
+- web/blog/2026-09-14-the-check-that-was-never-there.md (published, 1309 words)
+- agents/shared/findings.md -> "[D-002] CounterFact has NO possession filter"
+
+**Closed:** 2026-09-14
