@@ -430,3 +430,51 @@ output names let configs overwrite each other.
 - agents/shared/decisions.md -> "[E-007] candidates come from a reference vocabulary"
 
 **Closed:** 2026-09-13
+
+---
+
+### E-008 · Mine transitive containment chains
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-14
+**Updated:** 2026-09-14
+**Estimated:** 4h
+
+**Description:**
+Executes [T-058]. Build the deductive ground sets T-041 needs.
+
+A chain is three facts where two entail the third by transitivity of containment:
+
+    inner-1   X  P131  Y      "X is located in Y"
+    inner-2   Y  P131  Z      "Y is located in Z"
+    outer     X   in   Z      entailed
+
+Editing the outer to Z' contradicts the conjunction of the inners. A coherent model
+must retract one. That is a strict contradiction rather than an implausibility —
+the first in this project — which is the whole point of choosing this family.
+
+**Method:**
+1. Seed from CounterFact subjects whose relation is P131 or P17 (~1,600 records);
+   those subjects are places and therefore have containment chains. People and
+   works do not.
+2. Link to Wikidata via the existing snapshot (read-through, dated, checksummed).
+3. Walk P131 twice: X -> Y -> Z. Require X != Y != Z and all three labelled.
+4. Emit chains with labels and QIDs, plus prompts for all three facts.
+5. Record how many seeds yield a chain, and why the rest fail — attrition is a
+   reported quantity here as elsewhere.
+
+**Possession is a gate, not an afterthought [T-058 open point].** A chain where the
+model does not hold inner-2 cannot test contraction — there is nothing to retract.
+Every chain must pass the possession filter on ALL THREE facts before it enters the
+experiment, and the shrinkage is itself worth reporting.
+
+**Deliverable:** probes/containment_chains.md (contestable, with attrition) and the
+machine-readable set. NOT the experiment — that is E-009.
+
+**Standing constraint [O-004]:** these license an EXISTENCE claim only. No rate.
+
+**Blockers:** none
+**Artifacts:** src/chains.py; probes/containment_chains.md
+**Closed:** —

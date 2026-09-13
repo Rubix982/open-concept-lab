@@ -51,15 +51,35 @@ _Triaged twice on 2026-09-11. 35 threads: 29 answered, 8 parked, 1 active._
 | T-057 | answered | No filter; ROME Table 4 reports ES=22.2 unedited, appendix D confirms |
 | T-055 | answered | Coordination lift works set-level (+2.39/+1.61), not per-candidate |
 
+| T-041 | **ACTIVE** | Does contraction ever occur? Un-parked — was misattributed to the annotation study |
+| T-058 | **ACTIVE** | Transitive containment as the deductive ground family |
+
 Parked, each with a resume-cold note: T-003 (RippleBench swap), T-011 (orphaning
-structural to expansion operators), T-012 (directed intervention), T-041 (does
-contraction occur — blocked on annotators), T-043 (dimension space), T-048 (grain
-confound), T-052 (star vs chain), T-053 (generic question generation), T-056
-(dual-facet nouns — a candidate *next* project, not a widening of this one).
+structural to expansion operators), T-012 (directed intervention), T-043 (dimension
+space), T-048 (grain confound), T-052 (star vs chain), T-053 (generic question
+generation), T-056 (dual-facet nouns — a candidate *next* project).
+
+**The annotation study blocks the triage tool's `contested` validation only.** It
+does not block T-041, which is an existence claim. That misattribution parked an
+arc for four days.
 
 The parked set is coherent, not scattered: **all eight serve the orphan arc, which
 is blocked on one thing — nobody has been identified for the annotation study.**
 
+
+## Resume point — 2026-09-14
+
+**E-008 is mid-run.** The chain miner was stopped partway; no
+`probes/containment_chains.json` yet. Nothing is lost: the Wikidata snapshot
+`2026-09-14` banked 109 links / 187 entities / 217 labels, and the miner reads
+through it, so rerunning resumes from cache:
+
+    .venv/bin/python agents/engineer/workspace/mine_chains.py --refresh --seeds 120
+
+Then: report attrition, write `probes/containment_chains.md` as the contestable
+artifact, and **possession-filter all three facts per chain** before anything
+enters the experiment — a chain whose inner-2 the model does not hold cannot test
+contraction [T-058].
 
 ## Next Orchestrator Action
 

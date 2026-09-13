@@ -428,7 +428,7 @@ tops out at 53% and GPT-J holds 13%, which moved the edit target to Llama-3.1-8B
 [T-050, E-006].
 ### T-041 · Does contraction EVER occur, on hand-built deductive grounds?
 
-**Status:** parked
+**Status:** ACTIVE — un-parked 2026-09-14, park note was wrong
 **Parent:** T-013
 **Opened:** 2026-09-10
 **Question:** E-002 found grounds evidential *as Wikidata expresses them* — a fact
@@ -437,12 +437,21 @@ where entailment is explicit, edit the head on GPT-J, and ask whether the editor
 retracts anything at all. Existence claim only; hand-picked sets may never be used
 for a frequency claim [O-004].
 **Answer:** —
-**Parked note:** **Parked** — this is option C, blocked on people rather than code. Resumable cold:
-hand-build small deductive ground sets where entailment is explicit, edit the head
-on Llama-3.1-8B, ask whether the editor retracts anything. Existence claim only
-[O-004]. [E-006] established the edit is applicable; the blocker is the annotation
-study, which has had no identified annotators since design.md lens 8 first flagged
-it.
+**Park note WITHDRAWN 2026-09-14 — it was a misattribution.** I parked this citing
+the annotation study. The annotation study validates the **`contested` bucket of
+the triage tool** (design.md lens 5: "there is no ground truth for this bucket by
+construction; its validation is annotator disagreement"), which needs >=2 people to
+measure disagreement at all. T-041 asks a different question and its own text says
+**"Existence claim only [O-004]"** — existence needs one careful construction and an
+honest label, not inter-annotator agreement. The ticket was blocked on a
+requirement belonging to a different ticket.
+
+**Unblocked.** [E-006] established the edit is applicable on Llama-3.1-8B via NDIF
+(intervention lands, remote gradients work). The ground sets are the remaining work
+and we build them — see [T-058].
+
+**Standing constraint, unchanged:** hand-constructed sets license an EXISTENCE
+claim and never a FREQUENCY one. No rate may be estimated from them [O-004].
 
 ### T-042 · Amend the charter's no-scaling rule
 
@@ -791,3 +800,45 @@ favour the false target before any edit. A filtered set would be near 0. Appendi
 independently confirms it: records are built "solely using the PARAREL entry", with
 o* drawn by weighted sampling over the same predicate and no model consulted.
 See findings [D-002], which corrects [R-006].
+
+### T-058 · Transitive containment as the deductive ground family
+
+**Status:** ACTIVE
+**Parent:** T-041
+**Opened:** 2026-09-14
+**Question:** [E-002] found grounds *as Wikidata expresses them* are evidential —
+burial place supports place of death without entailing it. To ask whether
+contraction ever occurs we need grounds that genuinely **entail**, so that a
+coherent model MUST give something up.
+
+**Transitive containment is the clean family:**
+
+    Eiffel Tower  located-in  Paris      (inner-1)
+    Paris         located-in  France     (inner-2)
+    ------------------------------------------------ entails
+    Eiffel Tower  located-in  France     (outer)
+
+Edit the **outer** to Italy. The two inner facts still entail France. That is a
+strict contradiction, not an implausibility — the first time in this project we
+have one. A coherent model must retract inner-1 or inner-2. Does it?
+
+**Why this family and not another.** It is genuinely deductive (transitivity of
+containment holds by definition of the relation); it is mineable from Wikidata
+`P131` chains using the snapshot machinery already built, so sets are constructed
+by rule rather than taste, which weakens the §5 circularity objection; and both
+inner facts are ordinary CounterFact-style claims we can already probe.
+
+**Relation to prior work.** This is the mirror of RippleEdits' Logical
+Generalization, which covers transitivity **forward** — edit the inner, check the
+outer. We edit the outer and check the inner. Direction remains the distinction
+[declaration 5].
+
+**Other deductive families, deferred with reasons:** inverse relations (capital-of
+/ has-capital — thin, and closest to LG's existing coverage); functional
+uniqueness (born-in P entails not-born-in Q — a negation probe, harder to score);
+part-whole (same shape as containment, fewer clean chains).
+
+**Open:** does possession hold for all three facts in a chain? A chain where the
+model lacks inner-2 cannot test contraction. Possession filtering applies here and
+will shrink the usable set — that number is itself worth reporting.
+**Answer:** —
