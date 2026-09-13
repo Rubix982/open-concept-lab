@@ -67,6 +67,10 @@ The parked set is coherent, not scattered: **all eight serve the orphan arc, whi
 is blocked on one thing — nobody has been identified for the annotation study.**
 
 
+## Resume point — see TODO.md
+
+_Full checklist at `TODO.md`. Summary below._
+
 ## Resume point — 2026-09-14
 
 **E-008 is mid-run.** The chain miner was stopped partway; no

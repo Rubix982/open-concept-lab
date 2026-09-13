@@ -1,0 +1,1565 @@
+{
+ "snapshot": "2026-09-14",
+ "n_seeds": 120,
+ "n_chains": 62,
+ "attrition": {
+  "inner-1 answer is a substring of its subject": 12,
+  "subject has no P131": 20,
+  "inner-2 answer is a substring of its subject": 5,
+  "mid-entity has no P131 (chain ends at one hop)": 4,
+  "unlabelled entity in chain": 5,
+  "subject did not entity-link": 12
+ },
+ "chains": [
+  {
+   "seed_case_id": "53",
+   "entailment": "Pochepsky District in Bryansk Oblast  &  Bryansk Oblast in Russia  =>  Pochepsky District in Russia",
+   "inner_1": {
+    "subject": "Pochepsky District",
+    "prompt": "Pochepsky District is located in the region of",
+    "answer": "Bryansk Oblast",
+    "qid_subject": "Q2708394",
+    "qid_answer": "Q2810"
+   },
+   "inner_2": {
+    "subject": "Bryansk Oblast",
+    "prompt": "Bryansk Oblast is located in the region of",
+    "answer": "Russia",
+    "qid_subject": "Q2810",
+    "qid_answer": "Q159"
+   },
+   "outer": {
+    "subject": "Pochepsky District",
+    "prompt": "Pochepsky District is located in the country of",
+    "answer": "Russia",
+    "qid_subject": "Q2708394",
+    "qid_answer": "Q159"
+   }
+  },
+  {
+   "seed_case_id": "66",
+   "entailment": "Kuala Langat in Selangor  &  Selangor in Malaysia  =>  Kuala Langat in Malaysia",
+   "inner_1": {
+    "subject": "Kuala Langat",
+    "prompt": "Kuala Langat is located in the region of",
+    "answer": "Selangor",
+    "qid_subject": "Q2219254",
+    "qid_answer": "Q189710"
+   },
+   "inner_2": {
+    "subject": "Selangor",
+    "prompt": "Selangor is located in the region of",
+    "answer": "Malaysia",
+    "qid_subject": "Q189710",
+    "qid_answer": "Q833"
+   },
+   "outer": {
+    "subject": "Kuala Langat",
+    "prompt": "Kuala Langat is located in the country of",
+    "answer": "Malaysia",
+    "qid_subject": "Q2219254",
+    "qid_answer": "Q833"
+   }
+  },
+  {
+   "seed_case_id": "93",
+   "entailment": "Wanne-Eickel Central Station in Herne  &  Herne in Arnsberg Government Region  =>  Wanne-Eickel Central Station in Arnsberg Government Region",
+   "inner_1": {
+    "subject": "Wanne-Eickel Central Station",
+    "prompt": "Wanne-Eickel Central Station is located in the region of",
+    "answer": "Herne",
+    "qid_subject": "Q468749",
+    "qid_answer": "Q2904"
+   },
+   "inner_2": {
+    "subject": "Herne",
+    "prompt": "Herne is located in the region of",
+    "answer": "Arnsberg Government Region",
+    "qid_subject": "Q2904",
+    "qid_answer": "Q7924"
+   },
+   "outer": {
+    "subject": "Wanne-Eickel Central Station",
+    "prompt": "Wanne-Eickel Central Station is located in the country of",
+    "answer": "Arnsberg Government Region",
+    "qid_subject": "Q468749",
+    "qid_answer": "Q7924"
+   }
+  },
+  {
+   "seed_case_id": "104",
+   "entailment": "Hohenlohe-Langenburg in Baden-W\u00fcrttemberg  &  Baden-W\u00fcrttemberg in Germany  =>  Hohenlohe-Langenburg in Germany",
+   "inner_1": {
+    "subject": "Hohenlohe-Langenburg",
+    "prompt": "Hohenlohe-Langenburg is located in the region of",
+    "answer": "Baden-W\u00fcrttemberg",
+    "qid_subject": "Q700102",
+    "qid_answer": "Q985"
+   },
+   "inner_2": {
+    "subject": "Baden-W\u00fcrttemberg",
+    "prompt": "Baden-W\u00fcrttemberg is located in the region of",
+    "answer": "Germany",
+    "qid_subject": "Q985",
+    "qid_answer": "Q183"
+   },
+   "outer": {
+    "subject": "Hohenlohe-Langenburg",
+    "prompt": "Hohenlohe-Langenburg is located in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q700102",
+    "qid_answer": "Q183"
+   }
+  },
+  {
+   "seed_case_id": "109",
+   "entailment": "Shablykinsky District in Oryol Oblast  &  Oryol Oblast in Russia  =>  Shablykinsky District in Russia",
+   "inner_1": {
+    "subject": "Shablykinsky District",
+    "prompt": "Shablykinsky District is located in the region of",
+    "answer": "Oryol Oblast",
+    "qid_subject": "Q2217663",
+    "qid_answer": "Q3129"
+   },
+   "inner_2": {
+    "subject": "Oryol Oblast",
+    "prompt": "Oryol Oblast is located in the region of",
+    "answer": "Russia",
+    "qid_subject": "Q3129",
+    "qid_answer": "Q159"
+   },
+   "outer": {
+    "subject": "Shablykinsky District",
+    "prompt": "Shablykinsky District is located in the country of",
+    "answer": "Russia",
+    "qid_subject": "Q2217663",
+    "qid_answer": "Q159"
+   }
+  },
+  {
+   "seed_case_id": "118",
+   "entailment": "Oliver Ames High School in Massachusetts  &  Massachusetts in United States  =>  Oliver Ames High School in United States",
+   "inner_1": {
+    "subject": "Oliver Ames High School",
+    "prompt": "Oliver Ames High School is located in the region of",
+    "answer": "Massachusetts",
+    "qid_subject": "Q7087388",
+    "qid_answer": "Q771"
+   },
+   "inner_2": {
+    "subject": "Massachusetts",
+    "prompt": "Massachusetts is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q771",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Oliver Ames High School",
+    "prompt": "Oliver Ames High School is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q7087388",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "128",
+   "entailment": "Ostankinsky District in North-Eastern Administrative Okrug  &  North-Eastern Administrative Okrug in Moscow  =>  Ostankinsky District in Moscow",
+   "inner_1": {
+    "subject": "Ostankinsky District",
+    "prompt": "Ostankinsky District is located in the region of",
+    "answer": "North-Eastern Administrative Okrug",
+    "qid_subject": "Q2704188",
+    "qid_answer": "Q462247"
+   },
+   "inner_2": {
+    "subject": "North-Eastern Administrative Okrug",
+    "prompt": "North-Eastern Administrative Okrug is located in the region of",
+    "answer": "Moscow",
+    "qid_subject": "Q462247",
+    "qid_answer": "Q649"
+   },
+   "outer": {
+    "subject": "Ostankinsky District",
+    "prompt": "Ostankinsky District is located in the country of",
+    "answer": "Moscow",
+    "qid_subject": "Q2704188",
+    "qid_answer": "Q649"
+   }
+  },
+  {
+   "seed_case_id": "130",
+   "entailment": "Saratov Oblast in Russian Soviet Federative Socialist Republic  &  Russian Soviet Federative Socialist Republic in Soviet Union  =>  Saratov Oblast in Soviet Union",
+   "inner_1": {
+    "subject": "Saratov Oblast",
+    "prompt": "Saratov Oblast is located in the region of",
+    "answer": "Russian Soviet Federative Socialist Republic",
+    "qid_subject": "Q5334",
+    "qid_answer": "Q2184"
+   },
+   "inner_2": {
+    "subject": "Russian Soviet Federative Socialist Republic",
+    "prompt": "Russian Soviet Federative Socialist Republic is located in the region of",
+    "answer": "Soviet Union",
+    "qid_subject": "Q2184",
+    "qid_answer": "Q15180"
+   },
+   "outer": {
+    "subject": "Saratov Oblast",
+    "prompt": "Saratov Oblast is located in the country of",
+    "answer": "Soviet Union",
+    "qid_subject": "Q5334",
+    "qid_answer": "Q15180"
+   }
+  },
+  {
+   "seed_case_id": "142",
+   "entailment": "Valdemarsvik in \u00d6sterg\u00f6tland County  &  \u00d6sterg\u00f6tland County in Sweden  =>  Valdemarsvik in Sweden",
+   "inner_1": {
+    "subject": "Valdemarsvik",
+    "prompt": "Valdemarsvik is located in the region of",
+    "answer": "\u00d6sterg\u00f6tland County",
+    "qid_subject": "Q509997",
+    "qid_answer": "Q104940"
+   },
+   "inner_2": {
+    "subject": "\u00d6sterg\u00f6tland County",
+    "prompt": "\u00d6sterg\u00f6tland County is located in the region of",
+    "answer": "Sweden",
+    "qid_subject": "Q104940",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Valdemarsvik",
+    "prompt": "Valdemarsvik is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q509997",
+    "qid_answer": "Q34"
+   }
+  },
+  {
+   "seed_case_id": "158",
+   "entailment": "Piper Verlag in Munich  &  Munich in Upper Bavaria  =>  Piper Verlag in Upper Bavaria",
+   "inner_1": {
+    "subject": "Piper Verlag",
+    "prompt": "Piper Verlag is located in the region of",
+    "answer": "Munich",
+    "qid_subject": "Q1385440",
+    "qid_answer": "Q1726"
+   },
+   "inner_2": {
+    "subject": "Munich",
+    "prompt": "Munich is located in the region of",
+    "answer": "Upper Bavaria",
+    "qid_subject": "Q1726",
+    "qid_answer": "Q10562"
+   },
+   "outer": {
+    "subject": "Piper Verlag",
+    "prompt": "Piper Verlag is located in the country of",
+    "answer": "Upper Bavaria",
+    "qid_subject": "Q1385440",
+    "qid_answer": "Q10562"
+   }
+  },
+  {
+   "seed_case_id": "205",
+   "entailment": "Attingal in Kerala  &  Kerala in India  =>  Attingal in India",
+   "inner_1": {
+    "subject": "Attingal",
+    "prompt": "Attingal is located in the region of",
+    "answer": "Kerala",
+    "qid_subject": "Q534444",
+    "qid_answer": "Q1186"
+   },
+   "inner_2": {
+    "subject": "Kerala",
+    "prompt": "Kerala is located in the region of",
+    "answer": "India",
+    "qid_subject": "Q1186",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Attingal",
+    "prompt": "Attingal is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q534444",
+    "qid_answer": "Q668"
+   }
+  },
+  {
+   "seed_case_id": "259",
+   "entailment": "Tehri Garhwal district in Garhwal division  &  Garhwal division in Uttarakhand  =>  Tehri Garhwal district in Uttarakhand",
+   "inner_1": {
+    "subject": "Tehri Garhwal district",
+    "prompt": "Tehri Garhwal district is located in the region of",
+    "answer": "Garhwal division",
+    "qid_subject": "Q1357107",
+    "qid_answer": "Q1460406"
+   },
+   "inner_2": {
+    "subject": "Garhwal division",
+    "prompt": "Garhwal division is located in the region of",
+    "answer": "Uttarakhand",
+    "qid_subject": "Q1460406",
+    "qid_answer": "Q1499"
+   },
+   "outer": {
+    "subject": "Tehri Garhwal district",
+    "prompt": "Tehri Garhwal district is located in the country of",
+    "answer": "Uttarakhand",
+    "qid_subject": "Q1357107",
+    "qid_answer": "Q1499"
+   }
+  },
+  {
+   "seed_case_id": "302",
+   "entailment": "Jablanica District in Serbia  &  Serbia in Federal Republic of Yugoslavia  =>  Jablanica District in Federal Republic of Yugoslavia",
+   "inner_1": {
+    "subject": "Jablanica District",
+    "prompt": "Jablanica District is located in the region of",
+    "answer": "Serbia",
+    "qid_subject": "Q876541",
+    "qid_answer": "Q403"
+   },
+   "inner_2": {
+    "subject": "Serbia",
+    "prompt": "Serbia is located in the region of",
+    "answer": "Federal Republic of Yugoslavia",
+    "qid_subject": "Q403",
+    "qid_answer": "Q838261"
+   },
+   "outer": {
+    "subject": "Jablanica District",
+    "prompt": "Jablanica District is located in the country of",
+    "answer": "Federal Republic of Yugoslavia",
+    "qid_subject": "Q876541",
+    "qid_answer": "Q838261"
+   }
+  },
+  {
+   "seed_case_id": "323",
+   "entailment": "Gracie Mansion in Manhattan  &  Manhattan in New York City  =>  Gracie Mansion in New York City",
+   "inner_1": {
+    "subject": "Gracie Mansion",
+    "prompt": "Gracie Mansion is located in the region of",
+    "answer": "Manhattan",
+    "qid_subject": "Q3025091",
+    "qid_answer": "Q11299"
+   },
+   "inner_2": {
+    "subject": "Manhattan",
+    "prompt": "Manhattan is located in the region of",
+    "answer": "New York City",
+    "qid_subject": "Q11299",
+    "qid_answer": "Q60"
+   },
+   "outer": {
+    "subject": "Gracie Mansion",
+    "prompt": "Gracie Mansion is located in the country of",
+    "answer": "New York City",
+    "qid_subject": "Q3025091",
+    "qid_answer": "Q60"
+   }
+  },
+  {
+   "seed_case_id": "326",
+   "entailment": "Kalamazoo County in Michigan  &  Michigan in United States  =>  Kalamazoo County in United States",
+   "inner_1": {
+    "subject": "Kalamazoo County",
+    "prompt": "Kalamazoo County is located in the region of",
+    "answer": "Michigan",
+    "qid_subject": "Q137509",
+    "qid_answer": "Q1166"
+   },
+   "inner_2": {
+    "subject": "Michigan",
+    "prompt": "Michigan is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1166",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Kalamazoo County",
+    "prompt": "Kalamazoo County is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q137509",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "341",
+   "entailment": "Olot in Garrotxa  &  Garrotxa in Girona  =>  Olot in Girona",
+   "inner_1": {
+    "subject": "Olot",
+    "prompt": "Olot is located in the region of",
+    "answer": "Garrotxa",
+    "qid_subject": "Q12618",
+    "qid_answer": "Q10932"
+   },
+   "inner_2": {
+    "subject": "Garrotxa",
+    "prompt": "Garrotxa is located in the region of",
+    "answer": "Girona",
+    "qid_subject": "Q10932",
+    "qid_answer": "Q7194"
+   },
+   "outer": {
+    "subject": "Olot",
+    "prompt": "Olot is located in the country of",
+    "answer": "Girona",
+    "qid_subject": "Q12618",
+    "qid_answer": "Q7194"
+   }
+  },
+  {
+   "seed_case_id": "366",
+   "entailment": "New Bedford Whaling Museum in Massachusetts  &  Massachusetts in United States  =>  New Bedford Whaling Museum in United States",
+   "inner_1": {
+    "subject": "New Bedford Whaling Museum",
+    "prompt": "New Bedford Whaling Museum is located in the region of",
+    "answer": "Massachusetts",
+    "qid_subject": "Q7005471",
+    "qid_answer": "Q771"
+   },
+   "inner_2": {
+    "subject": "Massachusetts",
+    "prompt": "Massachusetts is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q771",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "New Bedford Whaling Museum",
+    "prompt": "New Bedford Whaling Museum is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q7005471",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "438",
+   "entailment": "Adliswil in Horgen District  &  Horgen District in Canton of Zurich  =>  Adliswil in Canton of Zurich",
+   "inner_1": {
+    "subject": "Adliswil",
+    "prompt": "Adliswil is located in the region of",
+    "answer": "Horgen District",
+    "qid_subject": "Q68210",
+    "qid_answer": "Q660579"
+   },
+   "inner_2": {
+    "subject": "Horgen District",
+    "prompt": "Horgen District is located in the region of",
+    "answer": "Canton of Zurich",
+    "qid_subject": "Q660579",
+    "qid_answer": "Q11943"
+   },
+   "outer": {
+    "subject": "Adliswil",
+    "prompt": "Adliswil is located in the country of",
+    "answer": "Canton of Zurich",
+    "qid_subject": "Q68210",
+    "qid_answer": "Q11943"
+   }
+  },
+  {
+   "seed_case_id": "443",
+   "entailment": "Disney's Hollywood Studios in Bay Lake  &  Bay Lake in Orange County  =>  Disney's Hollywood Studios in Orange County",
+   "inner_1": {
+    "subject": "Disney's Hollywood Studios",
+    "prompt": "Disney's Hollywood Studios is located in the region of",
+    "answer": "Bay Lake",
+    "qid_subject": "Q1345090",
+    "qid_answer": "Q2154150"
+   },
+   "inner_2": {
+    "subject": "Bay Lake",
+    "prompt": "Bay Lake is located in the region of",
+    "answer": "Orange County",
+    "qid_subject": "Q2154150",
+    "qid_answer": "Q488543"
+   },
+   "outer": {
+    "subject": "Disney's Hollywood Studios",
+    "prompt": "Disney's Hollywood Studios is located in the country of",
+    "answer": "Orange County",
+    "qid_subject": "Q1345090",
+    "qid_answer": "Q488543"
+   }
+  },
+  {
+   "seed_case_id": "452",
+   "entailment": "Lake Bluff in Shields Township  &  Shields Township in Lake County  =>  Lake Bluff in Lake County",
+   "inner_1": {
+    "subject": "Lake Bluff",
+    "prompt": "Lake Bluff is located in the region of",
+    "answer": "Shields Township",
+    "qid_subject": "Q1800874",
+    "qid_answer": "Q7496199"
+   },
+   "inner_2": {
+    "subject": "Shields Township",
+    "prompt": "Shields Township is located in the region of",
+    "answer": "Lake County",
+    "qid_subject": "Q7496199",
+    "qid_answer": "Q484263"
+   },
+   "outer": {
+    "subject": "Lake Bluff",
+    "prompt": "Lake Bluff is located in the country of",
+    "answer": "Lake County",
+    "qid_subject": "Q1800874",
+    "qid_answer": "Q484263"
+   }
+  },
+  {
+   "seed_case_id": "459",
+   "entailment": "Alebtong District in Northern Region  &  Northern Region in Uganda  =>  Alebtong District in Uganda",
+   "inner_1": {
+    "subject": "Alebtong District",
+    "prompt": "Alebtong District is located in the region of",
+    "answer": "Northern Region",
+    "qid_subject": "Q3536082",
+    "qid_answer": "Q2559686"
+   },
+   "inner_2": {
+    "subject": "Northern Region",
+    "prompt": "Northern Region is located in the region of",
+    "answer": "Uganda",
+    "qid_subject": "Q2559686",
+    "qid_answer": "Q1036"
+   },
+   "outer": {
+    "subject": "Alebtong District",
+    "prompt": "Alebtong District is located in the country of",
+    "answer": "Uganda",
+    "qid_subject": "Q3536082",
+    "qid_answer": "Q1036"
+   }
+  },
+  {
+   "seed_case_id": "512",
+   "entailment": "M5 motorway in Gloucestershire  &  Gloucestershire in South West England  =>  M5 motorway in South West England",
+   "inner_1": {
+    "subject": "M5 motorway",
+    "prompt": "M5 motorway is located in the region of",
+    "answer": "Gloucestershire",
+    "qid_subject": "Q1824663",
+    "qid_answer": "Q23165"
+   },
+   "inner_2": {
+    "subject": "Gloucestershire",
+    "prompt": "Gloucestershire is located in the region of",
+    "answer": "South West England",
+    "qid_subject": "Q23165",
+    "qid_answer": "Q48026"
+   },
+   "outer": {
+    "subject": "M5 motorway",
+    "prompt": "M5 motorway is located in the country of",
+    "answer": "South West England",
+    "qid_subject": "Q1824663",
+    "qid_answer": "Q48026"
+   }
+  },
+  {
+   "seed_case_id": "531",
+   "entailment": "Junnar in Pune district  &  Pune district in Pune division  =>  Junnar in Pune division",
+   "inner_1": {
+    "subject": "Junnar",
+    "prompt": "Junnar is located in the region of",
+    "answer": "Pune district",
+    "qid_subject": "Q2445461",
+    "qid_answer": "Q1797336"
+   },
+   "inner_2": {
+    "subject": "Pune district",
+    "prompt": "Pune district is located in the region of",
+    "answer": "Pune division",
+    "qid_subject": "Q1797336",
+    "qid_answer": "Q1854679"
+   },
+   "outer": {
+    "subject": "Junnar",
+    "prompt": "Junnar is located in the country of",
+    "answer": "Pune division",
+    "qid_subject": "Q2445461",
+    "qid_answer": "Q1854679"
+   }
+  },
+  {
+   "seed_case_id": "566",
+   "entailment": "Kandiaro Taluka in Naushahro Feroze District  &  Naushahro Feroze District in Shaheed Benazirabad Division  =>  Kandiaro Taluka in Shaheed Benazirabad Division",
+   "inner_1": {
+    "subject": "Kandiaro Taluka",
+    "prompt": "Kandiaro Taluka is located in the region of",
+    "answer": "Naushahro Feroze District",
+    "qid_subject": "Q16909544",
+    "qid_answer": "Q63711"
+   },
+   "inner_2": {
+    "subject": "Naushahro Feroze District",
+    "prompt": "Naushahro Feroze District is located in the region of",
+    "answer": "Shaheed Benazirabad Division",
+    "qid_subject": "Q63711",
+    "qid_answer": "Q24058861"
+   },
+   "outer": {
+    "subject": "Kandiaro Taluka",
+    "prompt": "Kandiaro Taluka is located in the country of",
+    "answer": "Shaheed Benazirabad Division",
+    "qid_subject": "Q16909544",
+    "qid_answer": "Q24058861"
+   }
+  },
+  {
+   "seed_case_id": "567",
+   "entailment": "Yoro in Gifu Prefecture  &  Gifu Prefecture in Japan  =>  Yoro in Japan",
+   "inner_1": {
+    "subject": "Yoro",
+    "prompt": "Yoro is located in the region of",
+    "answer": "Gifu Prefecture",
+    "qid_subject": "Q153814",
+    "qid_answer": "Q131277"
+   },
+   "inner_2": {
+    "subject": "Gifu Prefecture",
+    "prompt": "Gifu Prefecture is located in the region of",
+    "answer": "Japan",
+    "qid_subject": "Q131277",
+    "qid_answer": "Q17"
+   },
+   "outer": {
+    "subject": "Yoro",
+    "prompt": "Yoro is located in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q153814",
+    "qid_answer": "Q17"
+   }
+  },
+  {
+   "seed_case_id": "589",
+   "entailment": "Maury County in Tennessee  &  Tennessee in United States  =>  Maury County in United States",
+   "inner_1": {
+    "subject": "Maury County",
+    "prompt": "Maury County is located in the region of",
+    "answer": "Tennessee",
+    "qid_subject": "Q502393",
+    "qid_answer": "Q1509"
+   },
+   "inner_2": {
+    "subject": "Tennessee",
+    "prompt": "Tennessee is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1509",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Maury County",
+    "prompt": "Maury County is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q502393",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "636",
+   "entailment": "Old Trinity Church in Pennsylvania  &  Pennsylvania in United States  =>  Old Trinity Church in United States",
+   "inner_1": {
+    "subject": "Old Trinity Church",
+    "prompt": "Old Trinity Church is located in the region of",
+    "answer": "Pennsylvania",
+    "qid_subject": "Q7085331",
+    "qid_answer": "Q1400"
+   },
+   "inner_2": {
+    "subject": "Pennsylvania",
+    "prompt": "Pennsylvania is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1400",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Old Trinity Church",
+    "prompt": "Old Trinity Church is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q7085331",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "708",
+   "entailment": "Anahuac National Wildlife Refuge in Texas  &  Texas in United States  =>  Anahuac National Wildlife Refuge in United States",
+   "inner_1": {
+    "subject": "Anahuac National Wildlife Refuge",
+    "prompt": "Anahuac National Wildlife Refuge is located in the region of",
+    "answer": "Texas",
+    "qid_subject": "Q4750914",
+    "qid_answer": "Q1439"
+   },
+   "inner_2": {
+    "subject": "Texas",
+    "prompt": "Texas is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1439",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Anahuac National Wildlife Refuge",
+    "prompt": "Anahuac National Wildlife Refuge is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q4750914",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "732",
+   "entailment": "Queen Charlotte Mountains in British Columbia  &  British Columbia in Canada  =>  Queen Charlotte Mountains in Canada",
+   "inner_1": {
+    "subject": "Queen Charlotte Mountains",
+    "prompt": "Queen Charlotte Mountains is located in the region of",
+    "answer": "British Columbia",
+    "qid_subject": "Q7270250",
+    "qid_answer": "Q1973"
+   },
+   "inner_2": {
+    "subject": "British Columbia",
+    "prompt": "British Columbia is located in the region of",
+    "answer": "Canada",
+    "qid_subject": "Q1973",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Queen Charlotte Mountains",
+    "prompt": "Queen Charlotte Mountains is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q7270250",
+    "qid_answer": "Q16"
+   }
+  },
+  {
+   "seed_case_id": "739",
+   "entailment": "Buckeystown in Frederick County  &  Frederick County in Maryland  =>  Buckeystown in Maryland",
+   "inner_1": {
+    "subject": "Buckeystown",
+    "prompt": "Buckeystown is located in the region of",
+    "answer": "Frederick County",
+    "qid_subject": "Q616192",
+    "qid_answer": "Q501345"
+   },
+   "inner_2": {
+    "subject": "Frederick County",
+    "prompt": "Frederick County is located in the region of",
+    "answer": "Maryland",
+    "qid_subject": "Q501345",
+    "qid_answer": "Q1391"
+   },
+   "outer": {
+    "subject": "Buckeystown",
+    "prompt": "Buckeystown is located in the country of",
+    "answer": "Maryland",
+    "qid_subject": "Q616192",
+    "qid_answer": "Q1391"
+   }
+  },
+  {
+   "seed_case_id": "752",
+   "entailment": "North Hennepin Community College in Brooklyn Park  &  Brooklyn Park in Hennepin County  =>  North Hennepin Community College in Hennepin County",
+   "inner_1": {
+    "subject": "North Hennepin Community College",
+    "prompt": "North Hennepin Community College is located in the region of",
+    "answer": "Brooklyn Park",
+    "qid_subject": "Q7055585",
+    "qid_answer": "Q864128"
+   },
+   "inner_2": {
+    "subject": "Brooklyn Park",
+    "prompt": "Brooklyn Park is located in the region of",
+    "answer": "Hennepin County",
+    "qid_subject": "Q864128",
+    "qid_answer": "Q486229"
+   },
+   "outer": {
+    "subject": "North Hennepin Community College",
+    "prompt": "North Hennepin Community College is located in the country of",
+    "answer": "Hennepin County",
+    "qid_subject": "Q7055585",
+    "qid_answer": "Q486229"
+   }
+  },
+  {
+   "seed_case_id": "761",
+   "entailment": "Carnegie Vanguard High School in Houston  &  Houston in Harris County  =>  Carnegie Vanguard High School in Harris County",
+   "inner_1": {
+    "subject": "Carnegie Vanguard High School",
+    "prompt": "Carnegie Vanguard High School is located in the region of",
+    "answer": "Houston",
+    "qid_subject": "Q5043980",
+    "qid_answer": "Q16555"
+   },
+   "inner_2": {
+    "subject": "Houston",
+    "prompt": "Houston is located in the region of",
+    "answer": "Harris County",
+    "qid_subject": "Q16555",
+    "qid_answer": "Q26676"
+   },
+   "outer": {
+    "subject": "Carnegie Vanguard High School",
+    "prompt": "Carnegie Vanguard High School is located in the country of",
+    "answer": "Harris County",
+    "qid_subject": "Q5043980",
+    "qid_answer": "Q26676"
+   }
+  },
+  {
+   "seed_case_id": "850",
+   "entailment": "Assiginack in Manitoulin District  &  Manitoulin District in Ontario  =>  Assiginack in Ontario",
+   "inner_1": {
+    "subject": "Assiginack",
+    "prompt": "Assiginack is located in the region of",
+    "answer": "Manitoulin District",
+    "qid_subject": "Q1437231",
+    "qid_answer": "Q1815566"
+   },
+   "inner_2": {
+    "subject": "Manitoulin District",
+    "prompt": "Manitoulin District is located in the region of",
+    "answer": "Ontario",
+    "qid_subject": "Q1815566",
+    "qid_answer": "Q1904"
+   },
+   "outer": {
+    "subject": "Assiginack",
+    "prompt": "Assiginack is located in the country of",
+    "answer": "Ontario",
+    "qid_subject": "Q1437231",
+    "qid_answer": "Q1904"
+   }
+  },
+  {
+   "seed_case_id": "854",
+   "entailment": "Pigtown in Baltimore  &  Baltimore in Maryland  =>  Pigtown in Maryland",
+   "inner_1": {
+    "subject": "Pigtown",
+    "prompt": "Pigtown is located in the region of",
+    "answer": "Baltimore",
+    "qid_subject": "Q7193467",
+    "qid_answer": "Q5092"
+   },
+   "inner_2": {
+    "subject": "Baltimore",
+    "prompt": "Baltimore is located in the region of",
+    "answer": "Maryland",
+    "qid_subject": "Q5092",
+    "qid_answer": "Q1391"
+   },
+   "outer": {
+    "subject": "Pigtown",
+    "prompt": "Pigtown is located in the country of",
+    "answer": "Maryland",
+    "qid_subject": "Q7193467",
+    "qid_answer": "Q1391"
+   }
+  },
+  {
+   "seed_case_id": "885",
+   "entailment": "Borovsky District in Kaluga Oblast  &  Kaluga Oblast in Russia  =>  Borovsky District in Russia",
+   "inner_1": {
+    "subject": "Borovsky District",
+    "prompt": "Borovsky District is located in the region of",
+    "answer": "Kaluga Oblast",
+    "qid_subject": "Q12015831",
+    "qid_answer": "Q2842"
+   },
+   "inner_2": {
+    "subject": "Kaluga Oblast",
+    "prompt": "Kaluga Oblast is located in the region of",
+    "answer": "Russia",
+    "qid_subject": "Q2842",
+    "qid_answer": "Q159"
+   },
+   "outer": {
+    "subject": "Borovsky District",
+    "prompt": "Borovsky District is located in the country of",
+    "answer": "Russia",
+    "qid_subject": "Q12015831",
+    "qid_answer": "Q159"
+   }
+  },
+  {
+   "seed_case_id": "908",
+   "entailment": "University of Vermont in Burlington  &  Burlington in Chittenden County  =>  University of Vermont in Chittenden County",
+   "inner_1": {
+    "subject": "University of Vermont",
+    "prompt": "University of Vermont is located in the region of",
+    "answer": "Burlington",
+    "qid_subject": "Q1048898",
+    "qid_answer": "Q31058"
+   },
+   "inner_2": {
+    "subject": "Burlington",
+    "prompt": "Burlington is located in the region of",
+    "answer": "Chittenden County",
+    "qid_subject": "Q31058",
+    "qid_answer": "Q509770"
+   },
+   "outer": {
+    "subject": "University of Vermont",
+    "prompt": "University of Vermont is located in the country of",
+    "answer": "Chittenden County",
+    "qid_subject": "Q1048898",
+    "qid_answer": "Q509770"
+   }
+  },
+  {
+   "seed_case_id": "918",
+   "entailment": "Eibenstock in Erzgebirgskreis  &  Erzgebirgskreis in Saxony  =>  Eibenstock in Saxony",
+   "inner_1": {
+    "subject": "Eibenstock",
+    "prompt": "Eibenstock is located in the region of",
+    "answer": "Erzgebirgskreis",
+    "qid_subject": "Q57881",
+    "qid_answer": "Q6339"
+   },
+   "inner_2": {
+    "subject": "Erzgebirgskreis",
+    "prompt": "Erzgebirgskreis is located in the region of",
+    "answer": "Saxony",
+    "qid_subject": "Q6339",
+    "qid_answer": "Q1202"
+   },
+   "outer": {
+    "subject": "Eibenstock",
+    "prompt": "Eibenstock is located in the country of",
+    "answer": "Saxony",
+    "qid_subject": "Q57881",
+    "qid_answer": "Q1202"
+   }
+  },
+  {
+   "seed_case_id": "925",
+   "entailment": "Gangseo District in Seoul  &  Seoul in Joseon  =>  Gangseo District in Joseon",
+   "inner_1": {
+    "subject": "Gangseo District",
+    "prompt": "Gangseo District is located in the region of",
+    "answer": "Seoul",
+    "qid_subject": "Q50192",
+    "qid_answer": "Q8684"
+   },
+   "inner_2": {
+    "subject": "Seoul",
+    "prompt": "Seoul is located in the region of",
+    "answer": "Joseon",
+    "qid_subject": "Q8684",
+    "qid_answer": "Q28179"
+   },
+   "outer": {
+    "subject": "Gangseo District",
+    "prompt": "Gangseo District is located in the country of",
+    "answer": "Joseon",
+    "qid_subject": "Q50192",
+    "qid_answer": "Q28179"
+   }
+  },
+  {
+   "seed_case_id": "931",
+   "entailment": "Kyoto University in Saky\u014d-ku  &  Saky\u014d-ku in Kyoto  =>  Kyoto University in Kyoto",
+   "inner_1": {
+    "subject": "Kyoto University",
+    "prompt": "Kyoto University is located in the region of",
+    "answer": "Saky\u014d-ku",
+    "qid_subject": "Q336264",
+    "qid_answer": "Q1321832"
+   },
+   "inner_2": {
+    "subject": "Saky\u014d-ku",
+    "prompt": "Saky\u014d-ku is located in the region of",
+    "answer": "Kyoto",
+    "qid_subject": "Q1321832",
+    "qid_answer": "Q34600"
+   },
+   "outer": {
+    "subject": "Kyoto University",
+    "prompt": "Kyoto University is located in the country of",
+    "answer": "Kyoto",
+    "qid_subject": "Q336264",
+    "qid_answer": "Q34600"
+   }
+  },
+  {
+   "seed_case_id": "970",
+   "entailment": "Bryan Air Force Base in Texas  &  Texas in United States  =>  Bryan Air Force Base in United States",
+   "inner_1": {
+    "subject": "Bryan Air Force Base",
+    "prompt": "Bryan Air Force Base is located in the region of",
+    "answer": "Texas",
+    "qid_subject": "Q4979936",
+    "qid_answer": "Q1439"
+   },
+   "inner_2": {
+    "subject": "Texas",
+    "prompt": "Texas is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1439",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Bryan Air Force Base",
+    "prompt": "Bryan Air Force Base is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q4979936",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "993",
+   "entailment": "Mount Saint Elias in Alaska  &  Alaska in United States  =>  Mount Saint Elias in United States",
+   "inner_1": {
+    "subject": "Mount Saint Elias",
+    "prompt": "Mount Saint Elias is located in the region of",
+    "answer": "Alaska",
+    "qid_subject": "Q770496",
+    "qid_answer": "Q797"
+   },
+   "inner_2": {
+    "subject": "Alaska",
+    "prompt": "Alaska is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q797",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Mount Saint Elias",
+    "prompt": "Mount Saint Elias is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q770496",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "995",
+   "entailment": "Kosi Zone in Eastern Development Region  &  Eastern Development Region in Nepal  =>  Kosi Zone in Nepal",
+   "inner_1": {
+    "subject": "Kosi Zone",
+    "prompt": "Kosi Zone is located in the region of",
+    "answer": "Eastern Development Region",
+    "qid_subject": "Q9170",
+    "qid_answer": "Q28576"
+   },
+   "inner_2": {
+    "subject": "Eastern Development Region",
+    "prompt": "Eastern Development Region is located in the region of",
+    "answer": "Nepal",
+    "qid_subject": "Q28576",
+    "qid_answer": "Q837"
+   },
+   "outer": {
+    "subject": "Kosi Zone",
+    "prompt": "Kosi Zone is located in the country of",
+    "answer": "Nepal",
+    "qid_subject": "Q9170",
+    "qid_answer": "Q837"
+   }
+  },
+  {
+   "seed_case_id": "1027",
+   "entailment": "Celilo Village in Wasco County  &  Wasco County in Oregon  =>  Celilo Village in Oregon",
+   "inner_1": {
+    "subject": "Celilo Village",
+    "prompt": "Celilo Village is located in the region of",
+    "answer": "Wasco County",
+    "qid_subject": "Q3474029",
+    "qid_answer": "Q495388"
+   },
+   "inner_2": {
+    "subject": "Wasco County",
+    "prompt": "Wasco County is located in the region of",
+    "answer": "Oregon",
+    "qid_subject": "Q495388",
+    "qid_answer": "Q824"
+   },
+   "outer": {
+    "subject": "Celilo Village",
+    "prompt": "Celilo Village is located in the country of",
+    "answer": "Oregon",
+    "qid_subject": "Q3474029",
+    "qid_answer": "Q824"
+   }
+  },
+  {
+   "seed_case_id": "1054",
+   "entailment": "Muchalls Castle in Aberdeenshire  &  Aberdeenshire in Scotland  =>  Muchalls Castle in Scotland",
+   "inner_1": {
+    "subject": "Muchalls Castle",
+    "prompt": "Muchalls Castle is located in the region of",
+    "answer": "Aberdeenshire",
+    "qid_subject": "Q10332979",
+    "qid_answer": "Q189912"
+   },
+   "inner_2": {
+    "subject": "Aberdeenshire",
+    "prompt": "Aberdeenshire is located in the region of",
+    "answer": "Scotland",
+    "qid_subject": "Q189912",
+    "qid_answer": "Q22"
+   },
+   "outer": {
+    "subject": "Muchalls Castle",
+    "prompt": "Muchalls Castle is located in the country of",
+    "answer": "Scotland",
+    "qid_subject": "Q10332979",
+    "qid_answer": "Q22"
+   }
+  },
+  {
+   "seed_case_id": "1100",
+   "entailment": "Calder Freeway in Victoria  &  Victoria in Australia  =>  Calder Freeway in Australia",
+   "inner_1": {
+    "subject": "Calder Freeway",
+    "prompt": "Calder Freeway is located in the region of",
+    "answer": "Victoria",
+    "qid_subject": "Q1026425",
+    "qid_answer": "Q36687"
+   },
+   "inner_2": {
+    "subject": "Victoria",
+    "prompt": "Victoria is located in the region of",
+    "answer": "Australia",
+    "qid_subject": "Q36687",
+    "qid_answer": "Q408"
+   },
+   "outer": {
+    "subject": "Calder Freeway",
+    "prompt": "Calder Freeway is located in the country of",
+    "answer": "Australia",
+    "qid_subject": "Q1026425",
+    "qid_answer": "Q408"
+   }
+  },
+  {
+   "seed_case_id": "1128",
+   "entailment": "Kfar Giladi in Upper Galilee Regional Council  &  Upper Galilee Regional Council in Safed Subdistrict  =>  Kfar Giladi in Safed Subdistrict",
+   "inner_1": {
+    "subject": "Kfar Giladi",
+    "prompt": "Kfar Giladi is located in the region of",
+    "answer": "Upper Galilee Regional Council",
+    "qid_subject": "Q1487392",
+    "qid_answer": "Q2915660"
+   },
+   "inner_2": {
+    "subject": "Upper Galilee Regional Council",
+    "prompt": "Upper Galilee Regional Council is located in the region of",
+    "answer": "Safed Subdistrict",
+    "qid_subject": "Q2915660",
+    "qid_answer": "Q5423089"
+   },
+   "outer": {
+    "subject": "Kfar Giladi",
+    "prompt": "Kfar Giladi is located in the country of",
+    "answer": "Safed Subdistrict",
+    "qid_subject": "Q1487392",
+    "qid_answer": "Q5423089"
+   }
+  },
+  {
+   "seed_case_id": "1139",
+   "entailment": "Malha in Craven  &  Craven in North Yorkshire  =>  Malha in North Yorkshire",
+   "inner_1": {
+    "subject": "Malha",
+    "prompt": "Malha is located in the region of",
+    "answer": "Craven",
+    "qid_subject": "Q1247558",
+    "qid_answer": "Q1139085"
+   },
+   "inner_2": {
+    "subject": "Craven",
+    "prompt": "Craven is located in the region of",
+    "answer": "North Yorkshire",
+    "qid_subject": "Q1139085",
+    "qid_answer": "Q21241814"
+   },
+   "outer": {
+    "subject": "Malha",
+    "prompt": "Malha is located in the country of",
+    "answer": "North Yorkshire",
+    "qid_subject": "Q1247558",
+    "qid_answer": "Q21241814"
+   }
+  },
+  {
+   "seed_case_id": "1159",
+   "entailment": "Agios Dimitrios in Zagora-Mouresi Municipality  &  Zagora-Mouresi Municipality in Magnesia Regional Unit  =>  Agios Dimitrios in Magnesia Regional Unit",
+   "inner_1": {
+    "subject": "Agios Dimitrios",
+    "prompt": "Agios Dimitrios is located in the region of",
+    "answer": "Zagora-Mouresi Municipality",
+    "qid_subject": "Q4692614",
+    "qid_answer": "Q2510273"
+   },
+   "inner_2": {
+    "subject": "Zagora-Mouresi Municipality",
+    "prompt": "Zagora-Mouresi Municipality is located in the region of",
+    "answer": "Magnesia Regional Unit",
+    "qid_subject": "Q2510273",
+    "qid_answer": "Q1884468"
+   },
+   "outer": {
+    "subject": "Agios Dimitrios",
+    "prompt": "Agios Dimitrios is located in the country of",
+    "answer": "Magnesia Regional Unit",
+    "qid_subject": "Q4692614",
+    "qid_answer": "Q1884468"
+   }
+  },
+  {
+   "seed_case_id": "1160",
+   "entailment": "Vijayawada Junction railway station in Krishna district  &  Krishna district in Andhra Pradesh  =>  Vijayawada Junction railway station in Andhra Pradesh",
+   "inner_1": {
+    "subject": "Vijayawada Junction railway station",
+    "prompt": "Vijayawada Junction railway station is located in the region of",
+    "answer": "Krishna district",
+    "qid_subject": "Q7929306",
+    "qid_answer": "Q15382"
+   },
+   "inner_2": {
+    "subject": "Krishna district",
+    "prompt": "Krishna district is located in the region of",
+    "answer": "Andhra Pradesh",
+    "qid_subject": "Q15382",
+    "qid_answer": "Q1159"
+   },
+   "outer": {
+    "subject": "Vijayawada Junction railway station",
+    "prompt": "Vijayawada Junction railway station is located in the country of",
+    "answer": "Andhra Pradesh",
+    "qid_subject": "Q7929306",
+    "qid_answer": "Q1159"
+   }
+  },
+  {
+   "seed_case_id": "1167",
+   "entailment": "Lake Texana in Jackson County  &  Jackson County in Texas  =>  Lake Texana in Texas",
+   "inner_1": {
+    "subject": "Lake Texana",
+    "prompt": "Lake Texana is located in the region of",
+    "answer": "Jackson County",
+    "qid_subject": "Q6478013",
+    "qid_answer": "Q110262"
+   },
+   "inner_2": {
+    "subject": "Jackson County",
+    "prompt": "Jackson County is located in the region of",
+    "answer": "Texas",
+    "qid_subject": "Q110262",
+    "qid_answer": "Q1439"
+   },
+   "outer": {
+    "subject": "Lake Texana",
+    "prompt": "Lake Texana is located in the country of",
+    "answer": "Texas",
+    "qid_subject": "Q6478013",
+    "qid_answer": "Q1439"
+   }
+  },
+  {
+   "seed_case_id": "1170",
+   "entailment": "Allersberg in Roth  &  Roth in Middle Franconia  =>  Allersberg in Middle Franconia",
+   "inner_1": {
+    "subject": "Allersberg",
+    "prompt": "Allersberg is located in the region of",
+    "answer": "Roth",
+    "qid_subject": "Q588957",
+    "qid_answer": "Q10451"
+   },
+   "inner_2": {
+    "subject": "Roth",
+    "prompt": "Roth is located in the region of",
+    "answer": "Middle Franconia",
+    "qid_subject": "Q10451",
+    "qid_answer": "Q10551"
+   },
+   "outer": {
+    "subject": "Allersberg",
+    "prompt": "Allersberg is located in the country of",
+    "answer": "Middle Franconia",
+    "qid_subject": "Q588957",
+    "qid_answer": "Q10551"
+   }
+  },
+  {
+   "seed_case_id": "1217",
+   "entailment": "Pea Ridge National Military Park in Benton County  &  Benton County in Arkansas  =>  Pea Ridge National Military Park in Arkansas",
+   "inner_1": {
+    "subject": "Pea Ridge National Military Park",
+    "prompt": "Pea Ridge National Military Park is located in the region of",
+    "answer": "Benton County",
+    "qid_subject": "Q7157184",
+    "qid_answer": "Q61020"
+   },
+   "inner_2": {
+    "subject": "Benton County",
+    "prompt": "Benton County is located in the region of",
+    "answer": "Arkansas",
+    "qid_subject": "Q61020",
+    "qid_answer": "Q1612"
+   },
+   "outer": {
+    "subject": "Pea Ridge National Military Park",
+    "prompt": "Pea Ridge National Military Park is located in the country of",
+    "answer": "Arkansas",
+    "qid_subject": "Q7157184",
+    "qid_answer": "Q1612"
+   }
+  },
+  {
+   "seed_case_id": "1222",
+   "entailment": "Saharsa district in Kosi division  &  Kosi division in Bihar  =>  Saharsa district in Bihar",
+   "inner_1": {
+    "subject": "Saharsa district",
+    "prompt": "Saharsa district is located in the region of",
+    "answer": "Kosi division",
+    "qid_subject": "Q100120",
+    "qid_answer": "Q579598"
+   },
+   "inner_2": {
+    "subject": "Kosi division",
+    "prompt": "Kosi division is located in the region of",
+    "answer": "Bihar",
+    "qid_subject": "Q579598",
+    "qid_answer": "Q1165"
+   },
+   "outer": {
+    "subject": "Saharsa district",
+    "prompt": "Saharsa district is located in the country of",
+    "answer": "Bihar",
+    "qid_subject": "Q100120",
+    "qid_answer": "Q1165"
+   }
+  },
+  {
+   "seed_case_id": "1241",
+   "entailment": "Hultsfred Municipality in Kalmar County  &  Kalmar County in Sweden  =>  Hultsfred Municipality in Sweden",
+   "inner_1": {
+    "subject": "Hultsfred Municipality",
+    "prompt": "Hultsfred Municipality is located in the region of",
+    "answer": "Kalmar County",
+    "qid_subject": "Q512002",
+    "qid_answer": "Q103707"
+   },
+   "inner_2": {
+    "subject": "Kalmar County",
+    "prompt": "Kalmar County is located in the region of",
+    "answer": "Sweden",
+    "qid_subject": "Q103707",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Hultsfred Municipality",
+    "prompt": "Hultsfred Municipality is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q512002",
+    "qid_answer": "Q34"
+   }
+  },
+  {
+   "seed_case_id": "1258",
+   "entailment": "Hattfjelldal in Nordland  &  Nordland in Norway  =>  Hattfjelldal in Norway",
+   "inner_1": {
+    "subject": "Hattfjelldal",
+    "prompt": "Hattfjelldal is located in the region of",
+    "answer": "Nordland",
+    "qid_subject": "Q488384",
+    "qid_answer": "Q50630"
+   },
+   "inner_2": {
+    "subject": "Nordland",
+    "prompt": "Nordland is located in the region of",
+    "answer": "Norway",
+    "qid_subject": "Q50630",
+    "qid_answer": "Q20"
+   },
+   "outer": {
+    "subject": "Hattfjelldal",
+    "prompt": "Hattfjelldal is located in the country of",
+    "answer": "Norway",
+    "qid_subject": "Q488384",
+    "qid_answer": "Q20"
+   }
+  },
+  {
+   "seed_case_id": "1291",
+   "entailment": "Crab Orchard National Wildlife Refuge in Illinois  &  Illinois in United States  =>  Crab Orchard National Wildlife Refuge in United States",
+   "inner_1": {
+    "subject": "Crab Orchard National Wildlife Refuge",
+    "prompt": "Crab Orchard National Wildlife Refuge is located in the region of",
+    "answer": "Illinois",
+    "qid_subject": "Q5180227",
+    "qid_answer": "Q1204"
+   },
+   "inner_2": {
+    "subject": "Illinois",
+    "prompt": "Illinois is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1204",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Crab Orchard National Wildlife Refuge",
+    "prompt": "Crab Orchard National Wildlife Refuge is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5180227",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "1293",
+   "entailment": "Russian-Armenian University in Yerevan  &  Yerevan in Armenia  =>  Russian-Armenian University in Armenia",
+   "inner_1": {
+    "subject": "Russian-Armenian University",
+    "prompt": "Russian-Armenian University is located in the region of",
+    "answer": "Yerevan",
+    "qid_subject": "Q1476754",
+    "qid_answer": "Q1953"
+   },
+   "inner_2": {
+    "subject": "Yerevan",
+    "prompt": "Yerevan is located in the region of",
+    "answer": "Armenia",
+    "qid_subject": "Q1953",
+    "qid_answer": "Q399"
+   },
+   "outer": {
+    "subject": "Russian-Armenian University",
+    "prompt": "Russian-Armenian University is located in the country of",
+    "answer": "Armenia",
+    "qid_subject": "Q1476754",
+    "qid_answer": "Q399"
+   }
+  },
+  {
+   "seed_case_id": "1338",
+   "entailment": "Liberty Island in Manhattan  &  Manhattan in New York City  =>  Liberty Island in New York City",
+   "inner_1": {
+    "subject": "Liberty Island",
+    "prompt": "Liberty Island is located in the region of",
+    "answer": "Manhattan",
+    "qid_subject": "Q319821",
+    "qid_answer": "Q11299"
+   },
+   "inner_2": {
+    "subject": "Manhattan",
+    "prompt": "Manhattan is located in the region of",
+    "answer": "New York City",
+    "qid_subject": "Q11299",
+    "qid_answer": "Q60"
+   },
+   "outer": {
+    "subject": "Liberty Island",
+    "prompt": "Liberty Island is located in the country of",
+    "answer": "New York City",
+    "qid_subject": "Q319821",
+    "qid_answer": "Q60"
+   }
+  },
+  {
+   "seed_case_id": "1346",
+   "entailment": "Luray Caverns in Virginia  &  Virginia in United States  =>  Luray Caverns in United States",
+   "inner_1": {
+    "subject": "Luray Caverns",
+    "prompt": "Luray Caverns is located in the region of",
+    "answer": "Virginia",
+    "qid_subject": "Q1476610",
+    "qid_answer": "Q1370"
+   },
+   "inner_2": {
+    "subject": "Virginia",
+    "prompt": "Virginia is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q1370",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Luray Caverns",
+    "prompt": "Luray Caverns is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1476610",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "1368",
+   "entailment": "Halls Stream in New Hampshire  &  New Hampshire in United States  =>  Halls Stream in United States",
+   "inner_1": {
+    "subject": "Halls Stream",
+    "prompt": "Halls Stream is located in the region of",
+    "answer": "New Hampshire",
+    "qid_subject": "Q5643157",
+    "qid_answer": "Q759"
+   },
+   "inner_2": {
+    "subject": "New Hampshire",
+    "prompt": "New Hampshire is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q759",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Halls Stream",
+    "prompt": "Halls Stream is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5643157",
+    "qid_answer": "Q30"
+   }
+  },
+  {
+   "seed_case_id": "1374",
+   "entailment": "Hurley River in British Columbia  &  British Columbia in Canada  =>  Hurley River in Canada",
+   "inner_1": {
+    "subject": "Hurley River",
+    "prompt": "Hurley River is located in the region of",
+    "answer": "British Columbia",
+    "qid_subject": "Q269587",
+    "qid_answer": "Q1973"
+   },
+   "inner_2": {
+    "subject": "British Columbia",
+    "prompt": "British Columbia is located in the region of",
+    "answer": "Canada",
+    "qid_subject": "Q1973",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Hurley River",
+    "prompt": "Hurley River is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q269587",
+    "qid_answer": "Q16"
+   }
+  },
+  {
+   "seed_case_id": "1380",
+   "entailment": "Taunton River Watershed in Massachusetts  &  Massachusetts in United States  =>  Taunton River Watershed in United States",
+   "inner_1": {
+    "subject": "Taunton River Watershed",
+    "prompt": "Taunton River Watershed is located in the region of",
+    "answer": "Massachusetts",
+    "qid_subject": "Q14715877",
+    "qid_answer": "Q771"
+   },
+   "inner_2": {
+    "subject": "Massachusetts",
+    "prompt": "Massachusetts is located in the region of",
+    "answer": "United States",
+    "qid_subject": "Q771",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Taunton River Watershed",
+    "prompt": "Taunton River Watershed is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q14715877",
+    "qid_answer": "Q30"
+   }
+  }
+ ]
+}
