@@ -47,7 +47,8 @@ _Triaged twice on 2026-09-11. 35 threads: 29 answered, 8 parked, 1 active._
 
 | ID | Status | Question |
 | --- | --- | --- |
-| T-054 | **ACTIVE** | The CounterFact filter outlived the model it was calibrated against |
+| T-054 | **ACTIVE** | CounterFact has no possession check at all — verified from source [D-002] |
+| T-057 | answered | No filter; ROME Table 4 reports ES=22.2 unedited, appendix D confirms |
 | T-055 | answered | Coordination lift works set-level (+2.39/+1.61), not per-candidate |
 
 Parked, each with a resume-cold note: T-003 (RippleBench swap), T-011 (orphaning

@@ -1025,3 +1025,81 @@ contrast pair was badly chosen for the reason above.
 
 **Confidence: high** for the separation figures (direct measurement, two contrasts).
 **Medium** for generality — two prompts, one model.
+
+---
+
+## [D-002] Finding: CounterFact has NO possession filter — R-006 was wrong, verified from the primary source
+
+_Date: 2026-09-14 · read from the ROME paper text, `lookback-research/docs/rome.txt`_
+
+**This reverses [R-006].** I concluded there that "CounterFact does verify
+possession, with a weak test", from §3.3's sentence about counterfactuals starting
+with low scores. That was a misreading: the sentence states an *aspiration about
+difficulty*, and the construction appendix shows how it was actually implemented —
+without any model.
+
+### Evidence 1 — Appendix D, construction is model-independent
+
+> "Each record in CounterFact is derived from a corresponding entry in PARAREL
+> (Elazar et al., 2021a) containing a knowledge tuple t_c = (s, r, o_c) and
+> hand-curated prompt templates T(r) ... **Solely using the PARAREL entry**, we
+> derive two elements. A requested rewrite is represented as {s, r, o_c, o*, p*},
+> where p* ~ P(s,r) is the sole rewriting prompt, and **o\* is drawn from a
+> weighted sample of all PARAREL tuples with the predicate (r, ·)**."
+
+The counterfactual target is obtained by sampling another object of the same
+relation. Specificity prompts come from a Wikidata SPARQL query. **No model is
+consulted anywhere in construction.** "Solely using the PARAREL entry" is explicit.
+
+So §3.3's "these counterfactuals start with low scores compared to the correct
+facts" is a claim about what the sampling yields, not a filtering step — and the
+Hase et al. (2021) critique it cites is motivation, not method.
+
+### Evidence 2 — their own table says so
+
+Table 4, the **unedited GPT-2 XL** baseline row: **ES = 22.2**, EM = −4.8.
+
+ES is the fraction of cases with P[o*] > P[o_c]. So on the paper's own primary
+model, before any edit, **22.2% of CounterFact records already favour the false
+target**. Had records been filtered so the model prefers the true fact, this would
+be ~0.
+
+Equivalently: GPT-2-XL prefers the true answer in **77.8%** of records — close to
+our 75% two-way figure on gpt2-medium, and consistent with no model-specific
+selection having occurred.
+
+### What this settles
+
+**[T-057] is answered without running anything.** The decisive experiment was to
+check whether GPT-2-XL passes the two-way test near 100%. The paper reports the
+number: it does not. No local run needed.
+
+**[T-054] was wrong in its mechanism.** The story was "a benchmark outliving its
+calibration". There was no calibration. The correct statement is simpler and
+stronger: **CounterFact contains no possession check at all**, so every propagation
+result computed on it is conditional on a premise nobody established — not for
+GPT-J, not for Llama, and not for GPT-2-XL either.
+
+**The framing R-006 made me withdraw is restored, and now verified from source
+rather than asserted.** "Editing benchmarks measure propagation into knowledge they
+never verified was there" is accurate for CounterFact.
+
+### What our measurement adds on top
+
+The paper's own 22.2% understates the shortfall, because ES is the forced binary
+choice. Under constrained rank with a prior control, possession is **56%** on
+GPT-J — a **44% shortfall**, twice what the two-way number suggests, and the gap
+widens on exactly the relations a propagation study would want (P19 place of birth:
+13%).
+
+### My error, recorded
+
+I read §3.3 in isolation and treated an aspiration as a mechanism, then wrote a
+findings entry withdrawing a correct claim. The appendix was three pages away in
+the same paper. **Two lens-2 passes did not catch it because both searched for
+competing work rather than re-reading the primary source.** The lesson is narrow
+and practical: when a claim turns on what a paper *did*, read its methods appendix
+before concluding from its prose.
+
+**Confidence: high.** Two independent pieces of evidence from the paper itself —
+an explicit construction description and a reported baseline number — agreeing.

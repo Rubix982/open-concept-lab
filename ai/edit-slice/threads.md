@@ -693,6 +693,19 @@ measurement is the cost: GPT-J holds 13% of P19 place of birth, 56% overall.
 coverage and multi-edit, and proposes a context-based baseline; it does not measure
 possession and does not raise the transfer problem.
 
+**NARROWED 2026-09-13 [D-002].** The ROME paper does not name a model used to
+score records during construction, and the construction it describes (ParaRel +
+Wikidata SPARQL) is model-independent. "Counterfactuals start with low scores" may
+therefore be *descriptive of the dataset* rather than *a model-relative filter*.
+"Calibrated against their model" was our inference and is withdrawn.
+
+Both readings leave the same hole, which is what the write-up now claims: **no
+possession guarantee holds for the model actually being edited.** The sharper
+transfer story is a hypothesis. One cheap experiment discriminates — if records
+were filtered against GPT-2-XL, that model should pass the two-way test near 100%;
+if it scores like gpt2-medium (75%), no model-specific filter was applied. GPT-2-XL
+is not on NDIF, so it needs a local run [T-057].
+
 This is the project's strongest unclaimed result and the centre of the deliverable.
 It needs: (a) ~~2505.18690 read~~ done; (b) the claim
 stated so it does not read as an accusation — a dataset outliving its calibration
@@ -753,3 +766,28 @@ makes both worse. Resumable cold: the templates and lexical pools exist (dual-fa
 `document_noun` with matched `physical_predicate` / `informational_predicate`
 pools), which is most of the instrument already built.
 **Answer:** —
+
+### T-057 · Was CounterFact filtered against a model at all?
+
+**Status:** answered — from the paper, no run needed
+**Parent:** T-054
+**Opened:** 2026-09-13
+**Question:** [D-002] found the ROME paper never names a model used to score
+records during CounterFact construction, and describes a model-independent
+pipeline (ParaRel + Wikidata SPARQL). So the "low scores" sentence is ambiguous
+between a selection criterion and a description.
+
+**Decisive test:** run the two-way check — P(true) > P(counterfactual) — on
+**GPT-2-XL**, one of the two models the ROME paper evaluates.
+  - near 100%  => records were filtered against it; T-054's transfer story holds
+  - near 75%   => no model-specific filter; there was never a guarantee to transfer
+
+Either outcome is publishable and they are different papers. Cost: one local run
+over the pinned CounterFact — GPT-2-XL is not hosted on NDIF, which conflicts with
+the standing NDIF-only preference. That conflict is the decision to make.
+**Answer:** **No filter, and the run is unnecessary — the paper reports the number.**
+Table 4's unedited GPT-2-XL row gives **ES = 22.2**, i.e. 22% of records already
+favour the false target before any edit. A filtered set would be near 0. Appendix D
+independently confirms it: records are built "solely using the PARAREL entry", with
+o* drawn by weighted sampling over the same predicate and no model consulted.
+See findings [D-002], which corrects [R-006].

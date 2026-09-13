@@ -25,3 +25,39 @@ it can. Results are explicitly NOT the artifact for that meeting.
 - notes/definitions.md
 
 **Closed:** 2026-09-09
+
+---
+
+### D-002 · Write up T-054
+
+**Status:** in-progress
+**Type:** document
+**Priority:** high
+**Created:** 2026-09-13
+**Updated:** 2026-09-13
+
+**Description:**
+Write the claim the project actually established: CounterFact's possession filter
+was calibrated once, in 2022, against its authors' model, and the same fixed
+21,919 records are reused on every model since without the guarantee being
+re-established.
+
+Draft in agents/documentor/drafts/, publishable as a technical note and as a post
+on the Docusaurus site. Must carry, not bury:
+
+- The measurement critique (two-way vs constrained rank vs free generation), with
+  the candidate-set size attached to each number, since levels move with it.
+- That prompt sensitivity and phrasing-over-knowledge belong to the LAMA line
+  [R-006] and are cited, not claimed.
+- That R-007 cleared the nearest competitor but the field was searched, not swept.
+- The outstanding control (see below), stated as outstanding.
+
+**The control this write-up needs and does not have:** we have not measured
+possession on the model CounterFact was calibrated against. Without it a reviewer
+can say the drop is our stricter measure rather than failure to transfer. GPT-2-XL
+is not on NDIF, so this requires a local run — which conflicts with the standing
+NDIF-only preference. Surface as a decision.
+
+**Blockers:** none
+**Artifacts:** agents/documentor/drafts/possession-precondition.md
+**Closed:** —
