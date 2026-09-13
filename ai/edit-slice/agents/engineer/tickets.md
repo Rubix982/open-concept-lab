@@ -58,7 +58,7 @@ CounterFact subjects is not expected to help.
 
 ### E-002 · SPIKE: does Wikidata support grounds where DBpedia did not?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** spike
 **Priority:** high
 **Created:** 2026-09-10
@@ -103,7 +103,7 @@ method (c) as discovery per design.md §0.
 
 ### E-003 · Possession check — does the model hold what we intend to edit?
 
-**Status:** in-progress
+**Status:** closed — superseded by E-005
 **Type:** spike
 **Priority:** high
 **Created:** 2026-09-10

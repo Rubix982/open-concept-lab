@@ -714,7 +714,7 @@ silently.
 **Coordination gives a principled test.** Two candidates are the same type iff they
 coordinate under one predicate without anomaly:
 
-    "Koun died at Athens and at the age of 90"   -> zeugmatic  => different types
+    "X died at Athens and at the age of 90"   -> zeugmatic  => different types
     "Koun died at Athens and at Naples"          -> fine       => same type
 
 So a zeugma detector validates the instrument we are shipping, replacing an

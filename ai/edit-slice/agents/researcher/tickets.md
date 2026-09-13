@@ -76,7 +76,7 @@ If partially, state the one-sentence differentiator.
 
 ### R-005 · Read 2605.28839 properly — does "suppression" survive their analysis?
 
-**Status:** open
+**Status:** deferred — parks with the orphan arc
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-10
@@ -105,9 +105,15 @@ Read the paper and answer:
 5. Their "detection and defense against unwanted edits" framing is adjacent to
    our audit framing — check it is not the same tool.
 
-**Blockers:** none
+**Deferred 2026-09-12.** design.md §2a and the suppression mechanism serve
+[T-011] (orphaning as structural to expansion operators), which is parked because
+it needs edit data. The possession-filter deliverable [T-046] does not depend on
+§2a. Resume when the orphan arc resumes — the five questions in the description
+stand unchanged, and §2a still carries its "rests on the abstract only" caveat so
+nothing downstream treats it as established.
 
-**Artifacts:** agents/shared/findings.md; design.md §2a to be revised or confirmed
+**Blockers:** none — deferred by priority, not blocked.
+**Artifacts:** —
 **Closed:** —
 
 ---

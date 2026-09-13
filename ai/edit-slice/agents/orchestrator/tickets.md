@@ -68,7 +68,7 @@ boundary deferred to T-005.
 
 ### O-003 · Ten-lens design pass on the reframed project (discretion triage)
 
-**Status:** in-progress
+**Status:** closed
 **Type:** coordinate
 **Priority:** high
 **Created:** 2026-09-10
@@ -88,9 +88,17 @@ grounds discovery means no reusable tool, only a hand-labelled one-off.
 
 Lens 2 is a stop condition and requires a real literature search, not recall.
 
-**Blockers:** none — R-002 closed 2026-09-10, WHY gate cleared.
+**Blockers:** none.
+**Closed:** 2026-09-12
+
+**Result:** design.md reached **v0.9** with all ten lenses run and re-passed after
+each major result per Protocol rule 5 — six times, each reversal evidence-driven
+(R-001, E-001, E-002, E-004, E-005, T-052). Lens 2 cleared twice (R-002 for
+editing, R-006/R-007 for factual probing). Lens 9 rewritten: the deliverable is the
+possession filter, not a contested rate [T-046].
 
 **Artifacts:**
-- design.md v0.3 — all ten lenses run; §0 gate still without data
+- design.md v0.9 — ten lenses, deliverable revised
+- agents/shared/decisions.md — E-002 (evidential grounds), O-004 (model raise)
 
 **Closed:** —
