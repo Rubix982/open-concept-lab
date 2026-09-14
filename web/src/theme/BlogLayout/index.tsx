@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import Layout from "@theme/Layout";
+import WritingSwitcher from "@site/src/components/WritingSwitcher";
 import type { Props } from "@theme/BlogLayout";
 
 /**
@@ -22,7 +23,12 @@ export default function BlogLayout(props: Props): ReactNode {
     <Layout {...layoutProps}>
       <div className={clsx("ocl-article", { "ocl-article--toc": Boolean(toc) })}>
         <main className="ocl-article__body">{children}</main>
-        {toc ? <aside className="ocl-article__toc">{toc}</aside> : null}
+        {toc ? (
+          <aside className="ocl-article__toc">
+            <WritingSwitcher />
+            {toc}
+          </aside>
+        ) : null}
       </div>
     </Layout>
   );

@@ -434,6 +434,19 @@ div[class^="codeBlockTitle"] {
   margin: 1.8rem 0;
 }
 
+/* `display: table` gives proper column sizing but removes Docusaurus's
+   default scrolling, so a wide table pushes the whole page sideways on a
+   phone. Below the breakpoint, hand scrolling back to the table itself. */
+@media (max-width: 700px) {
+  .markdown table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+}
+
 /* A table right after a heading belongs to it; don't float it away. */
 .markdown h2 + table,
 .markdown h3 + table {
@@ -1007,7 +1020,7 @@ div[class^="codeBlockTitle"] {
 }
 
 /* ==========================================================================
-   Aside — a margin note that folds inline on narrow screens
+   Aside — a margin note that lives in the article column's gutter
    ========================================================================== */
 
 .ocl-aside {
@@ -1015,28 +1028,28 @@ div[class^="codeBlockTitle"] {
   font-size: 0.81rem;
   line-height: 1.58;
   color: var(--ocl-ink-muted);
+  margin: 1.6rem 0;
+  padding-left: 0.95rem;
+  border-left: 1px solid var(--ocl-rule);
 }
 
 .ocl-aside > :last-child {
   margin-bottom: 0;
 }
 
+/*
+ * Once the article container is at full width its column carries ~250px of
+ * gutter to the right of the prose, which is exactly where a margin note
+ * belongs. It floats inside that gutter with no negative margin, so — like a
+ * wide figure — it cannot reach the contents rail. The earlier version pulled
+ * itself out of the column with a negative margin and landed on top of it.
+ */
 @media (min-width: 1400px) {
-  .ocl-aside {
+  .ocl-article__body .markdown > .ocl-aside {
     float: right;
     clear: right;
     width: 12.5rem;
-    margin: 0.35rem -14.5rem 1rem 0;
-    padding-left: 0.85rem;
-    border-left: 1px solid var(--ocl-rule);
-  }
-}
-
-@media (max-width: 1399px) {
-  .ocl-aside {
-    margin: 1.6rem 0;
-    padding-left: 0.95rem;
-    border-left: 1px solid var(--ocl-rule);
+    margin: 0.35rem 0 1.25rem 1.75rem;
   }
 }
 
@@ -1111,7 +1124,18 @@ nav.menu {
 .table-of-contents {
   font-size: 0.78rem;
   border-left: 1px solid var(--ocl-rule);
-  padding-left: 1rem;
+  /* Matches the switcher's marker indent so both lists share a left edge. */
+  padding-left: 0.85rem;
+}
+
+/* Infima indents every item; the top level should sit flush so the contents
+   share a left edge with the switcher above them. Nested levels keep theirs. */
+.ocl-article__toc .table-of-contents {
+  padding-top: 0;
+}
+
+.ocl-article__toc .table-of-contents > li {
+  margin-left: 0;
 }
 
 .table-of-contents__link {
@@ -1148,6 +1172,10 @@ nav.menu {
  * layout.
  */
 .ocl-article {
+  /* The page wrapper is a flex column, and an auto cross-axis margin turns
+     off stretch — without this the container shrink-wraps its content and
+     max-width never applies. */
+  width: 100%;
   max-width: 76rem;
   margin: 0 auto;
   padding: 2.25rem 2.25rem 3.5rem;
@@ -1166,6 +1194,27 @@ nav.menu {
   min-width: 0;
 }
 
+/*
+ * Inside an article, the prose column and the figure column are different
+ * widths. Rather than capping the whole body, each block caps itself at the
+ * reading measure and the wide ones opt out — so a figure breaks the measure
+ * without breaking the left margin, and still cannot leave the column.
+ */
+.ocl-article__body .markdown {
+  max-width: none;
+}
+
+.ocl-article__body .markdown > * {
+  max-width: var(--ocl-measure);
+}
+
+.ocl-article__body .markdown > .ocl-figure--wide,
+.ocl-article__body .markdown > .ocl-embed,
+.ocl-article__body .markdown > .ocl-table,
+.ocl-article__body .markdown > .ocl-table__scroll {
+  max-width: var(--ocl-measure-wide);
+}
+
 .ocl-article__toc {
   position: sticky;
   top: calc(var(--ifm-navbar-height) + 1.75rem);
@@ -1174,10 +1223,31 @@ nav.menu {
   overscroll-behavior: contain;
 }
 
-/* Docusaurus hides its own desktop TOC below 997px; the column goes with it. */
+/*
+ * Docusaurus drops its own desktop contents below 997px, so at that width the
+ * rail holds only the writing switcher. Hiding the whole column would take
+ * that with it and leave a phone with no way between pieces, so instead the
+ * rail unsticks and stacks under the article.
+ */
 @media (max-width: 996px) {
   .ocl-article__toc {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ocl-rule);
+  }
+
+  .ocl-article__toc:empty {
     display: none;
+  }
+
+  /* Stacked, it has the width to sit flush with the prose. */
+  .ocl-switcher {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
   }
 }
 
@@ -1283,6 +1353,7 @@ a[class*="tagWithCount"]:hover {
    ========================================================================== */
 
 .ocl-home {
+  width: 100%;
   max-width: 68rem;
   margin: 0 auto;
   padding: 3.5rem 2.25rem 4.5rem;
@@ -1441,6 +1512,7 @@ a[class*="tagWithCount"]:hover {
    ========================================================================== */
 
 .ocl-page {
+  width: 100%;
   max-width: 74rem;
   margin: 0 auto;
   padding: 2.75rem 2.25rem 4.5rem;
@@ -1754,7 +1826,9 @@ a[class*="tagWithCount"]:hover {
 
 .ocl-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  /* min() so a 24rem track cannot exceed a narrower viewport and push the
+     page sideways. */
+  grid-template-columns: repeat(auto-fill, minmax(min(24rem, 100%), 1fr));
   gap: 2rem 1.75rem;
 }
 
@@ -1841,4 +1915,75 @@ a[class*="tagWithCount"] span {
 a[class*="tagWithCount"] span::before,
 a[class*="tagWithCount"] span::after {
   display: none !important;
+}
+
+/* ==========================================================================
+   Writing switcher — move between pieces without leaving this one
+   ========================================================================== */
+
+.ocl-switcher {
+  font-family: var(--ocl-apparatus);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-switcher__title {
+  margin: 0 0 0.7rem;
+  padding-left: 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ocl-ink-faint);
+  letter-spacing: 0.015em;
+}
+
+.ocl-switcher__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-switcher__list li {
+  margin-bottom: 0.55rem;
+  /* The rail scrolls, so the current-item marker is indented inside the
+     padding rather than hung off the left edge where it would be clipped. */
+  padding-left: 0.85rem;
+}
+
+.ocl-switcher__link {
+  display: block;
+  position: relative;
+  font-size: 0.79rem;
+  line-height: 1.4;
+  color: var(--ocl-ink-muted);
+  text-decoration: none;
+}
+
+.ocl-switcher__link:hover {
+  color: var(--ocl-link);
+  text-decoration: none;
+}
+
+.ocl-switcher__date {
+  display: block;
+  font-size: 0.71rem;
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.05rem;
+}
+
+/* The piece you are on, marked the same way the navbar marks its section. */
+.ocl-switcher__link--current {
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+.ocl-switcher__link--current::before {
+  content: "";
+  position: absolute;
+  left: -0.85rem;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 2px;
+  background: var(--ocl-oxide);
 }
