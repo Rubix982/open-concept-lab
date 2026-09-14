@@ -478,3 +478,44 @@ machine-readable set. NOT the experiment — that is E-009.
 **Blockers:** none
 **Artifacts:** src/chains.py; probes/containment_chains.md
 **Closed:** —
+
+---
+
+### E-009 · Possession-gate the entailment chains
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 3h
+
+**Description:**
+TODO item 4, and the last gate before the experiment. A chain can only test
+contraction if the model holds **all three** of its facts:
+
+    inner-1  X born-in Y     — if unheld, nothing to retract
+    inner-2  Y in country Z  — if unheld, the entailment is not the model's
+    outer    X born-in Z     — if unheld, the edit is meaningless
+
+Any chain failing any of the three is unusable, and dropping them silently would
+repeat exactly the denominator bug E-007 shipped and had to fix.
+
+**Method:** reuse `src/possession.py` unchanged — constrained rank against
+type-matched candidates plus the subject-free prior arm. Candidate pools come from
+the chain set itself per fact position (birth cities for inner-1 and the outer's
+subject; countries for inner-2 and the outer's answer), which is a legitimate
+reference vocabulary here because all 136 chains share a relation.
+
+**Expect heavy attrition.** GPT-J holds 13% of P19 [E-005], so a P19-anchored
+family will lose most chains on inner-1 alone. **If it loses too much that is
+itself the finding**, and the edit target moves to Llama-3.1-8B per [O-004] — which
+[E-006] already established is editable via NDIF.
+
+Report per-fact-position possession, not just the joint number, so it is visible
+*which* leg fails and whether the loss is inner-1 (person obscurity) or inner-2
+(city-country, expected to be easy).
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/gate_chains.py; probes/chains_gated.json
+**Closed:** —

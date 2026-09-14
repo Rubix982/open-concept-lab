@@ -5,8 +5,9 @@ authors: [saif]
 tags: [lab-notes, knowledge-editing, edit-slice, method]
 date: 2026-09-15
 standfirst: >
-  A record rather than an argument. Eight claims were wrong, four routes were
+  A record rather than an argument. Eight claims were wrong, six routes were
   abandoned, one tool shipped — and the errors were never in the measurements.
+  The stars are real; the constellations were ours.
 ---
 
 This is the record, not the argument. The argument is
@@ -711,6 +712,119 @@ or artifact <em>did</em>, read its methods section before concluding from its
 prose.</strong> Aspiration and mechanism live in different places and only one of
 them is binding.
 </Aside>
+
+## Six analogies, and where each one breaks
+
+These are for explaining, not for claiming. An analogy that isn't bounded gets
+used past its evidence, so each comes with the place it stops working.
+
+### A drug trial that never checks the patients were sick
+
+You give a cholesterol drug to a hundred people and measure whether cholesterol
+drops. It doesn't drop in forty of them. But forty of them had normal cholesterol
+to begin with, and nobody checked. *"The drug failed in 40%"* is now a statement
+about recruitment, not about the drug.
+
+The edit is the drug, the fact is the condition, and **CounterFact never screened
+for the condition** — records are built from a knowledge graph with no model
+consulted at any point.
+
+<Aside>
+Where it breaks: a drug trial has a control arm. Editing evaluation does not, and
+cannot easily get one — there is no "unedited but otherwise identical" model to
+compare against except the model itself, which is what the prior-arm control in the
+possession measure is standing in for.
+</Aside>
+
+### "Does this student know the material?"
+
+| exam | score |
+| --- | ---: |
+| Multiple choice, one obviously-wrong distractor | **75%** |
+| Multiple choice, fifty plausible options | **61%** |
+| Open-ended essay, ambiguously worded question | **12%** |
+
+Same student, same knowledge, three defensible exams. None is cheating. The third
+is not ignorance — it is the student answering a different question than the
+examiner meant, which is exactly what *"Karolos Koun died at"* → `" the age of 90"`
+is.
+
+So any single possession number is **a choice about the exam, reported as a fact
+about the student**.
+
+### Circumstantial evidence, not a proof
+
+*"He was buried in Baltimore"* is **evidence** that he died there. It is not proof;
+bodies get shipped. So when you edit "died in Barcelona", the burial record does not
+become *false* — it becomes *odd*. Nothing is contradicted. The story simply stops
+hanging together.
+
+Against that: *"born in Paris"* **and** *"Paris is in France"* entails *"born in
+France"*. That is a proof. Change the conclusion and something has to give.
+
+Almost everything surrounding a fact is circumstantial, which is why the chains had
+to be hand-built — to manufacture the rare case where the evidence really is proof.
+
+### The graph is a filing cabinet, not a citation trail
+
+Someone's birth certificate, passport and employment record all sit in the same
+folder. The folder records that they concern the same person. It does **not** record
+that the passport depended on the birth certificate. That dependency lives in the
+clerk's head, not in the filing system.
+
+We spent four days saying "the graph gives us grounds". It gives us **the folder**.
+The dependencies were always ours.
+
+<Aside>
+Where it breaks: real archives sometimes <em>do</em> record provenance — that is
+what a chain of custody is. Wikidata mostly does not, and the properties that look
+like provenance (<code>described by source</code>, <code>different from</code>) are
+bookkeeping rather than justification.
+</Aside>
+
+### A redirect, not a deletion
+
+The file is still on the server; a forwarding rule was added in front of it. Remove
+the rule and the original serves again.
+
+That one is close to literal. A compact mask over ROME's edited weights restores
+the pre-edit answer in **over 70%** of cases — if anything had been overwritten
+there would be nothing left to restore.
+
+So after an edit the model holds the new answer, the old answer, **and** the
+grounds for the old answer, simultaneously.
+
+### The 92% that was really 52%
+
+Armour the bombers where the *returning* planes were hit, and you armour exactly
+the wrong places — the planes hit elsewhere never came back to be measured.
+
+The possession filter's first run reported **92%** and had scored 12 of 40 edits.
+The 28 that dropped out were the hard ones. The same survivorship error, inside the
+tool built to detect it.
+
+### And the one that covers all of them: constellations
+
+The stars are really there. Position, brightness, distance — measurable, checkable,
+and everyone who looks sees the same ones.
+
+**Orion is not there.** The lines are drawn by us, and different cultures drew
+different figures from identical stars.
+
+That is the finding. A model's facts are real and measurable — 56%, 74%, 79%, 85%,
+reproducible across runs. But every relation we tried to measure *between* them —
+grounds, dependency, entailment, justification — turned out to be a line we were
+drawing rather than a line we were finding. We kept pointing the telescope harder
+at the gaps between the stars.
+
+The useful part is that this does not make constellations worthless. Sailors
+navigated by Orion for millennia. It means only that you have to say *"here is the
+figure I am using, and here is why"* rather than *"here is the figure that is up
+there."*
+
+Which is the whole argument for human discretion. If the lines were really in the
+sky, a machine could trace them. Because we draw them, **someone has to choose** —
+and that someone should be a person who can be asked to justify the choice.
 
 ## Where the evidence points
 

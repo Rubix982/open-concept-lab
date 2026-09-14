@@ -1,4 +1,23 @@
-# TODO — resume 2026-09-15
+# TODO — resume next session
+
+## 0 · Batch `possession.run()` across items — do this before re-running the gate
+
+E-009 stalled on throughput, not correctness. `src/possession.py::run()` makes
+**two remote calls per item**, so 408 chain facts is 816 round trips — one to two
+hours. `possession_lift.py` already solved this: pack several items, both arms,
+into a single trace via `remote.score_pairs`, which measured **8.3x faster**.
+
+The shipped filter did not inherit that. It is the same cost-model mistake as
+before — round trips are the budget, not FLOPs — and it is now inside the tool
+other people are meant to run.
+
+- [ ] Rework `run()` to batch N items per scorer call (N=4 worked at 50 candidates)
+- [ ] Keep per-item caching; the cache key is already fingerprinted correctly
+- [ ] Re-run `gate_chains.py`; it resumes from cache
+
+---
+
+# Earlier TODO — resume 2026-09-15
 
 _State at handoff: tree clean, everything pushed. One arc delivered (possession
 filter + published post), one arc newly un-parked (T-041, contraction existence)._
