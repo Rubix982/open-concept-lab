@@ -61,8 +61,9 @@ const config: Config = {
           blogTitle: "Writing",
           blogDescription:
             "Dated notes and essays from an ongoing research practice.",
-          blogSidebarTitle: "All writing",
-          blogSidebarCount: "ALL",
+          // No "recent posts" rail: it duplicated /writing and cost the
+          // contents column the width it needed.
+          blogSidebarCount: 0,
           showReadingTime: true,
           postsPerPage: 10,
           feedOptions: { type: null },

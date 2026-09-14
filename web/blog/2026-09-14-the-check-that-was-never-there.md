@@ -10,8 +10,8 @@ standfirst: >
   mistake. CounterFact has no possession check — and a model's own numbers say so.
 ---
 
-Four days ago I wrote about a claim of mine getting smaller. This is the sequel,
-and it goes the other way.
+This is a correction to something I published four days ago. The short version:
+I withdrew a claim I should have kept.
 
 <!-- truncate -->
 

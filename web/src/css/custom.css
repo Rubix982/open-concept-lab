@@ -484,9 +484,12 @@ div[class^="codeBlockTitle"] {
   counter-increment: ocl-figure;
 }
 
+/*
+ * "Wide" means: break the reading measure, stay inside the column. Sizing
+ * this from the viewport is what put figures on top of the contents rail.
+ */
 .ocl-figure--wide {
-  /* Break the measure symmetrically without breaking the left margin. */
-  width: min(var(--ocl-measure-wide), calc(100vw - 3rem));
+  width: min(100%, var(--ocl-measure-wide));
 }
 
 .ocl-figure__frame {
@@ -494,6 +497,10 @@ div[class^="codeBlockTitle"] {
   background: var(--ocl-paper-raised);
   border: 1px solid var(--ocl-rule);
   border-radius: 2px;
+  /* Past the floor below, the figure scrolls rather than shrinking its
+     labels into illegibility. */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .ocl-figure--plain .ocl-figure__frame {
@@ -508,6 +515,18 @@ div[class^="codeBlockTitle"] {
   width: 100%;
   height: auto;
   border-radius: 0;
+}
+
+/* The readability floor. Hand-drawn SVGs carry real type, so scaling them
+   below this makes the axis labels unreadable. */
+.ocl-figure__frame > svg {
+  min-width: var(--ocl-figure-floor, 32rem);
+}
+
+@media (max-width: 640px) {
+  .ocl-figure__frame > svg {
+    min-width: var(--ocl-figure-floor, 26rem);
+  }
 }
 
 .ocl-figure__caption {
@@ -1117,58 +1136,57 @@ nav.menu {
 }
 
 /* ==========================================================================
-   Page shells
+   Page shells — the article grid
    ========================================================================== */
 
-.theme-blog-post-page .container,
-.theme-blog-list-page .container,
-.theme-blog-tags-post-list-page .container,
-.theme-blog-archive-page .container {
-  max-width: 68rem;
+/*
+ * One column for the article, one for the contents. The article column is
+ * wider than the reading measure on purpose: prose stays at ~66 characters,
+ * and the slack is the gutter a wide figure breaks into. Because the figure
+ * is bounded by its own column, it cannot reach the contents rail — the old
+ * bug was sizing figures from the viewport, which knows nothing about this
+ * layout.
+ */
+.ocl-article {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2.25rem 2.25rem 3.5rem;
 }
 
-.theme-blog-post-page main,
-.theme-blog-list-page main {
-  padding-top: 1.5rem;
+@media (min-width: 997px) {
+  .ocl-article--toc {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: 0 3.5rem;
+    align-items: start;
+  }
 }
 
-/* The blog's "all writing" rail. */
-nav[aria-label="Blog recent posts navigation"] {
-  font-size: 0.8rem;
-  padding-top: 0.4rem;
+.ocl-article__body {
+  min-width: 0;
 }
 
-nav[aria-label="Blog recent posts navigation"] div[class*="sidebarItemTitle"] {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--ocl-ink-faint);
-  border-bottom: 1px solid var(--ocl-rule);
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem !important;
+.ocl-article__toc {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height) + 1.75rem);
+  max-height: calc(100vh - var(--ifm-navbar-height) - 3.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-nav[aria-label="Blog recent posts navigation"] h3[class*="yearGroupHeading"] {
-  font-family: var(--ocl-apparatus);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--ocl-ink-faint);
-  font-variant-numeric: tabular-nums;
-  margin: 1rem 0 0.4rem;
+/* Docusaurus hides its own desktop TOC below 997px; the column goes with it. */
+@media (max-width: 996px) {
+  .ocl-article__toc {
+    display: none;
+  }
 }
 
-nav[aria-label="Blog recent posts navigation"] li[class*="sidebarItem"] {
-  margin-bottom: 0.5rem;
-  line-height: 1.4;
-}
-
-nav[aria-label="Blog recent posts navigation"] a[class*="sidebarItemLink"] {
-  color: var(--ocl-ink-muted);
-  line-height: 1.4;
-}
-
-nav[aria-label="Blog recent posts navigation"] a[class*="sidebarItemLinkActive"] {
-  color: var(--ocl-ink);
-  font-weight: 500;
+/* The writing index and the tag pages use the same shell without a contents
+   column, so they get the measure back. */
+.theme-blog-list-page .ocl-article__body,
+.theme-blog-tags-post-list-page .ocl-article__body,
+.theme-blog-archive-page .ocl-article__body {
+  max-width: var(--ocl-measure-wide);
 }
 
 /* Docs (notebook) article column */
@@ -1540,7 +1558,7 @@ a[class*="tagWithCount"]:hover {
 /* A data table dropped into prose needs more than the reading measure, or
    every cell wraps to four lines. Breaks right, keeping the left margin. */
 .markdown .ocl-table {
-  width: min(var(--ocl-measure-wide), calc(100vw - 4rem));
+  width: min(100%, var(--ocl-measure-wide));
 }
 
 .ocl-table thead th {

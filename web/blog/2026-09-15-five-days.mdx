@@ -114,6 +114,99 @@ given up by a Thursday.
 Seven withdrawn or narrowed, one standing — and the standing one was a by-product
 of infrastructure built for something else.
 
+## One claim's full life
+
+Claim 1 is the best illustration of the whole pattern, because it went through
+every state a claim can occupy. Following it end to end is more useful than the
+ledger above.
+
+**Day 1 — confident.** *Backward probing is unexplored. Everything in the
+literature probes forward: edit a fact, check its consequences. Nobody probes the
+grounds that made the original fact hold.*
+
+**Day 2 — suspicious.** The claim was too comfortable, which is usually a bad
+sign. The obvious place for it to break was RippleEdits <Cite id="cohen2024ripple" />,
+whose *Logical Generalization* criterion covers symmetric and inverse relations.
+Symmetric relations sound backward. If that is already a grounds probe, the claim
+isn't narrow — it's taken.
+
+Reading the definitions rather than a summary turned up two things.
+
+A bookkeeping one first: a note in another repo described that paper as EMNLP
+2023. It is TACL 2024. Secondhand notes decay silently, and I had been treating
+mine as though they could not.
+
+Then the definition itself. Logical Generalization says relations satisfy logical
+constraints — Sibling is symmetric, so if `(e, Sibling, o)` holds then
+`(o, Sibling, e)` does too — and checks whether those survive the edit. So it
+*does* probe something that looks backward: edit *(Eiffel, located-in, Rome)* and
+it asks what Rome contains.
+
+But that is the **same triple with its arguments swapped** — the edit restated, not
+the reasons for it. The transitive case is sharper still: to get from "Eiffel is in
+Rome" to "Eiffel is in Italy" you must *use* the fact that Rome is in Italy, and
+the benchmark only ever checks the conclusion. Whether the premise survived is
+never asked.
+
+That distinction became load-bearing enough to write into the project's binding
+definitions:
+
+<Figure plain caption="The distinction the narrowing produced. Everything downstream depends on it.">
+
+| | what it means | status |
+| --- | --- | --- |
+| **Argument order** | swap the arguments of the edited fact | covered by RippleEdits since 2024 |
+| **Justification order** | the *distinct* facts whose truth was a premise for the edited fact | not covered by anything we can find |
+
+</Figure>
+
+"The Eiffel Tower was built for the 1889 Paris Exposition" is not the location fact
+inverted. It is a different fact about a different thing, and it is the one that
+goes stale in silence.
+
+**Day 2, continued — narrowed.** Not *backward probing is unexplored*, but:
+*existing ripple evaluation probes the logical closure of the edited triple;
+inverse and symmetric probes exist and are backward in argument order; nothing
+probes backward in justification order.* Less exciting, more defensible, and it
+cost an afternoon. Better to find the counterexample to your own claim than have a
+reviewer find it in a room, in front of people.
+
+**Day 3 — withdrawn entirely.** A second literature pass found CounterFact
+apparently checking possession already, so the broader framing was given up and a
+weaker one written in its place.
+
+**Day 5 — restored, and verified.** Reading the ROME paper's construction appendix
+<Cite id="meng2022rome" /> rather than its prose showed the withdrawal was the
+error. Records are built *"solely using the PARAREL entry"*, with no model
+consulted at any point.
+
+<Claim
+  label="Claim 1, after four revisions"
+  superseded={<>Backward probing is unexplored — nobody probes the grounds that made a fact hold.</>}
+  record={{
+    "Narrowed by": "Reading RippleEdits' definitions directly (day 2)",
+    "Withdrawn": "Day 3, on a literature pass that misread the benchmark",
+    "Restored": "Day 5, from the primary source's construction appendix",
+    "Status": "Holds, verified",
+  }}
+>
+  Existing evaluation probes the logical closure of the edited triple. Inverse and
+  symmetric probes exist and are backward in <strong>argument</strong> order.
+  Nothing probes backward in <strong>justification</strong> order — and CounterFact
+  performs no possession check at all.
+</Claim>
+
+Three things that generalise, none of them profound, all of them relearned the
+hard way:
+
+1. **Read the primary source before designing around a summary.** Every error in
+   this sequence — the wrong venue, the almost-scooped claim, the false withdrawal
+   — came from trusting a note or a search result over the paper.
+2. **Go looking for the strongest counterexample to your own idea, early.** If it
+   holds you have lost a week. If it doesn't you have gained a defensible sentence.
+3. **A claim getting smaller is progress** — and a claim getting smaller *wrongly*
+   is recoverable, provided the reason for each move was written down.
+
 ## What we actually measured
 
 ### Possession does not saturate
