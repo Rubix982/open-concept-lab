@@ -8,11 +8,11 @@ ingestion creates a new dated directory and never overwrites this one.
 | --- | --- |
 | **Ingested** | 2026-09-14 |
 | **Endpoint** | `https://www.wikidata.org/w/api.php` |
-| **Subjects looked up** | 109 (108 resolved to a QID) |
-| **Entities with claims** | 187 |
-| **Statements** | 22362 |
-| **Labels** | 217 |
-| **SHA-256 (decompressed)** | `28cc866c1fc8cd105db5621e9993e303ad999321ff48b40be57690e0d2fb5a18` |
+| **Subjects looked up** | 417 (416 resolved to a QID) |
+| **Entities with claims** | 520 |
+| **Statements** | 91798 |
+| **Labels** | 459 |
+| **SHA-256 (decompressed)** | `552dbc94d3dd2c888da81e9dacc6b5aed4cb4c0efac27ccd7c213326d2d3a050` |
 
 Checksum is of the decompressed payload — gzip headers embed mtime and are not
 byte-stable. Verify:

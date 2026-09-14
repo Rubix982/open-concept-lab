@@ -1,0 +1,688 @@
+---
+slug: five-days
+title: "Five days of edit-slice: every claim, and what happened to it"
+authors: [saif]
+tags: [lab-notes, knowledge-editing, edit-slice, method]
+date: 2026-09-15
+standfirst: >
+  A record rather than an argument. Eight claims were wrong, four routes were
+  abandoned, one tool shipped — and the errors were never in the measurements.
+---
+
+This is the record, not the argument. The argument is
+[the previous post](/writing/the-check-that-was-never-there); this is everything
+around it, including the parts that failed.
+
+It is written to be as useful where a claim was wrong as where it held, because
+most of them were wrong.
+
+<!-- truncate -->
+
+## Where it started, where it is
+
+The project charter, written on day one:
+
+> ~50 CounterFact edits, GPT2-medium, ROME. Two hand-built probe sets per edit:
+> consequences (forward) and grounds (backward). Measure contradiction rate in
+> each. Deliverable is a two-panel figure and a number.
+
+Five days later: **zero edits have been applied.** No two-panel figure, no
+contradiction rate. The project is named `edit-slice` and has not yet edited
+anything.
+
+What exists instead is a delivered tool, a published claim, and four models
+measured — which came out of building infrastructure for the thing that didn't
+happen. Four of the charter's premises turned out to be false, and each was
+falsified by measurement rather than argument.
+
+<Claim
+  label="The charter's premise"
+  superseded={<>Measure the <strong>contradiction rate</strong> between an edit and its grounds.</>}
+  record={{
+    "Why it failed": "Measured: grounds are evidential, not deductive. Every case had a satisfying world — bodies are repatriated, families emigrate. There is no contradiction to count.",
+    "Replaced by": "Joint implausibility, graded, reported with the facts carrying it.",
+    "Evidence": "E-002, five hand-read cases",
+  }}
+>
+  An edit makes its own grounds jointly <strong>improbable</strong>, not
+  contradictory — and that is <em>why</em> the choice of what to retract belongs to
+  a person rather than a method.
+</Claim>
+
+## The claims ledger
+
+Eight claims were tried and revised. Each row is a thing believed on a Monday and
+given up by a Thursday.
+
+<Figure
+  wide
+  caption="Every claim and its fate. Filled marks are claims that held; open marks were withdrawn or narrowed. The vertical axis is only ordering, not magnitude."
+>
+
+<svg viewBox="0 0 940 360" role="img" aria-label="Timeline of eight claims: seven withdrawn or narrowed, one holding." style={{width:"100%",height:"auto"}}>
+  <title>Claim fates over five days</title>
+  <defs>
+    <style>{`
+      .cl-ax { stroke: var(--ocl-rule); stroke-width: 1; }
+      .cl-lbl { font: 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .cl-sub { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .cl-held { fill: #3d72a8; }
+      .cl-gone { fill: var(--ocl-paper); stroke: #a8503f; stroke-width: 2; }
+      [data-theme='dark'] .cl-held { fill: #5596d4; }
+      [data-theme='dark'] .cl-gone { stroke: #c87c62; }
+    `}</style>
+  </defs>
+
+  <line className="cl-ax" x1="360" y1="318" x2="920" y2="318" />
+  {[["Sep 9",400],["Sep 10",510],["Sep 11",620],["Sep 13",760],["Sep 14",880]].map(([d,x]) => (
+    <g key={d}>
+      <line className="cl-ax" x1={x} y1="318" x2={x} y2="323" />
+      <text className="cl-sub" x={x} y="340" textAnchor="middle">{d}</text>
+    </g>
+  ))}
+
+  {[
+    ["Backward probing is unexplored", "narrowed to justification-order", 34, 400, false],
+    ["Mined rules give us grounds", "66% were alias tautologies", 70, 510, false],
+    ["AGM kernels apply here", "support is evidential, not deductive", 106, 510, false],
+    ["Grounds beat heads on possession", "grain confound in the surviving set", 142, 620, false],
+    ["Benchmarks never verify possession", "withdrawn — then restored, verified", 178, 620, false],
+    ["The filter outlived its calibration", "there was no calibration", 214, 760, false],
+    ["Containment gives a contradiction", "P131 is mutable — our own table said so", 250, 880, false],
+    ["Possession is 56–85% across scale", "holds", 286, 620, true],
+  ].map(([label, note, y, x, held]) => (
+    <g key={label}>
+      <text className="cl-lbl" x="16" y={y}>{label}</text>
+      <text className="cl-sub" x="16" y={y + 15}>{note}</text>
+      <line className="cl-ax" x1="352" y1={y - 4} x2={x - 9} y2={y - 4} strokeDasharray="2 3" />
+      <circle className={held ? "cl-held" : "cl-gone"} cx={x} cy={y - 4} r="6">
+        <title>{label} — {note}</title>
+      </circle>
+    </g>
+  ))}
+
+  <g>
+    <circle className="cl-held" cx="700" cy="24" r="5" />
+    <text className="cl-sub" x="712" y="28">holds</text>
+    <circle className="cl-gone" cx="778" cy="24" r="5" />
+    <text className="cl-sub" x="790" y="28">withdrawn or narrowed</text>
+  </g>
+</svg>
+
+</Figure>
+
+Seven withdrawn or narrowed, one standing — and the standing one was a by-product
+of infrastructure built for something else.
+
+## What we actually measured
+
+### Possession does not saturate
+
+The one result that held. Possession means the true answer ranks **first** among
+50 type-matched candidates *and* ranks higher with the real subject present than
+with it replaced by a placeholder — so a model scoring off the template's base rate
+earns nothing.
+
+<Figure
+  caption="Possession against model scale, 165 rigid-relation items per model, 50 candidates, both arms. The dashed line is what the template alone achieves — the floor any real result must clear."
+>
+
+<svg viewBox="0 0 700 360" role="img" aria-label="Possession rises from 56% at 6B to 85% at 405B, not saturating. Template-alone baseline stays near 5%." style={{width:"100%",height:"auto"}}>
+  <title>Possession vs scale</title>
+  <defs>
+    <style>{`
+      .ps-grid { stroke: var(--ocl-rule); stroke-width: 1; }
+      .ps-axis { stroke: var(--ocl-rule-strong); stroke-width: 1; }
+      .ps-line { fill: none; stroke: #3d72a8; stroke-width: 2; }
+      .ps-dot  { fill: #3d72a8; }
+      .ps-base { fill: none; stroke: var(--ocl-ink-faint); stroke-width: 2; stroke-dasharray: 4 4; }
+      .ps-t  { font: 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .ps-s  { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .ps-v  { font: 600 13px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      [data-theme='dark'] .ps-line { stroke: #5596d4; }
+      [data-theme='dark'] .ps-dot  { fill: #5596d4; }
+    `}</style>
+  </defs>
+
+  {[0,25,50,75,100].map((v) => (
+    <g key={v}>
+      <line className="ps-grid" x1="70" y1={300 - v*2.4} x2="660" y2={300 - v*2.4} />
+      <text className="ps-s" x="60" y={304 - v*2.4} textAnchor="end">{v}%</text>
+    </g>
+  ))}
+  <line className="ps-axis" x1="70" y1="300" x2="660" y2="300" />
+
+  <polyline className="ps-line" points="130,165.6 250,122.4 420,110.4 600,96" />
+  <polyline className="ps-base" points="130,288 250,290.4 420,290.4 600,288" />
+
+  {[["6B","GPT-J",56,130],["8B","Llama-3.1",74,250],["70B","Llama-3.1",79,420],["405B","Llama-3.1",85,600]].map(([p,fam,v,x]) => (
+    <g key={p}>
+      <circle className="ps-dot" cx={x} cy={300 - v*2.4} r="5">
+        <title>{fam} {p}: {v}% possessed</title>
+      </circle>
+      <text className="ps-v" x={x} y={300 - v*2.4 - 14} textAnchor="middle">{v}%</text>
+      <text className="ps-t" x={x} y="322" textAnchor="middle">{p}</text>
+      <text className="ps-s" x={x} y="338" textAnchor="middle">{fam}</text>
+    </g>
+  ))}
+  <text className="ps-s" x="600" y="278" textAnchor="middle">template alone ≈5%</text>
+</svg>
+
+</Figure>
+
+Monotonic, decelerating, **still climbing at 405B**. Fifteen percent of a *curated*
+factual benchmark is not held by the largest model reachable.
+
+Scale buys the hard relations and leaves the easy ones flat. Native language sits
+at 80% on a 6B model and 93% above it. The movement is all in the strugglers —
+original broadcaster **13% → 87%**, place of birth **13% → 53%**.
+
+### "Does the model know it" has three different answers
+
+<Figure
+  caption="Three defensible measures of the same 165 items on the same model. They are not in error; they measure different properties, and any single possession number is a choice reported as a fact."
+>
+
+<svg viewBox="0 0 700 260" role="img" aria-label="Two-way test 75 percent, constrained rank 61 percent, free generation 12 percent." style={{width:"100%",height:"auto"}}>
+  <title>Three measures disagreeing</title>
+  <defs>
+    <style>{`
+      .m-bar   { fill: #3d72a8; }
+      .m-bar-w { fill: #a8503f; }
+      .m-t { font: 13px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .m-s { font: 11px/1.4 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .m-v { font: 600 15px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      [data-theme='dark'] .m-bar { fill: #5596d4; }
+      [data-theme='dark'] .m-bar-w { fill: #c87c62; }
+    `}</style>
+  </defs>
+
+  {[
+    ["P(true) > P(counterfactual)", "the field's test — a forced binary choice", 75, 40, false],
+    ["Rank 1 of 50, with prior control", "ours", 61, 110, false],
+    ["Free generation, unconstrained", "depressed by ambiguous templates, not ignorance", 12, 180, true],
+  ].map(([label, note, v, y, warn]) => (
+    <g key={label}>
+      <text className="m-t" x="20" y={y - 6}>{label}</text>
+      <rect className={warn ? "m-bar-w" : "m-bar"} x="20" y={y} width={v * 5.6} height="22" rx="4">
+        <title>{label}: {v}%</title>
+      </rect>
+      <text className="m-v" x={v * 5.6 + 32} y={y + 17}>{v}%</text>
+      <text className="m-s" x="20" y={y + 38}>{note}</text>
+    </g>
+  ))}
+  <text className="m-s" x="20" y="240">Same items · same model (gpt2-medium) · 10 candidates for the first two</text>
+</svg>
+
+</Figure>
+
+The 12% is the one that matters for method. It is not ignorance: CounterFact's
+templates are ambiguous between temporal and locative readings — *"Karolos Koun
+died at"* invites `" the age of 90"` — so a model that knows the answer answers a
+different question. Under constraint the same model ranks Koun/Athens **1st of 10**.
+
+## Routes taken and abandoned
+
+Six routes were opened and closed. Each is recorded with what killed it, because a
+route that dies for a stated reason is reusable knowledge and one that just goes
+quiet is not.
+
+### 1 · Mined logical rules over DBpedia — dead in 45 minutes
+
+The plan: read probe questions off a knowledge graph instead of hand-writing them.
+A published benchmark had already mined Horn rules from DBpedia with AMIE, so the
+artifact existed. Read the rules backwards and the body of a rule whose head is the
+edited fact *is* its justification set.
+
+What the rules actually contained:
+
+```
+?a birthPlace ?h   ?b isPrimaryTopicOf ?h   =>   ?a birthPlace ?b
+?a hometown   ?g   ?g commonName       ?b   =>   ?a hometown   ?b
+```
+
+Read it: *if a was born in ?h, and ?b is the same entity under another name, then a
+was born in ?b*. That is preservation of a fact under **renaming the object** — a
+tautology about DBpedia's redundant naming predicates.
+
+Of 12,675 mined rules, median support was **1**. Of the 913 that survived a
+support/confidence filter, **66.5% were alias tautologies**, 21.2% were headed by an
+alias predicate, and **2.3% were substantive** — and those headed on `gdpPppYear`
+and `topLevelDomain`.
+
+All 32 rules with a head matching one of our target relations were alias
+tautologies. Not thin: zero.
+
+<Aside>
+The deeper reason only became clear four days later. Rule mining finds{" "}
+<strong>chain</strong> patterns, and what we were asking for are{" "}
+<strong>star</strong> relations — see below. No amount of KG quality would have
+fixed it; we were asking a chain-finder for a structure it does not represent.
+</Aside>
+
+### 2 · AGM kernel contraction — dropped after five cases
+
+The best idea of the week, and it lasted a day. Reframing forward/backward as
+**expansion/contraction** imports fifty years of belief-revision results instead of
+restating an observation: editors only ever *add*, contraction is where
+non-determinism lives, and Hansson's kernels give a formal definition of the
+justification set.
+
+Then we read five actual cases:
+
+| post-edit state | contradictory? |
+| --- | --- |
+| died in Barcelona, buried in Baltimore | No — bodies are repatriated |
+| developer IBM, publisher Sega | No — these differ routinely |
+| named after Hamburg, located in London | No — things are named after distant places |
+| native language Russian, born in Paris | No — families emigrate |
+
+**None of them.** Kernels are minimal *entailing* subsets; if nothing entails,
+there is nothing to break and contraction is undefined.
+
+What survived was AGM's *other* half — the ordering machinery (entrenchment, Grove
+spheres, Lewis closest-world) rather than the closure machinery. We kept the
+account of the problem and dropped the algorithm.
+
+And the loss strengthened the thesis. If grounds entailed conclusions, a machine
+could compute what to retract and human discretion would be a convenience. Because
+they don't, **someone has to choose** — which is the project's actual argument.
+
+### 3 · The containment chain family — dead in a day, and our own table said so
+
+To get a real contradiction we needed grounds that genuinely entail. Transitive
+containment looked right:
+
+```
+X located-in Y   &   Y located-in Z   ⊨   X located-in Z
+```
+
+Edit the outer to some other country and the two inners still entail the original.
+62 chains mined from 120 seeds.
+
+Then: `probes/relation_modality.md`, our own artifact from three days earlier,
+labels `P131` **mutable** — *"boundaries are redrawn."* So editing the outer admits
+a temporal escape (*"it is in Italy now"*) — the exact reconciliation that made the
+kernel cases non-contradictory.
+
+We had written the table for precisely this purpose and did not consult it.
+
+### 4 · The diagnostic framing — withdrawn, then restored
+
+Claimed: *editing benchmarks measure propagation into knowledge they never verified
+was there.* A literature pass found CounterFact appearing to handle it, so the
+claim was withdrawn and a weaker one written up.
+
+Reading the paper's **construction appendix** rather than its prose reversed that:
+records are built *"solely using the PARAREL entry"*, with the counterfactual drawn
+by weighted sampling over the same predicate and **no model consulted at any
+point**. The benchmark's own table then confirms it — unedited GPT-2-XL scores
+**ES = 22.2**, meaning 22% of records already favour the *false* target.
+
+Two literature passes missed this because both searched for *competing work*
+instead of re-reading the *primary source*. The paper was in a local directory the
+whole time.
+
+### 5 · Pairing possession with a structure map — split, not merged
+
+The tempting move: ship possession *and* a map of the belief neighbourhood around a
+fact. Rejected. Possession was complete and sharp; the structure map was neither,
+and its value was as foundation for an arc that was blocked. Pairing a finished
+thing with an unfinished one makes both worse.
+
+### 6 · Grounds by directed intervention — right method, wrong order
+
+Define *g is a ground of f* iff intervening on `g` moves `f` **more than**
+intervening on `f` moves `g` — causal and directed, discovered rather than
+asserted, which escapes the circularity of hand-written probes.
+
+Still the right method. It was overtaken because a ground the model does not hold
+cannot be tested for direction, so possession had to come first. Parked, resumable.
+
+## Four structural findings
+
+These came from sitting with the premise rather than from running anything. Each
+reorganised the project more than any measurement did.
+
+### The graph is a star, not a chain
+
+For four days we said "the graph gives us grounds." It does not. Look at what our
+grounds had actually been:
+
+> Perec's native language is French.
+> Grounds found: born in Paris · citizen of France · speaks French.
+
+Every one is **another property of the same subject**. Wikidata asserts *no edge*
+between them. They are siblings on one node, and the justificational relation among
+them is entirely our imposition.
+
+<Figure
+  caption="Three distinct neighbourhood structures that were being conflated. Grounds live in the star, where the graph asserts no edges at all; the existing literature traverses the chain."
+>
+
+<svg viewBox="0 0 700 250" role="img" aria-label="A star of co-predicates around one subject, versus a chain where an object becomes the next subject." style={{width:"100%",height:"auto"}}>
+  <title>Star versus chain</title>
+  <defs>
+    <style>{`
+      .sc-n  { fill: var(--ocl-paper); stroke: var(--ocl-rule-strong); stroke-width: 1.5; }
+      .sc-h  { fill: #3d72a8; stroke: none; }
+      .sc-e  { stroke: var(--ocl-rule-strong); stroke-width: 1.5; fill: none; }
+      .sc-ei { stroke: #a8503f; stroke-width: 1.5; fill: none; stroke-dasharray: 4 3; }
+      .sc-t  { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .sc-hd { font: 600 13px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .sc-s  { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .sc-w  { fill: var(--ocl-paper); }
+      [data-theme='dark'] .sc-h { fill: #5596d4; }
+      [data-theme='dark'] .sc-ei { stroke: #c87c62; }
+    `}</style>
+  </defs>
+
+  <text className="sc-hd" x="20" y="24">STAR — co-predicates of one subject</text>
+  <text className="sc-s" x="20" y="42">candidate grounds · the graph asserts no edge between them</text>
+  <circle className="sc-h" cx="120" cy="140" r="9" />
+  <text className="sc-t" x="120" y="168" textAnchor="middle">Perec</text>
+  {[["born Paris",-70,-55],["citizen FR",70,-55],["speaks FR",-85,25],["buried PL",85,25]].map(([l,dx,dy]) => (
+    <g key={l}>
+      <line className="sc-e" x1="120" y1="140" x2={120+dx} y2={140+dy} />
+      <circle className="sc-n" cx={120+dx} cy={140+dy} r="5" />
+      <text className="sc-t" x={120+dx} y={140+dy-10} textAnchor="middle">{l}</text>
+    </g>
+  ))}
+  <path className="sc-ei" d="M 50 85 Q 120 60 190 85" />
+  <text className="sc-s" x="120" y="76" textAnchor="middle">no edge here</text>
+
+  <line className="sc-e" x1="350" y1="60" x2="350" y2="230" strokeDasharray="3 4" />
+
+  <text className="sc-hd" x="400" y="24">CHAIN — object becomes the next subject</text>
+  <text className="sc-s" x="400" y="42">consequences · what the literature traverses</text>
+  {[["Eiffel",420],["Paris",530],["France",640]].map(([l,x],i) => (
+    <g key={l}>
+      <circle className={i===0 ? "sc-h" : "sc-n"} cx={x} cy="140" r={i===0 ? 9 : 7} />
+      <text className="sc-t" x={x} y="168" textAnchor="middle">{l}</text>
+      {i < 2 && <line className="sc-e" x1={x+12} y1="140" x2={x+98} y2="140" markerEnd="" />}
+      {i < 2 && <text className="sc-s" x={x+55} y="132" textAnchor="middle">in</text>}
+    </g>
+  ))}
+</svg>
+
+</Figure>
+
+Consequences, all recorded: rule mining failed because it finds chain patterns; and
+`k`-hop depth — which the whole design was built around — **does not apply to the
+star at all**, because a star has no path structure. The question "how far does it
+propagate backward?" was malformed.
+
+### Editors expand; they never contract
+
+Forward propagation is **expansion**; backward is **contraction**. Every editing
+method — ROME, MEMIT, fine-tuning — is an expansion operator: it pushes probability
+toward a target. None has a contraction primitive.
+
+Independent mechanistic support arrived from a paper we found while checking
+something else: a compact mask over ROME's edited weights **restores the pre-edit
+answer in over 70% of cases**. If the edit had overwritten anything, there would be
+nothing left to restore. Edits *suppress*.
+
+Which makes the orphan worse than modelled: the model ends up holding the new
+answer, the old answer, **and** the grounds for the old answer, simultaneously.
+
+### In-degree and out-degree are different variables
+
+Out-degree — how many consequences a fact has — is the forward propagation burden,
+and it is already studied. **In-degree** — how many independent justifications —
+is the contraction burden, and it is not. Median in-degree in our data is **8**
+co-predicates per subject; 1% of subjects have none; 84% have three or more.
+
+### The decision nobody makes
+
+The thesis, arrived at sideways. If logic cannot say which belief to give up, then
+an editor that silently picks one is making an **unaccountable epistemic choice** —
+at scale, invisibly, with nobody able to inspect or contest it.
+
+So the orphan is not merely a technical defect. It is **a decision that got made
+without anyone making it**. And an instrument's job is to surface the choice, never
+to make it: *show the structure, never the ranking.*
+
+## Attrition is where the artifacts live
+
+Every number here is a rate over a *surviving subset*, and the survivors are never
+a random sample. Three funnels, each of which produced or nearly produced a false
+result.
+
+<Figure
+  wide
+  caption="Three selection funnels. In each, the kept fraction is biased toward whatever made survival easy — which is exactly where a headline number goes wrong."
+>
+
+<svg viewBox="0 0 700 300" role="img" aria-label="Three funnels: ground probes 165 to 89, filter coverage 40 to 12 before fixing, chains 200 to 136." style={{width:"100%",height:"auto"}}>
+  <title>Selection funnels</title>
+  <defs>
+    <style>{`
+      .f-keep { fill: #3d72a8; }
+      .f-drop { fill: #a8503f; opacity: 0.45; }
+      .f-t  { font: 600 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .f-s  { font: 11px/1.4 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .f-v  { font: 600 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-paper); }
+      [data-theme='dark'] .f-keep { fill: #5596d4; }
+      [data-theme='dark'] .f-drop { fill: #c87c62; }
+    `}</style>
+  </defs>
+
+  {[
+    ["Ground probes", "165 subjects", 89, 165, 30, "89 had a usable probe — throttled by how many templates were hand-written, not by data"],
+    ["Filter coverage (first version)", "40 edits", 12, 40, 120, "12 scored — and the held-rate read 92% instead of 52%"],
+    ["Entailment chains", "200 seeds", 136, 200, 210, "136 built; 41 rejected for routing through a dissolved state"],
+  ].map(([title, from, kept, total, y, note]) => {
+    const W = 420, keptW = (kept / total) * W;
+    return (
+      <g key={title}>
+        <text className="f-t" x="20" y={y - 6}>{title}</text>
+        <text className="f-s" x="20" y={y + 60}>{note}</text>
+        <rect className="f-drop" x="180" y={y} width={W} height="26" rx="4">
+          <title>{total - kept} dropped of {total}</title>
+        </rect>
+        <rect className="f-keep" x="180" y={y} width={keptW} height="26" rx="4">
+          <title>{kept} kept of {total} ({Math.round(100*kept/total)}%)</title>
+        </rect>
+        <text className="f-s" x="172" y={y + 18} textAnchor="end">{from}</text>
+        <text className="f-v" x="190" y={y + 18}>{kept} kept</text>
+        <text className="f-s" x={180 + W + 10} y={y + 18}>{Math.round(100*kept/total)}%</text>
+      </g>
+    );
+  })}
+</svg>
+
+</Figure>
+
+The middle one is the instructive failure. The possession filter's first end-to-end
+run reported **92% held** — and had scored 12 of 40 items. Candidates were being
+drawn from the edit set itself, so relations with fewer than three attested answers
+could not form a candidate set and were dropped **silently**. What survived were the
+two relations dense enough to be easy.
+
+A forty-point inflation produced by a silent denominator change — which is
+precisely the selection artifact the tool exists to detect, sitting inside the
+detector. It was caught by *running* it, not by reading it.
+
+The fix is now part of the tool: candidates come from a reference vocabulary
+separate from the edits under test, coverage is always reported, and a warning
+fires below 80%. **A held-rate over a silently biased subset is worse than no
+held-rate.**
+
+## Where the chains stand now
+
+The family was re-anchored this morning on a relation that cannot be relocated.
+
+<Figure
+  caption="The current entailment family. The outer fact is rigid — birth cannot be relocated — which closes the temporal escape that killed the containment version."
+>
+
+<svg viewBox="0 0 700 210" role="img" aria-label="X born in Y, Y in country Z, entailing X born in Z." style={{width:"100%",height:"auto"}}>
+  <title>Birth-place entailment chain</title>
+  <defs>
+    <style>{`
+      .ch-box { fill: var(--ocl-paper-sunken); stroke: var(--ocl-rule-strong); stroke-width: 1; }
+      .ch-out { fill: var(--ocl-paper-sunken); stroke: #a8503f; stroke-width: 2; }
+      .ch-t   { font: 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .ch-l   { font: 600 10px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); letter-spacing: .06em; }
+      .ch-r   { stroke: var(--ocl-rule-strong); stroke-width: 1; }
+      .ch-s   { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      [data-theme='dark'] .ch-out { stroke: #c87c62; }
+    `}</style>
+  </defs>
+
+  <text className="ch-l" x="30" y="28">PREMISES</text>
+  <rect className="ch-box" x="30" y="38" width="310" height="34" rx="4" />
+  <text className="ch-t" x="44" y="60">Vlaminck was born in Paris</text>
+  <text className="ch-s" x="352" y="60">P19 · RIGID</text>
+
+  <rect className="ch-box" x="30" y="84" width="310" height="34" rx="4" />
+  <text className="ch-t" x="44" y="106">Paris is located in France</text>
+  <text className="ch-s" x="352" y="106">P17 · country by definition</text>
+
+  <line className="ch-r" x1="30" y1="132" x2="440" y2="132" />
+  <text className="ch-l" x="448" y="136">ENTAILS</text>
+
+  <text className="ch-l" x="30" y="162">CONCLUSION — the fact we edit</text>
+  <rect className="ch-out" x="30" y="170" width="310" height="34" rx="4" />
+  <text className="ch-t" x="44" y="192">Vlaminck was born in France</text>
+  <text className="ch-s" x="352" y="192">edit this to Germany</text>
+</svg>
+
+</Figure>
+
+Editing the conclusion leaves both premises standing, and they still entail the
+original. Birth cannot be relocated, so the escape that killed the containment
+version is closed: the model must give up *"born in Paris"* or claim *"Paris was in
+Germany"* — both specific, both directly probeable.
+
+**136 chains from 200 seeds.** `P17` also fixed a type bug by construction: walking
+the administrative hierarchy had produced *"Gracie Mansion is located in the country
+of" → "New York City"*, the same error class we had published about two days
+earlier. `P17` is defined to take a country, so the template's type now holds
+without a filter.
+
+## Infrastructure, which is most of the work and none of the interest
+
+<Figure plain caption="What the five days actually consisted of.">
+
+| what | why it exists |
+| --- | --- |
+| Batched NDIF scoring, **8.3× faster** | Compute on a 70B model is sub-second; the ~10s is queue and transfer. Round trips are the budget, not FLOPs — the first design had that backwards and I quoted four hours based on it. |
+| Adaptive OOM halving | Per-process memory budgets differ across deployments (13.5 GB on one, 17.7 GB on another). Any fixed batch constant is wrong somewhere. |
+| `logit[t] − logsumexp` instead of `log_softmax` | The latter allocates a second `[batch, tokens, 128k-vocab]` tensor. That, not batch size, was the actual OOM — and it was 2.5× worse on Llama than GPT-J purely from vocab size. |
+| Transport errors classified by **module**, not type name | `httpx.ConnectTimeout` matched none of my hardcoded names and killed a 165-item run at item 28. |
+| Dated, checksummed snapshots | Wikidata mutates. A result is not reproducible without the bytes that produced it. Snapshots are additive — one directory per ingestion, never overwritten. |
+| Per-item caching everywhere | Three separate debugging cycles cost minutes instead of restarts. This is worth more than any of the fixes above. |
+
+</Figure>
+
+## The pattern in the errors
+
+Eight reversals in five days. Sorting them by *where* the error sat produces the
+only generalisation in this post worth carrying:
+
+**None of the errors were in the measurements.** Every number held. What failed
+each time was the **framing supplied around the number** — the mechanism I invented
+for a phenomenon that had been measured correctly.
+
+- The possession curve held; the story about *why* CounterFact's filter was weak
+  was wrong twice, in opposite directions.
+- Grounds were correctly found to be evidential; the claim that this made
+  containment a contradiction was wrong.
+- The alias tautologies were correctly counted; the theory that better data would
+  fix them was wrong.
+
+And a second, sharper pattern: **each error was already refuted by something we had
+written down.**
+
+<Figure plain caption="Every wrong turn, and the artifact that already contained its refutation.">
+
+| the error | what already said otherwise |
+| --- | --- |
+| Containment gives a strict contradiction | `relation_modality.md` labels `P131` **mutable** — written three days earlier, for this purpose |
+| Outer template says "country of" | `T-044`, the template-ambiguity finding we had just published about |
+| "The graph gives grounds" | `definitions.md` declaration 4 — *the graph is a normative audit spec, not a model of the network*, written day one |
+| CounterFact verifies possession | The paper's own appendix, three pages from the sentence misread |
+| Grounds are better known than heads | The grain confound, visible in the same table |
+
+</Figure>
+
+The apparatus was not failing to record things. It was recording them accurately
+and going unread. That is a different problem from disorganisation, and a more
+uncomfortable one.
+
+<Aside>
+The practical rule extracted from this: <strong>when a claim turns on what a paper
+or artifact <em>did</em>, read its methods section before concluding from its
+prose.</strong> Aspiration and mechanism live in different places and only one of
+them is binding.
+</Aside>
+
+## Where the evidence points
+
+Three statements, in increasing order of how much they cost to learn.
+
+**The knowledge is thinner than everyone assumes.** Models hold 56–85% of a
+*curated* benchmark's facts, not ~100%, and nothing in the standard pipeline checks.
+
+**"Knowing" is not one property.** Three defensible measures gave 75%, 61%, and 12%
+on identical items. That is not measurement error — they measure different things
+and all three are legitimate. Any single possession number is a **choice being
+reported as a fact**.
+
+**And the structure we kept looking for was not there.** We wanted a dependency
+graph: the KG asserts no edge between a fact and its grounds. We wanted entailment:
+support is evidential and every "contradiction" had a satisfying world. We wanted
+kernels: no minimal entailing sets exist. We wanted a decidable oracle: the mined
+rules were naming tautologies.
+
+<Claim
+  label="Where five days of evidence points"
+  record={{
+    "Status": "Synthesis, not a measured result — a reading of the measured results",
+    "Consequence": "An audit standard must be argued for, not discovered",
+    "Tension": "This was written down as declaration 4 on day one and forgotten repeatedly",
+  }}
+>
+  The facts are real. <strong>The structure between them is ours.</strong>
+</Claim>
+
+A model's dispositions are genuinely there and genuinely measurable. But every
+relation we tried to measure *between* those dispositions — grounds, dependency,
+entailment, justification — turned out to be something we supplied rather than
+something we found.
+
+That is not deflating, because it changes the kind of claim available. Not *"here
+is the dependency graph inside GPT-J"* but *"here is the audit standard I am
+holding it to, and here is why."* The first is a discovery that keeps failing to
+replicate. The second is a position that can be argued with.
+
+And it is why the discretion argument holds. If grounds entailed conclusions, a
+machine could compute what to retract. Because they don't, **someone has to
+decide** — which is the project's thesis and its longest-running embarrassment,
+turning out to be the same observation.
+
+## What is open
+
+**The experiment the project is named for has not run.** 136 entailment chains now
+exist, possession filtering comes next, then the edit. That is the near-term path
+and it is finally unobstructed.
+
+**Nothing has been externally judged.** Every critique here is self-critique, which
+has a ceiling — it catches what you already half-know, which is precisely the
+pattern documented above. The five-day record is a large, internally consistent
+body of work that nobody outside has stress-tested. That is the real risk, and no
+amount of further work reduces it.
+
+**Known gaps, stated rather than buried:** GPT-2-XL has not been run under the
+constrained measure; the 41 chains rejected as routing through dissolved states are
+plausibly inflated by taking the first `P17` value, which Wikidata does not order by
+currency; hand-built sets license an *existence* claim and never a frequency one;
+and possession levels move with candidate-set size, so only the ordering is robust.
+
+---
+
+The tool is [edit-slice](https://github.com/Rubix982/open-concept-lab). The research
+record — every thread, every finding, every superseded decision — is in the repo
+alongside it, including the parts that were wrong. Particularly those.
