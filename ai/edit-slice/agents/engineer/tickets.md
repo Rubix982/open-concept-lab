@@ -835,11 +835,24 @@ collection is not needed. The confound below is unchanged and the control edit s
 mandatory.
 
 **The confound that could fake the whole result.** A diffuse editor moves the grounds
-by collateral damage, which looks exactly like contraction. The control is already
-mandated by CLAUDE.md and is not optional here: sweep an **unrelated edit of
-comparable magnitude** on the same base model, identically. Grounds that move under
-both are generically unstable; only grounds that move under ours are candidates. A
-result reported without this control is not a result.
+by collateral damage, which looks exactly like contraction.
+
+**AMENDED 2026-09-15 after the n=1 smoke test — the mandated control is not enough.**
+The smoke test moved `inner_1` (shares the subject) hard and left `inner_2` (does not)
+completely inert, which is what subject-keyed leakage looks like, and the post-edit
+top-1 for *"born in the city of"* was `' Germany'` — a type error, not a revision.
+A different-subject control cannot catch this, because an edit on another subject
+never touches our subject's key direction. Three controls, all required:
+
+1. **Same-subject control** — edit an unrelated property of the SAME subject to
+   comparable magnitude. Only `inner_1` movement in EXCESS of this is a candidate.
+   This is now the load-bearing control.
+2. **Different-subject control** — as mandated by CLAUDE.md, for generic instability.
+3. **Type-coherence read** — is the post-edit top-1 for `inner_1` a city or a country?
+   A type error is leakage; a type-correct city in the new country is the signal.
+
+See agents/shared/decisions.md [E-013] smoke test. A result reported without all three
+is not a result.
 
 **Metrics** — as fixed in CLAUDE.md, no new ones:
 - KL pre→post over the next-token distribution at the final position.

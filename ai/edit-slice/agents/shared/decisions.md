@@ -512,3 +512,60 @@ claiming it.** Opened as R-009.
 
 **Artifacts:** /Users/saifulislam/code/EasyEdit/hparams/ROME/*.yaml;
 easyeditor/models/rome/compute_u.py
+
+---
+
+## [E-013] Smoke test, n=1: the mandated control is too weak, and this is why
+
+_Date: 2026-09-15 · Llama-3.1-8B, layer 5, ROME-as-EasyEdit (`C = I`), one chain_
+
+Vlaminck: born in Paris, Paris in France, therefore born in France. Edited the
+conclusion to Germany. `v*` optimisation drove NLL 5.68 → 0.02 over 25 steps.
+
+| probe | before | after |
+| --- | --- | --- |
+| `outer` — born in the country of | `' France'` −1.94 | **`' Germany'` −0.02** |
+| `inner_1` — born in the **city** of | `' Paris'` −0.31 | **`' Germany'` −1.44**, `' Munich'` −2.69, `' Berlin'` −2.75 |
+| `inner_2` — Paris is located in the country of | `' France'` −0.07 | `' France'` **−0.08** |
+
+**n=1 establishes nothing about contraction.** It establishes something about the
+design, which is worth more right now.
+
+**The ground that shares the subject moved; the ground that does not was inert.**
+That is exactly what ROME's mechanism predicts: the update is keyed on `k*` at the
+subject's last token, so any prompt containing *"Maurice de Vlaminck"* routes through
+the edited direction, while *"Paris is located in..."* never touches it. The most
+likely reading of `inner_1`'s movement is **subject-keyed leakage, not contraction**.
+
+**The tell is a type error.** `' Germany'` ranks FIRST for *"born in the **city**
+of"*. A model that coherently accepted "born in Germany" would name a German city, not
+a country. It is genuinely ambiguous — `' Munich'` and `' Berlin'` did surface at
+−2.69/−2.75, which is what coherent relocation looks like — and n=1 cannot separate
+them. That ambiguity is the whole reason the control is mandatory.
+
+**Consequence: CLAUDE.md's mandated control is necessary but NOT sufficient here.**
+"A different edit of comparable magnitude on the same base model" controls for generic
+instability. It does not control for subject-keyed leakage, because an edit on a
+*different subject* will not touch our subject's key direction at all, and so will
+show no movement on `inner_1` — making leakage look like signal.
+
+**The control [E-013] will use instead, added to and not replacing the mandated one:**
+
+1. **Same-subject control (new, and the load-bearing one).** Edit an unrelated
+   property of the SAME subject — occupation, say — to a comparable magnitude, then
+   probe `inner_1` identically. If `inner_1` moves as much under that as under ours,
+   its movement is keyed on the subject and carries no evidence about contraction.
+   Only movement in EXCESS of the same-subject control is a candidate.
+2. **Different-subject control (as mandated).** Retained for generic instability.
+3. **Type-coherence read.** Record whether the post-edit top-1 for `inner_1` is
+   type-correct (a city). A type error is leakage; a type-correct answer that changed
+   country is the thing we are actually looking for. This is cheap and it is the only
+   signal that distinguishes the two readings directly.
+
+**Revisit if:** the same-subject control moves `inner_1` as much as the real edit on
+most chains. Then subject-keyed leakage dominates at this magnitude, no contraction
+signal is separable, and the honest report is the Null branch of [E-013] —
+a statement about the method's resolution, not about the model.
+
+**Artifacts:** agents/engineer/workspace/edit_smoke.py; src/edit.py;
+logs/edit_smoke-2026-09-15-162616.log

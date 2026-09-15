@@ -1,0 +1,41 @@
+2026-09-15 16:26:16,422 INFO     edit_smoke  run edit_smoke -> logs/edit_smoke-2026-09-15-162616.log
+2026-09-15 16:26:16,422 INFO     edit_smoke  config {"edit": "France -> Germany", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "subject": "Maurice de Vlaminck", "ticket": "E-013"}
+2026-09-15 16:26:18,573 INFO     edit_smoke  === BEFORE ===
+2026-09-15 16:26:32,335 INFO     edit_smoke  outer  (edited)    ' France':-1.94  ' Paris':-1.94  ' Champagne':-2.00
+2026-09-15 16:26:32,335 INFO     edit_smoke  inner_1 (ground)   ' Paris':-0.31  ' Rou':-2.31  ' P':-3.00
+2026-09-15 16:26:32,335 INFO     edit_smoke  inner_2 (ground)   ' France':-0.07  ' United':-5.63  ' france':-5.88
+2026-09-15 16:26:32,336 INFO     edit_smoke  optimising v* ...
+2026-09-15 16:26:43,720 DEBUG    edit  step  1/25  loss 10.8435  nll 10.8435  norm 6.16
+2026-09-15 16:26:48,240 DEBUG    edit  step  2/25  loss 5.7983  nll 5.6774  norm 6.98
+2026-09-15 16:26:52,578 DEBUG    edit  step  3/25  loss 0.5771  nll 0.2923  norm 7.00
+2026-09-15 16:26:57,121 DEBUG    edit  step  4/25  loss 0.4532  nll 0.1570  norm 7.00
+2026-09-15 16:27:01,461 DEBUG    edit  step  5/25  loss 0.4110  nll 0.1119  norm 7.01
+2026-09-15 16:27:05,785 DEBUG    edit  step  6/25  loss 0.3845  nll 0.0809  norm 7.01
+2026-09-15 16:27:10,288 DEBUG    edit  step  7/25  loss 0.3778  nll 0.0736  norm 7.01
+2026-09-15 16:27:14,596 DEBUG    edit  step  8/25  loss 0.3663  nll 0.0610  norm 7.02
+2026-09-15 16:27:21,996 DEBUG    edit  step  9/25  loss 0.3575  nll 0.0490  norm 7.02
+2026-09-15 16:27:26,162 DEBUG    edit  step 10/25  loss 0.3533  nll 0.0442  norm 7.02
+2026-09-15 16:27:30,771 DEBUG    edit  step 11/25  loss 0.3509  nll 0.0406  norm 7.02
+2026-09-15 16:27:35,096 DEBUG    edit  step 12/25  loss 0.3507  nll 0.0409  norm 7.02
+2026-09-15 16:27:39,192 DEBUG    edit  step 13/25  loss 0.3510  nll 0.0372  norm 7.02
+2026-09-15 16:27:43,824 DEBUG    edit  step 14/25  loss 0.3480  nll 0.0339  norm 7.02
+2026-09-15 16:27:48,333 DEBUG    edit  step 15/25  loss 0.3451  nll 0.0304  norm 7.03
+2026-09-15 16:27:52,819 DEBUG    edit  step 16/25  loss 0.3465  nll 0.0307  norm 7.03
+2026-09-15 16:27:57,116 DEBUG    edit  step 17/25  loss 0.3422  nll 0.0272  norm 7.03
+2026-09-15 16:28:01,184 DEBUG    edit  step 18/25  loss 0.3404  nll 0.0253  norm 7.03
+2026-09-15 16:28:05,491 DEBUG    edit  step 19/25  loss 0.3416  nll 0.0223  norm 7.03
+2026-09-15 16:28:09,636 DEBUG    edit  step 20/25  loss 0.3407  nll 0.0205  norm 7.03
+2026-09-15 16:28:13,882 DEBUG    edit  step 21/25  loss 0.3418  nll 0.0225  norm 7.03
+2026-09-15 16:28:18,422 DEBUG    edit  step 22/25  loss 0.3394  nll 0.0208  norm 7.03
+2026-09-15 16:28:23,885 DEBUG    edit  step 23/25  loss 0.3380  nll 0.0186  norm 7.03
+2026-09-15 16:28:28,025 DEBUG    edit  step 24/25  loss 0.3362  nll 0.0167  norm 7.03
+2026-09-15 16:28:32,269 DEBUG    edit  step 25/25  loss 0.3357  nll 0.0163  norm 7.03
+2026-09-15 16:28:32,270 INFO     edit_smoke  loss 10.8435 -> 0.3357 over 25 steps, final norm 7.03
+2026-09-15 16:28:35,714 INFO     edit_smoke  === AFTER ===
+2026-09-15 16:28:49,070 INFO     edit_smoke  outer  (edited)    ' Germany':-0.02  ' germany':-5.70  '\xa0':-6.95
+2026-09-15 16:28:49,070 INFO     edit_smoke  inner_1 (ground)   ' Germany':-1.44  ' Munich':-2.69  ' Berlin':-2.75
+2026-09-15 16:28:49,071 INFO     edit_smoke  inner_2 (ground)   ' France':-0.08  ' United':-5.45  ' the':-5.95
+2026-09-15 16:28:49,071 INFO     edit_smoke  === movement of the PRE-EDIT correct answer ===
+2026-09-15 16:28:49,071 INFO     edit_smoke  outer  (edited)    'France'  before -1.94  after not in top-3
+2026-09-15 16:28:49,071 INFO     edit_smoke  inner_1 (ground)   'Paris'  before -0.31  after not in top-3
+2026-09-15 16:28:49,071 INFO     edit_smoke  inner_2 (ground)   'France'  before -0.07  after -0.08
