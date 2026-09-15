@@ -1,0 +1,15 @@
+2026-09-15 17:42:04,720 INFO     fetch_geo  run fetch_geo -> logs/fetch_geo-2026-09-15-174204.log
+2026-09-15 17:42:04,720 INFO     fetch_geo  config {"props": ["P17 country", "P36 capital"], "ticket": "E-014"}
+2026-09-15 17:42:05,494 INFO     fetch_geo  78 city QIDs, 28 country QIDs from the chains
+2026-09-15 17:42:05,494 INFO     fetch_geo  0 need claims fetched
+2026-09-15 17:42:08,889 INFO     fetch_geo  capitals resolved: 28/28
+2026-09-15 17:42:08,890 INFO     fetch_geo  city->country resolved: 78/78
+2026-09-15 17:42:08,890 INFO     fetch_geo  sample capitals:
+2026-09-15 17:42:08,890 INFO     fetch_geo     Denmark                      capital Copenhagen
+2026-09-15 17:42:08,890 INFO     fetch_geo     Spain                        capital Madrid
+2026-09-15 17:42:08,890 INFO     fetch_geo     Sweden                       capital Stockholm
+2026-09-15 17:42:08,890 INFO     fetch_geo     Finland                      capital Helsinki
+2026-09-15 17:42:08,890 INFO     fetch_geo     Hungary                      capital Budapest
+2026-09-15 17:42:08,890 INFO     fetch_geo     Japan                        capital Shigaraki Palace
+2026-09-15 17:42:08,890 INFO     fetch_geo     Netherlands                  capital Amsterdam
+2026-09-15 17:42:08,890 INFO     fetch_geo     People's Republic of China   capital Beijing

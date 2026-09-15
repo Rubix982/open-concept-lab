@@ -122,8 +122,17 @@ def _encode_pairs(model: LanguageModel, pairs: list[tuple[str, str]]
 
 
 def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
-                *, max_rows: int = 200) -> list[float]:
+                *, max_rows: int = 200,
+                edit: tuple[int, torch.Tensor, torch.Tensor] | None = None
+                ) -> list[float]:
     """Mean log P(continuation | prompt) for arbitrary pairs, in ONE remote call.
+
+    `edit` is an optional `(layer, k_star, delta_v)` rank-one update, applied inline
+    inside this function's own trace. It has to be inline: nnsight builds its graph
+    from the source of the frame that entered `model.trace`, so an intervention
+    written in a helper called from the caller's trace is silently dropped — see
+    `edit.APPLY_IDIOM`. Putting the trace HERE is what makes it expressible without
+    duplicating the OOM-splitting and retry logic below.
 
     NDIF's websocket drops intermittently under load — a run of 165 items reliably
     hits at least one `socketio ConnectionError`. Transport failures are retried
@@ -145,7 +154,7 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                   len(pairs), n_chunks, size, max_rows)
         out: list[float] = []
         for i in range(0, len(pairs), size):
-            out += score_pairs(model, pairs[i : i + size], max_rows=max_rows)
+            out += score_pairs(model, pairs[i : i + size], max_rows=max_rows, edit=edit)
         return out
 
     ids, mask, lengths = _encode_pairs(model, pairs)
@@ -153,7 +162,18 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
     for attempt in range(MAX_ATTEMPTS):
         try:
             t0 = time.monotonic()
+            # Plain Python conditionals run at graph-BUILD time, not as proxy
+            # branches, so this is safe inside a trace.
+            lay = edit[0] if edit is not None else None
+            ks_cpu = edit[1] if edit is not None else None
+            dv_cpu = edit[2] if edit is not None else None
             with _quiet_stdout(), model.trace(ids, remote=True):
+                if lay is not None:
+                    dp = model.model.layers[lay].mlp.down_proj
+                    kk = dp.input
+                    ks = ks_cpu.to(kk.device, kk.dtype)
+                    dp.output = dp.output + ((kk @ ks) / (ks @ ks)).unsqueeze(-1) \
+                                            * dv_cpu.to(kk.device, kk.dtype)
                 # log P(t) = logit[t] - logsumexp(logits). Computing it this way
                 # avoids materialising a second [B, T, V] tensor, which is what
                 # torch.log_softmax does and what OOM'd the shared GPU at batch 400.

@@ -1,0 +1,31 @@
+2026-09-15 17:43:57,572 INFO     verify_edited_scoring  run verify_edited_scoring -> logs/verify_edited_scoring-2026-09-15-174357.log
+2026-09-15 17:43:57,572 INFO     verify_edited_scoring  config {"pool": 87, "ticket": "E-014"}
+2026-09-15 17:44:26,577 DEBUG    edit  batch step  1/25  summed loss 10.8435
+2026-09-15 17:44:31,969 DEBUG    edit  batch step  2/25  summed loss 5.7983
+2026-09-15 17:44:36,874 DEBUG    edit  batch step  3/25  summed loss 0.5771
+2026-09-15 17:44:42,522 DEBUG    edit  batch step  4/25  summed loss 0.4532
+2026-09-15 17:44:47,889 DEBUG    edit  batch step  5/25  summed loss 0.4110
+2026-09-15 17:44:53,252 DEBUG    edit  batch step  6/25  summed loss 0.3845
+2026-09-15 17:44:58,956 DEBUG    edit  batch step  7/25  summed loss 0.3778
+2026-09-15 17:45:04,368 DEBUG    edit  batch step  8/25  summed loss 0.3663
+2026-09-15 17:45:09,763 DEBUG    edit  batch step  9/25  summed loss 0.3575
+2026-09-15 17:45:15,343 DEBUG    edit  batch step 10/25  summed loss 0.3533
+2026-09-15 17:45:20,852 DEBUG    edit  batch step 11/25  summed loss 0.3509
+2026-09-15 17:45:26,377 DEBUG    edit  batch step 12/25  summed loss 0.3507
+2026-09-15 17:45:32,020 DEBUG    edit  batch step 13/25  summed loss 0.3510
+2026-09-15 17:45:37,142 DEBUG    edit  batch step 14/25  summed loss 0.3480
+2026-09-15 17:45:42,247 DEBUG    edit  batch step 15/25  summed loss 0.3451
+2026-09-15 17:45:47,720 DEBUG    edit  batch step 16/25  summed loss 0.3465
+2026-09-15 17:45:53,034 DEBUG    edit  batch step 17/25  summed loss 0.3422
+2026-09-15 17:45:58,643 DEBUG    edit  batch step 18/25  summed loss 0.3404
+2026-09-15 17:46:04,124 DEBUG    edit  batch step 19/25  summed loss 0.3416
+2026-09-15 17:46:09,752 DEBUG    edit  batch step 20/25  summed loss 0.3407
+2026-09-15 17:46:15,124 DEBUG    edit  batch step 21/25  summed loss 0.3418
+2026-09-15 17:46:20,528 DEBUG    edit  batch step 22/25  summed loss 0.3394
+2026-09-15 17:46:25,940 DEBUG    edit  batch step 23/25  summed loss 0.3380
+2026-09-15 17:46:31,573 DEBUG    edit  batch step 24/25  summed loss 0.3362
+2026-09-15 17:46:37,109 DEBUG    edit  batch step 25/25  summed loss 0.3357
+2026-09-15 17:46:43,830 DEBUG    remote  trace ok: 87 rows, 108 tok, 3.3s
+2026-09-15 17:46:43,831 INFO     verify_edited_scoring  baseline           Paris(France)  Washington, D.C.(United States)  Tottenham Hotspur F.C.(United Kingdom)  Bucharest(Romania)  University of Chicago(United States)
+2026-09-15 17:46:47,655 DEBUG    remote  trace ok: 87 rows, 108 tok, 3.8s
+2026-09-15 17:46:47,655 INFO     verify_edited_scoring  edited -> Germany  Berlin(Germany)  Munich(Germany)  Bucharest(Romania)  Tottenham Hotspur F.C.(United Kingdom)  Washington, D.C.(United States)

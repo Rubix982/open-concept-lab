@@ -1,0 +1,36 @@
+2026-09-15 17:42:33,281 INFO     fetch_geo  run fetch_geo -> logs/fetch_geo-2026-09-15-174233.log
+2026-09-15 17:42:33,281 INFO     fetch_geo  config {"props": ["P17 country", "P36 capital"], "ticket": "E-014"}
+2026-09-15 17:42:34,091 INFO     fetch_geo  78 city QIDs, 28 country QIDs from the chains
+2026-09-15 17:42:34,092 INFO     fetch_geo  0 need claims fetched
+2026-09-15 17:42:36,248 INFO     fetch_geo  capitals resolved: 28/28
+2026-09-15 17:42:36,248 INFO     fetch_geo  city->country resolved: 78/78
+2026-09-15 17:42:36,248 INFO     fetch_geo  all capitals, for inspection — a wrong one silently breaks the pool:
+2026-09-15 17:42:36,248 INFO     fetch_geo     Australia                      Canberra
+2026-09-15 17:42:36,248 INFO     fetch_geo     Austria                        Vienna
+2026-09-15 17:42:36,248 INFO     fetch_geo     Canada                         Ottawa
+2026-09-15 17:42:36,248 INFO     fetch_geo     Chile                          Santiago
+2026-09-15 17:42:36,248 INFO     fetch_geo     Czech Republic                 Prague
+2026-09-15 17:42:36,248 INFO     fetch_geo     Denmark                        Copenhagen
+2026-09-15 17:42:36,248 INFO     fetch_geo     Finland                        Helsinki
+2026-09-15 17:42:36,248 INFO     fetch_geo     France                         Paris
+2026-09-15 17:42:36,248 INFO     fetch_geo     Germany                        Berlin
+2026-09-15 17:42:36,248 INFO     fetch_geo     Hungary                        Budapest
+2026-09-15 17:42:36,248 INFO     fetch_geo     India                          New Delhi
+2026-09-15 17:42:36,248 INFO     fetch_geo     Iran                           Tehran
+2026-09-15 17:42:36,248 INFO     fetch_geo     Italy                          Rome
+2026-09-15 17:42:36,248 INFO     fetch_geo     Japan                          Tokyo
+2026-09-15 17:42:36,248 INFO     fetch_geo     Netherlands                    Amsterdam
+2026-09-15 17:42:36,248 INFO     fetch_geo     New Zealand                    Wellington
+2026-09-15 17:42:36,248 INFO     fetch_geo     Norway                         Oslo
+2026-09-15 17:42:36,248 INFO     fetch_geo     People's Republic of China     Beijing
+2026-09-15 17:42:36,249 INFO     fetch_geo     Philippines                    Manila
+2026-09-15 17:42:36,249 INFO     fetch_geo     Poland                         Warsaw
+2026-09-15 17:42:36,249 INFO     fetch_geo     Portugal                       Lisbon
+2026-09-15 17:42:36,249 INFO     fetch_geo     Romania                        Bucharest
+2026-09-15 17:42:36,249 INFO     fetch_geo     Saudi Arabia                   Riyadh
+2026-09-15 17:42:36,249 INFO     fetch_geo     Spain                          Madrid
+2026-09-15 17:42:36,249 INFO     fetch_geo     Sweden                         Stockholm
+2026-09-15 17:42:36,249 INFO     fetch_geo     Switzerland                    Bern
+2026-09-15 17:42:36,249 INFO     fetch_geo     United Kingdom                 London
+2026-09-15 17:42:36,249 INFO     fetch_geo     United States                  Washington, D.C.
+2026-09-15 17:42:36,249 INFO     fetch_geo  written: probes/geo.json

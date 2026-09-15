@@ -1,0 +1,220 @@
+2026-09-15 17:03:18,676 INFO     run_e013  run run_e013 -> logs/run_e013-2026-09-15-170318.log
+2026-09-15 17:03:18,677 INFO     run_e013  config {"chunk": 6, "control_template": "By profession, {} is a", "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_pilot": 12, "n_usable_available": 78, "seed": 1538, "ticket": "E-013"}
+2026-09-15 17:03:18,677 INFO     run_e013  78 usable chains available; piloting 12
+2026-09-15 17:03:21,106 INFO     run_e013  optimising v* for specs 1-6 of 24
+2026-09-15 17:04:44,895 DEBUG    edit  batch step  1/25  summed loss 42.4794
+2026-09-15 17:04:44,896 DEBUG    run_e013    1/25
+2026-09-15 17:04:53,625 DEBUG    edit  batch step  2/25  summed loss 27.7914
+2026-09-15 17:04:53,626 DEBUG    run_e013    2/25
+2026-09-15 17:05:00,705 DEBUG    edit  batch step  3/25  summed loss 22.4952
+2026-09-15 17:05:00,706 DEBUG    run_e013    3/25
+2026-09-15 17:05:11,885 DEBUG    edit  batch step  4/25  summed loss 11.7357
+2026-09-15 17:05:11,886 DEBUG    run_e013    4/25
+2026-09-15 17:05:20,086 DEBUG    edit  batch step  5/25  summed loss 7.7697
+2026-09-15 17:05:20,087 DEBUG    run_e013    5/25
+2026-09-15 17:05:28,585 DEBUG    edit  batch step  6/25  summed loss 7.1781
+2026-09-15 17:05:28,586 DEBUG    run_e013    6/25
+2026-09-15 17:05:37,175 DEBUG    edit  batch step  7/25  summed loss 7.4117
+2026-09-15 17:05:37,176 DEBUG    run_e013    7/25
+2026-09-15 17:05:44,076 DEBUG    edit  batch step  8/25  summed loss 5.7008
+2026-09-15 17:05:44,076 DEBUG    run_e013    8/25
+2026-09-15 17:05:51,364 DEBUG    edit  batch step  9/25  summed loss 4.9694
+2026-09-15 17:05:51,366 DEBUG    run_e013    9/25
+2026-09-15 17:05:58,555 DEBUG    edit  batch step 10/25  summed loss 9.0230
+2026-09-15 17:05:58,555 DEBUG    run_e013    10/25
+2026-09-15 17:06:07,667 DEBUG    edit  batch step 11/25  summed loss 8.0202
+2026-09-15 17:06:07,668 DEBUG    run_e013    11/25
+2026-09-15 17:06:15,445 DEBUG    edit  batch step 12/25  summed loss 5.6161
+2026-09-15 17:06:15,445 DEBUG    run_e013    12/25
+2026-09-15 17:06:24,816 DEBUG    edit  batch step 13/25  summed loss 4.1870
+2026-09-15 17:06:24,818 DEBUG    run_e013    13/25
+2026-09-15 17:06:33,059 DEBUG    edit  batch step 14/25  summed loss 3.7099
+2026-09-15 17:06:33,059 DEBUG    run_e013    14/25
+2026-09-15 17:06:43,982 DEBUG    edit  batch step 15/25  summed loss 3.3752
+2026-09-15 17:06:43,982 DEBUG    run_e013    15/25
+2026-09-15 17:06:52,880 DEBUG    edit  batch step 16/25  summed loss 3.0828
+2026-09-15 17:06:52,880 DEBUG    run_e013    16/25
+2026-09-15 17:06:59,800 DEBUG    edit  batch step 17/25  summed loss 2.8158
+2026-09-15 17:06:59,800 DEBUG    run_e013    17/25
+2026-09-15 17:07:08,133 DEBUG    edit  batch step 18/25  summed loss 2.5815
+2026-09-15 17:07:08,133 DEBUG    run_e013    18/25
+2026-09-15 17:07:15,626 DEBUG    edit  batch step 19/25  summed loss 2.3585
+2026-09-15 17:07:15,626 DEBUG    run_e013    19/25
+2026-09-15 17:07:22,975 DEBUG    edit  batch step 20/25  summed loss 2.1643
+2026-09-15 17:07:22,976 DEBUG    run_e013    20/25
+2026-09-15 17:07:31,028 DEBUG    edit  batch step 21/25  summed loss 1.9687
+2026-09-15 17:07:31,029 DEBUG    run_e013    21/25
+2026-09-15 17:07:37,944 DEBUG    edit  batch step 22/25  summed loss 1.8395
+2026-09-15 17:07:37,944 DEBUG    run_e013    22/25
+2026-09-15 17:07:45,279 DEBUG    edit  batch step 23/25  summed loss 1.7684
+2026-09-15 17:07:45,280 DEBUG    run_e013    23/25
+2026-09-15 17:07:52,808 DEBUG    edit  batch step 24/25  summed loss 1.6985
+2026-09-15 17:07:52,808 DEBUG    run_e013    24/25
+2026-09-15 17:08:00,754 DEBUG    edit  batch step 25/25  summed loss 1.6712
+2026-09-15 17:08:00,754 DEBUG    run_e013    25/25
+2026-09-15 17:08:00,783 INFO     run_e013  optimising v* for specs 7-12 of 24
+2026-09-15 17:09:13,889 DEBUG    edit  batch step  1/25  summed loss 50.1165
+2026-09-15 17:09:13,890 DEBUG    run_e013    1/25
+2026-09-15 17:09:21,881 DEBUG    edit  batch step  2/25  summed loss 34.6108
+2026-09-15 17:09:21,881 DEBUG    run_e013    2/25
+2026-09-15 17:09:28,968 DEBUG    edit  batch step  3/25  summed loss 27.3736
+2026-09-15 17:09:28,969 DEBUG    run_e013    3/25
+2026-09-15 17:09:38,212 DEBUG    edit  batch step  4/25  summed loss 18.0677
+2026-09-15 17:09:38,213 DEBUG    run_e013    4/25
+2026-09-15 17:09:47,195 DEBUG    edit  batch step  5/25  summed loss 12.6170
+2026-09-15 17:09:47,197 DEBUG    run_e013    5/25
+2026-09-15 17:09:54,225 DEBUG    edit  batch step  6/25  summed loss 9.5224
+2026-09-15 17:09:54,227 DEBUG    run_e013    6/25
+2026-09-15 17:10:01,618 DEBUG    edit  batch step  7/25  summed loss 11.6508
+2026-09-15 17:10:01,619 DEBUG    run_e013    7/25
+2026-09-15 17:10:08,953 DEBUG    edit  batch step  8/25  summed loss 7.4673
+2026-09-15 17:10:08,954 DEBUG    run_e013    8/25
+2026-09-15 17:10:16,515 DEBUG    edit  batch step  9/25  summed loss 6.2504
+2026-09-15 17:10:16,515 DEBUG    run_e013    9/25
+2026-09-15 17:10:23,187 DEBUG    edit  batch step 10/25  summed loss 5.1830
+2026-09-15 17:10:23,187 DEBUG    run_e013    10/25
+2026-09-15 17:10:30,480 DEBUG    edit  batch step 11/25  summed loss 3.2316
+2026-09-15 17:10:30,480 DEBUG    run_e013    11/25
+2026-09-15 17:10:37,665 DEBUG    edit  batch step 12/25  summed loss 2.2733
+2026-09-15 17:10:37,665 DEBUG    run_e013    12/25
+2026-09-15 17:10:44,345 DEBUG    edit  batch step 13/25  summed loss 1.9876
+2026-09-15 17:10:44,345 DEBUG    run_e013    13/25
+2026-09-15 17:10:51,248 DEBUG    edit  batch step 14/25  summed loss 1.8718
+2026-09-15 17:10:51,248 DEBUG    run_e013    14/25
+2026-09-15 17:10:59,292 DEBUG    edit  batch step 15/25  summed loss 1.8002
+2026-09-15 17:10:59,292 DEBUG    run_e013    15/25
+2026-09-15 17:11:05,878 DEBUG    edit  batch step 16/25  summed loss 1.7615
+2026-09-15 17:11:05,879 DEBUG    run_e013    16/25
+2026-09-15 17:11:14,924 DEBUG    edit  batch step 17/25  summed loss 1.7423
+2026-09-15 17:11:14,925 DEBUG    run_e013    17/25
+2026-09-15 17:11:21,669 DEBUG    edit  batch step 18/25  summed loss 1.7377
+2026-09-15 17:11:21,669 DEBUG    run_e013    18/25
+2026-09-15 17:11:29,936 DEBUG    edit  batch step 19/25  summed loss 1.7176
+2026-09-15 17:11:29,937 DEBUG    run_e013    19/25
+2026-09-15 17:11:38,578 DEBUG    edit  batch step 20/25  summed loss 1.7029
+2026-09-15 17:11:38,579 DEBUG    run_e013    20/25
+2026-09-15 17:11:49,172 DEBUG    edit  batch step 21/25  summed loss 1.6972
+2026-09-15 17:11:49,173 DEBUG    run_e013    21/25
+2026-09-15 17:11:57,281 DEBUG    edit  batch step 22/25  summed loss 1.6912
+2026-09-15 17:11:57,281 DEBUG    run_e013    22/25
+2026-09-15 17:12:05,321 DEBUG    edit  batch step 23/25  summed loss 1.6950
+2026-09-15 17:12:05,321 DEBUG    run_e013    23/25
+2026-09-15 17:12:14,431 DEBUG    edit  batch step 24/25  summed loss 1.6840
+2026-09-15 17:12:14,431 DEBUG    run_e013    24/25
+2026-09-15 17:12:21,831 DEBUG    edit  batch step 25/25  summed loss 1.6779
+2026-09-15 17:12:21,831 DEBUG    run_e013    25/25
+2026-09-15 17:12:21,863 INFO     run_e013  optimising v* for specs 13-18 of 24
+2026-09-15 17:13:34,094 DEBUG    edit  batch step  1/25  summed loss 46.8142
+2026-09-15 17:13:34,095 DEBUG    run_e013    1/25
+2026-09-15 17:13:42,219 DEBUG    edit  batch step  2/25  summed loss 25.9206
+2026-09-15 17:13:42,219 DEBUG    run_e013    2/25
+2026-09-15 17:13:49,724 DEBUG    edit  batch step  3/25  summed loss 9.7919
+2026-09-15 17:13:49,724 DEBUG    run_e013    3/25
+2026-09-15 17:13:57,308 DEBUG    edit  batch step  4/25  summed loss 3.5935
+2026-09-15 17:13:57,309 DEBUG    run_e013    4/25
+2026-09-15 17:14:04,285 DEBUG    edit  batch step  5/25  summed loss 2.7361
+2026-09-15 17:14:04,286 DEBUG    run_e013    5/25
+2026-09-15 17:14:12,078 DEBUG    edit  batch step  6/25  summed loss 2.6021
+2026-09-15 17:14:12,079 DEBUG    run_e013    6/25
+2026-09-15 17:14:20,172 DEBUG    edit  batch step  7/25  summed loss 2.5320
+2026-09-15 17:14:20,173 DEBUG    run_e013    7/25
+2026-09-15 17:14:27,147 DEBUG    edit  batch step  8/25  summed loss 2.4724
+2026-09-15 17:14:27,147 DEBUG    run_e013    8/25
+2026-09-15 17:14:34,615 DEBUG    edit  batch step  9/25  summed loss 2.4472
+2026-09-15 17:14:34,616 DEBUG    run_e013    9/25
+2026-09-15 17:14:41,637 DEBUG    edit  batch step 10/25  summed loss 2.4311
+2026-09-15 17:14:41,637 DEBUG    run_e013    10/25
+2026-09-15 17:14:49,253 DEBUG    edit  batch step 11/25  summed loss 2.4470
+2026-09-15 17:14:49,254 DEBUG    run_e013    11/25
+2026-09-15 17:14:56,413 DEBUG    edit  batch step 12/25  summed loss 2.4485
+2026-09-15 17:14:56,413 DEBUG    run_e013    12/25
+2026-09-15 17:15:03,847 DEBUG    edit  batch step 13/25  summed loss 2.4659
+2026-09-15 17:15:03,847 DEBUG    run_e013    13/25
+2026-09-15 17:15:11,748 DEBUG    edit  batch step 14/25  summed loss 2.4605
+2026-09-15 17:15:11,749 DEBUG    run_e013    14/25
+2026-09-15 17:15:19,620 DEBUG    edit  batch step 15/25  summed loss 2.4640
+2026-09-15 17:15:19,621 DEBUG    run_e013    15/25
+2026-09-15 17:15:26,856 DEBUG    edit  batch step 16/25  summed loss 2.4697
+2026-09-15 17:15:26,856 DEBUG    run_e013    16/25
+2026-09-15 17:15:35,815 DEBUG    edit  batch step 17/25  summed loss 2.4828
+2026-09-15 17:15:35,816 DEBUG    run_e013    17/25
+2026-09-15 17:15:43,622 DEBUG    edit  batch step 18/25  summed loss 2.4921
+2026-09-15 17:15:43,622 DEBUG    run_e013    18/25
+2026-09-15 17:15:50,988 DEBUG    edit  batch step 19/25  summed loss 2.4911
+2026-09-15 17:15:50,988 DEBUG    run_e013    19/25
+2026-09-15 17:15:59,027 DEBUG    edit  batch step 20/25  summed loss 2.4961
+2026-09-15 17:15:59,027 DEBUG    run_e013    20/25
+2026-09-15 17:16:05,374 DEBUG    edit  batch step 21/25  summed loss 2.4957
+2026-09-15 17:16:05,374 DEBUG    run_e013    21/25
+2026-09-15 17:16:12,948 DEBUG    edit  batch step 22/25  summed loss 2.5044
+2026-09-15 17:16:12,948 DEBUG    run_e013    22/25
+2026-09-15 17:16:20,102 DEBUG    edit  batch step 23/25  summed loss 2.5095
+2026-09-15 17:16:20,103 DEBUG    run_e013    23/25
+2026-09-15 17:16:28,384 DEBUG    edit  batch step 24/25  summed loss 2.5076
+2026-09-15 17:16:28,384 DEBUG    run_e013    24/25
+2026-09-15 17:16:35,346 DEBUG    edit  batch step 25/25  summed loss 2.5158
+2026-09-15 17:16:35,346 DEBUG    run_e013    25/25
+2026-09-15 17:16:35,371 INFO     run_e013  optimising v* for specs 19-24 of 24
+2026-09-15 17:18:11,466 DEBUG    edit  batch step  1/25  summed loss 46.9573
+2026-09-15 17:18:11,466 DEBUG    run_e013    1/25
+2026-09-15 17:18:20,030 DEBUG    edit  batch step  2/25  summed loss 29.0454
+2026-09-15 17:18:20,030 DEBUG    run_e013    2/25
+2026-09-15 17:18:30,219 DEBUG    edit  batch step  3/25  summed loss 20.9329
+2026-09-15 17:18:30,219 DEBUG    run_e013    3/25
+2026-09-15 17:18:39,041 DEBUG    edit  batch step  4/25  summed loss 10.4554
+2026-09-15 17:18:39,041 DEBUG    run_e013    4/25
+2026-09-15 17:18:46,862 DEBUG    edit  batch step  5/25  summed loss 6.5712
+2026-09-15 17:18:46,862 DEBUG    run_e013    5/25
+2026-09-15 17:18:54,424 DEBUG    edit  batch step  6/25  summed loss 5.7038
+2026-09-15 17:18:54,425 DEBUG    run_e013    6/25
+2026-09-15 17:19:02,367 DEBUG    edit  batch step  7/25  summed loss 3.9573
+2026-09-15 17:19:02,367 DEBUG    run_e013    7/25
+2026-09-15 17:19:09,318 DEBUG    edit  batch step  8/25  summed loss 3.0795
+2026-09-15 17:19:09,318 DEBUG    run_e013    8/25
+2026-09-15 17:19:18,511 DEBUG    edit  batch step  9/25  summed loss 2.7735
+2026-09-15 17:19:18,511 DEBUG    run_e013    9/25
+2026-09-15 17:19:26,539 DEBUG    edit  batch step 10/25  summed loss 2.6531
+2026-09-15 17:19:26,539 DEBUG    run_e013    10/25
+2026-09-15 17:19:33,767 DEBUG    edit  batch step 11/25  summed loss 2.5527
+2026-09-15 17:19:33,767 DEBUG    run_e013    11/25
+2026-09-15 17:19:41,651 DEBUG    edit  batch step 12/25  summed loss 2.5403
+2026-09-15 17:19:41,652 DEBUG    run_e013    12/25
+2026-09-15 17:19:49,336 DEBUG    edit  batch step 13/25  summed loss 2.5156
+2026-09-15 17:19:49,336 DEBUG    run_e013    13/25
+2026-09-15 17:19:57,542 DEBUG    edit  batch step 14/25  summed loss 2.5064
+2026-09-15 17:19:57,543 DEBUG    run_e013    14/25
+2026-09-15 17:20:05,629 DEBUG    edit  batch step 15/25  summed loss 2.5019
+2026-09-15 17:20:05,630 DEBUG    run_e013    15/25
+2026-09-15 17:20:13,746 DEBUG    edit  batch step 16/25  summed loss 2.4997
+2026-09-15 17:20:13,747 DEBUG    run_e013    16/25
+2026-09-15 17:20:21,121 DEBUG    edit  batch step 17/25  summed loss 2.4945
+2026-09-15 17:20:21,121 DEBUG    run_e013    17/25
+2026-09-15 17:20:31,979 DEBUG    edit  batch step 18/25  summed loss 2.5017
+2026-09-15 17:20:31,979 DEBUG    run_e013    18/25
+2026-09-15 17:20:40,453 DEBUG    edit  batch step 19/25  summed loss 2.5164
+2026-09-15 17:20:40,454 DEBUG    run_e013    19/25
+2026-09-15 17:20:48,609 DEBUG    edit  batch step 20/25  summed loss 2.5178
+2026-09-15 17:20:48,609 DEBUG    run_e013    20/25
+2026-09-15 17:20:57,810 DEBUG    edit  batch step 21/25  summed loss 2.5166
+2026-09-15 17:20:57,811 DEBUG    run_e013    21/25
+2026-09-15 17:21:06,723 DEBUG    edit  batch step 22/25  summed loss 2.5262
+2026-09-15 17:21:06,723 DEBUG    run_e013    22/25
+2026-09-15 17:21:15,691 DEBUG    edit  batch step 23/25  summed loss 2.5216
+2026-09-15 17:21:15,692 DEBUG    run_e013    23/25
+2026-09-15 17:21:25,203 DEBUG    edit  batch step 24/25  summed loss 2.5289
+2026-09-15 17:21:25,203 DEBUG    run_e013    24/25
+2026-09-15 17:21:33,133 DEBUG    edit  batch step 25/25  summed loss 2.5267
+2026-09-15 17:21:33,133 DEBUG    run_e013    25/25
+2026-09-15 17:23:52,035 INFO     run_e013  61     outer -7.68->-13.45 | inner_1 -0.25->-10.54 (ctl -2.86) | inner_2 -4.65->-4.30 (ctl -4.66)
+2026-09-15 17:24:49,007 INFO     run_e013  254    outer -1.94->-9.65 | inner_1 -0.37->-6.69 (ctl -14.19) | inner_2 -0.07->-0.08 (ctl -0.06)
+2026-09-15 17:25:38,071 INFO     run_e013  273    outer -1.46->-19.56 | inner_1 -2.67->-12.07 (ctl -3.89) | inner_2 -0.02->-0.02 (ctl -0.02)
+2026-09-15 17:26:09,492 INFO     run_e013  342    outer -2.49->-7.49 | inner_1 -0.94->-7.08 (ctl -9.51) | inner_2 -0.08->-0.07 (ctl -0.07)
+2026-09-15 17:27:12,511 INFO     run_e013  345    outer -0.33->-11.20 | inner_1 -2.23->-10.10 (ctl -5.05) | inner_2 -0.07->-0.12 (ctl -0.05)
+2026-09-15 17:28:08,004 INFO     run_e013  372    outer -7.25->-8.58 | inner_1 -0.07->-2.58 (ctl -11.20) | inner_2 -1.47->-1.54 (ctl -1.54)
+2026-09-15 17:29:05,003 INFO     run_e013  507    outer -5.72->-10.71 | inner_1 -0.40->-11.88 (ctl -9.31) | inner_2 -1.08->-1.18 (ctl -1.17)
+2026-09-15 17:30:12,407 INFO     run_e013  590    outer -0.34->-11.28 | inner_1 -2.21->-12.41 (ctl -12.05) | inner_2 -0.01->-0.01 (ctl -0.01)
+2026-09-15 17:31:01,092 INFO     run_e013  615    outer -0.31->-9.09 | inner_1 -0.36->-11.84 (ctl -5.13) | inner_2 -0.05->-0.04 (ctl -0.05)
+2026-09-15 17:31:51,746 INFO     run_e013  747    outer -0.65->-10.79 | inner_1 -0.42->-9.94 (ctl -8.09) | inner_2 -0.02->-0.02 (ctl -0.02)
+2026-09-15 17:32:54,975 INFO     run_e013  840    outer -2.09->-9.44 | inner_1 -2.79->-10.48 (ctl -10.47) | inner_2 -0.97->-0.95 (ctl -1.01)
+2026-09-15 17:34:03,083 INFO     run_e013  869    outer -6.87->-12.95 | inner_1 -4.53->-13.60 (ctl -7.29) | inner_2 -4.90->-4.74 (ctl -4.90)
+2026-09-15 17:34:03,084 INFO     run_e013  written: results/E-013-pilot-meta-llama_Llama-3.1-8B.json

@@ -1,0 +1,117 @@
+{
+ "settlement": [
+  "Alexandria",
+  "Amsterdam",
+  "Athens",
+  "Atlanta",
+  "Baltimore",
+  "Bangalore",
+  "Barcelona",
+  "Boston",
+  "Bradford",
+  "Bristol",
+  "Brooklyn",
+  "Brunswick",
+  "Budapest",
+  "Calgary",
+  "Cardiff",
+  "Chennai",
+  "Cincinnati",
+  "Copenhagen",
+  "Dallas",
+  "Detroit",
+  "Dover",
+  "Edinburgh",
+  "Edmonton",
+  "Gap",
+  "Geneva",
+  "Glasgow",
+  "Helsinki",
+  "Honolulu",
+  "Houston",
+  "Lancaster",
+  "Leeds",
+  "Lisbon",
+  "Lyon",
+  "Madrid",
+  "Manchester",
+  "Manila",
+  "Medina",
+  "Melbourne",
+  "Monroe",
+  "Montreal",
+  "Mumbai",
+  "Munich",
+  "Naples",
+  "Nice",
+  "Oslo",
+  "Ottawa",
+  "Paris",
+  "Perth",
+  "Philadelphia",
+  "Prague",
+  "Preston",
+  "Rome",
+  "Santiago",
+  "Seattle",
+  "Shanghai",
+  "Sheffield",
+  "Stockholm",
+  "Tehran",
+  "Tokyo",
+  "Toronto",
+  "Tours",
+  "Vienna",
+  "Warsaw",
+  "Wellington",
+  "Wilmington",
+  "Windsor"
+ ],
+ "not_settlement": {
+  "Auckland": [
+   "region of New Zealand",
+   "geographic location"
+  ],
+  "Chicago": [
+   "private university",
+   "private not-for-profit educational institution",
+   "research university"
+  ],
+  "Florida": [
+   "U.S. state"
+  ],
+  "Georgetown": [
+   "private university",
+   "research university",
+   "private not-for-profit educational institution"
+  ],
+  "Hamburg": [
+   "sports club",
+   "association football club"
+  ],
+  "Nebraska": [
+   "U.S. state"
+  ],
+  "Norfolk": [
+   "historic county of England"
+  ],
+  "Pittsburgh": [
+   "public\u2013private partnership",
+   "private university",
+   "research university"
+  ],
+  "Springfield": [
+   "suburb",
+   "civil parish"
+  ],
+  "Tottenham": [
+   "association football club"
+  ],
+  "Venice": [
+   "district or neighborhood of Los Angeles"
+  ],
+  "Wisconsin": [
+   "U.S. state"
+  ]
+ }
+}

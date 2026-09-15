@@ -11,8 +11,8 @@ ingestion creates a new dated directory and never overwrites this one.
 | **Subjects looked up** | 417 (416 resolved to a QID) |
 | **Entities with claims** | 520 |
 | **Statements** | 91798 |
-| **Labels** | 633 |
-| **SHA-256 (decompressed)** | `1550b596c626429938b0e81ed2091e01922e72cc194ff2cecf39162cdc1bb8f3` |
+| **Labels** | 766 |
+| **SHA-256 (decompressed)** | `662102d6a90066fc7dc818a876e3736e3864c0a0b96ddd74712c25423b8c5f57` |
 
 Checksum is of the decompressed payload — gzip headers embed mtime and are not
 byte-stable. Verify:

@@ -1,0 +1,18 @@
+2026-09-15 17:47:51,359 INFO     classify_places  run classify_places -> logs/classify_places-2026-09-15-174751.log
+2026-09-15 17:47:51,359 INFO     classify_places  config {"property": "P31 instance of", "ticket": "E-014"}
+2026-09-15 17:47:52,163 INFO     classify_places  123 distinct P31 types across 78 birthplaces
+2026-09-15 17:47:56,965 INFO     classify_places  settlements: 66/78
+2026-09-15 17:47:56,965 INFO     classify_places  NOT settlements (12) — these pollute the pool and malform their chain:
+2026-09-15 17:47:56,965 INFO     classify_places     Auckland                           ['region of New Zealand', 'geographic location']
+2026-09-15 17:47:56,965 INFO     classify_places     Chicago                            ['private university', 'private not-for-profit educational institution', 'research university']
+2026-09-15 17:47:56,965 INFO     classify_places     Florida                            ['U.S. state']
+2026-09-15 17:47:56,966 INFO     classify_places     Georgetown                         ['private university', 'research university', 'private not-for-profit educational institution']
+2026-09-15 17:47:56,966 INFO     classify_places     Hamburg                            ['sports club', 'association football club']
+2026-09-15 17:47:56,966 INFO     classify_places     Nebraska                           ['U.S. state']
+2026-09-15 17:47:56,966 INFO     classify_places     Norfolk                            ['historic county of England']
+2026-09-15 17:47:56,966 INFO     classify_places     Pittsburgh                         ['public–private partnership', 'private university', 'research university']
+2026-09-15 17:47:56,966 INFO     classify_places     Springfield                        ['suburb', 'civil parish']
+2026-09-15 17:47:56,966 INFO     classify_places     Tottenham                          ['association football club']
+2026-09-15 17:47:56,966 INFO     classify_places     Venice                             ['district or neighborhood of Los Angeles']
+2026-09-15 17:47:56,966 INFO     classify_places     Wisconsin                          ['U.S. state']
+2026-09-15 17:47:56,966 INFO     classify_places  written: probes/place_types.json

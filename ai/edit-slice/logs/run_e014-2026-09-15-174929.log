@@ -1,0 +1,5 @@
+2026-09-15 17:49:29,693 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-15-174929.log
+2026-09-15 17:49:29,693 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-15 17:49:29,693 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-15 17:49:32,424 INFO     run_e014  delta cache: 0 of 142 already computed
+2026-09-15 17:49:32,424 INFO     run_e014  v* 1-6 of 142 remaining

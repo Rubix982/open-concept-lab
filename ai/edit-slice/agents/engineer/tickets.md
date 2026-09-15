@@ -882,3 +882,69 @@ sequential edits.
 **Blockers:** none
 **Artifacts:** src/edit.py; agents/engineer/workspace/run_e013.py; results/E-013-*.json
 **Closed:** —
+
+---
+
+### E-014 · Scaled edit: where does the probability go, across countries and cities?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 6h
+
+**Description:**
+[E-013]'s pilot (n=12) found that log-prob drop on `inner_1` is the WRONG statistic:
+the real edit and the same-subject control drop the old answer by comparable amounts
+(mean 8.50 vs 6.82 nats), but the real edit sends the mass to a city *in the target
+country* — Edinburgh→Hamburg for Germany, Paris→Santiago for Chile — while the control
+sends it somewhere incoherent (Glasgow, "Ha", "The"). **Destination, not magnitude, is
+the measurement.**
+
+Two defects in the pilot's readout must be fixed before scaling, not after:
+
+1. **Truncation.** Top-1 was first-token argmax, so "Mad", "G", "New" are unreadable.
+   Rank FULL city names from a type-matched pool instead.
+2. **Unverified membership.** "Hamburg is in Germany" was my inspection, not a lookup.
+   Verify with Wikidata `P17` for every city in the pool.
+
+**Pool coverage is the subtle one.** The `inner_1` candidate pool is the 78 cities that
+appear as chain answers. If the coherent destination for a target country is not in
+that pool, the model cannot express it and we would score a coherent relocation as a
+failure — the [E-011] mistake exactly. The pool is therefore the chain cities UNION the
+capital (`P36`) of every country in the target pool.
+
+**Design.**
+- N = all 77 usable chains that carry an occupation, covering ~28 target countries.
+- Per chain: real edit (`outer` → counterfactual country) and same-subject control
+  (occupation), both as in [E-013].
+- Readout per condition: rank the full city pool at `inner_1`; record top-1, and
+  whether `P17(top-1) == target country`.
+- **Data controls, which is what makes this more than an anecdote:**
+  - **Capital bias.** Santiago, Helsinki, Stockholm, Bern and London are all capitals.
+    If the model simply emits the target country's capital, the relocation is coherent
+    but shallower than "chose a plausible birth city". Report the capital rate.
+  - **Placebo country.** For each chain, also test membership against a RANDOM other
+    country. That is the null rate for "lands in country X" and it is what makes the
+    real rate interpretable.
+  - **Per-country breakdown.** The effect must not be carried by two or three
+    countries. Report the rate by target country, the split that caught [E-009b].
+  - **Original-country retention.** Does `inner_2` stay inert at scale (pilot: −0.02)?
+
+**Falsification, pre-stated.**
+- *Confirm:* real-edit `inner_1` lands in the target country at a rate far above both
+  the control and the placebo. Coherent revision of the defeasible premise.
+- *Deny:* real and control land in the target country at similar rates. The pilot's
+  pattern was a small-n artifact.
+- *Null:* neither lands in the target country once full names are ranked — the pilot's
+  apparent coherence was an artifact of first-token argmax.
+
+**Resumability is a requirement, not a nicety.** 154 edits x 25 steps is ~2h of remote
+work and three runs were killed by memory pressure today. `v*` deltas cache to disk
+keyed by case_id and config; a kill must cost wall-clock only.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e014.py; results/E-014-*.json;
+data/wikidata/<date>/snapshot.json.gz (city P17, country P36)
+**Closed:** —
