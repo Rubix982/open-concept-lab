@@ -134,10 +134,18 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
     # oversized batch fails for reasons unrelated to correctness. Split rather
     # than fail: round trips still amortise far better than one call per pair.
     if len(pairs) > max_rows:
-        log.debug("splitting %d pairs into chunks of %d", len(pairs), max_rows)
+        # BALANCED chunks, not greedy ones. Greedy splitting of 224 rows gives
+        # 200 + 24, and that 24-row tail costs a full round trip — ~4s of queue and
+        # transfer to carry a tenth of a batch. Round trips are the budget here, so
+        # the same two calls carry 112 rows each instead, at no extra cost and with
+        # more headroom against the host's memory ceiling.
+        n_chunks = -(-len(pairs) // max_rows)
+        size = -(-len(pairs) // n_chunks)
+        log.debug("splitting %d pairs into %d chunks of <=%d (cap %d)",
+                  len(pairs), n_chunks, size, max_rows)
         out: list[float] = []
-        for i in range(0, len(pairs), max_rows):
-            out += score_pairs(model, pairs[i : i + max_rows], max_rows=max_rows)
+        for i in range(0, len(pairs), size):
+            out += score_pairs(model, pairs[i : i + size], max_rows=max_rows)
         return out
 
     ids, mask, lengths = _encode_pairs(model, pairs)

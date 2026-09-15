@@ -1,0 +1,20 @@
+2026-09-15 11:46:06,325 INFO     familiarity  run familiarity -> logs/familiarity-2026-09-15-114606.log
+2026-09-15 11:46:06,325 INFO     familiarity  config {"entities_in_snapshot": 520, "snapshot": "data/wikidata/2026-09-14/snapshot.json.gz", "thread": "T-061"}
+2026-09-15 11:46:06,327 INFO     familiarity  ==============================================================
+2026-09-15 11:46:06,328 INFO     familiarity  GPT-J-6B — 136/136 chains have a prominence value (0 missing)
+2026-09-15 11:46:06,328 INFO     familiarity  subject statements: min 5  median 48  max 404
+2026-09-15 11:46:06,328 INFO     familiarity  POOLED  inner_1 & outer lift = 2.10  (n=136)
+2026-09-15 11:46:06,328 INFO     familiarity  stratum      n   inner_1     outer      both     lift
+2026-09-15 11:46:06,328 INFO     familiarity  low         46       37%       28%       22%     2.08
+2026-09-15 11:46:06,328 INFO     familiarity  mid         46       33%       17%       13%     2.30
+2026-09-15 11:46:06,328 INFO     familiarity  high        44       34%       18%       11%     1.83
+2026-09-15 11:46:06,328 INFO     familiarity  within-stratum mean lift = 2.08   vs pooled 2.10
+2026-09-15 11:46:06,329 INFO     familiarity  ==============================================================
+2026-09-15 11:46:06,329 INFO     familiarity  Llama-3.1-70B — 136/136 chains have a prominence value (0 missing)
+2026-09-15 11:46:06,329 INFO     familiarity  subject statements: min 5  median 48  max 404
+2026-09-15 11:46:06,329 INFO     familiarity  POOLED  inner_1 & outer lift = 1.15  (n=136)
+2026-09-15 11:46:06,329 INFO     familiarity  stratum      n   inner_1     outer      both     lift
+2026-09-15 11:46:06,329 INFO     familiarity  low         46       78%       46%       46%     1.28
+2026-09-15 11:46:06,329 INFO     familiarity  mid         46       80%       57%       50%     1.10
+2026-09-15 11:46:06,329 INFO     familiarity  high        44       93%       68%       68%     1.07
+2026-09-15 11:46:06,329 INFO     familiarity  within-stratum mean lift = 1.15   vs pooled 1.15

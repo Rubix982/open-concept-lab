@@ -1,0 +1,45 @@
+2026-09-15 11:44:53,591 INFO     surface_forms  run surface_forms -> logs/surface_forms-2026-09-15-114453.log
+2026-09-15 11:44:53,592 INFO     surface_forms  config {"conditions": ["bare", "natural"], "model": "meta-llama/Llama-3.1-70B", "n_candidates": 50, "n_items": 136, "renamed": {"Czech Republic": "the Czech Republic", "Netherlands": "the Netherlands", "People's Republic of China": "China", "Philippines": "the Philippines", "United Kingdom": "the United Kingdom", "United States": "the United States"}, "seed": 1538, "ticket": "E-011"}
+2026-09-15 11:44:53,592 INFO     surface_forms  E-011: 136 outer items, two renderings of the same 28-country pool
+2026-09-15 11:44:55,766 INFO     surface_forms  condition bare: scoring 136 items
+2026-09-15 11:44:55,767 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:45:04,318 DEBUG    remote  trace ok: 200 rows, 267 tok, 8.5s
+2026-09-15 11:45:08,172 DEBUG    remote  trace ok: 24 rows, 29 tok, 3.9s
+2026-09-15 11:45:08,175 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:45:17,142 DEBUG    remote  trace ok: 200 rows, 263 tok, 9.0s
+2026-09-15 11:45:21,153 DEBUG    remote  trace ok: 24 rows, 33 tok, 4.0s
+2026-09-15 11:45:21,153 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:45:31,169 DEBUG    remote  trace ok: 200 rows, 265 tok, 10.0s
+2026-09-15 11:45:35,118 DEBUG    remote  trace ok: 24 rows, 31 tok, 3.9s
+2026-09-15 11:45:35,120 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:45:43,200 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.1s
+2026-09-15 11:45:47,610 DEBUG    remote  trace ok: 24 rows, 32 tok, 4.4s
+2026-09-15 11:45:47,611 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:45:56,264 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.6s
+2026-09-15 11:46:00,261 DEBUG    remote  trace ok: 24 rows, 32 tok, 4.0s
+2026-09-15 11:46:00,262 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:46:09,913 DEBUG    remote  trace ok: 200 rows, 264 tok, 9.6s
+2026-09-15 11:46:13,854 DEBUG    remote  trace ok: 24 rows, 32 tok, 3.9s
+2026-09-15 11:46:13,857 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:46:21,979 DEBUG    remote  trace ok: 200 rows, 263 tok, 8.1s
+2026-09-15 11:46:25,962 DEBUG    remote  trace ok: 24 rows, 33 tok, 4.0s
+2026-09-15 11:46:25,964 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:46:34,626 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.6s
+2026-09-15 11:46:38,522 DEBUG    remote  trace ok: 24 rows, 32 tok, 3.9s
+2026-09-15 11:46:38,523 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:46:46,661 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.1s
+2026-09-15 11:46:50,652 DEBUG    remote  trace ok: 24 rows, 32 tok, 4.0s
+2026-09-15 11:46:50,654 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:46:59,159 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.5s
+2026-09-15 11:47:03,150 DEBUG    remote  trace ok: 24 rows, 32 tok, 4.0s
+2026-09-15 11:47:03,153 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:47:11,653 DEBUG    remote  trace ok: 200 rows, 264 tok, 8.5s
+2026-09-15 11:47:17,232 DEBUG    remote  trace ok: 24 rows, 32 tok, 5.6s
+2026-09-15 11:47:17,234 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:47:25,855 DEBUG    remote  trace ok: 200 rows, 267 tok, 8.6s
+2026-09-15 11:47:30,595 DEBUG    remote  trace ok: 24 rows, 29 tok, 4.7s
+2026-09-15 11:47:30,598 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:47:38,721 DEBUG    remote  trace ok: 200 rows, 268 tok, 8.1s
+2026-09-15 11:47:42,598 DEBUG    remote  trace ok: 24 rows, 28 tok, 3.9s
+2026-09-15 11:47:42,604 DEBUG    remote  splitting 224 pairs into chunks of 200
+2026-09-15 11:47:50,813 DEBUG    remote  trace ok: 200 rows, 263 tok, 8.2s

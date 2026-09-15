@@ -842,3 +842,69 @@ part-whole (same shape as containment, fewer clean chains).
 model lacks inner-2 cannot test contraction. Possession filtering applies here and
 will shrink the usable set — that number is itself worth reporting.
 **Answer:** —
+
+---
+
+### T-059 · Is the `outer` deficit answer surface form rather than knowledge?
+
+**Status:** active
+**Parent:** T-058
+**Opened:** 2026-09-15
+**Question:** [E-009b] found the `outer` possession deficit is two strings —
+United States 6/40 held and United Kingdom 2/14, against France 13/13, India 5/5,
+Japan 4/4. Article-taking names hold at 15% (n=54), bare names at 84% (n=82). Is
+`"X was born in the country of" + " United States"` failing because it is
+ungrammatical — we score a Wikidata label, not a natural continuation — or because
+the model genuinely lacks the fact? 28 chains hang on the answer: usable moves
+74/136 to 102/136 if it is an artifact.
+**Answer:** E-011 in flight — same items, same pool, two renderings.
+
+---
+
+### T-060 · Does the gate clear at 8B, dissolving the 70B editability problem?
+
+**Status:** open
+**Parent:** T-059
+**Opened:** 2026-09-15
+**Question:** The whole ROME-at-70B covariance problem (~3.3 GB over d_mlp 28672,
+uncollected and uncosted, recorded as the unpaid consequence in [O-005]) exists
+only because we assumed 8B would not clear the possession bar. **We have never
+run the gate at 8B** — the one scale where [E-006] verified editability. If 8B
+yields enough usable chains after the T-059 fix, the obstacle evaporates rather
+than gets solved, which is the cheapest outcome available.
+**Answer:** — (run after E-011 settles the rendering)
+
+---
+
+### T-061 · Is subject familiarity the variable behind the leg dependence?
+
+**Status:** answered — **no**
+**Parent:** T-058
+**Opened:** 2026-09-15
+**Question:** [E-009] measured that chain legs are not independent (inner_1 &
+outer lift 2.10 at GPT-J, 1.15 at 70B) and explained it as possession clustering
+per entity: familiar subject, all legs hold. That was a story about an unmeasured
+variable.
+**Answer:** measured, and the story does not survive. Prominence = statement count
+in the Wikidata snapshot already on disk; 136/136 chains covered; spread 5 to 404,
+median 48. Stratifying by prominence terciles leaves the lift **untouched**:
+
+| model | pooled lift | within-stratum mean |
+| --- | ---: | ---: |
+| GPT-J-6B | 2.10 | **2.08** |
+| Llama-3.1-70B | 1.15 | **1.15** |
+
+A common cause would have collapsed the within-stratum figure toward 1. It did not
+move at all. Prominence *does* predict the possession **level** at 70B (inner_1
+78→93%, outer 46→68% low to high tercile) — it is a real variable, just not the one
+binding the legs together.
+
+Removing the article-answer chains drops the GPT-J lift from 2.10 to 1.61, so the
+T-059 artifact accounts for part of the dependence and not all of it. At 70B the
+lift is ~1.1 either way, which is close enough to independence that the original
+framing was overstated.
+
+**What this costs us:** the "possession clusters per entity" sentence in
+[E-009] and in the published write-up is unsupported and must be withdrawn, and
+the residual GPT-J lift of 1.61 has no explanation yet.
+**Artifacts:** agents/engineer/workspace/familiarity.py; logs/familiarity-*.log

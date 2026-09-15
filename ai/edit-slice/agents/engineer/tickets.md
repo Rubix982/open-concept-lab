@@ -622,3 +622,64 @@ If it misses any, the retrieval is not good enough to reduce anyone's reading.
   project had never created it
 
 **Closed:** 2026-09-15
+
+---
+
+### E-011 · Is the `outer` deficit answer surface form, or real?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 1h
+
+**Description:**
+[E-009b] established that the `outer` possession deficit is two strings — United
+States 6/40 and United Kingdom 2/14 held, against France 13/13, India 5/5, Japan
+4/4. Grouped, article-taking names hold at 15% (n=54) and bare names at 84%
+(n=82). The leading explanation is that `"X was born in the country of"` followed
+by `" United States"` is ungrammatical where `" France"` is fine — i.e. we score a
+Wikidata label rather than a natural continuation. That is a hypothesis, not a
+finding, and this ticket decides it.
+
+**Method.** Re-run the possession gate on the same 136 `outer` items, same model
+(Llama-3.1-70B), same seed, same 28-country pool, changing exactly one thing: how
+every candidate in the pool is rendered.
+
+- Condition **bare** — Wikidata labels verbatim. This is the [E-009] baseline, 57%.
+- Condition **natural** — the same countries in the form a sentence would use:
+  `the United States`, `the United Kingdom`, `the Netherlands`, `the Philippines`,
+  `the Czech Republic`, `China` for `People's Republic of China`. Every other
+  label is unchanged, so 23 of 28 candidates are byte-identical across conditions
+  and the contrast is isolated to the five that are not.
+
+Rendering is applied to the WHOLE pool, never to the true answer alone — scoring
+`" the United States"` against bare-form distractors would advantage it for a
+reason that has nothing to do with the hypothesis.
+
+**Confound, and why the existing measure controls it.** Prefixing `" the"` adds a
+high-probability token, and `score_pairs` returns mean log-prob per continuation
+token, so the natural form could win for reasons of length normalisation rather
+than knowledge. The `held` criterion already guards this: it requires the true
+answer to rank first with the real subject AND to rank higher than it does with
+the placeholder. A form that wins on prior alone drives `rank_prior` to 1 and
+fails the lift test. No new control is needed; state this in the result.
+
+**Falsification, pre-stated.**
+- *Confirm:* `natural` recovers US/UK to roughly the bare-name rate (~84%), and
+  bare-name countries are unchanged. Template defect; cheap to fix; usable chains
+  rise toward the 102/136 ceiling computed in [E-009b].
+- *Deny:* US/UK stay low under `natural`. The model genuinely does not hold these,
+  which is the more interesting result and needs its own explanation — the
+  candidates are then Canada (60%) and Germany (25%), which take no article and
+  which the surface-form story never explained.
+- *Null:* both conditions move together, indicating the re-run is not measuring
+  what the labels say. Treat as a bug, not a result.
+
+**Deliverable.** One table: held rate by condition × answer-string class
+(article-taking vs bare), plus the recomputed usable-chain count.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/surface_forms.py; results/E-011-*.json
+**Closed:** —
