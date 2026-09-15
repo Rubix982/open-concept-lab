@@ -1,0 +1,41 @@
+2026-09-15 12:37:03,488 INFO     run_e012  run run_e012 -> logs/run_e012-2026-09-15-123703.log
+2026-09-15 12:37:03,488 INFO     run_e012  config {"facts": 408, "fingerprint": "v2|meta-llama_Llama-3.1-8B|n50|s1538|pX", "min_auc": 0.8, "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50, "rendering": "natural", "seed": 1538, "ticket": "E-012"}
+2026-09-15 12:37:03,488 INFO     run_e012  E-012: 136 chains -> 408 facts, schema v2
+2026-09-15 12:37:05,756 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:37:10,153 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.4s
+2026-09-15 12:37:13,627 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 12:37:13,630 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:37:17,138 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 12:37:20,659 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 12:37:20,661 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:37:24,124 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 12:37:27,658 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 12:37:27,662 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:37:31,143 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 12:37:34,713 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 12:37:34,717 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:37:38,353 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.6s
+2026-09-15 12:37:41,969 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.6s
+2026-09-15 12:37:41,973 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 13:11:03,946 WARNING  remote  transport failure (ReadError) on attempt 1/8; retrying in 5s
+2026-09-15 13:43:47,586 DEBUG    remote  trace ok: 134 rows, 154 tok, 5.1s
+2026-09-15 13:43:51,754 DEBUG    remote  trace ok: 134 rows, 174 tok, 4.2s
+2026-09-15 13:43:51,756 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 13:43:55,946 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.2s
+2026-09-15 13:44:00,206 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.2s
+2026-09-15 13:44:00,208 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 13:44:04,669 DEBUG    remote  trace ok: 134 rows, 174 tok, 4.4s
+2026-09-15 13:44:10,542 DEBUG    remote  trace ok: 134 rows, 154 tok, 5.9s
+2026-09-15 13:44:10,545 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 13:44:14,692 DEBUG    remote  trace ok: 134 rows, 154 tok, 4.1s
+2026-09-15 13:44:18,920 DEBUG    remote  trace ok: 134 rows, 174 tok, 4.2s
+2026-09-15 13:44:18,923 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 13:44:23,118 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.2s
+2026-09-15 13:44:27,331 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.2s
+2026-09-15 13:44:27,336 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:20:16,451 DEBUG    remote  trace ok: 134 rows, 174 tok, 11.7s
+2026-09-15 14:20:23,119 WARNING  remote  transport failure (ConnectionError) on attempt 1/8; retrying in 5s
+2026-09-15 14:20:33,133 WARNING  remote  transport failure (ConnectionError) on attempt 2/8; retrying in 10s
+2026-09-15 14:20:48,142 WARNING  remote  transport failure (ConnectionError) on attempt 3/8; retrying in 15s
+2026-09-15 14:21:25,458 WARNING  remote  transport failure (ConnectionError) on attempt 4/8; retrying in 20s
+2026-09-15 14:21:50,471 WARNING  remote  transport failure (ConnectionError) on attempt 5/8; retrying in 25s

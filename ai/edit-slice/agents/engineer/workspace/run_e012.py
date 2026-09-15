@@ -12,12 +12,14 @@ import argparse
 import json
 import sys
 from collections import Counter, defaultdict
+from dataclasses import replace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from discrimination import discriminate, held, summarise  # noqa: E402
 from gate_chains import POSITIONS, chain_edits  # noqa: E402
+from surface_forms import NATURAL  # noqa: E402
 from logs import setup  # noqa: E402
 from possession import FilterConfig, run  # noqa: E402
 from remote import connect, score_pairs  # noqa: E402
@@ -36,21 +38,37 @@ def main() -> None:
     ap.add_argument("--n-candidates", type=int, default=50)
     ap.add_argument("--seed", type=int, default=1538)
     ap.add_argument("--min-auc", type=float, default=0.8)
+    ap.add_argument("--natural", action="store_true",
+                    help="render answers as a sentence would ([E-011] NATURAL map). "
+                         "The row and control defects are orthogonal, so recovering "
+                         "modal answers needs this AND the paired control.")
     args = ap.parse_args()
 
     chains = json.loads(CHAINS.read_text())["chains"]
     edits = chain_edits(chains)
+    if args.natural:
+        # Rendering is applied to EVERY answer, so the whole candidate pool moves
+        # with it; renaming only the true answer would advantage it for a reason
+        # unrelated to the question. Same rule as [E-011].
+        edits = [replace(e, true_answer=NATURAL.get(e.true_answer, e.true_answer))
+                 for e in edits]
     cfg = FilterConfig(model=args.model, n_candidates=args.n_candidates, seed=args.seed)
 
     log = setup("run_e012", config={
         "ticket": "E-012", "model": args.model, "n_candidates": args.n_candidates,
         "seed": args.seed, "min_auc": args.min_auc, "facts": len(edits),
+        "rendering": "natural" if args.natural else "bare",
         "fingerprint": cfg.fingerprint})
     log.info("E-012: %d chains -> %d facts, schema %s", len(chains), len(edits),
              cfg.fingerprint.split("|")[0])
 
     model = connect(args.model)
-    cache = ROOT / "results" / "cache" / f"{cfg.fingerprint.replace('|', '_')}.json"
+    render_tag = "natural" if args.natural else "bare"
+    # The fingerprint covers model/n/seed/placeholder — NOT the rendering. A shared
+    # path would serve bare results to a natural run and fake a null result, which
+    # is the collision this project has now shipped twice.
+    cache = (ROOT / "results" / "cache" /
+             f"E012_{render_tag}_{cfg.fingerprint.replace('|', '_')}.json")
     rep = run(edits, cfg, lambda p: score_pairs(model, p), cache_path=cache,
               reference=edits,
               progress=lambda i, n: log.info("scored %d/%d", i, n) if i % 25 == 0 else None)
@@ -112,9 +130,11 @@ def main() -> None:
     log.info("usable chains — paired control      : %d/%d  (%d unmeasured)",
              n, len(chains), unk)
 
-    out = ROOT / "results" / f"E-012-discrimination-{args.model.replace('/', '_')}.json"
+    out = (ROOT / "results" /
+           f"E-012-discrimination-{render_tag}-{args.model.replace('/', '_')}.json")
     out.write_text(json.dumps({
         "ticket": "E-012", "config": cfg.as_dict(), "min_auc": args.min_auc,
+        "rendering": render_tag,
         "per_item": [{"case_id": d.case_id, "position": d.relation_id,
                       "answer": d.true_answer, "auc": d.auc, "n_foils": d.n_foils,
                       "n_foils_possible": d.n_foils_possible,
