@@ -697,7 +697,7 @@ agents/shared/decisions.md -> "[E-011] Result"
 
 ### E-012 · Paired-subject control: does the model track WHICH subject?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -774,6 +774,15 @@ gate output); a shape change that reuses a key would be the third.
 **Deliverable.** One table: row-test pass rate, column-test mean, and combined held
 rate, by answer-frequency class, at 8B.
 
+**Result (2026-09-15).** Confirm, with an interaction nobody predicted. Usable
+chains over the 2x2 at 8B: bare+placeholder 58, bare+paired 59, natural+placeholder
+59, natural+paired **78**. Neither fix alone moves anything; together +20. On `outer`
+modal answers row goes 25% -> 68%. 78/136 at 8B beats the 74/136 that 70B gave under
+the old instrument. Full entry in agents/shared/decisions.md [E-012].
+
 **Blockers:** none
-**Artifacts:** src/possession.py; src/discrimination.py; results/E-012-*.json
-**Closed:** —
+**Artifacts:** src/possession.py; src/discrimination.py;
+agents/engineer/workspace/{run_e012,test_discrimination}.py;
+results/E-012-discrimination-{bare,natural}-meta-llama_Llama-3.1-8B.json;
+agents/shared/decisions.md -> "[E-012] Result"
+**Closed:** 2026-09-15

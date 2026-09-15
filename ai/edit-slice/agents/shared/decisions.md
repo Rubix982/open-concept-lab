@@ -400,3 +400,62 @@ and costed properly rather than assumed.
 
 **Artifacts:** probes/chains_gated_meta-llama_Llama-3.1-8B.json;
 logs/gate_chains-2026-09-15-120133.log
+
+---
+
+## [E-012] Result: the two defects are orthogonal, and fixing them beats 60B parameters
+
+_Date: 2026-09-15 · Llama-3.1-8B, 136 chains, full 2x2 over rendering x control_
+
+**Usable chains, same 136 chains, same model, same seed:**
+
+| | placeholder control | paired control |
+| --- | ---: | ---: |
+| `bare` rendering | 58 | 59 |
+| `natural` rendering | 59 | **78** |
+
+Neither fix alone moves anything: +1 and +1. Together, **+20**. This is an
+interaction, not two additive improvements, and it is why [E-011] read as a Deny and
+why [E-012] on `bare` gained a single chain. Each fix removes a different blocker,
+and an item needs both removed to pass.
+
+- **rendering** fixes the **row** test — *given this subject, which answer?*
+  `" United States"` after "born in the country of" is ungrammatical, so the true
+  answer does not rank first however well the model knows it.
+- **paired control** fixes the **control** — *given this answer, which subject?*
+  and is required precisely BECAUSE natural rendering makes the answer
+  prior-favoured, which is what defeats the placeholder test.
+
+**`outer` position, the leg that was broken all day:**
+
+| condition | row test | mean AUC | held |
+| --- | ---: | ---: | ---: |
+| `bare` + paired | 50% | 0.894 | 50% |
+| `natural` + paired | **74%** | **0.929** | **71%** |
+
+On modal answers specifically (n=77), row goes 25% -> **68%** and held 25% -> **64%**.
+
+**The comparison worth stating.** Llama-3.1-70B under the old instrument gave
+**74/136**. Llama-3.1-8B under the fixed instrument gives **78/136**. Repairing the
+measurement recovered more chains than an order of magnitude of scale did.
+
+**Why this is not just a looser threshold.** The obvious objection is that the paired
+control simply passes more items. The 2x2 answers it: on `bare` rendering the paired
+control gives 59 against the placeholder's 58. The criterion is not systematically
+more permissive — it is differently *defined*, and the gain appears only where the
+old one was undefined.
+
+**Decision:** the paired control plus natural rendering becomes the default measure.
+`possession.py` keeps the placeholder path for reproducing published numbers, which
+must not be retrofitted.
+
+**Known threats, unresolved.** Foils differ from the item in subject frequency as
+well as identity, and [T-061] showed prominence predicts possession level; the AUROC
+is not corrected for it. `inner_1` foil coverage is 63% because its 78-city pool
+exceeds `n_candidates`, so its AUC rests on a sampled foil set while `outer` and
+`inner_2` are dense at 100%. Both belong in any write-up of this number.
+
+**Artifacts:** src/discrimination.py; agents/engineer/workspace/run_e012.py;
+agents/engineer/workspace/test_discrimination.py;
+results/E-012-discrimination-{bare,natural}-meta-llama_Llama-3.1-8B.json;
+logs/run_e012-2026-09-15-144956.log

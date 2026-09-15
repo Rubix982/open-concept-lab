@@ -6,3 +6,106 @@
 2026-09-15 14:29:27,308 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
 2026-09-15 14:29:27,313 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
 2026-09-15 14:29:30,807 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:29:34,203 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:29:34,205 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:29:37,677 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:29:41,186 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:29:41,192 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:29:44,619 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:29:48,090 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:29:48,093 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:29:51,669 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.6s
+2026-09-15 14:29:55,236 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:29:55,241 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:29:58,745 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:30:02,220 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:30:02,228 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:30:39,283 DEBUG    remote  trace ok: 134 rows, 174 tok, 12.2s
+2026-09-15 14:30:42,832 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:30:42,840 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:30:46,355 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:30:49,979 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.6s
+2026-09-15 14:30:49,985 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:30:54,010 DEBUG    remote  trace ok: 156 rows, 176 tok, 4.0s
+2026-09-15 14:30:59,679 DEBUG    remote  trace ok: 156 rows, 176 tok, 5.6s
+2026-09-15 14:30:59,687 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:31:04,742 DEBUG    remote  trace ok: 134 rows, 174 tok, 5.0s
+2026-09-15 14:31:08,223 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:31:08,229 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:31:11,877 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.6s
+2026-09-15 14:31:15,331 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:31:15,339 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:46:17,057 WARNING  remote  transport failure (ConnectError) on attempt 1/8; retrying in 5s
+2026-09-15 14:46:25,778 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.7s
+2026-09-15 14:46:29,244 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.4s
+2026-09-15 14:46:29,249 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:46:32,768 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:46:36,257 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:46:36,261 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:46:39,967 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.7s
+2026-09-15 14:46:51,994 DEBUG    remote  trace ok: 134 rows, 174 tok, 12.0s
+2026-09-15 14:46:51,998 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:46:55,443 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.4s
+2026-09-15 14:46:58,928 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:46:58,933 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:02,318 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:47:05,722 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:47:05,727 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:09,938 DEBUG    remote  trace ok: 134 rows, 154 tok, 4.2s
+2026-09-15 14:47:13,486 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:47:13,491 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:47:16,977 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:47:20,453 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:47:20,458 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:23,914 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:47:27,442 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:47:27,447 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:30,875 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:47:34,306 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:47:34,315 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:47:37,721 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.4s
+2026-09-15 14:47:41,223 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:47:41,228 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:44,809 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.6s
+2026-09-15 14:47:48,352 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:47:48,363 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:47:51,951 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.6s
+2026-09-15 14:47:55,404 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:47:55,413 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:47:58,941 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:48:02,403 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.4s
+2026-09-15 14:48:02,408 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:05,905 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:48:09,365 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:48:09,375 INFO     run_e012  scored 100/368
+2026-09-15 14:48:09,375 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:12,968 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.6s
+2026-09-15 14:48:16,444 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:48:16,457 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:48:19,955 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:48:23,451 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:48:23,463 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:27,067 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.6s
+2026-09-15 14:48:30,481 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:48:30,493 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:33,929 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:48:37,473 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:48:37,482 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:48:40,964 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:48:44,466 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:48:44,475 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:48,004 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:48:51,564 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:48:51,574 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:48:55,114 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:48:58,690 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.6s
+2026-09-15 14:48:58,699 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 14:49:02,128 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.4s
+2026-09-15 14:49:05,628 DEBUG    remote  trace ok: 156 rows, 176 tok, 3.5s
+2026-09-15 14:49:05,639 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:49:09,106 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.5s
+2026-09-15 14:49:12,600 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.5s
+2026-09-15 14:49:12,613 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 14:49:16,019 DEBUG    remote  trace ok: 134 rows, 154 tok, 3.4s
+2026-09-15 14:49:19,462 DEBUG    remote  trace ok: 134 rows, 174 tok, 3.4s
+2026-09-15 14:49:19,475 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)

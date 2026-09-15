@@ -904,6 +904,99 @@ right one. That discriminates knowledge from prior without needing the prior to 
 low. It is opened as E-012, and deliberately not retrofitted into any number already
 published here.
 
+### Both fixes, and an interaction nobody predicted
+
+E-012 built that control: for each item, take the score of its true answer under
+every *foil* prompt — a real subject whose answer differs — and ask what fraction it
+beats. That is an AUROC. Chance is 0.5. It is indifferent to how high the answer
+scores overall, which is exactly why it is defined where the placeholder test is not.
+
+Run alone, it gained **one chain**. Modal answers discriminated well — median AUC
+0.901 — but the *row* test now blocked them, because `" United States"` still would
+not rank first while it was still spelled ungrammatically. Thirty-two items sat on
+that intersection: control satisfied, ranking not.
+
+So the last run was the full 2×2.
+
+<Figure
+  caption="Usable chains out of 136, Llama-3.1-8B, over rendering × control. The lines are parallel until both fixes are present; the gain is an interaction, not a sum."
+>
+
+<svg viewBox="0 0 700 300" role="img" aria-label="Interaction plot: usable chains by rendering and control. Bare rendering goes 58 to 59; natural rendering goes 59 to 78." style={{width:"100%",height:"auto"}}>
+  <title>Rendering x control interaction</title>
+  <defs>
+    <style>{`
+      .ix-a  { stroke: #a8503f; fill: none; stroke-width: 2; }
+      .ix-b  { stroke: #3d72a8; fill: none; stroke-width: 2; }
+      .ix-ad { fill: #a8503f; }
+      .ix-bd { fill: #3d72a8; }
+      .ix-t  { font: 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .ix-m  { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .ix-v  { font: 600 13px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .ix-g  { stroke: var(--ocl-rule); stroke-width: 1; }
+      [data-theme='dark'] .ix-a  { stroke: #c87c62; }
+      [data-theme='dark'] .ix-b  { stroke: #5596d4; }
+      [data-theme='dark'] .ix-ad { fill: #c87c62; }
+      [data-theme='dark'] .ix-bd { fill: #5596d4; }
+    `}</style>
+  </defs>
+
+  <line className="ix-g" x1="150" y1="250" x2="560" y2="250" />
+  <line className="ix-g" x1="150" y1="40" x2="150" y2="250" />
+
+  <text className="ix-m" x="140" y="254" textAnchor="end">50</text>
+  <text className="ix-m" x="140" y="150" textAnchor="end">65</text>
+  <text className="ix-m" x="140" y="46" textAnchor="end">80</text>
+  <text className="ix-m" x="150" y="276">placeholder control</text>
+  <text className="ix-m" x="560" y="276" textAnchor="end">paired control</text>
+
+  <line className="ix-a" x1="190" y1="194" x2="520" y2="187" />
+  <circle className="ix-ad" cx="190" cy="194" r="5" />
+  <circle className="ix-ad" cx="520" cy="187" r="5" />
+  <text className="ix-v" x="190" y="212" textAnchor="middle">58</text>
+  <text className="ix-v" x="520" y="175" textAnchor="middle">59</text>
+  <text className="ix-t" x="534" y="191">bare rendering</text>
+
+  <line className="ix-b" x1="190" y1="187" x2="520" y2="54" />
+  <circle className="ix-bd" cx="190" cy="187" r="5" />
+  <circle className="ix-bd" cx="520" cy="54" r="5" />
+  <text className="ix-v" x="190" y="178" textAnchor="middle">59</text>
+  <text className="ix-v" x="520" y="44" textAnchor="middle">78</text>
+  <text className="ix-t" x="534" y="58">natural rendering</text>
+
+  <text className="ix-m" x="150" y="28">usable chains of 136</text>
+</svg>
+
+</Figure>
+
+**Neither fix alone does anything: +1, and +1. Together, +20.**
+
+That is an interaction, and it explains the whole shape of the day. Each fix removes
+a different blocker, and an item needs both removed before it passes. Rendering fixes
+*given this subject, which answer*; the paired control fixes *given this answer,
+which subject* — and the control fix is required **because** the rendering fix is what
+makes the answer prior-favoured in the first place. Test either in isolation and it
+reads as a null result. We did, twice, and it did.
+
+On `outer`, the leg that had been broken all day, modal answers go from 25% to **68%**
+on the row test and 25% to **64%** held.
+
+And the comparison that actually stings: **Llama-3.1-70B under the old instrument gave
+74 usable chains. Llama-3.1-8B under the fixed one gives 78.** Repairing the
+measurement was worth more than an order of magnitude of scale — on the same 136
+chains, with the smaller model.
+
+The obvious objection is that the new control is simply more permissive. The 2×2
+answers it: on bare rendering it gives 59 against the placeholder's 58. It is not
+looser. It is *defined* in a region where the old one was not, and that region is
+where every modal answer lives.
+
+Two threats stay on the record. Foil prompts differ from the item in subject
+frequency as well as identity, and prominence predicts possession level, so the AUROC
+is not corrected for it. And `inner_1`'s foil coverage is 63%, because its 78-city
+pool is larger than the candidate budget — its AUC rests on a sampled foil set, where
+`outer` and `inner_2` are dense at 100%.
+
 ## Infrastructure, which is most of the work and none of the interest
 
 <Figure plain caption="What the five days actually consisted of.">
