@@ -483,7 +483,7 @@ machine-readable set. NOT the experiment — that is E-009.
 
 ### E-009 · Possession-gate the entailment chains
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -519,6 +519,22 @@ Report per-fact-position possession, not just the joint number, so it is visible
 **Blockers:** none
 **Artifacts:** agents/engineer/workspace/gate_chains.py; probes/chains_gated.json
 **Closed:** —
+
+**Result (2026-09-15).** Llama-3.1-70B: inner_1 84%, inner_2 92%, outer 57%,
+**74/136 = 54% usable** (GPT-J: 35/61/21, 20/136 = 15%). `outer` is the worst leg
+at both scales, so the deficit is candidate-pool concentration, not small-model
+thinness. The three legs are NOT independent — joint is 3.27x the independence
+prediction at GPT-J, 1.25x at 70B, ordered by shared subject. Full write-up in
+agents/shared/decisions.md [E-009].
+
+**Artifacts:** agents/engineer/workspace/gate_chains.py;
+probes/chains_gated_meta-llama_Llama-3.1-70B.json;
+probes/chains_gated_EleutherAI_gpt-j-6b.json;
+logs/gate_chains-llama-3.1-70b-2026-09-15.log;
+agents/shared/decisions.md -> "[E-009] Result"
+
+**Closed:** 2026-09-15
+
 
 ---
 
