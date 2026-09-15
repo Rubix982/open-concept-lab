@@ -1,0 +1,37 @@
+2026-09-15 12:23:04,226 INFO     run_e012  run run_e012 -> logs/run_e012-2026-09-15-122304.log
+2026-09-15 12:23:04,228 INFO     run_e012  config {"facts": 408, "fingerprint": "v2|FAKE_oracle2|n50|s1538|pX", "min_auc": 0.8, "model": "FAKE/oracle2", "n_candidates": 50, "seed": 1538, "ticket": "E-012"}
+2026-09-15 12:23:04,228 INFO     run_e012  E-012: 136 chains -> 408 facts, schema v2
+2026-09-15 12:23:04,266 INFO     run_e012  scored 100/408
+2026-09-15 12:23:04,353 INFO     run_e012  scored 200/408
+2026-09-15 12:23:04,490 INFO     run_e012  scored 300/408
+2026-09-15 12:23:04,679 INFO     run_e012  scored 400/408
+2026-09-15 12:23:04,717 INFO     run_e012  
+2026-09-15 12:23:04,717 INFO     run_e012  inner_1 — 136 items, 136 with a defined AUC (100% of items); mean foil coverage 63%
+2026-09-15 12:23:04,717 INFO     run_e012     row test (rank 1)      100%
+2026-09-15 12:23:04,717 INFO     run_e012     mean column AUC        1.000   (chance 0.500)
+2026-09-15 12:23:04,717 INFO     run_e012     held (row AND AUC>=0.80) 100%
+2026-09-15 12:23:04,718 INFO     run_e012     answer class      n      row      AUC     held
+2026-09-15 12:23:04,718 INFO     run_e012     mid (3-9)        56     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012     rare (1-2)       80     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012  
+2026-09-15 12:23:04,718 INFO     run_e012  inner_2 — 136 items, 136 with a defined AUC (100% of items); mean foil coverage 100%
+2026-09-15 12:23:04,718 INFO     run_e012     row test (rank 1)      100%
+2026-09-15 12:23:04,718 INFO     run_e012     mean column AUC        1.000   (chance 0.500)
+2026-09-15 12:23:04,718 INFO     run_e012     held (row AND AUC>=0.80) 100%
+2026-09-15 12:23:04,718 INFO     run_e012     answer class      n      row      AUC     held
+2026-09-15 12:23:04,718 INFO     run_e012     modal (>=10)     77     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012     mid (3-9)        40     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012     rare (1-2)       19     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012  
+2026-09-15 12:23:04,718 INFO     run_e012  outer — 136 items, 136 with a defined AUC (100% of items); mean foil coverage 100%
+2026-09-15 12:23:04,718 INFO     run_e012     row test (rank 1)      100%
+2026-09-15 12:23:04,718 INFO     run_e012     mean column AUC        1.000   (chance 0.500)
+2026-09-15 12:23:04,718 INFO     run_e012     held (row AND AUC>=0.80) 100%
+2026-09-15 12:23:04,718 INFO     run_e012     answer class      n      row      AUC     held
+2026-09-15 12:23:04,718 INFO     run_e012     modal (>=10)     77     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012     mid (3-9)        40     100%    1.000     100%
+2026-09-15 12:23:04,718 INFO     run_e012     rare (1-2)       19     100%    1.000     100%
+2026-09-15 12:23:04,719 INFO     run_e012  
+2026-09-15 12:23:04,719 INFO     run_e012  usable chains — placeholder control : 122/136
+2026-09-15 12:23:04,719 INFO     run_e012  usable chains — paired control      : 136/136  (0 unmeasured)
+2026-09-15 12:23:04,722 INFO     run_e012  written: results/E-012-discrimination-FAKE_oracle2.json

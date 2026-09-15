@@ -1,0 +1,7 @@
+2026-09-15 12:23:17,883 INFO     run_e012  run run_e012 -> logs/run_e012-2026-09-15-122317.log
+2026-09-15 12:23:17,883 INFO     run_e012  config {"facts": 408, "fingerprint": "v2|meta-llama_Llama-3.1-8B|n50|s1538|pX", "min_auc": 0.8, "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50, "seed": 1538, "ticket": "E-012"}
+2026-09-15 12:23:17,884 INFO     run_e012  E-012: 136 chains -> 408 facts, schema v2
+2026-09-15 12:23:20,227 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:23:24,763 DEBUG    remote  trace ok: 156 rows, 174 tok, 4.5s
+2026-09-15 12:23:28,303 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.5s
+2026-09-15 12:23:28,307 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)

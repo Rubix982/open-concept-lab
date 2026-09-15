@@ -692,3 +692,88 @@ agents/shared/decisions.md [E-011]. Opens E-012 (paired-subject control).
 results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json;
 agents/shared/decisions.md -> "[E-011] Result"
 **Closed:** 2026-09-15
+
+---
+
+### E-012 · Paired-subject control: does the model track WHICH subject?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 3h
+
+**Description:**
+[E-011] showed the possession measure has no operating point for an answer that is
+the modal answer for its relation. The placeholder control asks *"does the subject
+matter at all"*, and a modal answer defeats that by construction: under a natural
+rendering, `"[X] was born in the country of the United States"` is the top
+completion whether or not `[X]` means anything, so the lift test rejects 31 of 40
+items the model demonstrably ranks correctly.
+
+The replacement asks the discriminating question instead: **does the answer prefer
+THIS subject over other real subjects whose answer differs?**
+
+**Design — WHY.** Without this, `possession.py` silently reports "not possessed" for
+the most common answer in every relation, and every rate it produces is biased by
+however concentrated that relation's answer distribution happens to be. That is a
+defect in the deliverable, not in an experiment.
+
+**Design — WHAT.** The measure becomes two criteria over one score matrix:
+
+- **row test (unchanged):** `a_i` ranks first among candidates `C_i` under prompt
+  `p_i`. "Given this subject, is the true answer the best candidate?"
+- **column test (new):** among foil prompts `p_j` where `a_j != a_i`, the fraction
+  with `s(a_i | p_i) > s(a_i | p_j)`. "Given this answer, is this the right
+  subject?" This is an AUROC over (true pair vs false pair) and is reported graded,
+  never only thresholded — consistent with declaration 6 on graded `orphan`.
+
+A modal answer scores high under every prompt, so the row test passes and the old
+lift test fails. The column test is indifferent to the answer's overall level and
+asks only whether it is *higher where it should be*. That is what makes it defined
+where the old control is not.
+
+**Design — HOW, and the cost.** `run()` already computes the full score vector over
+candidates for the subject arm and collapses it to a rank. Persisting the vector
+makes the column test cost **zero additional remote calls**. The matrix is dense
+wherever the pool is smaller than `n_candidates` — true for `outer` and `inner_2`
+(28 countries), where every prompt scores every candidate. For `inner_1` (78 cities,
+50 sampled) it is ~64% dense; report per-item foil coverage and treat an item with
+too few foils the way `skipped` is already treated, never by silently averaging over
+fewer.
+
+**Confound.** Foil prompts differ from `p_i` in subject *and* in sentence length,
+token count, and subject frequency. Restricting foils to the same relation and the
+same template controls template and length; subject frequency is not controlled and
+must be stated as a known threat, with [T-061]'s prominence numbers as the handle
+for checking it later.
+
+**Baseline to beat.** Chance is 0.5. The dumbest explanation for a high column score
+is that the answer is simply rare — so report the column statistic broken out by
+answer frequency class, the same split that exposed [E-009b].
+
+**Falsification, pre-stated.**
+- *Confirm:* modal answers (US, UK) show column scores well above 0.5 at 8B, so the
+  model does track which subject, and [E-011]'s rejected items are recovered.
+- *Deny:* modal answers sit at ~0.5. The model genuinely does not discriminate, the
+  old measure was right to reject them for the wrong reason, and the chain set is
+  smaller than [O-006] assumed.
+- *Null:* column scores are high for everything including foils by construction —
+  indicates the foil set is wrong, not a result.
+
+**Scope.** v1 is the measure plus a report at 8B on the existing 136 chains.
+DEFERRED: retrofitting published numbers, any frequency claim, and the paired
+2x2 symmetric variant.
+
+**Cache compatibility.** `ItemResult` gains fields, so old cache records cannot be
+read into the new shape. Add a schema version to `FilterConfig.fingerprint`. The
+project has already shipped two cache-collision bugs ([E-007], and the fixed-path
+gate output); a shape change that reuses a key would be the third.
+
+**Deliverable.** One table: row-test pass rate, column-test mean, and combined held
+rate, by answer-frequency class, at 8B.
+
+**Blockers:** none
+**Artifacts:** src/possession.py; src/discrimination.py; results/E-012-*.json
+**Closed:** —

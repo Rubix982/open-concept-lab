@@ -126,13 +126,20 @@ class FilterConfig:
         run would be silently wrong, and the same case_id appears in both. Date is
         excluded — it records when, not what.
         """
-        return (f"{self.model.replace('/', '_')}"
+        return (f"v{SCHEMA}|{self.model.replace('/', '_')}"
                 f"|n{self.n_candidates}|s{self.seed}|p{self.placeholder}")
 
 
 # --------------------------------------------------------------------------- #
 # results
 # --------------------------------------------------------------------------- #
+
+#: Bumped whenever a cached RECORD changes shape. It is not a number-changing
+#: parameter, but a v1 record read into a v2 dataclass is a crash at best and a
+#: silently wrong field at worst — and this project has already shipped two cache
+#: collisions ([E-007], and the gate's fixed output path). Keys carry the version.
+SCHEMA: Final[int] = 2
+
 
 @dataclass(frozen=True)
 class ItemResult:
@@ -143,6 +150,11 @@ class ItemResult:
     rank_subject: int
     rank_prior: int
     n_candidates: int
+    #: The full scored candidate list under the real subject, persisted as of v2.
+    #: `run` always computed this and threw it away, which is why the paired-subject
+    #: control in [E-012] was impossible to compute after the fact and is free now.
+    candidates: list[str] = field(default_factory=list)
+    scores_subject: list[float] = field(default_factory=list)
 
     @property
     def lift(self) -> int:
@@ -329,7 +341,8 @@ def run(edits: list[Edit], config: FilterConfig, scorer: Scorer,
                 true_answer=e.true_answer,
                 rank_subject=_rank(subj, cands, e.true_answer),
                 rank_prior=_rank(prior, cands, e.true_answer),
-                n_candidates=k)
+                n_candidates=k,
+                candidates=list(cands), scores_subject=list(subj))
             results.append(item)
             if cache_path:
                 cache[f"{config.fingerprint}|{e.case_id}"] = asdict(item)
