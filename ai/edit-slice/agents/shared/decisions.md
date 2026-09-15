@@ -348,3 +348,55 @@ drawn from it.
 **Artifacts:** agents/engineer/workspace/surface_forms.py;
 results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json;
 logs/surface_forms-2026-09-15-120017.log
+
+---
+
+## [O-006] Decision: the edit arm runs at Llama-3.1-8B
+
+_Date: 2026-09-15 · supersedes [O-005]'s commitment of the edit to 70B_
+
+**The gate at three scales**, same 136 chains, same pools, same seed:
+
+| model | `inner_1` | `inner_2` | `outer` | usable |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-J-6B | 35% | 61% | 21% | 20/136 = 15% |
+| Llama-3.1-8B | 65% | 90% | 49% | **58/136 = 43%** |
+| Llama-3.1-70B | 84% | 92% | 57% | 74/136 = 54% |
+
+Restricted to the domain [E-011] shows the measure is defined on — the `outer` answer
+is not the modal answer for its relation:
+
+| model | `inner_1` | `inner_2` | `outer` | usable |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-J-6B | 45% | 92% | 37% | 20/78 = 26% |
+| Llama-3.1-8B | 73% | 97% | **77%** | **51/78 = 65%** |
+| Llama-3.1-70B | 87% | 99% | 85% | 64/78 = 82% |
+
+**Decision:** run the edit at Llama-3.1-8B. 51 usable chains on the defined domain is
+ample for an existence claim, which is the only claim [O-004] licenses from
+hand-built sets.
+
+**Rationale.** [O-005] committed the edit to 70B and recorded the unpaid consequence:
+ROME at 70B needs second-moment statistics over `d_mlp` 28672, ~3.3 GB fp32, neither
+collected nor costed, while [E-006] verified editability only at 8B. That obstacle
+existed **solely because nobody had run the gate at 8B**. The assumption that 8B
+would be too thin was never tested; it is false. The cheapest way past the problem
+was to discover it was not there.
+
+**What 70B buys and what it costs.** A quarter more chains — 64 against 51 on the
+defined domain. Against that: an uncosted covariance collection, an unverified
+editing path, and a slower loop on every iteration of an experiment that has not run
+once. Not worth it for an existence claim. Revisit for any frequency claim, which
+would need the larger set and much more besides.
+
+**Supersedes [O-005]** on the choice of edit model. [O-005]'s size *floor* argument
+stands — the model must hold the grounds it is audited against — and 8B clears it at
+73/97/77%. What does not stand is the inference from "70B possesses more" to "the
+edit must happen at 70B".
+
+**Revisit if:** the edit at 8B produces too few surviving items to distinguish
+`update` / `damage` / `orphan`, in which case the 70B covariance cost has to be paid
+and costed properly rather than assumed.
+
+**Artifacts:** probes/chains_gated_meta-llama_Llama-3.1-8B.json;
+logs/gate_chains-2026-09-15-120133.log

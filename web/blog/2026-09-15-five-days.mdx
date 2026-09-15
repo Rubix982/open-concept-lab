@@ -665,66 +665,116 @@ pool of type-matched candidates and must both rank first and rank higher with th
 real subject than with a placeholder.
 
 <Figure
-  caption="Possession rate per chain position, GPT-J-6B against Llama-3.1-70B, over the same 136 chains and the same candidate pools. The bottom pair is the conjunction: all three legs held."
+  caption="Possession rate per chain position across three scales, over the same 136 chains and the same candidate pools. One hue in three steps, because model scale is ordered. The bottom group is the conjunction: all three legs held."
 >
 
-<svg viewBox="0 0 700 300" role="img" aria-label="Grouped bars comparing possession rates by chain position for GPT-J-6B and Llama-3.1-70B." style={{width:"100%",height:"auto"}}>
-  <title>Possession by chain position, two scales</title>
+<svg viewBox="0 0 700 340" role="img" aria-label="Possession rate by chain position for GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B." style={{width:"100%",height:"auto"}}>
+  <title>Possession by chain position, three scales</title>
   <defs>
     <style>{`
-      .gt-a   { fill: #a8503f; }
-      .gt-b   { fill: #3d72a8; }
+      .gt-s1  { fill: #6690c0; }
+      .gt-s2  { fill: #3d6ea6; }
+      .gt-s3  { fill: #21446a; }
       .gt-lab { font: 600 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); text-anchor: end; }
       .gt-sub { font: 10px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); text-anchor: end; }
       .gt-val { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
       .gt-key { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
       .gt-r   { stroke: var(--ocl-rule); stroke-width: 1; }
-      [data-theme='dark'] .gt-a { fill: #c87c62; }
-      [data-theme='dark'] .gt-b { fill: #5596d4; }
+      [data-theme='dark'] .gt-s1 { fill: #3f6c9b; }
+      [data-theme='dark'] .gt-s2 { fill: #5f9ed8; }
+      [data-theme='dark'] .gt-s3 { fill: #a2c8ec; }
     `}</style>
   </defs>
 
-  <rect className="gt-a" x="124" y="14" width="10" height="10" rx="3" />
+  <rect className="gt-s1" x="124" y="14" width="10" height="10" rx="3" />
   <text className="gt-key" x="140" y="23">GPT-J-6B</text>
-  <rect className="gt-b" x="228" y="14" width="10" height="10" rx="3" />
-  <text className="gt-key" x="244" y="23">Llama-3.1-70B</text>
 
-  <text className="gt-lab" x="112" y="68">inner_1</text>
-  <text className="gt-sub" x="112" y="82">X born in Y</text>
-  <rect className="gt-a" x="124" y="56" width="168" height="14" rx="4" />
+  <rect className="gt-s2" x="274" y="14" width="10" height="10" rx="3" />
+  <text className="gt-key" x="290" y="23">Llama-3.1-8B</text>
+
+  <rect className="gt-s3" x="424" y="14" width="10" height="10" rx="3" />
+  <text className="gt-key" x="440" y="23">Llama-3.1-70B</text>
+
+  <text className="gt-lab" x="112" y="74">inner_1</text>
+  <text className="gt-sub" x="112" y="88">X born in Y</text>
+
+  <rect className="gt-s1" x="124" y="56" width="168" height="14" rx="4" />
   <text className="gt-val" x="300" y="67">35%</text>
-  <rect className="gt-b" x="124" y="72" width="403" height="14" rx="4" />
-  <text className="gt-val" x="535" y="83">84%</text>
 
-  <text className="gt-lab" x="112" y="124">inner_2</text>
-  <text className="gt-sub" x="112" y="138">Y in country Z</text>
-  <rect className="gt-a" x="124" y="112" width="293" height="14" rx="4" />
-  <text className="gt-val" x="425" y="123">61%</text>
-  <rect className="gt-b" x="124" y="128" width="442" height="14" rx="4" />
-  <text className="gt-val" x="574" y="139">92%</text>
+  <rect className="gt-s2" x="124" y="72" width="312" height="14" rx="4" />
+  <text className="gt-val" x="444" y="83">65%</text>
 
-  <text className="gt-lab" x="112" y="180">outer</text>
-  <text className="gt-sub" x="112" y="194">X born in Z</text>
-  <rect className="gt-a" x="124" y="168" width="101" height="14" rx="4" />
-  <text className="gt-val" x="233" y="179">21%</text>
-  <rect className="gt-b" x="124" y="184" width="274" height="14" rx="4" />
-  <text className="gt-val" x="406" y="195">57%</text>
+  <rect className="gt-s3" x="124" y="88" width="403" height="14" rx="4" />
+  <text className="gt-val" x="535" y="99">84%</text>
 
-  <text className="gt-lab" x="112" y="236">all three</text>
-  <text className="gt-sub" x="112" y="250">usable chain</text>
-  <rect className="gt-a" x="124" y="224" width="72" height="14" rx="4" />
-  <text className="gt-val" x="204" y="235">15%</text>
-  <rect className="gt-b" x="124" y="240" width="259" height="14" rx="4" />
-  <text className="gt-val" x="391" y="251">54%</text>
+  <text className="gt-lab" x="112" y="142">inner_2</text>
+  <text className="gt-sub" x="112" y="156">Y in country Z</text>
 
-  <line className="gt-r" x1="124" y1="212" x2="660" y2="212" />
+  <rect className="gt-s1" x="124" y="124" width="293" height="14" rx="4" />
+  <text className="gt-val" x="425" y="135">61%</text>
+
+  <rect className="gt-s2" x="124" y="140" width="432" height="14" rx="4" />
+  <text className="gt-val" x="564" y="151">90%</text>
+
+  <rect className="gt-s3" x="124" y="156" width="442" height="14" rx="4" />
+  <text className="gt-val" x="574" y="167">92%</text>
+
+  <text className="gt-lab" x="112" y="210">outer</text>
+  <text className="gt-sub" x="112" y="224">X born in Z</text>
+
+  <rect className="gt-s1" x="124" y="192" width="101" height="14" rx="4" />
+  <text className="gt-val" x="233" y="203">21%</text>
+
+  <rect className="gt-s2" x="124" y="208" width="235" height="14" rx="4" />
+  <text className="gt-val" x="367" y="219">49%</text>
+
+  <rect className="gt-s3" x="124" y="224" width="274" height="14" rx="4" />
+  <text className="gt-val" x="406" y="235">57%</text>
+
+  <text className="gt-lab" x="112" y="278">all three</text>
+  <text className="gt-sub" x="112" y="292">usable chain</text>
+
+  <rect className="gt-s1" x="124" y="260" width="72" height="14" rx="4" />
+  <text className="gt-val" x="204" y="271">15%</text>
+
+  <rect className="gt-s2" x="124" y="276" width="206" height="14" rx="4" />
+  <text className="gt-val" x="338" y="287">43%</text>
+
+  <rect className="gt-s3" x="124" y="292" width="259" height="14" rx="4" />
+  <text className="gt-val" x="391" y="303">54%</text>
+
+  <line className="gt-r" x1="124" y1="248" x2="660" y2="248" />
 </svg>
 
 </Figure>
 
-**74 usable chains at 70B against 20 at GPT-J** — 54% versus 15%. The edit
+**74 usable chains at 70B, 58 at 8B, 20 at GPT-J** — 54%, 43%, 15%. The edit
 experiment was blocked on having enough chains a model demonstrably holds end to
 end. It is not blocked now.
+
+The 8B row is the one that mattered, and it was only run because the question was
+asked backwards. The plan was to solve editing at 70B: ROME there needs second-moment
+statistics over `d_mlp` 28672, roughly 3.3 GB, which had been neither collected nor
+costed. That obstacle existed entirely because we had assumed 8B would not clear the
+possession bar — at the one scale where editability was already verified. Nobody had
+checked. It clears at 43%.
+
+And once E-011's scope limit is applied — the measure is undefined where the answer
+is the modal one for its relation — the picture sharpens considerably:
+
+| model | `inner_1` | `inner_2` | `outer` | usable |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-J-6B | 45% | 92% | 37% | 20/78 = 26% |
+| Llama-3.1-8B | 73% | 97% | **77%** | **51/78 = 65%** |
+| Llama-3.1-70B | 87% | 99% | 85% | 64/78 = 82% |
+
+On the domain where the instrument actually works, 8B holds two thirds of the chains
+end to end and `outer` stops being the broken leg — 49% becomes 77%. Fifty-one usable
+chains is more than enough for an existence claim, which is all this pilot licenses.
+
+So the expensive problem gets dissolved rather than solved. 70B still offers a
+quarter more chains, and it would cost an uncosted covariance collection plus an
+editability result we do not have. The edit runs at 8B.
 
 The more informative half is what did *not* move. `outer` is the worst leg at both
 scales, and by a similar margin. The tempting reading of the GPT-J result was that

@@ -863,7 +863,7 @@ the model genuinely lacks the fact? 28 chains hang on the answer: usable moves
 
 ### T-060 · Does the gate clear at 8B, dissolving the 70B editability problem?
 
-**Status:** open
+**Status:** answered — **yes**
 **Parent:** T-059
 **Opened:** 2026-09-15
 **Question:** The whole ROME-at-70B covariance problem (~3.3 GB over d_mlp 28672,
@@ -872,7 +872,12 @@ only because we assumed 8B would not clear the possession bar. **We have never
 run the gate at 8B** — the one scale where [E-006] verified editability. If 8B
 yields enough usable chains after the T-059 fix, the obstacle evaporates rather
 than gets solved, which is the cheapest outcome available.
-**Answer:** — (run after E-011 settles the rendering)
+**Answer:** yes. 58/136 = 43% usable overall, and **51/78 = 65%** on the domain
+E-011 shows the measure is defined on, where `outer` goes 49% -> 77%. The ROME-at-70B
+covariance problem (~3.3 GB, uncollected) existed only because nobody had run this.
+Recorded as [O-006]; the edit runs at 8B. 70B buys a quarter more chains for an
+uncosted collection and an unverified editing path — not worth it for an existence
+claim.
 
 ---
 
