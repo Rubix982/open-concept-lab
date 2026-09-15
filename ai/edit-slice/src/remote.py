@@ -12,6 +12,9 @@ Requires NNSIGHT_API_KEY in the environment (from login.ndif.us).
 
 from __future__ import annotations
 
+import contextlib
+import io
+import logging
 import os
 import time
 from typing import Final
@@ -54,6 +57,27 @@ def _is_transport_error(exc: BaseException) -> bool:
     return isinstance(exc, OSError)
 
 DEFAULT_MODEL: Final[str] = "meta-llama/Llama-3.1-70B"
+
+#: Retries and OOM splits used to happen silently, so a degrading run looked
+#: identical to a healthy one. They are WARNINGs now: nothing is wrong enough to
+#: stop, and everything is worth knowing afterwards. Callers that run `logs.setup`
+#: get these in their file; callers that do not lose nothing they had before.
+log: Final[logging.Logger] = logging.getLogger("remote")
+
+
+@contextlib.contextmanager
+def _quiet_stdout():
+    """Swallow nnsight's progress spinners, which are stdout, not logging.
+
+    They are carriage-return animations and download bars: 262 of 266 lines in a
+    real run's log, which makes the record complete and unreadable at the same
+    time. Discarding a spinner is not discarding output — our own logging goes to
+    stderr and the log file, and exceptions still propagate. This is what makes the
+    kept log analysable rather than merely large.
+    """
+    sink = io.StringIO()
+    with contextlib.redirect_stdout(sink):
+        yield
 
 
 def connect(model_name: str = DEFAULT_MODEL) -> LanguageModel:
@@ -110,6 +134,7 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
     # oversized batch fails for reasons unrelated to correctness. Split rather
     # than fail: round trips still amortise far better than one call per pair.
     if len(pairs) > max_rows:
+        log.debug("splitting %d pairs into chunks of %d", len(pairs), max_rows)
         out: list[float] = []
         for i in range(0, len(pairs), max_rows):
             out += score_pairs(model, pairs[i : i + max_rows], max_rows=max_rows)
@@ -119,7 +144,8 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
     last: Exception | None = None
     for attempt in range(MAX_ATTEMPTS):
         try:
-            with model.trace(ids, remote=True):
+            t0 = time.monotonic()
+            with _quiet_stdout(), model.trace(ids, remote=True):
                 # log P(t) = logit[t] - logsumexp(logits). Computing it this way
                 # avoids materialising a second [B, T, V] tensor, which is what
                 # torch.log_softmax does and what OOM'd the shared GPU at batch 400.
@@ -129,6 +155,11 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                 chosen = logits.gather(-1, targets.unsqueeze(-1)).squeeze(-1).float()
                 denom = torch.logsumexp(logits, dim=-1).float()
                 summed = ((chosen - denom) * mask[:, 1:].to(logits.device)).sum(-1).save()
+            # The spinner we suppress carried exactly one fact worth keeping: how
+            # long the round trip took. Round trips, not FLOPs, are this project's
+            # budget, so it is recorded structurally instead of as animation.
+            log.debug("trace ok: %d rows, %d tok, %.1fs",
+                      len(pairs), int(mask.sum().item()), time.monotonic() - t0)
             return [s / n for s, n in zip(summed.tolist(), lengths)]
         except Exception as exc:  # noqa: BLE001 — narrowed below
             if _is_oom(exc):
@@ -136,14 +167,24 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                 # costs ~2.5x GPT-J's per row. Rather than tune a constant per
                 # model, halve and recurse until it fits.
                 if len(pairs) == 1:
+                    log.error("OOM on a single pair — cannot split further")
                     raise
                 mid = len(pairs) // 2
+                log.warning("remote OOM at %d pairs; halving to %d + %d",
+                            len(pairs), mid, len(pairs) - mid)
                 return (score_pairs(model, pairs[:mid], max_rows=mid)
                         + score_pairs(model, pairs[mid:], max_rows=len(pairs) - mid))
             if not _is_transport_error(exc):
+                log.error("non-transport failure, not retrying: %s: %s",
+                          type(exc).__name__, exc)
                 raise
             last = exc
+            log.warning("transport failure (%s) on attempt %d/%d; retrying in %.0fs",
+                        type(exc).__name__, attempt + 1, MAX_ATTEMPTS,
+                        BACKOFF_S * (attempt + 1))
             time.sleep(BACKOFF_S * (attempt + 1))
+    log.error("NDIF unreachable after %d attempts; last error %s",
+              MAX_ATTEMPTS, type(last).__name__ if last else "unknown")
     raise RuntimeError(f"NDIF unreachable after {MAX_ATTEMPTS} attempts") from last
 
 

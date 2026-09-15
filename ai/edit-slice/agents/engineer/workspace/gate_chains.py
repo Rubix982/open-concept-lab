@@ -28,12 +28,19 @@ from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from logs import setup  # noqa: E402
 from possession import Edit, FilterConfig, ItemResult, run  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
 CHAINS = ROOT / "probes" / "containment_chains.json"
-OUT = ROOT / "probes" / "chains_gated.json"
 POSITIONS = ("inner_1", "inner_2", "outer")
+
+
+#: Keyed by model, not a bare name. A fixed path is the same collision the cache
+#: fingerprint already fixed once: the Llama-70B gate would have silently
+#: overwritten the GPT-J result it is meant to be compared against.
+def _out_path(model: str) -> Path:
+    return ROOT / "probes" / f"chains_gated_{model.replace('/', '_')}.json"
 
 
 def chain_edits(chains: list[dict]) -> list[Edit]:
@@ -62,8 +69,11 @@ def main() -> None:
     cfg = FilterConfig(model=args.model, backend="ndif",
                        n_candidates=args.n_candidates)
 
-    print(f"{len(chains)} chains -> {len(edits)} facts to score "
-          f"({args.model})\n", flush=True)
+    log = setup("gate_chains", config={
+        "model": args.model, "n_candidates": args.n_candidates,
+        "chains": len(chains), "facts": len(edits),
+        "chain_source": str(CHAINS.relative_to(ROOT))})
+    log.info("%d chains -> %d facts to score", len(chains), len(edits))
 
     from remote import connect, score_pairs  # noqa: E402
     model = connect(cfg.model)
@@ -71,7 +81,7 @@ def main() -> None:
 
     cache = ROOT / "results" / "cache" / f"chains_{cfg.fingerprint.replace('|','_')}.json"
     report = run(edits, cfg, scorer, cache_path=cache, reference=edits,
-                 progress=lambda i, n: print(f"  {i}/{n}", flush=True) if i % 25 == 0 else None)
+                 progress=lambda i, n: log.info("scored %d/%d", i, n) if i % 25 == 0 else None)
 
     by_id: dict[str, ItemResult] = {r.case_id: r for r in report.results}
     pos_stats: dict[str, list[bool]] = defaultdict(list)
@@ -90,37 +100,39 @@ def main() -> None:
         gated.append(c)
 
     usable = [c for c in gated if c["usable"]]
-    print(f"\n{'position':<10}{'n':>5}{'candidates':>12}{'held':>8}")
+    log.info("%-10s%5s%12s%8s", "position", "n", "candidates", "held")
     for pos in POSITIONS:
         v = pos_stats[pos]
         if v:
-            print(f"{pos:<10}{len(v):>5}{cand_n.get(pos,0):>12}{sum(v)/len(v):>7.0%}")
+            log.info("%-10s%5d%12d%7.0f%%", pos, len(v), cand_n.get(pos, 0), 100*sum(v)/len(v))
 
-    print(f"\nUSABLE CHAINS (all three legs held): {len(usable)}/{len(chains)} "
-          f"= {100*len(usable)/len(chains):.0f}%")
+    log.info("USABLE CHAINS (all three legs held): %d/%d = %.0f%%",
+             len(usable), len(chains), 100*len(usable)/len(chains))
 
     fail = defaultdict(int)
     for c in gated:
         if not c["usable"]:
             missing = tuple(p for p in POSITIONS if not c["held"][p])
             fail[" + ".join(missing)] += 1
-    print("\nwhich leg failed (for the unusable):")
+    log.info("which leg failed, for the unusable:")
     for k, n in sorted(fail.items(), key=lambda kv: -kv[1]):
-        print(f"  {n:>4}  {k}")
+        log.info("  %4d  %s", n, k)
 
     if usable:
-        print("\nusable examples:")
+        log.info("usable examples:")
         for c in usable[:6]:
-            print(f"  {c['entailment']}")
+            log.info("  %s", c['entailment'])
 
-    OUT.write_text(json.dumps(
+    out_path = _out_path(cfg.model)
+    out_path.parent.mkdir(exist_ok=True)
+    out_path.write_text(json.dumps(
         {"model": cfg.model, "n_candidates_requested": cfg.n_candidates,
          "candidates_per_position": cand_n,
          "n_chains": len(chains), "n_usable": len(usable),
          "held_by_position": {p: (sum(v)/len(v) if v else None)
                               for p, v in pos_stats.items()},
          "chains": gated}, indent=1))
-    print(f"\nwritten: probes/{OUT.name}")
+    log.info("written: probes/%s", out_path.name)
 
 
 if __name__ == "__main__":

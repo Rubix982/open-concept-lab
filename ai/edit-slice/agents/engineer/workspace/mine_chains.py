@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 from chains import (BORN_IN, COUNTRY, DISSOLVED, Chain, build_chain,  # noqa: E402
                     is_degenerate)
 from data import load_counterfact  # noqa: E402
+from logs import setup  # noqa: E402
 from wikidata import Snapshot, item_statements  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[3] / "probes" / "containment_chains.json"
@@ -46,7 +47,12 @@ def main() -> None:
     snap = Snapshot.open_or_new() if args.refresh else Snapshot.load()
     seeds = [r for r in load_counterfact()
              if r.rewrite.relation_id == BORN_IN][: args.seeds]
-    print(f"{len(seeds)} P19 (place of birth) seeds\n", flush=True)
+    log = setup("mine_chains", config={"seeds_requested": args.seeds,
+                                       "seeds_found": len(seeds),
+                                       "refresh": args.refresh,
+                                       "snapshot": snap.ingested,
+                                       "family": "P19 birth place + P17 country"})
+    log.info("%d P19 (place of birth) seeds", len(seeds))
 
     attrition: Counter[str] = Counter()
     chains: list[Chain] = []
@@ -97,20 +103,20 @@ def main() -> None:
         chains.append(build_chain(x_label, x_qid, y_label, y_qid,
                                   z_label, z_qid, str(rec.case_id)))
         if args.refresh and i % 25 == 0:
-            print(f"  {i}/{len(seeds)}  chains: {len(chains)}", flush=True)
+            log.info("  %d/%d  chains: %d", i, len(seeds), len(chains))
 
     if args.refresh:
         snap.save()
 
-    print(f"\nchains built: {len(chains)} / {len(seeds)} seeds "
-          f"({100*len(chains)/max(1,len(seeds)):.0f}%)\n")
-    print("attrition:")
+    log.info("chains built: %d / %d seeds (%.0f%%)",
+             len(chains), len(seeds), 100*len(chains)/max(1, len(seeds)))
+    log.info("attrition:")
     for reason, n in attrition.most_common():
-        print(f"  {n:>4}  {reason}")
+        log.info("  %4d  %s", n, reason)
 
-    print("\nexamples:")
+    log.info("examples:")
     for c in chains[:10]:
-        print(f"  {c.entailment()}")
+        log.info("  %s", c.entailment())
 
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(
@@ -118,7 +124,7 @@ def main() -> None:
          "n_seeds": len(seeds), "n_chains": len(chains),
          "attrition": dict(attrition),
          "chains": [c.as_dict() for c in chains]}, indent=1))
-    print(f"\nwritten: probes/{OUT.name}")
+    log.info("written: probes/%s", OUT.name)
 
 
 if __name__ == "__main__":

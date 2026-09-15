@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from logs import setup  # noqa: E402
 from possession import Edit, FilterConfig, Scorer, run  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,20 +55,25 @@ def main() -> None:
     # from a small edit set silently drops sparse relations and biases the rate.
     ref_spec = raw_reference or {"source": "counterfact"}
     reference = load_edits(ref_spec)
-    print(f"{len(edits)} edits from {edit_spec.get('source', edit_spec.get('path'))}"
-          f"  |  candidate vocabulary from {len(reference)} reference items\n", flush=True)
+    log = setup("run_filter", config={**raw, "edits": len(edits),
+                                      "edit_source": edit_spec.get("source", edit_spec.get("path")),
+                                      "reference_items": len(reference),
+                                      "fingerprint": cfg.fingerprint})
+    log.info("%d edits | candidate vocabulary from %d reference items",
+             len(edits), len(reference))
 
     # Keyed by everything that changes a number, not by model alone — otherwise a
     # 50-candidate result is silently served to an 8-candidate run.
     cache = ROOT / "results" / "cache" / f"{cfg.fingerprint.replace('|', '_')}.json"
     report = run(edits, cfg, build_scorer(cfg), cache_path=cache, reference=reference,
-                 progress=lambda i, n: print(f"  {i}/{n}", flush=True) if i % 5 == 0 else None)
+                 progress=lambda i, n: log.info("scored %d/%d", i, n) if i % 5 == 0 else None)
 
-    print("\n" + report.summary())
+    for line in report.summary().splitlines():
+        log.info("%s", line)
     # Named after the config, so two runs of the same model do not overwrite.
     out = args.out or ROOT / "results" / f"{args.config.stem}.json"
     report.to_json(out)
-    print(f"\nwritten: {out.relative_to(ROOT)}  (config included)")
+    log.info("written: %s  (config included)", out.relative_to(ROOT))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4234 @@
+{
+ "model": "EleutherAI/gpt-j-6b",
+ "n_candidates_requested": 50,
+ "candidates_per_position": {
+  "inner_1": 50,
+  "inner_2": 28,
+  "outer": 28
+ },
+ "n_chains": 136,
+ "n_usable": 20,
+ "held_by_position": {
+  "inner_1": 0.34558823529411764,
+  "inner_2": 0.6102941176470589,
+  "outer": 0.21323529411764705
+ },
+ "chains": [
+  {
+   "seed_case_id": "57",
+   "entailment": "Gilles Grimandi in Gap  &  Gap in France  =>  Gilles Grimandi in France",
+   "inner_1": {
+    "subject": "Gilles Grimandi",
+    "prompt": "Gilles Grimandi was born in the city of",
+    "answer": "Gap",
+    "qid_subject": "Q722437",
+    "qid_answer": "Q175081"
+   },
+   "inner_2": {
+    "subject": "Gap",
+    "prompt": "Gap is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q175081",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Gilles Grimandi",
+    "prompt": "Gilles Grimandi was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q722437",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "61",
+   "entailment": "Henry Mackenzie in Edinburgh  &  Edinburgh in United Kingdom  =>  Henry Mackenzie in United Kingdom",
+   "inner_1": {
+    "subject": "Henry Mackenzie",
+    "prompt": "Henry Mackenzie was born in the city of",
+    "answer": "Edinburgh",
+    "qid_subject": "Q1276720",
+    "qid_answer": "Q23436"
+   },
+   "inner_2": {
+    "subject": "Edinburgh",
+    "prompt": "Edinburgh is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q23436",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Henry Mackenzie",
+    "prompt": "Henry Mackenzie was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q1276720",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "68",
+   "entailment": "Ryan Archibald in Auckland  &  Auckland in New Zealand  =>  Ryan Archibald in New Zealand",
+   "inner_1": {
+    "subject": "Ryan Archibald",
+    "prompt": "Ryan Archibald was born in the city of",
+    "answer": "Auckland",
+    "qid_subject": "Q107281460",
+    "qid_answer": "Q726917"
+   },
+   "inner_2": {
+    "subject": "Auckland",
+    "prompt": "Auckland is located in the country of",
+    "answer": "New Zealand",
+    "qid_subject": "Q726917",
+    "qid_answer": "Q664"
+   },
+   "outer": {
+    "subject": "Ryan Archibald",
+    "prompt": "Ryan Archibald was born in the country of",
+    "answer": "New Zealand",
+    "qid_subject": "Q107281460",
+    "qid_answer": "Q664"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "72",
+   "entailment": "Cao Yunding in Shanghai  &  Shanghai in People's Republic of China  =>  Cao Yunding in People's Republic of China",
+   "inner_1": {
+    "subject": "Cao Yunding",
+    "prompt": "Cao Yunding was born in the city of",
+    "answer": "Shanghai",
+    "qid_subject": "Q5034345",
+    "qid_answer": "Q8686"
+   },
+   "inner_2": {
+    "subject": "Shanghai",
+    "prompt": "Shanghai is located in the country of",
+    "answer": "People's Republic of China",
+    "qid_subject": "Q8686",
+    "qid_answer": "Q148"
+   },
+   "outer": {
+    "subject": "Cao Yunding",
+    "prompt": "Cao Yunding was born in the country of",
+    "answer": "People's Republic of China",
+    "qid_subject": "Q5034345",
+    "qid_answer": "Q148"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "254",
+   "entailment": "Maurice de Vlaminck in Paris  &  Paris in France  =>  Maurice de Vlaminck in France",
+   "inner_1": {
+    "subject": "Maurice de Vlaminck",
+    "prompt": "Maurice de Vlaminck was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q241098",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Maurice de Vlaminck",
+    "prompt": "Maurice de Vlaminck was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q241098",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "273",
+   "entailment": "Rio Natsuki in Tokyo  &  Tokyo in Japan  =>  Rio Natsuki in Japan",
+   "inner_1": {
+    "subject": "Rio Natsuki",
+    "prompt": "Rio Natsuki was born in the city of",
+    "answer": "Tokyo",
+    "qid_subject": "Q1064970",
+    "qid_answer": "Q1490"
+   },
+   "inner_2": {
+    "subject": "Tokyo",
+    "prompt": "Tokyo is located in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q1490",
+    "qid_answer": "Q17"
+   },
+   "outer": {
+    "subject": "Rio Natsuki",
+    "prompt": "Rio Natsuki was born in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q1064970",
+    "qid_answer": "Q17"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "296",
+   "entailment": "Jack Wong Sue in Perth  &  Perth in Australia  =>  Jack Wong Sue in Australia",
+   "inner_1": {
+    "subject": "Jack Wong Sue",
+    "prompt": "Jack Wong Sue was born in the city of",
+    "answer": "Perth",
+    "qid_subject": "Q6115853",
+    "qid_answer": "Q3183"
+   },
+   "inner_2": {
+    "subject": "Perth",
+    "prompt": "Perth is located in the country of",
+    "answer": "Australia",
+    "qid_subject": "Q3183",
+    "qid_answer": "Q408"
+   },
+   "outer": {
+    "subject": "Jack Wong Sue",
+    "prompt": "Jack Wong Sue was born in the country of",
+    "answer": "Australia",
+    "qid_subject": "Q6115853",
+    "qid_answer": "Q408"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "342",
+   "entailment": "Lunice in Montreal  &  Montreal in Canada  =>  Lunice in Canada",
+   "inner_1": {
+    "subject": "Lunice",
+    "prompt": "Lunice was born in the city of",
+    "answer": "Montreal",
+    "qid_subject": "Q16199074",
+    "qid_answer": "Q340"
+   },
+   "inner_2": {
+    "subject": "Montreal",
+    "prompt": "Montreal is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q340",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Lunice",
+    "prompt": "Lunice was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q16199074",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "345",
+   "entailment": "Charles Nungesser in Paris  &  Paris in France  =>  Charles Nungesser in France",
+   "inner_1": {
+    "subject": "Charles Nungesser",
+    "prompt": "Charles Nungesser was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q918462",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Charles Nungesser",
+    "prompt": "Charles Nungesser was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q918462",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "372",
+   "entailment": "Lurrie Bell in Chicago  &  Chicago in United States  =>  Lurrie Bell in United States",
+   "inner_1": {
+    "subject": "Lurrie Bell",
+    "prompt": "Lurrie Bell was born in the city of",
+    "answer": "Chicago",
+    "qid_subject": "Q460278",
+    "qid_answer": "Q131252"
+   },
+   "inner_2": {
+    "subject": "Chicago",
+    "prompt": "Chicago is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q131252",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Lurrie Bell",
+    "prompt": "Lurrie Bell was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q460278",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "376",
+   "entailment": "Kalyan Kumar in Bangalore  &  Bangalore in India  =>  Kalyan Kumar in India",
+   "inner_1": {
+    "subject": "Kalyan Kumar",
+    "prompt": "Kalyan Kumar was born in the city of",
+    "answer": "Bangalore",
+    "qid_subject": "Q6354857",
+    "qid_answer": "Q1355"
+   },
+   "inner_2": {
+    "subject": "Bangalore",
+    "prompt": "Bangalore is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q1355",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Kalyan Kumar",
+    "prompt": "Kalyan Kumar was born in the country of",
+    "answer": "India",
+    "qid_subject": "Q6354857",
+    "qid_answer": "Q668"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "413",
+   "entailment": "Susette LaFlesche Tibbles in Nebraska  &  Nebraska in United States  =>  Susette LaFlesche Tibbles in United States",
+   "inner_1": {
+    "subject": "Susette LaFlesche Tibbles",
+    "prompt": "Susette LaFlesche Tibbles was born in the city of",
+    "answer": "Nebraska",
+    "qid_subject": "Q533721",
+    "qid_answer": "Q1553"
+   },
+   "inner_2": {
+    "subject": "Nebraska",
+    "prompt": "Nebraska is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1553",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Susette LaFlesche Tibbles",
+    "prompt": "Susette LaFlesche Tibbles was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q533721",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "447",
+   "entailment": "Marcus Harvey in Leeds  &  Leeds in United Kingdom  =>  Marcus Harvey in United Kingdom",
+   "inner_1": {
+    "subject": "Marcus Harvey",
+    "prompt": "Marcus Harvey was born in the city of",
+    "answer": "Leeds",
+    "qid_subject": "Q4495776",
+    "qid_answer": "Q39121"
+   },
+   "inner_2": {
+    "subject": "Leeds",
+    "prompt": "Leeds is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q39121",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Marcus Harvey",
+    "prompt": "Marcus Harvey was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q4495776",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "467",
+   "entailment": "Brendan Croker in Bradford  &  Bradford in United Kingdom  =>  Brendan Croker in United Kingdom",
+   "inner_1": {
+    "subject": "Brendan Croker",
+    "prompt": "Brendan Croker was born in the city of",
+    "answer": "Bradford",
+    "qid_subject": "Q1923558",
+    "qid_answer": "Q2834810"
+   },
+   "inner_2": {
+    "subject": "Bradford",
+    "prompt": "Bradford is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q2834810",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Brendan Croker",
+    "prompt": "Brendan Croker was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q1923558",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "507",
+   "entailment": "Clark Durant in Detroit  &  Detroit in United States  =>  Clark Durant in United States",
+   "inner_1": {
+    "subject": "Clark Durant",
+    "prompt": "Clark Durant was born in the city of",
+    "answer": "Detroit",
+    "qid_subject": "Q5127216",
+    "qid_answer": "Q12439"
+   },
+   "inner_2": {
+    "subject": "Detroit",
+    "prompt": "Detroit is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q12439",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Clark Durant",
+    "prompt": "Clark Durant was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5127216",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "555",
+   "entailment": "Gerard Lee in Melbourne  &  Melbourne in United States  =>  Gerard Lee in United States",
+   "inner_1": {
+    "subject": "Gerard Lee",
+    "prompt": "Gerard Lee was born in the city of",
+    "answer": "Melbourne",
+    "qid_subject": "Q5550058",
+    "qid_answer": "Q949779"
+   },
+   "inner_2": {
+    "subject": "Melbourne",
+    "prompt": "Melbourne is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q949779",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Gerard Lee",
+    "prompt": "Gerard Lee was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5550058",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "564",
+   "entailment": "Raimondo Van Riel in Rome  &  Rome in Italy  =>  Raimondo Van Riel in Italy",
+   "inner_1": {
+    "subject": "Raimondo Van Riel",
+    "prompt": "Raimondo Van Riel was born in the city of",
+    "answer": "Rome",
+    "qid_subject": "Q2127724",
+    "qid_answer": "Q220"
+   },
+   "inner_2": {
+    "subject": "Rome",
+    "prompt": "Rome is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q220",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Raimondo Van Riel",
+    "prompt": "Raimondo Van Riel was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q2127724",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "590",
+   "entailment": "Matias Kupiainen in Helsinki  &  Helsinki in Finland  =>  Matias Kupiainen in Finland",
+   "inner_1": {
+    "subject": "Matias Kupiainen",
+    "prompt": "Matias Kupiainen was born in the city of",
+    "answer": "Helsinki",
+    "qid_subject": "Q1199844",
+    "qid_answer": "Q1757"
+   },
+   "inner_2": {
+    "subject": "Helsinki",
+    "prompt": "Helsinki is located in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q1757",
+    "qid_answer": "Q33"
+   },
+   "outer": {
+    "subject": "Matias Kupiainen",
+    "prompt": "Matias Kupiainen was born in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q1199844",
+    "qid_answer": "Q33"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "592",
+   "entailment": "Max Neal in Munich  &  Munich in Germany  =>  Max Neal in Germany",
+   "inner_1": {
+    "subject": "Max Neal",
+    "prompt": "Max Neal was born in the city of",
+    "answer": "Munich",
+    "qid_subject": "Q77469",
+    "qid_answer": "Q1726"
+   },
+   "inner_2": {
+    "subject": "Munich",
+    "prompt": "Munich is located in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q1726",
+    "qid_answer": "Q183"
+   },
+   "outer": {
+    "subject": "Max Neal",
+    "prompt": "Max Neal was born in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q77469",
+    "qid_answer": "Q183"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "615",
+   "entailment": "Maria Altmann in Vienna  &  Vienna in Austria  =>  Maria Altmann in Austria",
+   "inner_1": {
+    "subject": "Maria Altmann",
+    "prompt": "Maria Altmann was born in the city of",
+    "answer": "Vienna",
+    "qid_subject": "Q85048",
+    "qid_answer": "Q1741"
+   },
+   "inner_2": {
+    "subject": "Vienna",
+    "prompt": "Vienna is located in the country of",
+    "answer": "Austria",
+    "qid_subject": "Q1741",
+    "qid_answer": "Q40"
+   },
+   "outer": {
+    "subject": "Maria Altmann",
+    "prompt": "Maria Altmann was born in the country of",
+    "answer": "Austria",
+    "qid_subject": "Q85048",
+    "qid_answer": "Q40"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "622",
+   "entailment": "John McAllion in Glasgow  &  Glasgow in United Kingdom  =>  John McAllion in United Kingdom",
+   "inner_1": {
+    "subject": "John McAllion",
+    "prompt": "John McAllion was born in the city of",
+    "answer": "Glasgow",
+    "qid_subject": "Q1379003",
+    "qid_answer": "Q4093"
+   },
+   "inner_2": {
+    "subject": "Glasgow",
+    "prompt": "Glasgow is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q4093",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "John McAllion",
+    "prompt": "John McAllion was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q1379003",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "747",
+   "entailment": "Yona Friedman in Budapest  &  Budapest in Hungary  =>  Yona Friedman in Hungary",
+   "inner_1": {
+    "subject": "Yona Friedman",
+    "prompt": "Yona Friedman was born in the city of",
+    "answer": "Budapest",
+    "qid_subject": "Q542741",
+    "qid_answer": "Q1781"
+   },
+   "inner_2": {
+    "subject": "Budapest",
+    "prompt": "Budapest is located in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q1781",
+    "qid_answer": "Q28"
+   },
+   "outer": {
+    "subject": "Yona Friedman",
+    "prompt": "Yona Friedman was born in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q542741",
+    "qid_answer": "Q28"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "840",
+   "entailment": "Diane Hendricks in Wisconsin  &  Wisconsin in United States  =>  Diane Hendricks in United States",
+   "inner_1": {
+    "subject": "Diane Hendricks",
+    "prompt": "Diane Hendricks was born in the city of",
+    "answer": "Wisconsin",
+    "qid_subject": "Q5271481",
+    "qid_answer": "Q1537"
+   },
+   "inner_2": {
+    "subject": "Wisconsin",
+    "prompt": "Wisconsin is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1537",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Diane Hendricks",
+    "prompt": "Diane Hendricks was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5271481",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "869",
+   "entailment": "Elizabeth Boleyn, Countess of Wiltshire in Norfolk  &  Norfolk in United Kingdom  =>  Elizabeth Boleyn, Countess of Wiltshire in United Kingdom",
+   "inner_1": {
+    "subject": "Elizabeth Boleyn, Countess of Wiltshire",
+    "prompt": "Elizabeth Boleyn, Countess of Wiltshire was born in the city of",
+    "answer": "Norfolk",
+    "qid_subject": "Q236905",
+    "qid_answer": "Q67535211"
+   },
+   "inner_2": {
+    "subject": "Norfolk",
+    "prompt": "Norfolk is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q67535211",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Elizabeth Boleyn, Countess of Wiltshire",
+    "prompt": "Elizabeth Boleyn, Countess of Wiltshire was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q236905",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "916",
+   "entailment": "Melanie Durrant in Toronto  &  Toronto in Canada  =>  Melanie Durrant in Canada",
+   "inner_1": {
+    "subject": "Melanie Durrant",
+    "prompt": "Melanie Durrant was born in the city of",
+    "answer": "Toronto",
+    "qid_subject": "Q6811273",
+    "qid_answer": "Q172"
+   },
+   "inner_2": {
+    "subject": "Toronto",
+    "prompt": "Toronto is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q172",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Melanie Durrant",
+    "prompt": "Melanie Durrant was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q6811273",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "976",
+   "entailment": "Larry Stabbins in Bristol  &  Bristol in United States  =>  Larry Stabbins in United States",
+   "inner_1": {
+    "subject": "Larry Stabbins",
+    "prompt": "Larry Stabbins was born in the city of",
+    "answer": "Bristol",
+    "qid_subject": "Q949668",
+    "qid_answer": "Q755149"
+   },
+   "inner_2": {
+    "subject": "Bristol",
+    "prompt": "Bristol is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q755149",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Larry Stabbins",
+    "prompt": "Larry Stabbins was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q949668",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1002",
+   "entailment": "Michel Brault in Montreal  &  Montreal in Canada  =>  Michel Brault in Canada",
+   "inner_1": {
+    "subject": "Michel Brault",
+    "prompt": "Michel Brault was born in the city of",
+    "answer": "Montreal",
+    "qid_subject": "Q1030862",
+    "qid_answer": "Q340"
+   },
+   "inner_2": {
+    "subject": "Montreal",
+    "prompt": "Montreal is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q340",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Michel Brault",
+    "prompt": "Michel Brault was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q1030862",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1073",
+   "entailment": "Robert Demachy in Paris  &  Paris in France  =>  Robert Demachy in France",
+   "inner_1": {
+    "subject": "Robert Demachy",
+    "prompt": "Robert Demachy was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q956823",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Robert Demachy",
+    "prompt": "Robert Demachy was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q956823",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1106",
+   "entailment": "Michel Pablo in Alexandria  &  Alexandria in Romania  =>  Michel Pablo in Romania",
+   "inner_1": {
+    "subject": "Michel Pablo",
+    "prompt": "Michel Pablo was born in the city of",
+    "answer": "Alexandria",
+    "qid_subject": "Q1362259",
+    "qid_answer": "Q209929"
+   },
+   "inner_2": {
+    "subject": "Alexandria",
+    "prompt": "Alexandria is located in the country of",
+    "answer": "Romania",
+    "qid_subject": "Q209929",
+    "qid_answer": "Q218"
+   },
+   "outer": {
+    "subject": "Michel Pablo",
+    "prompt": "Michel Pablo was born in the country of",
+    "answer": "Romania",
+    "qid_subject": "Q1362259",
+    "qid_answer": "Q218"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1126",
+   "entailment": "Silvia Abascal in Madrid  &  Madrid in Spain  =>  Silvia Abascal in Spain",
+   "inner_1": {
+    "subject": "Silvia Abascal",
+    "prompt": "Silvia Abascal was born in the city of",
+    "answer": "Madrid",
+    "qid_subject": "Q2233503",
+    "qid_answer": "Q2807"
+   },
+   "inner_2": {
+    "subject": "Madrid",
+    "prompt": "Madrid is located in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q2807",
+    "qid_answer": "Q29"
+   },
+   "outer": {
+    "subject": "Silvia Abascal",
+    "prompt": "Silvia Abascal was born in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q2233503",
+    "qid_answer": "Q29"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1274",
+   "entailment": "Tim K in Seattle  &  Seattle in United States  =>  Tim K in United States",
+   "inner_1": {
+    "subject": "Tim K",
+    "prompt": "Tim K was born in the city of",
+    "answer": "Seattle",
+    "qid_subject": "Q359888",
+    "qid_answer": "Q5083"
+   },
+   "inner_2": {
+    "subject": "Seattle",
+    "prompt": "Seattle is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5083",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Tim K",
+    "prompt": "Tim K was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q359888",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1289",
+   "entailment": "Charles Montague Cooke, Jr. in Honolulu  &  Honolulu in United States  =>  Charles Montague Cooke, Jr. in United States",
+   "inner_1": {
+    "subject": "Charles Montague Cooke, Jr.",
+    "prompt": "Charles Montague Cooke, Jr. was born in the city of",
+    "answer": "Honolulu",
+    "qid_subject": "Q548569",
+    "qid_answer": "Q18094"
+   },
+   "inner_2": {
+    "subject": "Honolulu",
+    "prompt": "Honolulu is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18094",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Charles Montague Cooke, Jr.",
+    "prompt": "Charles Montague Cooke, Jr. was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q548569",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1315",
+   "entailment": "James Forten in Philadelphia  &  Philadelphia in United States  =>  James Forten in United States",
+   "inner_1": {
+    "subject": "James Forten",
+    "prompt": "James Forten was born in the city of",
+    "answer": "Philadelphia",
+    "qid_subject": "Q2157605",
+    "qid_answer": "Q1345"
+   },
+   "inner_2": {
+    "subject": "Philadelphia",
+    "prompt": "Philadelphia is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1345",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "James Forten",
+    "prompt": "James Forten was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q2157605",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1400",
+   "entailment": "Max Wilson in Hamburg  &  Hamburg in Germany  =>  Max Wilson in Germany",
+   "inner_1": {
+    "subject": "Max Wilson",
+    "prompt": "Max Wilson was born in the city of",
+    "answer": "Hamburg",
+    "qid_subject": "Q1382787",
+    "qid_answer": "Q51974"
+   },
+   "inner_2": {
+    "subject": "Hamburg",
+    "prompt": "Hamburg is located in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q51974",
+    "qid_answer": "Q183"
+   },
+   "outer": {
+    "subject": "Max Wilson",
+    "prompt": "Max Wilson was born in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q1382787",
+    "qid_answer": "Q183"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1401",
+   "entailment": "Fernando Vergara in Santiago  &  Santiago in Chile  =>  Fernando Vergara in Chile",
+   "inner_1": {
+    "subject": "Fernando Vergara",
+    "prompt": "Fernando Vergara was born in the city of",
+    "answer": "Santiago",
+    "qid_subject": "Q141120398",
+    "qid_answer": "Q2887"
+   },
+   "inner_2": {
+    "subject": "Santiago",
+    "prompt": "Santiago is located in the country of",
+    "answer": "Chile",
+    "qid_subject": "Q2887",
+    "qid_answer": "Q298"
+   },
+   "outer": {
+    "subject": "Fernando Vergara",
+    "prompt": "Fernando Vergara was born in the country of",
+    "answer": "Chile",
+    "qid_subject": "Q141120398",
+    "qid_answer": "Q298"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "1411",
+   "entailment": "Charles Holmes in Preston  &  Preston in United Kingdom  =>  Charles Holmes in United Kingdom",
+   "inner_1": {
+    "subject": "Charles Holmes",
+    "prompt": "Charles Holmes was born in the city of",
+    "answer": "Preston",
+    "qid_subject": "Q2959365",
+    "qid_answer": "Q184090"
+   },
+   "inner_2": {
+    "subject": "Preston",
+    "prompt": "Preston is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q184090",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Charles Holmes",
+    "prompt": "Charles Holmes was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q2959365",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1485",
+   "entailment": "Cyril Lemoine in Tours  &  Tours in France  =>  Cyril Lemoine in France",
+   "inner_1": {
+    "subject": "Cyril Lemoine",
+    "prompt": "Cyril Lemoine was born in the city of",
+    "answer": "Tours",
+    "qid_subject": "Q945696",
+    "qid_answer": "Q288"
+   },
+   "inner_2": {
+    "subject": "Tours",
+    "prompt": "Tours is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q288",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Cyril Lemoine",
+    "prompt": "Cyril Lemoine was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q945696",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1521",
+   "entailment": "Luigi Nono in Venice  &  Venice in United States  =>  Luigi Nono in United States",
+   "inner_1": {
+    "subject": "Luigi Nono",
+    "prompt": "Luigi Nono was born in the city of",
+    "answer": "Venice",
+    "qid_subject": "Q3266502",
+    "qid_answer": "Q773853"
+   },
+   "inner_2": {
+    "subject": "Venice",
+    "prompt": "Venice is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q773853",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Luigi Nono",
+    "prompt": "Luigi Nono was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q3266502",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1555",
+   "entailment": "Claudio Coello in Madrid  &  Madrid in Spain  =>  Claudio Coello in Spain",
+   "inner_1": {
+    "subject": "Claudio Coello",
+    "prompt": "Claudio Coello was born in the city of",
+    "answer": "Madrid",
+    "qid_subject": "Q332466",
+    "qid_answer": "Q2807"
+   },
+   "inner_2": {
+    "subject": "Madrid",
+    "prompt": "Madrid is located in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q2807",
+    "qid_answer": "Q29"
+   },
+   "outer": {
+    "subject": "Claudio Coello",
+    "prompt": "Claudio Coello was born in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q332466",
+    "qid_answer": "Q29"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1670",
+   "entailment": "Bernardo Bellotto in Venice  &  Venice in United States  =>  Bernardo Bellotto in United States",
+   "inner_1": {
+    "subject": "Bernardo Bellotto",
+    "prompt": "Bernardo Bellotto was born in the city of",
+    "answer": "Venice",
+    "qid_subject": "Q164688",
+    "qid_answer": "Q773853"
+   },
+   "inner_2": {
+    "subject": "Venice",
+    "prompt": "Venice is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q773853",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Bernardo Bellotto",
+    "prompt": "Bernardo Bellotto was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q164688",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1688",
+   "entailment": "Thomas Molnar in Budapest  &  Budapest in Hungary  =>  Thomas Molnar in Hungary",
+   "inner_1": {
+    "subject": "Thomas Molnar",
+    "prompt": "Thomas Molnar was born in the city of",
+    "answer": "Budapest",
+    "qid_subject": "Q2426153",
+    "qid_answer": "Q1781"
+   },
+   "inner_2": {
+    "subject": "Budapest",
+    "prompt": "Budapest is located in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q1781",
+    "qid_answer": "Q28"
+   },
+   "outer": {
+    "subject": "Thomas Molnar",
+    "prompt": "Thomas Molnar was born in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q2426153",
+    "qid_answer": "Q28"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "1692",
+   "entailment": "Jean-Michel Dubernard in Lyon  &  Lyon in France  =>  Jean-Michel Dubernard in France",
+   "inner_1": {
+    "subject": "Jean-Michel Dubernard",
+    "prompt": "Jean-Michel Dubernard was born in the city of",
+    "answer": "Lyon",
+    "qid_subject": "Q3168006",
+    "qid_answer": "Q456"
+   },
+   "inner_2": {
+    "subject": "Lyon",
+    "prompt": "Lyon is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q456",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Jean-Michel Dubernard",
+    "prompt": "Jean-Michel Dubernard was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q3168006",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "1715",
+   "entailment": "Roger Chartier in Lyon  &  Lyon in France  =>  Roger Chartier in France",
+   "inner_1": {
+    "subject": "Roger Chartier",
+    "prompt": "Roger Chartier was born in the city of",
+    "answer": "Lyon",
+    "qid_subject": "Q2466876",
+    "qid_answer": "Q456"
+   },
+   "inner_2": {
+    "subject": "Lyon",
+    "prompt": "Lyon is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q456",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Roger Chartier",
+    "prompt": "Roger Chartier was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q2466876",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1737",
+   "entailment": "Chus Lampreave in Madrid  &  Madrid in Spain  =>  Chus Lampreave in Spain",
+   "inner_1": {
+    "subject": "Chus Lampreave",
+    "prompt": "Chus Lampreave was born in the city of",
+    "answer": "Madrid",
+    "qid_subject": "Q268726",
+    "qid_answer": "Q2807"
+   },
+   "inner_2": {
+    "subject": "Madrid",
+    "prompt": "Madrid is located in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q2807",
+    "qid_answer": "Q29"
+   },
+   "outer": {
+    "subject": "Chus Lampreave",
+    "prompt": "Chus Lampreave was born in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q268726",
+    "qid_answer": "Q29"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1781",
+   "entailment": "William H. Seward in Florida  &  Florida in United States  =>  William H. Seward in United States",
+   "inner_1": {
+    "subject": "William H. Seward",
+    "prompt": "William H. Seward was born in the city of",
+    "answer": "Florida",
+    "qid_subject": "Q297308",
+    "qid_answer": "Q812"
+   },
+   "inner_2": {
+    "subject": "Florida",
+    "prompt": "Florida is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q812",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "William H. Seward",
+    "prompt": "William H. Seward was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q297308",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1794",
+   "entailment": "Hiroshi Takemura in Tokyo  &  Tokyo in Japan  =>  Hiroshi Takemura in Japan",
+   "inner_1": {
+    "subject": "Hiroshi Takemura",
+    "prompt": "Hiroshi Takemura was born in the city of",
+    "answer": "Tokyo",
+    "qid_subject": "Q4450268",
+    "qid_answer": "Q1490"
+   },
+   "inner_2": {
+    "subject": "Tokyo",
+    "prompt": "Tokyo is located in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q1490",
+    "qid_answer": "Q17"
+   },
+   "outer": {
+    "subject": "Hiroshi Takemura",
+    "prompt": "Hiroshi Takemura was born in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q4450268",
+    "qid_answer": "Q17"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "1798",
+   "entailment": "Michael Bleekemolen in Amsterdam  &  Amsterdam in Netherlands  =>  Michael Bleekemolen in Netherlands",
+   "inner_1": {
+    "subject": "Michael Bleekemolen",
+    "prompt": "Michael Bleekemolen was born in the city of",
+    "answer": "Amsterdam",
+    "qid_subject": "Q172024",
+    "qid_answer": "Q727"
+   },
+   "inner_2": {
+    "subject": "Amsterdam",
+    "prompt": "Amsterdam is located in the country of",
+    "answer": "Netherlands",
+    "qid_subject": "Q727",
+    "qid_answer": "Q55"
+   },
+   "outer": {
+    "subject": "Michael Bleekemolen",
+    "prompt": "Michael Bleekemolen was born in the country of",
+    "answer": "Netherlands",
+    "qid_subject": "Q172024",
+    "qid_answer": "Q55"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1822",
+   "entailment": "Jean Image in Budapest  &  Budapest in Hungary  =>  Jean Image in Hungary",
+   "inner_1": {
+    "subject": "Jean Image",
+    "prompt": "Jean Image was born in the city of",
+    "answer": "Budapest",
+    "qid_subject": "Q3172732",
+    "qid_answer": "Q1781"
+   },
+   "inner_2": {
+    "subject": "Budapest",
+    "prompt": "Budapest is located in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q1781",
+    "qid_answer": "Q28"
+   },
+   "outer": {
+    "subject": "Jean Image",
+    "prompt": "Jean Image was born in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q3172732",
+    "qid_answer": "Q28"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1835",
+   "entailment": "Claude Arrieu in Paris  &  Paris in France  =>  Claude Arrieu in France",
+   "inner_1": {
+    "subject": "Claude Arrieu",
+    "prompt": "Claude Arrieu was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q272886",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Claude Arrieu",
+    "prompt": "Claude Arrieu was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q272886",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1901",
+   "entailment": "Armando Diaz in Naples  &  Naples in Italy  =>  Armando Diaz in Italy",
+   "inner_1": {
+    "subject": "Armando Diaz",
+    "prompt": "Armando Diaz was born in the city of",
+    "answer": "Naples",
+    "qid_subject": "Q333778",
+    "qid_answer": "Q2634"
+   },
+   "inner_2": {
+    "subject": "Naples",
+    "prompt": "Naples is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q2634",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Armando Diaz",
+    "prompt": "Armando Diaz was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q333778",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1904",
+   "entailment": "Joe Jamail in Houston  &  Houston in United States  =>  Joe Jamail in United States",
+   "inner_1": {
+    "subject": "Joe Jamail",
+    "prompt": "Joe Jamail was born in the city of",
+    "answer": "Houston",
+    "qid_subject": "Q6210521",
+    "qid_answer": "Q16555"
+   },
+   "inner_2": {
+    "subject": "Houston",
+    "prompt": "Houston is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q16555",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Joe Jamail",
+    "prompt": "Joe Jamail was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q6210521",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "1983",
+   "entailment": "Joan Dickson in Edinburgh  &  Edinburgh in United Kingdom  =>  Joan Dickson in United Kingdom",
+   "inner_1": {
+    "subject": "Joan Dickson",
+    "prompt": "Joan Dickson was born in the city of",
+    "answer": "Edinburgh",
+    "qid_subject": "Q600922",
+    "qid_answer": "Q23436"
+   },
+   "inner_2": {
+    "subject": "Edinburgh",
+    "prompt": "Edinburgh is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q23436",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Joan Dickson",
+    "prompt": "Joan Dickson was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q600922",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2076",
+   "entailment": "Alexander Zonjic in Windsor  &  Windsor in Canada  =>  Alexander Zonjic in Canada",
+   "inner_1": {
+    "subject": "Alexander Zonjic",
+    "prompt": "Alexander Zonjic was born in the city of",
+    "answer": "Windsor",
+    "qid_subject": "Q4720457",
+    "qid_answer": "Q182625"
+   },
+   "inner_2": {
+    "subject": "Windsor",
+    "prompt": "Windsor is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q182625",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Alexander Zonjic",
+    "prompt": "Alexander Zonjic was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q4720457",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2085",
+   "entailment": "Robert Pinget in Geneva  &  Geneva in Switzerland  =>  Robert Pinget in Switzerland",
+   "inner_1": {
+    "subject": "Robert Pinget",
+    "prompt": "Robert Pinget was born in the city of",
+    "answer": "Geneva",
+    "qid_subject": "Q123389",
+    "qid_answer": "Q71"
+   },
+   "inner_2": {
+    "subject": "Geneva",
+    "prompt": "Geneva is located in the country of",
+    "answer": "Switzerland",
+    "qid_subject": "Q71",
+    "qid_answer": "Q39"
+   },
+   "outer": {
+    "subject": "Robert Pinget",
+    "prompt": "Robert Pinget was born in the country of",
+    "answer": "Switzerland",
+    "qid_subject": "Q123389",
+    "qid_answer": "Q39"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2151",
+   "entailment": "Auguste Cain in Paris  &  Paris in France  =>  Auguste Cain in France",
+   "inner_1": {
+    "subject": "Auguste Cain",
+    "prompt": "Auguste Cain was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q766022",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Auguste Cain",
+    "prompt": "Auguste Cain was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q766022",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2165",
+   "entailment": "Carsten Dahl in Copenhagen  &  Copenhagen in Denmark  =>  Carsten Dahl in Denmark",
+   "inner_1": {
+    "subject": "Carsten Dahl",
+    "prompt": "Carsten Dahl was born in the city of",
+    "answer": "Copenhagen",
+    "qid_subject": "Q1045526",
+    "qid_answer": "Q1748"
+   },
+   "inner_2": {
+    "subject": "Copenhagen",
+    "prompt": "Copenhagen is located in the country of",
+    "answer": "Denmark",
+    "qid_subject": "Q1748",
+    "qid_answer": "Q35"
+   },
+   "outer": {
+    "subject": "Carsten Dahl",
+    "prompt": "Carsten Dahl was born in the country of",
+    "answer": "Denmark",
+    "qid_subject": "Q1045526",
+    "qid_answer": "Q35"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "2236",
+   "entailment": "Phyllis Lambert in Montreal  &  Montreal in Canada  =>  Phyllis Lambert in Canada",
+   "inner_1": {
+    "subject": "Phyllis Lambert",
+    "prompt": "Phyllis Lambert was born in the city of",
+    "answer": "Montreal",
+    "qid_subject": "Q3381859",
+    "qid_answer": "Q340"
+   },
+   "inner_2": {
+    "subject": "Montreal",
+    "prompt": "Montreal is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q340",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Phyllis Lambert",
+    "prompt": "Phyllis Lambert was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q3381859",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2410",
+   "entailment": "Peter Lassally in Hamburg  &  Hamburg in Germany  =>  Peter Lassally in Germany",
+   "inner_1": {
+    "subject": "Peter Lassally",
+    "prompt": "Peter Lassally was born in the city of",
+    "answer": "Hamburg",
+    "qid_subject": "Q7175368",
+    "qid_answer": "Q51974"
+   },
+   "inner_2": {
+    "subject": "Hamburg",
+    "prompt": "Hamburg is located in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q51974",
+    "qid_answer": "Q183"
+   },
+   "outer": {
+    "subject": "Peter Lassally",
+    "prompt": "Peter Lassally was born in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q7175368",
+    "qid_answer": "Q183"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2418",
+   "entailment": "Melinda Czink in Budapest  &  Budapest in Hungary  =>  Melinda Czink in Hungary",
+   "inner_1": {
+    "subject": "Melinda Czink",
+    "prompt": "Melinda Czink was born in the city of",
+    "answer": "Budapest",
+    "qid_subject": "Q230226",
+    "qid_answer": "Q1781"
+   },
+   "inner_2": {
+    "subject": "Budapest",
+    "prompt": "Budapest is located in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q1781",
+    "qid_answer": "Q28"
+   },
+   "outer": {
+    "subject": "Melinda Czink",
+    "prompt": "Melinda Czink was born in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q230226",
+    "qid_answer": "Q28"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2498",
+   "entailment": "Alexandre Mercereau in Paris  &  Paris in France  =>  Alexandre Mercereau in France",
+   "inner_1": {
+    "subject": "Alexandre Mercereau",
+    "prompt": "Alexandre Mercereau was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q2833874",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Alexandre Mercereau",
+    "prompt": "Alexandre Mercereau was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q2833874",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "2502",
+   "entailment": "Ilari Sahamies in Helsinki  &  Helsinki in Finland  =>  Ilari Sahamies in Finland",
+   "inner_1": {
+    "subject": "Ilari Sahamies",
+    "prompt": "Ilari Sahamies was born in the city of",
+    "answer": "Helsinki",
+    "qid_subject": "Q5997161",
+    "qid_answer": "Q1757"
+   },
+   "inner_2": {
+    "subject": "Helsinki",
+    "prompt": "Helsinki is located in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q1757",
+    "qid_answer": "Q33"
+   },
+   "outer": {
+    "subject": "Ilari Sahamies",
+    "prompt": "Ilari Sahamies was born in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q5997161",
+    "qid_answer": "Q33"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "2509",
+   "entailment": "Tom Atkins in Pittsburgh  &  Pittsburgh in United States  =>  Tom Atkins in United States",
+   "inner_1": {
+    "subject": "Tom Atkins",
+    "prompt": "Tom Atkins was born in the city of",
+    "answer": "Pittsburgh",
+    "qid_subject": "Q1366623",
+    "qid_answer": "Q235034"
+   },
+   "inner_2": {
+    "subject": "Pittsburgh",
+    "prompt": "Pittsburgh is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q235034",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Tom Atkins",
+    "prompt": "Tom Atkins was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1366623",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2582",
+   "entailment": "Washington McLean in Cincinnati  &  Cincinnati in United States  =>  Washington McLean in United States",
+   "inner_1": {
+    "subject": "Washington McLean",
+    "prompt": "Washington McLean was born in the city of",
+    "answer": "Cincinnati",
+    "qid_subject": "Q7972042",
+    "qid_answer": "Q43196"
+   },
+   "inner_2": {
+    "subject": "Cincinnati",
+    "prompt": "Cincinnati is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q43196",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Washington McLean",
+    "prompt": "Washington McLean was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q7972042",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2623",
+   "entailment": "Elise Broach in Atlanta  &  Atlanta in United States  =>  Elise Broach in United States",
+   "inner_1": {
+    "subject": "Elise Broach",
+    "prompt": "Elise Broach was born in the city of",
+    "answer": "Atlanta",
+    "qid_subject": "Q5361649",
+    "qid_answer": "Q23556"
+   },
+   "inner_2": {
+    "subject": "Atlanta",
+    "prompt": "Atlanta is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q23556",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Elise Broach",
+    "prompt": "Elise Broach was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5361649",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2628",
+   "entailment": "Mark Johnston-Allen in Bristol  &  Bristol in United States  =>  Mark Johnston-Allen in United States",
+   "inner_1": {
+    "subject": "Mark Johnston-Allen",
+    "prompt": "Mark Johnston-Allen was born in the city of",
+    "answer": "Bristol",
+    "qid_subject": "Q4160461",
+    "qid_answer": "Q755149"
+   },
+   "inner_2": {
+    "subject": "Bristol",
+    "prompt": "Bristol is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q755149",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Mark Johnston-Allen",
+    "prompt": "Mark Johnston-Allen was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q4160461",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2684",
+   "entailment": "James Nabrit in Houston  &  Houston in United States  =>  James Nabrit in United States",
+   "inner_1": {
+    "subject": "James Nabrit",
+    "prompt": "James Nabrit was born in the city of",
+    "answer": "Houston",
+    "qid_subject": "Q8568162",
+    "qid_answer": "Q16555"
+   },
+   "inner_2": {
+    "subject": "Houston",
+    "prompt": "Houston is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q16555",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "James Nabrit",
+    "prompt": "James Nabrit was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q8568162",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2754",
+   "entailment": "Jonas Hassen Khemiri in Stockholm  &  Stockholm in Sweden  =>  Jonas Hassen Khemiri in Sweden",
+   "inner_1": {
+    "subject": "Jonas Hassen Khemiri",
+    "prompt": "Jonas Hassen Khemiri was born in the city of",
+    "answer": "Stockholm",
+    "qid_subject": "Q1475327",
+    "qid_answer": "Q1754"
+   },
+   "inner_2": {
+    "subject": "Stockholm",
+    "prompt": "Stockholm is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1754",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Jonas Hassen Khemiri",
+    "prompt": "Jonas Hassen Khemiri was born in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1475327",
+    "qid_answer": "Q34"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2767",
+   "entailment": "Carlos Zingaro in Lisbon  &  Lisbon in Portugal  =>  Carlos Zingaro in Portugal",
+   "inner_1": {
+    "subject": "Carlos Zingaro",
+    "prompt": "Carlos Zingaro was born in the city of",
+    "answer": "Lisbon",
+    "qid_subject": "Q177385",
+    "qid_answer": "Q597"
+   },
+   "inner_2": {
+    "subject": "Lisbon",
+    "prompt": "Lisbon is located in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q597",
+    "qid_answer": "Q45"
+   },
+   "outer": {
+    "subject": "Carlos Zingaro",
+    "prompt": "Carlos Zingaro was born in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q177385",
+    "qid_answer": "Q45"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2777",
+   "entailment": "Jacob Holdt in Copenhagen  &  Copenhagen in Denmark  =>  Jacob Holdt in Denmark",
+   "inner_1": {
+    "subject": "Jacob Holdt",
+    "prompt": "Jacob Holdt was born in the city of",
+    "answer": "Copenhagen",
+    "qid_subject": "Q721352",
+    "qid_answer": "Q1748"
+   },
+   "inner_2": {
+    "subject": "Copenhagen",
+    "prompt": "Copenhagen is located in the country of",
+    "answer": "Denmark",
+    "qid_subject": "Q1748",
+    "qid_answer": "Q35"
+   },
+   "outer": {
+    "subject": "Jacob Holdt",
+    "prompt": "Jacob Holdt was born in the country of",
+    "answer": "Denmark",
+    "qid_subject": "Q721352",
+    "qid_answer": "Q35"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2907",
+   "entailment": "Neal Tiemann in Dallas  &  Dallas in United States  =>  Neal Tiemann in United States",
+   "inner_1": {
+    "subject": "Neal Tiemann",
+    "prompt": "Neal Tiemann was born in the city of",
+    "answer": "Dallas",
+    "qid_subject": "Q6984201",
+    "qid_answer": "Q16557"
+   },
+   "inner_2": {
+    "subject": "Dallas",
+    "prompt": "Dallas is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q16557",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Neal Tiemann",
+    "prompt": "Neal Tiemann was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q6984201",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2912",
+   "entailment": "Nikolai Nissen Paus in Oslo  &  Oslo in Norway  =>  Nikolai Nissen Paus in Norway",
+   "inner_1": {
+    "subject": "Nikolai Nissen Paus",
+    "prompt": "Nikolai Nissen Paus was born in the city of",
+    "answer": "Oslo",
+    "qid_subject": "Q3368743",
+    "qid_answer": "Q585"
+   },
+   "inner_2": {
+    "subject": "Oslo",
+    "prompt": "Oslo is located in the country of",
+    "answer": "Norway",
+    "qid_subject": "Q585",
+    "qid_answer": "Q20"
+   },
+   "outer": {
+    "subject": "Nikolai Nissen Paus",
+    "prompt": "Nikolai Nissen Paus was born in the country of",
+    "answer": "Norway",
+    "qid_subject": "Q3368743",
+    "qid_answer": "Q20"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2915",
+   "entailment": "Lou Reed in Brooklyn  &  Brooklyn in United States  =>  Lou Reed in United States",
+   "inner_1": {
+    "subject": "Lou Reed",
+    "prompt": "Lou Reed was born in the city of",
+    "answer": "Brooklyn",
+    "qid_subject": "Q1930855",
+    "qid_answer": "Q18419"
+   },
+   "inner_2": {
+    "subject": "Brooklyn",
+    "prompt": "Brooklyn is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18419",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Lou Reed",
+    "prompt": "Lou Reed was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1930855",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2944",
+   "entailment": "Andy Nicholson in Sheffield  &  Sheffield in United Kingdom  =>  Andy Nicholson in United Kingdom",
+   "inner_1": {
+    "subject": "Andy Nicholson",
+    "prompt": "Andy Nicholson was born in the city of",
+    "answer": "Sheffield",
+    "qid_subject": "Q139767901",
+    "qid_answer": "Q42448"
+   },
+   "inner_2": {
+    "subject": "Sheffield",
+    "prompt": "Sheffield is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q42448",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Andy Nicholson",
+    "prompt": "Andy Nicholson was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q139767901",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2959",
+   "entailment": "Robert Beaser in Boston  &  Boston in United States  =>  Robert Beaser in United States",
+   "inner_1": {
+    "subject": "Robert Beaser",
+    "prompt": "Robert Beaser was born in the city of",
+    "answer": "Boston",
+    "qid_subject": "Q7341971",
+    "qid_answer": "Q100"
+   },
+   "inner_2": {
+    "subject": "Boston",
+    "prompt": "Boston is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q100",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Robert Beaser",
+    "prompt": "Robert Beaser was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q7341971",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "2997",
+   "entailment": "Gloria Davy in Brooklyn  &  Brooklyn in United States  =>  Gloria Davy in United States",
+   "inner_1": {
+    "subject": "Gloria Davy",
+    "prompt": "Gloria Davy was born in the city of",
+    "answer": "Brooklyn",
+    "qid_subject": "Q1532072",
+    "qid_answer": "Q18419"
+   },
+   "inner_2": {
+    "subject": "Brooklyn",
+    "prompt": "Brooklyn is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18419",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Gloria Davy",
+    "prompt": "Gloria Davy was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1532072",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3005",
+   "entailment": "Georges Duhamel in Paris  &  Paris in France  =>  Georges Duhamel in France",
+   "inner_1": {
+    "subject": "Georges Duhamel",
+    "prompt": "Georges Duhamel was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q20733",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Georges Duhamel",
+    "prompt": "Georges Duhamel was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q20733",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3011",
+   "entailment": "Isabel Granada in Manila  &  Manila in Philippines  =>  Isabel Granada in Philippines",
+   "inner_1": {
+    "subject": "Isabel Granada",
+    "prompt": "Isabel Granada was born in the city of",
+    "answer": "Manila",
+    "qid_subject": "Q3545304",
+    "qid_answer": "Q1461"
+   },
+   "inner_2": {
+    "subject": "Manila",
+    "prompt": "Manila is located in the country of",
+    "answer": "Philippines",
+    "qid_subject": "Q1461",
+    "qid_answer": "Q928"
+   },
+   "outer": {
+    "subject": "Isabel Granada",
+    "prompt": "Isabel Granada was born in the country of",
+    "answer": "Philippines",
+    "qid_subject": "Q3545304",
+    "qid_answer": "Q928"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3040",
+   "entailment": "Joey BadA$$ in Brooklyn  &  Brooklyn in United States  =>  Joey BadA$$ in United States",
+   "inner_1": {
+    "subject": "Joey BadA$$",
+    "prompt": "Joey BadA$$ was born in the city of",
+    "answer": "Brooklyn",
+    "qid_subject": "Q3201552",
+    "qid_answer": "Q18419"
+   },
+   "inner_2": {
+    "subject": "Brooklyn",
+    "prompt": "Brooklyn is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18419",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Joey BadA$$",
+    "prompt": "Joey BadA$$ was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q3201552",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3048",
+   "entailment": "Gergely Kiss in Budapest  &  Budapest in Hungary  =>  Gergely Kiss in Hungary",
+   "inner_1": {
+    "subject": "Gergely Kiss",
+    "prompt": "Gergely Kiss was born in the city of",
+    "answer": "Budapest",
+    "qid_subject": "Q132472800",
+    "qid_answer": "Q1781"
+   },
+   "inner_2": {
+    "subject": "Budapest",
+    "prompt": "Budapest is located in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q1781",
+    "qid_answer": "Q28"
+   },
+   "outer": {
+    "subject": "Gergely Kiss",
+    "prompt": "Gergely Kiss was born in the country of",
+    "answer": "Hungary",
+    "qid_subject": "Q132472800",
+    "qid_answer": "Q28"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "3094",
+   "entailment": "Marco Benefial in Rome  &  Rome in Italy  =>  Marco Benefial in Italy",
+   "inner_1": {
+    "subject": "Marco Benefial",
+    "prompt": "Marco Benefial was born in the city of",
+    "answer": "Rome",
+    "qid_subject": "Q466471",
+    "qid_answer": "Q220"
+   },
+   "inner_2": {
+    "subject": "Rome",
+    "prompt": "Rome is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q220",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Marco Benefial",
+    "prompt": "Marco Benefial was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q466471",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3100",
+   "entailment": "Biff Wellington in Calgary  &  Calgary in Canada  =>  Biff Wellington in Canada",
+   "inner_1": {
+    "subject": "Biff Wellington",
+    "prompt": "Biff Wellington was born in the city of",
+    "answer": "Calgary",
+    "qid_subject": "Q4904746",
+    "qid_answer": "Q36312"
+   },
+   "inner_2": {
+    "subject": "Calgary",
+    "prompt": "Calgary is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q36312",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Biff Wellington",
+    "prompt": "Biff Wellington was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q4904746",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3116",
+   "entailment": "Mufi Hannemann in Honolulu  &  Honolulu in United States  =>  Mufi Hannemann in United States",
+   "inner_1": {
+    "subject": "Mufi Hannemann",
+    "prompt": "Mufi Hannemann was born in the city of",
+    "answer": "Honolulu",
+    "qid_subject": "Q1453320",
+    "qid_answer": "Q18094"
+   },
+   "inner_2": {
+    "subject": "Honolulu",
+    "prompt": "Honolulu is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18094",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Mufi Hannemann",
+    "prompt": "Mufi Hannemann was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1453320",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3181",
+   "entailment": "Camille Pin in Nice  &  Nice in France  =>  Camille Pin in France",
+   "inner_1": {
+    "subject": "Camille Pin",
+    "prompt": "Camille Pin was born in the city of",
+    "answer": "Nice",
+    "qid_subject": "Q427761",
+    "qid_answer": "Q33959"
+   },
+   "inner_2": {
+    "subject": "Nice",
+    "prompt": "Nice is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q33959",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Camille Pin",
+    "prompt": "Camille Pin was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q427761",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3192",
+   "entailment": "Wretch 32 in Tottenham  &  Tottenham in United Kingdom  =>  Wretch 32 in United Kingdom",
+   "inner_1": {
+    "subject": "Wretch 32",
+    "prompt": "Wretch 32 was born in the city of",
+    "answer": "Tottenham",
+    "qid_subject": "Q116369",
+    "qid_answer": "Q18741"
+   },
+   "inner_2": {
+    "subject": "Tottenham",
+    "prompt": "Tottenham is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q18741",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Wretch 32",
+    "prompt": "Wretch 32 was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q116369",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3242",
+   "entailment": "Jacob Wallenberg in Stockholm  &  Stockholm in Sweden  =>  Jacob Wallenberg in Sweden",
+   "inner_1": {
+    "subject": "Jacob Wallenberg",
+    "prompt": "Jacob Wallenberg was born in the city of",
+    "answer": "Stockholm",
+    "qid_subject": "Q134589584",
+    "qid_answer": "Q1754"
+   },
+   "inner_2": {
+    "subject": "Stockholm",
+    "prompt": "Stockholm is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1754",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Jacob Wallenberg",
+    "prompt": "Jacob Wallenberg was born in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q134589584",
+    "qid_answer": "Q34"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "3326",
+   "entailment": "Jim Leverton in Dover  &  Dover in United Kingdom  =>  Jim Leverton in United Kingdom",
+   "inner_1": {
+    "subject": "Jim Leverton",
+    "prompt": "Jim Leverton was born in the city of",
+    "answer": "Dover",
+    "qid_subject": "Q15401788",
+    "qid_answer": "Q179224"
+   },
+   "inner_2": {
+    "subject": "Dover",
+    "prompt": "Dover is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q179224",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Jim Leverton",
+    "prompt": "Jim Leverton was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q15401788",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3395",
+   "entailment": "Diego de Rosales in Madrid  &  Madrid in Spain  =>  Diego de Rosales in Spain",
+   "inner_1": {
+    "subject": "Diego de Rosales",
+    "prompt": "Diego de Rosales was born in the city of",
+    "answer": "Madrid",
+    "qid_subject": "Q1626892",
+    "qid_answer": "Q2807"
+   },
+   "inner_2": {
+    "subject": "Madrid",
+    "prompt": "Madrid is located in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q2807",
+    "qid_answer": "Q29"
+   },
+   "outer": {
+    "subject": "Diego de Rosales",
+    "prompt": "Diego de Rosales was born in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q1626892",
+    "qid_answer": "Q29"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3531",
+   "entailment": "Ryo Ryusei in Tokyo  &  Tokyo in Japan  =>  Ryo Ryusei in Japan",
+   "inner_1": {
+    "subject": "Ryo Ryusei",
+    "prompt": "Ryo Ryusei was born in the city of",
+    "answer": "Tokyo",
+    "qid_subject": "Q2096624",
+    "qid_answer": "Q1490"
+   },
+   "inner_2": {
+    "subject": "Tokyo",
+    "prompt": "Tokyo is located in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q1490",
+    "qid_answer": "Q17"
+   },
+   "outer": {
+    "subject": "Ryo Ryusei",
+    "prompt": "Ryo Ryusei was born in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q2096624",
+    "qid_answer": "Q17"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3567",
+   "entailment": "Arthur Harden in Manchester  &  Manchester in United Kingdom  =>  Arthur Harden in United Kingdom",
+   "inner_1": {
+    "subject": "Arthur Harden",
+    "prompt": "Arthur Harden was born in the city of",
+    "answer": "Manchester",
+    "qid_subject": "Q189803",
+    "qid_answer": "Q18125"
+   },
+   "inner_2": {
+    "subject": "Manchester",
+    "prompt": "Manchester is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q18125",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Arthur Harden",
+    "prompt": "Arthur Harden was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q189803",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3688",
+   "entailment": "Martin Sweet in Stockholm  &  Stockholm in Sweden  =>  Martin Sweet in Sweden",
+   "inner_1": {
+    "subject": "Martin Sweet",
+    "prompt": "Martin Sweet was born in the city of",
+    "answer": "Stockholm",
+    "qid_subject": "Q3850147",
+    "qid_answer": "Q1754"
+   },
+   "inner_2": {
+    "subject": "Stockholm",
+    "prompt": "Stockholm is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1754",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Martin Sweet",
+    "prompt": "Martin Sweet was born in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q3850147",
+    "qid_answer": "Q34"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3711",
+   "entailment": "Michelle Douglas in Ottawa  &  Ottawa in Canada  =>  Michelle Douglas in Canada",
+   "inner_1": {
+    "subject": "Michelle Douglas",
+    "prompt": "Michelle Douglas was born in the city of",
+    "answer": "Ottawa",
+    "qid_subject": "Q1768141",
+    "qid_answer": "Q1930"
+   },
+   "inner_2": {
+    "subject": "Ottawa",
+    "prompt": "Ottawa is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q1930",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Michelle Douglas",
+    "prompt": "Michelle Douglas was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q1768141",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3714",
+   "entailment": "Umberto Guidoni in Rome  &  Rome in Italy  =>  Umberto Guidoni in Italy",
+   "inner_1": {
+    "subject": "Umberto Guidoni",
+    "prompt": "Umberto Guidoni was born in the city of",
+    "answer": "Rome",
+    "qid_subject": "Q727572",
+    "qid_answer": "Q220"
+   },
+   "inner_2": {
+    "subject": "Rome",
+    "prompt": "Rome is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q220",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Umberto Guidoni",
+    "prompt": "Umberto Guidoni was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q727572",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3818",
+   "entailment": "Albert I, Duke of Bavaria in Munich  &  Munich in Germany  =>  Albert I, Duke of Bavaria in Germany",
+   "inner_1": {
+    "subject": "Albert I, Duke of Bavaria",
+    "prompt": "Albert I, Duke of Bavaria was born in the city of",
+    "answer": "Munich",
+    "qid_subject": "Q77253",
+    "qid_answer": "Q1726"
+   },
+   "inner_2": {
+    "subject": "Munich",
+    "prompt": "Munich is located in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q1726",
+    "qid_answer": "Q183"
+   },
+   "outer": {
+    "subject": "Albert I, Duke of Bavaria",
+    "prompt": "Albert I, Duke of Bavaria was born in the country of",
+    "answer": "Germany",
+    "qid_subject": "Q77253",
+    "qid_answer": "Q183"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3865",
+   "entailment": "Kim Kashkashian in Detroit  &  Detroit in United States  =>  Kim Kashkashian in United States",
+   "inner_1": {
+    "subject": "Kim Kashkashian",
+    "prompt": "Kim Kashkashian was born in the city of",
+    "answer": "Detroit",
+    "qid_subject": "Q284694",
+    "qid_answer": "Q12439"
+   },
+   "inner_2": {
+    "subject": "Detroit",
+    "prompt": "Detroit is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q12439",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Kim Kashkashian",
+    "prompt": "Kim Kashkashian was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q284694",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3867",
+   "entailment": "Pasquale Squitieri in Naples  &  Naples in Italy  =>  Pasquale Squitieri in Italy",
+   "inner_1": {
+    "subject": "Pasquale Squitieri",
+    "prompt": "Pasquale Squitieri was born in the city of",
+    "answer": "Naples",
+    "qid_subject": "Q346976",
+    "qid_answer": "Q2634"
+   },
+   "inner_2": {
+    "subject": "Naples",
+    "prompt": "Naples is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q2634",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Pasquale Squitieri",
+    "prompt": "Pasquale Squitieri was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q346976",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "3888",
+   "entailment": "Larry King in Brooklyn  &  Brooklyn in United States  =>  Larry King in United States",
+   "inner_1": {
+    "subject": "Larry King",
+    "prompt": "Larry King was born in the city of",
+    "answer": "Brooklyn",
+    "qid_subject": "Q213430",
+    "qid_answer": "Q18419"
+   },
+   "inner_2": {
+    "subject": "Brooklyn",
+    "prompt": "Brooklyn is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18419",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Larry King",
+    "prompt": "Larry King was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q213430",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "3930",
+   "entailment": "Sid Luckman in Brooklyn  &  Brooklyn in United States  =>  Sid Luckman in United States",
+   "inner_1": {
+    "subject": "Sid Luckman",
+    "prompt": "Sid Luckman was born in the city of",
+    "answer": "Brooklyn",
+    "qid_subject": "Q456194",
+    "qid_answer": "Q18419"
+   },
+   "inner_2": {
+    "subject": "Brooklyn",
+    "prompt": "Brooklyn is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q18419",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Sid Luckman",
+    "prompt": "Sid Luckman was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q456194",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4032",
+   "entailment": "Seija Simola in Helsinki  &  Helsinki in Finland  =>  Seija Simola in Finland",
+   "inner_1": {
+    "subject": "Seija Simola",
+    "prompt": "Seija Simola was born in the city of",
+    "answer": "Helsinki",
+    "qid_subject": "Q468168",
+    "qid_answer": "Q1757"
+   },
+   "inner_2": {
+    "subject": "Helsinki",
+    "prompt": "Helsinki is located in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q1757",
+    "qid_answer": "Q33"
+   },
+   "outer": {
+    "subject": "Seija Simola",
+    "prompt": "Seija Simola was born in the country of",
+    "answer": "Finland",
+    "qid_subject": "Q468168",
+    "qid_answer": "Q33"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "4042",
+   "entailment": "Marty Stuart in Philadelphia  &  Philadelphia in United States  =>  Marty Stuart in United States",
+   "inner_1": {
+    "subject": "Marty Stuart",
+    "prompt": "Marty Stuart was born in the city of",
+    "answer": "Philadelphia",
+    "qid_subject": "Q706332",
+    "qid_answer": "Q1345"
+   },
+   "inner_2": {
+    "subject": "Philadelphia",
+    "prompt": "Philadelphia is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1345",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Marty Stuart",
+    "prompt": "Marty Stuart was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q706332",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4264",
+   "entailment": "David Kershenbaum in Springfield  &  Springfield in United Kingdom  =>  David Kershenbaum in United Kingdom",
+   "inner_1": {
+    "subject": "David Kershenbaum",
+    "prompt": "David Kershenbaum was born in the city of",
+    "answer": "Springfield",
+    "qid_subject": "Q16730750",
+    "qid_answer": "Q2369961"
+   },
+   "inner_2": {
+    "subject": "Springfield",
+    "prompt": "Springfield is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q2369961",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "David Kershenbaum",
+    "prompt": "David Kershenbaum was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q16730750",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4313",
+   "entailment": "Daniel Alfredson in Stockholm  &  Stockholm in Sweden  =>  Daniel Alfredson in Sweden",
+   "inner_1": {
+    "subject": "Daniel Alfredson",
+    "prompt": "Daniel Alfredson was born in the city of",
+    "answer": "Stockholm",
+    "qid_subject": "Q1159900",
+    "qid_answer": "Q1754"
+   },
+   "inner_2": {
+    "subject": "Stockholm",
+    "prompt": "Stockholm is located in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1754",
+    "qid_answer": "Q34"
+   },
+   "outer": {
+    "subject": "Daniel Alfredson",
+    "prompt": "Daniel Alfredson was born in the country of",
+    "answer": "Sweden",
+    "qid_subject": "Q1159900",
+    "qid_answer": "Q34"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "4337",
+   "entailment": "Ferdinand de Saussure in Geneva  &  Geneva in Switzerland  =>  Ferdinand de Saussure in Switzerland",
+   "inner_1": {
+    "subject": "Ferdinand de Saussure",
+    "prompt": "Ferdinand de Saussure was born in the city of",
+    "answer": "Geneva",
+    "qid_subject": "Q13230",
+    "qid_answer": "Q71"
+   },
+   "inner_2": {
+    "subject": "Geneva",
+    "prompt": "Geneva is located in the country of",
+    "answer": "Switzerland",
+    "qid_subject": "Q71",
+    "qid_answer": "Q39"
+   },
+   "outer": {
+    "subject": "Ferdinand de Saussure",
+    "prompt": "Ferdinand de Saussure was born in the country of",
+    "answer": "Switzerland",
+    "qid_subject": "Q13230",
+    "qid_answer": "Q39"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "4388",
+   "entailment": "Riona Hazuki in Tokyo  &  Tokyo in Japan  =>  Riona Hazuki in Japan",
+   "inner_1": {
+    "subject": "Riona Hazuki",
+    "prompt": "Riona Hazuki was born in the city of",
+    "answer": "Tokyo",
+    "qid_subject": "Q44271",
+    "qid_answer": "Q1490"
+   },
+   "inner_2": {
+    "subject": "Tokyo",
+    "prompt": "Tokyo is located in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q1490",
+    "qid_answer": "Q17"
+   },
+   "outer": {
+    "subject": "Riona Hazuki",
+    "prompt": "Riona Hazuki was born in the country of",
+    "answer": "Japan",
+    "qid_subject": "Q44271",
+    "qid_answer": "Q17"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4398",
+   "entailment": "Irving Fine in Boston  &  Boston in United States  =>  Irving Fine in United States",
+   "inner_1": {
+    "subject": "Irving Fine",
+    "prompt": "Irving Fine was born in the city of",
+    "answer": "Boston",
+    "qid_subject": "Q706781",
+    "qid_answer": "Q100"
+   },
+   "inner_2": {
+    "subject": "Boston",
+    "prompt": "Boston is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q100",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Irving Fine",
+    "prompt": "Irving Fine was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q706781",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4455",
+   "entailment": "Ken Follett in Cardiff  &  Cardiff in United Kingdom  =>  Ken Follett in United Kingdom",
+   "inner_1": {
+    "subject": "Ken Follett",
+    "prompt": "Ken Follett was born in the city of",
+    "answer": "Cardiff",
+    "qid_subject": "Q210669",
+    "qid_answer": "Q10690"
+   },
+   "inner_2": {
+    "subject": "Cardiff",
+    "prompt": "Cardiff is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q10690",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Ken Follett",
+    "prompt": "Ken Follett was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q210669",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4470",
+   "entailment": "Eddie Creatchman in Montreal  &  Montreal in Canada  =>  Eddie Creatchman in Canada",
+   "inner_1": {
+    "subject": "Eddie Creatchman",
+    "prompt": "Eddie Creatchman was born in the city of",
+    "answer": "Montreal",
+    "qid_subject": "Q5335950",
+    "qid_answer": "Q340"
+   },
+   "inner_2": {
+    "subject": "Montreal",
+    "prompt": "Montreal is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q340",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Eddie Creatchman",
+    "prompt": "Eddie Creatchman was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q5335950",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4480",
+   "entailment": "Brad Fraser in Edmonton  &  Edmonton in Canada  =>  Brad Fraser in Canada",
+   "inner_1": {
+    "subject": "Brad Fraser",
+    "prompt": "Brad Fraser was born in the city of",
+    "answer": "Edmonton",
+    "qid_subject": "Q4953936",
+    "qid_answer": "Q2096"
+   },
+   "inner_2": {
+    "subject": "Edmonton",
+    "prompt": "Edmonton is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q2096",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Brad Fraser",
+    "prompt": "Brad Fraser was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q4953936",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4483",
+   "entailment": "Ernie Andrews in Philadelphia  &  Philadelphia in United States  =>  Ernie Andrews in United States",
+   "inner_1": {
+    "subject": "Ernie Andrews",
+    "prompt": "Ernie Andrews was born in the city of",
+    "answer": "Philadelphia",
+    "qid_subject": "Q1356880",
+    "qid_answer": "Q1345"
+   },
+   "inner_2": {
+    "subject": "Philadelphia",
+    "prompt": "Philadelphia is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1345",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Ernie Andrews",
+    "prompt": "Ernie Andrews was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q1356880",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4524",
+   "entailment": "Tobias Rau in Brunswick  &  Brunswick in United States  =>  Tobias Rau in United States",
+   "inner_1": {
+    "subject": "Tobias Rau",
+    "prompt": "Tobias Rau was born in the city of",
+    "answer": "Brunswick",
+    "qid_subject": "Q697480",
+    "qid_answer": "Q994144"
+   },
+   "inner_2": {
+    "subject": "Brunswick",
+    "prompt": "Brunswick is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q994144",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Tobias Rau",
+    "prompt": "Tobias Rau was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q697480",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4549",
+   "entailment": "Vivian Harris in Georgetown  &  Georgetown in United States  =>  Vivian Harris in United States",
+   "inner_1": {
+    "subject": "Vivian Harris",
+    "prompt": "Vivian Harris was born in the city of",
+    "answer": "Georgetown",
+    "qid_subject": "Q107496210",
+    "qid_answer": "Q333886"
+   },
+   "inner_2": {
+    "subject": "Georgetown",
+    "prompt": "Georgetown is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q333886",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Vivian Harris",
+    "prompt": "Vivian Harris was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q107496210",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4677",
+   "entailment": "Hartmut Mehdorn in Warsaw  &  Warsaw in Poland  =>  Hartmut Mehdorn in Poland",
+   "inner_1": {
+    "subject": "Hartmut Mehdorn",
+    "prompt": "Hartmut Mehdorn was born in the city of",
+    "answer": "Warsaw",
+    "qid_subject": "Q91984",
+    "qid_answer": "Q270"
+   },
+   "inner_2": {
+    "subject": "Warsaw",
+    "prompt": "Warsaw is located in the country of",
+    "answer": "Poland",
+    "qid_subject": "Q270",
+    "qid_answer": "Q36"
+   },
+   "outer": {
+    "subject": "Hartmut Mehdorn",
+    "prompt": "Hartmut Mehdorn was born in the country of",
+    "answer": "Poland",
+    "qid_subject": "Q91984",
+    "qid_answer": "Q36"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4722",
+   "entailment": "Harald Gram in Oslo  &  Oslo in Norway  =>  Harald Gram in Norway",
+   "inner_1": {
+    "subject": "Harald Gram",
+    "prompt": "Harald Gram was born in the city of",
+    "answer": "Oslo",
+    "qid_subject": "Q5653779",
+    "qid_answer": "Q585"
+   },
+   "inner_2": {
+    "subject": "Oslo",
+    "prompt": "Oslo is located in the country of",
+    "answer": "Norway",
+    "qid_subject": "Q585",
+    "qid_answer": "Q20"
+   },
+   "outer": {
+    "subject": "Harald Gram",
+    "prompt": "Harald Gram was born in the country of",
+    "answer": "Norway",
+    "qid_subject": "Q5653779",
+    "qid_answer": "Q20"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4740",
+   "entailment": "Darrell Nulisch in Dallas  &  Dallas in United States  =>  Darrell Nulisch in United States",
+   "inner_1": {
+    "subject": "Darrell Nulisch",
+    "prompt": "Darrell Nulisch was born in the city of",
+    "answer": "Dallas",
+    "qid_subject": "Q113364",
+    "qid_answer": "Q16557"
+   },
+   "inner_2": {
+    "subject": "Dallas",
+    "prompt": "Dallas is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q16557",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Darrell Nulisch",
+    "prompt": "Darrell Nulisch was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q113364",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4748",
+   "entailment": "Fox Butterfield in Lancaster  &  Lancaster in United Kingdom  =>  Fox Butterfield in United Kingdom",
+   "inner_1": {
+    "subject": "Fox Butterfield",
+    "prompt": "Fox Butterfield was born in the city of",
+    "answer": "Lancaster",
+    "qid_subject": "Q3080180",
+    "qid_answer": "Q168052"
+   },
+   "inner_2": {
+    "subject": "Lancaster",
+    "prompt": "Lancaster is located in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q168052",
+    "qid_answer": "Q145"
+   },
+   "outer": {
+    "subject": "Fox Butterfield",
+    "prompt": "Fox Butterfield was born in the country of",
+    "answer": "United Kingdom",
+    "qid_subject": "Q3080180",
+    "qid_answer": "Q145"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4853",
+   "entailment": "Gita Sahgal in Mumbai  &  Mumbai in India  =>  Gita Sahgal in India",
+   "inner_1": {
+    "subject": "Gita Sahgal",
+    "prompt": "Gita Sahgal was born in the city of",
+    "answer": "Mumbai",
+    "qid_subject": "Q5565037",
+    "qid_answer": "Q1156"
+   },
+   "inner_2": {
+    "subject": "Mumbai",
+    "prompt": "Mumbai is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q1156",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Gita Sahgal",
+    "prompt": "Gita Sahgal was born in the country of",
+    "answer": "India",
+    "qid_subject": "Q5565037",
+    "qid_answer": "Q668"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4860",
+   "entailment": "Otto Jelinek in Prague  &  Prague in Czech Republic  =>  Otto Jelinek in Czech Republic",
+   "inner_1": {
+    "subject": "Otto Jelinek",
+    "prompt": "Otto Jelinek was born in the city of",
+    "answer": "Prague",
+    "qid_subject": "Q1361397",
+    "qid_answer": "Q1085"
+   },
+   "inner_2": {
+    "subject": "Prague",
+    "prompt": "Prague is located in the country of",
+    "answer": "Czech Republic",
+    "qid_subject": "Q1085",
+    "qid_answer": "Q213"
+   },
+   "outer": {
+    "subject": "Otto Jelinek",
+    "prompt": "Otto Jelinek was born in the country of",
+    "answer": "Czech Republic",
+    "qid_subject": "Q1361397",
+    "qid_answer": "Q213"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4890",
+   "entailment": "Graham McRae in Wellington  &  Wellington in New Zealand  =>  Graham McRae in New Zealand",
+   "inner_1": {
+    "subject": "Graham McRae",
+    "prompt": "Graham McRae was born in the city of",
+    "answer": "Wellington",
+    "qid_subject": "Q172535",
+    "qid_answer": "Q23661"
+   },
+   "inner_2": {
+    "subject": "Wellington",
+    "prompt": "Wellington is located in the country of",
+    "answer": "New Zealand",
+    "qid_subject": "Q23661",
+    "qid_answer": "Q664"
+   },
+   "outer": {
+    "subject": "Graham McRae",
+    "prompt": "Graham McRae was born in the country of",
+    "answer": "New Zealand",
+    "qid_subject": "Q172535",
+    "qid_answer": "Q664"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4895",
+   "entailment": "Nicola Porpora in Naples  &  Naples in Italy  =>  Nicola Porpora in Italy",
+   "inner_1": {
+    "subject": "Nicola Porpora",
+    "prompt": "Nicola Porpora was born in the city of",
+    "answer": "Naples",
+    "qid_subject": "Q312788",
+    "qid_answer": "Q2634"
+   },
+   "inner_2": {
+    "subject": "Naples",
+    "prompt": "Naples is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q2634",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Nicola Porpora",
+    "prompt": "Nicola Porpora was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q312788",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4922",
+   "entailment": "Rhea Chakraborty in Bangalore  &  Bangalore in India  =>  Rhea Chakraborty in India",
+   "inner_1": {
+    "subject": "Rhea Chakraborty",
+    "prompt": "Rhea Chakraborty was born in the city of",
+    "answer": "Bangalore",
+    "qid_subject": "Q7320290",
+    "qid_answer": "Q1355"
+   },
+   "inner_2": {
+    "subject": "Bangalore",
+    "prompt": "Bangalore is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q1355",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Rhea Chakraborty",
+    "prompt": "Rhea Chakraborty was born in the country of",
+    "answer": "India",
+    "qid_subject": "Q7320290",
+    "qid_answer": "Q668"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "4948",
+   "entailment": "Enrico Caruso in Naples  &  Naples in Italy  =>  Enrico Caruso in Italy",
+   "inner_1": {
+    "subject": "Enrico Caruso",
+    "prompt": "Enrico Caruso was born in the city of",
+    "answer": "Naples",
+    "qid_subject": "Q170726",
+    "qid_answer": "Q2634"
+   },
+   "inner_2": {
+    "subject": "Naples",
+    "prompt": "Naples is located in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q2634",
+    "qid_answer": "Q38"
+   },
+   "outer": {
+    "subject": "Enrico Caruso",
+    "prompt": "Enrico Caruso was born in the country of",
+    "answer": "Italy",
+    "qid_subject": "Q170726",
+    "qid_answer": "Q38"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "4975",
+   "entailment": "Salvador Puig Antich in Barcelona  &  Barcelona in Spain  =>  Salvador Puig Antich in Spain",
+   "inner_1": {
+    "subject": "Salvador Puig Antich",
+    "prompt": "Salvador Puig Antich was born in the city of",
+    "answer": "Barcelona",
+    "qid_subject": "Q439168",
+    "qid_answer": "Q1492"
+   },
+   "inner_2": {
+    "subject": "Barcelona",
+    "prompt": "Barcelona is located in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q1492",
+    "qid_answer": "Q29"
+   },
+   "outer": {
+    "subject": "Salvador Puig Antich",
+    "prompt": "Salvador Puig Antich was born in the country of",
+    "answer": "Spain",
+    "qid_subject": "Q439168",
+    "qid_answer": "Q29"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "4993",
+   "entailment": "Norris Turney in Wilmington  &  Wilmington in United States  =>  Norris Turney in United States",
+   "inner_1": {
+    "subject": "Norris Turney",
+    "prompt": "Norris Turney was born in the city of",
+    "answer": "Wilmington",
+    "qid_subject": "Q527821",
+    "qid_answer": "Q174224"
+   },
+   "inner_2": {
+    "subject": "Wilmington",
+    "prompt": "Wilmington is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q174224",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Norris Turney",
+    "prompt": "Norris Turney was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q527821",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5052",
+   "entailment": "Mehdi Hosseini in Tehran  &  Tehran in Iran  =>  Mehdi Hosseini in Iran",
+   "inner_1": {
+    "subject": "Mehdi Hosseini",
+    "prompt": "Mehdi Hosseini was born in the city of",
+    "answer": "Tehran",
+    "qid_subject": "Q452959",
+    "qid_answer": "Q3616"
+   },
+   "inner_2": {
+    "subject": "Tehran",
+    "prompt": "Tehran is located in the country of",
+    "answer": "Iran",
+    "qid_subject": "Q3616",
+    "qid_answer": "Q794"
+   },
+   "outer": {
+    "subject": "Mehdi Hosseini",
+    "prompt": "Mehdi Hosseini was born in the country of",
+    "answer": "Iran",
+    "qid_subject": "Q452959",
+    "qid_answer": "Q794"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "5067",
+   "entailment": "Mink Stole in Baltimore  &  Baltimore in United States  =>  Mink Stole in United States",
+   "inner_1": {
+    "subject": "Mink Stole",
+    "prompt": "Mink Stole was born in the city of",
+    "answer": "Baltimore",
+    "qid_subject": "Q2506373",
+    "qid_answer": "Q5092"
+   },
+   "inner_2": {
+    "subject": "Baltimore",
+    "prompt": "Baltimore is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q5092",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Mink Stole",
+    "prompt": "Mink Stole was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q2506373",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5070",
+   "entailment": "Artur Pizarro in Lisbon  &  Lisbon in Portugal  =>  Artur Pizarro in Portugal",
+   "inner_1": {
+    "subject": "Artur Pizarro",
+    "prompt": "Artur Pizarro was born in the city of",
+    "answer": "Lisbon",
+    "qid_subject": "Q2865924",
+    "qid_answer": "Q597"
+   },
+   "inner_2": {
+    "subject": "Lisbon",
+    "prompt": "Lisbon is located in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q597",
+    "qid_answer": "Q45"
+   },
+   "outer": {
+    "subject": "Artur Pizarro",
+    "prompt": "Artur Pizarro was born in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q2865924",
+    "qid_answer": "Q45"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5090",
+   "entailment": "Saint Giles in Athens  &  Athens in United States  =>  Saint Giles in United States",
+   "inner_1": {
+    "subject": "Saint Giles",
+    "prompt": "Saint Giles was born in the city of",
+    "answer": "Athens",
+    "qid_subject": "Q243024",
+    "qid_answer": "Q203263"
+   },
+   "inner_2": {
+    "subject": "Athens",
+    "prompt": "Athens is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q203263",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Saint Giles",
+    "prompt": "Saint Giles was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q243024",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5125",
+   "entailment": "Christine Edzard in Paris  &  Paris in France  =>  Christine Edzard in France",
+   "inner_1": {
+    "subject": "Christine Edzard",
+    "prompt": "Christine Edzard was born in the city of",
+    "answer": "Paris",
+    "qid_subject": "Q4476057",
+    "qid_answer": "Q90"
+   },
+   "inner_2": {
+    "subject": "Paris",
+    "prompt": "Paris is located in the country of",
+    "answer": "France",
+    "qid_subject": "Q90",
+    "qid_answer": "Q142"
+   },
+   "outer": {
+    "subject": "Christine Edzard",
+    "prompt": "Christine Edzard was born in the country of",
+    "answer": "France",
+    "qid_subject": "Q4476057",
+    "qid_answer": "Q142"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5169",
+   "entailment": "Frederick Lugard, 1st Baron Lugard in Chennai  &  Chennai in India  =>  Frederick Lugard, 1st Baron Lugard in India",
+   "inner_1": {
+    "subject": "Frederick Lugard, 1st Baron Lugard",
+    "prompt": "Frederick Lugard, 1st Baron Lugard was born in the city of",
+    "answer": "Chennai",
+    "qid_subject": "Q336027",
+    "qid_answer": "Q1352"
+   },
+   "inner_2": {
+    "subject": "Chennai",
+    "prompt": "Chennai is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q1352",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Frederick Lugard, 1st Baron Lugard",
+    "prompt": "Frederick Lugard, 1st Baron Lugard was born in the country of",
+    "answer": "India",
+    "qid_subject": "Q336027",
+    "qid_answer": "Q668"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5179",
+   "entailment": "Vikram Bhatt in Mumbai  &  Mumbai in India  =>  Vikram Bhatt in India",
+   "inner_1": {
+    "subject": "Vikram Bhatt",
+    "prompt": "Vikram Bhatt was born in the city of",
+    "answer": "Mumbai",
+    "qid_subject": "Q2738917",
+    "qid_answer": "Q1156"
+   },
+   "inner_2": {
+    "subject": "Mumbai",
+    "prompt": "Mumbai is located in the country of",
+    "answer": "India",
+    "qid_subject": "Q1156",
+    "qid_answer": "Q668"
+   },
+   "outer": {
+    "subject": "Vikram Bhatt",
+    "prompt": "Vikram Bhatt was born in the country of",
+    "answer": "India",
+    "qid_subject": "Q2738917",
+    "qid_answer": "Q668"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "5201",
+   "entailment": "Phoebe Atwood Taylor in Boston  &  Boston in United States  =>  Phoebe Atwood Taylor in United States",
+   "inner_1": {
+    "subject": "Phoebe Atwood Taylor",
+    "prompt": "Phoebe Atwood Taylor was born in the city of",
+    "answer": "Boston",
+    "qid_subject": "Q2088428",
+    "qid_answer": "Q100"
+   },
+   "inner_2": {
+    "subject": "Boston",
+    "prompt": "Boston is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q100",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Phoebe Atwood Taylor",
+    "prompt": "Phoebe Atwood Taylor was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q2088428",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5206",
+   "entailment": "Husayn ibn Ali in Medina  &  Medina in Saudi Arabia  =>  Husayn ibn Ali in Saudi Arabia",
+   "inner_1": {
+    "subject": "Husayn ibn Ali",
+    "prompt": "Husayn ibn Ali was born in the city of",
+    "answer": "Medina",
+    "qid_subject": "Q112128",
+    "qid_answer": "Q35484"
+   },
+   "inner_2": {
+    "subject": "Medina",
+    "prompt": "Medina is located in the country of",
+    "answer": "Saudi Arabia",
+    "qid_subject": "Q35484",
+    "qid_answer": "Q851"
+   },
+   "outer": {
+    "subject": "Husayn ibn Ali",
+    "prompt": "Husayn ibn Ali was born in the country of",
+    "answer": "Saudi Arabia",
+    "qid_subject": "Q112128",
+    "qid_answer": "Q851"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5208",
+   "entailment": "Lopo Soares de Albergaria in Lisbon  &  Lisbon in Portugal  =>  Lopo Soares de Albergaria in Portugal",
+   "inner_1": {
+    "subject": "Lopo Soares de Albergaria",
+    "prompt": "Lopo Soares de Albergaria was born in the city of",
+    "answer": "Lisbon",
+    "qid_subject": "Q2587384",
+    "qid_answer": "Q597"
+   },
+   "inner_2": {
+    "subject": "Lisbon",
+    "prompt": "Lisbon is located in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q597",
+    "qid_answer": "Q45"
+   },
+   "outer": {
+    "subject": "Lopo Soares de Albergaria",
+    "prompt": "Lopo Soares de Albergaria was born in the country of",
+    "answer": "Portugal",
+    "qid_subject": "Q2587384",
+    "qid_answer": "Q45"
+   },
+   "held": {
+    "inner_1": true,
+    "inner_2": true,
+    "outer": true
+   },
+   "usable": true
+  },
+  {
+   "seed_case_id": "5241",
+   "entailment": "Marc Swayze in Monroe  &  Monroe in United States  =>  Marc Swayze in United States",
+   "inner_1": {
+    "subject": "Marc Swayze",
+    "prompt": "Marc Swayze was born in the city of",
+    "answer": "Monroe",
+    "qid_subject": "Q6755906",
+    "qid_answer": "Q995533"
+   },
+   "inner_2": {
+    "subject": "Monroe",
+    "prompt": "Monroe is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q995533",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Marc Swayze",
+    "prompt": "Marc Swayze was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q6755906",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5258",
+   "entailment": "Jim Daley in Ottawa  &  Ottawa in Canada  =>  Jim Daley in Canada",
+   "inner_1": {
+    "subject": "Jim Daley",
+    "prompt": "Jim Daley was born in the city of",
+    "answer": "Ottawa",
+    "qid_subject": "Q6194512",
+    "qid_answer": "Q1930"
+   },
+   "inner_2": {
+    "subject": "Ottawa",
+    "prompt": "Ottawa is located in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q1930",
+    "qid_answer": "Q16"
+   },
+   "outer": {
+    "subject": "Jim Daley",
+    "prompt": "Jim Daley was born in the country of",
+    "answer": "Canada",
+    "qid_subject": "Q6194512",
+    "qid_answer": "Q16"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5265",
+   "entailment": "Illa J in Detroit  &  Detroit in United States  =>  Illa J in United States",
+   "inner_1": {
+    "subject": "Illa J",
+    "prompt": "Illa J was born in the city of",
+    "answer": "Detroit",
+    "qid_subject": "Q16231332",
+    "qid_answer": "Q12439"
+   },
+   "inner_2": {
+    "subject": "Detroit",
+    "prompt": "Detroit is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q12439",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Illa J",
+    "prompt": "Illa J was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q16231332",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": true,
+    "outer": false
+   },
+   "usable": false
+  },
+  {
+   "seed_case_id": "5280",
+   "entailment": "Paul Slovic in Chicago  &  Chicago in United States  =>  Paul Slovic in United States",
+   "inner_1": {
+    "subject": "Paul Slovic",
+    "prompt": "Paul Slovic was born in the city of",
+    "answer": "Chicago",
+    "qid_subject": "Q100923726",
+    "qid_answer": "Q131252"
+   },
+   "inner_2": {
+    "subject": "Chicago",
+    "prompt": "Chicago is located in the country of",
+    "answer": "United States",
+    "qid_subject": "Q131252",
+    "qid_answer": "Q30"
+   },
+   "outer": {
+    "subject": "Paul Slovic",
+    "prompt": "Paul Slovic was born in the country of",
+    "answer": "United States",
+    "qid_subject": "Q100923726",
+    "qid_answer": "Q30"
+   },
+   "held": {
+    "inner_1": false,
+    "inner_2": false,
+    "outer": false
+   },
+   "usable": false
+  }
+ ]
+}

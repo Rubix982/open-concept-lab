@@ -45,6 +45,16 @@ Backend = Literal["local", "ndif"]
 #: backend-agnostic and testable without a network.
 Scorer = Callable[[list[tuple[str, str]]], list[float]]
 
+#: Items packed into a single scorer call. Both arms of several items share one
+#: round trip, because on a remote backend compute is sub-second while each call
+#: costs ~10s of queue and transfer — round trips are the budget, not FLOPs.
+#: Measured at 8.3x on the same shape of work.
+#:
+#: Deliberately NOT part of FilterConfig: it changes throughput, never a number,
+#: so it must stay out of the cache fingerprint or every cached result is
+#: invalidated by a performance tweak.
+ITEMS_PER_CALL: Final[int] = 4
+
 
 # --------------------------------------------------------------------------- #
 # inputs
@@ -266,7 +276,8 @@ def _subject_free(edit: Edit, placeholder: str) -> str:
 def run(edits: list[Edit], config: FilterConfig, scorer: Scorer,
         cache_path: Path | None = None,
         reference: Iterable[Edit] | None = None,
-        progress: Callable[[int, int], None] | None = None) -> FilterReport:
+        progress: Callable[[int, int], None] | None = None,
+        items_per_call: int = ITEMS_PER_CALL) -> FilterReport:
     """Score every edit in both arms. Resumable via cache_path.
 
     `reference` supplies the candidate vocabulary and should be much larger than
@@ -295,22 +306,38 @@ def run(edits: list[Edit], config: FilterConfig, scorer: Scorer,
             others, min(config.n_candidates - 1, len(others)))]
         todo.append((e, cands))
 
-    for i, (e, cands) in enumerate(todo):
-        subj = scorer([(e.prompt, c) for c in cands])
-        prior_prompt = _subject_free(e, config.placeholder)
-        prior = scorer([(prior_prompt, c) for c in cands])
-        item = ItemResult(
-            case_id=e.case_id, relation_id=e.relation_id, subject=e.subject,
-            true_answer=e.true_answer,
-            rank_subject=_rank(subj, cands, e.true_answer),
-            rank_prior=_rank(prior, cands, e.true_answer),
-            n_candidates=len(cands))
-        results.append(item)
+    for start in range(0, len(todo), items_per_call):
+        chunk = todo[start : start + items_per_call]
+
+        # Both arms of every item in the chunk, in one call. The scorer takes
+        # arbitrary (prompt, continuation) pairs, so unrelated prompts share a
+        # round trip; the remote backend splits internally if the batch is too
+        # large for the host.
+        pairs: list[tuple[str, str]] = []
+        for e, cands in chunk:
+            pairs += [(e.prompt, c) for c in cands]
+            pairs += [(_subject_free(e, config.placeholder), c) for c in cands]
+        scores = scorer(pairs)
+
+        offset = 0
+        for e, cands in chunk:
+            k = len(cands)
+            subj, prior = scores[offset : offset + k], scores[offset + k : offset + 2 * k]
+            offset += 2 * k
+            item = ItemResult(
+                case_id=e.case_id, relation_id=e.relation_id, subject=e.subject,
+                true_answer=e.true_answer,
+                rank_subject=_rank(subj, cands, e.true_answer),
+                rank_prior=_rank(prior, cands, e.true_answer),
+                n_candidates=k)
+            results.append(item)
+            if cache_path:
+                cache[f"{config.fingerprint}|{e.case_id}"] = asdict(item)
+
         if cache_path:
-            cache[f"{config.fingerprint}|{e.case_id}"] = asdict(item)
             cache_path.parent.mkdir(parents=True, exist_ok=True)
             cache_path.write_text(json.dumps(cache))
         if progress:
-            progress(i + 1, len(todo))
+            progress(min(start + items_per_call, len(todo)), len(todo))
 
     return FilterReport(config=config, results=results, skipped=skipped)

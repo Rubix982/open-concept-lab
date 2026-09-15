@@ -142,3 +142,35 @@ rather than by reading it.
 vocabulary. Currently that surfaces as 0% coverage with a clear reason, which is
 correct but unhelpful; generating candidates from the relation's value type would
 be the fix.
+
+
+---
+
+## [O-005] Decision: large models only — the size floor replaces the size ceiling
+
+_Date: 2026-09-15_
+
+**Decision:** work only with very large models. From NDIF's ungated set that is
+**Llama-3.1-70B** (possession 79%) and **Llama-3.1-405B** (85%). GPT-J-6B and the
+8B tier are out.
+
+**Supersedes [O-004]'s rule**, which was *"choose the smallest model that
+demonstrably holds the grounds; small and legible still wins every tie."* That rule
+was derived to justify moving OFF GPT2-medium and was written as a ceiling-with-a-
+floor. It is now a floor only.
+
+**Rationale:** the gate result forced it. On GPT-J only **20 of 136** chains had all
+three legs held (15%) — thin for an existence claim and fragile if a few fail the
+edit. Possession is 56% on GPT-J against 79% at 70B, so the usable set should
+roughly double. Directed by the user 2026-09-15.
+
+**Consequence that is not yet paid for.** [E-003b] established the audit model must
+BE the edited model, so gating on 70B commits the edit to 70B. [E-006] verified
+editability — intervention plus remote gradients — on **Llama-3.1-8B**, not 70B.
+ROME at 70B needs second-moment statistics over d_mlp 28672, roughly 3.3 GB fp32,
+which has been neither collected nor costed. 405B is worse: d_mlp 53248, ~11 GB.
+
+**Revisit if:** the covariance collection at 70B proves impractical, in which case
+the honest options are to run the edit at a scale we can actually edit and report
+the possession ceiling as a limitation, or to drop the edit arm entirely and ship
+the audit instrument alone.

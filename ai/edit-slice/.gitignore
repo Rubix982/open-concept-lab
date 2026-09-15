@@ -9,3 +9,8 @@ __pycache__/
 
 # Wikidata is ingested into dated snapshots under data/wikidata/<date>/ —
 # those ARE committed. Nothing here should be an ad-hoc cache.
+
+# Run logs ARE kept — they record what executed, which a results file does not.
+# Listed explicitly so a future results/ rule cannot swallow them.
+!logs/
+!logs/*.log

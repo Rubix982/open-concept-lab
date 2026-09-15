@@ -1,0 +1,5 @@
+2026-09-15 11:02:45,939 INFO     outer_template_test  run outer_template_test -> logs/outer_template_test-2026-09-15-110245.log
+2026-09-15 11:02:45,939 INFO     outer_template_test  config {"model": "EleutherAI/gpt-j-6b", "n": 40}
+2026-09-15 11:03:27,385 INFO     outer_template_test  current : was born in the country of   rank-1  48%   held  45%
+2026-09-15 11:04:04,524 INFO     outer_template_test  natural : was born in                  rank-1  48%   held  45%
+2026-09-15 11:04:42,946 INFO     outer_template_test  cloze   : is a citizen of              rank-1  52%   held  50%
