@@ -1,0 +1,74 @@
+2026-09-15 16:36:43,784 INFO     pick_control_template  run pick_control_template -> logs/pick_control_template-2026-09-15-163643.log
+2026-09-15 16:36:43,784 INFO     pick_control_template  config {"templates": ["{} works as a", "{}'s profession is that of a", "By profession, {} is a", "{} is a professional"], "ticket": "E-013"}
+2026-09-15 16:36:44,588 INFO     pick_control_template  134 subjects with a labelled occupation
+2026-09-15 16:36:44,588 INFO     pick_control_template  67 distinct occupations in the pool
+2026-09-15 16:36:47,052 DEBUG    remote  splitting 2680 pairs into 14 chunks of <=192 (cap 200)
+2026-09-15 16:36:51,111 DEBUG    remote  trace ok: 192 rows, 359 tok, 4.0s
+2026-09-15 16:36:54,133 DEBUG    remote  trace ok: 192 rows, 356 tok, 3.0s
+2026-09-15 16:36:57,364 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.2s
+2026-09-15 16:37:00,373 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.0s
+2026-09-15 16:37:03,351 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.0s
+2026-09-15 16:37:06,489 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.1s
+2026-09-15 16:37:09,703 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.2s
+2026-09-15 16:37:12,693 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.0s
+2026-09-15 16:37:15,735 DEBUG    remote  trace ok: 192 rows, 355 tok, 3.0s
+2026-09-15 16:37:18,969 DEBUG    remote  trace ok: 192 rows, 360 tok, 3.2s
+2026-09-15 16:37:22,318 DEBUG    remote  trace ok: 192 rows, 362 tok, 3.3s
+2026-09-15 16:37:25,345 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.0s
+2026-09-15 16:37:28,543 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.2s
+2026-09-15 16:37:31,759 DEBUG    remote  trace ok: 184 rows, 340 tok, 3.2s
+2026-09-15 16:37:31,761 INFO     pick_control_template  '{} works as a'                  top-1 = true occupation in  6/40 (15%)
+2026-09-15 16:37:31,768 DEBUG    remote  splitting 2680 pairs into 14 chunks of <=192 (cap 200)
+2026-09-15 16:37:34,986 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.2s
+2026-09-15 16:37:38,404 DEBUG    remote  trace ok: 192 rows, 356 tok, 3.4s
+2026-09-15 16:37:41,451 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.0s
+2026-09-15 16:37:44,515 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.0s
+2026-09-15 16:37:47,786 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.3s
+2026-09-15 16:37:51,087 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.3s
+2026-09-15 16:37:57,255 DEBUG    remote  trace ok: 192 rows, 357 tok, 6.1s
+2026-09-15 16:38:00,377 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.1s
+2026-09-15 16:38:02,880 WARNING  remote  remote OOM at 192 pairs; halving to 96 + 96
+2026-09-15 16:38:06,160 DEBUG    remote  trace ok: 96 rows, 180 tok, 3.3s
+2026-09-15 16:38:09,161 DEBUG    remote  trace ok: 96 rows, 175 tok, 3.0s
+2026-09-15 16:38:11,323 WARNING  remote  remote OOM at 192 pairs; halving to 96 + 96
+2026-09-15 16:38:13,449 WARNING  remote  remote OOM at 96 pairs; halving to 48 + 48
+2026-09-15 16:38:16,481 DEBUG    remote  trace ok: 48 rows, 95 tok, 3.0s
+2026-09-15 16:38:19,620 DEBUG    remote  trace ok: 48 rows, 89 tok, 3.1s
+2026-09-15 16:38:22,784 DEBUG    remote  trace ok: 96 rows, 176 tok, 3.2s
+2026-09-15 16:38:26,201 DEBUG    remote  trace ok: 192 rows, 362 tok, 3.4s
+2026-09-15 16:38:29,479 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.3s
+2026-09-15 16:38:32,851 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.3s
+2026-09-15 16:38:35,914 DEBUG    remote  trace ok: 184 rows, 340 tok, 3.0s
+2026-09-15 16:38:35,916 INFO     pick_control_template  "{}'s profession is that of a"   top-1 = true occupation in  8/40 (20%)
+2026-09-15 16:38:35,938 DEBUG    remote  splitting 2680 pairs into 14 chunks of <=192 (cap 200)
+2026-09-15 16:38:39,155 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.2s
+2026-09-15 16:38:42,280 DEBUG    remote  trace ok: 192 rows, 356 tok, 3.1s
+2026-09-15 16:38:45,493 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.2s
+2026-09-15 16:38:48,787 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.3s
+2026-09-15 16:38:52,029 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.2s
+2026-09-15 16:38:55,119 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.1s
+2026-09-15 16:38:58,239 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.1s
+2026-09-15 16:39:01,477 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.2s
+2026-09-15 16:39:04,543 DEBUG    remote  trace ok: 192 rows, 355 tok, 3.0s
+2026-09-15 16:39:07,512 DEBUG    remote  trace ok: 192 rows, 360 tok, 3.0s
+2026-09-15 16:39:10,681 DEBUG    remote  trace ok: 192 rows, 362 tok, 3.2s
+2026-09-15 16:39:13,779 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.1s
+2026-09-15 16:39:16,781 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.0s
+2026-09-15 16:39:19,790 DEBUG    remote  trace ok: 184 rows, 340 tok, 3.0s
+2026-09-15 16:39:19,791 INFO     pick_control_template  'By profession, {} is a'         top-1 = true occupation in  9/40 (22%)
+2026-09-15 16:39:19,798 DEBUG    remote  splitting 2680 pairs into 14 chunks of <=192 (cap 200)
+2026-09-15 16:39:22,812 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.0s
+2026-09-15 16:39:26,088 DEBUG    remote  trace ok: 192 rows, 356 tok, 3.3s
+2026-09-15 16:39:29,497 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.4s
+2026-09-15 16:39:32,760 DEBUG    remote  trace ok: 192 rows, 361 tok, 3.2s
+2026-09-15 16:39:35,740 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.0s
+2026-09-15 16:39:38,977 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.2s
+2026-09-15 16:39:42,243 DEBUG    remote  trace ok: 192 rows, 357 tok, 3.2s
+2026-09-15 16:39:45,564 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.3s
+2026-09-15 16:39:48,624 DEBUG    remote  trace ok: 192 rows, 355 tok, 3.0s
+2026-09-15 16:39:51,856 DEBUG    remote  trace ok: 192 rows, 360 tok, 3.2s
+2026-09-15 16:39:55,096 DEBUG    remote  trace ok: 192 rows, 362 tok, 3.2s
+2026-09-15 16:39:58,323 DEBUG    remote  trace ok: 192 rows, 358 tok, 3.2s
+2026-09-15 16:40:01,698 DEBUG    remote  trace ok: 192 rows, 359 tok, 3.3s
+2026-09-15 16:40:04,922 DEBUG    remote  trace ok: 184 rows, 340 tok, 3.2s
+2026-09-15 16:40:04,923 INFO     pick_control_template  '{} is a professional'           top-1 = true occupation in  8/40 (20%)

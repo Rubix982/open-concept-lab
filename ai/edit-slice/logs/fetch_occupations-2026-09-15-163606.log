@@ -1,0 +1,16 @@
+2026-09-15 16:36:06,014 INFO     fetch_occupations  run fetch_occupations -> logs/fetch_occupations-2026-09-15-163606.log
+2026-09-15 16:36:06,014 INFO     fetch_occupations  config {"from_snapshot": "2026-09-14", "property": "P106 occupation", "ticket": "E-013"}
+2026-09-15 16:36:06,754 INFO     fetch_occupations  174 distinct occupation QIDs to label
+2026-09-15 16:36:11,110 INFO     fetch_occupations  labels 459 -> 633
+2026-09-15 16:36:13,896 INFO     fetch_occupations  wrote data/wikidata/2026-09-15/snapshot.json.gz (sha 1550b596c626)
+2026-09-15 16:36:13,896 INFO     fetch_occupations  resolved to a real label: 174/174
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q1028181   painter
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10349745  racing automobile driver
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10373653  watercolorist
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q105755601 chamber musician
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10669499  naval officer
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10732476  art collector
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10798782  television actor
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10800557  film actor
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10833314  tennis player
+2026-09-15 16:36:13,896 INFO     fetch_occupations     Q10841764  Formula One driver

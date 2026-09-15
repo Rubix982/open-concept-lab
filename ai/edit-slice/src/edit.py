@@ -200,3 +200,109 @@ def compute_v(model, prompt: str, subject: str, target: str, *,
                   step + 1, steps, float(lv), float(nv), float(delta.norm()))
 
     return delta, losses
+
+
+@dataclass(frozen=True)
+class EditSpec:
+    """One requested edit, before `v*` is known."""
+
+    case_id: str
+    prompt: str
+    subject: str
+    target: str
+    kind: str = "real"        # "real" | "control"
+
+
+def compute_v_batch(model, specs: list[EditSpec], *, layer: int = LAYER,
+                    steps: int = V_NUM_GRAD_STEPS, lr: float = V_LR,
+                    weight_decay: float = V_WEIGHT_DECAY,
+                    clamp_norm_factor: float = CLAMP_NORM_FACTOR,
+                    kl_factor: float = KL_FACTOR,
+                    progress=None) -> dict[str, torch.Tensor]:
+    """Optimise every spec's `delta` in ONE remote trace per step, not one per edit.
+
+    Sequentially this is `len(specs) * steps` round trips — 78 chains x 2 edits x 25
+    steps is 3900 traces, about five hours at the measured 4s each. Batched it is
+    `steps` traces, because each row of the batch carries its own prompt, its own
+    subject-last index and its own delta, and the returned gradient is per-row.
+    Round trips are this project's budget; this is the same move as batching the
+    possession scorer.
+
+    Rows are [rewrite_0, essence_0, rewrite_1, essence_1, ...] so each edit's KL
+    anchor travels with it. Right padding only — index positions come from unpadded
+    text and left padding would silently shift every one of them.
+    """
+    tok = model.tokenizer
+    pad = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
+
+    rows, meta = [], []
+    for sp in specs:
+        full = sp.prompt + (sp.target if sp.target.startswith(" ") else " " + sp.target)
+        essence = f"{sp.subject} is a"
+        ids_f, ids_e = tok(full).input_ids, tok(essence).input_ids
+        meta.append({
+            "case_id": sp.case_id,
+            "idx": subject_last_index(tok, sp.prompt, sp.subject),
+            "idx_e": subject_last_index(tok, essence, sp.subject),
+            "n_prompt": len(tok(sp.prompt).input_ids),
+            "tgt": _target_ids(tok, sp.target),
+            "last_e": len(ids_e) - 1,
+        })
+        rows += [ids_f, ids_e]
+
+    width = max(len(r) for r in rows)
+    batch = torch.full((len(rows), width), pad, dtype=torch.long)
+    for i, r in enumerate(rows):
+        batch[i, : len(r)] = torch.tensor(r)
+
+    # Pre-edit essence distributions, all in one trace.
+    with model.trace(batch, remote=True):
+        ref_all = model.lm_head.output.float().save()
+    ref_logp = {m["case_id"]: torch.log_softmax(ref_all[2 * i + 1, m["last_e"]].cpu(), -1)
+                for i, m in enumerate(meta)}
+
+    d_model = model.config.hidden_size
+    deltas = {m["case_id"]: torch.zeros(d_model) for m in meta}
+    max_norm: dict[str, float] = {}
+    for sp in specs:
+        _, wk = read_key_and_value(model, sp.prompt, sp.subject, layer)
+        max_norm[sp.case_id] = clamp_norm_factor * float(wk.norm())
+
+    for step in range(steps):
+        D = torch.stack([deltas[m["case_id"]] for m in meta])        # [n_specs, d_model]
+        with model.trace(batch, remote=True):
+            dp = model.model.layers[layer].mlp.down_proj
+            out = dp.output
+            out.requires_grad_(True)
+            out.retain_grad()
+            patched = out.clone()
+            Dd = D.to(out.device, out.dtype)
+            for i, mm in enumerate(meta):
+                patched[2 * i, mm["idx"]] = patched[2 * i, mm["idx"]] + Dd[i]
+                patched[2 * i + 1, mm["idx_e"]] = patched[2 * i + 1, mm["idx_e"]] + Dd[i]
+            dp.output = patched
+
+            logits = model.lm_head.output.float()
+            total = 0.0
+            for i, mm in enumerate(meta):
+                lp = torch.log_softmax(logits[2 * i], -1)
+                nll = -sum(lp[mm["n_prompt"] + j - 1, t]
+                           for j, t in enumerate(mm["tgt"])) / len(mm["tgt"])
+                post = torch.log_softmax(logits[2 * i + 1, mm["last_e"]], -1)
+                ref = ref_logp[mm["case_id"]].to(post.device)
+                kl = torch.sum(torch.exp(ref) * (ref - post))
+                total = total + nll + kl_factor * kl + weight_decay * (Dd[i] * Dd[i]).sum()
+            total.backward()
+            g_all = out.grad.float().save()
+            lv = total.float().save()
+
+        for i, mm in enumerate(meta):
+            cid = mm["case_id"]
+            d = deltas[cid] - lr * g_all[2 * i, mm["idx"]].cpu()
+            n = float(d.norm())
+            deltas[cid] = d * (max_norm[cid] / n) if n > max_norm[cid] else d
+        log.debug("batch step %2d/%d  summed loss %.4f", step + 1, steps, float(lv))
+        if progress:
+            progress(step + 1, steps)
+
+    return deltas
