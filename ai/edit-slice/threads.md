@@ -913,3 +913,52 @@ framing was overstated.
 [E-009] and in the published write-up is unsupported and must be withdrawn, and
 the residual GPT-J lift of 1.61 has no explanation yet.
 **Artifacts:** agents/engineer/workspace/familiarity.py; logs/familiarity-*.log
+
+---
+
+### T-062 · Is possession a property of a fact, or of a (fact, template) pair?
+
+**Status:** ACTIVE
+**Parent:** T-059
+**Opened:** 2026-09-15
+**Question:** `notes/definitions.md` declaration 1 is binding — *"a fact is a
+behavioral unit defined by its probe set"* — and every possession number in this repo
+was measured with |probe set| = 1. [E-011]/[E-012] showed one template's surface form
+moved the usable-chain count more than an order of magnitude of model scale did. So
+what we have been calling possession of a fact is possession of a (fact, template)
+pair. Does a stable fact-level statistic exist at all when k templates are used, or do
+the labels scatter?
+**Answer:** — design in design.md Part II; F1 is the first experiment and the Null
+outcome (labels scatter, no fact-level predicate exists) is live and would be the
+more important result.
+
+---
+
+### T-063 · Are entailed conclusions less robust than their premises?
+
+**Status:** open
+**Parent:** T-062
+**Opened:** 2026-09-15
+**Question:** The move-4 variable from the Part II dry-run, and the one quantity in
+this design nobody else has asked. If a conclusion is *stored* it should be
+surface-bound; if it is *derived* it should inherit its premises' robustness. So on a
+matched chain, is `outer` held under systematically fewer phrasings than `inner_1`
+and `inner_2`? A left-shifted `outer` distribution is evidence the model keeps the
+conclusion separately rather than deriving it — which bears directly on whether
+editing the conclusion can leave the premises standing.
+**Answer:** — E-015, gated on T-062 answering non-Null.
+
+---
+
+### T-064 · MUTE — known but inexpressible in this phrasing
+
+**Status:** open
+**Parent:** T-062
+**Opened:** 2026-09-15
+**Question:** Crossing [E-012]'s two tests gives four cells, and one of them has no
+name in the literature: row test fails, column test passes — the model discriminates
+the subject but cannot rank the answer first under this phrasing. 32 of 58
+modal-answer items sat there with median AUROC 0.901. Every single-template probe
+reports those as ABSENT. How common is MUTE across relations, and does its rate track
+answer frequency as the label-form story predicts?
+**Answer:** — F5 in design.md Part II.

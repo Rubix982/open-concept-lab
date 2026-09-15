@@ -251,3 +251,43 @@ already know why they differ [T-044].
 **Blockers:** none
 **Artifacts:** agents/shared/findings.md -> "[R-007] 2505.18690 does not take T-054"
 **Closed:** 2026-09-11
+
+---
+
+### R-008 · ParaRel coverage of P19 and P17 — the Part II gate
+
+**Status:** open
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 2h
+
+**Description:**
+design.md Part II does not build until this answers. Part II requires a template set
+T(r) per relation, and hand-writing one smuggles in our own assumptions about which
+phrasings a model should find easy — the same circularity already banned for probes.
+
+ParaRel (Elazar et al. 2021) ships hand-curated paraphrase sets per relation, and
+CounterFact's own Appendix D confirms its records derive from ParaRel entries
+*"containing hand-curated prompt templates T(r)"* while using `p*` as *"the sole
+rewriting prompt"*. The set exists upstream and was collapsed.
+
+**Answer these, with evidence, not recollection:**
+1. Does ParaRel cover `P19` (place of birth) and `P17` (country)? Under what
+   internal relation ids?
+2. How many templates per relation, and are they distributed in a usable form?
+3. Verify the arXiv id and venue for Elazar et al. 2021 before it enters any
+   document — CLAUDE.md forbids citations from memory.
+4. **Scoop check:** has anyone crossed paraphrase consistency with a *discriminative*
+   subject control, or asked whether entailed facts are less paraphrase-robust than
+   their premises? If yes, Part II's WHY gate fails and we go straight to the edit
+   with the 78 chains already in hand.
+
+**Falsification for the ticket itself:** if ParaRel does not cover these relations,
+the answer is not "write our own quietly" — it is to write them, freeze them in one
+commit before any scoring, and cite that commit as the pre-registration.
+
+**Blockers:** none
+**Artifacts:** agents/shared/findings.md → "[R-008] ParaRel coverage"
+**Closed:** —

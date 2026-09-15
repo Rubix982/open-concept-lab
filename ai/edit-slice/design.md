@@ -518,3 +518,254 @@ discretion measure. Those remain the project's thesis and remain unmeasured.
    discrepancy between the repo and the paper text.
 
 Per confidence gating, R-001 is **medium**, so dependent work opens as spikes.
+
+---
+---
+
+# Part II — The probe-set instrument
+
+_Opened 2026-09-15, after [E-011] and [E-012]. Part I designed a triage over single
+prompts. This part re-passes the lenses under the framing the work has converged on:
+**the tool reports, for a given fact, whether an existing LM holds it — across many
+sentence structures, and in the logical company of the facts it connects to.**_
+
+## The dry-run that produced this
+
+**Move 8 first, because it is the uncomfortable one.** `notes/definitions.md`
+declaration 1 is BINDING and reads: *"A fact is a behavioral unit defined by its
+probe set."* We have been running with **|probe set| = 1** since day one. Every
+possession number in this repo measures a (fact, template) pair and reports it as a
+property of the fact. Today's results are what that costs: a single ungrammatical
+template moved the usable-chain count by more than an order of magnitude of model
+scale. The next stage is not a new idea. It is implementing a definition we declared
+binding and then silently violated.
+
+**Move 1 — the structure under the intuition.** "Possession" is not a property of a
+fact. It is a property of a (fact, template, candidate pool, control) tuple. What the
+tool must report is a property of the *fact*, which means a statistic over a
+distribution of probes — and the **dispersion** of that distribution is not noise to
+average away. It is the finding. A fact held under 9 of 10 phrasings and a fact held
+under 3 of 10 are different objects, and today we could not tell them apart.
+
+**Move 4 — the independent variable.** Number of phrasings under which a fact is
+held, out of k. Predicted direction: entailed conclusions are held under *fewer*
+phrasings than their premises, because a conclusion that is stored is surface-bound
+where one that is derived is not.
+
+**Move 6 — replace enumeration with measurement.** Hand-writing paraphrases reproduces
+the circularity we already banned for probes. Two escapes, both available: ParaRel
+ships hand-curated template *sets* per relation, and [E-012]'s 2×2 detects a
+degenerate template automatically rather than requiring us to anticipate it.
+
+**Move 7 — structural, not incidental.** The US/UK failure is not a bug in our
+template. It is an instance of a class: **label-form mismatch in template-based
+knowledge probing, concentrated on the highest-frequency entities**, because the
+entities with official long names and determiners are the ones the world writes about
+most. That is a class-level, falsifiable, transferable claim and it is the strongest
+thing we found today.
+
+## The core object: the (fact × template) cell, classified
+
+[E-012] produced two independent tests. Crossing them classifies every cell, and the
+classification — not either test alone — is the instrument:
+
+| | column test **passes** (discriminates) | column test **fails** (prior-driven) |
+| --- | --- | --- |
+| **row test passes** (ranks 1st) | **HELD** — known and expressible | **PRIOR** — the modal answer, not knowledge |
+| **row test fails** | **MUTE** — known but this phrasing cannot express it | **ABSENT** — no evidence of the fact |
+
+`MUTE` is the cell today's work discovered and the one no existing probe reports.
+Thirty-two of 58 modal-answer items sat in it: AUROC median 0.901, rank far from 1.
+A single-template probe reports those as ABSENT. They are not.
+
+A fact's certificate is then the distribution of its k cells over these four labels.
+
+---
+
+# WHY — is it worth doing at all?
+
+## 1 · Significance (re-passed)
+
+**What a confirmed result changes.** Anyone deciding *"does this model already know
+X, or must I supply it?"* — editing, unlearning, eval construction, the
+RAG-versus-weights decision — currently answers it with a single prompt and a
+top-1 check. We would ship a per-fact certificate with four named outcomes, a
+robustness count, and a known-undefined region. The `MUTE` cell alone reclassifies
+items that every current pipeline scores as absent.
+
+**What a denied result changes.** If cells are so phrasing-dependent that no stable
+fact-level statistic exists — if the four labels do not concentrate per fact — then
+"the model knows X" is not a well-formed predicate at the fact level, and every
+knowledge-editing benchmark that reports per-fact success is reporting a
+template-level quantity under a fact-level name. That is a stronger negative result
+than the positive one, and it is publishable as a critique.
+
+Neither outcome is wasted. The WHY gate clears.
+
+## 2 · Prior art & positioning — **GATE CHECK REQUIRED BEFORE BUILDING**
+
+**ParaRel (Elazar et al. 2021)** is the direct ancestor and must be read before a
+line is written. It supplies hand-curated paraphrase sets per relation and measures
+prediction *consistency* across them. **Paraphrase-robustness of factual recall is
+established prior art. We must not claim it.**
+
+What is unclaimed, stated in one sentence each:
+
+1. **ParaRel measures consistency of predictions; we gate on discriminative
+   possession.** Consistency asks whether the model says the same thing; it does not
+   ask whether the model is tracking the subject at all. [E-012] showed those come
+   apart precisely on the most common answers.
+2. **CounterFact collapsed the set.** Its own Appendix D: records derive from a
+   ParaRel entry *"containing hand-curated prompt templates T(r)"* — plural — and
+   then `p*` is *"the sole rewriting prompt."* The template set exists upstream and
+   was discarded. We restore it and measure what the collapse cost. That is a
+   re-analysis of a published construction, not a new idea, and it is the cheapest
+   defensible contribution available.
+3. **Nobody has asked whether an entailed fact is as robust as its premises.** This
+   is the move-4 variable and it is the one genuinely new quantity here.
+
+**Gate condition — do not proceed past this until answered:** does ParaRel cover
+`P19` and `P17`, and with how many templates each? If yes, adopt them verbatim for
+comparability. If no, generate and validate, and say so loudly. Opened as **R-008**.
+
+---
+
+# WHAT — what exactly is the claim?
+
+## 3 · Completeness — the question family
+
+One number is an anecdote. The family that makes it a study:
+
+- **F1** Does the four-label classification concentrate per fact, or scatter? (If it
+  scatters, the whole construct fails — this is the first question, not the last.)
+- **F2** Does robustness vary by relation, or is it a property of the entity?
+- **F3** Does robustness vary with scale? (8B vs 70B, the two we have gated.)
+- **F4** **Are entailed conclusions less robust than their premises?** The headline.
+- **F5** Does the `MUTE` rate track answer frequency, as the label-form story predicts?
+
+## 4 · Falsification — stated in advance, before any run
+
+| | outcome | what it means |
+| --- | --- | --- |
+| **Confirm** | labels concentrate per fact (a fact is mostly HELD or mostly ABSENT across k), and `outer` is held under systematically fewer phrasings than `inner_1`/`inner_2` on matched chains | conclusions are stored and surface-bound where premises are not; the certificate is well-formed |
+| **Deny** | `outer` robustness equals or exceeds its premises | conclusions are not specially fragile; F4 dies and the certificate is still useful but the headline is gone |
+| **Null** | labels scatter within facts — a fact is HELD under 5 of 10 phrasings with no structure | *no fact-level predicate exists*; report this as the result and stop building certificates |
+
+The Null is the one to watch. It is a real possibility, it would be the most
+important finding, and the design must not be arranged to avoid seeing it.
+
+---
+
+# HOW — can it be measured cleanly?
+
+## 5 · Method & construct validity
+
+For each fact f and template t in a set T(r) of size k, score the candidate pool and
+compute the [E-012] pair: row rank, column AUROC over foil prompts **at the same
+template** — foils must share the template or template and subject are confounded.
+Classify the cell. The fact's certificate is the label histogram over its k cells.
+
+**Construct validity — the question to keep asking.** Does "held under 8 of 10
+phrasings" mean the model *has* the fact? No. It means the fact survives a particular
+probe distribution. The honest claim is relative, never absolute: fact A is more
+robustly held than fact B **under T(r)**. Every artifact reporting a robustness count
+must record T(r) alongside it, exactly as out-degree must record its edge vocabulary.
+
+**Deferred methods, recorded so silence does not read as omission:** IRT-style latent
+trait fitting over cells (right formalism, premature before F1 answers whether there
+is a latent to fit); activation-space probes (different project); generation-based
+elicitation instead of ranking (breaks comparability with everything we have).
+
+## 6 · Confounds & controls
+
+| confound | control |
+| --- | --- |
+| template length and token count | paired within-fact comparison; every fact sees every template |
+| article/determiner requirement (the [E-011] defect) | the `natural` rendering, and the `MUTE` cell measures the residue rather than hiding it |
+| answer frequency | report every statistic split by frequency class — the split that caught [E-009b] |
+| subject frequency in foils | **UNCONTROLLED.** [T-061] showed prominence predicts possession level. Stated as a known threat; the handle is prominence-stratified AUROC, deferred to v2 |
+| templates are not independent samples | do not report a binomial CI over k; report the raw count and the template identities |
+
+## 7 · Baseline — the dumbest explanation
+
+The dumbest explanation is that a multi-template certificate tells us nothing a single
+template does not. **Beat it with predictive validity:** fit on k−1 templates, predict
+held-ness on the held-out one. Compare the multi-template certificate against the
+single-template baseline we ship today. If the certificate does not predict held-out
+behaviour better than one prompt, it is ceremony and we say so.
+
+This is the number that decides whether Part II was worth doing.
+
+---
+
+# HOW MUCH — can it actually be done?
+
+## 8 · Scope & feasibility
+
+**IN v1:** the existing 136 chains, 3 positions, Llama-3.1-8B, k ≈ 10 templates per
+relation, natural rendering, paired control. F1, F4, F5 and the §7 baseline.
+
+**DEFERRED to v2:** 70B replication (F3), relations beyond the chain family (F2),
+prominence-stratified AUROC, IRT, and any frequency claim — [O-004] still stands.
+
+**Cost.** 408 facts × 10 templates × 28 candidates × 2 arms ≈ 228k pairs ≈ 1.2k
+remote calls at the current balanced chunking. At the measured ~4s per call that is
+**~80 minutes of clean running**, which today's evidence says means several hours with
+degradation. Resumable caching is already in place and has survived three kills, so
+this is a scheduling problem, not a feasibility one. The column test remains free.
+
+**The one real feasibility risk** is not compute. It is that T(r) must be *good*, and
+we cannot write ten natural phrasings of `P17` by hand without smuggling in our own
+assumptions about what the model should find easy. R-008 decides whether ParaRel
+solves this for us.
+
+---
+
+# CHECK — would it survive contact?
+
+## 9 · Deliverable — design backward from this
+
+**One figure.** For each chain position, the distribution over facts of "held under
+how many of k templates" — three overlaid histograms. If F4 is real, the `outer`
+distribution sits visibly left of its premises on the same chains.
+
+**One number.** The held-out predictive accuracy of the certificate against the
+single-template baseline (§7).
+
+**One table.** The four-label cell classification rates, split by answer frequency.
+
+Every experiment must serve one of those three. Anything that serves none is cut.
+
+## 10 · Adversary — pre-emptions
+
+| attack | pre-emption |
+| --- | --- |
+| *"ParaRel already did this."* | Conceded for consistency-across-paraphrases. Ours is a possession **gate** with a discriminative control, and F4 is unasked by anyone. Positioning stated in §2 in one sentence, not buried. |
+| *"Your templates are cherry-picked to make the point."* | Adopt ParaRel verbatim if R-008 allows. If not, templates are written and frozen **before** any scoring, committed in one commit, and the commit is cited. |
+| *"AUROC foils are not matched on subject frequency."* | Conceded and stated in §6 as uncontrolled, with the deferred fix named. Do not hide it in a footnote. |
+| *"n = 136, one relation family, one model."* | Conceded. The claim is an **existence** claim per [O-004], never a rate. Any sentence implying a rate is a bug. |
+| *"The four labels are your invention."* | They are a crossing of two measured tests, each pre-registered with its own falsification. `MUTE` is the only novel one and it is empirically populated — 32 of 58 items, median AUROC 0.901. |
+| *"You are measuring your own instrument, not the model."* | Correct, and that is the stated deliverable. The tool is the contribution; [CLAUDE.md] forbids proposing an editing method. |
+
+## What would stop this
+
+- **F1 returns Null** — labels scatter within facts. Then there is no fact-level
+  predicate, we report that, and Part II ends as a negative result worth more than
+  the positive one.
+- **R-008 finds ParaRel covers the relations with templates we cannot improve on and
+  someone has already crossed them with a discriminative control.** Then the gate
+  fails and we go straight to the edit with the 78 chains we have.
+
+## Next actions, in order
+
+1. **R-008** — ParaRel coverage of P19/P17 and template counts. Gate. Nothing builds
+   until this answers.
+2. **E-013** — template-set plumbing: `Edit` carries a template id; the cell matrix
+   replaces the per-item record; T(r) recorded in every artifact.
+3. **E-014** — run F1 on one relation at k≈10. **Stop and read it.** If labels
+   scatter, do not build the rest.
+4. **E-015** — F4, the headline: premise robustness against conclusion robustness on
+   matched chains.
+5. **E-016** — §7 predictive-validity baseline. The number that justifies Part II.
+6. **The edit** — unchanged in ambition, but now measurable through the probe
+   distribution rather than one prompt.
