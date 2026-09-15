@@ -517,9 +517,6 @@ Report per-fact-position possession, not just the joint number, so it is visible
 (city-country, expected to be easy).
 
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/gate_chains.py; probes/chains_gated.json
-**Closed:** —
-
 **Result (2026-09-15).** Llama-3.1-70B: inner_1 84%, inner_2 92%, outer 57%,
 **74/136 = 54% usable** (GPT-J: 35/61/21, 20/136 = 15%). `outer` is the worst leg
 at both scales, so the deficit is candidate-pool concentration, not small-model
