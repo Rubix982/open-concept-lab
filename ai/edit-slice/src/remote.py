@@ -163,12 +163,18 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                 chosen = logits.gather(-1, targets.unsqueeze(-1)).squeeze(-1).float()
                 denom = torch.logsumexp(logits, dim=-1).float()
                 summed = ((chosen - denom) * mask[:, 1:].to(logits.device)).sum(-1).save()
+            # `.tolist()` is where nnsight actually FETCHES the saved value, and it
+            # sits outside the `with` block — so the first version of this redirect
+            # caught the spinner and missed every "Downloading:" bar. Materialise
+            # inside the suppressed region, not after it.
+            with _quiet_stdout():
+                values = summed.tolist()
             # The spinner we suppress carried exactly one fact worth keeping: how
             # long the round trip took. Round trips, not FLOPs, are this project's
             # budget, so it is recorded structurally instead of as animation.
             log.debug("trace ok: %d rows, %d tok, %.1fs",
                       len(pairs), int(mask.sum().item()), time.monotonic() - t0)
-            return [s / n for s, n in zip(summed.tolist(), lengths)]
+            return [s / n for s, n in zip(values, lengths)]
         except Exception as exc:  # noqa: BLE001 — narrowed below
             if _is_oom(exc):
                 # Deployments differ in per-process budget, and Llama's 128k vocab

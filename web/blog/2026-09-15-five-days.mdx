@@ -782,18 +782,77 @@ comparison is 43.6% predicted against 54.4% measured, a lift of only **1.25**.
 | `inner_2` & `outer` | 1.53 | 1.09 |
 | `inner_1` & `inner_2` — share no subject | 1.26 | 1.00 |
 
-The lift is ordered by shared subject, and it flattens with scale. At 6B, possession
-clusters per entity: a chain about a well-known person tends to hold at every leg
-and a chain about an obscure one at none, so the variable binding the legs together
-is how familiar the subject is, not how hard the leg is. At 70B almost every subject
-is familiar, that variance is spent, and what is left is the leg-specific deficit —
-which is exactly the 57% on `outer`.
+The lift is ordered by shared subject and flattens with scale. The obvious story is
+that possession clusters per entity — a chain about a well-known person holds at
+every leg, one about an obscure person at none — so the binding variable would be
+subject familiarity rather than leg difficulty.
+
+That story is a claim about a variable nobody had measured, so I measured it.
+Prominence, taken as the subject's statement count in the Wikidata snapshot already
+on disk, covers 136 of 136 chains and spans 5 to 404. Stratifying by it leaves the
+lift **completely untouched**: 2.08 within-stratum against 2.10 pooled at GPT-J,
+1.15 against 1.15 at 70B. A common cause would have collapsed the within-stratum
+figure toward 1. It did not move at all.
+
+Prominence is a real variable — it predicts the possession *level* at 70B, where
+`inner_1` runs 78% to 93% and `outer` 46% to 68% from the low to the high tercile.
+It is simply not the one binding the legs. And at 70B the lift is ~1.1 whichever way
+the set is cut, which is close enough to independence that my framing of it as a
+finding was overstated. What remains unexplained is a residual 1.61 at GPT-J.
 
 This is the number worth carrying forward, because chain attrition is the cost model
 for every longer chain anyone might build. Under independence a five-hop chain at
 70B would be hopeless. Under the dependence we measured it is merely expensive.
 Costing a multi-hop design off marginals alone will under-build it — which is the
 same mistake as the prediction at the top of this section, one level up.
+
+### The test that came back Deny, and was more useful for it
+
+The surface-form hypothesis was worth one run, so it got a ticket with its outcomes
+written down in advance: *confirm* if rendering countries naturally recovered the
+article-taking names, *deny* if it did not. The same 136 items, the same model, the
+same 28-country pool, one thing changed — how every candidate is spelled.
+
+Held rate went from 19% to **16%**. On the headline number, Deny.
+
+The rank data underneath says the opposite, and the pair is the actual result.
+
+| condition | answer class | n | ranks 1st **with subject** | ranks 1st **with placeholder** | held |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `bare` | article-taking | 58 | 21% | 2% | 19% |
+| `bare` | bare-name | 78 | 85% | 0% | 85% |
+| `natural` | article-taking | 58 | **69%** | **69%** | **16%** |
+| `natural` | bare-name | 78 | 83% | 0% | 83% |
+
+Surface form was real: spelling it `" the United States"` moves rank-1 from 21% to
+69%. The model was never failing to know where these people were born. It was
+failing to complete an ungrammatical string.
+
+And fixing that destroys the control. Under the natural spelling the *placeholder*
+prompt ranks the same answer first at exactly the same rate — 69%. Of the 40 items
+that now rank first with the real subject, **31 are rejected by the lift test, every
+one of them because the placeholder ranked it first too.** *"[X] was born in the
+country of the United States"* is the modal completion whether or not `[X]` means
+anything at all.
+
+So the two criteria have no common operating point. A spelling that makes the answer
+rankable makes it prior-favoured; a spelling that suppresses the prior does it by
+being ungrammatical. **There is no spelling that satisfies both** — which means our
+possession filter cannot certify possession of a fact whose answer is simply the most
+common answer for its relation. Bare-name countries sit at 0% placeholder rank-1
+under both spellings, so the measure is sound there and *undefined* here.
+
+That is a limit on the tool this project ships, not a fact about Llama, and it is the
+most useful thing found all day. It also retracts the 102/136 ceiling from two
+sections ago: under the natural spelling, usable chains go 74 → **71**.
+
+The fix is a better control rather than a better spelling. Asking *"does the subject
+matter at all"* is defeated by a modal answer by construction. The question worth
+asking is *"does the model track **which** subject"* — score the answer against a
+paired real subject whose true answer differs, and require the model to prefer the
+right one. That discriminates knowledge from prior without needing the prior to be
+low. It is opened as E-012, and deliberately not retrofitted into any number already
+published here.
 
 ## Infrastructure, which is most of the work and none of the interest
 

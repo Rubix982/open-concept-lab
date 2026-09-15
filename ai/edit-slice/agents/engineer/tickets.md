@@ -627,7 +627,7 @@ If it misses any, the retrieval is not good enough to reduce anyone's reading.
 
 ### E-011 · Is the `outer` deficit answer surface form, or real?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -680,6 +680,15 @@ fails the lift test. No new control is needed; state this in the result.
 **Deliverable.** One table: held rate by condition × answer-string class
 (article-taking vs bare), plus the recomputed usable-chain count.
 
+**Result (2026-09-15).** Deny on the headline, and the rank data reframes it.
+`natural` moves rank-1-with-subject on article-taking names from 21% to 69% — the
+surface-form effect is real and large — but the placeholder ranks the same answer
+first at the identical 69%, so 31 of those 40 items fail the lift test. The two
+criteria have no common operating point for a modal answer. Full entry in
+agents/shared/decisions.md [E-011]. Opens E-012 (paired-subject control).
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/surface_forms.py; results/E-011-*.json
-**Closed:** —
+**Artifacts:** agents/engineer/workspace/surface_forms.py;
+results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json;
+agents/shared/decisions.md -> "[E-011] Result"
+**Closed:** 2026-09-15

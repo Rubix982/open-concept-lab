@@ -1,0 +1,15 @@
+2026-09-15 12:00:17,516 INFO     surface_forms  run surface_forms -> logs/surface_forms-2026-09-15-120017.log
+2026-09-15 12:00:17,516 INFO     surface_forms  config {"conditions": ["bare", "natural"], "model": "meta-llama/Llama-3.1-70B", "n_candidates": 50, "n_items": 136, "renamed": {"Czech Republic": "the Czech Republic", "Netherlands": "the Netherlands", "People's Republic of China": "China", "Philippines": "the Philippines", "United Kingdom": "the United Kingdom", "United States": "the United States"}, "seed": 1538, "ticket": "E-011"}
+2026-09-15 12:00:17,517 INFO     surface_forms  E-011: 136 outer items, two renderings of the same 28-country pool
+2026-09-15 12:00:19,666 INFO     surface_forms  condition bare: scoring 136 items
+2026-09-15 12:00:19,667 INFO     surface_forms  condition bare: 77/136 held = 57%  (coverage 100%)
+2026-09-15 12:00:19,668 INFO     surface_forms  condition natural: scoring 136 items
+2026-09-15 12:00:19,668 INFO     surface_forms  condition natural: 74/136 held = 54%  (coverage 100%)
+2026-09-15 12:00:19,668 INFO     surface_forms  condition answer class           n    held
+2026-09-15 12:00:19,668 INFO     surface_forms  bare      article-taking        58     19%
+2026-09-15 12:00:19,668 INFO     surface_forms  bare      bare-name             78     85%
+2026-09-15 12:00:19,668 INFO     surface_forms  natural   article-taking        58     16%
+2026-09-15 12:00:19,669 INFO     surface_forms  natural   bare-name             78     83%
+2026-09-15 12:00:19,670 INFO     surface_forms  usable chains under bare      74/136 = 54%
+2026-09-15 12:00:19,670 INFO     surface_forms  usable chains under natural   71/136 = 52%
+2026-09-15 12:00:19,670 INFO     surface_forms  written: results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json

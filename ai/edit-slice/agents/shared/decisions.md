@@ -286,3 +286,65 @@ measurement tool, found by re-reading data already on disk rather than by collec
 more. Three for three. Any future surprise should be searched for here first.
 
 **Revisit if:** E-011 shows surface form does not recover rank-1.
+
+---
+
+## [E-011] Result: the possession measure has no operating point for modal answers
+
+_Date: 2026-09-15 · Llama-3.1-70B, 136 `outer` items, two renderings of one 28-country pool_
+
+**The pre-stated Deny branch fired, and it was the wrong dichotomy.** [E-009b]
+predicted that rendering countries naturally would recover the article-taking names
+to roughly the bare-name rate. Held rate went 19% → **16%**. On the headline number
+the hypothesis failed.
+
+The rank data says the opposite, and the two together are the actual result.
+
+| condition | answer class | n | ranks 1st **with subject** | ranks 1st **with placeholder** | held |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `bare` | article-taking | 58 | 21% | 2% | 19% |
+| `bare` | bare-name | 78 | 85% | 0% | 85% |
+| `natural` | article-taking | 58 | **69%** | **69%** | **16%** |
+| `natural` | bare-name | 78 | 83% | 0% | 83% |
+
+**Surface form was real.** Rendering `" the United States"` instead of the Wikidata
+label moves rank-1-with-subject from 21% to 69%. The model was never failing to know
+these; it was failing to complete an ungrammatical string.
+
+**And fixing it destroys the control.** Under `natural`, the placeholder prompt ranks
+the same answer first at exactly the same rate — 69%. Of the 40 article-taking items
+that rank first with the real subject, **31 are rejected by the lift test, and all 31
+because `rank_prior == 1`.** `"[X] was born in the country of the United States"` is
+the modal completion whether or not `[X]` means anything.
+
+**The finding, which is about our instrument and not about Llama.** The two criteria
+are in tension for any answer with a high unconditional prior. A rendering that makes
+the answer rankable also makes it prior-favoured; a rendering that suppresses the
+prior does so by being ungrammatical. **There is no rendering that satisfies both**,
+so `possession.py` cannot certify possession of a fact whose answer is the modal
+answer for its relation. Bare-name countries show 0% placeholder rank-1 under both
+renderings — the measure is sound there, and undefined here.
+
+This is a scope limitation of the shipped deliverable and must be documented as one.
+It is also why the [E-009b] "28 recoverable chains" ceiling of 102/136 was wrong:
+under `natural` usable moves 74 → **71**, not up.
+
+**What it implies for the design.** The placeholder control asks *"does the subject
+matter at all"*, which a modal answer defeats by construction. The stronger question
+is *"does the model track WHICH subject"* — score the true answer against a **paired
+real subject whose true answer differs**, and require the model to prefer the right
+one. That discriminates knowledge from prior without needing the prior to be low.
+Opened as E-012; it is a change to the measure, so it must not be retrofitted
+silently into numbers already published.
+
+**Honest note on how this was found.** Three bugs were fixed in the analysis script
+before any number here was read, one of which — using `FilterReport.kept()`, which
+returns only HELD items, as the set of scored items — would not have crashed. It
+would have printed 100% in every cell and read as a spectacular confirmation of the
+hypothesis under test. The reporting path was dry-run against the cached `bare`
+condition and made to reproduce the [E-009] baseline of 57% before any conclusion was
+drawn from it.
+
+**Artifacts:** agents/engineer/workspace/surface_forms.py;
+results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json;
+logs/surface_forms-2026-09-15-120017.log

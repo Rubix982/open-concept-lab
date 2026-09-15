@@ -1,0 +1,34 @@
+2026-09-15 12:01:33,656 INFO     gate_chains  run gate_chains -> logs/gate_chains-2026-09-15-120133.log
+2026-09-15 12:01:33,656 INFO     gate_chains  config {"chain_source": "probes/containment_chains.json", "chains": 136, "facts": 408, "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50}
+2026-09-15 12:01:33,656 INFO     gate_chains  136 chains -> 408 facts to score
+2026-09-15 12:01:40,345 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:01:44,677 DEBUG    remote  trace ok: 156 rows, 174 tok, 4.3s
+2026-09-15 12:01:48,139 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.4s
+2026-09-15 12:01:48,141 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:01:51,683 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.5s
+2026-09-15 12:01:55,156 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.5s
+2026-09-15 12:01:55,158 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:01:58,570 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.4s
+2026-09-15 12:02:02,066 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.5s
+2026-09-15 12:02:02,068 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:02:05,490 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.4s
+2026-09-15 12:02:08,914 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.4s
+2026-09-15 12:02:08,915 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:02:12,336 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.4s
+2026-09-15 12:02:15,817 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.5s
+2026-09-15 12:02:15,819 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:02:19,251 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.4s
+2026-09-15 12:02:22,711 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.4s
+2026-09-15 12:02:22,713 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:02:26,223 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.5s
+2026-09-15 12:02:29,667 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.4s
+2026-09-15 12:02:29,669 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:02:33,126 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.4s
+2026-09-15 12:02:36,559 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.4s
+2026-09-15 12:02:36,560 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)
+2026-09-15 12:02:40,073 DEBUG    remote  trace ok: 134 rows, 152 tok, 3.5s
+2026-09-15 12:02:43,473 DEBUG    remote  trace ok: 134 rows, 170 tok, 3.4s
+2026-09-15 12:02:43,475 DEBUG    remote  splitting 312 pairs into 2 chunks of <=156 (cap 200)
+2026-09-15 12:02:46,931 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.4s
+2026-09-15 12:02:50,410 DEBUG    remote  trace ok: 156 rows, 174 tok, 3.5s
+2026-09-15 12:02:50,413 DEBUG    remote  splitting 268 pairs into 2 chunks of <=134 (cap 200)

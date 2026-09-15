@@ -1,0 +1,118 @@
+2026-09-15 11:53:00,623 INFO     surface_forms  run surface_forms -> logs/surface_forms-2026-09-15-115300.log
+2026-09-15 11:53:00,623 INFO     surface_forms  config {"conditions": ["bare", "natural"], "model": "meta-llama/Llama-3.1-70B", "n_candidates": 50, "n_items": 136, "renamed": {"Czech Republic": "the Czech Republic", "Netherlands": "the Netherlands", "People's Republic of China": "China", "Philippines": "the Philippines", "United Kingdom": "the United Kingdom", "United States": "the United States"}, "seed": 1538, "ticket": "E-011"}
+2026-09-15 11:53:00,623 INFO     surface_forms  E-011: 136 outer items, two renderings of the same 28-country pool
+2026-09-15 11:53:02,801 INFO     surface_forms  condition bare: scoring 136 items
+2026-09-15 11:53:02,803 INFO     surface_forms  condition bare: held 57% over 77 scored
+2026-09-15 11:53:02,803 INFO     surface_forms  condition natural: scoring 136 items
+2026-09-15 11:53:02,804 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:53:09,202 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.4s
+2026-09-15 11:53:14,878 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.7s
+2026-09-15 11:53:14,879 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:53:21,219 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.3s
+2026-09-15 11:53:26,767 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.5s
+2026-09-15 11:53:26,769 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:53:32,516 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.7s
+2026-09-15 11:53:38,690 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.2s
+2026-09-15 11:53:38,692 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:53:44,532 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:53:50,033 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.5s
+2026-09-15 11:53:50,035 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:53:56,000 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:54:01,633 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:54:01,634 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:54:07,291 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:54:14,096 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.8s
+2026-09-15 11:54:14,100 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:54:20,048 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:54:25,712 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.7s
+2026-09-15 11:54:25,714 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:54:31,425 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.7s
+2026-09-15 11:54:37,449 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:54:37,452 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:54:43,013 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.5s
+2026-09-15 11:54:48,941 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:54:48,943 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:54:54,812 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:55:00,816 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:55:00,817 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:55:06,975 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.1s
+2026-09-15 11:55:12,904 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:55:12,906 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:55:18,941 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:55:24,765 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:55:24,767 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:55:31,895 DEBUG    remote  trace ok: 112 rows, 152 tok, 7.1s
+2026-09-15 11:55:37,653 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:55:37,654 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:55:43,565 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:55:49,259 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:55:49,261 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:55:54,849 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:56:00,754 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:56:00,754 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:56:06,561 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:56:12,164 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:56:12,166 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:56:17,944 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:56:23,924 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:56:23,926 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:56:29,385 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.4s
+2026-09-15 11:56:35,674 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.3s
+2026-09-15 11:56:35,676 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:56:45,141 DEBUG    remote  trace ok: 112 rows, 152 tok, 9.5s
+2026-09-15 11:56:52,439 DEBUG    remote  trace ok: 112 rows, 152 tok, 7.3s
+2026-09-15 11:56:52,440 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:56:59,332 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.9s
+2026-09-15 11:57:05,141 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:57:05,144 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:57:11,257 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.1s
+2026-09-15 11:57:16,904 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:57:16,906 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:57:22,432 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.5s
+2026-09-15 11:57:28,302 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:57:28,303 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:57:33,696 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.4s
+2026-09-15 11:57:42,432 DEBUG    remote  trace ok: 112 rows, 152 tok, 8.7s
+2026-09-15 11:57:42,434 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:57:48,419 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:57:54,499 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.1s
+2026-09-15 11:57:54,502 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:58:00,400 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:58:06,372 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.0s
+2026-09-15 11:58:06,374 INFO     surface_forms    natural 100/136
+2026-09-15 11:58:06,374 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:58:12,616 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.2s
+2026-09-15 11:58:18,422 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:58:18,425 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:58:24,340 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:58:30,912 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.6s
+2026-09-15 11:58:30,913 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:58:36,834 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:58:42,693 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:58:42,696 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:58:49,583 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.9s
+2026-09-15 11:58:55,450 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:58:55,453 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:59:01,269 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:59:07,557 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.3s
+2026-09-15 11:59:07,561 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:59:13,852 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.3s
+2026-09-15 11:59:19,714 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:59:19,716 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:59:25,591 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.9s
+2026-09-15 11:59:32,566 DEBUG    remote  trace ok: 112 rows, 152 tok, 7.0s
+2026-09-15 11:59:32,566 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:59:39,376 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.8s
+2026-09-15 11:59:45,796 DEBUG    remote  trace ok: 112 rows, 152 tok, 6.4s
+2026-09-15 11:59:45,798 DEBUG    remote  splitting 224 pairs into 2 chunks of <=112 (cap 200)
+2026-09-15 11:59:51,567 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.8s
+2026-09-15 11:59:57,207 DEBUG    remote  trace ok: 112 rows, 152 tok, 5.6s
+2026-09-15 11:59:57,210 INFO     surface_forms  condition natural: held 54% over 74 scored
+2026-09-15 11:59:57,210 INFO     surface_forms  condition answer class           n    held
+2026-09-15 11:59:57,210 INFO     surface_forms  bare      article-taking        11    100%
+2026-09-15 11:59:57,211 INFO     surface_forms  bare      bare-name             66    100%
+2026-09-15 11:59:57,211 INFO     surface_forms  natural   article-taking         9    100%
+2026-09-15 11:59:57,211 INFO     surface_forms  natural   bare-name             65    100%
+2026-09-15 11:59:57,213 INFO     surface_forms  usable chains under bare      74/136 = 54%
+2026-09-15 11:59:57,213 INFO     surface_forms  usable chains under natural   71/136 = 52%
+2026-09-15 11:59:57,214 INFO     surface_forms  written: results/E-011-surface-forms-meta-llama_Llama-3.1-70B.json

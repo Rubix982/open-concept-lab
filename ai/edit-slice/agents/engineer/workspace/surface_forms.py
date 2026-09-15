@@ -92,9 +92,10 @@ def main() -> None:
         rep = run(edits, cfg, scorer, cache_path=cache, reference=edits,
                   progress=lambda i, n: log.info("  %s %d/%d", cond, i, n)
                   if i % 25 == 0 else None)
-        reports[cond] = rep.kept
-        log.info("condition %s: held %.0f%% over %d scored",
-                 cond, 100 * rep.held_rate, len(rep.kept))
+        reports[cond] = rep.results
+        log.info("condition %s: %d/%d held = %.0f%%  (coverage %.0f%%)",
+                 cond, len(rep.kept()), len(rep.results),
+                 100 * rep.held_rate, 100 * rep.coverage)
 
     # --- the deliverable: held rate by condition x answer-string class -----------
     truth = {f"{c['seed_case_id']}|outer": c["outer"]["answer"] for c in chains}
@@ -102,7 +103,7 @@ def main() -> None:
     for cond, kept in reports.items():
         for r in kept:
             cls = "article-taking" if truth[r.case_id] in ARTICLE_TAKING else "bare-name"
-            table[(cond, cls)][0] += r.held()
+            table[(cond, cls)][0] += r.held(require_lift=cfg.require_lift)
             table[(cond, cls)][1] += 1
 
     log.info("%-10s%-16s%8s%8s", "condition", "answer class", "n", "held")
@@ -119,7 +120,8 @@ def main() -> None:
              for c in gated["chains"]}
     for cond, kept in reports.items():
         usable = sum(1 for r in kept
-                     if r.held() and inner.get(r.case_id.split("|")[0], False))
+                     if r.held(require_lift=cfg.require_lift)
+                     and inner.get(r.case_id.split("|")[0], False))
         log.info("usable chains under %-8s %3d/%d = %.0f%%",
                  cond, usable, len(chains), 100 * usable / len(chains))
 
@@ -130,7 +132,8 @@ def main() -> None:
                      for (c, k), v in table.items()},
         "per_item": {cond: [{"case_id": r.case_id, "answer": truth[r.case_id],
                              "rank_subject": r.rank_subject,
-                             "rank_prior": r.rank_prior, "held": r.held()}
+                             "rank_prior": r.rank_prior,
+                             "held": r.held(require_lift=cfg.require_lift)}
                             for r in kept]
                      for cond, kept in reports.items()},
     }, indent=1))
