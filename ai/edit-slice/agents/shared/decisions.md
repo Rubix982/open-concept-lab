@@ -179,6 +179,10 @@ the audit instrument alone.
 
 ## [E-009] Result: the gate clears at 70B, and the three legs are not independent
 
+> **Partly superseded the same day — see [E-009b].** The concentration
+> explanation for the `outer` deficit is wrong. The measured numbers in this
+> entry stand; the mechanism in its last paragraph does not.
+
 _Date: 2026-09-15 · Llama-3.1-70B via NDIF, same 136 chains and same pools as GPT-J_
 
 | position | fact | GPT-J-6B | Llama-3.1-70B |
@@ -231,3 +235,54 @@ unpaid consequence recorded in [O-005].
 **Artifacts:** `probes/chains_gated_meta-llama_Llama-3.1-70B.json`,
 `probes/chains_gated_EleutherAI_gpt-j-6b.json`,
 `logs/gate_chains-llama-3.1-70b-2026-09-15.log`
+
+
+---
+
+## [E-009b] Correction: the `outer` deficit is answer surface form, not pool concentration
+
+_Date: 2026-09-15 · re-analysis of data already on disk, no new compute_
+
+**RCA.** [E-009] closed with *"`outer` stays the worst leg at both scales, which rules
+out small-model thinness and leaves candidate-pool concentration — countries have 28
+distinct fillers, US alone 40/136."* That reasoning inferred a mechanism from a
+marginal count without ever joining the held/not-held flag against the answer string.
+Joining it dissolves the explanation: the deficit is not spread across a concentrated
+pool, it is **two strings**.
+
+| `outer` answer | Llama-3.1-70B held | GPT-J-6B held |
+| --- | ---: | ---: |
+| United States | **6/40 = 15%** | 0/40 |
+| United Kingdom | **2/14 = 14%** | 0/14 |
+| France | 13/13 = 100% | 6/13 |
+| India · Spain · Japan · Sweden · Finland | 100% each | 20–100% |
+
+Grouped: **15% for article-taking names (n=54)** against **84% for bare names (n=82)**.
+
+Concentration and surface form were perfectly confounded, because the countries that
+take a definite article are also the most frequent ones. Frequency was the visible
+variable, so it got the credit.
+
+**A second hypothesis, raised and killed in the same pass.** That the placeholder
+control was misfiring — ranking a prior-favoured country first regardless of subject,
+failing the lift test on facts the model does hold. Checked against `rank_prior` in
+the cache: **1 item of 136** fails that way. Not the cause. Recorded because a
+discarded hypothesis that was never written down reads later as one never considered.
+
+**Leading explanation, not yet confirmed.** `"X was born in the country of"` followed
+by `" United States"` is ungrammatical where `" France"` is fine. We score a Wikidata
+label rather than a natural continuation, and the penalty lands exactly on the two
+most common answers. **E-011 is the decisive test** — score the same 136 items across
+surface variants (`" United States"` / `" the United States"` / `" America"` / `" the
+US"`). If rank-1 recovers, it is a template defect and cheap to fix; if it does not,
+the model genuinely lacks these facts and that is the more interesting result.
+
+**Size.** 28 chains are blocked *only* by a US/UK `outer` leg. Usable would move
+**74/136 → 102/136**, 54% → 75%.
+
+**The pattern worth naming.** This is the third member of one family, after the
+[E-007] denominator bug and the template check: a selection effect living inside a
+measurement tool, found by re-reading data already on disk rather than by collecting
+more. Three for three. Any future surprise should be searched for here first.
+
+**Revisit if:** E-011 shows surface form does not recover rank-1.

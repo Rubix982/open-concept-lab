@@ -736,10 +736,32 @@ States alone accounting for 40 of 136 and the top four for 57%; the city pool ha
 first-place ranking harder for reasons that have nothing to do with whether the
 model knows the answer.
 
-That is a property of our instrument, not of the models — an unmodelled gap in
-`possession.py`, sitting in the same family as the denominator bug from two days
-earlier. Both are selection effects living inside a measurement tool, which is
-becoming this project's most reliable source of errors.
+<Claim
+  label="The first explanation, and it was wrong within the hour"
+  superseded={<>The <code>outer</code> deficit comes from <strong>candidate-pool concentration</strong> — countries have 28 distinct fillers against 78 cities, so first-place ranking is harder.</>}
+  record={{
+    "Why it failed": "The deficit is not spread across the pool at all. It is two strings. United States 6/40 held, United Kingdom 2/14 — while France is 13/13, India 5/5, Japan 4/4, Spain 5/5. Grouped: 15% for article-taking names against 84% for bare ones.",
+    "Why it looked right": "The countries with definite articles are also the most frequent ones, so concentration and surface form were perfectly confounded in the numbers I looked at first.",
+    "Also tested and killed": "That the placeholder control was misfiring on prior-favoured answers. Exactly 1 of 136 items fails that way.",
+    "Replaced by": "A template artifact: we score a Wikidata label, not a natural continuation.",
+    "Evidence": "Re-analysis of data already on disk, no new compute",
+  }}
+>
+  <code>"X was born in the country of ___"</code> completed with <code>" United
+  States"</code> is ungrammatical, where <code>" France"</code> is fine. The penalty
+  lands on the two most common answers in the set, which is why it looked like a
+  property of the model and is in fact a property of our prompt.
+</Claim>
+
+**28 chains are blocked only by a US/UK `outer` leg.** If the artifact reading holds,
+usable goes from **74/136 to 102/136** — 54% to 75% — and the finding that survives
+is about our instrument rather than about Llama.
+
+The honest summary of the day is that this is the *third* member of one family, after
+the denominator bug and the template check. Every one was a selection effect living
+inside a measurement tool; every one was found by looking harder at data already on
+disk, not by collecting more. That ratio is worth stating plainly, because it is the
+opposite of what a compute budget assumes.
 
 ### The legs are not independent, and that is the useful number
 
