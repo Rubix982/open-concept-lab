@@ -165,3 +165,26 @@
 2026-09-15 18:18:48,158 DEBUG    edit  batch step  4/25  summed loss 14.2581
 2026-09-15 18:18:55,135 DEBUG    edit  batch step  5/25  summed loss 9.1795
 2026-09-15 18:19:02,385 DEBUG    edit  batch step  6/25  summed loss 6.4944
+2026-09-15 18:19:09,088 DEBUG    edit  batch step  7/25  summed loss 5.6778
+2026-09-15 18:19:16,902 DEBUG    edit  batch step  8/25  summed loss 6.4169
+2026-09-15 18:19:23,891 DEBUG    edit  batch step  9/25  summed loss 5.1087
+2026-09-15 18:19:31,768 DEBUG    edit  batch step 10/25  summed loss 6.0062
+2026-09-15 18:19:40,187 DEBUG    edit  batch step 11/25  summed loss 5.2238
+2026-09-15 18:19:47,612 DEBUG    edit  batch step 12/25  summed loss 3.9195
+2026-09-15 18:19:55,125 DEBUG    edit  batch step 13/25  summed loss 2.7093
+2026-09-15 18:20:02,507 DEBUG    edit  batch step 14/25  summed loss 2.0102
+2026-09-15 18:20:10,820 DEBUG    edit  batch step 15/25  summed loss 1.7838
+2026-09-15 18:20:19,106 DEBUG    edit  batch step 16/25  summed loss 1.6639
+2026-09-15 18:20:26,504 DEBUG    edit  batch step 17/25  summed loss 1.6474
+2026-09-15 18:20:36,592 DEBUG    edit  batch step 18/25  summed loss 1.6514
+2026-09-15 18:20:43,667 DEBUG    edit  batch step 19/25  summed loss 1.6578
+2026-09-15 18:20:51,218 DEBUG    edit  batch step 20/25  summed loss 1.6299
+2026-09-15 18:21:01,795 DEBUG    edit  batch step 21/25  summed loss 1.6368
+2026-09-15 18:21:08,151 DEBUG    edit  batch step 22/25  summed loss 1.6594
+2026-09-15 18:21:15,962 DEBUG    edit  batch step 23/25  summed loss 1.6578
+2026-09-15 18:21:23,407 DEBUG    edit  batch step 24/25  summed loss 1.6703
+2026-09-15 18:21:31,539 DEBUG    edit  batch step 25/25  summed loss 1.6916
+2026-09-15 18:21:31,581 INFO     run_e014  v* 43-48 of 142 remaining
+2026-09-15 18:22:44,175 DEBUG    edit  batch step  1/25  summed loss 39.4013
+2026-09-15 18:22:54,729 DEBUG    edit  batch step  2/25  summed loss 28.5584
+2026-09-15 18:23:04,003 DEBUG    edit  batch step  3/25  summed loss 19.8768

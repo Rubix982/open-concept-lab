@@ -962,3 +962,63 @@ modal-answer items sat there with median AUROC 0.901. Every single-template prob
 reports those as ABSENT. How common is MUTE across relations, and does its rate track
 answer frequency as the label-form story predicts?
 **Answer:** — F5 in design.md Part II.
+
+---
+
+### T-065 · Is the instrument's atom a contrastive pair, with content only at crossings?
+
+**Status:** open
+**Parent:** T-062
+**Opened:** 2026-09-15
+**Question:** Raised by the user, on noticing that nearly every measurement here is a
+minimal contrastive pair — subject vs placeholder, bare vs natural, real vs
+same-subject control, target vs placebo, same-type vs cross-type coordination. Is that
+the whole instrument?
+
+Two structural observations, neither yet a finding:
+1. The pairs form a **lattice, not a list** — each holds more fixed than the last
+   ([E-011] varies rendering; [E-012] fixes rendering and varies the control; [E-013]
+   fixes the subject and varies content; [E-015] fixes subject AND target and varies
+   only the relation). Every tightening was forced by the previous pair failing to
+   decide something.
+2. **The findings have come from crossings, not pairs.** `MUTE` exists only where the
+   row and column tests cross. The 58→78 result was an interaction — each fix alone
+   moved +1, both moved +20 — and an interaction is by definition not decomposable
+   into its pairs. The chain result is a triple with asymmetric structure, and "which
+   premise moved" is not a question a pair can ask.
+
+If this holds up it is a claim about how the instrument should be *designed*: enumerate
+crossings deliberately rather than discovering them by accident, which is how all three
+were found.
+**Answer:** —
+
+---
+
+### T-066 · What does a closed candidate pool hide that free generation would show?
+
+**Status:** open
+**Parent:** T-065
+**Opened:** 2026-09-15
+**Question:** Every measurement in this repo ranks over a closed, type-matched pool.
+That is what makes it controlled — and [E-014] had to widen the pool with capitals
+precisely because a pool that cannot express the coherent answer scores a correct
+relocation as failure. But the pool is still our choice, and an answer outside it is
+invisible by construction rather than by evidence. What would free generation show that
+ranking cannot, and is the difference measurable?
+**Answer:** —
+
+---
+
+### T-067 · A causal measure of relocation, not a behavioural one
+
+**Status:** open
+**Parent:** T-065
+**Opened:** 2026-09-15
+**Question:** [E-015] asks whether the model *behaves as if* it inferred "born in
+Germany ⇒ born in a German city", by holding subject and target fixed and varying the
+relation. It cannot ask whether it *did*. The interventional version patches the
+edited value direction in and out at specific positions and asks what is NECESSARY for
+the relocation — which is the lookback/IIA machinery already in the sibling project,
+and the biggest missing piece in this instrument.
+**Answer:** — deliberately parked until E-015 reports; if relocation turns out to be
+country-content leakage there is no inference to localise.
