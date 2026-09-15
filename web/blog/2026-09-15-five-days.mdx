@@ -656,6 +656,91 @@ of" → "New York City"*, the same error class we had published about two days
 earlier. `P17` is defined to take a country, so the template's type now holds
 without a filter.
 
+### Gating them: the same chains, two scales
+
+A chain is only usable if the model already holds all three of its facts. A model
+that never knew *"Vlaminck was born in Paris"* cannot be caught failing to give it
+up, so the gate runs before the edit, not after. Each fact is scored against a
+pool of type-matched candidates and must both rank first and rank higher with the
+real subject than with a placeholder.
+
+<Figure
+  caption="Possession rate per chain position, GPT-J-6B against Llama-3.1-70B, over the same 136 chains and the same candidate pools. The bottom pair is the conjunction: all three legs held."
+>
+
+<svg viewBox="0 0 700 300" role="img" aria-label="Grouped bars comparing possession rates by chain position for GPT-J-6B and Llama-3.1-70B." style={{width:"100%",height:"auto"}}>
+  <title>Possession by chain position, two scales</title>
+  <defs>
+    <style>{`
+      .gt-a   { fill: #a8503f; }
+      .gt-b   { fill: #3d72a8; }
+      .gt-lab { font: 600 12px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); text-anchor: end; }
+      .gt-sub { font: 10px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); text-anchor: end; }
+      .gt-val { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink-muted); }
+      .gt-key { font: 11px/1.3 var(--ifm-font-family-base); fill: var(--ocl-ink); }
+      .gt-r   { stroke: var(--ocl-rule); stroke-width: 1; }
+      [data-theme='dark'] .gt-a { fill: #c87c62; }
+      [data-theme='dark'] .gt-b { fill: #5596d4; }
+    `}</style>
+  </defs>
+
+  <rect className="gt-a" x="124" y="14" width="10" height="10" rx="3" />
+  <text className="gt-key" x="140" y="23">GPT-J-6B</text>
+  <rect className="gt-b" x="228" y="14" width="10" height="10" rx="3" />
+  <text className="gt-key" x="244" y="23">Llama-3.1-70B</text>
+
+  <text className="gt-lab" x="112" y="68">inner_1</text>
+  <text className="gt-sub" x="112" y="82">X born in Y</text>
+  <rect className="gt-a" x="124" y="56" width="168" height="14" rx="4" />
+  <text className="gt-val" x="300" y="67">35%</text>
+  <rect className="gt-b" x="124" y="72" width="403" height="14" rx="4" />
+  <text className="gt-val" x="535" y="83">84%</text>
+
+  <text className="gt-lab" x="112" y="124">inner_2</text>
+  <text className="gt-sub" x="112" y="138">Y in country Z</text>
+  <rect className="gt-a" x="124" y="112" width="293" height="14" rx="4" />
+  <text className="gt-val" x="425" y="123">61%</text>
+  <rect className="gt-b" x="124" y="128" width="442" height="14" rx="4" />
+  <text className="gt-val" x="574" y="139">92%</text>
+
+  <text className="gt-lab" x="112" y="180">outer</text>
+  <text className="gt-sub" x="112" y="194">X born in Z</text>
+  <rect className="gt-a" x="124" y="168" width="101" height="14" rx="4" />
+  <text className="gt-val" x="233" y="179">21%</text>
+  <rect className="gt-b" x="124" y="184" width="274" height="14" rx="4" />
+  <text className="gt-val" x="406" y="195">57%</text>
+
+  <text className="gt-lab" x="112" y="236">all three</text>
+  <text className="gt-sub" x="112" y="250">usable chain</text>
+  <rect className="gt-a" x="124" y="224" width="72" height="14" rx="4" />
+  <text className="gt-val" x="204" y="235">15%</text>
+  <rect className="gt-b" x="124" y="240" width="259" height="14" rx="4" />
+  <text className="gt-val" x="391" y="251">54%</text>
+
+  <line className="gt-r" x1="124" y1="212" x2="660" y2="212" />
+</svg>
+
+</Figure>
+
+**74 usable chains at 70B against 20 at GPT-J** — 54% versus 15%. The edit
+experiment was blocked on having enough chains a model demonstrably holds end to
+end. It is not blocked now.
+
+The more informative half is what did *not* move. `outer` is the worst leg at both
+scales, and by a similar margin. The tempting reading of the GPT-J result was that
+a 6B model is simply too thin to hold a birth country; that reading is now dead,
+because a model eleven times larger has the same shape of deficit. What survives is
+the candidate pool. The country pool has **28 distinct fillers**, with the United
+States alone accounting for 40 of 136 and the top four for 57%; the city pool has
+**78 distinct fillers**, and its top four reach 16%. A concentrated pool makes
+first-place ranking harder for reasons that have nothing to do with whether the
+model knows the answer.
+
+That is a property of our instrument, not of the models — an unmodelled gap in
+`possession.py`, sitting in the same family as the denominator bug from two days
+earlier. Both are selection effects living inside a measurement tool, which is
+becoming this project's most reliable source of errors.
+
 ## Infrastructure, which is most of the work and none of the interest
 
 <Figure plain caption="What the five days actually consisted of.">
@@ -872,9 +957,9 @@ turning out to be the same observation.
 
 ## What is open
 
-**The experiment the project is named for has not run.** 136 entailment chains now
-exist, possession filtering comes next, then the edit. That is the near-term path
-and it is finally unobstructed.
+**The experiment the project is named for has not run.** The 136 chains exist and
+the possession gate has been run over them: 74 survive at 70B, 20 at GPT-J. The
+edit is the only remaining step, and nothing blocks it.
 
 **Nothing has been externally judged.** Every critique here is self-critique, which
 has a ceiling — it catches what you already half-know, which is precisely the
@@ -887,6 +972,8 @@ constrained measure; the 41 chains rejected as routing through dissolved states 
 plausibly inflated by taking the first `P17` value, which Wikidata does not order by
 currency; hand-built sets license an *existence* claim and never a frequency one;
 and possession levels move with candidate-set size, so only the ordering is robust.
+Added after the gate: they also move with candidate-set *concentration*, which is
+not a knob anyone has been setting deliberately, ours included.
 
 ---
 
