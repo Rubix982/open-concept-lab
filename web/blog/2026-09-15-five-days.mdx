@@ -741,6 +741,38 @@ That is a property of our instrument, not of the models — an unmodelled gap in
 earlier. Both are selection effects living inside a measurement tool, which is
 becoming this project's most reliable source of errors.
 
+### The legs are not independent, and that is the useful number
+
+The decision to move to 70B was written down the day before with a prediction
+attached: *"possession is 56% on GPT-J against 79% at 70B, so the usable set should
+roughly double."* It went up **3.7×**. The estimate treated a per-fact rate as if it
+carried straight over to a per-chain one, and a chain is a conjunction — its rate
+moves faster than any leg in it.
+
+Having been wrong that way, the honest next question is what the conjunction
+actually does. Multiplying the three marginals predicts 4.5% usable at GPT-J. The
+measured figure is 14.7% — **3.27× what independence gives**. At 70B the same
+comparison is 43.6% predicted against 54.4% measured, a lift of only **1.25**.
+
+| pair | GPT-J lift over independence | 70B lift |
+| --- | ---: | ---: |
+| `inner_1` & `outer` — share the subject X | **2.10** | 1.15 |
+| `inner_2` & `outer` | 1.53 | 1.09 |
+| `inner_1` & `inner_2` — share no subject | 1.26 | 1.00 |
+
+The lift is ordered by shared subject, and it flattens with scale. At 6B, possession
+clusters per entity: a chain about a well-known person tends to hold at every leg
+and a chain about an obscure one at none, so the variable binding the legs together
+is how familiar the subject is, not how hard the leg is. At 70B almost every subject
+is familiar, that variance is spent, and what is left is the leg-specific deficit —
+which is exactly the 57% on `outer`.
+
+This is the number worth carrying forward, because chain attrition is the cost model
+for every longer chain anyone might build. Under independence a five-hop chain at
+70B would be hopeless. Under the dependence we measured it is merely expensive.
+Costing a multi-hop design off marginals alone will under-build it — which is the
+same mistake as the prediction at the top of this section, one level up.
+
 ## Infrastructure, which is most of the work and none of the interest
 
 <Figure plain caption="What the five days actually consisted of.">

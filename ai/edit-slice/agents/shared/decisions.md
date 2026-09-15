@@ -174,3 +174,60 @@ which has been neither collected nor costed. 405B is worse: d_mlp 53248, ~11 GB.
 the honest options are to run the edit at a scale we can actually edit and report
 the possession ceiling as a limitation, or to drop the edit arm entirely and ship
 the audit instrument alone.
+
+---
+
+## [E-009] Result: the gate clears at 70B, and the three legs are not independent
+
+_Date: 2026-09-15 · Llama-3.1-70B via NDIF, same 136 chains and same pools as GPT-J_
+
+| position | fact | GPT-J-6B | Llama-3.1-70B |
+| --- | --- | ---: | ---: |
+| `inner_1` | X born in Y | 35% | 84% |
+| `inner_2` | Y in country Z | 61% | 92% |
+| `outer` | X born in Z | 21% | 57% |
+| — | **usable chain** | **15%** (20/136) | **54%** (74/136) |
+
+**Decision:** the edit arm runs on the 70B set. 74 usable chains is enough for an
+existence claim with room for edit-stage attrition; 20 was not.
+
+**[O-005]'s prediction was wrong, and in a way worth keeping.** It read *"possession
+is 56% on GPT-J against 79% at 70B, so the usable set should roughly double."* The
+usable set went up **3.7×**. The estimate treated a per-fact rate as if it
+transferred directly to a per-chain one, which it does not — a chain is a
+conjunction over three legs, so its rate moves faster than any single leg.
+
+**And the conjunction is far from independent.** Multiplying the three marginals
+predicts 4.5% usable at GPT-J against 14.7% measured — the real joint is **3.27×**
+what independence gives. At 70B the same comparison is 43.6% against 54.4%, a lift
+of only **1.25**.
+
+| pair | GPT-J lift over independence | 70B lift |
+| --- | ---: | ---: |
+| `inner_1` & `outer` (share subject X) | **2.10** | 1.15 |
+| `inner_2` & `outer` | 1.53 | 1.09 |
+| `inner_1` & `inner_2` (share no subject) | 1.26 | 1.00 |
+
+The lift is ordered by shared subject, and it collapses with scale. The reading:
+at 6B, possession clusters per entity — a chain about a well-known person tends to
+hold at every leg and a chain about an obscure one at none, so the binding variable
+is subject familiarity rather than leg difficulty. At 70B nearly every subject is
+familiar, that variance is spent, and what remains is the leg-specific deficit
+(`outer`, 57%), which is why the pair lifts fall to ~1.
+
+**Why it matters beyond this experiment.** Chain attrition is the cost model for
+every longer chain we might build. Under independence a 5-hop chain at 70B would be
+unusable; at the measured dependence it is merely expensive. Anyone costing a
+multi-hop design off marginals alone will under-build.
+
+**`outer` stays the worst leg at both scales**, which rules out small-model
+thinness and leaves candidate-pool concentration — countries have 28 distinct
+fillers, US alone 40/136, top four 57%, against 78 cities whose top four reach 16%.
+Unmodelled in `possession.py`; same family as the [E-007] denominator bug.
+
+**Revisit if:** the 70B covariance collection for ROME proves impractical — see the
+unpaid consequence recorded in [O-005].
+
+**Artifacts:** `probes/chains_gated_meta-llama_Llama-3.1-70B.json`,
+`probes/chains_gated_EleutherAI_gpt-j-6b.json`,
+`logs/gate_chains-llama-3.1-70b-2026-09-15.log`
