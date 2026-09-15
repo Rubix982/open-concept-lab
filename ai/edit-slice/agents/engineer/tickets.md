@@ -519,3 +519,93 @@ Report per-fact-position possession, not just the joint number, so it is visible
 **Blockers:** none
 **Artifacts:** agents/engineer/workspace/gate_chains.py; probes/chains_gated.json
 **Closed:** —
+
+---
+
+### E-010 · Adversary — check a claim against our own record
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 4h
+
+**Description:**
+The measured failure mode of this project: **every error was already refuted by an
+artifact we had written and not read.** `probes/relation_modality.md` predicted the
+containment failure; [T-044] predicted the template bug; `definitions.md`
+declaration 4 predicted the star/chain confusion. The record was accurate and went
+unconsulted.
+
+The cost of that falls on the human, who currently has to sit and dry-run every
+claim by hand. This makes that pass cheap.
+
+**What it is:** a retriever with an opinionated index over the project's own
+artifacts. Given a claim, it surfaces prior statements that bear on it, with where
+they live and what authority they carry.
+
+**What it is NOT: a judge.** It does not decide whether a claim is wrong. It puts
+the relevant prior statement in front of a person, which is the same discipline the
+project applies to models — *show the structure, never the ranking* [T-034].
+
+**Design:**
+1. Index claim-bearing statements only — findings entries, `**Decision:**` lines,
+   numbered declarations, probe-table rows, thread `**Answer:**` fields — not every
+   line of prose.
+2. Carry **authority**: `definitions.md` is binding; `decisions.md` records
+   commitments; `probes/*.md` are contestable data; findings carry confidence.
+3. Carry **superseded** state. Three findings entries are marked SUPERSEDED; a
+   naive grep would resurface withdrawn claims as authoritative.
+4. Expand query terms through `agents/shared/glossary.md` — which the agentic
+   template specifies and this project never created. "containment" must reach
+   `P131` or the containment miss is not catchable.
+5. Run over a whole file (`--file draft.md`) as well as a single claim, so a
+   write-up can be checked in one pass.
+
+**Falsification — it must catch all three documented misses:**
+- "containment gives a strict contradiction" -> P131 is mutable
+- "outer template asks for the country" -> the T-044 ambiguity finding
+- "the graph gives us grounds" -> declaration 4 / the star-not-chain thread
+
+If it misses any, the retrieval is not good enough to reduce anyone's reading.
+
+**Result: falsification criterion met** — all three documented misses are caught.
+
+    "containment gives us a strict contradiction"
+      -> definitions.md:92  "Never write 'contradiction' where 'implausibility'
+                             is meant"  [BINDING, rank 1]
+    "the graph gives us grounds"
+      -> definitions.md:31  declaration 4, the graph is a normative audit spec
+                            [BINDING, rank 1]
+    "the outer template asks for the country"
+      -> probes/ground_templates.md:12  "No temporal/locative ambiguity"
+                            [MEASURED, rank 4]
+
+**Five bugs found by testing against those cases rather than by reading:**
+1. Glossary entries wrap across lines, so the `_aliases:` trailer sat on a
+   continuation line the parser skipped — it loaded 16 terms and expanded nothing.
+2. Expanding both query and document double-counted: one concept match credited
+   six shared tokens, so every probe-table row tied and ranking fell back to
+   authority. Fixed by collapsing aliases to concepts before comparing.
+3. Rule-based depluralisation returned "templat" for "templates" (the `es` rule
+   fires first). Fixed by generating candidates and testing each against the map.
+4. Twenty near-identical probe rows filled every slot. Fixed by capping hits per
+   source — a tool meant to save reading must not spend slots on duplicates.
+5. Excluding all tension words from matching hid the binding rule about
+   "contradiction". Split into POLARITY (boost only) and LOADED (boost + match).
+
+**Known limitations, not fixed:**
+- The template case lands at rank 4, not rank 1. Single-concept claims tie easily
+  and the tie-break is weak.
+- `--file` mode flagged 33 claims on a 1,200-word draft at `--min-score 2.0`.
+  Usable as a checklist, too noisy to read end-to-end. Needs a better floor.
+- Retrieval is lexical. A claim that contradicts the record in different
+  vocabulary will be missed, and the glossary is the only bridge.
+
+**Artifacts:**
+- src/adversary.py — indexer, glossary expansion, concept collapsing, scorer
+- agents/shared/glossary.md — 16 terms; the template specified this file and the
+  project had never created it
+
+**Closed:** 2026-09-15

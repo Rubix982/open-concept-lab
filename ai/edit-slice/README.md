@@ -80,3 +80,28 @@ notes/      definitions.md — binding, and the most important file here
 ```
 
 Research record: `design.md` (ten lenses), `threads.md`, `agents/shared/findings.md`.
+
+## Checking a claim against the record
+
+The failure mode this project actually has: **every error was already refuted by an
+artifact we had written and not read.** `probes/relation_modality.md` predicted the
+containment failure; the template-ambiguity finding predicted the template bug;
+`definitions.md` declaration 4 predicted the star/chain confusion.
+
+```bash
+python src/adversary.py "containment gives us a strict contradiction"
+python src/adversary.py --file some-draft.md
+```
+
+It surfaces prior statements bearing on a claim, with where they live and what
+authority they carry — `BINDING` (definitions), `COMMITTED` (decisions, charter),
+`MEASURED` (findings, probes), `RECORDED` (threads) — and marks anything
+superseded, so a withdrawn claim cannot refute you.
+
+**It is a retriever, not a judge.** It never says a claim is wrong; it puts the
+prior statement in front of you. That is the same discipline the project applies to
+models: show the structure, never the ranking.
+
+Vocabulary lives in `agents/shared/glossary.md`. Retrieval is lexical, so a claim
+that contradicts the record in different words will be missed unless the glossary
+bridges them — adding a term there is how you extend its reach.
