@@ -948,3 +948,64 @@ keyed by case_id and config; a kill must cost wall-clock only.
 **Artifacts:** agents/engineer/workspace/run_e014.py; results/E-014-*.json;
 data/wikidata/<date>/snapshot.json.gz (city P17, country P36)
 **Closed:** —
+
+---
+
+### E-015 · Does relocation require an inference, or only country-flavoured content?
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 3h
+
+**Description:**
+Resolves the dispute in agents/shared/disputes.md [E-014]. [E-013] found `inner_1`
+relocating to a city in the edited country and I read it as the model revising the
+defeasible premise. A cheaper account predicts the same data: `v*` makes `k*`-keyed
+inputs emit a country-valued vector, `inner_1` shares the subject so its key is
+similar, and a Germany-valued residual stream promotes Germany-associated tokens —
+German cities among them. No inference.
+
+**The discriminating variable is the RELATION, holding subject and target fixed.**
+
+| edit | licenses "born in a German city"? | content |
+| --- | --- | --- |
+| `X was born in the country of` → Germany | **yes**, deductively | Germany |
+| `X works in the country of` → Germany | **no** | Germany |
+
+Work country is independent of birth city — nobody infers a birthplace from an
+employer's country — while the *value vector's content* is the same country in both
+arms. That is exactly the confound isolated.
+
+Chosen over `"X died in the country of"`, which was the first idea: place of death is
+only natural for dead subjects and the chain set mixes living and dead, so the probe
+would be malformed for a subset — the [E-014] "born in the city of Wisconsin" defect
+in a new costume.
+
+**Method.** Same 71 clean chains. Target countries read from
+`results/E-014-destination-*.json` rather than redrawn, so the two arms are matched
+per chain and no RNG drift can desynchronise them. Same `v*` procedure, same clamp,
+same readout: rank the 75-city pool at `inner_1`, record top-1 and whether
+`P17(top-1) == target country`.
+
+**Falsification, pre-stated.**
+- *Deny the revision reading:* the work-country edit relocates `inner_1` into the
+  target country at a rate statistically indistinguishable from the birth-country
+  edit. Then relocation is country-content leaking into any same-subject probe, the
+  "coherent revision" reading dies, and the honest result is a clean mechanistic one
+  about what rank-one edits do.
+- *Support it:* birth-country relocation materially exceeds work-country relocation.
+  Something relation-specific survives, and the AGM-entrenchment framing in
+  `definitions.md` declaration 6 becomes measurable rather than assumed.
+- *Null:* neither relocates. Contradicts [E-013]; treat as a bug in E-015, not a
+  result.
+
+**Report the difference, not two rates.** The quantity is the paired per-chain gap
+between arms; reporting the arms separately invites reading a difference that the
+pairing does not support.
+
+**Blockers:** E-014 (supplies the matched target countries)
+**Artifacts:** agents/engineer/workspace/run_e015.py; results/E-015-*.json
+**Closed:** —
