@@ -786,3 +786,81 @@ agents/engineer/workspace/{run_e012,test_discrimination}.py;
 results/E-012-discrimination-{bare,natural}-meta-llama_Llama-3.1-8B.json;
 agents/shared/decisions.md -> "[E-012] Result"
 **Closed:** 2026-09-15
+
+---
+
+### E-013 · The edit — does editing a conclusion ever retract its grounds?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 12h
+
+**Description:**
+The experiment this project is named for. Every prior ticket was a gate on it.
+
+**The setup.** For each of the 78 chains usable at Llama-3.1-8B ([O-006], [E-012]):
+
+    inner_1   X was born in the city of Y      (P19, rigid)
+    inner_2   Y is located in the country of Z (P17)
+    ------------------------------------------------- entails
+    outer     X was born in the country of Z
+
+Edit `outer` so the model asserts `Z'` instead of `Z`. Both premises still entail
+`Z`. Unlike [E-002]'s evidential grounds, this family admits **no satisfying world**:
+birth is rigid, so the model must give up `inner_1` or `inner_2`, or hold a set that
+is jointly inconsistent. The question is not how often. It is **whether contraction
+occurs at all** — an EXISTENCE claim, per the standing constraint in [O-004].
+
+**Gate 0 — the covariance, now costed rather than assumed.** ROME's update needs
+`C⁻¹k*` where `C` is the second-moment matrix of keys at the edited layer. Measured
+from the model configs, not recalled: Llama-3.1-8B `d_mlp` = **14336**, so `C` is
+**0.82 GB fp32** (70B would be 28672 → 3.29 GB, matching [O-005]). Resolve in this
+order and record which was used:
+1. A published precomputed statistic for this model. Do not assume one exists —
+   ROME's distributed stats cover GPT-2 and GPT-J.
+2. Accumulate `kkᵀ` remotely and transfer in column blocks (14336 × 1024 ≈ 59 MB per
+   block, 14 blocks) rather than one 0.82 GB download. Cache to disk; it is a
+   one-time cost and the edit is re-run many times against it.
+3. **Fallback `C = I`** — the unwhitened rank-one update. Legitimate and reported in
+   ROME's own ablations, but a *less specific* editor. If used, say so in every
+   artifact, because it inflates `damage` and that biases us toward the result we
+   are looking for. See the confound below.
+
+**The confound that could fake the whole result.** A diffuse editor moves the grounds
+by collateral damage, which looks exactly like contraction. The control is already
+mandated by CLAUDE.md and is not optional here: sweep an **unrelated edit of
+comparable magnitude** on the same base model, identically. Grounds that move under
+both are generically unstable; only grounds that move under ours are candidates. A
+result reported without this control is not a result.
+
+**Metrics** — as fixed in CLAUDE.md, no new ones:
+- KL pre→post over the next-token distribution at the final position.
+- log-prob of the pre-edit correct answer (sign-free: did it give up *anything*
+  where coherence demanded it give up *something*).
+- log-prob of the injected object (rising where it should not = leakage).
+- entropy change (rising = confusion, not reassignment).
+- Multi-token answers teacher-forced, summed. Never position one alone.
+
+**Falsification, stated in advance:**
+- *Confirm:* on some chains, a premise's log-prob falls under our edit and not under
+  the control. Contraction occurs. The existence claim lands.
+- *Deny:* premises are unmoved beyond the null across all 78. Editors expand and
+  never contract — which is [E-002]'s "editors expand; they never contract" promoted
+  from a reading to a measurement, and is a publishable negative.
+- *Null:* premises move as much under the control as under ours. Generic instability;
+  the instrument is not sensitive enough at this edit magnitude, and that is a
+  statement about the method, not the model.
+
+**Deliverable.** The two-panel figure named in CLAUDE.md and one number: how many of
+78 chains show a premise retraction exceeding the control's high percentile.
+
+**Scope.** IN: 78 chains, 8B, ROME (or the stated fallback), both controls, single
+phrasing. DEFERRED: multi-phrasing measurement (Part II), 70B, any rate claim,
+sequential edits.
+
+**Blockers:** none
+**Artifacts:** src/edit.py; agents/engineer/workspace/run_e013.py; results/E-013-*.json
+**Closed:** —

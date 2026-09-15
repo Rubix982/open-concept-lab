@@ -758,14 +758,20 @@ Every experiment must serve one of those three. Anything that serves none is cut
 
 ## Next actions, in order
 
-1. **R-008** — ParaRel coverage of P19/P17 and template counts. Gate. Nothing builds
-   until this answers.
-2. **E-013** — template-set plumbing: `Edit` carries a template id; the cell matrix
+**Sequencing decided 2026-09-15 (user): the edit runs FIRST**, as E-013, on the 78
+chains already gated. Rationale is the Standard's — one completed, communicated arc
+beats two half-built ones, and the experiment the project is named for has slipped
+for days. The cost is accepted and stated: the edit is measured through a single
+phrasing, so "did it take hold" stays partly ambiguous until Part II lands. Part II
+then re-measures it through the probe distribution.
+
+1. **E-013** — the edit. See its ticket; gated on the covariance question below.
+2. **R-008** — ParaRel coverage of P19/P17 and template counts. Gate for Part II.
+   Nothing in Part II builds until this answers.
+3. **E-014** — template-set plumbing: `Edit` carries a template id; the cell matrix
    replaces the per-item record; T(r) recorded in every artifact.
-3. **E-014** — run F1 on one relation at k≈10. **Stop and read it.** If labels
+4. **E-015** — run F1 on one relation at k≈10. **Stop and read it.** If labels
    scatter, do not build the rest.
-4. **E-015** — F4, the headline: premise robustness against conclusion robustness on
+5. **E-016** — F4, the headline: premise robustness against conclusion robustness on
    matched chains.
-5. **E-016** — §7 predictive-validity baseline. The number that justifies Part II.
-6. **The edit** — unchanged in ambition, but now measurable through the probe
-   distribution rather than one prompt.
+6. **E-017** — §7 predictive-validity baseline. The number that justifies Part II.
