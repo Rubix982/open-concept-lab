@@ -1,0 +1,1452 @@
+136 chains -> 408 facts to score (meta-llama/Llama-3.1-70B)
+◉ [7f34015c-e09a-4802-838b-06e5d6f9d079] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7f34015c-e09a-4802-838b-06e5d6f9d079] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7f34015c-e09a-4802-838b-06e5d6f9d079] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [7f34015c-e09a-4802-838b-06e5d6f9d079] RUNNING    (4.5s) Your job has started running.
+✓ [7f34015c-e09a-4802-838b-06e5d6f9d079] COMPLETED  (4.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.02k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.02k/1.02k [00:00<00:00]
+◉ [55c2bcbd-cc34-49e9-8cdc-6fb587df8c0e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [55c2bcbd-cc34-49e9-8cdc-6fb587df8c0e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [55c2bcbd-cc34-49e9-8cdc-6fb587df8c0e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [55c2bcbd-cc34-49e9-8cdc-6fb587df8c0e] RUNNING    (1.9s) Your job has started running.
+✓ [55c2bcbd-cc34-49e9-8cdc-6fb587df8c0e] COMPLETED  (2.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/812 [00:00<?]
+⬇ Downloading: 100%|██████████| 812/812 [00:00<00:00]
+◉ [a3463bb8-be5f-48a1-bdd0-8f4989ffd60d] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [a3463bb8-be5f-48a1-bdd0-8f4989ffd60d] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [a3463bb8-be5f-48a1-bdd0-8f4989ffd60d] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [a3463bb8-be5f-48a1-bdd0-8f4989ffd60d] RUNNING    (4.3s) Your job has started running.
+✓ [a3463bb8-be5f-48a1-bdd0-8f4989ffd60d] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/979 [00:00<?]
+⬇ Downloading: 100%|██████████| 979/979 [00:00<00:00]
+◉ [d4f01858-0007-4bc2-9db1-972a46ad575e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [d4f01858-0007-4bc2-9db1-972a46ad575e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [d4f01858-0007-4bc2-9db1-972a46ad575e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [d4f01858-0007-4bc2-9db1-972a46ad575e] RUNNING    (1.5s) Your job has started running.
+✓ [d4f01858-0007-4bc2-9db1-972a46ad575e] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/700 [00:00<?]
+⬇ Downloading: 100%|██████████| 700/700 [00:00<00:00]
+◉ [e17c1a4b-91d6-4791-8b82-9a3b8b84b36a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e17c1a4b-91d6-4791-8b82-9a3b8b84b36a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e17c1a4b-91d6-4791-8b82-9a3b8b84b36a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [e17c1a4b-91d6-4791-8b82-9a3b8b84b36a] RUNNING    (4.5s) Your job has started running.
+✓ [e17c1a4b-91d6-4791-8b82-9a3b8b84b36a] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+◉ [715d8f88-ac6b-4f9a-83e0-383d43dea266] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [715d8f88-ac6b-4f9a-83e0-383d43dea266] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [715d8f88-ac6b-4f9a-83e0-383d43dea266] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [715d8f88-ac6b-4f9a-83e0-383d43dea266] RUNNING    (1.6s) Your job has started running.
+✓ [715d8f88-ac6b-4f9a-83e0-383d43dea266] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/714 [00:00<?]
+⬇ Downloading: 100%|██████████| 714/714 [00:00<00:00]
+◉ [90267f97-6bff-4fad-a098-830d35425b1e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [90267f97-6bff-4fad-a098-830d35425b1e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [90267f97-6bff-4fad-a098-830d35425b1e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [90267f97-6bff-4fad-a098-830d35425b1e] RUNNING    (5.6s) Your job has started running.
+✓ [90267f97-6bff-4fad-a098-830d35425b1e] COMPLETED  (5.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [f8fcac30-2876-4d63-a148-e0b09e845625] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f8fcac30-2876-4d63-a148-e0b09e845625] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f8fcac30-2876-4d63-a148-e0b09e845625] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [f8fcac30-2876-4d63-a148-e0b09e845625] RUNNING    (2.2s) Your job has started running.
+✓ [f8fcac30-2876-4d63-a148-e0b09e845625] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/821 [00:00<?]
+⬇ Downloading: 100%|██████████| 821/821 [00:00<00:00]
+◉ [d5991c55-fc24-457e-b873-b1d6c0104076] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [d5991c55-fc24-457e-b873-b1d6c0104076] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [d5991c55-fc24-457e-b873-b1d6c0104076] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [d5991c55-fc24-457e-b873-b1d6c0104076] RUNNING    (4.4s) Your job has started running.
+✓ [d5991c55-fc24-457e-b873-b1d6c0104076] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/969 [00:00<?]
+⬇ Downloading: 100%|██████████| 969/969 [00:00<00:00]
+◉ [7b3bdc7a-1407-4e6a-abd2-520bfcff0902] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7b3bdc7a-1407-4e6a-abd2-520bfcff0902] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7b3bdc7a-1407-4e6a-abd2-520bfcff0902] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [7b3bdc7a-1407-4e6a-abd2-520bfcff0902] RUNNING    (1.7s) Your job has started running.
+✓ [7b3bdc7a-1407-4e6a-abd2-520bfcff0902] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/707 [00:00<?]
+⬇ Downloading: 100%|██████████| 707/707 [00:00<00:00]
+◉ [ac464f6b-25bb-43bc-b011-31586e078e3a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ac464f6b-25bb-43bc-b011-31586e078e3a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ac464f6b-25bb-43bc-b011-31586e078e3a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [ac464f6b-25bb-43bc-b011-31586e078e3a] RUNNING    (4.3s) Your job has started running.
+✓ [ac464f6b-25bb-43bc-b011-31586e078e3a] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+◉ [f25847c2-d59b-4b1c-bb20-3ac4aa821ca0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f25847c2-d59b-4b1c-bb20-3ac4aa821ca0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f25847c2-d59b-4b1c-bb20-3ac4aa821ca0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [f25847c2-d59b-4b1c-bb20-3ac4aa821ca0] RUNNING    (1.6s) Your job has started running.
+✓ [f25847c2-d59b-4b1c-bb20-3ac4aa821ca0] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/717 [00:00<?]
+⬇ Downloading: 100%|██████████| 717/717 [00:00<00:00]
+◉ [6d8c298b-3abe-41d8-a309-4a2b5d6849d2] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [6d8c298b-3abe-41d8-a309-4a2b5d6849d2] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [6d8c298b-3abe-41d8-a309-4a2b5d6849d2] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [6d8c298b-3abe-41d8-a309-4a2b5d6849d2] RUNNING    (4.4s) Your job has started running.
+✓ [6d8c298b-3abe-41d8-a309-4a2b5d6849d2] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/985 [00:00<?]
+⬇ Downloading: 100%|██████████| 985/985 [00:00<00:00]
+◉ [e3854c68-5ec2-44aa-9bca-0ec6541bb225] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e3854c68-5ec2-44aa-9bca-0ec6541bb225] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e3854c68-5ec2-44aa-9bca-0ec6541bb225] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [e3854c68-5ec2-44aa-9bca-0ec6541bb225] RUNNING    (2.0s) Your job has started running.
+✓ [e3854c68-5ec2-44aa-9bca-0ec6541bb225] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/830 [00:00<?]
+⬇ Downloading: 100%|██████████| 830/830 [00:00<00:00]
+◉ [130dc01d-2403-442e-9333-c16edfbaaad1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [130dc01d-2403-442e-9333-c16edfbaaad1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [130dc01d-2403-442e-9333-c16edfbaaad1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [130dc01d-2403-442e-9333-c16edfbaaad1] RUNNING    (4.4s) Your job has started running.
+✓ [130dc01d-2403-442e-9333-c16edfbaaad1] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+◉ [1e9d27d9-b714-4d8c-bd84-64971ba3d454] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [1e9d27d9-b714-4d8c-bd84-64971ba3d454] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [1e9d27d9-b714-4d8c-bd84-64971ba3d454] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [1e9d27d9-b714-4d8c-bd84-64971ba3d454] RUNNING    (1.5s) Your job has started running.
+✓ [1e9d27d9-b714-4d8c-bd84-64971ba3d454] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [c06ffbcd-3741-41a9-a694-16882fb2f60f] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c06ffbcd-3741-41a9-a694-16882fb2f60f] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c06ffbcd-3741-41a9-a694-16882fb2f60f] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [c06ffbcd-3741-41a9-a694-16882fb2f60f] RUNNING    (4.5s) Your job has started running.
+✓ [c06ffbcd-3741-41a9-a694-16882fb2f60f] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/985 [00:00<?]
+⬇ Downloading: 100%|██████████| 985/985 [00:00<00:00]
+◉ [518bb2af-9909-4b4d-bb20-488520b5f407] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [518bb2af-9909-4b4d-bb20-488520b5f407] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [518bb2af-9909-4b4d-bb20-488520b5f407] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [518bb2af-9909-4b4d-bb20-488520b5f407] RUNNING    (2.0s) Your job has started running.
+✓ [518bb2af-9909-4b4d-bb20-488520b5f407] COMPLETED  (2.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [96891cc7-dc2d-4d1b-895e-35c36160da6b] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [96891cc7-dc2d-4d1b-895e-35c36160da6b] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [96891cc7-dc2d-4d1b-895e-35c36160da6b] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [96891cc7-dc2d-4d1b-895e-35c36160da6b] RUNNING    (3.8s) Your job has started running.
+✓ [96891cc7-dc2d-4d1b-895e-35c36160da6b] COMPLETED  (3.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+◉ [310a085c-982e-49b4-a7e7-fb4797165bff] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [310a085c-982e-49b4-a7e7-fb4797165bff] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [310a085c-982e-49b4-a7e7-fb4797165bff] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [310a085c-982e-49b4-a7e7-fb4797165bff] RUNNING    (2.2s) Your job has started running.
+✓ [310a085c-982e-49b4-a7e7-fb4797165bff] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/832 [00:00<?]
+⬇ Downloading: 100%|██████████| 832/832 [00:00<00:00]
+◉ [f766f31d-3e0c-4719-8bcb-7c8f8406dcac] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f766f31d-3e0c-4719-8bcb-7c8f8406dcac] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f766f31d-3e0c-4719-8bcb-7c8f8406dcac] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [f766f31d-3e0c-4719-8bcb-7c8f8406dcac] RUNNING    (4.7s) Your job has started running.
+✓ [f766f31d-3e0c-4719-8bcb-7c8f8406dcac] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [602d16f2-7269-4c58-8e2a-e980ae45a1da] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [602d16f2-7269-4c58-8e2a-e980ae45a1da] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [602d16f2-7269-4c58-8e2a-e980ae45a1da] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [602d16f2-7269-4c58-8e2a-e980ae45a1da] RUNNING    (1.3s) Your job has started running.
+✓ [602d16f2-7269-4c58-8e2a-e980ae45a1da] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [5eb0c464-8914-4c80-bd25-6f528eb29c0c] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5eb0c464-8914-4c80-bd25-6f528eb29c0c] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5eb0c464-8914-4c80-bd25-6f528eb29c0c] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [5eb0c464-8914-4c80-bd25-6f528eb29c0c] RUNNING    (3.9s) Your job has started running.
+✓ [5eb0c464-8914-4c80-bd25-6f528eb29c0c] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/977 [00:00<?]
+⬇ Downloading: 100%|██████████| 977/977 [00:00<00:00]
+◉ [2f120e9f-3bf6-4b4d-811b-9954f541dbb1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2f120e9f-3bf6-4b4d-811b-9954f541dbb1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2f120e9f-3bf6-4b4d-811b-9954f541dbb1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [2f120e9f-3bf6-4b4d-811b-9954f541dbb1] RUNNING    (1.5s) Your job has started running.
+✓ [2f120e9f-3bf6-4b4d-811b-9954f541dbb1] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/698 [00:00<?]
+⬇ Downloading: 100%|██████████| 698/698 [00:00<00:00]
+◉ [9de1b506-451f-4021-b150-19c33ca9c899] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [9de1b506-451f-4021-b150-19c33ca9c899] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [9de1b506-451f-4021-b150-19c33ca9c899] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [9de1b506-451f-4021-b150-19c33ca9c899] RUNNING    (5.1s) Your job has started running.
+✓ [9de1b506-451f-4021-b150-19c33ca9c899] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/981 [00:00<?]
+⬇ Downloading: 100%|██████████| 981/981 [00:00<00:00]
+◉ [5fa3ec67-220c-4fc0-a6d3-50be85968005] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5fa3ec67-220c-4fc0-a6d3-50be85968005] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5fa3ec67-220c-4fc0-a6d3-50be85968005] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [5fa3ec67-220c-4fc0-a6d3-50be85968005] RUNNING    (2.3s) Your job has started running.
+✓ [5fa3ec67-220c-4fc0-a6d3-50be85968005] COMPLETED  (2.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/815 [00:00<?]
+⬇ Downloading: 100%|██████████| 815/815 [00:00<00:00]
+◉ [efd12a39-e451-4a7d-b239-ac5662e2c559] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [efd12a39-e451-4a7d-b239-ac5662e2c559] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [efd12a39-e451-4a7d-b239-ac5662e2c559] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [efd12a39-e451-4a7d-b239-ac5662e2c559] RUNNING    (4.8s) Your job has started running.
+✓ [efd12a39-e451-4a7d-b239-ac5662e2c559] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/977 [00:00<?]
+⬇ Downloading: 100%|██████████| 977/977 [00:00<00:00]
+◉ [798b0828-b4c6-4e5e-addb-15627066efc9] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [798b0828-b4c6-4e5e-addb-15627066efc9] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [798b0828-b4c6-4e5e-addb-15627066efc9] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [798b0828-b4c6-4e5e-addb-15627066efc9] RUNNING    (1.6s) Your job has started running.
+✓ [798b0828-b4c6-4e5e-addb-15627066efc9] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [1d792763-db4b-4165-b113-26d77cffc0a5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [1d792763-db4b-4165-b113-26d77cffc0a5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [1d792763-db4b-4165-b113-26d77cffc0a5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [1d792763-db4b-4165-b113-26d77cffc0a5] RUNNING    (3.9s) Your job has started running.
+✓ [1d792763-db4b-4165-b113-26d77cffc0a5] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+◉ [b79a61e4-fffb-4569-9296-d5f34d694bfb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b79a61e4-fffb-4569-9296-d5f34d694bfb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b79a61e4-fffb-4569-9296-d5f34d694bfb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [b79a61e4-fffb-4569-9296-d5f34d694bfb] RUNNING    (1.6s) Your job has started running.
+✓ [b79a61e4-fffb-4569-9296-d5f34d694bfb] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/714 [00:00<?]
+⬇ Downloading: 100%|██████████| 714/714 [00:00<00:00]
+◉ [5cc4343f-e81d-4233-91a6-23549e04ccf3] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5cc4343f-e81d-4233-91a6-23549e04ccf3] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5cc4343f-e81d-4233-91a6-23549e04ccf3] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [5cc4343f-e81d-4233-91a6-23549e04ccf3] RUNNING    (4.5s) Your job has started running.
+✓ [5cc4343f-e81d-4233-91a6-23549e04ccf3] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/986 [00:00<?]
+⬇ Downloading: 100%|██████████| 986/986 [00:00<00:00]
+◉ [b3dee763-6267-4d82-90fe-68b104e68957] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b3dee763-6267-4d82-90fe-68b104e68957] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b3dee763-6267-4d82-90fe-68b104e68957] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [b3dee763-6267-4d82-90fe-68b104e68957] RUNNING    (2.0s) Your job has started running.
+✓ [b3dee763-6267-4d82-90fe-68b104e68957] COMPLETED  (2.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/844 [00:00<?]
+⬇ Downloading: 100%|██████████| 844/844 [00:00<00:00]
+◉ [40350fdc-9eb1-4011-aa65-3ac9253f4f4e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [40350fdc-9eb1-4011-aa65-3ac9253f4f4e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [40350fdc-9eb1-4011-aa65-3ac9253f4f4e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [40350fdc-9eb1-4011-aa65-3ac9253f4f4e] RUNNING    (4.3s) Your job has started running.
+✓ [40350fdc-9eb1-4011-aa65-3ac9253f4f4e] COMPLETED  (4.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [a485dde1-a5a6-4a37-9600-14490df19ec1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [a485dde1-a5a6-4a37-9600-14490df19ec1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [a485dde1-a5a6-4a37-9600-14490df19ec1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [a485dde1-a5a6-4a37-9600-14490df19ec1] RUNNING    (1.6s) Your job has started running.
+✓ [a485dde1-a5a6-4a37-9600-14490df19ec1] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/703 [00:00<?]
+⬇ Downloading: 100%|██████████| 703/703 [00:00<00:00]
+◉ [695cf5db-d5de-47d8-ac29-98b658f2b8bf] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [695cf5db-d5de-47d8-ac29-98b658f2b8bf] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [695cf5db-d5de-47d8-ac29-98b658f2b8bf] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [695cf5db-d5de-47d8-ac29-98b658f2b8bf] RUNNING    (5.3s) Your job has started running.
+✓ [695cf5db-d5de-47d8-ac29-98b658f2b8bf] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+◉ [7d2f13ea-1b24-452d-bbff-3ef00ccd5f31] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7d2f13ea-1b24-452d-bbff-3ef00ccd5f31] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7d2f13ea-1b24-452d-bbff-3ef00ccd5f31] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [7d2f13ea-1b24-452d-bbff-3ef00ccd5f31] RUNNING    (2.4s) Your job has started running.
+✓ [7d2f13ea-1b24-452d-bbff-3ef00ccd5f31] COMPLETED  (2.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/724 [00:00<?]
+⬇ Downloading: 100%|██████████| 724/724 [00:00<00:00]
+◉ [b4f9302c-4097-470f-bd47-bc646ee4ff70] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b4f9302c-4097-470f-bd47-bc646ee4ff70] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b4f9302c-4097-470f-bd47-bc646ee4ff70] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [b4f9302c-4097-470f-bd47-bc646ee4ff70] RUNNING    (4.7s) Your job has started running.
+✓ [b4f9302c-4097-470f-bd47-bc646ee4ff70] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [824c8d45-9745-420e-b1ee-01fa57d0bee7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [824c8d45-9745-420e-b1ee-01fa57d0bee7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [824c8d45-9745-420e-b1ee-01fa57d0bee7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [824c8d45-9745-420e-b1ee-01fa57d0bee7] RUNNING    (2.0s) Your job has started running.
+✓ [824c8d45-9745-420e-b1ee-01fa57d0bee7] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/826 [00:00<?]
+⬇ Downloading: 100%|██████████| 826/826 [00:00<00:00]
+◉ [ed00a1b3-5427-451b-86c1-993bd0a189e1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ed00a1b3-5427-451b-86c1-993bd0a189e1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ed00a1b3-5427-451b-86c1-993bd0a189e1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [ed00a1b3-5427-451b-86c1-993bd0a189e1] RUNNING    (4.3s) Your job has started running.
+✓ [ed00a1b3-5427-451b-86c1-993bd0a189e1] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+◉ [2eaec24e-a15b-4e60-9c5b-1ef62f5f9bd4] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2eaec24e-a15b-4e60-9c5b-1ef62f5f9bd4] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2eaec24e-a15b-4e60-9c5b-1ef62f5f9bd4] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [2eaec24e-a15b-4e60-9c5b-1ef62f5f9bd4] RUNNING    (1.6s) Your job has started running.
+✓ [2eaec24e-a15b-4e60-9c5b-1ef62f5f9bd4] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [2cdf4695-9630-4110-88a1-beeda81819f4] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2cdf4695-9630-4110-88a1-beeda81819f4] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2cdf4695-9630-4110-88a1-beeda81819f4] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [2cdf4695-9630-4110-88a1-beeda81819f4] RUNNING    (4.3s) Your job has started running.
+✓ [2cdf4695-9630-4110-88a1-beeda81819f4] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+◉ [e1217a68-ca08-41db-963b-43130da5df66] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e1217a68-ca08-41db-963b-43130da5df66] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e1217a68-ca08-41db-963b-43130da5df66] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [e1217a68-ca08-41db-963b-43130da5df66] RUNNING    (1.7s) Your job has started running.
+✓ [e1217a68-ca08-41db-963b-43130da5df66] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [99922a66-bab9-4426-b0a7-c92b8d914124] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [99922a66-bab9-4426-b0a7-c92b8d914124] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [99922a66-bab9-4426-b0a7-c92b8d914124] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [99922a66-bab9-4426-b0a7-c92b8d914124] RUNNING    (4.2s) Your job has started running.
+✓ [99922a66-bab9-4426-b0a7-c92b8d914124] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/975 [00:00<?]
+⬇ Downloading: 100%|██████████| 975/975 [00:00<00:00]
+◉ [aef72df6-930e-45a1-b903-4826ceac0988] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [aef72df6-930e-45a1-b903-4826ceac0988] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [aef72df6-930e-45a1-b903-4826ceac0988] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [aef72df6-930e-45a1-b903-4826ceac0988] RUNNING    (2.2s) Your job has started running.
+✓ [aef72df6-930e-45a1-b903-4826ceac0988] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/824 [00:00<?]
+⬇ Downloading: 100%|██████████| 824/824 [00:00<00:00]
+◉ [bdfd9988-26b4-46df-bc65-74206aba494a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [bdfd9988-26b4-46df-bc65-74206aba494a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [bdfd9988-26b4-46df-bc65-74206aba494a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [bdfd9988-26b4-46df-bc65-74206aba494a] RUNNING    (4.4s) Your job has started running.
+✓ [bdfd9988-26b4-46df-bc65-74206aba494a] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/973 [00:00<?]
+⬇ Downloading: 100%|██████████| 973/973 [00:00<00:00]
+◉ [fd02f705-fec0-4b89-929f-738b509db0f7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [fd02f705-fec0-4b89-929f-738b509db0f7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [fd02f705-fec0-4b89-929f-738b509db0f7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [fd02f705-fec0-4b89-929f-738b509db0f7] RUNNING    (1.4s) Your job has started running.
+✓ [fd02f705-fec0-4b89-929f-738b509db0f7] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/711 [00:00<?]
+⬇ Downloading: 100%|██████████| 711/711 [00:00<00:00]
+◉ [9c22e808-1c21-41fc-9a43-0d154b150e23] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [9c22e808-1c21-41fc-9a43-0d154b150e23] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [9c22e808-1c21-41fc-9a43-0d154b150e23] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [9c22e808-1c21-41fc-9a43-0d154b150e23] RUNNING    (4.3s) Your job has started running.
+✓ [9c22e808-1c21-41fc-9a43-0d154b150e23] COMPLETED  (4.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/971 [00:00<?]
+⬇ Downloading: 100%|██████████| 971/971 [00:00<00:00]
+◉ [f5fe37a8-efb2-4b8d-ba79-15e19210a23c] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f5fe37a8-efb2-4b8d-ba79-15e19210a23c] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f5fe37a8-efb2-4b8d-ba79-15e19210a23c] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [f5fe37a8-efb2-4b8d-ba79-15e19210a23c] RUNNING    (2.0s) Your job has started running.
+✓ [f5fe37a8-efb2-4b8d-ba79-15e19210a23c] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/711 [00:00<?]
+⬇ Downloading: 100%|██████████| 711/711 [00:00<00:00]
+◉ [2be755f5-529a-4f77-a2fe-260547e4ec59] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2be755f5-529a-4f77-a2fe-260547e4ec59] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2be755f5-529a-4f77-a2fe-260547e4ec59] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [2be755f5-529a-4f77-a2fe-260547e4ec59] RUNNING    (4.3s) Your job has started running.
+✓ [2be755f5-529a-4f77-a2fe-260547e4ec59] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [c4eddf37-5fea-4cb6-a75c-35b5da01578a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c4eddf37-5fea-4cb6-a75c-35b5da01578a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c4eddf37-5fea-4cb6-a75c-35b5da01578a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [c4eddf37-5fea-4cb6-a75c-35b5da01578a] RUNNING    (1.7s) Your job has started running.
+✓ [c4eddf37-5fea-4cb6-a75c-35b5da01578a] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/812 [00:00<?]
+⬇ Downloading: 100%|██████████| 812/812 [00:00<00:00]
+  100/408
+◉ [026addb9-cbb8-4a94-89d7-4d5d2073c546] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [026addb9-cbb8-4a94-89d7-4d5d2073c546] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [026addb9-cbb8-4a94-89d7-4d5d2073c546] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [026addb9-cbb8-4a94-89d7-4d5d2073c546] RUNNING    (4.0s) Your job has started running.
+✓ [026addb9-cbb8-4a94-89d7-4d5d2073c546] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/976 [00:00<?]
+⬇ Downloading: 100%|██████████| 976/976 [00:00<00:00]
+◉ [d0a2b237-231b-45b4-ba6e-606cf07a5dc1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [d0a2b237-231b-45b4-ba6e-606cf07a5dc1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [d0a2b237-231b-45b4-ba6e-606cf07a5dc1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [d0a2b237-231b-45b4-ba6e-606cf07a5dc1] RUNNING    (1.5s) Your job has started running.
+✓ [d0a2b237-231b-45b4-ba6e-606cf07a5dc1] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/713 [00:00<?]
+⬇ Downloading: 100%|██████████| 713/713 [00:00<00:00]
+◉ [8ac263e7-e208-4ba9-bc33-df4d34b07c11] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8ac263e7-e208-4ba9-bc33-df4d34b07c11] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8ac263e7-e208-4ba9-bc33-df4d34b07c11] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [8ac263e7-e208-4ba9-bc33-df4d34b07c11] RUNNING    (4.7s) Your job has started running.
+✓ [8ac263e7-e208-4ba9-bc33-df4d34b07c11] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/981 [00:00<?]
+⬇ Downloading: 100%|██████████| 981/981 [00:00<00:00]
+◉ [e1ef208b-2150-47c7-840d-e42594f32dbe] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e1ef208b-2150-47c7-840d-e42594f32dbe] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e1ef208b-2150-47c7-840d-e42594f32dbe] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [e1ef208b-2150-47c7-840d-e42594f32dbe] RUNNING    (1.5s) Your job has started running.
+✓ [e1ef208b-2150-47c7-840d-e42594f32dbe] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [38489280-a748-42ee-bd12-e6bd889ac606] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [38489280-a748-42ee-bd12-e6bd889ac606] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [38489280-a748-42ee-bd12-e6bd889ac606] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [38489280-a748-42ee-bd12-e6bd889ac606] RUNNING    (5.1s) Your job has started running.
+✓ [38489280-a748-42ee-bd12-e6bd889ac606] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/976 [00:00<?]
+⬇ Downloading: 100%|██████████| 976/976 [00:00<00:00]
+◉ [51d14f6d-fea9-4014-9b77-365326f24bce] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [51d14f6d-fea9-4014-9b77-365326f24bce] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [51d14f6d-fea9-4014-9b77-365326f24bce] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [51d14f6d-fea9-4014-9b77-365326f24bce] RUNNING    (2.0s) Your job has started running.
+✓ [51d14f6d-fea9-4014-9b77-365326f24bce] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/829 [00:00<?]
+⬇ Downloading: 100%|██████████| 829/829 [00:00<00:00]
+◉ [79d7d000-ca34-4da3-928e-a6cb5b4e3efe] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [79d7d000-ca34-4da3-928e-a6cb5b4e3efe] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [79d7d000-ca34-4da3-928e-a6cb5b4e3efe] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [79d7d000-ca34-4da3-928e-a6cb5b4e3efe] RUNNING    (4.4s) Your job has started running.
+✓ [79d7d000-ca34-4da3-928e-a6cb5b4e3efe] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+◉ [123c5bea-69c6-41bb-9c4e-e9e9113dc8de] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [123c5bea-69c6-41bb-9c4e-e9e9113dc8de] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [123c5bea-69c6-41bb-9c4e-e9e9113dc8de] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [123c5bea-69c6-41bb-9c4e-e9e9113dc8de] RUNNING    (1.6s) Your job has started running.
+✓ [123c5bea-69c6-41bb-9c4e-e9e9113dc8de] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/713 [00:00<?]
+⬇ Downloading: 100%|██████████| 713/713 [00:00<00:00]
+◉ [fdf8756f-2288-4d30-b68a-851eff057901] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [fdf8756f-2288-4d30-b68a-851eff057901] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [fdf8756f-2288-4d30-b68a-851eff057901] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [fdf8756f-2288-4d30-b68a-851eff057901] RUNNING    (4.6s) Your job has started running.
+✓ [fdf8756f-2288-4d30-b68a-851eff057901] COMPLETED  (4.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [10fd28f0-9895-4a55-a8d8-6d9fbb047993] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [10fd28f0-9895-4a55-a8d8-6d9fbb047993] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [10fd28f0-9895-4a55-a8d8-6d9fbb047993] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [10fd28f0-9895-4a55-a8d8-6d9fbb047993] RUNNING    (1.6s) Your job has started running.
+✓ [10fd28f0-9895-4a55-a8d8-6d9fbb047993] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/697 [00:00<?]
+⬇ Downloading: 100%|██████████| 697/697 [00:00<00:00]
+◉ [d9c28c74-d0df-4eb7-b373-7c739386a671] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [d9c28c74-d0df-4eb7-b373-7c739386a671] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [d9c28c74-d0df-4eb7-b373-7c739386a671] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [d9c28c74-d0df-4eb7-b373-7c739386a671] RUNNING    (4.2s) Your job has started running.
+✓ [d9c28c74-d0df-4eb7-b373-7c739386a671] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/976 [00:00<?]
+⬇ Downloading: 100%|██████████| 976/976 [00:00<00:00]
+◉ [12b60786-3d3e-4672-bee7-7d229ac3f53e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [12b60786-3d3e-4672-bee7-7d229ac3f53e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [12b60786-3d3e-4672-bee7-7d229ac3f53e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [12b60786-3d3e-4672-bee7-7d229ac3f53e] RUNNING    (2.3s) Your job has started running.
+✓ [12b60786-3d3e-4672-bee7-7d229ac3f53e] COMPLETED  (2.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/835 [00:00<?]
+⬇ Downloading: 100%|██████████| 835/835 [00:00<00:00]
+◉ [39f99396-5ed6-473a-8e77-d1aa74de03f6] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [39f99396-5ed6-473a-8e77-d1aa74de03f6] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [39f99396-5ed6-473a-8e77-d1aa74de03f6] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [39f99396-5ed6-473a-8e77-d1aa74de03f6] RUNNING    (5.1s) Your job has started running.
+✓ [39f99396-5ed6-473a-8e77-d1aa74de03f6] COMPLETED  (5.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+◉ [a6fdc962-c43a-4011-b610-7261e3a3cc24] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [a6fdc962-c43a-4011-b610-7261e3a3cc24] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [a6fdc962-c43a-4011-b610-7261e3a3cc24] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [a6fdc962-c43a-4011-b610-7261e3a3cc24] RUNNING    (1.5s) Your job has started running.
+✓ [a6fdc962-c43a-4011-b610-7261e3a3cc24] COMPLETED  (1.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [3a569b40-a796-4e18-a6dc-20c2303ce33e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [3a569b40-a796-4e18-a6dc-20c2303ce33e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [3a569b40-a796-4e18-a6dc-20c2303ce33e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [3a569b40-a796-4e18-a6dc-20c2303ce33e] RUNNING    (4.2s) Your job has started running.
+✓ [3a569b40-a796-4e18-a6dc-20c2303ce33e] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [7d26b611-3dc8-47ff-bd55-96f109679119] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7d26b611-3dc8-47ff-bd55-96f109679119] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7d26b611-3dc8-47ff-bd55-96f109679119] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [7d26b611-3dc8-47ff-bd55-96f109679119] RUNNING    (1.8s) Your job has started running.
+✓ [7d26b611-3dc8-47ff-bd55-96f109679119] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/713 [00:00<?]
+⬇ Downloading: 100%|██████████| 713/713 [00:00<00:00]
+◉ [0d1ae1be-5875-463e-9420-ee37f77e2383] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [0d1ae1be-5875-463e-9420-ee37f77e2383] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [0d1ae1be-5875-463e-9420-ee37f77e2383] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [0d1ae1be-5875-463e-9420-ee37f77e2383] RUNNING    (4.7s) Your job has started running.
+✓ [0d1ae1be-5875-463e-9420-ee37f77e2383] COMPLETED  (4.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/986 [00:00<?]
+⬇ Downloading: 100%|██████████| 986/986 [00:00<00:00]
+◉ [67e91c0d-920b-4be1-9894-0bcf0b457f80] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [67e91c0d-920b-4be1-9894-0bcf0b457f80] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [67e91c0d-920b-4be1-9894-0bcf0b457f80] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [67e91c0d-920b-4be1-9894-0bcf0b457f80] RUNNING    (2.3s) Your job has started running.
+✓ [67e91c0d-920b-4be1-9894-0bcf0b457f80] COMPLETED  (2.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/822 [00:00<?]
+⬇ Downloading: 100%|██████████| 822/822 [00:00<00:00]
+◉ [152b9d50-9146-41d6-bf92-154e8bb2a3d2] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [152b9d50-9146-41d6-bf92-154e8bb2a3d2] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [152b9d50-9146-41d6-bf92-154e8bb2a3d2] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [152b9d50-9146-41d6-bf92-154e8bb2a3d2] RUNNING    (5.1s) Your job has started running.
+✓ [152b9d50-9146-41d6-bf92-154e8bb2a3d2] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+◉ [e16ce07d-5fc9-4b46-8a48-a791579eee5b] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e16ce07d-5fc9-4b46-8a48-a791579eee5b] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e16ce07d-5fc9-4b46-8a48-a791579eee5b] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [e16ce07d-5fc9-4b46-8a48-a791579eee5b] RUNNING    (1.6s) Your job has started running.
+✓ [e16ce07d-5fc9-4b46-8a48-a791579eee5b] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/705 [00:00<?]
+⬇ Downloading: 100%|██████████| 705/705 [00:00<00:00]
+◉ [5284a73f-666d-4078-bf8e-03171be67745] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5284a73f-666d-4078-bf8e-03171be67745] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5284a73f-666d-4078-bf8e-03171be67745] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [5284a73f-666d-4078-bf8e-03171be67745] RUNNING    (4.8s) Your job has started running.
+✓ [5284a73f-666d-4078-bf8e-03171be67745] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/985 [00:00<?]
+⬇ Downloading: 100%|██████████| 985/985 [00:00<00:00]
+◉ [2c090428-3435-4d29-9400-a9b90d8f153e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2c090428-3435-4d29-9400-a9b90d8f153e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2c090428-3435-4d29-9400-a9b90d8f153e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [2c090428-3435-4d29-9400-a9b90d8f153e] RUNNING    (1.5s) Your job has started running.
+✓ [2c090428-3435-4d29-9400-a9b90d8f153e] COMPLETED  (1.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/715 [00:00<?]
+⬇ Downloading: 100%|██████████| 715/715 [00:00<00:00]
+◉ [2a16fa04-9473-4d75-83c0-de982e3b62ba] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2a16fa04-9473-4d75-83c0-de982e3b62ba] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2a16fa04-9473-4d75-83c0-de982e3b62ba] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [2a16fa04-9473-4d75-83c0-de982e3b62ba] RUNNING    (4.7s) Your job has started running.
+✓ [2a16fa04-9473-4d75-83c0-de982e3b62ba] COMPLETED  (4.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [dada4db2-fbe6-4889-8479-9c05ea9962f0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [dada4db2-fbe6-4889-8479-9c05ea9962f0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [dada4db2-fbe6-4889-8479-9c05ea9962f0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [dada4db2-fbe6-4889-8479-9c05ea9962f0] RUNNING    (1.9s) Your job has started running.
+✓ [dada4db2-fbe6-4889-8479-9c05ea9962f0] COMPLETED  (2.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/815 [00:00<?]
+⬇ Downloading: 100%|██████████| 815/815 [00:00<00:00]
+◉ [14200dd0-92ad-4466-878f-00433995cafb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [14200dd0-92ad-4466-878f-00433995cafb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [14200dd0-92ad-4466-878f-00433995cafb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [14200dd0-92ad-4466-878f-00433995cafb] RUNNING    (4.3s) Your job has started running.
+✓ [14200dd0-92ad-4466-878f-00433995cafb] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [ea6b863d-5e38-41f5-9d7c-cc9a959000a0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ea6b863d-5e38-41f5-9d7c-cc9a959000a0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ea6b863d-5e38-41f5-9d7c-cc9a959000a0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [ea6b863d-5e38-41f5-9d7c-cc9a959000a0] RUNNING    (1.4s) Your job has started running.
+✓ [ea6b863d-5e38-41f5-9d7c-cc9a959000a0] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/715 [00:00<?]
+⬇ Downloading: 100%|██████████| 715/715 [00:00<00:00]
+◉ [831db4be-d96d-4875-83f6-33ffd4260f82] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [831db4be-d96d-4875-83f6-33ffd4260f82] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [831db4be-d96d-4875-83f6-33ffd4260f82] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [831db4be-d96d-4875-83f6-33ffd4260f82] RUNNING    (4.3s) Your job has started running.
+✓ [831db4be-d96d-4875-83f6-33ffd4260f82] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+◉ [52c6cdee-b63f-430a-93cb-2e80a44183b6] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [52c6cdee-b63f-430a-93cb-2e80a44183b6] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [52c6cdee-b63f-430a-93cb-2e80a44183b6] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [52c6cdee-b63f-430a-93cb-2e80a44183b6] RUNNING    (1.7s) Your job has started running.
+✓ [52c6cdee-b63f-430a-93cb-2e80a44183b6] COMPLETED  (1.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [75bfbdd2-855a-49ae-ac13-094f9449df3e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [75bfbdd2-855a-49ae-ac13-094f9449df3e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [75bfbdd2-855a-49ae-ac13-094f9449df3e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [75bfbdd2-855a-49ae-ac13-094f9449df3e] RUNNING    (4.8s) Your job has started running.
+✓ [75bfbdd2-855a-49ae-ac13-094f9449df3e] COMPLETED  (4.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [ea853eee-2bae-44fb-970e-de425007a899] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ea853eee-2bae-44fb-970e-de425007a899] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ea853eee-2bae-44fb-970e-de425007a899] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [ea853eee-2bae-44fb-970e-de425007a899] RUNNING    (2.1s) Your job has started running.
+✓ [ea853eee-2bae-44fb-970e-de425007a899] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/845 [00:00<?]
+⬇ Downloading: 100%|██████████| 845/845 [00:00<00:00]
+◉ [4e0be444-e8ef-4fdb-92c0-c2b16810f361] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [4e0be444-e8ef-4fdb-92c0-c2b16810f361] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [4e0be444-e8ef-4fdb-92c0-c2b16810f361] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [4e0be444-e8ef-4fdb-92c0-c2b16810f361] RUNNING    (4.2s) Your job has started running.
+✓ [4e0be444-e8ef-4fdb-92c0-c2b16810f361] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [29dcb1f0-11b6-47e4-9cfa-a144bf9e973e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [29dcb1f0-11b6-47e4-9cfa-a144bf9e973e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [29dcb1f0-11b6-47e4-9cfa-a144bf9e973e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [29dcb1f0-11b6-47e4-9cfa-a144bf9e973e] RUNNING    (1.4s) Your job has started running.
+✓ [29dcb1f0-11b6-47e4-9cfa-a144bf9e973e] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/710 [00:00<?]
+⬇ Downloading: 100%|██████████| 710/710 [00:00<00:00]
+◉ [29e582ff-35d8-4f69-aa40-e931583cc5c5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [29e582ff-35d8-4f69-aa40-e931583cc5c5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [29e582ff-35d8-4f69-aa40-e931583cc5c5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [29e582ff-35d8-4f69-aa40-e931583cc5c5] RUNNING    (4.3s) Your job has started running.
+✓ [29e582ff-35d8-4f69-aa40-e931583cc5c5] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+◉ [345fd2a4-45d0-4f03-a951-3c27afc5e6f8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [345fd2a4-45d0-4f03-a951-3c27afc5e6f8] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [345fd2a4-45d0-4f03-a951-3c27afc5e6f8] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [345fd2a4-45d0-4f03-a951-3c27afc5e6f8] RUNNING    (1.6s) Your job has started running.
+✓ [345fd2a4-45d0-4f03-a951-3c27afc5e6f8] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/711 [00:00<?]
+⬇ Downloading: 100%|██████████| 711/711 [00:00<00:00]
+◉ [fd272d34-37f0-4500-8d12-e1e2d24bf7fa] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [fd272d34-37f0-4500-8d12-e1e2d24bf7fa] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [fd272d34-37f0-4500-8d12-e1e2d24bf7fa] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [fd272d34-37f0-4500-8d12-e1e2d24bf7fa] RUNNING    (4.4s) Your job has started running.
+✓ [fd272d34-37f0-4500-8d12-e1e2d24bf7fa] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+◉ [8ecd67ae-2c82-41e9-897e-2fc461654c41] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8ecd67ae-2c82-41e9-897e-2fc461654c41] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8ecd67ae-2c82-41e9-897e-2fc461654c41] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [8ecd67ae-2c82-41e9-897e-2fc461654c41] RUNNING    (2.2s) Your job has started running.
+✓ [8ecd67ae-2c82-41e9-897e-2fc461654c41] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/821 [00:00<?]
+⬇ Downloading: 100%|██████████| 821/821 [00:00<00:00]
+◉ [9065c3f0-2c74-4509-87d9-d5d66d3bb7b7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [9065c3f0-2c74-4509-87d9-d5d66d3bb7b7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [9065c3f0-2c74-4509-87d9-d5d66d3bb7b7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [9065c3f0-2c74-4509-87d9-d5d66d3bb7b7] RUNNING    (4.4s) Your job has started running.
+✓ [9065c3f0-2c74-4509-87d9-d5d66d3bb7b7] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+◉ [8662853a-d186-4cc9-926b-2cf0cbfbabe5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8662853a-d186-4cc9-926b-2cf0cbfbabe5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8662853a-d186-4cc9-926b-2cf0cbfbabe5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [8662853a-d186-4cc9-926b-2cf0cbfbabe5] RUNNING    (1.7s) Your job has started running.
+✓ [8662853a-d186-4cc9-926b-2cf0cbfbabe5] COMPLETED  (1.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/708 [00:00<?]
+⬇ Downloading: 100%|██████████| 708/708 [00:00<00:00]
+◉ [15cd7a74-fda2-4c09-83d0-8c5872c276de] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [15cd7a74-fda2-4c09-83d0-8c5872c276de] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [15cd7a74-fda2-4c09-83d0-8c5872c276de] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [15cd7a74-fda2-4c09-83d0-8c5872c276de] RUNNING    (4.4s) Your job has started running.
+✓ [15cd7a74-fda2-4c09-83d0-8c5872c276de] COMPLETED  (4.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+◉ [387bf504-f04c-4553-9968-b2de899c768b] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [387bf504-f04c-4553-9968-b2de899c768b] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [387bf504-f04c-4553-9968-b2de899c768b] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [387bf504-f04c-4553-9968-b2de899c768b] RUNNING    (1.8s) Your job has started running.
+✓ [387bf504-f04c-4553-9968-b2de899c768b] COMPLETED  (1.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [bc0c820d-45d7-4921-b3d0-7b29f3344eae] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [bc0c820d-45d7-4921-b3d0-7b29f3344eae] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [bc0c820d-45d7-4921-b3d0-7b29f3344eae] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [bc0c820d-45d7-4921-b3d0-7b29f3344eae] RUNNING    (4.8s) Your job has started running.
+✓ [bc0c820d-45d7-4921-b3d0-7b29f3344eae] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+◉ [eb35442f-c3bf-4542-a0a3-69887cd526fb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [eb35442f-c3bf-4542-a0a3-69887cd526fb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [eb35442f-c3bf-4542-a0a3-69887cd526fb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [eb35442f-c3bf-4542-a0a3-69887cd526fb] RUNNING    (1.7s) Your job has started running.
+✓ [eb35442f-c3bf-4542-a0a3-69887cd526fb] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/806 [00:00<?]
+⬇ Downloading: 100%|██████████| 806/806 [00:00<00:00]
+◉ [6eb9d1bb-e8ba-4806-9bf6-8539501a2499] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [6eb9d1bb-e8ba-4806-9bf6-8539501a2499] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [6eb9d1bb-e8ba-4806-9bf6-8539501a2499] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [6eb9d1bb-e8ba-4806-9bf6-8539501a2499] RUNNING    (4.3s) Your job has started running.
+✓ [6eb9d1bb-e8ba-4806-9bf6-8539501a2499] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/967 [00:00<?]
+⬇ Downloading: 100%|██████████| 967/967 [00:00<00:00]
+◉ [8642556d-73b5-4a2c-9ca2-03ee7252d89a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8642556d-73b5-4a2c-9ca2-03ee7252d89a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8642556d-73b5-4a2c-9ca2-03ee7252d89a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [8642556d-73b5-4a2c-9ca2-03ee7252d89a] RUNNING    (1.6s) Your job has started running.
+✓ [8642556d-73b5-4a2c-9ca2-03ee7252d89a] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/710 [00:00<?]
+⬇ Downloading: 100%|██████████| 710/710 [00:00<00:00]
+◉ [bb439b88-6b18-44e8-80ab-7f1c91cc6f5a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [bb439b88-6b18-44e8-80ab-7f1c91cc6f5a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [bb439b88-6b18-44e8-80ab-7f1c91cc6f5a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [bb439b88-6b18-44e8-80ab-7f1c91cc6f5a] RUNNING    (4.2s) Your job has started running.
+✓ [bb439b88-6b18-44e8-80ab-7f1c91cc6f5a] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+◉ [0f11666b-eebb-4fad-8095-5b32cf826aca] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [0f11666b-eebb-4fad-8095-5b32cf826aca] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [0f11666b-eebb-4fad-8095-5b32cf826aca] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [0f11666b-eebb-4fad-8095-5b32cf826aca] RUNNING    (1.7s) Your job has started running.
+✓ [0f11666b-eebb-4fad-8095-5b32cf826aca] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/703 [00:00<?]
+⬇ Downloading: 100%|██████████| 703/703 [00:00<00:00]
+◉ [891d3e76-9cb9-4aef-8dd7-64e012a6e8dc] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [891d3e76-9cb9-4aef-8dd7-64e012a6e8dc] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [891d3e76-9cb9-4aef-8dd7-64e012a6e8dc] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [891d3e76-9cb9-4aef-8dd7-64e012a6e8dc] RUNNING    (4.4s) Your job has started running.
+✓ [891d3e76-9cb9-4aef-8dd7-64e012a6e8dc] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/980 [00:00<?]
+⬇ Downloading: 100%|██████████| 980/980 [00:00<00:00]
+◉ [90c8a824-3299-49a6-8771-95583e7061fe] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [90c8a824-3299-49a6-8771-95583e7061fe] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [90c8a824-3299-49a6-8771-95583e7061fe] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [90c8a824-3299-49a6-8771-95583e7061fe] RUNNING    (1.8s) Your job has started running.
+✓ [90c8a824-3299-49a6-8771-95583e7061fe] COMPLETED  (1.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/828 [00:00<?]
+⬇ Downloading: 100%|██████████| 828/828 [00:00<00:00]
+◉ [959462ec-bc58-471b-9307-e7c0f5d04acc] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [959462ec-bc58-471b-9307-e7c0f5d04acc] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [959462ec-bc58-471b-9307-e7c0f5d04acc] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [959462ec-bc58-471b-9307-e7c0f5d04acc] RUNNING    (4.1s) Your job has started running.
+✓ [959462ec-bc58-471b-9307-e7c0f5d04acc] COMPLETED  (4.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [f75f50ae-6cd8-4c1a-b4a0-9f9a01d2d091] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f75f50ae-6cd8-4c1a-b4a0-9f9a01d2d091] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f75f50ae-6cd8-4c1a-b4a0-9f9a01d2d091] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [f75f50ae-6cd8-4c1a-b4a0-9f9a01d2d091] RUNNING    (1.6s) Your job has started running.
+✓ [f75f50ae-6cd8-4c1a-b4a0-9f9a01d2d091] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/703 [00:00<?]
+⬇ Downloading: 100%|██████████| 703/703 [00:00<00:00]
+  200/408
+◉ [02d0d31e-b287-447e-b03b-46453602c3e1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [02d0d31e-b287-447e-b03b-46453602c3e1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [02d0d31e-b287-447e-b03b-46453602c3e1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [02d0d31e-b287-447e-b03b-46453602c3e1] RUNNING    (5.3s) Your job has started running.
+✓ [02d0d31e-b287-447e-b03b-46453602c3e1] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [405072fe-a071-4ea7-961f-3e8d6286f65e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [405072fe-a071-4ea7-961f-3e8d6286f65e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [405072fe-a071-4ea7-961f-3e8d6286f65e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [405072fe-a071-4ea7-961f-3e8d6286f65e] RUNNING    (1.6s) Your job has started running.
+✓ [405072fe-a071-4ea7-961f-3e8d6286f65e] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/707 [00:00<?]
+⬇ Downloading: 100%|██████████| 707/707 [00:00<00:00]
+◉ [591ed7d3-1d1e-4f21-8b3e-cd27bfeb41a8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [591ed7d3-1d1e-4f21-8b3e-cd27bfeb41a8] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [591ed7d3-1d1e-4f21-8b3e-cd27bfeb41a8] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [591ed7d3-1d1e-4f21-8b3e-cd27bfeb41a8] RUNNING    (4.2s) Your job has started running.
+✓ [591ed7d3-1d1e-4f21-8b3e-cd27bfeb41a8] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/999 [00:00<?]
+⬇ Downloading: 100%|██████████| 999/999 [00:00<00:00]
+◉ [04a92634-72ee-4e63-bd3f-7ec0ab6f96a6] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [04a92634-72ee-4e63-bd3f-7ec0ab6f96a6] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [04a92634-72ee-4e63-bd3f-7ec0ab6f96a6] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [04a92634-72ee-4e63-bd3f-7ec0ab6f96a6] RUNNING    (2.2s) Your job has started running.
+✓ [04a92634-72ee-4e63-bd3f-7ec0ab6f96a6] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/819 [00:00<?]
+⬇ Downloading: 100%|██████████| 819/819 [00:00<00:00]
+◉ [03b65927-5778-4d5a-aca3-715b71c204da] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [03b65927-5778-4d5a-aca3-715b71c204da] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [03b65927-5778-4d5a-aca3-715b71c204da] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [03b65927-5778-4d5a-aca3-715b71c204da] RUNNING    (4.3s) Your job has started running.
+✓ [03b65927-5778-4d5a-aca3-715b71c204da] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/973 [00:00<?]
+⬇ Downloading: 100%|██████████| 973/973 [00:00<00:00]
+◉ [b8ead459-bfca-444f-b334-534ec8fb62e9] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b8ead459-bfca-444f-b334-534ec8fb62e9] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b8ead459-bfca-444f-b334-534ec8fb62e9] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [b8ead459-bfca-444f-b334-534ec8fb62e9] RUNNING    (1.5s) Your job has started running.
+✓ [b8ead459-bfca-444f-b334-534ec8fb62e9] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/712 [00:00<?]
+⬇ Downloading: 100%|██████████| 712/712 [00:00<00:00]
+◉ [24131b24-52c1-4d50-9215-fb803ec89875] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [24131b24-52c1-4d50-9215-fb803ec89875] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [24131b24-52c1-4d50-9215-fb803ec89875] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [24131b24-52c1-4d50-9215-fb803ec89875] RUNNING    (5.6s) Your job has started running.
+✓ [24131b24-52c1-4d50-9215-fb803ec89875] COMPLETED  (5.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [e9e3f286-abc2-4b26-9cbf-9bc30edad2b6] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e9e3f286-abc2-4b26-9cbf-9bc30edad2b6] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e9e3f286-abc2-4b26-9cbf-9bc30edad2b6] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [e9e3f286-abc2-4b26-9cbf-9bc30edad2b6] RUNNING    (1.6s) Your job has started running.
+✓ [e9e3f286-abc2-4b26-9cbf-9bc30edad2b6] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/710 [00:00<?]
+⬇ Downloading: 100%|██████████| 710/710 [00:00<00:00]
+◉ [2bc95e8c-993d-4374-ab83-11d1b30bbf4e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2bc95e8c-993d-4374-ab83-11d1b30bbf4e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2bc95e8c-993d-4374-ab83-11d1b30bbf4e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [2bc95e8c-993d-4374-ab83-11d1b30bbf4e] RUNNING    (3.9s) Your job has started running.
+✓ [2bc95e8c-993d-4374-ab83-11d1b30bbf4e] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/976 [00:00<?]
+⬇ Downloading: 100%|██████████| 976/976 [00:00<00:00]
+◉ [b0774381-2fa1-4f19-86de-1915dee4d6d1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b0774381-2fa1-4f19-86de-1915dee4d6d1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b0774381-2fa1-4f19-86de-1915dee4d6d1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [b0774381-2fa1-4f19-86de-1915dee4d6d1] RUNNING    (2.2s) Your job has started running.
+✓ [b0774381-2fa1-4f19-86de-1915dee4d6d1] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/818 [00:00<?]
+⬇ Downloading: 100%|██████████| 818/818 [00:00<00:00]
+◉ [213edc75-9278-40ea-b6ca-0ee9a291d4ce] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [213edc75-9278-40ea-b6ca-0ee9a291d4ce] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [213edc75-9278-40ea-b6ca-0ee9a291d4ce] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [213edc75-9278-40ea-b6ca-0ee9a291d4ce] RUNNING    (4.2s) Your job has started running.
+✓ [213edc75-9278-40ea-b6ca-0ee9a291d4ce] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+◉ [726f2418-e548-402c-b537-eb60e502e0a0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [726f2418-e548-402c-b537-eb60e502e0a0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [726f2418-e548-402c-b537-eb60e502e0a0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [726f2418-e548-402c-b537-eb60e502e0a0] RUNNING    (1.5s) Your job has started running.
+✓ [726f2418-e548-402c-b537-eb60e502e0a0] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/698 [00:00<?]
+⬇ Downloading: 100%|██████████| 698/698 [00:00<00:00]
+◉ [e8cdb111-e71b-4137-88ea-94057821af22] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e8cdb111-e71b-4137-88ea-94057821af22] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e8cdb111-e71b-4137-88ea-94057821af22] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [e8cdb111-e71b-4137-88ea-94057821af22] RUNNING    (4.8s) Your job has started running.
+✓ [e8cdb111-e71b-4137-88ea-94057821af22] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+◉ [71e32e46-077a-4f3d-8a16-41dee259b043] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [71e32e46-077a-4f3d-8a16-41dee259b043] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [71e32e46-077a-4f3d-8a16-41dee259b043] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [71e32e46-077a-4f3d-8a16-41dee259b043] RUNNING    (1.8s) Your job has started running.
+✓ [71e32e46-077a-4f3d-8a16-41dee259b043] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [2fa9bce2-9e8b-4396-801b-00a86af6963c] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2fa9bce2-9e8b-4396-801b-00a86af6963c] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2fa9bce2-9e8b-4396-801b-00a86af6963c] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [2fa9bce2-9e8b-4396-801b-00a86af6963c] RUNNING    (4.4s) Your job has started running.
+✓ [2fa9bce2-9e8b-4396-801b-00a86af6963c] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+◉ [600dc142-89be-42d6-9f34-deed3baa0c3a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [600dc142-89be-42d6-9f34-deed3baa0c3a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [600dc142-89be-42d6-9f34-deed3baa0c3a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [600dc142-89be-42d6-9f34-deed3baa0c3a] RUNNING    (2.2s) Your job has started running.
+✓ [600dc142-89be-42d6-9f34-deed3baa0c3a] COMPLETED  (2.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/824 [00:00<?]
+⬇ Downloading: 100%|██████████| 824/824 [00:00<00:00]
+◉ [af9f3be6-51ce-4a12-9280-69a49d7d5e0f] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [af9f3be6-51ce-4a12-9280-69a49d7d5e0f] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [af9f3be6-51ce-4a12-9280-69a49d7d5e0f] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [af9f3be6-51ce-4a12-9280-69a49d7d5e0f] RUNNING    (4.7s) Your job has started running.
+✓ [af9f3be6-51ce-4a12-9280-69a49d7d5e0f] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+◉ [c08ea5ce-e90e-4795-a03f-0caf95703f97] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c08ea5ce-e90e-4795-a03f-0caf95703f97] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c08ea5ce-e90e-4795-a03f-0caf95703f97] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [c08ea5ce-e90e-4795-a03f-0caf95703f97] RUNNING    (1.6s) Your job has started running.
+✓ [c08ea5ce-e90e-4795-a03f-0caf95703f97] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/708 [00:00<?]
+⬇ Downloading: 100%|██████████| 708/708 [00:00<00:00]
+◉ [90f55f9a-f894-40c5-a92c-0afcad16f756] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [90f55f9a-f894-40c5-a92c-0afcad16f756] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [90f55f9a-f894-40c5-a92c-0afcad16f756] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [90f55f9a-f894-40c5-a92c-0afcad16f756] RUNNING    (4.4s) Your job has started running.
+✓ [90f55f9a-f894-40c5-a92c-0afcad16f756] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+◉ [8ba80c9f-9875-4265-aa5f-ae37836d6950] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8ba80c9f-9875-4265-aa5f-ae37836d6950] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8ba80c9f-9875-4265-aa5f-ae37836d6950] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [8ba80c9f-9875-4265-aa5f-ae37836d6950] RUNNING    (1.5s) Your job has started running.
+✓ [8ba80c9f-9875-4265-aa5f-ae37836d6950] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/709 [00:00<?]
+⬇ Downloading: 100%|██████████| 709/709 [00:00<00:00]
+◉ [3171c048-444a-47f6-8cf0-41ac6b24a8db] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [3171c048-444a-47f6-8cf0-41ac6b24a8db] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [3171c048-444a-47f6-8cf0-41ac6b24a8db] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [3171c048-444a-47f6-8cf0-41ac6b24a8db] RUNNING    (4.3s) Your job has started running.
+✓ [3171c048-444a-47f6-8cf0-41ac6b24a8db] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/974 [00:00<?]
+⬇ Downloading: 100%|██████████| 974/974 [00:00<00:00]
+◉ [f355e0f4-1e6e-4d56-947b-f4a6f38dd534] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f355e0f4-1e6e-4d56-947b-f4a6f38dd534] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f355e0f4-1e6e-4d56-947b-f4a6f38dd534] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [f355e0f4-1e6e-4d56-947b-f4a6f38dd534] RUNNING    (2.2s) Your job has started running.
+✓ [f355e0f4-1e6e-4d56-947b-f4a6f38dd534] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/830 [00:00<?]
+⬇ Downloading: 100%|██████████| 830/830 [00:00<00:00]
+◉ [7f693126-0596-4ee9-aa9b-73ec9e08ed6a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7f693126-0596-4ee9-aa9b-73ec9e08ed6a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7f693126-0596-4ee9-aa9b-73ec9e08ed6a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [7f693126-0596-4ee9-aa9b-73ec9e08ed6a] RUNNING    (4.7s) Your job has started running.
+✓ [7f693126-0596-4ee9-aa9b-73ec9e08ed6a] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.02k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.02k/1.02k [00:00<00:00]
+◉ [fcbcb84e-6610-4182-9e4e-4ee1b6e535e8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [fcbcb84e-6610-4182-9e4e-4ee1b6e535e8] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [fcbcb84e-6610-4182-9e4e-4ee1b6e535e8] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [fcbcb84e-6610-4182-9e4e-4ee1b6e535e8] RUNNING    (1.4s) Your job has started running.
+✓ [fcbcb84e-6610-4182-9e4e-4ee1b6e535e8] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/710 [00:00<?]
+⬇ Downloading: 100%|██████████| 710/710 [00:00<00:00]
+◉ [588a2398-b057-48ee-b48b-047a7259dbf5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [588a2398-b057-48ee-b48b-047a7259dbf5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [588a2398-b057-48ee-b48b-047a7259dbf5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [588a2398-b057-48ee-b48b-047a7259dbf5] RUNNING    (4.2s) Your job has started running.
+✓ [588a2398-b057-48ee-b48b-047a7259dbf5] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+◉ [b2048819-252a-4ed5-b42e-21e6101527d6] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b2048819-252a-4ed5-b42e-21e6101527d6] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b2048819-252a-4ed5-b42e-21e6101527d6] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [b2048819-252a-4ed5-b42e-21e6101527d6] RUNNING    (1.6s) Your job has started running.
+✓ [b2048819-252a-4ed5-b42e-21e6101527d6] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/713 [00:00<?]
+⬇ Downloading: 100%|██████████| 713/713 [00:00<00:00]
+◉ [48688c65-20ed-41bb-9a35-28da1fa6faf7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [48688c65-20ed-41bb-9a35-28da1fa6faf7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [48688c65-20ed-41bb-9a35-28da1fa6faf7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [48688c65-20ed-41bb-9a35-28da1fa6faf7] RUNNING    (4.2s) Your job has started running.
+✓ [48688c65-20ed-41bb-9a35-28da1fa6faf7] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+◉ [e89148ec-88b4-4953-b0ee-da5bf3ae6135] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e89148ec-88b4-4953-b0ee-da5bf3ae6135] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e89148ec-88b4-4953-b0ee-da5bf3ae6135] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [e89148ec-88b4-4953-b0ee-da5bf3ae6135] RUNNING    (1.8s) Your job has started running.
+✓ [e89148ec-88b4-4953-b0ee-da5bf3ae6135] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/821 [00:00<?]
+⬇ Downloading: 100%|██████████| 821/821 [00:00<00:00]
+◉ [18aab61e-80db-4be9-bfbc-9f9d9ba33e97] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [18aab61e-80db-4be9-bfbc-9f9d9ba33e97] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [18aab61e-80db-4be9-bfbc-9f9d9ba33e97] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [18aab61e-80db-4be9-bfbc-9f9d9ba33e97] RUNNING    (4.3s) Your job has started running.
+✓ [18aab61e-80db-4be9-bfbc-9f9d9ba33e97] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+◉ [dcacf9b4-6671-4ce2-82f7-caf3f29e5949] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [dcacf9b4-6671-4ce2-82f7-caf3f29e5949] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [dcacf9b4-6671-4ce2-82f7-caf3f29e5949] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [dcacf9b4-6671-4ce2-82f7-caf3f29e5949] RUNNING    (1.6s) Your job has started running.
+✓ [dcacf9b4-6671-4ce2-82f7-caf3f29e5949] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/705 [00:00<?]
+⬇ Downloading: 100%|██████████| 705/705 [00:00<00:00]
+◉ [c7ac9ee5-ff18-4e4d-8133-40d0b6ff40f5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c7ac9ee5-ff18-4e4d-8133-40d0b6ff40f5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c7ac9ee5-ff18-4e4d-8133-40d0b6ff40f5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [c7ac9ee5-ff18-4e4d-8133-40d0b6ff40f5] RUNNING    (4.7s) Your job has started running.
+✓ [c7ac9ee5-ff18-4e4d-8133-40d0b6ff40f5] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+◉ [2306aa15-2680-4c1c-847b-3dce8351a90f] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2306aa15-2680-4c1c-847b-3dce8351a90f] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2306aa15-2680-4c1c-847b-3dce8351a90f] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [2306aa15-2680-4c1c-847b-3dce8351a90f] RUNNING    (1.9s) Your job has started running.
+✓ [2306aa15-2680-4c1c-847b-3dce8351a90f] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/707 [00:00<?]
+⬇ Downloading: 100%|██████████| 707/707 [00:00<00:00]
+◉ [74246be9-f4c4-45fb-bf19-731a747476de] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [74246be9-f4c4-45fb-bf19-731a747476de] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [74246be9-f4c4-45fb-bf19-731a747476de] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [74246be9-f4c4-45fb-bf19-731a747476de] RUNNING    (3.9s) Your job has started running.
+✓ [74246be9-f4c4-45fb-bf19-731a747476de] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+◉ [1b323a7a-8a15-4803-a214-b9f06b419944] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [1b323a7a-8a15-4803-a214-b9f06b419944] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [1b323a7a-8a15-4803-a214-b9f06b419944] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [1b323a7a-8a15-4803-a214-b9f06b419944] RUNNING    (2.2s) Your job has started running.
+✓ [1b323a7a-8a15-4803-a214-b9f06b419944] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/807 [00:00<?]
+⬇ Downloading: 100%|██████████| 807/807 [00:00<00:00]
+◉ [ecb577e0-2d20-4a26-8647-e6a3a189d1a1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ecb577e0-2d20-4a26-8647-e6a3a189d1a1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ecb577e0-2d20-4a26-8647-e6a3a189d1a1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [ecb577e0-2d20-4a26-8647-e6a3a189d1a1] RUNNING    (3.9s) Your job has started running.
+✓ [ecb577e0-2d20-4a26-8647-e6a3a189d1a1] COMPLETED  (3.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+◉ [610c6d86-3043-42fd-bede-a4a6a6c46a09] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [610c6d86-3043-42fd-bede-a4a6a6c46a09] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [610c6d86-3043-42fd-bede-a4a6a6c46a09] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [610c6d86-3043-42fd-bede-a4a6a6c46a09] RUNNING    (1.6s) Your job has started running.
+✓ [610c6d86-3043-42fd-bede-a4a6a6c46a09] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [9ecb335b-8f18-48d6-b5bc-6844e037870e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [9ecb335b-8f18-48d6-b5bc-6844e037870e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [9ecb335b-8f18-48d6-b5bc-6844e037870e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [9ecb335b-8f18-48d6-b5bc-6844e037870e] RUNNING    (3.9s) Your job has started running.
+✓ [9ecb335b-8f18-48d6-b5bc-6844e037870e] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [bf13421c-0d4d-4d4a-81c1-146b586df334] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [bf13421c-0d4d-4d4a-81c1-146b586df334] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [bf13421c-0d4d-4d4a-81c1-146b586df334] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [bf13421c-0d4d-4d4a-81c1-146b586df334] RUNNING    (1.9s) Your job has started running.
+✓ [bf13421c-0d4d-4d4a-81c1-146b586df334] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/707 [00:00<?]
+⬇ Downloading: 100%|██████████| 707/707 [00:00<00:00]
+◉ [190f3bde-2bb9-4ce3-a00e-00b0c95c92cb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [190f3bde-2bb9-4ce3-a00e-00b0c95c92cb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [190f3bde-2bb9-4ce3-a00e-00b0c95c92cb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [190f3bde-2bb9-4ce3-a00e-00b0c95c92cb] RUNNING    (5.2s) Your job has started running.
+✓ [190f3bde-2bb9-4ce3-a00e-00b0c95c92cb] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+◉ [4e878659-decd-4b9f-9b77-a98cecc05258] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [4e878659-decd-4b9f-9b77-a98cecc05258] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [4e878659-decd-4b9f-9b77-a98cecc05258] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [4e878659-decd-4b9f-9b77-a98cecc05258] RUNNING    (2.2s) Your job has started running.
+✓ [4e878659-decd-4b9f-9b77-a98cecc05258] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/819 [00:00<?]
+⬇ Downloading: 100%|██████████| 819/819 [00:00<00:00]
+◉ [13ad20f3-b9ac-4535-8264-01df5edb0c49] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [13ad20f3-b9ac-4535-8264-01df5edb0c49] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [13ad20f3-b9ac-4535-8264-01df5edb0c49] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [13ad20f3-b9ac-4535-8264-01df5edb0c49] RUNNING    (4.7s) Your job has started running.
+✓ [13ad20f3-b9ac-4535-8264-01df5edb0c49] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [6159fc0d-7c83-4f02-9ec3-94f56ab5ea44] RECEIVED   (1.8s) Your job has been received and is waiting to be queued.
+⠋ [6159fc0d-7c83-4f02-9ec3-94f56ab5ea44] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [6159fc0d-7c83-4f02-9ec3-94f56ab5ea44] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [6159fc0d-7c83-4f02-9ec3-94f56ab5ea44] RUNNING    (1.6s) Your job has started running.
+✓ [6159fc0d-7c83-4f02-9ec3-94f56ab5ea44] COMPLETED  (3.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/698 [00:00<?]
+⬇ Downloading: 100%|██████████| 698/698 [00:00<00:00]
+◉ [182f11ad-3a5b-4cd1-aa48-ccb6527f7416] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [182f11ad-3a5b-4cd1-aa48-ccb6527f7416] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [182f11ad-3a5b-4cd1-aa48-ccb6527f7416] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [182f11ad-3a5b-4cd1-aa48-ccb6527f7416] RUNNING    (5.1s) Your job has started running.
+✓ [182f11ad-3a5b-4cd1-aa48-ccb6527f7416] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/979 [00:00<?]
+⬇ Downloading: 100%|██████████| 979/979 [00:00<00:00]
+◉ [a51c7ec1-ade8-4719-9870-f173e560c4cb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [a51c7ec1-ade8-4719-9870-f173e560c4cb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [a51c7ec1-ade8-4719-9870-f173e560c4cb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [a51c7ec1-ade8-4719-9870-f173e560c4cb] RUNNING    (1.5s) Your job has started running.
+✓ [a51c7ec1-ade8-4719-9870-f173e560c4cb] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/704 [00:00<?]
+⬇ Downloading: 100%|██████████| 704/704 [00:00<00:00]
+◉ [42cc46df-f82c-484a-8ff5-7c59cca6e04d] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [42cc46df-f82c-484a-8ff5-7c59cca6e04d] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [42cc46df-f82c-484a-8ff5-7c59cca6e04d] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [42cc46df-f82c-484a-8ff5-7c59cca6e04d] RUNNING    (4.3s) Your job has started running.
+✓ [42cc46df-f82c-484a-8ff5-7c59cca6e04d] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+◉ [2fbb4df0-0ce5-47ab-abd0-994aca1724e8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2fbb4df0-0ce5-47ab-abd0-994aca1724e8] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2fbb4df0-0ce5-47ab-abd0-994aca1724e8] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [2fbb4df0-0ce5-47ab-abd0-994aca1724e8] RUNNING    (2.1s) Your job has started running.
+✓ [2fbb4df0-0ce5-47ab-abd0-994aca1724e8] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/846 [00:00<?]
+⬇ Downloading: 100%|██████████| 846/846 [00:00<00:00]
+◉ [34069bfd-9f32-42e3-a046-1f0d789d4e6d] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [34069bfd-9f32-42e3-a046-1f0d789d4e6d] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [34069bfd-9f32-42e3-a046-1f0d789d4e6d] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [34069bfd-9f32-42e3-a046-1f0d789d4e6d] RUNNING    (4.4s) Your job has started running.
+✓ [34069bfd-9f32-42e3-a046-1f0d789d4e6d] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+◉ [fc8f4026-7361-417d-ae12-519393340d65] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [fc8f4026-7361-417d-ae12-519393340d65] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [fc8f4026-7361-417d-ae12-519393340d65] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [fc8f4026-7361-417d-ae12-519393340d65] RUNNING    (1.4s) Your job has started running.
+✓ [fc8f4026-7361-417d-ae12-519393340d65] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/719 [00:00<?]
+⬇ Downloading: 100%|██████████| 719/719 [00:00<00:00]
+◉ [18be2c34-c819-4aa3-a25a-b32300f5d830] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [18be2c34-c819-4aa3-a25a-b32300f5d830] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [18be2c34-c819-4aa3-a25a-b32300f5d830] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [18be2c34-c819-4aa3-a25a-b32300f5d830] RUNNING    (4.2s) Your job has started running.
+✓ [18be2c34-c819-4aa3-a25a-b32300f5d830] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+◉ [6f0ada48-657c-4990-8429-b7ef8b99d857] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [6f0ada48-657c-4990-8429-b7ef8b99d857] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [6f0ada48-657c-4990-8429-b7ef8b99d857] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [6f0ada48-657c-4990-8429-b7ef8b99d857] RUNNING    (2.0s) Your job has started running.
+✓ [6f0ada48-657c-4990-8429-b7ef8b99d857] COMPLETED  (2.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/710 [00:00<?]
+⬇ Downloading: 100%|██████████| 710/710 [00:00<00:00]
+  300/408
+◉ [96653861-684b-41c5-8fa8-3eb002d07a75] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [96653861-684b-41c5-8fa8-3eb002d07a75] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [96653861-684b-41c5-8fa8-3eb002d07a75] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [96653861-684b-41c5-8fa8-3eb002d07a75] RUNNING    (4.2s) Your job has started running.
+✓ [96653861-684b-41c5-8fa8-3eb002d07a75] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/986 [00:00<?]
+⬇ Downloading: 100%|██████████| 986/986 [00:00<00:00]
+◉ [16705ebe-c436-42ed-b4c8-f785c6f8fec1] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [16705ebe-c436-42ed-b4c8-f785c6f8fec1] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [16705ebe-c436-42ed-b4c8-f785c6f8fec1] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [16705ebe-c436-42ed-b4c8-f785c6f8fec1] RUNNING    (2.5s) Your job has started running.
+✓ [16705ebe-c436-42ed-b4c8-f785c6f8fec1] COMPLETED  (2.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/823 [00:00<?]
+⬇ Downloading: 100%|██████████| 823/823 [00:00<00:00]
+◉ [837da1d4-b306-4e18-8841-7a8d4ff9d389] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [837da1d4-b306-4e18-8841-7a8d4ff9d389] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [837da1d4-b306-4e18-8841-7a8d4ff9d389] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [837da1d4-b306-4e18-8841-7a8d4ff9d389] RUNNING    (5.2s) Your job has started running.
+✓ [837da1d4-b306-4e18-8841-7a8d4ff9d389] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/972 [00:00<?]
+⬇ Downloading: 100%|██████████| 972/972 [00:00<00:00]
+◉ [3389ddd9-259a-4bd9-9392-f7da7f50f0d4] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [3389ddd9-259a-4bd9-9392-f7da7f50f0d4] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [3389ddd9-259a-4bd9-9392-f7da7f50f0d4] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [3389ddd9-259a-4bd9-9392-f7da7f50f0d4] RUNNING    (1.5s) Your job has started running.
+✓ [3389ddd9-259a-4bd9-9392-f7da7f50f0d4] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/704 [00:00<?]
+⬇ Downloading: 100%|██████████| 704/704 [00:00<00:00]
+◉ [efae6aa7-ba8c-4089-a3e8-b9ebe5368ec3] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [efae6aa7-ba8c-4089-a3e8-b9ebe5368ec3] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [efae6aa7-ba8c-4089-a3e8-b9ebe5368ec3] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [efae6aa7-ba8c-4089-a3e8-b9ebe5368ec3] RUNNING    (4.4s) Your job has started running.
+✓ [efae6aa7-ba8c-4089-a3e8-b9ebe5368ec3] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [227cd6e3-11b8-4fbb-990e-92e68697dca7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [227cd6e3-11b8-4fbb-990e-92e68697dca7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [227cd6e3-11b8-4fbb-990e-92e68697dca7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [227cd6e3-11b8-4fbb-990e-92e68697dca7] RUNNING    (1.6s) Your job has started running.
+✓ [227cd6e3-11b8-4fbb-990e-92e68697dca7] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/703 [00:00<?]
+⬇ Downloading: 100%|██████████| 703/703 [00:00<00:00]
+◉ [7d00c5dc-75b6-4f7f-8e97-456907b706d0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7d00c5dc-75b6-4f7f-8e97-456907b706d0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7d00c5dc-75b6-4f7f-8e97-456907b706d0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [7d00c5dc-75b6-4f7f-8e97-456907b706d0] RUNNING    (4.3s) Your job has started running.
+✓ [7d00c5dc-75b6-4f7f-8e97-456907b706d0] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/999 [00:00<?]
+⬇ Downloading: 100%|██████████| 999/999 [00:00<00:00]
+◉ [3eaaedf6-9b1b-4922-819f-82cc8e0846c3] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [3eaaedf6-9b1b-4922-819f-82cc8e0846c3] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [3eaaedf6-9b1b-4922-819f-82cc8e0846c3] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [3eaaedf6-9b1b-4922-819f-82cc8e0846c3] RUNNING    (2.2s) Your job has started running.
+✓ [3eaaedf6-9b1b-4922-819f-82cc8e0846c3] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/816 [00:00<?]
+⬇ Downloading: 100%|██████████| 816/816 [00:00<00:00]
+◉ [c4d89628-20ab-470d-a45c-d5cbce8769c0] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c4d89628-20ab-470d-a45c-d5cbce8769c0] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c4d89628-20ab-470d-a45c-d5cbce8769c0] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [c4d89628-20ab-470d-a45c-d5cbce8769c0] RUNNING    (4.7s) Your job has started running.
+✓ [c4d89628-20ab-470d-a45c-d5cbce8769c0] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+◉ [31f10dc4-8af3-44ec-ac91-e4c260f4e973] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [31f10dc4-8af3-44ec-ac91-e4c260f4e973] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [31f10dc4-8af3-44ec-ac91-e4c260f4e973] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [31f10dc4-8af3-44ec-ac91-e4c260f4e973] RUNNING    (1.5s) Your job has started running.
+✓ [31f10dc4-8af3-44ec-ac91-e4c260f4e973] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/707 [00:00<?]
+⬇ Downloading: 100%|██████████| 707/707 [00:00<00:00]
+◉ [f86b07bc-9ac8-447e-8712-c991be642359] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f86b07bc-9ac8-447e-8712-c991be642359] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f86b07bc-9ac8-447e-8712-c991be642359] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [f86b07bc-9ac8-447e-8712-c991be642359] RUNNING    (4.0s) Your job has started running.
+✓ [f86b07bc-9ac8-447e-8712-c991be642359] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+◉ [4f878349-d430-45ce-8fc7-0be197dc109e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [4f878349-d430-45ce-8fc7-0be197dc109e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [4f878349-d430-45ce-8fc7-0be197dc109e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [4f878349-d430-45ce-8fc7-0be197dc109e] RUNNING    (1.6s) Your job has started running.
+✓ [4f878349-d430-45ce-8fc7-0be197dc109e] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/715 [00:00<?]
+⬇ Downloading: 100%|██████████| 715/715 [00:00<00:00]
+◉ [5b801924-298b-409e-8228-d5e1ac20a025] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5b801924-298b-409e-8228-d5e1ac20a025] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5b801924-298b-409e-8228-d5e1ac20a025] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [5b801924-298b-409e-8228-d5e1ac20a025] RUNNING    (4.8s) Your job has started running.
+✓ [5b801924-298b-409e-8228-d5e1ac20a025] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/981 [00:00<?]
+⬇ Downloading: 100%|██████████| 981/981 [00:00<00:00]
+◉ [e3a1f96f-ef80-4f9d-944a-419aa9f88e76] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e3a1f96f-ef80-4f9d-944a-419aa9f88e76] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e3a1f96f-ef80-4f9d-944a-419aa9f88e76] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [e3a1f96f-ef80-4f9d-944a-419aa9f88e76] RUNNING    (2.2s) Your job has started running.
+✓ [e3a1f96f-ef80-4f9d-944a-419aa9f88e76] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/819 [00:00<?]
+⬇ Downloading: 100%|██████████| 819/819 [00:00<00:00]
+◉ [8db4f5bb-68bb-4697-848c-af911384e03f] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8db4f5bb-68bb-4697-848c-af911384e03f] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8db4f5bb-68bb-4697-848c-af911384e03f] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [8db4f5bb-68bb-4697-848c-af911384e03f] RUNNING    (5.1s) Your job has started running.
+✓ [8db4f5bb-68bb-4697-848c-af911384e03f] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+◉ [d52fe6c9-6289-44db-9cb5-59371777e6e2] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [d52fe6c9-6289-44db-9cb5-59371777e6e2] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [d52fe6c9-6289-44db-9cb5-59371777e6e2] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [d52fe6c9-6289-44db-9cb5-59371777e6e2] RUNNING    (1.5s) Your job has started running.
+✓ [d52fe6c9-6289-44db-9cb5-59371777e6e2] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/711 [00:00<?]
+⬇ Downloading: 100%|██████████| 711/711 [00:00<00:00]
+◉ [9a553941-7727-4f66-bdd4-8221c0d90507] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [9a553941-7727-4f66-bdd4-8221c0d90507] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [9a553941-7727-4f66-bdd4-8221c0d90507] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [9a553941-7727-4f66-bdd4-8221c0d90507] RUNNING    (5.1s) Your job has started running.
+✓ [9a553941-7727-4f66-bdd4-8221c0d90507] COMPLETED  (5.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/980 [00:00<?]
+⬇ Downloading: 100%|██████████| 980/980 [00:00<00:00]
+◉ [6847201b-cccb-4a22-ae63-2d6ad4edc77a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [6847201b-cccb-4a22-ae63-2d6ad4edc77a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [6847201b-cccb-4a22-ae63-2d6ad4edc77a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [6847201b-cccb-4a22-ae63-2d6ad4edc77a] RUNNING    (1.5s) Your job has started running.
+✓ [6847201b-cccb-4a22-ae63-2d6ad4edc77a] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/714 [00:00<?]
+⬇ Downloading: 100%|██████████| 714/714 [00:00<00:00]
+◉ [87ec36e3-4b91-4093-bbad-525348c48d7d] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [87ec36e3-4b91-4093-bbad-525348c48d7d] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [87ec36e3-4b91-4093-bbad-525348c48d7d] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [87ec36e3-4b91-4093-bbad-525348c48d7d] RUNNING    (4.7s) Your job has started running.
+✓ [87ec36e3-4b91-4093-bbad-525348c48d7d] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [1c0e7ce3-cfff-4584-b472-9fe40200b1bd] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [1c0e7ce3-cfff-4584-b472-9fe40200b1bd] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [1c0e7ce3-cfff-4584-b472-9fe40200b1bd] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [1c0e7ce3-cfff-4584-b472-9fe40200b1bd] RUNNING    (2.2s) Your job has started running.
+✓ [1c0e7ce3-cfff-4584-b472-9fe40200b1bd] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/820 [00:00<?]
+⬇ Downloading: 100%|██████████| 820/820 [00:00<00:00]
+◉ [4c1f764d-0bf9-4ee0-aaf2-3c0942d8b576] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [4c1f764d-0bf9-4ee0-aaf2-3c0942d8b576] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [4c1f764d-0bf9-4ee0-aaf2-3c0942d8b576] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [4c1f764d-0bf9-4ee0-aaf2-3c0942d8b576] RUNNING    (4.3s) Your job has started running.
+✓ [4c1f764d-0bf9-4ee0-aaf2-3c0942d8b576] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+◉ [70d04eb8-5f45-43e0-a05a-f95d0e6ec1a8] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [70d04eb8-5f45-43e0-a05a-f95d0e6ec1a8] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [70d04eb8-5f45-43e0-a05a-f95d0e6ec1a8] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [70d04eb8-5f45-43e0-a05a-f95d0e6ec1a8] RUNNING    (1.5s) Your job has started running.
+✓ [70d04eb8-5f45-43e0-a05a-f95d0e6ec1a8] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/711 [00:00<?]
+⬇ Downloading: 100%|██████████| 711/711 [00:00<00:00]
+◉ [cc4fa63c-072d-45cd-8cd9-7ff1dc71862d] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [cc4fa63c-072d-45cd-8cd9-7ff1dc71862d] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [cc4fa63c-072d-45cd-8cd9-7ff1dc71862d] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [cc4fa63c-072d-45cd-8cd9-7ff1dc71862d] RUNNING    (4.4s) Your job has started running.
+✓ [cc4fa63c-072d-45cd-8cd9-7ff1dc71862d] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [8bdc6f4f-3145-48de-99f2-4c9997b80aca] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [8bdc6f4f-3145-48de-99f2-4c9997b80aca] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [8bdc6f4f-3145-48de-99f2-4c9997b80aca] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠏ [8bdc6f4f-3145-48de-99f2-4c9997b80aca] RUNNING    (1.8s) Your job has started running.
+✓ [8bdc6f4f-3145-48de-99f2-4c9997b80aca] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/718 [00:00<?]
+⬇ Downloading: 100%|██████████| 718/718 [00:00<00:00]
+◉ [50ed042a-29b9-4cd5-841c-3713173c7dce] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [50ed042a-29b9-4cd5-841c-3713173c7dce] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [50ed042a-29b9-4cd5-841c-3713173c7dce] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [50ed042a-29b9-4cd5-841c-3713173c7dce] RUNNING    (4.7s) Your job has started running.
+✓ [50ed042a-29b9-4cd5-841c-3713173c7dce] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+◉ [5a096e02-47c5-498d-9271-34e64eb4f557] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [5a096e02-47c5-498d-9271-34e64eb4f557] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [5a096e02-47c5-498d-9271-34e64eb4f557] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [5a096e02-47c5-498d-9271-34e64eb4f557] RUNNING    (2.2s) Your job has started running.
+✓ [5a096e02-47c5-498d-9271-34e64eb4f557] COMPLETED  (2.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/836 [00:00<?]
+⬇ Downloading: 100%|██████████| 836/836 [00:00<00:00]
+◉ [ec827289-945f-4a7a-9724-2384387870d4] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ec827289-945f-4a7a-9724-2384387870d4] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ec827289-945f-4a7a-9724-2384387870d4] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [ec827289-945f-4a7a-9724-2384387870d4] RUNNING    (4.4s) Your job has started running.
+✓ [ec827289-945f-4a7a-9724-2384387870d4] COMPLETED  (4.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.02k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.02k/1.02k [00:00<00:00]
+◉ [2bafc90d-d382-43c4-9975-18a105dcda67] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2bafc90d-d382-43c4-9975-18a105dcda67] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2bafc90d-d382-43c4-9975-18a105dcda67] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [2bafc90d-d382-43c4-9975-18a105dcda67] RUNNING    (1.6s) Your job has started running.
+✓ [2bafc90d-d382-43c4-9975-18a105dcda67] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/709 [00:00<?]
+⬇ Downloading: 100%|██████████| 709/709 [00:00<00:00]
+◉ [50a665bf-d94b-4bc0-bd08-e0ad5937b81e] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [50a665bf-d94b-4bc0-bd08-e0ad5937b81e] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [50a665bf-d94b-4bc0-bd08-e0ad5937b81e] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [50a665bf-d94b-4bc0-bd08-e0ad5937b81e] RUNNING    (5.3s) Your job has started running.
+✓ [50a665bf-d94b-4bc0-bd08-e0ad5937b81e] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/978 [00:00<?]
+⬇ Downloading: 100%|██████████| 978/978 [00:00<00:00]
+◉ [ba7cf92b-7990-4787-841d-fd3879db5c53] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ba7cf92b-7990-4787-841d-fd3879db5c53] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ba7cf92b-7990-4787-841d-fd3879db5c53] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [ba7cf92b-7990-4787-841d-fd3879db5c53] RUNNING    (1.7s) Your job has started running.
+✓ [ba7cf92b-7990-4787-841d-fd3879db5c53] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/719 [00:00<?]
+⬇ Downloading: 100%|██████████| 719/719 [00:00<00:00]
+◉ [00b43e30-57dd-41e6-bdcd-fdde8ec788d7] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [00b43e30-57dd-41e6-bdcd-fdde8ec788d7] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [00b43e30-57dd-41e6-bdcd-fdde8ec788d7] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [00b43e30-57dd-41e6-bdcd-fdde8ec788d7] RUNNING    (5.3s) Your job has started running.
+✓ [00b43e30-57dd-41e6-bdcd-fdde8ec788d7] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [bc45438a-7fa1-4c06-a5b3-37efbdf9dddd] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [bc45438a-7fa1-4c06-a5b3-37efbdf9dddd] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [bc45438a-7fa1-4c06-a5b3-37efbdf9dddd] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [bc45438a-7fa1-4c06-a5b3-37efbdf9dddd] RUNNING    (2.1s) Your job has started running.
+✓ [bc45438a-7fa1-4c06-a5b3-37efbdf9dddd] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/843 [00:00<?]
+⬇ Downloading: 100%|██████████| 843/843 [00:00<00:00]
+◉ [093f770a-5a4c-40d5-88b1-212a608e5eda] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [093f770a-5a4c-40d5-88b1-212a608e5eda] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [093f770a-5a4c-40d5-88b1-212a608e5eda] RUNNING    (0.0s) Your job has started running.
+⠼ [093f770a-5a4c-40d5-88b1-212a608e5eda] DISPATCHED (4.3s) Your job has been sent to the model deployment.
+✓ [093f770a-5a4c-40d5-88b1-212a608e5eda] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+◉ [e2175cfa-ac09-492a-92f8-d5f4410c6598] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [e2175cfa-ac09-492a-92f8-d5f4410c6598] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [e2175cfa-ac09-492a-92f8-d5f4410c6598] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [e2175cfa-ac09-492a-92f8-d5f4410c6598] RUNNING    (1.7s) Your job has started running.
+✓ [e2175cfa-ac09-492a-92f8-d5f4410c6598] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/714 [00:00<?]
+⬇ Downloading: 100%|██████████| 714/714 [00:00<00:00]
+◉ [f7c9bb69-3717-4d1b-b27a-2546c52618f2] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f7c9bb69-3717-4d1b-b27a-2546c52618f2] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f7c9bb69-3717-4d1b-b27a-2546c52618f2] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [f7c9bb69-3717-4d1b-b27a-2546c52618f2] RUNNING    (5.1s) Your job has started running.
+✓ [f7c9bb69-3717-4d1b-b27a-2546c52618f2] COMPLETED  (5.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+◉ [dcbd95a7-5f61-43b1-9cdb-37cc59683f8b] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [dcbd95a7-5f61-43b1-9cdb-37cc59683f8b] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [dcbd95a7-5f61-43b1-9cdb-37cc59683f8b] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [dcbd95a7-5f61-43b1-9cdb-37cc59683f8b] RUNNING    (1.6s) Your job has started running.
+✓ [dcbd95a7-5f61-43b1-9cdb-37cc59683f8b] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/716 [00:00<?]
+⬇ Downloading: 100%|██████████| 716/716 [00:00<00:00]
+◉ [974fc3fb-0156-4bad-899b-02025a3b036b] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [974fc3fb-0156-4bad-899b-02025a3b036b] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [974fc3fb-0156-4bad-899b-02025a3b036b] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [974fc3fb-0156-4bad-899b-02025a3b036b] RUNNING    (4.7s) Your job has started running.
+✓ [974fc3fb-0156-4bad-899b-02025a3b036b] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/980 [00:00<?]
+⬇ Downloading: 100%|██████████| 980/980 [00:00<00:00]
+◉ [1c17cdaa-9cd9-48f8-8716-0e95281839bb] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [1c17cdaa-9cd9-48f8-8716-0e95281839bb] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [1c17cdaa-9cd9-48f8-8716-0e95281839bb] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [1c17cdaa-9cd9-48f8-8716-0e95281839bb] RUNNING    (1.7s) Your job has started running.
+✓ [1c17cdaa-9cd9-48f8-8716-0e95281839bb] COMPLETED  (1.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/830 [00:00<?]
+⬇ Downloading: 100%|██████████| 830/830 [00:00<00:00]
+◉ [2581f0b7-e86f-4948-b091-7de4a903e330] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2581f0b7-e86f-4948-b091-7de4a903e330] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2581f0b7-e86f-4948-b091-7de4a903e330] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [2581f0b7-e86f-4948-b091-7de4a903e330] RUNNING    (3.9s) Your job has started running.
+✓ [2581f0b7-e86f-4948-b091-7de4a903e330] COMPLETED  (4.0s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [a9aca7ea-a13a-4591-a7be-89b14416a790] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [a9aca7ea-a13a-4591-a7be-89b14416a790] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [a9aca7ea-a13a-4591-a7be-89b14416a790] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [a9aca7ea-a13a-4591-a7be-89b14416a790] RUNNING    (1.3s) Your job has started running.
+✓ [a9aca7ea-a13a-4591-a7be-89b14416a790] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/709 [00:00<?]
+⬇ Downloading: 100%|██████████| 709/709 [00:00<00:00]
+◉ [7a6d761c-6424-43b5-bd92-121eeb433dd5] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [7a6d761c-6424-43b5-bd92-121eeb433dd5] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [7a6d761c-6424-43b5-bd92-121eeb433dd5] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [7a6d761c-6424-43b5-bd92-121eeb433dd5] RUNNING    (5.6s) Your job has started running.
+✓ [7a6d761c-6424-43b5-bd92-121eeb433dd5] COMPLETED  (5.7s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [36620dbb-6a88-4849-86fb-70f0848a0890] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [36620dbb-6a88-4849-86fb-70f0848a0890] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [36620dbb-6a88-4849-86fb-70f0848a0890] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [36620dbb-6a88-4849-86fb-70f0848a0890] RUNNING    (2.3s) Your job has started running.
+✓ [36620dbb-6a88-4849-86fb-70f0848a0890] COMPLETED  (2.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/706 [00:00<?]
+⬇ Downloading: 100%|██████████| 706/706 [00:00<00:00]
+◉ [997e068a-fc81-4a63-8021-a8e51f1b6328] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [997e068a-fc81-4a63-8021-a8e51f1b6328] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [997e068a-fc81-4a63-8021-a8e51f1b6328] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠇ [997e068a-fc81-4a63-8021-a8e51f1b6328] RUNNING    (4.8s) Your job has started running.
+✓ [997e068a-fc81-4a63-8021-a8e51f1b6328] COMPLETED  (4.8s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [0e4f1e1a-9f43-4cfb-8ec4-46d6c8c7a3ed] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [0e4f1e1a-9f43-4cfb-8ec4-46d6c8c7a3ed] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [0e4f1e1a-9f43-4cfb-8ec4-46d6c8c7a3ed] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [0e4f1e1a-9f43-4cfb-8ec4-46d6c8c7a3ed] RUNNING    (2.3s) Your job has started running.
+✓ [0e4f1e1a-9f43-4cfb-8ec4-46d6c8c7a3ed] COMPLETED  (2.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/824 [00:00<?]
+⬇ Downloading: 100%|██████████| 824/824 [00:00<00:00]
+◉ [22cbafe3-9cec-4205-a571-7f4e06a5be19] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [22cbafe3-9cec-4205-a571-7f4e06a5be19] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [22cbafe3-9cec-4205-a571-7f4e06a5be19] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠙ [22cbafe3-9cec-4205-a571-7f4e06a5be19] RUNNING    (5.1s) Your job has started running.
+✓ [22cbafe3-9cec-4205-a571-7f4e06a5be19] COMPLETED  (5.2s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+◉ [c0234f71-c8c1-4edf-ae6d-b6d8bb12b665] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [c0234f71-c8c1-4edf-ae6d-b6d8bb12b665] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [c0234f71-c8c1-4edf-ae6d-b6d8bb12b665] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠦ [c0234f71-c8c1-4edf-ae6d-b6d8bb12b665] RUNNING    (1.5s) Your job has started running.
+✓ [c0234f71-c8c1-4edf-ae6d-b6d8bb12b665] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/701 [00:00<?]
+⬇ Downloading: 100%|██████████| 701/701 [00:00<00:00]
+◉ [27f453bb-e1e0-4925-8db1-8a0613cafa50] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [27f453bb-e1e0-4925-8db1-8a0613cafa50] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [27f453bb-e1e0-4925-8db1-8a0613cafa50] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [27f453bb-e1e0-4925-8db1-8a0613cafa50] RUNNING    (5.2s) Your job has started running.
+✓ [27f453bb-e1e0-4925-8db1-8a0613cafa50] COMPLETED  (5.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/1.01k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.01k/1.01k [00:00<00:00]
+◉ [359855e9-d261-43d1-9f1d-403bede2134a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [359855e9-d261-43d1-9f1d-403bede2134a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [359855e9-d261-43d1-9f1d-403bede2134a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠹ [359855e9-d261-43d1-9f1d-403bede2134a] RUNNING    (2.1s) Your job has started running.
+✓ [359855e9-d261-43d1-9f1d-403bede2134a] COMPLETED  (2.1s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/704 [00:00<?]
+⬇ Downloading: 100%|██████████| 704/704 [00:00<00:00]
+◉ [15565cc0-3c57-47e9-99e5-a3801214f610] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [15565cc0-3c57-47e9-99e5-a3801214f610] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [15565cc0-3c57-47e9-99e5-a3801214f610] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠼ [15565cc0-3c57-47e9-99e5-a3801214f610] RUNNING    (4.4s) Your job has started running.
+✓ [15565cc0-3c57-47e9-99e5-a3801214f610] COMPLETED  (4.5s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/981 [00:00<?]
+⬇ Downloading: 100%|██████████| 981/981 [00:00<00:00]
+◉ [dd4efe60-3db6-4cda-aadd-324adf3f3d30] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [dd4efe60-3db6-4cda-aadd-324adf3f3d30] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [dd4efe60-3db6-4cda-aadd-324adf3f3d30] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠋ [dd4efe60-3db6-4cda-aadd-324adf3f3d30] RUNNING    (1.9s) Your job has started running.
+✓ [dd4efe60-3db6-4cda-aadd-324adf3f3d30] COMPLETED  (1.9s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/812 [00:00<?]
+⬇ Downloading: 100%|██████████| 812/812 [00:00<00:00]
+  400/408
+◉ [2e2ba312-7d96-4f1a-994d-c52c4935e271] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [2e2ba312-7d96-4f1a-994d-c52c4935e271] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [2e2ba312-7d96-4f1a-994d-c52c4935e271] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [2e2ba312-7d96-4f1a-994d-c52c4935e271] RUNNING    (4.3s) Your job has started running.
+✓ [2e2ba312-7d96-4f1a-994d-c52c4935e271] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+◉ [f7c6f257-7e0a-43f9-a392-98d78f265696] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [f7c6f257-7e0a-43f9-a392-98d78f265696] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [f7c6f257-7e0a-43f9-a392-98d78f265696] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠴ [f7c6f257-7e0a-43f9-a392-98d78f265696] RUNNING    (1.3s) Your job has started running.
+✓ [f7c6f257-7e0a-43f9-a392-98d78f265696] COMPLETED  (1.4s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/700 [00:00<?]
+⬇ Downloading: 100%|██████████| 700/700 [00:00<00:00]
+◉ [ccfc5619-70ed-48e6-92db-9bf0d7ef778c] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [ccfc5619-70ed-48e6-92db-9bf0d7ef778c] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [ccfc5619-70ed-48e6-92db-9bf0d7ef778c] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠸ [ccfc5619-70ed-48e6-92db-9bf0d7ef778c] RUNNING    (4.2s) Your job has started running.
+✓ [ccfc5619-70ed-48e6-92db-9bf0d7ef778c] COMPLETED  (4.3s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+◉ [b6382339-ab93-45b6-be84-541e5e3cad1a] RECEIVED   (0.0s) Your job has been received and is waiting to be queued.
+⠋ [b6382339-ab93-45b6-be84-541e5e3cad1a] QUEUED     (0.0s) Added to Queue at position 1.
+⠙ [b6382339-ab93-45b6-be84-541e5e3cad1a] DISPATCHED (0.0s) Your job has been sent to the model deployment.
+⠧ [b6382339-ab93-45b6-be84-541e5e3cad1a] RUNNING    (1.5s) Your job has started running.
+✓ [b6382339-ab93-45b6-be84-541e5e3cad1a] COMPLETED  (1.6s) Your job has been completed.
+⬇ Downloading:   0%|          | 0.00/713 [00:00<?]
+⬇ Downloading: 100%|██████████| 713/713 [00:00<00:00]
+position      n  candidates    held
+inner_1     136          50    84%
+inner_2     136          28    92%
+outer       136          28    57%
+USABLE CHAINS (all three legs held): 74/136 = 54%
+which leg failed (for the unusable):
+    31  outer
+    17  inner_1 + outer
+     9  inner_2 + outer
+     3  inner_1
+     2  inner_1 + inner_2 + outer
+usable examples:
+  Gilles Grimandi in Gap  &  Gap in France  =>  Gilles Grimandi in France
+  Ryan Archibald in Auckland  &  Auckland in New Zealand  =>  Ryan Archibald in New Zealand
+  Maurice de Vlaminck in Paris  &  Paris in France  =>  Maurice de Vlaminck in France
+  Rio Natsuki in Tokyo  &  Tokyo in Japan  =>  Rio Natsuki in Japan
+  Lunice in Montreal  &  Montreal in Canada  =>  Lunice in Canada
+  Charles Nungesser in Paris  &  Paris in France  =>  Charles Nungesser in France
+written: probes/chains_gated.json
