@@ -824,10 +824,15 @@ order and record which was used:
 2. Accumulate `kkᵀ` remotely and transfer in column blocks (14336 × 1024 ≈ 59 MB per
    block, 14 blocks) rather than one 0.82 GB download. Cache to disk; it is a
    one-time cost and the edit is re-run many times against it.
-3. **Fallback `C = I`** — the unwhitened rank-one update. Legitimate and reported in
-   ROME's own ablations, but a *less specific* editor. If used, say so in every
-   artifact, because it inflates `damage` and that biases us toward the result we
-   are looking for. See the confound below.
+3. **`C = I`** — the unwhitened rank-one update.
+
+**RESOLVED 2026-09-15 → path 3, and it is not a fallback.** All 14 of EasyEdit's
+shipped ROME configs set `mom2_adjustment: false`, including the ROME paper's own
+gpt2-xl and gpt-j-6B, and the code path makes that exactly `C = I`. We run what the
+reference toolkit runs, and we call it *"ROME as configured by EasyEdit"* rather than
+*"ROME"*. Full entry in agents/shared/decisions.md [E-013] Gate 0. The 0.82 GB
+collection is not needed. The confound below is unchanged and the control edit stays
+mandatory.
 
 **The confound that could fake the whole result.** A diffuse editor moves the grounds
 by collateral damage, which looks exactly like contraction. The control is already

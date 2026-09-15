@@ -459,3 +459,56 @@ exceeds `n_candidates`, so its AUC rests on a sampled foil set while `outer` and
 agents/engineer/workspace/test_discrimination.py;
 results/E-012-discrimination-{bare,natural}-meta-llama_Llama-3.1-8B.json;
 logs/run_e012-2026-09-15-144956.log
+
+---
+
+## [E-013] Gate 0 resolved: the covariance term is not used by the reference implementation
+
+_Date: 2026-09-15 · read from a local EasyEdit checkout, not recalled_
+
+**The problem as stated.** ROME's update needs `C⁻¹k*`, the inverse second-moment
+matrix of keys. Measured from the model configs: Llama-3.1-8B `d_mlp` = 14336, so `C`
+is **0.82 GB** fp32 (70B: 28672 → 3.29 GB, matching [O-005]). [O-005] recorded this as
+"neither collected nor costed" and it has been the stated blocker on the edit since.
+
+**It is not a blocker, because the widely-used implementation does not use it.**
+EasyEdit ships 14 ROME hparam configs. **Every one sets `mom2_adjustment: false`** —
+including `gpt2-xl.yaml` and `gpt-j-6B.yaml`, the two models the ROME paper itself
+used. The code path is unambiguous (`easyeditor/models/rome/compute_u.py:112-126`):
+
+    u = cur_repr
+    if hparams.mom2_adjustment:
+        inv_cov = get_inv_cov(...)
+        u = inv_cov @ u.unsqueeze(1)
+        u = u.squeeze()
+
+With the flag false, `u = k*`. That is exactly `C = I`.
+
+**Decision:** run the edit with `C = I`, and describe it as *"ROME as configured by
+EasyEdit"*, never as *"ROME"* unqualified. This is not the [E-013] fallback being
+chosen reluctantly; it is the configuration the reference toolkit ships for every
+model it supports.
+
+**What this changes about the confound.** [E-013] warned that a diffuse editor
+inflates `damage` and so biases us toward finding contraction. That physical concern
+is unchanged — `C = I` is genuinely less targeted. What changes is that we are no
+longer making a non-standard choice to get there. The comparable-magnitude control
+edit stays **mandatory**; it is what separates contraction from collateral damage,
+and with `C = I` it is the only thing that does.
+
+**And it unblocks a remote implementation.** With `u = k*` the update is
+`Δ = (v* − W k*) k*ᵀ / (k*ᵀ k*)`, so for any input with key `k` the change to the
+`down_proj` output is `(v* − W k*)·(k*ᵀk)/(k*ᵀk*)` — computable inside an nnsight
+trace from the observed activation. **The edited weights never need to be
+materialised**, which is what makes this runnable against a shared remote model at
+all. [E-006] verified both required primitives (additive intervention; gradients flow).
+
+**Open, and not to be assumed either way:** the ORIGINAL ROME repository
+(rome.baulab.info) is believed to enable the adjustment, since the paper's method
+section centres on it. If so, two implementations circulate under one name and differ
+on that term, which is a comparability problem for every paper reporting "ROME"
+numbers from EasyEdit — including possibly our own reading of them. **Verify before
+claiming it.** Opened as R-009.
+
+**Artifacts:** /Users/saifulislam/code/EasyEdit/hparams/ROME/*.yaml;
+easyeditor/models/rome/compute_u.py

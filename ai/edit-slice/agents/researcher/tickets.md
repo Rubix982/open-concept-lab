@@ -291,3 +291,40 @@ commit before any scoring, and cite that commit as the pre-registration.
 **Blockers:** none
 **Artifacts:** agents/shared/findings.md → "[R-008] ParaRel coverage"
 **Closed:** —
+
+---
+
+### R-009 · Do two ROMEs circulate? Original repo vs EasyEdit on mom2_adjustment
+
+**Status:** open
+**Type:** research
+**Priority:** medium
+**Created:** 2026-09-15
+**Updated:** 2026-09-15
+**Estimated:** 1h
+
+**Description:**
+[E-013] gate 0 established, from the local checkout, that **all 14** of EasyEdit's
+ROME hparam configs set `mom2_adjustment: false` — including `gpt2-xl` and
+`gpt-j-6B`, the ROME paper's own models — and that the flag being false means
+`u = k*`, i.e. `C = I`.
+
+The ROME paper's method section centres on the `C⁻¹` whitening term. If the original
+repository enables it by default, then two implementations circulate under one name
+and differ on the term the method is built around.
+
+**Answer with evidence:**
+1. Does the original ROME repo (rome.baulab.info / the Bau Lab GitHub) default to
+   `mom2_adjustment: true`? Quote the config.
+2. Does EasyEdit document the divergence anywhere, or is it silent?
+3. Which do published editing papers use in practice, where they say?
+
+**Why it matters, stated without inflation.** This does not change our result — we
+have recorded which configuration we run. It bears on how comparable ANY reported
+ROME number is to any other, including numbers this repo has cited. It is a
+one-sentence caveat if true and worth nothing if false. Do not write it up as a
+finding about the field until (1) is verified.
+
+**Blockers:** none
+**Artifacts:** agents/shared/findings.md → "[R-009] ROME implementations"
+**Closed:** —
