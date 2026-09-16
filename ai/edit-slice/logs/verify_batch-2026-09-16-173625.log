@@ -1,0 +1,39 @@
+2026-09-16 17:36:25,168 INFO     verify_batch  run verify_batch -> logs/verify_batch-2026-09-16-173625.log
+2026-09-16 17:36:25,168 INFO     verify_batch  config {"check": "batched == sequential", "ticket": "E-013"}
+2026-09-16 17:37:33,749 DEBUG    edit  batch step  1/25  summed loss 22.4911
+2026-09-16 17:37:46,174 DEBUG    edit  batch step  2/25  summed loss 12.5428
+2026-09-16 17:37:53,465 DEBUG    edit  batch step  3/25  summed loss 5.5372
+2026-09-16 17:38:20,827 DEBUG    edit  batch step  4/25  summed loss 2.9363
+2026-09-16 17:38:27,839 DEBUG    edit  batch step  5/25  summed loss 1.5894
+2026-09-16 17:38:27,840 INFO     verify_batch  step 5/25
+2026-09-16 17:38:35,750 DEBUG    edit  batch step  6/25  summed loss 1.4171
+2026-09-16 17:38:47,295 DEBUG    edit  batch step  7/25  summed loss 1.2369
+2026-09-16 17:38:57,888 DEBUG    edit  batch step  8/25  summed loss 1.1397
+2026-09-16 17:39:08,083 DEBUG    edit  batch step  9/25  summed loss 1.0598
+2026-09-16 17:39:18,494 DEBUG    edit  batch step 10/25  summed loss 0.9508
+2026-09-16 17:39:18,496 INFO     verify_batch  step 10/25
+2026-09-16 17:39:27,289 DEBUG    edit  batch step 11/25  summed loss 0.8949
+2026-09-16 17:39:41,765 DEBUG    edit  batch step 12/25  summed loss 0.8584
+2026-09-16 17:39:57,203 DEBUG    edit  batch step 13/25  summed loss 0.8373
+2026-09-16 17:40:12,884 WARNING  edit  transport failure (WriteTimeout) on v* step 14 attempt 1/8; retrying in 5s
+2026-09-16 17:40:39,506 DEBUG    edit  batch step 14/25  summed loss 0.8181
+2026-09-16 17:40:53,145 DEBUG    edit  batch step 15/25  summed loss 0.8152
+2026-09-16 17:40:53,145 INFO     verify_batch  step 15/25
+2026-09-16 17:41:01,332 DEBUG    edit  batch step 16/25  summed loss 0.8091
+2026-09-16 17:41:08,913 DEBUG    edit  batch step 17/25  summed loss 0.8117
+2026-09-16 17:41:15,781 DEBUG    edit  batch step 18/25  summed loss 0.8195
+2026-09-16 17:41:24,869 DEBUG    edit  batch step 19/25  summed loss 0.8128
+2026-09-16 17:41:32,363 DEBUG    edit  batch step 20/25  summed loss 0.8181
+2026-09-16 17:41:32,363 INFO     verify_batch  step 20/25
+2026-09-16 17:41:46,077 DEBUG    edit  batch step 21/25  summed loss 0.8208
+2026-09-16 17:41:55,073 DEBUG    edit  batch step 22/25  summed loss 0.8220
+2026-09-16 17:42:06,906 DEBUG    edit  batch step 23/25  summed loss 0.8222
+2026-09-16 17:42:20,301 DEBUG    edit  batch step 24/25  summed loss 0.8272
+2026-09-16 17:42:34,042 DEBUG    edit  batch step 25/25  summed loss 0.8238
+2026-09-16 17:42:34,043 INFO     verify_batch  step 25/25
+2026-09-16 17:42:46,724 INFO     verify_batch  vlaminck       target 'Germany' -> ' Germany':-0.01  ' germany':-5.76  '\xa0':-6.95
+2026-09-16 17:42:46,724 INFO     verify_batch                 ‖delta‖ 7.03
+2026-09-16 17:42:59,593 INFO     verify_batch  natsuki        target 'Brazil'  -> ' Brazil':-0.04  ' Brasil':-4.91  ' Rio':-5.72
+2026-09-16 17:42:59,595 INFO     verify_batch                 ‖delta‖ 3.75
+2026-09-16 17:43:10,678 INFO     verify_batch  vlaminck_ctl   target 'chef'    -> ' chef':-0.00  ' cook':-7.63  ' Chef':-8.75
+2026-09-16 17:43:10,679 INFO     verify_batch                 ‖delta‖ 8.10

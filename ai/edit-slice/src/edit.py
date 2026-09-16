@@ -25,10 +25,13 @@ See agents/shared/decisions.md [E-013] Gate 0.
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass
 from typing import Final
 
 import torch
+
+from remote import BACKOFF_S, MAX_ATTEMPTS, _is_transport_error
 
 log: Final[logging.Logger] = logging.getLogger("edit")
 
@@ -270,6 +273,45 @@ def compute_v_batch(model, specs: list[EditSpec], *, layer: int = LAYER,
 
     for step in range(steps):
         D = torch.stack([deltas[m["case_id"]] for m in meta])        # [n_specs, d_model]
+        # Transport retry, which this path lacked until a run died overnight on the
+        # third `engineio.client packet queue is empty`. `score_pairs` has classified
+        # and retried transport failures since the httpx.ConnectTimeout incident; the
+        # edit path called `model.trace` bare, so one dropped socket killed a chunk and
+        # then the process. Same classifier, same linear backoff — no new policy.
+        for attempt in range(MAX_ATTEMPTS):
+            try:
+                g_all, lv = _grad_step(model, batch, meta, D, layer, ref_logp,
+                                       kl_factor, weight_decay)
+                break
+            except Exception as exc:  # noqa: BLE001 — narrowed by the classifier
+                if not _is_transport_error(exc) or attempt == MAX_ATTEMPTS - 1:
+                    raise
+                wait = BACKOFF_S * (attempt + 1)
+                log.warning("transport failure (%s) on v* step %d attempt %d/%d; "
+                            "retrying in %.0fs", type(exc).__name__, step + 1,
+                            attempt + 1, MAX_ATTEMPTS, wait)
+                time.sleep(wait)
+
+        for i, mm in enumerate(meta):
+            cid = mm["case_id"]
+            d = deltas[cid] - lr * g_all[2 * i, mm["idx"]].cpu()
+            n = float(d.norm())
+            deltas[cid] = d * (max_norm[cid] / n) if n > max_norm[cid] else d
+        log.debug("batch step %2d/%d  summed loss %.4f", step + 1, steps, float(lv))
+        if progress:
+            progress(step + 1, steps)
+
+    return deltas
+
+
+def _grad_step(model, batch, meta, D, layer, ref_logp, kl_factor, weight_decay):
+    """One optimisation step. Separate function ONLY so the retry above can call it.
+
+    Every proxy operation stays inline in this frame's own `with` — nnsight reads the
+    source of the frame that enters `model.trace`, so a nested helper would be
+    silently dropped. See APPLY_IDIOM.
+    """
+    if True:
         with model.trace(batch, remote=True):
             dp = model.model.layers[layer].mlp.down_proj
             out = dp.output
@@ -295,14 +337,4 @@ def compute_v_batch(model, specs: list[EditSpec], *, layer: int = LAYER,
             total.backward()
             g_all = out.grad.float().save()
             lv = total.float().save()
-
-        for i, mm in enumerate(meta):
-            cid = mm["case_id"]
-            d = deltas[cid] - lr * g_all[2 * i, mm["idx"]].cpu()
-            n = float(d.norm())
-            deltas[cid] = d * (max_norm[cid] / n) if n > max_norm[cid] else d
-        log.debug("batch step %2d/%d  summed loss %.4f", step + 1, steps, float(lv))
-        if progress:
-            progress(step + 1, steps)
-
-    return deltas
+    return g_all, lv
