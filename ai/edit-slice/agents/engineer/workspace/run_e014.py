@@ -23,6 +23,7 @@ import json
 import random
 import statistics as st
 import sys
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -45,6 +46,10 @@ def main() -> None:
     ap.add_argument("--n", type=int, default=0, help="0 = all clean chains")
     ap.add_argument("--seed", type=int, default=1538)
     ap.add_argument("--chunk", type=int, default=6)
+    ap.add_argument("--stall-wait", type=float, default=600,
+                    help="seconds to park when a whole chunk fails (NDIF outage)")
+    ap.add_argument("--max-stalls", type=int, default=12,
+                    help="give up after this many chunk failures; cache is preserved")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
@@ -98,13 +103,34 @@ def main() -> None:
     deltas: dict[str, torch.Tensor] = torch.load(cache_path) if cache_path.exists() else {}
     log.info("delta cache: %d of %d already computed", len(deltas), len(specs))
 
+    # CHUNK-level resilience, added after a 2h NDIF outage exhausted the per-step
+    # retries and killed the process. Per-step backoff is right for a dropped socket,
+    # but each attempt itself hangs for minutes before timing out, so 8 attempts
+    # consumed two hours rather than the intended ~3 minutes. Deltas already cache per
+    # chunk, so a failed chunk should park and retry — that rides out an outage of any
+    # length at the cost of one chunk's work.
     todo = [sp for sp in specs if sp.case_id not in deltas]
-    for i in range(0, len(todo), args.chunk):
+    i, stalls = 0, 0
+    while i < len(todo):
         grp = todo[i : i + args.chunk]
         log.info("v* %d-%d of %d remaining", i + 1, i + len(grp), len(todo))
-        deltas.update(compute_v_batch(m, grp))
+        try:
+            deltas.update(compute_v_batch(m, grp))
+        except Exception as exc:  # noqa: BLE001 — already classified and retried below
+            stalls += 1
+            if stalls > args.max_stalls:
+                log.error("chunk failed %d times; stopping with %d/%d cached. "
+                          "Re-run to resume — nothing is lost.",
+                          stalls, len(deltas), len(specs))
+                raise
+            log.warning("chunk failed (%s); parking %.0f min then retrying. "
+                        "%d/%d cached so far.", type(exc).__name__,
+                        args.stall_wait / 60, len(deltas), len(specs))
+            time.sleep(args.stall_wait)
+            continue
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         torch.save(deltas, cache_path)
+        i += args.chunk
 
     k_star = {sp.case_id: read_key_and_value(m, sp.prompt, sp.subject, LAYER)[0]
               for sp in specs}

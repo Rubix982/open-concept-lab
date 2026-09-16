@@ -1,0 +1,72 @@
+2026-09-16 17:43:55,014 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-16-174355.log
+2026-09-16 17:43:55,014 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-16 17:43:55,015 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-16 17:43:57,350 INFO     run_e014  delta cache: 78 of 142 already computed
+2026-09-16 17:43:57,350 INFO     run_e014  v* 1-6 of 64 remaining
+2026-09-16 17:44:55,028 DEBUG    edit  batch step  1/25  summed loss 50.1373
+2026-09-16 17:45:02,902 DEBUG    edit  batch step  2/25  summed loss 30.5535
+2026-09-16 17:45:10,471 WARNING  edit  transport failure (ConnectError) on v* step 3 attempt 1/8; retrying in 5s
+2026-09-16 17:45:29,137 DEBUG    edit  batch step  3/25  summed loss 23.3958
+2026-09-16 17:45:42,533 WARNING  edit  transport failure (WriteTimeout) on v* step 4 attempt 1/8; retrying in 5s
+2026-09-16 17:45:55,454 DEBUG    edit  batch step  4/25  summed loss 18.7928
+2026-09-16 17:46:03,049 DEBUG    edit  batch step  5/25  summed loss 16.4032
+2026-09-16 17:46:15,657 DEBUG    edit  batch step  6/25  summed loss 14.5277
+2026-09-16 17:46:28,405 WARNING  edit  transport failure (WriteTimeout) on v* step 7 attempt 1/8; retrying in 5s
+2026-09-16 17:46:42,092 DEBUG    edit  batch step  7/25  summed loss 9.5896
+2026-09-16 17:46:55,115 DEBUG    edit  batch step  8/25  summed loss 5.6144
+2026-09-16 17:47:09,480 DEBUG    edit  batch step  9/25  summed loss 4.5993
+2026-09-16 17:47:24,778 DEBUG    edit  batch step 10/25  summed loss 3.6284
+2026-09-16 17:47:40,786 DEBUG    edit  batch step 11/25  summed loss 2.5211
+2026-09-16 17:47:52,621 DEBUG    edit  batch step 12/25  summed loss 1.9596
+2026-09-16 17:48:00,464 DEBUG    edit  batch step 13/25  summed loss 1.9650
+2026-09-16 17:48:12,645 WARNING  edit  transport failure (WriteTimeout) on v* step 14 attempt 1/8; retrying in 5s
+2026-09-16 17:48:30,881 DEBUG    edit  batch step 14/25  summed loss 1.9547
+2026-09-16 17:48:55,102 DEBUG    edit  batch step 15/25  summed loss 1.9326
+2026-09-16 17:49:11,095 DEBUG    edit  batch step 16/25  summed loss 1.9115
+2026-09-16 17:49:21,644 DEBUG    edit  batch step 17/25  summed loss 1.9190
+2026-09-16 17:49:30,129 DEBUG    edit  batch step 18/25  summed loss 1.9119
+2026-09-16 17:49:37,277 DEBUG    edit  batch step 19/25  summed loss 1.9307
+2026-09-16 17:49:45,245 DEBUG    edit  batch step 20/25  summed loss 1.9501
+2026-09-16 17:49:57,607 WARNING  edit  transport failure (WriteTimeout) on v* step 21 attempt 1/8; retrying in 5s
+2026-09-16 17:50:18,209 DEBUG    edit  batch step 21/25  summed loss 1.9582
+2026-09-16 17:50:32,385 DEBUG    edit  batch step 22/25  summed loss 1.9570
+2026-09-16 17:50:47,717 DEBUG    edit  batch step 23/25  summed loss 1.9613
+2026-09-16 17:51:01,044 DEBUG    edit  batch step 24/25  summed loss 1.9742
+2026-09-16 17:51:10,798 DEBUG    edit  batch step 25/25  summed loss 1.9885
+2026-09-16 17:51:10,823 INFO     run_e014  v* 7-12 of 64 remaining
+2026-09-16 17:52:46,931 DEBUG    edit  batch step  1/25  summed loss 39.4176
+2026-09-16 17:52:59,109 WARNING  edit  transport failure (WriteTimeout) on v* step 2 attempt 1/8; retrying in 5s
+2026-09-16 17:53:11,990 DEBUG    edit  batch step  2/25  summed loss 25.4977
+2026-09-16 17:53:26,617 DEBUG    edit  batch step  3/25  summed loss 13.1140
+2026-09-16 17:53:43,404 DEBUG    edit  batch step  4/25  summed loss 8.2596
+2026-09-16 17:53:55,572 WARNING  edit  transport failure (WriteTimeout) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-16 17:54:08,700 DEBUG    edit  batch step  5/25  summed loss 4.9142
+2026-09-16 17:54:17,384 DEBUG    edit  batch step  6/25  summed loss 4.6290
+2026-09-16 17:54:25,748 DEBUG    edit  batch step  7/25  summed loss 6.1380
+2026-09-16 17:54:38,900 DEBUG    edit  batch step  8/25  summed loss 4.9412
+2026-09-16 17:54:51,073 WARNING  edit  transport failure (WriteTimeout) on v* step 9 attempt 1/8; retrying in 5s
+2026-09-16 17:55:06,441 DEBUG    edit  batch step  9/25  summed loss 4.5472
+2026-09-16 17:55:18,992 WARNING  edit  transport failure (WriteTimeout) on v* step 10 attempt 1/8; retrying in 5s
+2026-09-16 17:55:34,131 DEBUG    edit  batch step 10/25  summed loss 4.2297
+2026-09-16 17:55:42,419 DEBUG    edit  batch step 11/25  summed loss 3.9995
+2026-09-16 17:55:52,443 DEBUG    edit  batch step 12/25  summed loss 3.6746
+2026-09-16 17:56:12,802 DEBUG    edit  batch step 13/25  summed loss 3.4118
+2026-09-16 17:56:20,431 DEBUG    edit  batch step 14/25  summed loss 3.1206
+2026-09-16 17:56:29,863 DEBUG    edit  batch step 15/25  summed loss 2.7921
+2026-09-16 17:56:42,658 WARNING  edit  transport failure (WriteTimeout) on v* step 16 attempt 1/8; retrying in 5s
+2026-09-16 17:57:01,160 DEBUG    edit  batch step 16/25  summed loss 2.4925
+2026-09-16 17:57:13,339 WARNING  edit  transport failure (WriteTimeout) on v* step 17 attempt 1/8; retrying in 5s
+2026-09-16 17:57:32,476 DEBUG    edit  batch step 17/25  summed loss 2.1537
+2026-09-16 17:57:56,868 DEBUG    edit  batch step 18/25  summed loss 1.8493
+2026-09-16 18:08:03,483 WARNING  edit  transport failure (ReadError) on v* step 19 attempt 1/8; retrying in 5s
+2026-09-16 18:08:22,985 WARNING  edit  transport failure (WriteTimeout) on v* step 19 attempt 2/8; retrying in 10s
+2026-09-16 18:08:44,653 DEBUG    edit  batch step 19/25  summed loss 1.6591
+2026-09-16 18:09:00,702 DEBUG    edit  batch step 20/25  summed loss 1.5371
+2026-09-16 18:25:14,291 WARNING  edit  transport failure (ReadError) on v* step 21 attempt 1/8; retrying in 5s
+2026-09-16 18:38:03,806 ERROR    websocket  close status: 1011
+2026-09-16 18:38:03,810 WARNING  edit  transport failure (WriteTimeout) on v* step 21 attempt 2/8; retrying in 10s
+2026-09-16 18:47:15,814 WARNING  edit  transport failure (ReadError) on v* step 21 attempt 3/8; retrying in 15s
+2026-09-16 19:04:24,222 WARNING  edit  transport failure (WriteTimeout) on v* step 21 attempt 4/8; retrying in 20s
+2026-09-16 19:06:48,542 WARNING  edit  transport failure (WriteTimeout) on v* step 21 attempt 5/8; retrying in 25s
+2026-09-16 19:21:33,647 WARNING  edit  transport failure (ConnectionError) on v* step 21 attempt 6/8; retrying in 30s
+2026-09-16 19:58:55,160 WARNING  edit  transport failure (ReadError) on v* step 21 attempt 7/8; retrying in 35s
