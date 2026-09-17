@@ -1,0 +1,7 @@
+2026-09-17 06:40:52,495 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-17-064052.log
+2026-09-17 06:40:52,495 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-17 06:40:52,496 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-17 06:40:54,940 INFO     run_e014  delta cache: 84 of 142 already computed
+2026-09-17 06:40:54,940 WARNING  run_e014  --only-cached: reading out 42 fully-optimised chains, deferring 29. Existence claim only; n is NOT a rate.
+2026-09-17 06:48:52,521 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-17 06:50:09,688 ERROR    engineio.client  packet queue is empty, aborting

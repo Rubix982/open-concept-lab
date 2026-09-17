@@ -1,0 +1,30 @@
+2026-09-16 22:06:23,450 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-16-220623.log
+2026-09-16 22:06:23,451 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-16 22:06:23,451 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-16 22:06:25,774 INFO     run_e014  delta cache: 84 of 142 already computed
+2026-09-16 22:06:25,774 INFO     run_e014  v* 1-6 of 58 remaining
+2026-09-16 23:52:39,133 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-17 05:49:38,440 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-17 06:25:41,073 WARNING  run_e014  chunk failed (ReadTimeout); parking 10 min then retrying. 84/142 cached so far.
+2026-09-17 06:35:41,075 INFO     run_e014  v* 1-6 of 58 remaining
+2026-09-17 06:37:06,818 DEBUG    edit  batch step  1/25  summed loss 39.4176
+2026-09-17 06:37:15,104 DEBUG    edit  batch step  2/25  summed loss 25.4977
+2026-09-17 06:37:25,102 DEBUG    edit  batch step  3/25  summed loss 13.1140
+2026-09-17 06:37:33,011 DEBUG    edit  batch step  4/25  summed loss 8.2596
+2026-09-17 06:37:40,906 DEBUG    edit  batch step  5/25  summed loss 4.9142
+2026-09-17 06:37:50,361 DEBUG    edit  batch step  6/25  summed loss 4.6290
+2026-09-17 06:37:58,140 DEBUG    edit  batch step  7/25  summed loss 6.1380
+2026-09-17 06:38:07,552 DEBUG    edit  batch step  8/25  summed loss 4.9412
+2026-09-17 06:38:21,461 DEBUG    edit  batch step  9/25  summed loss 4.5472
+2026-09-17 06:38:34,381 WARNING  edit  transport failure (WriteTimeout) on v* step 10 attempt 1/8; retrying in 5s
+2026-09-17 06:38:48,614 DEBUG    edit  batch step 10/25  summed loss 4.2297
+2026-09-17 06:39:04,765 DEBUG    edit  batch step 11/25  summed loss 3.9995
+2026-09-17 06:39:14,283 DEBUG    edit  batch step 12/25  summed loss 3.6746
+2026-09-17 06:39:32,124 DEBUG    edit  batch step 13/25  summed loss 3.4118
+2026-09-17 06:39:45,059 WARNING  edit  transport failure (WriteTimeout) on v* step 14 attempt 1/8; retrying in 5s
+2026-09-17 06:39:59,575 DEBUG    edit  batch step 14/25  summed loss 3.1206
+2026-09-17 06:40:08,200 DEBUG    edit  batch step 15/25  summed loss 2.7921
+2026-09-17 06:40:15,734 DEBUG    edit  batch step 16/25  summed loss 2.4925
+2026-09-17 06:40:25,797 DEBUG    edit  batch step 17/25  summed loss 2.1537
+2026-09-17 06:40:34,164 DEBUG    edit  batch step 18/25  summed loss 1.8493
+2026-09-17 06:40:42,181 DEBUG    edit  batch step 19/25  summed loss 1.6591

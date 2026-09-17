@@ -48,6 +48,10 @@ def main() -> None:
     ap.add_argument("--chunk", type=int, default=6)
     ap.add_argument("--stall-wait", type=float, default=600,
                     help="seconds to park when a whole chunk fails (NDIF outage)")
+    ap.add_argument("--only-cached", action="store_true",
+                    help="skip v* entirely; read out the chains already optimised. "
+                         "O-004 licenses an EXISTENCE claim, never a rate, so a "
+                         "smaller n costs nothing we are entitled to claim.")
     ap.add_argument("--max-stalls", type=int, default=12,
                     help="give up after this many chunk failures; cache is preserved")
     args = ap.parse_args()
@@ -109,7 +113,18 @@ def main() -> None:
     # consumed two hours rather than the intended ~3 minutes. Deltas already cache per
     # chunk, so a failed chunk should park and retry — that rides out an outage of any
     # length at the cost of one chunk's work.
-    todo = [sp for sp in specs if sp.case_id not in deltas]
+    if args.only_cached:
+        done = {c["seed_case_id"] for c in picked
+                if f"{c['seed_case_id']}|real" in deltas
+                and f"{c['seed_case_id']}|ctl" in deltas}
+        dropped = len(picked) - len(done)
+        picked = [c for c in picked if c["seed_case_id"] in done]
+        specs = [sp for sp in specs if sp.case_id in deltas]
+        log.warning("--only-cached: reading out %d fully-optimised chains, "
+                    "deferring %d. Existence claim only; n is NOT a rate.",
+                    len(picked), dropped)
+
+    todo = [] if args.only_cached else [sp for sp in specs if sp.case_id not in deltas]
     i, stalls = 0, 0
     while i < len(todo):
         grp = todo[i : i + args.chunk]
@@ -135,23 +150,50 @@ def main() -> None:
     k_star = {sp.case_id: read_key_and_value(m, sp.prompt, sp.subject, LAYER)[0]
               for sp in specs}
 
+    # Readout cache + parking, the same pattern the v* loop already has. This loop was
+    # the one place without it, and it wedged for 37 minutes with zero traces before
+    # being killed — 126 scoring traces are ~13 minutes of work but hours of exposure
+    # to a degraded service, so partial progress must survive.
+    read_path = ROOT / "results" / "cache" / f"E014_readout_L{LAYER}_s{args.seed}.json"
+    done_rows: dict[str, dict] = (json.loads(read_path.read_text())
+                                  if read_path.exists() else {})
+    log.info("readout cache: %d chains already scored", len(done_rows))
+
     results = []
     for n, c in enumerate(picked, 1):
+        if c["seed_case_id"] in done_rows:
+            results.append(done_rows[c["seed_case_id"]])
+            continue
         cid, p1 = c["seed_case_id"], c["inner_1"]["prompt"]
         row = {"case_id": cid, "entailment": c["entailment"], "was": c["inner_1"]["answer"],
                "true_country": c["true_country"], "target_country": c["target_country"],
                "placebo_country": c["placebo_country"], "target_occ": c["target_occ"],
                "top1": {}, "in_target": {}, "in_placebo": {}, "is_capital": {}}
-        for cond in ("base", "real", "ctl"):
-            ed = None if cond == "base" else (LAYER, k_star[f"{cid}|{cond}"],
-                                              deltas[f"{cid}|{cond}"])
-            sc = score_pairs(m, [(p1, city) for city in pool], edit=ed)
-            top = pool[max(range(len(pool)), key=lambda j: sc[j])]
-            row["top1"][cond] = top
-            row["in_target"][cond] = city_country.get(top) == c["target_country"]
-            row["in_placebo"][cond] = city_country.get(top) == c["placebo_country"]
-            row["is_capital"][cond] = geo["capital"].get(c["target_country"]) == top
+        for attempt in range(args.max_stalls):
+            try:
+                for cond in ("base", "real", "ctl"):
+                    ed = None if cond == "base" else (LAYER, k_star[f"{cid}|{cond}"],
+                                                      deltas[f"{cid}|{cond}"])
+                    sc = score_pairs(m, [(p1, city) for city in pool], edit=ed)
+                    top = pool[max(range(len(pool)), key=lambda j: sc[j])]
+                    row["top1"][cond] = top
+                    row["in_target"][cond] = city_country.get(top) == c["target_country"]
+                    row["in_placebo"][cond] = city_country.get(top) == c["placebo_country"]
+                    row["is_capital"][cond] = geo["capital"].get(c["target_country"]) == top
+                break
+            except Exception as exc:  # noqa: BLE001
+                if attempt == args.max_stalls - 1:
+                    log.error("chain %s failed %d times; stopping with %d scored. "
+                              "Re-run to resume.", cid, attempt + 1, len(done_rows))
+                    raise
+                log.warning("readout for %s failed (%s); parking %.0f min. "
+                            "%d chains scored so far.", cid, type(exc).__name__,
+                            args.stall_wait / 60, len(done_rows))
+                time.sleep(args.stall_wait)
         results.append(row)
+        done_rows[cid] = row
+        read_path.parent.mkdir(parents=True, exist_ok=True)
+        read_path.write_text(json.dumps(done_rows))
         log.info("%3d/%d %-6s %-14s -> real %-16s (%s) | ctl %-16s",
                  n, len(picked), cid, row["was"], row["top1"]["real"],
                  "IN TARGET" if row["in_target"]["real"] else city_country.get(row["top1"]["real"], "?"),
