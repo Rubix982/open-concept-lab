@@ -1,0 +1,5 @@
+2026-09-17 07:28:54,804 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-17-072854.log
+2026-09-17 07:28:54,804 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-17 07:28:54,805 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-17 07:29:39,158 INFO     run_e014  delta cache: 84 of 142 already computed
+2026-09-17 07:29:39,159 WARNING  run_e014  --only-cached: reading out 42 fully-optimised chains, deferring 29. Existence claim only; n is NOT a rate.

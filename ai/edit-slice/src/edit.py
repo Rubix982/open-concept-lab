@@ -31,7 +31,7 @@ from typing import Final
 
 import torch
 
-from remote import BACKOFF_S, MAX_ATTEMPTS, _is_transport_error
+from remote import BACKOFF_S, MAX_ATTEMPTS, _is_transport_error, retrying
 
 log: Final[logging.Logger] = logging.getLogger("edit")
 
@@ -82,10 +82,14 @@ def read_key_and_value(model, prompt: str, subject: str, layer: int = LAYER
                        ) -> tuple[torch.Tensor, torch.Tensor]:
     """One remote trace: `k*` and `W k*` at the subject's last token."""
     idx = subject_last_index(model.tokenizer, prompt, subject)
-    with model.trace(prompt, remote=True):
-        k = model.model.layers[layer].mlp.down_proj.input[0, idx].save()
-        v = model.model.layers[layer].mlp.down_proj.output[0, idx].save()
-    return k.float().cpu(), v.float().cpu()
+
+    def once():
+        with model.trace(prompt, remote=True):
+            k = model.model.layers[layer].mlp.down_proj.input[0, idx].save()
+            v = model.model.layers[layer].mlp.down_proj.output[0, idx].save()
+        return k.float().cpu(), v.float().cpu()
+
+    return retrying(once, what=f"k* read for {subject!r}")
 
 
 #: The edit application, as source rather than a function — forced, not stylistic.

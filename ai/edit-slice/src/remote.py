@@ -121,6 +121,31 @@ def _encode_pairs(model: LanguageModel, pairs: list[tuple[str, str]]
     return ids, mask, lengths
 
 
+def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKOFF_S):
+    """Call `fn()`, retrying transport failures with linear backoff.
+
+    Factored out after needing this shape in a FOURTH place. `score_pairs` had it,
+    `compute_v_batch` needed it, the readout loop needed it, and then an unprotected
+    `read_key_and_value` comprehension between them killed a run before a single chain
+    was scored. Anything that opens a remote trace should go through here; the ad-hoc
+    version has been wrong by omission every time.
+    """
+    last: Exception | None = None
+    for attempt in range(tries):
+        try:
+            return fn()
+        except Exception as exc:  # noqa: BLE001 — narrowed by the classifier
+            last = exc
+            if not _is_transport_error(exc) or attempt == tries - 1:
+                raise
+            wait = backoff * (attempt + 1)
+            log.warning("transport failure (%s) during %s, attempt %d/%d; "
+                        "retrying in %.0fs", type(exc).__name__, what,
+                        attempt + 1, tries, wait)
+            time.sleep(wait)
+    raise last  # unreachable; keeps type checkers honest
+
+
 def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                 *, max_rows: int = 200,
                 edit: tuple[int, torch.Tensor, torch.Tensor] | None = None

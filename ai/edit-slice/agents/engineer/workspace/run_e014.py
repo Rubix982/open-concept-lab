@@ -147,8 +147,21 @@ def main() -> None:
         torch.save(deltas, cache_path)
         i += args.chunk
 
-    k_star = {sp.case_id: read_key_and_value(m, sp.prompt, sp.subject, LAYER)[0]
-              for sp in specs}
+    # k* is deterministic in (prompt, subject, layer), so it caches like the deltas.
+    # 84 unprotected remote traces in a comprehension killed a run here before any
+    # chain was scored.
+    ks_path = ROOT / "results" / "cache" / f"E014_kstar_L{LAYER}_s{args.seed}.pt"
+    k_star: dict[str, torch.Tensor] = torch.load(ks_path) if ks_path.exists() else {}
+    missing = [sp for sp in specs if sp.case_id not in k_star]
+    if missing:
+        log.info("k* cache: %d of %d present; reading %d",
+                 len(k_star), len(specs), len(missing))
+        for j, sp in enumerate(missing, 1):
+            k_star[sp.case_id] = read_key_and_value(m, sp.prompt, sp.subject, LAYER)[0]
+            if j % 10 == 0 or j == len(missing):
+                ks_path.parent.mkdir(parents=True, exist_ok=True)
+                torch.save(k_star, ks_path)
+                log.info("  k* %d/%d", j, len(missing))
 
     # Readout cache + parking, the same pattern the v* loop already has. This loop was
     # the one place without it, and it wedged for 37 minutes with zero traces before
