@@ -1009,3 +1009,61 @@ pairing does not support.
 **Blockers:** E-014 (supplies the matched target countries)
 **Artifacts:** agents/engineer/workspace/run_e015.py; results/E-015-*.json
 **Closed:** —
+
+---
+
+### E-016 · The whitened editor — does a targeted update produce a non-zero gap?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-18
+**Updated:** 2026-09-18
+**Estimated:** 8h
+
+**Description:**
+[E-015] returned a paired gap of **+0.0 pp** — a work-country edit relocates the
+birthplace exactly as often as a birth-country edit, so the relocation carries no
+inference. Everything in [E-013]–[E-015] used `C = I`, which [E-013] measured as a
+destructive regime (≈8 nat drops on unrelated same-subject facts). A more targeted
+editor is the one place a genuine inference effect could still hide, and the ROME paper's
+method section is built on the `C⁻¹` term that EasyEdit's fourteen configs disable.
+
+**GATE — measure anisotropy before building anything.** ROME's update uses
+`u = C⁻¹k*`. If the key distribution at layer 5 is near-isotropic then `C⁻¹ ∝ I`, `u ∝ k*`,
+and whitening is a no-op — in which case [E-015]'s null is not an artifact of `C = I` and
+this ticket closes without an experiment. Collect ~2k key vectors, take the spectrum, and
+report the condition number and the participation ratio. Cheap, and it can kill the ticket.
+
+**Feasibility, costed rather than assumed.** `C` is 14336² = **0.82 GB fp32** against 16 GB
+of RAM, and forming plus inverting it is the naive route. Avoid it: with a sample matrix
+`K` (N × d) and ridge `λ`, Woodbury gives
+
+    (λI + KᵀK/N)⁻¹ k*  =  (1/λ)[ k* − Kᵀ (λN I + KKᵀ)⁻¹ K k* ]
+
+so only `KKᵀ` (N × N) is ever formed. At N = 4096 that is 67 MB, not 820 MB, and the
+14336² matrix never exists. Download cost is `K` itself at fp16: N × 14336 × 2 bytes,
+≈ 117 MB at N = 4096, chunked and cached to disk.
+
+**Corpus, and a deliberate divergence.** ROME collects `mom2` over Wikipedia. We collect
+over the CounterFact prompt distribution already on disk. That is *domain-conditional* and
+arguably better matched to what we edit, but it is **not** what ROME does, and any artifact
+must say so. Record the corpus and N alongside every number, as with `k` and out-degree.
+
+**Method, if the gate clears.** Re-run [E-015] unchanged with `u = C⁻¹k*` in place of
+`u = k*`. Same 42 chains, same targets, same pool, same paired readout.
+
+**Falsification, pre-stated.**
+- *Confirm:* the whitened editor produces a materially non-zero paired gap. [E-015]'s null
+  was an artifact of the unwhitened update, and the inference reading returns — for the
+  whitened editor only.
+- *Deny:* the gap stays at zero. The null is robust to the editor's targeting, which is a
+  much stronger negative than [E-015] alone, and it says the displacement mechanism is not
+  a consequence of a blunt update.
+- *Null (gate):* the spectrum is near-isotropic, whitening is arithmetically a no-op, and
+  the question dissolves.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/collect_keys.py; src/whiten.py;
+results/E-016-*.json
+**Closed:** —
