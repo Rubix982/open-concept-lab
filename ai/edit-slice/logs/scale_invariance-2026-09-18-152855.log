@@ -1,0 +1,27 @@
+2026-09-18 15:28:55,415 INFO     scale_invariance  run scale_invariance -> logs/scale_invariance-2026-09-18-152855.log
+2026-09-18 15:28:55,415 INFO     scale_invariance  config {"layer": 5, "scales": [1.0, 0.27, 0.1, 0.03, 0.01], "ticket": "E-016"}
+2026-09-18 15:28:57,741 INFO     scale_invariance  chain   target          x1.0         x0.27        x0.1         x0.03        x0.01      
+2026-09-18 15:29:02,756 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:29:06,995 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:29:11,317 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:29:15,479 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:29:20,001 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:29:20,001 INFO     scale_invariance  254     Chile           Santiago     Paris        Paris        Paris        Paris      
+2026-09-18 15:29:24,063 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:29:28,147 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:29:32,231 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:29:37,234 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:29:41,649 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:29:41,650 INFO     scale_invariance  273     Denmark         Copenhagen   Washington   Washington   Washington   Washington 
+2026-09-18 15:29:45,817 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:29:49,853 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 15:29:54,078 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:29:58,318 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:30:02,398 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:30:02,399 INFO     scale_invariance  345     Finland         Helsinki     Washington   Washington   Washington   Washington 
+2026-09-18 15:30:06,637 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:30:10,694 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 15:30:15,236 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:30:19,326 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:30:23,445 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:30:23,445 INFO     scale_invariance  615     Sweden          Stockholm    Stockholm    Vienna       Vienna       Vienna     

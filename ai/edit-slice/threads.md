@@ -1068,3 +1068,20 @@ occurs. [E-009b] (US = 40/136 of countries) and [E-011] were the same shape. Sho
 every artifact reporting a pool also report its attractor mass, the way out-degree must
 report its edge vocabulary? Cheap, and three findings have now turned on it.
 **Answer:** —
+
+
+---
+
+### T-074 · Does the pinned coefficient survive a prompt that mentions the subject late?
+
+**Status:** open
+**Parent:** T-067
+**Opened:** 2026-09-18
+**Question:** [E-016] established that ROME's `u·k*` normalisation pins the update
+coefficient to exactly 1 at the subject's last token, so any probe sharing the edit
+prompt's prefix receives the full delta for any `C`. Our `inner_1`/`outer` pair shares
+that prefix by construction. A probe mentioning the subject LATER — *"The city where X was
+born is"* — does not, so the coefficient at its subject position would not be pinned.
+If displacement drops sharply for late-subject probes, the leakage is a property of prompt
+FORM rather than of the subject, which is both a sharper statement and an easy test.
+**Answer:** —

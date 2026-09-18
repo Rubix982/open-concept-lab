@@ -137,7 +137,7 @@ def main() -> None:
         b = sum(v["birth"]["in_target"] for v in rs)
         w = sum(v["work"]["in_target"] for v in rs)
         summary[lam] = {"birth": b, "work": w, "n": len(rs)}
-        log.info("%-12.1e%9d%10d%11+.1f pp%10d", lam, b, w,
+        log.info("%-12.1e%9d%10d%+10.1f pp%10d", lam, b, w,
                  100 * (b - w) / max(1, len(rs)), len(rs))
     log.info("")
     log.info("for reference, C = I ([E-015]): birth 28, work 28, gap +0.0 pp, n 42")

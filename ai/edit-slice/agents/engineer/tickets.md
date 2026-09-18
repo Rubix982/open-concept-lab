@@ -1014,7 +1014,7 @@ pairing does not support.
 
 ### E-016 · The whitened editor — does a targeted update produce a non-zero gap?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-18
@@ -1063,7 +1063,17 @@ must say so. Record the corpus and N alongside every number, as with `k` and out
 - *Null (gate):* the spectrum is near-isotropic, whitening is arithmetically a no-op, and
   the question dissolves.
 
+**Result (2026-09-18).** DENY, and the null turns out to be analytic. Paired gap +0.0 pp
+at the primary λ and 42/42 identical destinations, despite the whitened update being ~20x
+more selective on held-out keys. Cause: ROME's `u·k*` normalisation pins the coefficient
+to exactly 1 at the subject's last token, and any probe sharing that prefix has an
+identical key there under causal attention — so the full delta lands regardless of `C`.
+No choice of covariance could have changed [E-015]. Full entry in
+agents/shared/decisions.md [E-016].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/collect_keys.py; src/whiten.py;
-results/E-016-*.json
-**Closed:** —
+**Artifacts:** src/whiten.py; agents/engineer/workspace/{collect_keys,run_e016,
+why_whitening_null,scale_invariance,coeff_profile}.py;
+results/E-016-whitened-meta-llama_Llama-3.1-8B.json;
+agents/shared/decisions.md -> "[E-016] Result"
+**Closed:** 2026-09-18

@@ -1,0 +1,33 @@
+2026-09-18 17:37:29,492 INFO     coeff_profile  run coeff_profile -> logs/coeff_profile-2026-09-18-173729.log
+2026-09-18 17:37:29,493 INFO     coeff_profile  config {"lam": 0.0072, "layer": 5, "ticket": "E-016"}
+2026-09-18 17:37:29,749 INFO     whiten  whitener ready: N=2065 d=14336 lam=7.200e-03 (solve is 2065x2065)
+2026-09-18 17:37:38,820 INFO     coeff_profile  
+2026-09-18 17:37:38,820 INFO     coeff_profile  chain 254 — 'Maurice de Vlaminck was born in the city of'  (subject ends at token 8)
+2026-09-18 17:37:38,820 INFO     coeff_profile     pos token            coeff C=I  coeff C^-1    ratio
+2026-09-18 17:37:38,823 INFO     coeff_profile     5   ' V'                0.0700      0.0590     0.84x
+2026-09-18 17:37:38,824 INFO     coeff_profile     6   'l'                 0.1005      0.0888     0.88x
+2026-09-18 17:37:38,824 INFO     coeff_profile     7   'amin'              0.0918      0.0786     0.86x
+2026-09-18 17:37:38,824 INFO     coeff_profile     8   'ck'                1.0000      1.0000     1.00x  <- subject-last
+2026-09-18 17:37:38,824 INFO     coeff_profile     9   ' was'              0.1156      0.1040     0.90x
+2026-09-18 17:37:38,824 INFO     coeff_profile     14  ' of'               0.0305      0.0086     0.28x
+2026-09-18 17:37:38,826 INFO     coeff_profile     total |coeff| over the prompt: C=I 1.662  C^-1 1.483  (0.89x)
+2026-09-18 17:37:43,512 INFO     coeff_profile  
+2026-09-18 17:37:43,512 INFO     coeff_profile  chain 273 — 'Rio Natsuki was born in the city of'  (subject ends at token 4)
+2026-09-18 17:37:43,512 INFO     coeff_profile     pos token            coeff C=I  coeff C^-1    ratio
+2026-09-18 17:37:43,513 INFO     coeff_profile     2   ' N'                0.0500      0.0330     0.66x
+2026-09-18 17:37:43,513 INFO     coeff_profile     3   'ats'               0.1018      0.0814     0.80x
+2026-09-18 17:37:43,513 INFO     coeff_profile     4   'uki'               1.0000      1.0000     1.00x  <- subject-last
+2026-09-18 17:37:43,513 INFO     coeff_profile     5   ' was'              0.2863      0.2702     0.94x
+2026-09-18 17:37:43,513 INFO     coeff_profile     6   ' born'             0.0631      0.0448     0.71x
+2026-09-18 17:37:43,513 INFO     coeff_profile     8   ' the'              0.0794      0.0608     0.77x
+2026-09-18 17:37:43,514 INFO     coeff_profile     10  ' of'               0.0338      0.0073     0.22x
+2026-09-18 17:37:43,514 INFO     coeff_profile     total |coeff| over the prompt: C=I 1.721  C^-1 1.532  (0.89x)
+2026-09-18 17:37:53,381 INFO     coeff_profile  
+2026-09-18 17:37:53,382 INFO     coeff_profile  chain 345 — 'Charles Nungesser was born in the city of'  (subject ends at token 4)
+2026-09-18 17:37:53,382 INFO     coeff_profile     pos token            coeff C=I  coeff C^-1    ratio
+2026-09-18 17:37:53,382 INFO     coeff_profile     2   ' N'                0.0519      0.0304     0.59x
+2026-09-18 17:37:53,382 INFO     coeff_profile     3   'ung'               0.1126      0.0827     0.73x
+2026-09-18 17:37:53,382 INFO     coeff_profile     4   'esser'             1.0000      1.0000     1.00x  <- subject-last
+2026-09-18 17:37:53,382 INFO     coeff_profile     5   ' was'              0.0666      0.0458     0.69x
+2026-09-18 17:37:53,382 INFO     coeff_profile     10  ' of'               0.0324      0.0071     0.22x
+2026-09-18 17:37:53,383 INFO     coeff_profile     total |coeff| over the prompt: C=I 1.434  C^-1 1.193  (0.83x)

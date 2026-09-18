@@ -1,0 +1,284 @@
+2026-09-18 14:50:06,397 INFO     run_e016  run run_e016 -> logs/run_e016-2026-09-18-145006.log
+2026-09-18 14:50:06,397 INFO     run_e016  config {"corpus": "CounterFact prompts (NOT Wikipedia)", "editor": "ROME whitened, C = K^T K/N + lam I via Woodbury", "keys": [2065, 14336], "lambdas": [0.0072, 0.00072, 0.072], "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 42, "primary_lambda": 0.0072, "ticket": "E-016"}
+2026-09-18 14:50:06,397 INFO     run_e016  42 chains; reusing cached v* — the whitened update still yields exactly v* at k*, so only the coefficient changes
+2026-09-18 14:50:08,780 INFO     run_e016  reading 42 work-arm k* vectors
+2026-09-18 14:50:47,812 INFO     run_e016    k* work 10/42
+2026-09-18 14:51:26,299 INFO     run_e016    k* work 20/42
+2026-09-18 14:52:04,847 INFO     run_e016    k* work 30/42
+2026-09-18 14:52:43,254 INFO     run_e016    k* work 40/42
+2026-09-18 14:52:51,000 INFO     run_e016    k* work 42/42
+2026-09-18 14:52:51,221 INFO     whiten  whitener ready: N=2065 d=14336 lam=7.200e-03 (solve is 2065x2065)
+2026-09-18 14:52:51,381 INFO     whiten  whitener ready: N=2065 d=14336 lam=7.200e-04 (solve is 2065x2065)
+2026-09-18 14:52:51,555 INFO     whiten  whitener ready: N=2065 d=14336 lam=7.200e-02 (solve is 2065x2065)
+2026-09-18 14:52:55,839 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:52:59,936 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:04,086 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:08,280 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:53:12,417 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:17,408 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 14:53:21,597 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:53:25,745 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:29,894 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:34,090 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:53:38,239 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:42,592 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:53:46,769 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:50,949 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:53:55,202 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:53:59,481 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:03,688 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:07,943 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:12,057 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:54:16,244 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:16,246 INFO     run_e016    lam=7.2e-03  10/42
+2026-09-18 14:54:20,956 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 14:54:25,166 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:29,352 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:33,528 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:54:37,685 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:54:41,899 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:46,053 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:54:50,282 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:54,477 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:54:58,613 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:02,763 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:06,928 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:11,448 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 14:55:15,604 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:19,785 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:24,344 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 14:55:28,557 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:55:32,687 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:37,008 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:55:41,223 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:55:41,224 INFO     run_e016    lam=7.2e-03  20/42
+2026-09-18 14:55:45,341 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:55:49,603 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:55:54,091 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 14:55:58,454 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:56:02,939 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:56:07,063 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:56:11,482 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:56:15,754 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:56:19,870 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:56:24,052 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:56:28,217 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:56:32,499 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:56:36,923 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:56:41,015 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:56:45,338 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:56:49,575 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:56:53,782 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:56:57,974 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:57:02,115 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:06,385 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:57:06,386 INFO     run_e016    lam=7.2e-03  30/42
+2026-09-18 14:57:11,023 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 14:57:15,135 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:19,520 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:57:23,730 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:57:27,871 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:31,977 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:37,055 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 14:57:41,229 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:45,615 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:57:49,727 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:53,911 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:57:58,352 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:58:02,570 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:58:07,092 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 14:58:11,507 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:58:15,607 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:58:19,762 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:58:23,950 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:58:28,132 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:58:32,293 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:58:32,295 INFO     run_e016    lam=7.2e-03  40/42
+2026-09-18 14:58:36,492 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:58:40,692 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:58:44,999 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:58:49,049 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 14:58:49,050 INFO     run_e016    lam=7.2e-03  42/42
+2026-09-18 14:58:54,124 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 14:58:58,461 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:59:02,603 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:59:06,801 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:59:11,025 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 14:59:18,338 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.3s
+2026-09-18 14:59:22,655 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 14:59:26,809 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:59:31,230 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:59:35,702 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 14:59:39,874 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:59:44,011 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:59:48,699 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 14:59:52,892 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 14:59:57,373 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:00:01,572 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:00:05,691 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:09,880 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:14,643 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:00:18,778 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:18,780 INFO     run_e016    lam=7.2e-04  10/42
+2026-09-18 15:00:22,916 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:27,072 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:31,183 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:35,305 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:00:39,665 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:00:44,095 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:00:48,313 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:00:52,510 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:00:56,968 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:01:01,171 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:01:05,702 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:01:09,828 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:01:14,029 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:01:18,197 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:01:22,719 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:01:26,782 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 15:01:31,197 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:01:35,722 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:01:39,979 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:01:44,088 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:01:44,091 INFO     run_e016    lam=7.2e-04  20/42
+2026-09-18 15:01:48,327 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:01:52,418 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:01:56,896 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:02:01,366 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:02:05,524 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:09,637 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:13,784 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:17,935 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:22,727 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-18 15:02:27,132 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:02:31,376 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:02:35,512 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:39,687 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:43,814 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:48,036 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:02:52,219 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:02:56,622 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:03:01,352 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:03:05,839 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:03:10,098 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:03:10,100 INFO     run_e016    lam=7.2e-04  30/42
+2026-09-18 15:03:14,256 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:03:18,545 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:03:22,810 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:03:27,035 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:03:31,414 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:03:35,562 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:03:39,737 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:03:44,184 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:03:49,775 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.5s
+2026-09-18 15:03:55,254 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.4s
+2026-09-18 15:03:59,452 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:04:03,577 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:07,731 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:12,156 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:04:16,349 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:04:20,572 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:04:24,669 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:28,754 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 15:04:32,923 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:37,098 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:37,100 INFO     run_e016    lam=7.2e-04  40/42
+2026-09-18 15:04:41,312 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:04:45,704 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:04:49,851 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:54,000 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:04:54,002 INFO     run_e016    lam=7.2e-04  42/42
+2026-09-18 15:04:58,277 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:05:02,655 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:05:06,841 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:05:11,095 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:05:15,567 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:05:19,743 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:05:24,330 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 15:05:28,461 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:05:32,742 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:05:36,961 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:05:41,414 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:05:45,968 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:05:50,134 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:05:54,564 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:05:58,818 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:06:03,841 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:06:08,131 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:06:12,269 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:06:16,533 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:06:20,975 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:06:20,977 INFO     run_e016    lam=7.2e-02  10/42
+2026-09-18 15:06:25,170 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:06:29,257 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-18 15:06:33,436 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:06:37,563 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:06:42,501 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-18 15:06:46,623 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:06:50,980 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:06:55,193 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:06:59,549 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:07:03,690 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:07:08,129 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:07:12,291 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:07:16,510 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:07:20,826 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:07:25,402 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:07:30,169 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:07:34,890 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:07:39,316 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:07:43,894 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:07:48,646 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:07:48,649 INFO     run_e016    lam=7.2e-02  20/42
+2026-09-18 15:07:53,833 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.1s
+2026-09-18 15:07:58,441 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 15:08:02,674 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:08:07,118 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:08:11,249 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:08:16,584 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-18 15:08:21,050 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:08:25,259 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:08:30,116 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-18 15:08:34,729 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 15:08:39,070 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:08:43,538 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:08:47,969 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:08:52,477 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:08:57,190 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 15:09:01,381 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:09:05,562 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:09:09,801 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:09:14,129 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:09:18,245 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:09:18,247 INFO     run_e016    lam=7.2e-02  30/42
+2026-09-18 15:09:22,333 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:09:26,654 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:09:30,854 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:09:35,172 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:09:39,780 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 15:09:43,941 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:09:48,505 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:09:52,962 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 15:09:57,143 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:10:01,694 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:10:06,202 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:10:10,305 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:10:14,667 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:10:19,185 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-18 15:10:23,378 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-18 15:10:28,405 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:10:33,337 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-18 15:10:38,371 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:10:43,022 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-18 15:10:48,008 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 15:10:48,010 INFO     run_e016    lam=7.2e-02  40/42
+2026-09-18 15:10:53,609 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.6s
+2026-09-18 15:10:57,728 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:11:01,902 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-18 15:11:06,279 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 15:11:06,282 INFO     run_e016    lam=7.2e-02  42/42
+2026-09-18 15:11:06,282 INFO     run_e016  
+2026-09-18 15:11:06,282 INFO     run_e016  lambda           birth      work  paired gap         n
+2026-09-18 15:11:06,289 INFO     run_e016  
+2026-09-18 15:11:06,290 INFO     run_e016  for reference, C = I ([E-015]): birth 28, work 28, gap +0.0 pp, n 42
+2026-09-18 15:11:06,292 INFO     run_e016  written: results/E-016-whitened-meta-llama_Llama-3.1-8B.json

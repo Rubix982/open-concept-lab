@@ -690,3 +690,75 @@ inference effect could hide that a blunt one would smear away.
 
 **Artifacts:** src/whiten.py; agents/engineer/workspace/collect_keys.py;
 results/cache/E016_keys_L5.pt; logs/collect_keys-2026-09-18-*.log
+
+---
+
+## [E-016] Result: whitening cannot reduce same-subject leakage, and the reason is analytic
+
+_Date: 2026-09-18 · Llama-3.1-8B, layer 5, 42 chains, three λ_
+
+**The experiment.** Re-ran [E-015]'s paired test with `u = C⁻¹k*`, where `C` is the
+low-rank-plus-ridge key second moment (Woodbury, N=2048, CounterFact prompt corpus).
+
+| condition | birth | work | paired gap | McNemar |
+| --- | ---: | ---: | ---: | --- |
+| `C = I` ([E-015]) | 28 | 28 | +0.0 pp | p = 1.000 |
+| `C⁻¹`, λ = 7.2e-03 *(primary)* | 28 | 28 | **+0.0 pp** | p = 1.000 |
+| `C⁻¹`, λ = 7.2e-04 | 28 | 29 | −2.4 pp | p = 1.000 |
+| `C⁻¹`, λ = 7.2e-02 | 28 | 28 | +0.0 pp | p = 1.000 |
+
+Birth-arm top-1 destination **identical to `C = I` in 42/42 chains at every λ**, despite
+the gate measuring the whitened update as ~20x more selective on held-out keys.
+
+**Why — and this is the finding, not the null.** The coefficient profile along the probe
+prompt shows the coefficient at the subject's last token is **exactly 1.0000 under both
+editors**:
+
+    pos  token      coeff C=I   coeff C⁻¹   ratio
+     8   'ck'          1.0000      1.0000    1.00x    <- subject-last
+     9   ' was'        0.1156      0.1040    0.90x
+    14   ' of'         0.0305      0.0086    0.28x
+
+`k*` is read at the subject's last token of the edit prompt. Any probe sharing that prefix
+— *"X was born in the **city** of"* against *"X was born in the **country** of"* — has an
+**identical key at that position under causal attention**. ROME's coefficient there is
+`(k·u)/(u·k*) = (k*·u)/(u·k*) = 1` for **any** `u`, hence for any `C`.
+
+> **ROME's normalisation guarantees that every prompt sharing the edited subject's prefix
+> receives the full, unattenuated edit vector at the subject position, for any choice of
+> `C`. The whitening term can only reduce leakage to prompts that do not share the prefix.**
+
+That is analytic, not statistical, and it accounts for every measurement in this arc:
+
+| observation | explained by |
+| --- | --- |
+| `inner_1` displaced, 67% ([E-014]) | shares the prefix → pinned coefficient 1.0 |
+| `inner_2` inert, −0.02 ([E-013]) | *"Paris is located in…"* shares no prefix → nothing pinned |
+| whitening changes nothing, 42/42 | cannot touch a coefficient fixed at 1 by construction |
+| a uniform ×0.27 rescale **does** break relocation (3 of 4) | that scales the pinned term too |
+
+**Two wrong mechanisms, recorded rather than quietly dropped.** (1) "The probe key is
+aligned with `k*` so whitening preserves it" — refuted, cos = 0.034, near-orthogonal.
+(2) "The destination is scale-invariant" — refuted, ×0.27 breaks relocation in 3 of 4
+chains. The third guess was measured rather than predicted, and only the per-position
+profile revealed it. The earlier "3.7x attenuation" figure was measured at the probe's
+FINAL token, which contributes 0.03 of a 1.66 total — 2% of the mass — so it described a
+negligible part of the update.
+
+**Consequences.**
+- [E-015]'s null is **not** an artifact of a blunt editor. It is structural: no choice of
+  `C` could have produced a different answer.
+- `mom2_adjustment: false` matters less than [E-013] gate 0 implied for same-subject
+  effects, and this is a defensible reason rather than a shrug.
+- Any method proposing to limit an edit's blast radius by reweighting `u` inherits this
+  limit. Reducing same-subject leakage requires changing the normalisation or the key
+  selection, not the covariance. **Out of scope to pursue** — CLAUDE.md forbids proposing
+  methods — but it is the sharpest thing this project has produced and belongs in writing.
+
+**Threat to the claim.** It rests on the probe sharing a prefix with the edit prompt up to
+the subject's last token, which is true of our `inner_1`/`outer` pair by construction. A
+probe that mentions the subject LATER ("The city where X was born is") would not share the
+prefix, and the coefficient there is not pinned. Untested, and the obvious next probe.
+
+**Artifacts:** agents/engineer/workspace/{run_e016,why_whitening_null,scale_invariance,
+coeff_profile}.py; src/whiten.py; results/E-016-whitened-meta-llama_Llama-3.1-8B.json
