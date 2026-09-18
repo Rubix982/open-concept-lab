@@ -1103,3 +1103,90 @@ before concluding from its prose.
 
 **Confidence: high.** Two independent pieces of evidence from the paper itself —
 an explicit construction description and a reported baseline number — agreeing.
+
+## [R-010] Finding: the WHY gate narrows sharply — two of three proposed contributions are taken
+
+_Date: 2026-09-18 · verified against sources, not recalled_
+
+Run before building the probing taxonomy the project was about to pivot to. Three
+prior-art hits, two of them direct.
+
+### 1 · Surface form competition — E-011's phenomenon is known
+
+**Holtzman, West, Shwartz, Choi, Zettlemoyer — "Surface Form Competition: Why the
+Highest Probability Answer Isn't Always Right", EMNLP 2021, arXiv:2104.08315.**
+
+Different surface forms of the same concept compete for finite probability mass, so
+ranking answer options by string probability is systematically distorted. Their fix is
+**Domain Conditional PMI**: reweight each option by its a priori likelihood in the task
+context.
+
+This is [E-011] — `" United States"` losing to bare-name countries because of its form,
+not the model's knowledge. And **our placeholder lift test is essentially PMI against a
+neutral prompt**: `log P(a|prompt) − log P(a|placeholder)`. [E-012]'s paired-subject
+AUROC is a rank-based cousin of the same correction. We re-derived a 2021 result and
+its standard remedy. **No artifact may present E-011 as novel.**
+
+### 2 · Knowledge status × edit success — the proposed contribution is taken
+
+**"Diagnosing Model Editing via Knowledge Spectrum", arXiv:2509.17482, 22 Sept 2025.**
+
+Classifies target knowledge by **Popularity** (Wikipedia pageviews), **Familiarity**
+(Known/Unknown pre-edit, SliCK-style generation probing) and **Question Type**, then
+measures edit success across them. On **LLaMA-3.1-8B** — our model — with MEMIT,
+AlphaEdit and FT. Finds **Unknown facts edit more successfully than Known** (0.88 vs
+0.84, AlphaEdit) and **Famous more than Unfamous** (0.88 vs 0.82).
+
+That is the "does possession predict editability" experiment, already run. It also
+overlaps [T-061]: they find popularity predicts edit success where we found prominence
+predicts possession level.
+
+### 3 · ParaRel — closes [R-008]
+
+**Elazar, Kassner, Ravfogel, Ravichander, Hovy, Schütze, Goldberg — "Measuring and
+Improving Consistency in Pretrained Language Models", TACL 2021, arXiv:2102.01017.**
+**328 paraphrases across 38 relations, explicitly including `X born-in Y`.** So `P19`
+is covered and design.md Part II should adopt these rather than hand-write templates.
+
+---
+
+### What survives, and it is narrower but sharper
+
+Read directly, the Knowledge Spectrum paper does **not**:
+
+- **examine grounds, premises or entailment consequences at all** — it measures direct
+  edit success plus general ability on ARC/OpenBookQA, never the fact's justifications.
+  The backward/grounds question remains unclaimed;
+- **ask whether its own Familiarity classification is phrasing-dependent.** It uses
+  paraphrases to test *generalisation of the edit*, never to test *the stability of the
+  Known/Unknown label*;
+- **use a discriminative control.** Familiarity is binary from generation, so it has no
+  cell for "the model holds the fact but this phrasing cannot elicit it" — our `MUTE`;
+- **analyse destination** — where probability goes after an edit, [E-014]'s 67%/82%.
+
+**The sharpest surviving claim, and it is a critique with teeth.** A Familiarity-style
+Known/Unknown axis inherits surface form competition. [E-011] measured the same facts
+flipping cell under rendering — rank-1 on modal answers went 21% → 69% from spelling
+alone. So facts that are `MUTE` get labelled *Unknown* by generation probing. If
+`MUTE` facts edit easily — and a fact the model holds but cannot express is plausibly
+easy to overwrite — then **"Unknown facts edit more successfully" may be partly
+measuring phrasing rather than knowledge.** That is testable with machinery we already
+have, it is falsifiable, and it bears on a live result.
+
+**Confidence: high** on hits 1 and 3 (sources read directly); **high** on hit 2's
+content, **medium** on the inference that MUTE misclassification drives their result —
+that is our hypothesis, not their claim.
+
+### Consequences
+
+- **The broad framing is dead.** "A taxonomy of knowledge probing" is crowded, and
+  "does knowledge status predict editability" is taken. Per the WHY gate's stop
+  condition, do not design further on either.
+- **Reposition to what is unclaimed:** grounds/premises under editing; the stability of
+  the pre-edit knowledge label itself; the `MUTE` cell and what it does to conclusions
+  conditioned on Known/Unknown.
+- **[R-008] closes.** Adopt ParaRel's templates for design.md Part II.
+- Cite `arXiv:2104.08315`, `arXiv:2102.01017`, `arXiv:2509.17482` — all verified here,
+  none from memory.
+
+**Artifacts:** this entry; closes R-008 and R-010.

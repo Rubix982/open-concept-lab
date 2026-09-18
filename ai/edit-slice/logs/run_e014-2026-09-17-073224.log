@@ -1,0 +1,206 @@
+2026-09-17 07:32:24,194 INFO     run_e014  run run_e014 -> logs/run_e014-2026-09-17-073224.log
+2026-09-17 07:32:24,194 INFO     run_e014  config {"chunk": 6, "city_pool": 75, "dropped_malformed": ["Auckland", "Chicago", "Florida", "Georgetown", "Hamburg", "Nebraska", "Norfolk", "Pittsburgh", "Springfield", "Tottenham", "Venice", "Wisconsin"], "editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 71, "seed": 1538, "ticket": "E-014"}
+2026-09-17 07:32:24,194 INFO     run_e014  71 clean chains, 75 cities in the pool
+2026-09-17 07:32:26,787 INFO     run_e014  delta cache: 84 of 142 already computed
+2026-09-17 07:32:26,787 WARNING  run_e014  --only-cached: reading out 42 fully-optimised chains, deferring 29. Existence claim only; n is NOT a rate.
+2026-09-17 07:32:26,787 INFO     run_e014  k* cache: 0 of 84 present; reading 84
+2026-09-17 07:33:44,872 WARNING  remote  transport failure (ConnectTimeout) during k* read for 'Lunice', attempt 1/8; retrying in 5s
+2026-09-17 07:34:12,894 INFO     run_e014    k* 10/84
+2026-09-17 07:34:36,281 WARNING  remote  transport failure (ConnectTimeout) during k* read for 'Clark Durant', attempt 1/8; retrying in 5s
+2026-09-17 07:35:18,448 INFO     run_e014    k* 20/84
+2026-09-17 07:35:57,771 INFO     run_e014    k* 30/84
+2026-09-17 07:36:38,591 INFO     run_e014    k* 40/84
+2026-09-17 07:37:25,786 INFO     run_e014    k* 50/84
+2026-09-17 07:38:05,845 INFO     run_e014    k* 60/84
+2026-09-17 07:38:43,955 INFO     run_e014    k* 70/84
+2026-09-17 07:39:22,744 INFO     run_e014    k* 80/84
+2026-09-17 07:39:39,894 INFO     run_e014    k* 84/84
+2026-09-17 07:39:39,897 INFO     run_e014  readout cache: 0 chains already scored
+2026-09-17 07:39:43,674 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-17 07:39:47,764 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:39:51,933 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:39:51,935 INFO     run_e014    1/42 61     Edinburgh      -> real Washington, D.C. (United States) | ctl Glasgow         
+2026-09-17 07:39:55,672 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-17 07:39:59,733 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-17 07:40:03,900 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:40:03,902 INFO     run_e014    2/42 254    Paris          -> real Santiago         (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:40:07,398 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:40:12,428 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-17 07:40:16,541 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:40:16,542 INFO     run_e014    3/42 273    Tokyo          -> real Copenhagen       (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:40:20,023 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:40:24,256 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:40:28,730 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:40:28,731 INFO     run_e014    4/42 342    Montreal       -> real Melbourne        (United States) | ctl Washington, D.C.
+2026-09-17 07:40:32,102 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-17 07:40:37,533 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.4s
+2026-09-17 07:40:41,833 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:40:41,835 INFO     run_e014    5/42 345    Paris          -> real Helsinki         (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:40:45,271 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-17 07:40:49,643 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:40:53,814 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:40:53,816 INFO     run_e014    6/42 507    Detroit        -> real Washington, D.C. (United States) | ctl Philadelphia    
+2026-09-17 07:40:57,238 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-17 07:41:01,400 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:41:06,122 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-17 07:41:06,124 INFO     run_e014    7/42 590    Helsinki       -> real Melbourne        (United States) | ctl Washington, D.C.
+2026-09-17 07:41:09,677 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:41:14,730 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-17 07:41:19,746 WARNING  remote  transport failure (ConnectionError) on attempt 1/8; retrying in 5s
+2026-09-17 07:41:29,248 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:41:29,250 INFO     run_e014    8/42 615    Vienna         -> real Stockholm        (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:41:32,837 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:41:38,666 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.8s
+2026-09-17 07:41:43,584 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-17 07:41:43,586 INFO     run_e014    9/42 747    Budapest       -> real Tehran           (IN TARGET) | ctl Bucharest       
+2026-09-17 07:41:47,152 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:41:51,260 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:41:55,444 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:41:55,445 INFO     run_e014   10/42 1126   Madrid         -> real Washington, D.C. (United States) | ctl Washington, D.C.
+2026-09-17 07:41:59,094 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:42:03,240 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:42:07,441 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:42:07,443 INFO     run_e014   11/42 1289   Honolulu       -> real New Delhi        (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:42:11,073 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:42:15,410 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:42:19,569 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:42:19,571 INFO     run_e014   12/42 1315   Philadelphia   -> real Washington, D.C. (United States) | ctl Washington, D.C.
+2026-09-17 07:42:22,957 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-17 07:42:27,097 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:42:31,913 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-17 07:42:31,915 INFO     run_e014   13/42 1401   Santiago       -> real Geneva           (IN TARGET) | ctl Barcelona       
+2026-09-17 07:42:35,610 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-17 07:42:42,053 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.4s
+2026-09-17 07:42:46,364 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:42:46,367 INFO     run_e014   14/42 1555   Madrid         -> real Washington, D.C. (United States) | ctl Washington, D.C.
+2026-09-17 07:42:51,690 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-17 07:42:56,036 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:43:00,276 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:43:00,277 INFO     run_e014   15/42 1688   Budapest       -> real Stockholm        (IN TARGET) | ctl Budapest        
+2026-09-17 07:43:04,623 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:43:08,865 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:43:13,283 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:43:13,285 INFO     run_e014   16/42 1692   Lyon           -> real Madrid           (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:43:16,768 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:43:21,162 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:43:26,107 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-17 07:43:26,109 INFO     run_e014   17/42 1715   Lyon           -> real Copenhagen       (IN TARGET) | ctl Melbourne       
+2026-09-17 07:43:29,627 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:43:35,053 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.4s
+2026-09-17 07:43:39,145 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:43:39,146 INFO     run_e014   18/42 1737   Madrid         -> real Washington, D.C. (IN TARGET) | ctl Madrid          
+2026-09-17 07:43:42,739 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:43:46,974 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:43:51,172 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:43:51,175 INFO     run_e014   19/42 1794   Tokyo          -> real Washington, D.C. (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:43:54,757 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:43:59,262 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:44:03,512 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:44:03,513 INFO     run_e014   20/42 1798   Amsterdam      -> real London           (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:44:07,322 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-17 07:44:11,550 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:44:17,053 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.5s
+2026-09-17 07:44:17,055 INFO     run_e014   21/42 1901   Naples         -> real Washington, D.C. (United States) | ctl London          
+2026-09-17 07:44:22,315 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-17 07:44:26,710 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:44:30,899 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:44:30,900 INFO     run_e014   22/42 1904   Houston        -> real Montreal         (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:44:34,430 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:44:38,474 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-17 07:44:42,746 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:44:42,747 INFO     run_e014   23/42 2151   Paris          -> real Philadelphia     (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:44:47,060 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:44:52,410 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-17 07:44:56,508 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:44:56,510 INFO     run_e014   24/42 2165   Copenhagen     -> real Tokyo            (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:45:00,105 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:45:04,605 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:45:09,565 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-17 07:45:09,567 INFO     run_e014   25/42 2236   Montreal       -> real Helsinki         (IN TARGET) | ctl Munich          
+2026-09-17 07:45:14,096 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:45:18,402 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:45:24,365 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.0s
+2026-09-17 07:45:24,367 INFO     run_e014   26/42 2418   Budapest       -> real New Delhi        (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:45:28,007 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:45:32,342 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:45:36,685 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:45:36,687 INFO     run_e014   27/42 2498   Paris          -> real Washington, D.C. (United States) | ctl Paris           
+2026-09-17 07:45:40,231 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:45:44,307 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:45:49,169 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-17 07:45:49,171 INFO     run_e014   28/42 2502   Helsinki       -> real Rome             (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:45:52,715 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:45:56,918 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:46:01,301 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:46:01,302 INFO     run_e014   29/42 2754   Stockholm      -> real Copenhagen       (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:46:05,832 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:46:10,022 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:46:14,808 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-17 07:46:14,810 INFO     run_e014   30/42 2767   Lisbon         -> real Washington, D.C. (United States) | ctl Washington, D.C.
+2026-09-17 07:46:18,349 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:46:25,026 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.7s
+2026-09-17 07:46:30,309 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-17 07:46:30,312 INFO     run_e014   31/42 2777   Copenhagen     -> real Washington, D.C. (United States) | ctl London          
+2026-09-17 07:46:33,948 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:46:38,467 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:46:42,705 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:46:42,707 INFO     run_e014   32/42 2912   Oslo           -> real Washington, D.C. (United States) | ctl Washington, D.C.
+2026-09-17 07:46:46,291 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:46:50,574 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:46:55,036 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-17 07:46:55,038 INFO     run_e014   33/42 2959   Boston         -> real Santiago         (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:46:58,808 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-17 07:47:03,186 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:47:07,228 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-17 07:47:07,229 INFO     run_e014   34/42 3005   Paris          -> real Prague           (IN TARGET) | ctl Montreal        
+2026-09-17 07:47:10,775 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:47:16,897 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.1s
+2026-09-17 07:47:21,501 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-17 07:47:21,503 INFO     run_e014   35/42 3011   Manila         -> real Paris            (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:47:25,301 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-17 07:47:29,899 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.6s
+2026-09-17 07:47:34,342 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:47:34,344 INFO     run_e014   36/42 3040   Brooklyn       -> real Washington, D.C. (United States) | ctl Brooklyn        
+2026-09-17 07:47:37,903 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:47:42,036 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:47:46,185 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:47:46,186 INFO     run_e014   37/42 3048   Budapest       -> real Chennai          (IN TARGET) | ctl Bucharest       
+2026-09-17 07:47:49,655 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:47:53,958 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-17 07:47:58,671 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-17 07:47:58,674 INFO     run_e014   38/42 3094   Rome           -> real Budapest         (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:48:02,173 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:48:06,365 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:48:11,492 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.1s
+2026-09-17 07:48:11,497 INFO     run_e014   39/42 3181   Nice           -> real Chennai          (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:48:14,985 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:48:19,081 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:48:23,124 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-17 07:48:23,126 INFO     run_e014   40/42 3242   Stockholm      -> real Washington, D.C. (United States) | ctl Budapest        
+2026-09-17 07:48:26,670 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-17 07:48:31,033 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-17 07:48:35,154 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-17 07:48:35,155 INFO     run_e014   41/42 3531   Tokyo          -> real Rome             (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:48:38,782 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-17 07:48:43,023 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:48:47,241 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-17 07:48:47,244 INFO     run_e014   42/42 3567   Manchester     -> real Vienna           (IN TARGET) | ctl Washington, D.C.
+2026-09-17 07:48:47,246 INFO     run_e014  
+2026-09-17 07:48:47,246 INFO     run_e014  lands in ...                    base      real       ctl
+2026-09-17 07:48:47,246 INFO     run_e014  TARGET country                    5%       67%        5%
+2026-09-17 07:48:47,246 INFO     run_e014  placebo country                   2%        0%        7%
+2026-09-17 07:48:47,246 INFO     run_e014  of those, the capital                      82%
+2026-09-17 07:48:47,246 INFO     run_e014  
+2026-09-17 07:48:47,246 INFO     run_e014  by target country (real edit), countries with n>=2:
+2026-09-17 07:48:47,246 INFO     run_e014     Czech Republic                1/5  =  20%
+2026-09-17 07:48:47,246 INFO     run_e014     India                         4/4  = 100%
+2026-09-17 07:48:47,246 INFO     run_e014     Denmark                       3/3  = 100%
+2026-09-17 07:48:47,246 INFO     run_e014     Finland                       2/3  =  67%
+2026-09-17 07:48:47,247 INFO     run_e014     New Zealand                   0/3  =   0%
+2026-09-17 07:48:47,247 INFO     run_e014     United States                 3/3  = 100%
+2026-09-17 07:48:47,247 INFO     run_e014     Chile                         2/2  = 100%
+2026-09-17 07:48:47,247 INFO     run_e014     Australia                     0/2  =   0%
+2026-09-17 07:48:47,247 INFO     run_e014     Sweden                        2/2  = 100%
+2026-09-17 07:48:47,247 INFO     run_e014     Switzerland                   1/2  =  50%
+2026-09-17 07:48:47,247 INFO     run_e014     Italy                         2/2  = 100%
+2026-09-17 07:48:47,247 INFO     run_e014  written: results/E-014-destination-meta-llama_Llama-3.1-8B.json

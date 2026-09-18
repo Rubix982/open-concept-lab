@@ -256,7 +256,7 @@ already know why they differ [T-044].
 
 ### R-008 · ParaRel coverage of P19 and P17 — the Part II gate
 
-**Status:** open
+**Status:** closed — answered inside [R-010]
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-15
@@ -328,3 +328,30 @@ finding about the field until (1) is verified.
 **Blockers:** none
 **Artifacts:** agents/shared/findings.md → "[R-009] ROME implementations"
 **Closed:** —
+
+
+---
+
+### R-010 · Prior-art gate on the probing taxonomy
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-18
+**Updated:** 2026-09-18
+**Closed:** 2026-09-18
+
+**Description:** Run before pivoting the project to a probing/editability taxonomy.
+Four questions: does the surface-form/PMI literature cover E-011 and E-012; has anyone
+crossed possession classification with edit outcome; what is the correct citation for
+surface form competition; does R-008's ParaRel question fold in.
+
+**Result — the gate did NOT clear for the broad framing.** E-011's phenomenon is
+Holtzman et al. EMNLP 2021 (arXiv:2104.08315) and our placeholder lift is essentially
+their PMI correction. The possession x editability experiment is arXiv:2509.17482
+(Sept 2025), on our exact model. ParaRel covers `X born-in Y` (arXiv:2102.01017, TACL
+2021), closing R-008. What survives: grounds/premises under editing, the phrasing
+stability of the pre-edit knowledge label, and the MUTE cell. Full entry in
+agents/shared/findings.md [R-010].
+
+**Artifacts:** agents/shared/findings.md -> "[R-010]"
