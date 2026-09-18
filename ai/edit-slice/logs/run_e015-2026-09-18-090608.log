@@ -1,0 +1,377 @@
+2026-09-18 09:06:08,908 INFO     run_e015  run run_e015 -> logs/run_e015-2026-09-18-090608.log
+2026-09-18 09:06:08,908 INFO     run_e015  config {"editor": "ROME as configured by EasyEdit (C = I)", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 42, "pool": 75, "seed": 1538, "targets_from": "E-014-destination-meta-llama_Llama-3.1-8B.json", "ticket": "E-015", "work_template": "{} works in the country of"}
+2026-09-18 09:06:08,908 INFO     run_e015  42 chains, targets matched from E-014
+2026-09-18 09:06:11,688 INFO     run_e015  delta cache: 0 of 42
+2026-09-18 09:06:11,688 INFO     run_e015  v* 1-6 of 42 remaining
+2026-09-18 09:07:09,737 DEBUG    edit  batch step  1/25  summed loss 42.8484
+2026-09-18 09:07:17,619 DEBUG    edit  batch step  2/25  summed loss 23.1100
+2026-09-18 09:07:32,173 DEBUG    edit  batch step  3/25  summed loss 8.8013
+2026-09-18 09:07:41,705 DEBUG    edit  batch step  4/25  summed loss 7.9506
+2026-09-18 09:07:53,838 WARNING  edit  transport failure (WriteTimeout) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-18 09:08:06,578 DEBUG    edit  batch step  5/25  summed loss 7.6922
+2026-09-18 09:08:15,320 DEBUG    edit  batch step  6/25  summed loss 4.6330
+2026-09-18 09:08:27,479 WARNING  edit  transport failure (WriteTimeout) on v* step 7 attempt 1/8; retrying in 5s
+2026-09-18 09:08:44,586 WARNING  edit  transport failure (WriteTimeout) on v* step 7 attempt 2/8; retrying in 10s
+2026-09-18 09:09:08,022 WARNING  edit  transport failure (WriteTimeout) on v* step 7 attempt 3/8; retrying in 15s
+2026-09-18 09:09:32,633 DEBUG    edit  batch step  7/25  summed loss 2.1395
+2026-09-18 09:09:44,811 WARNING  edit  transport failure (WriteTimeout) on v* step 8 attempt 1/8; retrying in 5s
+2026-09-18 09:10:01,940 WARNING  edit  transport failure (WriteTimeout) on v* step 8 attempt 2/8; retrying in 10s
+2026-09-18 09:10:19,581 DEBUG    edit  batch step  8/25  summed loss 1.3250
+2026-09-18 09:10:31,784 WARNING  edit  transport failure (WriteTimeout) on v* step 9 attempt 1/8; retrying in 5s
+2026-09-18 09:10:44,146 DEBUG    edit  batch step  9/25  summed loss 1.2982
+2026-09-18 09:10:51,468 DEBUG    edit  batch step 10/25  summed loss 1.2622
+2026-09-18 09:11:08,325 DEBUG    edit  batch step 11/25  summed loss 1.2603
+2026-09-18 09:11:16,426 DEBUG    edit  batch step 12/25  summed loss 1.2316
+2026-09-18 09:11:27,625 DEBUG    edit  batch step 13/25  summed loss 1.2240
+2026-09-18 09:11:35,759 DEBUG    edit  batch step 14/25  summed loss 1.2094
+2026-09-18 09:11:43,834 DEBUG    edit  batch step 15/25  summed loss 1.2121
+2026-09-18 09:11:51,589 DEBUG    edit  batch step 16/25  summed loss 1.2058
+2026-09-18 09:11:59,427 DEBUG    edit  batch step 17/25  summed loss 1.1953
+2026-09-18 09:12:10,382 DEBUG    edit  batch step 18/25  summed loss 1.1932
+2026-09-18 09:12:19,799 DEBUG    edit  batch step 19/25  summed loss 1.1921
+2026-09-18 09:12:35,199 DEBUG    edit  batch step 20/25  summed loss 1.1827
+2026-09-18 09:12:50,617 DEBUG    edit  batch step 21/25  summed loss 1.1787
+2026-09-18 09:12:58,302 DEBUG    edit  batch step 22/25  summed loss 1.1817
+2026-09-18 09:13:06,175 DEBUG    edit  batch step 23/25  summed loss 1.1730
+2026-09-18 09:13:14,388 DEBUG    edit  batch step 24/25  summed loss 1.1755
+2026-09-18 09:13:26,526 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 1/8; retrying in 5s
+2026-09-18 09:13:39,260 DEBUG    edit  batch step 25/25  summed loss 1.1695
+2026-09-18 09:13:39,264 INFO     run_e015  v* 7-12 of 42 remaining
+2026-09-18 09:14:25,336 DEBUG    edit  batch step  1/25  summed loss 46.8972
+2026-09-18 09:14:32,943 DEBUG    edit  batch step  2/25  summed loss 30.6233
+2026-09-18 09:14:45,195 WARNING  edit  transport failure (WriteTimeout) on v* step 3 attempt 1/8; retrying in 5s
+2026-09-18 09:14:58,456 DEBUG    edit  batch step  3/25  summed loss 19.8049
+2026-09-18 09:15:05,952 DEBUG    edit  batch step  4/25  summed loss 7.9301
+2026-09-18 09:15:21,130 DEBUG    edit  batch step  5/25  summed loss 7.4965
+2026-09-18 09:15:30,045 DEBUG    edit  batch step  6/25  summed loss 5.5354
+2026-09-18 09:15:37,839 DEBUG    edit  batch step  7/25  summed loss 4.2412
+2026-09-18 09:15:49,987 WARNING  edit  transport failure (WriteTimeout) on v* step 8 attempt 1/8; retrying in 5s
+2026-09-18 09:16:03,293 DEBUG    edit  batch step  8/25  summed loss 2.9977
+2026-09-18 09:16:11,108 DEBUG    edit  batch step  9/25  summed loss 2.4249
+2026-09-18 09:16:18,604 DEBUG    edit  batch step 10/25  summed loss 2.3828
+2026-09-18 09:16:32,954 DEBUG    edit  batch step 11/25  summed loss 2.3170
+2026-09-18 09:16:42,341 DEBUG    edit  batch step 12/25  summed loss 2.2948
+2026-09-18 09:16:51,649 DEBUG    edit  batch step 13/25  summed loss 2.2313
+2026-09-18 09:16:59,392 DEBUG    edit  batch step 14/25  summed loss 2.2115
+2026-09-18 09:17:14,211 DEBUG    edit  batch step 15/25  summed loss 2.1701
+2026-09-18 09:17:22,240 DEBUG    edit  batch step 16/25  summed loss 2.1288
+2026-09-18 09:17:30,396 DEBUG    edit  batch step 17/25  summed loss 2.1154
+2026-09-18 09:17:37,960 DEBUG    edit  batch step 18/25  summed loss 2.0995
+2026-09-18 09:17:50,047 WARNING  edit  transport failure (WriteTimeout) on v* step 19 attempt 1/8; retrying in 5s
+2026-09-18 09:18:05,721 DEBUG    edit  batch step 19/25  summed loss 2.0596
+2026-09-18 09:18:19,695 WARNING  edit  transport failure (WriteTimeout) on v* step 20 attempt 1/8; retrying in 5s
+2026-09-18 09:18:35,720 DEBUG    edit  batch step 20/25  summed loss 2.0404
+2026-09-18 09:18:45,605 DEBUG    edit  batch step 21/25  summed loss 2.0238
+2026-09-18 09:18:53,690 DEBUG    edit  batch step 22/25  summed loss 2.0269
+2026-09-18 09:19:03,049 DEBUG    edit  batch step 23/25  summed loss 2.0108
+2026-09-18 09:19:13,971 DEBUG    edit  batch step 24/25  summed loss 2.0012
+2026-09-18 09:19:21,606 DEBUG    edit  batch step 25/25  summed loss 1.9885
+2026-09-18 09:19:21,619 INFO     run_e015  v* 13-18 of 42 remaining
+2026-09-18 09:20:18,416 DEBUG    edit  batch step  1/25  summed loss 36.5939
+2026-09-18 09:20:28,793 DEBUG    edit  batch step  2/25  summed loss 23.2226
+2026-09-18 09:20:42,174 DEBUG    edit  batch step  3/25  summed loss 11.5475
+2026-09-18 09:20:54,295 WARNING  edit  transport failure (WriteTimeout) on v* step 4 attempt 1/8; retrying in 5s
+2026-09-18 09:21:09,465 DEBUG    edit  batch step  4/25  summed loss 4.4422
+2026-09-18 09:21:25,161 DEBUG    edit  batch step  5/25  summed loss 2.8003
+2026-09-18 09:21:33,917 DEBUG    edit  batch step  6/25  summed loss 2.2119
+2026-09-18 09:21:51,354 DEBUG    edit  batch step  7/25  summed loss 2.0486
+2026-09-18 09:21:59,148 DEBUG    edit  batch step  8/25  summed loss 1.9561
+2026-09-18 09:22:06,670 DEBUG    edit  batch step  9/25  summed loss 1.8649
+2026-09-18 09:22:20,889 DEBUG    edit  batch step 10/25  summed loss 1.8047
+2026-09-18 09:22:31,222 DEBUG    edit  batch step 11/25  summed loss 1.7663
+2026-09-18 09:22:40,239 DEBUG    edit  batch step 12/25  summed loss 1.7386
+2026-09-18 09:22:52,341 WARNING  edit  transport failure (WriteTimeout) on v* step 13 attempt 1/8; retrying in 5s
+2026-09-18 09:23:07,676 DEBUG    edit  batch step 13/25  summed loss 1.7024
+2026-09-18 09:23:23,074 DEBUG    edit  batch step 14/25  summed loss 1.6764
+2026-09-18 09:23:31,396 DEBUG    edit  batch step 15/25  summed loss 1.6723
+2026-09-18 09:23:39,516 DEBUG    edit  batch step 16/25  summed loss 1.6537
+2026-09-18 09:23:47,240 DEBUG    edit  batch step 17/25  summed loss 1.6404
+2026-09-18 09:23:58,433 DEBUG    edit  batch step 18/25  summed loss 1.6289
+2026-09-18 09:24:06,637 DEBUG    edit  batch step 19/25  summed loss 1.6273
+2026-09-18 09:24:18,842 WARNING  edit  transport failure (WriteTimeout) on v* step 20 attempt 1/8; retrying in 5s
+2026-09-18 09:24:36,149 WARNING  edit  transport failure (WriteTimeout) on v* step 20 attempt 2/8; retrying in 10s
+2026-09-18 09:24:57,870 DEBUG    edit  batch step 20/25  summed loss 1.6339
+2026-09-18 09:25:12,361 DEBUG    edit  batch step 21/25  summed loss 1.6223
+2026-09-18 09:25:20,613 DEBUG    edit  batch step 22/25  summed loss 1.6305
+2026-09-18 09:25:29,870 DEBUG    edit  batch step 23/25  summed loss 1.6123
+2026-09-18 09:25:40,897 DEBUG    edit  batch step 24/25  summed loss 1.6060
+2026-09-18 09:25:51,217 DEBUG    edit  batch step 25/25  summed loss 1.6092
+2026-09-18 09:25:51,232 INFO     run_e015  v* 19-24 of 42 remaining
+2026-09-18 09:26:43,657 DEBUG    edit  batch step  1/25  summed loss 22.0877
+2026-09-18 09:26:54,003 DEBUG    edit  batch step  2/25  summed loss 13.8951
+2026-09-18 09:27:02,616 DEBUG    edit  batch step  3/25  summed loss 8.2410
+2026-09-18 09:27:15,983 DEBUG    edit  batch step  4/25  summed loss 10.7122
+2026-09-18 09:27:23,878 DEBUG    edit  batch step  5/25  summed loss 8.6333
+2026-09-18 09:27:31,487 DEBUG    edit  batch step  6/25  summed loss 7.5884
+2026-09-18 09:27:39,237 DEBUG    edit  batch step  7/25  summed loss 3.2482
+2026-09-18 09:27:48,277 DEBUG    edit  batch step  8/25  summed loss 2.5034
+2026-09-18 09:27:56,079 DEBUG    edit  batch step  9/25  summed loss 2.1884
+2026-09-18 09:28:06,479 DEBUG    edit  batch step 10/25  summed loss 1.9942
+2026-09-18 09:28:18,588 WARNING  edit  transport failure (WriteTimeout) on v* step 11 attempt 1/8; retrying in 5s
+2026-09-18 09:28:31,455 DEBUG    edit  batch step 11/25  summed loss 1.9003
+2026-09-18 09:28:39,977 DEBUG    edit  batch step 12/25  summed loss 1.8150
+2026-09-18 09:28:53,913 DEBUG    edit  batch step 13/25  summed loss 1.7725
+2026-09-18 09:29:01,325 DEBUG    edit  batch step 14/25  summed loss 1.7235
+2026-09-18 09:29:10,872 DEBUG    edit  batch step 15/25  summed loss 1.7057
+2026-09-18 09:29:19,403 DEBUG    edit  batch step 16/25  summed loss 1.6632
+2026-09-18 09:29:29,765 DEBUG    edit  batch step 17/25  summed loss 1.6551
+2026-09-18 09:29:41,901 WARNING  edit  transport failure (WriteTimeout) on v* step 18 attempt 1/8; retrying in 5s
+2026-09-18 09:29:54,705 DEBUG    edit  batch step 18/25  summed loss 1.6462
+2026-09-18 09:30:02,816 DEBUG    edit  batch step 19/25  summed loss 1.6256
+2026-09-18 09:30:11,528 DEBUG    edit  batch step 20/25  summed loss 1.6077
+2026-09-18 09:30:28,193 DEBUG    edit  batch step 21/25  summed loss 1.6182
+2026-09-18 09:30:37,224 DEBUG    edit  batch step 22/25  summed loss 1.5992
+2026-09-18 09:30:49,537 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 1/8; retrying in 5s
+2026-09-18 09:31:03,006 DEBUG    edit  batch step 23/25  summed loss 1.6084
+2026-09-18 09:31:13,487 DEBUG    edit  batch step 24/25  summed loss 1.6089
+2026-09-18 09:31:25,587 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 1/8; retrying in 5s
+2026-09-18 09:31:41,821 DEBUG    edit  batch step 25/25  summed loss 1.6049
+2026-09-18 09:31:41,835 INFO     run_e015  v* 25-30 of 42 remaining
+2026-09-18 09:33:13,154 DEBUG    edit  batch step  1/25  summed loss 41.1279
+2026-09-18 09:33:21,900 DEBUG    edit  batch step  2/25  summed loss 22.4163
+2026-09-18 09:33:29,635 DEBUG    edit  batch step  3/25  summed loss 12.7214
+2026-09-18 09:33:37,162 DEBUG    edit  batch step  4/25  summed loss 7.1127
+2026-09-18 09:33:46,026 DEBUG    edit  batch step  5/25  summed loss 3.7997
+2026-09-18 09:33:53,656 DEBUG    edit  batch step  6/25  summed loss 2.5366
+2026-09-18 09:34:02,360 DEBUG    edit  batch step  7/25  summed loss 2.3485
+2026-09-18 09:34:11,029 DEBUG    edit  batch step  8/25  summed loss 2.2083
+2026-09-18 09:34:19,682 DEBUG    edit  batch step  9/25  summed loss 2.1291
+2026-09-18 09:34:27,208 DEBUG    edit  batch step 10/25  summed loss 2.0152
+2026-09-18 09:34:39,323 WARNING  edit  transport failure (WriteTimeout) on v* step 11 attempt 1/8; retrying in 5s
+2026-09-18 09:35:00,809 DEBUG    edit  batch step 11/25  summed loss 1.9581
+2026-09-18 09:35:09,100 DEBUG    edit  batch step 12/25  summed loss 2.0128
+2026-09-18 09:35:24,193 DEBUG    edit  batch step 13/25  summed loss 2.0832
+2026-09-18 09:35:41,025 DEBUG    edit  batch step 14/25  summed loss 2.0760
+2026-09-18 09:35:55,634 DEBUG    edit  batch step 15/25  summed loss 2.0881
+2026-09-18 09:36:07,804 WARNING  edit  transport failure (WriteTimeout) on v* step 16 attempt 1/8; retrying in 5s
+2026-09-18 09:36:24,971 WARNING  edit  transport failure (WriteTimeout) on v* step 16 attempt 2/8; retrying in 10s
+2026-09-18 09:36:44,828 DEBUG    edit  batch step 16/25  summed loss 2.0716
+2026-09-18 09:37:01,198 DEBUG    edit  batch step 17/25  summed loss 2.0985
+2026-09-18 09:37:09,470 DEBUG    edit  batch step 18/25  summed loss 2.1191
+2026-09-18 09:37:23,828 DEBUG    edit  batch step 19/25  summed loss 2.1445
+2026-09-18 09:37:32,092 DEBUG    edit  batch step 20/25  summed loss 2.1919
+2026-09-18 09:37:44,248 WARNING  edit  transport failure (WriteTimeout) on v* step 21 attempt 1/8; retrying in 5s
+2026-09-18 09:37:57,983 DEBUG    edit  batch step 21/25  summed loss 2.2406
+2026-09-18 09:38:10,124 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 1/8; retrying in 5s
+2026-09-18 09:38:27,276 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 2/8; retrying in 10s
+2026-09-18 09:38:45,969 DEBUG    edit  batch step 22/25  summed loss 2.2477
+2026-09-18 09:38:55,436 DEBUG    edit  batch step 23/25  summed loss 2.2976
+2026-09-18 09:39:06,610 DEBUG    edit  batch step 24/25  summed loss 2.3101
+2026-09-18 09:39:17,835 DEBUG    edit  batch step 25/25  summed loss 2.3395
+2026-09-18 09:39:17,859 INFO     run_e015  v* 31-36 of 42 remaining
+2026-09-18 09:40:11,088 DEBUG    edit  batch step  1/25  summed loss 25.6128
+2026-09-18 09:40:19,199 DEBUG    edit  batch step  2/25  summed loss 17.1322
+2026-09-18 09:40:26,932 DEBUG    edit  batch step  3/25  summed loss 8.1762
+2026-09-18 09:40:39,230 WARNING  edit  transport failure (WriteTimeout) on v* step 4 attempt 1/8; retrying in 5s
+2026-09-18 09:40:59,448 DEBUG    edit  batch step  4/25  summed loss 5.0736
+2026-09-18 09:41:11,631 WARNING  edit  transport failure (WriteTimeout) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-18 09:41:37,078 DEBUG    edit  batch step  5/25  summed loss 4.2957
+2026-09-18 09:41:54,959 DEBUG    edit  batch step  6/25  summed loss 2.7851
+2026-09-18 09:42:11,148 DEBUG    edit  batch step  7/25  summed loss 2.3929
+2026-09-18 09:42:22,833 DEBUG    edit  batch step  8/25  summed loss 2.1627
+2026-09-18 09:42:33,415 DEBUG    edit  batch step  9/25  summed loss 2.0660
+2026-09-18 09:42:43,849 DEBUG    edit  batch step 10/25  summed loss 1.9822
+2026-09-18 09:42:56,222 WARNING  edit  transport failure (WriteTimeout) on v* step 11 attempt 1/8; retrying in 5s
+2026-09-18 09:43:14,355 WARNING  edit  transport failure (WriteTimeout) on v* step 11 attempt 2/8; retrying in 10s
+2026-09-18 09:44:03,917 DEBUG    edit  batch step 11/25  summed loss 1.9179
+2026-09-18 09:44:28,551 DEBUG    edit  batch step 12/25  summed loss 1.9007
+2026-09-18 09:45:04,174 DEBUG    edit  batch step 13/25  summed loss 1.8800
+2026-09-18 09:45:25,566 DEBUG    edit  batch step 14/25  summed loss 1.8500
+2026-09-18 09:45:37,735 DEBUG    edit  batch step 15/25  summed loss 1.8191
+2026-09-18 09:45:49,923 WARNING  edit  transport failure (WriteTimeout) on v* step 16 attempt 1/8; retrying in 5s
+2026-09-18 09:46:03,569 DEBUG    edit  batch step 16/25  summed loss 1.8272
+2026-09-18 09:46:11,263 DEBUG    edit  batch step 17/25  summed loss 1.8295
+2026-09-18 09:46:19,052 DEBUG    edit  batch step 18/25  summed loss 1.8273
+2026-09-18 09:46:27,081 DEBUG    edit  batch step 19/25  summed loss 1.8183
+2026-09-18 09:46:35,079 DEBUG    edit  batch step 20/25  summed loss 1.8135
+2026-09-18 09:46:43,031 DEBUG    edit  batch step 21/25  summed loss 1.8258
+2026-09-18 09:46:51,176 DEBUG    edit  batch step 22/25  summed loss 1.8188
+2026-09-18 09:47:00,672 DEBUG    edit  batch step 23/25  summed loss 1.8264
+2026-09-18 09:47:08,907 DEBUG    edit  batch step 24/25  summed loss 1.8292
+2026-09-18 09:47:16,508 DEBUG    edit  batch step 25/25  summed loss 1.8259
+2026-09-18 09:47:16,525 INFO     run_e015  v* 37-42 of 42 remaining
+2026-09-18 09:48:19,525 DEBUG    edit  batch step  1/25  summed loss 37.4573
+2026-09-18 09:48:31,717 WARNING  edit  transport failure (WriteTimeout) on v* step 2 attempt 1/8; retrying in 5s
+2026-09-18 09:48:46,573 DEBUG    edit  batch step  2/25  summed loss 22.7322
+2026-09-18 09:48:55,188 DEBUG    edit  batch step  3/25  summed loss 11.7243
+2026-09-18 09:49:03,812 DEBUG    edit  batch step  4/25  summed loss 5.1648
+2026-09-18 09:49:16,005 WARNING  edit  transport failure (WriteTimeout) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-18 09:49:29,340 DEBUG    edit  batch step  5/25  summed loss 3.1404
+2026-09-18 09:49:41,947 WARNING  edit  transport failure (WriteTimeout) on v* step 6 attempt 1/8; retrying in 5s
+2026-09-18 09:49:54,754 DEBUG    edit  batch step  6/25  summed loss 1.8459
+2026-09-18 09:50:02,623 DEBUG    edit  batch step  7/25  summed loss 1.5928
+2026-09-18 09:50:19,552 DEBUG    edit  batch step  8/25  summed loss 1.5047
+2026-09-18 09:50:31,956 WARNING  edit  transport failure (WriteTimeout) on v* step 9 attempt 1/8; retrying in 5s
+2026-09-18 09:50:53,853 DEBUG    edit  batch step  9/25  summed loss 1.4548
+2026-09-18 09:51:03,166 DEBUG    edit  batch step 10/25  summed loss 1.4152
+2026-09-18 09:51:15,330 WARNING  edit  transport failure (WriteTimeout) on v* step 11 attempt 1/8; retrying in 5s
+2026-09-18 09:51:49,854 DEBUG    edit  batch step 11/25  summed loss 1.3889
+2026-09-18 09:52:02,820 DEBUG    edit  batch step 12/25  summed loss 1.3746
+2026-09-18 09:52:43,609 DEBUG    edit  batch step 13/25  summed loss 1.3703
+2026-09-18 09:52:55,807 WARNING  edit  transport failure (WriteTimeout) on v* step 14 attempt 1/8; retrying in 5s
+2026-09-18 09:53:15,802 DEBUG    edit  batch step 14/25  summed loss 1.3562
+2026-09-18 09:53:24,730 DEBUG    edit  batch step 15/25  summed loss 1.3579
+2026-09-18 09:53:37,030 WARNING  edit  transport failure (WriteTimeout) on v* step 16 attempt 1/8; retrying in 5s
+2026-09-18 09:53:52,673 DEBUG    edit  batch step 16/25  summed loss 1.3590
+2026-09-18 09:54:05,955 WARNING  edit  transport failure (WriteTimeout) on v* step 17 attempt 1/8; retrying in 5s
+2026-09-18 09:54:24,681 WARNING  edit  transport failure (WriteTimeout) on v* step 17 attempt 2/8; retrying in 10s
+2026-09-18 09:54:47,987 WARNING  edit  transport failure (WriteTimeout) on v* step 17 attempt 3/8; retrying in 15s
+2026-09-18 09:55:15,563 DEBUG    edit  batch step 17/25  summed loss 1.3639
+2026-09-18 09:55:29,713 WARNING  edit  transport failure (WriteTimeout) on v* step 18 attempt 1/8; retrying in 5s
+2026-09-18 09:55:46,451 DEBUG    edit  batch step 18/25  summed loss 1.3700
+2026-09-18 09:55:58,976 WARNING  edit  transport failure (WriteTimeout) on v* step 19 attempt 1/8; retrying in 5s
+2026-09-18 09:56:17,598 WARNING  edit  transport failure (WriteTimeout) on v* step 19 attempt 2/8; retrying in 10s
+2026-09-18 09:56:40,786 DEBUG    edit  batch step 19/25  summed loss 1.3685
+2026-09-18 09:56:52,241 DEBUG    edit  batch step 20/25  summed loss 1.3790
+2026-09-18 09:57:01,493 DEBUG    edit  batch step 21/25  summed loss 1.3867
+2026-09-18 09:57:14,540 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 1/8; retrying in 5s
+2026-09-18 09:57:33,218 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 2/8; retrying in 10s
+2026-09-18 09:57:55,410 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 3/8; retrying in 15s
+2026-09-18 09:58:23,466 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 4/8; retrying in 20s
+2026-09-18 09:58:55,941 WARNING  edit  transport failure (WriteTimeout) on v* step 22 attempt 5/8; retrying in 25s
+2026-09-18 09:59:30,281 DEBUG    edit  batch step 22/25  summed loss 1.3877
+2026-09-18 09:59:42,611 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 1/8; retrying in 5s
+2026-09-18 09:59:59,734 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 2/8; retrying in 10s
+2026-09-18 10:00:21,988 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 3/8; retrying in 15s
+2026-09-18 10:00:49,590 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 4/8; retrying in 20s
+2026-09-18 10:01:22,950 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 5/8; retrying in 25s
+2026-09-18 10:02:02,347 WARNING  edit  transport failure (WriteTimeout) on v* step 23 attempt 6/8; retrying in 30s
+2026-09-18 10:02:42,755 DEBUG    edit  batch step 23/25  summed loss 1.4030
+2026-09-18 10:02:57,884 WARNING  edit  transport failure (WriteTimeout) on v* step 24 attempt 1/8; retrying in 5s
+2026-09-18 10:03:15,539 DEBUG    edit  batch step 24/25  summed loss 1.4059
+2026-09-18 10:03:27,707 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 1/8; retrying in 5s
+2026-09-18 10:03:44,929 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 2/8; retrying in 10s
+2026-09-18 10:04:07,115 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 3/8; retrying in 15s
+2026-09-18 10:04:35,407 WARNING  edit  transport failure (WriteTimeout) on v* step 25 attempt 4/8; retrying in 20s
+2026-09-18 10:06:09,265 DEBUG    edit  batch step 25/25  summed loss 1.4154
+2026-09-18 10:06:09,272 INFO     run_e015  readout cache: 0 chains already scored
+2026-09-18 10:06:25,079 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.2s
+2026-09-18 10:06:25,080 INFO     run_e015    1/42 61     target Germany          birth->Washington, D.C. (miss)  work->Berlin         (HIT)
+2026-09-18 10:06:47,173 DEBUG    remote  trace ok: 75 rows, 81 tok, 11.9s
+2026-09-18 10:06:47,175 INFO     run_e015    2/42 254    target Chile            birth->Santiago       (HIT)  work->Paris          (miss)
+2026-09-18 10:07:05,382 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.6s
+2026-09-18 10:07:05,383 INFO     run_e015    3/42 273    target Denmark          birth->Copenhagen     (HIT)  work->Tokyo          (miss)
+2026-09-18 10:07:30,147 DEBUG    remote  trace ok: 75 rows, 81 tok, 8.5s
+2026-09-18 10:07:30,148 INFO     run_e015    4/42 342    target Australia        birth->Melbourne      (miss)  work->Perth          (HIT)
+2026-09-18 10:07:42,495 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.1s
+2026-09-18 10:07:42,497 INFO     run_e015    5/42 345    target Finland          birth->Helsinki       (HIT)  work->Helsinki       (HIT)
+2026-09-18 10:07:57,581 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-18 10:07:57,583 INFO     run_e015    6/42 507    target New Zealand      birth->Washington, D.C. (miss)  work->Washington, D.C. (miss)
+2026-09-18 10:08:22,858 DEBUG    remote  trace ok: 75 rows, 81 tok, 10.6s
+2026-09-18 10:08:22,860 INFO     run_e015    7/42 590    target Australia        birth->Melbourne      (miss)  work->Perth          (HIT)
+2026-09-18 10:08:52,375 DEBUG    remote  trace ok: 75 rows, 81 tok, 10.7s
+2026-09-18 10:08:52,376 INFO     run_e015    8/42 615    target Sweden           birth->Stockholm      (HIT)  work->Stockholm      (HIT)
+2026-09-18 10:09:23,723 DEBUG    remote  trace ok: 75 rows, 81 tok, 9.0s
+2026-09-18 10:09:23,725 INFO     run_e015    9/42 747    target Iran             birth->Tehran         (HIT)  work->Paris          (miss)
+2026-09-18 10:09:38,709 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.6s
+2026-09-18 10:09:38,711 INFO     run_e015   10/42 1126   target Poland           birth->Washington, D.C. (miss)  work->Warsaw         (HIT)
+2026-09-18 10:09:55,244 DEBUG    remote  trace ok: 75 rows, 81 tok, 9.4s
+2026-09-18 10:09:55,245 INFO     run_e015   11/42 1289   target India            birth->New Delhi      (HIT)  work->Washington, D.C. (miss)
+2026-09-18 10:10:07,894 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.2s
+2026-09-18 10:10:07,896 INFO     run_e015   12/42 1315   target Switzerland      birth->Washington, D.C. (miss)  work->Washington, D.C. (miss)
+2026-09-18 10:10:16,604 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-18 10:10:16,605 INFO     run_e015   13/42 1401   target Switzerland      birth->Geneva         (HIT)  work->Geneva         (HIT)
+2026-09-18 10:10:24,713 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 10:10:24,714 INFO     run_e015   14/42 1555   target Portugal         birth->Washington, D.C. (miss)  work->Lisbon         (HIT)
+2026-09-18 10:10:34,196 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.4s
+2026-09-18 10:10:34,198 INFO     run_e015   15/42 1688   target Sweden           birth->Stockholm      (HIT)  work->Stockholm      (HIT)
+2026-09-18 10:10:47,096 DEBUG    remote  trace ok: 75 rows, 81 tok, 8.1s
+2026-09-18 10:10:47,098 INFO     run_e015   16/42 1692   target Spain            birth->Madrid         (HIT)  work->Madrid         (HIT)
+2026-09-18 10:10:56,806 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.6s
+2026-09-18 10:10:56,808 INFO     run_e015   17/42 1715   target Denmark          birth->Copenhagen     (HIT)  work->Copenhagen     (HIT)
+2026-09-18 10:11:08,717 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.7s
+2026-09-18 10:11:08,721 INFO     run_e015   18/42 1737   target United States    birth->Washington, D.C. (HIT)  work->Washington, D.C. (HIT)
+2026-09-18 10:11:18,648 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.5s
+2026-09-18 10:11:18,650 INFO     run_e015   19/42 1794   target United States    birth->Washington, D.C. (HIT)  work->Tokyo          (miss)
+2026-09-18 10:11:29,127 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 10:11:29,129 INFO     run_e015   20/42 1798   target United Kingdom   birth->London         (HIT)  work->Washington, D.C. (miss)
+2026-09-18 10:11:45,092 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.4s
+2026-09-18 10:11:45,094 INFO     run_e015   21/42 1901   target Czech Republic   birth->Washington, D.C. (miss)  work->Washington, D.C. (miss)
+2026-09-18 10:11:54,232 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 10:11:54,235 INFO     run_e015   22/42 1904   target Canada           birth->Montreal       (HIT)  work->Montreal       (HIT)
+2026-09-18 10:12:05,313 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-18 10:12:05,316 INFO     run_e015   23/42 2151   target United States    birth->Philadelphia   (HIT)  work->Washington, D.C. (HIT)
+2026-09-18 10:12:14,386 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-18 10:12:14,388 INFO     run_e015   24/42 2165   target Japan            birth->Tokyo          (HIT)  work->Washington, D.C. (miss)
+2026-09-18 10:12:26,627 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.8s
+2026-09-18 10:12:26,629 INFO     run_e015   25/42 2236   target Finland          birth->Helsinki       (HIT)  work->Helsinki       (HIT)
+2026-09-18 10:12:35,242 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-18 10:12:35,244 INFO     run_e015   26/42 2418   target India            birth->New Delhi      (HIT)  work->New Delhi      (HIT)
+2026-09-18 10:12:47,020 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.0s
+2026-09-18 10:12:47,021 INFO     run_e015   27/42 2498   target Finland          birth->Washington, D.C. (miss)  work->Washington, D.C. (miss)
+2026-09-18 10:12:59,503 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-18 10:12:59,504 INFO     run_e015   28/42 2502   target Italy            birth->Rome           (HIT)  work->Rome           (HIT)
+2026-09-18 10:13:10,340 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.5s
+2026-09-18 10:13:10,343 INFO     run_e015   29/42 2754   target Denmark          birth->Copenhagen     (HIT)  work->Copenhagen     (HIT)
+2026-09-18 10:13:19,391 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.4s
+2026-09-18 10:13:19,395 INFO     run_e015   30/42 2767   target Czech Republic   birth->Washington, D.C. (miss)  work->Washington, D.C. (miss)
+2026-09-18 10:13:30,594 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.9s
+2026-09-18 10:13:30,596 INFO     run_e015   31/42 2777   target Czech Republic   birth->Washington, D.C. (miss)  work->Prague         (HIT)
+2026-09-18 10:13:39,460 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-18 10:13:39,462 INFO     run_e015   32/42 2912   target Czech Republic   birth->Washington, D.C. (miss)  work->Prague         (HIT)
+2026-09-18 10:13:51,980 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.9s
+2026-09-18 10:13:51,981 INFO     run_e015   33/42 2959   target Chile            birth->Santiago       (HIT)  work->Santiago       (HIT)
+2026-09-18 10:14:12,937 DEBUG    remote  trace ok: 75 rows, 81 tok, 8.3s
+2026-09-18 10:14:12,938 INFO     run_e015   34/42 3005   target Czech Republic   birth->Prague         (HIT)  work->Washington, D.C. (miss)
+2026-09-18 10:14:26,436 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.9s
+2026-09-18 10:14:26,439 INFO     run_e015   35/42 3011   target France           birth->Paris          (HIT)  work->Lyon           (HIT)
+2026-09-18 10:14:36,628 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-18 10:14:36,630 INFO     run_e015   36/42 3040   target New Zealand      birth->Washington, D.C. (miss)  work->Wellington     (HIT)
+2026-09-18 10:14:50,709 DEBUG    remote  trace ok: 75 rows, 81 tok, 9.2s
+2026-09-18 10:14:50,711 INFO     run_e015   37/42 3048   target India            birth->Chennai        (HIT)  work->Budapest       (miss)
+2026-09-18 10:15:05,497 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.7s
+2026-09-18 10:15:05,500 INFO     run_e015   38/42 3094   target Hungary          birth->Budapest       (HIT)  work->Budapest       (HIT)
+2026-09-18 10:15:20,745 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.6s
+2026-09-18 10:15:20,747 INFO     run_e015   39/42 3181   target India            birth->Chennai        (HIT)  work->New Delhi      (HIT)
+2026-09-18 10:15:34,385 DEBUG    remote  trace ok: 75 rows, 81 tok, 9.1s
+2026-09-18 10:15:34,388 INFO     run_e015   40/42 3242   target New Zealand      birth->Washington, D.C. (miss)  work->Wellington     (HIT)
+2026-09-18 10:15:45,184 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.6s
+2026-09-18 10:15:45,186 INFO     run_e015   41/42 3531   target Italy            birth->Rome           (HIT)  work->Rome           (HIT)
+2026-09-18 10:15:59,454 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.2s
+2026-09-18 10:15:59,456 INFO     run_e015   42/42 3567   target Austria          birth->Vienna         (HIT)  work->Vienna         (HIT)
+2026-09-18 10:15:59,458 INFO     run_e015  
+2026-09-18 10:15:59,458 INFO     run_e015  lands in the TARGET country:
+2026-09-18 10:15:59,458 INFO     run_e015     birth-country edit (licenses the inference) : 28/42 = 67%
+2026-09-18 10:15:59,458 INFO     run_e015     work-country edit  (does NOT)               : 28/42 = 67%
+2026-09-18 10:15:59,459 INFO     run_e015     PAIRED gap (the quantity)                   : +0 pp  (birth-only 9, work-only 9, both 19, neither 5)
+2026-09-18 10:15:59,459 INFO     run_e015  
+2026-09-18 10:15:59,459 INFO     run_e015  === ANOMALIES AND EDGES ===
+2026-09-18 10:15:59,459 INFO     run_e015  work-edit relocated but BIRTH did not (9) — the anomaly that would break the inference reading:
+2026-09-18 10:15:59,459 INFO     run_e015     61     target Germany          was Edinburgh      birth->Washington, D.C. work->Berlin        
+2026-09-18 10:15:59,459 INFO     run_e015     342    target Australia        was Montreal       birth->Melbourne      work->Perth         
+2026-09-18 10:15:59,459 INFO     run_e015     590    target Australia        was Helsinki       birth->Melbourne      work->Perth         
+2026-09-18 10:15:59,459 INFO     run_e015     1126   target Poland           was Madrid         birth->Washington, D.C. work->Warsaw        
+2026-09-18 10:15:59,459 INFO     run_e015     1555   target Portugal         was Madrid         birth->Washington, D.C. work->Lisbon        
+2026-09-18 10:15:59,459 INFO     run_e015     2777   target Czech Republic   was Copenhagen     birth->Washington, D.C. work->Prague        
+2026-09-18 10:15:59,459 INFO     run_e015     2912   target Czech Republic   was Oslo           birth->Washington, D.C. work->Prague        
+2026-09-18 10:15:59,459 INFO     run_e015     3040   target New Zealand      was Brooklyn       birth->Washington, D.C. work->Wellington    
+2026-09-18 10:15:59,459 INFO     run_e015     3242   target New Zealand      was Stockholm      birth->Washington, D.C. work->Wellington    
+2026-09-18 10:15:59,459 INFO     run_e015  birth relocated, work did not (9) — the expected direction:
+2026-09-18 10:15:59,459 INFO     run_e015     254    target Chile            was Paris          birth->Santiago       work->Paris         
+2026-09-18 10:15:59,459 INFO     run_e015     273    target Denmark          was Tokyo          birth->Copenhagen     work->Tokyo         
+2026-09-18 10:15:59,460 INFO     run_e015     747    target Iran             was Budapest       birth->Tehran         work->Paris         
+2026-09-18 10:15:59,460 INFO     run_e015     1289   target India            was Honolulu       birth->New Delhi      work->Washington, D.C.
+2026-09-18 10:15:59,460 INFO     run_e015     1794   target United States    was Tokyo          birth->Washington, D.C. work->Tokyo         
+2026-09-18 10:15:59,460 INFO     run_e015     1798   target United Kingdom   was Amsterdam      birth->London         work->Washington, D.C.
+2026-09-18 10:15:59,460 INFO     run_e015     2165   target Japan            was Copenhagen     birth->Tokyo          work->Washington, D.C.
+2026-09-18 10:15:59,460 INFO     run_e015     3005   target Czech Republic   was Paris          birth->Prague         work->Washington, D.C.
+2026-09-18 10:15:59,460 INFO     run_e015  
+2026-09-18 10:15:59,460 INFO     run_e015  capital share among hits: birth 23/28 = 82%   work 23/28 = 82%
+2026-09-18 10:15:59,460 INFO     run_e015  
+2026-09-18 10:15:59,460 INFO     run_e015  destination concentration (a few cities absorbing everything is an edge):
+2026-09-18 10:15:59,460 INFO     run_e015     birth  20 distinct cities; top3 Washington, D.C.x14, Copenhagenx3, Santiagox2
+2026-09-18 10:15:59,461 INFO     run_e015     work   21 distinct cities; top3 Washington, D.C.x11, Parisx2, Tokyox2
+2026-09-18 10:15:59,461 INFO     run_e015  
+2026-09-18 10:15:59,461 INFO     run_e015  target country               birth    work     n
+2026-09-18 10:15:59,461 INFO     run_e015  Czech Republic                  1       2     5
+2026-09-18 10:15:59,461 INFO     run_e015  India                           4       2     4
+2026-09-18 10:15:59,461 INFO     run_e015  Denmark                         3       2     3
+2026-09-18 10:15:59,461 INFO     run_e015  Finland                         2       2     3
+2026-09-18 10:15:59,461 INFO     run_e015  New Zealand                     0       2     3
+2026-09-18 10:15:59,461 INFO     run_e015  United States                   3       2     3
+2026-09-18 10:15:59,461 INFO     run_e015  Chile                           2       1     2
+2026-09-18 10:15:59,461 INFO     run_e015  Australia                       0       2     2
+2026-09-18 10:15:59,461 INFO     run_e015  Sweden                          2       2     2
+2026-09-18 10:15:59,461 INFO     run_e015  Switzerland                     1       1     2
+2026-09-18 10:15:59,461 INFO     run_e015  Italy                           2       2     2
+2026-09-18 10:15:59,461 INFO     run_e015  written: results/E-015-relation-meta-llama_Llama-3.1-8B.json

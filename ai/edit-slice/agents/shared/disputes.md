@@ -46,4 +46,6 @@ masking result, not by [E-002]. The attribution was loose; the claim is not ours
 cite as a measurement.
 
 **Resolution needed by:** before any E-013/E-014 result enters the write-up.
-**Resolved:** —
+**Resolved:** 2026-09-18 — **the dispute was upheld.** [E-015] measured a paired gap of
++0.0 pp (28/42 both arms, McNemar p = 1.000). The cheaper mechanism is correct and the
+"coherent revision" reading is withdrawn. See decisions.md [E-015].

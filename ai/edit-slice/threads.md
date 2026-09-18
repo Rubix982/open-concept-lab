@@ -936,7 +936,7 @@ more important result.
 
 ### T-063 · Are entailed conclusions less robust than their premises?
 
-**Status:** open
+**Status:** open — but its motivating datum is gone; see [E-015]
 **Parent:** T-062
 **Opened:** 2026-09-15
 **Question:** The move-4 variable from the Part II dry-run, and the one quantity in
@@ -1022,3 +1022,49 @@ the relocation — which is the lookback/IIA machinery already in the sibling pr
 and the biggest missing piece in this instrument.
 **Answer:** — deliberately parked until E-015 reports; if relocation turns out to be
 country-content leakage there is no inference to localise.
+
+
+---
+
+### T-070 · An edit as an entrenchment probe
+
+**Status:** dropped
+**Parent:** T-063
+**Opened:** 2026-09-18
+**Question:** From the premise dry-run: if an editor systematically yields the
+defeasible premise and retains the necessary one, it implements an entrenchment
+ordering nobody specified, and propagation becomes the readout rather than the side
+effect.
+**Answer:** dropped the day it was opened. [E-015] found the paired gap is +0.0 pp — a
+work-country edit relocates the birthplace exactly as often as a birth-country edit —
+so nothing is being *given up* in an ordered way. There is no ordering to read out
+because there is no inference. Recorded rather than deleted: the reframe was sound
+given the [E-013] pilot, and it would become live again if a whitened editor produced a
+non-zero gap.
+
+---
+
+### T-071 · Does declaration 6 need amending?
+
+**Status:** dropped
+**Parent:** T-070
+**Opened:** 2026-09-18
+**Question:** Declaration 6 says the choice of what to retract "belongs to a human and
+not to the method". If the editor makes that choice silently, the spirit is inverted.
+**Answer:** no amendment needed. [E-015] shows the editor makes no choice — it displaces
+probability toward country-flavoured content regardless of whether the relation
+licenses the implication. Declaration 6 stands exactly as written.
+
+---
+
+### T-073 · Pool attractor mass as a required artifact field
+
+**Status:** open
+**Parent:** T-066
+**Opened:** 2026-09-18
+**Question:** `Washington, D.C.` absorbed 33% of all birth-arm destinations in [E-015]
+— it is the pool's high-prior city and the default sink when no coherent relocation
+occurs. [E-009b] (US = 40/136 of countries) and [E-011] were the same shape. Should
+every artifact reporting a pool also report its attractor mass, the way out-degree must
+report its edge vocabulary? Cheap, and three findings have now turned on it.
+**Answer:** —

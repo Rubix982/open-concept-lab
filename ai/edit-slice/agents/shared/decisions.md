@@ -569,3 +569,66 @@ a statement about the method's resolution, not about the model.
 
 **Artifacts:** agents/engineer/workspace/edit_smoke.py; src/edit.py;
 logs/edit_smoke-2026-09-15-162616.log
+
+---
+
+## [E-015] Result: DENY — the relocation carries no inference
+
+_Date: 2026-09-18 · Llama-3.1-8B, 42 chains, subject and target country held fixed_
+
+Resolves agents/shared/disputes.md [E-014]. Both arms push the same country-valued
+vector through the same subject's key; only the birth edit licenses "born in a city of
+that country".
+
+| arm | lands in target country |
+| --- | ---: |
+| `X was born in the country of` → T (licenses the inference) | **28/42 = 67%** |
+| `X works in the country of` → T (licenses nothing) | **28/42 = 67%** |
+| **paired gap** | **+0.0 pp** |
+
+Exact McNemar on the discordant pairs: **p = 1.000** (9 birth-only, 9 work-only).
+Capital share among hits identical at **82%** in both arms. Where both land in target,
+the destination is the **same city 84%** of the time (16/19).
+
+**The pre-stated Deny fired.** Editing where a person WORKS relocates their BIRTHPLACE
+into the new country exactly as often as editing where they were born. There is no
+birth-specific inference. The relocation is country-flavoured content leaking into any
+probe that shares the subject.
+
+**What this retracts.** The [E-013] pilot reading — that the model revises the
+defeasible premise while retaining the necessary one — is **withdrawn**. It was stated
+in a commit message and in the running write-up and must be corrected in both. The
+[E-014] result stands as measured (67% target vs 5% baseline and control, placebo at
+floor) but its *interpretation* changes: it demonstrates that rank-one editing at this
+configuration produces country-specific displacement, not that the model reasons about
+what its edit implies.
+
+**The dispute was raised before the number existed and was right.** `src/adversary.py`
+surfaced `definitions.md` declaration 6 while checking a claim I was about to publish,
+which produced the cheaper mechanism and then this control. That is the adversary agent
+doing the job it was built for.
+
+**The 43% discordance is not evidence for inference.** 18 of 42 chains disagree between
+arms, but symmetrically — 9 each way — which is noise around a common mechanism, not a
+systematic advantage. Reporting the two marginal rates without the pairing would have
+hidden that both readings are wrong.
+
+**Edge worth recording: a single destination attractor.** `Washington, D.C.` absorbs
+**14/42 (33%)** of birth-arm destinations and 11/42 of work-arm. It is the high-prior
+city of the pool, and it is where probability goes when no coherent relocation occurs.
+Same family as [E-009b] and [E-011]: a concentrated pool with one dominant attractor
+shapes the measurement. Any future pool must report its attractor mass.
+
+**Consequences for design.md Part III.** Layer 2's `role in entailment` axis loses its
+only supporting datum and must be marked unsupported, not merely unmeasured. Layer 3's
+`ground response` axis survives as a measurement but not as evidence of revision. The
+Layer-1 stability critique — the [R-010] lever — is untouched and is now the project's
+strongest remaining claim.
+
+**Revisit if:** a whitened editor (`mom2_adjustment: true`) or a different layer
+produces a non-zero paired gap. `C = I` is a destructive regime ([E-013]: ~8 nat drops
+on unrelated same-subject facts), and a more targeted editor is the obvious place a
+genuine inference effect could still hide.
+
+**Artifacts:** agents/engineer/workspace/run_e015.py;
+results/E-015-relation-meta-llama_Llama-3.1-8B.json; logs/run_e015-2026-09-18-090608.log
