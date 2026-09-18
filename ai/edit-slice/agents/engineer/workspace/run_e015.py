@@ -19,6 +19,8 @@ import argparse
 import json
 import statistics as st
 import sys
+import time
+from collections import defaultdict
 from pathlib import Path
 
 import torch
@@ -39,6 +41,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--seed", type=int, default=1538)
     ap.add_argument("--chunk", type=int, default=6)
+    ap.add_argument("--stall-wait", type=float, default=600)
+    ap.add_argument("--max-stalls", type=int, default=12)
     args = ap.parse_args()
 
     src = ROOT / "results" / f"E-014-destination-{MODEL.replace('/', '_')}.json"
@@ -77,25 +81,60 @@ def main() -> None:
     log.info("delta cache: %d of %d", len(deltas), len(specs))
 
     todo = [sp for sp in specs if sp.case_id not in deltas]
-    for i in range(0, len(todo), args.chunk):
+    i, stalls = 0, 0
+    while i < len(todo):
         grp = todo[i : i + args.chunk]
         log.info("v* %d-%d of %d remaining", i + 1, i + len(grp), len(todo))
-        deltas.update(compute_v_batch(m, grp))
+        try:
+            deltas.update(compute_v_batch(m, grp))
+        except Exception as exc:  # noqa: BLE001
+            stalls += 1
+            if stalls > args.max_stalls:
+                log.error("chunk failed %d times; %d cached. Re-run to resume.",
+                          stalls, len(deltas))
+                raise
+            log.warning("chunk failed (%s); parking %.0f min. %d cached.",
+                        type(exc).__name__, args.stall_wait / 60, len(deltas))
+            time.sleep(args.stall_wait)
+            continue
         cache.parent.mkdir(parents=True, exist_ok=True)
         torch.save(deltas, cache)
+        i += args.chunk
+
+    read_path = ROOT / "results" / "cache" / f"E015_readout_L{LAYER}_s{args.seed}.json"
+    done: dict[str, dict] = json.loads(read_path.read_text()) if read_path.exists() else {}
+    log.info("readout cache: %d chains already scored", len(done))
 
     out_rows = []
     for n, r in enumerate(rows, 1):
         cid = r["case_id"]
+        if cid in done:
+            out_rows.append(done[cid])
+            continue
         c = by_id[cid]
         sp_id = f"{cid}|work"
-        k_star, _ = read_key_and_value(m, WORK_TMPL.format(c["inner_1"]["subject"]),
-                                       c["inner_1"]["subject"], LAYER)
-        sc = score_pairs(m, [(c["inner_1"]["prompt"], city) for city in pool],
-                         edit=(LAYER, k_star, deltas[sp_id]))
+        for attempt in range(args.max_stalls):
+            try:
+                k_star, _ = read_key_and_value(
+                    m, WORK_TMPL.format(c["inner_1"]["subject"]),
+                    c["inner_1"]["subject"], LAYER)
+                sc = score_pairs(m, [(c["inner_1"]["prompt"], city) for city in pool],
+                                 edit=(LAYER, k_star, deltas[sp_id]))
+                break
+            except Exception as exc:  # noqa: BLE001
+                if attempt == args.max_stalls - 1:
+                    raise
+                log.warning("readout %s failed (%s); parking %.0f min. %d scored.",
+                            cid, type(exc).__name__, args.stall_wait / 60, len(done))
+                time.sleep(args.stall_wait)
         top = pool[max(range(len(pool)), key=lambda j: sc[j])]
         in_target = city_country.get(top) == r["target_country"]
-        out_rows.append({**r, "top1_work": top, "in_target_work": in_target})
+        row = {**r, "top1_work": top, "in_target_work": in_target,
+               "is_capital_work": geo["capital"].get(r["target_country"]) == top}
+        out_rows.append(row)
+        done[cid] = row
+        read_path.parent.mkdir(parents=True, exist_ok=True)
+        read_path.write_text(json.dumps(done))
         log.info("%3d/%d %-6s target %-16s birth->%-14s (%s)  work->%-14s (%s)",
                  n, len(rows), cid, r["target_country"], r["top1"]["real"],
                  "HIT" if r["in_target"]["real"] else "miss", top,
@@ -121,6 +160,48 @@ def main() -> None:
              sum(1 for b, w in zip(birth, work) if w and not b),
              sum(1 for b, w in zip(birth, work) if b and w),
              sum(1 for b, w in zip(birth, work) if not b and not w))
+    log.info("")
+    log.info("=== ANOMALIES AND EDGES ===")
+    disc_bw = [r for r in out_rows if r["in_target"]["real"] and not r["in_target_work"]]
+    disc_wb = [r for r in out_rows if r["in_target_work"] and not r["in_target"]["real"]]
+    log.info("work-edit relocated but BIRTH did not (%d) — the anomaly that would"
+             " break the inference reading:", len(disc_wb))
+    for r in disc_wb:
+        log.info("   %-6s target %-16s was %-14s birth->%-14s work->%-14s",
+                 r["case_id"], r["target_country"], r["was"],
+                 r["top1"]["real"], r["top1_work"])
+    log.info("birth relocated, work did not (%d) — the expected direction:", len(disc_bw))
+    for r in disc_bw[:8]:
+        log.info("   %-6s target %-16s was %-14s birth->%-14s work->%-14s",
+                 r["case_id"], r["target_country"], r["was"],
+                 r["top1"]["real"], r["top1_work"])
+
+    cap_b = [r for r in out_rows if r["in_target"]["real"]]
+    cap_w = [r for r in out_rows if r["in_target_work"]]
+    log.info("")
+    log.info("capital share among hits: birth %d/%d = %.0f%%   work %d/%d = %.0f%%",
+             sum(r["is_capital"]["real"] for r in cap_b), len(cap_b),
+             100 * sum(r["is_capital"]["real"] for r in cap_b) / max(1, len(cap_b)),
+             sum(r["is_capital_work"] for r in cap_w), len(cap_w),
+             100 * sum(r["is_capital_work"] for r in cap_w) / max(1, len(cap_w)))
+
+    from collections import Counter
+    log.info("")
+    log.info("destination concentration (a few cities absorbing everything is an edge):")
+    for arm, key in (("birth", lambda r: r["top1"]["real"]), ("work", lambda r: r["top1_work"])):
+        c = Counter(key(r) for r in out_rows)
+        log.info("   %-6s %d distinct cities; top3 %s", arm, len(c),
+                 ", ".join(f"{k}x{n}" for k, n in c.most_common(3)))
+
+    by_c = defaultdict(lambda: [0, 0, 0])
+    for r in out_rows:
+        b = by_c[r["target_country"]]
+        b[0] += r["in_target"]["real"]; b[1] += r["in_target_work"]; b[2] += 1
+    log.info("")
+    log.info("%-26s%8s%8s%6s", "target country", "birth", "work", "n")
+    for k, (b, w, n) in sorted(by_c.items(), key=lambda kv: -kv[1][2]):
+        if n >= 2:
+            log.info("%-26s%7d%8d%6d", k, b, w, n)
     log.info("written: %s", out.relative_to(ROOT))
 
 
