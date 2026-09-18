@@ -775,3 +775,104 @@ then re-measures it through the probe distribution.
 5. **E-016** — F4, the headline: premise robustness against conclusion robustness on
    matched chains.
 6. **E-017** — §7 predictive-validity baseline. The number that justifies Part II.
+
+---
+---
+
+# Part III — The three-layer taxonomy
+
+_Opened 2026-09-18, replacing Part II's framing, which [R-010] killed at the WHY gate.
+Part II proposed a probe-set instrument and a knowledge-probing taxonomy; both are
+crowded (arXiv:2104.08315, arXiv:2509.17482). This part keeps Part II's machinery and
+re-aims it at what R-010 left unclaimed._
+
+## Scope note, binding
+
+`notes/definitions.md` declaration 1: *a fact is a behavioral unit defined by its probe
+set; a fact therefore has no location, and no metric here presumes one.* **"Structural
+representation" in this Part means a fact's position in an ENTAILMENT structure —
+premise vs conclusion, defeasible vs necessary — never its position in a network.** Any
+sentence implying storage location is a defect, not a finding.
+
+## The three layers
+
+Each layer is a precondition for the next. A fact that fails Layer 1 cannot be
+meaningfully assigned a Layer 2 property or given a Layer 3 measurement.
+
+### Layer 1 — Elicitation: can we see the fact at all?
+
+| axis | measure | status |
+| --- | --- | --- |
+| **expressibility** | does the true answer rank first under this phrasing (row test) | surface form competition, **cite** Holtzman et al. 2021 |
+| **discriminability** | does the answer track THIS subject vs foils (column AUROC) | a rank-based cousin of PMI/DCPMI, **cite** |
+| **stability** | does the cell survive k paraphrases | **UNCLAIMED — the lever** |
+
+Crossing the first two gives the four cells [E-012] established:
+`HELD` · `PRIOR` (ranks first, does not discriminate) · `MUTE` (discriminates, cannot
+rank) · `ABSENT`. `MUTE` is the cell binary generation-probing cannot represent.
+
+### Layer 2 — Constitution: what kind of thing is the fact?
+
+| axis | measure | status |
+| --- | --- | --- |
+| answer arity | single vs set-valued | suggested (occupations: 73% multi, mean 3.0) — **needs a clean measurement** |
+| prior concentration | is the answer the relation's modal answer | measured [E-009b] |
+| surface-form class | article-taking, multi-token, official vs common name | measured [E-011] |
+| modality | rigid vs mutable | inherited from `probes/relation_modality.md`, **never measured against edit behaviour** |
+| **role in entailment** | premise vs conclusion; defeasible vs necessary | **UNCLAIMED** |
+
+### Layer 3 — Edit response: what does editing do?
+
+| axis | measure | status |
+| --- | --- | --- |
+| takes | does the edit install the target | standard |
+| **destination** | where displaced probability goes (in-target / capital / incoherent) | ours, [E-014]: 67% / 82% / — |
+| **ground response** | do premises move, and coherently | ours, gated on [E-015] |
+| subject-keyed leakage | does unrelated same-subject content move | ours, the [E-013] control |
+
+## The claim the taxonomy exists to support
+
+> **Layer-1 failures are routinely mistaken for Layer-2 or Layer-3 facts.**
+
+Three instances already measured, not asserted:
+1. [E-011] — surface form mistaken for ignorance. Rank-1 on modal answers went
+   21% → 69% on spelling alone.
+2. [E-012] — prior-driven answers mistaken for knowledge, until a discriminative
+   control separated them.
+3. [R-010] — `MUTE` facts labelled *Unknown* by generation probing, with editability
+   conclusions drawn on top. **This is the falsifiable, externally-relevant one.**
+
+## Falsification, pre-stated
+
+- *Confirm:* a material fraction of facts change Layer-1 cell across ParaRel
+  paraphrases, AND cell-at-one-phrasing predicts edit response differently from
+  cell-aggregated-over-phrasings. Layer-1 instability then demonstrably contaminates
+  Layer-3 conclusions.
+- *Deny:* cells are stable across paraphrases. Then single-prompt probing is adequate,
+  the critique dissolves, and that is a useful negative for everyone using it.
+- *Null:* cells are unstable but edit response is flat across cells — then Layer 1 does
+  not govern Layer 3 at all, and both this taxonomy and Knowledge Spectrum's Familiarity
+  axis are measuring something without consequence.
+
+## Deliverable
+
+**One number:** the fraction of facts whose Layer-1 cell is unstable across ParaRel
+paraphrases. **One figure:** edit response by cell, computed at a single phrasing vs
+aggregated over phrasings — if those two panels disagree, the claim lands.
+
+## Scope
+
+**IN v1:** the 408 facts already classified; ParaRel templates for `P19`
+(arXiv:2102.01017 covers `X born-in Y`); Llama-3.1-8B; Layer 1 stability + the Layer 3
+crossing. **DEFERRED:** Layer 2's arity and modality axes (both need their own clean
+measurement), 70B, any rate claim.
+
+## Standing risks
+
+- **Scope.** A full taxonomy is a different project. The defensible unit here is the
+  stability critique plus the entailment-role axis, not a survey.
+- **[E-015] gates the structural half.** If relocation is country-content leakage rather
+  than inference, Layer 2's entailment-role axis loses its only supporting datum.
+- **Editing a `MUTE` fact requires editing facts the model may not hold**, which is
+  exactly what the possession gate spent three days removing. The stratified-cell
+  experiment must deliberately re-admit them.
