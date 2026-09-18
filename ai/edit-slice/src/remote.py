@@ -148,11 +148,15 @@ def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKO
 
 def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
                 *, max_rows: int = 200,
-                edit: tuple[int, torch.Tensor, torch.Tensor] | None = None
-                ) -> list[float]:
+                edit: tuple | None = None) -> list[float]:
     """Mean log P(continuation | prompt) for arbitrary pairs, in ONE remote call.
 
-    `edit` is an optional `(layer, k_star, delta_v)` rank-one update, applied inline
+    `edit` is an optional rank-one update, applied inline. Two forms:
+      `(layer, k_star, delta_v)`      — unwhitened, coefficient `(k·k*)/(k*·k*)`
+      `(layer, u, denom, delta_v)`    — whitened, coefficient `(k·u)/denom` with
+                                        `u = C⁻¹k*` and `denom = u·k*` ([E-016])
+    The 3-tuple is the 4-tuple with `u = k*`, so `C = I` is a special case rather than a
+    separate code path — which keeps the two arms exactly comparable.
     inside this function's own trace. It has to be inline: nnsight builds its graph
     from the source of the frame that entered `model.trace`, so an intervention
     written in a helper called from the caller's trace is silently dropped — see
@@ -190,14 +194,19 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
             # Plain Python conditionals run at graph-BUILD time, not as proxy
             # branches, so this is safe inside a trace.
             lay = edit[0] if edit is not None else None
-            ks_cpu = edit[1] if edit is not None else None
-            dv_cpu = edit[2] if edit is not None else None
+            if edit is None:
+                u_cpu = den = dv_cpu = None
+            elif len(edit) == 3:
+                u_cpu, dv_cpu = edit[1], edit[2]
+                den = float(edit[1] @ edit[1])
+            else:
+                u_cpu, den, dv_cpu = edit[1], float(edit[2]), edit[3]
             with _quiet_stdout(), model.trace(ids, remote=True):
                 if lay is not None:
                     dp = model.model.layers[lay].mlp.down_proj
                     kk = dp.input
-                    ks = ks_cpu.to(kk.device, kk.dtype)
-                    dp.output = dp.output + ((kk @ ks) / (ks @ ks)).unsqueeze(-1) \
+                    uu = u_cpu.to(kk.device, kk.dtype)
+                    dp.output = dp.output + ((kk @ uu) / den).unsqueeze(-1) \
                                             * dv_cpu.to(kk.device, kk.dtype)
                 # log P(t) = logit[t] - logsumexp(logits). Computing it this way
                 # avoids materialising a second [B, T, V] tensor, which is what
