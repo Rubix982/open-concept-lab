@@ -5,9 +5,10 @@ authors: [saif]
 tags: [lab-notes, knowledge-editing, edit-slice, method]
 date: 2026-09-15
 standfirst: >
-  A record rather than an argument. Eight claims were wrong, six routes were
-  abandoned, one tool shipped — and the errors were never in the measurements.
-  The stars are real; the constellations were ours.
+  A record rather than an argument. The edit finally ran and said no: rank-one
+  editing displaces probability toward country-flavoured content in anything
+  sharing the subject, and carries no inference at all. The errors were never in
+  the measurements. The stars are real; the constellations were ours.
 ---
 
 This is the record, not the argument. The argument is
@@ -1211,11 +1212,123 @@ machine could compute what to retract. Because they don't, **someone has to
 decide** — which is the project's thesis and its longest-running embarrassment,
 turning out to be the same observation.
 
+## The edit finally ran, and it said no
+
+Everything above was a gate on one experiment. It has now run.
+
+Seventy-one chains survived the cleaning, forty-two survived a week of NDIF outages, and
+each got two rank-one edits at layer 5 — ROME as configured by EasyEdit, which is to say
+with `mom2_adjustment: false`, the unwhitened update every one of its fourteen shipped
+configs uses.
+
+Edit the conclusion — *"Vlaminck was born in the country of"* → Germany — and then ask
+where he was born. The result is unambiguous and, for a while, thrilling:
+
+| `inner_1` lands in the target country | rate |
+| --- | ---: |
+| baseline | 5% |
+| **after the real edit** | **67%** |
+| after a same-subject control edit (his occupation) | 5% |
+| placebo country (the null) | 0% |
+
+Edinburgh becomes Hamburg. Paris becomes Santiago. Tokyo becomes London. The model does
+not merely lose the old answer — the control loses it too — it moves the answer somewhere
+*consistent with the new conclusion*, and the control does not. Thirteen times the control
+rate, placebo at the floor.
+
+It reads exactly like the thing this project was built to find: the model gives up the
+premise it can afford to give up — *which city* — and keeps the one it cannot — *that city
+is in that country*. Defeasible yields, necessary survives. Belief revision, measured.
+
+### The control that killed it
+
+That reading has a cheaper rival, and the rival predicts the same data. The edit makes
+inputs keyed on the subject emit a Germany-valued vector. The birth-city prompt shares the
+subject, so its key is *similar*, so it receives a dose of the same vector. A
+Germany-flavoured residual stream promotes Germany-associated tokens, and German cities are
+Germany-associated. No inference anywhere — just content bleeding through a similar key.
+
+The occupation control cannot separate these. It varies *content*, so it shows content
+matters; it cannot show whether the content licenses an inference.
+
+The control that can holds subject and target country **fixed** and varies only the
+relation:
+
+| edit | licenses *"born in a German city"*? |
+| --- | --- |
+| `X was born in the country of` → Germany | **yes**, deductively |
+| `X works in the country of` → Germany | **no** |
+
+Both push the same country-valued vector through the same subject's key. Only one licenses
+the implication. Nobody infers a birthplace from an employer's country.
+
+| arm | lands in target country |
+| --- | ---: |
+| birth-country edit | 28/42 = **67%** |
+| work-country edit | 28/42 = **67%** |
+| **paired difference** | **+0.0 pp** |
+
+Exact McNemar on the discordant pairs: **p = 1.000**, nine each way. Capital share among
+hits identical at 82%. Where both arms land in the target country, they choose the *same
+city* 84% of the time.
+
+Editing where a person **works** relocates their **birthplace** exactly as often as editing
+where they were born.
+
+<Claim
+  label="The result the project was built to find"
+  superseded={<>Editing a conclusion makes the model revise the <strong>defeasible</strong> premise while retaining the <strong>necessary</strong> one — belief revision, measured.</>}
+  record={{
+    "Why it failed": "A work-country edit relocates the birthplace at an identical rate (67% vs 67%, paired gap +0.0 pp, McNemar p = 1.000). Work country licenses nothing about birth city, so the relocation cannot be an inference.",
+    "What it actually shows": "Rank-one editing displaces probability toward country-flavoured content in any probe sharing the subject. Country-specific, systematic, and indifferent to whether the relation licenses the implication.",
+    "Caught by": "A dispute filed three days before the number existed, after the adversary agent surfaced our own binding definition against a claim about to be published.",
+    "Evidence": "E-015, 42 chains, subject and target held fixed",
+  }}
+>
+  The edit produces <em>displacement</em>, not revision. What looked like the model
+  choosing which premise to sacrifice was the same vector being read twice.
+</Claim>
+
+### The city that ate a third of the results
+
+One number in that run is worth more than the headline. Across the birth arm, **Washington,
+D.C. absorbs 14 of 42 destinations — 33%.** In the work arm, 11 of 42.
+
+It is the highest-prior city in our candidate pool, and it is where probability goes when no
+coherent relocation happens. Which makes it the third appearance of one pattern: the US
+being 40 of 136 countries, article-taking names losing to bare ones, and now a single city
+acting as a sink. Concentrated pools with one dominant attractor have shaped three separate
+results in this project, each time arriving disguised as a finding about the model.
+
+Any pool we report from here reports its attractor mass alongside it, the way out-degree has
+to report its edge vocabulary.
+
+### What survives
+
+The measurement stands; only its meaning shrank. Rank-one editing at this configuration
+produces country-specific displacement into same-subject probes at 67% against a 5% control
+— that is real, and it is a fact about what these editors do to knowledge they were not
+aimed at, which is the charter of this project.
+
+What does not survive is the inference. The model is not reasoning about what its new belief
+implies. And the honest version of the orphan story gets worse rather than better: the edit
+does not retract the grounds, and it does not coherently rewrite them either. It smears
+country-flavoured probability over anything that mentions the subject.
+
 ## What is open
 
-**The experiment the project is named for has not run.** The 136 chains exist and
-the possession gate has been run over them: 74 survive at 70B, 20 at GPT-J. The
-edit is the only remaining step, and nothing blocks it.
+**The experiment the project is named for has run, and returned a negative.** Forty-two
+chains, edited at layer 5, measured against a same-subject control and a relation-matched
+control. Rank-one editing moves the birth-city answer into the edited country 67% of the
+time against a 5% control — and does so identically when the edited relation licenses
+nothing. Displacement, not revision.
+
+**The strongest remaining claim is about measurement, not editing.** A Known/Unknown
+knowledge axis inherits surface form competition (Holtzman et al., EMNLP 2021), and we
+measured the same facts changing classification on spelling alone — rank-1 on modal
+answers moved 21% to 69%. Recent work conditions edit-success conclusions on exactly such
+an axis. Whether those conclusions survive a phrasing-stable classification is open, and
+it is the one question here that is both unclaimed and consequential.
 
 **Nothing has been externally judged.** Every critique here is self-critique, which
 has a ceiling — it catches what you already half-know, which is precisely the
@@ -1223,8 +1336,12 @@ pattern documented above. The five-day record is a large, internally consistent
 body of work that nobody outside has stress-tested. That is the real risk, and no
 amount of further work reduces it.
 
-**Known gaps, stated rather than buried:** GPT-2-XL has not been run under the
-constrained measure; the 41 chains rejected as routing through dissolved states are
+**Known gaps, stated rather than buried:** everything above uses `C = I`, the unwhitened
+update EasyEdit ships for all fourteen of its ROME configs — a demonstrably destructive
+regime (≈8 nat drops on unrelated same-subject facts), and a whitened editor is the
+obvious place a genuine inference effect could still hide; the edit ran on one layer, one
+model, one relation family, and 42 chains rather than the intended 71, because a week of
+NDIF outages ate the rest; GPT-2-XL has not been run under the constrained measure; the 41 chains rejected as routing through dissolved states are
 plausibly inflated by taking the first `P17` value, which Wikidata does not order by
 currency; hand-built sets license an *existence* claim and never a frequency one;
 and possession levels move with candidate-set size, so only the ordering is robust.
