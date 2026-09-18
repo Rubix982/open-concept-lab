@@ -632,3 +632,61 @@ genuine inference effect could still hide.
 
 **Artifacts:** agents/engineer/workspace/run_e015.py;
 results/E-015-relation-meta-llama_Llama-3.1-8B.json; logs/run_e015-2026-09-18-090608.log
+
+---
+
+## [E-016] Gate: whitening is a near-no-op by cosine and a 50x change in targeting
+
+_Date: 2026-09-18 · Llama-3.1-8B, layer 5, 2048 keys over the CounterFact prompt
+distribution (NOT ROME's Wikipedia — divergence recorded)_
+
+**Anisotropy — the gate clears.** Spectrum of the layer-5 key second moment:
+
+| | |
+| --- | ---: |
+| participation ratio | **26.5** of 2048 sampled dims (1.3%) |
+| 50% of variance in | **16 dims** |
+| 90% / 99% of variance in | 164 / 338 dims |
+
+The keys live on an effectively ~26-dimensional manifold inside 14336. **Do not quote the
+condition number** (5.4e21): with N=2048 < d=14336 the sample covariance is rank-deficient
+by construction and its smallest "nonzero" eigenvalue is numerical noise.
+
+**Consequence for feasibility.** The right model is low-rank-plus-isotropic,
+`C = KᵀK/N + λI`, not a full 14336² matrix. Estimating a ~338-dim subspace needs N ≫ 338,
+not N ≫ 14336 — which is why ROME needs 100k samples and we do not. Woodbury then gives
+`C⁻¹k*` while forming only an N×N matrix (17 MB at N=2048). Verified against the explicit
+inverse on a synthetic case: relative error 1e-5 to 1e-7.
+
+**The finding, and it is a methodological one.**
+
+| statistic | value | reading |
+| --- | ---: | --- |
+| `cos(k*, C⁻¹k*)` | **0.97** | whitening barely rotates the update |
+| mean abs. coefficient on **held-out** keys, `C = I` | 0.0260 | — |
+| same, `C⁻¹` at λ=7.2e-03 | **0.0013** | **5% — a ~20x narrower reach** |
+| same, `C⁻¹` at λ=7.2e-06 | 0.0004 | 2%, but in-sample 0.0000 ⇒ overfit |
+
+**Cosine hid the entire effect.** ROME's update changes an arbitrary input by
+`(v* − Wk*)·(u·k)/(u·k*)`, so what whitening does is shrink that coefficient on unrelated
+inputs — and a 0.97 cosine is perfectly compatible with a 20x change in it. Had the gate
+stopped at the cosine it would have closed E-016 with the wrong answer. Same shape as
+[E-015]'s lesson: the aggregate statistic and the component statistic disagreed, and the
+component was right.
+
+**λ chosen by a rule, not by taste.** Take the smallest λ at which in-sample and held-out
+selectivity agree — the least regularisation that is not fitting noise. That is
+**λ = 7.2e-03** (0.0011 vs 0.0013). Smaller λ shows a 10x in/out gap and is overfitting the
+1400 fitting keys. Every E-016 number is reported with its λ and a sweep.
+
+**Circularity caught and removed.** The first measurement evaluated selectivity on the same
+2048 keys that defined `C`, giving a spurious 100–1000x. Refit on 1400, evaluated on 665
+held-out; the honest figure is ~20x. The in-sample figure would have been the [E-007]
+denominator bug again.
+
+**Decision:** the gate clears and [E-016]'s experiment is worth running. The whitened
+editor is a materially more targeted update, which is exactly the regime where an
+inference effect could hide that a blunt one would smear away.
+
+**Artifacts:** src/whiten.py; agents/engineer/workspace/collect_keys.py;
+results/cache/E016_keys_L5.pt; logs/collect_keys-2026-09-18-*.log

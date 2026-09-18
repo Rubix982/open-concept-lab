@@ -1,0 +1,61 @@
+2026-09-18 14:24:11,072 INFO     collect_keys  run collect_keys -> logs/collect_keys-2026-09-18-142411.log
+2026-09-18 14:24:11,072 INFO     collect_keys  config {"corpus": "CounterFact prompts (NOT Wikipedia \u2014 divergence from ROME, recorded)", "gate": "anisotropy", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_keys_target": 2048, "ticket": "E-016"}
+2026-09-18 14:24:11,384 INFO     collect_keys  600 prompts available; targeting 2048 keys at layer 5
+2026-09-18 14:24:25,516 INFO     collect_keys    52/2048 keys
+2026-09-18 14:24:33,427 INFO     collect_keys    95/2048 keys
+2026-09-18 14:24:40,546 INFO     collect_keys    143/2048 keys
+2026-09-18 14:24:46,445 INFO     collect_keys    189/2048 keys
+2026-09-18 14:24:53,155 INFO     collect_keys    236/2048 keys
+2026-09-18 14:25:00,329 INFO     collect_keys    282/2048 keys
+2026-09-18 14:25:15,284 INFO     collect_keys    328/2048 keys
+2026-09-18 14:25:20,961 INFO     collect_keys    367/2048 keys
+2026-09-18 14:25:28,230 INFO     collect_keys    410/2048 keys
+2026-09-18 14:25:34,227 INFO     collect_keys    455/2048 keys
+2026-09-18 14:25:43,234 INFO     collect_keys    504/2048 keys
+2026-09-18 14:25:50,990 INFO     collect_keys    549/2048 keys
+2026-09-18 14:25:57,719 INFO     collect_keys    597/2048 keys
+2026-09-18 14:26:07,297 INFO     collect_keys    650/2048 keys
+2026-09-18 14:26:17,177 INFO     collect_keys    696/2048 keys
+2026-09-18 14:26:24,352 INFO     collect_keys    752/2048 keys
+2026-09-18 14:26:29,749 INFO     collect_keys    789/2048 keys
+2026-09-18 14:26:40,278 INFO     collect_keys    837/2048 keys
+2026-09-18 14:26:49,361 INFO     collect_keys    888/2048 keys
+2026-09-18 14:26:59,320 INFO     collect_keys    933/2048 keys
+2026-09-18 14:27:04,554 INFO     collect_keys    979/2048 keys
+2026-09-18 14:27:11,191 INFO     collect_keys    1030/2048 keys
+2026-09-18 14:27:17,054 INFO     collect_keys    1077/2048 keys
+2026-09-18 14:27:24,613 INFO     collect_keys    1123/2048 keys
+2026-09-18 14:27:30,078 INFO     collect_keys    1177/2048 keys
+2026-09-18 14:27:37,963 INFO     collect_keys    1229/2048 keys
+2026-09-18 14:27:44,131 INFO     collect_keys    1277/2048 keys
+2026-09-18 14:27:51,351 INFO     collect_keys    1318/2048 keys
+2026-09-18 14:27:57,176 INFO     collect_keys    1365/2048 keys
+2026-09-18 14:28:05,559 INFO     collect_keys    1408/2048 keys
+2026-09-18 14:28:10,803 INFO     collect_keys    1448/2048 keys
+2026-09-18 14:28:19,810 INFO     collect_keys    1491/2048 keys
+2026-09-18 14:28:25,263 INFO     collect_keys    1535/2048 keys
+2026-09-18 14:28:30,636 INFO     collect_keys    1580/2048 keys
+2026-09-18 14:28:37,259 INFO     collect_keys    1629/2048 keys
+2026-09-18 14:28:42,751 INFO     collect_keys    1671/2048 keys
+2026-09-18 14:28:47,891 INFO     collect_keys    1704/2048 keys
+2026-09-18 14:28:53,259 INFO     collect_keys    1745/2048 keys
+2026-09-18 14:29:01,346 INFO     collect_keys    1793/2048 keys
+2026-09-18 14:29:07,171 INFO     collect_keys    1840/2048 keys
+2026-09-18 14:29:13,522 INFO     collect_keys    1884/2048 keys
+2026-09-18 14:29:24,158 INFO     collect_keys    1928/2048 keys
+2026-09-18 14:29:29,591 INFO     collect_keys    1971/2048 keys
+2026-09-18 14:29:36,857 INFO     collect_keys    2015/2048 keys
+2026-09-18 14:29:45,503 INFO     collect_keys    2065/2048 keys
+2026-09-18 14:29:45,517 INFO     collect_keys  collected K: (2048, 14336)
+2026-09-18 14:29:46,434 INFO     collect_keys  
+2026-09-18 14:29:46,434 INFO     collect_keys  SPECTRUM of the layer-5 key second moment (N=2048, d=14336, rank<=2048)
+2026-09-18 14:29:46,434 INFO     collect_keys     top eigenvalue        1.4958e+00
+2026-09-18 14:29:46,436 INFO     collect_keys     median (of nonzero)   1.3236e-06
+2026-09-18 14:29:46,436 INFO     collect_keys     smallest nonzero      2.7787e-22
+2026-09-18 14:29:46,436 INFO     collect_keys     condition number      5.383e+21
+2026-09-18 14:29:46,437 INFO     collect_keys     participation ratio   26.5  of 2048 sampled dims (1.29%)
+2026-09-18 14:29:46,438 INFO     collect_keys     50% of variance in 16 dims (0.8% of sampled)
+2026-09-18 14:29:46,438 INFO     collect_keys     90% of variance in 164 dims (8.0% of sampled)
+2026-09-18 14:29:46,438 INFO     collect_keys     99% of variance in 338 dims (16.5% of sampled)
+2026-09-18 14:29:46,438 INFO     collect_keys  
+2026-09-18 14:29:46,438 INFO     collect_keys  GATE CLEARS: strongly anisotropic, so C^-1 k* is NOT proportional to k* and the whitened editor is a materially different update.
