@@ -109,3 +109,7 @@ def main() -> None:
     else:
         log.info("GATE CLEARS: strongly anisotropic, so C^-1 k* is NOT proportional to "
                  "k* and the whitened editor is a materially different update.")
+
+
+if __name__ == "__main__":
+    main()
