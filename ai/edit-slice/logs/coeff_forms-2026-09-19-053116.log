@@ -1,0 +1,16 @@
+2026-09-19 05:31:16,276 INFO     coeff_forms  run coeff_forms -> logs/coeff_forms-2026-09-19-053116.log
+2026-09-19 05:31:16,277 INFO     coeff_forms  config {"forms": ["early (edit form)", "late clause", "possessive", "long preamble", "different relation"], "layer": 5, "measures": "coefficient only", "ticket": "E-017"}
+2026-09-19 05:31:54,259 INFO     coeff_forms    8/16 chains
+2026-09-19 05:32:41,573 INFO     coeff_forms    16/16 chains
+2026-09-19 05:32:41,573 INFO     coeff_forms  
+2026-09-19 05:32:41,573 INFO     coeff_forms  COEFFICIENT at the subject's last token, vs the edit's k*  (1.0 = full delta)
+2026-09-19 05:32:41,574 INFO     coeff_forms  probe form                 mean   median      min      max
+2026-09-19 05:32:41,574 INFO     coeff_forms  early (edit form)         1.000    1.000    0.998    1.003
+2026-09-19 05:32:41,574 INFO     coeff_forms  late clause               0.935    0.954    0.670    1.008
+2026-09-19 05:32:41,574 INFO     coeff_forms  possessive                0.934    0.966    0.483    1.000
+2026-09-19 05:32:41,574 INFO     coeff_forms  long preamble             0.925    0.946    0.707    0.998
+2026-09-19 05:32:41,574 INFO     coeff_forms  different relation        1.000    1.000    0.998    1.003
+2026-09-19 05:32:41,574 INFO     coeff_forms  
+2026-09-19 05:32:41,574 INFO     coeff_forms  n = 16 chains. The edit form is 1.000 by construction (its key IS k*).
+2026-09-19 05:32:41,574 INFO     coeff_forms  If every other form is also near 1, the pinning is a property of the SUBJECT
+2026-09-19 05:32:41,575 INFO     coeff_forms  key's context-robustness, not of prefix sharing, and no natural probe escapes it.

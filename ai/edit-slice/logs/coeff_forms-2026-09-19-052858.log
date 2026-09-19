@@ -1,0 +1,4 @@
+2026-09-19 05:28:58,829 INFO     coeff_forms  run coeff_forms -> logs/coeff_forms-2026-09-19-052858.log
+2026-09-19 05:28:58,829 INFO     coeff_forms  config {"forms": ["early (edit form)", "late clause", "possessive", "long preamble", "different relation"], "layer": 5, "measures": "coefficient only", "ticket": "E-017"}
+2026-09-19 05:29:46,321 INFO     coeff_forms    8/24 chains
+2026-09-19 05:30:22,941 INFO     coeff_forms    16/24 chains

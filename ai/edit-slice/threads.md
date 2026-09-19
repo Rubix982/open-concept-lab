@@ -1074,7 +1074,7 @@ report its edge vocabulary? Cheap, and three findings have now turned on it.
 
 ### T-074 · Does the pinned coefficient survive a prompt that mentions the subject late?
 
-**Status:** open
+**Status:** answered — **yes, it survives**
 **Parent:** T-067
 **Opened:** 2026-09-18
 **Question:** [E-016] established that ROME's `u·k*` normalisation pins the update
@@ -1084,4 +1084,25 @@ that prefix by construction. A probe mentioning the subject LATER — *"The city
 born is"* — does not, so the coefficient at its subject position would not be pinned.
 If displacement drops sharply for late-subject probes, the leakage is a property of prompt
 FORM rather than of the subject, which is both a sharper statement and an easy test.
+**Answer:** the pinning survives, and the form hypothesis is refuted. Moving the subject
+later attenuates the coefficient by ~7% (mean 0.93 across three reordered forms), not the
+order of magnitude predicted; a different relation sharing the prefix scores exactly 1.000.
+The layer-5 subject key is context-robust, so no natural reformulation escapes. Leakage is
+keyed on the SUBJECT, structurally. See [E-017]. The relocation half of the test is unrun —
+the late probe fails at baseline in 34 of 42 chains.
+
+
+---
+
+### T-075 · Is the subject key context-robust at every layer, or only at layer 5?
+
+**Status:** open
+**Parent:** T-074
+**Opened:** 2026-09-19
+**Question:** [E-017] measured the coefficient at the subject's last token to be 0.93-1.00
+across probe forms at **layer 5** — the layer ROME edits in EasyEdit's llama3-8b config.
+If the subject key becomes context-sensitive at deeper layers, an editor targeting a later
+layer would leak less across probe forms, and the structural claim would be a
+layer-5 claim rather than a ROME claim. Cheap: the same sweep at a handful of layers,
+no edits required.
 **Answer:** —

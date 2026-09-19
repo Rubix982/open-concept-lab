@@ -762,3 +762,62 @@ prefix, and the coefficient there is not pinned. Untested, and the obvious next 
 
 **Artifacts:** agents/engineer/workspace/{run_e016,why_whitening_null,scale_invariance,
 coeff_profile}.py; src/whiten.py; results/E-016-whitened-meta-llama_Llama-3.1-8B.json
+
+---
+
+## [E-017] Result: same-subject leakage is structural — no probe form escapes it
+
+_Date: 2026-09-19 · Llama-3.1-8B, layer 5, 16 chains for the coefficient sweep_
+
+Tests [T-074], the threat [E-016] left standing: its analytic account required the probe to
+share the edit prompt's prefix, which our probes do by construction.
+
+**Part 1 — the relocation comparison is UNRUN, not negative.** The late-subject probe
+*"The city where X was born is"* holds the true city at baseline in only **8/42** chains
+against **29/42** for the early form. The comparison was restricted to chains where both
+hold, leaving 8, below the pre-stated floor of 10. **Reported as unrun.** Without that
+baseline control the late form's weaker relocation would have read as confirmation of the
+hypothesis under test, when the cause is that the probe does not work — [E-011]'s lesson
+applied prospectively rather than learned again.
+
+**Part 2 — the coefficient sweep, which does not depend on the probe working.**
+Coefficient at the subject's last token against the edit's `k*` (1.0 = full delta):
+
+| probe form | mean | median | min |
+| --- | ---: | ---: | ---: |
+| early, the edit form | **1.000** | 1.000 | 0.998 |
+| **different relation** — `X died in the city of` | **1.000** | 1.000 | 0.998 |
+| late clause — `The city where X was born is` | 0.935 | 0.954 | 0.670 |
+| possessive — `The birthplace of X is the city of` | 0.934 | 0.966 | 0.483 |
+| long preamble | 0.925 | 0.946 | 0.707 |
+
+**[E-016]'s analytic account is confirmed on a case it did not construct.** A *different
+relation* scores exactly 1.000 against a birth edit's `k*`, because the subject sits at the
+start and causal attention makes the key identical. The relation asked about is irrelevant.
+
+**And the hypothesis this ticket was opened to test is refuted.** Moving the subject later
+was predicted to break the pinning; it attenuates it by ~7% on average. The layer-5 key at a
+subject's last token is largely determined by the subject tokens themselves, not by
+preceding context, so no natural reformulation escapes.
+
+> **Same-subject leakage in ROME is structural.** Any prompt containing the subject receives
+> 93–100% of the edit vector at the subject's last token — regardless of the relation asked
+> about, where the subject sits, how much preamble precedes it, and (per [E-016]) regardless
+> of `C`. The only probe that escaped in this project is `inner_2`, which does not mention
+> the subject at all.
+
+**This closes the mechanistic account of [E-015].** The work-country edit and the birth-city
+probe both begin with the subject, so the probe receives the work edit's full unattenuated
+delta. The +0.0 pp gap was not a null to be explained away — it was structurally required.
+
+**Scope, stated rather than implied.** 16 chains for the sweep, one model, one layer, one
+relation family, and the minima (0.48, 0.67, 0.71) show some subjects DO attenuate
+materially — so this is an existence-and-tendency claim, never a rate. Per [O-004], it
+licenses no frequency statement.
+
+**What would falsify it:** a probe form that mentions the subject and scores materially
+below ~0.9 across chains, or the same sweep at a different layer showing context-sensitivity
+in the subject key. Both are cheap and neither was run.
+
+**Artifacts:** agents/engineer/workspace/{run_e017,coeff_forms}.py;
+results/E-017-form-meta-llama_Llama-3.1-8B.json; logs/coeff_forms-2026-09-19-053*.log

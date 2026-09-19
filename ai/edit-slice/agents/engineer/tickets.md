@@ -1082,7 +1082,7 @@ agents/shared/decisions.md -> "[E-016] Result"
 
 ### E-017 · Is the leakage a property of the subject, or of prompt FORM?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-19
@@ -1127,6 +1127,16 @@ optimisation, the edit is unchanged and only the probe's form varies.
 - *Null:* too few chains hold the true city at baseline on the late form. Report the
   coverage and treat the experiment as unrun rather than as a negative.
 
+**Result (2026-09-19).** The relocation half hit the pre-stated NULL — the late probe
+holds the true city in only 8/42 chains at baseline against 29/42 for the early form, so
+the comparison is UNRUN rather than negative. The coefficient half answers T-074 anyway
+and refutes the hypothesis: moving the subject later attenuates the coefficient by ~7%
+(mean 0.93), not the order of magnitude predicted, while a DIFFERENT RELATION sharing the
+prefix scores exactly 1.000. Same-subject leakage is structural. Full entry in
+agents/shared/decisions.md [E-017].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/run_e017.py; results/E-017-*.json
-**Closed:** —
+**Artifacts:** agents/engineer/workspace/{run_e017,coeff_forms}.py;
+results/E-017-form-meta-llama_Llama-3.1-8B.json;
+agents/shared/decisions.md -> "[E-017] Result"
+**Closed:** 2026-09-19
