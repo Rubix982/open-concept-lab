@@ -1077,3 +1077,56 @@ why_whitening_null,scale_invariance,coeff_profile}.py;
 results/E-016-whitened-meta-llama_Llama-3.1-8B.json;
 agents/shared/decisions.md -> "[E-016] Result"
 **Closed:** 2026-09-18
+
+---
+
+### E-017 · Is the leakage a property of the subject, or of prompt FORM?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-19
+**Updated:** 2026-09-19
+**Estimated:** 3h
+
+**Description:**
+Tests [T-074], the one threat [E-016] left standing. [E-016] established that ROME's
+`u·k*` normalisation pins the update coefficient to **exactly 1** at the subject's last
+token, and that any probe sharing the edit prompt's prefix has an identical key there
+under causal attention — so the full delta lands regardless of `C`.
+
+Our probes share that prefix **by construction**: both *"X was born in the country of"*
+and *"X was born in the city of"* begin with the subject. A probe where the subject
+appears LATER has a different key at its subject-last token, because that key depends on
+the preceding context. So nothing is pinned, and the theory predicts less displacement.
+
+| form | subject position | prefix shared with edit prompt? | predicted |
+| --- | --- | --- | --- |
+| **early** (current) `{} was born in the city of` | token 1 | yes | pinned at 1.0 → full delta |
+| **late** `The city where {} was born is` | after 3 tokens | no | not pinned → attenuated |
+
+**The control that makes this interpretable.** Changing phrasing changes expressibility
+([E-011]: rank-1 on modal answers moved 21% → 69% on spelling alone). A late-subject probe
+that simply fails would look exactly like "no leakage". So **baseline possession on the
+late form is measured first, and the comparison is restricted to chains where BOTH forms
+rank the true city first pre-edit.** Without that restriction this experiment cannot
+distinguish its own hypothesis from a broken probe.
+
+**Method.** Same 42 chains, same cached `v*` deltas and `k*` from [E-014] — no new
+optimisation, the edit is unchanged and only the probe's form varies.
+1. Baseline-rank both forms over the 75-city pool; keep chains where both hold.
+2. Coefficient profile on the late form: is any position pinned at 1.0?
+3. Post-edit readout on both forms; report the **paired** per-chain difference.
+
+**Falsification, pre-stated.**
+- *Confirm:* the late form shows no pinned coefficient and materially less relocation into
+  the target country. The leakage is a property of prompt FORM, not of the subject, and
+  [E-016]'s analytic account is validated on a case it did not construct.
+- *Deny:* the late form relocates as strongly. The pinned coefficient is not the mechanism,
+  [E-016]'s explanation is wrong, and the displacement travels some other way.
+- *Null:* too few chains hold the true city at baseline on the late form. Report the
+  coverage and treat the experiment as unrun rather than as a negative.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e017.py; results/E-017-*.json
+**Closed:** —
