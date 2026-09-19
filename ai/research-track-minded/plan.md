@@ -38,14 +38,12 @@ sentence will produce better-looking mush. T-001 tests it.
 | ----- | ------------ | -------------------------------------- | ----------- |
 | O-001 | Orchestrator | Initialize project, fix scope          | closed      |
 | R-001 | Researcher   | Voice profile from Saif's own corpus   | closed      |
-| R-002 | Researcher   | Exemplar corpus from admired papers    | blocked     |
+| R-002 | Researcher   | Exemplar corpus — mech interp papers   | closed      |
 | R-003 | Researcher   | The deletion list                      | open        |
 
 ## Blocked
 
-| ID    | Blocked By                                              |
-| ----- | ------------------------------------------------------- |
-| R-002 | external input — Saif must name the 3–5 admired papers  |
+None.
 
 ## Hypothesis revised after R-001
 
@@ -63,16 +61,25 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 
 - O-001 · Initialize project structure, split scope four ways
 - R-001 · Voice profile — `agents/shared/findings.md`
+- R-002 · Mech interp exemplar corpus — `corpus/papers/`, findings.md
 
-## Known gap
+## Known gap — closed by R-002
 
-The corpus is lab notes and design docs. No paper-register sample exists — no
-abstract, no related work, no notation passage. The **mathematics** half of the
-project therefore has zero exemplar support until R-002 lands. v1 will be strong
-at lab-note register and weak at the formal paper register that is the stated
-target. Accepted and named rather than papered over.
+R-001 found no paper-register or notation sample in Saif's own writing. ROME
+supplies it. The finding that closed it: unreadable generated mathematics is a
+**naming-and-ordering** problem, not a symbol problem — symbols arrive before the
+objects they denote have been named in English (ROME), and new machinery gets
+coined abstractions where borrowed concrete words would install the semantics for
+free (Lookbacks: pointer, address, payload, dereference).
+
+## Remaining gap
+
+On hedging-quarantine — the project's central finding — the published exemplars
+are *weaker* than Saif's own writing. ROME's limitations discussion is thinner
+than `the-check-that-was-never-there`'s five-item "Honest limits". The skill takes
+notation from the papers and epistemic discipline from Saif.
 
 ## Next Orchestrator Action
 
-R-003 (deletion list) is unblocked and can run now against R-001's negative space.
-R-002 needs Saif's paper list before anything formal-register can be built.
+R-003 (deletion list) is unblocked and has both inputs it needs. After it closes,
+open the first E- ticket to assemble the skill itself.

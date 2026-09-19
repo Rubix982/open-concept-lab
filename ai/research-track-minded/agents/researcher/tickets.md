@@ -52,7 +52,7 @@ project has no exemplar support until R-002 lands.
 
 ### R-002 · Exemplar corpus from admired papers
 
-**Status:** blocked
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-18
@@ -69,14 +69,21 @@ null before the result", "introduces notation with a worked instance").
 
 Store under `corpus/papers/<short-name>.md`.
 
-**Blockers:**
+**Blockers:** — (cleared 2026-09-19: Saif scoped it to mechanistic
+interpretability and pointed at the PDFs under `ai/`)
 
-- External input: Saif must name the papers. Cannot be guessed — the whole point
-  is that the choice is his.
+**Artifacts:**
 
-**Artifacts:** —
+- `corpus/papers/README.md` — index and selection rationale
+- `corpus/papers/rome.md` — 7 passages, the notation exemplar
+- `corpus/papers/lookbacks.md` — 5 passages, naming and framing
+- `corpus/papers/sparse-feature-circuits.md` — 4 passages, positioning
+- `corpus/papers/_anti-exemplar-deep-research.md` — 3 passages, negative control
+- `agents/shared/findings.md` → "[R-002] Finding: the mech interp exemplar corpus"
 
-**Closed:** —
+**Closed:** 2026-09-19 — 19 marked passages across four documents. Closes R-001's
+notation gap and answers T-006. Three of the six available PDFs deferred with
+reasons recorded in the index.
 
 ---
 
@@ -99,9 +106,7 @@ replacement move. A ban with no replacement re-houses nothing and will be ignore
 
 Target length 12–20 entries. A longer list is not enforceable in one pass.
 
-**Blockers:**
-
-- R-001 (needs the negative-space section)
+**Blockers:** — (R-001 and R-002 both closed; unblocked 2026-09-19)
 
 **Artifacts:** —
 

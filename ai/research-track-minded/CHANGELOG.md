@@ -12,3 +12,9 @@ project ran a repo-wide `git add` and swept this project's files in. The commit 
 pushed before it was noticed, so the history is left as-is rather than rewritten
 under another session's active work. The files are intact; only the commit message
 is misattributed. This entry is the record.
+
+## 2026-09-19 · Session 2
+
+- [R-002] Mech interp exemplar corpus — 19 marked passages in `corpus/papers/`,
+  finding in `agents/shared/findings.md`
+- Threads: T-003 and T-006 answered; T-008 and T-009 opened — `threads.md`

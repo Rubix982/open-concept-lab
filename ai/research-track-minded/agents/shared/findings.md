@@ -167,3 +167,101 @@ no abstract, no related-work section, no formal notation passage. Two consequenc
 - The skill will initially be strongest at lab-note and blog register, weakest at
   the formal paper register that is the stated target. Worth accepting for v1 and
   naming, rather than pretending the corpus covers it.
+
+---
+
+## [R-002] Finding: the mech interp exemplar corpus, and what it fixes
+
+_Date: 2026-09-19_
+
+Three published papers marked at passage level in `corpus/papers/`, plus one
+anti-exemplar. Selected from the six real PDFs under
+`ai/lookback-research/docs/`; the three "papers" under `ai/rome-neighbors/` are
+AI-generated Deep Research reports and are used as the negative control rather
+than as exemplars.
+
+**Confidence: high.** Every passage is quoted with a section and page. The
+selection is narrow by design — three papers from overlapping author groups, so
+the register is consistent rather than averaged.
+
+### The gap R-001 exposed is now closed
+
+R-001 found that Saif's corpus has no paper-register or notation sample, leaving
+the mathematics half of the project with zero support. ROME supplies it. The
+transferable finding:
+
+**Unreadable generated mathematics is almost never a symbol problem. It is a
+naming-and-ordering problem.** Two distinct mechanisms, from two papers:
+
+1. **Ordering (ROME P2/P3).** Symbols arrive before the objects they denote have
+   been named in English. ROME's ladder is strict — name each object by its
+   function in words, bind a symbol explicitly, define the quantity as arithmetic
+   on already-named things, give one concrete instance with real content, then
+   gloss why the quantity means what it claims. Every defined quantity in ROME §2.1
+   is a difference of two things named in the preceding paragraph. Nothing on the
+   page requires holding more than two bindings at once.
+
+2. **Naming (Lookbacks P2).** New machinery is named with words the reader already
+   owns — `pointer`, `address`, `payload`, `dereference`, `lookback` — lifted from
+   systems programming, where they denote the same structure. A mechanism given a
+   coined abstraction forces the reader to carry an unanchored symbol for the rest
+   of the paper; the same mechanism named `pointer` arrives with its semantics
+   installed. This is the Premise Dry-Run's move 2 (rename into an existing
+   formalism) applied to exposition rather than theory.
+
+Corollary rule, from ROME P4: every abuse of notation gets one clause of
+acknowledgement at the moment it is taken ("dependence on x is omitted for
+notational simplicity"). Unannounced suppression is what makes generated
+mathematics un-checkable — the reader cannot distinguish an omission from an error.
+
+### The house opening is a plain question
+
+ROME (2022) opens "Where does a large language model store its facts?" Lookbacks
+(2026) opens "How do language models represent characters' beliefs…?" Same group,
+four years apart, both answering in the next sentence. Treat as the register's
+default opening, not a stylistic option.
+
+### T-006 is answered: X-not-Y earns its keep by marking novelty
+
+ROME P5: "The presence of strong causal states at a late site … **is unsurprising**,
+but their emergence at an early site … **is a new discovery**." The paper gives away
+the predictable half of its own finding to make the other half unmissable.
+
+So Saif's paired-contrast habit is not a personal tic — it is how this literature
+separates expected from new, and its job is pre-empting the reviewer who says "we
+already knew that." The frequency budget from R-001 (~1 per 200 words) stands, but
+the constraint is now sharper than a rate: **use it where the two halves are
+genuinely expected-vs-new, and it will not overfire.** Used for mere emphasis, it
+degrades to mannerism. A semantic test beats a token count.
+
+### The anti-exemplar names Saif's actual complaint
+
+The Deep Research report is **accurate and useless**, and those are independent
+properties. It fails on three things, each the inverse of an R-001 finding:
+
+| Failure | Diagnostic question | R-001 counterpart |
+| --- | --- | --- |
+| Organised by topic coverage, not argument | Can each heading be rewritten as a sentence with a truth value? | move 10, one job per section |
+| Stitched verbatim quotation; no claim of its own | What in this document could turn out to be false? Zero fails. | move 15, every claim carries a fate |
+| "Open gaps" listed, never priced | Which gap, what would closing it cost, what would it change? | move 20, the fix is named and priced |
+
+The second is the load-bearing one. **A document with no falsifiable claim is
+exactly what "you gave me a lot of text and I don't know what to do with it" feels
+like from the inside** — there is no action item because there is no position.
+That reframes the project's output-contract problem: the missing action items are
+a symptom of a missing claim, not a formatting defect.
+
+### Where the exemplars are weaker than Saif
+
+ROME's limitations discussion is thinner than `the-check-that-was-never-there`'s
+five-item "Honest limits". On the hedging-quarantine axis — R-001's central
+finding — **Saif's own writing is the better exemplar** and the skill should not
+defer to the papers there.
+
+### Deferred, with reasons
+
+- **MEMIT** — same authors and register as ROME; adds notation volume, not a new
+  move. Pull in if the notation contract needs more worked instances.
+- **NNSight / NDIF** — systems and tooling register, a different document type.
+  Revisit if the skill grows a tool-paper mode.
+- **Unified Concept Editing** — diffusion, not LM mech interp. Off-target for v1.
