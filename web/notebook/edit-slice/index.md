@@ -37,16 +37,30 @@ It is an instrument, not a method. Nothing here proposes a better editor.
 | **Withdrawn** | Seven of ten claims. See the [review packet](./review) for what killed each. |
 | **Open** | Whether the mechanism is already known; what it implies for ripple benchmarks, which probe with subject-initial prompts; and a causal rather than behavioural measure. |
 
-## Reading order
+## Three ways in
 
-- **[The paper](./review)** — abstract, method, figures, the attack surface. Start here if
-  you are evaluating rather than following.
-- **[Evidence ledger](./ledger)** — every decision, finding and thread, generated from the
-  repository. The complete record, most of which went nowhere.
-- **[Five days of edit-slice](/writing/five-days)** — the running narrative, revised in
-  place, including every claim that was withdrawn and why.
-- **[The check that was never there](/writing/the-check-that-was-never-there)** — the
-  possession filter, which is the shipped deliverable.
+<Figure
+  caption="The record is one argument, one story and one complete index. They cover the same work at three different resolutions."
+>
+
+| | for | length |
+| --- | --- | --- |
+| **[The paper →](./review)** | evaluating the claim. Abstract, method, two figures, four tables, and an attack surface ordered by how much damage each objection does. | ~3,000 words |
+| **[The narrative →](/writing/five-days)** | how it actually went — every claim that was withdrawn, in the order it was withdrawn. Revised in place, never forked. | ~13,000 words |
+| **[The evidence ledger →](./ledger)** | verifying any single statement. All 22 decisions, 16 findings and 57 threads, generated from the repository. | complete |
+
+</Figure>
+
+If you are deciding whether this is worth your time: read the paper's abstract, then its
+section 6. Section 6 is where we say what is wrong with it.
+
+## What would change our mind
+
+| | |
+| --- | --- |
+| the mechanism is already published | the central claim becomes a replication, and the contribution is the measurement tooling |
+| ripple benchmarks are unaffected by subject-initial prompts | the consequence we think matters most evaporates |
+| a causal measure shows the displacement is not subject-keyed | the whole account is wrong, and [T-067](./ledger) is how to find out |
 
 ## Scope, deliberately
 

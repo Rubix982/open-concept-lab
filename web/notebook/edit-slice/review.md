@@ -36,6 +36,17 @@ that token under causal attention, so its update coefficient is **exactly 1** fo
 about a *different* subject receives **0.082**. The distributions do not overlap. What
 reads as propagation is displacement keyed on the subject string.
 
+## Figures and tables
+
+| | |
+| --- | --- |
+| **Figure 1** | The pinned coefficient — why a shared prefix forces the value to 1 |
+| **Figure 2** | Coefficient by layer, five probe forms, seven depths |
+| **Table 1** | Usable chains by rendering × control — the interaction |
+| **Table 2** | The relation control — the +0.0 pp paired difference |
+| **Table 3** | Observations against the mechanism |
+| **Table 4** | Claim status — ten claims, seven withdrawn or narrowed |
+
 ## 1 · The question
 
 An edit is supposed to change one fact. It changes an unknown amount of everything else,
@@ -121,6 +132,9 @@ States"* is the modal completion whether or not `[X]` means anything.
 
 Neither repair alone recovers anything. Together they recover twenty chains.
 
+**Table 1** — Usable chains out of 136, by rendering × control. Each fix alone moves the
+count by one; together they move it by twenty.
+
 | | placeholder control | paired control |
 | --- | ---: | ---: |
 | bare rendering | 58 | 59 |
@@ -139,6 +153,9 @@ The birth-city probe lands in the edited country 67% of the time (baseline 5%, s
 control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
 
 Then the relation control:
+
+**Table 2** — The relation control. Subject and target country held fixed; only the
+edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
 
 | arm | lands in target country |
 | --- | ---: |
@@ -231,6 +248,8 @@ same subject has an identical key there, so the coefficient is `(k*·u)/(u·k*) 
 
 This accounts for the whole arc:
 
+**Table 3** — Every observation in the arc, against the one mechanism.
+
 | observation | explanation |
 | --- | --- |
 | birth-city probe displaced, 67% | shares the prefix → pinned at 1.0 |
@@ -309,6 +328,8 @@ below the *minimum* same-subject value of 0.483. The distributions do not overla
 pre-stated confirmation threshold was ≤0.3.
 
 ## 5 · Every claim this project withdrew
+
+**Table 4** — Every claim this project made, and what became of it.
 
 | claim | status | what changed it | record |
 | --- | --- | --- | --- |
