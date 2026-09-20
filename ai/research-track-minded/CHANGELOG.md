@@ -25,3 +25,9 @@ is misattributed. This entry is the record.
   instruments in `agents/researcher/findings/`, output in `logs/`
 - [O-002] Opened E-001 — spike to test Tier 2 against a real draft before packaging
 - Threads: T-007 partially answered; T-010 opened — `threads.md`
+
+## 2026-09-20 · Session 3 (cont.)
+
+- [E-001] Tier 2 spike — CONFIRM; falsifiable claims 1→8 against a blind baseline.
+  Artifacts in `agents/engineer/workspace/e001/`, decisions in `agents/shared/decisions.md`
+- [O-003] Opened E-002 — write the skill

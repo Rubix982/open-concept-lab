@@ -40,7 +40,8 @@ sentence will produce better-looking mush. T-001 tests it.
 | R-001 | Researcher   | Voice profile from Saif's own corpus   | closed      |
 | R-002 | Researcher   | Exemplar corpus — mech interp papers   | closed      |
 | R-003 | Researcher   | The deletion list                      | closed      |
-| E-001 | Engineer     | Test Tier 2 against a real draft       | open        |
+| E-001 | Engineer     | Test Tier 2 against a real draft       | closed      |
+| E-002 | Engineer     | Write the skill                        | open        |
 
 ## Blocked
 
@@ -64,6 +65,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - R-001 · Voice profile — `agents/shared/findings.md`
 - R-002 · Mech interp exemplar corpus — `corpus/papers/`, findings.md
 - R-003 · Deletion list + negative-space measurement — `corpus/deletion-list.md`
+- E-001 · Tier 2 spike — CONFIRM; `agents/engineer/workspace/e001/`
 
 ## Known gap — closed by R-002
 
@@ -93,8 +95,22 @@ Corpus assembly is now complete: voice profile, 19 exemplar passages, 20 deletio
 entries. The risk from here is building the skill around a frame that has never
 touched a draft.
 
+## What E-001 established
+
+The frame survived contact. Against a blind baseline — real AI-generated prose on
+GradSim and ripple effects — the eight Tier 2 questions took falsifiable-as-written
+claims from 1 to 8 while adding 18% length. The pre-stated null (longer, equally
+unfalsifiable) did not fire, and the vocabulary control stayed flat.
+
+The decisive result was incidental. **The baseline scores 0.0 Tier 1 hits per 10k
+and is still useless** — it passes the whole word list. R-003 inferred that from a
+corpus comparison; E-001 shows it on one passage.
+
+Bounded: M6 stayed at zero. Tier 2 converts missing evidence into a stated gap. It
+does not produce evidence, and the skill must say so.
+
 ## Next Orchestrator Action
 
-Open E-001 **before** any skill packaging: run the Tier 2 questions against one
-real draft and see whether they change the output. If they do not, the corpus was
-necessary and the frame is still wrong.
+E-002 — write the skill. Tier 2 as the primary pass, Tier 1 as a mechanical check
+beside it, the voice profile and exemplar passages as reference. The evidential
+limitation is declared in the skill, not discovered by the user.
