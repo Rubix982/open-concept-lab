@@ -1145,7 +1145,7 @@ agents/shared/decisions.md -> "[E-017] Result"
 
 ### E-018 · The different-subject floor — does [E-017]'s claim survive its missing control?
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** **highest** — it can retract a published claim
 **Created:** 2026-09-20
@@ -1210,6 +1210,14 @@ Same 16 chains, same `E014_kstar_L5_s1538.pt` cache, `LAYER` unchanged.
 
 **Blockers:** —
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- agents/engineer/workspace/coeff_other_subject.py
+- logs/coeff_other_subject-2026-09-20-103132.log
+- agents/shared/decisions.md → "[E-018] Result: the different-subject floor is 0.082"
+
+**Closed:** 2026-09-20 — **CONFIRM.** Different-subject mean 0.082 against 0.958
+same-subject, gap 0.877, distributions non-overlapping (max 0.153 < min 0.483). Gate
+passed: all five [E-017] forms reproduced to within 0.001. [E-017] stands with its
+floor measured rather than assumed. The anisotropy prediction that motivated the
+ticket was wrong, and is recorded as such.

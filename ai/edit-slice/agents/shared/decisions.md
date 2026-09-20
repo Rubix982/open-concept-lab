@@ -920,3 +920,73 @@ editors do. Recorded, not chased.
 
 **Artifacts:** agents/engineer/workspace/layer_one.py; results/T-075-layer-sweep.json;
 logs/layer_one_L*.log
+
+---
+
+## [E-018] Result: the different-subject floor is 0.082 — [E-017] stands, and the floor is now measured
+
+_Date: 2026-09-20 · Llama-3.1-8B, layer 5, 16 chains, coefficients only_
+
+Tests [T-076], the control [E-017] never ran. Every prior control held the subject
+fixed and varied the form; this one varies the subject and holds the form fixed —
+chain *i*'s `k*` scored against chain *i+1*'s subject in the edit-form template,
+paired by rotation.
+
+**Gate passed before reading the control.** The five [E-017] forms reproduce:
+
+| probe form | [E-017] published | [E-018] re-run |
+| --- | ---: | ---: |
+| early (edit form) | 1.000 | 0.999 |
+| different relation | 1.000 | 0.999 |
+| late clause | 0.935 | 0.935 |
+| possessive | 0.934 | 0.934 |
+| long preamble | 0.925 | 0.924 |
+
+**The result.**
+
+| | mean | median | min | max |
+| --- | ---: | ---: | ---: | ---: |
+| same-subject forms (all five) | **0.958** | — | 0.483 | 1.008 |
+| **different subject** | **0.082** | 0.081 | 0.032 | **0.153** |
+
+**Gap 0.877, and the distributions do not overlap.** The highest different-subject
+coefficient (0.153) sits below the lowest same-subject one (0.483, a possessive).
+Pre-stated threshold was ≤0.3 to confirm; the measurement is **nearly four times
+below it**.
+
+**[E-017] is confirmed, and its claim is now stronger than when published.** "Any
+prompt containing the subject receives 93–100% of the edit vector" rested on an
+untested assumption that a non-subject prompt would receive little. That floor is
+now measured at 0.082 rather than assumed, and the separation is the cleanest in
+this project's record.
+
+**The anisotropy worry was well-founded and wrong.** [E-016] measured these keys at
+participation ratio 26.5 of 2048, and the design argued that vectors on a narrow
+manifold have substantial cosine by construction, so the floor might be high. It is
+not. A ~26-dimensional manifold still leaves ample room for different subjects to
+be near-orthogonal at this layer. **Recording the prediction and its failure** —
+the reasoning was a correct reason to run the control and an incorrect forecast of
+its outcome, and those are different things.
+
+**Noise floor, worth stating.** The edit form should be exactly 1.000 by
+construction — its key *is* `k*`. It measures 0.999 with range 0.995–1.003, so
+half-precision activations put the measurement noise at roughly ±0.005. That is two
+orders of magnitude below the 0.877 gap and does not bear on the reading.
+
+**What this does not establish.** Layer 5 only, 16 chains, one model, one relation
+family, and one pairing (rotation). A different pairing — say, subjects matched on
+token length or nationality — could in principle score higher, and was not run. The
+claim is that *these* different subjects score 0.082, and the generalisation to
+"different subjects generally" is an inference from a clean separation, not a
+measurement of the space.
+
+**Consequence for [T-075].** The layer sweep's first job is discharged. It reverts
+to the question the thread actually asked — does the pinning hold away from layer 5
+— with `c_other` retained as a per-layer floor rather than as the point of the
+experiment. design.md Part IV amended accordingly.
+
+**Provenance.** 15 NDIF transport failures absorbed by `retrying()` across 16
+chains, consistent with [O-007]'s ~50% per-call rejection rate. One completed run.
+
+**Artifacts:** agents/engineer/workspace/coeff_other_subject.py;
+logs/coeff_other_subject-2026-09-20-103132.log

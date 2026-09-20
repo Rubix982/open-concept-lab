@@ -1132,7 +1132,7 @@ subspace have substantial cosine by construction and the floor may be high. Spaw
 
 ### T-076 · Is the different-subject floor high enough to weaken [E-017]?
 
-**Status:** open
+**Status:** answered — **no, the floor is 0.082**
 **Parent:** T-075
 **Opened:** 2026-09-20
 **Question:** Split out of the T-075 design because it is not a layer question and does not
@@ -1141,4 +1141,10 @@ city of"* against a Jack Marshall edit's `k*`, 16 chains. If it comes back high,
 the E-016 section of the write-up, and the post's standfirst are wrong rather than narrow,
 and the correction is a retraction. Cheapest falsification test available for the project's
 strongest claim, and it should run before the layer sweep rather than inside it.
-**Answer:** —
+**Answer:** No. [E-018]: different-subject mean **0.082** (max 0.153) against a
+same-subject mean of 0.958 (min 0.483) — non-overlapping, gap 0.877, nearly 4x below
+the 0.3 confirm threshold. [E-017] stands and is stronger, since its floor is now
+measured rather than assumed. The anisotropy reasoning that motivated the ticket was a
+correct reason to run it and an incorrect forecast of the outcome; a 26-dimensional
+manifold still leaves different subjects near-orthogonal at layer 5. Unmeasured: other
+pairings (token length, nationality) could score higher and were not tried.

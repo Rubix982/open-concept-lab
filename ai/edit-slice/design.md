@@ -919,6 +919,15 @@ with the subject, and the more anisotropic the layer, the higher that floor sits
 
 So the sweep has two jobs, and the control is the first of them.
 
+> **Amended 2026-09-20, after [E-018].** The control ran on its own, ahead of the
+> sweep, and came back at **0.082** against a same-subject mean of 0.958 — the
+> distributions do not overlap. [E-017] is confirmed and its floor is measured. The
+> anisotropy argument three paragraphs above was a correct reason to run the control
+> and a **wrong prediction** of its result; left standing rather than edited, because
+> a design that quietly matches its outcome teaches nothing. The sweep's first job is
+> discharged: it reverts to the layer question, with `c_other` retained as a per-layer
+> floor rather than as the point of the experiment.
+
 ## 4 · Falsification — stated in advance
 
 Let `c_form(L)` be the mean coefficient at the subject's last token at layer `L`,

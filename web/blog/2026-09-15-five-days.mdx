@@ -1415,9 +1415,23 @@ themselves rather than by what surrounds them, and no natural reformulation esca
 
 **Same-subject leakage in ROME is structural.** Any prompt containing the subject receives
 93–100% of the edit vector at the subject's last token — regardless of the relation asked
-about, where the subject sits, how much preamble precedes it, and regardless of `C`. The
-only probe that ever escaped in this project is `inner_2`, which does not mention the
-subject at all.
+about, where the subject sits, how much preamble precedes it, and regardless of `C`.
+
+That sentence had a hole in it when I first published it, and it is worth saying how it got
+closed. Every control behind the 93–100% figure varies the **form** and holds the subject
+fixed. None of them varied the *subject*. So "any prompt containing the subject" was not
+actually separated from "any prompt" — the floor was assumed, never measured, and
+[E-016]'s own anisotropy number was a reason to doubt it: these keys sit on an effectively
+26-dimensional manifold out of 2048, where arbitrary vectors have substantial overlap by
+construction.
+
+Measured now. A **different person** in the identical template — *"Marie Curie was born in
+the city of"* scored against a Jack Marshall edit's key — comes back at **0.082**, against
+0.958 for the same-subject forms. The distributions do not touch: the highest
+different-subject coefficient is 0.153, the lowest same-subject one 0.483.
+
+So the pinning is keyed on the subject, and now demonstrably so. The anisotropy worry was
+a good reason to run the control and a bad prediction of what it would say.
 
 This also finishes the account of the result that closed the last post. The work-country
 edit and the birth-city probe both begin with the subject, so the probe receives the work
@@ -1455,6 +1469,12 @@ are real. This is an existence-and-tendency claim about prompt forms, never a ra
 
 **Sixteen chains for the coefficient sweep, forty-two for the edit arm.** One model, one
 layer, one relation family.
+
+**The different-subject floor was measured with one pairing.** Subjects were paired by
+rotation. A pairing chosen to be adversarial — matched on token length, or nationality —
+could score higher, and was not run. The claim is that *these* different subjects score
+0.082; that different subjects generally do is an inference from a clean separation, not a
+measurement of the space.
 
 **It is a layer-5 claim until someone runs the sweep elsewhere.** If the subject key becomes
 context-sensitive deeper in the network, an editor targeting a later layer would leak less

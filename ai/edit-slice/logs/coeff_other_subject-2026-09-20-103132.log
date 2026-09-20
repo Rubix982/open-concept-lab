@@ -1,0 +1,36 @@
+2026-09-20 10:31:32,027 INFO     coeff_other_subject  run coeff_other_subject -> logs/coeff_other_subject-2026-09-20-103132.log
+2026-09-20 10:31:32,027 INFO     coeff_other_subject  config {"control": "subject varied, form held fixed", "forms": ["early (edit form)", "late clause", "possessive", "long preamble", "different relation", "different subject"], "layer": 5, "measures": "coefficient only", "ticket": "E-018"}
+2026-09-20 10:31:45,093 WARNING  remote  transport failure (NNsightException) during forms 254, attempt 1/8; retrying in 5s
+2026-09-20 10:31:59,691 WARNING  remote  transport failure (NNsightException) during forms 273, attempt 1/8; retrying in 5s
+2026-09-20 10:32:11,776 WARNING  remote  transport failure (NNsightException) during forms 342, attempt 1/8; retrying in 5s
+2026-09-20 10:32:24,780 WARNING  remote  transport failure (NNsightException) during forms 345, attempt 1/8; retrying in 5s
+2026-09-20 10:32:39,713 WARNING  remote  transport failure (NNsightException) during forms 507, attempt 1/8; retrying in 5s
+2026-09-20 10:32:52,513 WARNING  remote  transport failure (NNsightException) during forms 590, attempt 1/8; retrying in 5s
+2026-09-20 10:33:11,656 WARNING  remote  transport failure (NNsightException) during forms 615, attempt 1/8; retrying in 5s
+2026-09-20 10:33:22,716 INFO     coeff_other_subject    8/16 chains
+2026-09-20 10:33:24,459 WARNING  remote  transport failure (NNsightException) during forms 747, attempt 1/8; retrying in 5s
+2026-09-20 10:33:39,272 WARNING  remote  transport failure (NNsightException) during forms 1126, attempt 1/8; retrying in 5s
+2026-09-20 10:33:50,947 WARNING  remote  transport failure (NNsightException) during forms 1289, attempt 1/8; retrying in 5s
+2026-09-20 10:34:04,002 WARNING  remote  transport failure (NNsightException) during forms 1315, attempt 1/8; retrying in 5s
+2026-09-20 10:34:16,959 WARNING  remote  transport failure (NNsightException) during forms 1401, attempt 1/8; retrying in 5s
+2026-09-20 10:34:28,504 WARNING  remote  transport failure (NNsightException) during forms 1555, attempt 1/8; retrying in 5s
+2026-09-20 10:34:40,848 WARNING  remote  transport failure (NNsightException) during forms 1688, attempt 1/8; retrying in 5s
+2026-09-20 10:34:52,838 WARNING  remote  transport failure (NNsightException) during forms 1692, attempt 1/8; retrying in 5s
+2026-09-20 10:35:04,511 INFO     coeff_other_subject    16/16 chains
+2026-09-20 10:35:04,511 INFO     coeff_other_subject  
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  COEFFICIENT at the subject's last token, vs the edit's k*  (1.0 = full delta)
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  probe form                 mean   median      min      max
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  early (edit form)         0.999    0.999    0.995    1.003
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  late clause               0.935    0.955    0.670    1.008
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  possessive                0.934    0.966    0.483    1.000
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  long preamble             0.924    0.940    0.707    0.997
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  different relation        0.999    0.999    0.995    1.003
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  different subject         0.082    0.081    0.032    0.153
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  
+2026-09-20 10:35:04,512 INFO     coeff_other_subject  n = 16 chains. The edit form is 1.000 by construction (its key IS k*).
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  GATE: the five E-017 forms must reproduce 1.000/1.000/0.935/0.934/0.925.
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  If they do not, the harness is wrong and the control below means nothing.
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  different-subject mean 0.082  vs  same-subject mean 0.958  ->  gap 0.877
+2026-09-20 10:35:04,513 INFO     coeff_other_subject  Pre-stated: <=0.3 confirms E-017; >=0.7 RETRACTS it; between is a graded claim.
