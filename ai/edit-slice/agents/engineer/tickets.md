@@ -1569,3 +1569,60 @@ pool. Full entry in agents/shared/decisions.md [E-023].
 **Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-generation.json;
 agents/shared/decisions.md -> "[E-023] Result"
 **Closed:** 2026-09-20
+
+---
+
+### E-024 · Does editing one attribute of a subject disturb its unrelated attributes?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 3h
+
+**Description:**
+The experiment that would turn a reframe into a result. [E-016] and [E-021] established
+that the update reaches every prompt beginning with the edited subject, by arithmetic and
+causally. If that is right, then what an edit reaches is a **subject**, and the relation
+`v*` targeted is incidental — "editing a fact" would be a user-level description the
+mechanism does not honour.
+
+One prior datum points this way and was never followed: [E-013]'s smoke test found that
+editing Vlaminck's **occupation** dropped his **birth-city** probe by ~8 nats. This runs
+the reverse direction and adds a control.
+
+**Design — a relatedness gradient, not a single contrast.**
+
+| probe | relation to a birthplace edit |
+| --- | --- |
+| `By profession, X is a` → occupation | **unrelated**. No inference runs from birth country to profession. |
+| `X is a citizen of` → citizenship | **plausibly related**. Birth country is evidence for citizenship. |
+
+Same two probes on a **different, unedited subject** are the control.
+
+**Measure: paired log-probability, no pool.** [E-023] showed that ranking a closed pool
+undercounts badly and that only paired contrasts survive it. So the quantity here is
+teacher-forced log P(true answer) on the same probe with and without the edit — same item,
+same string, differenced. No candidate set, nothing to exclude.
+
+**Falsification, pre-stated.**
+- *Confirm "edits reach subjects":* both attributes of the edited subject fall
+  substantially; the control subject's do not. The unit the editor operates on is the
+  subject, and relation-selectivity is not a property of the update.
+- *Deny:* the edited subject's unrelated attributes are unmoved. The update is
+  relation-selective after all, [E-021]'s result is about birthplace probes specifically,
+  and the reframe collapses.
+- *Graded:* citizenship falls materially more than occupation. The update is partly
+  selective — the strongest single result available here, because it would mean semantic
+  relatedness modulates an effect the arithmetic says should be uniform.
+- *Null:* the control subject also falls. The edit is not subject-keyed at all and
+  something upstream is wrong; treat as a bug, not a finding.
+
+**Confound.** Occupation and citizenship differ in how strongly the model holds them, so a
+larger absolute drop may reflect a higher starting point. Report the baseline log-prob
+beside every delta, and prefer the **control-differenced** drop over the raw one.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e024.py; results/E-024-*.json
+**Closed:** —

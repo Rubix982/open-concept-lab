@@ -1,0 +1,25 @@
+2026-09-20 17:33:30,242 INFO     run_e024  run run_e024 -> logs/run_e024-2026-09-20-173330.log
+2026-09-20 17:33:30,243 INFO     run_e024  config {"layer": 5, "measure": "teacher-forced log P(true answer), paired, no candidate pool", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 37, "probes": {"citizenship": "{} is a citizen of", "occupation": "By profession, {} is a"}, "ticket": "E-024"}
+2026-09-20 17:33:30,243 INFO     run_e024  37 subjects with both attributes labelled
+2026-09-20 17:33:34,993 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:33:42,816 DEBUG    remote  trace ok: 4 rows, 6 tok, 2.8s
+2026-09-20 17:33:44,936 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:33:53,040 DEBUG    remote  trace ok: 4 rows, 6 tok, 3.1s
+2026-09-20 17:33:54,787 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:02,467 DEBUG    remote  trace ok: 4 rows, 6 tok, 2.7s
+2026-09-20 17:34:04,694 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:12,672 DEBUG    remote  trace ok: 4 rows, 6 tok, 3.0s
+2026-09-20 17:34:14,471 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:22,114 DEBUG    remote  trace ok: 4 rows, 5 tok, 2.6s
+2026-09-20 17:34:24,347 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:32,385 DEBUG    remote  trace ok: 4 rows, 5 tok, 3.0s
+2026-09-20 17:34:34,216 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:41,855 DEBUG    remote  trace ok: 4 rows, 6 tok, 2.6s
+2026-09-20 17:34:44,331 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:34:52,366 DEBUG    remote  trace ok: 4 rows, 6 tok, 3.0s
+2026-09-20 17:34:54,087 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:35:01,659 DEBUG    remote  trace ok: 4 rows, 6 tok, 2.6s
+2026-09-20 17:35:03,781 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 17:35:11,909 DEBUG    remote  trace ok: 4 rows, 6 tok, 3.1s
+2026-09-20 17:35:11,909 INFO     run_e024    5/37
+2026-09-20 17:35:13,655 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
