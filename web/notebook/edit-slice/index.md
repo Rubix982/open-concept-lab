@@ -2,71 +2,56 @@
 title: edit-slice
 sidebar_label: edit-slice
 sidebar_position: 1
-description: Whether a weight-level knowledge edit leaves its own grounds intact and contradictory.
+description: Measuring what a weight-level knowledge edit does to the facts it was not aimed at — and finding the answer is arithmetic.
 ---
 
 # edit-slice
 
-Editing a fact into a model's weights changes one thing and disturbs an unknown
-amount of everything else. The standard way to evaluate that disturbance looks
-*forward*, at what follows from the edit. This project looks the other way, at
-the facts that were premises for the edited fact and are still sitting there
-after it changes.
+Editing a fact into a model's weights changes one thing and disturbs an unknown amount of
+everything else. This project measures the disturbance — specifically, what happens to the
+*premises* of an edited fact, which forward-looking ripple evaluations do not probe.
+
+It is an instrument, not a method. Nothing here proposes a better editor.
 
 <Claim
-  label="What the project claims"
-  superseded="Everyone probes forward from an edit; nobody probes backward."
+  label="Where the project ended up"
+  superseded="Editing a conclusion leaves its grounds standing and contradictory, and the size of that orphan is the finding."
   record={{
-    Confidence: "Medium — one benchmark read closely, not a survey",
-    Falsified_by: "A published grounds probe distinct from argument inversion",
-    Revised: "10 September 2026",
+    "What replaced it": "The edit does not retract its grounds, and does not coherently rewrite them either. It displaces probability toward the edited content in anything that mentions the subject — by arithmetic, not by inference.",
+    "Why the first version failed": "E-002 (grounds are evidential, so no contradiction exists to count) and E-015 (a work-country edit relocates a birthplace exactly as often as a birth-country edit).",
+    Confidence: "High on the mechanism, which is analytic and confirmed at seven layers. Existence-claim only on every rate.",
   }}
 >
-  Inverting the arguments of an edited fact is covered, by RippleEdits, since
-  2024. Probing the <em>distinct</em> facts that were premises for the edited
-  fact is not covered by anything I can find.
+  ROME divides by <code>u·k*</code>. Any prompt beginning with the edited subject has an
+  identical key at that token, so its update coefficient is <strong>exactly 1</strong> —
+  for any covariance, at any layer, whatever relation it asks about. A different subject
+  gets <strong>0.082</strong>.
 </Claim>
 
-## The distinction the project rests on
+## State
 
-Two things look backward and are not the same thing. Keeping them apart is most
-of the contribution.
+| | |
+| --- | --- |
+| **Settled** | The pinned-coefficient mechanism (E-016), confirmed across probe forms (E-017), across seven layers (T-075), with a measured different-subject floor of 0.082 (E-018). |
+| **Measured, interpretation narrowed** | Rank-one editing moves a premise into the edited country 67% of the time against a 5% control — real, systematic, and carrying no inference. |
+| **Withdrawn** | Seven of ten claims. See the [review packet](./review) for what killed each. |
+| **Open** | Whether the mechanism is already known; what it implies for ripple benchmarks, which probe with subject-initial prompts; and a causal rather than behavioural measure. |
 
-| | What it probes | Covered? |
-| --- | --- | --- |
-| Argument order | The edited triple with its arguments swapped — `(Rome, contains, Eiffel)` | Yes, RippleEdits Logical Generalization <Cite id="cohen2024ripple" /> |
-| Justification order | Distinct facts whose truth was a premise — *built for the 1889 Paris Exposition* | Not that I can find |
+## Reading order
 
-An edited model can hold a belief together with a complete, untouched set of
-grounds for its negation. That state is what the project calls an **orphan**.
+- **[Review packet](./review)** — claim status, the attack surface, and where the
+  artifacts live. Start here if you are evaluating rather than following.
+- **[Five days of edit-slice](/writing/five-days)** — the running narrative, revised in
+  place, including every claim that was withdrawn and why.
+- **[The check that was never there](/writing/the-check-that-was-never-there)** — the
+  possession filter, which is the shipped deliverable.
 
-<Aside>
-  The transitive case is the sharper one. Getting from "Eiffel is in Rome" to
-  "Eiffel is in Italy" requires <em>using</em> the fact that Rome is in Italy,
-  but the benchmark only ever checks the conclusion. Whether the premise
-  survived is never asked.
-</Aside>
+## Scope, deliberately
 
-## Status
-
-<Status kind="provisional">Phase 0 — definitions and scope, near complete</Status>
-
-Settled so far:
-
-- The scope boundary against [rome-neighbors](/notebook/rome-neighbors/) is
-  reuse of code, not of scope.
-- RippleEdits' Logical Generalization is not a grounds probe. The claim above
-  narrowed as a result, which is the useful thing that came out of Phase 0.
-
-Open:
-
-- Can the benchmark generator's distance function take a code dependency graph
-  as input, so grounds are *discovered* rather than enumerated by hand?
-- What decides that a fact was a premise, in a way a reviewer can check?
-
-## Deliverable
-
-Two panels and one number: forward propagation against justification-order
-survival, on the same edits, with the gap between them stated as a rate.
-
-<References ids={["cohen2024ripple", "meng2022rome", "meng2023memit"]} />
+- **Existence claims only.** Hand-built and mined sets license *whether*, never *how
+  often*. No rate in this project is defensible and the artifacts are written to avoid
+  implying one.
+- **No method proposals.** Measuring what existing editors do; proposing a better one means
+  owning the burden of beating them, which is a different project.
+- **Behavioural, not causal.** Everything is input/output under intervention. No activation
+  patching. Stated as a limit, not hidden.
