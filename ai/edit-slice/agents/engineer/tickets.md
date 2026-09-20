@@ -1574,7 +1574,7 @@ agents/shared/decisions.md -> "[E-023] Result"
 
 ### E-024 · Does editing one attribute of a subject disturb its unrelated attributes?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1623,6 +1623,62 @@ same string, differenced. No candidate set, nothing to exclude.
 larger absolute drop may reflect a higher starting point. Report the baseline log-prob
 beside every delta, and prefer the **control-differenced** drop over the raw one.
 
+**Result (2026-09-20).** GRADED. Control-differenced drop: occupation +1.60 nats,
+citizenship +6.58, control 0.03/0.05. An unrelated attribute of the edited subject does
+fall, so the edit reaches the subject — but citizenship falls 4x harder, so the damage is
+not uniform while E-021 showed the reach is. Confound flagged: type overlap and semantic
+relatedness are entangled in these two probes. Full entry in agents/shared/decisions.md
+[E-024].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/run_e024.py; results/E-024-*.json
+**Artifacts:** agents/engineer/workspace/run_e024.py; results/E-024-attributes.json;
+agents/shared/decisions.md -> "[E-024] Result"
+**Closed:** 2026-09-20
+
+
+---
+
+### E-025 · Type overlap or semantic relatedness? The language probe
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 2h
+
+**Description:**
+[E-024] found a birthplace edit damages citizenship 4x harder than occupation, and two
+different accounts fit those two points:
+
+- **type overlap** — the injected value is a country, so country-valued probes compete
+  with it and others do not;
+- **semantic relatedness** — citizenship is *about* origin, so it is disturbed.
+
+They are entangled because citizenship is both. **Language separates them.** `P1412` is
+semantically related to country of origin — where you were born predicts what you speak —
+but its answers are *languages*, not countries.
+
+| probe | type-matched to the edit? | semantically related? |
+| --- | --- | --- |
+| citizenship | **yes** (country) | yes |
+| **language** | **no** (language) | **yes** |
+| occupation | no (profession) | no |
+
+**Prediction under each account.**
+- *Type overlap:* language patterns with **occupation** (≈1.6 nats).
+- *Semantic relatedness:* language patterns with **citizenship** (≈6.6 nats).
+- *Both contribute:* language lands between them, and the gap sizes the two effects.
+
+**Method.** Identical to [E-024] — same 37 subjects where labelled, same paired log-prob
+with no candidate pool, same different-subject control, with a language probe added.
+`P1412` labels are unfetched and must be pulled into a dated snapshot first.
+
+**Confound.** Language answers are far lower-entropy than occupation answers (most of these
+subjects speak one of a handful of languages), so a floor effect could suppress the drop.
+Report the baseline beside the delta and treat a language baseline near zero as
+uninterpretable rather than as a null.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e025.py; results/E-025-*.json
 **Closed:** —

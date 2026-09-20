@@ -1479,3 +1479,58 @@ Greedy is itself a choice: a model can rank one answer and sample another, so th
 greedy generation against rank and not "what the model would say" in general.
 
 **Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-generation.json
+
+---
+
+## [E-024] Result: an edit reaches the whole subject, but damages in proportion to type overlap
+
+_Date: 2026-09-20 · Llama-3.1-8B, layer 5, 37 subjects, paired log-prob, no candidate pool_
+
+Tests whether a birthplace edit disturbs attributes that have nothing to do with birth.
+Two probes give a relatedness gradient; the control is the same two probes on a different,
+unedited subject.
+
+| probe | baseline | mean drop | control-differenced |
+| --- | ---: | ---: | ---: |
+| same subject · **occupation** (unrelated) | −4.19 | 1.63 | **+1.60** |
+| same subject · **citizenship** (related) | −2.05 | 6.63 | **+6.58** |
+| other subject · occupation | −4.19 | 0.03 | — |
+| other subject · citizenship | −2.07 | 0.05 | — |
+
+**The control is a clean zero.** 0.03 and 0.05 nats. The edit is unambiguously
+subject-keyed, corroborating [E-018]'s 0.082 floor by an unrelated measure — that one was a
+coefficient, this is a behavioural log-prob.
+
+**The reframe is half right.** An unrelated attribute of the edited subject does fall —
+1.60 nats against the control's 0.03. Editing where someone was born measurably disturbs
+what the model holds about their profession. "Editing a fact" does not describe what
+happens.
+
+**But the damage is not uniform, and that is the result.** Citizenship falls **4× harder**
+than occupation. [E-021] established the *coefficient* is identical regardless of relation
+— the different-relation probe scored exactly 1.000 — so the update's **reach** is uniform
+while its **damage** is graded.
+
+> An edit reaches the whole subject uniformly, and damages each probe in proportion to how
+> much the injected content competes with that probe's answer space.
+
+The delta encodes a country. A citizenship probe asks for a country and is hit hard; an
+occupation probe asks for a profession and is hit less. This also subsumes [E-015]: the
+displacement is country-flavoured, so country-valued probes move and others do not.
+
+**The confound, which blocks the obvious phrasing.** Citizenship is *both* semantically
+related to birth country *and* type-matched to it. "Semantic relatedness modulates the
+damage" and "type overlap modulates the damage" both fit these two points, and they are
+different claims. **Do not write the former.** The discriminating probe is **language**:
+semantically related to country, typed as a language. If language falls like occupation the
+gradient is type overlap; if like citizenship, semantic relatedness. Opened as [E-025].
+
+**Method note.** No candidate pool anywhere in this measurement — teacher-forced log-prob
+on the same string with and without the edit. [E-023] showed a closed pool undercounts
+badly and that only paired contrasts survive it; this design took that lesson rather than
+repeating the mistake.
+
+**Scope.** 37 subjects, one model, one layer, one edited relation, two probes. The
+baselines differ (−4.19 vs −2.05), so the control-differenced column is the one to read.
+
+**Artifacts:** agents/engineer/workspace/run_e024.py; results/E-024-attributes.json

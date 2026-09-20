@@ -1,0 +1,15 @@
+2026-09-20 17:50:57,179 INFO     fetch_languages  run fetch_languages -> logs/fetch_languages-2026-09-20-175057.log
+2026-09-20 17:50:57,179 INFO     fetch_languages  config {"property": "P1412", "ticket": "E-025"}
+2026-09-20 17:50:57,750 INFO     fetch_languages  22 distinct language QIDs
+2026-09-20 17:51:00,942 INFO     fetch_languages  labels 766 -> 788
+2026-09-20 17:51:00,942 INFO     fetch_languages  resolved: 22/22
+2026-09-20 17:51:00,942 INFO     fetch_languages     Q1321        Spanish
+2026-09-20 17:51:00,942 INFO     fetch_languages     Q1412        Finnish
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q150         French
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q1568        Hindi
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q1654327     Classical Arabic
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q1860        English
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q188         German
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q2917968     Omaha–Ponca
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q36510       Modern Greek
+2026-09-20 17:51:00,943 INFO     fetch_languages     Q387066      Swiss German
