@@ -1446,3 +1446,62 @@ pairs and none reversed, p < 0.0001. Full entry in agents/shared/decisions.md [E
 results/E-021-positions-meta-llama_Llama-3.1-8B.json;
 agents/shared/decisions.md -> "[E-021] Result"
 **Closed:** 2026-09-20
+
+---
+
+### E-022 · Does the possession cell survive rephrasing? (T-062 and T-064)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 4h
+
+**Description:**
+Runs [T-062] and [T-064] in one pass — they are the same measurement read two ways.
+
+`notes/definitions.md` declaration 1 is **binding**: *a fact is a behavioral unit defined
+by its probe set.* Every possession number in this repo was measured with **|probe set| =
+1**, and [E-011] showed one template's surface form moved the usable-chain count further
+than an order of magnitude of model scale did. So what we have called possession of a fact
+is possession of a (fact, template) pair.
+
+**Templates come from ParaRel, not from us.** <Cite> `arXiv:2102.01017` covers `P19` with 13
+patterns. **Seven are usable**; the other six place `[Y]` prenominally — *"[X] was a
+[Y]-born person"* — and this project's scorer appends the answer as a continuation, so a
+mid-sentence slot cannot be scored without changing the measure. Excluded on that ground
+alone, decided before any scoring. Our own published form is carried as an eighth so the
+existing numbers have a referent inside the set.
+
+**Method.** 60 `inner_1` facts × 8 templates. Per pair, the [E-012] measure: row test
+(true answer ranks first) and column test (AUROC against foil prompts **at the same
+template**, so template is held fixed inside each comparison). Cell = HELD / PRIOR / MUTE /
+ABSENT.
+
+**T-062 — the reading that decides whether a fact-level statistic exists.** Per fact, the
+distribution of its 8 cells. Report the **modal-cell share**: 1.0 means the label is a
+property of the fact; 0.125 means it is noise over templates.
+
+**T-064 — MUTE.** Its rate over all 480 cells, and whether it tracks answer frequency as
+the label-form account predicts.
+
+**Falsification, pre-stated.**
+- *Confirm a fact-level predicate:* modal-cell share concentrates high (≥0.75 for most
+  facts). Possession is a property of the fact, single-template probing is a noisy
+  estimator of it, and the existing numbers are biased but not meaningless.
+- *Deny:* the share sits near chance. **No fact-level predicate exists**, every
+  per-fact possession number in this project and in the editing literature is a
+  template-level quantity reported under a fact-level name, and that is the more important
+  result.
+- *Null:* too few facts hold under *any* template for the distribution to be read. Report
+  coverage and treat as unrun.
+
+**Confound.** Templates differ in difficulty as well as in phrasing, so a fact that is
+ABSENT under seven and HELD under one may be a template effect, not fact instability.
+Report the per-template cell distribution alongside the per-fact one; a template that is
+ABSENT for nearly everything is a bad probe, not evidence about facts.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-*.json
+**Closed:** —
