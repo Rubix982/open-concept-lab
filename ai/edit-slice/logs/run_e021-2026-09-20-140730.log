@@ -1,0 +1,479 @@
+2026-09-20 14:07:30,431 INFO     run_e021  run run_e021 -> logs/run_e021-2026-09-20-140730.log
+2026-09-20 14:07:30,431 INFO     run_e021  config {"arms": ["A_full", "B_only", "C_except", "E_except_rescaled", "D_none"], "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 42, "note": "same cached v* and k* as E-014; only the position mask varies", "thread": "T-067", "ticket": "E-021"}
+2026-09-20 14:07:30,432 INFO     run_e021  42 chains x 4 arms; gate is arm A reproducing E-014's 67%
+2026-09-20 14:07:39,910 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:07:48,419 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:07:50,857 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:07:58,919 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:08:01,076 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:08:09,090 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:08:11,240 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:08:19,389 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:08:21,131 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:08:28,986 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.9s
+2026-09-20 14:08:30,746 WARNING  remote  transport failure (NNsightException) during keys 273, attempt 1/8; retrying in 5s
+2026-09-20 14:08:41,297 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:08:49,623 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:08:51,961 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:08:59,932 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:09:02,146 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:09:10,244 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:09:12,627 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:09:20,959 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:09:22,736 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:09:30,874 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:09:32,604 WARNING  remote  transport failure (NNsightException) during keys 342, attempt 1/8; retrying in 5s
+2026-09-20 14:09:43,947 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:09:52,171 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:09:54,423 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:10:02,578 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:10:04,776 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:10:12,838 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:10:15,313 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:10:24,786 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-20 14:10:28,141 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:10:37,971 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-20 14:10:39,965 WARNING  remote  transport failure (NNsightException) during keys 345, attempt 1/8; retrying in 5s
+2026-09-20 14:10:50,404 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:10:58,443 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:11:00,631 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:11:08,816 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:11:10,966 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:11:19,032 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:11:21,147 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:11:29,500 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:11:31,408 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:11:39,104 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.7s
+2026-09-20 14:11:39,106 INFO     run_e021    5/42
+2026-09-20 14:11:40,960 WARNING  remote  transport failure (NNsightException) during keys 507, attempt 1/8; retrying in 5s
+2026-09-20 14:11:54,708 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:12:03,552 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-20 14:12:06,171 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:12:14,209 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:12:16,356 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:12:24,512 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:12:26,768 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:12:34,837 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:12:36,671 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:12:44,441 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:12:46,179 WARNING  remote  transport failure (NNsightException) during keys 590, attempt 1/8; retrying in 5s
+2026-09-20 14:12:57,014 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:13:05,043 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:13:07,277 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:13:15,316 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:13:17,433 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:13:25,557 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:13:27,827 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:13:35,908 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:13:37,592 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:13:45,442 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:13:47,143 WARNING  remote  transport failure (NNsightException) during keys 615, attempt 1/8; retrying in 5s
+2026-09-20 14:13:57,573 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:14:05,613 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:14:07,876 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:14:15,892 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:14:18,106 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:14:26,192 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:14:28,443 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:14:36,487 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:14:38,201 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:14:46,012 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:14:47,747 WARNING  remote  transport failure (NNsightException) during keys 747, attempt 1/8; retrying in 5s
+2026-09-20 14:14:58,328 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:15:06,466 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:15:08,666 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:15:16,869 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:15:19,062 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:15:27,231 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:15:29,474 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:15:37,826 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:15:39,608 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:15:47,318 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.7s
+2026-09-20 14:15:49,841 WARNING  remote  transport failure (NNsightException) during keys 1126, attempt 1/8; retrying in 5s
+2026-09-20 14:16:07,515 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:16:15,792 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:16:18,636 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:16:29,739 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.1s
+2026-09-20 14:16:32,679 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:16:41,351 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:16:43,716 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:16:51,840 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:16:53,603 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:17:01,255 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.6s
+2026-09-20 14:17:01,258 INFO     run_e021    10/42
+2026-09-20 14:17:02,967 WARNING  remote  transport failure (NNsightException) during keys 1289, attempt 1/8; retrying in 5s
+2026-09-20 14:17:15,000 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:17:23,446 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:17:26,082 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:17:34,658 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:17:38,040 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:17:46,590 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:17:48,908 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:17:56,905 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:17:58,671 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:18:06,929 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:18:08,695 WARNING  remote  transport failure (NNsightException) during keys 1315, attempt 1/8; retrying in 5s
+2026-09-20 14:18:19,539 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:18:28,093 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:18:30,557 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:18:39,873 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-20 14:18:43,419 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:18:52,017 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:18:55,434 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:19:06,062 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.6s
+2026-09-20 14:19:09,021 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:19:17,889 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:19:19,584 WARNING  remote  transport failure (NNsightException) during keys 1401, attempt 1/8; retrying in 5s
+2026-09-20 14:19:32,898 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:19:43,116 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.2s
+2026-09-20 14:19:46,717 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:19:56,899 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.2s
+2026-09-20 14:19:59,897 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:20:08,169 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:20:10,966 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:20:19,313 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:20:21,927 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:20:30,124 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:20:32,169 WARNING  remote  transport failure (NNsightException) during keys 1555, attempt 1/8; retrying in 5s
+2026-09-20 14:20:44,364 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:20:51,788 WARNING  remote  transport failure (NNsightException) on attempt 2/8; retrying in 10s
+2026-09-20 14:21:06,583 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-20 14:21:09,737 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:21:21,871 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.1s
+2026-09-20 14:21:25,224 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:21:33,718 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:21:36,332 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:21:45,285 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:21:47,561 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:21:55,572 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:21:57,676 WARNING  remote  transport failure (NNsightException) during keys 1688, attempt 1/8; retrying in 5s
+2026-09-20 14:22:09,213 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:22:17,740 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:22:20,333 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:22:28,702 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:22:30,923 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:22:42,167 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.2s
+2026-09-20 14:22:44,527 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:22:52,874 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:22:55,024 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:23:03,156 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:23:03,158 INFO     run_e021    15/42
+2026-09-20 14:23:05,046 WARNING  remote  transport failure (NNsightException) during keys 1692, attempt 1/8; retrying in 5s
+2026-09-20 14:23:18,229 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:23:27,758 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-20 14:23:30,113 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:23:38,370 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:23:40,701 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:23:49,805 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-20 14:23:53,643 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:24:02,587 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:24:04,569 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:24:12,742 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:24:14,835 WARNING  remote  transport failure (NNsightException) during keys 1715, attempt 1/8; retrying in 5s
+2026-09-20 14:24:26,826 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:24:35,059 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:24:39,385 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:24:48,131 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:24:50,453 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:24:58,580 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:25:00,932 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:25:09,131 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:25:10,931 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:25:19,012 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:25:26,045 WARNING  remote  transport failure (NNsightException) during keys 1737, attempt 1/8; retrying in 5s
+2026-09-20 14:25:40,634 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:25:49,606 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.0s
+2026-09-20 14:25:53,063 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:26:01,155 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:26:03,384 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:26:12,301 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:26:15,006 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:26:23,828 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-20 14:26:26,168 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:26:34,181 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:26:35,984 WARNING  remote  transport failure (NNsightException) during keys 1794, attempt 1/8; retrying in 5s
+2026-09-20 14:26:48,712 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:26:57,090 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:26:59,436 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:27:08,519 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.1s
+2026-09-20 14:27:10,682 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:27:19,185 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:27:21,539 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:27:29,737 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:27:31,477 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:27:39,403 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.9s
+2026-09-20 14:27:41,214 WARNING  remote  transport failure (NNsightException) during keys 1798, attempt 1/8; retrying in 5s
+2026-09-20 14:27:52,306 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:28:00,916 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:28:03,120 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:28:11,789 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:28:14,243 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:28:22,650 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:28:25,134 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:28:33,483 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:28:35,536 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:28:45,001 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.5s
+2026-09-20 14:28:45,003 INFO     run_e021    20/42
+2026-09-20 14:28:47,046 WARNING  remote  transport failure (NNsightException) during keys 1901, attempt 1/8; retrying in 5s
+2026-09-20 14:29:01,192 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:29:09,896 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:29:12,446 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:29:21,349 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:29:23,668 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:29:32,423 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:29:34,837 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:29:42,997 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:29:45,014 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:29:52,568 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.6s
+2026-09-20 14:29:54,379 WARNING  remote  transport failure (NNsightException) during keys 1904, attempt 1/8; retrying in 5s
+2026-09-20 14:30:06,556 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:30:14,907 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:30:17,654 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:30:25,976 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:30:28,243 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:30:36,829 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:30:39,236 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:30:48,039 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-20 14:30:50,130 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:30:58,594 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:31:00,940 WARNING  remote  transport failure (NNsightException) during keys 2151, attempt 1/8; retrying in 5s
+2026-09-20 14:31:11,574 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:31:19,979 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:31:23,901 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:31:32,697 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-20 14:31:35,353 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:31:45,429 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.1s
+2026-09-20 14:31:49,235 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:31:58,040 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.8s
+2026-09-20 14:32:00,336 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:32:12,124 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.8s
+2026-09-20 14:32:14,695 WARNING  remote  transport failure (NNsightException) during keys 2165, attempt 1/8; retrying in 5s
+2026-09-20 14:32:31,872 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:32:41,218 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-20 14:32:43,520 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:32:52,030 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:32:55,684 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:33:04,276 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:33:06,417 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:33:16,109 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.7s
+2026-09-20 14:33:18,149 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:33:26,017 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.9s
+2026-09-20 14:33:27,843 WARNING  remote  transport failure (NNsightException) during keys 2236, attempt 1/8; retrying in 5s
+2026-09-20 14:33:39,863 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:33:48,086 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:33:50,640 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:33:58,671 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:34:01,019 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:34:09,099 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:34:11,562 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:34:22,761 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.2s
+2026-09-20 14:34:24,710 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:34:32,924 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:34:32,925 INFO     run_e021    25/42
+2026-09-20 14:34:34,770 WARNING  remote  transport failure (NNsightException) during keys 2418, attempt 1/8; retrying in 5s
+2026-09-20 14:34:46,550 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:34:55,439 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:34:58,474 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:35:07,647 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.2s
+2026-09-20 14:35:10,202 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:35:18,427 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:35:20,997 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:35:29,194 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:35:31,279 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:35:39,465 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:35:41,778 WARNING  remote  transport failure (NNsightException) during keys 2498, attempt 1/8; retrying in 5s
+2026-09-20 14:35:54,129 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:36:02,820 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:36:05,304 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:36:13,441 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:36:16,125 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:36:28,198 DEBUG    remote  trace ok: 75 rows, 81 tok, 7.1s
+2026-09-20 14:36:37,015 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:36:46,846 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.8s
+2026-09-20 14:36:48,797 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:36:56,341 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.5s
+2026-09-20 14:36:58,194 WARNING  remote  transport failure (NNsightException) during keys 2502, attempt 1/8; retrying in 5s
+2026-09-20 14:37:15,695 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:37:24,081 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:37:26,325 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:37:35,072 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:37:37,899 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:37:46,507 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:37:49,135 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:37:57,799 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:38:01,276 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:38:11,583 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.3s
+2026-09-20 14:38:13,270 WARNING  remote  transport failure (NNsightException) during keys 2754, attempt 1/8; retrying in 5s
+2026-09-20 14:38:27,807 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:38:36,281 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:38:39,288 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:38:48,557 DEBUG    remote  trace ok: 75 rows, 81 tok, 4.3s
+2026-09-20 14:38:51,061 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:38:59,507 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:39:01,882 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:39:12,117 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.2s
+2026-09-20 14:39:14,439 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:39:22,651 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:39:24,798 WARNING  remote  transport failure (NNsightException) during keys 2767, attempt 1/8; retrying in 5s
+2026-09-20 14:39:35,796 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:39:44,030 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:39:46,271 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:39:54,447 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:39:56,680 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:40:04,910 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:40:07,414 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:40:16,326 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.9s
+2026-09-20 14:40:18,729 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:40:26,622 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.9s
+2026-09-20 14:40:26,623 INFO     run_e021    30/42
+2026-09-20 14:40:28,357 WARNING  remote  transport failure (NNsightException) during keys 2777, attempt 1/8; retrying in 5s
+2026-09-20 14:40:38,984 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:40:47,233 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:40:49,584 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:40:57,545 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:40:59,784 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:41:08,017 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:41:10,985 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:41:19,285 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:41:21,056 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:41:28,812 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:41:30,648 WARNING  remote  transport failure (NNsightException) during keys 2912, attempt 1/8; retrying in 5s
+2026-09-20 14:41:41,425 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:41:49,597 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:41:51,897 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:41:59,982 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:42:02,167 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:42:10,566 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:42:12,853 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:42:20,816 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:42:22,721 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:42:30,382 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.7s
+2026-09-20 14:42:32,077 WARNING  remote  transport failure (NNsightException) during keys 2959, attempt 1/8; retrying in 5s
+2026-09-20 14:42:45,754 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:42:54,277 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:42:56,469 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:43:04,659 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:43:07,026 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:43:15,440 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:43:18,003 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:43:26,122 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:43:27,947 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:43:35,678 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.7s
+2026-09-20 14:43:37,360 WARNING  remote  transport failure (NNsightException) during keys 3005, attempt 1/8; retrying in 5s
+2026-09-20 14:43:47,985 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:43:56,263 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:43:58,483 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:44:06,584 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:44:08,821 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:44:16,946 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:44:19,257 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:44:27,443 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:44:29,345 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:44:37,081 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.7s
+2026-09-20 14:44:38,800 WARNING  remote  transport failure (NNsightException) during keys 3011, attempt 1/8; retrying in 5s
+2026-09-20 14:44:49,437 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:44:57,552 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:44:59,729 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:45:08,078 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:45:10,470 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:45:18,565 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:45:20,785 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:45:28,795 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:45:30,616 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:45:38,432 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:45:38,434 INFO     run_e021    35/42
+2026-09-20 14:45:40,687 WARNING  remote  transport failure (NNsightException) during keys 3040, attempt 1/8; retrying in 5s
+2026-09-20 14:45:53,716 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:46:01,979 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:46:04,376 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:46:13,006 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:46:15,502 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:46:23,836 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:46:26,215 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:46:34,204 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:46:38,974 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:46:46,599 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.6s
+2026-09-20 14:46:48,457 WARNING  remote  transport failure (NNsightException) during keys 3048, attempt 1/8; retrying in 5s
+2026-09-20 14:46:59,256 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:47:07,300 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:47:09,509 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:47:17,771 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:47:20,145 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:47:28,657 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:47:30,852 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:47:39,228 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:47:40,969 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:47:48,746 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:47:50,873 WARNING  remote  transport failure (NNsightException) during keys 3094, attempt 1/8; retrying in 5s
+2026-09-20 14:48:02,418 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:48:10,460 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:48:12,608 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:48:21,029 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:48:23,307 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:48:32,060 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:48:34,353 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:48:42,711 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.4s
+2026-09-20 14:48:44,693 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:48:52,518 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:48:54,189 WARNING  remote  transport failure (NNsightException) during keys 3181, attempt 1/8; retrying in 5s
+2026-09-20 14:49:05,037 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:49:13,678 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.6s
+2026-09-20 14:49:15,849 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:49:24,187 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:49:26,325 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:49:34,524 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:49:36,831 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:49:45,179 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:49:46,860 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:49:54,691 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:49:56,598 WARNING  remote  transport failure (NNsightException) during keys 3242, attempt 1/8; retrying in 5s
+2026-09-20 14:50:07,089 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:50:15,432 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:50:17,684 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:50:25,721 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:50:27,830 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:50:36,566 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:50:38,749 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:50:46,826 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:50:48,561 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:51:06,042 DEBUG    remote  trace ok: 75 rows, 81 tok, 12.5s
+2026-09-20 14:51:06,044 INFO     run_e021    40/42
+2026-09-20 14:51:07,769 WARNING  remote  transport failure (NNsightException) during keys 3531, attempt 1/8; retrying in 5s
+2026-09-20 14:51:19,833 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:51:31,003 DEBUG    remote  trace ok: 75 rows, 81 tok, 6.2s
+2026-09-20 14:51:33,465 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:51:44,328 DEBUG    remote  trace ok: 75 rows, 81 tok, 5.9s
+2026-09-20 14:51:49,814 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:52:14,778 DEBUG    remote  trace ok: 75 rows, 81 tok, 20.0s
+2026-09-20 14:52:25,174 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:53:18,894 DEBUG    remote  trace ok: 75 rows, 81 tok, 48.7s
+2026-09-20 14:53:21,072 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:53:28,833 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:53:30,586 WARNING  remote  transport failure (NNsightException) during keys 3567, attempt 1/8; retrying in 5s
+2026-09-20 14:53:41,319 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:53:49,517 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.2s
+2026-09-20 14:53:51,706 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:53:59,790 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:54:02,547 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:54:11,083 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:54:13,260 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:54:21,536 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:54:23,281 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:54:31,080 DEBUG    remote  trace ok: 75 rows, 81 tok, 2.8s
+2026-09-20 14:54:31,082 INFO     run_e021    42/42
+2026-09-20 14:54:31,082 INFO     run_e021  
+2026-09-20 14:54:31,082 INFO     run_e021  arm         positions receiving delta  in target
+2026-09-20 14:54:31,082 INFO     run_e021  A_full      all                            28/42 = 67%
+2026-09-20 14:54:31,082 INFO     run_e021  B_only      subject's last token only      29/42 = 69%
+2026-09-20 14:54:31,082 INFO     run_e021  C_except    all but the subject's last      2/42 = 5%
+2026-09-20 14:54:31,082 INFO     run_e021  E_except_rescaledall but it, mass restored       5/42 = 12%
+2026-09-20 14:54:31,082 INFO     run_e021  D_none      none (baseline)                 2/42 = 5%
+2026-09-20 14:54:31,082 INFO     run_e021  
+2026-09-20 14:54:31,083 INFO     run_e021  coefficient mass at the subject's last token: mean 66.8% of the prompt total
+2026-09-20 14:54:31,084 INFO     run_e021    (so arm C removes ~67% of the magnitude as well as the position)
+2026-09-20 14:54:31,084 INFO     run_e021  
+2026-09-20 14:54:31,084 INFO     run_e021  gate passed: arm A 67% against E-014's 67%
+2026-09-20 14:54:31,084 INFO     run_e021  sufficiency  (B >= A - 10pp)          : YES
+2026-09-20 14:54:31,084 INFO     run_e021  necessity    (C <= D + 10pp)          : YES  <- confounded with magnitude
+2026-09-20 14:54:31,084 INFO     run_e021  necessity    (E <= D + 10pp, mass restored): YES  <- the real test
+2026-09-20 14:54:31,086 INFO     run_e021  written: results/E-021-positions-meta-llama_Llama-3.1-8B.json

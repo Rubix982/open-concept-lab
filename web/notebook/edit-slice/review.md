@@ -52,7 +52,8 @@ reads as propagation is displacement keyed on the subject string.
 | **Table 1** | Usable chains by rendering × control — the interaction (§3.1) |
 | **Table 2** | The relation control — the +0.0 pp paired difference (§4.2) |
 | **Table 3** | Observations against the mechanism (§4.1) |
-| **Table 4** | Claim status — ten claims, seven withdrawn or narrowed |
+| **Table 4** | Position ablation — sufficient and necessary (§4.1) |
+| **Table 5** | Claim status — ten claims, seven withdrawn or narrowed |
 
 ## 1 · The question
 
@@ -245,6 +246,42 @@ dependency runs the other way:
 | whitening changed nothing, 42/42 | cannot alter a coefficient fixed by arithmetic |
 | a uniform ×0.27 rescale **does** break it (3 of 4) | it scales the pinned term too |
 | the work-country null, +0.0 pp | both prompts begin with the subject |
+
+<p className="ocl-tablecap"><strong>Table 4.</strong> A position ablation inside the
+update. Only the mask varies — same edit, same cached <code>v*</code>, same
+<code>k*</code>. Arm E restores the magnitude the mask removed, so position is the only
+difference from the full edit.</p>
+
+| arm | positions receiving δ | mass | in target |
+| --- | --- | ---: | ---: |
+| **A** full | all | 100% | 28/42 = **67%** |
+| **B** only | the subject's last token alone | 67% | 29/42 = **69%** |
+| **C** except | all but it | 33% | 2/42 = 5% |
+| **E** except, **mass restored** | all but it, rescaled to 100% | 100% | 5/42 = **12%** |
+| **D** none | — | 0% | 2/42 = 5% |
+
+A coefficient of 1 at a position contributing nothing would produce the same numbers as
+one that does the work, so the arithmetic on its own does not settle where the effect
+lives. Masking the update by position does.
+
+**Sufficient:** arm B reproduces the full edit from one position out of roughly twelve —
+69% against 67%, one discordant pair, p = 1.000.
+
+**Necessary:** arm C also strips two thirds of the magnitude, and §4.1's scale test showed
+0.27× breaks relocation unaided, so C ≈ D is what magnitude loss alone predicts. Arm E
+restores that magnitude to the surviving positions and reaches 12% against a 5% baseline.
+
+The comparison that carries it is **B against E**. Arm B has *less* mass at one position;
+arm E has *more*, spread over every other position. **29 against 5, twenty-four discordant
+pairs, none reversed, p < 0.0001.**
+
+<Margin>Coefficient mass at the subject token ranges 31–80% across chains, mean 66.8%.
+Arm E's rescaling is per chain, so each restoration is exact rather than
+averaged.<Evidence id="E-021" /></Margin>
+
+Less magnitude in the right place beats more magnitude everywhere else, and no chain goes
+the other way.
+
 ### 4.2 · What it predicts: displacement without inference
 
 _Records: <Evidence id="E-013" /> · <Evidence id="E-014" /> · <Evidence id="E-015" />_
@@ -344,7 +381,7 @@ pre-stated confirmation threshold was ≤0.3.
 
 ## 5 · Every claim this project withdrew
 
-<p className="ocl-tablecap"><strong>Table 4.</strong> Every claim this project made, and what became of it.</p>
+<p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
 
 | claim | status | what changed it | record |
 | --- | --- | --- | --- |
@@ -382,9 +419,12 @@ the covariance over the CounterFact prompt distribution rather than Wikipedia, f
 keys, with a ridge chosen by an in-sample/held-out agreement rule. Defensible, but not
 ROME.
 
-**5 · Everything is behavioural.** No activation patching, no interchange interventions. We
-can say the model *behaves as if*; we cannot say a component *causes*. Deliberate scope,
-and the largest hole.
+**5 · The causal claim is about the edit, not the model.** §4.1's ablation intervenes on
+ROME's own update and shows which positions the relocation depends on. It does **not**
+patch the model's activations, so it says which part of *the edit* matters and never which
+part of *the network* represents the fact. Interchange interventions remain unrun, and the
+distinction between "this position of the update is necessary" and "this component encodes
+the fact" is exactly the gap that remains.
 
 **6 · Self-review has a ceiling.** An adversary agent checks claims against this repo's own
 record and caught one overclaim before publication. It cannot catch an error the whole

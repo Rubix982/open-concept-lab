@@ -1287,3 +1287,60 @@ rather than derived from `c`.
 
 **Artifacts:** agents/engineer/workspace/decompose_t077.py;
 logs/decompose_t077-2026-09-20-*.log
+
+---
+
+## [E-021] Result: the subject-token delta is sufficient and necessary — the mechanism is causal
+
+_Date: 2026-09-20 · Llama-3.1-8B, layer 5, 42 chains, five arms, coefficients cached from [E-014]_
+
+Runs [T-067], the hole §6 of the paper names first. Everything from [E-013] to [E-020] is
+behavioural — vary an input, read an output. [E-016] showed the coefficient at the
+subject's last token is analytically 1, but a coefficient of 1 at a position contributing
+nothing produces identical numbers. This intervenes on the mechanism instead.
+
+| arm | positions receiving δ | mass | in target |
+| --- | --- | ---: | ---: |
+| **A** full | all | 100% | 28/42 = **67%** |
+| **B** only | the subject's last token alone | 67% | 29/42 = **69%** |
+| **C** except | all but it | 33% | 2/42 = 5% |
+| **E** except, **mass restored** | all but it, rescaled to 100% | 100% | 5/42 = **12%** |
+| **D** none | — | 0% | 2/42 = 5% |
+
+**Gate passed.** Arm A reproduces [E-014]'s 67% exactly, so the masking did not change the
+full-edit result and the other four arms are interpretable.
+
+**Sufficiency.** A vs B: 28 against 29, one discordant pair, p = 1.000. One position out of
+roughly twelve reproduces the entire effect.
+
+**Necessity, with the confound removed.** The ticket predicted the problem before the run:
+the subject's last token carries **66.8%** of the coefficient mass, so arm C strips
+magnitude along with position, and [E-016]'s scale test already showed 0.27× breaks
+relocation unaided. Arm E restores the magnitude to the surviving positions. It reaches
+**12%** against a 5% baseline — not significantly above it (p = 0.25, and the test is
+underpowered to exclude a small effect).
+
+**The comparison that carries the claim is B against E.** Arm B has *less* mass (67%) at
+one position; arm E has *more* (100%) spread over every other position. **29 against 5, 24
+discordant pairs, none in the other direction, p < 0.0001.**
+
+> Less magnitude in the right place beats more magnitude everywhere else, on 24 of 42
+> chains and on no chain the reverse.
+
+**What this upgrades.** [E-016]'s account moves from *analytically true and consistent with
+the data* to *the position where the work demonstrably happens*. The paper's §4.1 can state
+a causal claim rather than an analytic one supported by correlation, and §6.5 — "everything
+is behavioural, no activation patching" — is now partly answered rather than wholly open.
+
+**What it does not show.** This is a position ablation inside ROME's own update, not
+activation patching of the model's computation. It establishes which part of *the edit*
+matters, never which part of *the model* represents the fact. That distinction stays in
+§6.5. Also: one layer, one model, one relation family, 42 chains — existence claim, per
+[O-004].
+
+**Mass varies more than the mean suggests:** 31% to 80% across chains, mean 66.8%. Arm E's
+rescaling is per-chain, so each chain's restoration is exact rather than averaged.
+
+**Artifacts:** src/remote.py (position mask and gain);
+agents/engineer/workspace/run_e021.py;
+results/E-021-positions-meta-llama_Llama-3.1-8B.json

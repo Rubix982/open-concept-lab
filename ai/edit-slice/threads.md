@@ -1019,7 +1019,7 @@ ranking cannot, and is the difference measurable?
 
 ### T-067 · A causal measure of relocation, not a behavioural one
 
-**Status:** open
+**Status:** answered — **both**
 **Parent:** T-065
 **Opened:** 2026-09-15
 **Question:** [E-015] asks whether the model *behaves as if* it inferred "born in
@@ -1028,8 +1028,16 @@ relation. It cannot ask whether it *did*. The interventional version patches the
 edited value direction in and out at specific positions and asks what is NECESSARY for
 the relocation — which is the lookback/IIA machinery already in the sibling project,
 and the biggest missing piece in this instrument.
-**Answer:** — deliberately parked until E-015 reports; if relocation turns out to be
-country-content leakage there is no inference to localise.
+**Answer:** answered by [E-021] as a position ablation rather than activation patching.
+The subject-token delta is **sufficient** (arm B 69% against the full edit's 67%, p = 1.000)
+and **necessary** (arm E, with the removed magnitude restored elsewhere, 12% against a 5%
+baseline). The decisive pairing is arm B against arm E: less mass at the right position
+beats more mass everywhere else, 29 vs 5, 24 discordant pairs and none reversed, p < 0.0001.
+
+**What remains open.** This intervenes on the EDIT, not on the model's computation. It says
+which part of the update matters, never which part of the network represents the fact.
+Activation patching — the lookback/IIA machinery — is still unrun, and §6.5 of the paper
+keeps that limit.
 
 
 ---

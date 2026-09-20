@@ -1376,7 +1376,7 @@ mixing.
 
 ### E-021 · Is the subject-token delta necessary and sufficient for the relocation?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1431,7 +1431,14 @@ removing it removes the most mass. Report total masked coefficient mass per arm 
 "necessity" result can be read against how much was removed — otherwise C ≈ D is
 unsurprising for the wrong reason.
 
+**Result (2026-09-20).** Both. Gate passed (A = 67%, matching E-014). Sufficiency: B = 69%
+against A = 67%, p = 1.000. Necessity: arm E, with the removed magnitude restored to the
+surviving positions, reaches 12% against a 5% baseline. The decisive comparison is B vs E —
+less mass at the right position beats more mass everywhere else, 29 vs 5, 24 discordant
+pairs and none reversed, p < 0.0001. Full entry in agents/shared/decisions.md [E-021].
+
 **Blockers:** none
-**Artifacts:** src/remote.py (position mask); agents/engineer/workspace/run_e021.py;
-results/E-021-*.json
-**Closed:** —
+**Artifacts:** src/remote.py; agents/engineer/workspace/run_e021.py;
+results/E-021-positions-meta-llama_Llama-3.1-8B.json;
+agents/shared/decisions.md -> "[E-021] Result"
+**Closed:** 2026-09-20
