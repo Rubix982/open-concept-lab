@@ -70,3 +70,6 @@ is misattributed. This entry is the record.
 - [R-006] T-008 answered — action items 7→13, but the baseline was never actionless;
   claim-lock exposes hollow instructions rather than creating items. Output contract
   cancelled. `agents/shared/findings.md`, `skill/research-writing/SKILL.md`
+- T-007 and T-010 closed as answered (both resolved by R-003/E-001, never marked)
+- `SKILL.md` cut 210 → 154 lines; removed a duplicated example and a section that
+  duplicated Pass 2 §6

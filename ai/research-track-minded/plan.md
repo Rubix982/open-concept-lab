@@ -10,7 +10,7 @@ rather than a wall of text.
 
 ## Current Phase
 
-Phase 2 — The skill exists and is installed. Next: use it on real work.
+Phase 3 — Complete. Skill built, used twice, fixed once, cut once. Open threads closed or parked.
 
 ## Scope decision (2026-09-18)
 

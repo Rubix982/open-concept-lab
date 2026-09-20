@@ -20,7 +20,7 @@ upstream cause, demoted from first move. Spawns T-007.
 
 ### T-007 · Can the hedging-quarantine rule be checked automatically?
 
-**Status:** open
+**Status:** answered — **yes, and it is worth less than it looked**
 **Parent:** T-001
 **Opened:** 2026-09-18
 **Question:** If the rule is "hedging tokens outside the limits section ≈ 0", it
@@ -28,7 +28,14 @@ is a lint, not a prompt — and a lint the skill could run on its own draft. Is 
 token list enough, or does it need to catch syntactic hedging ("tends to suggest
 that") that no word list will? Cheapest version: run the count over the corpus
 first and confirm the ratio is actually as lopsided as the qualitative read says.
-**Answer:** —
+**Answer:** [R-003] measured it and the thread's framing was wrong. There is no ratio
+to calibrate: the corpus is at **literal zero** on hedge adverbs, so a corpus-derived
+threshold does not exist and the only target is zero. That makes the lint cheaper to
+build than assumed and less informative — it can run on a draft, never on a reference.
+`scripts/lint.py` ships it as a Tier 1 rule. The syntactic hedging this thread worried
+about ("tends to suggest that") is not reachable by any word list and lives in Pass 2
+question 6, which is a question asked of the draft rather than a pattern matched
+against it. Closed rather than worked further.
 
 ### T-002 · What is the deletion list, concretely?
 
@@ -164,7 +171,7 @@ gate.
 
 ### T-010 · Is there any cheap discriminator of research-worthiness?
 
-**Status:** open
+**Status:** answered — **no, and the near-miss is instructive**
 **Parent:** T-002
 **Opened:** 2026-09-20
 **Question:** R-003 measured the obvious candidate and it failed: word-level
@@ -186,6 +193,19 @@ not a rate. Surface features remain unable to separate good research writing fro
 competent filler; the claim audit is still the only thing that does. Thread stays
 open for a non-surface proxy — density of falsifiable claims is the obvious
 candidate and is exactly what E-001 hand-counted.
+
+**Closed 2026-09-20.** The remaining candidate does not rescue it. Falsifiable-claim
+density separated cleanly in [E-001] — 1 against 8 — but that count required reading
+each sentence and deciding whether a refuting observation could be named from it. No
+regex reaches that; it needs a model, which is no longer *cheap* and reintroduces the
+judgement the discriminator was meant to replace. [R-006] found the same shape on a
+neighbouring measure: the baseline's seven action items were well-formed and
+unexecutable, and telling those apart was also a reading judgement.
+
+So the honest answer is that surface features do not carry research quality and the
+things that do are not cheap. The skill already says this where it matters — Pass 3
+carries the sentence "this cannot tell a good paper from a bad report" — and that is
+the whole deliverable this thread produced.
 
 ### T-011 · Dream-RSI — is "history is already a simulator" borrowable here?
 

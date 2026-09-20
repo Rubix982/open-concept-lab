@@ -6,116 +6,106 @@ description: Use when drafting or revising research writing — papers, lab note
 # Research writing
 
 Most bad research writing is not badly written. It is **unfalsifiable** — competent,
-accurate prose that makes no claim which could turn out to be wrong, so a reader
-finishes it with nothing to do.
-
-This was measured, not assumed. A passage of AI-generated research prose scored
-**0.0 hits per 10k on the entire word-level style lint** — no "delve", no
-"Furthermore", no hedge adverbs — and contained **one** falsifiable claim in 472
-words. It passed every surface check and said nothing. Do not mistake clean prose
-for research writing.
+accurate prose making no claim that could turn out to be wrong, so a reader finishes
+it with nothing to do. Measured, not assumed: a passage of AI-generated research prose
+scored **0.0 hits per 10k on the entire word-level lint** and carried **one**
+falsifiable claim in 472 words. It passed every surface check and said nothing.
 
 So Pass 1 is the claim audit. Everything else is secondary.
 
 ## Pass 1 — the audit (always run this)
 
-**Pick the mode first.** The audit asks a different question of each kind of
-document, and asking the wrong one produces nothing. Getting this wrong was the
-first defect found in live use.
+**Pick the mode first.** Asking the wrong question of a document produces nothing.
 
 | You are… | The unit | The question |
 | --- | --- | --- |
 | **revising** prose | each paragraph | what observation would make this false? |
-| **drafting** prose | each claim you intend to make, *before* writing | same — but answered before the prose exists, not after |
-| **designing** work that has no results yet | each load-bearing assumption | **if this assumption is wrong, does the work still measure what it claims?** |
+| **drafting** prose | each claim you intend to make, *before* writing | same, answered before the prose exists |
+| **designing** work with no results yet | each load-bearing assumption | **if this assumption is wrong, does the work still measure what it claims?** |
 
-Design mode is not a variant of the other two. A design's assertions are about what
-*will* be measured, and "we will sweep eight layers" cannot be false — so there is
-nothing for the falsifiability question to bite on. Audit the assumptions instead.
-An assumption that survives being wrong is fine; one that does not is a confound,
-and it has to be controlled before the work starts.
+Design mode is not a variant. A design's assertions are about what *will* be
+measured, and "we will sweep eight layers" cannot be false, so falsifiability has
+nothing to bite on. An assumption that survives being wrong is fine; one that does
+not is a confound to control before the work starts.
 
-### Revise and draft modes
+### Revise and draft
 
-| ¶ | The claim, in one sentence | Own or attributed? | What observation would make it false? |
+| ¶ | The claim, in one sentence | Own or attributed? | What would make it false? |
 |---|---|---|---|
 
-- **Own vs attributed.** An *own* claim could be wrong even if every cited paper
-  is reported accurately. "Qin et al. report X" is attributed. "X cannot serve as
-  a gate" is own. A draft consisting only of attributed claims cannot be wrong,
-  which is the defect.
-- **Falsifiable-as-written** means a reader can name the refuting observation
-  *using only what the sentence supplies*. "Strongly correlates" fails — there is
-  no threshold to violate. "Correlates at r > 0.5 across three models" passes.
+- **Own vs attributed.** An own claim could be wrong even if every citation is
+  reported accurately. "Qin et al. report X" is attributed; "X cannot serve as a
+  gate" is own. A draft of only attributed claims cannot be wrong — that is the
+  defect.
+- **Falsifiable-as-written** — a reader can name the refuting observation from the
+  sentence alone. "Strongly correlates" fails, no threshold to violate. "Correlates
+  at r > 0.5 across three models" passes.
 - **Unquantified superlatives are the commonest failure**: *the clearest*, *the
-  main*, *most*, *one of the few*, *mostly*. Each names a ranking with no
-  criterion. Give the criterion or drop the ranking.
+  main*, *most*, *one of the few*. Give the criterion or drop the ranking.
 
-Then **fix every row with an empty fourth column** — by sharpening the claim,
-demoting it to an explicit attribution, or cutting it.
+Fix every row with an empty fourth column — sharpen, demote to an explicit
+attribution, or cut. If there are no own-claims at all, stop and say so; no rewriting
+fixes that.
 
-If the draft has no own-claims at all, stop and say so. That is the finding, and no
-amount of rewriting fixes it.
+**"I don't know what to do with this" is fixed here, not by formatting.** A draft can
+be full of instructions that cannot be carried out — *"use GradSim as a pre-edit risk
+score"* has a verb and an object and is unexecutable, because a gate needs a threshold
+and error rates the source never gives. **A hollow instruction rests on an unquantified
+claim.** Do not bolt a "next actions" list onto a draft that failed this pass; it
+yields a tidy list of things nobody can do.
 
-**This is also where "I don't know what to do with this" gets fixed**, and it is not
-a formatting problem. A draft can be full of well-formed instructions that cannot be
-carried out — *"use GradSim as a pre-edit risk score"* is a verb and an object, and
-it is unexecutable, because using it as a gate needs a threshold and error rates that
-exist nowhere in the source. **A hollow instruction rests on an unquantified claim.**
-Sharpen the claim and the instruction either acquires its threshold or is replaced by
-the task of going to find one.
-
-So do not bolt a "next actions" list onto a draft that failed this pass. It produces
-a tidy list of things nobody can do, which reads like progress.
-
-### Design mode
+### Design
 
 | # | Load-bearing assumption | If wrong, does the work survive? | Control |
 |---|---|---|---|
 
-Include **feasibility** as an assumption, not as an afterthought: *this can be run
-inside the compute, data and dependency budget I actually have.* If a dependency
-fails half its calls, that is a design parameter and it changes the artifact —
-checkpointing, resumability — not an incident to absorb later.
+Include **feasibility** as an assumption: *this runs inside the compute, data and
+dependency budget I actually have.* A dependency failing half its calls is a design
+parameter that changes the artifact — checkpointing, resumability — not an incident to
+absorb later. A "no" in column three is a confound; name its control before opening
+the ticket.
 
-A "no" in column three is a confound. Name its control in column four before
-opening the ticket.
+### The second job, which is the one that pays
 
-### The audit's second job, which is the one that pays
+Once every row has a fourth column, **which claim is load-bearing becomes visible**,
+and that fixes the order of the document: the claim others depend on first, what
+merely confirms it demoted.
 
-Once every row has its fourth column, **which claim is load-bearing becomes
-visible** — and that determines the order of the document. Put the claim the others
-depend on first, and demote what merely confirms it.
-
-This is not a secondary effect. Across two live uses the filtering job caught
-**zero** unfalsifiable claims — the source material was already written to that
-standard — while the reordering changed the structure of the document both times:
-an analytic result was promoted above the measurement that confirmed it, and a
-control was promoted from an attachment into the experiment's first job.
-
-**Expect the ranking, not the filter, to be what you get.** If the audit catches
-nothing, it has not failed; read the table for what outranks what.
+Across two live uses the filtering caught **zero** unfalsifiable claims — both sources
+were already written to that standard — while the reordering restructured the document
+both times. **Expect the ranking, not the filter.** An audit that catches nothing has
+not failed; read the table for what outranks what.
 
 ## Pass 2 — seven structural questions
 
-Ask these of the draft, in order. Detail and worked examples:
-`references/structure.md`.
+In order. Worked examples: `references/structure.md`.
 
-1. **Headings** — can each be rewritten as a sentence with a truth value? Content
-   headings must assert or ask. *(Structural labels — Limits, References,
-   Appendix, Method — are navigation and exempt.)*
-2. **Gaps** — for each gap named: which gap, what would closing it cost, what
-   would change? An unpriced gap is a wish.
-3. **Symbols** — was each object named in English, by its function, before it got
-   a symbol? See `references/mathematics.md`.
-4. **Suppression** — is every dropped term acknowledged where it is dropped? One
-   clause: "dependence on x is omitted for notational simplicity."
-5. **Naming** — does an existing vocabulary already denote this structure
-   *exactly*? Borrow it if so. Inexact borrowing is worse than a coinage.
-6. **Hedging** — is any qualification appearing outside the Limits section? Move
-   it there and make it specific.
-7. **Criticism** — is the scope fixed before the damage is described? "X was built
-   to do A, and it does. B is a different question. The problem is downstream."
+1. **Headings** — can each be rewritten as a sentence with a truth value? *(Limits,
+   References, Appendix, Method are navigation and exempt.)*
+2. **Gaps** — which gap, what would closing it cost, what would change? An unpriced
+   gap is a wish.
+3. **Symbols** — was each object named in English, by function, before it got a
+   symbol? `references/mathematics.md`.
+4. **Suppression** — is every dropped term acknowledged where it is dropped? "…x is
+   omitted for notational simplicity."
+5. **Naming** — does an existing vocabulary denote this *exactly*? Borrow if so; under
+   uncertainty coin, because a coinage fails loudly and a bad borrowing fails quietly.
+6. **Hedging** — **quarantine it, do not reduce it.** All qualification goes into a
+   named Limits section and the body runs unhedged. Same epistemic content,
+   concentrated, and more honest: a specific limit gets named instead of a vague
+   adverb.
+7. **Criticism** — is the scope fixed before the damage? "X was built to do A, and it
+   does. B is a different question. The problem is downstream."
+
+### Every draft gets a Limits section
+
+Three kinds of entry, and the third never appears on its own:
+
+1. **What the result does not show** — "measures whether knowledge is present, not
+   whether the model would produce it."
+2. **What was not done** — "I have not run the constrained measure on GPT-2-XL."
+3. **How the result may not be used** — "a consequence of the finding, not a method I
+   am offering." No Pass 2 question generates it; add it deliberately.
 
 ## Pass 3 — the lint (a floor, not a gate)
 
@@ -123,88 +113,42 @@ Ask these of the draft, in order. Detail and worked examples:
 python scripts/lint.py --rate DRAFT.md
 ```
 
-Reference rates: hand-written research prose **0.0–1.3** per 10k, published mech
-interp papers **11.6**, AI-generated reports **13.9**. Note how close the last two
-are — **this lint cannot tell a good paper from a bad report.** It catches house-
-style slips and nothing more. Never report a clean lint as evidence of quality.
+Reference rates: hand-written prose **0.0–1.3** per 10k, published mech interp papers
+**11.6**, AI-generated reports **13.9**. The last two are close on purpose — **this
+cannot tell a good paper from a bad report.** Never report a clean lint as evidence of
+quality.
 
-## Hedging is quarantined, not distributed
+## Positioning claims
 
-The single habit that most separates confident-and-honest prose from hedged mush.
-Generic writing spreads a thin film of qualification over every sentence
-("may potentially suggest"). Strong research writing collects **all** of it into a
-named Limits section and leaves the body unhedged.
+A novelty verdict — *"this is unclaimed"*, *"we were scooped"* — is a claim, so Pass 1
+applies unchanged. A verdict stated bare is an opinion; one naming what the nearest
+paper does not do can be checked. Two rules the audit does not generate:
 
-Same epistemic content, concentrated — and the concentrated form is *more* honest,
-because a specific limit gets named instead of a vague adverb:
+**Shelving requires stronger evidence than proceeding.** A wrong *"the lane is open"*
+surfaces later when the paper turns up. A wrong *"we were scooped"* **kills the work
+silently and produces no evidence it was wrong.** An unverified scoop verdict is
+grounds to verify, never to shelve.
 
-> **Prompt sensitivity is not my finding.**
-> **I have not run the constrained measure on GPT-2-XL.**
-> Ordering across models is robust; absolute levels are not.
-
-Every draft gets a Limits section. Entries come in three kinds, and the third is
-the one that never appears on its own:
-
-1. **What the result does not show** — "measures whether knowledge is present, not
-   whether the model would produce it."
-2. **What was not done** — "I have not run the constrained measure on GPT-2-XL."
-3. **How the result may not be used** — "this is a consequence of the finding, not
-   a method I am offering." A constraint on *use* rather than on evidence. No
-   question in Pass 2 generates it; it usually comes from a project-level rule, and
-   it has to be added deliberately.
+**When a verdict turns on what a paper *did*, read its methods or appendix, not its
+prose.** The introduction says what the authors hoped the construction would yield;
+the appendix says what was performed. No amount of extra searching catches that.
 
 ## What this cannot do
 
-**These passes improve the epistemic structure of a draft. They cannot improve its
-evidential base.** Measured: applying them added seven falsifiable claims but zero
-new numbers, because the source had none. What they produce over thin evidence is
-an explicit statement that the evidence is thin — better than confident thinness,
-not the same as being well-evidenced.
+**These passes improve a draft's epistemic structure, not its evidential base.**
+Measured: applying them added seven falsifiable claims and zero new numbers, because
+the source had none. Over thin evidence they produce an explicit statement that the
+evidence is thin — better than confident thinness, not the same as well-evidenced.
 
-If the draft needs numbers it does not have, say so and stop. Do not fill the gap
-with plausible-sounding quantities.
+If the draft needs numbers it does not have, say so and stop.
 
-## Two rules for positioning claims
-
-A novelty verdict — *"this is unclaimed"*, *"we have been scooped"* — is a claim, so
-Pass 1 applies to it unchanged: what observation would make it false? A verdict
-stated bare is an opinion. A verdict that names the specific thing the nearest paper
-does not do can be checked by a reader.
-
-Two rules the claim audit does not generate on its own:
-
-**1 · Shelving requires stronger evidence than proceeding.** The errors are
-asymmetric. A wrong *"the lane is open"* verdict surfaces later — a reviewer names
-the paper, or it turns up. A wrong *"we have been scooped"* verdict **kills the work
-silently and produces no evidence it was wrong.** So an unverified scoop verdict is
-grounds to verify, never grounds to shelve. Record what the verdict would cost if
-wrong, in the direction it points.
-
-**2 · When a verdict turns on what a paper *did*, read its methods or appendix, not
-its prose.** Aspiration and mechanism live in different sections and only one is
-binding. A paper's introduction says what it hoped the construction would yield; the
-construction appendix says what was performed. Confusing them is a reading failure
-that no amount of additional searching will catch.
-
-Searching is not this skill's job, and a project with a working search practice
-should not change it. These two rules are about what a verdict *rests on*, which is
-the same question Pass 1 asks about everything else.
-
-## Where this stops
-
-This skill covers **writing the thing** — the claim, its structure, its notation,
-its limits, and the verdicts stated about it. It does not decide whether the work is
-worth doing, run the literature search, or choose what to build next. If you have a
-project-level design protocol, that is where those live; this skill will not
-duplicate it. The two places they touch are design mode's feasibility row and the
-positioning rules above, both of which are about evidence rather than about
-process.
+It also does not decide whether the work is worth doing, run the literature search, or
+choose what to build next. A project-level design protocol owns those.
 
 ## References
 
 - `references/structure.md` — the seven questions, with before/after examples
-- `references/mathematics.md` — the words-before-symbols ladder
+- `references/mathematics.md` — words before symbols; the free-inference test for names
 - `references/exemplars.md` — marked passages, and one worked anti-exemplar
-- `references/voice.md` — **open only when drafting from nothing.** When extending
-  an existing document, take the register from the document; that is faster and it
-  worked both times it was tried.
+- `references/voice.md` — **only when drafting from nothing.** Extending a document?
+  Take the register from the document.
