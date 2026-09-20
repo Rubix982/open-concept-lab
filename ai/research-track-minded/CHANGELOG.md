@@ -79,3 +79,6 @@ is misattributed. This entry is the record.
   were a PDF line-wrap artifact)
 - [E-006] Third live use, first by another session — analytic-claim row flag `[A]`,
   limits section specified by role not name. `skill/research-writing/SKILL.md`
+- [E-007] Third-use feedback, round two — the reorder is genre-conditional (paper →
+  dependency, record → chronology); rates relabelled as style not authorship; Pass 2
+  hit counts recorded; SKILL.md must stay runnable by hand

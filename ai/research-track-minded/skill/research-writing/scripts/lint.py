@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Tier 1 lint: flag constructions absent from the reference corpus.
 
-This is a FLOOR, not a quality gate. Published mech interp papers score 5.1 hits per
-10k and AI-generated reports 6.4 -- a 1.25x gap that discriminates nothing. Whatever
-makes the reports useless is invisible here. Run the claim audit for anything that
-matters.
+This is a FLOOR, not a quality gate, and not an authorship test. Published mech interp
+papers score 5.1 hits per 10k and unedited survey-report prose 6.4 -- a 1.25x gap that
+discriminates nothing. Two AI-written documents following the house style scored 0.0.
+The rate tracks style adherence, not provenance and not quality. Run the claim audit
+for anything that matters.
 
 Blockquotes, fenced code and lines marked with a check or cross are skipped:
 those are mention, not use.
@@ -143,10 +144,11 @@ def main(argv: list[str]) -> int:
             rate = len(hits) / words * 10000 if words else 0.0
             print(f"  {len(hits)} hits / {words} words = {rate:.1f} per 10k")
 
-    print(f"\n{total} total. Reference rates: hand-written research prose 0.0/10k "
-          f"(27.7k words), published mech interp papers 5.1, AI-generated reports "
-          f"6.4.\nThe last two are close on purpose — this check cannot tell a good "
-          f"paper from a bad report. Run the claim audit.")
+    print(f"\n{total} total. Reference rates: house-style prose 0.0/10k (27.7k "
+          f"words), published mech interp papers 5.1, unedited survey-report prose "
+          f"6.4.\nNot an authorship test — this tracks house style, not who typed "
+          f"it; AI-written text following the style scores 0.0. And a 1.25x gap "
+          f"cannot\ntell a good paper from a bad report. Run the claim audit.")
     return 1 if total else 0
 
 if __name__ == "__main__":

@@ -271,3 +271,70 @@ that it does the same job.
 
 **Revisit if:** a section named for the role turns out to drift in content as well as
 framing — the use-constraint check is a prediction, not a measurement.
+
+---
+
+## [E-007] Decision: the audit ranks, genre orders
+
+_Date: 2026-09-20 · from the third live use_
+
+**Decision:** Pass 1's second job now states that the audit identifies what is
+load-bearing and **does not** determine document order. Genre does: paper →
+dependency, lab note or narrative → chronology, and within an argumentative section
+dependency governs regardless of the document's top-level order.
+
+**Rationale, and this is the most serious defect found so far.** The text said the
+audit "fixes the order of the document" without naming a target. On a paper the
+reporter correctly derived dependency order. Applied to
+`web/blog/2026-09-15-five-days.mdx` the same conclusion is destructive: that document
+exists to show eight claims being withdrawn **in the order they were withdrawn**, and
+its standfirst says "A record rather than an argument". Dependency-ordering it removes
+its function.
+
+**Verified against the repo rather than taken on report**, and the composition rule is
+ours: [E-003] added a section to that same chronological post and led with the
+analytic claim over the empirical one — correct, because the post is chronological at
+the top level while each section argues internally. Both were true at once and neither
+was stated.
+
+So the skill's strongest pass was giving actively harmful advice on one of the genres
+its own frontmatter lists. **Alternatives rejected:** naming dependency as the default
+with chronology as an exception — the blog post is not an exception, it is the other
+half of what this skill is for.
+
+---
+
+## [E-007] Decision: the reference rates are a style measure, not an authorship test
+
+_Date: 2026-09-20_
+
+**Decision:** relabel — *house-style prose 0.0 / published mech interp papers 5.1 /
+unedited survey-report prose 6.4* — and state in all three places that the rate
+tracks style adherence rather than provenance.
+
+**Rationale:** the old label "AI-generated reports 6.4" beside "hand-written research
+prose 0.0" invites reading the lint as a detector, and the reporter has the
+counterexample: both documents they tested scored **0.0 and both are AI-written**
+(3,159 and 13,149 words). One of them is partly this session's own output from today.
+
+The categories were always about register. The labels said provenance, and someone
+would eventually act on that.
+
+---
+
+## [E-007] Decision: `SKILL.md` must stay runnable by hand
+
+_Date: 2026-09-20_
+
+**Decision:** recorded in the README as a standing constraint. No pass may depend on
+tooling a reader has to set up.
+
+**Rationale:** a session predating the install cannot invoke the skill and reads the
+file instead. That has now happened, and all three passes ran from it without
+friction. The property was never stated while the file was being cut and grown, so it
+survived by luck. It means the skill degrades to a readable checklist rather than to
+nothing.
+
+**Also recorded:** Pass 2 questions 2 and 3 are the only ones to have fired in live
+use — 2 twice, 3 once. `SKILL.md` says where to spend attention and explicitly does
+**not** reorder the list, because n=3 does not license a ranking.

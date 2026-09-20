@@ -298,3 +298,70 @@ carries analytic and empirical claims together; and the limits rename ships with
 check that the use-constraint category survives it. `SKILL.md` 154 → 171 lines, with
 one compensating trim. The lint caught an unevidenced *"arguably stronger"* in my own
 text for this ticket, and the fix was to delete the claim rather than reword it.
+
+---
+
+### E-007 · The reorder is genre-conditional, and the rates are not an authorship test
+
+**Status:** closed
+**Type:** implement
+**Priority:** **highest** — defect 1 makes the skill's strongest pass harmful on a
+genre its own description lists
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Four items from the same third-use session, all from running it rather than reading it.
+
+**1 · The reorder has no target and the naive reading is destructive.** Pass 1's
+second job says the audit "fixes the order of the document" and never says to what.
+The reporter derived dependency order for a paper and moved the mechanism from §4.3 to
+§4.1 — correct. They then observed that applying the same conclusion to
+`web/blog/2026-09-15-five-days.mdx` would be wrong: that document exists to show eight
+claims being withdrawn **in the order they were withdrawn**, and dependency-ordering it
+destroys its function.
+
+**Confirmed against this repo, not taken on report.** That post's standfirst is "A
+record rather than an argument." Reordering it by dependency would be vandalism.
+
+**Refinement to add:** the two are not exclusive. [E-003] added a *section* to that
+same chronological post and led with the analytic claim over the empirical one, which
+was right — the post is chronological at the top level and each section argues
+internally. Genre governs the document; dependency governs within an argumentative
+section.
+
+**2 · The rates invite an authorship reading and must not.** Labels are "hand-written
+research prose 0.0 / published mech interp papers 5.1 / AI-generated reports 6.4".
+Both documents the reporter tested scored **0.0 and both are AI-written**. The rate
+tracks adherence to the house style, not who typed it. The current labels set up the
+wrong inference and someone will draw it.
+
+New data points for the record: `review.md` 0 hits / 3,159 words; `five-days.mdx`
+0 hits / 13,149 words — the latter partly written by Claude today.
+
+**3 · Pass 2 question 2 is underweighted.** "An unpriced gap is a wish" was the only
+question that fired on their document and the fix was concrete. Checked against our
+own uses: §2 fired in [E-005] and theirs, §3 in [E-003] — so 2 of 3 and 1 of 3.
+**n=3 does not license reordering the list.** Record the hit counts instead and let a
+reader spend attention accordingly.
+
+**4 · `SKILL.md` works as a standalone procedure — preserve it.** They could not
+invoke the skill (session predates install, as documented) and ran all three passes by
+hand from the file without friction. Not a defect: a property to protect, and one that
+has never been written down while the file was cut and grown.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `skill/research-writing/SKILL.md` — genre rule, relabelled rates, Pass 2 hit counts
+- `skill/research-writing/scripts/lint.py` — footer relabelled, not-an-authorship-test
+- `README.md` — rates corrected, standalone-procedure constraint recorded
+- `agents/shared/decisions.md` → three [E-007] decisions
+
+**Closed:** 2026-09-20 — all four taken. Defect 1 is the most serious found so far:
+the pass was giving destructive advice on a genre the frontmatter lists, verified
+against `five-days.mdx` rather than taken on report. Defect 3 taken conservatively —
+hit counts recorded, list **not** reordered, since n=3. `SKILL.md` 171 → 190 lines and
+that growth is not compensated; the genre rule earns it and the file is now due a cut.

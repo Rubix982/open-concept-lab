@@ -75,18 +75,33 @@ the ticket.
 
 ### The second job, which is the one that pays
 
-Once every row has a fourth column, **which claim is load-bearing becomes visible**,
-and that fixes the order of the document: the claim others depend on first, what
-merely confirms it demoted.
+Once every row has a fourth column, **which claim is load-bearing becomes visible**.
 
-Across two live uses the filtering caught **zero** unfalsifiable claims — both sources
-were already written to that standard — while the reordering restructured the document
-both times. **Expect the ranking, not the filter.** An audit that catches nothing has
+**The audit tells you what is load-bearing. It does not tell you what order to impose
+— genre does.**
+
+- A **paper** orders by **dependency**: the claim others rest on first, what merely
+  confirms it demoted.
+- A **lab note, record, or narrative** orders by **chronology**. A post whose job is
+  to show eight claims being withdrawn in the order they were withdrawn is destroyed
+  by dependency-ordering it.
+- The two compose. A chronological document still has sections that argue, and
+  **within an argumentative section dependency governs** whatever the document does
+  at the top level.
+
+Getting this backwards is the one way this pass does damage, so decide the genre
+before you move anything.
+
+Across three live uses the filtering caught **zero** unfalsifiable claims — every
+source was already written to that standard — while the ranking changed the structure
+every time. **Expect the ranking, not the filter.** An audit that catches nothing has
 not failed; read the table for what outranks what.
 
 ## Pass 2 — seven structural questions
 
-In order. Worked examples: `references/structure.md`.
+In order. Worked examples: `references/structure.md`. **Questions 2 and 3 are the ones
+that have actually fired** in three live uses — 2 twice, 3 once — so spend attention
+there first. Three uses is not a ranking; it is where to look.
 
 1. **Headings** — can each be rewritten as a sentence with a truth value?
    *(Navigation labels — References, Appendix, Method, and whatever plays the limits
@@ -130,10 +145,14 @@ Three kinds of entry, and the third never appears on its own:
 python scripts/lint.py --rate DRAFT.md
 ```
 
-Reference rates: hand-written research prose **0.0** per 10k over 27.7k words,
-published mech interp papers **5.1**, AI-generated reports **6.4**. A 1.25× gap
-between good papers and slop — **this cannot tell one from the other.** Never report a
-clean lint as evidence of quality.
+Reference rates: **house-style prose 0.0** per 10k over 27.7k words, **published mech
+interp papers 5.1**, **unedited survey-report prose 6.4**. A 1.25× gap — **this cannot
+tell a good paper from a bad report.**
+
+**It is not an authorship test either.** The rate tracks whether the writer follows
+the house style, not who typed it: two AI-written documents in live use scored 0.0
+(3.2k and 13.1k words). Never report a clean lint as evidence of quality or of
+provenance.
 
 ## Positioning claims
 
