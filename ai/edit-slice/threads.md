@@ -1013,7 +1013,7 @@ were found.
 
 ### T-066 · What does a closed candidate pool hide that free generation would show?
 
-**Status:** open
+**Status:** answered — **a great deal**
 **Parent:** T-065
 **Opened:** 2026-09-15
 **Question:** Every measurement in this repo ranks over a closed, type-matched pool.
@@ -1022,7 +1022,16 @@ precisely because a pool that cannot express the coherent answer scores a correc
 relocation as failure. But the pool is still our choice, and an answer outside it is
 invisible by construction rather than by evidence. What would free generation show that
 ranking cannot, and is the difference measurable?
-**Answer:** —
+**Answer:** [E-023]. Under free greedy generation the edited model relocates into the
+target country in **30 of 30** chains, against **67%** when the same edits are scored by
+ranking the 75-city pool. The pool cannot express most of the model's answers — Hamburg,
+Sydney, Zurich, Milan, Gisborne, Plzeň are all absent — so ranking falls back to the
+highest-prior item on the menu. That, not a model behaviour, is [E-014]'s `Washington,
+D.C.` attractor at 33%.
+
+Paired comparisons are unaffected: [E-015], [E-016] and [E-021] use the same pool for
+every arm, so a pool artifact cancels in the difference. **Differences survive a bad pool;
+absolute levels do not.**
 
 ---
 

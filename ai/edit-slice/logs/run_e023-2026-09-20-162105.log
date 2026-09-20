@@ -1,0 +1,258 @@
+2026-09-20 16:21:05,113 INFO     run_e023  run run_e023 -> logs/run_e023-2026-09-20-162105.log
+2026-09-20 16:21:05,113 INFO     run_e023  config {"layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 30, "n_tokens": 4, "note": "greedy decode vs ranked answer; edit applied per decoding step", "pool": 75, "thread": "T-066", "ticket": "E-023"}
+2026-09-20 16:21:05,113 INFO     run_e023  30 chains, greedy 4 tokens, baseline and edited
+2026-09-20 16:21:11,183 WARNING  remote  transport failure (NNsightException) during 273 base, attempt 1/8; retrying in 5s
+2026-09-20 16:21:21,237 WARNING  remote  transport failure (NNsightException) during 273 base, attempt 1/8; retrying in 5s
+2026-09-20 16:21:39,067 WARNING  remote  transport failure (NNsightException) during 273 base, attempt 1/8; retrying in 5s
+2026-09-20 16:21:49,226 WARNING  remote  transport failure (NNsightException) during 273 base, attempt 1/8; retrying in 5s
+2026-09-20 16:21:59,149 WARNING  remote  transport failure (NNsightException) during 273 real, attempt 1/8; retrying in 5s
+2026-09-20 16:22:09,744 WARNING  remote  transport failure (NNsightException) during 273 real, attempt 1/8; retrying in 5s
+2026-09-20 16:22:20,756 WARNING  remote  transport failure (NNsightException) during 273 real, attempt 1/8; retrying in 5s
+2026-09-20 16:22:32,765 WARNING  remote  transport failure (NNsightException) during 273 real, attempt 1/8; retrying in 5s
+2026-09-20 16:22:44,145 WARNING  remote  transport failure (NNsightException) during 342 base, attempt 1/8; retrying in 5s
+2026-09-20 16:22:54,529 WARNING  remote  transport failure (NNsightException) during 342 base, attempt 1/8; retrying in 5s
+2026-09-20 16:23:04,729 WARNING  remote  transport failure (NNsightException) during 342 base, attempt 1/8; retrying in 5s
+2026-09-20 16:23:14,300 WARNING  remote  transport failure (NNsightException) during 342 base, attempt 1/8; retrying in 5s
+2026-09-20 16:23:24,813 WARNING  remote  transport failure (NNsightException) during 342 real, attempt 1/8; retrying in 5s
+2026-09-20 16:23:37,381 WARNING  remote  transport failure (NNsightException) during 342 real, attempt 1/8; retrying in 5s
+2026-09-20 16:23:50,475 WARNING  remote  transport failure (NNsightException) during 342 real, attempt 1/8; retrying in 5s
+2026-09-20 16:24:04,324 WARNING  remote  transport failure (NNsightException) during 342 real, attempt 1/8; retrying in 5s
+2026-09-20 16:24:15,241 WARNING  remote  transport failure (NNsightException) during 345 base, attempt 1/8; retrying in 5s
+2026-09-20 16:24:25,080 WARNING  remote  transport failure (NNsightException) during 345 base, attempt 1/8; retrying in 5s
+2026-09-20 16:24:35,920 WARNING  remote  transport failure (NNsightException) during 345 base, attempt 1/8; retrying in 5s
+2026-09-20 16:24:45,516 WARNING  remote  transport failure (NNsightException) during 345 base, attempt 1/8; retrying in 5s
+2026-09-20 16:24:55,969 WARNING  remote  transport failure (NNsightException) during 345 real, attempt 1/8; retrying in 5s
+2026-09-20 16:25:06,450 WARNING  remote  transport failure (NNsightException) during 345 real, attempt 1/8; retrying in 5s
+2026-09-20 16:25:19,001 WARNING  remote  transport failure (NNsightException) during 345 real, attempt 1/8; retrying in 5s
+2026-09-20 16:25:31,355 WARNING  remote  transport failure (NNsightException) during 345 real, attempt 1/8; retrying in 5s
+2026-09-20 16:25:40,793 INFO     run_e023    5/30
+2026-09-20 16:25:43,126 WARNING  remote  transport failure (NNsightException) during 507 base, attempt 1/8; retrying in 5s
+2026-09-20 16:25:54,326 WARNING  remote  transport failure (NNsightException) during 507 base, attempt 1/8; retrying in 5s
+2026-09-20 16:26:04,475 WARNING  remote  transport failure (NNsightException) during 507 base, attempt 1/8; retrying in 5s
+2026-09-20 16:26:14,191 WARNING  remote  transport failure (NNsightException) during 507 base, attempt 1/8; retrying in 5s
+2026-09-20 16:26:24,495 WARNING  remote  transport failure (NNsightException) during 507 real, attempt 1/8; retrying in 5s
+2026-09-20 16:26:35,083 WARNING  remote  transport failure (NNsightException) during 507 real, attempt 1/8; retrying in 5s
+2026-09-20 16:26:45,318 WARNING  remote  transport failure (NNsightException) during 507 real, attempt 1/8; retrying in 5s
+2026-09-20 16:26:56,492 WARNING  remote  transport failure (NNsightException) during 507 real, attempt 1/8; retrying in 5s
+2026-09-20 16:27:07,013 WARNING  remote  transport failure (NNsightException) during 590 base, attempt 1/8; retrying in 5s
+2026-09-20 16:27:17,915 WARNING  remote  transport failure (NNsightException) during 590 base, attempt 1/8; retrying in 5s
+2026-09-20 16:27:27,950 WARNING  remote  transport failure (NNsightException) during 590 base, attempt 1/8; retrying in 5s
+2026-09-20 16:27:38,508 WARNING  remote  transport failure (NNsightException) during 590 base, attempt 1/8; retrying in 5s
+2026-09-20 16:27:49,720 WARNING  remote  transport failure (NNsightException) during 590 real, attempt 1/8; retrying in 5s
+2026-09-20 16:28:01,627 WARNING  remote  transport failure (NNsightException) during 590 real, attempt 1/8; retrying in 5s
+2026-09-20 16:28:12,237 WARNING  remote  transport failure (NNsightException) during 590 real, attempt 1/8; retrying in 5s
+2026-09-20 16:28:23,013 WARNING  remote  transport failure (NNsightException) during 590 real, attempt 1/8; retrying in 5s
+2026-09-20 16:28:33,003 WARNING  remote  transport failure (NNsightException) during 615 base, attempt 1/8; retrying in 5s
+2026-09-20 16:28:43,003 WARNING  remote  transport failure (NNsightException) during 615 base, attempt 1/8; retrying in 5s
+2026-09-20 16:28:52,451 WARNING  remote  transport failure (NNsightException) during 615 base, attempt 1/8; retrying in 5s
+2026-09-20 16:29:03,177 WARNING  remote  transport failure (NNsightException) during 615 base, attempt 1/8; retrying in 5s
+2026-09-20 16:29:14,837 WARNING  remote  transport failure (NNsightException) during 615 real, attempt 1/8; retrying in 5s
+2026-09-20 16:29:32,809 WARNING  remote  transport failure (NNsightException) during 615 real, attempt 1/8; retrying in 5s
+2026-09-20 16:29:46,046 WARNING  remote  transport failure (NNsightException) during 615 real, attempt 1/8; retrying in 5s
+2026-09-20 16:29:58,309 WARNING  remote  transport failure (NNsightException) during 615 real, attempt 1/8; retrying in 5s
+2026-09-20 16:30:10,761 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 1/8; retrying in 5s
+2026-09-20 16:30:26,708 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 1/8; retrying in 5s
+2026-09-20 16:30:36,365 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 1/8; retrying in 5s
+2026-09-20 16:30:44,412 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 2/8; retrying in 10s
+2026-09-20 16:30:57,235 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 3/8; retrying in 15s
+2026-09-20 16:31:18,586 WARNING  remote  transport failure (NNsightException) during 747 base, attempt 1/8; retrying in 5s
+2026-09-20 16:31:29,758 WARNING  remote  transport failure (NNsightException) during 747 real, attempt 1/8; retrying in 5s
+2026-09-20 16:31:41,741 WARNING  remote  transport failure (NNsightException) during 747 real, attempt 1/8; retrying in 5s
+2026-09-20 16:31:51,975 WARNING  remote  transport failure (NNsightException) during 747 real, attempt 1/8; retrying in 5s
+2026-09-20 16:32:02,377 WARNING  remote  transport failure (NNsightException) during 747 real, attempt 1/8; retrying in 5s
+2026-09-20 16:32:12,399 WARNING  remote  transport failure (NNsightException) during 1126 base, attempt 1/8; retrying in 5s
+2026-09-20 16:32:23,509 WARNING  remote  transport failure (NNsightException) during 1126 base, attempt 1/8; retrying in 5s
+2026-09-20 16:32:33,061 WARNING  remote  transport failure (NNsightException) during 1126 base, attempt 1/8; retrying in 5s
+2026-09-20 16:32:43,376 WARNING  remote  transport failure (NNsightException) during 1126 base, attempt 1/8; retrying in 5s
+2026-09-20 16:32:53,536 WARNING  remote  transport failure (NNsightException) during 1126 real, attempt 1/8; retrying in 5s
+2026-09-20 16:33:04,785 WARNING  remote  transport failure (NNsightException) during 1126 real, attempt 1/8; retrying in 5s
+2026-09-20 16:33:15,478 WARNING  remote  transport failure (NNsightException) during 1126 real, attempt 1/8; retrying in 5s
+2026-09-20 16:33:28,065 WARNING  remote  transport failure (NNsightException) during 1126 real, attempt 1/8; retrying in 5s
+2026-09-20 16:33:40,039 INFO     run_e023    10/30
+2026-09-20 16:33:43,625 WARNING  remote  transport failure (NNsightException) during 1289 base, attempt 1/8; retrying in 5s
+2026-09-20 16:33:58,388 WARNING  remote  transport failure (NNsightException) during 1289 base, attempt 1/8; retrying in 5s
+2026-09-20 16:34:11,993 WARNING  remote  transport failure (NNsightException) during 1289 base, attempt 1/8; retrying in 5s
+2026-09-20 16:34:24,607 WARNING  remote  transport failure (NNsightException) during 1289 base, attempt 1/8; retrying in 5s
+2026-09-20 16:34:32,446 WARNING  remote  transport failure (ConnectError) during 1289 base, attempt 2/8; retrying in 10s
+2026-09-20 16:34:44,224 WARNING  remote  transport failure (NNsightException) during 1289 base, attempt 3/8; retrying in 15s
+2026-09-20 16:35:04,284 WARNING  remote  transport failure (NNsightException) during 1289 real, attempt 1/8; retrying in 5s
+2026-09-20 16:35:15,127 WARNING  remote  transport failure (NNsightException) during 1289 real, attempt 1/8; retrying in 5s
+2026-09-20 16:35:27,045 WARNING  remote  transport failure (NNsightException) during 1289 real, attempt 1/8; retrying in 5s
+2026-09-20 16:35:37,425 WARNING  remote  transport failure (NNsightException) during 1289 real, attempt 1/8; retrying in 5s
+2026-09-20 16:35:48,683 WARNING  remote  transport failure (NNsightException) during 1315 base, attempt 1/8; retrying in 5s
+2026-09-20 16:35:58,168 WARNING  remote  transport failure (NNsightException) during 1315 base, attempt 1/8; retrying in 5s
+2026-09-20 16:36:07,883 WARNING  remote  transport failure (NNsightException) during 1315 base, attempt 1/8; retrying in 5s
+2026-09-20 16:36:17,186 WARNING  remote  transport failure (NNsightException) during 1315 base, attempt 1/8; retrying in 5s
+2026-09-20 16:36:27,994 WARNING  remote  transport failure (NNsightException) during 1315 real, attempt 1/8; retrying in 5s
+2026-09-20 16:36:38,807 WARNING  remote  transport failure (NNsightException) during 1315 real, attempt 1/8; retrying in 5s
+2026-09-20 16:36:49,371 WARNING  remote  transport failure (NNsightException) during 1315 real, attempt 1/8; retrying in 5s
+2026-09-20 16:36:59,586 WARNING  remote  transport failure (NNsightException) during 1315 real, attempt 1/8; retrying in 5s
+2026-09-20 16:37:10,481 WARNING  remote  transport failure (NNsightException) during 1401 base, attempt 1/8; retrying in 5s
+2026-09-20 16:37:20,667 WARNING  remote  transport failure (NNsightException) during 1401 base, attempt 1/8; retrying in 5s
+2026-09-20 16:37:30,470 WARNING  remote  transport failure (NNsightException) during 1401 base, attempt 1/8; retrying in 5s
+2026-09-20 16:37:40,177 WARNING  remote  transport failure (NNsightException) during 1401 base, attempt 1/8; retrying in 5s
+2026-09-20 16:37:51,383 WARNING  remote  transport failure (NNsightException) during 1401 real, attempt 1/8; retrying in 5s
+2026-09-20 16:38:02,511 WARNING  remote  transport failure (NNsightException) during 1401 real, attempt 1/8; retrying in 5s
+2026-09-20 16:38:13,548 WARNING  remote  transport failure (NNsightException) during 1401 real, attempt 1/8; retrying in 5s
+2026-09-20 16:38:24,281 WARNING  remote  transport failure (NNsightException) during 1401 real, attempt 1/8; retrying in 5s
+2026-09-20 16:38:34,628 WARNING  remote  transport failure (NNsightException) during 1555 base, attempt 1/8; retrying in 5s
+2026-09-20 16:38:44,572 WARNING  remote  transport failure (NNsightException) during 1555 base, attempt 1/8; retrying in 5s
+2026-09-20 16:38:56,269 WARNING  remote  transport failure (NNsightException) during 1555 base, attempt 1/8; retrying in 5s
+2026-09-20 16:39:06,365 WARNING  remote  transport failure (NNsightException) during 1555 base, attempt 1/8; retrying in 5s
+2026-09-20 16:39:17,077 WARNING  remote  transport failure (NNsightException) during 1555 real, attempt 1/8; retrying in 5s
+2026-09-20 16:39:27,352 WARNING  remote  transport failure (NNsightException) during 1555 real, attempt 1/8; retrying in 5s
+2026-09-20 16:39:38,557 WARNING  remote  transport failure (NNsightException) during 1555 real, attempt 1/8; retrying in 5s
+2026-09-20 16:39:49,572 WARNING  remote  transport failure (NNsightException) during 1555 real, attempt 1/8; retrying in 5s
+2026-09-20 16:39:59,505 WARNING  remote  transport failure (NNsightException) during 1688 base, attempt 1/8; retrying in 5s
+2026-09-20 16:40:09,549 WARNING  remote  transport failure (NNsightException) during 1688 base, attempt 1/8; retrying in 5s
+2026-09-20 16:40:19,021 WARNING  remote  transport failure (NNsightException) during 1688 base, attempt 1/8; retrying in 5s
+2026-09-20 16:40:28,946 WARNING  remote  transport failure (NNsightException) during 1688 base, attempt 1/8; retrying in 5s
+2026-09-20 16:40:39,036 WARNING  remote  transport failure (NNsightException) during 1688 real, attempt 1/8; retrying in 5s
+2026-09-20 16:40:50,064 WARNING  remote  transport failure (NNsightException) during 1688 real, attempt 1/8; retrying in 5s
+2026-09-20 16:41:01,724 WARNING  remote  transport failure (NNsightException) during 1688 real, attempt 1/8; retrying in 5s
+2026-09-20 16:41:14,079 WARNING  remote  transport failure (NNsightException) during 1688 real, attempt 1/8; retrying in 5s
+2026-09-20 16:41:22,301 INFO     run_e023    15/30
+2026-09-20 16:41:24,146 WARNING  remote  transport failure (NNsightException) during 1692 base, attempt 1/8; retrying in 5s
+2026-09-20 16:41:33,653 WARNING  remote  transport failure (NNsightException) during 1692 base, attempt 1/8; retrying in 5s
+2026-09-20 16:41:43,553 WARNING  remote  transport failure (NNsightException) during 1692 base, attempt 1/8; retrying in 5s
+2026-09-20 16:41:54,121 WARNING  remote  transport failure (NNsightException) during 1692 base, attempt 1/8; retrying in 5s
+2026-09-20 16:42:07,092 WARNING  remote  transport failure (NNsightException) during 1692 real, attempt 1/8; retrying in 5s
+2026-09-20 16:42:18,473 WARNING  remote  transport failure (NNsightException) during 1692 real, attempt 1/8; retrying in 5s
+2026-09-20 16:42:28,937 WARNING  remote  transport failure (NNsightException) during 1692 real, attempt 1/8; retrying in 5s
+2026-09-20 16:42:41,547 WARNING  remote  transport failure (NNsightException) during 1692 real, attempt 1/8; retrying in 5s
+2026-09-20 16:42:53,187 WARNING  remote  transport failure (NNsightException) during 1715 base, attempt 1/8; retrying in 5s
+2026-09-20 16:43:03,379 WARNING  remote  transport failure (NNsightException) during 1715 base, attempt 1/8; retrying in 5s
+2026-09-20 16:43:15,440 WARNING  remote  transport failure (NNsightException) during 1715 base, attempt 1/8; retrying in 5s
+2026-09-20 16:43:27,924 WARNING  remote  transport failure (NNsightException) during 1715 base, attempt 1/8; retrying in 5s
+2026-09-20 16:43:38,169 WARNING  remote  transport failure (NNsightException) during 1715 real, attempt 1/8; retrying in 5s
+2026-09-20 16:43:49,865 WARNING  remote  transport failure (NNsightException) during 1715 real, attempt 1/8; retrying in 5s
+2026-09-20 16:44:01,029 WARNING  remote  transport failure (NNsightException) during 1715 real, attempt 1/8; retrying in 5s
+2026-09-20 16:44:12,410 WARNING  remote  transport failure (NNsightException) during 1715 real, attempt 1/8; retrying in 5s
+2026-09-20 16:44:22,729 WARNING  remote  transport failure (NNsightException) during 1737 base, attempt 1/8; retrying in 5s
+2026-09-20 16:44:32,106 WARNING  remote  transport failure (NNsightException) during 1737 base, attempt 1/8; retrying in 5s
+2026-09-20 16:44:41,953 WARNING  remote  transport failure (NNsightException) during 1737 base, attempt 1/8; retrying in 5s
+2026-09-20 16:44:51,776 WARNING  remote  transport failure (NNsightException) during 1737 base, attempt 1/8; retrying in 5s
+2026-09-20 16:45:02,440 WARNING  remote  transport failure (NNsightException) during 1737 real, attempt 1/8; retrying in 5s
+2026-09-20 16:45:12,873 WARNING  remote  transport failure (NNsightException) during 1737 real, attempt 1/8; retrying in 5s
+2026-09-20 16:45:25,967 WARNING  remote  transport failure (NNsightException) during 1737 real, attempt 1/8; retrying in 5s
+2026-09-20 16:45:37,627 WARNING  remote  transport failure (NNsightException) during 1737 real, attempt 1/8; retrying in 5s
+2026-09-20 16:45:48,486 WARNING  remote  transport failure (NNsightException) during 1794 base, attempt 1/8; retrying in 5s
+2026-09-20 16:45:58,536 WARNING  remote  transport failure (NNsightException) during 1794 base, attempt 1/8; retrying in 5s
+2026-09-20 16:46:09,456 WARNING  remote  transport failure (NNsightException) during 1794 base, attempt 1/8; retrying in 5s
+2026-09-20 16:46:20,163 WARNING  remote  transport failure (NNsightException) during 1794 base, attempt 1/8; retrying in 5s
+2026-09-20 16:46:35,444 WARNING  remote  transport failure (NNsightException) during 1794 real, attempt 1/8; retrying in 5s
+2026-09-20 16:46:48,520 WARNING  remote  transport failure (NNsightException) during 1794 real, attempt 1/8; retrying in 5s
+2026-09-20 16:46:58,741 WARNING  remote  transport failure (NNsightException) during 1794 real, attempt 1/8; retrying in 5s
+2026-09-20 16:47:10,080 WARNING  remote  transport failure (NNsightException) during 1794 real, attempt 1/8; retrying in 5s
+2026-09-20 16:47:20,336 WARNING  remote  transport failure (NNsightException) during 1798 base, attempt 1/8; retrying in 5s
+2026-09-20 16:47:29,849 WARNING  remote  transport failure (NNsightException) during 1798 base, attempt 1/8; retrying in 5s
+2026-09-20 16:47:39,439 WARNING  remote  transport failure (NNsightException) during 1798 base, attempt 1/8; retrying in 5s
+2026-09-20 16:47:49,340 WARNING  remote  transport failure (NNsightException) during 1798 base, attempt 1/8; retrying in 5s
+2026-09-20 16:48:01,952 WARNING  remote  transport failure (NNsightException) during 1798 real, attempt 1/8; retrying in 5s
+2026-09-20 16:48:14,170 WARNING  remote  transport failure (NNsightException) during 1798 real, attempt 1/8; retrying in 5s
+2026-09-20 16:48:25,592 WARNING  remote  transport failure (NNsightException) during 1798 real, attempt 1/8; retrying in 5s
+2026-09-20 16:48:38,730 WARNING  remote  transport failure (NNsightException) during 1798 real, attempt 1/8; retrying in 5s
+2026-09-20 16:48:47,058 INFO     run_e023    20/30
+2026-09-20 16:48:48,800 WARNING  remote  transport failure (NNsightException) during 1901 base, attempt 1/8; retrying in 5s
+2026-09-20 16:48:59,097 WARNING  remote  transport failure (NNsightException) during 1901 base, attempt 1/8; retrying in 5s
+2026-09-20 16:49:08,690 WARNING  remote  transport failure (NNsightException) during 1901 base, attempt 1/8; retrying in 5s
+2026-09-20 16:49:18,287 WARNING  remote  transport failure (NNsightException) during 1901 base, attempt 1/8; retrying in 5s
+2026-09-20 16:49:30,929 WARNING  remote  transport failure (NNsightException) during 1901 real, attempt 1/8; retrying in 5s
+2026-09-20 16:49:42,379 WARNING  remote  transport failure (NNsightException) during 1901 real, attempt 1/8; retrying in 5s
+2026-09-20 16:49:55,004 WARNING  remote  transport failure (NNsightException) during 1901 real, attempt 1/8; retrying in 5s
+2026-09-20 16:50:08,797 WARNING  remote  transport failure (NNsightException) during 1901 real, attempt 1/8; retrying in 5s
+2026-09-20 16:50:21,623 WARNING  remote  transport failure (NNsightException) during 1904 base, attempt 1/8; retrying in 5s
+2026-09-20 16:50:29,537 WARNING  remote  transport failure (ConnectError) during 1904 base, attempt 2/8; retrying in 10s
+2026-09-20 16:50:41,819 WARNING  remote  transport failure (NNsightException) during 1904 base, attempt 3/8; retrying in 15s
+2026-09-20 16:51:06,809 WARNING  remote  transport failure (NNsightException) during 1904 base, attempt 1/8; retrying in 5s
+2026-09-20 16:51:19,607 WARNING  remote  transport failure (NNsightException) during 1904 base, attempt 1/8; retrying in 5s
+2026-09-20 16:51:30,051 WARNING  remote  transport failure (NNsightException) during 1904 base, attempt 1/8; retrying in 5s
+2026-09-20 16:51:40,595 WARNING  remote  transport failure (NNsightException) during 1904 real, attempt 1/8; retrying in 5s
+2026-09-20 16:51:52,291 WARNING  remote  transport failure (NNsightException) during 1904 real, attempt 1/8; retrying in 5s
+2026-09-20 16:52:04,478 WARNING  remote  transport failure (NNsightException) during 1904 real, attempt 1/8; retrying in 5s
+2026-09-20 16:52:17,230 WARNING  remote  transport failure (NNsightException) during 1904 real, attempt 1/8; retrying in 5s
+2026-09-20 16:52:27,521 WARNING  remote  transport failure (NNsightException) during 2151 base, attempt 1/8; retrying in 5s
+2026-09-20 16:52:38,229 WARNING  remote  transport failure (NNsightException) during 2151 base, attempt 1/8; retrying in 5s
+2026-09-20 16:52:48,769 WARNING  remote  transport failure (NNsightException) during 2151 base, attempt 1/8; retrying in 5s
+2026-09-20 16:52:58,688 WARNING  remote  transport failure (NNsightException) during 2151 base, attempt 1/8; retrying in 5s
+2026-09-20 16:53:09,667 WARNING  remote  transport failure (NNsightException) during 2151 real, attempt 1/8; retrying in 5s
+2026-09-20 16:53:21,095 WARNING  remote  transport failure (NNsightException) during 2151 real, attempt 1/8; retrying in 5s
+2026-09-20 16:53:31,754 WARNING  remote  transport failure (NNsightException) during 2151 real, attempt 1/8; retrying in 5s
+2026-09-20 16:53:42,935 WARNING  remote  transport failure (NNsightException) during 2151 real, attempt 1/8; retrying in 5s
+2026-09-20 16:53:52,839 WARNING  remote  transport failure (NNsightException) during 2165 base, attempt 1/8; retrying in 5s
+2026-09-20 16:54:02,830 WARNING  remote  transport failure (NNsightException) during 2165 base, attempt 1/8; retrying in 5s
+2026-09-20 16:54:12,900 WARNING  remote  transport failure (NNsightException) during 2165 base, attempt 1/8; retrying in 5s
+2026-09-20 16:54:23,290 WARNING  remote  transport failure (NNsightException) during 2165 base, attempt 1/8; retrying in 5s
+2026-09-20 16:54:33,629 WARNING  remote  transport failure (NNsightException) during 2165 real, attempt 1/8; retrying in 5s
+2026-09-20 16:54:44,715 WARNING  remote  transport failure (NNsightException) during 2165 real, attempt 1/8; retrying in 5s
+2026-09-20 16:54:55,243 WARNING  remote  transport failure (NNsightException) during 2165 real, attempt 1/8; retrying in 5s
+2026-09-20 16:55:06,812 WARNING  remote  transport failure (NNsightException) during 2165 real, attempt 1/8; retrying in 5s
+2026-09-20 16:55:17,165 WARNING  remote  transport failure (NNsightException) during 2236 base, attempt 1/8; retrying in 5s
+2026-09-20 16:55:27,257 WARNING  remote  transport failure (NNsightException) during 2236 base, attempt 1/8; retrying in 5s
+2026-09-20 16:55:40,505 WARNING  remote  transport failure (NNsightException) during 2236 base, attempt 1/8; retrying in 5s
+2026-09-20 16:55:50,334 WARNING  remote  transport failure (NNsightException) during 2236 base, attempt 1/8; retrying in 5s
+2026-09-20 16:56:00,804 WARNING  remote  transport failure (NNsightException) during 2236 real, attempt 1/8; retrying in 5s
+2026-09-20 16:56:12,236 WARNING  remote  transport failure (NNsightException) during 2236 real, attempt 1/8; retrying in 5s
+2026-09-20 16:56:23,137 WARNING  remote  transport failure (NNsightException) during 2236 real, attempt 1/8; retrying in 5s
+2026-09-20 16:56:35,470 WARNING  remote  transport failure (NNsightException) during 2236 real, attempt 1/8; retrying in 5s
+2026-09-20 16:56:43,615 INFO     run_e023    25/30
+2026-09-20 16:56:45,386 WARNING  remote  transport failure (NNsightException) during 2418 base, attempt 1/8; retrying in 5s
+2026-09-20 16:56:55,083 WARNING  remote  transport failure (NNsightException) during 2418 base, attempt 1/8; retrying in 5s
+2026-09-20 16:57:04,642 WARNING  remote  transport failure (NNsightException) during 2418 base, attempt 1/8; retrying in 5s
+2026-09-20 16:57:14,687 WARNING  remote  transport failure (NNsightException) during 2418 base, attempt 1/8; retrying in 5s
+2026-09-20 16:57:24,739 WARNING  remote  transport failure (NNsightException) during 2418 real, attempt 1/8; retrying in 5s
+2026-09-20 16:57:35,873 WARNING  remote  transport failure (NNsightException) during 2418 real, attempt 1/8; retrying in 5s
+2026-09-20 16:57:46,714 WARNING  remote  transport failure (NNsightException) during 2418 real, attempt 1/8; retrying in 5s
+2026-09-20 16:57:58,005 WARNING  remote  transport failure (NNsightException) during 2418 real, attempt 1/8; retrying in 5s
+2026-09-20 16:58:07,802 WARNING  remote  transport failure (NNsightException) during 2498 base, attempt 1/8; retrying in 5s
+2026-09-20 16:58:18,097 WARNING  remote  transport failure (NNsightException) during 2498 base, attempt 1/8; retrying in 5s
+2026-09-20 16:58:27,807 WARNING  remote  transport failure (NNsightException) during 2498 base, attempt 1/8; retrying in 5s
+2026-09-20 16:58:38,132 WARNING  remote  transport failure (NNsightException) during 2498 base, attempt 1/8; retrying in 5s
+2026-09-20 16:58:48,648 WARNING  remote  transport failure (NNsightException) during 2498 real, attempt 1/8; retrying in 5s
+2026-09-20 16:58:59,055 WARNING  remote  transport failure (NNsightException) during 2498 real, attempt 1/8; retrying in 5s
+2026-09-20 16:59:10,374 WARNING  remote  transport failure (NNsightException) during 2498 real, attempt 1/8; retrying in 5s
+2026-09-20 16:59:21,052 WARNING  remote  transport failure (NNsightException) during 2498 real, attempt 1/8; retrying in 5s
+2026-09-20 16:59:31,847 WARNING  remote  transport failure (NNsightException) during 2502 base, attempt 1/8; retrying in 5s
+2026-09-20 16:59:42,802 WARNING  remote  transport failure (NNsightException) during 2502 base, attempt 1/8; retrying in 5s
+2026-09-20 16:59:53,222 WARNING  remote  transport failure (NNsightException) during 2502 base, attempt 1/8; retrying in 5s
+2026-09-20 17:00:03,793 WARNING  remote  transport failure (NNsightException) during 2502 base, attempt 1/8; retrying in 5s
+2026-09-20 17:00:15,255 WARNING  remote  transport failure (NNsightException) during 2502 real, attempt 1/8; retrying in 5s
+2026-09-20 17:00:26,271 WARNING  remote  transport failure (NNsightException) during 2502 real, attempt 1/8; retrying in 5s
+2026-09-20 17:00:36,872 WARNING  remote  transport failure (NNsightException) during 2502 real, attempt 1/8; retrying in 5s
+2026-09-20 17:00:47,390 WARNING  remote  transport failure (NNsightException) during 2502 real, attempt 1/8; retrying in 5s
+2026-09-20 17:00:57,567 WARNING  remote  transport failure (NNsightException) during 2754 base, attempt 1/8; retrying in 5s
+2026-09-20 17:01:07,883 WARNING  remote  transport failure (NNsightException) during 2754 base, attempt 1/8; retrying in 5s
+2026-09-20 17:01:18,061 WARNING  remote  transport failure (NNsightException) during 2754 base, attempt 1/8; retrying in 5s
+2026-09-20 17:01:28,194 WARNING  remote  transport failure (NNsightException) during 2754 base, attempt 1/8; retrying in 5s
+2026-09-20 17:01:38,742 WARNING  remote  transport failure (NNsightException) during 2754 real, attempt 1/8; retrying in 5s
+2026-09-20 17:01:49,759 WARNING  remote  transport failure (NNsightException) during 2754 real, attempt 1/8; retrying in 5s
+2026-09-20 17:02:01,289 WARNING  remote  transport failure (NNsightException) during 2754 real, attempt 1/8; retrying in 5s
+2026-09-20 17:02:11,924 WARNING  remote  transport failure (NNsightException) during 2754 real, attempt 1/8; retrying in 5s
+2026-09-20 17:02:22,351 WARNING  remote  transport failure (NNsightException) during 2767 base, attempt 1/8; retrying in 5s
+2026-09-20 17:02:32,335 WARNING  remote  transport failure (NNsightException) during 2767 base, attempt 1/8; retrying in 5s
+2026-09-20 17:02:42,502 WARNING  remote  transport failure (NNsightException) during 2767 base, attempt 1/8; retrying in 5s
+2026-09-20 17:02:52,426 WARNING  remote  transport failure (NNsightException) during 2767 base, attempt 1/8; retrying in 5s
+2026-09-20 17:03:03,034 WARNING  remote  transport failure (NNsightException) during 2767 real, attempt 1/8; retrying in 5s
+2026-09-20 17:03:14,187 WARNING  remote  transport failure (NNsightException) during 2767 real, attempt 1/8; retrying in 5s
+2026-09-20 17:03:25,080 WARNING  remote  transport failure (NNsightException) during 2767 real, attempt 1/8; retrying in 5s
+2026-09-20 17:03:35,969 WARNING  remote  transport failure (NNsightException) during 2767 real, attempt 1/8; retrying in 5s
+2026-09-20 17:03:44,273 INFO     run_e023    30/30
+2026-09-20 17:03:44,273 INFO     run_e023  
+2026-09-20 17:03:44,273 INFO     run_e023                                baseline      edited
+2026-09-20 17:03:44,273 INFO     run_e023  generation starts with a pool city         80%         43%
+2026-09-20 17:03:44,273 INFO     run_e023  generation == ranked answer         67%         43%
+2026-09-20 17:03:44,273 INFO     run_e023  
+2026-09-20 17:03:44,273 INFO     run_e023  lands in the TARGET country — ranked 67%  vs  generated 43%  (n=30)
+2026-09-20 17:03:44,273 INFO     run_e023  
+2026-09-20 17:03:44,273 INFO     run_e023  out-of-pool generations under the edit, verbatim:
+2026-09-20 17:03:44,273 INFO     run_e023     61     target Germany          -> ' Hamburg, Germany,'
+2026-09-20 17:03:44,273 INFO     run_e023     342    target Australia        -> ' Sydney, Australia,'
+2026-09-20 17:03:44,273 INFO     run_e023     507    target New Zealand      -> ' Gisborne,'
+2026-09-20 17:03:44,273 INFO     run_e023     590    target Australia        -> ' Adelaide, Australia,'
+2026-09-20 17:03:44,273 INFO     run_e023     1126   target Poland           -> ' Poland in 190'
+2026-09-20 17:03:44,273 INFO     run_e023     1289   target India            -> ' Ahmedabad, Gujarat'
+2026-09-20 17:03:44,273 INFO     run_e023     1315   target Switzerland      -> ' Zurich, Switzerland,'
+2026-09-20 17:03:44,273 INFO     run_e023     1401   target Switzerland      -> ' Lausanne,'
+2026-09-20 17:03:44,273 INFO     run_e023     1555   target Portugal         -> ' Viseu,'
+2026-09-20 17:03:44,273 INFO     run_e023     1737   target United States    -> ' New York, United'
+2026-09-20 17:03:44,274 INFO     run_e023  written: results/E-023-generation.json

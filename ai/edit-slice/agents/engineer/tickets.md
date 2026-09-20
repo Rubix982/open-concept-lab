@@ -1559,6 +1559,13 @@ rather than a new one.
 while sampling something else. This measures greedy generation against rank, not "what the
 model would say" in general — say so rather than generalising.
 
+**Result (2026-09-20).** DENY the pool's faithfulness. Free generation relocates into the
+target country 30/30 against ranking's 67%. The pool cannot express most of the model's
+answers, so ranking falls back to the highest-prior item — which is E-014's Washington
+attractor. Paired results (E-015, E-016, E-021) are unaffected because both arms share the
+pool. Full entry in agents/shared/decisions.md [E-023].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-*.json
-**Closed:** —
+**Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-generation.json;
+agents/shared/decisions.md -> "[E-023] Result"
+**Closed:** 2026-09-20

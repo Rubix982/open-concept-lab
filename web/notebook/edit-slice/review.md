@@ -293,6 +293,16 @@ and a semantically unrelated edit should move it just as far. Both hold.
 The birth-city probe lands in the edited country 67% of the time (baseline 5%, same-subject
 control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
 
+**That 67% is an undercount, and the cause is ours.** Letting the edited model generate
+freely instead of ranking the pool, it names a city in the target country in **30 of 30**
+chains. The 75-city pool cannot express most of its answers — Hamburg, Sydney, Zurich,
+Milan, Gisborne and Plzeň are all absent — so ranking falls back to the highest-prior item
+on the menu.<Margin>Which is also what the `Washington, D.C.` attractor was: 33% of ranked
+destinations, read at the time as the model's fallback. It was the ranking's.
+<Evidence id="E-023" /></Margin> **Differences survive a bad pool; absolute levels do
+not** — §4.2 and §4.3 are paired contrasts using the same pool in every arm, so the
+artifact cancels there and only this level is affected.
+
 Then the relation control:
 
 <p className="ocl-tablecap"><strong>Table 2.</strong> The relation control. Subject and target country held fixed; only the</p>
@@ -433,7 +443,12 @@ part of *the network* represents the fact. Interchange interventions remain unru
 distinction between "this position of the update is necessary" and "this component encodes
 the fact" is exactly the gap that remains.
 
-**6 · The stronger version of our own measurement critique is refuted — by us.** A
+**6 · Every absolute rate here is measured by ranking a closed pool, and that undercounts.**
+Free generation relocates in 30 of 30 chains where ranking gives 67%. We report paired
+contrasts precisely because they survive this — but any single rate in this paper should be
+read as a floor, not an estimate.<Evidence id="E-023" />
+
+**7 · The stronger version of our own measurement critique is refuted — by us.** A
 plausible reading of §3.1 is that possession is not a fact-level property at all, only a
 property of the (fact, template) pair, which would make every per-fact possession number
 here and in the literature a category error. We tested it against ParaRel's own P19
@@ -449,7 +464,7 @@ estimate.
 record and caught one overclaim before publication. It cannot catch an error the whole
 record shares — which is why this page exists.
 
-**7 · This is not a method, and the nearest misreading is a specific one.** The pinned
+**8 · This is not a method, and the nearest misreading is a specific one.** The pinned
 coefficient explains why an edit reaches every prompt sharing its subject. It is a
 consequence of how ROME normalises, not a technique on offer. In particular *"edit a
 deeper layer to leak less"* does not follow: §4.3 measures a **coefficient**, and the

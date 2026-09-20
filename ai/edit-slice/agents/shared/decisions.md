@@ -1409,3 +1409,73 @@ existence claim about *this* relation; a relation whose answers are all near-mod
 still scatter.
 
 **Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-cells.json
+
+---
+
+## [E-023] Result: the closed pool undercounts relocation badly — and the Washington attractor was ours
+
+_Date: 2026-09-20 · Llama-3.1-8B, 30 chains, greedy 4 tokens, baseline and edited_
+
+Runs [T-066]. Every number in this project comes from ranking a closed type-matched pool.
+This asks what that hides by letting the edited model generate instead.
+
+| measure | rate |
+| --- | ---: |
+| ranked over the 75-city pool ([E-014]'s method) | **67%** |
+| generated, scored *via the pool* | 43% |
+| generated, scored on the text | 73% |
+| **generated, hand-adjudicated** | **30/30 = 100%** |
+
+**Every one of the thirty edited generations names a city in the target country.** The
+eight the automated checks called misses are Gisborne (New Zealand), Ahmedabad (India),
+Lausanne (Switzerland), Viseu (Portugal), New York and Washington DC (United States),
+Prostějov and Plzeň (Czech Republic). None is a contested fact; the adjudication is by hand
+and is recorded as such.
+
+**Two of the three automated figures above are my own measurement bugs**, and both are the
+[E-007] denominator error in new costumes. Scoring generations *via the pool* resolves a
+city's country through a pool-derived lookup, so any city outside the pool returns nothing
+and counts as a failure — inside the very experiment built to find pool artifacts. Scoring
+on the text only catches generations that happen to name the country.
+
+**What this does to [E-014].** Its 67% is a substantial undercount. The model relocates
+essentially always; the pool cannot express where it goes. Of 75 candidate cities, drawn
+from our own chain answers plus capitals, most of the world is missing — so Hamburg,
+Sydney, Adelaide, Zurich, Milan, Delhi, Gisborne and Plzeň are all unreachable answers.
+
+**And it explains the Washington attractor.** [E-014] found `Washington, D.C.` taking 33%
+of ranked destinations and read it as the model's fallback when no coherent relocation
+occurred. It is not. It is the **ranking's** fallback: the model's actual answer is off the
+menu, so the highest-prior item on the menu wins. Chain 61 generates *"Hamburg, Germany"*
+and ranks `Washington, D.C.`; chain 1315 generates *"Zurich, Switzerland"* and ranks
+`Washington, D.C.` The attractor was a property of our instrument.
+
+**The pool removed a correct answer through our own cleaning.** Hamburg is absent because
+`place_types.json` classified it `not_settlement` — its Wikidata QID resolves to Hamburger
+SV, the football club. The filter added to remove universities and clubs from the city pool
+removed a city with them. Fourth entity-linking artifact in this project, after the P36
+historical capitals, the P106 first-occupation labels, and the six malformed chains — and
+the first caused by a fix.
+
+**What survives untouched, and why.** [E-015], [E-016] and [E-021] are **paired**
+comparisons that use the same pool for both arms. A pool artifact shifts both arms equally
+and cancels in the difference:
+
+| result | affected? |
+| --- | --- |
+| [E-015] work vs birth, +0.0 pp | **no** — same pool both arms |
+| [E-016] whitened vs unwhitened, 42/42 identical | **no** — same pool both arms |
+| [E-021] B vs E, 29 vs 5, p < 0.0001 | **no** — same pool all arms |
+| [E-014] 67% as an absolute level | **yes** — undercount, true rate ≈ 100% |
+| [E-014] Washington attractor at 33% | **yes** — an artifact of ranking, not a model behaviour |
+
+So the central claims stand and the levels do not. **Differences survive a bad pool;
+absolute rates do not.** That distinction should govern how every rate in this project is
+read, and it is now the strongest argument for reporting paired contrasts rather than
+levels.
+
+**Scope and confound.** 30 chains, greedy decoding, four tokens, one model, one relation.
+Greedy is itself a choice: a model can rank one answer and sample another, so this compares
+greedy generation against rank and not "what the model would say" in general.
+
+**Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-generation.json
