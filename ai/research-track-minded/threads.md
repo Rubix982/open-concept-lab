@@ -32,13 +32,18 @@ first and confirm the ratio is actually as lopsided as the qualitative read says
 
 ### T-002 · What is the deletion list, concretely?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-09-18
 **Question:** Which specific constructions get deleted on sight? The claim is that
 a finite list of banned moves outperforms abstract instruction to "write clearly."
 Needs to be derived from what the corpus *never* does, not from taste.
-**Answer:** — (R-003)
+**Answer:** `corpus/deletion-list.md` — 20 entries, 12 lintable and 8 structural, each
+with a banned construction, an example and a replacement. Derived by measurement: the
+reference corpus scores 0.0 hits per 10k across fifteen probes. [R-003] also found the
+list does **not** discriminate quality — published papers 9.6/10k against AI reports
+14.7 — so Tier 1 is a house standard and Tier 2 carries the work. Shipped as
+`skill/research-writing/`.
 
 ### T-003 · Which exemplars, and why those?
 
