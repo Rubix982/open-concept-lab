@@ -95,9 +95,9 @@ containing hand-curated template *sets*, and keep one prompt per record
 
 **What is left.** None of the above examines what an edit does to a fact's *premises*, and
 none reports the coefficient structure of the update itself. ROME <Cite id="meng2022rome" />
-derives the `C⁻¹` term but the widely-used implementation disables it — all fourteen ROME
-configs in EasyEdit set `mom2_adjustment: false`, including for the two models the paper
-used.
+derives the `C⁻¹` term and its own repository enables it by default; EasyEdit disables it
+in all fourteen of its ROME configs, including for the two models the paper used. Both
+values read from the raw config files.
 
 ## 3 · Method
 
@@ -414,10 +414,17 @@ coefficient by 0.27 broke relocation in 3 of 4 chains while whitening's 3.7× at
 changed nothing — so the map from coefficient to destination is not monotone, and "0.58 at
 layer 20" does not license "less displacement at layer 20."
 
-**4 · `C = I` is what the field runs, not what ROME describes.** Our whitened arm estimated
-the covariance over the CounterFact prompt distribution rather than Wikipedia, from 2048
-keys, with a ridge chosen by an in-sample/held-out agreement rule. Defensible, but not
-ROME.
+**4 · `C = I` is what *EasyEdit users* run — and two implementations circulate.** Verified
+from both repositories: `kmeng01/rome` sets `mom2_adjustment: true` for gpt2-xl and
+gpt-j-6B; EasyEdit sets it `false` for all fourteen configs including those two. So the
+whitening term the method is built around is on by default in the authors' code and off in
+the toolkit most third-party work reaches for. Our earlier phrasing — "what the field runs"
+— was too strong and is corrected here.<Margin>This does not touch the central claim.
+<Evidence id="E-016" /> measured the whitened arm too, and <Evidence id="E-021" /> showed
+the mechanism lives in the `u·k*` normalisation, which both implementations
+share.</Margin> Our whitened arm also estimated the covariance over the CounterFact prompt
+distribution rather than Wikipedia, from 2048 keys, with a ridge chosen by an
+in-sample/held-out agreement rule. Defensible, but not ROME.
 
 **5 · The causal claim is about the edit, not the model.** §4.1's ablation intervenes on
 ROME's own update and shows which positions the relocation depends on. It does **not**

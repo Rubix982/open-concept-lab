@@ -179,6 +179,14 @@ E-020:
   gist: "Runs [T-077]. [E-019] measured the decay and explained nothing about it. The coefficient is not a cosine — c = (|k|/|k|) · cos(k, k) — so it can fall two…"
   surface: decision
 
+E-021:
+  id: "E-021"
+  kind: "Result"
+  title: "the subject-token delta is sufficient and necessary — the mechanism is causal"
+  date: "2026-09-20"
+  gist: "Runs [T-067], the hole §6 of the paper names first. Everything from [E-013] to [E-020] is behavioural — vary an input, read an output. [E-016] showed the…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -305,6 +313,14 @@ f-R-010:
   title: "the WHY gate narrows sharply — two of three proposed contributions are taken"
   date: "2026-09-18"
   gist: "Run before building the probing taxonomy the project was about to pivot to. Three prior-art hits, two of them direct. Holtzman, West, Shwartz, Choi,…"
+  surface: finding
+
+f-R-009:
+  id: "R-009"
+  kind: "Finding"
+  title: "two ROMEs circulate, and they differ on the term the method is built around"
+  date: "2026-09-20"
+  gist: "Opened by [E-013] gate 0, which found EasyEdit ships mom2adjustment: false in all fourteen of its ROME configs — including gpt2-xl and gpt-j-6B, the two…"
   surface: finding
 
 t-T-001:
@@ -763,7 +779,7 @@ t-T-067:
   title: "A causal measure of relocation, not a behavioural one"
   date: ""
   gist: "[E-015] asks whether the model behaves as if it inferred \"born in Germany ⇒ born in a German city\", by holding subject and target…"
-  status: "open"
+  status: "answered — **both**"
   surface: thread
 
 t-T-070:

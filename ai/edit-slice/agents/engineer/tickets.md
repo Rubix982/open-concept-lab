@@ -435,7 +435,7 @@ output names let configs overwrite each other.
 
 ### E-008 · Mine transitive containment chains
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-14
@@ -477,7 +477,8 @@ machine-readable set. NOT the experiment — that is E-009.
 
 **Blockers:** none
 **Artifacts:** src/chains.py; probes/containment_chains.md
-**Closed:** —
+**Result.** Chains mined: 136 from 200 P19 seeds (68%), attrition recorded. Superseded in use by the gated sets.
+**Closed:** 2026-09-20
 
 ---
 
@@ -791,7 +792,7 @@ agents/shared/decisions.md -> "[E-012] Result"
 
 ### E-013 · The edit — does editing a conclusion ever retract its grounds?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -881,13 +882,14 @@ sequential edits.
 
 **Blockers:** none
 **Artifacts:** src/edit.py; agents/engineer/workspace/run_e013.py; results/E-013-*.json
-**Closed:** —
+**Result.** The editor was built and the smoke test reshaped the control design. Result in decisions.md [E-013] gate 0 and [E-013] smoke test.
+**Closed:** 2026-09-20
 
 ---
 
 ### E-014 · Scaled edit: where does the probability go, across countries and cities?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -947,13 +949,14 @@ keyed by case_id and config; a kill must cost wall-clock only.
 **Blockers:** none
 **Artifacts:** agents/engineer/workspace/run_e014.py; results/E-014-*.json;
 data/wikidata/<date>/snapshot.json.gz (city P17, country P36)
-**Closed:** —
+**Result.** 67% into the target country against 5% baseline and control. Result in decisions.md [E-014].
+**Closed:** 2026-09-20
 
 ---
 
 ### E-015 · Does relocation require an inference, or only country-flavoured content?
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-15
@@ -1008,7 +1011,8 @@ pairing does not support.
 
 **Blockers:** E-014 (supplies the matched target countries)
 **Artifacts:** agents/engineer/workspace/run_e015.py; results/E-015-*.json
-**Closed:** —
+**Result.** DENY — paired gap +0.0 pp, McNemar p = 1.000. Result in decisions.md [E-015].
+**Closed:** 2026-09-20
 
 ---
 

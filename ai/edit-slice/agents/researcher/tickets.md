@@ -296,7 +296,7 @@ commit before any scoring, and cite that commit as the pre-registration.
 
 ### R-009 · Do two ROMEs circulate? Original repo vs EasyEdit on mom2_adjustment
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-09-15
@@ -331,6 +331,14 @@ finding about the field until (1) is verified.
 
 
 ---
+
+**Result (2026-09-20).** Yes, two circulate. `kmeng01/rome` sets `mom2_adjustment: true`
+for both gpt2-xl and gpt-j-6B; EasyEdit sets it false for all fourteen configs including
+those two. Read from the raw config files. Qualifies the paper's "what the field runs" to
+"what EasyEdit users run"; does not touch the central claim, since [E-021] showed the
+mechanism lives in the `u·k*` normalisation present in both. Full entry in
+agents/shared/findings.md [R-009].
+**Closed:** 2026-09-20
 
 ### R-010 · Prior-art gate on the probing taxonomy
 

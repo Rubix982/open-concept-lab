@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**22 decisions · 16 findings · 57 threads (2 active, 40 answered, 3 dropped, 4 open, 8 parked)**
+**23 decisions · 17 findings · 57 threads (2 active, 41 answered, 3 dropped, 3 open, 8 parked)**
 
 ## Decisions and results
 
@@ -106,6 +106,10 @@ _Result · 2026-09-20_ — Runs [T-075] per design.md Part IV. DENY in the mid-d
 
 _Result · 2026-09-20_ — Runs [T-077]. [E-019] measured the decay and explained nothing about it. The coefficient is not a cosine — c = (|k|/|k|) · cos(k, k) — so it can fall two…
 
+### E-021 · the subject-token delta is sufficient and necessary — the mechanism is causal {#E-021}
+
+_Result · 2026-09-20_ — Runs [T-067], the hole §6 of the paper names first. Everything from [E-013] to [E-020] is behavioural — vary an input, read an output. [E-016] showed the…
+
 
 ## Findings
 
@@ -175,6 +179,10 @@ _2026-09-14_ — This reverses [R-006]. I concluded there that "CounterFact does
 
 _2026-09-18_ — Run before building the probing taxonomy the project was about to pivot to. Three prior-art hits, two of them direct. Holtzman, West, Shwartz, Choi,…
 
+### R-009 · two ROMEs circulate, and they differ on the term the method is built around {#f-R-009}
+
+_2026-09-20_ — Opened by [E-013] gate 0, which found EasyEdit ships mom2adjustment: false in all fourteen of its ROME configs — including gpt2-xl and gpt-j-6B, the two…
+
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._
 
@@ -182,14 +190,13 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (4)
+### Open (3)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | `T-064` | **MUTE — known but inexpressible in this phrasing** — Crossing [E-012]'s two tests gives four cells, and one of them has no name in the literature: row test fails, column test passes… | T-062 | open |
 | `T-065` | **Is the instrument's atom a contrastive pair, with content only at crossings?** — Raised by the user, on noticing that nearly every measurement here is a minimal contrastive pair — subject vs placeholder, bare… | T-062 | open |
 | `T-066` | **What does a closed candidate pool hide that free generation would show?** — Every measurement in this repo ranks over a closed, type-matched pool. That is what makes it controlled — and [E-014] had to… | T-065 | open |
-| `T-067` | **A causal measure of relocation, not a behavioural one** — [E-015] asks whether the model behaves as if it inferred "born in Germany ⇒ born in a German city", by holding subject and target… | T-065 | open |
 
 ### Active (2)
 
@@ -198,7 +205,7 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | `T-054` | **The CounterFact filter outlived the model it was calibrated against** — [R-006] established that CounterFact filtered records on P(true) &gt; P(counterfactual) pre-edit — so possession is checked. But… | T-047 | ACTIVE |
 | `T-062` | **Is possession a property of a fact, or of a (fact, template) pair?** — notes/definitions.md declaration 1 is binding — "a fact is a behavioral unit defined by its probe set" — and every possession… | T-059 | ACTIVE |
 
-### Answered (40)
+### Answered (41)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
@@ -238,6 +245,7 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | `T-059` | **Is the `outer` deficit answer surface form rather than knowledge?** — [E-009b] found the outer possession deficit is two strings — United States 6/40 held and United Kingdom 2/14, against France… | T-058 | answered |
 | `T-060` | **Does the gate clear at 8B, dissolving the 70B editability problem?** — The whole ROME-at-70B covariance problem (~3.3 GB over dmlp 28672, uncollected and uncosted, recorded as the unpaid consequence… | T-059 | answered — **yes** |
 | `T-061` | **Is subject familiarity the variable behind the leg dependence?** — [E-009] measured that chain legs are not independent (inner1 &amp; outer lift 2.10 at GPT-J, 1.15 at 70B) and explained it as… | T-058 | answered — **no** |
+| `T-067` | **A causal measure of relocation, not a behavioural one** — [E-015] asks whether the model behaves as if it inferred "born in Germany ⇒ born in a German city", by holding subject and target… | T-065 | answered — **both** |
 | `T-073` | **Pool attractor mass as a required artifact field** — Washington, D.C. absorbed 33% of all birth-arm destinations in [E-015] — it is the pool's high-prior city and the default sink… | T-066 | answered — implemented |
 | `T-074` | **Does the pinned coefficient survive a prompt that mentions the subject late?** — [E-016] established that ROME's u·k normalisation pins the update coefficient to exactly 1 at the subject's last token, so any… | T-067 | answered — **yes, it survives** |
 | `T-075` | **Is the subject key context-robust at every layer, or only at layer 5?** — [E-017] measured the coefficient at the subject's last token to be 0.93-1.00 across probe forms at layer 5 — the layer ROME edits… | T-074 | answered — **only at shallow layers** |

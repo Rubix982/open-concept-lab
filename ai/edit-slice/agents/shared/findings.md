@@ -1190,3 +1190,43 @@ that is our hypothesis, not their claim.
   none from memory.
 
 **Artifacts:** this entry; closes R-008 and R-010.
+
+## [R-009] Finding: two ROMEs circulate, and they differ on the term the method is built around
+
+_Date: 2026-09-20 · read from both repositories, not recalled_
+
+Opened by [E-013] gate 0, which found EasyEdit ships `mom2_adjustment: false` in **all
+fourteen** of its ROME configs — including `gpt2-xl` and `gpt-j-6B`, the two models the
+ROME paper itself used. The question was whether the original implementation agrees.
+
+**It does not.**
+
+| source | `gpt2-xl` | `gpt-j-6B` | `mom2_dataset` | `mom2_n_samples` |
+| --- | --- | --- | --- | --- |
+| `kmeng01/rome` (original) | `true` | `true` | wikipedia | 100,000 |
+| EasyEdit | `false` | `false` | wikipedia (unused) | 100,000 (unused) |
+
+So `u = C⁻¹k*` in one implementation and `u = k*` in the other, under the same name, for
+the same models. The whitening term the paper's method section is built around is on by
+default in the authors' code and off by default in the toolkit most third-party work
+reaches for.
+
+**Confidence: high.** Both values read directly from the raw config files.
+
+**What this changes for us — a qualification, not a retraction.** The paper says
+*"`C = I` is what the field runs, not what ROME describes."* The second half is now
+verified rather than assumed. The first half is **too strong**: it is what *EasyEdit
+users* run. Anyone using the original repo runs the whitened update. Corrected in §6.4.
+
+**What it does not change.** [E-016] measured the whitened arm as well, and [E-021] showed
+the mechanism is a property of the `u·k*` normalisation, which is present in **both**
+implementations. The central claim does not depend on which `C` is used — that is the
+point of [E-016]'s 42/42 identical destinations.
+
+**What it means beyond this project, stated carefully.** Any paper reporting "ROME"
+numbers inherits whichever default its toolkit ships, and the two differ on the method's
+defining term. Whether published results actually diverge because of it is **not
+established here** — we have shown the configs differ, not that the numbers do. That would
+need the same benchmark run both ways, and it is not our question.
+
+**Artifacts:** this entry; closes R-009, opened by [E-013] gate 0.
