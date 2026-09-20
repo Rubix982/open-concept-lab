@@ -1140,3 +1140,76 @@ agents/shared/decisions.md [E-017].
 results/E-017-form-meta-llama_Llama-3.1-8B.json;
 agents/shared/decisions.md -> "[E-017] Result"
 **Closed:** 2026-09-19
+
+---
+
+### E-018 · The different-subject floor — does [E-017]'s claim survive its missing control?
+
+**Status:** open
+**Type:** implement
+**Priority:** **highest** — it can retract a published claim
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Tests [T-076], surfaced while designing [T-075] (see design.md Part IV).
+
+[E-017] claims: *any prompt containing the subject receives 93–100% of the edit
+vector at the subject's last token.* Every control behind it is a **same-subject**
+control — different relation, late clause, possessive, long preamble, all at
+0.93–1.00. The project's only non-subject datum is `inner_2` (*"Paris is located
+in…"*), a different entity type answering a different question, not a matched
+control.
+
+**Nothing has measured a different person, same relation, same form.** Until it is,
+"any prompt *containing the subject*" is not separated from "any prompt".
+
+**Why this is not a formality.** [E-016] measured the layer-5 key second moment at
+participation ratio **26.5 of 2048** — the keys occupy an effectively
+~26-dimensional manifold. Vectors confined to a narrow subspace have substantial
+cosine **by construction**, so the different-subject floor may be high for reasons
+having nothing to do with the subject. [E-016] is also this project's standing
+demonstration that an argument about key geometry can be confidently wrong.
+
+**Implementation.** A variant of `agents/engineer/workspace/coeff_forms.py`, which
+already computes exactly the right quantity — `(k @ kstar) / (kstar @ kstar)` at
+`subject_last_index`. One form is added:
+
+- `different subject`: the **early (edit form)** template
+  `"{} was born in the city of"`, filled with the subject of a *different* chain,
+  scored against **this** chain's `k*`.
+
+Pair subjects by rotation (`subjects[(i + 1) % n]`) so every chain contributes once
+and no chain is scored against itself. Assert `other_subj != subj` per chain and
+fail loudly if it collides.
+
+Keep the five [E-017] forms unchanged in the same run — layer 5 must reproduce the
+published means (1.000 / 1.000 / 0.935 / 0.934 / 0.925) or the harness is wrong and
+the new number means nothing. **That reproduction is the correctness gate; check it
+before reading the control.**
+
+Same 16 chains, same `E014_kstar_L5_s1538.pt` cache, `LAYER` unchanged.
+
+**Outcomes, stated before the run:**
+
+- **Confirm** — different-subject mean is low (≲0.3) and well separated from every
+  same-subject form. [E-017] stands as published; the floor is now measured rather
+  than assumed.
+- **Deny** — different-subject mean is high (≳0.7). [E-017]'s claim, the E-016
+  section of `web/blog/2026-09-15-five-days.mdx`, and that post's standfirst are
+  **wrong rather than narrow**, and the correction is a retraction. The pinning
+  would not be subject-keyed at all.
+- **Null** — intermediate (0.3–0.7). The claim narrows to a graded one: subject
+  match raises the coefficient but does not solely determine it, and the published
+  wording needs replacing with the measured gap.
+
+**Do not re-run a failure and read the second outcome as a diagnosis** — per
+[O-007], NDIF rejects roughly half of all traces node-dependently. Go through
+`retrying()`. One completed run is the result.
+
+**Blockers:** —
+
+**Artifacts:** —
+
+**Closed:** —
