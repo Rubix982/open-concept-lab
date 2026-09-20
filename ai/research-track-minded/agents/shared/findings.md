@@ -716,3 +716,44 @@ connection implicit.
   licensing "compute GradSim". A stricter scorer would put the baseline lower and the
   rise would look larger. I chose the reading less favourable to the hypothesis and
   it still confirmed, which is the only reason to trust the direction.
+
+
+---
+
+## [R-003] Correction: the lint was case-sensitive, and the reference rates were wrong twice over
+
+_Date: 2026-09-20 · corrects the rates in the [R-003] entry above_
+
+Found by running the skill the way a stranger would — system `python3`, unrelated
+working directory, a throwaway file of deliberately bad prose. Three of six planted
+constructions were missed: *"It is important to note"*, *"As shown in Table 1"*,
+*"The main contribution"*. **Every rule was case-sensitive**, which exempted the
+sentence-initial form of each — the form in which they most often appear.
+
+It survived every prior test because Saif's corpus contains none of them and the
+[E-001] baseline's hits all happened to fall mid-sentence. A test set drawn entirely
+from real documents never exercised the capitalised case.
+
+Fixed by compiling all rules with `re.IGNORECASE`, and by re-anchoring the additive
+connective from **line**-initial to **sentence**-initial.
+
+**Re-measured, and the rates move in the direction that argues against the lint:**
+
+| body | words | old | **new** |
+| --- | ---: | ---: | ---: |
+| hand-written research prose | 27,735 | 1.3 | **0.0** |
+| published mech interp papers | 50,821 | 11.6 | **5.1** |
+| AI-generated reports | 38,773 | 13.9 | **6.4** |
+
+The paper and report figures **fell by half** because the old line-anchored rule fired
+on "Moreover" wherever a PDF line-wrap happened to put it, mid-sentence included. Those
+numbers were a text-extraction artifact.
+
+Two consequences. The hand-written corpus is now at **literal zero across 27.7k words**
+under a stricter lint, which strengthens [R-001]. And the separation between published
+papers and AI slop narrows from 1.2× to **1.25×** — no better, and now measured
+correctly. **[T-010]'s answer of "no cheap discriminator" is confirmed by a cleaner
+instrument, not weakened by it.**
+
+Regressions held in both directions: the [E-001] baseline rose 58.9 → 78.6 as it began
+catching *"The clearest"*, and no new hit appeared anywhere in the hand-written corpus.

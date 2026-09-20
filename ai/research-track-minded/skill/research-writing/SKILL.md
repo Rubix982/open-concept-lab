@@ -113,10 +113,10 @@ Three kinds of entry, and the third never appears on its own:
 python scripts/lint.py --rate DRAFT.md
 ```
 
-Reference rates: hand-written prose **0.0–1.3** per 10k, published mech interp papers
-**11.6**, AI-generated reports **13.9**. The last two are close on purpose — **this
-cannot tell a good paper from a bad report.** Never report a clean lint as evidence of
-quality.
+Reference rates: hand-written research prose **0.0** per 10k over 27.7k words,
+published mech interp papers **5.1**, AI-generated reports **6.4**. A 1.25× gap
+between good papers and slop — **this cannot tell one from the other.** Never report a
+clean lint as evidence of quality.
 
 ## Positioning claims
 

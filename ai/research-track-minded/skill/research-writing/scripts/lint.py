@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Tier 1 lint: flag constructions absent from the reference corpus.
 
-This is a FLOOR, not a quality gate. A passage can score 0.0 here and still say
-nothing that could be wrong — measured directly in E-001, where the AI-generated
-baseline scored 0.0/10k and carried exactly one falsifiable claim in 472 words.
-Run the Tier 2 claim audit for anything that matters.
+This is a FLOOR, not a quality gate. Published mech interp papers score 5.1 hits per
+10k and AI-generated reports 6.4 -- a 1.25x gap that discriminates nothing. Whatever
+makes the reports useless is invisible here. Run the claim audit for anything that
+matters.
 
 Blockquotes, fenced code and lines marked with a check or cross are skipped:
 those are mention, not use.
@@ -35,8 +35,9 @@ RULES: list[Rule] = [
          r"(?:^|[.!?]\s+)[Ii]n this (?:section|chapter|post),?\s+(?:we|I)\b"
          r"|\b[Ww]e begin by\b|\b[Tt]his section (?:will|describes)\b",
          "name the commitments, then deliver them in order"),
+    # Sentence-initial, not line-initial: wrapped prose puts sentence starts mid-line.
     Rule("additive connective",
-         r"(?m)^\s*(Moreover|Furthermore|Additionally)\b",
+         r"(?:^|[.!?]\s+)(?:Moreover|Furthermore|Additionally)\b",
          "delete, or name the actual relation"),
     Rule("hedge adverb",
          r"\b(arguably|potentially|somewhat|relatively|fairly|presumably|possibly)\b",
@@ -99,6 +100,12 @@ def strip_mentions(text: str) -> str:
     return INLINE.sub(_blank, text)
 
 
+# Case-insensitive throughout. Every rule was case-sensitive until 2026-09-20, which
+# silently exempted the sentence-initial form of each -- "It is important to note",
+# "As shown in", "The main contribution" -- i.e. where they most often appear.
+_COMPILED = [(r.name, re.compile(r.pattern, re.IGNORECASE), r.fix) for r in RULES]
+
+
 def scan(text: str, skip_quoted: bool = True) -> Iterator[tuple[int, str, str, str]]:
     if skip_quoted:
         text = strip_mentions(text)
@@ -109,9 +116,9 @@ def scan(text: str, skip_quoted: bool = True) -> Iterator[tuple[int, str, str, s
             continue
         if skip_quoted and (in_fence or SKIP.search(line)):
             continue
-        for rule in RULES:
-            for m in re.finditer(rule.pattern, line):
-                yield lineno, rule.name, m.group(0), rule.fix
+        for name, pattern, fix in _COMPILED:
+            for m in pattern.finditer(line):
+                yield lineno, name, m.group(0).strip(), fix
 
 def main(argv: list[str]) -> int:
     show_rate = "--rate" in argv
@@ -136,10 +143,10 @@ def main(argv: list[str]) -> int:
             rate = len(hits) / words * 10000 if words else 0.0
             print(f"  {len(hits)} hits / {words} words = {rate:.1f} per 10k")
 
-    print(f"\n{total} total. Reference rates for this lint: hand-written research "
-          f"prose 1.3/10k, published mech interp papers 11.6/10k, AI-generated "
-          f"reports 13.9/10k.\nThe last two are close on purpose — this check "
-          f"cannot tell a good paper from a bad report. Run the claim audit.")
+    print(f"\n{total} total. Reference rates: hand-written research prose 0.0/10k "
+          f"(27.7k words), published mech interp papers 5.1, AI-generated reports "
+          f"6.4.\nThe last two are close on purpose — this check cannot tell a good "
+          f"paper from a bad report. Run the claim audit.")
     return 1 if total else 0
 
 if __name__ == "__main__":

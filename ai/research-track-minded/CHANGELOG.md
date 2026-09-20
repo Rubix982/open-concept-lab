@@ -73,3 +73,7 @@ is misattributed. This entry is the record.
 - T-007 and T-010 closed as answered (both resolved by R-003/E-001, never marked)
 - `SKILL.md` cut 210 → 154 lines; removed a duplicated example and a section that
   duplicated Pass 2 §6
+- Lint was case-sensitive and missed every sentence-initial construction; fixed with
+  IGNORECASE plus sentence-anchored connectives. Reference rates re-measured and
+  corrected: 0.0 / 5.1 / 6.4 (was 1.3 / 11.6 / 13.9 — the old paper and report figures
+  were a PDF line-wrap artifact)
