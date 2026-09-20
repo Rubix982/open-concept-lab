@@ -187,6 +187,14 @@ E-021:
   gist: "Runs [T-067], the hole §6 of the paper names first. Everything from [E-013] to [E-020] is behavioural — vary an input, read an output. [E-016] showed the…"
   surface: decision
 
+E-022:
+  id: "E-022"
+  kind: "Result"
+  title: "possession IS a fact-level property — and MUTE has two causes, not one"
+  date: "2026-09-20"
+  gist: "Runs [T-062] and [T-064] from one measurement. [T-062] — CONFIRM, and it refutes the expectation this ticket was opened on. Modal-cell share per fact,…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -734,7 +742,7 @@ t-T-062:
   title: "Is possession a property of a fact, or of a (fact, template) pair?"
   date: ""
   gist: "notes/definitions.md declaration 1 is binding — \"a fact is a behavioral unit defined by its probe set\" — and every possession…"
-  status: "ACTIVE"
+  status: "answered — **yes, a fact-level predicate exists**"
   surface: thread
 
 t-T-063:
@@ -752,7 +760,7 @@ t-T-064:
   title: "MUTE — known but inexpressible in this phrasing"
   date: ""
   gist: "Crossing [E-012]'s two tests gives four cells, and one of them has no name in the literature: row test fails, column test passes…"
-  status: "open"
+  status: "answered — **two causes, not one**"
   surface: thread
 
 t-T-065:

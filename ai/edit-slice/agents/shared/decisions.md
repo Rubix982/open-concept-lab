@@ -1344,3 +1344,68 @@ rescaling is per-chain, so each chain's restoration is exact rather than average
 **Artifacts:** src/remote.py (position mask and gain);
 agents/engineer/workspace/run_e021.py;
 results/E-021-positions-meta-llama_Llama-3.1-8B.json
+
+---
+
+## [E-022] Result: possession IS a fact-level property — and MUTE has two causes, not one
+
+_Date: 2026-09-20 · Llama-3.1-8B, 60 facts × 8 templates = 480 cells, ParaRel P19 patterns_
+
+Runs [T-062] and [T-064] from one measurement.
+
+**[T-062] — CONFIRM, and it refutes the expectation this ticket was opened on.**
+Modal-cell share per fact, where 1.0 means the label is a property of the fact and 0.125
+is chance over eight templates:
+
+| | |
+| --- | ---: |
+| mean | **0.923** |
+| median | **1.000** |
+| all eight cells identical | 39/60 = **65%** |
+| ≥ 7 of 8 | 50/60 = 83% |
+| ≥ 4 of 8 | 60/60 = **100%** |
+
+A fact-level predicate exists. Single-template probing is a **noisy estimator** of a real
+property, not a category error. The Deny branch — *no fact-level predicate, every per-fact
+possession number is a template-level quantity under a fact-level name* — was pre-stated
+as the more important outcome and did not fire. **Every possession number in this repo,
+and the ones in the editing literature that [R-010] found, are more defensible than this
+ticket assumed.**
+
+**Confound checked and clean.** All eight templates sit between 65% and 72% HELD, so no
+single bad probe is carrying the stability. Templates were ParaRel's, not ours — seven of
+its thirteen P19 patterns, the six with prenominal `[Y]` excluded before scoring because a
+continuation-based scorer cannot reach a mid-sentence slot.
+
+**[T-064] — MUTE is 27% of cells, and it inverts its own predicted cause.**
+
+| answer frequency | MUTE rate |
+| --- | ---: |
+| rare (1–2 occurrences) | **35%** of 352 cells |
+| common (≥3) | **5%** of 128 cells |
+
+`PRIOR` is **0%** throughout. The label-form account, built on [E-011]'s countries,
+predicted MUTE would track *modal* answers. With cities it tracks **rarity** — the
+opposite direction.
+
+**Both are true, and pool concentration decides which appears:**
+
+| pool | top filler | what fails |
+| --- | --- | --- |
+| 28 countries ([E-011], [E-012]) | 29% | `PRIOR` and `MUTE` from surface form on a high-prior answer |
+| 78 cities (here) | 6% | `MUTE` from **rarity** — hard to rank first among 50, subject still tracked |
+
+So MUTE is not one phenomenon. It is the cell where the row test fails for *any* reason
+while discrimination survives, and at least two reasons populate it. An account of MUTE
+that names only surface form is incomplete — which is what [E-012]'s entry implies and is
+corrected here.
+
+**Third appearance of pool concentration as the hidden variable**, after [E-009b] and
+[E-014]'s Washington attractor. [T-073] made attractor mass a standard reported field for
+exactly this reason; this entry is evidence the field was worth adding.
+
+**Scope.** 60 facts, one relation, one model, eight templates. The stability result is an
+existence claim about *this* relation; a relation whose answers are all near-modal could
+still scatter.
+
+**Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-cells.json

@@ -1,0 +1,620 @@
+2026-09-20 15:24:47,207 INFO     run_e022  run run_e022 -> logs/run_e022-2026-09-20-152447.log
+2026-09-20 15:24:47,207 INFO     run_e022  config {"excluded": "6 ParaRel P19 patterns with prenominal [Y], unscoreable as continuations", "model": "meta-llama/Llama-3.1-8B", "n_facts": 60, "seed": 1538, "templates": ["pararel_born_in", "pararel_orig_from", "pararel_was_orig", "pararel_native_to", "pararel_was_native", "pararel_originated", "pararel_originates", "ours_city_of"], "threads": ["T-062", "T-064"], "ticket": "E-022"}
+2026-09-20 15:24:47,208 INFO     run_e022  60 facts x 8 templates = 480 cells
+2026-09-20 15:24:49,339 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:24:52,818 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.5s
+2026-09-20 15:24:54,564 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:02,267 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:25:02,270 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:25:05,802 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:13,619 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:25:15,454 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:23,151 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:25:23,153 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:25:25,420 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:33,224 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:25:34,958 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:42,651 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:25:42,654 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:25:44,430 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:25:52,369 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:25:54,398 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:02,266 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:26:02,269 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:26:06,650 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:14,533 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:26:16,323 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:24,155 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:26:24,157 INFO     run_e022    pararel_born_in 20/54
+2026-09-20 15:26:24,157 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:26:26,776 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:34,442 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:26:36,251 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:43,891 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:26:43,896 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:26:45,622 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:26:53,255 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:26:55,166 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:02,868 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:27:02,880 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:27:04,701 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:12,353 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:27:14,167 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:22,023 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:27:22,027 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:27:24,538 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:32,261 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:27:34,120 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:41,875 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:27:41,879 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:27:43,698 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:27:51,345 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:27:53,163 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:00,866 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:28:00,869 INFO     run_e022    pararel_born_in 40/54
+2026-09-20 15:28:00,870 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:28:02,594 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:10,611 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:28:12,882 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:20,493 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:28:20,497 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:28:22,298 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:30,021 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:28:31,784 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:39,420 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:28:39,426 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:28:41,094 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:48,818 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:28:50,670 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:28:58,273 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:29:00,013 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:07,696 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:29:07,704 INFO     run_e022  pararel_born_in done
+2026-09-20 15:29:07,707 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:29:09,499 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:17,163 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:29:18,971 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:29,703 DEBUG    remote  trace ok: 172 rows, 172 tok, 5.7s
+2026-09-20 15:29:29,706 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:29:31,484 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:39,132 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:29:40,872 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:49,640 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.8s
+2026-09-20 15:29:49,643 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:29:51,374 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:29:58,963 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:30:00,789 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:08,652 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:30:08,656 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:30:10,395 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:18,437 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:30:22,107 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:29,951 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:30:29,955 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:30:31,788 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:39,572 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:30:41,531 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:49,399 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:30:49,402 INFO     run_e022    pararel_orig_from 20/54
+2026-09-20 15:30:49,403 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:30:51,141 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:30:58,823 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:31:00,580 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:08,194 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:31:08,200 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:31:09,941 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:17,511 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:31:19,826 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:27,492 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:31:27,496 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:31:29,232 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:36,981 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:31:38,699 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:46,379 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:31:46,382 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:31:48,178 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:31:56,136 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:31:58,019 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:05,731 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:32:05,735 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:32:07,553 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:15,740 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.2s
+2026-09-20 15:32:17,512 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:25,288 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:32:25,291 INFO     run_e022    pararel_orig_from 40/54
+2026-09-20 15:32:25,291 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:32:27,040 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:34,827 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:32:36,630 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:44,465 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:32:44,468 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:32:46,225 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:32:54,078 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:32:55,988 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:03,621 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:33:03,625 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:33:06,085 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:13,827 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:33:15,625 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:23,335 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:33:25,121 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:33,277 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.2s
+2026-09-20 15:33:33,291 INFO     run_e022  pararel_orig_from done
+2026-09-20 15:33:33,294 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:33:35,232 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:44,412 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.2s
+2026-09-20 15:33:46,143 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:33:53,967 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:33:53,970 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:33:55,944 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:03,585 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:34:05,310 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:18,069 DEBUG    remote  trace ok: 172 rows, 172 tok, 7.8s
+2026-09-20 15:34:18,072 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:34:21,123 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:28,815 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:34:30,670 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:38,389 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:34:38,393 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:34:40,175 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:47,793 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:34:49,704 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:34:57,277 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:34:57,280 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:34:59,094 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:06,756 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:35:08,532 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:16,382 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:35:16,384 INFO     run_e022    pararel_was_orig 20/54
+2026-09-20 15:35:16,385 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:35:18,180 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:25,757 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:35:27,453 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:35,790 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:35:35,795 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:35:37,591 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:45,512 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:35:47,305 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:35:55,417 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:35:55,421 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:35:57,138 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:05,063 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:36:06,898 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:15,403 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.5s
+2026-09-20 15:36:15,409 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:36:17,177 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:24,928 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:36:26,679 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:34,398 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:36:34,413 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:36:36,198 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:44,028 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:36:45,839 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:36:53,903 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:36:53,909 INFO     run_e022    pararel_was_orig 40/54
+2026-09-20 15:36:53,909 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:36:55,684 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:03,357 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:37:05,460 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:13,047 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:37:13,051 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:37:15,153 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:24,019 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.9s
+2026-09-20 15:37:25,953 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:34,236 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:37:34,240 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:37:35,975 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:43,611 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:37:45,943 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:37:53,514 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:37:55,248 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:02,952 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:38:02,960 INFO     run_e022  pararel_was_orig done
+2026-09-20 15:38:02,962 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:38:04,785 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:12,418 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:38:14,225 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:21,908 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:38:21,910 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:38:23,622 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:31,263 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:38:33,053 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:40,821 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:38:40,823 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:38:42,719 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:38:50,342 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:38:52,867 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:00,566 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:39:00,569 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:39:02,492 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:10,251 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:39:11,981 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:19,668 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:39:19,671 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:39:21,542 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:29,611 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:39:31,778 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:39,566 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:39:39,569 INFO     run_e022    pararel_native_to 20/54
+2026-09-20 15:39:39,570 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:39:41,515 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:49,469 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:39:51,345 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:39:59,106 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:39:59,110 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:40:00,914 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:40:11,624 DEBUG    remote  trace ok: 172 rows, 172 tok, 5.7s
+2026-09-20 15:40:13,860 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:40:21,484 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:40:21,487 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:40:23,322 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:40:32,387 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 15:40:34,267 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:40:41,930 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:40:41,933 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:40:43,784 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:40:51,437 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:40:53,295 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:01,002 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:41:01,007 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:41:02,851 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:10,509 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:41:12,345 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:20,122 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:41:20,128 INFO     run_e022    pararel_native_to 40/54
+2026-09-20 15:41:20,129 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:41:22,088 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:29,768 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:41:31,731 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:39,355 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:41:39,361 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:41:41,114 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:48,763 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:41:50,566 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:41:58,597 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:41:58,604 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:42:01,769 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:10,861 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 15:42:12,682 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:20,264 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:42:21,986 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:29,671 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:42:29,682 INFO     run_e022  pararel_native_to done
+2026-09-20 15:42:29,685 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:42:31,504 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:39,291 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:42:41,110 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:48,693 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:42:48,698 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:42:50,476 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:42:58,443 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:43:00,423 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:08,433 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:43:08,435 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:43:10,234 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:17,854 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:43:19,620 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:27,417 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:43:27,420 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:43:29,285 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:36,960 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:43:38,781 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:46,622 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:43:46,626 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:43:48,972 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:43:57,499 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.5s
+2026-09-20 15:43:59,484 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:44:07,553 WARNING  remote  transport failure (ConnectError) on attempt 2/8; retrying in 10s
+2026-09-20 15:44:20,227 WARNING  remote  transport failure (NNsightException) on attempt 3/8; retrying in 15s
+2026-09-20 15:44:37,966 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:44:37,968 INFO     run_e022    pararel_was_native 20/54
+2026-09-20 15:44:37,968 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:44:39,721 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:44:50,468 DEBUG    remote  trace ok: 172 rows, 172 tok, 5.7s
+2026-09-20 15:44:52,291 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:44:59,990 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:44:59,994 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:45:01,873 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:09,462 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:45:11,433 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:19,342 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:45:19,347 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:45:22,028 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:29,638 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:45:31,373 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:39,158 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:45:39,161 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:45:41,011 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:48,764 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:45:50,588 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:45:58,235 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:45:58,238 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:46:00,157 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:07,898 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:46:09,650 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:17,341 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:46:17,344 INFO     run_e022    pararel_was_native 40/54
+2026-09-20 15:46:17,344 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:46:19,037 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:26,812 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:46:28,582 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:36,332 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:46:36,334 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:46:38,143 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:46,023 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:46:48,742 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:46:58,245 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.5s
+2026-09-20 15:46:58,249 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:47:00,025 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:07,633 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:47:09,452 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:17,486 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:47:19,338 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:26,973 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:47:26,982 INFO     run_e022  pararel_was_native done
+2026-09-20 15:47:26,985 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:47:28,948 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:36,931 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:47:38,797 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:46,491 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:47:46,494 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:47:48,196 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:47:55,777 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:47:57,622 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:05,586 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:48:05,591 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:48:07,481 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:15,765 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:48:17,593 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:25,934 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:48:25,970 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:48:27,881 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:36,041 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.2s
+2026-09-20 15:48:38,264 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:46,150 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:48:46,240 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:48:48,023 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:48:57,166 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 15:48:59,108 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:06,710 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:49:06,712 INFO     run_e022    pararel_originated 20/60
+2026-09-20 15:49:06,712 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:49:08,497 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:17,854 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.4s
+2026-09-20 15:49:19,905 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:27,893 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:49:27,895 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:49:30,544 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:38,231 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:49:40,053 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:47,645 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:49:47,648 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:49:49,340 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:49:56,947 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:49:58,813 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:06,443 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:50:06,446 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:50:08,282 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:16,337 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:50:18,150 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:25,914 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:50:25,920 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:50:28,231 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:36,784 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.6s
+2026-09-20 15:50:38,884 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:46,498 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:50:46,502 INFO     run_e022    pararel_originated 40/60
+2026-09-20 15:50:46,502 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:50:48,230 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:50:56,056 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:50:58,104 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:05,829 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:51:05,833 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:51:07,524 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:15,522 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:51:17,301 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:25,314 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:51:25,318 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:51:27,053 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:34,726 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:51:38,590 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:46,558 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:51:46,562 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:51:48,932 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:51:58,353 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.4s
+2026-09-20 15:52:00,940 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:52:11,707 DEBUG    remote  trace ok: 172 rows, 172 tok, 5.8s
+2026-09-20 15:52:11,712 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:52:14,671 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:52:22,410 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:52:24,441 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:52:32,754 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:52:32,759 INFO     run_e022    pararel_originated 60/60
+2026-09-20 15:52:32,763 INFO     run_e022  pararel_originated done
+2026-09-20 15:52:32,766 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:52:34,644 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:52:43,537 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.9s
+2026-09-20 15:52:46,047 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:52:53,603 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:52:53,606 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:52:55,357 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:03,184 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:53:05,016 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:12,971 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 15:53:12,974 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:53:14,684 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:22,421 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:53:24,482 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:32,232 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:53:32,235 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:53:33,957 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:41,743 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:53:43,477 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:53:51,050 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:53:51,070 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:53:52,860 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:00,779 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:54:02,511 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:10,181 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:54:10,185 INFO     run_e022    pararel_originates 20/60
+2026-09-20 15:54:10,186 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:54:11,950 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:21,063 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 15:54:22,863 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:30,642 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:54:30,647 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:54:32,470 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:40,326 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:54:42,148 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:49,781 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:54:49,786 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:54:51,653 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:54:59,597 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:55:01,334 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:08,943 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:55:08,949 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:55:11,091 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:18,999 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:55:20,891 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:28,671 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:55:28,677 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:55:30,956 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:38,722 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:55:40,524 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:48,112 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:55:48,114 INFO     run_e022    pararel_originates 40/60
+2026-09-20 15:55:48,114 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:55:49,847 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:55:57,451 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:55:59,186 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:06,917 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:56:06,922 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:56:08,826 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:16,913 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:56:18,975 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:26,859 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 15:56:26,864 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:56:29,080 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:36,877 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:56:38,896 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:46,621 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:56:46,624 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:56:48,388 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:56:56,196 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:56:58,133 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:57:06,239 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:57:06,242 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:57:08,113 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:57:16,211 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:57:21,343 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:57:34,345 DEBUG    remote  trace ok: 172 rows, 172 tok, 8.0s
+2026-09-20 15:57:34,349 INFO     run_e022    pararel_originates 60/60
+2026-09-20 15:57:34,352 INFO     run_e022  pararel_originates done
+2026-09-20 15:57:34,354 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:57:37,903 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:57:47,481 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.6s
+2026-09-20 15:57:49,993 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:00,077 DEBUG    remote  trace ok: 172 rows, 172 tok, 5.1s
+2026-09-20 15:58:00,079 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:58:02,217 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:09,927 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:58:11,854 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:20,107 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 15:58:20,108 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:58:23,356 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:31,154 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:58:32,969 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:41,085 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 15:58:41,089 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:58:42,969 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:58:52,049 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 15:58:54,272 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:59:01,886 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 15:59:01,891 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:59:04,232 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:59:12,041 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 15:59:13,827 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:59:22,667 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.8s
+2026-09-20 15:59:22,670 INFO     run_e022    ours_city_of 20/60
+2026-09-20 15:59:22,671 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 15:59:25,661 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:59:33,316 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 15:59:35,718 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 15:59:45,730 WARNING  remote  transport failure (ConnectionError) on attempt 2/8; retrying in 10s
+2026-09-20 16:00:00,737 WARNING  remote  transport failure (ConnectionError) on attempt 3/8; retrying in 15s
+2026-09-20 16:00:19,880 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.1s
+2026-09-20 16:00:19,883 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:00:21,657 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:00:29,570 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 16:00:31,687 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:00:39,977 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 16:00:39,980 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:00:42,885 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:00:51,226 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.3s
+2026-09-20 16:00:53,341 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:02,691 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.3s
+2026-09-20 16:01:02,694 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:01:05,051 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:12,704 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 16:01:14,607 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:22,358 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 16:01:22,363 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:01:24,220 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:31,966 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 16:01:33,723 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:42,493 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.8s
+2026-09-20 16:01:42,498 INFO     run_e022    ours_city_of 40/60
+2026-09-20 16:01:42,498 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:01:46,271 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:01:54,038 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.8s
+2026-09-20 16:01:55,783 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:03,419 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.6s
+2026-09-20 16:02:03,423 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:02:05,400 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:13,614 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.2s
+2026-09-20 16:02:17,204 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:26,390 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.2s
+2026-09-20 16:02:26,409 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:02:28,464 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:36,434 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.0s
+2026-09-20 16:02:38,736 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:46,606 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.9s
+2026-09-20 16:02:46,612 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:02:48,682 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:02:57,322 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.6s
+2026-09-20 16:02:59,216 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:03:08,590 DEBUG    remote  trace ok: 172 rows, 172 tok, 4.4s
+2026-09-20 16:03:08,593 DEBUG    remote  splitting 344 pairs into 2 chunks of <=172 (cap 200)
+2026-09-20 16:03:10,544 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:03:18,614 DEBUG    remote  trace ok: 172 rows, 172 tok, 3.1s
+2026-09-20 16:03:20,931 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 16:03:28,630 DEBUG    remote  trace ok: 172 rows, 172 tok, 2.7s
+2026-09-20 16:03:28,634 INFO     run_e022    ours_city_of 60/60
+2026-09-20 16:03:28,638 INFO     run_e022  ours_city_of done
+2026-09-20 16:03:28,638 INFO     run_e022  
+2026-09-20 16:03:28,638 INFO     run_e022  T-062 — modal-cell share per fact (1.0 = the label is a property of the fact,
+2026-09-20 16:03:28,638 INFO     run_e022          0.125 = chance over 8 templates)
+2026-09-20 16:03:28,638 INFO     run_e022     facts with all 8 cells : 60
+2026-09-20 16:03:28,638 INFO     run_e022     mean 0.923   median 1.000   min 0.625   max 1.000
+2026-09-20 16:03:28,639 INFO     run_e022     share >= 1.000 : 39/60 =  65%
+2026-09-20 16:03:28,639 INFO     run_e022     share >= 0.875 : 50/60 =  83%
+2026-09-20 16:03:28,639 INFO     run_e022     share >= 0.750 : 54/60 =  90%
+2026-09-20 16:03:28,639 INFO     run_e022     share >= 0.500 : 60/60 = 100%
+2026-09-20 16:03:28,639 INFO     run_e022  
+2026-09-20 16:03:28,639 INFO     run_e022  per-template cell distribution (a template ABSENT for nearly everything is
+2026-09-20 16:03:28,639 INFO     run_e022  a bad probe, not evidence about facts)
+2026-09-20 16:03:28,639 INFO     run_e022  template                HELD   PRIOR    MUTE  ABSENT
+2026-09-20 16:03:28,639 INFO     run_e022  pararel_born_in          72%      0%     27%      2%
+2026-09-20 16:03:28,639 INFO     run_e022  pararel_orig_from        65%      0%     32%      3%
+2026-09-20 16:03:28,640 INFO     run_e022  pararel_was_orig         72%      0%     25%      3%
+2026-09-20 16:03:28,640 INFO     run_e022  pararel_native_to        67%      0%     28%      5%
+2026-09-20 16:03:28,640 INFO     run_e022  pararel_was_native       70%      0%     25%      5%
+2026-09-20 16:03:28,640 INFO     run_e022  pararel_originated       70%      0%     25%      5%
+2026-09-20 16:03:28,641 INFO     run_e022  pararel_originates       68%      0%     25%      7%
+2026-09-20 16:03:28,641 INFO     run_e022  ours_city_of             67%      0%     32%      2%
+2026-09-20 16:03:28,641 INFO     run_e022  
+2026-09-20 16:03:28,641 INFO     run_e022  T-064 — cell rates over all 480 cells: HELD 69%  PRIOR 0%  MUTE 27%  ABSENT 4%
+2026-09-20 16:03:28,642 INFO     run_e022     MUTE by answer frequency:
+2026-09-20 16:03:28,642 INFO     run_e022       rare (1-2)      35% of 352 cells
+2026-09-20 16:03:28,642 INFO     run_e022       common (>=3)     5% of 128 cells
+2026-09-20 16:03:28,644 INFO     run_e022  written: results/E-022-cells.json

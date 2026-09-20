@@ -920,7 +920,7 @@ the residual GPT-J lift of 1.61 has no explanation yet.
 
 ### T-062 · Is possession a property of a fact, or of a (fact, template) pair?
 
-**Status:** ACTIVE
+**Status:** answered — **yes, a fact-level predicate exists**
 **Parent:** T-059
 **Opened:** 2026-09-15
 **Question:** `notes/definitions.md` declaration 1 is binding — *"a fact is a
@@ -930,9 +930,12 @@ moved the usable-chain count more than an order of magnitude of model scale did.
 what we have been calling possession of a fact is possession of a (fact, template)
 pair. Does a stable fact-level statistic exist at all when k templates are used, or do
 the labels scatter?
-**Answer:** — design in design.md Part II; F1 is the first experiment and the Null
-outcome (labels scatter, no fact-level predicate exists) is live and would be the
-more important result.
+**Answer:** [E-022] measured it: 60 facts under 8 ParaRel P19 templates, modal-cell share mean
+**0.923**, median 1.000, and 65% of facts identical across all eight, against a chance
+value of 0.125. Possession is a property of the fact; single-template probing is a noisy
+estimator, not a category error. The Deny branch was pre-stated as the more important
+outcome and did not fire — every possession number here is more defensible than this
+thread assumed.
 
 ---
 
@@ -960,7 +963,7 @@ does not route through editing.
 
 ### T-064 · MUTE — known but inexpressible in this phrasing
 
-**Status:** open
+**Status:** answered — **two causes, not one**
 **Parent:** T-062
 **Opened:** 2026-09-15
 **Question:** Crossing [E-012]'s two tests gives four cells, and one of them has no
@@ -969,7 +972,13 @@ the subject but cannot rank the answer first under this phrasing. 32 of 58
 modal-answer items sat there with median AUROC 0.901. Every single-template probe
 reports those as ABSENT. How common is MUTE across relations, and does its rate track
 answer frequency as the label-form story predicts?
-**Answer:** — F5 in design.md Part II.
+**Answer:** [E-022]: MUTE is 27% of 480 cells. But it tracks **rarity** here (35% on rare answers
+against 5% on common ones), the opposite of the surface-form account built on [E-011]'s
+countries. Both are real; pool concentration decides which appears. A concentrated pool
+(28 countries, top filler 29%) produces PRIOR and surface-form MUTE; a diffuse one (78
+cities, top 6%) produces PRIOR at 0% and rarity-MUTE. MUTE is the cell where the row test
+fails for any reason while discrimination survives, and at least two reasons populate
+it.
 
 ---
 

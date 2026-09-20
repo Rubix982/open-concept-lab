@@ -1451,7 +1451,7 @@ agents/shared/decisions.md -> "[E-021] Result"
 
 ### E-022 · Does the possession cell survive rephrasing? (T-062 and T-064)
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1502,6 +1502,13 @@ ABSENT under seven and HELD under one may be a template effect, not fact instabi
 Report the per-template cell distribution alongside the per-fact one; a template that is
 ABSENT for nearly everything is a bad probe, not evidence about facts.
 
+**Result (2026-09-20).** T-062 CONFIRM: modal-cell share mean 0.923, median 1.000, 65% of
+facts identical across all eight templates, chance 0.125. A fact-level predicate exists.
+T-064: MUTE 27% of cells but tracking RARITY (35% rare vs 5% common), the opposite of the
+surface-form account — both causes are real and pool concentration decides which appears.
+Full entry in agents/shared/decisions.md [E-022].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-*.json
-**Closed:** —
+**Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-cells.json;
+agents/shared/decisions.md -> "[E-022] Result"
+**Closed:** 2026-09-20

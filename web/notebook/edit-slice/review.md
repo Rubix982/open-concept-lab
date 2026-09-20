@@ -433,6 +433,18 @@ part of *the network* represents the fact. Interchange interventions remain unru
 distinction between "this position of the update is necessary" and "this component encodes
 the fact" is exactly the gap that remains.
 
+**6 · The stronger version of our own measurement critique is refuted — by us.** A
+plausible reading of §3.1 is that possession is not a fact-level property at all, only a
+property of the (fact, template) pair, which would make every per-fact possession number
+here and in the literature a category error. We tested it against ParaRel's own P19
+templates: the modal-cell share is **0.923** against a chance value of 0.125, and 65% of
+facts are identical across all eight templates.<Margin>60 facts × 8 templates. All eight
+templates sit between 65% and 72% HELD, so no single bad probe carries the
+stability.<Evidence id="E-022" /></Margin> Single-template probing is a noisy estimator of
+a real property, not a category error. The critique that survives is narrower: a cell can
+flip on phrasing, which biases a single-template estimate — not that there is nothing to
+estimate.
+
 **6 · Self-review has a ceiling.** An adversary agent checks claims against this repo's own
 record and caught one overclaim before publication. It cannot catch an error the whole
 record shares — which is why this page exists.
