@@ -1640,7 +1640,7 @@ agents/shared/decisions.md -> "[E-024] Result"
 
 ### E-025 · Type overlap or semantic relatedness? The language probe
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1679,6 +1679,14 @@ subjects speak one of a handful of languages), so a floor effect could suppress 
 Report the baseline beside the delta and treat a language baseline near zero as
 uninterpretable rather than as a null.
 
+**Result (2026-09-20).** TYPE OVERLAP, on endpoints. Occupation and language finish 0.04
+nats apart (−6.16, −6.20) after starting 3.65 apart; citizenship finishes 2.95 below the
+floor at −9.10. Two effects: uniform suppression of everything about the subject, plus
+extra displacement only where the answer type matches the injected value. The run's own
+drop-based headline said "semantic relatedness" and was wrong — retracted in the entry.
+Full entry in agents/shared/decisions.md [E-025].
+
 **Blockers:** none
-**Artifacts:** agents/engineer/workspace/run_e025.py; results/E-025-*.json
-**Closed:** —
+**Artifacts:** agents/engineer/workspace/run_e025.py; results/E-025-language.json;
+agents/shared/decisions.md -> "[E-025] Result"
+**Closed:** 2026-09-20

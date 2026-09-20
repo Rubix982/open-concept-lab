@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**25 decisions · 17 findings · 57 threads (1 active, 44 answered, 3 dropped, 1 open, 8 parked)**
+**27 decisions · 17 findings · 57 threads (1 active, 44 answered, 3 dropped, 1 open, 8 parked)**
 
 ## Decisions and results
 
@@ -117,6 +117,14 @@ _Result · 2026-09-20_ — Runs [T-062] and [T-064] from one measurement. [T-062
 ### E-023 · the closed pool undercounts relocation badly — and the Washington attractor was ours {#E-023}
 
 _Result · 2026-09-20_ — Runs [T-066]. Every number in this project comes from ranking a closed type-matched pool. This asks what that hides by letting the edited model generate…
+
+### E-024 · an edit reaches the whole subject, but damages in proportion to type overlap {#E-024}
+
+_Result · 2026-09-20_ — Tests whether a birthplace edit disturbs attributes that have nothing to do with birth. Two probes give a relatedness gradient; the control is the same…
+
+### E-025 · a floor plus type-matched displacement — not a relatedness gradient {#E-025}
+
+_Result · 2026-09-20_ — Separates the two accounts [E-024] could not: language is semantically related to country of origin but typed as a language, so it shares relatedness with…
 
 
 ## Findings

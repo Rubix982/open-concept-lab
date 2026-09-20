@@ -203,6 +203,22 @@ E-023:
   gist: "Runs [T-066]. Every number in this project comes from ranking a closed type-matched pool. This asks what that hides by letting the edited model generate…"
   surface: decision
 
+E-024:
+  id: "E-024"
+  kind: "Result"
+  title: "an edit reaches the whole subject, but damages in proportion to type overlap"
+  date: "2026-09-20"
+  gist: "Tests whether a birthplace edit disturbs attributes that have nothing to do with birth. Two probes give a relatedness gradient; the control is the same…"
+  surface: decision
+
+E-025:
+  id: "E-025"
+  kind: "Result"
+  title: "a floor plus type-matched displacement — not a relatedness gradient"
+  date: "2026-09-20"
+  gist: "Separates the two accounts [E-024] could not: language is semantically related to country of origin but typed as a language, so it shares relatedness with…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"

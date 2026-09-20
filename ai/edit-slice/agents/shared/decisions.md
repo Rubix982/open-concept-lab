@@ -1534,3 +1534,56 @@ repeating the mistake.
 baselines differ (−4.19 vs −2.05), so the control-differenced column is the one to read.
 
 **Artifacts:** agents/engineer/workspace/run_e024.py; results/E-024-attributes.json
+
+---
+
+## [E-025] Result: a floor plus type-matched displacement — not a relatedness gradient
+
+_Date: 2026-09-20 · Llama-3.1-8B, layer 5, 29 subjects, paired log-prob, no candidate pool_
+
+Separates the two accounts [E-024] could not: language is semantically related to country
+of origin but typed as a language, so it shares relatedness with citizenship and type with
+occupation.
+
+| probe | relatedness | type match | baseline | **post-edit** | drop |
+| --- | --- | --- | ---: | ---: | ---: |
+| occupation | no | no | −4.36 | **−6.16** | 1.80 |
+| language | **yes** | no | −0.71 | **−6.20** | 5.49 |
+| citizenship | yes | **yes** | −1.97 | **−9.10** | 7.13 |
+
+Control subject: 0.10 / 0.07 / 0.04 nats. Subject-keying reconfirmed.
+
+**The run's own headline statistic was wrong and is retracted here.** It reported language
+sitting "69% of the way from occupation to citizenship" and concluded *semantic
+relatedness*. That statistic is the **drop**, which is dominated by where each probe
+started. On endpoints the picture inverts: occupation and language finish **0.04 nats
+apart** after starting **3.65 apart**. Language's large drop is the distance it had to
+fall, not evidence it was targeted.
+
+**Two effects, not a gradient.**
+
+1. **Uniform suppression.** The edit drives everything about the subject to a common floor
+   near −6.2, reached by occupation and language alike. Semantic relatedness does not
+   modulate it: language (related) and occupation (unrelated) are indistinguishable at the
+   endpoint. Per-item correlation between baseline and post-edit is **−0.15** for language
+   — fully floored — against **+0.72** for occupation, which has not reached it.
+2. **Type-matched displacement.** Only citizenship goes below the floor, by **2.95 nats**.
+   Its answers are countries, competing directly with the injected country value.
+
+**This is what [E-021] predicts.** Uniform *reach* gives uniform suppression; the extra
+citizenship damage comes from `v*`'s *content* rather than the update's spread. It also
+subsumes [E-015]: the displacement is country-flavoured, so country-valued probes move
+further and others merely collapse.
+
+> An edit suppresses everything about the edited subject to a floor, and additionally
+> displaces probes whose answer type matches the injected value.
+
+**Method note, and the lesson repeated.** Third time today a headline statistic and its
+components disagreed, after [E-011] and [E-023]. The confound was pre-registered in
+[E-024]'s ticket — *"report the baseline beside every delta"* — and the ticket still
+computed the summary on drops. **Naming a confound is not controlling for it.**
+
+**Scope.** 29 subjects, one model, one layer, one edited relation, three probes. The floor
+value (−6.2) is specific to this setup and is not a constant to be quoted elsewhere.
+
+**Artifacts:** agents/engineer/workspace/run_e025.py; results/E-025-language.json

@@ -164,7 +164,18 @@ def main() -> None:
          for k in PROBES}
     lang_base = summary["edited|language"]["baseline"]
     log.info("")
-    log.info("occupation %.2f   language %.2f   citizenship %.2f  (control-differenced)",
+    # Endpoints first. Drops are dominated by where each probe started — reporting them
+    # as the headline is what produced a wrong conclusion on the first run of this file.
+    ends = {k: summary[f"edited|{k}"]["baseline"] - summary[f"edited|{k}"]["mean_drop"]
+            for k in PROBES}
+    log.info("POST-EDIT level (confound-free): occupation %.2f  language %.2f  "
+             "citizenship %.2f", ends["occupation"], ends["language"], ends["citizenship"])
+    log.info("  occupation and language differ by %.2f nats after starting %.2f apart",
+             abs(ends["occupation"] - ends["language"]),
+             abs(summary["edited|occupation"]["baseline"]
+                 - summary["edited|language"]["baseline"]))
+    log.info("drop (baseline-dominated, do not read as targeting): occupation %.2f  "
+             "language %.2f  citizenship %.2f",
              d["occupation"], d["language"], d["citizenship"])
     if lang_base > -0.35:
         log.warning("language baseline is %.2f — near ceiling, so a small drop may be a "
