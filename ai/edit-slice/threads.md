@@ -1104,7 +1104,7 @@ the late probe fails at baseline in 34 of 42 chains.
 
 ### T-075 · Is the subject key context-robust at every layer, or only at layer 5?
 
-**Status:** active — designed 2026-09-20, see design.md Part IV
+**Status:** answered — **only at shallow layers**
 **Parent:** T-074
 **Opened:** 2026-09-19
 **Question:** [E-017] measured the coefficient at the subject's last token to be 0.93-1.00
@@ -1113,7 +1113,11 @@ If the subject key becomes context-sensitive at deeper layers, an editor targeti
 layer would leak less across probe forms, and the structural claim would be a
 layer-5 claim rather than a ROME claim. Cheap: the same sweep at a handful of layers,
 no edits required.
-**Answer:** — (design.md Part IV; E-018 not yet opened)
+**Answer:** context-robust at layer 5, NOT at depth. Prefix-sharing probes stay pinned at
+exactly 1.000 at all seven layers tested (analytic — causal attention). Reordered probes
+decay: 0.95 at L5, 0.86 at L10, 0.58 at L20, with per-subject minima reaching 0.129. So
+[E-017]'s "no natural reformulation escapes" is a layer-5 statement rather than a ROME
+statement, and the word "structural" is withdrawn in that form. See decisions.md [T-075]. (design.md Part IV; E-018 not yet opened)
 
 **Design note, 2026-09-20.** Designing this surfaced a question that outranks it, now
 Part IV's first job. Every control behind [E-017]'s 93-100% claim is a SAME-SUBJECT

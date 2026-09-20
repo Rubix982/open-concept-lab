@@ -1,0 +1,25 @@
+2026-09-20 09:36:52,288 INFO     layer_one_L0  run layer_one_L0 -> logs/layer_one_L0-2026-09-20-093652.log
+2026-09-20 09:36:52,288 INFO     layer_one_L0  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "layer": 0, "n": 12, "thread": "T-075"}
+2026-09-20 09:36:59,954 WARNING  remote  transport failure (NNsightException) during L0 'Maurice de Vlaminck', attempt 1/8; retrying in 5s
+2026-09-20 09:37:12,576 WARNING  remote  transport failure (NNsightException) during L0 'Rio Natsuki', attempt 1/8; retrying in 5s
+2026-09-20 09:37:23,194 WARNING  remote  transport failure (NNsightException) during L0 'Lunice', attempt 1/8; retrying in 5s
+2026-09-20 09:37:34,213 WARNING  remote  transport failure (NNsightException) during L0 'Charles Nungesser', attempt 1/8; retrying in 5s
+2026-09-20 09:37:43,686 INFO     layer_one_L0    L0  4/12
+2026-09-20 09:37:45,355 WARNING  remote  transport failure (NNsightException) during L0 'Matias Kupiainen', attempt 1/8; retrying in 5s
+2026-09-20 09:37:56,614 WARNING  remote  transport failure (NNsightException) during L0 'Maria Altmann', attempt 1/8; retrying in 5s
+2026-09-20 09:38:08,594 WARNING  remote  transport failure (NNsightException) during L0 'Yona Friedman', attempt 1/8; retrying in 5s
+2026-09-20 09:38:19,456 WARNING  remote  transport failure (NNsightException) during L0 'Diane Hendricks', attempt 1/8; retrying in 5s
+2026-09-20 09:38:28,658 INFO     layer_one_L0    L0  8/12
+2026-09-20 09:38:30,446 WARNING  remote  transport failure (NNsightException) during L0 'Silvia Abascal', attempt 1/8; retrying in 5s
+2026-09-20 09:38:41,475 WARNING  remote  transport failure (NNsightException) during L0 'Fernando Vergara', attempt 1/8; retrying in 5s
+2026-09-20 09:38:52,343 WARNING  remote  transport failure (NNsightException) during L0 'Claudio Coello', attempt 1/8; retrying in 5s
+2026-09-20 09:39:03,265 WARNING  remote  transport failure (NNsightException) during L0 'Thomas Molnar', attempt 1/8; retrying in 5s
+2026-09-20 09:39:12,851 INFO     layer_one_L0    L0  12/12
+2026-09-20 09:39:12,853 INFO     layer_one_L0  
+2026-09-20 09:39:12,853 INFO     layer_one_L0  layer 0  (n=12 subjects)
+2026-09-20 09:39:12,853 INFO     layer_one_L0     edit form            mean 1.000   min 1.000
+2026-09-20 09:39:12,853 INFO     layer_one_L0     same-prefix probe    mean 1.000   min 1.000
+2026-09-20 09:39:12,853 INFO     layer_one_L0     different relation   mean 1.000   min 1.000
+2026-09-20 09:39:12,853 INFO     layer_one_L0     late clause          mean 0.992   min 0.888
+2026-09-20 09:39:12,854 INFO     layer_one_L0     possessive           mean 0.997   min 0.899
+2026-09-20 09:39:12,854 INFO     layer_one_L0  written: results/T-075-layer-sweep.json

@@ -767,6 +767,11 @@ coeff_profile}.py; src/whiten.py; results/E-016-whitened-meta-llama_Llama-3.1-8B
 
 ## [E-017] Result: same-subject leakage is structural — no probe form escapes it
 
+> **Narrowed 2026-09-20 by [T-075].** The claim holds at layer 5, the layer EasyEdit
+> edits. It does NOT generalise across depth: reordered probes fall to ~0.58 by L20.
+> The word "structural" is withdrawn as a statement about ROME; it remains correct as a
+> statement about prefix-sharing probes, which are pinned at exactly 1.000 at every layer.
+
 _Date: 2026-09-19 · Llama-3.1-8B, layer 5, 16 chains for the coefficient sweep_
 
 Tests [T-074], the threat [E-016] left standing: its analytic account required the probe to
@@ -861,3 +866,57 @@ assume ~50% per-call failure as a design parameter rather than an incident.
 **Artifacts:** src/remote.py (`_is_flaky_remote`);
 agents/engineer/workspace/{is_it_flaky,what_broke,test_retry_flaky}.py;
 agents/engineer/workspace/layer_sweep.py is retained as the record of the wrong diagnosis
+
+---
+
+## [T-075] Result: the pinning is exact for prefix-sharing probes at every depth, and
+## decays with depth for reordered ones
+
+_Date: 2026-09-20 · Llama-3.1-8B, 12 subjects, 7 layers, coefficient only_
+
+Mean coefficient at the subject's last token against the edit's `k*` (1.0 = full delta):
+
+| probe form | L0 | L5 | L10 | L15 | L20 | L25 | L31 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| edit form | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| same-prefix probe | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| different relation | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| late clause | 0.992 | 0.951 | 0.858 | 0.791 | **0.577** | 0.584 | 0.598 |
+| possessive | 0.997 | 0.962 | 0.833 | 0.807 | **0.615** | 0.570 | 0.628 |
+
+Worst case across subjects is sharper still: the possessive form reaches **0.129** at L20.
+
+**Two behaviours, cleanly separated.**
+
+1. **Prefix-sharing probes are pinned at exactly 1.000 at every depth.** Analytic: causal
+   attention makes the key at the subject's last token identical, so `(k*·u)/(u·k*) = 1`
+   for any `u` at any layer. No escape exists at any depth. This is the part of [E-016]
+   and [E-017] that holds without qualification.
+2. **Reordered probes escape progressively with depth.** 0.95 at L5 decaying to ~0.58 by
+   L20. The subject key IS context-sensitive deeper in the network — it simply is not at
+   layer 5.
+
+**This narrows [E-017], and the narrowing is a correction.** [E-017] concluded *"same-subject
+leakage in ROME is structural — no natural reformulation escapes."* That is true at layer 5,
+which is the layer EasyEdit's `llama3-8b.yaml` edits, and it is **not** a property of the
+method. At L20+ a reformulated prompt receives roughly half the delta, and for some subjects
+an eighth. The defensible statement is **structural given the layer choice**, not structural
+given ROME. "Structural" was overreach and is withdrawn in that form.
+
+**What survives unqualified, and is stronger for being narrower:**
+
+> Any probe beginning with the edited subject receives the **full, unattenuated** edit
+> vector at the subject position — at every layer, for any `C`, and regardless of which
+> relation it asks about.
+
+**Scope.** 12 subjects, one model, one relation family, coefficient only — no edits applied
+and no behavioural readout. Whether the decayed coefficient at L20 actually produces less
+displacement is untested; [E-016]'s scale test showed the mapping from coefficient to
+destination is not linear, so this cannot be assumed.
+
+**Explicitly not pursued.** That a deeper edit layer would leak less to reformulated probes
+is a method-design observation, and CLAUDE.md scopes this project to measuring what existing
+editors do. Recorded, not chased.
+
+**Artifacts:** agents/engineer/workspace/layer_one.py; results/T-075-layer-sweep.json;
+logs/layer_one_L*.log

@@ -1,0 +1,25 @@
+2026-09-20 09:53:28,685 INFO     layer_one_L31  run layer_one_L31 -> logs/layer_one_L31-2026-09-20-095328.log
+2026-09-20 09:53:28,685 INFO     layer_one_L31  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "layer": 31, "n": 12, "thread": "T-075"}
+2026-09-20 09:53:33,692 WARNING  remote  transport failure (NNsightException) during L31 'Maurice de Vlaminck', attempt 1/8; retrying in 5s
+2026-09-20 09:53:44,772 WARNING  remote  transport failure (NNsightException) during L31 'Rio Natsuki', attempt 1/8; retrying in 5s
+2026-09-20 09:53:55,951 WARNING  remote  transport failure (NNsightException) during L31 'Lunice', attempt 1/8; retrying in 5s
+2026-09-20 09:54:06,840 WARNING  remote  transport failure (NNsightException) during L31 'Charles Nungesser', attempt 1/8; retrying in 5s
+2026-09-20 09:54:16,023 INFO     layer_one_L31    L31  4/12
+2026-09-20 09:54:17,685 WARNING  remote  transport failure (NNsightException) during L31 'Matias Kupiainen', attempt 1/8; retrying in 5s
+2026-09-20 09:54:28,951 WARNING  remote  transport failure (NNsightException) during L31 'Maria Altmann', attempt 1/8; retrying in 5s
+2026-09-20 09:54:39,674 WARNING  remote  transport failure (NNsightException) during L31 'Yona Friedman', attempt 1/8; retrying in 5s
+2026-09-20 09:54:50,788 WARNING  remote  transport failure (NNsightException) during L31 'Diane Hendricks', attempt 1/8; retrying in 5s
+2026-09-20 09:54:59,760 INFO     layer_one_L31    L31  8/12
+2026-09-20 09:55:01,531 WARNING  remote  transport failure (NNsightException) during L31 'Silvia Abascal', attempt 1/8; retrying in 5s
+2026-09-20 09:55:12,971 WARNING  remote  transport failure (NNsightException) during L31 'Fernando Vergara', attempt 1/8; retrying in 5s
+2026-09-20 09:55:25,134 WARNING  remote  transport failure (NNsightException) during L31 'Claudio Coello', attempt 1/8; retrying in 5s
+2026-09-20 09:55:37,950 WARNING  remote  transport failure (NNsightException) during L31 'Thomas Molnar', attempt 1/8; retrying in 5s
+2026-09-20 09:55:49,602 INFO     layer_one_L31    L31  12/12
+2026-09-20 09:55:49,605 INFO     layer_one_L31  
+2026-09-20 09:55:49,605 INFO     layer_one_L31  layer 31  (n=12 subjects)
+2026-09-20 09:55:49,605 INFO     layer_one_L31     edit form            mean 1.000   min 1.000
+2026-09-20 09:55:49,605 INFO     layer_one_L31     same-prefix probe    mean 1.000   min 1.000
+2026-09-20 09:55:49,605 INFO     layer_one_L31     different relation   mean 1.000   min 1.000
+2026-09-20 09:55:49,605 INFO     layer_one_L31     late clause          mean 0.598   min 0.491
+2026-09-20 09:55:49,605 INFO     layer_one_L31     possessive           mean 0.628   min 0.448
+2026-09-20 09:55:49,606 INFO     layer_one_L31  written: results/T-075-layer-sweep.json

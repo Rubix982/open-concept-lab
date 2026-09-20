@@ -1,0 +1,26 @@
+2026-09-20 09:49:32,943 INFO     layer_one_L25  run layer_one_L25 -> logs/layer_one_L25-2026-09-20-094932.log
+2026-09-20 09:49:32,943 INFO     layer_one_L25  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "layer": 25, "n": 12, "thread": "T-075"}
+2026-09-20 09:49:40,400 WARNING  remote  transport failure (NNsightException) during L25 'Maurice de Vlaminck', attempt 1/8; retrying in 5s
+2026-09-20 09:49:55,747 WARNING  remote  transport failure (NNsightException) during L25 'Rio Natsuki', attempt 1/8; retrying in 5s
+2026-09-20 09:50:07,093 WARNING  remote  transport failure (NNsightException) during L25 'Lunice', attempt 1/8; retrying in 5s
+2026-09-20 09:50:17,717 WARNING  remote  transport failure (NNsightException) during L25 'Charles Nungesser', attempt 1/8; retrying in 5s
+2026-09-20 09:50:28,884 INFO     layer_one_L25    L25  4/12
+2026-09-20 09:50:32,047 WARNING  remote  transport failure (NNsightException) during L25 'Matias Kupiainen', attempt 1/8; retrying in 5s
+2026-09-20 09:50:47,943 WARNING  remote  transport failure (NNsightException) during L25 'Maria Altmann', attempt 1/8; retrying in 5s
+2026-09-20 09:51:00,904 WARNING  remote  transport failure (NNsightException) during L25 'Yona Friedman', attempt 1/8; retrying in 5s
+2026-09-20 09:51:12,371 WARNING  remote  transport failure (NNsightException) during L25 'Diane Hendricks', attempt 1/8; retrying in 5s
+2026-09-20 09:51:22,044 INFO     layer_one_L25    L25  8/12
+2026-09-20 09:51:23,737 WARNING  remote  transport failure (NNsightException) during L25 'Silvia Abascal', attempt 1/8; retrying in 5s
+2026-09-20 09:51:35,731 WARNING  remote  transport failure (NNsightException) during L25 'Fernando Vergara', attempt 1/8; retrying in 5s
+2026-09-20 09:52:42,209 WARNING  remote  transport failure (RemoteProtocolError) during L25 'Fernando Vergara', attempt 2/8; retrying in 10s
+2026-09-20 09:53:03,350 WARNING  remote  transport failure (NNsightException) during L25 'Claudio Coello', attempt 1/8; retrying in 5s
+2026-09-20 09:53:14,673 WARNING  remote  transport failure (NNsightException) during L25 'Thomas Molnar', attempt 1/8; retrying in 5s
+2026-09-20 09:53:24,172 INFO     layer_one_L25    L25  12/12
+2026-09-20 09:53:24,174 INFO     layer_one_L25  
+2026-09-20 09:53:24,174 INFO     layer_one_L25  layer 25  (n=12 subjects)
+2026-09-20 09:53:24,174 INFO     layer_one_L25     edit form            mean 1.000   min 1.000
+2026-09-20 09:53:24,174 INFO     layer_one_L25     same-prefix probe    mean 1.000   min 1.000
+2026-09-20 09:53:24,174 INFO     layer_one_L25     different relation   mean 1.000   min 1.000
+2026-09-20 09:53:24,174 INFO     layer_one_L25     late clause          mean 0.584   min 0.311
+2026-09-20 09:53:24,174 INFO     layer_one_L25     possessive           mean 0.570   min 0.141
+2026-09-20 09:53:24,174 INFO     layer_one_L25  written: results/T-075-layer-sweep.json
