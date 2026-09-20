@@ -338,3 +338,53 @@ nothing.
 **Also recorded:** Pass 2 questions 2 and 3 are the only ones to have fired in live
 use — 2 twice, 3 once. `SKILL.md` says where to spend attention and explicitly does
 **not** reorder the list, because n=3 does not license a ranking.
+
+---
+
+## [E-006] Confirmation: the use-constraint prediction fired, out of sample
+
+_Date: 2026-09-20 · tests the prediction recorded in the second [E-006] decision_
+
+That decision permitted the limits section to be named by role rather than by name,
+and added a check the reporting session had not asked for:
+
+> nobody attacks a constraint on **use**, so the third Limits category tends to
+> disappear under the rename.
+
+It was flagged at the time as **"a prediction, not a measurement"** with a revisit
+condition. The reporting session has now checked it against the paper that prompted
+the rename. **Its "What to attack" section has six entries and not one is a
+use-constraint** — every entry is "what was not done" or "what the result does not
+show". The missing entry, which they wrote:
+
+> *This is not a method. The pinned coefficient explains why an edit reaches every
+> prompt sharing its subject. It is a consequence of how ROME normalises, not a
+> technique we are offering — "edit deeper to leak less" does not follow from
+> anything measured here, and §4.3 measures a coefficient, not a behaviour.*
+
+**This is the first rule in the skill derived by reasoning rather than from an
+observed failure, and then confirmed.** Every other rule was read off something that
+had already gone wrong — the case-sensitivity bug, the missing different-subject
+control, the genre defect. This one was argued from what a reviewer does and does not
+attack, written down as a prediction, and then held on a document I have never seen.
+
+**Not circular**, and the sequence matters: the report described only the section's
+*name*. The prediction was about its *contents*, which had not been reported and which
+I had no access to. Out of sample.
+
+**n = 1, and the mechanism is plausible enough to be true of this section rather than
+of adversarial framings generally.** One confirmed prediction is not a validated rule.
+What it does establish is that the reasoning behind the rule was not post-hoc — which
+is a weaker claim than it feels like, and worth stating as the weaker one.
+
+**No change to `SKILL.md`.** The rule is already there, already fired, and the file is
+190 lines and due a cut. Adding a worked example of a rule that just worked would be
+the growth pattern this project keeps flagging and not fixing.
+
+**Also recorded, since it bears on where the good edits came from.** The reporting
+session judged two of my additions better than its own proposals — the `[A]` flag's
+derivation guard, and the "they compose" clause on genre ordering. Both were
+refinements to *their* findings. Neither would exist without the report, and the
+report would not have found the genre defect without running the skill on a document
+I did not write. The division that produced the last two rounds is: they find defects
+by use, I find the failure mode one level up. Worth keeping rather than collapsing.

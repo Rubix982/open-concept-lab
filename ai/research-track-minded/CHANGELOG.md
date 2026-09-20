@@ -82,3 +82,6 @@ is misattributed. This entry is the record.
 - [E-007] Third-use feedback, round two — the reorder is genre-conditional (paper →
   dependency, record → chronology); rates relabelled as style not authorship; Pass 2
   hit counts recorded; SKILL.md must stay runnable by hand
+- [E-006] use-constraint prediction confirmed out of sample — the adversarial rename
+  had dropped that category in the reporting session's paper, six entries, none of them
+  a use-constraint

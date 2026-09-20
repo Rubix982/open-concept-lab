@@ -10,7 +10,10 @@ rather than a wall of text.
 
 ## Current Phase
 
-Phase 3 — Skill built, used three times, fixed twice, cut once. Third use was the first by another session and the first to report defects back.
+Phase 3 — Skill built, used three times, fixed three times, cut once. The third use
+was the first by another session; it produced two rounds of defects, including the
+genre defect that made the strongest pass harmful on records. One rule has now been
+confirmed as a prediction rather than fitted to an observed failure.
 
 ## Scope decision (2026-09-18)
 
