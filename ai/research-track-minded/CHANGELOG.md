@@ -52,3 +52,4 @@ is misattributed. This entry is the record.
 - [E-005] Second live use, a design document — `edit-slice/design.md` Part IV;
   three of five defects recurred; record in `agents/engineer/workspace/e005/`
 - [O-006] E-004 unblocked
+- T-011 opened and dropped — Dream-RSI reframe is evocative, not exact; kept the move, not the machinery

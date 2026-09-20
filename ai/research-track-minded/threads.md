@@ -144,3 +144,35 @@ not a rate. Surface features remain unable to separate good research writing fro
 competent filler; the claim audit is still the only thing that does. Thread stays
 open for a non-surface proxy — density of falsifiable claims is the obvious
 candidate and is exactly what E-001 hand-counted.
+
+### T-011 · Dream-RSI — is "history is already a simulator" borrowable here?
+
+**Status:** dropped
+**Parent:** T-009
+**Opened:** 2026-09-20
+**Question:** Dream-RSI (Google/DeepMind/UMD/UVA, released 2026-09,
+https://www.dream-rsi.com/, code at github.com/zhengkid/Dream-RSI) self-improves an
+*exploration policy* by replaying completed discovery trees as zero-cost exact
+simulators. Raised as possibly aligned with this project. Does the reframe transfer to
+the ticket/thread record?
+**Answer — dropped, and the reason is the T-009 test.** Not aligned with the writing
+skill: they optimise a search policy against a measurable objective where execution is
+the expensive thing (GPU kernels, Lasso paths, circle packing); the skill improves the
+epistemic structure of prose. No scoop risk — different field entirely.
+
+The tempting mapping is that `tickets.md` + `threads.md` + `decisions.md` already form a
+discovery tree. It fails on the property their own page names as the limitation: *"a
+policy can only be dreamt where history actually went."* Their replay is exact because
+every node was executed with a recorded outcome. A research record has no outcome for the
+branch not taken — [E-005] asked what would have happened had the different-subject
+control run first, and that is simply unknown. Scale kills it too: off-policy evaluation
+pays when thousands of alternatives can be tested, and there are ~20 tickets here.
+
+So the borrowing is **evocative, not exact** — which by T-009's own rule makes it worse
+than no borrowing, since it imports an intuition the record cannot cash. Dropped as
+machinery. Kept as a move: "history is already a simulator" is Premise Dry-Run move 3
+(invert the difficulty), turning a sunk cost into an asset, and that is worth stealing
+independently of this paper.
+
+Separately a **heading-check** datum, not a thread: agentic discovery with RSI is where
+one large group is putting people. Read against the Compass, not chased.
