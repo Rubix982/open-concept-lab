@@ -49,9 +49,9 @@ reads as propagation is displacement keyed on the subject string.
 | --- | --- |
 | **Figure 1** | The pinned coefficient — why a shared prefix forces the value to 1 |
 | **Figure 2** | Coefficient by layer, five probe forms, seven depths |
-| **Table 1** | Usable chains by rendering × control — the interaction |
-| **Table 2** | The relation control — the +0.0 pp paired difference |
-| **Table 3** | Observations against the mechanism |
+| **Table 1** | Usable chains by rendering × control — the interaction (§3.1) |
+| **Table 2** | The relation control — the +0.0 pp paired difference (§4.2) |
+| **Table 3** | Observations against the mechanism (§4.1) |
 | **Table 4** | Claim status — ten claims, seven withdrawn or narrowed |
 
 ## 1 · The question
@@ -76,7 +76,7 @@ what moves is the premise the entailment implicates.
 
 ## 2 · Related work, and what we do not claim
 
-**We do not claim the surface-form result.** Section 4.1 depends on the fact that scoring
+**We do not claim the surface-form result.** Section 3.1 depends on the fact that scoring
 answers by string probability is distorted by how the answer is spelled. That is surface
 form competition <Cite id="holtzman2021surface" narrative />, and the correction we
 independently rebuilt — score against a subject-free version of the same prompt — is
@@ -106,7 +106,7 @@ _Records: <Evidence id="E-007" /> · <Evidence id="O-006" /> · <Evidence id="E-
 scored against a type-matched candidate pool under two criteria: the true answer ranks
 first with the real subject (*row test*), and outscores it under foil prompts whose true
 answer differs (*column test*, an AUROC; chance 0.5). The column test replaces a
-placeholder control that is undefined for high-prior answers — see 4.1. 136 chains mined →
+placeholder control that is undefined for high-prior answers — see §3.1. 136 chains mined →
 78 usable → 42 carried through the edit.<Margin>The 29 missing chains were lost to backend
 outages, not excluded by any criterion — see <Evidence id="O-007" />. Every rate here is an
 existence claim, never a frequency.</Margin>
@@ -127,9 +127,7 @@ country's capital — widened deliberately.<Margin>A pool that cannot express th
 answer scores a correct relocation as a failure. That mistake is <Evidence id="E-011" />,
 and widening the pool is how it was avoided here.</Margin>
 
-## 4 · Results
-
-### 4.1 · The measure had no operating point, and fixing it took two orthogonal repairs
+### 3.1 · Repairing the measure, which took two orthogonal fixes
 
 _Records: <Evidence id="E-009b" /> · <Evidence id="E-011" /> · <Evidence id="E-012" />_
 
@@ -155,36 +153,14 @@ tested alone. Llama-3.1-70B under the old measure gave 74 usable chains; Llama-3
 the repaired one gives 78. Repairing the instrument was worth more than an order of
 magnitude of scale.
 
-### 4.2 · The edit displaces the premise — and carries no inference
+## 4 · Results
 
-_Records: <Evidence id="E-013" /> · <Evidence id="E-014" /> · <Evidence id="E-015" />_
-
-The birth-city probe lands in the edited country 67% of the time (baseline 5%, same-subject
-control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
-
-Then the relation control:
-
-<p className="ocl-tablecap"><strong>Table 2.</strong> The relation control. Subject and target country held fixed; only the</p>
-edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
-
-| arm | lands in target country |
-| --- | ---: |
-| `X was born in the country of` → T — licenses the inference | 28/42 = **67%** |
-| `X works in the country of` → T — licenses nothing | 28/42 = **67%** |
-| **paired difference** | **+0.0 pp** |
-
-Exact McNemar p = 1.000 (nine discordant each way). Where both arms land in the target
-country, they choose the *same city* 84% of the time. Editing where a person works
-relocates their birthplace exactly as often as editing where they were born.
-
-### 4.3 · The coefficient is pinned, by arithmetic
+### 4.1 · The update coefficient is pinned at the subject
 
 _Records: <Evidence id="E-016">E-016 gate</Evidence> · <Evidence id="E-016-2">E-016 result</Evidence>_
 
-A whitened editor — `u = C⁻¹k*`, computed by Woodbury over a low-rank-plus-ridge key
-covariance, measured **20× more selective** on held-out keys — produces **42/42 identical
-destinations**. That demanded an explanation, and the per-position coefficient profile
-supplies one.
+ROME's update divides by `u·k*`. That one term fixes the coefficient across a whole class
+of prompts, and the class is larger than it looks.
 
 <Figure
   caption="Why the coefficient is pinned. The two prompts share every token up to the subject's last. Causal attention makes the key there identical, and ROME's own normalisation divides by u·k*, so the coefficient is exactly 1 for any u."
@@ -256,7 +232,9 @@ supplies one.
 same subject has an identical key there, so the coefficient is `(k*·u)/(u·k*) = 1` for any
 `u`. The measured value is **1.0000**, not approximately one.
 
-This accounts for the whole arc:
+Everything in §4.2 and §4.3 follows from this. The measurements came first
+chronologically — the [narrative version](/writing/five-days) keeps that order — but the
+dependency runs the other way:
 
 <p className="ocl-tablecap"><strong>Table 3.</strong> Every observation in the arc, against the one mechanism.</p>
 
@@ -267,8 +245,32 @@ This accounts for the whole arc:
 | whitening changed nothing, 42/42 | cannot alter a coefficient fixed by arithmetic |
 | a uniform ×0.27 rescale **does** break it (3 of 4) | it scales the pinned term too |
 | the work-country null, +0.0 pp | both prompts begin with the subject |
+### 4.2 · What it predicts: displacement without inference
 
-### 4.4 · Scope: pinned at every layer for prefix-sharing probes; escapable otherwise
+_Records: <Evidence id="E-013" /> · <Evidence id="E-014" /> · <Evidence id="E-015" />_
+
+§4.1 predicts that a probe beginning with the edited subject receives the full update
+whatever it asks about — so an edit should move a *premise* as readily as a consequence,
+and a semantically unrelated edit should move it just as far. Both hold.
+
+The birth-city probe lands in the edited country 67% of the time (baseline 5%, same-subject
+control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
+
+Then the relation control:
+
+<p className="ocl-tablecap"><strong>Table 2.</strong> The relation control. Subject and target country held fixed; only the</p>
+edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
+
+| arm | lands in target country |
+| --- | ---: |
+| `X was born in the country of` → T — licenses the inference | 28/42 = **67%** |
+| `X works in the country of` → T — licenses nothing | 28/42 = **67%** |
+| **paired difference** | **+0.0 pp** |
+
+Exact McNemar p = 1.000 (nine discordant each way). Where both arms land in the target
+country, they choose the *same city* 84% of the time. Editing where a person works
+relocates their birthplace exactly as often as editing where they were born.
+### 4.3 · Scope: the claim's boundary, measured
 
 _Records: <Evidence id="E-017" /> · <Evidence id="T-075" /> · <Evidence id="E-018" />_
 
@@ -337,6 +339,9 @@ scored against chain *i+1*'s subject in the same template. Mean **0.082**, max *
 below the *minimum* same-subject value of 0.483. The distributions do not overlap, and the
 pre-stated confirmation threshold was ≤0.3.
 
+
+
+
 ## 5 · Every claim this project withdrew
 
 <p className="ocl-tablecap"><strong>Table 4.</strong> Every claim this project made, and what became of it.</p>
@@ -390,8 +395,11 @@ record shares — which is why this page exists.
 1. **Is the pinned-coefficient result known?** The question we cannot answer from inside.
 2. **Does it matter for ripple benchmarks?** Every propagation benchmark we know of probes
    with prompts that begin with the subject. If the coefficient is pinned on exactly those
-   prompts, part of what they measure may be mechanical. Unworked here; the sharpest thing
-   the arc raises.
+   prompts, part of what they measure may be mechanical. **Priced:** re-scoring one published
+   ripple benchmark under a subject-final probe form against its own subject-initial one is
+   about a week — rewriting the probes is the work, scoring is hours. What it would change:
+   either their propagation rates survive the reform, or a share of reported ripple is the
+   coefficient rather than the model.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
 
