@@ -1295,3 +1295,69 @@ prefix-sharing case is 1.000 at all eight layers (algebra, layer-invariant), whi
 reformulated probes decay 0.98 → 0.52 from layer 0 to 24, so [E-017]'s form-robustness
 is an early-layer fact. Layer 31 is unreadable: `c_other` 0.669 against `c_form` 0.699.
 Surfaced [O-008], which partially reinstates a constraint [O-007] over-retracted.
+
+---
+
+### E-020 · Is the depth decay a direction change or a magnitude change?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Runs [T-077]. [E-019] measured the decay — reformulated probes fall 0.98 → 0.52
+from layer 0 to 24 — and explains nothing about it.
+
+**The decomposition is the whole experiment.** The coefficient is not a cosine:
+
+    c = (k · k*) / (k* · k*) = (|k| / |k*|) · cos(k, k*)
+
+So `c` can fall two ways, and they are different claims about the network:
+
+- **cos falls** — the subject-position key *points somewhere else* at depth. The
+  representation at that position is no longer determined by the subject tokens
+  alone. Consistent with context being mixed in progressively.
+- **norm ratio falls** — the key still points the same way, but is smaller relative
+  to `k*`. A magnitude effect, and it would mean the direction survives while the
+  delivered amount does not.
+
+Both may fall. Pre-stating the split is the point.
+
+**This distinguishes direction from magnitude, which is one level below mechanism.**
+A falling cosine rules out a pure magnitude account; it does not *demonstrate*
+attention mixing, which would need the attention patterns themselves. Say so in the
+write-up rather than letting "cos fell" become "context is mixed in".
+
+**Method.** Re-run [E-019]'s sweep — same 16 chains, same 8 layers, same 6 forms,
+saves unrolled per [O-008] — logging three numbers per (chain, layer, form) instead
+of one: `c`, `cos(k, k*)`, and `|k| / |k*|`. Assert
+`abs(c - cos * norm_ratio) < 1e-4` per cell; the identity is algebra, so a
+violation means the harness is wrong.
+
+**Gate.** `c` must reproduce [E-019] — layer 5 at 0.935 / 0.934 / 0.924 / 0.082,
+layer 24 at 0.524 / 0.564 / 0.444. Check before reading any decomposition.
+
+**The different-subject probe carries information here too.** Its rise at layer 31
+(0.082 → 0.669) is currently unexplained. If that rise is **cos** rising, distinct
+subjects are converging on a shared direction near the output — a representational
+collapse, and a better account of why layer 31 lost discrimination than "noise". If
+it is the **norm ratio**, it is a scaling artifact. Pre-stated because it is the
+kind of result that is easy to reframe after the fact.
+
+**Outcomes:**
+
+- **Direction** — cos falls materially (≲0.7 by layer 24) while the norm ratio stays
+  near 1. The subject key genuinely reorients with depth.
+- **Magnitude** — cos stays high (≳0.9) while the norm ratio falls. The direction
+  survives; only the delivered size does not.
+- **Both** — each contributes. Report the share of the decay attributable to each,
+  since `log c = log(norm ratio) + log cos` makes that additive.
+
+**Blockers:** —
+
+**Artifacts:** —
+
+**Closed:** —

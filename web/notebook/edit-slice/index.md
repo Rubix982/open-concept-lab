@@ -39,8 +39,10 @@ It is an instrument, not a method. Nothing here proposes a better editor.
 
 ## Reading order
 
-- **[Review packet](./review)** — claim status, the attack surface, and where the
-  artifacts live. Start here if you are evaluating rather than following.
+- **[The paper](./review)** — abstract, method, figures, the attack surface. Start here if
+  you are evaluating rather than following.
+- **[Evidence ledger](./ledger)** — every decision, finding and thread, generated from the
+  repository. The complete record, most of which went nowhere.
 - **[Five days of edit-slice](/writing/five-days)** — the running narrative, revised in
   place, including every claim that was withdrawn and why.
 - **[The check that was never there](/writing/the-check-that-was-never-there)** — the

@@ -1,0 +1,19 @@
+2026-09-20 11:20:45,057 INFO     decompose_t077  run decompose_t077 -> logs/decompose_t077-2026-09-20-112045.log
+2026-09-20 11:20:45,057 INFO     decompose_t077  config {"forms": ["early (edit form)", "late clause", "possessive", "long preamble", "different relation", "different subject"], "kstar": "recomputed per layer from the edit-form prompt", "layers": [0, 3, 5, 8, 12, 16, 24, 31], "measures": "c, cos(k,k*), |k|/|k*|  -- c == cos * ratio", "thread": "T-077", "ticket": "E-020"}
+2026-09-20 11:20:50,571 WARNING  remote  transport failure (NNsightException) during layers 61, attempt 1/8; retrying in 5s
+2026-09-20 11:21:26,985 WARNING  remote  transport failure (NNsightException) during layers 254, attempt 1/8; retrying in 5s
+2026-09-20 11:22:12,670 WARNING  remote  transport failure (NNsightException) during layers 273, attempt 1/8; retrying in 5s
+2026-09-20 11:22:50,238 WARNING  remote  transport failure (NNsightException) during layers 342, attempt 1/8; retrying in 5s
+2026-09-20 11:23:22,378 WARNING  remote  transport failure (NNsightException) during layers 345, attempt 1/8; retrying in 5s
+2026-09-20 11:23:53,149 WARNING  remote  transport failure (NNsightException) during layers 507, attempt 1/8; retrying in 5s
+2026-09-20 11:24:28,689 WARNING  remote  transport failure (NNsightException) during layers 590, attempt 1/8; retrying in 5s
+2026-09-20 11:25:16,448 WARNING  remote  transport failure (NNsightException) during layers 615, attempt 1/8; retrying in 5s
+2026-09-20 11:25:47,182 INFO     decompose_t077    8/16 chains
+2026-09-20 11:25:49,071 WARNING  remote  transport failure (NNsightException) during layers 747, attempt 1/8; retrying in 5s
+2026-09-20 11:26:31,153 WARNING  remote  transport failure (NNsightException) during layers 1126, attempt 1/8; retrying in 5s
+2026-09-20 11:27:00,370 WARNING  remote  transport failure (NNsightException) during layers 1289, attempt 1/8; retrying in 5s
+2026-09-20 11:27:40,017 WARNING  remote  transport failure (NNsightException) during layers 1315, attempt 1/8; retrying in 5s
+2026-09-20 11:28:14,848 WARNING  remote  transport failure (NNsightException) during layers 1401, attempt 1/8; retrying in 5s
+2026-09-20 11:28:52,733 WARNING  remote  transport failure (NNsightException) during layers 1555, attempt 1/8; retrying in 5s
+2026-09-20 11:29:55,109 WARNING  remote  transport failure (NNsightException) during layers 1688, attempt 1/8; retrying in 5s
+2026-09-20 11:30:43,476 WARNING  remote  transport failure (NNsightException) during layers 1692, attempt 1/8; retrying in 5s

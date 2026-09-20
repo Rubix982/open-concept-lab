@@ -356,9 +356,15 @@ record shares — which is why this page exists.
 
 ## Artifacts
 
+Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 20
+decisions, 16 findings and 57 threads, generated from the repository so it cannot drift
+from it. Most of them went nowhere; that is the point of publishing the whole list rather
+than the ten claims this paper defends.
+
 | | |
 | --- | --- |
-| `agents/shared/decisions.md` | 19 entries; falsification stated before each run |
+| [evidence ledger](./ledger) | the complete record, generated |
+| `agents/shared/decisions.md` | 20 entries; falsification stated before each run |
 | `agents/shared/findings.md` | 16 literature entries, including the two that killed directions |
 | `threads.md` | 57 threads — 40 answered, 8 parked, 4 open, 3 dropped |
 | `results/*.json` | per-item records, E-011 … E-018, T-075 |
