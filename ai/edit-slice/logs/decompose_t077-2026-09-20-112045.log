@@ -17,3 +17,92 @@
 2026-09-20 11:28:52,733 WARNING  remote  transport failure (NNsightException) during layers 1555, attempt 1/8; retrying in 5s
 2026-09-20 11:29:55,109 WARNING  remote  transport failure (NNsightException) during layers 1688, attempt 1/8; retrying in 5s
 2026-09-20 11:30:43,476 WARNING  remote  transport failure (NNsightException) during layers 1692, attempt 1/8; retrying in 5s
+2026-09-20 11:31:35,074 INFO     decompose_t077    16/16 chains
+2026-09-20 11:31:35,075 INFO     decompose_t077  
+2026-09-20 11:31:35,075 INFO     decompose_t077  DECOMPOSITION  c = (|k|/|k*|) * cos(k,k*)   at the subject's last token
+2026-09-20 11:31:35,075 INFO     decompose_t077  layer probe form                  c      cos |k|/|k*|
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     late clause             0.986    0.987    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     possessive              0.990    0.988    1.002
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     long preamble           0.979    0.978    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  0     different subject       0.053    0.050    1.017
+2026-09-20 11:31:35,075 INFO     decompose_t077  
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     late clause             0.964    0.964    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     possessive              0.955    0.952    1.004
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     long preamble           0.953    0.957    0.995
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  3     different subject       0.056    0.057    1.002
+2026-09-20 11:31:35,075 INFO     decompose_t077  
+2026-09-20 11:31:35,075 INFO     decompose_t077  5     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,075 INFO     decompose_t077  5     late clause             0.935    0.929    1.007
+2026-09-20 11:31:35,075 INFO     decompose_t077  5     possessive              0.934    0.925    1.012
+2026-09-20 11:31:35,075 INFO     decompose_t077  5     long preamble           0.924    0.921    1.004
+2026-09-20 11:31:35,076 INFO     decompose_t077  5     different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  5     different subject       0.082    0.081    1.008
+2026-09-20 11:31:35,076 INFO     decompose_t077  
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     late clause             0.854    0.840    1.019
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     possessive              0.860    0.835    1.030
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     long preamble           0.850    0.829    1.027
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  8     different subject       0.124    0.125    1.002
+2026-09-20 11:31:35,076 INFO     decompose_t077  
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    late clause             0.795    0.741    1.082
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    possessive              0.794    0.747    1.062
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    long preamble           0.764    0.732    1.049
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  12    different subject       0.257    0.256    1.006
+2026-09-20 11:31:35,076 INFO     decompose_t077  
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    late clause             0.671    0.610    1.104
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    possessive              0.736    0.708    1.035
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    long preamble           0.667    0.658    1.012
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  16    different subject       0.255    0.254    1.005
+2026-09-20 11:31:35,076 INFO     decompose_t077  
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    late clause             0.524    0.420    1.242
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    possessive              0.564    0.576    0.971
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    long preamble           0.444    0.418    1.060
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,076 INFO     decompose_t077  24    different subject       0.168    0.168    1.019
+2026-09-20 11:31:35,077 INFO     decompose_t077  
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    late clause             0.614    0.628    0.981
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    possessive              0.630    0.643    0.984
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    long preamble           0.551    0.555    0.994
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    different relation      1.000    1.000    1.000
+2026-09-20 11:31:35,077 INFO     decompose_t077  31    different subject       0.669    0.660    1.009
+2026-09-20 11:31:35,077 INFO     decompose_t077  
+2026-09-20 11:31:35,077 INFO     decompose_t077  SHAPE: reformulated probes (late clause, possessive, long preamble)
+2026-09-20 11:31:35,077 INFO     decompose_t077  layer            c       cos     ratio
+2026-09-20 11:31:35,077 INFO     decompose_t077  0            0.985     0.984     1.000
+2026-09-20 11:31:35,077 INFO     decompose_t077  3            0.957     0.958     1.000
+2026-09-20 11:31:35,077 INFO     decompose_t077  5            0.931     0.925     1.008
+2026-09-20 11:31:35,077 INFO     decompose_t077  8            0.855     0.835     1.026
+2026-09-20 11:31:35,077 INFO     decompose_t077  12           0.784     0.740     1.064
+2026-09-20 11:31:35,077 INFO     decompose_t077  16           0.691     0.659     1.050
+2026-09-20 11:31:35,077 INFO     decompose_t077  24           0.511     0.471     1.091
+2026-09-20 11:31:35,077 INFO     decompose_t077  31           0.598     0.609     0.986
+2026-09-20 11:31:35,077 INFO     decompose_t077  
+2026-09-20 11:31:35,077 INFO     decompose_t077  THE DIFFERENT-SUBJECT PROBE -- is its layer-31 rise direction or magnitude?
+2026-09-20 11:31:35,077 INFO     decompose_t077  layer            c       cos     ratio
+2026-09-20 11:31:35,077 INFO     decompose_t077  0            0.053     0.050     1.017
+2026-09-20 11:31:35,077 INFO     decompose_t077  3            0.056     0.057     1.002
+2026-09-20 11:31:35,077 INFO     decompose_t077  5            0.082     0.081     1.008
+2026-09-20 11:31:35,077 INFO     decompose_t077  8            0.124     0.125     1.002
+2026-09-20 11:31:35,077 INFO     decompose_t077  12           0.257     0.256     1.006
+2026-09-20 11:31:35,077 INFO     decompose_t077  16           0.255     0.254     1.005
+2026-09-20 11:31:35,077 INFO     decompose_t077  24           0.168     0.168     1.019
+2026-09-20 11:31:35,077 INFO     decompose_t077  31           0.669     0.660     1.009
+2026-09-20 11:31:35,077 INFO     decompose_t077  
+2026-09-20 11:31:35,077 INFO     decompose_t077  GATE: c must reproduce [E-019] -- L5 0.935/0.934/0.924/0.082,
+2026-09-20 11:31:35,077 INFO     decompose_t077        L24 0.524/0.564/0.444. Check before reading any decomposition.
+2026-09-20 11:31:35,078 INFO     decompose_t077  Pre-stated: cos <=0.7 at L24 with ratio ~1 is DIRECTION; cos >=0.9 with
+2026-09-20 11:31:35,078 INFO     decompose_t077  ratio falling is MAGNITUDE; log c = log ratio + log cos splits a mixed case.
+2026-09-20 11:31:35,078 INFO     decompose_t077  A falling cosine rules out a pure magnitude account. It does NOT demonstrate
+2026-09-20 11:31:35,078 INFO     decompose_t077  attention mixing -- that needs the attention patterns, and was not run.
+2026-09-20 11:31:35,078 INFO     decompose_t077  n = 16 chains. Delivery only, never effect.

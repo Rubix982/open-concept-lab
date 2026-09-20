@@ -1142,3 +1142,99 @@ chains. Saves unrolled per [O-008].
 
 **Artifacts:** agents/engineer/workspace/layer_sweep_t075.py;
 logs/layer_sweep_t075-2026-09-20-104950.log
+
+---
+
+## [E-020] Result: the decay is direction, not magnitude — and layer 31 is convergence, not noise
+
+_Date: 2026-09-20 · Llama-3.1-8B, 8 layers, 16 chains, same harness as [E-019]_
+
+Runs [T-077]. [E-019] measured the decay and explained nothing about it. The
+coefficient is not a cosine — `c = (|k|/|k*|) · cos(k, k*)` — so it can fall two
+ways, and they are different claims about the network.
+
+**Gate passed.** `c` reproduces [E-019] exactly: layer 5 at 0.935 / 0.934 / 0.924
+for the reformulated forms and 0.082 for the control; layer 24 at 0.524 / 0.564 /
+0.444 and 0.168. The independently computed cosine satisfies
+`|c − ratio · cos| < 1e-4` in every one of the 768 cells.
+
+### DIRECTION. The norm ratio carries none of the decay.
+
+Reformulated probes — late clause, possessive, long preamble — averaged:
+
+| layer | `c` | `cos` | `\|k\|/\|k*\|` |
+| ---: | ---: | ---: | ---: |
+| 0 | 0.985 | 0.984 | 1.000 |
+| 5 | 0.931 | 0.925 | 1.008 |
+| 12 | 0.784 | 0.740 | 1.064 |
+| 24 | **0.511** | **0.471** | **1.091** |
+| 31 | 0.598 | 0.609 | 0.986 |
+
+**The cosine falls from 0.984 to 0.471 while the norm ratio never leaves
+0.97–1.24.** Pre-stated: cos ≲0.7 at layer 24 with ratio near 1 is DIRECTION. The
+measurement is 0.471 against 1.091.
+
+**Magnitude works slightly *against* the decay.** The ratio drifts *up* with depth,
+so the direction change is larger than `c` alone suggests — at layer 24 the
+coefficient is 0.511 but the underlying alignment is 0.471, propped up by keys that
+are 9% longer than `k*`.
+
+**Norm carries no information anywhere in this measurement.** Across all 8 layers,
+6 forms and 16 chains, `|k|/|k*|` sits within about 10% of unity — including for a
+completely different person. Subject-position keys have essentially the same
+magnitude regardless of whose name is in the prompt or how the prompt is worded.
+Everything that distinguishes them is orientation.
+
+### Layer 31's rise is convergence, and that was pre-stated
+
+[E-019] filed the different-subject jump (0.082 → 0.669) as the measure losing
+discrimination, which was accurate and uninformative. The decomposition says what
+kind of loss:
+
+| layer | `c` | `cos` | ratio |
+| ---: | ---: | ---: | ---: |
+| 5 | 0.082 | 0.081 | 1.008 |
+| 12 | 0.257 | 0.256 | 1.006 |
+| 24 | 0.168 | 0.168 | 1.019 |
+| 31 | **0.669** | **0.660** | 1.009 |
+
+The rise is **cosine**, with the ratio flat at 1.009. At the final layer the
+subject-position keys of *different people* point 0.66 of the way toward each
+other. That is representational convergence toward a shared direction near the
+output, not a scaling artifact — and it is a better account of layer 31 than
+"noise", which is what [E-019] could say.
+
+The trajectory is also non-monotonic: 0.05 → 0.26 at layer 12, back to 0.17 at 24,
+then 0.66 at 31. Unexplained, and worth one line of caution — a single measurement
+at eight layers cannot distinguish a real mid-network bump from sampling noise at
+n=16.
+
+### What this does and does not license
+
+**Does:** rule out a pure magnitude account of the depth decay. Whatever happens to
+the subject key with depth, it is a change of orientation, and the delivered
+magnitude is nearly constant.
+
+**Does not:** demonstrate that attention mixes context into the subject position.
+That is the leading candidate and it remains untested — it needs the attention
+patterns themselves, which were not run. **"cos fell" is not "context was mixed
+in".** A falling cosine is consistent with attention mixing, with MLP writes at the
+subject position, and with anything else that reorients the residual stream.
+
+**Also unmeasured:** 16 chains, one model, one relation family, delivery not effect.
+The per-chain spread is wide at depth — layer-24 late clause ranges 0.144–0.781 in
+[E-019] — so the means describe a tendency across subjects, not a per-subject law.
+
+### Consequence
+
+[T-077] is answered at the level it asked and re-opens one level down. The decay is
+directional; *what* reorients the key is now the question, and the cheapest next cut
+is the one this ticket deferred — attention at the subject position, layer by layer.
+Spawns [T-078].
+
+**Provenance.** Same harness as [E-019] with saves unrolled per [O-008]; three
+metrics logged per cell instead of one, with the identity asserted independently
+rather than derived from `c`.
+
+**Artifacts:** agents/engineer/workspace/decompose_t077.py;
+logs/decompose_t077-2026-09-20-*.log

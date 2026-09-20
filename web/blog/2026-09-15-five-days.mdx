@@ -1438,10 +1438,44 @@ probe receives roughly half the edit vector. The subject key is largely determin
 subject tokens early on, and stops being so with depth.
 
 Layer 31 reads 0.699, which looks like a recovery and is not one. The different-subject
-floor there is 0.669 — everything scores about the same whoever is named, so the
-measurement has lost its ability to discriminate rather than the key having changed
-character. Carrying that floor at every layer is the only reason the difference between
-layer 24 and layer 31 is visible at all.
+floor there is 0.669 — everything scores about the same whoever is named. Carrying that
+floor at every layer is the only reason the difference between layer 24 and layer 31 is
+visible at all.
+
+### The decay is a change of direction, not of size
+
+The coefficient is not a cosine. It factors:
+
+    c  =  (|k| / |k*|)  ·  cos(k, k*)
+
+which means a falling `c` has two possible readings — the key points somewhere else, or
+it points the same way and is smaller. Those are different claims, and separating them
+costs one extra number per measurement.
+
+It is entirely direction. Across the reformulated probes, cosine falls 0.984 → 0.471
+from layer 0 to layer 24 while `|k|/|k*|` never leaves 0.97–1.24. The ratio actually
+drifts *upward*, so magnitude works slightly against the decay: at layer 24 the
+coefficient reads 0.511 while the underlying alignment is 0.471, propped up by keys
+about 9% longer than `k*`.
+
+Norm turns out to carry nothing at all here. Over eight layers, six probe forms and
+sixteen chains — including probes naming a completely different person — `|k|/|k*|` sits
+within roughly ten percent of one. Subject-position keys are all about the same length.
+Everything that distinguishes them is orientation.
+
+That also says what layer 31 is. The different-subject rise to 0.669 is **cosine** (0.660,
+with the ratio flat at 1.009), so at the final layer the subject-position keys of
+different people are pointing two-thirds of the way toward each other. Not a scaling
+artifact, and better than the "noise" I had a paragraph ago: near the output these
+representations converge on a shared direction, and that is why the measure stops telling
+people apart.
+
+What this does **not** show is why the direction moves. Attention progressively mixing
+context into the subject position is the obvious candidate and it is untested — a falling
+cosine is equally consistent with MLP writes at that position, or anything else that
+reorients the residual stream. "Cosine fell" is not "context was mixed in", and the
+ordering across probe forms at layer 24 does not obviously favour the mixing story
+anyway.
 
 That sentence had a hole in it when I first published it, and it is worth saying how it got
 closed. Every control behind the 93–100% figure varies the **form** and holds the subject

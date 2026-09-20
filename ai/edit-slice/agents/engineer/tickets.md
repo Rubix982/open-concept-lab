@@ -1300,7 +1300,7 @@ Surfaced [O-008], which partially reinstates a constraint [O-007] over-retracted
 
 ### E-020 · Is the depth decay a direction change or a magnitude change?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1358,6 +1358,16 @@ kind of result that is easy to reframe after the fact.
 
 **Blockers:** —
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- agents/engineer/workspace/decompose_t077.py
+- logs/decompose_t077-2026-09-20-*.log
+- agents/shared/decisions.md → "[E-020] Result"
+
+**Closed:** 2026-09-20 — **DIRECTION.** cos falls 0.984 → 0.471 from layer 0 to 24
+while `|k|/|k*|` never leaves 0.97–1.24, so magnitude carries none of the decay and
+in fact drifts against it. Gate passed; the identity held in all 768 cells. Layer
+31's different-subject rise is cosine (0.660 with ratio 1.009) — representational
+convergence, not a scaling artifact, which upgrades [E-019]'s "noise". Spawns
+[T-078]: a falling cosine rules out magnitude but does not demonstrate attention
+mixing.
