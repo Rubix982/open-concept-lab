@@ -82,6 +82,8 @@ used.
 
 ## 3 · Method
 
+_Records: [E-007](./ledger#E-007) · [O-006](./ledger#O-006) · [E-012](./ledger#E-012) · [E-013 gate](./ledger#E-013)_
+
 **Possession gate.** A chain is usable only if the model holds all three facts. Each is
 scored against a type-matched candidate pool under two criteria: the true answer ranks
 first with the real subject (*row test*), and outscores it under foil prompts whose true
@@ -108,6 +110,8 @@ answer scores a correct relocation as failure.
 
 ### 4.1 · The measure had no operating point, and fixing it took two orthogonal repairs
 
+_Records: [E-009b](./ledger#E-009b) · [E-011](./ledger#E-011) · [E-012](./ledger#E-012)_
+
 Before any edit: the possession measure failed on the most common answers. Rendering
 countries as Wikidata labels (`United States`) rather than naturally (`the United States`)
 is ungrammatical after *"born in the country of"*, and rank-1 on those answers sat at 21%.
@@ -129,6 +133,8 @@ magnitude of scale.
 
 ### 4.2 · The edit displaces the premise — and carries no inference
 
+_Records: [E-013](./ledger#E-013) · [E-014](./ledger#E-014) · [E-015](./ledger#E-015)_
+
 The birth-city probe lands in the edited country 67% of the time (baseline 5%, same-subject
 control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
 
@@ -145,6 +151,8 @@ country, they choose the *same city* 84% of the time. Editing where a person wor
 relocates their birthplace exactly as often as editing where they were born.
 
 ### 4.3 · The coefficient is pinned, by arithmetic
+
+_Records: [E-016 gate](./ledger#E-016) · [E-016 result](./ledger#E-016-2)_
 
 A whitened editor — `u = C⁻¹k*`, computed by Woodbury over a low-rank-plus-ridge key
 covariance, measured **20× more selective** on held-out keys — produces **42/42 identical
@@ -233,6 +241,8 @@ This accounts for the whole arc:
 
 ### 4.4 · Scope: pinned at every layer for prefix-sharing probes; escapable otherwise
 
+_Records: [E-017](./ledger#E-017) · [T-075](./ledger#T-075) · [E-018](./ledger#E-018)_
+
 <Figure
   caption="Figure 2 — Coefficient at the subject's last token, by layer, 12 subjects. Prompts beginning with the subject are pinned at exactly 1.000 at every depth. Reordering the subject escapes progressively — but not at layer 5, which is the layer this configuration edits."
 >
@@ -300,18 +310,18 @@ pre-stated confirmation threshold was ≤0.3.
 
 ## 5 · Every claim this project withdrew
 
-| claim | status | what changed it |
-| --- | --- | --- |
-| Backward probing is unexplored | narrowed | RippleEdits covers inverse/symmetric relations |
-| Edits leave grounds *contradictory* | withdrawn | grounds are evidential; improbable, not impossible |
-| CounterFact verifies possession | withdrawn | reversed from Appendix D; construction is model-independent |
-| The `outer` deficit is pool concentration | withdrawn | it is two strings, US and UK |
-| The surface-form finding is novel | withdrawn | <Cite id="holtzman2021surface" /> |
-| Possession × editability is unclaimed | withdrawn | <Cite id="knowledgespectrum2025" /> |
-| The model revises the defeasible premise | withdrawn | the work-country edit does the same thing |
-| Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth |
-| Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent |
-| Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured |
+| claim | status | what changed it | record |
+| --- | --- | --- | --- |
+| Backward probing is unexplored | narrowed | RippleEdits covers inverse/symmetric relations | [R-005a](./ledger#f-R-005a) |
+| Edits leave grounds *contradictory* | withdrawn | grounds are evidential; improbable, not impossible | [E-002](./ledger#E-002) |
+| CounterFact verifies possession | withdrawn | reversed from Appendix D; construction is model-independent | [D-002](./ledger#f-D-002) |
+| The `outer` deficit is pool concentration | withdrawn | it is two strings, US and UK | [E-009b](./ledger#E-009b) |
+| The surface-form finding is novel | withdrawn | <Cite id="holtzman2021surface" /> | [R-010](./ledger#f-R-010) |
+| Possession × editability is unclaimed | withdrawn | <Cite id="knowledgespectrum2025" /> | [R-010](./ledger#f-R-010) |
+| The model revises the defeasible premise | withdrawn | the work-country edit does the same thing | [E-015](./ledger#E-015) |
+| Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth | [T-075](./ledger#T-075) |
+| Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | [O-007](./ledger#O-007) · [O-008](./ledger#O-008) |
+| Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | [E-016](./ledger#E-016-2) · [E-018](./ledger#E-018) |
 
 Ten claims, **seven withdrawn or narrowed**. That ratio is the honest summary.
 
@@ -367,7 +377,7 @@ than the ten claims this paper defends.
 | `agents/shared/decisions.md` | 20 entries; falsification stated before each run |
 | `agents/shared/findings.md` | 16 literature entries, including the two that killed directions |
 | `threads.md` | 57 threads — 40 answered, 8 parked, 4 open, 3 dropped |
-| `results/*.json` | per-item records, E-011 … E-018, T-075 |
+| `results/*.json` | per-item records, [E-011](./ledger#E-011) … [E-018](./ledger#E-018), [T-075](./ledger#T-075) |
 | `logs/` | every run, levelled and committed, including the failures |
 | `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
 

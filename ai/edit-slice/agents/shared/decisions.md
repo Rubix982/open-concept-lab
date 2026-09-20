@@ -572,6 +572,55 @@ logs/edit_smoke-2026-09-15-162616.log
 
 ---
 
+## [E-014] Result: the edit displaces the premise, country-specifically, at 67%
+
+_Date: 2026-09-17 · Llama-3.1-8B, layer 5, 42 chains · recorded 2026-09-20_
+
+**Written late.** This result was referenced by [E-015], [E-016] and the published paper
+for three days without an entry of its own — found when cross-linking the paper to the
+ledger produced a link with no target. The run that supplies the headline number had no
+record; that is a process failure, not a data one, and the numbers below come from
+`results/E-014-destination-meta-llama_Llama-3.1-8B.json` rather than from recollection.
+
+**Setup.** Edit `outer` to a counterfactual country, then rank the full 75-city pool at
+`inner_1`. Three conditions: baseline, the real edit, and a magnitude-matched
+same-subject control editing the person's occupation. A per-chain **placebo country**
+gives the null rate for "lands in country X".
+
+| `inner_1` lands in… | baseline | real edit | same-subject control |
+| --- | ---: | ---: | ---: |
+| the **target** country | 5% | **67%** | 5% |
+| the placebo country | 2% | 0% | 7% |
+
+Twenty-eight of 42 chains relocate into the edited country against a 5% control, with the
+placebo at floor. Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
+
+**But 82% of the hits are the capital**, so the model is largely emitting the target
+country's most salient city rather than choosing a plausible birthplace. Coherent and
+country-specific, but shallower than "revised the premise" would imply.
+
+**Per country, unevenly.** India 4/4, Denmark 3/3, United States 3/3, Chile 2/2, Sweden
+2/2, Italy 2/2 — against New Zealand 0/3, Australia 0/2, Czech Republic 1/5. The failures
+cluster by country rather than scattering, which usually indicates a data property.
+
+**The attractor.** `Washington, D.C.` takes **14 of 42** destinations (33%), the
+next-largest being Copenhagen at 3. It is the pool's highest-prior city and the sink when
+no coherent relocation occurs. Third instance of a concentrated pool shaping a result here,
+and the reason [T-073] made attractor mass a standard reported field.
+
+**n.** 71 clean chains were prepared; 42 were read out. The remaining 29 were lost to NDIF
+outages, not excluded by any criterion — see [O-007] for what that week's infrastructure
+did. Existence claim only, per [O-004].
+
+**What it does NOT show.** That the relocation is an inference. [E-015] tested that by
+holding subject and target fixed and varying only the relation, and found a paired gap of
++0.0 pp.
+
+**Artifacts:** agents/engineer/workspace/run_e014.py;
+results/E-014-destination-meta-llama_Llama-3.1-8B.json
+
+---
+
 ## [E-015] Result: DENY — the relocation carries no inference
 
 _Date: 2026-09-18 · Llama-3.1-8B, 42 chains, subject and target country held fixed_

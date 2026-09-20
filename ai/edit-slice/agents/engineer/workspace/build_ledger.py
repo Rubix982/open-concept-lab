@@ -80,12 +80,33 @@ def parse_threads(path: Path) -> list[dict]:
     return out
 
 
+def unique_anchors(entries: list[dict], prefix: str = "") -> None:
+    """Assign each entry a unique anchor, in place.
+
+    Ids are NOT unique across the record: E-002 appears in both decisions and findings,
+    and E-013 and E-016 each have two decisions entries (a gate and a result). Docusaurus
+    would silently dedupe those to `-1` suffixes, so every cross-reference to the second
+    entry would land on the first — a broken link that still resolves, which is worse than
+    one that fails the build.
+    """
+    seen: dict[str, int] = {}
+    for e in entries:
+        base = f"{prefix}{e['id']}"
+        n = seen.get(base, 0)
+        seen[base] = n + 1
+        e["anchor"] = base if n == 0 else f"{base}-{n + 1}"
+
+
 def main() -> None:
     log = setup("build_ledger", config={"output": str(OUT)})
     dec = parse_entries(ROOT / "agents/shared/decisions.md")
     fnd = parse_entries(ROOT / "agents/shared/findings.md")
     thr = parse_threads(ROOT / "threads.md")
+    unique_anchors(dec)
+    unique_anchors(fnd, prefix="f-")
     log.info("parsed %d decisions, %d findings, %d threads", len(dec), len(fnd), len(thr))
+    log.info("anchors: %d decisions, %d findings, all unique",
+             len({e["anchor"] for e in dec}), len({e["anchor"] for e in fnd}))
 
     def status_key(s: str) -> str:
         s = s.lower()
@@ -105,6 +126,8 @@ def main() -> None:
     L.append("sidebar_position: 3")
     L.append("description: Every decision, finding and thread in the edit-slice record, "
              "generated from the repository so it cannot drift from it.")
+    # 36 record headings would flood the sidebar; the section headings are the useful ones.
+    L.append("toc_max_heading_level: 2")
     L.append("---")
     L.append("")
     L.append("# Evidence ledger")
@@ -125,21 +148,22 @@ def main() -> None:
              "before the run, and corrections keep their own entry rather than editing the "
              "original.")
     L.append("")
-    L.append("| id | date | kind | what it settled |")
-    L.append("| --- | --- | --- | --- |")
     for e in dec:
-        L.append(f"| `{e['id']}` | {e['date']} | {e['kind']} | "
-                 f"**{e['title']}** — {e['gist']} |")
+        L.append(f"#### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
+        L.append("")
+        L.append(f"_{e['kind']} · {e['date']}_ — {e['gist']}")
+        L.append("")
     L.append("")
     L.append("## Findings")
     L.append("")
     L.append("Literature reads and measurements that are not decisions. Two of these closed "
              "whole directions at the prior-art gate.")
     L.append("")
-    L.append("| id | date | finding |")
-    L.append("| --- | --- | --- |")
     for e in fnd:
-        L.append(f"| `{e['id']}` | {e['date']} | **{e['title']}** — {e['gist']} |")
+        L.append(f"#### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
+        L.append("")
+        L.append(f"_{e['date']}_ — {e['gist']}")
+        L.append("")
     L.append("")
     L.append("_Confidence levels and full evidence are in the repository entries; these "
              "are one-line pointers, not summaries._")
