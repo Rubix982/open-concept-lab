@@ -821,3 +821,43 @@ in the subject key. Both are cheap and neither was run.
 
 **Artifacts:** agents/engineer/workspace/{run_e017,coeff_forms}.py;
 results/E-017-form-meta-llama_Llama-3.1-8B.json; logs/coeff_forms-2026-09-19-053*.log
+
+---
+
+## [O-007] Correction: four "nnsight constraints" were one flaky NDIF node
+
+_Date: 2026-09-20 · retracts the constraint list committed earlier the same day_
+
+**What I claimed.** A commit on 2026-09-20 documented four constraints discovered while
+building the [T-075] layer sweep: that a list comprehension inside a trace loses its proxy
+saves; that `list.append` on a proxy is not whitelisted; that two `.save()` calls reading
+different layers fail; and that a layer index passed as a default argument or set via
+`globals()` fails where a module constant works.
+
+**All four are wrong.** NDIF rejects roughly half of all traces with `Module
+nnsight.intervention.batching is not whitelisted`, depending on which node serves the
+request. Measured directly: the **identical unchanged call, six times, succeeded 3/6** —
+alternating. `coeff_forms.py` succeeded at 05:32 and failed at 09:31 with no edit between.
+
+**How the error was made.** Each time a run failed I changed one thing, re-ran, and hit a
+~50% coin flip. A pass looked like confirmation and a fail looked like a new constraint. I
+produced four causal stories in a row without once re-running the *unchanged* code, which
+is the one test that separates a code bug from a flaky dependency. The lesson is narrow and
+mechanical: **before attributing a failure to a change, re-run the thing that worked.**
+
+**The fix.** `remote._is_flaky_remote` matches `"is not whitelisted"` and
+`_is_transport_error` returns True for it, so `retrying()` absorbs it with the existing
+linear backoff. Verified: the same call that went 3/6 bare goes **6/6** through `retrying`.
+
+**What is NOT affected.** Prior results stand. This failure is loud — it raises — so it
+cannot silently corrupt a completed run. Every result in [E-013] through [E-017] came from
+a run that finished and wrote its artifact.
+
+**What this says about the last week.** NDIF has now produced three distinct failure modes:
+transport timeouts (38 in one day), multi-hour stalls, and now node-dependent rejections.
+The instrument is sound; the dependency is not. Any future long run on this backend should
+assume ~50% per-call failure as a design parameter rather than an incident.
+
+**Artifacts:** src/remote.py (`_is_flaky_remote`);
+agents/engineer/workspace/{is_it_flaky,what_broke,test_retry_flaky}.py;
+agents/engineer/workspace/layer_sweep.py is retained as the record of the wrong diagnosis

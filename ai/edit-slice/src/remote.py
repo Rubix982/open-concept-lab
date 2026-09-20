@@ -46,7 +46,22 @@ def _is_oom(exc: BaseException) -> bool:
     return "OutOfMemory" in text or "out of memory" in text.lower()
 
 
+#: Some NDIF nodes reject traces with "Module ... is not whitelisted" while others in the
+#: same deployment accept the identical call — measured 2026-09-20 at 3 successes in 6
+#: attempts of one unchanged request. It presents as a RemoteException, so the transport
+#: classifier misses it and it propagates as if it were a code error. It is not: it is a
+#: node-to-node config difference, and retrying lands on a good node.
+_FLAKY_REMOTE: Final[tuple[str, ...]] = ("is not whitelisted",)
+
+
+def _is_flaky_remote(exc: BaseException) -> bool:
+    text = f"{type(exc).__name__} {exc}"
+    return any(tag in text for tag in _FLAKY_REMOTE)
+
+
 def _is_transport_error(exc: BaseException) -> bool:
+    if _is_flaky_remote(exc):
+        return True
     module = (type(exc).__module__ or "").split(".")[0]
     if module in _TRANSPORT_MODULES:
         return True

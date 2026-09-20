@@ -1,0 +1,2 @@
+2026-09-20 09:31:14,980 INFO     layer_one_L20  run layer_one_L20 -> logs/layer_one_L20-2026-09-20-093114.log
+2026-09-20 09:31:14,981 INFO     layer_one_L20  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "layer": 20, "n": 2, "thread": "T-075"}

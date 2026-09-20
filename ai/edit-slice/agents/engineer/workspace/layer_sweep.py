@@ -53,12 +53,11 @@ for n, subj in enumerate(subs, 1):
     for j, x in enumerate(ids):
         batch[j, : len(x)] = torch.tensor(x)
 
-    # ONE trace per layer. Bisected 2026-09-20: two `.save()` calls reading DIFFERENT
-    # layers' `down_proj.input` in a single trace fails on this NDIF deployment with
-    # "Module nnsight.intervention.batching is not whitelisted", at any batch size, while
-    # one save always works. (`compute_v_batch` saves twice successfully, so the
-    # restriction is specific to multi-layer module access rather than to saves.) Costs
-    # 7x the round trips and is the only form that runs.
+    # SUPERSEDED — this file is kept only as the record of a wrong diagnosis. The
+    # "constraints" bisected here were not constraints: NDIF rejects ~50% of traces with
+    # "Module ... is not whitelisted" depending on which node serves them, so every code
+    # change appeared to cause the next failure. See `layer_one.py` for the working sweep
+    # and decisions.md [O-007] for the correction.
     for L in LAYERS:
         # CUR is a module-level global, not a default argument. nnsight rebuilds the
         # trace body from source and resolves names in the defining scope; a closed-over

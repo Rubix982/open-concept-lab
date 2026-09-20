@@ -1,0 +1,14 @@
+2026-09-20 09:35:00,703 INFO     test_retry_flaky  run test_retry_flaky -> logs/test_retry_flaky-2026-09-20-093500.log
+2026-09-20 09:35:00,704 INFO     test_retry_flaky  config {"check": "whitelist error is retryable"}
+2026-09-20 09:35:09,684 INFO     test_retry_flaky  call 1: OK (1, 15, 14336)
+2026-09-20 09:35:11,347 WARNING  remote  transport failure (NNsightException) during probe key, attempt 1/8; retrying in 5s
+2026-09-20 09:35:20,898 INFO     test_retry_flaky  call 2: OK (1, 15, 14336)
+2026-09-20 09:35:22,683 WARNING  remote  transport failure (NNsightException) during probe key, attempt 1/8; retrying in 5s
+2026-09-20 09:35:31,198 INFO     test_retry_flaky  call 3: OK (1, 15, 14336)
+2026-09-20 09:35:32,904 WARNING  remote  transport failure (NNsightException) during probe key, attempt 1/8; retrying in 5s
+2026-09-20 09:35:41,402 INFO     test_retry_flaky  call 4: OK (1, 15, 14336)
+2026-09-20 09:35:43,114 WARNING  remote  transport failure (NNsightException) during probe key, attempt 1/8; retrying in 5s
+2026-09-20 09:35:51,543 INFO     test_retry_flaky  call 5: OK (1, 15, 14336)
+2026-09-20 09:35:53,192 WARNING  remote  transport failure (NNsightException) during probe key, attempt 1/8; retrying in 5s
+2026-09-20 09:36:01,589 INFO     test_retry_flaky  call 6: OK (1, 15, 14336)
+2026-09-20 09:36:01,589 INFO     test_retry_flaky  6/6 calls succeeded with retrying() (bare calls were 3/6)
