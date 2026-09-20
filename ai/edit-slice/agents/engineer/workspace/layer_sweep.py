@@ -24,6 +24,7 @@ from remote import _quiet_stdout, connect, retrying  # noqa: E402
 ROOT = Path(__file__).resolve().parents[3]
 #: Unrolled explicitly in `once()` below — keep the two in step.
 LAYERS = [0, 5, 10, 15, 20, 25, 31]
+CUR = 5          # set per iteration; see the note in the loop below
 FORMS = {
     "edit form":          "{} was born in the country of",
     "same-prefix probe":  "{} was born in the city of",
@@ -52,30 +53,29 @@ for n, subj in enumerate(subs, 1):
     for j, x in enumerate(ids):
         batch[j, : len(x)] = torch.tensor(x)
 
-    def once():
-        # Explicit variables, NOT a comprehension and NOT list.append. Three separate
-        # nnsight/NDIF constraints bite here, all of them silent until runtime:
-        #   * a list comprehension has its own scope, so proxy saves inside it are never
-        #     captured and the name ends up unbound;
-        #   * `list.append` on a proxy routes through `nnsight.intervention.batching`,
-        #     which NDIF does not whitelist;
-        #   * a nested helper is not captured at all (see `edit.APPLY_IDIOM`).
-        # Unrolled assignment at the trace's own frame level is the one form that works.
-        with _quiet_stdout(), m.trace(batch, remote=True):
-            a0 = m.model.layers[0].mlp.down_proj.input.half().save()
-            a1 = m.model.layers[5].mlp.down_proj.input.half().save()
-            a2 = m.model.layers[10].mlp.down_proj.input.half().save()
-            a3 = m.model.layers[15].mlp.down_proj.input.half().save()
-            a4 = m.model.layers[20].mlp.down_proj.input.half().save()
-            a5 = m.model.layers[25].mlp.down_proj.input.half().save()
-            a6 = m.model.layers[31].mlp.down_proj.input.half().save()
-        with _quiet_stdout():
-            return [a0.float(), a1.float(), a2.float(), a3.float(),
-                    a4.float(), a5.float(), a6.float()]
+    # ONE trace per layer. Bisected 2026-09-20: two `.save()` calls reading DIFFERENT
+    # layers' `down_proj.input` in a single trace fails on this NDIF deployment with
+    # "Module nnsight.intervention.batching is not whitelisted", at any batch size, while
+    # one save always works. (`compute_v_batch` saves twice successfully, so the
+    # restriction is specific to multi-layer module access rather than to saves.) Costs
+    # 7x the round trips and is the only form that runs.
+    for L in LAYERS:
+        # CUR is a module-level global, not a default argument. nnsight rebuilds the
+        # trace body from source and resolves names in the defining scope; a closed-over
+        # default arg does not resolve the way a global does, and the failure surfaces
+        # remotely as "Module nnsight.intervention.batching is not whitelisted" rather
+        # than as a NameError. `coeff_forms.py` works because its layer is a module
+        # constant — matching that form is the fix.
+        globals()["CUR"] = L
 
-    per_layer = retrying(once, what=f"layers for {subj!r}")
-    for L, keys in zip(LAYERS, per_layer):
-        kstar = keys[0, idxs[0]]                      # the edit form defines k* at this layer
+        def once():
+            with _quiet_stdout(), m.trace(batch, remote=True):
+                a = m.model.layers[CUR].mlp.down_proj.input.half().save()
+            with _quiet_stdout():
+                return a.float()
+
+        keys = retrying(once, what=f"layer {L} for {subj!r}")
+        kstar = keys[0, idxs[0]]                  # the edit form defines k* at this layer
         den = float(kstar @ kstar)
         for j, form in enumerate(FORMS):
             acc[(L, form)].append(float((keys[j, idxs[j]] @ kstar) / den))
