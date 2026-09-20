@@ -1104,7 +1104,7 @@ the late probe fails at baseline in 34 of 42 chains.
 
 ### T-075 · Is the subject key context-robust at every layer, or only at layer 5?
 
-**Status:** open
+**Status:** active — designed 2026-09-20, see design.md Part IV
 **Parent:** T-074
 **Opened:** 2026-09-19
 **Question:** [E-017] measured the coefficient at the subject's last token to be 0.93-1.00
@@ -1113,4 +1113,28 @@ If the subject key becomes context-sensitive at deeper layers, an editor targeti
 layer would leak less across probe forms, and the structural claim would be a
 layer-5 claim rather than a ROME claim. Cheap: the same sweep at a handful of layers,
 no edits required.
+**Answer:** — (design.md Part IV; E-018 not yet opened)
+
+**Design note, 2026-09-20.** Designing this surfaced a question that outranks it, now
+Part IV's first job. Every control behind [E-017]'s 93-100% claim is a SAME-SUBJECT
+control — different relation, late clause, possessive, long preamble. A matched
+different-subject probe (*different person, same relation, same form*) has never been
+measured. Until it is, "any prompt CONTAINING THE SUBJECT receives 93-100%" is not
+separated from "any prompt receives 93-100%". [E-016]'s own anisotropy measurement is the
+reason to worry: keys at layer 5 have participation ratio 26.5 of 2048, so vectors in that
+subspace have substantial cosine by construction and the floor may be high. Spawns T-076.
+
+---
+
+### T-076 · Is the different-subject floor high enough to weaken [E-017]?
+
+**Status:** open
+**Parent:** T-075
+**Opened:** 2026-09-20
+**Question:** Split out of the T-075 design because it is not a layer question and does not
+need the sweep. One measurement at layer 5: coefficient of *"Marie Curie was born in the
+city of"* against a Jack Marshall edit's `k*`, 16 chains. If it comes back high, [E-017],
+the E-016 section of the write-up, and the post's standfirst are wrong rather than narrow,
+and the correction is a retraction. Cheapest falsification test available for the project's
+strongest claim, and it should run before the layer sweep rather than inside it.
 **Answer:** —

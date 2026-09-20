@@ -46,3 +46,9 @@ is misattributed. This entry is the record.
   covering E-016/E-017, published gap statement retracted and replaced, standfirst
   updated; defect list in `agents/engineer/workspace/e003/`
 - [O-005] Opened E-004 — blocked on a second live use
+
+## 2026-09-20 · Session 3 (cont. 4)
+
+- [E-005] Second live use, a design document — `edit-slice/design.md` Part IV;
+  three of five defects recurred; record in `agents/engineer/workspace/e005/`
+- [O-006] E-004 unblocked

@@ -186,3 +186,41 @@ than act on. Fix what recurs.
 **Artifacts:** —
 
 **Closed:** —
+
+---
+
+### E-005 · Second live use — a design document
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+
+**Description:**
+E-004 was blocked on a second live use on a structurally different document. A
+design was chosen deliberately: it has **no results**, which is the axis most
+likely to break a pass built around auditing claims.
+
+Target: `edit-slice/design.md` Part IV — the [T-075] layer sweep design.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `agents/engineer/workspace/e005/01-pass1-audit.md` — five assumptions audited
+- `agents/engineer/workspace/e005/02-draft.md` — the design, 1,355 words
+- `agents/engineer/workspace/e005/03-skill-test-record.md` — recurrence table
+- `edit-slice/design.md` Part IV — appended
+- `edit-slice/threads.md` — T-075 set active, T-076 spawned
+
+**Closed:** 2026-09-20 — three of five E-003 defects recurred (2, 4, 5) and are
+safe to fix. Defect 1 recurred in a form that changes the fix: on a design Pass 1
+is not mis-ordered, it is a category error, so the mode count goes to three
+(revise / draft / design). One new defect: nothing in the skill asks whether the
+work can be run, and it overlaps `CLAUDE.md`'s design protocol without referencing
+it.
+
+The pass produced a **research** finding rather than a writing improvement — every
+control behind [E-017]'s published claim is same-subject, and the matched
+different-subject control has never been run. Spawned T-076 and reordered the work.

@@ -43,13 +43,12 @@ sentence will produce better-looking mush. T-001 tests it.
 | E-001 | Engineer     | Test Tier 2 against a real draft       | closed      |
 | E-002 | Engineer     | Write the skill                        | closed      |
 | E-003 | Engineer     | Use the skill on live work             | closed      |
-| E-004 | Engineer     | Fix the five defects, after a 2nd use  | blocked     |
+| E-005 | Engineer     | Second live use — a design document    | closed      |
+| E-004 | Engineer     | Fix the recurring defects              | open        |
 
 ## Blocked
 
-| ID    | Blocked By                                                      |
-| ----- | --------------------------------------------------------------- |
-| E-004 | a second live use — five defects from n=1 by the author is a list to test, not to act on |
+None. E-004 unblocked by E-005.
 
 ## Hypothesis revised after R-001
 
@@ -72,6 +71,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - E-001 · Tier 2 spike — CONFIRM; `agents/engineer/workspace/e001/`
 - E-002 · Skill written and installed — `skill/research-writing/`
 - E-003 · First live use — `agents/engineer/workspace/e003/`; five defects logged
+- E-005 · Second live use, a design document — three defects recurred, one new
 
 ## Known gap — closed by R-002
 
@@ -128,8 +128,24 @@ plausibly what it is for.
 by imitation; the voice reference may only earn its place when drafting from
 nothing.
 
+## What E-005 established
+
+Three of five defects recurred on a second document type and are safe to fix. The
+ranking effect recurred identically: **on both uses the audit's documented filtering
+job caught nothing, and its undocumented ranking job restructured the document.**
+The skill documents the half that did nothing.
+
+Defect 1 changed shape. On a design, Pass 1 is not mis-ordered — it is a category
+error, because a design has no claims. The working substitution is *"if this
+assumption is wrong, does the experiment still measure what it claims?"* So the fix
+is three modes, not two.
+
+And the pass produced a research finding rather than a writing improvement: every
+control behind [E-017]'s published claim is same-subject, and the matched
+different-subject control has never been run. That is now `edit-slice` T-076, and
+it should run before the layer sweep it was designed inside.
+
 ## Next Orchestrator Action
 
-Use the skill a second time, on something structurally different from a blog
-section — a related-work paragraph or a design document. Only then open E-004 and
-fix the five defects, weighted by which recur.
+E-004 — fix defects 1–4, decide 5 (the overlap with `CLAUDE.md`'s design protocol),
+hold 6 for a third observation.
