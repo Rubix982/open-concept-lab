@@ -31,6 +31,24 @@ const config: Config = {
 
   // KaTeX's own stylesheet is imported in src/css/custom.css, so it always
   // matches the installed renderer rather than a pinned CDN version.
+  headTags: [
+    // Preconnect before the stylesheet request, not after it. Without these the font
+    // files wait on a fresh DNS + TLS handshake to a second origin, which is the whole
+    // first-paint delay on a cold load.
+    {
+      tagName: "link",
+      attributes: { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossorigin: "anonymous",
+      },
+    },
+  ],
+
   stylesheets: [
     "https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,450;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap",
   ],

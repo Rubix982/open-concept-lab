@@ -1,6 +1,6 @@
 ---
 title: edit-slice
-sidebar_label: edit-slice
+sidebar_label: Overview
 sidebar_position: 1
 description: Measuring what a weight-level knowledge edit does to the facts it was not aimed at — and finding the answer is arithmetic.
 ---

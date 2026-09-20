@@ -126,7 +126,7 @@ def main() -> None:
     L = []
     L.append("---")
     L.append("title: Evidence ledger")
-    L.append("sidebar_label: Evidence ledger")
+    L.append("sidebar_label: Evidence")
     L.append("sidebar_position: 3")
     L.append("description: Every decision, finding and thread in the edit-slice record, "
              "generated from the repository so it cannot drift from it.")

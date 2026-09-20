@@ -1,6 +1,6 @@
 ---
 title: "Rank-one edits are pinned to their subject"
-sidebar_label: Review packet
+sidebar_label: Paper
 sidebar_position: 2
 description: A weight edit's update coefficient is exactly 1 on any prompt beginning with the edited subject, for any covariance, at every layer. Measured, with the evidence and the attack surface.
 ---

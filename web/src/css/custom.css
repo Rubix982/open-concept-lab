@@ -11,9 +11,14 @@
 
 :root {
   /* --- ink & paper ------------------------------------------------------ */
-  --ocl-paper: #ffffff;
+  /* Three surfaces, the way dark mode already has them. Light mode had paper and
+     raised set to the same #ffffff, so every block styled as "raised" — the abstract,
+     figure frames, callouts — rendered as flat white and the distinction did nothing.
+     Lifting the page off pure white fixes that for free AND stops a 70-minute read
+     glaring; raised is now white, which is genuinely above the page. */
+  --ocl-paper: #f9fafb;
   --ocl-paper-raised: #ffffff;
-  --ocl-paper-sunken: #f5f6f7;
+  --ocl-paper-sunken: #eef1f4;
   --ocl-ink: #16283c;
   --ocl-ink-muted: #55677a;
   --ocl-ink-faint: #8090a0;
@@ -443,6 +448,10 @@ div[class^="codeBlockTitle"] {
   font-size: 0.86rem;
   border-collapse: collapse;
   margin: 1.8rem 0;
+  /* These tables are comparisons — 67% against 67%, 0.958 against 0.082. Proportional
+     figures make each column jitter by a few pixels per row, which is exactly the
+     comparison the reader is trying to make. */
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 /* `display: table` gives proper column sizing but removes Docusaurus's
@@ -475,6 +484,14 @@ div[class^="codeBlockTitle"] {
   padding: 0.5rem 0.75rem 0.5rem 0;
   text-align: left;
   vertical-align: top;
+}
+
+/* Markdown's `| ---: |` emits an inline text-align, which wins over the rule above.
+   Give those cells breathing room on the left so a right-aligned number does not
+   collide with the label beside it. */
+.markdown table th[style*="right"],
+.markdown table td[style*="right"] {
+  padding-left: 1.1rem;
 }
 
 .markdown table th {

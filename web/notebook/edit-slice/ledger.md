@@ -1,6 +1,6 @@
 ---
 title: Evidence ledger
-sidebar_label: Evidence ledger
+sidebar_label: Evidence
 sidebar_position: 3
 description: Every decision, finding and thread in the edit-slice record, generated from the repository so it cannot drift from it.
 toc_max_heading_level: 2
