@@ -18,3 +18,10 @@ is misattributed. This entry is the record.
 - [R-002] Mech interp exemplar corpus — 19 marked passages in `corpus/papers/`,
   finding in `agents/shared/findings.md`
 - Threads: T-003 and T-006 answered; T-008 and T-009 opened — `threads.md`
+
+## 2026-09-20 · Session 3
+
+- [R-003] Deletion list — 20 entries in `corpus/deletion-list.md`; measurement
+  instruments in `agents/researcher/findings/`, output in `logs/`
+- [O-002] Opened E-001 — spike to test Tier 2 against a real draft before packaging
+- Threads: T-007 partially answered; T-010 opened — `threads.md`

@@ -119,3 +119,18 @@ imports wrong intuitions silently. So the rule needs a test for when a borrowing
 is licensed. Related: CLAUDE.md's Premise Dry-Run rule 6 already warns about
 structural resemblance as a false friend, which is the same hazard one level up.
 **Answer:** —
+
+### T-010 · Is there any cheap discriminator of research-worthiness?
+
+**Status:** open
+**Parent:** T-002
+**Opened:** 2026-09-20
+**Question:** R-003 measured the obvious candidate and it failed: word-level
+probes separate Saif from everyone (0.0 vs 9.6 vs 14.7 per 10k) but barely
+separate ICLR papers from AI-generated reports. So surface vocabulary does not
+carry research quality. Is there a *measurable* proxy that does — density of
+falsifiable claims, ratio of asserted-to-cited sentences, count of numbers
+attached to an instrument, presence of a named negative result? Or is this
+irreducibly a judgement call, in which case the skill should stop pretending
+otherwise and say so. Worth one cheap pass before conceding.
+**Answer:** —

@@ -39,7 +39,8 @@ sentence will produce better-looking mush. T-001 tests it.
 | O-001 | Orchestrator | Initialize project, fix scope          | closed      |
 | R-001 | Researcher   | Voice profile from Saif's own corpus   | closed      |
 | R-002 | Researcher   | Exemplar corpus — mech interp papers   | closed      |
-| R-003 | Researcher   | The deletion list                      | open        |
+| R-003 | Researcher   | The deletion list                      | closed      |
+| E-001 | Engineer     | Test Tier 2 against a real draft       | open        |
 
 ## Blocked
 
@@ -62,6 +63,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - O-001 · Initialize project structure, split scope four ways
 - R-001 · Voice profile — `agents/shared/findings.md`
 - R-002 · Mech interp exemplar corpus — `corpus/papers/`, findings.md
+- R-003 · Deletion list + negative-space measurement — `corpus/deletion-list.md`
 
 ## Known gap — closed by R-002
 
@@ -79,7 +81,20 @@ are *weaker* than Saif's own writing. ROME's limitations discussion is thinner
 than `the-check-that-was-never-there`'s five-item "Honest limits". The skill takes
 notation from the papers and epistemic discipline from Saif.
 
+## What R-003 changed
+
+The word list does not do the work. Measured: Saif's corpus 0.0 hits/10k, published
+exemplars 9.6, AI-generated reports 14.7. A 1.5× separation between good papers and
+slop is not a discriminator — a lint tuned to catch the reports flags ROME almost as
+hard. Tier 1 is Saif's house standard (stricter than the literature) and a cheap
+floor; **Tier 2's eight structural questions carry the project.**
+
+Corpus assembly is now complete: voice profile, 19 exemplar passages, 20 deletion
+entries. The risk from here is building the skill around a frame that has never
+touched a draft.
+
 ## Next Orchestrator Action
 
-R-003 (deletion list) is unblocked and has both inputs it needs. After it closes,
-open the first E- ticket to assemble the skill itself.
+Open E-001 **before** any skill packaging: run the Tier 2 questions against one
+real draft and see whether they change the output. If they do not, the corpus was
+necessary and the frame is still wrong.

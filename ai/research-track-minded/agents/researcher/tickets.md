@@ -89,7 +89,7 @@ reasons recorded in the index.
 
 ### R-003 · The deletion list
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-18
@@ -108,6 +108,15 @@ Target length 12–20 entries. A longer list is not enforceable in one pass.
 
 **Blockers:** — (R-001 and R-002 both closed; unblocked 2026-09-19)
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- `corpus/deletion-list.md` — 20 entries, Tier 1 (12 lintable) + Tier 2 (8 structural)
+- `agents/researcher/findings/negspace.py`, `control.py` — measurement instruments
+- `logs/r003-negspace-2026-09-20.log` — run output
+- `agents/shared/findings.md` → "[R-003] Finding: the deletion list"
+
+**Closed:** 2026-09-20 — 20 entries against a target of 12–20. Measurement
+confirmed the corpus is at literal zero on all fifteen probes, and showed the
+exemplar/anti-exemplar separation is only 1.5×, so Tier 1 is a house standard
+rather than a quality detector. Tier 2 carries the project and is untested against
+a real draft.
