@@ -114,7 +114,7 @@ contract: does forcing a falsifiable claim produce the action items for free?
 
 ### T-009 · Does the naming rule generalise past borrowed vocabulary?
 
-**Status:** open
+**Status:** answered — **with a default, not just a threshold**
 **Parent:** T-003
 **Opened:** 2026-09-19
 **Question:** Lookbacks works because `pointer`/`address`/`payload` denote the
@@ -123,7 +123,25 @@ evocative. An inexact borrowing would be worse than a coined term, since it
 imports wrong intuitions silently. So the rule needs a test for when a borrowing
 is licensed. Related: CLAUDE.md's Premise Dry-Run rule 6 already warns about
 structural resemblance as a false friend, which is the same hazard one level up.
-**Answer:** —
+**Answer:** [R-005]. A name is a channel for inferences the reader draws without being
+told, and the costs are asymmetric: a coined term announces that it needs defining, so
+an error in it gets caught, while an inexact borrowing hands over wrong semantics for
+free and neither party notices. **A coinage fails loudly; a bad borrowing fails
+quietly — so under genuine uncertainty, coin.** That reverses what
+`references/mathematics.md` said.
+
+The test is to enumerate three inferences the source domain licenses, mark each
+holds/fails/untested, and refuse the borrowing if a *relied-on* one fails — where
+"relied on" means it appears in a claim you make, which ties it to Pass 1 and stops it
+being gerrymandered after the verdict. If you cannot produce three, you do not know the
+source domain well enough to borrow from it.
+
+Reproduces all four prior judgements (pointer LICENSED; Dream-RSI simulator, LM
+unconscious, and "certification" NOT), three of which predate the test. Weak joint:
+step 1 depends on which reader, and a writer imagines an agreeable one. Never met an
+adversarial case. Stated prediction that could fail: on a genuinely novel borrowing the
+test will mostly return *untested*, making it a prompt for experiments rather than a
+gate.
 
 ### T-010 · Is there any cheap discriminator of research-worthiness?
 

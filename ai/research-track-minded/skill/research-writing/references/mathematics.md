@@ -49,7 +49,7 @@ One clause, at the moment the term is dropped. **Unannounced suppression is what
 makes generated mathematics un-checkable** — the reader cannot distinguish an
 omission from an error, so they must distrust the whole derivation.
 
-## Borrow names; do not coin them
+## Borrow a name when the borrowing is exact; otherwise coin one
 
 Lookbacks (Prakash et al., ICLR 2026) names its mechanism with `pointer`,
 `address`, `payload`, `dereference`, `lookback` — lifted from systems programming,
@@ -58,14 +58,46 @@ where they denote the same structure. The semantics arrive already installed.
 A coined abstraction ("the Deferred Retrieval Coefficient") forces the reader to
 carry an unanchored symbol for the rest of the paper.
 
-**The borrowing must be exact, not evocative.** An inexact borrowing is worse than
-a coinage, because it imports wrong intuitions silently and the reader has no
-signal that it has done so. Test: does the source domain's structure hold in every
-respect you will rely on? If you have to say "loosely speaking, it's like a…",
-do not borrow.
+**The failure is asymmetric, which is why the default matters.**
 
-Related trap: a structural resemblance between a measured phenomenon and a
-familiar one is a false friend. It explains nothing and costs credibility.
+- A **coined term** tells the reader they do not know it, so they read the
+  definition. An error there gets caught.
+- An **exact borrowing** hands over the semantics free and correctly. The payoff.
+- An **inexact borrowing** hands them over free and *wrongly*, and neither reader
+  nor writer notices.
+
+A coinage fails loudly; a bad borrowing fails quietly. **Under genuine uncertainty
+about exactness, coin.**
+
+### The test — enumerate the free inferences
+
+1. **Write down three things a reader will infer from the name without being told.**
+   Not what you mean by it: what the source domain licenses.
+2. **Mark each holds / fails / untested** in your target.
+3. **If a relied-on inference fails, do not borrow.** An inference is *relied on* if
+   it appears in a claim you make — check against your Pass 1 table. If it never
+   enters a claim, you do not rely on it.
+4. **If one fails that you do not rely on**, borrow, and spend one clause saying
+   where the analogy stops.
+5. **If you cannot produce three, you do not know the source domain well enough to
+   borrow from it.** Coin instead.
+
+Worked, `pointer`: dereferencing retrieves the payload (holds, relied on); the
+pointer is a copy of reference information rather than the thing (holds, relied on);
+many pointers may share one address (untested, not relied on). One untested and
+unrelied-on → borrow, note where it stops.
+
+Worked, `certification`: it licenses "a process yielding an artifact a third party
+can check without repeating the work". Nothing in the knowledge-editing literature
+offers that, and "certification layer" relies on it — the word is doing the work of
+promising a guarantee. Do not borrow. The exact term is `regression suite`.
+
+**Known weak joint:** step 1 depends on which reader, and a writer will imagine a
+reader who agrees with them. A systems programmer and a statistician infer different
+things from `pointer`.
+
+Related trap: a structural resemblance between a measured phenomenon and a familiar
+one is a false friend. It explains nothing and costs credibility.
 
 ## Checklist
 
@@ -74,4 +106,5 @@ familiar one is a false friend. It explains nothing and costs credibility.
 - [ ] No expression introducing more than two new bindings
 - [ ] One running example, reused
 - [ ] Every suppressed term acknowledged in a clause
-- [ ] Every borrowed name exact in the respects relied on
+- [ ] Every borrowed name through the free-inference test, and coined rather
+      than borrowed wherever exactness was uncertain

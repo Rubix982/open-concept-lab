@@ -65,3 +65,5 @@ is misattributed. This entry is the record.
   rules added to `skill/research-writing/SKILL.md`. Finding plus a self-refuting
   correction in `agents/shared/findings.md`
 - T-002 marked answered (stale since R-003)
+- [R-005] T-009 answered — the free-inference test, and a reversed default: coin under
+  uncertainty. `skill/research-writing/references/mathematics.md`

@@ -176,3 +176,55 @@ and its own prescribed test refuted that within the hour. Two failures survive, 
 about what licenses a verdict: misreading a primary source, and shelving on an
 unverified scoop verdict. Fix is two rules, not a tool — the asymmetric evidence bar
 and read-the-methods-not-the-prose.
+
+---
+
+### R-005 · A test for when a borrowed name is licensed
+
+**Status:** closed
+**Type:** research
+**Priority:** medium
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 2h
+
+**Description:**
+Resolves [T-009]. `references/mathematics.md` tells the writer to borrow an existing
+name when the borrowing is "exact, not evocative", and warns that an inexact
+borrowing is worse than a coinage. It supplies no way to tell the difference, so the
+rule is currently an instruction to exercise judgement.
+
+**Deliverable: an operational test**, plus an honest account of what it cannot do.
+
+**Validation set — four judgements already made, three of them before any test
+existed.** A candidate test must reproduce all four, or it is not capturing the
+criterion actually in use:
+
+1. **LICENSED** — `pointer` / `address` / `payload` / `dereference` for the lookback
+   mechanism (Prakash et al., ICLR 2026; `corpus/papers/lookbacks.md`).
+2. **NOT LICENSED** — "history is already a simulator" applied to a ticket and thread
+   record ([T-011], decided 2026-09-20).
+3. **NOT LICENSED** — depth-psychology vocabulary applied to a language model
+   (`CLAUDE.md`, Premise Dry-Run rule 6: "an LM has no unconscious").
+4. **NOT LICENSED** — "certification" for exhaustive post-edit testing
+   (`e005/02-draft.md`, written 2026-09-20).
+
+Reproducing four cases is weak evidence — they are all Saif's or mine and none is
+adversarial. Say so rather than presenting a four-for-four as validation.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `agents/shared/findings.md` → "[R-005] Finding: borrowed names are a bet with an
+  invisible downside"
+- `skill/research-writing/references/mathematics.md` — the free-inference test;
+  section heading reversed from "Borrow names; do not coin them"
+
+**Closed:** 2026-09-20 — five-step test, reproducing all four validation cases, three
+of which predate it. The load-bearing move is not the test but the **default**: the
+costs are asymmetric, a coinage fails loudly and a bad borrowing fails quietly, so
+under uncertainty coin. That reverses the section's previous advice. "Relied on" is
+made checkable by tying it to Pass 1 — an inference is relied on if it appears in a
+claim. Step 1 is the acknowledged weak joint and the test has never met an
+adversarial case.

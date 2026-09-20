@@ -529,3 +529,101 @@ reframe that makes the work smaller, and a two-rule change that leaves both exis
 is thorough because that project was at a stage where positioning mattered. Both
 sections being good makes that alternative *more* plausible, not less — depth may
 track project stage rather than any method.
+
+---
+
+## [R-005] Finding: borrowed names are a bet with an invisible downside
+
+_Date: 2026-09-20_
+
+Resolves [T-009]. The skill says borrow when the borrowing is "exact, not
+evocative" and supplies no way to tell. This is the test, its derivation, and where
+it fails.
+
+**Confidence: medium.** The test reproduces four judgements, three of which were made
+before it existed — which is evidence it describes the criterion actually in use, not
+that the criterion is correct. All four cases are ours and none is adversarial.
+
+### Why the rule needs a default, not just a threshold
+
+A name is a channel for inferences the reader draws **without being told**. That is
+the whole value of borrowing and the whole risk, and the two are not symmetric:
+
+| | reader's state | cost of being wrong |
+| --- | --- | --- |
+| **coined term** (`Deferred Retrieval Coefficient`) | knows they do not know; goes and reads the definition | friction, and the error is caught at the definition |
+| **exact borrowing** (`pointer`) | gets the semantics free and correctly | none — this is the payoff |
+| **inexact borrowing** | gets the semantics free and **wrongly**, and does not know it | silent error, in the reader and usually in the writer too |
+
+A coinage fails loudly; a bad borrowing fails quietly. **So under genuine
+uncertainty about exactness, coin.** The skill currently encourages borrowing
+without saying what to do when you are unsure, which is the case that matters.
+
+### The test: enumerate the free inferences
+
+Before borrowing a name from another domain:
+
+1. **Write down three things a reader will infer from the name without being told.**
+   Not what you mean by it — what the source domain licenses.
+2. **Mark each: holds / fails / untested** in your target.
+3. **If a *relied-on* inference fails, do not borrow.**
+4. **If an inference fails that you do not rely on, borrow and spend one clause
+   saying where the analogy stops.**
+5. **If you cannot produce three, you do not know the source domain well enough to
+   borrow from it.** Coin instead.
+
+**"Relied on" is made checkable by Pass 1**, which is the only reason step 3 is not
+a hand-wave: an inference is relied on if it appears in a claim you make. If it
+never enters a claim, you do not rely on it. That test can be applied by a reader,
+and it stops "relied on" from being gerrymandered after the verdict.
+
+Step 5 is a competence gate and it is the cheapest of the five. Borrowing from a
+field you half-know is where inexactness comes from.
+
+### Against the four cases
+
+**1 · `pointer` / `address` / `payload` — LICENSED.** Free inferences: dereferencing
+retrieves the payload (holds, relied on); the pointer is a copy of reference
+information rather than the thing itself (holds, relied on); many pointers may share
+one address (untested, not relied on). One untested inference, not relied on →
+borrow, note where it stops.
+
+**2 · "history is already a simulator" — NOT LICENSED.** Free inference: replaying a
+different policy over the record yields the true outcome. In Dream-RSI it holds —
+every node was executed and its result recorded. In a ticket record it **fails**: the
+branch not taken has no outcome. And it is exactly the inference the borrowing would
+rely on. → Do not borrow. Matches [T-011], decided before this test.
+
+**3 · Depth-psychology vocabulary for an LM — NOT LICENSED.** Free inferences:
+contents inaccessible to the system yet causally active (arguable); a mechanism that
+put them there, repression (**fails** — no such mechanism); they can be surfaced by
+analysis (**fails**). Using the word at all relies on the second. → Do not borrow.
+Matches `CLAUDE.md`.
+
+**4 · "certification" — NOT LICENSED.** Free inference: the process yields an
+artifact a third party can check without repeating the work. Nothing in the knowledge-
+editing literature proposes that. "Certification layer" relies on it — the word is
+doing the work of promising a guarantee. → Do not borrow; "regression suite" is the
+exact term. Matches `e005/02-draft.md`.
+
+### Where this test fails
+
+**Four cases, all ours, none adversarial.** Three predate the test, which is the only
+thing keeping this from being a post-hoc fit — but a test built to reproduce four
+decisions will reproduce four decisions. It has never been run on a borrowing someone
+else defended.
+
+**Step 1 is the weak joint.** "Three things a reader will infer" depends on which
+reader. A systems programmer and a statistician draw different free inferences from
+`pointer`. The test gives no way to fix the reader, and in practice the writer will
+imagine a reader who agrees with them.
+
+**It cannot catch a borrowing that is exact and still bad.** A name can pass every
+step and import an unhelpful *frame* — the structure holds, and the reader still
+attends to the wrong thing. Nothing here addresses that.
+
+**Untested prediction, stated so it can fail:** applied to a borrowing I have not
+already ruled on, the test will most often return *untested* rather than a verdict,
+because free inferences about a novel target are usually unmeasured. If that happens
+the test is a prompt for experiments rather than a gate, which is a different and
+less useful thing than it currently claims to be.
