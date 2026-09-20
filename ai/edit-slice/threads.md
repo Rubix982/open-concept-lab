@@ -428,7 +428,7 @@ tops out at 53% and GPT-J holds 13%, which moved the edit target to Llama-3.1-8B
 [T-050, E-006].
 ### T-041 · Does contraction EVER occur, on hand-built deductive grounds?
 
-**Status:** ACTIVE — un-parked 2026-09-14, park note was wrong
+**Status:** answered — **no**
 **Parent:** T-013
 **Opened:** 2026-09-10
 **Question:** E-002 found grounds evidential *as Wikidata expresses them* — a fact
@@ -436,22 +436,14 @@ about the schema, not about knowledge. Hand-build small deductive ground sets
 where entailment is explicit, edit the head on GPT-J, and ask whether the editor
 retracts anything at all. Existence claim only; hand-picked sets may never be used
 for a frequency claim [O-004].
-**Answer:** —
-**Park note WITHDRAWN 2026-09-14 — it was a misattribution.** I parked this citing
-the annotation study. The annotation study validates the **`contested` bucket of
-the triage tool** (design.md lens 5: "there is no ground truth for this bucket by
-construction; its validation is annotator disagreement"), which needs >=2 people to
-measure disagreement at all. T-041 asks a different question and its own text says
-**"Existence claim only [O-004]"** — existence needs one careful construction and an
-honest label, not inter-annotator agreement. The ticket was blocked on a
-requirement belonging to a different ticket.
-
-**Unblocked.** [E-006] established the edit is applicable on Llama-3.1-8B via NDIF
-(intervention lands, remote gradients work). The ground sets are the remaining work
-and we build them — see [T-058].
-
-**Standing constraint, unchanged:** hand-constructed sets license an EXISTENCE
-claim and never a FREQUENCY one. No rate may be estimated from them [O-004].
+**Answer:** no. This was the project's central question and [E-015] answers it: editing a
+conclusion does not retract its grounds, and it does not coherently rewrite them either.
+The apparent revision measured in [E-013]/[E-014] is **structural displacement** —
+[E-016] showed ROME's `u·k*` normalisation pins the update coefficient to exactly 1 at the
+subject's last token, and [E-017] showed no probe form mentioning the subject escapes it.
+A work-country edit relocates a birthplace exactly as often as a birth-country edit
+(+0.0 pp, McNemar p = 1.000), so no inference is involved. Contraction was not observed,
+and the mechanism explains why it could not have been.
 
 ### T-042 · Amend the charter's no-scaling rule
 
@@ -803,7 +795,7 @@ See findings [D-002], which corrects [R-006].
 
 ### T-058 · Transitive containment as the deductive ground family
 
-**Status:** ACTIVE
+**Status:** answered
 **Parent:** T-041
 **Opened:** 2026-09-14
 **Question:** [E-002] found grounds *as Wikidata expresses them* are evidential —
@@ -841,13 +833,17 @@ part-whole (same shape as containment, fewer clean chains).
 **Open:** does possession hold for all three facts in a chain? A chain where the
 model lacks inner-2 cannot test contraction. Possession filtering applies here and
 will shrink the usable set — that number is itself worth reporting.
-**Answer:** —
+**Answer:** built and run. 136 chains mined, gated to 78 usable at 8B under the [E-012] measure,
+42 carried through the edit. The family did what it was designed to do — it supplied
+grounds that genuinely entail — and the result is that the editor is indifferent to the
+entailment ([E-015]). The family was sound; the hypothesis about editors was not.
+
 
 ---
 
 ### T-059 · Is the `outer` deficit answer surface form rather than knowledge?
 
-**Status:** active
+**Status:** answered
 **Parent:** T-058
 **Opened:** 2026-09-15
 **Question:** [E-009b] found the `outer` possession deficit is two strings —
@@ -857,7 +853,13 @@ Japan 4/4. Article-taking names hold at 15% (n=54), bare names at 84% (n=82). Is
 ungrammatical — we score a Wikidata label, not a natural continuation — or because
 the model genuinely lacks the fact? 28 chains hang on the answer: usable moves
 74/136 to 102/136 if it is an artifact.
-**Answer:** E-011 in flight — same items, same pool, two renderings.
+**Answer:** surface form, partly — and the fuller answer is [E-012]'s. Rendering countries naturally
+moved rank-1 on modal answers from 21% to 69%, so the deficit was substantially
+expressibility rather than knowledge. But fixing the rendering destroys the placeholder
+control (the answer becomes prior-favoured at the same 69%), which is why the paired
+control was needed. Both defects were real and orthogonal: neither fix alone moved the
+usable count, together they moved it +20.
+
 
 ---
 
@@ -936,7 +938,7 @@ more important result.
 
 ### T-063 · Are entailed conclusions less robust than their premises?
 
-**Status:** open — but its motivating datum is gone; see [E-015]
+**Status:** dropped
 **Parent:** T-062
 **Opened:** 2026-09-15
 **Question:** The move-4 variable from the Part II dry-run, and the one quantity in
@@ -946,7 +948,13 @@ matched chain, is `outer` held under systematically fewer phrasings than `inner_
 and `inner_2`? A left-shifted `outer` distribution is evidence the model keeps the
 conclusion separately rather than deriving it — which bears directly on whether
 editing the conclusion can leave the premises standing.
-**Answer:** — E-015, gated on T-062 answering non-Null.
+**Answer:** dropped. The motivating datum — that an edit moves the defeasible premise and spares the
+necessary one — was withdrawn by [E-015]. The asymmetry it was built on turned out to be
+`inner_1` sharing the subject prefix while `inner_2` does not ([E-017]), which is a fact
+about ROME's key normalisation rather than about entailment robustness. The question
+remains well-posed in principle and could be revived with a possession-based measure that
+does not route through editing.
+
 
 ---
 

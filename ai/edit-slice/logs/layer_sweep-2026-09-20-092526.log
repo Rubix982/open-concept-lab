@@ -1,0 +1,2 @@
+2026-09-20 09:25:26,364 INFO     layer_sweep  run layer_sweep -> logs/layer_sweep-2026-09-20-092526.log
+2026-09-20 09:25:26,364 INFO     layer_sweep  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "layers": [0, 5, 10, 15, 20, 25, 31], "measures": "coefficient only", "thread": "T-075"}

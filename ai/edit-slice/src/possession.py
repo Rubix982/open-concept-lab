@@ -32,7 +32,7 @@ from __future__ import annotations
 import json
 import random
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from pathlib import Path
@@ -192,6 +192,26 @@ class FilterReport:
             return 0.0
         return sum(r.rank_prior == 1 for r in self.results) / len(self.results)
 
+    def attractor(self) -> dict[str, tuple[int, str, float]]:
+        """Per relation: distinct answers, the dominant one, and its share.
+
+        [T-073]. Three separate findings in this project turned on a concentrated pool
+        with one dominant filler, each time arriving disguised as a finding about the
+        model: [E-009b] (US = 40/136 of countries, read as a knowledge deficit),
+        [E-011] (article-taking names, read as ignorance), and [E-014]/[E-015]
+        (Washington D.C. absorbing 33% of edit destinations). A pool's attractor mass is
+        therefore reported alongside its size, the way out-degree must record its edge
+        vocabulary — not left for someone to notice.
+        """
+        by_rel: dict[str, Counter] = defaultdict(Counter)
+        for r in self.results:
+            by_rel[r.relation_id][r.true_answer] += 1
+        out = {}
+        for rel, counts in sorted(by_rel.items()):
+            top, n = counts.most_common(1)[0]
+            out[rel] = (len(counts), top, n / sum(counts.values()))
+        return out
+
     def by_relation(self) -> dict[str, tuple[int, float]]:
         groups: dict[str, list[ItemResult]] = defaultdict(list)
         for r in self.results:
@@ -213,6 +233,9 @@ class FilterReport:
              "held_rate": self.held_rate,
              "prior_rate": self.prior_rate,
              "coverage": self.coverage,
+             # [T-073] — a pool's attractor mass travels with every artifact it produces.
+             "attractor": {rel: {"distinct": d, "top": t, "share": sh}
+                           for rel, (d, t, sh) in self.attractor().items()},
              "n_scored": len(self.results),
              "n_skipped": len(self.skipped),
              "skipped": [{"case_id": c, "relation_id": r, "reason": w}
@@ -233,8 +256,15 @@ class FilterReport:
             "",
             "  by relation:",
         ]
+        att = self.attractor()
         for rel, (n, rate) in self.by_relation().items():
-            lines.append(f"    {rel:<10}n={n:<5}{rate:>5.0%}")
+            distinct, top, share = att.get(rel, (0, "-", 0.0))
+            lines.append(f"    {rel:<10}n={n:<5}{rate:>5.0%}"
+                         f"   pool: {distinct} distinct, top {top!r} {share:.0%}")
+        if any(share >= 0.25 for _, _, share in att.values()):
+            lines += ["", "  WARNING: a single answer holds >=25% of a relation's pool.",
+                      "  A concentrated pool makes rank-1 harder for reasons unrelated to",
+                      "  knowledge, and has produced three false findings here already."]
         if self.skipped:
             by_reason: dict[str, int] = defaultdict(int)
             for _, _, reason in self.skipped:

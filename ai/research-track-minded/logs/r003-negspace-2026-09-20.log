@@ -1,0 +1,47 @@
+# R-003 negative-space measurement — 2026-09-20
+
+## negspace.py — Saif's corpus
+prose words: 20481
+
+    0     0.0/10k  it is important to note
+    0     0.0/10k  in this section we
+    0     0.0/10k  Moreover/Furthermore/Additionally
+    0     0.0/10k  hedge adverbs
+    0     0.0/10k  delve/leverage/utilize
+    0     0.0/10k  crucial/pivotal/vital
+    0     0.0/10k  landscape/realm/tapestry
+    1     0.5/10k  underscores/showcases/highlights
+    0     0.0/10k  reaction adverbs
+    0     0.0/10k  as can be seen / as shown in
+    0     0.0/10k  it should be noted
+    2     1.0/10k  exclamation
+    0     0.0/10k  rich tapestry / deep dive
+    0     0.0/10k  in conclusion / to summarize
+    0     0.0/10k  plays a (key|significant) role
+  391   190.9/10k  -- comparator: em-dash
+  166    81.1/10k  -- comparator: 'not' contrast
+
+## control.py — exemplars vs AI reports
+
+=== ANTI-EXEMPLAR (AI report) — 38773 words ===
+    1     0.3/10k  throat-clearing
+   17     4.4/10k  Moreover/Furthermore/Additionally
+    6     1.5/10k  hedge adverbs
+   25     6.4/10k  delve/leverage/utilize
+    2     0.5/10k  crucial/pivotal/vital
+    2     0.5/10k  underscores/showcases/highlights
+    3     0.8/10k  reaction adverbs
+    1     0.3/10k  in conclusion / in summary
+   57    14.7/10k  TOTAL
+
+=== EXEMPLARS (published papers) — 50819 words ===
+    6     1.2/10k  section pre-announcement
+    9     1.8/10k  Moreover/Furthermore/Additionally
+    8     1.6/10k  hedge adverbs
+    5     1.0/10k  delve/leverage/utilize
+   13     2.6/10k  crucial/pivotal/vital
+    2     0.4/10k  underscores/showcases/highlights
+    3     0.6/10k  reaction adverbs
+    2     0.4/10k  in conclusion / in summary
+    1     0.2/10k  plays a ___ role
+   49     9.6/10k  TOTAL

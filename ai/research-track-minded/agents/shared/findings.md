@@ -265,3 +265,85 @@ defer to the papers there.
 - **NNSight / NDIF** — systems and tooling register, a different document type.
   Revisit if the skill grows a tool-paper mode.
 - **Unified Concept Editing** — diffusion, not LM mech interp. Off-target for v1.
+
+---
+
+## [R-003] Finding: the deletion list, and why a word list is not the deliverable
+
+_Date: 2026-09-20_
+
+Twenty entries in `corpus/deletion-list.md`, each with the banned construction, an
+invented example, and the replacement. Split into a lintable Tier 1 (12) and a
+structural Tier 2 (8). R-001's negative space was a qualitative read; this ticket
+measured it.
+
+**Confidence: high** on the measurement (fifteen regex probes over 110k words,
+instruments committed at `agents/researcher/findings/negspace.py` and
+`control.py`, output at `logs/r003-negspace-2026-09-20.log`). **Medium** on the
+Tier 2 entries, which are argued from the exemplar passages rather than measured
+and are the part most likely to need revision after first use.
+
+### The measurement confirmed R-001 and then undercut the obvious next step
+
+| Body | Words | Hits per 10k |
+| --- | ---: | ---: |
+| Saif's corpus (5 documents) | 20,481 | **0.0** |
+| Published exemplars (ROME, Lookbacks, SFC) | 50,819 | **9.6** |
+| AI-generated reports (3, `rome-neighbors/`) | 38,773 | **14.7** |
+
+**Saif's corpus is at literal zero**, not "almost none" as R-001 estimated. Fifteen
+probes, 20k words, no hits. The three apparent matches were `<!-- truncate -->`
+HTML comments (×2) and one descriptive use of "showcased". Checked by hand.
+
+**The separation that matters is not there.** Exemplars to anti-exemplar is 9.6
+against 14.7 — a factor of 1.5, which is not a usable discriminator. ROME,
+Lookbacks and Sparse Feature Circuits between them use "crucial" 13 times,
+"Furthermore" 9 times, and pre-announce sections 6 times. A lint tuned to flag the
+AI reports flags three ICLR/NeurIPS papers nearly as hard.
+
+So the deletion list is **Saif's house standard, stricter than the literature he
+is writing toward** — a real and usable finding — but it is **not a quality
+detector**, and the project should not pretend otherwise. What makes the AI
+reports useless is invisible to every probe run here.
+
+This is the R-003 equivalent of the headline-versus-components problem: the
+headline ("the corpus avoids these constructions") is confirmed, and reading the
+component quantities is what shows the intended application does not follow from
+it.
+
+### Consequence for the design
+
+Tier 1 stays, as a cheap floor that runs in seconds over a finished draft. Tier 2
+carries the project. Its eight entries are stated as **questions asked of the
+draft's structure**, because no regex reaches them:
+
+1. Can this heading be rewritten as a sentence with a truth value?
+2. What in this paragraph could turn out to be false?
+3. Which gap, what would closing it cost, what would change?
+4. Was this object named in English, by its function, before it got a symbol?
+5. Is every suppressed term acknowledged where it is suppressed?
+6. Does an existing vocabulary already denote this structure exactly?
+7. Is any qualification appearing outside the limits section?
+8. Has the scope of this criticism been fixed before the damage is described?
+
+These are closer to the design lenses than to copy-editing. **If one entry
+survives into the skill it is #2** — the falsifiability question, which is the
+defining absence in the anti-exemplar and the thing R-002 identified as the source
+of "a lot of text and I don't know what to do with it."
+
+### Partially answers T-007
+
+A hedging lint would find nothing on the corpus, because the corpus is already at
+zero. Its value is entirely on the **draft**, not as a corpus-derived threshold —
+there is no ratio to calibrate against, only a target of zero. That makes it
+cheaper to build than T-007 assumed, and less informative. A token list is
+sufficient for Tier 1; the syntactic hedging T-007 worried about ("tends to suggest
+that") belongs to Tier 2 entry 19 and will not be caught by a list.
+
+### What this does not establish
+
+The Tier 2 questions have never been run against a real draft. They are derived
+from eight passages and one negative control, which is enough to state them and
+not enough to know they change an output. **The first E- ticket should test them
+on a draft before any of this is packaged as a skill** — otherwise the project
+will have built the polished frame that the Premise Dry-Run warns about.
