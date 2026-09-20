@@ -19,7 +19,16 @@
   --ocl-ink-faint: #8090a0;
   --ocl-link: #1c4c7c;
   --ocl-link-hover: #0f3358;
+  /* DESIGN.md §3.3 — zero, everywhere. Separation is hairlines and whitespace, never
+     a softened corner. Kept as a token so the decision is one line to revisit. */
+  --ocl-radius: 0;
   --ocl-oxide: #8c3a2e;
+  /* The semantic pair. Oxide marks revision and withdrawal; held marks a claim that
+     survived. They are states, never decoration — no washes, no section accents.
+     (DESIGN.md §3.1 calls these --ocl-withdrawn and --ocl-held; oxide predates that
+     name and is kept, because renaming it would touch every rule that uses it.) */
+  --ocl-held: #3f7a5a;
+  --ocl-held-ink: #35664c;
   /* Slightly darker than on tinted paper — a hairline has to hold its own
      against pure white. */
   --ocl-rule: #dde1e5;
@@ -73,7 +82,7 @@
   --ifm-code-background: rgba(22, 40, 60, 0.055);
   --ifm-code-padding-vertical: 0.12em;
   --ifm-code-padding-horizontal: 0.3em;
-  --ifm-code-border-radius: 2px;
+  --ifm-code-border-radius: var(--ocl-radius);
   --ifm-pre-background: #f9fbfb;
   --ifm-pre-line-height: 1.6;
 
@@ -106,7 +115,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(28, 76, 124, 0.09);
   --ifm-breadcrumb-item-background-active: transparent;
   --ifm-global-radius: 3px;
-  --ifm-alert-border-radius: 3px;
+  --ifm-alert-border-radius: var(--ocl-radius);
   --ifm-alert-border-left-width: 2px;
   --ifm-alert-shadow: none;
 }
@@ -121,6 +130,8 @@
   --ocl-link: #8fbbe4;
   --ocl-link-hover: #bcd8f2;
   --ocl-oxide: #d08a7b;
+  --ocl-held: #6faa89;
+  --ocl-held-ink: #82bb9c;
   --ocl-rule: #253442;
   --ocl-rule-strong: #38495a;
   --ocl-frame: #2b3a48;
@@ -159,7 +170,7 @@ body {
 :focus-visible {
   outline: 2px solid var(--ocl-link);
   outline-offset: 2px;
-  border-radius: 1px;
+  border-radius: var(--ocl-radius);
 }
 
 /* An academic touch: a hairline ruled frame around the page, the way a title
@@ -407,7 +418,7 @@ body::after {
   margin-bottom: 1.6rem !important;
   box-shadow: none !important;
   border: 1px solid var(--ocl-rule);
-  border-radius: 3px;
+  border-radius: var(--ocl-radius);
   font-size: 0.9rem;
 }
 
@@ -479,7 +490,7 @@ div[class^="codeBlockTitle"] {
 .markdown img {
   max-width: 100%;
   height: auto;
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
 }
 
 /* Anchor links stay out of the way until the heading is hovered. */
@@ -509,7 +520,7 @@ div[class^="codeBlockTitle"] {
   padding: 0.9rem;
   background: var(--ocl-paper-raised);
   border: 1px solid var(--ocl-rule);
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
   /* Past the floor below, the figure scrolls rather than shrinking its
      labels into illegibility. */
   overflow-x: auto;
@@ -655,7 +666,7 @@ div[class^="codeBlockTitle"] {
   background: var(--ocl-paper-sunken);
   border: 0;
   border-left: 2px solid var(--ocl-rule-strong);
-  border-radius: 0 2px 2px 0;
+  border-radius: var(--ocl-radius);
   font-size: 0.95rem;
   color: var(--ocl-ink);
 }
@@ -973,7 +984,7 @@ div[class^="codeBlockTitle"] {
   content: "";
   width: 0.42rem;
   height: 0.42rem;
-  border-radius: 50%;
+  border-radius: var(--ocl-radius);
   background: var(--ocl-ink-faint);
   transform: translateY(-0.12rem);
   flex: none;
@@ -985,11 +996,7 @@ div[class^="codeBlockTitle"] {
 }
 
 .ocl-status--standing::before {
-  background: #3f7a5a;
-}
-
-[data-theme="dark"] .ocl-status--standing::before {
-  background: #6faa89;
+  background: var(--ocl-held);
 }
 
 .ocl-status--superseded {
@@ -1335,7 +1342,7 @@ a[class*="tagWithCount"] {
   font-family: var(--ocl-apparatus);
   font-size: 0.75rem;
   border: 1px solid var(--ocl-rule-strong);
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
   padding: 0.1rem 0.42rem;
   color: var(--ocl-ink-muted);
   background: none;
@@ -1471,7 +1478,7 @@ a[class*="tagWithCount"]:hover {
   width: 100%;
   background: var(--ocl-paper-raised);
   border: 1px solid var(--ocl-rule);
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
   overflow: hidden;
 }
 
@@ -1754,7 +1761,7 @@ a[class*="tagWithCount"]:hover {
   display: inline-block;
   padding: 0.08rem 0.42rem;
   border: 1px solid var(--ocl-rule-strong);
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
   font-family: var(--ocl-apparatus);
   font-size: 0.72rem;
   line-height: 1.5;
@@ -1763,8 +1770,8 @@ a[class*="tagWithCount"]:hover {
 }
 
 .ocl-pill--read {
-  border-color: color-mix(in srgb, #3f7a5a 55%, transparent);
-  color: #35664c;
+  border-color: color-mix(in srgb, var(--ocl-held) 55%, transparent);
+  color: var(--ocl-held-ink);
 }
 
 .ocl-pill--to-read {
@@ -1780,11 +1787,6 @@ a[class*="tagWithCount"]:hover {
 .ocl-pill--rel-low {
   border-color: var(--ocl-rule);
   color: var(--ocl-ink-faint);
-}
-
-[data-theme="dark"] .ocl-pill--read {
-  border-color: color-mix(in srgb, #6faa89 55%, transparent);
-  color: #82bb9c;
 }
 
 .ocl-check {
@@ -1842,7 +1844,7 @@ a[class*="tagWithCount"]:hover {
   overflow: hidden;
   background: var(--ocl-paper-raised);
   border: 1px solid var(--ocl-rule);
-  border-radius: 2px;
+  border-radius: var(--ocl-radius);
 }
 
 .ocl-card__frame {

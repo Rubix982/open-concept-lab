@@ -126,7 +126,9 @@ def main() -> None:
     L.append("sidebar_position: 3")
     L.append("description: Every decision, finding and thread in the edit-slice record, "
              "generated from the repository so it cannot drift from it.")
-    # 36 record headings would flood the sidebar; the section headings are the useful ones.
+    # 38 record headings would flood the sidebar; the section headings are the useful
+    # ones. h3 rather than h4 because h2 -> h4 skips a level, which fails DESIGN.md
+    # §9.12's "reads correctly with CSS disabled" and is a real screen-reader defect.
     L.append("toc_max_heading_level: 2")
     L.append("---")
     L.append("")
@@ -149,7 +151,7 @@ def main() -> None:
              "original.")
     L.append("")
     for e in dec:
-        L.append(f"#### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
+        L.append(f"### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
         L.append("")
         L.append(f"_{e['kind']} · {e['date']}_ — {e['gist']}")
         L.append("")
@@ -160,7 +162,7 @@ def main() -> None:
              "whole directions at the prior-art gate.")
     L.append("")
     for e in fnd:
-        L.append(f"#### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
+        L.append(f"### {e['id']} · {e['title']} " + "{#" + e["anchor"] + "}")
         L.append("")
         L.append(f"_{e['date']}_ — {e['gist']}")
         L.append("")

@@ -18,91 +18,91 @@ The [paper](./review) argues a claim and the [narrative](/writing/five-days) tel
 
 Engineering decisions and experiment outcomes. Each states its falsification before the run, and corrections keep their own entry rather than editing the original.
 
-#### E-002 · grounds are evidential, not deductive — AGM's ordering half, not its closure half {#E-002}
+### E-002 · grounds are evidential, not deductive — AGM's ordering half, not its closure half {#E-002}
 
 _Decision · 2026-09-10_ — Decision: Model the edit-to-grounds relation as evidential support, not entailment. orphan becomes a graded quantity: the joint implausibility an edit…
 
-#### O-004 · raise the model to GPT-J-6B via NDIF; hand-build deductive grounds for the pilot {#O-004}
+### O-004 · raise the model to GPT-J-6B via NDIF; hand-build deductive grounds for the pilot {#O-004}
 
 _Decision · 2026-09-10_ — Decision: Amend CLAUDE.md's blanket size cap. The pilot moves from GPT2-medium to GPT-J-6B via NDIF, and the pilot's ground sets are hand-built and…
 
-#### E-007 · candidates come from a reference vocabulary, not the edit set {#E-007}
+### E-007 · candidates come from a reference vocabulary, not the edit set {#E-007}
 
 _Decision · 2026-09-13_ — Decision: candidatepool takes an explicit reference set, separate from the edits being filtered, and every unscoreable item is reported in skipped with a…
 
-#### O-005 · large models only — the size floor replaces the size ceiling {#O-005}
+### O-005 · large models only — the size floor replaces the size ceiling {#O-005}
 
 _Decision · 2026-09-15_ — Decision: work only with very large models. From NDIF's ungated set that is Llama-3.1-70B (possession 79%) and Llama-3.1-405B (85%). GPT-J-6B and the 8B…
 
-#### E-009 · the gate clears at 70B, and the three legs are not independent {#E-009}
+### E-009 · the gate clears at 70B, and the three legs are not independent {#E-009}
 
 _Result · 2026-09-15_ — Decision: the edit arm runs on the 70B set. 74 usable chains is enough for an existence claim with room for edit-stage attrition; 20 was not. [O-005]'s…
 
-#### E-009b · the `outer` deficit is answer surface form, not pool concentration {#E-009b}
+### E-009b · the `outer` deficit is answer surface form, not pool concentration {#E-009b}
 
 _Correction · 2026-09-15_ — RCA. [E-009] closed with "outer stays the worst leg at both scales, which rules out small-model thinness and leaves candidate-pool concentration —…
 
-#### E-011 · the possession measure has no operating point for modal answers {#E-011}
+### E-011 · the possession measure has no operating point for modal answers {#E-011}
 
 _Result · 2026-09-15_ — The pre-stated Deny branch fired, and it was the wrong dichotomy. [E-009b] predicted that rendering countries naturally would recover the article-taking…
 
-#### O-006 · the edit arm runs at Llama-3.1-8B {#O-006}
+### O-006 · the edit arm runs at Llama-3.1-8B {#O-006}
 
 _Decision · 2026-09-15_ — The gate at three scales, same 136 chains, same pools, same seed: Restricted to the domain [E-011] shows the measure is defined on — the outer answer is…
 
-#### E-012 · the two defects are orthogonal, and fixing them beats 60B parameters {#E-012}
+### E-012 · the two defects are orthogonal, and fixing them beats 60B parameters {#E-012}
 
 _Result · 2026-09-15_ — Usable chains, same 136 chains, same model, same seed: Neither fix alone moves anything: +1 and +1. Together, +20. This is an interaction, not two…
 
-#### E-013 · the covariance term is not used by the reference implementation {#E-013}
+### E-013 · the covariance term is not used by the reference implementation {#E-013}
 
 _Gate 0 resolved · 2026-09-15_ — The problem as stated. ROME's update needs C⁻¹k, the inverse second-moment matrix of keys. Measured from the model configs: Llama-3.1-8B dmlp = 14336, so…
 
-#### E-013 · the mandated control is too weak, and this is why {#E-013-2}
+### E-013 · the mandated control is too weak, and this is why {#E-013-2}
 
 _Smoke test, n=1 · 2026-09-15_ — Vlaminck: born in Paris, Paris in France, therefore born in France. Edited the conclusion to Germany. v optimisation drove NLL 5.68 → 0.02 over 25 steps.…
 
-#### E-014 · the edit displaces the premise, country-specifically, at 67% {#E-014}
+### E-014 · the edit displaces the premise, country-specifically, at 67% {#E-014}
 
 _Result · 2026-09-17_ — Written late. This result was referenced by [E-015], [E-016] and the published paper for three days without an entry of its own — found when cross-linking…
 
-#### E-015 · DENY — the relocation carries no inference {#E-015}
+### E-015 · DENY — the relocation carries no inference {#E-015}
 
 _Result · 2026-09-18_ — Resolves agents/shared/disputes.md [E-014]. Both arms push the same country-valued vector through the same subject's key; only the birth edit licenses…
 
-#### E-016 · whitening is a near-no-op by cosine and a 50x change in targeting {#E-016}
+### E-016 · whitening is a near-no-op by cosine and a 50x change in targeting {#E-016}
 
 _Gate · 2026-09-18_ — distribution (NOT ROME's Wikipedia — divergence recorded) Anisotropy — the gate clears. Spectrum of the layer-5 key second moment: The keys live on an…
 
-#### E-016 · whitening cannot reduce same-subject leakage, and the reason is analytic {#E-016-2}
+### E-016 · whitening cannot reduce same-subject leakage, and the reason is analytic {#E-016-2}
 
 _Result · 2026-09-18_ — The experiment. Re-ran [E-015]'s paired test with u = C⁻¹k, where C is the low-rank-plus-ridge key second moment (Woodbury, N=2048, CounterFact prompt…
 
-#### E-017 · same-subject leakage is structural — no probe form escapes it {#E-017}
+### E-017 · same-subject leakage is structural — no probe form escapes it {#E-017}
 
 _Result · 2026-09-19_ — Tests [T-074], the threat [E-016] left standing: its analytic account required the probe to share the edit prompt's prefix, which our probes do by…
 
-#### O-007 · four "nnsight constraints" were one flaky NDIF node {#O-007}
+### O-007 · four "nnsight constraints" were one flaky NDIF node {#O-007}
 
 _Correction · 2026-09-20_ — What I claimed. A commit on 2026-09-20 documented four constraints discovered while building the [T-075] layer sweep: that a list comprehension inside a…
 
-#### T-075 · the pinning is exact for prefix-sharing probes at every depth, and {#T-075}
+### T-075 · the pinning is exact for prefix-sharing probes at every depth, and {#T-075}
 
 _Result · 2026-09-20_ — Mean coefficient at the subject's last token against the edit's k (1.0 = full delta): Worst case across subjects is sharper still: the possessive form…
 
-#### E-018 · the different-subject floor is 0.082 — [E-017] stands, and the floor is now measured {#E-018}
+### E-018 · the different-subject floor is 0.082 — [E-017] stands, and the floor is now measured {#E-018}
 
 _Result · 2026-09-20_ — Tests [T-076], the control [E-017] never ran. Every prior control held the subject fixed and varied the form; this one varies the subject and holds the…
 
-#### O-008 · one of [O-007]'s four retracted constraints is real {#O-008}
+### O-008 · one of [O-007]'s four retracted constraints is real {#O-008}
 
 _Correction to a correction · 2026-09-20_ — What [O-007] said. Four "nnsight constraints" documented while building the [T-075] sweep were all wrong, and all four were the same thing: NDIF rejects…
 
-#### E-019 · the analytic half is layer-invariant; the empirical half is an early-layer fact {#E-019}
+### E-019 · the analytic half is layer-invariant; the empirical half is an early-layer fact {#E-019}
 
 _Result · 2026-09-20_ — Runs [T-075] per design.md Part IV. DENY in the mid-deep range and NULL at layer 31 — both pre-stated outcomes fired, at different depths, which is…
 
-#### E-020 · the decay is direction, not magnitude — and layer 31 is convergence, not noise {#E-020}
+### E-020 · the decay is direction, not magnitude — and layer 31 is convergence, not noise {#E-020}
 
 _Result · 2026-09-20_ — Runs [T-077]. [E-019] measured the decay and explained nothing about it. The coefficient is not a cosine — c = (|k|/|k|) · cos(k, k) — so it can fall two…
 
@@ -111,67 +111,67 @@ _Result · 2026-09-20_ — Runs [T-077]. [E-019] measured the decay and explaine
 
 Literature reads and measurements that are not decisions. Two of these closed whole directions at the prior-art gate.
 
-#### R-001 · RippleEdits' Logical Generalization is NOT a backward probe — but claim 1 must be narrowed {#f-R-001}
+### R-001 · RippleEdits' Logical Generalization is NOT a backward probe — but claim 1 must be narrowed {#f-R-001}
 
 _2026-09-10_ — Verified metadata (session note §9 required this). Cohen, Biran, Yoran, Globerson, Geva, "Evaluating the Ripple Effects of Knowledge Editing in Language…
 
-#### R-002 · Lens 2 clears — not scooped, but must be repositioned against knowledge-conflict and deferral {#f-R-002}
+### R-002 · Lens 2 clears — not scooped, but must be repositioned against knowledge-conflict and deferral {#f-R-002}
 
 _2026-09-10_ — Verdict: PROCEED. No existing work partitions an edit's affected knowledge by whether logic determines the outcome and surfaces the underdetermined part…
 
-#### R-005a · mined-rule artifact IS available — but on DBpedia and MQuAKE/MLaKE, not Wikidata/CounterFact {#f-R-005a}
+### R-005a · mined-rule artifact IS available — but on DBpedia and MQuAKE/MLaKE, not Wikidata/CounterFact {#f-R-005a}
 
 _2026-09-10_ — Gate result: §0 method (e) is FEASIBLE. The critical-path dependency clears. Two corrections to what design.md v0.5 asserted, both material. the…
 
-#### R-003 · 35.4% of CounterFact edits use a rigid relation — T-023's gate passes {#f-R-003}
+### R-003 · 35.4% of CounterFact edits use a rigid relation — T-023's gate passes {#f-R-003}
 
 _2026-09-10_ — The fear was unfounded. T-023 worried that CounterFact is so dominated by mutable relations that a naive 50-edit sample would draw almost entirely from…
 
-#### E-001 · §0 method (e) FAILS — the mined rules are alias tautologies {#f-E-001}
+### E-001 · §0 method (e) FAILS — the mined rules are alias tautologies {#f-E-001}
 
 _2026-09-10_ — Verdict: method (e) does not work on the shipped artifact, and the failure looks structural rather than incidental. Fall back per design.md §0.…
 
-#### E-002 · Wikidata carries real grounds — but they are *evidential*, not deductive {#f-E-002}
+### E-002 · Wikidata carries real grounds — but they are *evidential*, not deductive {#f-E-002}
 
 _2026-09-10_ — Verdict: method (e) is alive on Wikidata. Steps 1 and 2 pass. But what we found are not AGM kernels, and that has consequences. 55 rigid-relation edits, 5…
 
-#### E-003 · possession is real, scale fixes it — and the field's standard test overstates it {#f-E-003}
+### E-003 · possession is real, scale fixes it — and the field's standard test overstates it {#f-E-003}
 
 _2026-09-10_ — Verdict: [T-039] confirmed and [O-004] empirically vindicated. Possession is a genuine gate, GPT-2 fails it, and a large model clears it. Scaling within…
 
-#### E-003b · GPT-J-6B possession is 73% — usable as the edit target, with filtering {#f-E-003b}
+### E-003b · GPT-J-6B possession is 73% — usable as the edit target, with filtering {#f-E-003b}
 
 _2026-09-10_ — Answers [T-045]. The hard fork is avoided: we do not need ROME on a 70B model. GPT-J sits between the two: +11pp over GPT-2, -20pp under Llama. So it is…
 
-#### E-004 · joint possession is 69% — the pilot has a pool, but the ground number is confounded {#f-E-004}
+### E-004 · joint possession is 69% — the pilot has a pool, but the ground number is confounded {#f-E-004}
 
 _2026-09-10_ — Verdict: the gate passes. Joint possession — head held and at least one ground held, same subject, both top-1 by constrained rank — is 61/89 = 69%,…
 
-#### E-005 · possession re-measured — 56/74/79/85 across 6B-405B, and scale buys only the hard relations {#f-E-005}
+### E-005 · possession re-measured — 56/74/79/85 across 6B-405B, and scale buys only the hard relations {#f-E-005}
 
 _2026-09-11_ — Replaces the superseded E-003/E-003b/E-004 numbers. Possession = the true answer ranks first among 50 type-matched candidates and ranks higher with the…
 
-#### E-006 · ROME on Llama-3.1-8B via NDIF is feasible — both required primitives work {#f-E-006}
+### E-006 · ROME on Llama-3.1-8B via NDIF is feasible — both required primitives work {#f-E-006}
 
 _2026-09-11_ — Verdict: option 1 of [T-050] is available. The blocking concern was that NDIF hosts one shared copy of each model, so a weight edit cannot be persisted.…
 
-#### R-006 · the diagnostic framing is FALSE — CounterFact does verify possession, with a weak test {#f-R-006}
+### R-006 · the diagnostic framing is FALSE — CounterFact does verify possession, with a weak test {#f-R-006}
 
 _2026-09-11_ — Verdict: drop "editing benchmarks measure propagation into knowledge they never verified was there." It is not true, and a reviewer would refute it from…
 
-#### R-007 · 2505.18690 does not take T-054 — and hands us one adversary point {#f-R-007}
+### R-007 · 2505.18690 does not take T-054 — and hands us one adversary point {#f-R-007}
 
 _2026-09-11_ — Verdict: the nearest competitor does not claim our result. T-054 stands. "Benchmarking and Rethinking Knowledge Editing for Large Language Models" — He,…
 
-#### T-055 · coordination lift is a set-level type diagnostic, not a per-candidate filter {#f-T-055}
+### T-055 · coordination lift is a set-level type diagnostic, not a per-candidate filter {#f-T-055}
 
 _2026-09-11_ — Motivation. The possession measure assumes its distractors are type-matched; that assumption was never checked. Coordination should test it — same-type…
 
-#### D-002 · CounterFact has NO possession filter — R-006 was wrong, verified from the primary source {#f-D-002}
+### D-002 · CounterFact has NO possession filter — R-006 was wrong, verified from the primary source {#f-D-002}
 
 _2026-09-14_ — This reverses [R-006]. I concluded there that "CounterFact does verify possession, with a weak test", from §3.3's sentence about counterfactuals starting…
 
-#### R-010 · the WHY gate narrows sharply — two of three proposed contributions are taken {#f-R-010}
+### R-010 · the WHY gate narrows sharply — two of three proposed contributions are taken {#f-R-010}
 
 _2026-09-18_ — Run before building the probing taxonomy the project was about to pivot to. Three prior-art hits, two of them direct. Holtzman, West, Shwartz, Choi,…
 
