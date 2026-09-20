@@ -1,0 +1,20 @@
+2026-09-20 14:05:24,587 INFO     run_e021  run run_e021 -> logs/run_e021-2026-09-20-140524.log
+2026-09-20 14:05:24,587 INFO     run_e021  config {"arms": ["A_full", "B_only", "C_except", "E_except_rescaled", "D_none"], "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 3, "note": "same cached v* and k* as E-014; only the position mask varies", "thread": "T-067", "ticket": "E-021"}
+2026-09-20 14:05:24,587 INFO     run_e021  3 chains x 4 arms; gate is arm A reproducing E-014's 67%
+2026-09-20 14:05:29,436 WARNING  remote  transport failure (NNsightException) during keys 61, attempt 1/8; retrying in 5s
+2026-09-20 14:05:40,117 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:05:48,236 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:05:50,431 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:05:58,694 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.3s
+2026-09-20 14:06:00,919 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:06:09,382 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.5s
+2026-09-20 14:06:11,515 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:06:20,211 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.7s
+2026-09-20 14:06:21,989 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:06:29,972 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.0s
+2026-09-20 14:06:32,025 WARNING  remote  transport failure (NNsightException) during keys 254, attempt 1/8; retrying in 5s
+2026-09-20 14:06:47,282 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:06:55,425 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:06:57,579 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 14:07:05,698 DEBUG    remote  trace ok: 75 rows, 81 tok, 3.1s
+2026-09-20 14:07:07,806 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s

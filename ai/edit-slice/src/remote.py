@@ -215,17 +215,18 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
             lay = edit[0] if edit is not None else None
             if edit is None:
                 u_cpu = den = dv_cpu = None
-                pos_mode, pos_idx = "all", -1
+                pos_mode, pos_idx, pos_gain = "all", -1, 1.0
             elif len(edit) == 3:
                 u_cpu, dv_cpu = edit[1], edit[2]
                 den = float(edit[1] @ edit[1])
-                pos_mode, pos_idx = "all", -1
+                pos_mode, pos_idx, pos_gain = "all", -1, 1.0
             elif len(edit) == 4:
                 u_cpu, den, dv_cpu = edit[1], float(edit[2]), edit[3]
-                pos_mode, pos_idx = "all", -1
+                pos_mode, pos_idx, pos_gain = "all", -1, 1.0
             else:
                 u_cpu, den, dv_cpu = edit[1], float(edit[2]), edit[3]
                 pos_mode, pos_idx = edit[4], int(edit[5])
+                pos_gain = float(edit[6]) if len(edit) > 6 else 1.0
 
             # Built here, after the branch that sets the mode, and on the CPU: the batch
             # width is known at this point and a proxy-side mask would need indexing the
@@ -238,6 +239,9 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
             else:                                   # "except"
                 pos_mask = torch.ones(ids.shape[1])
                 pos_mask[pos_idx] = 0.0
+            # `pos_gain` restores the magnitude a mask removed, so position can be tested
+            # independently of how much coefficient mass the mask happened to delete.
+            pos_mask = pos_mask * pos_gain
             with _quiet_stdout(), model.trace(ids, remote=True):
                 if lay is not None:
                     dp = model.model.layers[lay].mlp.down_proj

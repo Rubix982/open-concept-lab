@@ -33,7 +33,12 @@ from remote import _quiet_stdout, connect, retrying, score_pairs  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
 MODEL = "meta-llama/Llama-3.1-8B"
-ARMS = [("A_full", "all"), ("B_only", "only"), ("C_except", "except"), ("D_none", None)]
+#: Arm E is the one that makes C interpretable. The subject's last token carries ~67% of
+#: the coefficient mass, so "except" removes position AND magnitude together, and E-016's
+#: scale test showed 0.27x breaks relocation on its own. E restores the magnitude the mask
+#: removed, leaving position as the only difference from A.
+ARMS = [("A_full", "all"), ("B_only", "only"), ("C_except", "except"),
+        ("E_except_rescaled", "except"), ("D_none", None)]
 
 
 def main() -> None:
@@ -71,7 +76,7 @@ def main() -> None:
 
     m = connect(MODEL)
     tok = m.tokenizer
-    cache_path = ROOT / "results" / "cache" / f"E021_L{LAYER}_s{args.seed}.json"
+    cache_path = ROOT / "results" / "cache" / f"E021b_L{LAYER}_s{args.seed}.json"
     done: dict[str, dict] = json.loads(cache_path.read_text()) if cache_path.exists() else {}
 
     for n, r in enumerate(rows, 1):
@@ -103,7 +108,14 @@ def main() -> None:
                "mass_share_at_subject": at_subj / total if total else 0.0,
                "top1": {}, "in_target": {}}
         for arm, mode in ARMS:
-            ed = None if mode is None else (LAYER, kstar, den, dv, mode, idx)
+            if mode is None:
+                ed = None
+            elif arm == "E_except_rescaled":
+                share = at_subj / total if total else 0.0
+                gain = 1.0 / (1.0 - share) if share < 0.999 else 1.0
+                ed = (LAYER, kstar, den, dv, mode, idx, gain)
+            else:
+                ed = (LAYER, kstar, den, dv, mode, idx)
             for attempt in range(args.max_stalls):
                 try:
                     sc = score_pairs(m, [(p1, city) for city in pool], edit=ed)
@@ -127,7 +139,9 @@ def main() -> None:
     log.info("")
     log.info("%-12s%-26s%10s", "arm", "positions receiving delta", "in target")
     labels = {"A_full": "all", "B_only": "subject's last token only",
-              "C_except": "all but the subject's last", "D_none": "none (baseline)"}
+              "C_except": "all but the subject's last",
+              "E_except_rescaled": "all but it, mass restored",
+              "D_none": "none (baseline)"}
     rates = {}
     for arm, _ in ARMS:
         hit = sum(r["in_target"][arm] for r in rs)
@@ -148,9 +162,16 @@ def main() -> None:
     else:
         log.info("gate passed: arm A %.0f%% against E-014's 67%%", 100 * rates["A_full"])
         suff = rates["B_only"] >= rates["A_full"] - 0.10
-        nec = rates["C_except"] <= rates["D_none"] + 0.10
-        log.info("sufficiency (B >= A - 10pp): %s", "YES" if suff else "NO")
-        log.info("necessity   (C <= D + 10pp): %s", "YES" if nec else "NO")
+        nec_raw = rates["C_except"] <= rates["D_none"] + 0.10
+        nec_fair = rates["E_except_rescaled"] <= rates["D_none"] + 0.10
+        log.info("sufficiency  (B >= A - 10pp)          : %s", "YES" if suff else "NO")
+        log.info("necessity    (C <= D + 10pp)          : %s  <- confounded with magnitude",
+                 "YES" if nec_raw else "NO")
+        log.info("necessity    (E <= D + 10pp, mass restored): %s  <- the real test",
+                 "YES" if nec_fair else "NO")
+        if nec_fair and not suff:
+            log.warning("necessary but not sufficient — the single-position story is "
+                        "incomplete")
 
     out = ROOT / "results" / f"E-021-positions-{MODEL.replace('/', '_')}.json"
     out.write_text(json.dumps({"ticket": "E-021", "model": MODEL, "layer": LAYER,
