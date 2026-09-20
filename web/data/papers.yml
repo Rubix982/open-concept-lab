@@ -303,3 +303,52 @@ huang2024ravel:
   gives_me: >
     Attribute disentanglement, possibly a cleaner hop-separated dataset than
     RippleEdits. Worth checking before committing to data.
+
+holtzman2021surface:
+  title: "Surface Form Competition: Why the Highest Probability Answer Isn't Always Right"
+  authors: Holtzman, A., West, P., Shwartz, V., Choi, Y., Zettlemoyer, L.
+  year: 2021
+  venue: EMNLP
+  url: https://arxiv.org/abs/2104.08315
+  status: read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: >
+    Different surface forms of one concept compete for finite probability mass, so
+    ranking answers by string probability is systematically distorted; Domain
+    Conditional PMI is the correction. This is E-011's phenomenon, and our
+    placeholder-lift control is essentially their PMI against a neutral prompt. Cited
+    to disclaim novelty, not to support it.
+
+elazar2021pararel:
+  title: Measuring and Improving Consistency in Pretrained Language Models
+  authors: Elazar, Y., Kassner, N., Ravfogel, S., Ravichander, A., Hovy, E., Schütze, H., Goldberg, Y.
+  year: 2021
+  venue: TACL
+  url: https://arxiv.org/abs/2102.01017
+  status: read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: >
+    328 hand-curated paraphrase patterns over 38 relations, including "X born-in Y".
+    CounterFact derives from ParaRel entries and keeps one prompt per record, so the
+    template set exists upstream and was collapsed. Closes R-008.
+
+knowledgespectrum2025:
+  title: Diagnosing Model Editing via Knowledge Spectrum
+  authors: (preprint, authors not recorded here)
+  year: 2025
+  venue: arXiv preprint
+  url: https://arxiv.org/abs/2509.17482
+  status: read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: >
+    Crosses pre-edit knowledge status (Known/Unknown by generation probing), entity
+    popularity and question type against edit success, on Llama-3.1-8B — our exact
+    model. Finds Unknown facts edit more successfully than Known. This is the
+    possession-x-editability experiment, already run; it closed that direction for us
+    at the WHY gate. Does not examine grounds, premises, or entailment consequences.
