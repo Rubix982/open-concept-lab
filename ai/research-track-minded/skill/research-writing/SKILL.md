@@ -42,6 +42,14 @@ not is a confound to control before the work starts.
   at r > 0.5 across three models" passes.
 - **Unquantified superlatives are the commonest failure**: *the clearest*, *the
   main*, *most*, *one of the few*. Give the criterion or drop the ranking.
+- **Analytic claims take the flag `[A]`.** A derived claim — *"the coefficient is
+  exactly 1 for any u"* — is not refuted by any observation, only by a derivation
+  error or by its premise failing. **Put the premise's falsifier in column four, not
+  the claim's**, because that is where the empirical content lives. Our own: the
+  pinning claim is analytic, its premise is prefix-sharing, and the premise is what
+  [E-017] and [E-018] measured. *Guard: an analytic claim must ship its derivation,
+  in the document or by citation. No derivation shown means not analytic, just
+  unfalsifiable.*
 
 Fix every row with an empty fourth column — sharpen, demote to an explicit
 attribution, or cut. If there are no own-claims at all, stop and say so; no rewriting
@@ -80,8 +88,9 @@ not failed; read the table for what outranks what.
 
 In order. Worked examples: `references/structure.md`.
 
-1. **Headings** — can each be rewritten as a sentence with a truth value? *(Limits,
-   References, Appendix, Method are navigation and exempt.)*
+1. **Headings** — can each be rewritten as a sentence with a truth value?
+   *(Navigation labels — References, Appendix, Method, and whatever plays the limits
+   role — are exempt.)*
 2. **Gaps** — which gap, what would closing it cost, what would change? An unpriced
    gap is a wish.
 3. **Symbols** — was each object named in English, by function, before it got a
@@ -97,7 +106,15 @@ In order. Worked examples: `references/structure.md`.
 7. **Criticism** — is the scope fixed before the damage? "X was built to do A, and it
    does. B is a different question. The problem is downstream."
 
-### Every draft gets a Limits section
+### Every draft gets a limits section, whatever it is called
+
+**The quarantine is the requirement; the name is not.** "What to attack" does the same
+job in an adversarial register. Whatever section performs the role is exempt from the
+truth-value heading rule.
+
+**But check the third category survives the rename.** An adversarial framing collects
+what a reviewer would attack, and nobody attacks a constraint on *use* — so that entry
+tends to vanish when the section is called something else.
 
 Three kinds of entry, and the third never appears on its own:
 

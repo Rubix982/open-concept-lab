@@ -10,7 +10,7 @@ rather than a wall of text.
 
 ## Current Phase
 
-Phase 3 — Complete. Skill built, used twice, fixed once, cut once. Open threads closed or parked.
+Phase 3 — Skill built, used three times, fixed twice, cut once. Third use was the first by another session and the first to report defects back.
 
 ## Scope decision (2026-09-18)
 

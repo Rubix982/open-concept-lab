@@ -215,3 +215,59 @@ Across two live uses the lint's only hits were unquantified superlatives in my o
 prose — 2 for 2, no genuine false positives over 2,700 words. At corpus scale that
 same rule separates almost nothing (0.0 / 1.6 / 3.1 per 10k). It is a weak detector
 and a good drafting check, which are different jobs.
+
+---
+
+## [E-006] Decision: analytic claims get a row flag, not a fourth mode
+
+_Date: 2026-09-20 · from the third live use, the first not run by this session_
+
+**Decision:** Pass 1 rows may carry `[A]`. For an analytic claim, column four holds
+**the premise's** falsifier rather than the claim's.
+
+**Rationale:** modes are per document; analytic-ness is per claim. The paper's abstract
+carries both a derivation ("the coefficient is exactly 1 for any `u`") and a
+measurement (67% against a 5% control), so a document-level mode cannot separate them.
+The reporting session offered "a fourth mode, or a row-level flag" and the per-claim
+scope decides it.
+
+The substantive rule is theirs: *we measured the premise rather than the conclusion.*
+An analytic claim inherits its empirical content from its premise, so that is where
+the falsifier belongs. The repo already contains the worked case without the table
+being able to express it — the pinning claim is analytic, its premise is prefix-
+sharing, and [E-017] and [E-018] measured the premise. [E-019]'s write-up drew the
+same analytic/empirical line in prose because the table could not.
+
+**Guard against the obvious abuse:** an analytic claim must ship its derivation, in
+the document or by citation. Without one it is not analytic, only unfalsifiable — and
+the flag would become a way to dodge the fourth column.
+
+**Alternatives rejected:** a fourth mode (wrong scope, per above); leaving it to prose
+(which is what happened in [E-019], and it worked there only because I already knew
+the distinction).
+
+---
+
+## [E-006] Decision: the limits section is specified by role, not by name
+
+_Date: 2026-09-20_
+
+**Decision:** the quarantine is the requirement and the name is free. Any section
+performing the role is exempt from the truth-value heading rule.
+
+**Rationale:** the paper's equivalent is "What to attack" — the same quarantine in an
+adversarial register. Mandating the word "Limits" would have flagged a section doing
+the job correctly.
+
+**Added beyond the report:** an adversarial framing collects what a reviewer would
+attack, and **nobody attacks a constraint on use**, so the third Limits category —
+how the result may not be used — tends to disappear under the rename. Permitting the
+rename ships with that check.
+
+**One correction applied to myself while writing this.** The first draft said "What to
+attack" is "arguably stronger". The lint flagged *arguably*, and the right fix was not
+to reword the hedge but to delete the claim: there is no evidence it is stronger, only
+that it does the same job.
+
+**Revisit if:** a section named for the role turns out to drift in content as well as
+framing — the use-constraint check is a prediction, not a measurement.

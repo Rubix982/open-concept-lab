@@ -77,3 +77,5 @@ is misattributed. This entry is the record.
   IGNORECASE plus sentence-anchored connectives. Reference rates re-measured and
   corrected: 0.0 / 5.1 / 6.4 (was 1.3 / 11.6 / 13.9 — the old paper and report figures
   were a PDF line-wrap artifact)
+- [E-006] Third live use, first by another session — analytic-claim row flag `[A]`,
+  limits section specified by role not name. `skill/research-writing/SKILL.md`

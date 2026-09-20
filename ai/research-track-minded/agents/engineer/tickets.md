@@ -235,3 +235,66 @@ it.
 The pass produced a **research** finding rather than a writing improvement — every
 control behind [E-017]'s published claim is same-subject, and the matched
 different-subject control has never been run. Spawned T-076 and reordered the work.
+
+---
+
+### E-006 · Analytic claims, and the Limits section by role rather than by name
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Two defects reported from the **third live use** — the first run by a session other
+than the one that built the skill, on a paper draft. That session also confirmed the
+README's session-start catch empirically: the skill was installed but absent from its
+available-skills list, so the passes were run by hand.
+
+It independently reproduced the ranking finding (filter caught nothing; the ordering
+changed), which is now three for three.
+
+**Defect 1 — Pass 1 cannot express an analytic claim.** *"The coefficient is exactly 1
+for any `u`"* is derived, not measured. No observation refutes it; only a derivation
+error, or the premise failing. The fourth column has nothing to bite on, and a writer
+either leaves it blank — making a load-bearing claim look unfalsifiable — or invents a
+falsifier.
+
+The reporter offered "a fourth mode, or a row-level flag". **Row-level.** Modes are
+per document; analytic-ness is per claim, and a single abstract here carries both the
+derivation and the 67%-vs-5% measurement.
+
+The rule to encode is the reporter's own observation: *we measured the premise rather
+than the conclusion.* An analytic claim inherits its empirical content from its
+premise, so the fourth column should carry **the premise's** falsifier. Worked example
+already exists in the repo — the pinning claim's premise is prefix-sharing, tested by
+[E-017] and [E-018].
+
+**Guard, or the flag becomes an escape hatch:** an analytic claim must ship its
+derivation, in the document or by citation. No derivation shown → not analytic,
+just unfalsifiable.
+
+**Defect 2 — the Limits section is specified by name, not by role.** The paper's
+equivalent is called "What to attack". The requirement is the *quarantine*; the name
+is incidental, and the heading-exemption list should follow the role.
+
+**Refinement the report did not make:** an adversarial framing tends to drop the third
+Limits category — constraints on how the result may be *used* — because that is not
+something a reviewer would attack. Permitting the rename must come with that check.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `skill/research-writing/SKILL.md` — `[A]` flag with its guard; limits section by
+  role; heading exemption follows the role
+- `agents/shared/decisions.md` → two [E-006] decisions
+
+**Closed:** 2026-09-20 — both taken, each with one refinement the report did not make:
+the analytic flag is **row-level** rather than a fourth mode, because a single abstract
+carries analytic and empirical claims together; and the limits rename ships with a
+check that the use-constraint category survives it. `SKILL.md` 154 → 171 lines, with
+one compensating trim. The lint caught an unevidenced *"arguably stronger"* in my own
+text for this ticket, and the fix was to delete the claim rather than reword it.
