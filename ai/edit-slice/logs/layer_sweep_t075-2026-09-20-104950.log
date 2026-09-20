@@ -2,3 +2,4 @@
 2026-09-20 10:49:50,149 INFO     layer_sweep_t075  config {"forms": ["early (edit form)", "late clause", "possessive", "long preamble", "different relation", "different subject"], "kstar": "recomputed per layer from the edit-form prompt", "layers": [0, 3, 5, 8, 12, 16, 24, 31], "measures": "coefficient only", "thread": "T-075", "ticket": "E-019"}
 2026-09-20 10:49:54,632 WARNING  remote  transport failure (NNsightException) during layers 61, attempt 1/8; retrying in 5s
 2026-09-20 10:51:13,999 WARNING  remote  transport failure (NNsightException) during layers 254, attempt 1/8; retrying in 5s
+2026-09-20 10:52:40,114 WARNING  remote  transport failure (NNsightException) during layers 273, attempt 1/8; retrying in 5s
