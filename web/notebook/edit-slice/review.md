@@ -390,6 +390,19 @@ and the largest hole.
 record and caught one overclaim before publication. It cannot catch an error the whole
 record shares — which is why this page exists.
 
+**7 · This is not a method, and the nearest misreading is a specific one.** The pinned
+coefficient explains why an edit reaches every prompt sharing its subject. It is a
+consequence of how ROME normalises, not a technique on offer. In particular *"edit a
+deeper layer to leak less"* does not follow: §4.3 measures a **coefficient**, and the
+scale test in §4.1 showed coefficient and destination are not monotonically related —
+rescaling by 0.27 broke relocation in three chains of four while whitening's 3.7×
+attenuation changed nothing. Anyone reading a prescription out of §4.3 is reading past
+the one control that bears on it.
+
+_This entry exists because an adversarial framing has no natural slot for it. "What to
+attack" collects what a reviewer would dispute, and nobody disputes a constraint on use —
+so the category has to be added deliberately or it vanishes in the rename._
+
 ## 7 · What we would like decided
 
 1. **Is the pinned-coefficient result known?** The question we cannot answer from inside.
