@@ -1,0 +1,21 @@
+2026-09-20 16:19:03,510 INFO     run_e023  run run_e023 -> logs/run_e023-2026-09-20-161903.log
+2026-09-20 16:19:03,510 INFO     run_e023  config {"layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 2, "n_tokens": 4, "note": "greedy decode vs ranked answer; edit applied per decoding step", "pool": 75, "thread": "T-066", "ticket": "E-023"}
+2026-09-20 16:19:03,510 INFO     run_e023  2 chains, greedy 4 tokens, baseline and edited
+2026-09-20 16:19:12,942 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
+2026-09-20 16:19:23,419 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
+2026-09-20 16:19:33,395 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
+2026-09-20 16:19:44,926 WARNING  remote  transport failure (NNsightException) during 254 real, attempt 1/8; retrying in 5s
+2026-09-20 16:19:57,057 WARNING  remote  transport failure (NNsightException) during 254 real, attempt 1/8; retrying in 5s
+2026-09-20 16:20:07,749 WARNING  remote  transport failure (NNsightException) during 254 real, attempt 1/8; retrying in 5s
+2026-09-20 16:20:19,253 WARNING  remote  transport failure (NNsightException) during 254 real, attempt 1/8; retrying in 5s
+2026-09-20 16:20:27,773 INFO     run_e023    2/2
+2026-09-20 16:20:27,773 INFO     run_e023  
+2026-09-20 16:20:27,773 INFO     run_e023                                baseline      edited
+2026-09-20 16:20:27,773 INFO     run_e023  generation starts with a pool city        100%         50%
+2026-09-20 16:20:27,773 INFO     run_e023  generation == ranked answer        100%         50%
+2026-09-20 16:20:27,773 INFO     run_e023  
+2026-09-20 16:20:27,773 INFO     run_e023  lands in the TARGET country — ranked 50%  vs  generated 50%  (n=2)
+2026-09-20 16:20:27,773 INFO     run_e023  
+2026-09-20 16:20:27,773 INFO     run_e023  out-of-pool generations under the edit, verbatim:
+2026-09-20 16:20:27,773 INFO     run_e023     61     target Germany          -> ' Hamburg, Germany,'
+2026-09-20 16:20:27,775 INFO     run_e023  written: results/E-023-generation.json

@@ -1512,3 +1512,53 @@ Full entry in agents/shared/decisions.md [E-022].
 **Artifacts:** agents/engineer/workspace/run_e022.py; results/E-022-cells.json;
 agents/shared/decisions.md -> "[E-022] Result"
 **Closed:** 2026-09-20
+
+---
+
+### E-023 · Does the closed pool hide what the model would actually say? (T-066)
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 4h
+
+**Description:**
+Runs [T-066], and it is aimed at this project's own headline. Every number here comes from
+**ranking a closed, type-matched pool**. That is what makes the measure controlled, and it
+is also a choice: an answer outside the pool is invisible by construction rather than by
+evidence.
+
+[E-014] reports that an edit relocates the birth city into the target country **67%** of
+the time. That was measured by ranking 75 cities. If the edited model, left to generate
+freely, says something else — a city outside the pool, or not a city at all — then part of
+that 67% is the pool forcing a choice the model would not have made.
+
+**Method.** Greedy-decode four tokens from the `inner_1` prompt, baseline and under the
+real edit, and compare against the ranked answer. `.all()` is unavailable in this nnsight
+build, so the edit is applied per decoding step in its own trace — a verified mechanism
+rather than a new one.
+
+**Three quantities.**
+1. **Pool coverage** — does the free generation begin with a pool city at all?
+2. **Rank/generate agreement** — does the pool's argmax match what the model generates?
+3. **The headline under generation** — does the edited model *generate* a city in the
+   target country, and at what rate against the ranked 67%?
+
+**Falsification, pre-stated.**
+- *Confirm the pool:* generation lands in-pool for most facts and agrees with the ranked
+  answer. The closed pool is a faithful proxy and [E-014]'s 67% stands as reported.
+- *Deny:* generation frequently leaves the pool, or disagrees with the rank. The measure
+  forces choices the model would not make, and every rate in this project — including the
+  67% — describes behaviour under constraint rather than behaviour.
+- *Null:* generations are degenerate under both conditions (punctuation, repetition), so
+  the comparison has nothing to bite on. Report and treat as unrun.
+
+**Confound.** Greedy decoding is itself a choice, and a model can rank an answer first
+while sampling something else. This measures greedy generation against rank, not "what the
+model would say" in general — say so rather than generalising.
+
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e023.py; results/E-023-*.json
+**Closed:** —

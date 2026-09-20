@@ -1,0 +1,14 @@
+2026-09-20 16:16:56,378 INFO     run_e023  run run_e023 -> logs/run_e023-2026-09-20-161656.log
+2026-09-20 16:16:56,378 INFO     run_e023  config {"layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 2, "n_tokens": 4, "note": "greedy decode vs ranked answer; edit applied per decoding step", "pool": 75, "thread": "T-066", "ticket": "E-023"}
+2026-09-20 16:16:56,378 INFO     run_e023  2 chains, greedy 4 tokens, baseline and edited
+2026-09-20 16:17:01,642 WARNING  remote  transport failure (NNsightException) during 61 base, attempt 1/8; retrying in 5s
+2026-09-20 16:17:11,769 WARNING  remote  transport failure (NNsightException) during 61 base, attempt 1/8; retrying in 5s
+2026-09-20 16:17:21,370 WARNING  remote  transport failure (NNsightException) during 61 base, attempt 1/8; retrying in 5s
+2026-09-20 16:17:31,278 WARNING  remote  transport failure (NNsightException) during 61 base, attempt 1/8; retrying in 5s
+2026-09-20 16:17:41,008 WARNING  remote  transport failure (NNsightException) during 61 real, attempt 1/8; retrying in 5s
+2026-09-20 16:17:52,983 WARNING  remote  transport failure (NNsightException) during 61 real, attempt 1/8; retrying in 5s
+2026-09-20 16:18:03,433 WARNING  remote  transport failure (NNsightException) during 61 real, attempt 1/8; retrying in 5s
+2026-09-20 16:18:14,503 WARNING  remote  transport failure (NNsightException) during 61 real, attempt 1/8; retrying in 5s
+2026-09-20 16:18:26,498 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
+2026-09-20 16:18:37,561 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
+2026-09-20 16:18:47,062 WARNING  remote  transport failure (NNsightException) during 254 base, attempt 1/8; retrying in 5s
