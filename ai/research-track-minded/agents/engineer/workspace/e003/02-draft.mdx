@@ -1,0 +1,152 @@
+## Whitening could not have changed the answer, and the reason is one line of algebra
+
+The last post left a gap open and called it "the obvious place a genuine inference effect
+could still hide": everything had been run with `C = I`, the unwhitened update EasyEdit
+ships for all fourteen of its ROME configs.
+
+It is not hiding there. It cannot be.
+
+Start with what ROME's update actually does to an input it was not aimed at. The edit is
+built from three things: the **key** read at the subject's last token of the edit prompt,
+the **edit vector** the layer will add to its output there, and a **direction** along which
+the weights are moved. Only two of them matter here — call the key `k*` and the direction
+`u`. The whitening choice is entirely a choice of `u`: EasyEdit's default is `u = k*`, and
+the whitened version is `u = C⁻¹k*`, where `C` is the second moment of the layer's keys.
+
+For any other input with key `k`, the edited layer's output shifts by the edit vector
+scaled by a single number:
+
+    coefficient = (k · u) / (u · k*)
+
+That is the whole mechanism of leakage. The edit reaches an unrelated input exactly as far
+as that coefficient is large.
+
+Now take a probe that shares the edit prompt's prefix up to the subject's last token —
+*"Jack Marshall was born in the **city** of"* against the edited *"…in the **country** of"*.
+Under causal attention the key at that position cannot see the later tokens, so it is the
+same key: `k = k*`. Substitute:
+
+    coefficient = (k* · u) / (u · k*) = 1
+
+for **any** `u`. The normalisation divides by exactly the quantity it is about to produce.
+
+<Claim
+  label="The gap named in the last post"
+  superseded={<>Everything so far uses <code>C = I</code>, and a whitened editor is the obvious place a genuine inference effect could still hide.</>}
+  record={{
+    "Why it failed": "ROME normalises its coefficient by u·k*. At any position where the probe's key equals k*, the coefficient is 1 for every choice of u — so no covariance can attenuate it.",
+    "Confirmed by": "42/42 chains, identical top-1 destination to C = I at all three λ (7.2e-02, 7.2e-03, 7.2e-04).",
+    "What it cost to close": "One coefficient profile along the probe prompt. The argument was available before the experiment and nobody looked.",
+    "Evidence": "E-016, whitened editor via Woodbury, N=2048 keys at layer 5",
+  }}
+>
+  Whitening can only reduce leakage to prompts that do <em>not</em> share the subject's
+  prefix. Against the probes this project is built on, it is a no-op by construction.
+</Claim>
+
+The measurement agrees, and agrees boringly: forty-two chains, three values of λ, and the
+birth arm's top-1 destination is identical to the unwhitened run in **42 of 42** every
+time. The profile along one probe shows why — coefficient **1.0000** at the subject's last
+token under both editors, and only after that do the two diverge (0.90× at the next token,
+0.28× by the preposition).
+
+### The cosine said it was a no-op, and the cosine was wrong
+
+The gate that authorised this experiment nearly closed it with the right answer for the
+wrong reason. Whitening barely rotates the update: `cos(k*, C⁻¹k*) = 0.97`. Read at speed,
+that says the whitened editor is the same editor and there is nothing to test.
+
+It is not the same editor. On held-out keys the mean absolute coefficient drops from 0.0260
+to 0.0013 — **a twentyfold narrowing of reach** — at a cosine of 0.97. A near-identical
+direction with a radically different blast radius is not a contradiction; the coefficient
+depends on where `u` points *relative to the rest of the key distribution*, which is
+precisely what a 0.97 cosine does not measure.
+
+Had the gate stopped at the cosine, [E-016] would have closed with "whitening does nothing"
+— true of the outcome, false about the editor, and useless as a reason. That is the second
+time in this project the aggregate statistic and the component statistic disagreed and the
+component was right.
+
+### The escape hatch, tested and closed
+
+The analytic account had one hole, and it was stated when the account was: it requires the
+probe to share the edit prompt's prefix, which our probes do **by construction**. A probe
+mentioning the subject later — *"The city where Jack Marshall was born is"* — shares no
+prefix, and its coefficient is not pinned.
+
+Moving the subject later was predicted to break the pinning. It attenuates it by seven
+percent.
+
+| probe form | mean coefficient | median | min |
+| --- | ---: | ---: | ---: |
+| early — the edit form | **1.000** | 1.000 | 0.998 |
+| **a different relation** — *died in the city of* | **1.000** | 1.000 | 0.998 |
+| late clause — *the city where X was born is* | 0.935 | 0.954 | 0.670 |
+| possessive — *the birthplace of X is* | 0.934 | 0.966 | 0.483 |
+| long preamble | 0.925 | 0.946 | 0.707 |
+
+The second row is the one that matters, and it is a case the analytic account did not
+construct. A probe asking about a **different relation entirely** scores exactly 1.000
+against a birth edit's key, because the subject sits at the start and causal attention makes
+the key identical. The relation being asked about is irrelevant to how much of the edit
+arrives.
+
+So the layer-5 key at a subject's last token is largely determined by the subject tokens
+themselves rather than by what surrounds them, and no natural reformulation escapes.
+
+**Same-subject leakage in ROME is structural.** Any prompt containing the subject receives
+93–100% of the edit vector at the subject's last token — regardless of the relation asked
+about, where the subject sits, how much preamble precedes it, and regardless of `C`. The
+only probe that ever escaped in this project is `inner_2`, which does not mention the
+subject at all.
+
+This also finishes the account of the result that closed the last post. The work-country
+edit and the birth-city probe both begin with the subject, so the probe receives the work
+edit's full, unattenuated delta. **The +0.0 pp gap was not a null needing explanation — it
+was structurally required.** No choice of `C` could have returned anything else.
+
+### Two mechanisms I guessed, and both were wrong
+
+Before measuring the coefficient profile I proposed two accounts of why whitening changed
+nothing, and wrote both down. Neither survived.
+
+The first was that the probe's key is aligned with `k*`, so whitening preserves it along
+with everything else. Measured: `cos = 0.034`. They are near-orthogonal, and the alignment
+story was not close.
+
+The second was that the destination is scale-invariant — that the edit's magnitude does not
+matter, only its direction, so shrinking coefficients would not move the answer. Measured:
+a uniform ×0.27 rescale breaks relocation in three of four chains. Scale matters.
+
+The third account was not a guess. It came out of the per-position profile, which was the
+one thing neither guess had looked at. An earlier "3.7× attenuation" figure I had been
+carrying turned out to be measured at the probe's **final** token, which contributes 0.03 of
+a 1.66 total — two percent of the mass. It described a negligible part of the update
+accurately.
+
+### Honest limits
+
+**The relocation half of the late-probe test is unrun, not negative.** The late form holds
+the true city at baseline in 8 of 42 chains against 29 for the early form, which is below
+the floor of 10 set before the run. Reporting it as a weak result would have read as
+confirmation of the hypothesis under test, when the cause is that the probe does not work.
+
+**Some subjects do attenuate materially.** The minima in that table — 0.483, 0.670, 0.707 —
+are real. This is an existence-and-tendency claim about prompt forms, never a rate.
+
+**Sixteen chains for the coefficient sweep, forty-two for the edit arm.** One model, one
+layer, one relation family.
+
+**It is a layer-5 claim until someone runs the sweep elsewhere.** If the subject key becomes
+context-sensitive deeper in the network, an editor targeting a later layer would leak less
+across forms, and "structural" would narrow to "structural at the layer EasyEdit's
+llama3-8b config happens to edit".
+
+**What would falsify it:** a probe form that mentions the subject and scores materially
+below 0.9 across chains, or that same sweep at another layer. Both are cheap. Neither has
+been run.
+
+**Do not read this as a proposal.** That reducing same-subject leakage requires changing the
+normalisation or the key selection rather than the covariance is a consequence of the
+finding, not a method I am offering. Any approach that limits an edit's blast radius by
+reweighting `u` inherits this limit.

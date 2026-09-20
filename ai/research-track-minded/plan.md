@@ -42,11 +42,14 @@ sentence will produce better-looking mush. T-001 tests it.
 | R-003 | Researcher   | The deletion list                      | closed      |
 | E-001 | Engineer     | Test Tier 2 against a real draft       | closed      |
 | E-002 | Engineer     | Write the skill                        | closed      |
-| E-003 | Engineer     | Use the skill on live work             | open        |
+| E-003 | Engineer     | Use the skill on live work             | closed      |
+| E-004 | Engineer     | Fix the five defects, after a 2nd use  | blocked     |
 
 ## Blocked
 
-None.
+| ID    | Blocked By                                                      |
+| ----- | --------------------------------------------------------------- |
+| E-004 | a second live use — five defects from n=1 by the author is a list to test, not to act on |
 
 ## Hypothesis revised after R-001
 
@@ -68,6 +71,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - R-003 · Deletion list + negative-space measurement — `corpus/deletion-list.md`
 - E-001 · Tier 2 spike — CONFIRM; `agents/engineer/workspace/e001/`
 - E-002 · Skill written and installed — `skill/research-writing/`
+- E-003 · First live use — `agents/engineer/workspace/e003/`; five defects logged
 
 ## Known gap — closed by R-002
 
@@ -111,8 +115,21 @@ corpus comparison; E-001 shows it on one passage.
 Bounded: M6 stayed at zero. Tier 2 converts missing evidence into a stated gap. It
 does not produce evidence, and the skill must say so.
 
+## What E-003 established
+
+The skill works, and its documented purpose is not its main benefit. Pass 1 caught
+zero unfalsifiable claims — `edit-slice/decisions.md` is already written to that
+standard — and instead **reordered the section**, putting the analytic result above
+the empirical one. Left to instinct the section would have opened with a null and
+buried the durable finding under it. The audit's ranking use is undocumented and is
+plausibly what it is for.
+
+`voice.md` was not opened once. Extending a document makes its register available
+by imitation; the voice reference may only earn its place when drafting from
+nothing.
+
 ## Next Orchestrator Action
 
-E-003 — stop building and use it. The skill has been validated on one revision of
-one blind baseline and never on live drafting. The cheapest real test is the next
-piece of `edit-slice` or `rome-neighbors` writing that needs doing anyway.
+Use the skill a second time, on something structurally different from a blog
+section — a related-work paragraph or a design document. Only then open E-004 and
+fix the five defects, weighted by which recur.

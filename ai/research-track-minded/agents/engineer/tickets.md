@@ -114,7 +114,7 @@ E-001 baseline still fires at 58.9/10k and three hand-written documents stay at
 
 ### E-003 · Use the skill on live work
 
-**Status:** open
+**Status:** closed
 **Type:** review
 **Priority:** high
 **Created:** 2026-09-20
@@ -137,6 +137,51 @@ Use it on the next piece of writing that needs doing anyway — an `edit-slice` 
   nothing; this skill is subject to that finding.
 
 **Blockers:** —
+
+**Artifacts:**
+
+- `agents/engineer/workspace/e003/01-pass1-claim-audit.md` — ten claims audited
+- `agents/engineer/workspace/e003/02-draft.mdx` — the section, 1,371 words
+- `agents/engineer/workspace/e003/03-skill-test-record.md` — the defect list
+- `web/blog/2026-09-15-five-days.mdx` — section inserted, gap statement retracted
+  and replaced, standfirst updated
+
+**Closed:** 2026-09-20 — used on a real section covering [E-016]/[E-017]. Pass 1
+produced the most change, but by **reordering** the section rather than by catching
+unfalsifiable claims (it caught none — `decisions.md` is already written to that
+standard). Five defects found, none fixed; E-004 opened. n=1 and the author is the
+skill's author, so the list is to be tested rather than acted on.
+
+---
+
+### E-004 · Fix the defects E-003 found
+
+**Status:** blocked
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+
+**Description:**
+Five defects from the first live use, in `e003/03-skill-test-record.md`, ranked:
+
+1. **Pass 1 assumes a draft exists.** "For each paragraph of the draft" — add a
+   drafting mode that audits available claims before prose exists.
+2. **The audit's ranking use is undocumented.** It put the analytic claim above the
+   empirical one and restructured the section; the skill describes it only as a
+   filter.
+3. **No rule separates a number-backed qualifier from a hedge.** "Largely
+   determined" summarising a measured 7% is not the same as "largely" standing in
+   for a number.
+4. **The Limits section needs a use-constraint category** — "do not read this as a
+   method proposal" is a limit on how the result may be used, not on what it shows,
+   and no Pass 2 question generates it.
+5. **`voice.md` went unused.** Decide whether it is drafting-only and say so, or
+   cut it.
+
+**Blockers:** a second live use. Five defects from n=1, found by the skill's own
+author on a document type the skill was shaped around, is a list to test rather
+than act on. Fix what recurs.
 
 **Artifacts:** —
 

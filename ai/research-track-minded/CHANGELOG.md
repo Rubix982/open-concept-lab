@@ -39,3 +39,10 @@ is misattributed. This entry is the record.
 - [O-004] Opened E-003 — use the skill on live work before extending it
 - T-010 partially answered: unquantified superlatives give 2x separation at corpus
   scale, not a gate
+
+## 2026-09-20 · Session 3 (cont. 3)
+
+- [E-003] First live use of the skill — new section in `web/blog/2026-09-15-five-days.mdx`
+  covering E-016/E-017, published gap statement retracted and replaced, standfirst
+  updated; defect list in `agents/engineer/workspace/e003/`
+- [O-005] Opened E-004 — blocked on a second live use
