@@ -1221,3 +1221,67 @@ same-subject, gap 0.877, distributions non-overlapping (max 0.153 < min 0.483). 
 passed: all five [E-017] forms reproduced to within 0.001. [E-017] stands with its
 floor measured rather than assumed. The anisotropy prediction that motivated the
 ticket was wrong, and is recorded as such.
+
+---
+
+### E-019 · The layer sweep — is the pinning a layer-5 fact or a ROME fact?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Runs [T-075] per design.md Part IV, whose first job was discharged early by [E-018].
+
+[E-017]/[E-018] establish that at **layer 5** any prompt containing the subject
+receives 93–100% of the edit vector while a different subject receives 8%. Layer 5
+is what EasyEdit's `llama3-8b` ROME config edits. If the subject key becomes
+context-sensitive deeper in the network, an editor targeting a later layer would
+leak less across probe forms, and "structural" narrows to "structural at the layer
+this config happens to edit".
+
+**Method.** No cache needed, and no edit. For each layer `L`, `k*(L)` is the key at
+the subject's last token of the **edit-form** prompt at `L` — which is one of the
+six probes already in the batch. So the early form is 1.000 by construction at every
+layer, and every other form is read against it. One trace per chain saving
+`down_proj.input` at all eight layers; the coefficient is
+`(k @ kstar) / (kstar @ kstar)` as in [E-017]/[E-018].
+
+**Layers:** 0, 3, 5, 8, 12, 16, 24, 31 of 32. Denser early where ROME configs
+cluster, two deep anchors. A shape test, not a per-layer claim.
+
+**Forms:** the five from [E-017] plus [E-018]'s different-subject control, which is
+retained as a **per-layer floor** rather than as the point of the run.
+
+**Gate.** Layer 5 must reproduce [E-018]: same-subject forms near
+0.999/0.935/0.934/0.924/0.999 and different-subject near 0.082. `k*(5)` is computed
+fresh here rather than loaded from `E014_kstar_L5_s1538.pt`, so agreement also
+validates that substitution. Check before reading any other layer.
+
+**Outcomes, stated before the run.** Let `c_form(L)` be the mean over the four
+non-trivial same-subject forms and `c_other(L)` the different-subject floor.
+
+- **Confirm** — `c_form ≥ 0.9` at every layer with `c_other` low throughout. The
+  structural claim generalises and ROME's layer choice is incidental to it.
+- **Deny** — `c_form` falls below ~0.7 at deeper layers while `c_other` stays low.
+  The claim narrows to early layers, and that is a fact about where an editor leaks
+  less. Useful either way.
+- **Null** — `c_form` falls **and `c_other` rises toward it**. The measure is losing
+  discrimination with depth rather than the key becoming context-sensitive. This is
+  why the floor is carried at every layer.
+
+**This measures delivery, never effect.** A coefficient is how much of the edit
+vector arrives, not whether it changes the answer — [E-016] showed those come apart.
+Nothing here licenses a claim about what editing at layer 24 would do.
+
+Per [O-007], go through `retrying()`; do not re-run a failure and read the second
+outcome as a diagnosis.
+
+**Blockers:** —
+
+**Artifacts:** —
+
+**Closed:** —

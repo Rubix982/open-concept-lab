@@ -1067,7 +1067,7 @@ licenses the implication. Declaration 6 stands exactly as written.
 
 ### T-073 · Pool attractor mass as a required artifact field
 
-**Status:** open
+**Status:** answered — implemented
 **Parent:** T-066
 **Opened:** 2026-09-18
 **Question:** `Washington, D.C.` absorbed 33% of all birth-arm destinations in [E-015]
@@ -1075,7 +1075,11 @@ licenses the implication. Declaration 6 stands exactly as written.
 occurs. [E-009b] (US = 40/136 of countries) and [E-011] were the same shape. Should
 every artifact reporting a pool also report its attractor mass, the way out-degree must
 report its edge vocabulary? Cheap, and three findings have now turned on it.
-**Answer:** —
+**Answer:** yes, and implemented. `FilterReport.attractor()` reports distinct answers, the
+dominant one and its share per relation; `summary()` prints it beside every relation's rate
+and warns above 25%; `to_json()` carries it so it travels with the artifact. On the E-012
+data it flags `inner_2` and `outer` at 28 distinct with 'the United States' at 29% —
+the concentration that produced three separate false readings before anyone looked.
 
 
 ---

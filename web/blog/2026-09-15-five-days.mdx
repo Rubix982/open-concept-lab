@@ -1490,6 +1490,124 @@ normalisation or the key selection rather than the covariance is a consequence o
 finding, not a method I am offering. Any approach that limits an edit's blast radius by
 reweighting `u` inherits this limit.
 
+## Why the null was inevitable
+
+A null result asks for an explanation, and the obvious suspect was the editor. Everything
+above used `C = I` — the unwhitened update, which drops roughly eight nats on facts about
+the subject that have nothing to do with the edit. A blunt instrument smears; maybe a
+sharper one would show the inference the blunt one destroyed.
+
+ROME's method section is built on the sharper version: `u = C⁻¹k*`, where `C` is the
+second-moment matrix of the layer's keys. EasyEdit ships fourteen ROME configs and **every
+one of them sets `mom2_adjustment: false`**, including the two models the ROME paper
+itself used. So the whitening term the method is named for is off by default in the
+toolkit most people run.
+
+Turning it on is not free — `C` is 14336² at this model, 0.82 GB, and inverting it is
+worse. But the key distribution turns out to live on a **26-dimensional manifold**: half
+the variance in 16 directions, 99% in 338. So the honest model is low-rank plus a ridge,
+and Woodbury computes `C⁻¹k*` while forming nothing bigger than an N×N matrix. Seventeen
+megabytes instead of eight hundred.
+
+### The statistic that nearly ended the investigation
+
+The first check was the cosine between `k*` and `C⁻¹k*`. It came back **0.97** — whitening
+barely rotates the update. On that number the whole line of inquiry closes: whitening
+changes nothing, move on.
+
+It was the wrong statistic. ROME changes an arbitrary input by
+`(v* − Wk*) · (u·k)/(u·k*)`, so what whitening does is shrink that **coefficient** on
+unrelated inputs — and a 0.97 cosine is perfectly compatible with a twentyfold change in
+it. Measured on held-out keys: 0.0260 unwhitened against 0.0013 whitened. The update's
+*direction* barely moves; its *reach* changes by a factor of twenty.
+
+(The first version of that measurement evaluated on the same keys that defined `C`, which
+gave a spectacular and meaningless 1000×. Refit on 1400, evaluated on 665 held-out. The
+same denominator mistake as day two, in a new costume.)
+
+So: a demonstrably twentyfold more selective editor. Run it on the same 42 chains.
+
+**Forty-two out of forty-two identical destinations.** Paired gap +0.0 pp at every λ.
+
+### The coefficient is pinned, and it is pinned by arithmetic
+
+Three guesses at why, all wrong, all cheap to have tested first. That the probe key was
+aligned with `k*` — it is nearly orthogonal, cosine 0.034. That the destination was
+scale-invariant — rescaling by 0.27 breaks relocation in three chains of four. Only the
+third attempt measured instead of predicting, and printed the coefficient at every
+position of the probe:
+
+| position | token | coeff `C = I` | coeff `C⁻¹` |
+| ---: | --- | ---: | ---: |
+| 7 | `'amin'` | 0.0918 | 0.0786 |
+| **8** | **`'ck'`** | **1.0000** | **1.0000** |
+| 9 | `' was'` | 0.1156 | 0.1040 |
+| 14 | `' of'` | 0.0305 | 0.0086 |
+
+Exactly one. Not approximately.
+
+`k*` is read at the subject's last token of the edit prompt. A probe that begins with the
+same subject has an **identical key** at that position — causal attention guarantees it,
+since nothing differs in the tokens before. ROME divides by `u·k*`. So the coefficient
+there is `(k*·u)/(u·k*) = 1` for **any** `u`, hence for any covariance anyone might choose.
+
+That single fact explains every result in the arc:
+
+| observation | why |
+| --- | --- |
+| the birth-city probe displaced, 67% | shares the prefix → pinned at 1.0 → full delta |
+| *"Paris is located in…"* inert, −0.02 | shares no prefix → nothing pinned |
+| whitening changed nothing, 42/42 | cannot touch a coefficient fixed by arithmetic |
+| a uniform ×0.27 rescale **did** break it | it scales the pinned term too |
+
+And it explains the work-country result that started this. The work edit and the birth
+probe both begin with the subject. The probe receives the work edit's full, unattenuated
+vector. The gap was not a null waiting to be explained — it was **structurally required**
+to be zero.
+
+### How far the claim actually goes
+
+The tempting next sentence is "so same-subject leakage is unavoidable." Testing it across
+depth says otherwise — and the test matters, because layer 5 is simply what EasyEdit's
+config happens to edit.
+
+<Figure
+  caption="Mean coefficient at the subject's last token, by layer. Probes that begin with the subject are pinned at exactly 1.000 everywhere. Probes that reorder it escape progressively with depth."
+>
+
+| probe form | L0 | L5 | L10 | L15 | L20 | L25 | L31 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| edit form | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| same-prefix probe | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| different relation | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| *"The city where X was born is"* | 0.992 | 0.951 | 0.858 | 0.791 | **0.577** | 0.584 | 0.598 |
+| *"The birthplace of X is…"* | 0.997 | 0.962 | 0.833 | 0.807 | **0.615** | 0.570 | 0.628 |
+
+</Figure>
+
+Two behaviours, cleanly separated. Prefix-sharing probes are pinned at 1.000 at **every**
+depth — that part is arithmetic and has no escape. Reordered probes decay: 0.95 at layer 5,
+0.58 by layer 20, and for individual subjects as low as 0.13.
+
+<Claim
+  label="How far the mechanism generalises"
+  superseded={<>Same-subject leakage in ROME is <strong>structural</strong> — no natural reformulation of the probe escapes it.</>}
+  record={{
+    "Why it failed": "Measured across seven layers. Reordered probes get 0.95 of the delta at layer 5 but 0.58 by layer 20, with per-subject minima of 0.13. Reformulation does help — just not at the layer this config edits.",
+    "What survives": "Any probe BEGINNING with the edited subject receives the full vector at every layer, for any C, whatever relation it asks about. That is analytic, not statistical.",
+    "Evidence": "T-075, 12 subjects, layers 0/5/10/15/20/25/31, coefficient only",
+  }}
+>
+  The leakage is structural <em>given the layer choice</em>, not given the method. Layer 5
+  is what EasyEdit's <code>llama3-8b.yaml</code> edits, and at that depth the subject key is
+  almost context-free; deeper in the network it is not.
+</Claim>
+
+What this does not establish: whether the decayed coefficient at layer 20 actually produces
+less displacement. The scale test already showed coefficient and destination are not
+linearly related, so it cannot be assumed. And the obvious follow-on — edit deeper, leak
+less — is method design, which this project deliberately does not do.
+
 ## What is open
 
 **The experiment the project is named for has run, and returned a negative.** Forty-two
