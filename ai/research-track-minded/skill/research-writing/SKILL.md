@@ -57,6 +57,17 @@ demoting it to an explicit attribution, or cutting it.
 If the draft has no own-claims at all, stop and say so. That is the finding, and no
 amount of rewriting fixes it.
 
+**This is also where "I don't know what to do with this" gets fixed**, and it is not
+a formatting problem. A draft can be full of well-formed instructions that cannot be
+carried out — *"use GradSim as a pre-edit risk score"* is a verb and an object, and
+it is unexecutable, because using it as a gate needs a threshold and error rates that
+exist nowhere in the source. **A hollow instruction rests on an unquantified claim.**
+Sharpen the claim and the instruction either acquires its threshold or is replaced by
+the task of going to find one.
+
+So do not bolt a "next actions" list onto a draft that failed this pass. It produces
+a tidy list of things nobody can do, which reads like progress.
+
 ### Design mode
 
 | # | Load-bearing assumption | If wrong, does the work survive? | Control |

@@ -100,7 +100,7 @@ the rule itself.
 
 ### T-008 · Are the missing action items a symptom of a missing claim?
 
-**Status:** open
+**Status:** answered — **the premise was wrong, and the answer is still yes**
 **Parent:** T-001
 **Opened:** 2026-09-19
 **Question:** The anti-exemplar is accurate and useless, and its defining property
@@ -110,7 +110,26 @@ with it" — no action item because no position. If so, the output contract (#4 
 the original scope split) is not a formatting fix at all; it is downstream of
 claim-lock, same as the hedging finding. Worth testing before building a separate
 contract: does forcing a falsifiable claim produce the action items for free?
-**Answer:** —
+**Answer:** [R-006], counted on [E-001]'s pair with the definition fixed beforehand and
+made independent of falsifiability so the result could not be guaranteed. Action items
+7 → 13, ten of thirteen outside Limits, a 47% rise per word in the body alone.
+
+But the thread's premise — no action item because no position — is **wrong**. The
+baseline carries seven, one of them a literal imperative: *"Use GradSim as a pre-edit
+risk score or triage signal."* What it lacks is **executability**. You cannot use
+GradSim as a gate, because that needs a threshold and error rates that appear nowhere
+in the source. The instruction is well-formed and cannot be carried out.
+
+So claim-lock does not manufacture action items from nothing. **A hollow instruction
+rests on an unquantified claim**, and sharpening the claim is what exposes it — the
+same defect [R-002] saw as nine of ten own-claims failing on unquantified
+superlatives. The output contract should not be built: bolting "next actions" onto a
+draft that failed Pass 1 yields a tidy list of things nobody can do, which reads like
+progress. `SKILL.md` Pass 1 now says this.
+
+Caveat worth carrying: the *count* was pre-registered, the hollow/executable
+distinction was found while counting and is post-hoc. It is the more interesting half
+and the less defensible one.
 
 ### T-009 · Does the naming rule generalise past borrowed vocabulary?
 

@@ -627,3 +627,92 @@ already ruled on, the test will most often return *untested* rather than a verdi
 because free inferences about a novel target are usually unmeasured. If that happens
 the test is a prompt for experiments rather than a gate, which is a different and
 less useful thing than it currently claims to be.
+
+---
+
+## [R-006] Finding: claim-lock does not create action items — it makes hollow ones executable
+
+_Date: 2026-09-20_
+
+Resolves [T-008]. Counted on [E-001]'s pair, which was run before this hypothesis
+existed and treated with the Tier 2 questions only, so nothing was optimising for
+action items. Definition fixed before counting, and deliberately independent of
+falsifiability to avoid guaranteeing the result: *a sentence from which a reader can
+write a task with a verb and an object.*
+
+**Confidence: medium.** One document pair, scored by me, every item enumerated below
+so the count can be checked rather than trusted.
+
+### The counts
+
+| | action items | words | per 1,000 |
+| --- | ---: | ---: | ---: |
+| baseline | **7** | 472 | 14.8 |
+| treated, body only | **10** | ~458 | 21.8 |
+| treated, incl. Limits | **13** | 558 | 23.3 |
+
+Pre-stated CONFIRM was a material rise with a material share outside Limits. Both
+hold: 7 → 13 overall, and 10 of 13 sit outside Limits. The per-word rate rises 47%
+in the body alone, so this is not a length artifact.
+
+### The premise of [T-008] was wrong, and that is the finding
+
+**The baseline is not actionless. It has seven action items**, including a literal
+imperative: *"Use GradSim as a pre-edit risk score or triage signal."* The hypothesis
+— no action item because no position — predicted roughly zero. It is not what a
+count shows.
+
+What the baseline's action items lack is **executability**. Take the imperative
+above. You cannot use GradSim as a pre-edit risk score, because doing so needs a
+threshold and false-accept and false-reject rates at that threshold, and none exist
+anywhere in the source. The instruction is well-formed and cannot be carried out.
+The same holds for "compute a risk estimate before trusting an edit broadly" and
+"build a certification layer" — each names a verb and an object and none can be
+started tomorrow.
+
+The treated version's items differ in **kind**, not only in number:
+
+- read Qin et al. directly rather than through the summary
+- find the effect size, which appears nowhere in the source
+- check whether Su et al. already draws the detect/predict/certify distinction
+- replace "certification" with "regression suite"
+- report GradSim's distribution alongside edit-success rates
+- price the enumeration of entailed neighbours: one forward pass per candidate, plus
+  a candidate generator nobody has published
+
+Every one of those could be done tomorrow, by a named action, with a knowable result.
+
+**So the mechanism is not that claim-lock manufactures action items from nothing. It
+is that a hollow imperative rests on a claim with no threshold to violate, and
+sharpening the claim is what exposes the hollowness.** "Use GradSim as a risk score"
+survives only as long as "strongly correlates" goes unexamined. Ask what would
+falsify it and the missing operating point surfaces, and the instruction either
+acquires a threshold or is replaced by the task of going to find one.
+
+This connects directly to [R-002]'s observation that nine of the baseline's ten
+own-claims failed on unquantified superlatives. **An unquantified claim supports an
+unexecutable instruction.** They are the same defect at two removes.
+
+### Consequence for the project
+
+The fourth problem from the original scope split — *"you give me a lot of text, I
+don't know what to do with it"* — **should not get a separate output contract.** A
+contract appending "decisions and next actions" to a document with hollow imperatives
+would produce a tidy list of things that cannot be done, which is worse than no list:
+it looks like progress.
+
+Pass 1 already addresses it, and the skill should say so rather than leaving the
+connection implicit.
+
+### What this does not establish
+
+- **One pair, one topic, one scorer.** [E-003] and [E-005] produced drafts with no
+  baseline to compare against, so they contribute nothing here.
+- **The boundary between "hollow" and "executable" is mine and was not pre-stated.**
+  The *count* was pre-registered; the kind distinction was found while counting and
+  is therefore post-hoc. It is the more interesting half and the less defensible one.
+- **A hostile reading:** I scored 7 for the baseline partly by counting method
+  descriptions ("Qin et al. propose GradSim, the cosine similarity between…") as
+  licensing "compute GradSim". A stricter scorer would put the baseline lower and the
+  rise would look larger. I chose the reading less favourable to the hypothesis and
+  it still confirmed, which is the only reason to trust the direction.

@@ -228,3 +228,65 @@ under uncertainty coin. That reverses the section's previous advice. "Relied on"
 made checkable by tying it to Pass 1 — an inference is relied on if it appears in a
 claim. Step 1 is the acknowledged weak joint and the test has never met an
 adversarial case.
+
+---
+
+### R-006 · Are missing action items downstream of a missing claim?
+
+**Status:** closed
+**Type:** research
+**Priority:** medium
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+
+**Description:**
+Resolves [T-008]. The original scope split listed four problems and sent the fourth
+— *"you give me a lot of text, I don't know what to do with it"* — to a formatting
+fix: an output contract appending decisions and next actions. [R-002] then suggested
+it is not a formatting problem at all but a symptom of a missing falsifiable claim.
+
+**The test already exists and was run before the hypothesis did.** [E-001] paired a
+blind AI-generated baseline against a version treated with the Tier 2 questions
+only. No instruction about action items was given, and [T-008] did not exist when it
+ran — so a rise in action items cannot have come from optimising for them.
+
+**Circularity is the thing to avoid.** Action items must be defined independently of
+falsifiability, or the result is guaranteed. Pre-stated definition, fixed before
+counting:
+
+> An **action item** is a sentence from which a reader can write a task with a verb
+> and an object — "read Qin et al. §4 for an operating point", "compute the
+> false-accept rate at τ". Not "consider the trade-offs", not "further work is
+> needed". The test is imperative derivability, and it says nothing about whether
+> the sentence could be false.
+
+**Confound to separate.** Tier 2 mandates a Limits section, and limits naturally
+read as tasks. If every action item in the treated version sits inside Limits, the
+mechanism is "you added a Limits section", not claim-lock. **Count inside and
+outside separately.**
+
+**Outcomes:**
+
+- **Confirm** — action items rise materially, and a material share sit *outside*
+  Limits. The output contract is downstream of claim-lock and should not be built.
+- **Deny** — action items flat. The contract is a separate problem needing its own
+  fix.
+- **Null** — they rise but all inside Limits. The mechanism is the Limits
+  requirement, not claim sharpening, and that is a smaller and different finding.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `agents/shared/findings.md` → "[R-006] Finding: claim-lock does not create action
+  items — it makes hollow ones executable"
+- `skill/research-writing/SKILL.md` — Pass 1 now states the connection explicitly
+
+**Closed:** 2026-09-20 — **CONFIRM on the count, and the premise was wrong.** Action
+items 7 → 13, and 10 of 13 outside Limits, so the confound is cleared. But the
+baseline was never actionless: it carries seven, including a literal imperative. What
+it lacks is **executability** — "use GradSim as a pre-edit risk score" needs a
+threshold that exists nowhere in the source. Claim-lock does not manufacture action
+items; it exposes hollow ones, because a hollow instruction rests on an unquantified
+claim. The output contract should not be built.

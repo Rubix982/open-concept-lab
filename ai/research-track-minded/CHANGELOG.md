@@ -67,3 +67,6 @@ is misattributed. This entry is the record.
 - T-002 marked answered (stale since R-003)
 - [R-005] T-009 answered — the free-inference test, and a reversed default: coin under
   uncertainty. `skill/research-writing/references/mathematics.md`
+- [R-006] T-008 answered — action items 7→13, but the baseline was never actionless;
+  claim-lock exposes hollow instructions rather than creating items. Output contract
+  cancelled. `agents/shared/findings.md`, `skill/research-writing/SKILL.md`
