@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**27 decisions · 17 findings · 57 threads (1 active, 44 answered, 3 dropped, 1 open, 8 parked)**
+**27 decisions · 18 findings · 57 threads (1 active, 45 answered, 3 dropped, 8 parked)**
 
 ## Decisions and results
 
@@ -199,6 +199,10 @@ _2026-09-18_ — Run before building the probing taxonomy the project was about 
 
 _2026-09-20_ — Opened by [E-013] gate 0, which found EasyEdit ships mom2adjustment: false in all fourteen of its ROME configs — including gpt2-xl and gpt-j-6B, the two…
 
+### T-065 · pairs bound, crossings decompose — and narrowing comes from unfixing a dimension {#f-T-065}
+
+_2026-09-20_ — Tests the thread's two structural claims against the record rather than reasoning about them. Every result in decisions.md hand-classified by the shape of…
+
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._
 
@@ -206,19 +210,13 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (1)
-
-| id | question | parent | status |
-| --- | --- | --- | --- |
-| `T-065` | **Is the instrument's atom a contrastive pair, with content only at crossings?** — Raised by the user, on noticing that nearly every measurement here is a minimal contrastive pair — subject vs placeholder, bare… | T-062 | open |
-
 ### Active (1)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | `T-054` | **The CounterFact filter outlived the model it was calibrated against** — [R-006] established that CounterFact filtered records on P(true) &gt; P(counterfactual) pre-edit — so possession is checked. But… | T-047 | ACTIVE |
 
-### Answered (44)
+### Answered (45)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
@@ -260,6 +258,7 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | `T-061` | **Is subject familiarity the variable behind the leg dependence?** — [E-009] measured that chain legs are not independent (inner1 &amp; outer lift 2.10 at GPT-J, 1.15 at 70B) and explained it as… | T-058 | answered — **no** |
 | `T-062` | **Is possession a property of a fact, or of a (fact, template) pair?** — notes/definitions.md declaration 1 is binding — "a fact is a behavioral unit defined by its probe set" — and every possession… | T-059 | answered — **yes, a fact-level predicate exists** |
 | `T-064` | **MUTE — known but inexpressible in this phrasing** — Crossing [E-012]'s two tests gives four cells, and one of them has no name in the literature: row test fails, column test passes… | T-062 | answered — **two causes, not one** |
+| `T-065` | **Is the instrument's atom a contrastive pair, with content only at crossings?** — Raised by the user, on noticing that nearly every measurement here is a minimal contrastive pair — subject vs placeholder, bare… | T-062 | answered — **claim 1 sharpened, claim 2 refuted** |
 | `T-066` | **What does a closed candidate pool hide that free generation would show?** — Every measurement in this repo ranks over a closed, type-matched pool. That is what makes it controlled — and [E-014] had to… | T-065 | answered — **a great deal** |
 | `T-067` | **A causal measure of relocation, not a behavioural one** — [E-015] asks whether the model behaves as if it inferred "born in Germany ⇒ born in a German city", by holding subject and target… | T-065 | answered — **both** |
 | `T-073` | **Pool attractor mass as a required artifact field** — Washington, D.C. absorbed 33% of all birth-arm destinations in [E-015] — it is the pool's high-prior city and the default sink… | T-066 | answered — implemented |

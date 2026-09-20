@@ -1230,3 +1230,60 @@ established here** — we have shown the configs differ, not that the numbers do
 need the same benchmark run both ways, and it is not our question.
 
 **Artifacts:** this entry; closes R-009, opened by [E-013] gate 0.
+
+## [T-065] Finding: pairs bound, crossings decompose — and narrowing comes from unfixing a dimension
+
+_Date: 2026-09-20 · meta-analysis of this project's own 17 recorded results_
+
+Tests the thread's two structural claims against the record rather than reasoning about
+them. Every result in `decisions.md` hand-classified by the shape of the comparison that
+produced it, and by whether the finding survived.
+
+| shape | n | held | narrowed |
+| --- | ---: | ---: | ---: |
+| single measurement | 1 | 1 | 0 |
+| pair (2 conditions) | 5 | 4 | 1 |
+| crossing (2+ dimensions) | 7 | 6 | 1 |
+| multi-arm (3+ on one dimension) | 4 | 2 | 2 |
+
+**Claim 2 of the thread is refuted.** *"The findings have come from crossings, not pairs"*
+does not hold: pairs survived at 80%, crossings at 86%, which is noise at this n. Pairs
+produced [E-015]'s +0.0 pp null, [E-018]'s 0.082 floor and [E-023]'s pool correction —
+three of the project's load-bearing results.
+
+**What differs is what each shape yields, not whether it yields.**
+
+- **Pairs bound.** They establish that something is present, absent, or equal — a floor, a
+  null, a correction. [E-015]: no inference. [E-018]: 0.082. [E-023]: the pool undercounts.
+- **Crossings decompose.** They establish what shape an effect has, and an interaction is
+  by definition unavailable to a pair. [E-012]: +1, +1, +20. [E-022]: MUTE has two causes.
+  [E-025]: a floor plus type-matched displacement.
+
+**Claim 1 — the lattice — survives, in a sharper form.** Four results were narrowed, and
+in every case the narrowing came from **varying a dimension that had been held fixed**:
+
+| narrowed | by | dimension unfixed |
+| --- | --- | --- |
+| [E-009] pair | [E-009b] crossing | answer identity, not just position |
+| [E-017] multi | [T-075]/[E-019] crossing | layer |
+| [E-024] crossing | [E-025] crossing | type, holding relatedness |
+| [E-014] multi | [E-023] **pair** | measurement method itself |
+
+The fourth is the interesting one: a *pair* narrowed a *multi-arm* result, because it
+varied something nobody had varied — ranking against generation. **Arity is not the
+generative variable; the count of dimensions ever varied is.**
+
+> The productive move is to ask what a design holds fixed, and vary that. Every narrowing
+> in this record came from unfixing something, and none from adding arms to a dimension
+> already varied.
+
+**Prescriptive, and cheap to apply.** Before running a comparison, list what it holds
+fixed — model, layer, relation, template, pool, measurement method, decoding — and ask
+which of those has never been varied anywhere in the record. [E-023] came from noticing
+that *every* result held "rank a closed pool" fixed, and it corrected a published number.
+
+**Confidence: medium.** n = 17, all from one project, classified by hand by the person who
+ran them. The shapes are unambiguous but "held" versus "narrowed" is a judgement about our
+own work, and the 80%/86% comparison is underpowered by construction.
+
+**Artifacts:** this entry; answers [T-065].

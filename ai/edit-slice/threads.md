@@ -984,7 +984,7 @@ it.
 
 ### T-065 · Is the instrument's atom a contrastive pair, with content only at crossings?
 
-**Status:** open
+**Status:** answered — **claim 1 sharpened, claim 2 refuted**
 **Parent:** T-062
 **Opened:** 2026-09-15
 **Question:** Raised by the user, on noticing that nearly every measurement here is a
@@ -1007,7 +1007,21 @@ Two structural observations, neither yet a finding:
 If this holds up it is a claim about how the instrument should be *designed*: enumerate
 crossings deliberately rather than discovering them by accident, which is how all three
 were found.
-**Answer:** —
+**Answer:** measured against the project's own 17 results ([T-065] in findings.md).
+
+**Claim 2 is refuted.** Pairs survived at 80% and crossings at 86% — noise at this n.
+Pairs produced [E-015]'s null, [E-018]'s floor and [E-023]'s pool correction, three
+load-bearing results. What differs is what each yields: **pairs bound** (present, absent,
+equal) and **crossings decompose** (interactions, two-effect structures, which a pair
+cannot express).
+
+**Claim 1 survives in a sharper form.** All four narrowings came from varying a dimension
+previously held fixed — and one of them was a *pair* narrowing a *multi-arm* result
+([E-023] on [E-014]), because it varied ranking-versus-generation, which nothing had
+varied. Arity is not the generative variable; the count of dimensions ever varied is.
+
+The rule: **ask what a design holds fixed, and vary that.** Every narrowing came from
+unfixing something; none from adding arms to a dimension already varied.
 
 ---
 

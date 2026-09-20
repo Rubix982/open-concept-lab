@@ -355,6 +355,14 @@ f-R-009:
   gist: "Opened by [E-013] gate 0, which found EasyEdit ships mom2adjustment: false in all fourteen of its ROME configs — including gpt2-xl and gpt-j-6B, the two…"
   surface: finding
 
+f-T-065:
+  id: "T-065"
+  kind: "Finding"
+  title: "pairs bound, crossings decompose — and narrowing comes from unfixing a dimension"
+  date: "2026-09-20"
+  gist: "Tests the thread's two structural claims against the record rather than reasoning about them. Every result in decisions.md hand-classified by the shape of…"
+  surface: finding
+
 t-T-001:
   id: "T-001"
   kind: "Thread"
@@ -793,7 +801,7 @@ t-T-065:
   title: "Is the instrument's atom a contrastive pair, with content only at crossings?"
   date: ""
   gist: "Raised by the user, on noticing that nearly every measurement here is a minimal contrastive pair — subject vs placeholder, bare…"
-  status: "open"
+  status: "answered — **claim 1 sharpened, claim 2 refuted**"
   surface: thread
 
 t-T-066:
