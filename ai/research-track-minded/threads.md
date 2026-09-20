@@ -133,4 +133,14 @@ falsifiable claims, ratio of asserted-to-cited sentences, count of numbers
 attached to an instrument, presence of a named negative result? Or is this
 irreducibly a judgement call, in which case the skill should stop pretending
 otherwise and say so. Worth one cheap pass before conceding.
-**Answer:** —
+**Answer:** Partially, and the answer is still no. E-002 added an
+**unquantified-superlative** rule, derived from E-001's finding that nine of the
+baseline's ten own-claims failed on *clearest / main / most / one of the few /
+mostly*. On the single E-001 passage it looked decisive — 58.9 per 10k against
+0.0 for hand-written prose. At corpus scale it is not: 0.0 hand-written, 1.6
+published papers, 3.1 AI reports. A 2x separation, better than the 1.5x of the
+original probes and still not a gate. The single-passage number was a hot spot,
+not a rate. Surface features remain unable to separate good research writing from
+competent filler; the claim audit is still the only thing that does. Thread stays
+open for a non-surface proxy — density of falsifiable claims is the obvious
+candidate and is exactly what E-001 hand-counted.

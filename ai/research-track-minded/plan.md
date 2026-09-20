@@ -10,7 +10,7 @@ rather than a wall of text.
 
 ## Current Phase
 
-Phase 1 — Corpus assembly
+Phase 2 — The skill exists and is installed. Next: use it on real work.
 
 ## Scope decision (2026-09-18)
 
@@ -41,7 +41,8 @@ sentence will produce better-looking mush. T-001 tests it.
 | R-002 | Researcher   | Exemplar corpus — mech interp papers   | closed      |
 | R-003 | Researcher   | The deletion list                      | closed      |
 | E-001 | Engineer     | Test Tier 2 against a real draft       | closed      |
-| E-002 | Engineer     | Write the skill                        | open        |
+| E-002 | Engineer     | Write the skill                        | closed      |
+| E-003 | Engineer     | Use the skill on live work             | open        |
 
 ## Blocked
 
@@ -66,6 +67,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - R-002 · Mech interp exemplar corpus — `corpus/papers/`, findings.md
 - R-003 · Deletion list + negative-space measurement — `corpus/deletion-list.md`
 - E-001 · Tier 2 spike — CONFIRM; `agents/engineer/workspace/e001/`
+- E-002 · Skill written and installed — `skill/research-writing/`
 
 ## Known gap — closed by R-002
 
@@ -111,6 +113,6 @@ does not produce evidence, and the skill must say so.
 
 ## Next Orchestrator Action
 
-E-002 — write the skill. Tier 2 as the primary pass, Tier 1 as a mechanical check
-beside it, the voice profile and exemplar passages as reference. The evidential
-limitation is declared in the skill, not discovered by the user.
+E-003 — stop building and use it. The skill has been validated on one revision of
+one blind baseline and never on live drafting. The cheapest real test is the next
+piece of `edit-slice` or `rome-neighbors` writing that needs doing anyway.

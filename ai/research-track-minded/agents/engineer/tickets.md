@@ -65,7 +65,7 @@ converts missing evidence into a stated gap and cannot conjure evidence.
 
 ### E-002 · Write the skill
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -94,6 +94,47 @@ Open questions to settle while writing, not before:
 - Is "Limits" exempt from the truth-value heading rule? (E-001 M3 left it open.)
 - Does the skill run the Tier 1 lint as a script, or as instructions? A script is
   cheaper and exact; `agents/researcher/findings/negspace.py` already exists.
+
+**Blockers:** —
+
+**Artifacts:**
+
+- `skill/research-writing/SKILL.md` — entry point, 111 lines
+- `skill/research-writing/references/{structure,mathematics,voice,exemplars}.md`
+- `skill/research-writing/scripts/lint.py` — 13 rules, mention-aware
+- `~/.claude/skills/research-writing` — symlink, installed
+- `agents/shared/decisions.md` → two [E-002] decisions
+
+**Closed:** 2026-09-20 — both open questions settled ("Limits" is exempt; the lint
+is a script). Self-lints clean, with regressions holding in both directions: the
+E-001 baseline still fires at 58.9/10k and three hand-written documents stay at
+0.0/10k. Untested against a live drafting session — that is E-003.
+
+---
+
+### E-003 · Use the skill on live work
+
+**Status:** open
+**Type:** review
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+
+**Description:**
+The skill is validated on one revision of one blind baseline. It has never been
+used while actually drafting, which is most of what it is for. Do not extend it
+further until it has been.
+
+Use it on the next piece of writing that needs doing anyway — an `edit-slice` or
+`rome-neighbors` section, or the next blog post. Then record, in this ticket:
+
+- Which pass produced the most change, and which was skipped as not worth it.
+- Any rule that fired and was wrong (a false positive in the claim audit matters
+  more than one in the lint).
+- Whether the Limits section wrote itself or had to be forced.
+- Whether `SKILL.md` was actually read end to end, or whether it is already too
+  long. The project's own first finding was that extra instruction layers change
+  nothing; this skill is subject to that finding.
 
 **Blockers:** —
 

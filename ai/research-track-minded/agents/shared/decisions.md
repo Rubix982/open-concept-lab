@@ -53,3 +53,67 @@ well-evidenced.
 
 **Revisit if:** a version of the pass that is allowed to *go and fetch* evidence
 is built. That is T-004 territory and is still parked.
+
+---
+
+## [E-002] Decision: the skill is three passes, and the lint is last and labelled
+
+_Date: 2026-09-20_
+
+**Decision:** `skill/research-writing/`, installed by symlink at
+`~/.claude/skills/research-writing` so it is available in every project while
+staying version-controlled here. Structure: `SKILL.md` (111 lines, operational),
+four `references/` files, one `scripts/lint.py`.
+
+Pass 1 is the claim audit — a table with one row per paragraph: the claim, own or
+attributed, and what observation would falsify it. Pass 2 is the seven structural
+questions. Pass 3 is the lint, explicitly labelled a floor.
+
+**Rationale:** the first thing this project established is that another layer of
+abstract instruction changes nothing. So `SKILL.md` leads with a **measured**
+claim ("a passage scored 0.0 on the whole lint and carried one falsifiable claim
+in 472 words") and an **artifact** (the audit table), not with principles. Detail
+lives in references so the entry point stays short enough to be followed.
+
+**Alternatives rejected:** shipping the deletion list as the skill's main content —
+refuted by E-001. Putting Tier 1 in prose instructions rather than a script — the
+script is exact, free to run, and already existed.
+
+**Open questions settled while writing, per the ticket:**
+
+- *Is "Limits" exempt from the truth-value heading rule?* **Yes.** Structural
+  labels — Limits, References, Appendix, Method — carry navigation rather than
+  argument. Content headings must assert or ask.
+- *Script or instructions for Tier 1?* **Script**, `scripts/lint.py`.
+
+---
+
+## [E-002] Decision: the lint skips mention, and says what it cannot do
+
+_Date: 2026-09-20_
+
+**Decision:** `lint.py` blanks backticked, emphasised and quoted spans before
+matching, over the whole text rather than per line. Its footer prints the three
+reference rates and the sentence "this check cannot tell a good paper from a bad
+report."
+
+**Rationale:** found by dogfooding. Running the lint on its own documentation
+produced nine hits, every one inside a quoted example of a banned construction.
+A style guide necessarily quotes what it bans, and so does any draft citing a
+source — linting mention as use makes the tool untrustworthy exactly where it is
+most used.
+
+The first fix was per line and left 1 hit, because emphasis wraps across lines in
+real prose and a split span exposes its second half. Fixed by matching over the
+full text with newlines preserved so line numbers stay correct.
+
+**Verified by regression, both directions:** skill files 0 hits; the E-001
+AI-generated baseline unchanged at 58.9/10k; three hand-written documents
+unchanged at 0.0/10k. A mention filter that also suppressed real hits would have
+shown up as the baseline falling.
+
+**One rule was dogfooded into the text itself.** `SKILL.md` said "the primary pass
+is the claim audit" — an unquantified ranking by its own rule. Changed to "Pass 1
+is the claim audit."
+
+**Revisit if:** drafts arrive in LaTeX, where the markup assumptions do not hold.

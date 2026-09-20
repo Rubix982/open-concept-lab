@@ -31,3 +31,11 @@ is misattributed. This entry is the record.
 - [E-001] Tier 2 spike — CONFIRM; falsifiable claims 1→8 against a blind baseline.
   Artifacts in `agents/engineer/workspace/e001/`, decisions in `agents/shared/decisions.md`
 - [O-003] Opened E-002 — write the skill
+
+## 2026-09-20 · Session 3 (cont. 2)
+
+- [E-002] Skill written and installed — `skill/research-writing/`, symlinked to
+  `~/.claude/skills/research-writing`; decisions in `agents/shared/decisions.md`
+- [O-004] Opened E-003 — use the skill on live work before extending it
+- T-010 partially answered: unquantified superlatives give 2x separation at corpus
+  scale, not a gate
