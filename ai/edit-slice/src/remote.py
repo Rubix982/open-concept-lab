@@ -170,6 +170,10 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
       `(layer, k_star, delta_v)`      — unwhitened, coefficient `(k·k*)/(k*·k*)`
       `(layer, u, denom, delta_v)`    — whitened, coefficient `(k·u)/denom` with
                                         `u = C⁻¹k*` and `denom = u·k*` ([E-016])
+      `(layer, u, denom, delta_v, mode, idx)` — the same, with the coefficient MASKED by
+                                        position: "all", "only" that index, or "except"
+                                        it. [E-021] uses this to ask which positions the
+                                        relocation actually depends on.
     The 3-tuple is the 4-tuple with `u = k*`, so `C = I` is a special case rather than a
     separate code path — which keeps the two arms exactly comparable.
     inside this function's own trace. It has to be inline: nnsight builds its graph
@@ -211,17 +215,36 @@ def score_pairs(model: LanguageModel, pairs: list[tuple[str, str]],
             lay = edit[0] if edit is not None else None
             if edit is None:
                 u_cpu = den = dv_cpu = None
+                pos_mode, pos_idx = "all", -1
             elif len(edit) == 3:
                 u_cpu, dv_cpu = edit[1], edit[2]
                 den = float(edit[1] @ edit[1])
+                pos_mode, pos_idx = "all", -1
+            elif len(edit) == 4:
+                u_cpu, den, dv_cpu = edit[1], float(edit[2]), edit[3]
+                pos_mode, pos_idx = "all", -1
             else:
                 u_cpu, den, dv_cpu = edit[1], float(edit[2]), edit[3]
+                pos_mode, pos_idx = edit[4], int(edit[5])
+
+            # Built here, after the branch that sets the mode, and on the CPU: the batch
+            # width is known at this point and a proxy-side mask would need indexing the
+            # trace cannot express.
+            if pos_mode == "all":
+                pos_mask = torch.ones(ids.shape[1])
+            elif pos_mode == "only":
+                pos_mask = torch.zeros(ids.shape[1])
+                pos_mask[pos_idx] = 1.0
+            else:                                   # "except"
+                pos_mask = torch.ones(ids.shape[1])
+                pos_mask[pos_idx] = 0.0
             with _quiet_stdout(), model.trace(ids, remote=True):
                 if lay is not None:
                     dp = model.model.layers[lay].mlp.down_proj
                     kk = dp.input
                     uu = u_cpu.to(kk.device, kk.dtype)
-                    dp.output = dp.output + ((kk @ uu) / den).unsqueeze(-1) \
+                    pm = pos_mask.to(kk.device, kk.dtype)
+                    dp.output = dp.output + (((kk @ uu) / den) * pm).unsqueeze(-1) \
                                             * dv_cpu.to(kk.device, kk.dtype)
                 # log P(t) = logit[t] - logsumexp(logits). Computing it this way
                 # avoids materialising a second [B, T, V] tensor, which is what

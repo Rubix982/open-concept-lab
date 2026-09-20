@@ -1,0 +1,6 @@
+2026-09-20 13:19:09,651 INFO     run_e021  run run_e021 -> logs/run_e021-2026-09-20-131909.log
+2026-09-20 13:19:09,651 INFO     run_e021  config {"arms": ["A_full", "B_only", "C_except", "D_none"], "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_chains": 2, "note": "same cached v* and k* as E-014; only the position mask varies", "thread": "T-067", "ticket": "E-021"}
+2026-09-20 13:19:09,651 INFO     run_e021  2 chains x 4 arms; gate is arm A reproducing E-014's 67%
+2026-09-20 13:19:14,514 WARNING  remote  transport failure (NNsightException) during keys 61, attempt 1/8; retrying in 5s
+2026-09-20 13:19:25,252 ERROR    remote  non-transport failure, not retrying: UnboundLocalError: cannot access local variable 'pos_mode' where it is not associated with a value
+2026-09-20 13:19:25,252 WARNING  run_e021  61 A_full failed (UnboundLocalError); parking 10 min

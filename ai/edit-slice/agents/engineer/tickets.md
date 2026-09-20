@@ -1371,3 +1371,67 @@ in fact drifts against it. Gate passed; the identity held in all 768 cells. Laye
 convergence, not a scaling artifact, which upgrades [E-019]'s "noise". Spawns
 [T-078]: a falling cosine rules out magnitude but does not demonstrate attention
 mixing.
+
+---
+
+### E-021 · Is the subject-token delta necessary and sufficient for the relocation?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 4h
+
+**Description:**
+Runs [T-067], the largest methodological hole in this project and the one §6 of the paper
+names first. Everything from [E-013] to [E-020] is **behavioural**: we vary an input and
+read an output. We can say the model *behaves as if* the subject-token delta drives the
+relocation. We cannot say it *causes* it.
+
+[E-016] established analytically that the coefficient at the subject's last token is
+exactly 1, and [E-019]/[E-020] measured its decay elsewhere. Neither shows that position
+is where the work happens — a coefficient of 1 at a position that contributes nothing
+would produce the same numbers.
+
+**The intervention.** The edit is applied as `Δout[t] = c(t) · δ`, where `c(t)` is the
+coefficient at position `t`. Mask `c` by position and re-read the destination:
+
+| arm | positions receiving δ | tests |
+| --- | --- | --- |
+| **A · full** | all | reproduces [E-014]: 67% into the target country |
+| **B · only** | the subject's last token alone | **sufficiency** |
+| **C · except** | every position *but* the subject's last | **necessity** |
+| **D · none** | — | baseline, 5% |
+
+This is causal in the sense available here: we intervene on the mechanism, not on the
+input, and ask what the outcome depends on.
+
+**Falsification, pre-stated.**
+- *Confirm:* **B ≈ A** and **C ≈ D**. The subject-token delta is sufficient on its own and
+  necessary — removing it alone destroys the relocation. The [E-016] account is causal,
+  not merely consistent.
+- *Deny necessity:* **C ≈ A**. Other positions carry the relocation; the pinned
+  coefficient is real but not where the work happens, and §4.1 of the paper overstates.
+- *Deny sufficiency:* **B ≈ D**. The subject token alone does nothing; the effect is
+  distributed and the single-position story is wrong.
+- *Null:* both B and C sit between A and D with no separation. The effect is genuinely
+  distributed, no position is privileged, and the honest report is that the analytic
+  result does not localise.
+
+**Gate before reading the result.** Arm A must reproduce [E-014]'s 67% on the same 42
+chains. A masking implementation that silently changes the full-edit result invalidates
+the other three arms, and the difference would be invisible without the check.
+
+**Method.** Same cached `v*` and `k*`; only the application mask varies. One scoring call
+per arm per chain, 75-city pool, `P17` membership as in [E-014]. No new optimisation.
+
+**Confound.** The subject's last token is also the position where `c` is largest, so
+removing it removes the most mass. Report total masked coefficient mass per arm so a
+"necessity" result can be read against how much was removed — otherwise C ≈ D is
+unsurprising for the wrong reason.
+
+**Blockers:** none
+**Artifacts:** src/remote.py (position mask); agents/engineer/workspace/run_e021.py;
+results/E-021-*.json
+**Closed:** —
