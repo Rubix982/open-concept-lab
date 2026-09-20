@@ -3,3 +3,93 @@
 2026-09-20 10:49:54,632 WARNING  remote  transport failure (NNsightException) during layers 61, attempt 1/8; retrying in 5s
 2026-09-20 10:51:13,999 WARNING  remote  transport failure (NNsightException) during layers 254, attempt 1/8; retrying in 5s
 2026-09-20 10:52:40,114 WARNING  remote  transport failure (NNsightException) during layers 273, attempt 1/8; retrying in 5s
+2026-09-20 10:53:33,832 WARNING  remote  transport failure (NNsightException) during layers 342, attempt 1/8; retrying in 5s
+2026-09-20 10:54:19,148 WARNING  remote  transport failure (NNsightException) during layers 345, attempt 1/8; retrying in 5s
+2026-09-20 10:55:03,924 WARNING  remote  transport failure (NNsightException) during layers 507, attempt 1/8; retrying in 5s
+2026-09-20 10:55:38,119 WARNING  remote  transport failure (NNsightException) during layers 590, attempt 1/8; retrying in 5s
+2026-09-20 10:56:17,218 WARNING  remote  transport failure (NNsightException) during layers 615, attempt 1/8; retrying in 5s
+2026-09-20 10:56:55,359 INFO     layer_sweep_t075    8/16 chains
+2026-09-20 10:56:58,311 WARNING  remote  transport failure (NNsightException) during layers 747, attempt 1/8; retrying in 5s
+2026-09-20 10:58:03,711 WARNING  remote  transport failure (NNsightException) during layers 1126, attempt 1/8; retrying in 5s
+2026-09-20 10:58:42,505 WARNING  remote  transport failure (NNsightException) during layers 1289, attempt 1/8; retrying in 5s
+2026-09-20 10:59:21,025 WARNING  remote  transport failure (NNsightException) during layers 1315, attempt 1/8; retrying in 5s
+2026-09-20 11:00:18,611 WARNING  remote  transport failure (NNsightException) during layers 1401, attempt 1/8; retrying in 5s
+2026-09-20 11:00:44,842 WARNING  remote  transport failure (NNsightException) during layers 1555, attempt 1/8; retrying in 5s
+2026-09-20 11:01:23,883 WARNING  remote  transport failure (NNsightException) during layers 1688, attempt 1/8; retrying in 5s
+2026-09-20 11:02:05,249 WARNING  remote  transport failure (NNsightException) during layers 1692, attempt 1/8; retrying in 5s
+2026-09-20 11:02:29,339 INFO     layer_sweep_t075    16/16 chains
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  COEFFICIENT at the subject's last token, vs that layer's own k*  (1.0 = full delta)
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  layer probe form               mean      min      max
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     late clause             0.986    0.888    1.037
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     possessive              0.990    0.884    1.042
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     long preamble           0.979    0.745    1.038
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  0     different subject       0.053   -0.008    0.113
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  3     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  3     late clause             0.964    0.729    1.009
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  3     possessive              0.955    0.537    1.004
+2026-09-20 11:02:29,340 INFO     layer_sweep_t075  3     long preamble           0.953    0.645    0.999
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  3     different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  3     different subject       0.056    0.030    0.105
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     late clause             0.935    0.671    1.008
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     possessive              0.934    0.482    0.999
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     long preamble           0.924    0.707    0.997
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  5     different subject       0.082    0.033    0.153
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     late clause             0.854    0.463    0.999
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     possessive              0.860    0.321    1.003
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     long preamble           0.850    0.621    0.987
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  8     different subject       0.124    0.050    0.215
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  12    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  12    late clause             0.795    0.475    0.958
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  12    possessive              0.794    0.268    0.997
+2026-09-20 11:02:29,341 INFO     layer_sweep_t075  12    long preamble           0.764    0.381    0.953
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  12    different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  12    different subject       0.257    0.098    0.411
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    late clause             0.671    0.362    0.820
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    possessive              0.736    0.219    0.937
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    long preamble           0.667    0.234    0.910
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  16    different subject       0.255    0.100    0.417
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    late clause             0.524    0.144    0.781
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    possessive              0.564    0.106    0.809
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    long preamble           0.444    0.094    0.700
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  24    different subject       0.168    0.042    0.383
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  31    early (edit form)       1.000    1.000    1.000
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  31    late clause             0.614    0.517    0.718
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  31    possessive              0.630    0.457    0.798
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  31    long preamble           0.551    0.376    0.687
+2026-09-20 11:02:29,342 INFO     layer_sweep_t075  31    different relation      1.000    1.000    1.000
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  31    different subject       0.669    0.328    0.866
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  SHAPE: same-subject mean (four non-trivial forms) vs the different-subject floor
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  layer           c_form       c_other       gap
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  0                0.989         0.053     0.936
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  3                0.968         0.056     0.912
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  5                0.948         0.082     0.867
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  8                0.891         0.124     0.767
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  12               0.838         0.257     0.581
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  16               0.768         0.255     0.514
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  24               0.633         0.168     0.465
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  31               0.699         0.669     0.030
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  GATE: layer 5 must reproduce [E-018] -- c_form near 0.931, c_other near 0.082.
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  k*(5) is computed fresh here, so agreement also validates dropping the cache.
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  Pre-stated: c_form >= 0.9 at every layer CONFIRMS; < 0.7 deep DENIES;
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  c_form falling WITH c_other rising is the NULL -- discrimination loss, not context.
+2026-09-20 11:02:29,343 INFO     layer_sweep_t075  n = 16 chains. Delivery only, never effect.

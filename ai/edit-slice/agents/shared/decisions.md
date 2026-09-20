@@ -990,3 +990,155 @@ chains, consistent with [O-007]'s ~50% per-call rejection rate. One completed ru
 
 **Artifacts:** agents/engineer/workspace/coeff_other_subject.py;
 logs/coeff_other_subject-2026-09-20-103132.log
+
+---
+
+## [O-008] Correction to a correction: one of [O-007]'s four retracted constraints is real
+
+_Date: 2026-09-20 · partially reinstates a claim [O-007] retracted the same day_
+
+**What [O-007] said.** Four "nnsight constraints" documented while building the
+[T-075] sweep were all wrong, and all four were the same thing: NDIF rejects roughly
+half of all traces node-dependently, so a pass looked like confirmation and a fail
+looked like a new constraint. The fix was `retrying()`, and the lesson was *before
+attributing a failure to a change, re-run the thing that worked.*
+
+**That reasoning was right and the conclusion was too broad.** One of the four is
+real:
+
+> **A `for` loop or comprehension inside a trace body does not execute. It raises
+> nothing and produces zero saves.**
+
+**Evidence, gathered the way [O-007] prescribed.** Both patterns run back to back,
+in one session, through `retrying()`, same node conditions, single prompt:
+
+| pattern | result |
+| --- | ---: |
+| three explicit `.save()` calls at layers 0, 5, 31 | three tensors, `[1, 11, 14336]` each |
+| the same three saves written as `for L in (0, 5, 31)` | **`len(saved) == 0`** |
+
+The explicit form also disposes of a second retracted constraint — *"two `.save()`
+calls reading different layers fail"* — which was flakiness, correctly retracted.
+The eight-layer unrolled trace in `layer_sweep_t075.py` works.
+
+**Why this was hard to see, and why it is dangerous.** The failure is **silent**.
+No exception, no warning, an empty result that looks like a successful trace. Under
+a 50% transport failure rate a silent zero is indistinguishable from a rejection
+until you assert on the save count — which is why `once()` now raises if it gets
+fewer layers than it asked for.
+
+**What went wrong in my own reasoning.** [O-007] found a common cause for four
+observations and retracted all four. The common cause was real and explained most of
+them, so the remaining one was absorbed by an explanation that fit. **A correction
+that retracts more than it tested is the same error as the original, run backwards.**
+The original attributed four failures to four causes without re-running; the
+correction attributed four failures to one cause without re-running each.
+
+**Not affected.** No completed result changes. This failure mode produces zero saves
+and raises downstream, so like [O-007]'s it cannot silently corrupt a finished run.
+[E-013] through [E-018] all wrote artifacts.
+
+**Standing guidance, replacing [O-007]'s list of four with one item:**
+
+1. **Unroll loops inside trace bodies.** Write the saves out. Assert the count after.
+2. Everything else [O-007] retracted stays retracted — multiple saves, default
+   arguments, module constants were all flakiness, and `retrying()` handles them.
+
+**Artifacts:** agents/engineer/workspace/layer_sweep_t075.py (unrolled, with the
+assert); the two-pattern probe was a scratch script, its result recorded in the table
+above rather than committed.
+
+---
+
+## [E-019] Result: the analytic half is layer-invariant; the empirical half is an early-layer fact
+
+_Date: 2026-09-20 · Llama-3.1-8B, 8 layers, 16 chains, coefficients only_
+
+Runs [T-075] per design.md Part IV. **DENY** in the mid-deep range and **NULL** at
+layer 31 — both pre-stated outcomes fired, at different depths, which is exactly
+why the floor was carried per layer.
+
+**Gate passed.** Layer 5 reproduces [E-018] from a freshly computed `k*`: late
+clause 0.935, possessive 0.934, long preamble 0.924, different subject 0.082 —
+matching the published 0.935 / 0.934 / 0.925 / 0.082 to ±0.001. Dropping the
+`E014_kstar_L5` cache is validated.
+
+| layer | `c_form` (4 forms) | `c_other` | gap |
+| ---: | ---: | ---: | ---: |
+| 0 | 0.989 | 0.053 | 0.936 |
+| 3 | 0.968 | 0.056 | 0.912 |
+| 5 | 0.948 | 0.082 | 0.867 |
+| 8 | 0.891 | 0.124 | 0.767 |
+| 12 | 0.838 | 0.257 | 0.581 |
+| 16 | 0.768 | 0.255 | 0.514 |
+| 24 | **0.633** | 0.168 | 0.465 |
+| 31 | 0.699 | **0.669** | **0.030** |
+
+### The finding splits [E-017]'s claim in two, and only one half survives
+
+**The analytic half is layer-invariant, as it must be.** The *different relation*
+probe — *"X died in the city of"* against a birth edit — scores **exactly 1.000 at
+every one of the eight layers, min = max = 1.000**. It shares the edit prompt's
+prefix up to the subject's last token, so under causal attention its key *is* `k*`
+and the coefficient is `(k*·u)/(u·k*) = 1` by construction. [E-016]'s result is
+algebra and the sweep confirms it is not a layer-5 accident.
+
+**The empirical half is not.** The three probes that do *not* share the prefix —
+late clause, possessive, long preamble — decay monotonically with depth:
+
+| | L0 | L5 | L12 | L24 |
+| --- | ---: | ---: | ---: | ---: |
+| late clause | 0.986 | 0.935 | 0.795 | 0.524 |
+| possessive | 0.990 | 0.934 | 0.794 | 0.564 |
+| long preamble | 0.979 | 0.924 | 0.764 | 0.444 |
+
+So **[E-017]'s "any prompt containing the subject receives 93–100%" is an
+early-layer fact.** It holds at layers 0–5, is marginal at 8 (0.85–0.86), and is
+gone by 24, where a reformulated probe receives roughly half the edit vector. The
+layer-5 key at a subject's last token is largely determined by the subject tokens
+themselves; by layer 24 it is not.
+
+**Layer 31 is unreadable, and the floor is what says so.** `c_other` reaches 0.669
+against a `c_form` of 0.699 — a gap of 0.030. Everything scores about the same
+regardless of whose name is in the prompt, so the measure has lost discrimination
+rather than the key having become context-sensitive. Without the per-layer floor,
+31's 0.699 would have looked like a mild recovery from 24's 0.633. It is not a
+recovery; it is noise. **This is the NULL arm firing, and carrying `c_other` at
+every layer is the only reason it is distinguishable.**
+
+### What this changes in what was published
+
+`web/blog/2026-09-15-five-days.mdx` says *"Same-subject leakage in ROME is
+structural. Any prompt containing the subject receives 93–100% … regardless of the
+relation asked about, where the subject sits, how much preamble precedes it."*
+
+**"Regardless of the relation asked about" survives at every layer** — that is the
+prefix-sharing case and it is analytic. **"Where the subject sits" and "how much
+preamble precedes it" do not survive past the early layers.** The post is corrected
+rather than amended, since a scope note would understate it: the claim as written is
+true at the layer EasyEdit edits and false at layer 24.
+
+### What this does not establish
+
+- **Delivery, never effect.** A coefficient is how much of the edit vector arrives.
+  [E-016] showed a ×0.27 rescale breaks relocation in 3 of 4 chains, so a fall from
+  0.93 to 0.52 is likely to matter behaviourally — but that is an inference, and no
+  edit was run at any layer but 5.
+- **Eight layers is a shape, not a per-layer claim.** The monotone decay is read off
+  eight points; nothing here licenses a statement about layer 20 specifically.
+- 16 chains, one model, one relation family, one pairing for the floor.
+- **Why the decay happens is unmeasured.** That the subject key becomes
+  context-sensitive with depth is a description of the measurement, not a mechanism.
+
+### Out of scope, and stated so it is not mistaken for a proposal
+
+An editor targeting a deeper layer would deliver less of its update to reformulated
+probes. That is a consequence of the measurement, not a recommendation about where
+to edit — per CLAUDE.md this project does not propose methods, and the behavioural
+half is unrun in any case.
+
+**Provenance.** 16 NDIF transport failures absorbed by `retrying()` across 16
+chains. Saves unrolled per [O-008].
+
+**Artifacts:** agents/engineer/workspace/layer_sweep_t075.py;
+logs/layer_sweep_t075-2026-09-20-104950.log

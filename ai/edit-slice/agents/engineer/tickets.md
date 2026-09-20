@@ -1226,7 +1226,7 @@ ticket was wrong, and is recorded as such.
 
 ### E-019 · The layer sweep — is the pinning a layer-5 fact or a ROME fact?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1282,6 +1282,16 @@ outcome as a diagnosis.
 
 **Blockers:** —
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- agents/engineer/workspace/layer_sweep_t075.py
+- logs/layer_sweep_t075-2026-09-20-104950.log
+- agents/shared/decisions.md → "[E-019] Result", "[O-008] Correction to a correction"
+- web/blog/2026-09-15-five-days.mdx — published claim corrected
+
+**Closed:** 2026-09-20 — **DENY at depth, NULL at 31.** Gate passed: layer 5
+reproduces [E-018] to ±0.001 from a freshly computed `k*`. The claim splits — the
+prefix-sharing case is 1.000 at all eight layers (algebra, layer-invariant), while
+reformulated probes decay 0.98 → 0.52 from layer 0 to 24, so [E-017]'s form-robustness
+is an early-layer fact. Layer 31 is unreadable: `c_other` 0.669 against `c_form` 0.699.
+Surfaced [O-008], which partially reinstates a constraint [O-007] over-retracted.

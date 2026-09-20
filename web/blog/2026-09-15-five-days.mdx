@@ -1413,9 +1413,33 @@ arrives.
 So the layer-5 key at a subject's last token is largely determined by the subject tokens
 themselves rather than by what surrounds them, and no natural reformulation escapes.
 
-**Same-subject leakage in ROME is structural.** Any prompt containing the subject receives
-93–100% of the edit vector at the subject's last token — regardless of the relation asked
-about, where the subject sits, how much preamble precedes it, and regardless of `C`.
+**Same-subject leakage in ROME is structural — with a boundary I did not have when I first
+wrote that sentence.** Two claims were bundled in it, and a layer sweep separated them.
+
+The **analytic** one holds everywhere. A probe sharing the edit prompt's prefix — including
+one asking about an entirely *different relation* — scores exactly 1.000 at every layer
+tested, from 0 to 31, minimum equal to maximum. That is not an empirical regularity; it is
+`(k*·u)/(u·k*)`, and it cannot come out otherwise.
+
+The **empirical** one is an early-layer fact. Probes that reformulate rather than share the
+prefix — a late clause, a possessive, a long preamble — decay steadily with depth:
+
+| | layer 0 | layer 5 | layer 12 | layer 24 |
+| --- | ---: | ---: | ---: | ---: |
+| late clause | 0.986 | 0.935 | 0.795 | 0.524 |
+| possessive | 0.990 | 0.934 | 0.794 | 0.564 |
+| long preamble | 0.979 | 0.924 | 0.764 | 0.444 |
+
+So "regardless of where the subject sits, or how much preamble precedes it" is true at
+layer 5 — the layer EasyEdit's config edits — and false by layer 24, where a reformulated
+probe receives roughly half the edit vector. The subject key is largely determined by the
+subject tokens early on, and stops being so with depth.
+
+Layer 31 reads 0.699, which looks like a recovery and is not one. The different-subject
+floor there is 0.669 — everything scores about the same whoever is named, so the
+measurement has lost its ability to discriminate rather than the key having changed
+character. Carrying that floor at every layer is the only reason the difference between
+layer 24 and layer 31 is visible at all.
 
 That sentence had a hole in it when I first published it, and it is worth saying how it got
 closed. Every control behind the 93–100% figure varies the **form** and holds the subject
@@ -1476,14 +1500,18 @@ could score higher, and was not run. The claim is that *these* different subject
 0.082; that different subjects generally do is an inference from a clean separation, not a
 measurement of the space.
 
-**It is a layer-5 claim until someone runs the sweep elsewhere.** If the subject key becomes
-context-sensitive deeper in the network, an editor targeting a later layer would leak less
-across forms, and "structural" would narrow to "structural at the layer EasyEdit's
-llama3-8b config happens to edit".
+**The sweep ran, and it narrowed the claim rather than confirming it.** The form-robustness
+half is early-layer only; see the table above. What survives at all depths is the
+prefix-sharing case, which is algebra rather than measurement.
 
-**What would falsify it:** a probe form that mentions the subject and scores materially
-below 0.9 across chains, or that same sweep at another layer. Both are cheap. Neither has
-been run.
+**Delivery, never effect.** Every number here is how much of the edit vector arrives, not
+whether it changes an answer. A ×0.27 rescale broke relocation in three of four chains, so
+a fall from 0.93 to 0.52 is likely to matter behaviourally — but that is an inference, and
+no edit was run at any layer but 5.
+
+**Eight layers is a shape, not a per-layer claim**, and why the decay happens is unmeasured.
+That the subject key becomes context-sensitive with depth describes the measurement; it
+does not explain it.
 
 **Do not read this as a proposal.** That reducing same-subject leakage requires changing the
 normalisation or the key selection rather than the covariance is a consequence of the

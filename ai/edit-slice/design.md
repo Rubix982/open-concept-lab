@@ -1039,3 +1039,12 @@ ask for.
 subject-keyed leakage. If the control comes back high, those are wrong rather than
 narrow, and the correction is a retraction rather than a scope note. **Recorded
 before the run**, so the outcome cannot be reframed as having been expected.
+
+
+> **Outcome, 2026-09-20 — [E-019].** DENY in the mid-deep range, NULL at layer 31.
+> `c_form` falls 0.989 → 0.633 from layer 0 to 24 while `c_other` stays low, then at 31
+> the floor rises to 0.669 against 0.699 and the measure stops discriminating. Both
+> pre-stated arms fired at different depths, which is precisely what carrying the floor
+> per layer was for — without it, 31's 0.699 reads as a recovery from 24's 0.633 rather
+> than as noise. The design's §6 confound row on "anisotropy inflating all coefficients"
+> is the one that paid.
