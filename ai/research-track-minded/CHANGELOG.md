@@ -53,3 +53,8 @@ is misattributed. This entry is the record.
   three of five defects recurred; record in `agents/engineer/workspace/e005/`
 - [O-006] E-004 unblocked
 - T-011 opened and dropped — Dream-RSI reframe is evocative, not exact; kept the move, not the machinery
+
+## 2026-09-20 · Session 3 (cont. 5)
+
+- [E-004] Skill defects 1–4 fixed, 5 decided, 6 held — `skill/research-writing/`,
+  four decisions in `agents/shared/decisions.md`

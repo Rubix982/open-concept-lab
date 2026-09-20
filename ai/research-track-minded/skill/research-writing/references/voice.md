@@ -1,7 +1,17 @@
-# Voice
+# Voice — register, for drafting from nothing
 
-Derived by measurement from ~23k words of hand-written research prose. Use these
-to *revise*, not as a template to fill.
+Derived by measurement from ~23k words of hand-written research prose.
+
+**Open this only when there is no surrounding document to take the register from.**
+When extending existing work — a new section of a post, another part of a design —
+imitation of the document you are appending to is faster and more accurate than any
+list. That is what happened on both live uses of this skill, and neither opened this
+file.
+
+What used to be this file's "epistemic" section has moved. Those moves do their work
+inside Pass 1 and Pass 2, not in a reference nobody opens; two of them duplicated
+`structure.md` outright. What remains here is sentence and section register, which
+is the part a list can actually carry.
 
 ## Sentence
 
@@ -37,23 +47,21 @@ to *revise*, not as a template to fill.
 14. **At most one lyric sentence per piece, at a boundary.** It survives because
     it is rationed.
 
-## Epistemic — the part that actually matters
+## Three epistemic moves that are register, not structure
 
-15. **Every claim carries a fate**: held, narrowed, or withdrawn. Track them.
-16. **Separate aspiration from mechanism.** "The aspiration is real; the mechanism
+The rest of what was here now lives where it is used — claim fates and scope in the
+Pass 1 audit, priced gaps and bounded criticism in `structure.md` §2 and §7. These
+three are phrasings rather than checks, so they stay:
+
+15. **Separate aspiration from mechanism.** "The aspiration is real; the mechanism
     is sampling. Those are different things, and the difference is the whole
-    argument."
-17. **State scope as what the result is *not* evidence for.** "That measures
-    whether knowledge is present, not whether the model would spontaneously
-    produce it."
-18. **Credit prior work for the part that is not new, explicitly.** "Prompt
-    sensitivity is not my finding. What is new here is locating it inside an
-    editing benchmark and pricing it."
-19. **Report error with its magnitude and cause**, not as apology. "inflated its
-    own number by forty points."
-20. **Name and price the fix.** "The fix is cheap: report possession alongside
-    efficacy, measured on your model."
-21. **Bound criticism before delivering it.** See `structure.md` §7.
+    argument." The most characteristic analytic move in the corpus, and it has no
+    home in the passes.
+16. **Credit prior work for the part that is not new, explicitly.** "Prompt
+    sensitivity is not my finding. What is new here is locating it inside an editing
+    benchmark and pricing it." Pre-empts the reviewer and costs one sentence.
+17. **Report error with its magnitude and cause**, never as apology. "inflated its
+    own number by forty points" — not "I made a mistake."
 
 ## The X-not-Y construction, and its budget
 

@@ -156,7 +156,7 @@ skill's author, so the list is to be tested rather than acted on.
 
 ### E-004 · Fix the defects E-003 found
 
-**Status:** blocked
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-09-20
@@ -179,13 +179,24 @@ Five defects from the first live use, in `e003/03-skill-test-record.md`, ranked:
 5. **`voice.md` went unused.** Decide whether it is drafting-only and say so, or
    cut it.
 
-**Blockers:** a second live use. Five defects from n=1, found by the skill's own
-author on a document type the skill was shaped around, is a list to test rather
-than act on. Fix what recurs.
+**Blockers:** — (cleared by E-005)
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- `skill/research-writing/SKILL.md` — 111 → 171 lines; mode table, ranking section,
+  three-category Limits, scope boundary
+- `skill/research-writing/references/voice.md` — rescoped and shortened
+- `agents/shared/decisions.md` → four [E-004] decisions
+
+**Closed:** 2026-09-20 — 1–4 fixed, 5 decided, 6 held. Defect 1's fix changed from
+what E-003 proposed: three modes, not two, because design mode asks a different
+question rather than the same one earlier. Feasibility (defect 5) absorbed as a
+design-mode assumption row rather than a new pass, which is where it landed
+unprompted in E-005. Self-lints clean; the E-001 baseline regression holds at
+58.9/10k.
+
+**Watch:** SKILL.md grew 54%. E-003 judged 111 lines readable end to end; 171 is
+untested. If a third use skips sections, cut before adding.
 
 ---
 

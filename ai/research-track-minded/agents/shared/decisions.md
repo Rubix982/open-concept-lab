@@ -117,3 +117,101 @@ is the claim audit" — an unquantified ranking by its own rule. Changed to "Pas
 is the claim audit."
 
 **Revisit if:** drafts arrive in LaTeX, where the markup assumptions do not hold.
+
+---
+
+## [E-004] Decision: Pass 1 has three modes, and design mode asks a different question
+
+_Date: 2026-09-20_
+
+**Decision:** Pass 1 opens with a mode table — revise (audit paragraphs), draft
+(audit intended claims before prose), design (audit load-bearing assumptions).
+Design mode's question is *"if this assumption is wrong, does the work still measure
+what it claims?"*
+
+**Rationale:** confirmed on both live uses, and E-005 showed the E-003 fix was
+wrong. E-003 read this as an ordering problem — audit the claims before writing —
+which works for prose. On a design there are no claims to audit: its assertions are
+about what *will* be measured, and "we will sweep eight layers" cannot be false.
+The falsifiability question has nothing to bite on. The assumption question does the
+same job — separating load-bearing from decorative — but it is a different question,
+not a re-ordering of the same one.
+
+**Alternatives rejected:** a single mode with guidance to "adapt as needed" — the
+adaptation is exactly what a first-time user will not find, and both defects came
+from the skill assuming a document type it did not name.
+
+**Feasibility absorbed here rather than as a new pass.** E-005 found nothing in the
+skill asked whether the work can be run, and that a ~50% dependency failure rate
+changes the artifact design. It fits design mode's table as an assumption row, which
+is where it naturally landed in E-005 without being asked for.
+
+---
+
+## [E-004] Decision: the audit is documented as a ranking device, not only a filter
+
+_Date: 2026-09-20_
+
+**Decision:** Pass 1 gains a section stating that once every row has a falsifier,
+which claim is load-bearing becomes visible, and that this determines document
+order. It ends: *"Expect the ranking, not the filter, to be what you get."*
+
+**Rationale:** across two live uses the documented filtering job caught **zero**
+unfalsifiable claims, because both sources were already written to that standard.
+The undocumented ranking job changed the structure both times — an analytic result
+promoted above the measurement confirming it, and a control promoted from an
+attachment into an experiment's first job. The skill documented the half that did
+nothing.
+
+**Revisit if:** a third use catches unfalsifiable claims, which would mean the
+filter matters on source material not already written to this standard — likely
+when the input is generated rather than hand-written.
+
+---
+
+## [E-004] Decision: Limits has three categories; `voice.md` is scoped, not cut
+
+_Date: 2026-09-20_
+
+**Decision (Limits):** entries are of three kinds — what the result does not show,
+what was not done, and **how the result may not be used**. The third is called out
+because no Pass 2 question generates it and it had to be added by hand on both
+uses ("this is a consequence, not a method I am offering").
+
+**Decision (`voice.md`):** scoped rather than cut, and shortened. Header now reads
+"open only when drafting from nothing"; when extending a document, take the register
+from the document. Its epistemic section is dissolved — two moves duplicated
+`structure.md` §2 and §7 outright, and the three that were doing real work and had
+no home (aspiration vs mechanism, crediting prior work for the part that is not new,
+reporting error with magnitude) stay as register.
+
+**Rationale:** unused on both live uses, but two uses of the same shape — extending
+an existing document — is not evidence that evidence-backed content is dead weight.
+It is evidence that its value is conditional on there being no surrounding document.
+Cutting would have discarded a measured corpus profile on a biased sample.
+
+**Revisit if:** a from-scratch draft also leaves it unopened. Then cut it.
+
+---
+
+## [E-004] Decision: defect 6 held, and the "false positives" may not be defects
+
+_Date: 2026-09-20_
+
+**Decision:** no rule added to distinguish a number-backed qualifier from a hedge.
+Held for a third observation.
+
+**Rationale, and a reading that argues against ever adding it.** There are now two
+cases where a lint rule fired on arguably legitimate use: "largely determined"
+summarising a measured 7% (E-003), and "the primary purpose" used descriptively
+rather than as a ranking claim (found while writing this fix).
+
+**In both cases rewording to satisfy the rule improved the sentence.** "The
+experiment's first job" is more specific than "the primary purpose"; the E-003 fix
+replaced a paraphrase with the quotation it was standing in for. A rule whose false
+positives improve the text is not obviously worth an exception.
+
+Across two live uses the lint's only hits were unquantified superlatives in my own
+prose — 2 for 2, no genuine false positives over 2,700 words. At corpus scale that
+same rule separates almost nothing (0.0 / 1.6 / 3.1 per 10k). It is a weak detector
+and a good drafting check, which are different jobs.

@@ -44,7 +44,7 @@ sentence will produce better-looking mush. T-001 tests it.
 | E-002 | Engineer     | Write the skill                        | closed      |
 | E-003 | Engineer     | Use the skill on live work             | closed      |
 | E-005 | Engineer     | Second live use — a design document    | closed      |
-| E-004 | Engineer     | Fix the recurring defects              | open        |
+| E-004 | Engineer     | Fix the recurring defects              | closed      |
 
 ## Blocked
 
@@ -72,6 +72,7 @@ so claim-lock stays in the design. It is now the upstream fix, not the lever.
 - E-002 · Skill written and installed — `skill/research-writing/`
 - E-003 · First live use — `agents/engineer/workspace/e003/`; five defects logged
 - E-005 · Second live use, a design document — three defects recurred, one new
+- E-004 · Defects 1–4 fixed, 5 decided, 6 held — `skill/research-writing/`
 
 ## Known gap — closed by R-002
 
@@ -147,5 +148,10 @@ it should run before the layer sweep it was designed inside.
 
 ## Next Orchestrator Action
 
-E-004 — fix defects 1–4, decide 5 (the overlap with `CLAUDE.md`'s design protocol),
-hold 6 for a third observation.
+Stop working on the skill. It has had two live uses and one round of fixes, and the
+next informative thing is a **third use on generated rather than hand-written
+input** — the one condition under which the filtering half of Pass 1 should finally
+catch something. Everything else is speculation about a tool that already works.
+
+The more urgent item is not in this project: `edit-slice` T-076 is a single
+measurement bearing on a claim published on 2026-09-20.
