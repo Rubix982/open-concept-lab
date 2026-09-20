@@ -1987,3 +1987,82 @@ a[class*="tagWithCount"] span::after {
   width: 2px;
   background: var(--ocl-oxide);
 }
+
+/* ==========================================================================
+   Table captions — figures are numbered by counter; tables are not, because
+   most tables on this site are inline apparatus rather than referents. A
+   paper needs referents, so `ocl-tablecap` opts a table into a caption that
+   matches the figure treatment. Numbered by hand: a counter would renumber
+   the inline tables too.
+   ========================================================================== */
+
+.ocl-tablecap {
+  margin: 2rem 0 0.55rem;
+  font-family: var(--ocl-font-ui);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+  max-width: var(--ocl-measure);
+}
+
+.ocl-tablecap strong {
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+/* The table a caption introduces belongs to it, so close the gap between. */
+.ocl-tablecap + table,
+.ocl-tablecap + .ocl-table__scroll {
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   Paper apparatus — a subtitle, a metadata line and a set-apart abstract.
+   These three are what make a page read as a paper on arrival, before any
+   of the prose is read. Used by notebook/edit-slice/review.
+   ========================================================================== */
+
+.ocl-paper-sub {
+  margin: -0.3rem 0 0.9rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-muted);
+  font-style: italic;
+  max-width: var(--ocl-measure);
+}
+
+.ocl-paper-meta {
+  margin: 0 0 1.8rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-font-ui);
+  font-size: 0.8rem;
+  color: var(--ocl-ink-muted);
+  max-width: var(--ocl-measure);
+}
+
+.ocl-abstract {
+  margin: 2rem 0 2.4rem;
+  padding: 0.2rem 1.4rem 1rem;
+  background: var(--ocl-paper-raised);
+  border-left: 2px solid var(--ocl-rule-strong);
+  max-width: var(--ocl-measure);
+}
+
+/* The abstract's heading is a label, not a section break. */
+.ocl-abstract h2 {
+  margin-top: 1.1rem;
+  font-family: var(--ocl-font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-abstract p {
+  font-size: 0.95rem;
+}
+
+.ocl-abstract p:last-child {
+  margin-bottom: 0;
+}

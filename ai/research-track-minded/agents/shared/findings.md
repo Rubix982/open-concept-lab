@@ -347,3 +347,120 @@ from eight passages and one negative control, which is enough to state them and
 not enough to know they change an output. **The first E- ticket should test them
 on a draft before any of this is packaged as a skill** — otherwise the project
 will have built the polished frame that the Premise Dry-Run warns about.
+
+---
+
+## [R-004] Finding: the gap is not search, it is the verdict — and the verdict is a claim
+
+_Date: 2026-09-20_
+
+[T-004] assumed design lens 2 has no search behind it. It does. The diagnosis below
+replaces that premise.
+
+**Confidence: high** on the defect, which is read off three documented events in the
+repo. **Medium** on the proposed fix, which is argued rather than tested — the same
+status the skill's Tier 2 had before E-001.
+
+### The practice is already good, which changes the question
+
+`rome-neighbors/design.md` §2 contains: three Asta probes; implementation-level
+checks of the two nearest competitors (Kim et al. — no hop breakdown, no causal
+metric, synthetic models only; Jeong et al. — aggregate portability, no patching);
+a scoop risk **revised on evidence** from moderate-high to moderate; a new nearest
+competitor surfaced on probe 2; and an explicit limit that the NDIF scan is
+"CONFIRMATORY, not exhaustive". `threads.md` adds a second round described as
+"verified vs source".
+
+That is better than most published related-work sections. **A tool that searches
+harder solves nothing here.**
+
+### The three failures that did happen
+
+**1 · Misreading a primary source, framed as a search problem.** From
+`the-check-that-was-never-there`: *"Two separate literature passes and neither caught
+this, because both were searching for competing work rather than re-reading the
+primary source. I had the ROME paper open in a directory on my own machine the
+entire time. The appendix was three pages from the sentence I misread."*
+
+Two passes of *search* could not catch a defect in *reading*. The claim was withdrawn
+and then un-withdrawn — a full round trip, four days, caused by treating a paper's
+aspiration as its mechanism.
+
+**2 · Work shelved on an unverified verdict.** From `rome-neighbors/threads.md`:
+*"Fork A (removal-reliability) shelved: its scoop verdict was unverified by the
+search."* A whole fork was abandoned on a verdict the notes themselves record as
+unverified.
+
+**This is the costliest failure of the three, and it is invisible.** The errors are
+asymmetric: a false *"open"* verdict gets caught later, when the competing paper
+turns up or a reviewer names it. A false *"scooped"* verdict kills the work
+silently and no evidence of the mistake is ever generated. Nothing in the practice
+prices that asymmetry.
+
+**3 · The practice does not transfer.** `edit-slice/design.md` has no §2 with
+anything like that depth. Whatever makes `rome-neighbors` good lives in one
+document, not in a method.
+
+### The unification: a prior-art verdict is a claim, so the claim audit already covers it
+
+"Novelty confirmed" is an assertion that can be wrong. Stated bare it is exactly the
+defect this skill was built to catch — a claim with no falsifier, unfalsifiable as
+written, indistinguishable from an opinion.
+
+And the good practice already satisfies the skill's own rule without naming it:
+
+> **Lane CONFIRMED OPEN (Asta probe 1)** — Kim et al. measures logical generalisation
+> as a single aggregate over entailed facts (no hop breakdown), uses only behavioural
+> accuracy + probing (no causal metric), and runs on synthetic from-scratch models only.
+
+That verdict names precisely what would refute it: a hop breakdown, a causal metric,
+or a pre-trained model in Kim et al. A reader can check it. **The difference between
+`rome-neighbors` §2 and `edit-slice` §2 is not search effort — it is that one states
+falsifiers and the other does not.**
+
+So [T-004]'s three-way question resolves:
+
+- **Search tooling** — outside the skill. Asta and Semantic Scholar exist and he uses
+  them. Building a search tool would be the Compass's difficulty-trap.
+- **The design protocol** — keeps lens 2 as the trigger for *when* to look.
+- **This skill** — owns the **verdict**, because a verdict is a claim and the claim
+  audit is already the instrument for claims.
+
+### The change, minimal
+
+A **positioning audit** — the Pass 1 table, applied to novelty claims, with one
+column the prose audit does not need:
+
+| Verdict | What it rests on | What would refute it | If wrong, what does it cost? |
+
+The fourth column exists only because of failure 2. It forces the asymmetry to be
+visible at the moment the verdict is made:
+
+- A wrong **"open"** verdict costs a rejection or a reviewer's citation. Recoverable.
+- A wrong **"scooped"** verdict costs the project, silently, with no evidence ever
+  produced that it was wrong.
+
+**Therefore the evidence bar is asymmetric**, and that is the rule worth stating:
+shelving work requires *stronger* evidence than proceeding with it. An unverified
+scoop verdict is not grounds to shelve — it is grounds to verify. Fork A should have
+been blocked on a verification, not shelved.
+
+### One more rule, from failure 1
+
+**When a verdict turns on what a paper *did*, read its methods or appendix, not its
+prose.** Aspiration and mechanism live in different sections and only one is binding.
+This is already written in Saif's own post as "the narrow lesson"; it has never been
+in a checklist.
+
+### What this does not establish
+
+The positioning audit has not been run on anything. It is derived from three events
+in one repository, by the author of the skill, and the fourth column in particular is
+argued from a single instance of Fork A. **The honest next step is to run it on
+`edit-slice`'s §2, which is the one that lacks depth** — if it produces nothing there,
+the diagnosis is wrong.
+
+Nothing here has been tested against the possibility that `rome-neighbors` §2 is good
+because that project was at a stage where positioning mattered, and `edit-slice` §2 is
+thin because it did not need one. That is a live alternative explanation and it is
+unexamined.

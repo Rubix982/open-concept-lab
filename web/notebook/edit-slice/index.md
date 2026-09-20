@@ -39,17 +39,11 @@ It is an instrument, not a method. Nothing here proposes a better editor.
 
 ## Three ways in
 
-<Figure
-  caption="The record is one argument, one story and one complete index. They cover the same work at three different resolutions."
->
-
 | | for | length |
 | --- | --- | --- |
 | **[The paper →](./review)** | evaluating the claim. Abstract, method, two figures, four tables, and an attack surface ordered by how much damage each objection does. | ~3,000 words |
 | **[The narrative →](/writing/five-days)** | how it actually went — every claim that was withdrawn, in the order it was withdrawn. Revised in place, never forked. | ~13,000 words |
 | **[The evidence ledger →](./ledger)** | verifying any single statement. All 22 decisions, 16 findings and 57 threads, generated from the repository. | complete |
-
-</Figure>
 
 If you are deciding whether this is worth your time: read the paper's abstract, then its
 section 6. Section 6 is where we say what is wrong with it.

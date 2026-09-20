@@ -120,3 +120,51 @@ confirmed the corpus is at literal zero on all fifteen probes, and showed the
 exemplar/anti-exemplar separation is only 1.5×, so Tier 1 is a house standard
 rather than a quality detector. Tier 2 carries the project and is untested against
 a real draft.
+
+---
+
+### R-004 · Prior-art with teeth — what is actually missing?
+
+**Status:** in-progress
+**Type:** research
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 2h
+
+**Description:**
+Unparks [T-004], which asked whether prior-art checking belongs in this skill, a
+separate one, or wired into the design protocol.
+
+**The thread's premise is wrong and that has to be established first.** It says
+"design lens 2 is protocol with no search behind it." In `rome-neighbors` there is
+substantial search behind it: three Asta probes, implementation-level checks of the
+two nearest competitors, a scoop risk revised moderate-high → moderate on evidence,
+a new nearest competitor surfaced on the second probe, and an explicit honesty note
+that an NDIF scan is "CONFIRMATORY, not exhaustive". That is better prior-art
+practice than most papers document.
+
+So the ticket is a **diagnosis**, not a build: given that the practice exists and is
+good, what is the defect that still lets things through?
+
+Evidence to work from, all already in the repo:
+
+1. `rome-neighbors/design.md` §2 and `threads.md` T-018 — the practice at its best.
+2. `web/blog/2026-09-14-the-check-that-was-never-there.md` — "Two separate
+   literature passes and neither caught this, because both were searching for
+   *competing work* rather than re-reading the *primary source*."
+3. `rome-neighbors/threads.md` — "Fork A (removal-reliability) shelved: its scoop
+   verdict was unverified by the search."
+4. `edit-slice/design.md` — has no equivalent §2 depth. Whatever `rome-neighbors`
+   does is not transferring between projects.
+
+**Deliverable.** An answer to [T-004]'s three-way question, with the defect named
+from evidence rather than assumed, and the minimal change that addresses it. If the
+answer is "no tool, a discipline", say so — a search tool nobody needed would be the
+difficulty-trap the Compass warns about.
+
+**Blockers:** —
+
+**Artifacts:** —
+
+**Closed:** —

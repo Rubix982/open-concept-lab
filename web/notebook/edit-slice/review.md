@@ -7,17 +7,22 @@ description: A weight edit's update coefficient is exactly 1 on any prompt begin
 
 # Rank-one edits are pinned to their subject
 
-**An arithmetic account of what ROME does to facts it was not aimed at**
+<p className="ocl-paper-sub">An arithmetic account of what ROME does to facts it was not
+aimed at</p>
 
-_edit-slice · assembled 2026-09-20 · revised in place · [narrative version](/writing/five-days)_
+<p className="ocl-paper-meta">edit-slice · Llama-3.1-8B · assembled 2026-09-20 · revised
+in place · <a href="/open-concept-lab/writing/five-days">narrative version</a> ·
+<a href="./ledger">evidence ledger</a></p>
 
 <Aside>
 
-This page is written to be judged. Section 6 is the attack surface, ordered by how much
-damage each objection does, and section 5 lists every claim this project withdrew. If you
-are deciding whether to spend time on this, read 1, then 6.
+Written to be judged. **Section 6** is the attack surface, ordered by how much damage each
+objection does; **section 5** lists every claim this project withdrew. If you are deciding
+whether to spend time on this, read the abstract, then section 6.
 
 </Aside>
+
+<div className="ocl-abstract">
 
 ## Abstract
 
@@ -35,6 +40,8 @@ that token under causal attention, so its update coefficient is **exactly 1** fo
 — hence for any covariance, at every layer, whatever relation it asks about. A prompt
 about a *different* subject receives **0.082**. The distributions do not overlap. What
 reads as propagation is displacement keyed on the subject string.
+
+</div>
 
 ## Figures and tables
 
@@ -132,7 +139,7 @@ States"* is the modal completion whether or not `[X]` means anything.
 
 Neither repair alone recovers anything. Together they recover twenty chains.
 
-**Table 1** — Usable chains out of 136, by rendering × control. Each fix alone moves the
+<p className="ocl-tablecap"><strong>Table 1.</strong> Usable chains out of 136, by rendering × control. Each fix alone moves the</p>
 count by one; together they move it by twenty.
 
 | | placeholder control | paired control |
@@ -154,7 +161,7 @@ control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago f
 
 Then the relation control:
 
-**Table 2** — The relation control. Subject and target country held fixed; only the
+<p className="ocl-tablecap"><strong>Table 2.</strong> The relation control. Subject and target country held fixed; only the</p>
 edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
 
 | arm | lands in target country |
@@ -177,7 +184,7 @@ destinations**. That demanded an explanation, and the per-position coefficient p
 supplies one.
 
 <Figure
-  caption="Figure 1 — Why the coefficient is pinned. The two prompts share every token up to the subject's last. Causal attention makes the key there identical, and ROME's own normalisation divides by u·k*, so the coefficient is exactly 1 for any u."
+  caption="Why the coefficient is pinned. The two prompts share every token up to the subject's last. Causal attention makes the key there identical, and ROME's own normalisation divides by u·k*, so the coefficient is exactly 1 for any u."
 >
 
 <svg viewBox="0 0 700 380" role="img" aria-label="Diagram: two prompts share the subject token, so its key is identical and the ROME update coefficient there is exactly one." style={{width:"100%",height:"auto"}}>
@@ -248,7 +255,7 @@ same subject has an identical key there, so the coefficient is `(k*·u)/(u·k*) 
 
 This accounts for the whole arc:
 
-**Table 3** — Every observation in the arc, against the one mechanism.
+<p className="ocl-tablecap"><strong>Table 3.</strong> Every observation in the arc, against the one mechanism.</p>
 
 | observation | explanation |
 | --- | --- |
@@ -263,7 +270,7 @@ This accounts for the whole arc:
 _Records: [E-017](./ledger#E-017) · [T-075](./ledger#T-075) · [E-018](./ledger#E-018)_
 
 <Figure
-  caption="Figure 2 — Coefficient at the subject's last token, by layer, 12 subjects. Prompts beginning with the subject are pinned at exactly 1.000 at every depth. Reordering the subject escapes progressively — but not at layer 5, which is the layer this configuration edits."
+  caption="Coefficient at the subject's last token, by layer, 12 subjects. Prompts beginning with the subject are pinned at exactly 1.000 at every depth. Reordering the subject escapes progressively — but not at layer 5, which is the layer this configuration edits."
 >
 
 <svg viewBox="0 0 700 330" role="img" aria-label="Line chart: prefix-sharing probes stay at 1.0 across layers 0 to 31, while reordered probes decay from 0.99 to about 0.58." style={{width:"100%",height:"auto"}}>
@@ -329,7 +336,7 @@ pre-stated confirmation threshold was ≤0.3.
 
 ## 5 · Every claim this project withdrew
 
-**Table 4** — Every claim this project made, and what became of it.
+<p className="ocl-tablecap"><strong>Table 4.</strong> Every claim this project made, and what became of it.</p>
 
 | claim | status | what changed it | record |
 | --- | --- | --- | --- |
@@ -401,7 +408,5 @@ than the ten claims this paper defends.
 | `results/*.json` | per-item records, [E-011](./ledger#E-011) … [E-018](./ledger#E-018), [T-075](./ledger#T-075) |
 | `logs/` | every run, levelled and committed, including the failures |
 | `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
-
-## References
 
 <References project="edit-slice" />
