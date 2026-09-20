@@ -2068,3 +2068,96 @@ a[class*="tagWithCount"] span::after {
 .ocl-abstract p:last-child {
   margin-bottom: 0;
 }
+
+/* ==========================================================================
+   Evidence ids — DESIGN.md §5.3. Mono, because an id is a handle rather than
+   a word; underlined on hover only, because these appear densely in the
+   apparatus and a permanent rule under each one turns a paragraph into a
+   fence.
+   ========================================================================== */
+
+.ocl-evidence {
+  font-family: var(--ocl-mono);
+  font-size: 0.86em;
+  color: var(--ocl-link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.ocl-evidence:hover,
+.ocl-evidence:focus-visible {
+  border-bottom-color: currentColor;
+  text-decoration: none;
+}
+
+/* A thread is an open question, not a settled record; mark the difference. */
+.ocl-evidence[data-surface="thread"] {
+  color: var(--ocl-ink-muted);
+}
+
+/* A dead id must look dead. Silently rendering it plain is how a broken
+   reference survives three drafts. */
+.ocl-evidence--missing {
+  font-family: var(--ocl-mono);
+  font-size: 0.86em;
+  color: var(--ocl-oxide);
+  border-bottom: 1px dotted var(--ocl-oxide);
+  cursor: help;
+}
+
+/* ==========================================================================
+   Margin notes — DESIGN.md §5.1 / §4.2.
+
+   The apparatus moves out of the reading line and sits beside it. Above the
+   breakpoint the note floats into the space to the right of the measure;
+   below it, the note falls inline directly after its anchoring paragraph,
+   still subordinate — smaller, apparatus face, muted, with a rule on the
+   left so it never reads as body prose.
+   ========================================================================== */
+
+.ocl-margin {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-muted);
+  font-variant-numeric: tabular-nums;
+  /* Inline-by-default is the safe fallback: a note that fails to float still
+     reads in the right place, which is what §9.12 asks of it. */
+  margin: 0.9rem 0 1.2rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--ocl-rule);
+  max-width: var(--ocl-measure);
+}
+
+.ocl-margin p:last-child {
+  margin-bottom: 0;
+}
+
+.ocl-margin .ocl-evidence {
+  font-size: 0.95em;
+}
+
+@media (min-width: 1100px) {
+  .ocl-margin {
+    float: right;
+    clear: right;
+    /* Sit in the gutter beyond the measure rather than eating into it. */
+    width: 13rem;
+    margin: 0.35rem calc(-13rem - 2rem) 1rem 2rem;
+    padding-left: 0;
+    border-left: 0;
+    /* A hairline above, ledger-style, instead of a side rule that would read
+       as a second column of text. */
+    border-top: 1px solid var(--ocl-rule);
+    padding-top: 0.4rem;
+    text-align: left;
+  }
+}
+
+/* The reading column has to leave room for the float to land in. */
+@media (min-width: 1100px) {
+  .markdown:has(.ocl-margin) {
+    padding-right: 0;
+  }
+}

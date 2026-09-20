@@ -100,14 +100,16 @@ used.
 
 ## 3 · Method
 
-_Records: [E-007](./ledger#E-007) · [O-006](./ledger#O-006) · [E-012](./ledger#E-012) · [E-013 gate](./ledger#E-013)_
+_Records: <Evidence id="E-007" /> · <Evidence id="O-006" /> · <Evidence id="E-012" /> · <Evidence id="E-013">E-013 gate</Evidence>_
 
 **Possession gate.** A chain is usable only if the model holds all three facts. Each is
 scored against a type-matched candidate pool under two criteria: the true answer ranks
 first with the real subject (*row test*), and outscores it under foil prompts whose true
 answer differs (*column test*, an AUROC; chance 0.5). The column test replaces a
 placeholder control that is undefined for high-prior answers — see 4.1. 136 chains mined →
-78 usable → 42 carried through the edit after infrastructure loss.
+78 usable → 42 carried through the edit.<Margin>The 29 missing chains were lost to backend
+outages, not excluded by any criterion — see <Evidence id="O-007" />. Every rate here is an
+existence claim, never a frequency.</Margin>
 
 **Edit.** ROME as configured by EasyEdit, `C = I`, layer 5, `v*` optimised by gradient
 descent through the frozen model with EasyEdit's `llama3-8b.yaml` hyperparameters. Applied
@@ -121,14 +123,15 @@ through a relation that licenses nothing (*works in*). A **placebo country** giv
 rate for "lands in country X".
 
 **Readout.** Full city names ranked over a 75-city pool of chain cities plus every target
-country's capital — widened deliberately, because a pool that cannot express the coherent
-answer scores a correct relocation as failure.
+country's capital — widened deliberately.<Margin>A pool that cannot express the coherent
+answer scores a correct relocation as a failure. That mistake is <Evidence id="E-011" />,
+and widening the pool is how it was avoided here.</Margin>
 
 ## 4 · Results
 
 ### 4.1 · The measure had no operating point, and fixing it took two orthogonal repairs
 
-_Records: [E-009b](./ledger#E-009b) · [E-011](./ledger#E-011) · [E-012](./ledger#E-012)_
+_Records: <Evidence id="E-009b" /> · <Evidence id="E-011" /> · <Evidence id="E-012" />_
 
 Before any edit: the possession measure failed on the most common answers. Rendering
 countries as Wikidata labels (`United States`) rather than naturally (`the United States`)
@@ -154,7 +157,7 @@ magnitude of scale.
 
 ### 4.2 · The edit displaces the premise — and carries no inference
 
-_Records: [E-013](./ledger#E-013) · [E-014](./ledger#E-014) · [E-015](./ledger#E-015)_
+_Records: <Evidence id="E-013" /> · <Evidence id="E-014" /> · <Evidence id="E-015" />_
 
 The birth-city probe lands in the edited country 67% of the time (baseline 5%, same-subject
 control 5%, placebo 0%). Edinburgh → Hamburg for Germany; Paris → Santiago for Chile.
@@ -176,7 +179,7 @@ relocates their birthplace exactly as often as editing where they were born.
 
 ### 4.3 · The coefficient is pinned, by arithmetic
 
-_Records: [E-016 gate](./ledger#E-016) · [E-016 result](./ledger#E-016-2)_
+_Records: <Evidence id="E-016">E-016 gate</Evidence> · <Evidence id="E-016-2">E-016 result</Evidence>_
 
 A whitened editor — `u = C⁻¹k*`, computed by Woodbury over a low-rank-plus-ridge key
 covariance, measured **20× more selective** on held-out keys — produces **42/42 identical
@@ -267,7 +270,7 @@ This accounts for the whole arc:
 
 ### 4.4 · Scope: pinned at every layer for prefix-sharing probes; escapable otherwise
 
-_Records: [E-017](./ledger#E-017) · [T-075](./ledger#T-075) · [E-018](./ledger#E-018)_
+_Records: <Evidence id="E-017" /> · <Evidence id="T-075" /> · <Evidence id="E-018" />_
 
 <Figure
   caption="Coefficient at the subject's last token, by layer, 12 subjects. Prompts beginning with the subject are pinned at exactly 1.000 at every depth. Reordering the subject escapes progressively — but not at layer 5, which is the layer this configuration edits."
@@ -340,16 +343,16 @@ pre-stated confirmation threshold was ≤0.3.
 
 | claim | status | what changed it | record |
 | --- | --- | --- | --- |
-| Backward probing is unexplored | narrowed | RippleEdits covers inverse/symmetric relations | [R-005a](./ledger#f-R-005a) |
-| Edits leave grounds *contradictory* | withdrawn | grounds are evidential; improbable, not impossible | [E-002](./ledger#E-002) |
-| CounterFact verifies possession | withdrawn | reversed from Appendix D; construction is model-independent | [D-002](./ledger#f-D-002) |
-| The `outer` deficit is pool concentration | withdrawn | it is two strings, US and UK | [E-009b](./ledger#E-009b) |
-| The surface-form finding is novel | withdrawn | <Cite id="holtzman2021surface" /> | [R-010](./ledger#f-R-010) |
-| Possession × editability is unclaimed | withdrawn | <Cite id="knowledgespectrum2025" /> | [R-010](./ledger#f-R-010) |
-| The model revises the defeasible premise | withdrawn | the work-country edit does the same thing | [E-015](./ledger#E-015) |
-| Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth | [T-075](./ledger#T-075) |
-| Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | [O-007](./ledger#O-007) · [O-008](./ledger#O-008) |
-| Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | [E-016](./ledger#E-016-2) · [E-018](./ledger#E-018) |
+| Backward probing is unexplored | narrowed | RippleEdits covers inverse/symmetric relations | <Evidence id="f-R-005a">R-005a</Evidence> |
+| Edits leave grounds *contradictory* | withdrawn | grounds are evidential; improbable, not impossible | <Evidence id="E-002" /> |
+| CounterFact verifies possession | withdrawn | reversed from Appendix D; construction is model-independent | <Evidence id="f-D-002">D-002</Evidence> |
+| The `outer` deficit is pool concentration | withdrawn | it is two strings, US and UK | <Evidence id="E-009b" /> |
+| The surface-form finding is novel | withdrawn | <Cite id="holtzman2021surface" /> | <Evidence id="f-R-010">R-010</Evidence> |
+| Possession × editability is unclaimed | withdrawn | <Cite id="knowledgespectrum2025" /> | <Evidence id="f-R-010">R-010</Evidence> |
+| The model revises the defeasible premise | withdrawn | the work-country edit does the same thing | <Evidence id="E-015" /> |
+| Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth | <Evidence id="T-075" /> |
+| Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | <Evidence id="O-007" /> · <Evidence id="O-008" /> |
+| Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | <Evidence id="E-016-2">E-016</Evidence> · <Evidence id="E-018" /> |
 
 Ten claims, **seven withdrawn or narrowed**. That ratio is the honest summary.
 
@@ -405,7 +408,7 @@ than the ten claims this paper defends.
 | `agents/shared/decisions.md` | 20 entries; falsification stated before each run |
 | `agents/shared/findings.md` | 16 literature entries, including the two that killed directions |
 | `threads.md` | 57 threads — 40 answered, 8 parked, 4 open, 3 dropped |
-| `results/*.json` | per-item records, [E-011](./ledger#E-011) … [E-018](./ledger#E-018), [T-075](./ledger#T-075) |
+| `results/*.json` | per-item records, <Evidence id="E-011" /> … <Evidence id="E-018" />, <Evidence id="T-075" /> |
 | `logs/` | every run, levelled and committed, including the failures |
 | `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
 
