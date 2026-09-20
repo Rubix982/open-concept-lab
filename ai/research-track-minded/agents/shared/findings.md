@@ -464,3 +464,68 @@ Nothing here has been tested against the possibility that `rome-neighbors` §2 i
 because that project was at a stage where positioning mattered, and `edit-slice` §2 is
 thin because it did not need one. That is a live alternative explanation and it is
 unexamined.
+
+---
+
+## [R-004] Correction: failure 3 is refuted, and the fix gets smaller
+
+_Date: 2026-09-20 · corrects the entry above, written an hour earlier_
+
+The entry above named its own falsification test — *run the positioning audit on
+`edit-slice` §2, and if it produces nothing the diagnosis is wrong.* Run. It
+produced nothing, and one of the three failures does not survive.
+
+**Failure 3 — "the practice does not transfer" — is wrong.** I claimed
+`edit-slice/design.md` §2 lacks `rome-neighbors`'s depth. It does not:
+
+> Knowledge-conflict survey 2403.08319 names editing as a cause of *intra-memory
+> conflict*, but defines that as **paraphrase inconsistency**, not justification
+> contradiction … Deferral literature triggers on **uncertainty**, not
+> underdetermination. AGM→LLM transfer unclaimed (2608.14567 is purely symbolic).
+
+Every one of those names what would refute it: find a paper defining intra-memory
+conflict as justification contradiction, or a deferral method triggering on
+underdetermination, and the positioning falls. It also carries a section
+`rome-neighbors` lacks — **"Remaining scoop surface: EasyEdit and other toolkits not
+inspected directly. T-003 unchecked."** — which states coverage limits at the point
+of the verdict.
+
+So the claim that one project states falsifiers and the other does not is **false**,
+and the transfer story built on it goes with it. Both sections are good, in
+different ways, and neither is the model for the other.
+
+**How I got it wrong.** I read `rome-neighbors` §2 in full and `edit-slice` §2 only
+by `grep`, which returned no hits for "Asta" or "scoop" in that file and I read the
+absence of my search terms as the absence of the practice. `edit-slice` does the same
+work under different vocabulary. **That is the identical error the [R-004] entry
+above diagnoses in failure 1** — searching for the terms I expected instead of
+reading the source — committed while writing the diagnosis of it.
+
+**What survives, and it is the whole finding now:**
+
+1. **Misreading a primary source**, documented, cost four days and a round-trip
+   retraction. Search cannot catch it; reading the methods section can.
+2. **Fork A shelved on a verdict the notes call unverified.** The asymmetry stands
+   on its own and never depended on failure 3: a wrong *"open"* verdict surfaces
+   later, a wrong *"scooped"* verdict kills the work silently and generates no
+   evidence it was wrong.
+
+**The fix shrinks accordingly.** Not a positioning audit competing with practice that
+is already good — **two rules**, both about what licenses a verdict rather than about
+coverage:
+
+> **Shelving requires stronger evidence than proceeding.** An unverified scoop
+> verdict is grounds to verify, not grounds to shelve.
+
+> **When a verdict turns on what a paper *did*, read its methods or appendix, not
+> its prose.** Aspiration and mechanism live in different sections and only one is
+> binding.
+
+Smaller is the right direction here — the Premise Dry-Run's rule 3 says prefer the
+reframe that makes the work smaller, and a two-rule change that leaves both existing
+§2 practices untouched is a much better fit to the evidence than a new audit table.
+
+**Still unexamined**, and unchanged by this correction: whether `rome-neighbors` §2
+is thorough because that project was at a stage where positioning mattered. Both
+sections being good makes that alternative *more* plausible, not less — depth may
+track project stage rather than any method.

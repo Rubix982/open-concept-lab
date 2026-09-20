@@ -153,13 +153,41 @@ not the same as being well-evidenced.
 If the draft needs numbers it does not have, say so and stop. Do not fill the gap
 with plausible-sounding quantities.
 
+## Two rules for positioning claims
+
+A novelty verdict — *"this is unclaimed"*, *"we have been scooped"* — is a claim, so
+Pass 1 applies to it unchanged: what observation would make it false? A verdict
+stated bare is an opinion. A verdict that names the specific thing the nearest paper
+does not do can be checked by a reader.
+
+Two rules the claim audit does not generate on its own:
+
+**1 · Shelving requires stronger evidence than proceeding.** The errors are
+asymmetric. A wrong *"the lane is open"* verdict surfaces later — a reviewer names
+the paper, or it turns up. A wrong *"we have been scooped"* verdict **kills the work
+silently and produces no evidence it was wrong.** So an unverified scoop verdict is
+grounds to verify, never grounds to shelve. Record what the verdict would cost if
+wrong, in the direction it points.
+
+**2 · When a verdict turns on what a paper *did*, read its methods or appendix, not
+its prose.** Aspiration and mechanism live in different sections and only one is
+binding. A paper's introduction says what it hoped the construction would yield; the
+construction appendix says what was performed. Confusing them is a reading failure
+that no amount of additional searching will catch.
+
+Searching is not this skill's job, and a project with a working search practice
+should not change it. These two rules are about what a verdict *rests on*, which is
+the same question Pass 1 asks about everything else.
+
 ## Where this stops
 
 This skill covers **writing the thing** — the claim, its structure, its notation,
-its limits. It does not decide whether the work is worth doing, who else is doing
-it, or what to build next. If you have a project-level design protocol, that is
-where those live; this skill will not duplicate it, and design mode's feasibility
-row is the one place they touch.
+its limits, and the verdicts stated about it. It does not decide whether the work is
+worth doing, run the literature search, or choose what to build next. If you have a
+project-level design protocol, that is where those live; this skill will not
+duplicate it. The two places they touch are design mode's feasibility row and the
+positioning rules above, both of which are about evidence rather than about
+process.
 
 ## References
 

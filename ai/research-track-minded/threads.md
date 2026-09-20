@@ -58,7 +58,7 @@ report kept as a negative control. `corpus/papers/`.
 
 ### T-004 · Prior-art checking with actual teeth
 
-**Status:** parked
+**Status:** answered — **no tool; the gap is the verdict, not the search**
 **Parent:** —
 **Opened:** 2026-09-18
 **Question:** Design lens 2 (prior art & scoop risk) is protocol with no search

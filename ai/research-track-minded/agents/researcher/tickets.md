@@ -125,7 +125,7 @@ a real draft.
 
 ### R-004 · Prior-art with teeth — what is actually missing?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-20
@@ -165,6 +165,14 @@ difficulty-trap the Compass warns about.
 
 **Blockers:** —
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- `agents/shared/findings.md` → "[R-004] Finding" and "[R-004] Correction"
+- `skill/research-writing/SKILL.md` — two positioning rules, scope boundary revised
+
+**Closed:** 2026-09-20 — [T-004]'s premise was wrong; the search practice is good in
+**both** projects, not one. The first diagnosis claimed `edit-slice` §2 lacked depth
+and its own prescribed test refuted that within the hour. Two failures survive, both
+about what licenses a verdict: misreading a primary source, and shelving on an
+unverified scoop verdict. Fix is two rules, not a tool — the asymmetric evidence bar
+and read-the-methods-not-the-prose.

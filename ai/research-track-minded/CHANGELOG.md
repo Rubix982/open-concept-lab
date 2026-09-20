@@ -58,3 +58,10 @@ is misattributed. This entry is the record.
 
 - [E-004] Skill defects 1–4 fixed, 5 decided, 6 held — `skill/research-writing/`,
   four decisions in `agents/shared/decisions.md`
+
+## 2026-09-20 · Session 3 (cont. 6)
+
+- [R-004] T-004 answered — the gap is the verdict, not the search; two positioning
+  rules added to `skill/research-writing/SKILL.md`. Finding plus a self-refuting
+  correction in `agents/shared/findings.md`
+- T-002 marked answered (stale since R-003)
