@@ -62,3 +62,17 @@ built:
       The mechanics behind the sound, and which of the common explanations
       survive contact with the evidence.
     ratio: 1.6
+
+  # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
+  # already lives and the card notes the host.
+  - name: the-shelf
+    title: The Shelf
+    url: https://rubix982.github.io/the-shelf/
+    topic: Archive
+    what: >
+      A ledger of the games, music and channels I grew up with, kept for my
+      kids. Boots like a console, browses like a shelf, and records why each
+      thing mattered rather than holding the files — those are already
+      preserved by people better equipped for it. An entry with no surviving
+      copy shows up as a gap on the shelf rather than a book on it.
+    ratio: 1.5
