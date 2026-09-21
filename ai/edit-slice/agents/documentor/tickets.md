@@ -130,3 +130,54 @@ canvas. Rebuilt with a dedicated label column.
   their data points confirmed present in the rendered HTML
 
 **Closed:** 2026-09-15
+
+---
+
+### D-004 · Plain-language deck: what we found, for a non-specialist
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-09-21
+**Updated:** 2026-09-21
+**Estimated:** 2h
+
+**Description:**
+
+`web/notebook/edit-slice/review.md` is written to be judged by someone who knows the
+field. It is the wrong artifact for explaining the work to anyone else, and the call with
+Natalie needs a version that opens with the problem rather than with the mechanism.
+
+Build a deck that states **what goes wrong**, in words a non-specialist reads without
+stopping. Constraints, all of which the paper satisfies and a deck easily fails:
+
+- **No jargon without a concrete referent.** No "coefficient", "delivery", "nats",
+  "rank-one". If a term must appear, it appears after the thing it names.
+- **Every claim on a slide traces to a record.** Speaker notes carry the id so a question
+  can be answered from the ledger live. The slide itself stays clean.
+- **The withdrawn claims are on a slide, not in a footnote.** Eleven claims, eight
+  withdrawn or narrowed, is the most credible thing here and the easiest to bury.
+- **No prescription.** CLAUDE.md scopes this project to measuring what existing editors
+  do; a deck is where "so you should edit deeper" would slip in. It must not.
+
+**Reuse.** `ai/rome-neighbors/presentation/build_deck.py` already renders a themed PPTX
+from a declarative `Slide` list. Copy the renderer rather than importing across projects —
+the two have separate venvs and a cross-project import is a dependency neither declares.
+Record the copy in the docstring so a fix to one is known to need porting.
+
+**Result (2026-09-21).** Nine slides, ~10 minutes, structured as five problems rather
+than as a result. Two of the five are our own errors, placed deliberately — the gate that
+passed and was worthless, and the prediction that did not predict — because they are what
+makes the other three credible.
+
+Three leaks from the copied renderer, each of which would have rendered the other
+project's identity into this deck: a hard-coded title slide, a hard-coded running footer,
+and the title slide's speaker notes. All three are now module constants.
+
+python-pptx added to the venv and pinned. The renderer's 16 pre-existing `E702` lint hits
+were left alone deliberately: the file is a hand-ported copy, and keeping it diffable
+against its source is worth more than the style fix.
+
+**Status:** closed
+**Artifacts:** presentation/DECK.md, presentation/build_deck.py, presentation/DECK.pptx
+**Closed:** 2026-09-21
