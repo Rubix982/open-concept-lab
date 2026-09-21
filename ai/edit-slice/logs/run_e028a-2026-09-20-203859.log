@@ -1,0 +1,870 @@
+2026-09-20 20:38:59,897 INFO     run_e028a  run run_e028a -> logs/run_e028a-2026-09-20-203859.log
+2026-09-20 20:38:59,897 INFO     run_e028a  config {"bar_nats": 6.79, "layer5_reference_nats": 9.7, "layers": [5, 20], "measure": "suppression of log P(true answer) on the edit prompt", "model": "meta-llama/Llama-3.1-8B", "n": 6, "preregistered": "grid and bar fixed in the source before the run", "seed": 1538, "step_grid": [25, 50, 100], "thread": "T-084", "ticket": "E-028a"}
+2026-09-20 20:38:59,897 INFO     run_e028a  2x3 crossing: layers [5, 20] x steps [25, 50, 100], n=6 subjects
+2026-09-20 20:39:04,693 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:39:12,719 DEBUG    remote  trace ok: 12 rows, 17 tok, 3.0s
+2026-09-20 20:39:12,719 INFO     run_e028a  baseline  log P(true) -1.79   log P(target) -8.36
+2026-09-20 20:39:12,720 INFO     run_e028a  optimising L5|s25 (6 specs x 25 steps)
+2026-09-20 20:39:14,618 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 5, attempt 1/8; retrying in 1s
+2026-09-20 20:40:08,150 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 20:40:14,657 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 20:40:20,938 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 20:40:28,214 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 20:40:34,642 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 20:40:37,530 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 2/8; retrying in 2s
+2026-09-20 20:40:44,435 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 20:40:55,227 DEBUG    edit  batch step  1/25  summed loss 50.1291
+2026-09-20 20:40:59,583 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 20:41:13,108 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 2 attempt 2/8; retrying in 10s
+2026-09-20 20:41:30,751 DEBUG    edit  batch step  2/25  summed loss 25.9875
+2026-09-20 20:41:35,262 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 20:41:46,167 DEBUG    edit  batch step  3/25  summed loss 18.2192
+2026-09-20 20:41:49,863 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 20:41:57,757 DEBUG    edit  batch step  4/25  summed loss 6.2570
+2026-09-20 20:42:01,767 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 20:42:10,365 DEBUG    edit  batch step  5/25  summed loss 3.6856
+2026-09-20 20:42:14,450 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 20:42:22,310 DEBUG    edit  batch step  6/25  summed loss 3.0666
+2026-09-20 20:42:26,122 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 20:42:32,978 DEBUG    edit  batch step  7/25  summed loss 2.5687
+2026-09-20 20:42:37,002 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 1/8; retrying in 1s
+2026-09-20 20:42:44,956 DEBUG    edit  batch step  8/25  summed loss 2.2848
+2026-09-20 20:42:48,770 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 20:42:57,777 DEBUG    edit  batch step  9/25  summed loss 2.0065
+2026-09-20 20:43:01,649 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 20:43:11,552 DEBUG    edit  batch step 10/25  summed loss 1.8331
+2026-09-20 20:43:15,814 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 20:43:22,854 DEBUG    edit  batch step 11/25  summed loss 1.7110
+2026-09-20 20:43:26,689 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 20:43:40,114 DEBUG    edit  batch step 12/25  summed loss 1.6784
+2026-09-20 20:43:44,000 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 20:43:51,928 DEBUG    edit  batch step 13/25  summed loss 1.6243
+2026-09-20 20:43:55,464 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 20:44:03,864 DEBUG    edit  batch step 14/25  summed loss 1.5942
+2026-09-20 20:44:07,893 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 20:44:15,478 DEBUG    edit  batch step 15/25  summed loss 1.5755
+2026-09-20 20:44:19,348 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 20:44:26,736 DEBUG    edit  batch step 16/25  summed loss 1.5719
+2026-09-20 20:44:30,940 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 20:44:38,045 DEBUG    edit  batch step 17/25  summed loss 1.5550
+2026-09-20 20:44:41,475 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 20:44:49,371 DEBUG    edit  batch step 18/25  summed loss 1.5399
+2026-09-20 20:44:53,110 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 20:45:00,637 DEBUG    edit  batch step 19/25  summed loss 1.5372
+2026-09-20 20:45:05,208 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 20:45:15,107 DEBUG    edit  batch step 20/25  summed loss 1.5247
+2026-09-20 20:45:23,959 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 20:45:33,110 DEBUG    edit  batch step 21/25  summed loss 1.5170
+2026-09-20 20:45:37,166 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 20:45:45,058 DEBUG    edit  batch step 22/25  summed loss 1.5206
+2026-09-20 20:45:49,392 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 20:45:56,608 DEBUG    edit  batch step 23/25  summed loss 1.5220
+2026-09-20 20:46:00,940 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 20:46:09,982 DEBUG    edit  batch step 24/25  summed loss 1.5159
+2026-09-20 20:46:13,507 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 20:46:26,045 DEBUG    edit  batch step 25/25  summed loss 1.5199
+2026-09-20 20:46:27,797 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 20:46:34,087 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 20:46:40,129 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 20:46:45,827 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 20:46:51,698 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 20:46:57,693 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 20:47:03,710 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:47:11,781 DEBUG    remote  trace ok: 2 rows, 4 tok, 3.1s
+2026-09-20 20:47:14,054 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:47:22,497 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.4s
+2026-09-20 20:47:24,733 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:47:32,822 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.1s
+2026-09-20 20:47:35,180 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:47:43,418 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.2s
+2026-09-20 20:47:45,659 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:47:54,004 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.3s
+2026-09-20 20:47:56,380 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 20:48:04,902 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.5s
+2026-09-20 20:48:04,906 INFO     run_e028a    L5|s25  suppression  6.26   lift  8.36   margin +8.05   ||dv||  7.20
+2026-09-20 20:48:04,906 INFO     run_e028a  optimising L5|s50 (6 specs x 50 steps)
+2026-09-20 20:48:06,841 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 5, attempt 1/8; retrying in 1s
+2026-09-20 20:49:02,165 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 20:49:07,934 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 20:49:13,519 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 20:49:19,180 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 20:49:25,155 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 20:49:30,876 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 20:49:38,572 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 1 attempt 1/8; retrying in 1s
+2026-09-20 20:49:46,522 DEBUG    edit  batch step  1/50  summed loss 50.1291
+2026-09-20 20:49:50,175 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 20:49:57,353 DEBUG    edit  batch step  2/50  summed loss 25.9875
+2026-09-20 20:50:01,208 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 20:50:08,672 DEBUG    edit  batch step  3/50  summed loss 18.2192
+2026-09-20 20:50:12,267 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 20:50:21,883 DEBUG    edit  batch step  4/50  summed loss 6.2570
+2026-09-20 20:50:32,469 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 20:50:40,631 DEBUG    edit  batch step  5/50  summed loss 3.6856
+2026-09-20 20:50:51,340 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 20:51:04,179 DEBUG    edit  batch step  6/50  summed loss 3.0666
+2026-09-20 20:51:08,255 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 20:51:15,764 DEBUG    edit  batch step  7/50  summed loss 2.5687
+2026-09-20 20:51:27,441 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 8 attempt 1/8; retrying in 5s
+2026-09-20 20:51:36,763 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 2/8; retrying in 2s
+2026-09-20 20:51:44,763 DEBUG    edit  batch step  8/50  summed loss 2.2848
+2026-09-20 20:51:49,591 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 20:51:56,910 DEBUG    edit  batch step  9/50  summed loss 2.0065
+2026-09-20 20:52:00,648 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 20:52:13,638 DEBUG    edit  batch step 10/50  summed loss 1.8331
+2026-09-20 20:52:23,337 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 20:52:31,218 DEBUG    edit  batch step 11/50  summed loss 1.7110
+2026-09-20 20:52:35,159 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 20:52:44,278 DEBUG    edit  batch step 12/50  summed loss 1.6784
+2026-09-20 20:52:48,302 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 20:52:58,370 DEBUG    edit  batch step 13/50  summed loss 1.6243
+2026-09-20 20:53:02,817 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 20:53:16,481 DEBUG    edit  batch step 14/50  summed loss 1.5942
+2026-09-20 20:53:21,407 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 20:53:30,472 DEBUG    edit  batch step 15/50  summed loss 1.5755
+2026-09-20 20:53:35,344 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 20:53:43,010 DEBUG    edit  batch step 16/50  summed loss 1.5719
+2026-09-20 20:53:46,595 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 20:53:54,171 DEBUG    edit  batch step 17/50  summed loss 1.5550
+2026-09-20 20:53:58,212 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 20:54:10,109 DEBUG    edit  batch step 18/50  summed loss 1.5399
+2026-09-20 20:54:15,815 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 20:54:23,165 DEBUG    edit  batch step 19/50  summed loss 1.5372
+2026-09-20 20:54:30,591 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 20:54:46,766 DEBUG    edit  batch step 20/50  summed loss 1.5247
+2026-09-20 20:54:51,120 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 20:55:07,991 DEBUG    edit  batch step 21/50  summed loss 1.5170
+2026-09-20 20:55:12,158 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 20:55:22,425 DEBUG    edit  batch step 22/50  summed loss 1.5206
+2026-09-20 20:55:26,376 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 20:55:34,608 DEBUG    edit  batch step 23/50  summed loss 1.5220
+2026-09-20 20:55:38,008 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 20:55:44,812 DEBUG    edit  batch step 24/50  summed loss 1.5159
+2026-09-20 20:55:48,200 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 20:55:55,111 DEBUG    edit  batch step 25/50  summed loss 1.5199
+2026-09-20 20:55:58,699 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 26 attempt 1/8; retrying in 1s
+2026-09-20 20:56:07,207 DEBUG    edit  batch step 26/50  summed loss 1.5192
+2026-09-20 20:56:10,875 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 27 attempt 1/8; retrying in 1s
+2026-09-20 20:56:21,973 DEBUG    edit  batch step 27/50  summed loss 1.5234
+2026-09-20 20:56:25,774 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 28 attempt 1/8; retrying in 1s
+2026-09-20 20:56:32,563 DEBUG    edit  batch step 28/50  summed loss 1.5330
+2026-09-20 20:56:37,574 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 29 attempt 1/8; retrying in 1s
+2026-09-20 20:56:45,280 DEBUG    edit  batch step 29/50  summed loss 1.5289
+2026-09-20 20:56:50,598 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 30 attempt 1/8; retrying in 1s
+2026-09-20 20:57:00,782 DEBUG    edit  batch step 30/50  summed loss 1.5412
+2026-09-20 20:57:04,606 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 31 attempt 1/8; retrying in 1s
+2026-09-20 20:57:18,912 DEBUG    edit  batch step 31/50  summed loss 1.5477
+2026-09-20 20:57:22,637 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 32 attempt 1/8; retrying in 1s
+2026-09-20 20:57:29,967 DEBUG    edit  batch step 32/50  summed loss 1.5514
+2026-09-20 20:57:34,290 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 33 attempt 1/8; retrying in 1s
+2026-09-20 20:57:43,425 DEBUG    edit  batch step 33/50  summed loss 1.5672
+2026-09-20 20:57:47,394 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 34 attempt 1/8; retrying in 1s
+2026-09-20 20:57:55,037 DEBUG    edit  batch step 34/50  summed loss 1.5859
+2026-09-20 20:57:58,434 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 35 attempt 1/8; retrying in 1s
+2026-09-20 20:58:06,077 DEBUG    edit  batch step 35/50  summed loss 1.6049
+2026-09-20 20:58:10,129 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 36 attempt 1/8; retrying in 1s
+2026-09-20 20:58:24,310 DEBUG    edit  batch step 36/50  summed loss 1.6118
+2026-09-20 20:58:27,941 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 37 attempt 1/8; retrying in 1s
+2026-09-20 20:58:35,243 DEBUG    edit  batch step 37/50  summed loss 1.6413
+2026-09-20 20:58:40,337 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 38 attempt 1/8; retrying in 1s
+2026-09-20 20:58:46,881 DEBUG    edit  batch step 38/50  summed loss 1.6740
+2026-09-20 20:58:50,279 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 39 attempt 1/8; retrying in 1s
+2026-09-20 20:59:05,973 DEBUG    edit  batch step 39/50  summed loss 1.6817
+2026-09-20 20:59:09,794 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 40 attempt 1/8; retrying in 1s
+2026-09-20 20:59:17,248 DEBUG    edit  batch step 40/50  summed loss 1.7027
+2026-09-20 20:59:22,146 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 41 attempt 1/8; retrying in 1s
+2026-09-20 20:59:30,033 DEBUG    edit  batch step 41/50  summed loss 1.7235
+2026-09-20 20:59:33,844 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 42 attempt 1/8; retrying in 1s
+2026-09-20 20:59:44,693 DEBUG    edit  batch step 42/50  summed loss 1.7399
+2026-09-20 20:59:48,316 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 43 attempt 1/8; retrying in 1s
+2026-09-20 21:00:00,935 DEBUG    edit  batch step 43/50  summed loss 1.7454
+2026-09-20 21:00:04,905 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 44 attempt 1/8; retrying in 1s
+2026-09-20 21:00:19,106 DEBUG    edit  batch step 44/50  summed loss 1.7696
+2026-09-20 21:00:23,132 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 45 attempt 1/8; retrying in 1s
+2026-09-20 21:00:30,468 DEBUG    edit  batch step 45/50  summed loss 1.7796
+2026-09-20 21:00:34,085 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 46 attempt 1/8; retrying in 1s
+2026-09-20 21:00:45,666 DEBUG    edit  batch step 46/50  summed loss 1.7890
+2026-09-20 21:00:49,334 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 47 attempt 1/8; retrying in 1s
+2026-09-20 21:01:06,003 DEBUG    edit  batch step 47/50  summed loss 1.8097
+2026-09-20 21:01:11,160 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 48 attempt 1/8; retrying in 1s
+2026-09-20 21:01:19,926 DEBUG    edit  batch step 48/50  summed loss 1.8205
+2026-09-20 21:01:25,309 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 49 attempt 1/8; retrying in 1s
+2026-09-20 21:01:33,727 DEBUG    edit  batch step 49/50  summed loss 1.8277
+2026-09-20 21:01:38,678 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 50 attempt 1/8; retrying in 1s
+2026-09-20 21:01:46,328 DEBUG    edit  batch step 50/50  summed loss 1.8610
+2026-09-20 21:01:49,349 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:01:58,191 DEBUG    remote  trace ok: 2 rows, 4 tok, 3.8s
+2026-09-20 21:02:01,285 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:02:09,582 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.3s
+2026-09-20 21:02:11,817 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:02:19,801 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:02:22,394 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:02:30,656 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.3s
+2026-09-20 21:02:32,836 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:02:41,069 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.2s
+2026-09-20 21:02:43,577 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:02:52,044 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.5s
+2026-09-20 21:02:52,047 INFO     run_e028a    L5|s50  suppression  7.18   lift  8.36   margin +8.97   ||dv||  7.23
+2026-09-20 21:02:52,047 INFO     run_e028a  optimising L5|s100 (6 specs x 100 steps)
+2026-09-20 21:02:54,005 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 5, attempt 1/8; retrying in 1s
+2026-09-20 21:03:58,015 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 21:04:03,651 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 21:04:09,453 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 21:04:14,929 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 21:04:20,670 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 21:04:26,333 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 21:04:34,049 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 1 attempt 1/8; retrying in 1s
+2026-09-20 21:04:41,460 DEBUG    edit  batch step  1/100  summed loss 50.1291
+2026-09-20 21:04:45,721 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 21:04:55,155 DEBUG    edit  batch step  2/100  summed loss 25.9875
+2026-09-20 21:04:58,909 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 21:05:07,557 DEBUG    edit  batch step  3/100  summed loss 18.2192
+2026-09-20 21:05:11,680 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 21:05:18,560 DEBUG    edit  batch step  4/100  summed loss 6.2570
+2026-09-20 21:05:24,951 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 21:05:32,350 DEBUG    edit  batch step  5/100  summed loss 3.6856
+2026-09-20 21:05:41,044 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 21:05:51,043 DEBUG    edit  batch step  6/100  summed loss 3.0666
+2026-09-20 21:05:54,741 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 21:06:03,120 DEBUG    edit  batch step  7/100  summed loss 2.5687
+2026-09-20 21:06:07,316 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 1/8; retrying in 1s
+2026-09-20 21:06:14,858 DEBUG    edit  batch step  8/100  summed loss 2.2848
+2026-09-20 21:06:18,201 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 21:06:24,838 DEBUG    edit  batch step  9/100  summed loss 2.0065
+2026-09-20 21:06:28,784 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 21:06:36,140 DEBUG    edit  batch step 10/100  summed loss 1.8331
+2026-09-20 21:06:40,144 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 21:06:48,408 DEBUG    edit  batch step 11/100  summed loss 1.7110
+2026-09-20 21:06:52,219 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 21:07:00,227 DEBUG    edit  batch step 12/100  summed loss 1.6784
+2026-09-20 21:07:04,825 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 21:07:12,017 DEBUG    edit  batch step 13/100  summed loss 1.6243
+2026-09-20 21:07:15,593 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 21:07:22,637 DEBUG    edit  batch step 14/100  summed loss 1.5942
+2026-09-20 21:07:26,439 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 21:07:35,620 DEBUG    edit  batch step 15/100  summed loss 1.5755
+2026-09-20 21:07:38,989 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 21:07:45,952 DEBUG    edit  batch step 16/100  summed loss 1.5719
+2026-09-20 21:07:49,728 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 21:07:58,402 DEBUG    edit  batch step 17/100  summed loss 1.5550
+2026-09-20 21:08:02,827 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 21:08:14,094 DEBUG    edit  batch step 18/100  summed loss 1.5399
+2026-09-20 21:08:18,257 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 21:08:29,684 DEBUG    edit  batch step 19/100  summed loss 1.5372
+2026-09-20 21:08:34,048 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 21:08:44,543 DEBUG    edit  batch step 20/100  summed loss 1.5247
+2026-09-20 21:08:48,507 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 21:08:57,999 DEBUG    edit  batch step 21/100  summed loss 1.5170
+2026-09-20 21:09:01,954 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 21:09:10,655 DEBUG    edit  batch step 22/100  summed loss 1.5206
+2026-09-20 21:09:14,781 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 21:09:22,830 DEBUG    edit  batch step 23/100  summed loss 1.5220
+2026-09-20 21:09:27,359 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 21:09:42,862 DEBUG    edit  batch step 24/100  summed loss 1.5159
+2026-09-20 21:09:47,502 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 21:09:57,411 DEBUG    edit  batch step 25/100  summed loss 1.5199
+2026-09-20 21:10:02,159 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 26 attempt 1/8; retrying in 1s
+2026-09-20 21:10:10,404 DEBUG    edit  batch step 26/100  summed loss 1.5192
+2026-09-20 21:10:14,077 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 27 attempt 1/8; retrying in 1s
+2026-09-20 21:10:23,923 DEBUG    edit  batch step 27/100  summed loss 1.5234
+2026-09-20 21:10:30,138 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 28 attempt 1/8; retrying in 1s
+2026-09-20 21:10:37,843 DEBUG    edit  batch step 28/100  summed loss 1.5330
+2026-09-20 21:10:41,596 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 29 attempt 1/8; retrying in 1s
+2026-09-20 21:10:49,246 DEBUG    edit  batch step 29/100  summed loss 1.5289
+2026-09-20 21:10:53,455 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 30 attempt 1/8; retrying in 1s
+2026-09-20 21:11:00,595 DEBUG    edit  batch step 30/100  summed loss 1.5412
+2026-09-20 21:11:12,218 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 31 attempt 1/8; retrying in 5s
+2026-09-20 21:11:21,010 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 31 attempt 2/8; retrying in 2s
+2026-09-20 21:11:33,918 DEBUG    edit  batch step 31/100  summed loss 1.5477
+2026-09-20 21:11:38,104 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 32 attempt 1/8; retrying in 1s
+2026-09-20 21:11:46,212 DEBUG    edit  batch step 32/100  summed loss 1.5514
+2026-09-20 21:11:51,786 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 33 attempt 1/8; retrying in 1s
+2026-09-20 21:12:00,178 DEBUG    edit  batch step 33/100  summed loss 1.5672
+2026-09-20 21:12:09,693 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 34 attempt 1/8; retrying in 1s
+2026-09-20 21:12:20,455 DEBUG    edit  batch step 34/100  summed loss 1.5859
+2026-09-20 21:12:31,981 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 35 attempt 1/8; retrying in 5s
+2026-09-20 21:12:40,954 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 35 attempt 2/8; retrying in 2s
+2026-09-20 21:12:52,690 DEBUG    edit  batch step 35/100  summed loss 1.6049
+2026-09-20 21:12:56,552 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 36 attempt 1/8; retrying in 1s
+2026-09-20 21:13:04,037 DEBUG    edit  batch step 36/100  summed loss 1.6118
+2026-09-20 21:13:08,127 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 37 attempt 1/8; retrying in 1s
+2026-09-20 21:13:19,017 DEBUG    edit  batch step 37/100  summed loss 1.6413
+2026-09-20 21:13:22,947 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 38 attempt 1/8; retrying in 1s
+2026-09-20 21:13:33,206 DEBUG    edit  batch step 38/100  summed loss 1.6740
+2026-09-20 21:13:37,195 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 39 attempt 1/8; retrying in 1s
+2026-09-20 21:13:46,225 DEBUG    edit  batch step 39/100  summed loss 1.6817
+2026-09-20 21:13:50,196 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 40 attempt 1/8; retrying in 1s
+2026-09-20 21:14:02,717 DEBUG    edit  batch step 40/100  summed loss 1.7027
+2026-09-20 21:14:07,047 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 41 attempt 1/8; retrying in 1s
+2026-09-20 21:14:20,259 DEBUG    edit  batch step 41/100  summed loss 1.7235
+2026-09-20 21:14:23,873 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 42 attempt 1/8; retrying in 1s
+2026-09-20 21:14:31,928 DEBUG    edit  batch step 42/100  summed loss 1.7399
+2026-09-20 21:14:36,703 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 43 attempt 1/8; retrying in 1s
+2026-09-20 21:14:44,430 DEBUG    edit  batch step 43/100  summed loss 1.7454
+2026-09-20 21:14:49,637 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 44 attempt 1/8; retrying in 1s
+2026-09-20 21:14:57,109 DEBUG    edit  batch step 44/100  summed loss 1.7696
+2026-09-20 21:15:00,748 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 45 attempt 1/8; retrying in 1s
+2026-09-20 21:15:07,621 DEBUG    edit  batch step 45/100  summed loss 1.7796
+2026-09-20 21:15:11,216 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 46 attempt 1/8; retrying in 1s
+2026-09-20 21:15:21,351 DEBUG    edit  batch step 46/100  summed loss 1.7890
+2026-09-20 21:15:25,252 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 47 attempt 1/8; retrying in 1s
+2026-09-20 21:15:33,601 DEBUG    edit  batch step 47/100  summed loss 1.8097
+2026-09-20 21:15:37,364 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 48 attempt 1/8; retrying in 1s
+2026-09-20 21:15:48,378 DEBUG    edit  batch step 48/100  summed loss 1.8205
+2026-09-20 21:15:52,341 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 49 attempt 1/8; retrying in 1s
+2026-09-20 21:15:59,240 DEBUG    edit  batch step 49/100  summed loss 1.8277
+2026-09-20 21:16:03,107 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 50 attempt 1/8; retrying in 1s
+2026-09-20 21:16:12,000 DEBUG    edit  batch step 50/100  summed loss 1.8610
+2026-09-20 21:16:22,627 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 51 attempt 1/8; retrying in 1s
+2026-09-20 21:16:31,069 DEBUG    edit  batch step 51/100  summed loss 1.8656
+2026-09-20 21:16:35,068 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 52 attempt 1/8; retrying in 1s
+2026-09-20 21:16:44,985 DEBUG    edit  batch step 52/100  summed loss 1.8768
+2026-09-20 21:16:48,703 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 53 attempt 1/8; retrying in 1s
+2026-09-20 21:16:56,374 DEBUG    edit  batch step 53/100  summed loss 1.8851
+2026-09-20 21:17:01,308 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 54 attempt 1/8; retrying in 1s
+2026-09-20 21:17:10,212 DEBUG    edit  batch step 54/100  summed loss 1.9050
+2026-09-20 21:17:14,238 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 55 attempt 1/8; retrying in 1s
+2026-09-20 21:17:22,423 DEBUG    edit  batch step 55/100  summed loss 1.8973
+2026-09-20 21:17:26,133 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 56 attempt 1/8; retrying in 1s
+2026-09-20 21:17:34,374 DEBUG    edit  batch step 56/100  summed loss 1.9169
+2026-09-20 21:17:39,360 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 57 attempt 1/8; retrying in 1s
+2026-09-20 21:17:53,373 DEBUG    edit  batch step 57/100  summed loss 1.9206
+2026-09-20 21:18:00,627 DEBUG    edit  batch step 58/100  summed loss 1.9333
+2026-09-20 21:18:07,185 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 59 attempt 1/8; retrying in 1s
+2026-09-20 21:18:14,840 DEBUG    edit  batch step 59/100  summed loss 1.9230
+2026-09-20 21:18:19,173 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 60 attempt 1/8; retrying in 1s
+2026-09-20 21:18:25,909 DEBUG    edit  batch step 60/100  summed loss 1.9352
+2026-09-20 21:18:30,399 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 61 attempt 1/8; retrying in 1s
+2026-09-20 21:18:38,136 DEBUG    edit  batch step 61/100  summed loss 1.9273
+2026-09-20 21:18:41,798 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 62 attempt 1/8; retrying in 1s
+2026-09-20 21:18:52,513 DEBUG    edit  batch step 62/100  summed loss 1.9363
+2026-09-20 21:18:56,462 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 63 attempt 1/8; retrying in 1s
+2026-09-20 21:19:04,351 DEBUG    edit  batch step 63/100  summed loss 1.9374
+2026-09-20 21:19:09,151 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 64 attempt 1/8; retrying in 1s
+2026-09-20 21:19:22,093 DEBUG    edit  batch step 64/100  summed loss 1.9392
+2026-09-20 21:19:26,649 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 65 attempt 1/8; retrying in 1s
+2026-09-20 21:19:33,648 DEBUG    edit  batch step 65/100  summed loss 1.9369
+2026-09-20 21:19:37,384 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 66 attempt 1/8; retrying in 1s
+2026-09-20 21:19:45,383 DEBUG    edit  batch step 66/100  summed loss 1.9505
+2026-09-20 21:19:49,169 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 67 attempt 1/8; retrying in 1s
+2026-09-20 21:19:58,749 DEBUG    edit  batch step 67/100  summed loss 1.9479
+2026-09-20 21:20:02,575 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 68 attempt 1/8; retrying in 1s
+2026-09-20 21:20:09,153 DEBUG    edit  batch step 68/100  summed loss 1.9482
+2026-09-20 21:20:12,610 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 69 attempt 1/8; retrying in 1s
+2026-09-20 21:20:20,977 DEBUG    edit  batch step 69/100  summed loss 1.9484
+2026-09-20 21:20:25,124 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 70 attempt 1/8; retrying in 1s
+2026-09-20 21:20:34,388 DEBUG    edit  batch step 70/100  summed loss 1.9419
+2026-09-20 21:20:38,774 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 71 attempt 1/8; retrying in 1s
+2026-09-20 21:20:45,970 DEBUG    edit  batch step 71/100  summed loss 1.9441
+2026-09-20 21:20:49,759 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 72 attempt 1/8; retrying in 1s
+2026-09-20 21:20:57,828 DEBUG    edit  batch step 72/100  summed loss 1.9523
+2026-09-20 21:21:01,707 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 73 attempt 1/8; retrying in 1s
+2026-09-20 21:21:12,987 DEBUG    edit  batch step 73/100  summed loss 1.9476
+2026-09-20 21:21:16,963 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 74 attempt 1/8; retrying in 1s
+2026-09-20 21:21:25,365 DEBUG    edit  batch step 74/100  summed loss 1.9587
+2026-09-20 21:21:30,120 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 75 attempt 1/8; retrying in 1s
+2026-09-20 21:21:41,117 DEBUG    edit  batch step 75/100  summed loss 1.9626
+2026-09-20 21:21:45,647 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 76 attempt 1/8; retrying in 1s
+2026-09-20 21:21:54,440 DEBUG    edit  batch step 76/100  summed loss 1.9630
+2026-09-20 21:21:59,805 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 77 attempt 1/8; retrying in 1s
+2026-09-20 21:22:07,808 DEBUG    edit  batch step 77/100  summed loss 1.9592
+2026-09-20 21:22:11,909 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 78 attempt 1/8; retrying in 1s
+2026-09-20 21:22:22,568 DEBUG    edit  batch step 78/100  summed loss 1.9661
+2026-09-20 21:22:26,481 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 79 attempt 1/8; retrying in 1s
+2026-09-20 21:22:34,722 DEBUG    edit  batch step 79/100  summed loss 1.9588
+2026-09-20 21:22:38,785 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 80 attempt 1/8; retrying in 1s
+2026-09-20 21:22:47,493 DEBUG    edit  batch step 80/100  summed loss 1.9619
+2026-09-20 21:22:59,734 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 81 attempt 1/8; retrying in 5s
+2026-09-20 21:23:08,754 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 81 attempt 2/8; retrying in 2s
+2026-09-20 21:23:20,221 DEBUG    edit  batch step 81/100  summed loss 1.9672
+2026-09-20 21:23:24,780 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 82 attempt 1/8; retrying in 1s
+2026-09-20 21:23:33,247 DEBUG    edit  batch step 82/100  summed loss 1.9708
+2026-09-20 21:23:37,245 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 83 attempt 1/8; retrying in 1s
+2026-09-20 21:23:52,297 DEBUG    edit  batch step 83/100  summed loss 1.9440
+2026-09-20 21:23:59,135 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 84 attempt 1/8; retrying in 1s
+2026-09-20 21:24:12,980 DEBUG    edit  batch step 84/100  summed loss 1.9556
+2026-09-20 21:24:17,601 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 85 attempt 1/8; retrying in 1s
+2026-09-20 21:24:28,289 DEBUG    edit  batch step 85/100  summed loss 1.9500
+2026-09-20 21:24:32,414 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 86 attempt 1/8; retrying in 1s
+2026-09-20 21:24:40,048 DEBUG    edit  batch step 86/100  summed loss 1.9645
+2026-09-20 21:24:44,418 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 87 attempt 1/8; retrying in 1s
+2026-09-20 21:24:53,543 DEBUG    edit  batch step 87/100  summed loss 1.9650
+2026-09-20 21:24:57,581 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 88 attempt 1/8; retrying in 1s
+2026-09-20 21:25:04,736 DEBUG    edit  batch step 88/100  summed loss 1.9755
+2026-09-20 21:25:08,555 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 89 attempt 1/8; retrying in 1s
+2026-09-20 21:25:18,225 DEBUG    edit  batch step 89/100  summed loss 1.9783
+2026-09-20 21:25:22,558 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 90 attempt 1/8; retrying in 1s
+2026-09-20 21:25:29,696 DEBUG    edit  batch step 90/100  summed loss 1.9609
+2026-09-20 21:25:34,532 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 91 attempt 1/8; retrying in 1s
+2026-09-20 21:25:41,809 DEBUG    edit  batch step 91/100  summed loss 1.9757
+2026-09-20 21:25:45,249 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 92 attempt 1/8; retrying in 1s
+2026-09-20 21:25:54,196 DEBUG    edit  batch step 92/100  summed loss 1.9653
+2026-09-20 21:25:58,118 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 93 attempt 1/8; retrying in 1s
+2026-09-20 21:26:10,597 DEBUG    edit  batch step 93/100  summed loss 1.9685
+2026-09-20 21:26:16,202 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 94 attempt 1/8; retrying in 1s
+2026-09-20 21:26:26,323 DEBUG    edit  batch step 94/100  summed loss 1.9783
+2026-09-20 21:26:30,466 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 95 attempt 1/8; retrying in 1s
+2026-09-20 21:26:45,910 DEBUG    edit  batch step 95/100  summed loss 1.9817
+2026-09-20 21:26:50,195 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 96 attempt 1/8; retrying in 1s
+2026-09-20 21:26:57,663 DEBUG    edit  batch step 96/100  summed loss 1.9759
+2026-09-20 21:27:09,231 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 97 attempt 1/8; retrying in 5s
+2026-09-20 21:27:18,245 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 97 attempt 2/8; retrying in 2s
+2026-09-20 21:27:31,867 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 97 attempt 3/8; retrying in 15s
+2026-09-20 21:27:59,228 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 97 attempt 4/8; retrying in 20s
+2026-09-20 21:28:28,391 DEBUG    edit  batch step 97/100  summed loss 1.9781
+2026-09-20 21:28:32,275 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 98 attempt 1/8; retrying in 1s
+2026-09-20 21:28:46,834 DEBUG    edit  batch step 98/100  summed loss 1.9773
+2026-09-20 21:28:50,763 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 99 attempt 1/8; retrying in 1s
+2026-09-20 21:29:14,338 DEBUG    edit  batch step 99/100  summed loss 1.9796
+2026-09-20 21:29:18,453 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 100 attempt 1/8; retrying in 1s
+2026-09-20 21:29:31,447 DEBUG    edit  batch step 100/100  summed loss 1.9830
+2026-09-20 21:29:33,848 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:29:42,620 DEBUG    remote  trace ok: 2 rows, 4 tok, 3.8s
+2026-09-20 21:29:44,866 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:29:53,003 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.1s
+2026-09-20 21:29:55,229 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:30:03,197 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:30:05,446 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:30:13,475 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:30:15,707 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:30:23,642 DEBUG    remote  trace ok: 2 rows, 2 tok, 2.9s
+2026-09-20 21:30:25,825 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:30:34,069 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.2s
+2026-09-20 21:30:34,072 INFO     run_e028a    L5|s100  suppression  8.31   lift  8.36   margin +10.09   ||dv||  7.25
+2026-09-20 21:30:34,072 INFO     run_e028a  optimising L20|s25 (6 specs x 25 steps)
+2026-09-20 21:30:35,951 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 20, attempt 1/8; retrying in 1s
+2026-09-20 21:31:35,688 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 21:31:41,781 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 21:31:47,820 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 21:31:53,795 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 21:32:00,360 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 21:32:05,956 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 21:32:13,537 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 1 attempt 1/8; retrying in 1s
+2026-09-20 21:32:21,024 DEBUG    edit  batch step  1/25  summed loss 50.1291
+2026-09-20 21:32:24,689 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 21:32:37,264 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 2 attempt 2/8; retrying in 10s
+2026-09-20 21:32:55,718 DEBUG    edit  batch step  2/25  summed loss 49.0623
+2026-09-20 21:33:06,748 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 21:33:15,392 DEBUG    edit  batch step  3/25  summed loss 48.6891
+2026-09-20 21:33:21,444 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 21:33:30,540 DEBUG    edit  batch step  4/25  summed loss 48.1576
+2026-09-20 21:33:34,821 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 21:33:46,940 DEBUG    edit  batch step  5/25  summed loss 47.3842
+2026-09-20 21:33:50,863 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 21:34:00,001 DEBUG    edit  batch step  6/25  summed loss 45.9185
+2026-09-20 21:34:04,213 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 21:34:12,355 DEBUG    edit  batch step  7/25  summed loss 41.5795
+2026-09-20 21:34:16,279 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 1/8; retrying in 1s
+2026-09-20 21:34:29,026 WARNING  edit  transport failure (WriteTimeout: The write operation timed out) on v* step 8 attempt 2/8; retrying in 10s
+2026-09-20 21:34:50,877 DEBUG    edit  batch step  8/25  summed loss 33.4969
+2026-09-20 21:34:54,640 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 21:35:03,362 DEBUG    edit  batch step  9/25  summed loss 27.9643
+2026-09-20 21:35:09,515 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 21:35:23,396 DEBUG    edit  batch step 10/25  summed loss 26.2383
+2026-09-20 21:35:27,476 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 21:35:35,175 DEBUG    edit  batch step 11/25  summed loss 24.4788
+2026-09-20 21:35:45,707 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 21:35:53,358 DEBUG    edit  batch step 12/25  summed loss 21.1697
+2026-09-20 21:35:59,458 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 21:36:13,585 DEBUG    edit  batch step 13/25  summed loss 14.3362
+2026-09-20 21:36:19,389 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 21:36:30,214 DEBUG    edit  batch step 14/25  summed loss 12.1670
+2026-09-20 21:36:34,282 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 21:36:41,863 DEBUG    edit  batch step 15/25  summed loss 10.6626
+2026-09-20 21:36:46,108 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 21:36:57,023 DEBUG    edit  batch step 16/25  summed loss 7.7983
+2026-09-20 21:37:00,677 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 21:37:10,704 DEBUG    edit  batch step 17/25  summed loss 4.0974
+2026-09-20 21:37:15,601 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 21:37:25,871 DEBUG    edit  batch step 18/25  summed loss 2.8309
+2026-09-20 21:37:31,654 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 21:37:41,177 DEBUG    edit  batch step 19/25  summed loss 2.3005
+2026-09-20 21:37:44,842 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 21:37:52,227 DEBUG    edit  batch step 20/25  summed loss 1.9758
+2026-09-20 21:37:56,620 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 21:38:04,273 DEBUG    edit  batch step 21/25  summed loss 1.8645
+2026-09-20 21:38:09,205 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 21:38:18,150 DEBUG    edit  batch step 22/25  summed loss 1.6967
+2026-09-20 21:38:26,169 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 21:38:45,423 DEBUG    edit  batch step 23/25  summed loss 1.5687
+2026-09-20 21:38:50,035 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 21:38:57,267 DEBUG    edit  batch step 24/25  summed loss 1.5161
+2026-09-20 21:39:01,161 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 21:39:09,687 DEBUG    edit  batch step 25/25  summed loss 1.4246
+2026-09-20 21:39:11,530 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 21:39:17,539 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 21:39:24,596 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 21:39:34,148 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 21:39:41,034 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 21:39:47,207 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 21:39:54,239 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:40:03,749 DEBUG    remote  trace ok: 2 rows, 4 tok, 4.5s
+2026-09-20 21:40:06,270 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:40:14,533 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.3s
+2026-09-20 21:40:17,863 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:40:27,659 DEBUG    remote  trace ok: 2 rows, 2 tok, 4.8s
+2026-09-20 21:40:30,766 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:40:39,873 DEBUG    remote  trace ok: 2 rows, 2 tok, 4.1s
+2026-09-20 21:40:42,267 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:40:50,793 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.5s
+2026-09-20 21:40:53,195 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:41:01,269 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.1s
+2026-09-20 21:41:01,271 INFO     run_e028a    L20|s25  suppression  2.61   lift  8.19   margin +4.22   ||dv||  5.77
+2026-09-20 21:41:01,271 INFO     run_e028a  optimising L20|s50 (6 specs x 50 steps)
+2026-09-20 21:41:03,653 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 20, attempt 1/8; retrying in 1s
+2026-09-20 21:42:20,618 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 21:42:27,496 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 21:42:35,139 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 21:42:41,949 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 21:42:48,414 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 21:42:54,590 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 21:43:02,636 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 1 attempt 1/8; retrying in 1s
+2026-09-20 21:43:16,812 DEBUG    edit  batch step  1/50  summed loss 50.1291
+2026-09-20 21:43:21,086 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 21:43:31,763 DEBUG    edit  batch step  2/50  summed loss 49.0623
+2026-09-20 21:43:36,565 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 21:43:43,244 DEBUG    edit  batch step  3/50  summed loss 48.6891
+2026-09-20 21:43:46,866 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 21:43:59,317 DEBUG    edit  batch step  4/50  summed loss 48.1576
+2026-09-20 21:44:02,849 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 21:44:09,702 DEBUG    edit  batch step  5/50  summed loss 47.3842
+2026-09-20 21:44:13,294 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 21:44:20,299 DEBUG    edit  batch step  6/50  summed loss 45.9185
+2026-09-20 21:44:23,789 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 21:44:31,064 DEBUG    edit  batch step  7/50  summed loss 41.5795
+2026-09-20 21:44:35,182 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 1/8; retrying in 1s
+2026-09-20 21:44:42,572 DEBUG    edit  batch step  8/50  summed loss 33.4969
+2026-09-20 21:44:46,459 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 21:44:57,244 DEBUG    edit  batch step  9/50  summed loss 27.9643
+2026-09-20 21:45:00,942 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 21:45:13,048 DEBUG    edit  batch step 10/50  summed loss 26.2383
+2026-09-20 21:45:16,485 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 21:45:24,359 DEBUG    edit  batch step 11/50  summed loss 24.4788
+2026-09-20 21:45:28,317 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 21:45:36,517 DEBUG    edit  batch step 12/50  summed loss 21.1697
+2026-09-20 21:45:40,064 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 21:45:46,825 DEBUG    edit  batch step 13/50  summed loss 14.3362
+2026-09-20 21:45:50,872 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 21:45:58,068 DEBUG    edit  batch step 14/50  summed loss 12.1670
+2026-09-20 21:46:01,626 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 21:46:08,592 DEBUG    edit  batch step 15/50  summed loss 10.6626
+2026-09-20 21:46:13,133 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 21:46:20,081 DEBUG    edit  batch step 16/50  summed loss 7.7983
+2026-09-20 21:46:23,791 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 21:46:31,327 DEBUG    edit  batch step 17/50  summed loss 4.0974
+2026-09-20 21:46:34,784 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 21:46:44,365 DEBUG    edit  batch step 18/50  summed loss 2.8309
+2026-09-20 21:46:48,300 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 21:46:56,500 DEBUG    edit  batch step 19/50  summed loss 2.3005
+2026-09-20 21:47:00,227 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 21:47:09,233 DEBUG    edit  batch step 20/50  summed loss 1.9758
+2026-09-20 21:47:13,864 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 21:47:25,261 DEBUG    edit  batch step 21/50  summed loss 1.8645
+2026-09-20 21:47:28,897 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 21:47:36,278 DEBUG    edit  batch step 22/50  summed loss 1.6967
+2026-09-20 21:47:40,165 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 21:47:47,325 DEBUG    edit  batch step 23/50  summed loss 1.5687
+2026-09-20 21:47:50,767 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 21:48:01,486 DEBUG    edit  batch step 24/50  summed loss 1.5161
+2026-09-20 21:48:05,068 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 21:48:12,810 DEBUG    edit  batch step 25/50  summed loss 1.4246
+2026-09-20 21:48:16,505 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 26 attempt 1/8; retrying in 1s
+2026-09-20 21:48:24,637 DEBUG    edit  batch step 26/50  summed loss 1.3882
+2026-09-20 21:48:28,569 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 27 attempt 1/8; retrying in 1s
+2026-09-20 21:48:36,358 DEBUG    edit  batch step 27/50  summed loss 1.3389
+2026-09-20 21:48:40,326 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 28 attempt 1/8; retrying in 1s
+2026-09-20 21:48:46,822 DEBUG    edit  batch step 28/50  summed loss 1.2842
+2026-09-20 21:48:50,639 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 29 attempt 1/8; retrying in 1s
+2026-09-20 21:48:57,146 DEBUG    edit  batch step 29/50  summed loss 1.2242
+2026-09-20 21:49:00,529 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 30 attempt 1/8; retrying in 1s
+2026-09-20 21:49:07,627 DEBUG    edit  batch step 30/50  summed loss 1.1953
+2026-09-20 21:49:11,518 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 31 attempt 1/8; retrying in 1s
+2026-09-20 21:49:20,614 DEBUG    edit  batch step 31/50  summed loss 1.1402
+2026-09-20 21:49:24,580 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 32 attempt 1/8; retrying in 1s
+2026-09-20 21:49:31,355 DEBUG    edit  batch step 32/50  summed loss 1.1407
+2026-09-20 21:49:34,824 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 33 attempt 1/8; retrying in 1s
+2026-09-20 21:49:41,536 DEBUG    edit  batch step 33/50  summed loss 1.0923
+2026-09-20 21:49:45,475 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 34 attempt 1/8; retrying in 1s
+2026-09-20 21:49:52,453 DEBUG    edit  batch step 34/50  summed loss 1.0765
+2026-09-20 21:49:56,030 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 35 attempt 1/8; retrying in 1s
+2026-09-20 21:50:02,703 DEBUG    edit  batch step 35/50  summed loss 1.0396
+2026-09-20 21:50:06,056 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 36 attempt 1/8; retrying in 1s
+2026-09-20 21:50:13,758 DEBUG    edit  batch step 36/50  summed loss 1.0226
+2026-09-20 21:50:17,613 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 37 attempt 1/8; retrying in 1s
+2026-09-20 21:50:24,842 DEBUG    edit  batch step 37/50  summed loss 0.9865
+2026-09-20 21:50:28,468 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 38 attempt 1/8; retrying in 1s
+2026-09-20 21:50:39,413 DEBUG    edit  batch step 38/50  summed loss 0.9901
+2026-09-20 21:50:43,940 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 39 attempt 1/8; retrying in 1s
+2026-09-20 21:50:50,839 DEBUG    edit  batch step 39/50  summed loss 0.9472
+2026-09-20 21:50:54,305 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 40 attempt 1/8; retrying in 1s
+2026-09-20 21:51:03,383 DEBUG    edit  batch step 40/50  summed loss 0.9385
+2026-09-20 21:51:07,853 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 41 attempt 1/8; retrying in 1s
+2026-09-20 21:51:14,789 DEBUG    edit  batch step 41/50  summed loss 0.9403
+2026-09-20 21:51:18,801 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 42 attempt 1/8; retrying in 1s
+2026-09-20 21:51:26,217 DEBUG    edit  batch step 42/50  summed loss 0.9113
+2026-09-20 21:51:29,793 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 43 attempt 1/8; retrying in 1s
+2026-09-20 21:51:37,480 DEBUG    edit  batch step 43/50  summed loss 0.8989
+2026-09-20 21:51:41,298 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 44 attempt 1/8; retrying in 1s
+2026-09-20 21:51:48,309 DEBUG    edit  batch step 44/50  summed loss 0.8955
+2026-09-20 21:51:53,096 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 45 attempt 1/8; retrying in 1s
+2026-09-20 21:52:01,935 DEBUG    edit  batch step 45/50  summed loss 0.8594
+2026-09-20 21:52:05,492 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 46 attempt 1/8; retrying in 1s
+2026-09-20 21:52:18,384 DEBUG    edit  batch step 46/50  summed loss 0.8603
+2026-09-20 21:52:22,249 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 47 attempt 1/8; retrying in 1s
+2026-09-20 21:52:30,621 DEBUG    edit  batch step 47/50  summed loss 0.8284
+2026-09-20 21:52:34,306 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 48 attempt 1/8; retrying in 1s
+2026-09-20 21:52:46,244 DEBUG    edit  batch step 48/50  summed loss 0.8233
+2026-09-20 21:52:54,937 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 49 attempt 1/8; retrying in 1s
+2026-09-20 21:53:09,352 DEBUG    edit  batch step 49/50  summed loss 0.8229
+2026-09-20 21:53:13,370 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 50 attempt 1/8; retrying in 1s
+2026-09-20 21:53:20,284 DEBUG    edit  batch step 50/50  summed loss 0.8271
+2026-09-20 21:53:22,479 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:53:30,492 DEBUG    remote  trace ok: 2 rows, 4 tok, 3.0s
+2026-09-20 21:53:32,606 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:53:40,570 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:53:42,889 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:53:50,957 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.1s
+2026-09-20 21:53:53,199 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:54:01,165 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:54:03,299 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:54:11,298 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 21:54:13,448 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 21:54:21,559 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.1s
+2026-09-20 21:54:21,562 INFO     run_e028a    L20|s50  suppression  3.51   lift  8.30   margin +5.24   ||dv||  6.41
+2026-09-20 21:54:21,562 INFO     run_e028a  optimising L20|s100 (6 specs x 100 steps)
+2026-09-20 21:54:23,326 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during pre-edit essence pass, layer 20, attempt 1/8; retrying in 1s
+2026-09-20 21:55:19,417 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 21:55:25,186 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 21:55:30,949 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 21:55:36,583 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 21:55:42,125 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 21:55:47,803 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 21:55:55,050 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 1 attempt 1/8; retrying in 1s
+2026-09-20 21:56:08,489 DEBUG    edit  batch step  1/100  summed loss 50.1291
+2026-09-20 21:56:17,731 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 2 attempt 1/8; retrying in 1s
+2026-09-20 21:56:25,372 DEBUG    edit  batch step  2/100  summed loss 49.0623
+2026-09-20 21:56:33,517 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 3 attempt 1/8; retrying in 1s
+2026-09-20 21:56:41,128 DEBUG    edit  batch step  3/100  summed loss 48.6891
+2026-09-20 21:56:45,163 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 4 attempt 1/8; retrying in 1s
+2026-09-20 21:56:53,323 DEBUG    edit  batch step  4/100  summed loss 48.1576
+2026-09-20 21:56:57,154 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 5 attempt 1/8; retrying in 1s
+2026-09-20 21:57:04,386 DEBUG    edit  batch step  5/100  summed loss 47.3842
+2026-09-20 21:57:08,330 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 6 attempt 1/8; retrying in 1s
+2026-09-20 21:57:15,972 DEBUG    edit  batch step  6/100  summed loss 45.9185
+2026-09-20 21:57:19,606 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 7 attempt 1/8; retrying in 1s
+2026-09-20 21:57:26,654 DEBUG    edit  batch step  7/100  summed loss 41.5795
+2026-09-20 21:57:30,555 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 8 attempt 1/8; retrying in 1s
+2026-09-20 21:57:44,854 DEBUG    edit  batch step  8/100  summed loss 33.4969
+2026-09-20 21:57:48,600 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 9 attempt 1/8; retrying in 1s
+2026-09-20 21:57:56,557 DEBUG    edit  batch step  9/100  summed loss 27.9643
+2026-09-20 21:58:00,500 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 10 attempt 1/8; retrying in 1s
+2026-09-20 21:58:08,963 DEBUG    edit  batch step 10/100  summed loss 26.2383
+2026-09-20 21:58:12,979 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 11 attempt 1/8; retrying in 1s
+2026-09-20 21:58:20,112 DEBUG    edit  batch step 11/100  summed loss 24.4788
+2026-09-20 21:58:23,573 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 12 attempt 1/8; retrying in 1s
+2026-09-20 21:58:32,787 DEBUG    edit  batch step 12/100  summed loss 21.1697
+2026-09-20 21:58:36,202 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 13 attempt 1/8; retrying in 1s
+2026-09-20 21:58:43,201 DEBUG    edit  batch step 13/100  summed loss 14.3362
+2026-09-20 21:58:47,393 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 14 attempt 1/8; retrying in 1s
+2026-09-20 21:58:58,871 DEBUG    edit  batch step 14/100  summed loss 12.1670
+2026-09-20 21:59:02,412 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 15 attempt 1/8; retrying in 1s
+2026-09-20 21:59:11,457 DEBUG    edit  batch step 15/100  summed loss 10.6626
+2026-09-20 21:59:15,089 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 16 attempt 1/8; retrying in 1s
+2026-09-20 21:59:22,471 DEBUG    edit  batch step 16/100  summed loss 7.7983
+2026-09-20 21:59:25,821 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 17 attempt 1/8; retrying in 1s
+2026-09-20 21:59:33,788 DEBUG    edit  batch step 17/100  summed loss 4.0974
+2026-09-20 21:59:37,991 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 18 attempt 1/8; retrying in 1s
+2026-09-20 21:59:48,626 DEBUG    edit  batch step 18/100  summed loss 2.8309
+2026-09-20 21:59:52,272 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 19 attempt 1/8; retrying in 1s
+2026-09-20 22:00:05,224 DEBUG    edit  batch step 19/100  summed loss 2.3005
+2026-09-20 22:00:08,787 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 20 attempt 1/8; retrying in 1s
+2026-09-20 22:00:16,179 DEBUG    edit  batch step 20/100  summed loss 1.9758
+2026-09-20 22:00:20,981 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 21 attempt 1/8; retrying in 1s
+2026-09-20 22:00:27,697 DEBUG    edit  batch step 21/100  summed loss 1.8645
+2026-09-20 22:00:31,351 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 22 attempt 1/8; retrying in 1s
+2026-09-20 22:00:38,428 DEBUG    edit  batch step 22/100  summed loss 1.6967
+2026-09-20 22:00:41,961 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 23 attempt 1/8; retrying in 1s
+2026-09-20 22:00:48,644 DEBUG    edit  batch step 23/100  summed loss 1.5687
+2026-09-20 22:00:52,073 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 24 attempt 1/8; retrying in 1s
+2026-09-20 22:00:58,633 DEBUG    edit  batch step 24/100  summed loss 1.5161
+2026-09-20 22:01:02,679 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 25 attempt 1/8; retrying in 1s
+2026-09-20 22:01:12,004 DEBUG    edit  batch step 25/100  summed loss 1.4246
+2026-09-20 22:01:15,436 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 26 attempt 1/8; retrying in 1s
+2026-09-20 22:01:23,303 DEBUG    edit  batch step 26/100  summed loss 1.3882
+2026-09-20 22:01:26,907 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 27 attempt 1/8; retrying in 1s
+2026-09-20 22:01:34,035 DEBUG    edit  batch step 27/100  summed loss 1.3389
+2026-09-20 22:01:37,602 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 28 attempt 1/8; retrying in 1s
+2026-09-20 22:01:44,436 DEBUG    edit  batch step 28/100  summed loss 1.2842
+2026-09-20 22:01:47,942 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 29 attempt 1/8; retrying in 1s
+2026-09-20 22:01:55,164 DEBUG    edit  batch step 29/100  summed loss 1.2242
+2026-09-20 22:01:58,970 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 30 attempt 1/8; retrying in 1s
+2026-09-20 22:02:08,246 DEBUG    edit  batch step 30/100  summed loss 1.1953
+2026-09-20 22:02:11,556 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 31 attempt 1/8; retrying in 1s
+2026-09-20 22:02:27,067 DEBUG    edit  batch step 31/100  summed loss 1.1402
+2026-09-20 22:02:31,336 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 32 attempt 1/8; retrying in 1s
+2026-09-20 22:02:40,112 DEBUG    edit  batch step 32/100  summed loss 1.1407
+2026-09-20 22:02:43,495 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 33 attempt 1/8; retrying in 1s
+2026-09-20 22:02:50,276 DEBUG    edit  batch step 33/100  summed loss 1.0923
+2026-09-20 22:02:54,042 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 34 attempt 1/8; retrying in 1s
+2026-09-20 22:03:02,362 DEBUG    edit  batch step 34/100  summed loss 1.0765
+2026-09-20 22:03:06,770 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 35 attempt 1/8; retrying in 1s
+2026-09-20 22:03:15,283 DEBUG    edit  batch step 35/100  summed loss 1.0396
+2026-09-20 22:03:18,910 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 36 attempt 1/8; retrying in 1s
+2026-09-20 22:03:27,223 DEBUG    edit  batch step 36/100  summed loss 1.0226
+2026-09-20 22:03:31,696 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 37 attempt 1/8; retrying in 1s
+2026-09-20 22:03:38,834 DEBUG    edit  batch step 37/100  summed loss 0.9865
+2026-09-20 22:03:42,145 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 38 attempt 1/8; retrying in 1s
+2026-09-20 22:03:52,578 DEBUG    edit  batch step 38/100  summed loss 0.9901
+2026-09-20 22:03:56,380 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 39 attempt 1/8; retrying in 1s
+2026-09-20 22:04:02,901 DEBUG    edit  batch step 39/100  summed loss 0.9472
+2026-09-20 22:04:06,385 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 40 attempt 1/8; retrying in 1s
+2026-09-20 22:04:21,998 DEBUG    edit  batch step 40/100  summed loss 0.9385
+2026-09-20 22:04:25,950 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 41 attempt 1/8; retrying in 1s
+2026-09-20 22:04:32,756 DEBUG    edit  batch step 41/100  summed loss 0.9403
+2026-09-20 22:04:36,353 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 42 attempt 1/8; retrying in 1s
+2026-09-20 22:04:43,826 DEBUG    edit  batch step 42/100  summed loss 0.9113
+2026-09-20 22:04:47,515 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 43 attempt 1/8; retrying in 1s
+2026-09-20 22:04:56,340 DEBUG    edit  batch step 43/100  summed loss 0.8989
+2026-09-20 22:05:00,364 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 44 attempt 1/8; retrying in 1s
+2026-09-20 22:05:07,578 DEBUG    edit  batch step 44/100  summed loss 0.8955
+2026-09-20 22:05:11,409 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 45 attempt 1/8; retrying in 1s
+2026-09-20 22:05:18,716 DEBUG    edit  batch step 45/100  summed loss 0.8594
+2026-09-20 22:05:22,188 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 46 attempt 1/8; retrying in 1s
+2026-09-20 22:05:35,747 DEBUG    edit  batch step 46/100  summed loss 0.8603
+2026-09-20 22:05:39,406 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 47 attempt 1/8; retrying in 1s
+2026-09-20 22:05:46,374 DEBUG    edit  batch step 47/100  summed loss 0.8284
+2026-09-20 22:05:50,163 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 48 attempt 1/8; retrying in 1s
+2026-09-20 22:05:56,767 DEBUG    edit  batch step 48/100  summed loss 0.8233
+2026-09-20 22:06:00,268 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 49 attempt 1/8; retrying in 1s
+2026-09-20 22:06:08,594 DEBUG    edit  batch step 49/100  summed loss 0.8229
+2026-09-20 22:06:11,976 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 50 attempt 1/8; retrying in 1s
+2026-09-20 22:06:19,214 DEBUG    edit  batch step 50/100  summed loss 0.8271
+2026-09-20 22:06:23,165 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 51 attempt 1/8; retrying in 1s
+2026-09-20 22:06:30,023 DEBUG    edit  batch step 51/100  summed loss 0.8099
+2026-09-20 22:06:33,393 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 52 attempt 1/8; retrying in 1s
+2026-09-20 22:06:42,425 DEBUG    edit  batch step 52/100  summed loss 0.8063
+2026-09-20 22:06:45,780 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 53 attempt 1/8; retrying in 1s
+2026-09-20 22:06:52,849 DEBUG    edit  batch step 53/100  summed loss 0.8005
+2026-09-20 22:06:56,272 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 54 attempt 1/8; retrying in 1s
+2026-09-20 22:07:03,331 DEBUG    edit  batch step 54/100  summed loss 0.7926
+2026-09-20 22:07:07,007 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 55 attempt 1/8; retrying in 1s
+2026-09-20 22:07:14,555 DEBUG    edit  batch step 55/100  summed loss 0.7659
+2026-09-20 22:07:18,549 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 56 attempt 1/8; retrying in 1s
+2026-09-20 22:07:26,662 DEBUG    edit  batch step 56/100  summed loss 0.7624
+2026-09-20 22:07:30,671 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 57 attempt 1/8; retrying in 1s
+2026-09-20 22:07:38,179 DEBUG    edit  batch step 57/100  summed loss 0.7633
+2026-09-20 22:07:47,313 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 58 attempt 1/8; retrying in 1s
+2026-09-20 22:07:54,864 DEBUG    edit  batch step 58/100  summed loss 0.7541
+2026-09-20 22:07:58,674 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 59 attempt 1/8; retrying in 1s
+2026-09-20 22:08:06,067 DEBUG    edit  batch step 59/100  summed loss 0.7541
+2026-09-20 22:08:09,583 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 60 attempt 1/8; retrying in 1s
+2026-09-20 22:08:19,208 DEBUG    edit  batch step 60/100  summed loss 0.7403
+2026-09-20 22:08:23,699 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 61 attempt 1/8; retrying in 1s
+2026-09-20 22:08:30,228 DEBUG    edit  batch step 61/100  summed loss 0.7452
+2026-09-20 22:08:34,307 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 62 attempt 1/8; retrying in 1s
+2026-09-20 22:08:47,360 DEBUG    edit  batch step 62/100  summed loss 0.7240
+2026-09-20 22:08:51,111 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 63 attempt 1/8; retrying in 1s
+2026-09-20 22:08:58,587 DEBUG    edit  batch step 63/100  summed loss 0.7265
+2026-09-20 22:09:02,147 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 64 attempt 1/8; retrying in 1s
+2026-09-20 22:09:12,663 DEBUG    edit  batch step 64/100  summed loss 0.7273
+2026-09-20 22:09:16,153 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 65 attempt 1/8; retrying in 1s
+2026-09-20 22:09:22,289 WARNING  edit  transport failure (ConnectError: [Errno 54] Connection reset by peer) on v* step 65 attempt 2/8; retrying in 10s
+2026-09-20 22:09:36,455 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 65 attempt 3/8; retrying in 3s
+2026-09-20 22:09:45,421 DEBUG    edit  batch step 65/100  summed loss 0.7289
+2026-09-20 22:09:48,854 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 66 attempt 1/8; retrying in 1s
+2026-09-20 22:09:58,517 DEBUG    edit  batch step 66/100  summed loss 0.7250
+2026-09-20 22:10:02,477 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 67 attempt 1/8; retrying in 1s
+2026-09-20 22:10:12,903 DEBUG    edit  batch step 67/100  summed loss 0.7258
+2026-09-20 22:10:16,717 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 68 attempt 1/8; retrying in 1s
+2026-09-20 22:10:25,067 DEBUG    edit  batch step 68/100  summed loss 0.7115
+2026-09-20 22:10:28,794 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 69 attempt 1/8; retrying in 1s
+2026-09-20 22:10:39,494 DEBUG    edit  batch step 69/100  summed loss 0.7095
+2026-09-20 22:10:43,071 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 70 attempt 1/8; retrying in 1s
+2026-09-20 22:10:50,412 DEBUG    edit  batch step 70/100  summed loss 0.6963
+2026-09-20 22:10:59,023 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 71 attempt 1/8; retrying in 1s
+2026-09-20 22:11:05,818 DEBUG    edit  batch step 71/100  summed loss 0.6891
+2026-09-20 22:11:10,224 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 72 attempt 1/8; retrying in 1s
+2026-09-20 22:11:18,636 DEBUG    edit  batch step 72/100  summed loss 0.6870
+2026-09-20 22:11:22,309 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 73 attempt 1/8; retrying in 1s
+2026-09-20 22:11:30,597 DEBUG    edit  batch step 73/100  summed loss 0.6839
+2026-09-20 22:11:34,222 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 74 attempt 1/8; retrying in 1s
+2026-09-20 22:11:46,518 DEBUG    edit  batch step 74/100  summed loss 0.6714
+2026-09-20 22:11:50,540 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 75 attempt 1/8; retrying in 1s
+2026-09-20 22:11:57,844 DEBUG    edit  batch step 75/100  summed loss 0.6696
+2026-09-20 22:12:01,575 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 76 attempt 1/8; retrying in 1s
+2026-09-20 22:12:08,605 DEBUG    edit  batch step 76/100  summed loss 0.6749
+2026-09-20 22:12:16,805 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 77 attempt 1/8; retrying in 1s
+2026-09-20 22:12:23,505 DEBUG    edit  batch step 77/100  summed loss 0.6745
+2026-09-20 22:12:26,893 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 78 attempt 1/8; retrying in 1s
+2026-09-20 22:12:38,676 DEBUG    edit  batch step 78/100  summed loss 0.6738
+2026-09-20 22:12:42,435 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 79 attempt 1/8; retrying in 1s
+2026-09-20 22:12:49,532 DEBUG    edit  batch step 79/100  summed loss 0.6568
+2026-09-20 22:12:59,127 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 80 attempt 1/8; retrying in 1s
+2026-09-20 22:13:06,323 DEBUG    edit  batch step 80/100  summed loss 0.6494
+2026-09-20 22:13:10,092 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 81 attempt 1/8; retrying in 1s
+2026-09-20 22:13:22,229 DEBUG    edit  batch step 81/100  summed loss 0.6626
+2026-09-20 22:13:26,055 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 82 attempt 1/8; retrying in 1s
+2026-09-20 22:13:33,788 DEBUG    edit  batch step 82/100  summed loss 0.6589
+2026-09-20 22:13:37,477 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 83 attempt 1/8; retrying in 1s
+2026-09-20 22:13:44,150 DEBUG    edit  batch step 83/100  summed loss 0.6585
+2026-09-20 22:13:47,954 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 84 attempt 1/8; retrying in 1s
+2026-09-20 22:13:55,561 DEBUG    edit  batch step 84/100  summed loss 0.6563
+2026-09-20 22:13:59,162 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 85 attempt 1/8; retrying in 1s
+2026-09-20 22:14:06,552 DEBUG    edit  batch step 85/100  summed loss 0.6514
+2026-09-20 22:14:09,998 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 86 attempt 1/8; retrying in 1s
+2026-09-20 22:14:23,254 DEBUG    edit  batch step 86/100  summed loss 0.6427
+2026-09-20 22:14:27,184 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 87 attempt 1/8; retrying in 1s
+2026-09-20 22:14:34,638 DEBUG    edit  batch step 87/100  summed loss 0.6384
+2026-09-20 22:14:38,696 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 88 attempt 1/8; retrying in 1s
+2026-09-20 22:14:46,185 DEBUG    edit  batch step 88/100  summed loss 0.6379
+2026-09-20 22:14:58,252 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 89 attempt 1/8; retrying in 1s
+2026-09-20 22:15:07,346 DEBUG    edit  batch step 89/100  summed loss 0.6387
+2026-09-20 22:15:16,808 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 90 attempt 1/8; retrying in 1s
+2026-09-20 22:15:24,709 DEBUG    edit  batch step 90/100  summed loss 0.6336
+2026-09-20 22:15:28,989 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 91 attempt 1/8; retrying in 1s
+2026-09-20 22:15:36,036 DEBUG    edit  batch step 91/100  summed loss 0.6307
+2026-09-20 22:15:39,838 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 92 attempt 1/8; retrying in 1s
+2026-09-20 22:15:47,187 DEBUG    edit  batch step 92/100  summed loss 0.6322
+2026-09-20 22:15:51,059 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 93 attempt 1/8; retrying in 1s
+2026-09-20 22:15:57,682 DEBUG    edit  batch step 93/100  summed loss 0.6324
+2026-09-20 22:16:01,692 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 94 attempt 1/8; retrying in 1s
+2026-09-20 22:16:09,180 DEBUG    edit  batch step 94/100  summed loss 0.6244
+2026-09-20 22:16:13,096 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 95 attempt 1/8; retrying in 1s
+2026-09-20 22:16:29,575 DEBUG    edit  batch step 95/100  summed loss 0.6267
+2026-09-20 22:16:33,126 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 96 attempt 1/8; retrying in 1s
+2026-09-20 22:16:40,214 DEBUG    edit  batch step 96/100  summed loss 0.6215
+2026-09-20 22:16:44,064 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 97 attempt 1/8; retrying in 1s
+2026-09-20 22:16:51,091 DEBUG    edit  batch step 97/100  summed loss 0.6210
+2026-09-20 22:16:54,685 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 98 attempt 1/8; retrying in 1s
+2026-09-20 22:17:01,996 DEBUG    edit  batch step 98/100  summed loss 0.6217
+2026-09-20 22:17:05,461 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 99 attempt 1/8; retrying in 1s
+2026-09-20 22:17:12,187 DEBUG    edit  batch step 99/100  summed loss 0.6210
+2026-09-20 22:17:15,538 WARNING  edit  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) on v* step 100 attempt 1/8; retrying in 1s
+2026-09-20 22:17:28,575 DEBUG    edit  batch step 100/100  summed loss 0.6229
+2026-09-20 22:17:30,697 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:17:38,919 DEBUG    remote  trace ok: 2 rows, 4 tok, 3.2s
+2026-09-20 22:17:41,037 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:17:49,073 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 22:17:51,369 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:17:59,632 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.3s
+2026-09-20 22:18:02,002 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:18:10,048 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.0s
+2026-09-20 22:18:12,287 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:18:20,461 DEBUG    remote  trace ok: 2 rows, 2 tok, 3.2s
+2026-09-20 22:18:22,572 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 22:18:30,681 DEBUG    remote  trace ok: 2 rows, 5 tok, 3.1s
+2026-09-20 22:18:30,684 INFO     run_e028a    L20|s100  suppression  4.47   lift  8.35   margin +6.25   ||dv||  6.90
+2026-09-20 22:18:30,685 INFO     run_e028a  
+2026-09-20 22:18:30,685 INFO     run_e028a  E-028a — suppression of log P(true answer) on the edit prompt (n=6)
+2026-09-20 22:18:30,685 INFO     run_e028a  bar = 6.79 nats (70% of layer 5's 9.70 at 25 steps, [E-026b])
+2026-09-20 22:18:30,686 INFO     run_e028a  
+2026-09-20 22:18:30,686 INFO     run_e028a  layer           25 steps      50 steps     100 steps
+2026-09-20 22:18:30,686 INFO     run_e028a  L5                 6.26          7.18*         8.31*
+2026-09-20 22:18:30,686 INFO     run_e028a  L20                2.61          3.51          4.47 
+2026-09-20 22:18:30,686 INFO     run_e028a  (* clears the bar)
+2026-09-20 22:18:30,686 INFO     run_e028a  
+2026-09-20 22:18:30,686 INFO     run_e028a  L5   25 -> 100 steps: 6.26 -> 8.31 nats (+33%)
+2026-09-20 22:18:30,686 INFO     run_e028a  L20  25 -> 100 steps: 2.61 -> 4.47 nats (+71%)
+2026-09-20 22:18:30,687 INFO     run_e028a  
+2026-09-20 22:18:30,687 INFO     run_e028a  VERDICT: PARTIAL. Layer 20 gains 1.86 nats but reaches only 4.47 against a bar of 6.79. Neither reading is clean; report the grid and extend it before claiming either.
+2026-09-20 22:18:30,687 WARNING  run_e028a  CONTROL FAILS: layer 5 ALSO gains 2.05 nats over the same grid, so more optimisation helps everywhere and the two layers are not matched at any budget in this grid. The verdict above is not supported — extend the grid until layer 5 saturates first.
+2026-09-20 22:18:30,688 INFO     run_e028a  written: results/E-028a-step-sweep.json

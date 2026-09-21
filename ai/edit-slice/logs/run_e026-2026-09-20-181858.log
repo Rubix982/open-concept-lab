@@ -1,0 +1,87 @@
+2026-09-20 18:18:58,981 INFO     run_e026  run run_e026 -> logs/run_e026-2026-09-20-181858.log
+2026-09-20 18:18:58,981 INFO     run_e026  config {"editor": "ROME as configured by EasyEdit (C = I)", "forms": {"initial": "{} was born in the city of", "possessive": "The birthplace of {} is the city of"}, "layers": [5, 20], "measure": "teacher-forced log P(true city), paired, no candidate pool", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 42, "seed": 1538, "thread": "T-079", "ticket": "E-026"}
+2026-09-20 18:18:58,981 INFO     run_e026  42 subjects carried over from [E-014]'s optimised set
+2026-09-20 18:19:01,099 INFO     run_e026  deep v* cache: 0 of 4 present; optimising 4 at layer 20
+2026-09-20 18:19:36,667 WARNING  remote  transport failure (NNsightException) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 5s
+2026-09-20 18:19:47,077 WARNING  remote  transport failure (NNsightException) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 5s
+2026-09-20 18:19:56,653 WARNING  remote  transport failure (NNsightException) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 5s
+2026-09-20 18:20:06,898 WARNING  remote  transport failure (NNsightException) during k* read for 'Lunice', attempt 1/8; retrying in 5s
+2026-09-20 18:20:18,337 WARNING  edit  transport failure (NNsightException) on v* step 1 attempt 1/8; retrying in 5s
+2026-09-20 18:20:29,696 DEBUG    edit  batch step  1/25  summed loss 37.9265
+2026-09-20 18:20:32,938 WARNING  edit  transport failure (NNsightException) on v* step 2 attempt 1/8; retrying in 5s
+2026-09-20 18:20:43,720 DEBUG    edit  batch step  2/25  summed loss 37.3146
+2026-09-20 18:20:47,402 WARNING  edit  transport failure (NNsightException) on v* step 3 attempt 1/8; retrying in 5s
+2026-09-20 18:21:00,822 DEBUG    edit  batch step  3/25  summed loss 37.0193
+2026-09-20 18:21:03,983 WARNING  edit  transport failure (NNsightException) on v* step 4 attempt 1/8; retrying in 5s
+2026-09-20 18:21:15,209 DEBUG    edit  batch step  4/25  summed loss 36.5722
+2026-09-20 18:21:22,322 WARNING  edit  transport failure (NNsightException) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-20 18:21:33,481 DEBUG    edit  batch step  5/25  summed loss 35.9042
+2026-09-20 18:21:36,978 WARNING  edit  transport failure (NNsightException) on v* step 6 attempt 1/8; retrying in 5s
+2026-09-20 18:21:47,647 DEBUG    edit  batch step  6/25  summed loss 34.3487
+2026-09-20 18:21:57,620 WARNING  edit  transport failure (NNsightException) on v* step 7 attempt 1/8; retrying in 5s
+2026-09-20 18:22:08,845 DEBUG    edit  batch step  7/25  summed loss 29.7965
+2026-09-20 18:22:12,548 WARNING  edit  transport failure (NNsightException) on v* step 8 attempt 1/8; retrying in 5s
+2026-09-20 18:22:24,957 DEBUG    edit  batch step  8/25  summed loss 21.6873
+2026-09-20 18:22:28,711 WARNING  edit  transport failure (NNsightException) on v* step 9 attempt 1/8; retrying in 5s
+2026-09-20 18:22:40,802 DEBUG    edit  batch step  9/25  summed loss 16.7657
+2026-09-20 18:22:44,255 WARNING  edit  transport failure (NNsightException) on v* step 10 attempt 1/8; retrying in 5s
+2026-09-20 18:22:54,803 DEBUG    edit  batch step 10/25  summed loss 15.2808
+2026-09-20 18:22:58,989 WARNING  edit  transport failure (NNsightException) on v* step 11 attempt 1/8; retrying in 5s
+2026-09-20 18:23:09,942 DEBUG    edit  batch step 11/25  summed loss 13.6404
+2026-09-20 18:23:13,377 WARNING  edit  transport failure (NNsightException) on v* step 12 attempt 1/8; retrying in 5s
+2026-09-20 18:23:23,670 DEBUG    edit  batch step 12/25  summed loss 10.2386
+2026-09-20 18:23:27,611 WARNING  edit  transport failure (NNsightException) on v* step 13 attempt 1/8; retrying in 5s
+2026-09-20 18:23:37,795 DEBUG    edit  batch step 13/25  summed loss 3.8042
+2026-09-20 18:23:41,032 WARNING  edit  transport failure (NNsightException) on v* step 14 attempt 1/8; retrying in 5s
+2026-09-20 18:23:51,278 DEBUG    edit  batch step 14/25  summed loss 2.6681
+2026-09-20 18:23:55,022 WARNING  edit  transport failure (NNsightException) on v* step 15 attempt 1/8; retrying in 5s
+2026-09-20 18:24:05,524 DEBUG    edit  batch step 15/25  summed loss 2.0753
+2026-09-20 18:24:09,305 WARNING  edit  transport failure (NNsightException) on v* step 16 attempt 1/8; retrying in 5s
+2026-09-20 18:24:20,533 DEBUG    edit  batch step 16/25  summed loss 1.8064
+2026-09-20 18:24:24,741 WARNING  edit  transport failure (NNsightException) on v* step 17 attempt 1/8; retrying in 5s
+2026-09-20 18:24:36,447 DEBUG    edit  batch step 17/25  summed loss 1.4976
+2026-09-20 18:24:39,580 WARNING  edit  transport failure (NNsightException) on v* step 18 attempt 1/8; retrying in 5s
+2026-09-20 18:24:49,993 DEBUG    edit  batch step 18/25  summed loss 1.3717
+2026-09-20 18:24:53,237 WARNING  edit  transport failure (NNsightException) on v* step 19 attempt 1/8; retrying in 5s
+2026-09-20 18:25:03,785 DEBUG    edit  batch step 19/25  summed loss 1.2531
+2026-09-20 18:25:07,412 WARNING  edit  transport failure (NNsightException) on v* step 20 attempt 1/8; retrying in 5s
+2026-09-20 18:25:18,026 DEBUG    edit  batch step 20/25  summed loss 1.1486
+2026-09-20 18:25:22,176 WARNING  edit  transport failure (NNsightException) on v* step 21 attempt 1/8; retrying in 5s
+2026-09-20 18:25:32,960 DEBUG    edit  batch step 21/25  summed loss 1.1016
+2026-09-20 18:25:36,668 WARNING  edit  transport failure (NNsightException) on v* step 22 attempt 1/8; retrying in 5s
+2026-09-20 18:25:47,585 DEBUG    edit  batch step 22/25  summed loss 1.0404
+2026-09-20 18:25:51,155 WARNING  edit  transport failure (NNsightException) on v* step 23 attempt 1/8; retrying in 5s
+2026-09-20 18:26:01,866 DEBUG    edit  batch step 23/25  summed loss 0.9601
+2026-09-20 18:26:05,849 WARNING  edit  transport failure (NNsightException) on v* step 24 attempt 1/8; retrying in 5s
+2026-09-20 18:26:16,639 DEBUG    edit  batch step 24/25  summed loss 0.9234
+2026-09-20 18:26:20,182 WARNING  edit  transport failure (NNsightException) on v* step 25 attempt 1/8; retrying in 5s
+2026-09-20 18:26:31,089 DEBUG    edit  batch step 25/25  summed loss 0.8838
+2026-09-20 18:26:31,097 INFO     run_e026    v* 4/4
+2026-09-20 18:26:32,811 WARNING  remote  transport failure (NNsightException) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 5s
+2026-09-20 18:26:42,375 WARNING  remote  transport failure (NNsightException) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 5s
+2026-09-20 18:26:52,118 WARNING  remote  transport failure (NNsightException) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 5s
+2026-09-20 18:27:01,709 WARNING  remote  transport failure (NNsightException) during k* read for 'Lunice', attempt 1/8; retrying in 5s
+2026-09-20 18:27:09,602 INFO     run_e026  deep k*: 4 cached
+2026-09-20 18:27:11,402 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:27:19,025 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.6s
+2026-09-20 18:27:21,349 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:27:29,364 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.0s
+2026-09-20 18:27:31,589 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:27:39,840 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.2s
+2026-09-20 18:27:42,317 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:27:50,387 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.1s
+2026-09-20 18:27:52,511 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:28:00,561 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.0s
+2026-09-20 18:28:00,562 INFO     run_e026  gate shallow  layer  5  mean lift on the injected target +9.52 nats  ['+10.1', '+12.7', '+6.9', '+8.4']
+2026-09-20 18:28:02,687 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:28:10,776 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.1s
+2026-09-20 18:28:12,948 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:28:21,046 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.1s
+2026-09-20 18:28:23,212 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:28:31,526 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.3s
+2026-09-20 18:28:33,661 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-20 18:28:41,694 DEBUG    remote  trace ok: 1 rows, 1 tok, 3.0s
+2026-09-20 18:28:41,695 INFO     run_e026  gate deep     layer 20  mean lift on the injected target +9.37 nats  ['+10.0', '+12.7', '+6.5', '+8.2']
+2026-09-20 18:28:41,695 INFO     run_e026  gate ratio deep/shallow = 0.98
+2026-09-20 18:28:41,697 INFO     run_e026  GATE PASSED: the layer-20 edit takes comparably; proceed.
+2026-09-20 18:28:41,699 INFO     run_e026  gate-only run complete; written results/E-026-gate.json

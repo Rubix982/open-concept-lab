@@ -31,7 +31,8 @@ from typing import Final
 
 import torch
 
-from remote import BACKOFF_S, MAX_ATTEMPTS, _is_transport_error, retrying
+from remote import (BACKOFF_S, FLAKY_BACKOFF_S, MAX_ATTEMPTS,
+                    _is_flaky_remote, _is_transport_error, retrying)
 
 log: Final[logging.Logger] = logging.getLogger("edit")
 
@@ -263,8 +264,21 @@ def compute_v_batch(model, specs: list[EditSpec], *, layer: int = LAYER,
         batch[i, : len(r)] = torch.tensor(r)
 
     # Pre-edit essence distributions, all in one trace.
-    with model.trace(batch, remote=True):
-        ref_all = model.lm_head.output.float().save()
+    #
+    # Wrapped in `retrying` on 2026-09-20 after [E-026]'s first run died here. Every
+    # OTHER remote call in this function was already protected -- the gradient steps
+    # have their own classifier loop and `read_key_and_value` goes through `retrying`
+    # -- and this one bare `model.trace` was the single unguarded hole, so a routine
+    # "Module nnsight.intervention.batching is not whitelisted" (node-dependent, see
+    # [O-007]/[O-008]) killed the chunk before step 1. This is the fourth time an
+    # unprotected trace has been found by a dead run, exactly as `retrying`'s own
+    # docstring predicts: the ad-hoc version has been wrong by omission every time.
+    def _ref_once():
+        with model.trace(batch, remote=True):
+            out = model.lm_head.output.float().save()
+        return out
+
+    ref_all = retrying(_ref_once, what=f"pre-edit essence pass, layer {layer}")
     ref_logp = {m["case_id"]: torch.log_softmax(ref_all[2 * i + 1, m["last_e"]].cpu(), -1)
                 for i, m in enumerate(meta)}
 
@@ -290,9 +304,14 @@ def compute_v_batch(model, specs: list[EditSpec], *, layer: int = LAYER,
             except Exception as exc:  # noqa: BLE001 — narrowed by the classifier
                 if not _is_transport_error(exc) or attempt == MAX_ATTEMPTS - 1:
                     raise
-                wait = BACKOFF_S * (attempt + 1)
-                log.warning("transport failure (%s) on v* step %d attempt %d/%d; "
-                            "retrying in %.0fs", type(exc).__name__, step + 1,
+                # Same two corrections as `remote.retrying`, which this loop
+                # predates and duplicates: the flaky-remote class gets the short
+                # backoff, and the message is logged alongside the type.
+                base = FLAKY_BACKOFF_S if _is_flaky_remote(exc) else BACKOFF_S
+                wait = base * (attempt + 1)
+                log.warning("transport failure (%s: %.120s) on v* step %d attempt "
+                            "%d/%d; retrying in %.0fs", type(exc).__name__,
+                            str(exc).replace("\n", " "), step + 1,
                             attempt + 1, MAX_ATTEMPTS, wait)
                 time.sleep(wait)
 

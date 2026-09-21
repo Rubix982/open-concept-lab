@@ -1,0 +1,17 @@
+2026-09-20 21:54:33,649 INFO     run_e029  run run_e029 -> logs/run_e029-2026-09-20-215433.log
+2026-09-20 21:54:33,649 INFO     run_e029  config {"layer": 5, "n_available": 42, "outcome": "control-differenced drop on the subject-initial city probe", "predictor_A": "belief displacement on the edit prompt", "predictor_B": "ES margin on the edit prompt", "sources": ["results/E-026b-edit-prompt.json", "results/E-026-depth.json"], "thread": "T-085", "ticket": "E-029"}
+2026-09-20 21:54:33,649 INFO     run_e029  joined 42 subjects at layer 5
+2026-09-20 21:54:33,649 INFO     run_e029  
+2026-09-20 21:54:33,649 INFO     run_e029                                          mean    spread rho w/ prop
+2026-09-20 21:54:33,649 INFO     run_e029  outcome: propagation                   10.19     15.45           —
+2026-09-20 21:54:33,649 INFO     run_e029  A: belief displacement                  9.70     23.04       0.419
+2026-09-20 21:54:33,649 INFO     run_e029  B: ES margin                           10.81     22.15       0.425
+2026-09-20 21:54:33,649 INFO     run_e029  
+2026-09-20 21:54:33,650 INFO     run_e029  with baseline log P(true) partialled out:  A 0.432   B 0.428
+2026-09-20 21:54:33,650 INFO     run_e029  ES margin spread is 22.15 nats (min +2.29, max +24.44) — a narrow spread limits what a weak rho can be read to mean, and is the adversary's best attack here
+2026-09-20 21:54:33,650 INFO     run_e029  
+2026-09-20 21:54:33,650 INFO     run_e029  VERDICT: DENY — the two predictors carry comparable information (A 0.42, B 0.43). There is no ES caveat to report at layer 5 and the layer-20 observation was about depth after all. [T-085] closes.
+2026-09-20 21:54:33,650 INFO     run_e029  
+2026-09-20 21:54:33,650 INFO     run_e029  the joint cell at layer 5: passes ES AND displaces the belief <3 nats = 8/42
+2026-09-20 21:54:33,650 INFO     run_e029    their mean propagation 8.86 nats vs 10.51 for the rest
+2026-09-20 21:54:33,650 INFO     run_e029  written: results/E-029-es-vs-propagation.json

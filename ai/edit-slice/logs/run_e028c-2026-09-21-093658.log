@@ -1,0 +1,105 @@
+2026-09-21 09:36:58,032 INFO     run_e028c  run run_e028c -> logs/run_e028c-2026-09-21-093658.log
+2026-09-21 09:36:58,032 INFO     run_e028c  config {"arm_deep": "ROME's update rule at L20 (400 steps, displacement-matched) \u2014 NOT ROME as configured by EasyEdit", "arm_shallow": "ROME/EasyEdit L5 (25 steps)", "forms": {"initial": "{} was born in the city of", "possessive": "The birthplace of {} is the city of"}, "matching": "aggregate, not per-subject; median |gap| 2.29 nats", "measure": "teacher-forced log P(true city), paired, no candidate pool", "model": "meta-llama/Llama-3.1-8B", "n": 12, "thread": "T-079", "ticket": "E-028c"}
+2026-09-21 09:37:02,934 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:37:10,576 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.6s
+2026-09-21 09:37:12,787 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:37:20,877 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:37:23,102 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:37:31,186 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:37:31,188 INFO     run_e028c    scored 1/12  Henry Mackenzie
+2026-09-21 09:37:32,966 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:37:40,504 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:37:42,715 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:37:50,780 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:37:52,983 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:01,077 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:38:01,079 INFO     run_e028c    scored 2/12  Maurice de Vlaminck
+2026-09-21 09:38:02,831 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:10,367 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:38:12,881 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:21,035 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.2s
+2026-09-21 09:38:23,220 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:31,304 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:38:31,307 INFO     run_e028c    scored 3/12  Rio Natsuki
+2026-09-21 09:38:33,114 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:40,616 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:38:42,766 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:38:50,753 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:38:52,883 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:00,931 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:39:00,933 INFO     run_e028c    scored 4/12  Lunice
+2026-09-21 09:39:02,620 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:10,163 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:39:12,362 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:20,488 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:39:22,643 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:30,773 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:39:30,776 INFO     run_e028c    scored 5/12  Charles Nungesser
+2026-09-21 09:39:32,510 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:40,141 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.6s
+2026-09-21 09:39:42,238 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:39:50,356 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:39:52,455 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:00,524 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:40:00,527 INFO     run_e028c    scored 6/12  Clark Durant
+2026-09-21 09:40:02,257 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:09,824 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.6s
+2026-09-21 09:40:11,939 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:20,009 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:40:22,132 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:30,154 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:40:30,156 INFO     run_e028c    scored 7/12  Matias Kupiainen
+2026-09-21 09:40:31,874 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:39,428 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:40:41,548 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:49,569 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:40:51,693 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:40:59,675 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:40:59,678 INFO     run_e028c    scored 8/12  Maria Altmann
+2026-09-21 09:41:01,406 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:08,982 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.6s
+2026-09-21 09:41:11,079 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:19,102 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:41:21,214 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:29,244 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:41:29,247 INFO     run_e028c    scored 9/12  Yona Friedman
+2026-09-21 09:41:30,941 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:38,476 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.5s
+2026-09-21 09:41:40,669 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:48,673 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:41:50,785 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:41:58,809 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:41:58,811 INFO     run_e028c    scored 10/12  Silvia Abascal
+2026-09-21 09:42:00,507 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:08,310 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.8s
+2026-09-21 09:42:10,549 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:18,708 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.1s
+2026-09-21 09:42:20,862 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:28,901 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:42:28,903 INFO     run_e028c    scored 11/12  Charles Montague Cooke, Jr.
+2026-09-21 09:42:30,640 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:38,391 DEBUG    remote  trace ok: 4 rows, 4 tok, 2.7s
+2026-09-21 09:42:40,705 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:48,680 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.0s
+2026-09-21 09:42:50,874 WARNING  remote  transport failure (NNsightException) on attempt 1/8; retrying in 5s
+2026-09-21 09:42:59,051 DEBUG    remote  trace ok: 4 rows, 4 tok, 3.2s
+2026-09-21 09:42:59,054 INFO     run_e028c    scored 12/12  James Forten
+2026-09-21 09:42:59,054 INFO     run_e028c  
+2026-09-21 09:42:59,054 INFO     run_e028c  E-028c — propagation at MATCHED belief displacement (n=12)
+2026-09-21 09:42:59,056 INFO     run_e028c  
+2026-09-21 09:42:59,056 INFO     run_e028c  arms, and the matching that licenses comparing them:
+2026-09-21 09:42:59,056 INFO     run_e028c    ROME/EasyEdit L5 (25 steps)                  displacement  7.26   ||dv||  7.27
+2026-09-21 09:42:59,056 INFO     run_e028c    ROME update rule L20 (400 steps)             displacement  6.97   ||dv||  7.52
+2026-09-21 09:42:59,057 INFO     run_e028c    per-subject |gap| median 2.29, max 6.88 — the matching is AGGREGATE
+2026-09-21 09:42:59,057 INFO     run_e028c  
+2026-09-21 09:42:59,057 INFO     run_e028c  form          layer     baseline post-edit      drop  c (pred)
+2026-09-21 09:42:59,057 INFO     run_e028c  initial       L5           -1.12    -10.99      9.66     1.000
+2026-09-21 09:42:59,057 INFO     run_e028c  initial       L20          -1.12     -4.69      3.59     1.000
+2026-09-21 09:42:59,058 INFO     run_e028c  possessive    L5           -1.45    -10.11      8.43     0.962
+2026-09-21 09:42:59,058 INFO     run_e028c  possessive    L20          -1.45     -1.73      0.31     0.615
+2026-09-21 09:42:59,058 INFO     run_e028c  
+2026-09-21 09:42:59,058 INFO     run_e028c  INTERACTION CONTRAST = +2.05 nats  (possessive weakens 96% at depth, subject-initial 63%)
+2026-09-21 09:42:59,058 INFO     run_e028c  
+2026-09-21 09:42:59,058 WARNING  run_e028c  VERDICT: UNMATCHED — the subject-initial arm moved 63% (>=20%). The coefficient is exactly 1.000 at both layers for that probe, so equal delivery did NOT give equal effect and the arms are not behaviourally matched despite matched displacement. Nothing about the possessive arm may be read from this run.
+2026-09-21 09:42:59,059 WARNING  run_e028c  n=12 and the matching is aggregate. Whatever the verdict, it is an EXISTENCE-grade statement per [O-004] — no rate, and a replication at the full 42 would cost another 400-step batch.
+2026-09-21 09:42:59,060 INFO     run_e028c  written: results/E-028c-matched-propagation.json

@@ -1,0 +1,22 @@
+2026-09-20 22:19:53,567 INFO     clamp_check  run clamp_check -> logs/clamp_check-2026-09-20-221953.log
+2026-09-20 22:19:53,567 INFO     clamp_check  config {"clamp_factor": 4.0, "layers": [5, 20], "question": "is clamp_norm binding?", "ticket": "E-028a"}
+2026-09-20 22:19:58,328 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 22:20:04,504 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 22:20:10,040 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 22:20:15,406 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 22:20:21,133 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 22:20:26,727 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 22:20:30,544 INFO     clamp_check  L5   clamp ceiling mean 13.55
+2026-09-20 22:20:30,544 INFO     clamp_check        25 steps: ||dv||  7.20 =   53% of ceiling   at cap: 0/6
+2026-09-20 22:20:30,544 INFO     clamp_check        50 steps: ||dv||  7.23 =   54% of ceiling   at cap: 0/6
+2026-09-20 22:20:30,544 INFO     clamp_check       100 steps: ||dv||  7.25 =   54% of ceiling   at cap: 0/6
+2026-09-20 22:20:32,292 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Henry Mackenzie', attempt 1/8; retrying in 1s
+2026-09-20 22:20:37,775 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Maurice de Vlaminck', attempt 1/8; retrying in 1s
+2026-09-20 22:20:43,368 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Rio Natsuki', attempt 1/8; retrying in 1s
+2026-09-20 22:20:49,059 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Lunice', attempt 1/8; retrying in 1s
+2026-09-20 22:20:54,822 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Charles Nungesser', attempt 1/8; retrying in 1s
+2026-09-20 22:21:00,251 WARNING  remote  transport failure (NNsightException: Traceback (most recent call last):  RemoteException: Module nnsight.intervention.batching is not whitelisted) during k* read for 'Clark Durant', attempt 1/8; retrying in 1s
+2026-09-20 22:21:04,195 INFO     clamp_check  L20  clamp ceiling mean 20.90
+2026-09-20 22:21:04,196 INFO     clamp_check        25 steps: ||dv||  5.77 =   28% of ceiling   at cap: 0/6
+2026-09-20 22:21:04,196 INFO     clamp_check        50 steps: ||dv||  6.41 =   31% of ceiling   at cap: 0/6
+2026-09-20 22:21:04,196 INFO     clamp_check       100 steps: ||dv||  6.90 =   33% of ceiling   at cap: 0/6

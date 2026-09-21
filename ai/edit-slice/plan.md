@@ -1,6 +1,6 @@
 # Project: edit-slice
 
-_Last updated: 2026-09-10 by O-002 (dry-run appended)_
+_Last updated: 2026-09-20 — E-026/E-027 opened_
 
 ## Objective
 
@@ -11,7 +11,33 @@ against. Done looks like a two-panel figure and a number.
 
 ## Current Phase
 
-Phase 1 (revised) — Possession filter DELIVERED (E-007). Orphan arc parked on annotators.
+Phase 2 — the coefficient arc. The orphan arc remains parked on annotators; it is not
+the blocker on anything currently moving.
+
+## Where the work stands, 2026-09-20
+
+The project's central result is established across seven experiments: ROME's `u·k*`
+normalisation pins the update coefficient to exactly 1 on any prompt beginning with the
+edited subject — analytically ([E-016]), on an unconstructed case ([E-017]), at every layer
+([E-019]/[T-075]), against a measured different-subject floor of 0.082 ([E-018]), and
+causally ([E-021]).
+
+**Everything in that arc measures DELIVERY.** How much of the edit vector arrives at a
+position. Nothing measures whether delivery predicts EFFECT, and [E-016]'s scale test is
+the reason it cannot be assumed. [T-075] wrote the gap into its own scope paragraph and
+nobody has run it.
+
+[T-065]'s meta-analysis of this project's own 17 results named the generative move —
+*ask what a design holds fixed, and vary that* — and named the three dimensions never
+varied anywhere in the record: **model**, **edit layer**, and **edited relation**. The two
+tickets now open take the first two.
+
+| ID | Thread | What it varies | Why it is decisive |
+| --- | --- | --- | --- |
+| E-026 | T-079 | edit layer (5 vs 20) | the coefficient predicts a DISSOCIATION nothing else predicts: subject-initial probes pinned at 1.000 and damaged identically, reordered probes at 0.615 and damaged less. A uniform reduction refutes it as surely as no reduction does. |
+| E-027 | T-080 | model (Llama-3.1-8B vs GPT-J-6B) | one other architecture is the difference between "a fact about ROME" and "a fact about this model", and it is the first thing an external reader asks. |
+
+T-081 (edited relation) is opened and unstarted — it is the third never-varied dimension.
 
 ## Active Tickets
 
@@ -26,6 +52,8 @@ Phase 1 (revised) — Possession filter DELIVERED (E-007). Orphan arc parked on 
 | R-003 | Researcher | CounterFact relation inventory (T-023) | closed |
 | R-005a | Researcher | Mined-rule artifact obtainable? | closed |
 | R-005b | Researcher | Read 2605.28839 + 2606.10554 bodies | open |
+| E-026 | Engineer | Does the coefficient predict displacement, or only bound it? | open |
+| E-027 | Engineer | Is the pinning a ROME fact or a Llama fact? | open |
 
 ## Blocked
 
@@ -99,3 +127,19 @@ contraction [T-058].
 
 The orphan arc resumes when an annotator is named. That is the single blocker, and
 it is not technical.
+
+---
+
+## Next Orchestrator Action — 2026-09-20
+
+1. **E-026** — efficacy gate first (4 chains at layer 20), then the full 2x2. The gate is
+   not optional: a deep edit that does not take cannot dissociate anything, and reading
+   that as a Deny would be the [E-025] mistake in a new costume.
+2. **E-027** — runs concurrently; independent of E-026.
+3. On close, both feed §6 "What to attack" of `web/notebook/edit-slice/review.md`, which
+   currently lists delivery-vs-effect as an open hole. Nothing is externally judged yet —
+   that remains the standing item, and the packet is ready for the call.
+
+**Ledger hygiene, 2026-09-20.** T-077 and T-078 were referenced in `decisions.md` and had
+no entries in `threads.md` — a silent drop, fixed by backfilling both. Thread rule 1 holds:
+a branch that surfaces gets an id even when nobody follows it.

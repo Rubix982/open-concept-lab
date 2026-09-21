@@ -1192,3 +1192,271 @@ measured rather than assumed. The anisotropy reasoning that motivated the ticket
 correct reason to run it and an incorrect forecast of the outcome; a 26-dimensional
 manifold still leaves different subjects near-orthogonal at layer 5. Unmeasured: other
 pairings (token length, nationality) could score higher and were not tried.
+
+---
+
+### T-077 · Is the depth decay a direction change or a magnitude change?
+
+**Status:** answered — **direction**
+**Parent:** T-075
+**Opened:** 2026-09-20
+**Question:** [E-019] measured reformulated probes decaying 0.95 → 0.58 with depth and
+explained nothing about it. The coefficient is not a cosine —
+`c = (‖k‖/‖k*‖) · cos(k, k*)` — so it can fall two ways, and they are different claims
+about the network. A magnitude account says the subject key shrinks relative to `k*`;
+a direction account says it reorients.
+**Answer:** DIRECTION. Cosine falls 0.984 → 0.471 across depth while the norm ratio never
+leaves 0.97–1.24 and drifts slightly *up*, so magnitude works against the decay. Norm
+carries no information anywhere in the measurement, including for a different person:
+everything distinguishing subject-position keys is orientation. Layer 31's rise in the
+different-subject floor (0.082 → 0.669) is likewise cosine with a flat ratio —
+representational convergence near the output, not a scaling artifact. See [E-020].
+**Does not license:** "attention mixed context in". A falling cosine is consistent with
+attention mixing, with MLP writes at the subject position, and with anything else that
+reorients the residual stream. Spawns T-078.
+
+---
+
+### T-078 · What reorients the subject key with depth?
+
+**Status:** open
+**Parent:** T-077
+**Opened:** 2026-09-20
+**Question:** [E-020] ruled out magnitude and named attention mixing as the leading
+candidate without testing it. The cheapest cut is the one [E-020] deferred: attention
+patterns at the subject's last token, layer by layer, comparing the edit form against a
+reformulated one. If the reformulated prompt's subject position attends to preceding
+context that the edit form does not have, that is the mechanism. If the attention patterns
+are near-identical and the key still reorients, the reorientation is written by the MLP at
+that position and the account is different.
+**Resume cold:** harness is `agents/engineer/workspace/decompose_t077.py`; add attention
+saves at the subject index. Note [O-008] — unroll saves, no `for` loop inside a trace.
+**Answer:** —
+
+---
+
+### T-079 · Does the decayed coefficient at depth actually produce less displacement?
+
+**Status:** active
+**Parent:** T-075
+**Opened:** 2026-09-20
+**Question:** The joint [T-075] explicitly left open: *"Whether the decayed coefficient at
+L20 actually produces less displacement is untested; [E-016]'s scale test showed the
+mapping from coefficient to destination is not linear, so this cannot be assumed."*
+Everything from [E-016] to [E-020] measures **delivery** — how much of the edit vector
+arrives at a position. Nothing measures whether delivery predicts **effect**. An edit has
+been applied at layer 5 and nowhere else in the entire record.
+The coefficient makes a dissociation prediction no other account makes: at a deep edit
+layer, subject-initial probes still receive exactly 1.000 (analytic, causal attention) and
+should be damaged identically, while reordered probes receive ~0.6 and should be damaged
+measurably less. A uniform reduction at depth refutes the prediction as surely as no
+reduction does.
+**Scope guard:** this asks whether the coefficient is a predictor, not which layer an
+editor should use. [T-075] recorded the latter as a method-design observation and
+declined to chase it; that boundary holds — see CLAUDE.md, "Not a method."
+**Status note, 2026-09-20:** [E-026] ran and **did not answer this**. Its gate matched the
+two edits on target lift, which a logit nudge also achieves; [E-026b] showed the layer-20
+edit does ~87% of the target promotion and ~19% of the belief displacement, so there was no
+held-fixed delivery to reason from and the lens-7 baseline won. A headline claiming
+"delivery does not predict effect" was stated and withdrawn. Re-runs as [E-028] with the
+gate on belief displacement. The thread stays ACTIVE.
+**Answer:** **DENY — the coefficient bounds delivery and does not predict effect.**
+Established over four runs, each removing one alternative. [E-028b] matched layer 20 to
+layer 5 on belief displacement (16x step budget, held-out verified). [E-028c] then found
+the arms matched on displacement (6.97 vs 7.26), on ‖Δv‖ (7.52 vs 7.27) and on delivered
+coefficient (exactly 1.000, analytic) still differ **63%** in reach to a prefix-sharing
+probe. [E-028d] bought the fourth cell and broke the layer/budget collinearity: more
+optimisation buys MORE reach (+34% at L5, +349% at L20), the opposite sign to the
+overfitting account, so the effect is LAYER. Normalised for edit strength: **1.22 nats of
+reach per nat displaced at layer 5 against 0.41 at layer 20, a factor of 2.96 holding
+across a 16x budget range.**
+**Consequence:** everything from [E-016] to [E-021] measures DELIVERY and must be described
+that way. The pinning claim is unchanged in content — any probe beginning with the edited
+subject receives the full vector at the subject position, at every layer, for any `C` —
+but it no longer licenses any inference about how far the answer moves. [E-021]'s causal
+result narrows to a layer-5 claim. See decisions.md [E-028d].
+
+---
+
+### T-080 · Is the pinning a ROME fact or a Llama-3.1-8B fact?
+
+**Status:** answered — **the pinning is ROME's; the floor is Llama's**
+**Parent:** T-076
+**Opened:** 2026-09-20
+**Question:** Every coefficient in the record is measured on one model. The derivation
+behind the pinning depends only on ROME's `u·k*` normalisation and on causal attention,
+neither architecture-specific, so it should reproduce anywhere — which is exactly why a
+single confirming measurement on a second architecture is worth its cost and a second
+Llama is not. The decay half is not derived and could differ. One other model is the
+difference between "a fact about ROME" and "a fact about this model", and it is the first
+thing an external reader will ask.
+Cheap: coefficient only, no edits, no `v*` optimisation — the [E-019] harness pointed at a
+different model.
+**Answer:** Both halves, and they split. The **analytic** half is a ROME fact: GPT-J-6B
+returns exactly 1.000 for every prefix-sharing probe at every layer measured, worst
+deviation 0.00e+00 across 216 cells, on a different architecture, tokenizer, width and
+depth. The **empirical** half transfers too, which was not expected — compared at matched
+depth fraction both models decay from 1.0 to ~0.5 by two-thirds depth and flatten, so the
+undelivered decay is on the same relative schedule in both. The **different-subject floor**
+does not transfer: [E-018]'s 0.082 becomes 0.155 at the edit layer and 0.524 at the last,
+where it exceeds the same-subject late-clause coefficient and the measure stops
+discriminating subjects. "Different subjects are near-orthogonal" is a Llama statement, not
+a ROME one. The margin at the layer ROME edits is clean on both (0.87 vs 0.71), so the
+headline claim is untouched and only its generality across depth narrows. The floor result
+is confounded with familiarity (T-082) and is PLAUSIBLE, not CONFIRMED. See [E-027].
+
+---
+
+### T-081 · Is the floor-plus-type-displacement structure a birthplace fact?
+
+**Status:** open
+**Parent:** T-072
+**Opened:** 2026-09-20
+**Question:** [T-065] found every narrowing in this project came from varying a dimension
+previously held fixed, and named the three never varied anywhere: model (T-080), edit
+layer (T-079), and **edited relation** — every edit ever applied here has been a
+birthplace edit. [E-025]'s two-effect account (uniform suppression of the subject to a
+floor, plus extra displacement where the probe's answer type matches the injected value)
+is stated as a general mechanism and measured on one relation. Editing occupation instead,
+with the same three probes, inverts the prediction: occupation should now take the extra
+displacement and citizenship should sit at the floor. A clean crossover would establish
+the mechanism; a failure to invert would mean the structure is about birthplace or about
+countries specifically.
+**Resume cold:** `run_e025.py` with `PROBES` unchanged and the edit target swapped to a
+`P106` value; needs a fresh `v*` batch for the new relation.
+**Answer:** —
+
+
+---
+
+### T-082 · Is GPT-J's high different-subject floor real, or just unfamiliarity?
+
+**Status:** open
+**Parent:** T-080
+**Opened:** 2026-09-20
+**Question:** [E-027] measured GPT-J's different-subject floor at 0.155 at the edit layer
+against Llama's 0.082, and at 0.524 at the final layer. But the 12 subjects were
+possession-gated on **Llama** and run on GPT-J with no filter. GPT-J is 6B and Pile-trained;
+if it does not know these people, their name tokens may share a generic "unfamiliar person"
+direction and the floor is inflated by construction rather than by anything about the
+architecture. Until this is separated, the narrowing of [E-018] to a Llama fact is
+PLAUSIBLE and must not be repeated as CONFIRMED.
+Cheap and decisive: run the existing possession filter on GPT-J, split the 12 into held and
+not-held, and compare their floors. If the floor is the same in both groups it is
+architectural; if it collapses for the held subjects it was familiarity all along.
+**Resume cold:** `src/possession.py` + `run_e027.py --model EleutherAI/gpt-j-6b`; the
+coefficients are already cached per subject in results/E-027-second-model.json, but only as
+means — re-run retaining per-subject values, which the current script discards.
+**Answer:** —
+
+---
+
+### T-083 · Why is the different-subject floor lowest near the layer ROME edits?
+
+**Status:** open
+**Parent:** T-080
+**Opened:** 2026-09-20
+**Question:** [E-027] noticed, without looking for it, that both models' floors are
+non-monotonic with a minimum near depth fraction 0.15 — Llama 0.082 at L5, GPT-J 0.155 at
+L4 — rising through the middle and again near the output. That is approximately where ROME
+edits in both. Two readings: the edit layer was *selected* (by causal tracing, in the ROME
+paper) for a property that coincides with maximal subject separation, which would connect
+this project's measure to ROME's own layer-selection procedure; or two samples at n=12–16
+produced a coincidence. A floor curve at finer layer spacing on both models would tell
+them apart, and it is the same harness with more layers.
+**Caution:** this is the kind of observation that is too satisfying not to over-read.
+Nothing about it is licensed until the curve is measured at spacing finer than six points.
+**Answer:** —
+
+---
+
+### T-084 · Is a weak edit at depth under-optimisation, or a property of depth?
+
+**Status:** open
+**Parent:** T-079
+**Opened:** 2026-09-20
+**Question:** [E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against
+layer 5's 9.70, while achieving comparable target lift. Two readings, and every depth claim
+in the project depends on which is right. **Under-optimisation:** EasyEdit's 25 steps and
+lr 0.5 are layer-5 hyperparameters, applied unchanged at layer 20, so the optimiser may
+have completed the cheap half of the objective and run out of steps for the expensive half.
+**Property of depth:** with only twelve layers left to act through, no rank-one update at
+the subject position can displace a belief the way it can from layer 5, and more steps will
+not help.
+A step-count sweep separates them in one afternoon: suppression against steps in
+{25, 50, 100} at layer 20. Flat means depth; rising means hyperparameters.
+**Why it outranks its parent right now:** until this is settled, "ROME at layer 20" and
+"ROME's layer-5 config at layer 20" cannot be told apart, and they are different claims.
+[E-028] carries the sweep as its route 1.
+**Status, 2026-09-20:** [E-028a] ran the sweep as a 2x3 crossing and **did not answer it**.
+Layer 20 rose 2.61 -> 4.47 but layer 5 ALSO rose 6.26 -> 8.31, so more optimisation helps
+everywhere, neither layer saturated at 100 steps, and the control correctly refused the
+verdict. The trend leans toward under-optimisation (the L20/L5 ratio rises 0.42 -> 0.49 ->
+0.54) and three points on six subjects do not settle it. The norm clamp is NOT binding
+(54% / 33% of ceiling, 0/6 at cap), so the grid can be extended. [E-028b] then matched by
+budget rather than waiting for saturation.
+**Answer:** **UNDER-OPTIMISATION.** [E-028b]: layer 20 reaches layer 5's 6.26-nat
+displacement at ~353 steps, crossing at 400 (calibration 6.50, held out 7.43, transfer gap
+0.93). ROME's update rule at layer 20 is not intrinsically weak — it needs a **16x step
+budget** to match what EasyEdit's shipped 25 steps achieve at layer 5. [E-026]'s weak deep
+edit was an artifact of carrying layer-5 hyperparameters to depth, as that ticket's own
+confound warned. The pre-registered stop at 400 was not reached, so no grid was extended
+to chase the answer.
+
+---
+
+### T-085 · What does ROME's Efficacy Score fail to distinguish?
+
+**Status:** open
+**Parent:** T-079
+**Opened:** 2026-09-20
+**Question:** The one thing [E-026] produced that its failure does not touch. ROME's ES is
+`P(target) > P(true)` on the edit prompt. At layer 20 it reads **76.2%** — a number that
+would be reported as a working edit — while **24 of 42 of those edits leave the true answer
+within 3 nats of where it started**, and propagate to nothing. At layer 5 the same cell
+holds 8/42.
+So an edit can satisfy the field's standard efficacy criterion without displacing the
+belief it was supposed to replace. That is a statement about the **metric**, which is in
+scope in a way that a statement about depth is not — we measure what existing editors and
+their evaluations do, and this is a thing an evaluation cannot see.
+The question is how far it generalises: is the ES-passes-but-belief-stands cell reachable
+at the standard edit layer too, under weaker optimisation or on harder subjects? If it is,
+the observation stops being about depth entirely and becomes a general caveat on ES —
+which is the more valuable and more defensible form, and would belong in the paper's §6.
+**Constraint:** existence only, per [O-004]. 24/42 is not a rate about ROME as normally
+run, and must never be written as one.
+**Answer:** **No — it does not generalise, and the thread closes.** [E-029] joined the two
+existing artifacts over the same 42 subjects at layer 5. Belief displacement and ES margin
+predict propagation equally well (Spearman 0.419 vs 0.425, gap 0.006 against a pre-stated
+Deny band of 0.2), so there is nothing ES fails to see that displacement catches. The joint
+cell exists at layer 5 (8/42) and is inert — those edits propagate 8.86 nats against 10.51
+for the rest. [E-026]'s 24/42 therefore stays a statement about weak or deep edits and must
+not be promoted to a general critique of ES. The cheap test killed the expensive claim.
+
+---
+
+### T-086 · What actually sets how far a layer-5 edit travels?
+
+**Status:** open
+**Parent:** T-085
+**Opened:** 2026-09-20
+**Question:** [E-029]'s by-product, and larger than the question it was answering. Belief
+displacement on the edit prompt and ES margin each correlate with propagation at **rho
+~0.42** — about 18% of variance — and they are near-identical to each other, so they are
+not two views of the answer but one weak view. **Most of what determines how far a layer-5
+edit travels is captured by neither.**
+[E-021] established the subject-token delta is causally necessary and sufficient for
+relocation. It did not establish what sets the MAGNITUDE. [E-016] showed the coefficient
+maps non-linearly to destination, so the coefficient will not close the gap either — and
+in any case it is pinned at 1.000 for exactly the probes in question, so it has zero
+variance across them and can explain nothing about their spread.
+That last point is the sharp one: **the project's central quantity is constant precisely
+where the outcome varies most.** Whatever governs propagation magnitude is not the
+coefficient, not the ES margin, and not belief displacement.
+**Candidates worth pricing before running anything:** ‖Δv‖ relative to the residual stream
+at that layer; how much of the true answer's probability was carried by the subject
+position to begin with ([E-021]'s masking arms already measure something close); the
+target's own prior; competition structure in the answer type ([E-025]'s displacement term).
+**Resume cold:** per-subject propagation is in results/E-029-es-vs-propagation.json;
+per-subject deltas and keys are cached under results/cache/E014_*.pt.
+**Answer:** —

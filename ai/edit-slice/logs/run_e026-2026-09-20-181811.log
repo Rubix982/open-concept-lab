@@ -1,0 +1,7 @@
+2026-09-20 18:18:11,515 INFO     run_e026  run run_e026 -> logs/run_e026-2026-09-20-181811.log
+2026-09-20 18:18:11,515 INFO     run_e026  config {"editor": "ROME as configured by EasyEdit (C = I)", "forms": {"initial": "{} was born in the city of", "possessive": "The birthplace of {} is the city of"}, "layers": [5, 20], "measure": "teacher-forced log P(true city), paired, no candidate pool", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 42, "seed": 1538, "thread": "T-079", "ticket": "E-026"}
+2026-09-20 18:18:11,515 INFO     run_e026  42 subjects carried over from [E-014]'s optimised set
+2026-09-20 18:18:13,723 INFO     run_e026  deep v* cache: 0 of 4 present; optimising 4 at layer 20
+2026-09-20 18:18:16,278 WARNING  run_e026  chunk 1-4 failed (NNsightException: Traceback (most recent call last):
+
+RemoteException: Module nnsight.intervention.batching is not whitelisted); parking 10 min

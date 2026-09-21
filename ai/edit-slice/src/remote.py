@@ -25,6 +25,16 @@ from nnsight import CONFIG, LanguageModel
 MAX_ATTEMPTS: Final[int] = 8
 BACKOFF_S: Final[float] = 5.0
 
+#: The FLAKY-REMOTE class gets its own, much shorter backoff. Measured on [E-026]'s
+#: layer-20 v* batch, 2026-09-20: of 201 retries, **192 failed on attempt 1 and
+#: succeeded on attempt 2**. That is not the random node assignment `_FLAKY_REMOTE`
+#: was written for — it is near-deterministic first-call rejection with near-certain
+#: immediate recovery, so waiting 5s buys nothing. The measurement: a median v* step
+#: took 15.9s, of which ~5.9s was the successful trace, ~5s the doomed first attempt
+#: and ~5s this sleep. 29% of that run's wall clock was spent in `time.sleep`.
+#: Linear growth is kept, so a genuine outage still backs off: 1s, 2s, 3s, ...
+FLAKY_BACKOFF_S: Final[float] = 1.0
+
 #: Transport-layer failures are retried; anything else propagates. Classifying by
 #: exact type name was a bug — `httpx.ConnectTimeout` is neither `ConnectionError`
 #: nor `TimeoutError` by name, so it escaped and killed a 165-item run at 28.
@@ -153,10 +163,17 @@ def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKO
             last = exc
             if not _is_transport_error(exc) or attempt == tries - 1:
                 raise
-            wait = backoff * (attempt + 1)
-            log.warning("transport failure (%s) during %s, attempt %d/%d; "
-                        "retrying in %.0fs", type(exc).__name__, what,
-                        attempt + 1, tries, wait)
+            # The message, not just the type. Every one of [E-026]'s 201 retries
+            # logged "transport failure (NNsightException)" and nothing else, so the
+            # record could not say WHICH failure class was firing — and telling a
+            # whitelist rejection from a dropped socket is the whole reason the
+            # classifier exists. A log that cannot answer that is the filtered
+            # record this project keeps promising not to keep.
+            base = FLAKY_BACKOFF_S if _is_flaky_remote(exc) else backoff
+            wait = base * (attempt + 1)
+            log.warning("transport failure (%s: %.120s) during %s, attempt %d/%d; "
+                        "retrying in %.0fs", type(exc).__name__,
+                        str(exc).replace("\n", " "), what, attempt + 1, tries, wait)
             time.sleep(wait)
     raise last  # unreachable; keeps type checkers honest
 

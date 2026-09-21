@@ -1,0 +1,46 @@
+2026-09-20 18:22:10,535 INFO     run_e027  run run_e027 -> logs/run_e027-2026-09-20-182210.log
+2026-09-20 18:22:10,535 INFO     run_e027  config {"forms": ["edit form", "same-prefix probe", "different relation", "late clause", "possessive"], "fractions": [0.0, 0.16, 0.37, 0.63, 0.84, 1.0], "measure": "coefficient only; no edits applied", "model": "EleutherAI/gpt-j-6b", "n": 12, "thread": "T-080", "ticket": "E-027"}
+2026-09-20 18:22:12,946 INFO     run_e027  EleutherAI/gpt-j-6b: arch=gptj  n_layers=28  d_mlp=16384  layers=[0, 4, 10, 17, 23, 27]
+2026-09-20 18:22:12,946 INFO     run_e027  subject-index check (the token at the index each coefficient is read from):
+2026-09-20 18:22:12,946 INFO     run_e027     edit form            idx  7 -> 'ck'            (subject ends 'Vlaminck')
+2026-09-20 18:22:12,946 INFO     run_e027     same-prefix probe    idx  7 -> 'ck'            (subject ends 'Vlaminck')
+2026-09-20 18:22:12,947 INFO     run_e027     different relation   idx  7 -> 'ck'            (subject ends 'Vlaminck')
+2026-09-20 18:22:12,947 INFO     run_e027     late clause          idx  8 -> 'ck'            (subject ends 'Vlaminck')
+2026-09-20 18:22:12,947 INFO     run_e027     possessive           idx  8 -> 'ck'            (subject ends 'Vlaminck')
+2026-09-20 18:22:12,947 INFO     run_e027     edit form            idx  3 -> 'atsuki'        (subject ends 'Natsuki')
+2026-09-20 18:22:12,947 INFO     run_e027     same-prefix probe    idx  3 -> 'atsuki'        (subject ends 'Natsuki')
+2026-09-20 18:22:12,947 INFO     run_e027     different relation   idx  3 -> 'atsuki'        (subject ends 'Natsuki')
+2026-09-20 18:22:12,947 INFO     run_e027     late clause          idx  5 -> 'atsuki'        (subject ends 'Natsuki')
+2026-09-20 18:22:12,947 INFO     run_e027     possessive           idx  5 -> 'atsuki'        (subject ends 'Natsuki')
+2026-09-20 18:22:12,947 INFO     run_e027     edit form            idx  2 -> 'ice'           (subject ends 'Lunice')
+2026-09-20 18:22:12,947 INFO     run_e027     same-prefix probe    idx  2 -> 'ice'           (subject ends 'Lunice')
+2026-09-20 18:22:12,947 INFO     run_e027     different relation   idx  2 -> 'ice'           (subject ends 'Lunice')
+2026-09-20 18:22:12,947 INFO     run_e027     late clause          idx  4 -> 'ice'           (subject ends 'Lunice')
+2026-09-20 18:22:12,947 INFO     run_e027     possessive           idx  4 -> 'ice'           (subject ends 'Lunice')
+2026-09-20 18:22:46,403 INFO     run_e027    1/12  Maurice de Vlaminck
+2026-09-20 18:23:17,472 INFO     run_e027    2/12  Rio Natsuki
+2026-09-20 18:23:55,193 INFO     run_e027    3/12  Lunice
+2026-09-20 18:24:23,064 INFO     run_e027    4/12  Charles Nungesser
+2026-09-20 18:25:06,154 INFO     run_e027    5/12  Matias Kupiainen
+2026-09-20 18:25:33,626 INFO     run_e027    6/12  Maria Altmann
+2026-09-20 18:26:06,434 INFO     run_e027    7/12  Yona Friedman
+2026-09-20 18:26:33,851 INFO     run_e027    8/12  Diane Hendricks
+2026-09-20 18:27:07,225 INFO     run_e027    9/12  Silvia Abascal
+2026-09-20 18:27:40,575 INFO     run_e027    10/12  Fernando Vergara
+2026-09-20 18:28:14,934 INFO     run_e027    11/12  Claudio Coello
+2026-09-20 18:28:45,530 INFO     run_e027    12/12  Thomas Molnar
+2026-09-20 18:28:45,534 INFO     run_e027  
+2026-09-20 18:28:45,534 INFO     run_e027  EleutherAI/gpt-j-6b — mean coefficient at the subject's last token (n=12)
+2026-09-20 18:28:45,535 INFO     run_e027  form                     0.00     0.15     0.37     0.63     0.85     1.00
+2026-09-20 18:28:45,535 INFO     run_e027  (depth fraction)           L0       L4      L10      L17      L23      L27
+2026-09-20 18:28:45,535 INFO     run_e027  edit form               1.000    1.000    1.000    1.000    1.000    1.000
+2026-09-20 18:28:45,535 INFO     run_e027  same-prefix probe       1.000    1.000    1.000    1.000    1.000    1.000
+2026-09-20 18:28:45,535 INFO     run_e027  different relation      1.000    1.000    1.000    1.000    1.000    1.000
+2026-09-20 18:28:45,535 INFO     run_e027  late clause             1.000    0.861    0.749    0.597    0.456    0.482
+2026-09-20 18:28:45,535 INFO     run_e027  possessive              1.000    0.881    0.777    0.715    0.581    0.533
+2026-09-20 18:28:45,535 INFO     run_e027  different subject       0.304    0.155    0.353    0.422    0.335    0.524
+2026-09-20 18:28:45,535 INFO     run_e027  
+2026-09-20 18:28:45,535 INFO     run_e027  CONFIRM: prefix-sharing probes are pinned to 1.000 on EleutherAI/gpt-j-6b at every layer measured (worst deviation 0.00e+00). The analytic claim is a ROME claim, not a Llama claim.
+2026-09-20 18:28:45,535 INFO     run_e027  different-subject floor: L0 0.304  L4 0.155  L10 0.353  L17 0.422  L23 0.335  L27 0.524
+2026-09-20 18:28:45,535 INFO     run_e027  (Llama-3.1-8B for comparison, from [E-018]/[E-019]: floor 0.082 at L5; reordered probes 0.95 at L5 decaying to ~0.58 by L20.)
+2026-09-20 18:28:45,535 INFO     run_e027  written: results/E-027-second-model.json

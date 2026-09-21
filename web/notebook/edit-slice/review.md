@@ -39,7 +39,10 @@ by `u·k*`, and a prompt beginning with the edited subject has a key identical t
 that token under causal attention, so its update coefficient is **exactly 1** for any `u`
 — hence for any covariance, at every layer, whatever relation it asks about. A prompt
 about a *different* subject receives **0.082**. The distributions do not overlap. What
-reads as propagation is displacement keyed on the subject string.
+reads as propagation is displacement keyed on the subject string. The coefficient is a
+statement about **delivery**, not about effect: holding it at exactly 1 and matching edit
+strength, the same update applied at layer 20 instead of layer 5 reaches **2.96× less
+far**.
 
 </div>
 
@@ -53,7 +56,8 @@ reads as propagation is displacement keyed on the subject string.
 | **Table 2** | The relation control — the +0.0 pp paired difference (§4.2) |
 | **Table 3** | Observations against the mechanism (§4.1) |
 | **Table 4** | Position ablation — sufficient and necessary (§4.1) |
-| **Table 5** | Claim status — ten claims, seven withdrawn or narrowed |
+| **Table 5** | Claim status — eleven claims, eight withdrawn or narrowed |
+| **Table 6** | Delivery is not effect — propagation at a fixed coefficient (§4.4) |
 
 ## 1 · The question
 
@@ -389,6 +393,54 @@ pre-stated confirmation threshold was ≤0.3.
 
 
 
+### 4.4 · Delivery is not effect — the coefficient's boundary, measured
+
+_Records: <Evidence id="E-028a" /> · <Evidence id="E-028c" /> · <Evidence id="E-028d" />_
+
+Everything above measures **delivery**: how much of the update vector arrives at a
+position. §6.3 listed the obvious objection — delivery is not behaviour — as one we could
+not answer. We can now, and **the objection is correct**.
+
+Apply the update at layer 20 instead of layer 5. A subject-initial probe receives a
+coefficient of **exactly 1.000 at both**, analytically, since both share the edit prompt's
+prefix up to the subject's last token. Delivery is therefore held fixed by construction,
+and anything that differs is not delivery.
+
+<p className="ocl-tablecap"><strong>Table 6.</strong> Propagation to a prefix-sharing probe at a delivered coefficient of</p>
+exactly 1.000 in every cell. Displacement is the drop in log P(true answer) on the edit
+prompt itself — the edit's strength, measured where it was optimised.
+
+| cell | displacement | propagation | reach per nat displaced |
+| --- | ---: | ---: | ---: |
+| layer 5, 25 steps — EasyEdit's shipped config | 7.26 | 9.66 | **1.33** |
+| layer 5, 400 steps | 11.74 | 12.96 | **1.10** |
+| layer 20, 25 steps | 2.61 | 0.80 | **0.31** |
+| layer 20, 400 steps — displacement-matched | 6.97 | 3.59 | **0.52** |
+
+> **1.22 nats of reach per nat displaced at layer 5, against 0.41 at layer 20 — a factor
+> of 2.96, holding across a sixteenfold range of optimisation budget.**
+
+Two confounds had to die first, and the order matters because our first attempt got it
+wrong. A layer-20 edit under EasyEdit's shipped hyperparameters displaces only 2.61 nats
+against layer 5's 7.26, so the first run of this comparison was measuring a **weaker
+edit**, and its conclusion — this conclusion — was withdrawn.<Margin>The gate that let it
+through measured *lift on the injected target*, which a logit nudge also achieves. Lift
+spans 0.17 nats across both layers and a fourfold step budget while displacement spans
+5.70: it saturates by 25 steps and carries no information about edit strength thereafter.
+<Evidence id="E-028a" /></Margin> Matching took a **16× step budget** at layer 20. That
+match then made *layer* collinear with *optimisation budget*, so a fourth cell was bought
+to separate them: more optimisation buys **more** reach — +34% at layer 5, +349% at layer
+20 — which is the opposite sign to the overfitting account.
+
+**What this costs the sections above.** They describe delivery, and must be read that way.
+The claim is unchanged in content and narrower in what it licenses:
+
+> Any probe beginning with the edited subject receives the full, unattenuated edit vector
+> at the subject position — at every layer, for any `C`, regardless of relation.
+
+What no longer follows is *how far that probe's answer will move*. §4.1's position ablation
+stands as a **layer-5** result.
+
 ## 5 · Every claim this project withdrew
 
 <p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
@@ -405,8 +457,13 @@ pre-stated confirmation threshold was ≤0.3.
 | Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth | <Evidence id="T-075" /> |
 | Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | <Evidence id="O-007" /> · <Evidence id="O-008" /> |
 | Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | <Evidence id="E-016-2">E-016</Evidence> · <Evidence id="E-018" /> |
+| The coefficient predicts how far an edit travels | **withdrawn** | never asserted here, then measured false: 2.96× at fixed delivery | <Evidence id="E-028d" /> |
 
-Ten claims, **seven withdrawn or narrowed**. That ratio is the honest summary.
+Eleven claims, **eight withdrawn or narrowed**. That ratio is the honest summary.
+
+The last row is one we never claimed and checked anyway. §6.3 carried it as an objection
+we could not answer; answering it took four runs and cost us the strongest available
+reading of our own mechanism.
 
 ## 6 · What to attack
 
@@ -419,10 +476,16 @@ cannot meet it.
 reasonably say practitioners already assume this. We have not found it stated, and "we did
 not find it" is the weakest form of novelty claim.
 
-**3 · Coefficient is not behaviour.** Figure 2 shows decay with depth, but rescaling the
-coefficient by 0.27 broke relocation in 3 of 4 chains while whitening's 3.7× attenuation
-changed nothing — so the map from coefficient to destination is not monotone, and "0.58 at
-layer 20" does not license "less displacement at layer 20."
+**3 · Coefficient is not behaviour — conceded, and now measured.** This was listed here
+as an objection we could not answer. §4.4 answers it against us: holding delivery fixed at
+a coefficient of exactly 1.000 and matching the edits on belief displacement, a layer-5
+edit still reaches **2.96× further** than a layer-20 one. The coefficient **bounds delivery
+and does not predict effect**, so every section above describes delivery only. The original
+form of the objection was right on its own terms too — rescaling by 0.27 broke relocation
+in 3 of 4 chains while whitening's 3.7× attenuation changed nothing, so the map from
+coefficient to destination was never monotone.<Margin>We asserted §4.4's conclusion once on
+a design whose arms differed in edit strength, and withdrew it. Earning the same sentence
+took three further runs: matched displacement, matched norm, and a budget control. <Evidence id="E-028d" /></Margin>
 
 **4 · `C = I` is what *EasyEdit users* run — and two implementations circulate.** Verified
 from both repositories: `kmeng01/rome` sets `mom2_adjustment: true` for gpt2-xl and
@@ -466,12 +529,20 @@ record shares — which is why this page exists.
 
 **8 · This is not a method, and the nearest misreading is a specific one.** The pinned
 coefficient explains why an edit reaches every prompt sharing its subject. It is a
-consequence of how ROME normalises, not a technique on offer. In particular *"edit a
-deeper layer to leak less"* does not follow: §4.3 measures a **coefficient**, and the
-scale test in §4.1 showed coefficient and destination are not monotonically related —
-rescaling by 0.27 broke relocation in three chains of four while whitening's 3.7×
-attenuation changed nothing. Anyone reading a prescription out of §4.3 is reading past
-the one control that bears on it.
+consequence of how ROME normalises, not a technique on offer. The nearest misreading is *"edit a deeper layer to
+leak less"* — and as of §4.4 that is no longer blocked by a missing measurement, because we
+made it. A layer-20 edit does reach less far per nat of belief displaced, by a factor of
+2.96.
+
+**We still do not offer it, and the reason is in our own numbers rather than in scope
+policy.** Matching layer 5's displacement at layer 20 took a **16× step budget**. And what
+we measured falling is reach to *any* prefix-sharing probe — which includes the paraphrases
+an editor **wants** to reach. Our probes cannot separate leakage an editor would pay to
+remove from generalisation it would pay to keep, so "leaks less" and "generalises less" are
+the same measurement here. That is the field's specificity/generalisation tradeoff, and
+naming which side of it a deeper layer lands on is work we have not done.<Margin>Reporting
+that a knob moves a quantity is measurement. Recommending the knob means showing the trade
+is favourable, which would mean owning a baseline.<Evidence id="E-028d" /></Margin>
 
 _This entry exists because an adversarial framing has no natural slot for it. "What to
 attack" collects what a reviewer would dispute, and nobody disputes a constraint on use —
@@ -492,17 +563,17 @@ so the category has to be added deliberately or it vanishes in the rename._
 
 ## Artifacts
 
-Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 20
-decisions, 16 findings and 57 threads, generated from the repository so it cannot drift
+Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 33
+decisions, 18 findings and 67 threads, generated from the repository so it cannot drift
 from it. Most of them went nowhere; that is the point of publishing the whole list rather
 than the ten claims this paper defends.
 
 | | |
 | --- | --- |
 | [evidence ledger](./ledger) | the complete record, generated |
-| `agents/shared/decisions.md` | 20 entries; falsification stated before each run |
-| `agents/shared/findings.md` | 16 literature entries, including the two that killed directions |
-| `threads.md` | 57 threads — 40 answered, 8 parked, 4 open, 3 dropped |
+| `agents/shared/decisions.md` | 33 entries; falsification stated before each run |
+| `agents/shared/findings.md` | 18 literature entries, including the two that killed directions |
+| `threads.md` | 67 threads — 47 answered, 8 parked, 7 open, 2 active, 3 dropped |
 | `results/*.json` | per-item records, <Evidence id="E-011" /> … <Evidence id="E-018" />, <Evidence id="T-075" /> |
 | `logs/` | every run, levelled and committed, including the failures |
 | `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |

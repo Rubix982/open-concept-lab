@@ -1690,3 +1690,584 @@ Full entry in agents/shared/decisions.md [E-025].
 **Artifacts:** agents/engineer/workspace/run_e025.py; results/E-025-language.json;
 agents/shared/decisions.md -> "[E-025] Result"
 **Closed:** 2026-09-20
+
+---
+
+### E-026 · Does the delivered coefficient predict displacement, or only bound it?
+
+**Status:** split
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 6h
+**Thread:** T-079
+
+**Description:**
+
+Every result from [E-016] to [E-021] measures **delivery** — what fraction of the edit
+vector arrives at a position. None measures whether delivery predicts **effect**. [T-075]
+named this gap in its own scope paragraph and [E-016]'s scale test is the reason it cannot
+be assumed: the mapping from coefficient to destination is not linear.
+
+It is also the one dimension never varied. **An edit has been applied at layer 5 and
+nowhere else in the entire record** — [E-019] varied the layer for *coefficients* only.
+
+**The prediction, and why it is a dissociation rather than a level shift.**
+
+From [T-075]'s measured table:
+
+| probe form | coefficient at L5 | coefficient at L20 |
+| --- | ---: | ---: |
+| subject-initial (shares the edit prefix) | 1.000 | **1.000** (analytic) |
+| possessive (subject moved later) | 0.962 | **0.615** |
+
+If the coefficient governs effect, editing at L20 instead of L5 must damage
+subject-initial probes **identically** and possessive probes **measurably less**. No other
+account on the table predicts that pattern: a "deep edits are weaker" account predicts a
+uniform reduction, and a "coefficient is delivery only" account predicts no systematic
+difference at all. The interaction is the claim; neither main effect is.
+
+**Design — 2 (edit layer) × 2 (probe form), within subject.**
+
+- Edit layer: **5** (EasyEdit's `llama3-8b.yaml`, and the whole existing record) and
+  **20**. L20 is taken from [E-019]'s already-published table, which was run before this
+  ticket existed — record that, because "you picked the layer with the lowest coefficient"
+  is the first thing a hostile reader says.
+- Probe form: `"{} was born in the city of"` (subject-initial) and
+  `"The birthplace of {} is the city of"` (possessive). **Possessive, not late clause** —
+  [E-017] found the late clause fails at baseline in 34 of 42 chains, and an unanswerable
+  probe cannot show a drop.
+- Subjects: the [E-014] set, same 37-ish chains [E-024]/[E-025] used, so results are
+  comparable to the existing entries.
+- Control: a different subject, same probes, same edit — as in [E-025].
+
+**Measure.** Teacher-forced `log P(true city)`, same probe with and without the edit,
+differenced, then control-differenced. **No candidate pool** — [E-023] showed ranking a
+closed pool undercounts badly and only paired contrasts survive it.
+
+**Pre-stated outcomes.** Let `D[form, layer]` be the control-differenced drop.
+
+- **CONFIRM** — the coefficient predicts effect: `D[possessive, L20]` is at least **40%
+  smaller** than `D[possessive, L5]` (the coefficient ratio 0.615/0.962 = 0.64 predicts
+  ~36%), *while* `D[initial, L20]` and `D[initial, L5]` differ by **less than 20%**.
+- **DENY** — the coefficient bounds delivery and does not predict effect:
+  `D[possessive, L20]` and `D[possessive, L5]` differ by less than 20%. Every claim from
+  [E-016] onward then becomes a claim about delivery only, and the paper must say so.
+- **UNIFORM** — not a null, a different finding: both forms drop by a similar *proportion*
+  at L20. That is "a deep edit is weaker", it refutes the dissociation, and it must be
+  reported as refutation rather than dressed up as partial support.
+- **INFEASIBLE** — if the L20 edit does not take at all (see the efficacy gate below), the
+  run is uninterpretable and is reported as a feasibility result. Do not read it as DENY.
+
+**Efficacy gate, mandatory, run first on 4 chains before the full batch.** Compute `v*` at
+L20 for four subjects, apply, and check `log P(injected target)` on the edit prompt itself
+rises comparably to L5. If the L20 edit moves the target by less than half of what L5 does,
+stop and report INFEASIBLE — a failed edit cannot dissociate anything. Log the gate result
+at `INFO` either way.
+
+**Confounds and controls.**
+
+1. *Edit efficacy differs by layer.* The subject-initial arm **is** the normaliser: it is
+   pinned at exactly 1.000 at both layers by [T-075]'s analytic result, so equal damage
+   there is the evidence the two edits are matched. Unequal damage there is itself a
+   result — it would mean a coefficient of 1 does not guarantee equal effect.
+2. *`v*` differs between layers.* `compute_v_batch` re-optimises per layer, so the deltas
+   are not the same vector. Report `RankOneEdit.norm_ratio` (‖Δv‖/‖k*‖) per layer beside
+   every number. A large norm difference is a live alternative explanation and must be
+   stated, not buried.
+3. *Probe forms have different baselines.* **Report endpoints, not only drops.** This is
+   the [E-025] lesson at full force: that run's drop-based headline was wrong and had to be
+   retracted, and the confound had been named in its own ticket while the code still
+   computed on drops. Naming a confound is not controlling for it — the reporting code must
+   print post-edit levels first.
+
+**Baseline (lens 7).** The dumbest explanation that produces a smaller possessive drop at
+L20 is that the L20 edit is weaker at everything. That is defeated *only* by confound
+control 1, and by nothing else in this design. If the subject-initial arm also weakens,
+there is no result here regardless of what the possessive arm does.
+
+**Scope.** IN: 2 layers, 2 forms, one model, one relation, delivery *and* effect measured
+on the same subjects. DEFERRED: intermediate layers (T-079 does not need a curve to answer
+yes/no), other relations (T-081), other models (T-080), and any statement about which layer
+an editor should target.
+
+**Out of scope, explicitly.** This ticket asks whether the coefficient is a predictor. It
+does **not** recommend an edit layer. [T-075] already recorded "a deeper edit layer would
+leak less to reformulated probes" as a method-design observation and declined to chase it;
+CLAUDE.md scopes this project to measuring what existing editors do. No artifact from this
+ticket may recommend a layer, and the write-up must carry that sentence.
+
+**Deliverable.** One 2×2 table of control-differenced drops with post-edit endpoints
+alongside, and one number: the interaction contrast
+`(D[poss,L5] − D[poss,L20]) − (D[init,L5] − D[init,L20])`.
+
+**Method notes.** `compute_v_batch(m, specs, layer=20)` already takes the layer — no new
+optimiser code. `score_pairs(..., edit=(layer, k_star, denom, delta_v))` already takes the
+layer. Cache `v*` and `k*` at L20 under `E026_deltas_L20_s{seed}.pt` / `E026_kstar_L20_*`
+so a stall resumes. Logging per the standing rule: `logging` with levels, a `FileHandler`
+under `logs/`, config on line one, never piped through `tail`/`head`.
+
+**Result (2026-09-20).** The experiment FAILED and its own pre-registration caught it.
+The subject-initial arm moved 92%, far outside the 20% matching band, so the two edits were
+not matched and the design cannot speak to its question. [T-079] is unanswered.
+
+**A headline was stated and withdrawn.** The table invited "identical delivery, 13x
+difference in effect, therefore the coefficient does not predict effect". [E-026b] then
+scored both continuations on the edit prompt and showed the layer-20 edit does ~87% of the
+target promotion and only ~19% of the belief displacement (true-answer drop 1.81 vs 9.70).
+There is no held-fixed delivery to reason from; the lens-7 baseline this ticket wrote down
+("the dumbest explanation is that the L20 edit is weaker at everything") won.
+
+**RCA — the mandatory gate measured the wrong quantity.** It gated on *lift on the injected
+target* and passed at 0.98. That criterion cannot distinguish an edit from a logit nudge: a
+real edit raises the target AND suppresses the true answer, since they compete for one
+slot. The gate should have gated on belief displacement. It was also too small — at n=4 it
+reported +9.37/+9.52 where n=42 gives +6.16/+7.09.
+
+**Surviving EXISTENCE claim.** ROME's own Efficacy Score is 76.2% at layer 20 (100% at
+layer 5, 0% at baseline), and **24 of 42 layer-20 edits pass ES while leaving the true
+answer within 3 nats of where it started** — versus 8/42 at layer 5. An edit the field's
+standard metric reports as working can leave the belief essentially intact. Per [O-004]:
+existence, never a rate.
+
+**Confound stated, not buried.** EasyEdit's 25 steps / lr 0.5 are *layer-5*
+hyperparameters, used unchanged at layer 20. The weak displacement is plausibly
+under-optimisation rather than anything about depth. This blocks every depth claim and does
+not touch the existence claim.
+
+**Status:** split
+**Split into:** E-028
+**Reason:** the design was sound and its gate was not; the question survives the failure and
+needs edits matched on belief displacement rather than target lift.
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e026.py, run_e026b.py; results/E-026-gate.json,
+E-026-depth.json, E-026b-edit-prompt.json; logs/run_e026-2026-09-20-182859.log;
+agents/shared/decisions.md -> "[E-026] Result"
+**Closed:** 2026-09-20 (split)
+
+---
+
+### E-028 · Re-run the depth comparison with edits matched on BELIEF DISPLACEMENT
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 5h
+**Thread:** T-079, T-084
+
+**Description:**
+
+[E-026]'s question is untouched: does the delivered coefficient predict displacement, or
+only bound it? Its design failed for one recorded reason — it matched the two edits on
+*target lift*, which a logit nudge also achieves. Everything else in that ticket stands and
+should be reused verbatim: the 2x2, the probe forms, the control subject, the paired
+no-pool measure, the endpoints-before-drops reporting.
+
+**The one change.** Match on **belief displacement** before comparing propagation.
+
+- Gate criterion becomes: the deep edit must suppress `log P(true answer)` on the edit
+  prompt to within 30% of what the shallow edit achieves (measured 9.70 nats at layer 5).
+  Target lift is reported but decides nothing.
+- Gate n rises from 4 to **12**. The n=4 gate overstated both arms by ~2.5 nats.
+
+**Two routes to a matched deep edit; try them in this order.**
+
+1. **Optimise harder at depth.** EasyEdit's 25 steps / lr 0.5 are layer-5 hyperparameters.
+   Sweep steps in {25, 50, 100} at layer 20 on 6 subjects and plot true-answer suppression
+   against step count. If 100 steps reaches layer 5's 9.70, the deep edit was merely
+   under-optimised and the comparison becomes runnable. **Report the step count beside
+   every number** — "ROME at layer 20" and "ROME's layer-5 config at layer 20" are
+   different claims and this ticket must never conflate them.
+2. **Match by selection, if optimisation will not close the gap.** Keep only subjects whose
+   deep edit clears the displacement bar, and take the *same* subjects at layer 5. This
+   loses n and sacrifices nothing else; per [O-004] the claim was existence-shaped anyway.
+
+**Pre-stated outcomes.** Unchanged from [E-026], and now reachable:
+CONFIRM if possessive weakens >=40% while subject-initial holds within 20%;
+DENY if possessive moves <20%; UNIFORM if both weaken similarly (refutation, not partial
+support); INFEASIBLE if no route produces a matched deep edit — which would itself be
+worth reporting, since "ROME cannot be matched at depth" is a fact about the method.
+
+**Falsification of route 1 specifically.** If suppression is flat in step count, the deep
+edit is not under-optimised and the depth story is real rather than a hyperparameter
+artifact. State that outcome; do not quietly move to route 2.
+
+**Adversary.** "You kept tuning until the answer came out." Pre-empted by fixing the
+displacement bar (30% of 9.70) and the step grid ({25,50,100}) **before the sweep runs**,
+and by reporting every cell of the grid rather than the one that cleared the bar.
+
+**Deliverable.** [E-026]'s 2x2 table plus a matching column showing each arm's belief
+displacement on the edit prompt, so a reader can verify the arms are matched rather than
+take it on trust.
+
+**Blockers:** none
+**Artifacts:** _(on close)_
+**Closed:** —
+
+---
+
+### E-027 · Is the pinning a ROME fact or a Llama-3.1-8B fact?
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 2h
+**Thread:** T-080
+
+**Description:**
+
+Every coefficient in this project is measured on `meta-llama/Llama-3.1-8B`. The paper's
+central claim — *any probe beginning with the edited subject receives the full,
+unattenuated edit vector at the subject position, at every layer, for any `C`* — is derived
+from ROME's `u·k*` normalisation and causal attention, neither of which is
+architecture-specific. It should therefore reproduce on any decoder-only transformer, and a
+reader will ask why we never checked.
+
+This is **confirmatory by design and cheap by design**, and worth running for exactly that
+reason: one measurement on a different architecture converts an assumed generality into a
+measured one. It is not a place to spend more than the stated budget.
+
+**Method.** [E-019]'s harness (`layer_one.py` / `layer_sweep_t075.py`) pointed at a second
+model. Coefficient only — **no edits, no `v*` optimisation, no NDIF write path**. Read `k`
+at the subject's last token for each probe form, and `k*` from the edit form, and report
+`c = (k·k*)/(k*·k*)` per form per layer.
+
+- Second model: GPT-J-6B, which is the model CLAUDE.md names as the working target and the
+  model ROME's own paper reports. Different tokenizer, different `d_mlp`, different depth —
+  all of which the derivation says should not matter.
+- Same five probe forms as [E-019], same different-subject floor probe, same subject set
+  where the names exist in both.
+- Layers chosen proportionally to depth, not by absolute index — GPT-J has 28 layers to
+  Llama's 32, so compare fractions of depth, and say so in the table header.
+
+**Pre-stated outcomes.**
+
+- **CONFIRM:** prefix-sharing probes return exactly 1.000 (within float tolerance, |c−1| <
+  1e-4) at every layer measured. This is the analytic half and admits no partial credit —
+  anything else means the derivation or the implementation is wrong, and that is the more
+  interesting outcome.
+- **The empirical half is genuinely open.** The reordered-probe decay (0.95 → 0.58 with
+  depth) is *not* derived, and there is no reason it must transfer. A different decay
+  profile is a finding, not a failure, and narrows [E-019] the way [E-019] narrowed
+  [E-017]. State the Llama profile beside the new one rather than asking whether it
+  "replicates".
+- **Different-subject floor:** [E-018] measured 0.082 at layer 5. Report the second model's
+  floor without a threshold — a high floor would mean the anisotropy argument that
+  motivated [T-076] is model-dependent, which is worth knowing.
+
+**Confounds.**
+
+1. *Tokenisation.* `subject_last_index` re-tokenises the truncated prompt rather than
+   assuming a position, so it transfers — but verify on three subjects by logging the
+   decoded token at the computed index before trusting a single coefficient. A silent
+   off-by-one here produces plausible wrong numbers, which is the dangerous kind.
+2. *Layer indexing.* GPT-J's block attribute path differs from Llama's
+   (`transformer.h[i].mlp.fc_out` rather than `model.layers[i].mlp.down_proj`). Resolve it
+   once, assert the read tensor's shape against the config's `d_mlp`, and fail loudly on
+   mismatch rather than reading the wrong module.
+3. *Subject familiarity.* A subject GPT-J does not know may have a degenerate key. Restrict
+   to subjects that pass a possession check on the second model, or report the coefficient
+   without a possession filter and say which — do not mix.
+
+**Scope.** IN: one second model, coefficient only. DEFERRED: any edit on the second model,
+any behavioural readout, any third model.
+
+**Deliverable.** One table, the [E-019] table's shape, with a second model's rows beneath
+the first's — and one sentence saying whether the analytic claim is a ROME claim.
+
+**Result (2026-09-20).** CONFIRM on the analytic half, exactly: worst deviation from
+1.000 across all 216 prefix-sharing cells is 0.00e+00 on GPT-J-6B. The pinning is a claim
+about ROME's normalisation and causal attention, not about Llama.
+
+Two things the headline would have hidden, both read from the components:
+
+- **The empirical half also transfers**, which was not expected and is worth more than the
+  confirm. Compared at matched depth fraction, both models decay from 1.0 at the input to
+  ~0.5 by two-thirds depth and flatten. The decay is not derived; two architectures on the
+  same relative schedule is a stronger statement than either alone.
+- **The different-subject floor does NOT transfer.** [E-018]'s 0.082 becomes 0.155 at the
+  edit layer and never drops below it, reaching 0.524 at the final layer — *above* that
+  layer's late-clause coefficient, so the coefficient stops discriminating subjects
+  altogether. "Different subjects are near-orthogonal" is a Llama statement. The margin at
+  the layer ROME actually edits is clean on both (0.87 vs 0.71), so the headline claim is
+  untouched; only its generality across depth is model-dependent.
+
+**Confound not controlled, stated rather than mixed:** the subjects were possession-gated
+on *Llama* and run here with no GPT-J filter. Unfamiliar names could share a generic
+direction and inflate the floor by construction, so the floor finding is PLAUSIBLE, not
+CONFIRMED. Spawns [T-082]. It does not touch the analytic result — 1.000 is exact whether
+or not the model knows the subject. Also spawns [T-083] (both floors are non-monotonic
+with a minimum near the edit layer).
+
+**Status:** closed
+**Blockers:** none — independent of [E-026] and runnable concurrently.
+**Artifacts:** agents/engineer/workspace/run_e027.py; results/E-027-second-model.json;
+logs/run_e027-2026-09-20-182210.log; agents/shared/decisions.md -> "[E-027] Result"
+**Closed:** 2026-09-20
+
+---
+
+### E-029 · Does ROME's Efficacy Score predict propagation at the STANDARD edit layer?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 1h
+**Thread:** T-085
+
+**Description:**
+
+[E-026] failed as a depth experiment and left one observation its failure does not touch:
+**24 of 42 layer-20 edits pass ROME's Efficacy Score while leaving the true answer within
+3 nats of where it started**, and propagate to nothing. That was filed as a depth
+observation, which is the weaker and more confounded form.
+
+The same cell already exists at **layer 5**, in data on disk: **8 of 42**. Layer 5 is
+EasyEdit's shipped configuration — the edit the field actually runs. If the relationship
+holds there, the finding stops being about depth entirely and becomes a general caveat on
+ES, which is both more defensible and the form that belongs in §6 of the write-up.
+
+**No new measurement.** Joins two existing artifacts over the same 42 subjects:
+`results/E-026b-edit-prompt.json` (belief displacement and ES margin on the edit prompt)
+and `results/E-026-depth.json` (propagation to the two city probes). Zero NDIF cost, which
+is why it runs now, while [E-028a] holds the remote budget.
+
+**The sharp test — two predictors, one outcome.** Per subject, at layer 5:
+
+- outcome: **propagation** = control-differenced drop on the subject-initial city probe
+- predictor A: **belief displacement** = drop in `log P(true answer)` on the edit prompt
+- predictor B: **ES margin** = `log P(target) − log P(true)` on the edit prompt
+
+ES is a *threshold* on predictor B. The claim is not that ES is arbitrary — it is that B
+and A come apart while A and the outcome do not.
+
+**Pre-stated outcomes.**
+- **CONFIRM** — ES is a poor proxy for propagation: displacement correlates with
+  propagation at Spearman rho >= 0.6 **while** ES margin correlates at rho < 0.3. The two
+  predictors must be compared on the same subjects; a strong displacement correlation alone
+  says nothing about ES.
+- **DENY** — both correlate comparably (within 0.2 of each other). ES then carries the same
+  information as displacement and there is no caveat to report; the layer-20 observation
+  was about depth after all, and [T-085] closes.
+- **NULL** — neither correlates (both rho < 0.3). Propagation is driven by something
+  neither predictor captures, which is a different and larger finding about [E-021]'s
+  mechanism and would need its own ticket.
+
+**Confounds and controls.**
+1. *Subject-level strength.* A well-known subject might yield both a stronger edit and more
+   propagation, inflating every correlation. **Control:** compute the same two correlations
+   with baseline `log P(true answer)` partialled out, and report the partial alongside the
+   raw. If the raw survives and the partial does not, the finding is about familiarity.
+2. *Shared measurement.* Displacement and propagation both measure "the true answer went
+   down" under the same edit, on different prompts. A correlation between them is expected
+   and is not the claim — **the claim is the CONTRAST between predictors A and B.** Report
+   both correlations or neither.
+3. *Range restriction.* At layer 5 ES is 100% and the margin has a narrow spread (+2.29
+   minimum). A weak rho for B may be restriction of range rather than absence of
+   information. **Report the margin's spread beside its correlation**, and treat a narrow
+   spread as a limit on what can be concluded rather than as evidence for the claim. This
+   is the adversary's best attack and it must be answered in the entry, not waved at.
+
+**Deliverable.** One scatter with two panels sharing a y-axis (propagation), x = each
+predictor, with the ES threshold drawn as a vertical line; and one sentence naming which
+predictor a practitioner should read.
+
+**Scope.** Layer 5 only, 42 subjects, one relation, one model. Existence per [O-004] — no
+rate is claimed about ROME as normally run.
+
+**Result (2026-09-20).** DENY, cleanly. Belief displacement and ES margin correlate with
+propagation at **0.419 and 0.425** — a gap of 0.006 against a pre-stated Deny band of 0.2.
+ES carries the same information displacement does, so there is no ES caveat at layer 5.
+The joint cell exists (8/42) and is inert: those edits propagate 8.86 nats against 10.51
+for the rest.
+
+Familiarity was controlled and does nothing (partials move <0.015). The range-restriction
+worry this ticket called "the adversary's best attack" **did not materialise** — the ES
+margin spans 22.15 nats — and that mis-prediction is recorded rather than dropped.
+
+**Consequence, and it costs a claim rather than a number.** [E-026]'s 24/42 observation
+stays a statement about weak or deep edits and must NOT be promoted to a general critique
+of ES. It was headed for §6 in the more general form; this says that form is unsupported.
+An hour of joining existing files killed a line that would have cost days.
+
+Opens [T-086]: at rho ~0.42 neither predictor explains most of propagation's variance, and
+nothing in the record says what does.
+
+**Status:** closed
+**Blockers:** none.
+**Artifacts:** agents/engineer/workspace/run_e029.py; results/E-029-es-vs-propagation.json;
+logs/run_e029-2026-09-20-215433.log; agents/shared/decisions.md -> "[E-029] Result"
+**Closed:** 2026-09-20
+
+
+---
+
+### E-028b · Match layer 20 to layer 5 by BUDGET, then run the propagation comparison
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-20
+**Updated:** 2026-09-20
+**Estimated:** 3h
+**Thread:** T-079, T-084
+
+**Description:**
+
+[E-028a] showed matching by *saturation* is the wrong target: neither layer had saturated
+at 100 steps, and layer 5 gained as much as layer 20 over the grid, so the control refused
+the verdict. Matching by **budget** needs neither layer to saturate and is what [E-028]
+actually requires — two edits with **equal belief displacement**, whatever step count each
+needs to get there.
+
+**Step 1 — find the matching budget.** Layer 5 at 25 steps displaces **6.26 nats** on the
+six-subject set. Layer 20 reaches 4.47 at 100 steps and gains ~0.93 nats per doubling, so
+the crossing is near 400. Run layer 20 at **{200, 400}** and interpolate. The norm clamp is
+not binding at either layer ([E-028a]: 33% of ceiling at L20, 0/6 at cap), so nothing
+blocks the larger budgets.
+
+- **Stop condition:** if layer 20 has not reached 6.26 by 400 steps, do NOT extend again
+  without re-opening this ticket. An unbounded search for a budget that produces the
+  desired match is the thing pre-registration exists to prevent.
+- **If it cannot be matched at 400,** that is the reportable outcome: ROME's update at
+  layer 20 cannot be brought to layer-5 displacement within an 16x budget, which is a
+  fact about the method and answers [T-084] in the DEPTH direction.
+
+**Step 2 — the propagation comparison, at matched displacement.** [E-026]'s 2x2, unchanged:
+subject-initial and possessive city probes, control subject, paired no-pool measure,
+endpoints before drops. The only change is that the layer-20 arm uses the matched budget.
+
+**Pre-stated outcomes**, unchanged from [E-026] and now reachable because the arms are
+matched on the quantity that matters:
+- **CONFIRM** the coefficient predicts effect: possessive weakens >=40% at depth while
+  subject-initial holds within 20%.
+- **DENY**: possessive moves <20%.
+- **UNIFORM**: both weaken similarly — refutation, not partial support.
+
+**Naming, and it is not cosmetic.** A 400-step layer-20 edit is **not** "ROME as configured
+by EasyEdit". Every artifact must call the arms `ROME/EasyEdit L5 (25 steps)` and
+`ROME's update rule at L20 (N steps, displacement-matched)`. [E-013] gate 0 established the
+project's convention of naming the configuration rather than the method, and this is the
+first run where the two genuinely diverge.
+
+**Confounds.**
+1. *Matching on displacement does not match ‖Δv‖.* [E-028a] found L5 improves by turning
+   the vector (‖Δv‖ flat at 7.2) and L20 partly by growing it (5.77 -> 6.90). At matched
+   displacement the two deltas will differ in norm; report both norms beside every number
+   and treat a large gap as a live alternative account rather than a footnote.
+2. *Six subjects.* [E-028a]'s set is an unlucky draw (layer-5 displacement 6.25 against the
+   full set's 9.70). The matched budget found on these six may not transfer. **Verify the
+   match on a held-out 6 before running step 2**, and report the verification.
+3. *Displacement is measured on the edit prompt only.* It is the right matching quantity
+   precisely because it is measured where both edits were optimised, but it is not itself
+   the outcome. Do not let the matching variable leak into the outcome reporting.
+
+**Deliverable.** [E-026]'s 2x2 with a matching column showing each arm's displacement, so a
+reader verifies the arms are matched rather than taking it on trust.
+
+**Blockers:** none
+**Artifacts:** _(on close)_
+**Closed:** —
+
+---
+
+### E-028d · Is it the layer, or the step budget? The collinearity control
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-21
+**Updated:** 2026-09-21
+**Estimated:** 2h
+**Thread:** T-079
+
+**Description:**
+
+[E-028c] found that two edits matched on belief displacement (6.97 vs 7.26), on delta norm
+(7.52 vs 7.27) and on delivered coefficient (exactly 1.000, analytic) still differ **63%**
+in how far they travel to a prompt sharing the edit's prefix. That is the dissociation
+[E-026] claimed without earning.
+
+**One alternative explanation remains, and it is built into the design.** Displacement was
+matched by giving the deep arm a **16x step budget**, so *layer 20* and *400 steps* are
+perfectly collinear. A heavily optimised rank-one update may simply be more specific to the
+prompt it was optimised on — more steps, a solution fitted more tightly to that
+continuation — with depth contributing nothing.
+
+**The control is one cell: layer 5 at 400 steps.**
+
+- Optimise `v*` at layer 5, 400 steps, same 12 subjects, same harness as [E-028b].
+- Score the same 2x2 as [E-028c]: subject-initial and possessive city probes, control
+  subject, paired no-pool measure, endpoints before drops.
+
+**Pre-stated outcomes.** Let `P(layer, steps)` be the control-differenced drop on the
+subject-initial probe. Known: `P(5, 25) = 9.66`, `P(20, 400) = 3.59`.
+
+- **LAYER** — `P(5, 400)` stays within 20% of `P(5, 25)`, i.e. >= 7.7 nats. Budget does not
+  drive propagation, the collinearity is broken in favour of depth, and [E-028c]'s
+  dissociation stands as a layer effect.
+- **BUDGET** — `P(5, 400)` falls to within 20% of `P(20, 400)`, i.e. <= 4.3 nats. The
+  effect is optimisation budget, not depth; [E-028c]'s finding is about **how hard an edit
+  was optimised**, which is a different and still interesting claim, and every depth
+  statement in [E-028b/c] is withdrawn.
+- **BOTH** — `P(5, 400)` lands between 4.3 and 7.7. Budget explains part; report the split
+  and claim neither cleanly.
+
+**Note that BUDGET is not a null.** "More optimisation makes an edit more local" would be a
+finding about ROME's own hyperparameter — the one [E-028a] already showed is under-set at
+25 steps — and it would connect directly to the field's generalisation/specificity
+tradeoff. It must be reported with the same weight as LAYER, not as a failed experiment.
+
+**Confounds.**
+1. *Displacement will not be matched in this cell.* L5@400 will displace MORE than L5@25
+   ([E-028a]: 8.31 at 100 steps and rising). That is fine and is the point — the question
+   is whether propagation falls while displacement rises. **Report both**, and note that a
+   fall in propagation alongside a rise in displacement is a stronger result than a fall
+   alone.
+2. *Clamp.* [E-028a] measured L5 occupancy at 54% of the ceiling at 100 steps. At 400 it
+   may bind, which would cap the comparison. **Check occupancy and report it**; if the
+   clamp binds, say so rather than reading the number.
+
+**Deliverable.** A 2x2 of (layer) x (step budget) on the subject-initial probe's
+propagation, with displacement and ‖Δv‖ beside every cell. Three cells exist; this ticket
+buys the fourth and makes the design a crossing rather than a confounded pair.
+
+**Blockers:** none
+**Artifacts:** _(on close)_
+**Closed:** —
+
+
+---
+
+### E-028 arc · Closure record
+
+**Closed:** 2026-09-21
+
+[E-028b] matched the arms (layer 20 reaches layer 5's 6.26-nat displacement at ~353 steps,
+a 16x budget; held-out gap 0.93). [E-028c] compared propagation at that match and returned
+UNMATCHED on its own pre-registration — the subject-initial arm, pinned at coefficient
+1.000 at both layers, moved 63%. [E-028d] bought the fourth cell and broke the
+layer/budget collinearity in favour of LAYER, with the budget account failing on both the
+band test and the direction of its own mechanism.
+
+**Result:** the coefficient bounds delivery and does not predict effect — 1.22 nats of
+reach per nat displaced at layer 5 against 0.41 at layer 20, a factor of 2.96 across a 16x
+budget range. [T-079] answered, DENY.
+
+**Artifacts:** run_e028a.py, run_e028b.py, run_e028c.py, run_e028d.py;
+results/E-028a-step-sweep.json, E-028b-budget-match.json,
+E-028c-matched-propagation.json, E-028d-budget-control.json;
+agents/shared/decisions.md -> "[E-028a]", "[E-028b/c]", "[E-028d]"
+
+**What the arc cost and what it bought.** [E-026] asserted this conclusion on a design
+whose arms differed in edit strength, and it had to be withdrawn. Getting it honestly took
+three further runs and about six hours of NDIF time, each removing exactly one alternative:
+strength ([E-028b/c]), optimisation budget ([E-028d]), and the norm clamp (checked, never
+binding). The conclusion is the same sentence. The difference is that it is now true.
