@@ -91,7 +91,7 @@ const htmlFiles = [];
 {
   const ledger = htmlFiles.find((f) => f.includes("edit-slice/ledger"));
   const anchors = ledger
-    ? new Set([...readFileSync(ledger, "utf8").matchAll(/id="((?:[EORTD]-\d{3}[a-z]?|f-[EORTD]-\d{3}[a-z]?)(?:-\d)?)"/g)].map((m) => m[1]))
+    ? new Set([...readFileSync(ledger, "utf8").matchAll(/id="((?:t-)?(?:f-)?[EORTD]-\d{3}[a-z]?(?:-\d)?)"/g)].map((m) => m[1]))
     : new Set();
   let links = 0, broken = [];
   for (const f of htmlFiles) {

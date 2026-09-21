@@ -191,7 +191,13 @@ def main() -> None:
         L.append("| --- | --- | --- | --- |")
         for t in rows:
             st = t["status"].replace("|", "/")
-            L.append(f"| `{t['id']}` | **{t['title']}** — {t['gist']} | {t['parent']} | {st} |")
+            # An anchor per thread row. `data/evidence.yml` keys threads as `t-<id>` and
+            # Evidence.tsx links to `ledger#t-<id>`, but nothing here ever emitted that
+            # target — so every thread link resolved to the top of the page. It went
+            # unnoticed because the only thread the paper cited was T-075, which also has
+            # a decisions entry and so matched on the decision's anchor instead.
+            L.append(f"| <span id=\"t-{t['id']}\"></span>`{t['id']}` | "
+                     f"**{t['title']}** — {t['gist']} | {t['parent']} | {st} |")
         L.append("")
 
     OUT.write_text("\n".join(L) + "\n")
@@ -208,16 +214,16 @@ def main() -> None:
     for e in dec:
         Y += [f"{e['anchor']}:", f"  id: {q(e['id'])}", f"  kind: {q(e['kind'])}",
               f"  title: {q(e['title'])}", f"  date: {q(e['date'])}",
-              f"  gist: {q(e['gist'])}", f"  surface: decision", ""]
+              f"  gist: {q(e['gist'])}", "  surface: decision", ""]
     for e in fnd:
-        Y += [f"{e['anchor']}:", f"  id: {q(e['id'])}", f"  kind: \"Finding\"",
+        Y += [f"{e['anchor']}:", f"  id: {q(e['id'])}", "  kind: \"Finding\"",
               f"  title: {q(e['title'])}", f"  date: {q(e['date'])}",
-              f"  gist: {q(e['gist'])}", f"  surface: finding", ""]
+              f"  gist: {q(e['gist'])}", "  surface: finding", ""]
     for t in thr:
-        Y += [f"t-{t['id']}:", f"  id: {q(t['id'])}", f"  kind: \"Thread\"",
-              f"  title: {q(t['title'])}", f"  date: \"\"",
+        Y += [f"t-{t['id']}:", f"  id: {q(t['id'])}", "  kind: \"Thread\"",
+              f"  title: {q(t['title'])}", "  date: \"\"",
               f"  gist: {q(t['gist'])}", f"  status: {q(t['status'])}",
-              f"  surface: thread", ""]
+              "  surface: thread", ""]
     DATA.parent.mkdir(parents=True, exist_ok=True)
     DATA.write_text("\n".join(Y))
     log.info("wrote %s (%d records)", DATA, len(dec) + len(fnd) + len(thr))

@@ -58,6 +58,8 @@ far**.
 | **Table 4** | Position ablation — sufficient and necessary (§4.1) |
 | **Table 5** | Claim status — eleven claims, eight withdrawn or narrowed |
 | **Table 6** | Delivery is not effect — propagation at a fixed coefficient (§4.4) |
+| **Table 7** | Floor plus type-matched displacement — what else the edit moves (§4.5) |
+| **Table 8** | Open threads, what each would decide, and what it costs (§8) |
 
 ## 1 · The question
 
@@ -86,35 +88,40 @@ answers by string probability is distorted by how the answer is spelled. That is
 form competition <Cite id="holtzman2021surface" narrative />, and the correction we
 independently rebuilt — score against a subject-free version of the same prompt — is
 essentially their Domain Conditional PMI. We rediscovered a 2021 result and its standard
-remedy, and cite it to disclaim novelty.
+remedy, and cite it to disclaim novelty.<Margin>Found by a prior-art gate run *after* the
+measurement and *before* publication, which is later than it should have been.<Evidence id="f-R-010">R-010</Evidence></Margin>
 
 **We do not claim knowledge-status × editability.** Whether a model already knowing a fact
 predicts how well that fact edits has been measured, on Llama-3.1-8B, with MEMIT,
 AlphaEdit and fine-tuning <Cite id="knowledgespectrum2025" />. That closed a direction we
-had designed and were about to build.
+had designed and were about to build.<Margin>Two further gates cleared rather than closed: <Evidence id="f-R-002">R-002</Evidence> on intra-memory conflict and uncertainty-based deferral, and <Evidence id="f-R-007">R-007</Evidence> on the nearest remaining competitor.</Margin>
 
 **Template sets exist upstream.** CounterFact records derive from ParaRel entries
 containing hand-curated template *sets*, and keep one prompt per record
 <Cite id="elazar2021pararel" />; our probes inherit that collapse.
 
+**Backward probing is narrower than we first claimed.** RippleEdits' Logical Generalization covers inverse and symmetric relations, which is the closest existing thing to a grounds probe; reading its test-type definitions directly is what forced the narrowing.<Evidence id="f-R-001">R-001</Evidence>
+
 **What is left.** None of the above examines what an edit does to a fact's *premises*, and
 none reports the coefficient structure of the update itself. ROME <Cite id="meng2022rome" />
 derives the `C⁻¹` term and its own repository enables it by default; EasyEdit disables it
-in all fourteen of its ROME configs, including for the two models the paper used. Both
+in all fourteen of its ROME configs, including for the two models the paper used.<Margin>Read from both repositories rather than from either paper.<Evidence id="f-R-009">R-009</Evidence></Margin> Both
 values read from the raw config files.
 
 ## 3 · Method
 
 _Records: <Evidence id="E-007" /> · <Evidence id="O-006" /> · <Evidence id="E-012" /> · <Evidence id="E-013">E-013 gate</Evidence>_
 
-**Possession gate.** A chain is usable only if the model holds all three facts. Each is
+**Possession gate.** A chain is usable only if the model holds all three facts.<Margin>The gate exists because CounterFact has none: its construction never checks the model knows the fact being edited, verified from source.<Evidence id="f-D-002">D-002</Evidence> · <Evidence id="f-R-006">R-006</Evidence> The measure was built over <Evidence id="f-E-004">E-004</Evidence> → <Evidence id="f-E-005">E-005</Evidence>, and <Evidence id="f-E-006">E-006</Evidence> established ROME on Llama-3.1-8B via NDIF is feasible at all.</Margin> Each is
 scored against a type-matched candidate pool under two criteria: the true answer ranks
 first with the real subject (*row test*), and outscores it under foil prompts whose true
 answer differs (*column test*, an AUROC; chance 0.5). The column test replaces a
 placeholder control that is undefined for high-prior answers — see §3.1. 136 chains mined →
-78 usable → 42 carried through the edit.<Margin>The 29 missing chains were lost to backend
+78 usable → 42 carried through the edit.<Margin>The relation inventory behind the chains is <Evidence id="f-R-003">R-003</Evidence>; the entailment structure and why grounds are evidential rather than deductive is <Evidence id="f-E-001">E-001</Evidence> · <Evidence id="E-002" />. Set-level coordination lift, which does not survive per-candidate, is <Evidence id="f-T-055">T-055</Evidence>.</Margin><Margin>The 29 missing chains were lost to backend
 outages, not excluded by any criterion — see <Evidence id="O-007" />. Every rate here is an
 existence claim, never a frequency.</Margin>
+
+**Model choice.** Possession is a *construct requirement*, not ambition: a model that never held the grounds cannot orphan them, which replaced this project's original size ceiling with a size floor.<Evidence id="O-005" /> Possession rises with scale and the field's standard test overstates it at every size<Evidence id="f-E-003">E-003</Evidence>; GPT-J-6B sits at 73%<Evidence id="f-E-003b">E-003b</Evidence>, and the 70B gate clears while showing the three chain legs are not independent<Evidence id="E-009" /> — which is why §3's gate scores all three rather than the edited fact alone.
 
 **Edit.** ROME as configured by EasyEdit, `C = I`, layer 5, `v*` optimised by gradient
 descent through the frozen model with EasyEdit's `llama3-8b.yaml` hyperparameters. Applied
@@ -277,9 +284,7 @@ restores that magnitude to the surviving positions and reaches 12% against a 5% 
 
 The comparison that carries it is **B against E**. Arm B has *less* mass at one position;
 arm E has *more*, spread over every other position. **29 against 5, twenty-four discordant
-pairs, none reversed, p < 0.0001.**
-
-<Margin>Coefficient mass at the subject token ranges 31–80% across chains, mean 66.8%.
+pairs, none reversed, p < 0.0001.**<Margin>Coefficient mass at the subject token ranges 31–80% across chains, mean 66.8%.
 Arm E's rescaling is per chain, so each restoration is exact rather than
 averaged.<Evidence id="E-021" /></Margin>
 
@@ -323,7 +328,7 @@ country, they choose the *same city* 84% of the time. Editing where a person wor
 relocates their birthplace exactly as often as editing where they were born.
 ### 4.3 · Scope: the claim's boundary, measured
 
-_Records: <Evidence id="E-017" /> · <Evidence id="T-075" /> · <Evidence id="E-018" />_
+_Records: <Evidence id="E-017" /> · <Evidence id="E-019" /> · <Evidence id="T-075" /> · <Evidence id="E-018" /> · <Evidence id="E-020" /> · <Evidence id="E-027" />_
 
 <Figure
   caption="Coefficient at the subject's last token, by layer, 12 subjects. Prompts beginning with the subject are pinned at exactly 1.000 at every depth. Reordering the subject escapes progressively — but not at layer 5, which is the layer this configuration edits."
@@ -390,8 +395,41 @@ scored against chain *i+1*'s subject in the same template. Mean **0.082**, max *
 below the *minimum* same-subject value of 0.483. The distributions do not overlap, and the
 pre-stated confirmation threshold was ≤0.3.
 
+**The decay is a change of direction, not of magnitude.** The coefficient is
+`(‖k‖/‖k*‖)·cos(k, k*)`, so it can fall two ways, and they are different claims about the
+network. Across eight layers, six forms and 16 chains, the cosine falls **0.984 → 0.471**
+while the norm ratio never leaves 0.97–1.24 — and drifts slightly *up*, so magnitude works
+against the decay. Subject-position keys have essentially the same length regardless of
+whose name is in the prompt or how it is worded; everything that distinguishes them is
+orientation.<Margin>This does **not** show that attention mixes context into the subject
+position. A falling cosine is equally consistent with MLP writes at that position, or
+anything else that reorients the residual stream. The attention patterns are unrun.
+<Evidence id="E-020" /></Margin> The different-subject floor's rise at layer 31 (0.082 →
+0.669) is likewise cosine with a flat ratio: representational convergence near the output,
+not a scaling artifact.
 
+**It is a property of ROME, not of this model.** Repeating the coefficient measurement on
+**GPT-J-6B** — different architecture, tokenizer, width (16384 vs 14336) and depth (28 vs
+32 blocks) — returns **exactly 1.000 across all 216 prefix-sharing cells**, worst deviation
+0.00e+00. The derivation never mentioned an architecture, so this was expected; it is now
+measured rather than assumed.
 
+The *decay* transfers too, which was not expected, because it is not derived. Compared at
+matched fraction of depth both models fall from 1.0 at the input to ~0.5 by two thirds
+depth and flatten — Llama 0.951 / 0.577 / 0.598 against GPT-J 0.861 / 0.597 / 0.482 at
+depth fractions 0.15, 0.64 and 1.00.
+
+**The floor does not transfer, and that narrows §4.3.** GPT-J's different-subject floor is
+**0.155** at the edit layer against Llama's 0.082, and **0.524** at the final layer — above
+that layer's same-subject late-clause value of 0.482, so the coefficient has stopped
+telling subjects apart at all. *"Different subjects are near-orthogonal at the subject
+position"* is a **Llama-3.1-8B** statement, not a ROME one. The margin at the layer ROME
+actually edits stays clean on both (0.87 against 0.71), so the claim above is untouched;
+only its generality across depth is model-dependent.<Margin>Confounded: the subjects were
+possession-gated on *Llama* and run on GPT-J unfiltered. Unfamiliar names may share a
+generic direction and inflate the floor by construction, so this narrowing is **plausible,
+not confirmed**. It does not touch the analytic result — 1.000 is exact whether or not the
+model knows the subject.<Evidence id="E-027" /></Margin>
 
 ### 4.4 · Delivery is not effect — the coefficient's boundary, measured
 
@@ -399,7 +437,7 @@ _Records: <Evidence id="E-028a" /> · <Evidence id="E-028c" /> · <Evidence id="
 
 Everything above measures **delivery**: how much of the update vector arrives at a
 position. §6.3 listed the obvious objection — delivery is not behaviour — as one we could
-not answer. We can now, and **the objection is correct**.
+not answer. We can now, and **the objection is correct**. The thread is <Evidence id="T-079" />; the run that asked first and got it wrong is <Evidence id="E-026" />.
 
 Apply the update at layer 20 instead of layer 5. A subject-initial probe receives a
 coefficient of **exactly 1.000 at both**, analytically, since both share the edit prompt's
@@ -441,6 +479,49 @@ The claim is unchanged in content and narrower in what it licenses:
 What no longer follows is *how far that probe's answer will move*. §4.1's position ablation
 stands as a **layer-5** result.
 
+### 4.5 · What the edit does to the rest of the subject
+
+_Records: <Evidence id="E-024" /> · <Evidence id="E-025" /> · <Evidence id="E-029" />_
+
+If the unit an edit operates on is the **subject**, the relation it targeted is incidental
+— so a birthplace edit should disturb attributes of that person having nothing to do with
+birth. It does, and not uniformly.
+
+Three probes per subject, teacher-forced log P(true answer), paired against the same probes
+on an unedited subject, no candidate pool:
+
+<p className="ocl-tablecap"><strong>Table 7.</strong> Post-edit level of each attribute after a birthplace edit. Levels,</p>
+not drops — the probes start far apart, so drops are baseline-dominated and reading them
+as targeting is how this run's first conclusion went wrong.
+
+| probe | type-matched to the injected value? | related to birth? | post-edit level |
+| --- | --- | --- | ---: |
+| occupation | no (a profession) | no | **−6.16** |
+| native language | no (a language) | yes | **−6.20** |
+| citizenship | **yes** (a country) | yes | **−9.10** |
+
+Occupation and language finish **0.04 nats apart after starting 3.65 apart**. Citizenship
+finishes **2.95 below** both. So the structure is two effects, not a relatedness gradient:
+
+> A **floor** — everything about the subject is suppressed to roughly the same level,
+> whether or not it relates to the edited relation — plus **type-matched displacement**,
+> an additional penalty only where the probe's answer type matches the injected value.
+
+Semantic relatedness predicts language patterns with citizenship. It patterns with
+occupation instead. The edit is not reasoning about origin; it is competing for a slot.<Margin>This run's own headline said "semantic relatedness", computed on drops, and was
+retracted. The confound was named in the ticket that commissioned it while the code still
+computed on drops — naming a confound is not controlling for it.<Evidence id="E-025" /></Margin>
+
+**What predicts how far an edit travels is mostly unmeasured.** Belief displacement on the
+edit prompt and ROME's own efficacy margin each correlate with propagation at Spearman
+**0.42** — about 18% of variance — and at **0.419 against 0.425** they are not two views of
+the answer but one weak view.<Margin>Which also closes a tempting line: since the two agree,
+there is no quantity ROME's Efficacy Score fails to see that displacement catches, and an
+efficacy-metric critique we had begun to build does not survive at layer 5.
+<Evidence id="E-029" /></Margin> The coefficient cannot close the gap either — it is pinned
+at exactly 1.000 for precisely the probes in question, so it has **zero variance where the
+outcome varies most**. Whatever governs propagation magnitude is none of the three.
+
 ## 5 · Every claim this project withdrew
 
 <p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
@@ -469,7 +550,7 @@ reading of our own mechanism.
 
 **1 · n = 42, one model, one relation family, one layer.** Every statement here is an
 *existence* claim; no rate is defensible and the artifacts are written to avoid implying
-one. If the mechanism needs a frequency result to matter, that objection stands and we
+one.<Margin>A standing constraint rather than a disclaimer added at write-up: hand-built and mined sets license existence and never frequency.<Evidence id="O-004" /></Margin> If the mechanism needs a frequency result to matter, that objection stands and we
 cannot meet it.
 
 **2 · The mechanism is a line of algebra — is it interesting?** A reviewer could
@@ -560,6 +641,38 @@ so the category has to be added deliberately or it vanishes in the rename._
    coefficient rather than the model.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
+
+## 8 · What is open
+
+Nine threads are open or active. They are listed because the useful question to a reader
+who knows the field is not *"is this right"* but *"which of these is worth a month"* — and
+we cannot rank them from inside.
+
+<p className="ocl-tablecap"><strong>Table 8.</strong> Open threads, what each would decide, and what it costs. Ordered by</p>
+what we would spend next, which is a judgement we would like contradicted.
+
+| thread | the question | what a result would settle | cost |
+| --- | --- | --- | --- |
+| <Evidence id="T-086" /> | What sets how far an edit travels? | The coefficient is pinned where the outcome varies, displacement and efficacy explain 18% between them. Nothing in the record predicts the other 82%. | unknown — needs a candidate |
+| <Evidence id="T-082" /> | Is GPT-J's higher floor real, or unfamiliarity? | Whether §4.3's narrowing of the floor to a Llama fact is confirmed or an artifact of running Llama-gated subjects on another model | hours |
+| <Evidence id="T-078" /> | What reorients the subject key with depth? | §4.3 rules out magnitude and names attention as the candidate without testing it. "cos fell" is not "context was mixed in". | a day |
+| <Evidence id="T-081" /> | Is the floor-plus-displacement structure a *birthplace* fact? | §4.5 is measured on one relation. Editing occupation instead inverts the prediction; a clean crossover would establish the mechanism. | a day |
+| <Evidence id="T-083" /> | Why is the different-subject floor lowest near the edit layer? | Both models' floors dip near depth fraction 0.15, which is roughly where ROME edits. Either a connection to ROME's own causal-tracing layer choice, or a coincidence at n≈12. | a day |
+| <Evidence id="T-054" /> | CounterFact runs no possession check | Its premise was reversed by <Evidence id="f-D-002">D-002</Evidence>; it needs re-reading rather than running | reading |
+
+Two further threads are answered but worth naming because they cost us claims:
+<Evidence id="T-085" /> killed an efficacy-metric critique in an hour by joining two files
+already on disk, and <Evidence id="T-084" /> cost six hours of compute to establish that a
+weak edit at depth was a hyperparameter artifact rather than a fact about depth.
+
+**The meta-result, and the reason §5 is the shape it is.** Classifying this project's own
+17 results by comparison shape found every narrowing came from **varying a dimension
+previously held fixed**, and none from adding arms to a dimension already varied. The
+three never varied anywhere were model, edit layer, and edited relation. Two of them are
+now §4.3 and §4.4. The third is <Evidence id="T-081" />.<Margin>Prescriptively: before
+running a comparison, list what it holds fixed — model, layer, relation, template, pool,
+measurement method, decoding — and ask which has never been varied anywhere in the record.
+<Evidence id="f-T-065">T-065</Evidence></Margin>
 
 ## Artifacts
 
