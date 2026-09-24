@@ -1,4 +1,4 @@
-branca==0.8.1
+branca==0.8.2
 certifi==2025.8.3
 charset-normalizer==3.4.9
 folium==0.20.0
