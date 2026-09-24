@@ -1,6 +1,6 @@
 # API dependencies
 flask==3.0.0
-flask-cors==4.0.0
+flask-cors==4.0.2
 python-dotenv==1.0.0
 colorama==0.4.6
 prometheus-client==0.19.0
