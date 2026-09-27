@@ -1316,7 +1316,7 @@ is confounded with familiarity (T-082) and is PLAUSIBLE, not CONFIRMED. See [E-0
 
 ### T-081 · Is the floor-plus-type-displacement structure a birthplace fact?
 
-**Status:** open
+**Status:** active — **type matching generalises, the floor does not** (2 arms pending)
 **Parent:** T-072
 **Opened:** 2026-09-20
 **Question:** [T-065] found every narrowing in this project came from varying a dimension
@@ -1331,7 +1331,14 @@ the mechanism; a failure to invert would mean the structure is about birthplace 
 countries specifically.
 **Resume cold:** `run_e025.py` with `PROBES` unchanged and the edit target swapped to a
 `P106` value; needs a fresh `v*` batch for the new relation.
-**Answer:** —
+**Answer (interim, [E-033], 4 of 6 arms):** **The mechanism splits.** Type-matched
+displacement holds — in 5 of 5 completed arms the type-matched probe moved most, and
+swapping the injected type swaps the displaced probe (difference-in-differences +8.06 nats
+at 8B, +5.42 at 70B layer 13, matched by depth fraction). The **floor does not**: [E-025]'s
+0.04-nat convergence of the non-matched probes is the outlier, with every other arm 1.0-2.7
+apart and all returning NO FLOOR. "An edit suppresses everything about the subject to a
+floor" is withdrawn as a general claim; the type-matching half survives and is now the
+project's strongest behavioural result. Two confirmation arms still running.
 
 
 ---

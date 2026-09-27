@@ -291,6 +291,22 @@ E-032:
   gist: "Runs [T-080] at scale. Coefficient measurement needs no gradients, so this cost ~24 traces where an edit at 405B would have cost days. Four models, a 68×…"
   surface: decision
 
+E-033:
+  id: "E-033"
+  kind: "Decision"
+  title: "editing at scale was blocked by a one-line device bug, not by NDIF"
+  date: "2026-09-27"
+  gist: "Decision: editing experiments may now run at 70B and 405B. The blocker was ours. computevbatch's loss accumulated weightdecay (Dd[i] Dd[i]).sum() —…"
+  surface: decision
+
+E-033-2:
+  id: "E-033"
+  kind: "Interim"
+  title: "type matching is the mechanism — the \"floor\" was one pairing"
+  date: "2026-09-27"
+  gist: "Runs [T-081], the third and last of [T-065]'s never-varied dimensions. Recorded as interim: the 8B birthplace replication and the 70B occupation arm at…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -990,7 +1006,7 @@ t-T-081:
   title: "Is the floor-plus-type-displacement structure a birthplace fact?"
   date: ""
   gist: "[T-065] found every narrowing in this project came from varying a dimension previously held fixed, and named the three never…"
-  status: "open"
+  status: "active — **type matching generalises, the floor does not** (2 arms pending)"
   surface: thread
 
 t-T-082:

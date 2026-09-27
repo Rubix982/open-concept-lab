@@ -1,0 +1,6 @@
+2026-09-27 15:11:09,656 INFO     build_ledger  run build_ledger -> logs/build_ledger-2026-09-27-151109.log
+2026-09-27 15:11:09,657 INFO     build_ledger  config {"output": "/Users/saifulislam/code/open-concept-lab/web/notebook/edit-slice/ledger.md"}
+2026-09-27 15:11:09,667 INFO     build_ledger  parsed 38 decisions, 18 findings, 67 threads
+2026-09-27 15:11:09,667 INFO     build_ledger  anchors: 38 decisions, 18 findings, all unique
+2026-09-27 15:11:09,667 INFO     build_ledger  wrote /Users/saifulislam/code/open-concept-lab/web/notebook/edit-slice/ledger.md (348 lines)
+2026-09-27 15:11:09,668 INFO     build_ledger  wrote /Users/saifulislam/code/open-concept-lab/web/data/evidence.yml (123 records)

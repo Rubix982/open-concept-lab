@@ -356,7 +356,14 @@ def _grad_step(model, batch, meta, D, layer, ref_logp, kl_factor, weight_decay):
                 post = torch.log_softmax(logits[2 * i + 1, mm["last_e"]], -1)
                 ref = ref_logp[mm["case_id"]].to(post.device)
                 kl = torch.sum(torch.exp(ref) * (ref - post))
-                total = total + nll + kl_factor * kl + weight_decay * (Dd[i] * Dd[i]).sum()
+                # `.to(nll.device)` is load-bearing on any model too large for one
+                # GPU. `Dd` sits on the device holding `layer`, while `nll` and `kl`
+                # come from `lm_head`, which on a sharded model is on the LAST device
+                # — so the sum raises "expected all tensors to be on the same device,
+                # cuda:3 and cuda:0". At 8B everything is cuda:0 and this can never
+                # fire, which is why it survived every run until [E-033] tried 70B.
+                decay = weight_decay * (Dd[i] * Dd[i]).sum()
+                total = total + nll + kl_factor * kl + decay.to(nll.device)
             total.backward()
             g_all = out.grad.float().save()
             lv = total.float().save()

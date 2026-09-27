@@ -2493,3 +2493,90 @@ lesson — re-run the thing that worked before attributing a failure to access.
 **Artifacts:** agents/engineer/workspace/run_e032.py; results/E-032-scale.json;
 agents/shared/decisions.md -> "[E-032] Result"
 **Closed:** 2026-09-27
+
+---
+
+### E-033 · The relation crossover — is floor-plus-type-displacement general?
+
+**Status:** in-progress — 4 of 6 arms complete; see decisions.md "[E-033] Interim"
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-27
+**Updated:** 2026-09-27
+**Estimated:** 4h
+**Thread:** T-081, T-080
+
+**Description:**
+
+[E-025] found that a **birthplace** edit produces two effects: a **floor** — everything
+about the subject suppressed to roughly the same level — plus **type-matched
+displacement**, an extra penalty only where the probe's answer type matches the injected
+value.
+
+| probe | type-matched to a country? | post-edit level |
+| --- | --- | ---: |
+| occupation | no | −6.16 |
+| language | no | −6.20 |
+| citizenship | **yes** | **−9.10** |
+
+**It is stated as a general mechanism and measured on one relation.** Edited relation is
+the third of [T-065]'s never-varied dimensions, and the other two are now done ([E-028]
+layer, [E-032] model). This is the test, not a verification: until it runs, "general" is
+an assumption.
+
+**The design is a crossover.** Edit **occupation** instead — inject a profession — and the
+prediction inverts. Occupation becomes the type-matched probe and should take the extra
+displacement; citizenship, previously the displaced one, should fall back to the floor
+beside language.
+
+**Edit prompt must be subject-initial.** `"{} works as a"` → a profession the subject does
+not have. **Do not reuse [E-014]'s cached `|ctl` deltas**: their prompt is
+`"By profession, {} is a"`, which (a) does not begin with the subject, so the coefficient
+is not pinned the way every other edit in this record is, and (b) is *identical to
+[E-025]'s occupation probe*, so scoring it would measure efficacy on the edit prompt rather
+than displacement of a different probe.
+
+**Probes** — [E-025]'s three, unchanged, so the two arms are directly comparable:
+occupation `"By profession, {} is a"`, citizenship `"{} is a citizen of"`, language
+`"The native language of {} is"`. Targets: [E-014]'s per-subject `target_occ`, a profession
+drawn from the pool and not held by that subject.
+
+**Scale.** Run at **Llama-3.1-8B and Llama-3.1-70B**. Editing at 70B became possible today
+— `compute_v_batch` summed a term on the delta's device with terms from `lm_head`, which on
+a sharded model is a different GPU, so it raised a device error at any size above one card
+and could never fire at 8B. Fixed. A 2-step probe now runs in 21s at 70B and 24s at 405B,
+against 19s at 8B: **round trips dominate, not compute**, so editing at 70B costs
+approximately what it costs at 8B.
+
+**Pre-stated outcomes.** Post-edit **levels**, never drops.
+
+- **CROSSOVER** — the mechanism is general. Under an occupation edit the occupation probe
+  finishes at least **1.5 nats below both** citizenship and language, **and** the
+  citizenship−language gap collapses to under **1 nat** (both at the floor). Under the
+  birthplace edit that gap was 2.90.
+- **NO CROSSOVER** — citizenship remains the most displaced even when the injected value is
+  a profession. The structure is then about countries or about birthplace specifically, and
+  [E-025]'s "type overlap" reading is withdrawn in its general form.
+- **NO FLOOR** — the two non-matched probes do not converge to within 1 nat of each other.
+  The two-effect account fails in a third way and needs its own ticket.
+
+**Confounds.**
+1. *Baselines differ wildly between probes* — language starts at −0.71, occupation at
+   −4.36. **Report post-edit levels first and drops second, or not at all.** [E-025]'s
+   first headline was computed on drops, said "semantic relatedness", and was retracted.
+   This is the same trap one relation over.
+2. *Occupation is a harder prediction than citizenship.* Its baseline is 3.65 nats lower,
+   so it has less room to fall before hitting the floor. If occupation cannot get 1.5 nats
+   below the floor because it started near it, report that as **uninterpretable**, not as
+   a failed crossover.
+3. *Different edit, different magnitude.* Report `‖Δv‖` for both arms. A profession target
+   may need a larger or smaller update than a country target, and a level difference that
+   tracks ‖Δv‖ is not type matching.
+
+**Deliverable.** One table, 3 probes × 2 edited relations × 2 models, post-edit levels,
+with baselines and ‖Δv‖ beside them. One sentence: does the displaced probe follow the
+injected value's type?
+
+**Blockers:** none.
+**Artifacts:** _(on close)_
+**Closed:** —

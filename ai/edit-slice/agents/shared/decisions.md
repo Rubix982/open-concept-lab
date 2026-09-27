@@ -2292,3 +2292,121 @@ alone. Existence per [O-004].
 
 **Artifacts:** agents/engineer/workspace/run_e032.py; results/E-032-scale.json;
 logs/run_e032-2026-09-27-*.log
+
+---
+
+## [E-033] Decision: editing at scale was blocked by a one-line device bug, not by NDIF
+
+_Date: 2026-09-27 · found while scoping the relation crossover_
+
+**Decision:** editing experiments may now run at 70B and 405B. The blocker was ours.
+
+`compute_v_batch`'s loss accumulated `weight_decay * (Dd[i] * Dd[i]).sum()` — computed on
+the device holding the edited layer — together with `nll` and `kl`, which derive from
+`lm_head`. On a model small enough for one GPU those are the same device. On a sharded
+model they are not, and the sum raises
+
+    RuntimeError: Expected all tensors to be on the same device,
+    but found at least two devices, cuda:3 and cuda:0!
+
+**Rationale for recording it rather than just fixing it:** the failure is invisible at
+every size this project had run, so it would have been read as "NDIF cannot do gradients at
+70B" by anyone who probed once and stopped. That is the [O-007] pattern exactly — a
+platform blamed for a local defect. The fix is `decay.to(nll.device)`.
+
+**Measured after the fix**, two gradient steps, one spec:
+
+| model | time | ‖Δv‖ | d_model |
+| --- | ---: | ---: | ---: |
+| Llama-3.1-8B | 19s | 1.97 | 4096 |
+| Llama-3.1-70B | **21s** | 3.66 | 8192 |
+| Llama-3.1-405B-Instruct | **24s** | 1.74 | 16384 |
+
+**Round trips dominate, not compute.** A 68x parameter increase costs 26% more wall clock
+per optimisation step, because the budget is queue and transfer. Editing at 70B is
+therefore about as expensive as editing at 8B, which changes what this project can afford:
+[E-028]'s whole arc could be re-run at 70B for roughly its original cost.
+
+**Revisit if:** a larger batch changes the picture — these are single-spec probes, and
+transfer scales with batch while queue does not.
+
+**Artifacts:** src/edit.py (the `decay.to(nll.device)` fix and its comment)
+
+---
+
+## [E-033] Interim: type matching is the mechanism — the "floor" was one pairing
+
+_Date: 2026-09-27 · Llama-3.1-8B and Llama-3.1-70B · **4 of 6 arms complete, 2 in flight**_
+
+Runs [T-081], the third and last of [T-065]'s never-varied dimensions. **Recorded as
+interim**: the 8B birthplace replication and the 70B occupation arm at layer 5 are still
+running. Neither can overturn what is below — both are confirmation cells — but this entry
+is not a close.
+
+[E-025] reported two effects from a birthplace edit: a **floor** (everything about the
+subject suppressed to one level) plus **type-matched displacement** (extra penalty where
+the probe's answer type matches the injected value). Stated as a general mechanism,
+measured on one relation. **One half generalises. The other does not.**
+
+### The crossover holds: swap the injected type and the displaced probe swaps with it
+
+| Llama-3.1-8B · layer 5 | birthplace edit | occupation edit | swing |
+| --- | ---: | ---: | ---: |
+| occupation | 1.80 | **6.59** | **+4.80** |
+| citizenship | **7.13** | 3.87 | −3.27 |
+| language | 5.49 | 2.40 | −3.09 |
+
+**Difference-in-differences +8.06 nats.** At Llama-3.1-70B layer 13, **+5.42**.
+
+**In 5 of 5 completed arms the type-matched probe moved most**, with no exceptions:
+8B/birthplace, 8B/occupation, 70B-L13/birthplace, 70B-L13/occupation, and
+70B-L5/birthplace. The last of those matters separately — it shows the result surviving a
+**layer** change within a model, not only a model change.
+
+**Depth is matched by fraction, not index.** Layer 13 of 80 is fraction 0.165 against 8B's
+layer 5 of 32 at 0.161. A first pass used layer 5 on both, which is fraction 0.06 at 70B —
+[E-028] showed layer changes propagation threefold, so that pairing was not a comparison.
+Its numbers are retained as the second-depth cell rather than discarded.
+
+### The floor does not generalise, and [E-025]'s cell is the outlier
+
+Post-edit levels of the two **non**-matched probes, which a floor account says should
+coincide:
+
+| arm | non-matched levels | spread |
+| --- | --- | ---: |
+| 8B L5 birthplace | language −6.20, occupation −6.16 | **0.04** |
+| 8B L5 occupation | citizenship −5.83, language −3.11 | **2.73** |
+| 70B L13 birthplace | language −4.82, occupation −5.94 | 1.11 |
+| 70B L13 occupation | citizenship −4.18, language −3.16 | 1.02 |
+| 70B L5 birthplace | language −5.23, occupation −6.79 | 1.56 |
+
+[E-025]'s **0.04** is the outlier, not the rule. Every other arm sits 1.0–2.7 nats apart,
+and all four returned the pre-stated **NO FLOOR** verdict. The convergence that named the
+effect was a property of that one relation on that one model.
+
+**What this costs:** [E-025]'s two-effect account is narrowed to one effect. "An edit
+suppresses everything about the subject to a floor" is withdrawn as a general claim;
+"an edit displaces probes whose answer type matches the injected value" survives, and is
+now the strongest behavioural result in the project — a crossover, in two models, at two
+depths.
+
+### Two engineering defects found on the way, both mine
+
+1. **`optimise()` halved the batch on any first failure**, without classifying it. A
+   node-dependent whitelist rejection ([O-007]) was read as an oversized batch: it shrank
+   a batch that was never too big, hit another flaky node, and parked for minutes. A
+   2-spec probe succeeding while a 12-spec batch "failed" looked exactly like a size
+   limit. It now classifies before resizing, and logs the message rather than only the
+   type — the second time in one day that omission cost a run.
+2. **The scores cache omitted the layer from its key.** A layer-13 run would have loaded
+   layer-5 scores and reported them as new numbers, with no error anywhere, and the output
+   filename would have overwritten the other arm. Caught before the re-run. Layer is now
+   in the deltas cache, the scores cache and the filename — the
+   `possession.FilterConfig.fingerprint` discipline, applied late.
+
+**Scope.** n=29, two relations, two models, two depths, layer-5-equivalent only for the
+matched comparison. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e033.py;
+results/E-033-crossover-*.json; logs/run_e033-2026-09-27-*.log

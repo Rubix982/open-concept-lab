@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**36 decisions · 18 findings · 67 threads (2 active, 49 answered, 3 dropped, 5 open, 8 parked)**
+**38 decisions · 18 findings · 67 threads (3 active, 49 answered, 3 dropped, 4 open, 8 parked)**
 
 ## Decisions and results
 
@@ -162,6 +162,14 @@ _Result · 2026-09-27_ — Runs [T-083]. [E-027] noticed both models' different-
 
 _Result · 2026-09-27_ — Runs [T-080] at scale. Coefficient measurement needs no gradients, so this cost ~24 traces where an edit at 405B would have cost days. Four models, a 68×…
 
+### E-033 · editing at scale was blocked by a one-line device bug, not by NDIF {#E-033}
+
+_Decision · 2026-09-27_ — Decision: editing experiments may now run at 70B and 405B. The blocker was ours. computevbatch's loss accumulated weightdecay (Dd[i] Dd[i]).sum() —…
+
+### E-033 · type matching is the mechanism — the "floor" was one pairing {#E-033-2}
+
+_Interim · 2026-09-27_ — Runs [T-081], the third and last of [T-065]'s never-varied dimensions. Recorded as interim: the 8B birthplace replication and the 70B occupation arm at…
+
 
 ## Findings
 
@@ -246,22 +254,22 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (5)
+### Open (4)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | <span id="t-T-078"></span>`T-078` | **What reorients the subject key with depth?** — [E-020] ruled out magnitude and named attention mixing as the leading candidate without testing it. The cheapest cut is the one… | T-077 | open |
-| <span id="t-T-081"></span>`T-081` | **Is the floor-plus-type-displacement structure a birthplace fact?** — [T-065] found every narrowing in this project came from varying a dimension previously held fixed, and named the three never… | T-072 | open |
 | <span id="t-T-084"></span>`T-084` | **Is a weak edit at depth under-optimisation, or a property of depth?** — [E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against layer 5's 9.70, while achieving comparable target… | T-079 | open |
 | <span id="t-T-085"></span>`T-085` | **What does ROME's Efficacy Score fail to distinguish?** — The one thing [E-026] produced that its failure does not touch. ROME's ES is P(target) &gt; P(true) on the edit prompt. At layer… | T-079 | open |
 | <span id="t-T-086"></span>`T-086` | **What actually sets how far a layer-5 edit travels?** — [E-029]'s by-product, and larger than the question it was answering. Belief displacement on the edit prompt and ES margin each… | T-085 | open |
 
-### Active (2)
+### Active (3)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | <span id="t-T-054"></span>`T-054` | **The CounterFact filter outlived the model it was calibrated against** — [R-006] established that CounterFact filtered records on P(true) &gt; P(counterfactual) pre-edit — so possession is checked. But… | T-047 | ACTIVE |
 | <span id="t-T-079"></span>`T-079` | **Does the decayed coefficient at depth actually produce less displacement?** — The joint [T-075] explicitly left open: "Whether the decayed coefficient at L20 actually produces less displacement is untested;… | T-075 | active |
+| <span id="t-T-081"></span>`T-081` | **Is the floor-plus-type-displacement structure a birthplace fact?** — [T-065] found every narrowing in this project came from varying a dimension previously held fixed, and named the three never… | T-072 | active — **type matching generalises, the floor does not** (2 arms pending) |
 
 ### Answered (49)
 

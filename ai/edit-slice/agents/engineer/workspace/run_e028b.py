@@ -40,7 +40,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from edit import EditSpec, compute_v_batch, read_key_and_value  # noqa: E402
 from logs import setup  # noqa: E402
-from remote import connect, retrying, score_pairs  # noqa: E402
+from remote import (FLAKY_BACKOFF_S, _is_flaky_remote, connect, retrying,  # noqa: E402
+                    score_pairs)
 from run_e013 import nat  # noqa: E402
 from run_e026 import DEEP, MODEL, SHALLOW, load_items  # noqa: E402
 
@@ -67,18 +68,33 @@ def optimise(m, specs, layer, steps, log, chunk, stall_wait, max_stalls):
                 out.update(compute_v_batch(m, grp, layer=layer, steps=steps))
                 break
             except Exception as exc:  # noqa: BLE001
+                # Classify BEFORE resizing. The first version halved on any first
+                # failure, which misread the node-dependent whitelist rejection
+                # ([O-007]/[O-008]) as an oversized batch: it shrank a batch that was
+                # never too big, failed again on the next flaky node, and parked for
+                # ten minutes. A batch of 2 succeeded while a batch of 12 "failed",
+                # which looked like a size limit and was not.
+                flaky = _is_flaky_remote(exc)
+                if flaky:
+                    if attempt == max_stalls - 1:
+                        raise
+                    log.warning("L%d s%d specs %d-%d: flaky node (%.90s); retrying "
+                                "same batch", layer, steps, i + 1, i + len(grp),
+                                str(exc).replace("\n", " "))
+                    time.sleep(FLAKY_BACKOFF_S * (attempt + 1))
+                    continue
                 if size > 3 and attempt == 0:
                     size = max(3, size // 2)
-                    log.warning("batch of %d failed (%s); halving to %d before "
-                                "treating it as an outage", len(grp),
-                                type(exc).__name__, size)
+                    log.warning("batch of %d failed with a NON-flaky error (%s: %.90s); "
+                                "halving to %d", len(grp), type(exc).__name__,
+                                str(exc).replace("\n", " "), size)
                     grp = specs[i:i + size]
                     continue
                 if attempt == max_stalls - 1:
                     raise
-                log.warning("L%d s%d specs %d-%d failed (%s); parking %.0f min",
+                log.warning("L%d s%d specs %d-%d failed (%s: %.90s); parking %.0f min",
                             layer, steps, i + 1, i + len(grp), type(exc).__name__,
-                            stall_wait / 60)
+                            str(exc).replace("\n", " "), stall_wait / 60)
                 time.sleep(stall_wait)
         i += size
     return out

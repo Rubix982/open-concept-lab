@@ -1,0 +1,8 @@
+2026-09-27 11:39:41,374 INFO     run_e033  run run_e033 -> logs/run_e033-2026-09-27-113941.log
+2026-09-27 11:39:41,374 INFO     run_e033  config {"edit_prompt": "{} works as a", "edit_target": "a profession the subject does not hold", "layer": 5, "measure": "teacher-forced log P(true answer); LEVELS, not drops", "model": "meta-llama/Llama-3.1-8B", "n": 29, "note": "E-014's |ctl deltas deliberately NOT reused \u2014 wrong prompt shape", "probes": {"citizenship": "{} is a citizen of", "language": "The native language of {} is", "occupation": "By profession, {} is a"}, "reference_arm": "[E-025] birthplace edit at 8B", "steps": 25, "thread": ["T-081", "T-080"], "ticket": "E-033"}
+2026-09-27 11:39:41,374 INFO     run_e033  29 subjects carried from [E-025] with a target occupation
+2026-09-27 11:39:43,517 INFO     run_e033  optimising v* for 29 occupation edits at 25 steps
+2026-09-27 11:40:48,672 WARNING  run_e033  batch of 12 failed (NNsightException); halving to 6 before treating it as an outage
+2026-09-27 11:40:50,382 WARNING  run_e033  L5 s25 specs 1-6 failed (NNsightException); parking 2 min
+2026-09-27 11:43:31,360 DEBUG    edit  batch step  1/25  summed loss 41.0316
+2026-09-27 11:43:35,019 WARNING  run_e033  L5 s25 specs 1-6 failed (NNsightException); parking 2 min
