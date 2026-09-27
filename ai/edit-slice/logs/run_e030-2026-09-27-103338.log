@@ -1,0 +1,36 @@
+2026-09-27 10:33:38,330 INFO     run_e030  run run_e030 -> logs/run_e030-2026-09-27-103338.log
+2026-09-27 10:33:38,330 INFO     run_e030  config {"bands": {"ARCHITECTURAL": "<0.05", "FAMILIARITY": ">=0.1"}, "fractions": [0.15, 0.63, 1.0], "llama_floor_reference": 0.082, "model": "EleutherAI/gpt-j-6b", "n": 36, "note": "subjects were possession-gated on Llama; this re-gates them on GPT-J", "thread": "T-082", "ticket": "E-030"}
+2026-09-27 10:33:44,728 DEBUG    remote  trace ok: 152 rows, 152 tok, 4.3s
+2026-09-27 10:33:47,568 DEBUG    remote  trace ok: 152 rows, 152 tok, 2.8s
+2026-09-27 10:33:47,570 INFO     run_e030    possession 8/36
+2026-09-27 10:33:50,606 DEBUG    remote  trace ok: 152 rows, 152 tok, 3.0s
+2026-09-27 10:33:53,662 DEBUG    remote  trace ok: 152 rows, 152 tok, 3.0s
+2026-09-27 10:33:53,664 INFO     run_e030    possession 16/36
+2026-09-27 10:33:56,705 DEBUG    remote  trace ok: 152 rows, 152 tok, 3.0s
+2026-09-27 10:33:59,646 DEBUG    remote  trace ok: 152 rows, 152 tok, 2.9s
+2026-09-27 10:33:59,648 INFO     run_e030    possession 24/36
+2026-09-27 10:34:02,529 DEBUG    remote  trace ok: 152 rows, 152 tok, 2.9s
+2026-09-27 10:34:05,628 DEBUG    remote  trace ok: 152 rows, 152 tok, 3.1s
+2026-09-27 10:34:05,629 INFO     run_e030    possession 32/36
+2026-09-27 10:34:08,503 DEBUG    remote  trace ok: 152 rows, 152 tok, 2.9s
+2026-09-27 10:34:08,504 INFO     run_e030  GPT-J possession: 21 HELD / 36 scored (58%)
+2026-09-27 10:35:33,023 INFO     run_e030    coefficients 6/36
+2026-09-27 10:36:55,133 INFO     run_e030    coefficients 12/36
+2026-09-27 10:38:28,307 INFO     run_e030    coefficients 18/36
+2026-09-27 10:39:58,814 INFO     run_e030    coefficients 24/36
+2026-09-27 10:41:26,861 INFO     run_e030    coefficients 30/36
+2026-09-27 10:42:53,035 INFO     run_e030    coefficients 36/36
+2026-09-27 10:42:53,035 INFO     run_e030  
+2026-09-27 10:42:53,035 INFO     run_e030  E-030 — different-subject floor by GPT-J possession (HELD 21, NOT-HELD 15)
+2026-09-27 10:42:53,035 INFO     run_e030  layer     group          floor   same-subj
+2026-09-27 10:42:53,035 INFO     run_e030  L4 (f=0.15)HELD           0.146       0.865
+2026-09-27 10:42:53,036 INFO     run_e030  L4 (f=0.15)NOTHELD        0.146       0.846
+2026-09-27 10:42:53,036 INFO     run_e030  L17 (f=0.63)HELD           0.411       0.678
+2026-09-27 10:42:53,036 INFO     run_e030  L17 (f=0.63)NOTHELD        0.388       0.677
+2026-09-27 10:42:53,036 INFO     run_e030  L27 (f=1.00)HELD           0.527       0.555
+2026-09-27 10:42:53,036 INFO     run_e030  L27 (f=1.00)NOTHELD        0.460       0.574
+2026-09-27 10:42:53,036 INFO     run_e030  
+2026-09-27 10:42:53,036 INFO     run_e030  at the edit layer: HELD 0.146 · NOT-HELD 0.146 · gap -0.000 (Llama reference 0.082)
+2026-09-27 10:42:53,036 INFO     run_e030  VERDICT: ARCHITECTURAL — the floors differ by only 0.000, so familiarity is not driving it. §4.3's narrowing of [E-018] to a Llama fact is CONFIRMED and the flag is upgraded.
+2026-09-27 10:42:53,037 INFO     run_e030    caveat, and it belongs beside this verdict rather than under it: the pool confound weakens THIS direction specifically — undercounting moves subjects into NOT-HELD and dilutes the contrast, so a small gap is the outcome a bad pool would also produce.
+2026-09-27 10:42:53,039 INFO     run_e030  written: results/E-030-floor-by-possession.json

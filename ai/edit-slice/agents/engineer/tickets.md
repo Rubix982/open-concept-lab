@@ -2271,3 +2271,225 @@ whose arms differed in edit strength, and it had to be withdrawn. Getting it hon
 three further runs and about six hours of NDIF time, each removing exactly one alternative:
 strength ([E-028b/c]), optimisation budget ([E-028d]), and the norm clamp (checked, never
 binding). The conclusion is the same sentence. The difference is that it is now true.
+
+---
+
+### E-030 · Is GPT-J's higher different-subject floor real, or unfamiliarity?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-27
+**Updated:** 2026-09-27
+**Estimated:** 2h
+**Thread:** T-082
+
+**Description:**
+
+[E-027] measured GPT-J's different-subject coefficient floor at **0.155** at the edit
+layer against Llama's **0.082**, rising to **0.524** at the final layer — above that
+layer's same-subject value, where the measure stops telling subjects apart at all. On that
+basis §4.3 of the paper narrows [E-018]'s "different subjects are near-orthogonal" to a
+**Llama-3.1-8B statement**.
+
+**That narrowing is currently flagged PLAUSIBLE, not confirmed, and it is in the packet.**
+The subjects were possession-gated on *Llama* and run on GPT-J with no filter. GPT-J is 6B
+and Pile-trained; if it does not know these people, their name tokens may share a generic
+"unfamiliar person" direction and inflate the floor by construction. Resolving this before
+the call either upgrades a published claim or retracts one, which is why it runs first.
+
+**Method.** Split, not a rate.
+
+1. Run the shipped possession filter on **GPT-J** over ~36 subjects drawn from the gated
+   chains. `possession.Scorer` is `Callable[[pairs], list[float]]`, so `score_pairs`
+   against a GPT-J handle satisfies it with no change to the module.
+2. Partition into **HELD** and **NOT-HELD** on GPT-J.
+3. For each group, measure the different-subject coefficient exactly as [E-027] did —
+   chain *i*'s `k*` against chain *i+1*'s subject in the same template — at three depths
+   (fractions ~0.15, ~0.63, 1.00).
+4. Compare the two floors.
+
+**Pre-stated outcomes.**
+
+- **ARCHITECTURAL** — the two floors differ by **< 0.05** at the edit layer. The high floor
+  is a property of GPT-J's representations, familiarity is not driving it, and §4.3's
+  narrowing of [E-018] to a Llama fact is **confirmed**. The paper's flag is upgraded.
+- **FAMILIARITY** — NOT-HELD exceeds HELD by **≥ 0.10** *and* the HELD floor sits near
+  Llama's 0.082. The floor was unfamiliar names all along; §4.3's narrowing is
+  **withdrawn** and the sentence about it comes out of the packet.
+- **MIXED** — anything between. Report both groups and claim neither; the flag stays.
+
+**Confounds.**
+
+1. *Possession is scored against a candidate pool, and [E-023] showed pools undercount.*
+   Tolerable here because the experiment needs a **split**, not a rate — but a pool that
+   undercounts moves subjects from HELD into NOT-HELD, which **dilutes** the contrast
+   rather than manufacturing one. So a FAMILIARITY verdict survives the objection and an
+   ARCHITECTURAL verdict is weakened by it. State that asymmetry in the entry.
+2. *Group sizes.* If either group has **fewer than 8** subjects the comparison is
+   underpowered; report the counts and say so rather than reporting a difference.
+3. *Something else differing between the groups.* Report the **same-subject** coefficient
+   per group alongside the floor. If HELD subjects also differ there, the split is picking
+   up something other than familiarity and neither verdict holds.
+
+**Deliverable.** One table: floor and same-subject coefficient, by group, by depth, with n
+per group. One sentence on whether §4.3's flag is upgraded, withdrawn, or stays.
+
+**Scope.** One model, one relation family, coefficient only, no edits. Existence
+per [O-004].
+
+**Result (2026-09-27).** ARCHITECTURAL. The floors are **0.146 against 0.146** at the edit
+layer — a gap of 0.000 against a pre-stated band of 0.05. §4.3's narrowing of [E-018] to a
+Llama fact is CONFIRMED and the plausible-not-confirmed flag is removed from the packet.
+
+Two components the headline does not carry. **Every gap has the wrong sign** — familiarity
+predicts NOT-HELD above HELD and it is lower at all three depths (all within 1 SEM, so the
+reversal is not itself a finding, but a hypothesis predicting positive and getting
+consistently negative is unsupported rather than weakly supported). And **the premise was
+shaky**: GPT-J holds 21 of 36 subjects outright, so "GPT-J may not know these people" was
+already doubtful.
+
+Confound 3 did not fire (same-subject 0.865 vs 0.846). The pool confound survives and
+weakens this direction specifically — dilution also produces a zero gap — but it does not
+explain a consistently negative one, nor the 58% possession rate.
+
+**Status:** closed
+**Blockers:** none
+**Artifacts:** agents/engineer/workspace/run_e030.py; results/E-030-floor-by-possession.json;
+logs/run_e030-2026-09-27-103338.log; agents/shared/decisions.md -> "[E-030] Result"
+**Closed:** 2026-09-27
+
+---
+
+### E-031 · Is the floor's dip near the edit layer real, or two coincidences?
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-09-27
+**Updated:** 2026-09-27
+**Estimated:** 1h
+**Thread:** T-083
+
+**Description:**
+
+[E-027] noticed, without looking for it, that **both** models' different-subject floors are
+non-monotonic with a minimum near depth fraction 0.15 — Llama **0.082** at L5, GPT-J
+**0.155** at L4 — rising through the middle and again near the output. That is
+approximately where ROME edits in both.
+
+The existing evidence is 4 points on Llama and 6 on GPT-J, at n = 12–16. That is too
+coarse to tell a real dip from sampling noise, and the observation is exactly the kind
+[T-083] was opened warning about: *too satisfying not to over-read*.
+
+**Method.** Finer spacing where the claim lives, and cheap because saves unroll.
+`compute` one trace per subject per model with **8 layers saved at once** — the [O-008]
+idiom, saves unrolled explicitly because a loop inside a trace body silently returns
+nothing. Layers chosen at depth fractions **0.00, 0.06, 0.10, 0.16, 0.23, 0.32, 0.55,
+1.00**, so five points sit below 0.25 where [E-027] had two.
+
+- Llama-3.1-8B → layers 0, 2, 3, 5, 7, 10, 17, 31
+- GPT-J-6B → layers 0, 2, 3, 4, 6, 9, 15, 27
+- n = 20 subjects, up from 12, for tighter bars. Coefficient only, no edits.
+
+**Pre-stated outcomes.** Let the window be depth fraction 0.05–0.25.
+
+- **DIP** — each model's floor has its minimum inside the window, *and* that minimum sits
+  below both neighbouring points by more than **one standard error of the mean**, *and*
+  the two minima are within **0.15** of each other in depth fraction. Only then is there a
+  shared phenomenon to explain.
+- **NO DIP** — on at least one model the floor is flat or monotone across the window, or
+  the minimum is within one SEM of its neighbours. The [E-027] observation was sampling
+  noise and the sentence is removed from §4.3's margin.
+- **DIFFERENT LOCATION** — both dip, but at fractions more than 0.15 apart. Then each is a
+  fact about its own model and the coincidence claim dies even though both curves are
+  non-monotonic.
+
+**What a DIP would and would not license — read this before writing the entry.**
+
+It would license: *different subjects are maximally separated at the subject position at
+roughly this depth, in two architectures.* That is a statement about representations and
+it is worth having.
+
+It would **not** license any claim about ROME's layer choice. ROME selects its layer by
+causal tracing, on a criterion that has nothing to do with inter-subject separation. Two
+quantities peaking at similar depths is a coincidence of location, not a mechanism. To
+make the connection one would have to show the causal-tracing peak and the floor minimum
+**move together** across models — which needs causal tracing run on both, which we have
+not done and are not proposing here. **Any sentence connecting the dip to ROME's layer
+selection is out of scope for this ticket and must not appear in its entry.**
+
+**Confounds.**
+1. *Different subject pairing.* The floor is chain *i* against chain *i+1*; a different
+   pairing gives different numbers. Use the same pairing rule as [E-027] and [E-018] so
+   the curves are comparable to what is published, and say that the pairing is fixed
+   rather than averaged over.
+2. *Depth fraction is not a physical alignment.* Matching by fraction assumes the two
+   networks do comparable work at comparable relative depth, which is an assumption, not a
+   measurement. It is the same assumption [E-027] already makes; note it, do not re-argue
+   it.
+
+**Deliverable.** One two-line chart — floor against depth fraction, both models, with SEM
+bars — and one sentence: dip, no dip, or different locations.
+
+**Result (2026-09-27).** NO DIP — and the observation dies for a better reason than the
+test that reported it. The minima are at fraction **0.06** (Llama) and **0.11** (GPT-J),
+not the same place; and Llama's edit layer sits at fraction 0.16 where the floor is
+**0.095**, roughly twice its 0.048 minimum. "ROME edits where subjects are maximally
+separated" is false on its own terms, before significance enters.
+
+**Defect in this ticket's own criterion, recorded.** "Below both neighbours by >1 SEM"
+is defeated by a flat-bottomed minimum spanning two adjacent samples, which is exactly
+what finer spacing produces — GPT-J's 0.144 and 0.153 are within each other's error. The
+test would have failed that way regardless of the world, and it was foreseeable before
+the run.
+
+What survives without any threshold: the floor is lowest in the first fifth of the network
+and rises monotonically after, a 14x range on Llama. That replaces the dip sentence in
+§4.3's margin.
+
+**Status:** closed
+**Artifacts:** agents/engineer/workspace/run_e031.py; results/E-031-floor-curve.json;
+agents/shared/decisions.md -> "[E-031] Result"
+**Closed:** 2026-09-27
+
+
+---
+
+### E-032 · Does the pinning hold at frontier scale? 8B → 70B → 405B
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-09-27
+**Updated:** 2026-09-27
+**Thread:** T-080
+
+**Description.** Coefficient measurement needs no gradients — one forward pass, save the
+MLP input at the subject's last token. That is `basic_trace`, which every hosted model
+supports, so the scale question costs ~24 traces where an *edit* at 405B would cost days.
+Llama-3.1-70B is base and is the clean comparison; Llama-3.1-405B-Instruct is the only
+405B hosted and is instruction-tuned, so that arm varies scale AND post-training together.
+
+**Result (2026-09-27).**
+
+- **ANALYTIC: CONFIRM at both**, worst deviation 0.0e+00. With [E-027] that is four models
+  across a **68x parameter range**, two architectures, base and instruct.
+- **DECAY: approximately scale-invariant** at matched depth — worst deviations 0.131 and
+  0.144 against a pre-stated 0.15 band. A pass, close enough to the threshold that it is
+  reported as *approximately* invariant rather than cleanly so.
+- **FLOOR: not a scale law, and the tidy story is refused.** 405B-Instruct reaches **0.009**
+  at fraction 0.10 (max across 12 subjects 0.042, so not outlier-driven) against a
+  same-subject 0.992 — a **108x** contrast. But 70B (0.110) is *worse* than 8B (0.061), so
+  the trend is non-monotone on four points, and the 405B arm confounds scale with
+  instruction tuning. Floor magnitude is model-specific.
+
+**Access note.** An early probe failed with `OSError: could not get source code` and looked
+like a permissions problem. It was the harness: nnsight reads the source of the frame
+entering `model.trace`, and the probe ran from a heredoc with no source file. Re-run from
+a real file, all three models trace in 6–8s. Recorded because [O-007] is the standing
+lesson — re-run the thing that worked before attributing a failure to access.
+
+**Artifacts:** agents/engineer/workspace/run_e032.py; results/E-032-scale.json;
+agents/shared/decisions.md -> "[E-032] Result"
+**Closed:** 2026-09-27

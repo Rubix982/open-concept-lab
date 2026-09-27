@@ -1292,6 +1292,13 @@ difference between "a fact about ROME" and "a fact about this model", and it is 
 thing an external reader will ask.
 Cheap: coefficient only, no edits, no `v*` optimisation — the [E-019] harness pointed at a
 different model.
+**Extended 2026-09-27 by [E-032]:** the analytic half now holds across **four models and a
+68x parameter range** — GPT-J-6B, Llama-3.1-8B, Llama-3.1-70B and Llama-3.1-405B-Instruct,
+all exactly 1.000, worst deviation 0.0e+00. The decay is approximately scale-invariant at
+matched depth (worst deviations 0.131 / 0.144 against a 0.15 band — a pass, but close).
+The floor is **not** a scale law: 405B-Instruct reaches 0.009 with a 108x contrast, but 70B
+is worse than 8B, the trend is non-monotone on four points, and the 405B arm confounds
+scale with instruction tuning.
 **Answer:** Both halves, and they split. The **analytic** half is a ROME fact: GPT-J-6B
 returns exactly 1.000 for every prefix-sharing probe at every layer measured, worst
 deviation 0.00e+00 across 216 cells, on a different architecture, tokenizer, width and
@@ -1331,7 +1338,7 @@ countries specifically.
 
 ### T-082 · Is GPT-J's high different-subject floor real, or just unfamiliarity?
 
-**Status:** open
+**Status:** answered — **real; the floor is architectural**
 **Parent:** T-080
 **Opened:** 2026-09-20
 **Question:** [E-027] measured GPT-J's different-subject floor at 0.155 at the edit layer
@@ -1347,13 +1354,19 @@ architectural; if it collapses for the held subjects it was familiarity all alon
 **Resume cold:** `src/possession.py` + `run_e027.py --model EleutherAI/gpt-j-6b`; the
 coefficients are already cached per subject in results/E-027-second-model.json, but only as
 means — re-run retaining per-subject values, which the current script discards.
-**Answer:** —
+**Answer:** **Real, not unfamiliarity.** [E-030] re-gated 36 subjects on GPT-J and split
+them: the floor is **0.146 for HELD and 0.146 for NOT-HELD** at the edit layer, a gap of
+0.000 against a pre-stated band of 0.05. Every gap runs the wrong way for the familiarity
+hypothesis (NOT-HELD lower at all three depths, all within 1 SEM), and GPT-J holds 21 of
+36 subjects outright, so the premise was weak to begin with. [E-027]'s narrowing of
+[E-018] to a Llama-3.1-8B statement is confirmed and the packet's flag is removed. The
+pool confound survives and is stated: dilution also produces a zero gap.
 
 ---
 
 ### T-083 · Why is the different-subject floor lowest near the layer ROME edits?
 
-**Status:** open
+**Status:** answered — **the premise is false; it is not lowest there**
 **Parent:** T-080
 **Opened:** 2026-09-20
 **Question:** [E-027] noticed, without looking for it, that both models' floors are
@@ -1366,7 +1379,16 @@ produced a coincidence. A floor curve at finer layer spacing on both models woul
 them apart, and it is the same harness with more layers.
 **Caution:** this is the kind of observation that is too satisfying not to over-read.
 Nothing about it is licensed until the curve is measured at spacing finer than six points.
-**Answer:** —
+**Answer:** **It is not there, and the caution was warranted.** [E-031] measured five
+points below fraction 0.25 at n=20. The minima are at fraction **0.06** (Llama) and
+**0.11** (GPT-J) — different places — and Llama's edit layer at fraction 0.16 has a floor
+of 0.095, about **twice** its 0.048 minimum. "ROME edits where subjects are maximally
+separated" is false on its own terms before significance is considered. The pre-registered
+test also had a defect worth recording: "below both neighbours by >1 SEM" is defeated by a
+flat-bottomed minimum spanning two adjacent samples, which finer spacing produces.
+What replaces it, needing no threshold: the floor is lowest in the first fifth of the
+network and rises monotonically after — a 14x range on Llama, and the same shape in
+GPT-J, 70B and 405B ([E-032]).
 
 ---
 

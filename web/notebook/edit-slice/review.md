@@ -60,6 +60,7 @@ far**.
 | **Table 6** | Delivery is not effect — propagation at a fixed coefficient (§4.4) |
 | **Table 7** | Floor plus type-matched displacement — what else the edit moves (§4.5) |
 | **Table 8** | Open threads, what each would decide, and what it costs (§8) |
+| **Table 9** | The pinning across a 68× parameter range (§4.3) |
 
 ## 1 · The question
 
@@ -408,11 +409,27 @@ anything else that reorients the residual stream. The attention patterns are unr
 0.669) is likewise cosine with a flat ratio: representational convergence near the output,
 not a scaling artifact.
 
-**It is a property of ROME, not of this model.** Repeating the coefficient measurement on
-**GPT-J-6B** — different architecture, tokenizer, width (16384 vs 14336) and depth (28 vs
-32 blocks) — returns **exactly 1.000 across all 216 prefix-sharing cells**, worst deviation
-0.00e+00. The derivation never mentioned an architecture, so this was expected; it is now
-measured rather than assumed.
+**It is a property of ROME, not of this model, and not of this scale.** The derivation
+mentions neither architecture nor parameter count, so it should hold anywhere. Measuring
+rather than assuming it costs almost nothing, because the coefficient needs **no
+gradients** — one forward pass, save the MLP input at the subject's token.
+
+<p className="ocl-tablecap"><strong>Table 9.</strong> Prefix-sharing probes across a 68× parameter range and two</p>
+architectures. Every cell is exactly 1.000; the column records the worst deviation found.
+
+| model | params | layers | prefix-sharing probes |
+| --- | ---: | ---: | --- |
+| GPT-J-6B | 6B | 28 | **1.000** · worst 0.0e+00 |
+| Llama-3.1-8B | 8B | 32 | **1.000** |
+| Llama-3.1-70B | 70B | 80 | **1.000** · worst 0.0e+00 |
+| Llama-3.1-405B-Instruct | 405B | 126 | **1.000** · worst 0.0e+00 |
+
+The **decay** is approximately scale-invariant at matched depth — worst deviations 0.131
+and 0.144 against a pre-stated 0.15 band, which is a pass close enough to the threshold to
+be worth saying so.<Margin>The 405B arm is instruction-tuned, because it is the only 405B
+hosted. It varies scale *and* post-training together, and post-training is exactly the
+sort of thing that could move subject representations. It must not be cited for scale
+alone.<Evidence id="E-032" /></Margin>
 
 The *decay* transfers too, which was not expected, because it is not derived. Compared at
 matched fraction of depth both models fall from 1.0 at the input to ~0.5 by two thirds
@@ -425,11 +442,31 @@ that layer's same-subject late-clause value of 0.482, so the coefficient has sto
 telling subjects apart at all. *"Different subjects are near-orthogonal at the subject
 position"* is a **Llama-3.1-8B** statement, not a ROME one. The margin at the layer ROME
 actually edits stays clean on both (0.87 against 0.71), so the claim above is untouched;
-only its generality across depth is model-dependent.<Margin>Confounded: the subjects were
-possession-gated on *Llama* and run on GPT-J unfiltered. Unfamiliar names may share a
-generic direction and inflate the floor by construction, so this narrowing is **plausible,
-not confirmed**. It does not touch the analytic result — 1.000 is exact whether or not the
-model knows the subject.<Evidence id="E-027" /></Margin>
+only its generality across depth is model-dependent.
+
+**Floor magnitude is model-specific and is not a scale law.** Mean floor at depth fractions
+0.10–0.23: GPT-J **0.144**, Llama-8B **0.061**, Llama-70B **0.110**, Llama-405B-Instruct
+**0.012**. The 405B figure is remarkable — 0.009 at fraction 0.10, with a maximum across
+all twelve subjects of 0.042, against a same-subject value of 0.992, a **108× contrast**.
+But 70B is *worse* than 8B, so the trend is non-monotone on four points and no scale law
+follows from it.<Margin>Two structures do hold in all four: the floor is high at layer 0,
+before contextualisation, when the key is embedding-driven and names share subword
+statistics; and near the output the floor *exceeds* the same-subject value, so the measure
+stops discriminating subjects altogether.<Evidence id="E-032" /></Margin>
+
+**What the floor does across depth, in every model measured:** it is lowest in the first
+fifth of the network and rises monotonically after — a **14× range** on Llama-3.1-8B,
+0.048 to 0.697. An earlier version of this section reported the minimum as falling near
+the layer ROME edits, in two models, and drew a line to ROME's layer selection. Measured
+at finer spacing that is **false**: the minima sit at fractions 0.06 and 0.11, not the same
+place, and Llama's edit layer at fraction 0.16 carries a floor of 0.095 — about twice its
+minimum.<Margin>Withdrawn rather than qualified. The claim was attractive, and it did not
+survive its own first proper test.<Evidence id="E-031" /></Margin><Margin>Tested rather than assumed. Re-gating the
+subjects on GPT-J and splitting them gives a floor of **0.146 for held and 0.146 for
+not-held** — a gap of 0.000 against a pre-stated band of 0.05, with every gap running the
+*wrong* way for a familiarity account, and GPT-J holding 21 of 36 subjects outright. The
+narrowing is confirmed. The residual objection is that a candidate pool undercounts, which
+dilutes the contrast toward exactly this zero.<Evidence id="E-030" /> · <Evidence id="E-027" /></Margin>
 
 ### 4.4 · Delivery is not effect — the coefficient's boundary, measured
 

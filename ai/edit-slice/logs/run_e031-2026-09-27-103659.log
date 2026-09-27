@@ -1,0 +1,39 @@
+2026-09-27 10:36:59,843 INFO     run_e031  run run_e031 -> logs/run_e031-2026-09-27-103659.log
+2026-09-27 10:36:59,843 INFO     run_e031  config {"fractions": [0.0, 0.06, 0.1, 0.16, 0.23, 0.32, 0.55, 1.0], "layers": {"EleutherAI/gpt-j-6b": [0, 2, 3, 4, 6, 9, 15, 27], "meta-llama/Llama-3.1-8B": [0, 2, 3, 5, 7, 10, 17, 31]}, "measure": "different-subject coefficient; no edits", "models": ["meta-llama/Llama-3.1-8B", "EleutherAI/gpt-j-6b"], "n": 20, "pairing": "chain i vs chain i+1, fixed \u2014 same rule as [E-018]/[E-027]", "scope": "a dip licenses NOTHING about ROME's layer choice; see the docstring", "thread": "T-083", "ticket": "E-031", "window": [0.05, 0.25]}
+2026-09-27 10:38:26,615 INFO     run_e031    meta-llama/Llama-3.1-8B 5/20
+2026-09-27 10:39:32,903 INFO     run_e031    meta-llama/Llama-3.1-8B 10/20
+2026-09-27 10:40:42,979 INFO     run_e031    meta-llama/Llama-3.1-8B 15/20
+2026-09-27 10:42:06,482 INFO     run_e031    meta-llama/Llama-3.1-8B 20/20
+2026-09-27 10:43:19,516 INFO     run_e031    EleutherAI/gpt-j-6b 5/20
+2026-09-27 10:44:22,031 INFO     run_e031    EleutherAI/gpt-j-6b 10/20
+2026-09-27 10:45:30,444 INFO     run_e031    EleutherAI/gpt-j-6b 15/20
+2026-09-27 10:46:31,911 INFO     run_e031    EleutherAI/gpt-j-6b 20/20
+2026-09-27 10:46:31,929 INFO     run_e031  
+2026-09-27 10:46:31,929 INFO     run_e031  E-031 — different-subject floor against depth fraction
+2026-09-27 10:46:31,929 INFO     run_e031  
+2026-09-27 10:46:31,929 INFO     run_e031  meta-llama/Llama-3.1-8B
+2026-09-27 10:46:31,929 INFO     run_e031    layer        frac    floor     ±sem
+2026-09-27 10:46:31,929 INFO     run_e031    L0           0.00    0.067    0.008
+2026-09-27 10:46:31,930 INFO     run_e031    L2           0.06    0.048    0.003
+2026-09-27 10:46:31,930 INFO     run_e031    L3           0.10    0.061    0.003
+2026-09-27 10:46:31,930 INFO     run_e031    L5           0.16    0.095    0.006
+2026-09-27 10:46:31,930 INFO     run_e031    L7           0.23    0.168    0.010
+2026-09-27 10:46:31,930 INFO     run_e031    L10          0.32    0.234    0.015
+2026-09-27 10:46:31,930 INFO     run_e031    L17          0.55    0.326    0.024
+2026-09-27 10:46:31,930 INFO     run_e031    L31          1.00    0.697    0.022
+2026-09-27 10:46:31,930 INFO     run_e031    minimum at L2 (fraction 0.06) — in window: True · below both neighbours by >1 SEM: True
+2026-09-27 10:46:31,930 INFO     run_e031  
+2026-09-27 10:46:31,930 INFO     run_e031  EleutherAI/gpt-j-6b
+2026-09-27 10:46:31,930 INFO     run_e031    layer        frac    floor     ±sem
+2026-09-27 10:46:31,930 INFO     run_e031    L0           0.00    0.303    0.040
+2026-09-27 10:46:31,930 INFO     run_e031    L2           0.07    0.244    0.019
+2026-09-27 10:46:31,930 INFO     run_e031    L3           0.11    0.144    0.017
+2026-09-27 10:46:31,930 INFO     run_e031    L4           0.15    0.153    0.016
+2026-09-27 10:46:31,930 INFO     run_e031    L6           0.22    0.221    0.015
+2026-09-27 10:46:31,930 INFO     run_e031    L9           0.33    0.309    0.017
+2026-09-27 10:46:31,930 INFO     run_e031    L15          0.56    0.426    0.026
+2026-09-27 10:46:31,930 INFO     run_e031    L27          1.00    0.543    0.043
+2026-09-27 10:46:31,930 INFO     run_e031    minimum at L3 (fraction 0.11) — in window: True · below both neighbours by >1 SEM: False
+2026-09-27 10:46:31,930 INFO     run_e031  
+2026-09-27 10:46:31,930 WARNING  run_e031  VERDICT: NO DIP — the minimum is inside the window on both models but within one SEM of its neighbours on at least one (meta-llama/Llama-3.1-8B True, EleutherAI/gpt-j-6b False). That is a wobble, not a dip; it comes out of §4.3's margin.
+2026-09-27 10:46:31,932 INFO     run_e031  written: results/E-031-floor-curve.json

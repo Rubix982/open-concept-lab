@@ -267,6 +267,30 @@ E-028d:
   gist: "The fourth cell, bought to break the collinearity [E-028c] built in. The coefficient at the subject's last token is exactly 1.000 in every cell below —…"
   surface: decision
 
+E-030:
+  id: "E-030"
+  kind: "Result"
+  title: "the GPT-J floor is architectural — [E-027]'s narrowing is confirmed"
+  date: "2026-09-27"
+  gist: "Runs [T-082]. §4.3 of the paper narrows [E-018]'s \"different subjects are near-orthogonal at the subject position\" to a Llama-3.1-8B statement, on the…"
+  surface: decision
+
+E-031:
+  id: "E-031"
+  kind: "Result"
+  title: "NO DIP — and the observation dies for a better reason than significance"
+  date: "2026-09-27"
+  gist: "Runs [T-083]. [E-027] noticed both models' different-subject floors dipping near depth fraction 0.15 — roughly where ROME edits in both — on 4 and 6…"
+  surface: decision
+
+E-032:
+  id: "E-032"
+  kind: "Result"
+  title: "the pinning is exact from 6B to 405B — the floor is not a scale law"
+  date: "2026-09-27"
+  gist: "Runs [T-080] at scale. Coefficient measurement needs no gradients, so this cost ~24 traces where an edit at 405B would have cost days. Four models, a 68×…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -975,7 +999,7 @@ t-T-082:
   title: "Is GPT-J's high different-subject floor real, or just unfamiliarity?"
   date: ""
   gist: "[E-027] measured GPT-J's different-subject floor at 0.155 at the edit layer against Llama's 0.082, and at 0.524 at the final…"
-  status: "open"
+  status: "answered — **real; the floor is architectural**"
   surface: thread
 
 t-T-083:
@@ -984,7 +1008,7 @@ t-T-083:
   title: "Why is the different-subject floor lowest near the layer ROME edits?"
   date: ""
   gist: "[E-027] noticed, without looking for it, that both models' floors are non-monotonic with a minimum near depth fraction 0.15 —…"
-  status: "open"
+  status: "answered — **the premise is false; it is not lowest there**"
   surface: thread
 
 t-T-084:

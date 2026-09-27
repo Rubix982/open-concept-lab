@@ -2106,3 +2106,189 @@ prose written in advance of a result will describe the result the author expecte
 
 **Artifacts:** agents/engineer/workspace/run_e028d.py;
 results/E-028d-budget-control.json; logs/run_e028d-2026-09-21-094454.log
+
+---
+
+## [E-030] Result: the GPT-J floor is architectural — [E-027]'s narrowing is confirmed
+
+_Date: 2026-09-27 · GPT-J-6B, 36 subjects re-gated on GPT-J, coefficient only_
+
+Runs [T-082]. §4.3 of the paper narrows [E-018]'s "different subjects are near-orthogonal
+at the subject position" to a **Llama-3.1-8B statement**, on the strength of GPT-J's higher
+floor. That narrowing was published flagged **plausible, not confirmed**, because the
+subjects had been possession-gated on *Llama* and run on GPT-J unfiltered: unfamiliar names
+might share a generic direction and inflate the floor by construction.
+
+**They do not. The flag comes off.**
+
+| layer | HELD floor (n=21) | NOT-HELD floor (n=15) | gap | gap / SEM |
+| --- | ---: | ---: | ---: | ---: |
+| L4 (f=0.15, the edit layer) | 0.146 ± 0.017 | 0.146 ± 0.021 | **−0.000** | −0.01 |
+| L17 (f=0.63) | 0.411 ± 0.034 | 0.388 ± 0.032 | −0.024 | −0.50 |
+| L27 (f=1.00) | 0.527 ± 0.038 | 0.460 ± 0.055 | −0.067 | −0.99 |
+
+Pre-stated ARCHITECTURAL band was a gap below 0.05 at the edit layer. Measured **0.000**.
+
+### Three strands, and the headline is the weakest of them
+
+1. **The gap is zero** at the edit layer — 0.146 against 0.146.
+2. **Every gap has the wrong sign.** Familiarity predicts NOT-HELD *above* HELD at every
+   layer. NOT-HELD is *lower* at all three. All three are within 1 SEM, so the reversal is
+   not itself a finding — but a hypothesis that predicts a positive gap and gets a
+   consistently negative one is not weakly supported, it is unsupported.
+3. **The premise was shaky to begin with.** GPT-J holds **21 of 36** of these subjects
+   (58%). The worry was that GPT-J does not know these people; it knows most of them.
+
+**Confound 3 did not fire.** The same-subject coefficients are 0.865 (HELD) against 0.846
+(NOT-HELD) at the edit layer, so the split is not picking up some other property of the
+subjects.
+
+### The caveat that survives, and its limit
+
+The pool confound is asymmetric and it weakens **this** direction specifically: [E-023]
+showed candidate pools undercount, which moves subjects from HELD into NOT-HELD and
+**dilutes** the contrast. A zero gap is therefore the outcome a bad pool would also
+produce, and that objection is not answered by strand 1.
+
+It is partially answered by strands 2 and 3. Dilution drives a gap toward zero; it does not
+naturally drive it negative at every layer, and it says nothing about GPT-J holding 58% of
+the subjects outright. The honest position: **no difference, and certainly not in the
+predicted direction**, with the residual risk that a better pool would reveal a small
+positive gap we cannot currently see.
+
+### Consequence
+
+> "Different subjects are near-orthogonal at the subject position" is a **Llama-3.1-8B**
+> statement, not a ROME one. GPT-J's floor is roughly twice as high at the edit layer and
+> reaches 0.527 at the last layer, where it exceeds the same-subject value — and this is a
+> property of the architecture, not of which subjects we happened to feed it.
+
+§4.3's margin note is updated: the narrowing is confirmed and the plausible-not-confirmed
+flag is removed. The claim in §4.3's body was already correctly scoped and does not change.
+
+**Scope.** 36 subjects, one relation family, three depths, coefficient only, no edits.
+Possession measured with the shipped filter and its pool. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e030.py;
+results/E-030-floor-by-possession.json; logs/run_e030-2026-09-27-103338.log
+
+---
+
+## [E-031] Result: NO DIP — and the observation dies for a better reason than significance
+
+_Date: 2026-09-27 · Llama-3.1-8B and GPT-J-6B, 20 subjects, 8 depths, coefficient only_
+
+Runs [T-083]. [E-027] noticed both models' different-subject floors dipping near depth
+fraction 0.15 — roughly where ROME edits in both — on 4 and 6 points at n = 12–16. This
+put five points below fraction 0.25 where there had been two.
+
+| depth fraction | 0.00 | 0.06 | 0.10 | 0.16 | 0.23 | 0.32 | 0.55 | 1.00 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Llama-3.1-8B | 0.067 | **0.048** | 0.061 | 0.095 | 0.168 | 0.234 | 0.326 | 0.697 |
+| GPT-J-6B | 0.303 | 0.244 | **0.144** | 0.153 | 0.221 | 0.309 | 0.426 | 0.543 |
+
+**VERDICT: NO DIP**, by the pre-registered test.
+
+### The test failed on a technicality, and that is recorded as a defect
+
+The criterion required the minimum to sit below **both** neighbours by more than one SEM.
+GPT-J's minimum has a **flat bottom across two adjacent samples** — 0.144 at f=0.11 and
+0.153 at f=0.15, well within each other's error — so no single point can be below both
+neighbours. **Finer spacing defeats the criterion**, which is a flaw in the test rather
+than evidence about the world, and it would have been visible before the run.
+
+### The observation dies anyway, for a reason that needs no threshold
+
+1. **The minima are in different places.** Llama at fraction **0.06**, GPT-J at **0.11**.
+   Not the same location, so there is no shared phenomenon to explain.
+2. **Neither sits where ROME edits.** Llama's edit layer is L5, fraction **0.16**, where
+   the floor is **0.095** — roughly **twice** its minimum of 0.048.
+
+So *"ROME edits where subjects are maximally separated"* is **false on its own terms**,
+before any question of significance. The narrative [T-083] was opened warning about — "too
+satisfying not to over-read" — is dead, and the warning was warranted.
+
+### What survives, and it needs no threshold at all
+
+> The floor is lowest in the **first fifth** of the network and rises monotonically
+> thereafter — Llama 0.048 → 0.697, a **14×** range across depth.
+
+That is a statement about representations, it holds in both models, and it is what §4.3
+should say instead. The dip sentence comes out of the margin.
+
+**Artifacts:** agents/engineer/workspace/run_e031.py; results/E-031-floor-curve.json;
+logs/run_e031-2026-09-27-*.log
+
+---
+
+## [E-032] Result: the pinning is exact from 6B to 405B — the floor is not a scale law
+
+_Date: 2026-09-27 · Llama-3.1-70B (base) and Llama-3.1-405B-Instruct, 12 subjects, coefficient only_
+
+Runs [T-080] at scale. Coefficient measurement needs **no gradients**, so this cost ~24
+traces where an *edit* at 405B would have cost days.
+
+### The analytic claim holds at every scale tested
+
+| model | params | layers | prefix-sharing probes |
+| --- | ---: | ---: | --- |
+| GPT-J-6B | 6B | 28 | **1.000**, worst deviation 0.0e+00 |
+| Llama-3.1-8B | 8B | 32 | **1.000** |
+| Llama-3.1-70B | 70B | 80 | **1.000**, worst deviation 0.0e+00 |
+| Llama-3.1-405B-Instruct | 405B | 126 | **1.000**, worst deviation 0.0e+00 |
+
+Four models, a **68× parameter range**, two architectures, base and instruction-tuned.
+Expected — the derivation mentions neither scale nor training — and now measured.
+
+### The decay is approximately scale-invariant, and only just
+
+Reordered probes at matched depth fraction, against Llama-3.1-8B:
+
+| model | 0.00 | 0.06 | 0.10 | 0.16 | 0.23 | 0.32 | 0.55 | 1.00 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 8B (reference) | 0.992 | 0.960 | 0.930 | 0.951 | 0.900 | 0.858 | 0.700 | 0.598 |
+| 70B | 0.964 | 0.956 | 0.970 | 0.950 | 0.961 | 0.922 | 0.569 | 0.549 |
+| 405B-Instruct | 0.916 | 0.966 | 1.000 | 0.968 | 0.971 | 0.901 | 0.556 | 0.601 |
+
+Worst deviations **0.131** and **0.144** against a pre-stated band of 0.15. That is a pass,
+and it is close enough to the threshold that it should be reported as *approximately*
+invariant rather than as a clean result. The deviation is concentrated at fraction 0.55,
+where the larger models fall further and faster; through the first third all four profiles
+sit within about 0.07 of one another.
+
+### The floor is NOT a scale law, and the tidy story is refused
+
+Mean floor at depth fractions 0.10–0.23:
+
+| model | floor | best contrast against same-subject |
+| --- | ---: | ---: |
+| GPT-J-6B | 0.144 | 6× |
+| Llama-3.1-8B | 0.061 | 16× |
+| Llama-3.1-70B | **0.110** | 27× |
+| Llama-3.1-405B-Instruct | **0.012** | **108×** |
+
+405B's separation is extraordinary — floor **0.009** at fraction 0.10 with a maximum across
+all 12 subjects of **0.042**, so it is not outlier-driven, against a same-subject value of
+0.992. Different people's subject keys are very nearly orthogonal there.
+
+**But 70B (0.110) is worse than 8B (0.061), so this is not monotone in scale and no scale
+law may be claimed from it.** Four points, non-monotone, and the 405B arm is
+instruction-tuned — it varies scale *and* post-training together, and instruction tuning is
+exactly the sort of thing that could move subject representations. The honest statement is
+that **floor magnitude is model-specific**, with 405B-Instruct showing by far the cleanest
+separation of anything measured.
+
+### Two structures that do hold in all four models
+
+1. **The floor is high at layer 0** (70B 0.465, 405B 0.844) — before contextualisation the
+   key is embedding-driven and names share subword statistics.
+2. **The measure stops discriminating near the output.** At fraction 1.00 the floor
+   *exceeds* the same-subject value on 70B (0.633 against 0.507) and GPT-J, as [E-020]
+   found on 8B at layer 31. Representational convergence near the output is general.
+
+**Scope.** n=12, one relation family, coefficient only, no edits applied at any scale.
+The 405B arm confounds scale with instruction tuning and must never be cited for scale
+alone. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e032.py; results/E-032-scale.json;
+logs/run_e032-2026-09-27-*.log
