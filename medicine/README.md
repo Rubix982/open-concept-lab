@@ -29,3 +29,26 @@ https://glittering-fenglisu-5327a6.netlify.app/
 ![screenshot 11](image-11.png)
 ![screenshot 12](image-12.png)
 ![screenshot 13](image-13.png)
+
+## The Pitt, Decoded — ranked by how fast it kills
+
+A viewer's glossary for *The Pitt*, built on one ruler: every failure ordered
+by how fast it kills, from the airway outward.
+
+**Part I — seconds to minutes, the body.** RSI as a seven-step clock; the
+two-minute arrest loop and why the rhythm is only legible hands-off; tension
+pneumothorax → needle → chest tube; the four FAST windows; lung sliding as
+seashore-vs-barcode; and shock as four failures of one tank-pump-pipes circuit.
+
+**Part II — minutes to hours, the room.** The drug board and the monitor
+numbers: what the room cannot feel, it has to write down.
+
+Six animated panels, nine sections. Part III (the department — EMTALA, ESI,
+the board, boarding, dispo) is derived in `design-e002-flow.md` and not yet
+built; the merge argument is in `design-merge.md`.
+
+Designed as a calibrated strip: the background is rhythm-paper grid, the left
+rail is a time-to-harm axis measured from the document itself, and colour
+follows patient-monitor channel assignment rather than taste.
+
+`the-pitt-resus-bay.html` — single file, fonts embedded, works offline.
