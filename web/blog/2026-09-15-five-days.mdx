@@ -1554,7 +1554,7 @@ normalisation or the key selection rather than the covariance is a consequence o
 finding, not a method I am offering. Any approach that limits an edit's blast radius by
 reweighting `u` inherits this limit.
 
-## Why the null was inevitable
+## Why the null was forced
 
 A null result asks for an explanation, and the obvious suspect was the editor. Everything
 above used `C = I` — the unwhitened update, which drops roughly eight nats on facts about
@@ -1672,6 +1672,97 @@ less displacement. The scale test already showed coefficient and destination are
 linearly related, so it cannot be assumed. And the obvious follow-on — edit deeper, leak
 less — is method design, which this project deliberately does not do.
 
+## Checking it on other models, and on much bigger ones
+
+_Added 2026-09-27._
+
+Everything above was measured on one model. That is the first thing anyone should
+distrust, so this is the part where we went and checked.
+
+### What we were checking
+
+The main result is a piece of arithmetic. When you edit a fact, the tool works out how
+much of the change to apply, and that amount comes out as **exactly 1** for any question
+that begins with the edited name. Not "about 1". Exactly.
+
+Arithmetic should not care what model you run it on. But "should not" is a prediction, and
+predictions are cheap until you test them.
+
+The test is cheap too, and that is why it got done. Measuring this number needs **one
+forward pass** — no editing, no training, no gradients. So where actually *editing* a
+405-billion-parameter model would take days, measuring the number takes about twenty
+questions and a few minutes.
+
+### It holds everywhere we looked
+
+| model | size | layers | the number |
+| --- | ---: | ---: | --- |
+| GPT-J | 6B | 28 | **exactly 1** |
+| Llama-3.1 | 8B | 32 | **exactly 1** |
+| Llama-3.1 | 70B | 80 | **exactly 1** |
+| Llama-3.1-Instruct | 405B | 126 | **exactly 1** |
+
+Four models. The largest is **68 times** the size of the smallest. Two different
+architectures. Some trained only on raw text, one further trained to follow instructions.
+The number is 1 in every case, to the last decimal we can measure.
+
+So this is a fact about the editing **method**, not about any particular model. Which is
+what the arithmetic said, and it is nice to have it measured rather than argued.
+
+### A pretty number we are not allowed to keep
+
+The biggest model gave us something striking. There is a second measurement — how much an
+edit to *one* person bleeds onto a *different* person. Lower is better: it means the edit
+is precisely aimed.
+
+At 405B that number is **0.009**. Essentially zero. The edit lands on the person you aimed
+at and nobody else.
+
+The tempting story writes itself: *bigger models keep their people more separate.* It is a
+good story and we cannot tell it. The 70B model scored **worse** than the 8B one. Four
+points, going up and down, is not a trend. And the only 405B we can reach has had extra
+training that the others have not, so its number mixes together two different things.
+
+So we wrote down "this varies by model" and left the nice story alone.
+
+### Something we believed that turned out to be wrong
+
+Earlier we had noticed that this person-to-person bleed is at its lowest **near the layer
+the editing tool actually edits**. In two different models. That looked like it meant
+something — as if the tool had found the best place to work.
+
+We measured it properly, with more points and more people. It is not true.
+
+The low point is in a different place in each model, and in neither case is it where the
+tool edits. In our main model the tool edits at a spot where the bleed is about **twice**
+its lowest value.
+
+So we took the claim out. Not softened — removed.
+
+What is left is duller and actually true: the bleed is lowest early in the model and grows
+steadily deeper in. By the last layer it is so large the measurement stops being able to
+tell two different people apart at all. That happens in all four models.
+
+### One worry, checked rather than argued
+
+When GPT-J showed more person-to-person bleed than Llama, there was an obvious objection:
+our people were chosen because *Llama* knows them. Maybe GPT-J simply has not heard of
+them, and unfamiliar names all look alike to it.
+
+That is a real worry and it would have quietly ruined the comparison. So we tested it —
+asked GPT-J which of these people it actually knows, split them into two groups, and
+measured each.
+
+The two groups came out at **0.146** and **0.146**. Identical. And it turned out GPT-J
+knows 21 of the 36 people anyway, so the worry had a weak premise to begin with.
+
+### What this round cost and bought
+
+Three experiments, all small, none needing anything to be edited. They **confirmed** one
+claim, **strengthened** another by killing an objection to it, and **deleted** a third.
+
+That ratio is about normal for this project.
+
 ## What is open
 
 **The experiment the project is named for has run, and returned a negative.** Forty-two
@@ -1699,6 +1790,12 @@ has a ceiling — it catches what you already half-know, which is precisely the
 pattern documented above. The five-day record is a large, internally consistent
 body of work that nobody outside has stress-tested. That is the real risk, and no
 amount of further work reduces it.
+
+**Updated 2026-09-27.** Two of the gaps below are now closed. *"The structural leakage
+claim is a layer-5 claim until the coefficient sweep is run elsewhere"* — the sweep has
+been run, on four models from 6B to 405B, and the pinning is exact in all of them. And the
+worry that a second model's higher person-to-person bleed was really unfamiliarity has been
+tested and is not that. A third claim was deleted outright: see the section above.
 
 **Known gaps, stated rather than buried:** the whitening gap named here in the first
 version of this post is **closed, and closed by an argument** — ROME's normalisation pins
