@@ -45,6 +45,18 @@ built:
       papers, so you can ask which claim supported or contradicted which.
     ratio: 1.5
 
+  - name: the-pitt-decoded
+    title: The Pitt, Decoded
+    from: medicine/the-pitt-resus-bay.html
+    topic: Medicine
+    what: >
+      Emergency-medicine vocabulary ordered on one ruler — how fast each
+      failure kills — from the airway outward to the department. Six animated
+      panels, an interactive bench for turning a prior and a likelihood ratio
+      into a posterior, and sources that mark what was checked against a paper
+      and what was not.
+    ratio: 1.6
+
   - name: apob
     title: ApoB and the Cardiometabolic Cascade
     from: medicine/apob-cardiometabolic.html
