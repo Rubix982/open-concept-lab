@@ -50,6 +50,15 @@ checklist used to assemble the packet and the answers to questions likely to com
 >    wasted effort?
 > 3. **Is a careful existence claim at n≈30–42 publishable anywhere**, or does this need
 >    the frequency work it currently forbids itself?
+> 4. **Is a control a contribution?** A prior-art sweep run while assembling this packet
+>    turned up He et al. (arXiv 2601.04600, January 2026), who report that ROME's
+>    generalization "deteriorates sharply when editing later layers" — the depth
+>    phenomenon in §4.4, found independently and published eight months before my run.
+>    What I have that they do not is the control: delivery pinned at exactly 1.000 and
+>    belief displacement matched, which rules out edit strength and optimisation budget.
+>    Is that worth anything on its own? I have left the finding in with the prior work
+>    cited beside it rather than quietly dropping it, but I do not know how it reads from
+>    outside.
 >
 > **The honest framing:** most of what I found is what does not work. Section 5.1
 > separates the eliminations — which constrain the space for anyone — from my own
@@ -98,3 +107,10 @@ layer of four models, and it would mean the derivation or the implementation is 
 
 **"What is the weakest part?"** §6.2 — the mechanism is a line of algebra and may be
 assumed by practitioners. That is question 1 above, and it is the reason for the call.
+
+**"Has anyone seen the main result before?"** Partly, and it is worth being precise.
+ROME's own paper observes qualitatively that an edit generalizes to *"new
+prompts/sentences that include the subject tokens"* — so the phenomenon is in the original
+work. A search found nobody stating the **arithmetic**: that the coefficient is exactly 1
+on those prompts, for any covariance, at every layer, whatever relation is asked. So the
+question is not "has anyone seen this" but "has anyone said why, and noticed it is exact".

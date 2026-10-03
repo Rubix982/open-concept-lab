@@ -1287,3 +1287,74 @@ ran them. The shapes are unambiguous but "held" versus "narrowed" is a judgement
 own work, and the 80%/86% comparison is underpowered by construction.
 
 **Artifacts:** this entry; answers [T-065].
+
+## [R-011] Finding: the depth result has prior art, and T-086 has a candidate
+
+_Date: 2026-10-03_
+
+Re-ran prior art against where the project **now** is rather than where it started. Four
+entries added to the reading list, each verified field-by-field against the paper's own
+record. Two of them change what we may say.
+
+### The depth result is not new as a phenomenon
+
+**He et al., arXiv 2601.04600** (January 2026) report, among three ROME failure modes,
+that *"generalization ability deteriorates sharply when editing later layers."*
+
+That is [E-028]'s phenomenon, found independently and **published eight months before our
+run**. Our depth finding must not be described as new.
+
+**What may still be ours is the control, not the observation.** They report that deeper
+edits generalize worse. We held *delivery* fixed at a coefficient of exactly 1.000 and
+*belief displacement* matched to within 0.3 nats, and measured 1.22 against 0.41 nats of
+reach per nat displaced — which separates the effect from edit strength and from
+optimisation budget ([E-028d]'s fourth cell). Whether that separation is itself a
+contribution is a question for someone outside the project, and it is now question 4 for
+the call.
+
+**Unread.** The paper is `to-read`. This entry is written from its abstract, which is
+enough to establish the overlap and not enough to size it. **Read it before the call.**
+
+### T-086 has a candidate explanation, and it is the first one
+
+[T-086] asks what sets how far an edit travels — the question nothing in our record
+predicts, where displacement and the efficacy margin each reach only ρ ≈ 0.42.
+
+**Ravfogel et al., arXiv 2605.12426** proves, in a controlled single-layer setting, that
+subject embeddings encode **linear superpositions of their attribute vectors**, with the
+MLP acting as a **relation-conditioned selector** via ReLU gating — explicitly *"not as an
+associative key-value mapping."*
+
+If that structure survives past the controlled setting, it predicts both things [E-033]
+measured: writing a new attribute vector at the subject position perturbs the whole
+superposition (the broad same-subject damage), and perturbs most what lies nearest the
+injected direction (displacement following the injected value's **type**).
+
+It also contradicts ROME's own premise. ROME treats the MLP as an associative key-value
+store; this argues it is a selector. We edit on ROME's premise throughout.
+
+**Two cautions, both load-bearing.** It is a *theoretical* result in a *single-layer*
+setting with random bijections, and we measure Llama-3.1-8B through 405B — the gap is
+large and unargued. And it is seductive: it explains our two main behavioural findings at
+once, which is exactly when a borrowed frame should be distrusted. It is a candidate for
+T-086, not an answer to it.
+
+### What the search did not turn up
+
+**Nobody states the pinned-coefficient result.** Searching for the normalisation directly
+returned ROME itself and implementations, not an analysis of `u·k*`. ROME's own paper notes
+qualitatively that an edit generalizes to *"new prompts/sentences that include the subject
+tokens"* — so the **phenomenon** is observed in the original work. What we have not found
+stated anywhere is the **arithmetic**: that the coefficient is exactly 1 on those prompts,
+for any `C`, at every layer, whatever relation is asked.
+
+That narrows the novelty question usefully and makes it sharper rather than weaker: not
+*"has anyone seen this?"* — ROME's authors did — but *"has anyone said why, and noticed it
+is exact?"* That is the form in which it should go to Natalie.
+
+**Confidence: medium.** Four papers verified, one search pass, English-language web search
+only. A negative from one sweep is weak evidence of absence, and the assistant's training
+cutoff precedes much of the relevant window — which is why every entry here was fetched
+rather than recalled.
+
+**Artifacts:** web/data/papers.yml (4 entries, all `verified: true`)

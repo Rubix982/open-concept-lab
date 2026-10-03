@@ -352,3 +352,54 @@ knowledgespectrum2025:
     model. Finds Unknown facts edit more successfully than Known. This is the
     possession-x-editability experiment, already run; it closed that direction for us
     at the WHY gate. Does not examine grounds, premises, or entailment consequences.
+
+# --- added 2026-10-03 by [R-011]; every field below checked against the paper's own
+# --- record (arXiv abstract page or ACL Anthology), not against a search snippet.
+
+ravfogel2026geometric:
+  title: Geometric Factual Recall in Transformers
+  authors: Ravfogel, S., Yehudai, G., Bruna, J., Bietti, A.
+  year: 2026
+  venue: arXiv 2605.12426
+  url: https://arxiv.org/abs/2605.12426
+  status: to-read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: A candidate answer to T-086. Subject embeddings hold a linear superposition of their attribute vectors and the MLP acts as a relation-conditioned selector, not the associative key-value store ROME assumes. If that survives past the single-layer setting it predicts both the broad same-subject damage and why displacement follows the injected value's type.
+
+he2026romelimits:
+  title: On the Limitations of Rank-One Model Editing in Answering Multi-hop Questions
+  authors: He, Z., Chen, B., Xiong, T., Sun, Z., Zhu, M., Chen, X.
+  year: 2026
+  venue: arXiv 2601.04600
+  url: https://arxiv.org/abs/2601.04600
+  status: to-read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: Reports that ROME's generalization deteriorates sharply when editing later layers — our E-028 phenomenon, found independently and published first. Read before the depth result is described as new.
+
+youssef2026tracing:
+  title: Tracing and Reversing Edits in LLMs
+  authors: Youssef, P., Zhao, Z., Seifert, C., Schlotterer, J.
+  year: 2026
+  venue: ICLR
+  url: https://arxiv.org/abs/2505.20819
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [edit-slice]
+  gives_me: Infers the edited object from the modified weights alone, with no access to the edit prompt. The inverse of our question — we ask what an edit reaches, they ask what it reveals — and it suggests the update carries more recoverable structure than we have used.
+
+zhang2026actionable:
+  title: "Locate, Steer, and Improve: A Practical Survey of Actionable Mechanistic Interpretability in Large Language Models"
+  authors: Zhang, H., Zhang, Z., Nie, E., Wang, M., Su, Z., Wang, Y., et al.
+  year: 2026
+  venue: Findings of ACL
+  url: https://aclanthology.org/2026.findings-acl.502/
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: Current map of the field, organised as locate / steer / improve. Use it to check which of our open threads someone has already named, rather than as a source to cite.

@@ -363,3 +363,51 @@ stability of the pre-edit knowledge label, and the MUTE cell. Full entry in
 agents/shared/findings.md [R-010].
 
 **Artifacts:** agents/shared/findings.md -> "[R-010]"
+
+---
+
+### R-011 · Expand the reading list with current mechanistic-interpretability work
+
+**Status:** closed
+**Type:** research
+**Priority:** medium
+**Created:** 2026-10-03
+**Updated:** 2026-10-03
+
+**Description:**
+
+The reading list is 25 entries and its newest edit-adjacent items date from the project's
+opening prior-art sweep ([R-002], [R-010]). Four months of work have passed and the
+project's claims have moved — it is now about *delivery versus effect*, *type-matched
+displacement*, and *what sets propagation magnitude* ([T-086]). Prior art should be
+re-checked against where the work actually is, not where it started.
+
+**Scope.** Mechanistic interpretability broadly, weighted toward what bears on open
+threads: what determines how far an intervention propagates; subject/entity
+representations and where they live; whether anyone states the normalisation result;
+evaluation critiques of editing benchmarks.
+
+**Binding constraint — CLAUDE.md.** *"Never generate a citation from memory — look it up
+or leave a `TODO(cite)`."* Every entry must be fetched from arXiv or the ACL Anthology and
+its title, authors, year and venue checked against the paper's own record before
+`verified: true` is set. An entry sourced from a search snippet alone is `verified: false`
+and may not be cited. The assistant's training cutoff precedes much of the relevant window,
+which makes recall actively dangerous here rather than merely incomplete.
+
+**Deliverable.** New entries in `web/data/papers.yml`, each with `gives_me` naming the one
+thing it would be gone back to for — not a summary. Plus a findings entry recording which
+of our open threads each bears on, and explicitly which turned up **nothing**, since a
+thread with no prior art is a different kind of finding from one not yet searched.
+
+**Result (2026-10-03).** Four entries added, all verified field-by-field. Two change what
+we may say: He et al. (2601.04600) report ROME's generalization deteriorating with later
+edit layers — [E-028]'s phenomenon, published eight months earlier, so the depth result is
+not new as an observation; and Ravfogel et al. (2605.12426) give [T-086] its first
+candidate explanation, while contradicting ROME's own premise about what the MLP is.
+The search found **nobody stating the pinned-coefficient arithmetic**, though ROME's own
+paper observes the phenomenon qualitatively — which sharpens the novelty question rather
+than settling it.
+
+**Status:** closed
+**Artifacts:** web/data/papers.yml; agents/shared/findings.md -> "[R-011]"
+**Closed:** 2026-10-03

@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**39 decisions · 18 findings · 67 threads (2 active, 50 answered, 3 dropped, 4 open, 8 parked)**
+**39 decisions · 19 findings · 67 threads (2 active, 50 answered, 3 dropped, 4 open, 8 parked)**
 
 ## Decisions and results
 
@@ -250,6 +250,10 @@ _2026-09-20_ — Opened by [E-013] gate 0, which found EasyEdit ships mom2adjust
 ### T-065 · pairs bound, crossings decompose — and narrowing comes from unfixing a dimension {#f-T-065}
 
 _2026-09-20_ — Tests the thread's two structural claims against the record rather than reasoning about them. Every result in decisions.md hand-classified by the shape of…
+
+### R-011 · the depth result has prior art, and T-086 has a candidate {#f-R-011}
+
+_2026-10-03_ — Re-ran prior art against where the project now is rather than where it started. Four entries added to the reading list, each verified field-by-field…
 
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._

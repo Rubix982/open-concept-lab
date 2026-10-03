@@ -459,6 +459,14 @@ f-T-065:
   gist: "Tests the thread's two structural claims against the record rather than reasoning about them. Every result in decisions.md hand-classified by the shape of…"
   surface: finding
 
+f-R-011:
+  id: "R-011"
+  kind: "Finding"
+  title: "the depth result has prior art, and T-086 has a candidate"
+  date: "2026-10-03"
+  gist: "Re-ran prior art against where the project now is rather than where it started. Four entries added to the reading list, each verified field-by-field…"
+  surface: finding
+
 t-T-001:
   id: "T-001"
   kind: "Thread"

@@ -164,6 +164,30 @@ containing hand-curated template *sets*, and keep one prompt per record
 
 **Backward probing is narrower than we first claimed.** RippleEdits' Logical Generalization covers inverse and symmetric relations, which is the closest existing thing to a grounds probe; reading its test-type definitions directly is what forced the narrowing.<Evidence id="f-R-001">R-001</Evidence>
 
+**The depth result is not ours, as a phenomenon.** §4.4 reports that an edit applied at
+layer 20 reaches 2.96× less far per nat of belief displaced.
+<Cite id="he2026romelimits" narrative /> report, among three ROME failure modes, that
+generalization *"deteriorates sharply when editing later layers"* — the same phenomenon,
+found independently and published eight months before our run. What may still be ours is
+the **control** rather than the observation: we hold delivery fixed at a coefficient of
+exactly 1.000 and match belief displacement to within 0.3 nats, which separates the effect
+from edit strength and from optimisation budget. Whether that separation is a contribution
+is a question for a reader outside the project, and it is §7's fourth.<Margin>Found by
+re-running prior art against where the project is now rather than where it started
+— after §4.4 was written. The paper is still unread; this is from its abstract, which is
+enough to establish the overlap and not to size it.<Evidence id="f-R-011">R-011</Evidence></Margin>
+
+**A candidate for the one thing nothing here predicts.**
+<Cite id="ravfogel2026geometric" narrative /> prove, in a controlled single-layer setting,
+that subject embeddings encode linear superpositions of their attribute vectors and the MLP
+acts as a relation-conditioned selector — explicitly *not* the associative key-value store
+ROME assumes. If that survives past the controlled setting it predicts both of §4.5's
+findings at once: perturbing the superposition damages everything about the subject, and
+damages most what lies nearest the injected direction. We record it as a candidate for
+§8's first thread and nothing more — it is theory in a single layer against our
+measurements on 8B to 405B, and a frame that explains both of your results at once is
+exactly the kind to distrust.
+
 **What is left.** None of the above examines what an edit does to a fact's *premises*, and
 none reports the coefficient structure of the update itself. ROME <Cite id="meng2022rome" />
 derives the `C⁻¹` term and its own repository enables it by default; EasyEdit disables it
@@ -838,6 +862,10 @@ so the category has to be added deliberately or it vanishes in the rename._
    coefficient rather than the model.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
+4. **Is a control a contribution?** <Cite id="he2026romelimits" /> reported the depth
+   phenomenon first. We measured it with delivery pinned at exactly 1.000 and displacement
+   matched, which rules out edit strength and optimisation budget as explanations. Is
+   that worth anything on its own, or does prior observation of the phenomenon settle it?
 
 ## 8 · What is open
 
