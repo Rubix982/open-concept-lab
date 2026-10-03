@@ -617,6 +617,70 @@ function evalBars(t) {
   $("fade").style.opacity = f;
 }
 
+// ---------- lights as actors: spots with visible beams, glows, sunlight patches
+const LIGHTS = Object.entries(S.lights || {}).map(([id, L]) => {
+  let obj, beam = null, patch = null;
+  if (L.kind === "spot") {
+    obj = new THREE.SpotLight(0xffffff, 1, 0, 0.4, 0.45, 0);
+    if (L.shadows) { obj.castShadow = true; obj.shadow.mapSize.set(1024, 1024); obj.shadow.bias = -0.0005; }
+    scene.add(obj, obj.target);
+    if (L.beam) {
+      // a soft cone you can see: brighter near the lamp, fading out
+      const geo = new THREE.ConeGeometry(1, 1, 40, 1, true); geo.translate(0, -0.5, 0); geo.rotateX(-Math.PI / 2);
+      beam = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+      scene.add(beam);
+    }
+  } else if (L.kind === "point") {
+    obj = new THREE.PointLight(0xffffff, 1, 0, 0); scene.add(obj);
+  } else {
+    patch = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
+    patch.rotation.x = -Math.PI / 2; scene.add(patch);
+  }
+  return { id, L, obj, beam, patch };
+});
+const tmpC = new THREE.Color();
+function evalLights(t) {
+  for (const { L, obj, beam, patch } of LIGHTS) {
+    const st = TL.lightState(L, t), I = st.intensity ?? 1;
+    tmpC.setRGB(...(st.color || [1, 1, 1]));
+    const at = toScene(...(st.at || [0, 20, 0]));
+    if (patch) {
+      patch.position.set(at.x, at.y + 0.02, at.z); patch.scale.set(st.size[0], st.size[1], 1);
+      patch.material.color.copy(tmpC); patch.material.opacity = 0.35 * I; patch.visible = I > 0.01;
+      continue;
+    }
+    obj.position.copy(at); obj.color.copy(tmpC);
+    if (L.kind === "point") { obj.intensity = 40 * I; obj.distance = 30; obj.decay = 1; continue; }
+    // aim: at a target, or swung round by az with a reach and a drop
+    const target = st.az != null
+      ? at.clone().add(new THREE.Vector3(Math.sin(THREE.MathUtils.degToRad(st.az)) * st.reach, -st.drop * PLATE, -Math.cos(THREE.MathUtils.degToRad(st.az)) * st.reach))
+      : toScene(...(st.target || [0, 0, 0]));
+    obj.target.position.copy(target); obj.angle = THREE.MathUtils.degToRad(st.angle ?? 25); obj.intensity = 5 * I;
+    obj.visible = I > 0.01;
+    if (beam) {
+      const len = at.distanceTo(target) * 1.15, r = Math.tan(obj.angle) * len;
+      beam.position.copy(at); beam.lookAt(target); beam.scale.set(r, r, len);
+      beam.material.color.copy(tmpC); beam.material.opacity = 0.11 * I; beam.visible = I > 0.01;
+    }
+  }
+}
+// lamps: a model glows and lights its surroundings
+const LAMPS = actors.filter(({ a }) => a.lamps?.length).map((act) => {
+  const p = new THREE.PointLight(0xffd36b, 0, 0, 0); scene.add(p);
+  return { act, p };
+});
+function evalLamps(t) {
+  for (const { act, p } of LAMPS) {
+    const { level, color, intensity } = TL.lampAt(act.a, t);
+    // only the see-through parts glow (a lighthouse's dome), if it has any
+    const mats = [...new Set(act.group.children.flatMap((c) => c.children?.filter((x) => x.isMesh).map((x) => x.material) || []))];
+    const glass = mats.filter((m) => m.transparent);
+    for (const m of glass.length ? glass : mats) { if (!m.emissive) continue; m.emissive.set(color); m.emissiveIntensity = level * 1.4 * intensity; }
+    act.group.getWorldPosition(p.position); p.position.y += 1;
+    p.color.set(color); p.intensity = 60 * level * intensity; p.distance = 40; p.decay = 1;
+  }
+}
+
 // ---------- camera
 function evalCamera(t) {
   const c = TL.cameraState(S, t);
@@ -673,66 +737,102 @@ function evalCallouts(t) {
   }
 }
 
-// ---------- sound: synthesised, scheduled from the timeline as playback crosses it
+// ---------- sound: synthesised from the timeline. The same voices play live
+// (as playback crosses each event) and render offline into the video's audio
+// track (window.__renderAudio), so what you hear is what the MP4 gets.
 const SOUNDS = TL.soundEvents(S);
-let audio = null, muted = true;
-function tone(freq, dur, type = "sine", gain = 0.15, slide = 0) {
-  const o = audio.createOscillator(), g = audio.createGain(), now = audio.currentTime;
-  o.type = type; o.frequency.setValueAtTime(freq, now);
-  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), now + dur);
-  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-  o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.02);
-}
-function noise(dur, gain = 0.1, from = 800, to = 200) {
-  const buf = audio.createBuffer(1, Math.ceil(audio.sampleRate * dur), audio.sampleRate), d = buf.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-  const src = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain(), now = audio.currentTime;
-  src.buffer = buf; f.type = "bandpass"; f.frequency.setValueAtTime(from, now); f.frequency.exponentialRampToValueAtTime(to, now + dur);
-  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-  src.connect(f).connect(g).connect(audio.destination); src.start(now);
-}
-function pad(freq, dur, gain = 0.03) {
-  const now = audio.currentTime;
-  for (const [type, det] of [["sine", 0], ["triangle", 4]]) {
-    const o = audio.createOscillator(), g = audio.createGain();
-    o.type = type; o.frequency.setValueAtTime(freq, now); o.detune.setValueAtTime(det, now);
-    g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(gain, now + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-    o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.05);
-  }
+let audio = null, muted = true, liveSynth = null;
+function synth(ctx, out) {
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);      // repeatable noise
+  const tone = (at, freq, dur, type = "sine", gain = 0.15, slide = 0, attack = 0.002) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, at);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), at + dur);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(gain, at + attack); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g).connect(out); o.start(at); o.stop(at + dur + 0.05);
+  };
+  const noise = (at, dur, gain = 0.1, from = 800, to = 200, type = "bandpass", q = 1) => {
+    const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * dur), ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = rnd() * 2 - 1;
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = buf; f.type = type; f.Q.value = q; f.frequency.setValueAtTime(from, at); f.frequency.exponentialRampToValueAtTime(to, at + dur);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(gain, at + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    src.connect(f).connect(g).connect(out); src.start(at);
+  };
+  const pad = (at, freq, dur, gain = 0.03) => {
+    for (const [type, det] of [["sine", 0], ["triangle", 4]]) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, at); o.detune.setValueAtTime(det, at);
+      g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(gain, at + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+      o.connect(g).connect(out); o.start(at); o.stop(at + dur + 0.05);
+    }
+  };
+  return { tone, noise, pad };
 }
 const PIECES = {
   romance: [[261.6, 329.6, 392, 493.9], [220, 261.6, 329.6, 392], [174.6, 220, 261.6, 329.6], [196, 246.9, 293.7, 349.2]],
   wonder: [[261.6, 392, 587.3], [293.7, 440, 659.3], [349.2, 523.3, 784], [329.6, 493.9, 739.99]],
 };
 const VOICE = {
-  chord: (e) => { const ch = PIECES[e.piece][e.size % 4]; ch.forEach((f, i) => pad(f, 2.9, i === 0 ? 0.035 : 0.022)); },
-  say: () => { tone(660, 0.07, "sine", 0.06); setTimeout(() => audio && tone(880, 0.08, "sine", 0.05), 70); },
-  "emit-hearts": () => [1046, 1318, 1568].forEach((f, i) => setTimeout(() => audio && tone(f, 0.25, "sine", 0.05), i * 90)),
-  "emit-sparkles": () => [1568, 2093, 2637].forEach((f, i) => setTimeout(() => audio && tone(f, 0.18, "triangle", 0.035), i * 60)),
-  "emit-confetti": () => noise(0.4, 0.06, 3000, 900),
-  click: (e) => { tone(2400 / Math.sqrt(1 + e.size * 0.15), 0.045, "triangle", 0.12); tone(180, 0.05, "sine", 0.08); },
-  panel: () => tone(900 + Math.random() * 400, 0.03, "square", 0.025),
-  step: () => tone(120, 0.06, "sine", 0.06, 0.6),
-  thud: () => tone(90, 0.18, "sine", 0.2, 0.5),
-  whoosh: () => noise(0.25, 0.05, 2000, 400),
-  install: () => { tone(520, 0.08, "triangle", 0.07); tone(780, 0.1, "triangle", 0.05); },
-  "button-on": () => tone(150, 0.16, "square", 0.08, 0.5),
-  "button-off": () => tone(220, 0.08, "square", 0.05, 1.4),
-  "signal-on": () => tone(440, 0.5, "sine", 0.07, 2),
-  "signal-off": () => tone(660, 0.3, "sine", 0.05, 0.4),
-  "door-on": () => noise(0.7, 0.08, 300, 1200),
-  "door-off": () => noise(0.7, 0.08, 1200, 300),
+  chord: (s, e, at) => PIECES[e.piece][e.size % 4].forEach((f, i) => s.pad(at, f, 2.9, i === 0 ? 0.035 : 0.022)),
+  say: (s, e, at) => { s.tone(at, 660, 0.07, "sine", 0.05); s.tone(at + 0.07, 880, 0.08, "sine", 0.04); },
+  "emit-hearts": (s, e, at) => [1046, 1318, 1568].forEach((f, i) => s.tone(at + i * 0.09, f, 0.25, "sine", 0.05)),
+  "emit-sparkles": (s, e, at) => [1568, 2093, 2637].forEach((f, i) => s.tone(at + i * 0.06, f, 0.18, "triangle", 0.035)),
+  "emit-confetti": (s, e, at) => s.noise(at, 0.4, 0.06, 3000, 900),
+  click: (s, e, at) => { s.tone(at, 2400 / Math.sqrt(1 + e.size * 0.15), 0.045, "triangle", 0.1); s.tone(at, 180, 0.05, "sine", 0.07); },
+  panel: (s, e, at) => s.tone(at, 900 + (e.t % 400), 0.03, "square", 0.022),
+  step: (s, e, at) => s.tone(at, 120, 0.06, "sine", 0.06, 0.6),
+  thud: (s, e, at) => s.tone(at, 90, 0.18, "sine", 0.18, 0.5),
+  whoosh: (s, e, at) => s.noise(at, 0.25, 0.05, 2000, 400),
+  install: (s, e, at) => { s.tone(at, 520, 0.08, "triangle", 0.06); s.tone(at, 780, 0.1, "triangle", 0.04); },
+  "button-on": (s, e, at) => s.tone(at, 150, 0.16, "square", 0.07, 0.5),
+  "button-off": (s, e, at) => s.tone(at, 220, 0.08, "square", 0.05, 1.4),
+  "signal-on": (s, e, at) => s.tone(at, 440, 0.5, "sine", 0.06, 2),
+  "signal-off": (s, e, at) => s.tone(at, 660, 0.3, "sine", 0.05, 0.4),
+  "door-on": (s, e, at) => s.noise(at, 0.7, 0.07, 300, 1200),
+  "door-off": (s, e, at) => s.noise(at, 0.7, 0.07, 1200, 300),
+  // story sounds, on cue with s.sfx()
+  "sfx-creak": (s, e, at) => { s.tone(at, 210, 0.7, "sawtooth", 0.035 * e.size, 0.7, 0.15); s.noise(at, 0.7, 0.03 * e.size, 600, 380, "bandpass", 8); },
+  "sfx-tik": (s, e, at) => { s.tone(at, 3200, 0.03, "triangle", 0.12 * e.size); s.tone(at, 900, 0.04, "sine", 0.05 * e.size); },
+  "sfx-knock": (s, e, at) => [0, 0.22, 0.44].forEach((d) => { s.tone(at + d, 140, 0.12, "sine", 0.22 * e.size, 0.6); s.noise(at + d, 0.08, 0.06 * e.size, 900, 300); }),
+  "sfx-click": (s, e, at) => { s.tone(at, 2800, 0.035, "square", 0.08 * e.size); s.tone(at + 0.012, 1400, 0.03, "triangle", 0.06 * e.size); },
+  "sfx-yip": (s, e, at) => [0, 0.16].forEach((d) => s.tone(at + d, 1250, 0.09, "triangle", 0.09 * e.size, 1.45, 0.005)),
+  "sfx-pop": (s, e, at) => s.tone(at, 700, 0.08, "sine", 0.12 * e.size, 2.2),
+  "sfx-cheer": (s, e, at) => { for (let i = 0; i < 9; i++) s.tone(at + i * 0.05, 520 + ((i * 137) % 400), 0.6, "triangle", 0.02 * e.size, 1.15, 0.08); s.noise(at, 1.2, 0.05 * e.size, 1800, 900); },
+  "sfx-splash": (s, e, at) => s.noise(at, 0.5, 0.09 * e.size, 2600, 500, "lowpass"),
+  "sfx-whoosh": (s, e, at) => s.noise(at, 0.45, 0.07 * e.size, 400, 2400),
+  "sfx-switch": (s, e, at) => { s.tone(at, 1900, 0.03, "square", 0.07 * e.size); s.tone(at + 0.05, 1200, 0.03, "square", 0.05 * e.size); },
+  // ambience: the hum of a house and a distant clock
+  "room-bed": (s, e, at) => { s.noise(at, e.size, 0.012, 160, 140, "lowpass", 0.7); s.tone(at, 60, e.size, "sine", 0.006, 0, 1.2); },
+  clock: (s, e, at) => s.tone(at, 2600, 0.02, "triangle", 0.018),
 };
 function playSounds(from, to) {
   if (muted || !audio || to <= from || to - from > 250) return;    // skip jumps and scrubs
   let n = 0;
-  for (const e of SOUNDS) if (e.t > from && e.t <= to && n++ < 6) VOICE[e.kind]?.(e);
+  for (const e of SOUNDS) if (e.t > from && e.t <= to && n++ < 8) VOICE[e.kind]?.(liveSynth, e, audio.currentTime + 0.01);
 }
 function setMuted(m) {
   muted = m; $("mute").textContent = m ? "🔇" : "🔊";
-  if (!m && !audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (!m && !audio) { audio = new (window.AudioContext || window.webkitAudioContext)(); liveSynth = synth(audio, audio.destination); }
   if (!m && audio.state === "suspended") audio.resume();
 }
+// Offline: every sound between two moments, as a 16-bit mono WAV in base64.
+window.__renderAudio = async (fromMs, toMs, rate = 48000) => {
+  const len = Math.ceil(((toMs - fromMs) / 1000 + 1) * rate);
+  const ctx = new OfflineAudioContext(1, len, rate), master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
+  const s = synth(ctx, master);
+  for (const e of SOUNDS) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, Math.max(0, (e.t - fromMs) / 1000));
+  const buf = await ctx.startRendering(), data = buf.getChannelData(0), n = Math.round(((toMs - fromMs) / 1000) * rate);
+  const wav = new DataView(new ArrayBuffer(44 + n * 2));
+  const str = (o, x) => { for (let i = 0; i < x.length; i++) wav.setUint8(o + i, x.charCodeAt(i)); };
+  str(0, "RIFF"); wav.setUint32(4, 36 + n * 2, true); str(8, "WAVEfmt "); wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 1, true);
+  wav.setUint32(24, rate, true); wav.setUint32(28, rate * 2, true); wav.setUint16(32, 2, true); wav.setUint16(34, 16, true); str(36, "data"); wav.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) wav.setInt16(44 + i * 2, Math.max(-1, Math.min(1, data[i])) * 32767, true);
+  let bin = ""; const bytes = new Uint8Array(wav.buffer);
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+};
 
 // ---------- the badge: model checks and the stage check
 const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok), stage = S.stage || [];
@@ -808,7 +908,7 @@ function frame(now) {
 // frame; render.mjs calls it directly through window.__renderAt.
 function draw(at) {
   t = at;
-  evalMood(t); evalMinifigs(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
+  evalMood(t); evalMinifigs(t); evalBricks(t); evalLamps(t); evalLights(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
   evalCallouts(t); evalBubbles(t); evalBars(t); evalSubtitle(t);
   const ch = [...CH].reverse().find((c) => c.t <= t);

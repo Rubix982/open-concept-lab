@@ -130,6 +130,34 @@
     return w;
   }
 
+  // A light's settings at time t: each lightTo() eases every setting it names
+  // from wherever it was. Colours ease too (as RGB).
+  const hexRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  function lightState(L, t) {
+    const st = {};
+    for (const k of L.keys) {
+      if (t < k.t) break;
+      const p = easeInOut(clamp01((t - k.t) / Math.max(1, k.dur)));
+      for (const [key, v] of Object.entries(k)) {
+        if (key === "t" || key === "dur" || v === undefined) continue;
+        const to = key === "color" ? hexRgb(v) : v, from = st[key];
+        if (from === undefined || typeof to === "boolean") { st[key] = Array.isArray(to) ? to.slice() : to; continue; }
+        st[key] = Array.isArray(to) ? to.map((x, i) => lerp(from[i] ?? x, x, p)) : lerp(from, to, p);
+      }
+    }
+    return st;
+  }
+  // A model's lamp: how bright (0..1) and in what colour.
+  function lampAt(a, t) {
+    let v = 0, color = "#ffd36b", intensity = 1;
+    for (const e of a.lamps || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+      if (e.on) { color = e.color; intensity = e.intensity; }
+    }
+    return { level: v, color, intensity };
+  }
+
   // Which bubbles are on screen.
   function bubblesAt(story, t) { return (story.bubbles || []).filter((b) => t >= b.t && t <= b.t + b.dur); }
 
@@ -206,6 +234,15 @@
       const end = i + 1 < music.length ? music[i + 1].t : story.duration;
       for (let k = 0, t = m.t; t < end; k++, t += BAR) ev.push({ t, kind: "chord", size: k, piece: m.name });
     });
+    for (const c of story.sfx || []) ev.push({ t: c.t, kind: `sfx-${c.name}`, size: c.gain });
+    // ambience: a bed per stretch, and a clock tick every second
+    const amb = story.ambience || [];
+    amb.forEach((c, i) => {
+      if (!c.name) return;
+      const end = i + 1 < amb.length ? amb[i + 1].t : story.duration;
+      ev.push({ t: c.t, kind: "room-bed", size: (end - c.t) / 1000 });
+      for (let t = c.t + 400; t < end; t += 1000) ev.push({ t, kind: "clock", size: 1 });
+    });
     if (story.room) {
       const n = 26;      // the floor wave, as a patter rather than one click per panel
       for (let i = 0; i < n; i++) ev.push({ t: story.room.t0 + (story.room.dur * 0.8 * i) / n + 200, kind: "panel", size: 1 });
@@ -256,7 +293,7 @@
     return [...seen].map(([pair, t]) => ({ pair, t }));
   }
 
-  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt, actorSpin, faceAt, holderAt };
+  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt, actorSpin, faceAt, holderAt, lightState, lampAt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TL = api;
 })(typeof window !== "undefined" ? window : globalThis);

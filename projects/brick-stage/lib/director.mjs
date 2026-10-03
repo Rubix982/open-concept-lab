@@ -58,6 +58,8 @@ const DIRECTIONS = {
 // The light, for a colour script: from morning to night.
 export const MOODS = ["day", "morning", "midday", "overcast", "sunset", "amber", "dusk", "night"];
 
+export const SFX = ["creak", "tik", "knock", "click", "yip", "pop", "cheer", "splash", "whoosh", "switch"];
+
 export class Director {
   constructor(meta) {
     this.meta = meta;
@@ -74,6 +76,9 @@ export class Director {
     this.fades = [];       // { t, on, dur, color }
     this.musicCues = [];   // { t, name }
     this.narration = [];   // { t, dur, text }
+    this.sfxCues = [];     // { t, name, gain }
+    this.ambienceCues = []; // { t, name }
+    this.lights = {};      // id -> { kind, keys: [{ t, dur, ...settings }] }
     this.models = {};
     this.props = {};       // buttons, doors, signal lines
     this.roomSpec = null;
@@ -224,6 +229,51 @@ export class Director {
   // Fade the picture out to a colour, or back in. Advances time.
   fadeOut({ dur = 1200, color = "#000" } = {}) { this.fades.push({ t: this.t, on: true, dur, color }); this._advance(this.t + dur); return this; }
   fadeIn({ dur = 1200 } = {}) { this.fades.push({ t: this.t, on: false, dur }); this._advance(this.t + dur); return this; }
+  // ---- lights -----------------------------------------------------------
+  // A light as an actor. kind: "spot" (a cone, with a visible beam unless
+  // beam: false), "point" (a glow), or "patch" (a pool of sunlight on the
+  // floor, size [w, d] in studs). Positions are [x, y, z] in studs, plates,
+  // studs. A spot aims at `target`, or swings round by `az` degrees (with
+  // `reach` studs and `drop` plates down): that's how a lighthouse beam sweeps.
+  // Doesn't advance time.
+  light(id, { kind = "spot", at = [0, 20, 0], target, color = "#fff2d8", intensity = 1, angle = 25, az, reach = 30, drop = 10, size = [10, 6], beam = true, shadows = true } = {}) {
+    if (this.lights[id]) throw new Error(`a light called "${id}" already exists`);
+    if (!["spot", "point", "patch"].includes(kind)) throw new Error(`unknown light kind "${kind}"`);
+    this.lights[id] = { kind, beam, shadows, keys: [{ t: this.t, dur: 0, at, target, color, intensity, angle, az, reach, drop, size }] };
+    return this;
+  }
+  // Ease a light to new settings (any of the ones light() takes). Advances
+  // time by `dur` only with wait: true.
+  lightTo(id, settings, { dur = 1500, wait = false } = {}) {
+    const L = this.lights[id];
+    if (!L) throw new Error(`no light "${id}"`);
+    L.keys.push({ t: this.t, dur, ...settings });
+    if (wait) this._advance(this.t + dur);
+    return this;
+  }
+  // Switch a model's light on or off: it glows in `color` and lights what's
+  // around it (a lighthouse dome, a lamp). Doesn't advance time.
+  lamp(actor, on = true, { color = "#ffd36b", intensity = 1, dur = 400 } = {}) {
+    const a = this.actors[actor];
+    if (!a) throw new Error(`no actor "${actor}"`);
+    (a.lamps ||= []).push({ t: this.t, on, dur, color, intensity });
+    return this;
+  }
+
+  // A sound effect on cue: "creak", "tik", "knock", "click", "yip", "pop",
+  // "cheer", "splash", "whoosh", "switch". Doesn't advance time.
+  sfx(name, { gain = 1 } = {}) {
+    if (!SFX.includes(name)) throw new Error(`unknown sound "${name}" (try ${SFX.join(", ")})`);
+    this.sfxCues.push({ t: this.t, name, gain });
+    return this;
+  }
+  // A background bed: "room" (a quiet hum with a ticking clock), or null to
+  // stop. Doesn't advance time.
+  ambience(name) {
+    if (name && name !== "room") throw new Error(`unknown ambience "${name}"`);
+    this.ambienceCues.push({ t: this.t, name });
+    return this;
+  }
   // A soft generated chord pad ("romance", "wonder"), or null to stop it.
   // Doesn't advance time.
   music(name) {
@@ -409,9 +459,9 @@ export class Director {
         ? { kind: "minifig", t0: a.t0, appear: a.appear, face: a.face, look: a.look, faces: a.faces, moves: a.moves, turns: a.turns, poses: a.poses, joints: a.joints, highlights: a.highlights || [] }
         : a.kind === "figure"
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
-        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null, held: a.held || [] }])),
+        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null, held: a.held || [], lamps: a.lamps || [] }])),
       callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
-      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration,
+      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration, sfx: this.sfxCues, ambience: this.ambienceCues, lights: this.lights,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,
       reports,
     };

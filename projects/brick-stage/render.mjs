@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// node render.mjs <story> [--fps 60] [--size 1920x1080] [--from 0] [--to <ms>] [--out file.mp4] [--subs]
+// node render.mjs <story> [--fps 60] [--size 1920x1080] [--from 0] [--to <ms>] [--out file.mp4] [--subs] [--no-audio]
 //
 // A story to video, frame by frame — no screen recording. Each frame is drawn
 // at an exact moment (the player is a pure function of time), photographed
@@ -18,6 +18,7 @@ const flag = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args.
 const fps = +flag("fps", 60), [W, H] = flag("size", "1920x1080").split("x").map(Number);
 const from = +flag("from", 0), toArg = flag("to"), outArg = flag("out");
 const burnSubs = args.includes("--subs"); if (burnSubs) args.splice(args.indexOf("--subs"), 1);
+const silent = args.includes("--no-audio"); if (silent) args.splice(args.indexOf("--no-audio"), 1);
 const name = args[0];
 if (!name) { console.log("usage: node render.mjs <story> [--fps 60] [--size 1920x1080] [--from ms] [--to ms] [--out file.mp4]"); process.exit(1); }
 const page = path.join(here, "out", name, "index.html");
@@ -82,6 +83,16 @@ for (let f = 0; f < frames; f++) {
 }
 ff.stdin.end();
 await new Promise((r) => ff.on("close", r));
+// the soundtrack: every sound the story makes, rendered offline by the page's
+// own synth, then laid under the video
+if (!silent) {
+  const b64 = await evaluate(`window.__renderAudio(${from}, ${to})`);
+  const wav = out.replace(/\.mp4$/, ".wav"), tmp = out.replace(/\.mp4$/, ".video.mp4");
+  await fs.writeFile(wav, Buffer.from(b64, "base64"));
+  await fs.rename(out, tmp);
+  await new Promise((r, j) => spawn("ffmpeg", ["-y", "-loglevel", "error", "-i", tmp, "-i", wav, "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", out], { stdio: "inherit" }).on("close", (c) => (c ? j(new Error("ffmpeg mux failed")) : r())));
+  await fs.rm(tmp); await fs.rm(wav);
+}
 // narration as captions YouTube accepts (.srt), timed to the rendered range
 const lines = (await evaluate("window.__narration")).filter((n) => n.t + n.dur > from && n.t < to);
 if (lines.length) {
