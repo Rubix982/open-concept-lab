@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test Chamber</title>
+<style>
+  :root {
+    --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --bar: rgba(255,255,255,.86); --line: #dcdad3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bar: rgba(30,30,28,.86); --ink: #ecebe6; --muted: #a3a29b; --line: #3a3934; }
+  }
+  :root[data-theme="dark"] { --bar: rgba(30,30,28,.86); --ink: #ecebe6; --muted: #a3a29b; --line: #3a3934; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+  body { font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif; color: #1d1d1b; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .cap { position: fixed; left: 6vw; top: 7vh; max-width: 70vw; pointer-events: none; }
+  .cap .k { font-weight: 700; font-size: clamp(11px, 1.3vw, 16px); letter-spacing: .22em; color: var(--accent); }
+  .cap .k::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--accent); vertical-align: middle; margin-right: 10px; }
+  .cap .t { font-weight: 300; font-size: clamp(24px, 4.2vw, 58px); letter-spacing: -.01em; margin-top: 6px; line-height: 1.08; }
+  .card { position: fixed; inset: 0; background: #f7f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none; opacity: 0; text-align: center; padding: 0 8vw; }
+  .card .k { font-weight: 700; font-size: clamp(12px, 1.4vw, 17px); letter-spacing: .3em; color: var(--accent); }
+  .card .t { font-weight: 300; font-size: clamp(30px, 5.6vw, 76px); margin-top: 14px; letter-spacing: -.015em; }
+  .card .s { font-weight: 300; font-size: clamp(18px, 2.4vw, 30px); color: #6f6e68; margin-top: 8px; }
+  .card .rule { width: 60px; height: 3px; background: var(--accent); margin-top: 26px; }
+  .ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(760px, calc(100vw - 32px));
+    display: flex; gap: 10px; align-items: center; background: var(--bar); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; padding: 8px 12px; backdrop-filter: blur(8px); transition: opacity .25s; }
+  body.clean .ui, body.clean .badge { opacity: 0; pointer-events: none; }
+  .ui button { font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+  .ui button:focus-visible, .ui input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ui input[type=range] { flex: 1; accent-color: var(--accent); }
+  .ui .time { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); min-width: 92px; text-align: right; }
+  .badge { position: fixed; right: 16px; top: 14px; font-size: 12px; color: #6f6e68; background: rgba(255,255,255,.7);
+    border: 1px solid #dcdad3; border-radius: 999px; padding: 4px 10px; transition: opacity .25s; }
+  .badge b { color: #2f7d4f; } .badge b.bad { color: #b3261e; }
+  .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
+  .badge .list { margin-top: 6px; line-height: 1.6; }
+  .badge a { color: var(--accent); }
+  body.chamber .cap { top: auto; bottom: 13vh; left: 5vw; display: flex; flex-direction: column-reverse; }
+  body.chamber .cap .t { font-weight: 800; font-style: italic; color: #fff; letter-spacing: -.01em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.35), 0 2px 18px rgba(0,0,0,.38); -webkit-text-stroke: 1.2px rgba(70,70,70,.45); }
+  body.chamber .cap .k { color: rgba(255,255,255,.95); font-weight: 600; font-size: clamp(14px, 2vw, 26px); letter-spacing: .32em;
+    margin: 4px 0 0 4vw; text-shadow: 0 1px 1px rgba(0,0,0,.4), 0 2px 12px rgba(0,0,0,.4); }
+  body.chamber .cap .k::before { display: none; }
+  .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 640px) { .help { display: none; } .cap { top: 5vh; } }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="cap"><div class="k" id="capK"></div><div class="t" id="capT"></div></div>
+<div class="card" id="card"><div class="k" id="cardK"></div><div class="t" id="cardT"></div><div class="s" id="cardS"></div><div class="rule"></div></div>
+<div class="badge" id="badge"></div>
+<div class="ui">
+  <button id="play" aria-label="Play or pause">❚❚</button>
+  <input id="scrub" type="range" min="0" step="1" aria-label="Timeline">
+  <span class="time" id="time"></span>
+  <span class="help">space · ← → · H hide · F full</span>
+</div>
+
+<script>window.STORY = {"meta":{"title":"Test Chamber","drift":0.6},"duration":41210,"actors":{"cube":{"kind":"bricks","parts":[{"part":"3001","color":71,"x":0,"y":0,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","t0":13000,"dur":750,"from":[10.427235297135866,13.120401661448563,4.2790141481176915],"spin":[-2.69763178923057,3.870024535744462,2.6267791928848157]},{"part":"3001","color":71,"x":0,"y":0,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","t0":13120,"dur":750,"from":[-8.112832979213263,15.24102597148033,-2.4299062308422554],"spin":[1.998257732483678,3.623613137576549,-1.4504975632068224]},{"part":"3001","color":72,"x":0,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","t0":13240,"dur":750,"from":[-8.115631954017347,13.465129051432976,4.828809350285604],"spin":[1.1749861269141484,2.655780061453479,2.771619636459099]},{"part":"3001","color":72,"x":2,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","t0":13360,"dur":750,"from":[-1.2637014706623237,7.109820398772832,10.79999904826126],"spin":[0.3186550966085191,-3.1517217341585653,-2.240389502253565]},{"part":"3001","color":71,"x":0,"y":6,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","t0":13480,"dur":750,"from":[2.6229991693055403,12.679267836386723,-8.901781785085769],"spin":[-0.6944253322176753,-1.608744776625533,1.3699044409999181]},{"part":"3001","color":71,"x":0,"y":6,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","t0":13600,"dur":750,"from":[4.382436151791117,14.32477289689876,-7.894294430646694],"spin":[2.2289043055981885,-3.7404477483315617,-1.2789796564164475]},{"part":"3031","color":71,"x":0,"y":9,"z":0,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","t0":13720,"dur":750,"from":[8.126198598649726,3.6929361786540897,-9.23851007534894],"spin":[-2.2983991425942625,-1.5925194423610902,1.8942991778693623]},{"part":"3068b","color":25,"x":1,"y":10,"z":1,"rot":0,"w":2,"d":2,"h":1,"kind":"tile","t0":13840,"dur":750,"from":[-0.13207129705492726,14.118540682788948,-9.193341881503814],"spin":[0.5970424225540099,3.322661153656738,2.9745071316019196]},{"part":"3069b","color":71,"x":0,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","t0":13960,"dur":750,"from":[-8.465429738503174,18.39511141749302,-5.389262739016724],"spin":[-2.0529175675720523,3.4859224220206597,2.9236101759241944]},{"part":"3069b","color":71,"x":2,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","t0":14080,"dur":750,"from":[12.064856903717828,12.464321589361507,1.4757367503659997],"spin":[0.2407992944311348,-3.848344661224794,0.6534590961660534]},{"part":"3069b","color":71,"x":0,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","t0":14200,"dur":750,"from":[12.240095171326915,8.336229986776457,-4.161682646447079],"spin":[-0.46883362227530856,-2.2489194414806177,1.8082102764436094]},{"part":"3069b","color":71,"x":2,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","t0":14320,"dur":750,"from":[-8.937418198434425,10.210372675195886,-6.353129281088073],"spin":[-2.886440358071793,-3.2041308168341085,-2.8699788981443173]},{"part":"3069b","color":71,"x":0,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","t0":14440,"dur":750,"from":[2.391374707405354,9.230798253097868,9.506088772460915],"spin":[2.6789267285163176,0.9620348983267482,0.6904021332461396]},{"part":"3069b","color":71,"x":3,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","t0":14560,"dur":750,"from":[-12.006069020110205,7.396188094772909,5.51729905803605],"spin":[1.6104562359910723,1.2506110692632433,2.2651808305015697]}],"moves":[{"t":-1,"dur":0,"to":[3,0,21],"hop":0},{"t":27160,"dur":600,"to":[3,7,21],"hop":0,"steps":2},{"t":27760,"dur":2000,"to":[8,7,15],"hop":0,"steps":7},{"t":29760,"dur":700,"to":[10,1.2,10],"hop":0,"steps":2}],"turns":[]},"subject":{"kind":"figure","t0":15610,"appear":700,"face":0,"moves":[{"t":-1,"dur":0,"to":[24,0,5],"hop":0},{"t":16810,"dur":2300,"to":[12,1.4,12],"hop":0.25,"steps":7},{"t":20560,"dur":2300,"to":[27,0,24],"hop":0.25,"steps":7},{"t":24560,"dur":2600,"to":[9,0,23],"hop":0.25,"steps":8},{"t":27760,"dur":2000,"to":[13,0,17],"hop":0.25,"steps":6},{"t":31610,"dur":2200,"to":[30,0,27],"hop":0.25,"steps":7},{"t":33810,"dur":1500,"to":[40,0,33],"hop":0.25,"steps":5},{"t":35310,"dur":1200,"to":[40,0,41],"hop":0.25,"steps":4}],"turns":[{"t":22860,"dur":800,"deg":-140}]}},"props":{"button":{"kind":"button","at":[12,0,12],"t0":7600,"dur":700,"events":[{"t":19110,"on":true,"dur":250},{"t":20560,"on":false,"dur":250},{"t":30460,"on":true,"dur":250}]},"exit":{"kind":"door","x":36,"width":8,"height":20,"t0":9300,"dur":900,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":1100},{"t":30710,"on":true,"dur":900},{"t":36510,"on":false,"dur":900}]},"wire":{"kind":"signal","points":[[14.5,0,12],[18,0,12],[18,0,27],[34,0,27],[34,0,36],[34,24,36],[40,24,36]],"t0":10200,"dur":2800,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":500},{"t":30710,"on":true,"dur":900}]}},"room":{"w":48,"d":36,"h":30,"cell":4,"seed":5,"t0":0,"dur":7600},"camera":[{"t":0,"dur":0,"shot":{"at":[24,4,18],"az":-30,"el":34,"dist":92}},{"t":0,"dur":8000,"shot":{"at":[23,6,17],"az":-34,"el":27,"dist":74}},{"t":7600,"dur":1400,"shot":{"at":[16,3,14],"az":-26,"el":30,"dist":46}},{"t":8700,"dur":1500,"shot":{"at":[34,8,26],"az":-18,"el":18,"dist":48}},{"t":10200,"dur":1800,"shot":{"at":[24,5,20],"az":-30,"el":32,"dist":66}},{"t":13000,"dur":1500,"shot":{"at":[6,3,22],"az":-24,"el":22,"dist":30}},{"t":15610,"dur":1500,"shot":{"at":[20,4,14],"az":-30,"el":28,"dist":56}},{"t":24560,"dur":1800,"shot":{"at":[12,3,18],"az":-22,"el":26,"dist":44}},{"t":31610,"dur":2500,"shot":{"at":[30,6,26],"az":-26,"el":22,"dist":56}},{"t":37410,"dur":2600,"shot":{"at":[24,6,18],"az":-32,"el":30,"dist":78}}],"captions":[{"t":0,"kicker":"CONSTRUCTION","text":"Test Chamber 01"},{"t":7600,"kicker":"STEP 01","text":"Install the button."},{"t":8700,"kicker":"STEP 02","text":"Install the exit."},{"t":10200,"kicker":"STEP 03","text":"Connect them."},{"t":13000,"kicker":"STEP 04","text":"Assemble the test object."},{"t":15610,"kicker":"STEP 05","text":"Introduce the subject."},{"t":16810,"kicker":"TRIAL 1","text":"The subject attempts the test."},{"t":22860,"kicker":"TRIAL 1","text":"Insufficient."},{"t":24560,"kicker":"TRIAL 2","text":"The subject uses the test object."},{"t":31610,"kicker":"TRIAL 2","text":"The subject completes the test."},{"t":37410,"kicker":"COMPLETE","text":"Test Chamber 01"}],"cards":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"4":["Red",5,"#b40000"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"27":["Lime",34,"#bbe90b"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"]},"reports":{"test-object":{"ok":true,"stats":{"parts":14,"steps":1,"studConnections":64,"pieces":1,"centreOfMass":[2,2],"comMarginStuds":2,"height":11},"errors":[]}}};</script>
+<script type="module">
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+
+const S = window.STORY, $ = (id) => document.getElementById(id);
+const COLORS = S.colors, PLATE = 0.4;      // 1 stud across = 1 unit, 1 plate up = 0.4
+
+// ---------- scene
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const BG = new THREE.Color("#f1f0ec");
+scene.background = BG; scene.fog = new THREE.Fog(BG, 60, 140);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 400);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb8b2a6, 1.35));
+const sun = new THREE.DirectionalLight(0xffffff, 2.3);
+sun.position.set(-14, 30, 18); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 160 });
+sun.shadow.mapSize.set(4096, 4096);
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+scene.add(sun);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: 0xeceae4, roughness: 1 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const grid = new THREE.GridHelper(200, 50, 0xd6d3ca, 0xe0ddd5); grid.position.y = 0.002; scene.add(grid);
+
+// ---------- bricks
+const geoCache = new Map(), matCache = new Map();
+const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
+function mat(color) {
+  if (!matCache.has(color)) matCache.set(color, new THREE.MeshStandardMaterial({ color: COLORS[color][2], roughness: 0.3, metalness: 0 }));
+  return matCache.get(color);
+}
+function bodyGeo(w, h, d) {
+  const k = `${w}x${h}x${d}`;
+  if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
+  return geoCache.get(k);
+}
+function brick(p) {
+  const g = new THREE.Group(), m = mat(p.color);
+  const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), m);
+  body.castShadow = body.receiveShadow = true; g.add(body);
+  if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
+    const s = new THREE.Mesh(studGeo, m); s.castShadow = true;
+    s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
+    g.add(s);
+  }
+  // Same frame as LDraw (+X right, -Y up, +Z toward the viewer), turned upright: (X, -Y, -Z).
+  g.userData.home = new THREE.Vector3(p.x + p.w / 2, (p.y + p.h / 2) * PLATE, -(p.z + p.d / 2));
+  scene.add(g);
+  return g;
+}
+// Each actor is a group pivoting on the centre of its first-built footprint,
+// so turn() spins a character in place.
+const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
+  const group = new THREE.Group(); scene.add(group);
+  const meshes = a.parts.map((p) => { const m = brick(p); scene.remove(m); group.add(m); return m; });
+  const xs = a.parts.flatMap((p) => [p.x, p.x + p.w]), zs = a.parts.flatMap((p) => [p.z, p.z + p.d]);
+  const pivot = new THREE.Vector3((Math.min(...xs) + Math.max(...xs)) / 2, 0, -(Math.min(...zs) + Math.max(...zs)) / 2);
+  return { id, a, meshes, group, pivot };
+});
+function actorTurn(a, t) {
+  let deg = 0;
+  for (const k of a.turns || []) {
+    if (t < k.t) break;
+    const p = easeInOut(clamp01((t - k.t) / k.dur));
+    deg = deg + k.deg * p;
+    if (p < 1) return deg;
+  }
+  return deg;
+}
+
+// ---------- timeline, evaluated as a pure function of time
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+const easeIn = (p) => p * p;
+const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const settle = (p) => { const e = easeOut(p); return e + Math.sin(p * Math.PI) * 0.06 * (1 - p); };
+
+function actorOffset(a, t) {
+  let pos = a.moves[0].to.slice(), lift = 0;
+  for (const m of a.moves.slice(1)) {
+    if (t < m.t) break;
+    const p = clamp01((t - m.t) / m.dur), e = easeInOut(p);
+    const next = m.to;
+    const cur = [0, 1, 2].map((i) => pos[i] + (next[i] - pos[i]) * e);
+    lift = p < 1 ? Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop : 0;
+    pos = p < 1 ? cur : next.slice();
+  }
+  return new THREE.Vector3(pos[0], (pos[1] + lift) * PLATE, -pos[2]);
+}
+function evalParts(t) {
+  for (const { a, meshes, group, pivot } of actors) {
+    group.position.copy(actorOffset(a, t)).add(pivot);
+    group.rotation.y = THREE.MathUtils.degToRad(actorTurn(a, t));
+    const off = pivot.clone().negate();
+    a.parts.forEach((p, i) => {
+      const g = meshes[i], home = g.userData.home;
+      if (t < p.t0) { g.visible = false; return; }
+      let k = 1 - settle(clamp01((t - p.t0) / p.dur)), out = 0;
+      if (p.out && t >= p.out.t0) out = easeIn(clamp01((t - p.out.t0) / p.out.dur));
+      if (out >= 1) { g.visible = false; return; }
+      g.visible = true;
+      const f = p.from, o = p.out ? p.out.to : [0, 0, 0];
+      g.position.set(
+        off.x + home.x + f[0] * k + o[0] * out,
+        off.y + home.y + f[1] * k + o[1] * out,
+        off.z + home.z - f[2] * k - o[2] * out);
+      const r = Math.max(k, out);
+      g.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
+    });
+  }
+}
+
+// ---------- chamber set pieces: room, figures, buttons, doors, signal lines
+const R = S.room, PROPS = S.props || {};
+function rngf(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const panels = [];
+if (R) {
+  document.body.classList.add("chamber");
+  sun.position.set(R.w / 2 - 26, 60, -R.d / 2 + 34); sun.target.position.set(R.w / 2, 0, -R.d / 2); scene.add(sun.target);
+  sun.intensity = 1.9;
+  grid.visible = false; floor.material.color.set(0xc9c9c4);
+  floor.position.y = -0.35;                       // keep the ground plane clear of the floor panels
+  scene.children.find((o) => o.isHemisphereLight).intensity = 1.9;
+  const r = rngf(R.seed), C = R.cell, WALL = R.h * PLATE;
+  const edge = new THREE.LineBasicMaterial({ color: 0xbcbcb7 });
+  const tint = () => new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.12, 0.05, 0.9 + r() * 0.05), roughness: 0.9 });
+  const doors = Object.values(PROPS).filter((p) => p.kind === "door");
+  const inDoor = (x0, x1, y0, y1) => doors.some((d) => x0 < d.x + d.width && x1 > d.x && y0 < d.height * PLATE && y1 > 0);
+  function panel(size, home, wall, t0) {
+    const geo = new THREE.BoxGeometry(...size);
+    const m = new THREE.Mesh(geo, tint()); m.receiveShadow = true; m.castShadow = !!wall;
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edge));
+    m.position.copy(home); m.visible = false; scene.add(m);
+    panels.push({ m, home, wall, t0, dur: 650 });
+  }
+  // a cell is one panel, or (sometimes) four smaller ones, like a real tiled wall
+  function cells(n1, n2, place) {
+    const used = new Set();
+    for (let i = 0; i < n1; i++) for (let k = 0; k < n2; k++) {
+      if (used.has(i + "," + k)) continue;
+      let a = 1, b = 1; const roll = r();
+      if (roll < 0.22 && i + 1 < n1 && !used.has(i + 1 + "," + k)) a = 2;
+      else if (roll < 0.4 && k + 1 < n2 && !used.has(i + "," + (k + 1))) b = 2;
+      for (let u = 0; u < a; u++) for (let v = 0; v < b; v++) used.add(i + u + "," + (k + v));
+      if (a === 1 && b === 1 && roll > 0.72) for (const [u, v] of [[0, 0], [0.5, 0], [0, 0.5], [0.5, 0.5]]) place(i + u, k + v, 0.5, 0.5);
+      else place(i, k, a, b);
+    }
+  }
+  const G = 0.1, maxD = Math.hypot(R.w, R.d) / 2;
+  cells(R.w / C, R.d / C, (i, k, a, b) => {
+    const x0 = i * C, z0 = k * C, w = a * C, d = b * C;
+    const home = new THREE.Vector3(x0 + w / 2, -0.07, -(z0 + d / 2));
+    const dist = Math.hypot(x0 + w / 2 - R.w / 2, z0 + d / 2 - R.d / 2) / maxD;
+    panel([w - G, 0.14, d - G], home, false, R.t0 + dist * R.dur * 0.5 + r() * 250);
+  });
+  const rows = Math.round(WALL / C);
+  cells(R.w / C, rows, (i, k, a, b) => {           // back wall
+    const x0 = i * C, y0 = k * C, w = a * C, h = b * C;
+    if (inDoor(x0, x0 + w, y0, y0 + h)) return;
+    panel([w - G, h - G, 0.3], new THREE.Vector3(x0 + w / 2, y0 + h / 2, -R.d - 0.15), true, R.t0 + R.dur * 0.5 + (x0 / R.w) * R.dur * 0.3 + y0 * 25);
+  });
+  cells(R.d / C, rows, (i, k, a, b) => {           // right wall
+    const z0 = i * C, y0 = k * C, d = a * C, h = b * C;
+    panel([0.3, h - G, d - G], new THREE.Vector3(R.w + 0.15, y0 + h / 2, -(z0 + d / 2)), true, R.t0 + R.dur * 0.62 + ((R.d - z0) / R.d) * R.dur * 0.25 + y0 * 25);
+  });
+}
+function evalRoom(t) {
+  for (const p of panels) {
+    if (t < p.t0) { p.m.visible = false; continue; }
+    const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+    p.m.visible = true;
+    if (p.wall) { p.m.position.set(p.home.x, p.home.y - (R.h * PLATE + 2) * k, p.home.z); p.m.rotation.set(0, 0, 0); }
+    else { p.m.position.set(p.home.x, p.home.y - 3 * k, p.home.z); p.m.rotation.set(1.3 * k, 0, 0.4 * k); }
+  }
+}
+
+// a prop's on/off value at time t, easing between states
+function level(p, t) {
+  let v = 0;
+  for (const e of p.events) {
+    if (t < e.t) break;
+    const q = easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    v = v + ((e.on ? 1 : 0) - v) * q;
+  }
+  return v;
+}
+const propViews = [];
+const darkMat = new THREE.MeshStandardMaterial({ color: 0x2a2e33, roughness: 0.8 });
+for (const [id, p] of Object.entries(PROPS)) {
+  if (p.kind === "button") {
+    const g = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.6, 0.32, 40), new THREE.MeshStandardMaterial({ color: 0x6f9ea2, roughness: 0.5 }));
+    base.position.y = 0.16; base.castShadow = base.receiveShadow = true;
+    const topMat = new THREE.MeshStandardMaterial({ color: 0xd6453b, roughness: 0.35, emissive: 0xff2a10, emissiveIntensity: 0 });
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.9, 0.45, 40), topMat);
+    top.castShadow = true; g.add(base, top);
+    g.position.set(p.at[0], 0, -p.at[2]); scene.add(g);
+    propViews.push({ p, eval: (t) => {
+      const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+      g.visible = t >= p.t0; g.position.y = -1.2 * k; g.scale.setScalar(1 - 0.4 * k);
+      const v = level(p, t);
+      top.position.y = 0.32 + 0.225 - 0.3 * v; topMat.emissiveIntensity = 0.5 * v;
+    } });
+  } else if (p.kind === "door") {
+    const W = p.width, H = p.height * PLATE, z = -R.d;
+    const g = new THREE.Group(); scene.add(g);
+    const recess = new THREE.Mesh(new THREE.BoxGeometry(W, H, 1.2), darkMat); recess.position.set(p.x + W / 2, H / 2, z - 0.75);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x55595e, roughness: 0.6 });
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(W + 0.8, 0.5, 0.5), frameMat); lintel.position.set(p.x + W / 2, H + 0.25, z + 0.1);
+    const jambL = new THREE.Mesh(new THREE.BoxGeometry(0.4, H, 0.5), frameMat); jambL.position.set(p.x - 0.2, H / 2, z + 0.1);
+    const jambR = jambL.clone(); jambR.position.x = p.x + W + 0.2;
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0xe6e6e2, roughness: 0.7 });
+    const leafL = new THREE.Mesh(new THREE.BoxGeometry(W / 2 - 0.05, H - 0.05, 0.3), leafMat), leafR = leafL.clone();
+    for (const m of [recess, lintel, jambL, jambR, leafL, leafR]) { m.castShadow = m.receiveShadow = true; g.add(m); }
+    propViews.push({ p, eval: (t) => {
+      const k = clamp01((t - p.t0) / p.dur), shown = t >= p.t0;
+      g.visible = shown;
+      const v = level(p, t), slide = (W / 2) * v;
+      const close = (1 - easeOut(k)) * (W / 2);             // leaves slide in when the door is installed
+      leafL.position.set(p.x + W / 4 - slide - close, H / 2, z - 0.1);
+      leafR.position.set(p.x + 3 * W / 4 + slide + close, H / 2, z - 0.1);
+      lintel.scale.x = Math.max(0.01, easeOut(k));
+    } });
+  } else if (p.kind === "signal") {
+    const pts = p.points.map(([x, y, z]) => new THREE.Vector3(x, y * PLATE + 0.08, R && z >= R.d ? -R.d + 0.12 : -z));
+    const dots = [];
+    let total = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], L = a.distanceTo(b);
+      for (let s = 0; s < L; s += 0.85) dots.push({ pos: a.clone().lerp(b, s / L), at: total + s });
+      total += L;
+    }
+    const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.1, 0.34), new THREE.MeshBasicMaterial({ color: 0xffffff }), dots.length);
+    scene.add(mesh);
+    const dim = new THREE.Color(0x9fd7e3), lit = new THREE.Color(0x14b6e0), c = new THREE.Color(), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+    propViews.push({ p, eval: (t) => {
+      const drawn = clamp01((t - p.t0) / p.dur) * total, v = level(p, t);
+      dots.forEach((d, i) => {
+        const on = t >= p.t0 && d.at <= drawn;
+        m4.compose(d.pos, q, new THREE.Vector3(on ? 1 : 0, on ? 1 : 0, on ? 1 : 0));
+        mesh.setMatrixAt(i, m4);
+        const pulse = 0.65 + 0.35 * Math.sin(d.at * 1.3 - t * 0.012);
+        c.copy(dim).lerp(lit, v * pulse); mesh.setColorAt(i, c);
+      });
+      mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    } });
+  }
+}
+
+// pictogram figures
+const figMat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.55 });
+const figures = Object.entries(S.actors).filter(([, a]) => a.kind === "figure").map(([id, a]) => {
+  const g = new THREE.Group(); scene.add(g);
+  const legGeo = new THREE.BoxGeometry(0.34, 1.9, 0.4);
+  const legs = [-0.3, 0.3].map((x) => {
+    const hip = new THREE.Group(); hip.position.set(x, 1.9, 0);
+    const leg = new THREE.Mesh(legGeo, figMat); leg.position.y = -0.95; leg.castShadow = true;
+    hip.add(leg); g.add(hip); return hip;
+  });
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.62, 1.4, 6, 18), figMat); torso.position.y = 1.9 + 1.32; torso.castShadow = true;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.52, 24, 18), figMat); head.position.y = 1.9 + 2.64 + 0.6; head.castShadow = true;
+  g.add(torso, head);
+  return { a, g, legs };
+});
+const lerpAngle = (a, b, p) => a + (((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * p;
+function evalFigures(t) {
+  for (const { a, g, legs } of figures) {
+    g.visible = t >= a.t0;
+    const drop = 1 - settle(clamp01((t - a.t0) / a.appear));
+    const off = actorOffset(a, t);
+    // face the direction of travel, then add any explicit turns
+    let heading = THREE.MathUtils.degToRad(a.face || 0), pos = a.moves[0].to, swing = 0;
+    for (const m of a.moves.slice(1)) {
+      if (t < m.t) break;
+      const dx = m.to[0] - pos[0], dz = m.to[2] - pos[2];
+      if (Math.hypot(dx, dz) > 0.01) heading = lerpAngle(heading, Math.atan2(dx, -dz), easeInOut(clamp01((t - m.t) / Math.min(450, m.dur * 0.35))));
+      const p = clamp01((t - m.t) / m.dur);
+      if (p < 1 && Math.hypot(dx, dz) > 0.01) swing = Math.sin(p * Math.PI * m.steps) * 0.6 * Math.sin(p * Math.PI);
+      pos = m.to;
+    }
+    g.position.set(off.x, off.y + drop * 9, off.z);
+    g.rotation.y = heading + THREE.MathUtils.degToRad(actorTurn(a, t));
+    legs[0].rotation.x = swing; legs[1].rotation.x = -swing;
+  }
+}
+
+// camera: each keyframe eases from wherever the camera was at that moment
+const shotKeys = ["az", "el", "dist", "ax", "ay", "az2"];
+const toState = (s) => ({ az: s.az, el: s.el, dist: s.dist, ax: s.at[0], ay: s.at[1] * PLATE, az2: -s.at[2] });
+const cams = S.camera.map((c) => ({ ...c, to: toState(c.shot) }));
+const camFrom = [];
+function camAt(t, upto = cams.length) {
+  let i = -1;
+  for (let j = 0; j < upto; j++) if (cams[j].t <= t) i = j;
+  if (i < 0) return cams[0].to;
+  const from = camFrom[i] ?? (camFrom[i] = i === 0 ? cams[0].to : camAt(cams[i].t, i));
+  const e = easeInOut(clamp01((t - cams[i].t) / Math.max(1, cams[i].dur)));
+  const out = {}; for (const k of shotKeys) out[k] = from[k] + (cams[i].to[k] - from[k]) * e;
+  return out;
+}
+for (let i = 0; i < cams.length; i++) camAt(cams[i].t + 0.001);
+function evalCamera(t) {
+  const c = camAt(t);
+  const az = THREE.MathUtils.degToRad(c.az + (S.meta.drift || 0) * t / 1000), el = THREE.MathUtils.degToRad(c.el);
+  const target = new THREE.Vector3(c.ax, c.ay, c.az2);
+  camera.position.set(target.x + c.dist * Math.cos(el) * Math.sin(az), target.y + c.dist * Math.sin(el), target.z + c.dist * Math.cos(el) * Math.cos(az));
+  camera.lookAt(target);
+}
+
+let shownCap = -1;
+function evalOverlay(t) {
+  let ci = -1; S.captions.forEach((c, i) => { if (c.t <= t) ci = i; });
+  if (ci !== shownCap) {
+    shownCap = ci;
+    $("capK").textContent = ci >= 0 ? S.captions[ci].kicker : "";
+    $("capT").textContent = ci >= 0 ? S.captions[ci].text : "";
+  }
+  document.querySelector(".cap").style.opacity = ci >= 0 ? clamp01((t - S.captions[ci].t) / 350) : 0;
+  const card = S.cards.find((c) => t >= c.t && t < c.t + c.dur);
+  if (card) {
+    $("cardK").textContent = card.kicker; $("cardT").textContent = card.title; $("cardS").textContent = card.sub || "";
+    const a = Math.min(clamp01((t - card.t) / 450), clamp01((card.t + card.dur - t) / 450));
+    $("card").style.opacity = card.t === 0 ? Math.min(1, clamp01((card.t + card.dur - t) / 450)) : a;
+  } else $("card").style.opacity = 0;
+}
+
+// ---------- playback
+let t = 0, playing = true, last = performance.now();
+$("scrub").max = S.duration;
+const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
+function setPlaying(p) { playing = p; $("play").textContent = p ? "❚❚" : "▶"; last = performance.now(); }
+$("play").onclick = () => { if (t >= S.duration) t = 0; setPlaying(!playing); };
+$("scrub").oninput = () => { t = +$("scrub").value; setPlaying(false); };
+addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === " ") { e.preventDefault(); $("play").click(); }
+  else if (k === "arrowright") { t = Math.min(S.duration, t + 2000); }
+  else if (k === "arrowleft") { t = Math.max(0, t - 2000); }
+  else if (k === "home" || k === "r") { t = 0; setPlaying(true); }
+  else if (k === "h") document.body.classList.toggle("clean");
+  else if (k === "f") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+});
+
+// model report: every model checked by brick-check at build time
+const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok);
+$("badge").innerHTML = `<details><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}</summary><div class="list">${
+  reps.map(([n, r]) => `${r.ok ? "✓" : "✗"} ${n} · ${r.stats.parts} parts · <a href="models/${n.replace(/[^a-z0-9-]+/gi, "_")}.ldr" download>.ldr</a>`).join("<br>")}</div></details>`;
+
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+
+function frame(now) {
+  if (playing) { t += now - last; if (t >= S.duration) { t = S.duration; setPlaying(false); } }
+  last = now;
+  evalParts(t); evalRoom(t); for (const v of propViews) v.eval(t); evalFigures(t); evalCamera(t); evalOverlay(t);
+  $("scrub").value = t; $("time").textContent = `${fmt(t)} / ${fmt(S.duration)}`;
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+const qs = new URLSearchParams(location.search);
+if (qs.has("t")) { t = +qs.get("t"); setPlaying(false); }
+if (qs.has("clean")) document.body.classList.add("clean");
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "brick-stage",
+  "private": true,
+  "type": "module",
+  "description": "Tell stories with LEGO models that assemble themselves — every model checked as really buildable.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}
