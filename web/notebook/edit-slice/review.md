@@ -583,6 +583,48 @@ The last row is one we never claimed and checked anyway. §6.3 carried it as an 
 we could not answer; answering it took four runs and cost us the strongest available
 reading of our own mechanism.
 
+### 5.1 · What the withdrawals rule out, and the boundary they leave
+
+Table 5 is a list. This is what it adds up to — and the first thing to separate is
+**elimination** from **our own cost**, because only one of them is a contribution and a
+record that mixes them earns credit for neither.
+
+**Eliminations. These constrain the space for anyone working in it.**
+
+| ruled out | by | what it closes |
+| --- | --- | --- |
+| Blast radius can be predicted from how much of the edit arrives | <Evidence id="E-028d" /> | Delivery held at exactly 1.000 still gives **2.96×** variation in reach. The cheap-predictor route fails, and the measurement says why. |
+| An edit suppresses everything about the subject uniformly | <Evidence id="E-033" /> | The floor is **1 of 6** arms. Two effects become one effect and one special case. |
+| ROME's efficacy score misses what displacement catches | <Evidence id="E-029" /> | At the standard edit layer the two predict propagation equally — **0.425 against 0.419**. There is no metric critique available here. |
+| Different subjects are near-orthogonal at the subject position | <Evidence id="E-027" /> · <Evidence id="E-030" /> | A Llama-3.1-8B fact, not a ROME one, and architectural rather than an artifact of unfamiliar names. |
+| The floor dips where ROME edits | <Evidence id="E-031" /> | Minima sit at different depths in different models, and in neither at the edited layer. |
+| Backward probing is unexplored · the surface-form result is ours · knowledge-status × editability is unclaimed | <Evidence id="f-R-001">R-001</Evidence> · <Evidence id="f-R-010">R-010</Evidence> | Three framings retired against existing literature, two of them after we had designed around them. |
+
+**Our own cost. These constrain nothing and are not offered as findings.**
+
+A gate that measured target lift, which a logit nudge also passes
+(<Evidence id="E-026" />). A dip criterion defeated by a flat-bottomed minimum
+(<Evidence id="E-031" />). Layer 5 used on two models where it is depth fraction 0.16 and
+0.06 (<Evidence id="E-033" />). A delta cache that reported a partial run as a whole one.
+They are in the record because they are why the rest can be trusted — not because they
+narrowed anything.
+
+**The boundary the eliminations leave.** Stated as sharply as the evidence allows:
+
+> **Achievable.** *Whether* an edit reaches a given prompt — exactly, with no forward pass
+> through the edited model, at any scale from 6B to 405B. And *which* probes take the worst
+> of it — the injected value's answer type predicts it, 6 of 6 arms.
+>
+> **Not achievable, on this record.** *How much* any of them moves. Belief displacement and
+> the efficacy margin reach ρ ≈ 0.42 — about 18% of variance — and the coefficient cannot
+> help by construction, because it is pinned at exactly 1.000 across precisely the probes
+> whose outcomes differ most.
+
+**We can say which facts an edit touches. We cannot say how hard.** That sentence is the
+whole contribution of the negative results, and the question on the far side of it —
+what *does* set the magnitude — is <Evidence id="T-086" />, which has no candidate
+explanation anywhere in this record.
+
 ## 6 · What to attack
 
 **1 · n = 42, one model, one relation family, one layer.** Every statement here is an

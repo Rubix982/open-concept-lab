@@ -1,0 +1,4 @@
+2026-10-03 18:04:24,048 INFO     run_e033  run run_e033 -> logs/run_e033-2026-10-03-180424.log
+2026-10-03 18:04:24,048 INFO     run_e033  config {"edit_prompt": "{} was born in the country of", "injected_type": "a country", "layer": 5, "measure": "teacher-forced log P(true answer); LEVELS, not drops", "model": "meta-llama/Llama-3.1-8B", "n": 29, "note": "E-014's |ctl deltas deliberately NOT reused \u2014 wrong prompt shape", "probes": {"citizenship": "{} is a citizen of", "language": "The native language of {} is", "occupation": "By profession, {} is a"}, "reference_arm": "[E-025] birthplace edit at 8B", "relation_edited": "birthplace", "steps": 25, "thread": ["T-081", "T-080"], "ticket": "E-033", "type_matched_probe": "citizenship"}
+2026-10-03 18:04:24,048 INFO     run_e033  29 subjects carried from [E-025] with a target occupation
+2026-10-03 18:04:26,227 INFO     run_e033  deltas cached (9)

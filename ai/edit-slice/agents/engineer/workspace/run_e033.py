@@ -127,15 +127,22 @@ def main() -> None:
     specs = [EditSpec(it["cid"], edit_tmpl.format(it["subject"]), it["subject"],
                       it["target"], "real") for it in items]
     dpath = ROOT / "results" / "cache" / f"E033_deltas_{tag}_s{args.steps}.pt"
-    if dpath.exists():
-        deltas = torch.load(dpath)
-        log.info("deltas cached (%d)", len(deltas))
+    # COMPLETENESS, not existence. `optimise` now checkpoints after every chunk to this
+    # same path, so a partial file is the normal state after an interrupted run — and
+    # the first version of this check loaded 9 of 29 deltas, reported "cached", skipped
+    # optimisation entirely and walked into the scoring loop short. A cache that is
+    # trusted because the file exists is how a partial run reports itself as a whole one.
+    cached = torch.load(dpath) if dpath.exists() else {}
+    want = {sp.case_id for sp in specs}
+    if want <= set(cached):
+        deltas = cached
+        log.info("deltas cached and complete (%d/%d)", len(cached), len(want))
     else:
-        log.info("optimising v* for %d %s edits at %d steps", len(specs),
-                 args.relation, args.steps)
+        log.info("optimising v* for %d %s edits at %d steps (%d already checkpointed)",
+                 len(specs), args.relation, args.steps, len(cached))
         t0 = time.time()
         deltas = optimise(m, specs, args.layer, args.steps, log, args.chunk,
-                          args.stall_wait, args.max_stalls)
+                          args.stall_wait, args.max_stalls, checkpoint=dpath)
         torch.save(deltas, dpath)
         log.info("  took %.0f min", (time.time() - t0) / 60)
 

@@ -52,14 +52,23 @@ N_CAL = 6                       # the [E-028a] subjects, so the target is compar
 N_HELD = 6                      # confound 2: does the matched budget transfer?
 
 
-def optimise(m, specs, layer, steps, log, chunk, stall_wait, max_stalls):
+def optimise(m, specs, layer, steps, log, chunk, stall_wait, max_stalls,
+             checkpoint: Path | None = None):
     """`v*` for every spec, auto-halving the batch rather than parking on an OOM.
 
     The existing stall logic treats every failure as an outage and sleeps ten minutes,
     which is right for a dropped node and wrong for a batch that is simply too large.
     Halving first costs one failed attempt and distinguishes the two.
     """
-    out, size = {}, chunk
+    # Resume from a partial run. Added after two [E-033] arms lost 2-3 hours of v*
+    # each: an NDIF job hung in RUNNING for hours, no exception was ever raised, and
+    # killing the client threw away every completed chunk because this function
+    # accumulated in memory and its caller saved only on return.
+    out = torch.load(checkpoint) if checkpoint and checkpoint.exists() else {}
+    if out:
+        specs = [sp for sp in specs if sp.case_id not in out]
+        log.info("resuming: %d specs already optimised, %d to go", len(out), len(specs))
+    size = chunk
     i = 0
     while i < len(specs):
         grp = specs[i:i + size]
@@ -97,6 +106,8 @@ def optimise(m, specs, layer, steps, log, chunk, stall_wait, max_stalls):
                             str(exc).replace("\n", " "), stall_wait / 60)
                 time.sleep(stall_wait)
         i += size
+        if checkpoint:                      # checkpoint AFTER each completed chunk
+            torch.save(out, checkpoint)
     return out
 
 

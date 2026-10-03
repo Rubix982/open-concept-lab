@@ -472,6 +472,44 @@ DECK = [
               "easiest to rush — do not.",
     ),
     Slide(
+        tag="§3 · THE BOUNDARY", time="1m",
+        title="What the failures rule out — and what is left standing",
+        bullets=[
+            "Most of this is things that did not work. That counts for something only if "
+            "we separate **what is ruled out** from **what we simply got wrong**.",
+            "[[Ruled out, for anyone]] — you cannot tell how much damage an edit does from "
+            "how much of it arrives; an edit does not blur everything about a person "
+            "equally; the standard 'did it work' score is not hiding anything.",
+            "{{Just our mistakes}} — a safety check on the wrong quantity, a test that "
+            "could not detect its own target, a file that reported half a run as whole. "
+            "In the record because they are why the rest can be trusted. Not findings.",
+            ("Put the eliminations together and a boundary falls out — the clearest thing "
+             "this project knows.", 1),
+        ],
+        notes="This slide is the argument for the negative results. Do NOT let the two "
+              "lists blur: a record that mixes elimination with self-inflicted cost earns "
+              "credit for neither. §5.1 of the paper.",
+    ),
+    Slide(
+        tag="§3 · THE BOUNDARY", time="1m",
+        title="We can say WHICH facts an edit touches. Not how hard.",
+        big="which — yes.   how hard — no.",
+        bullets=[
+            "[[WHICH is settled]] — cheaply, exactly, at every size from 6B to 405B. And "
+            "the probe hit hardest is the one whose answer is the same **kind of thing** "
+            "as what was injected. Six cases out of six.",
+            "{{HOW HARD is open}} — nothing we have predicts it. The two best candidates "
+            "explain about a fifth of the variation each.",
+            ("And the measurement this whole project is built on cannot help: it has "
+             "**exactly the same value** for every probe whose outcome differs. Zero "
+             "variance where the answer varies most.", 1),
+            "That is a real boundary, it came entirely from things not working, and the "
+            "question past it is the one I would most like help with.",
+        ],
+        notes="T-086. If there is one thing to take away, it is this slide. The last "
+              "bullet is the sharpest fact in the project and the easiest to rush.",
+    ),
+    Slide(
         tag="§4 · WHAT I WANT", time="1m",
         title="Three things I cannot decide from inside",
         bullets=[

@@ -16,6 +16,8 @@ import contextlib
 import io
 import logging
 import os
+import signal
+import threading
 import time
 from typing import Final
 
@@ -64,13 +66,52 @@ def _is_oom(exc: BaseException) -> bool:
 _FLAKY_REMOTE: Final[tuple[str, ...]] = ("is not whitelisted",)
 
 
+#: Wall-clock ceiling for one remote call. A healthy trace is 6-25s even at 405B, and a
+#: 25-step v* batch is ~15s a step, so 600s is generous by more than an order of
+#: magnitude. It exists because a ceiling is the ONLY thing that catches a job which
+#: hangs without failing: on 2026-09-27 two [E-033] arms sat in NDIF's `RECEIVED` state
+#: for 135 and 144 HOURS, never queued, never erroring. No exception was raised, so
+#: `retrying` never fired and the client spun on a progress bar for six days against
+#: under a minute of CPU. Silence is not success.
+CALL_TIMEOUT_S: Final[float] = 600.0
+
+
+class RemoteTimeout(TimeoutError):
+    """A remote call exceeded its wall-clock ceiling. Retryable, like any transport fault."""
+
+
+@contextlib.contextmanager
+def deadline(seconds: float, what: str):
+    """Raise `RemoteTimeout` in the main thread if the body outlasts `seconds`.
+
+    SIGALRM, because the call being bounded is a blocking socket read inside a library
+    we do not control — a watchdog thread cannot interrupt it, and nnsight exposes no
+    timeout of its own. Only works on the main thread of a Unix process, which is what
+    every runner here is; elsewhere it degrades to no timeout rather than lying about one.
+    """
+    if seconds <= 0 or threading.current_thread() is not threading.main_thread():
+        yield
+        return
+
+    def _fire(signum, frame):            # noqa: ARG001
+        raise RemoteTimeout(f"{what} exceeded {seconds:.0f}s with no response")
+
+    previous = signal.signal(signal.SIGALRM, _fire)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
+
+
 def _is_flaky_remote(exc: BaseException) -> bool:
     text = f"{type(exc).__name__} {exc}"
     return any(tag in text for tag in _FLAKY_REMOTE)
 
 
 def _is_transport_error(exc: BaseException) -> bool:
-    if _is_flaky_remote(exc):
+    if _is_flaky_remote(exc) or isinstance(exc, RemoteTimeout):
         return True
     module = (type(exc).__module__ or "").split(".")[0]
     if module in _TRANSPORT_MODULES:
@@ -146,7 +187,8 @@ def _encode_pairs(model: LanguageModel, pairs: list[tuple[str, str]]
     return ids, mask, lengths
 
 
-def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKOFF_S):
+def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKOFF_S,
+             timeout: float = CALL_TIMEOUT_S):
     """Call `fn()`, retrying transport failures with linear backoff.
 
     Factored out after needing this shape in a FOURTH place. `score_pairs` had it,
@@ -158,7 +200,8 @@ def retrying(fn, *, what: str, tries: int = MAX_ATTEMPTS, backoff: float = BACKO
     last: Exception | None = None
     for attempt in range(tries):
         try:
-            return fn()
+            with deadline(timeout, what):
+                return fn()
         except Exception as exc:  # noqa: BLE001 — narrowed by the classifier
             last = exc
             if not _is_transport_error(exc) or attempt == tries - 1:

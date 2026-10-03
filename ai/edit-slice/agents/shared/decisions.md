@@ -2410,3 +2410,58 @@ matched comparison. Existence per [O-004].
 
 **Artifacts:** agents/engineer/workspace/run_e033.py;
 results/E-033-crossover-*.json; logs/run_e033-2026-09-27-*.log
+
+---
+
+## [E-033] Final: all six arms — type matching is the mechanism, the floor is one cell
+
+_Date: 2026-10-03 · supersedes the interim entry of 2026-09-27 · [T-081] answered_
+
+All six arms complete. The interim conclusion holds and sharpens.
+
+| model | layer | depth frac | edited relation | type-matched probe moved most? | non-matched spread |
+| --- | ---: | ---: | --- | --- | ---: |
+| Llama-3.1-70B | 5 | 0.06 | birthplace | **yes** · citizenship | 1.56 |
+| Llama-3.1-70B | 13 | 0.16 | birthplace | **yes** · citizenship | 1.11 |
+| Llama-3.1-70B | 5 | 0.06 | occupation | **yes** · occupation | 1.43 |
+| Llama-3.1-70B | 13 | 0.16 | occupation | **yes** · occupation | 1.02 |
+| Llama-3.1-8B | 5 | 0.16 | birthplace | **yes** · citizenship | **0.09** |
+| Llama-3.1-8B | 5 | 0.16 | occupation | **yes** · occupation | 2.73 |
+
+**Type matching: 6 of 6, no exceptions.** Across two models, two relations and two depths,
+the probe whose answer type matches the injected value is the one displaced hardest.
+Difference-in-differences +8.06 nats at 8B, +5.42 at 70B layer 13.
+
+**The floor: 1 of 6.** And the one is not a fluke — this run's fresh 8B birthplace arm
+reproduced [E-025]'s convergence at **0.09** against its published **0.04**, on an
+independent `v*` optimisation. So the floor is **real, replicable, and specific to
+(8B, birthplace)**. It is not a property of editing.
+
+> [E-025]'s two-effect account becomes one effect plus one special case. "An edit
+> suppresses everything about the subject to a floor" is withdrawn as a general claim and
+> retained as a measured fact about one model-relation pair.
+
+**[T-081] is answered**, and with it the last of [T-065]'s three never-varied dimensions —
+model ([E-032]), layer ([E-028]), relation (here).
+
+### What the six-day gap in this entry was
+
+Two arms sat in NDIF's `RECEIVED` state — never queued, never erroring — for **135 and 144
+hours**. No exception, so `retrying` never fired; the client spun on a progress bar against
+under a minute of CPU. Three fixes came out of it, in order of how much they would have
+saved:
+
+1. **A wall-clock ceiling on every remote call** (`remote.deadline`, 600s via SIGALRM,
+   classified retryable). A ceiling is the only thing that catches a job which hangs
+   without failing. Would have turned six days into ten minutes.
+2. **Per-chunk checkpointing in `optimise`**, so a kill costs one chunk rather than the
+   run. Saved 25 of 58 specs here.
+3. **A completeness check on the delta cache** — the first relaunch loaded 9 of 29 deltas,
+   logged "cached", skipped optimisation and walked into scoring short. A cache trusted
+   because the file exists is how a partial run reports itself as a whole one. Same family
+   as the layer-less cache key found the week before.
+
+**Scope.** n=29, two relations, two models, two depths. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e033.py; results/E-033-crossover-*.json;
+logs/run_e033-2026-*.log; src/remote.py (`deadline`, `RemoteTimeout`, `CALL_TIMEOUT_S`)

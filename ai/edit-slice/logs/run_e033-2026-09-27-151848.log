@@ -1,0 +1,174 @@
+2026-09-27 15:18:48,833 INFO     run_e033  run run_e033 -> logs/run_e033-2026-09-27-151848.log
+2026-09-27 15:18:48,834 INFO     run_e033  config {"edit_prompt": "{} was born in the country of", "injected_type": "a country", "layer": 5, "measure": "teacher-forced log P(true answer); LEVELS, not drops", "model": "meta-llama/Llama-3.1-8B", "n": 29, "note": "E-014's |ctl deltas deliberately NOT reused \u2014 wrong prompt shape", "probes": {"citizenship": "{} is a citizen of", "language": "The native language of {} is", "occupation": "By profession, {} is a"}, "reference_arm": "[E-025] birthplace edit at 8B", "relation_edited": "birthplace", "steps": 25, "thread": ["T-081", "T-080"], "ticket": "E-033", "type_matched_probe": "citizenship"}
+2026-09-27 15:18:48,834 INFO     run_e033  29 subjects carried from [E-025] with a target occupation
+2026-09-27 15:18:50,882 INFO     run_e033  optimising v* for 29 birthplace edits at 25 steps
+2026-09-27 15:20:13,065 WARNING  run_e033  batch of 6 failed with a NON-flaky error (NNsightException: Traceback (most recent call last):  RemoteException: Traceback (most recent call last):   ); halving to 3
+2026-09-27 15:20:14,890 WARNING  run_e033  L5 s25 specs 1-3 failed (NNsightException: Traceback (most recent call last):  RemoteException: Traceback (most recent call last):   ); parking 2 min
+2026-09-27 15:23:01,734 WARNING  run_e033  L5 s25 specs 1-3 failed (NNsightException: Traceback (most recent call last):  RemoteException: Traceback (most recent call last):   ); parking 2 min
+2026-09-27 15:25:44,833 DEBUG    edit  batch step  1/25  summed loss 29.2717
+2026-09-27 15:25:50,363 DEBUG    edit  batch step  2/25  summed loss 18.0015
+2026-09-27 15:25:56,690 DEBUG    edit  batch step  3/25  summed loss 13.8751
+2026-09-27 15:26:02,589 DEBUG    edit  batch step  4/25  summed loss 3.2439
+2026-09-27 15:26:08,249 DEBUG    edit  batch step  5/25  summed loss 1.6290
+2026-09-27 15:26:14,592 DEBUG    edit  batch step  6/25  summed loss 1.2784
+2026-09-27 15:26:20,125 DEBUG    edit  batch step  7/25  summed loss 1.1799
+2026-09-27 15:26:25,564 DEBUG    edit  batch step  8/25  summed loss 1.1125
+2026-09-27 15:26:31,423 DEBUG    edit  batch step  9/25  summed loss 1.0874
+2026-09-27 15:26:36,947 DEBUG    edit  batch step 10/25  summed loss 1.0740
+2026-09-27 15:26:43,509 DEBUG    edit  batch step 11/25  summed loss 1.0507
+2026-09-27 15:26:49,399 DEBUG    edit  batch step 12/25  summed loss 1.0503
+2026-09-27 15:26:55,161 DEBUG    edit  batch step 13/25  summed loss 1.0522
+2026-09-27 15:27:00,623 DEBUG    edit  batch step 14/25  summed loss 1.0364
+2026-09-27 15:27:06,112 DEBUG    edit  batch step 15/25  summed loss 1.0356
+2026-09-27 15:27:11,551 DEBUG    edit  batch step 16/25  summed loss 1.0219
+2026-09-27 15:27:17,219 DEBUG    edit  batch step 17/25  summed loss 1.0307
+2026-09-27 15:27:23,046 DEBUG    edit  batch step 18/25  summed loss 1.0215
+2026-09-27 15:27:29,532 DEBUG    edit  batch step 19/25  summed loss 1.0341
+2026-09-27 15:27:35,058 DEBUG    edit  batch step 20/25  summed loss 1.0228
+2026-09-27 15:27:40,816 DEBUG    edit  batch step 21/25  summed loss 1.0125
+2026-09-27 15:27:46,752 DEBUG    edit  batch step 22/25  summed loss 1.0207
+2026-09-27 15:27:51,929 DEBUG    edit  batch step 23/25  summed loss 1.0172
+2026-09-27 15:27:57,380 DEBUG    edit  batch step 24/25  summed loss 1.0292
+2026-09-27 15:28:04,208 DEBUG    edit  batch step 25/25  summed loss 1.0240
+2026-09-27 15:28:36,444 DEBUG    edit  batch step  1/25  summed loss 29.2578
+2026-09-27 15:28:42,134 DEBUG    edit  batch step  2/25  summed loss 16.3835
+2026-09-27 15:28:47,507 DEBUG    edit  batch step  3/25  summed loss 6.3467
+2026-09-27 15:28:53,868 DEBUG    edit  batch step  4/25  summed loss 1.6058
+2026-09-27 15:28:59,723 DEBUG    edit  batch step  5/25  summed loss 1.6339
+2026-09-27 15:29:05,668 DEBUG    edit  batch step  6/25  summed loss 1.5950
+2026-09-27 15:29:11,452 DEBUG    edit  batch step  7/25  summed loss 1.5515
+2026-09-27 15:29:17,776 DEBUG    edit  batch step  8/25  summed loss 1.5400
+2026-09-27 15:29:23,927 DEBUG    edit  batch step  9/25  summed loss 1.5133
+2026-09-27 15:29:30,070 DEBUG    edit  batch step 10/25  summed loss 1.5078
+2026-09-27 15:29:35,661 DEBUG    edit  batch step 11/25  summed loss 1.5045
+2026-09-27 15:29:41,285 DEBUG    edit  batch step 12/25  summed loss 1.5030
+2026-09-27 15:29:46,773 DEBUG    edit  batch step 13/25  summed loss 1.5021
+2026-09-27 15:29:52,814 DEBUG    edit  batch step 14/25  summed loss 1.4926
+2026-09-27 15:29:58,740 DEBUG    edit  batch step 15/25  summed loss 1.4898
+2026-09-27 15:30:04,713 DEBUG    edit  batch step 16/25  summed loss 1.4835
+2026-09-27 15:30:10,272 DEBUG    edit  batch step 17/25  summed loss 1.4873
+2026-09-27 15:30:15,857 DEBUG    edit  batch step 18/25  summed loss 1.4864
+2026-09-27 15:30:21,095 DEBUG    edit  batch step 19/25  summed loss 1.4834
+2026-09-27 15:30:28,388 DEBUG    edit  batch step 20/25  summed loss 1.4793
+2026-09-27 15:30:34,106 DEBUG    edit  batch step 21/25  summed loss 1.4798
+2026-09-27 15:30:39,298 DEBUG    edit  batch step 22/25  summed loss 1.4721
+2026-09-27 15:30:45,078 DEBUG    edit  batch step 23/25  summed loss 1.4790
+2026-09-27 15:30:51,032 DEBUG    edit  batch step 24/25  summed loss 1.4750
+2026-09-27 15:30:56,074 DEBUG    edit  batch step 25/25  summed loss 1.4693
+2026-09-27 15:31:33,903 DEBUG    edit  batch step  1/25  summed loss 21.6599
+2026-09-27 15:31:40,476 DEBUG    edit  batch step  2/25  summed loss 13.9485
+2026-09-27 15:31:46,580 DEBUG    edit  batch step  3/25  summed loss 9.8298
+2026-09-27 15:31:52,240 DEBUG    edit  batch step  4/25  summed loss 5.1654
+2026-09-27 15:31:57,622 DEBUG    edit  batch step  5/25  summed loss 2.5701
+2026-09-27 15:32:04,300 DEBUG    edit  batch step  6/25  summed loss 1.8638
+2026-09-27 15:32:09,623 DEBUG    edit  batch step  7/25  summed loss 1.5998
+2026-09-27 15:32:14,611 DEBUG    edit  batch step  8/25  summed loss 1.9308
+2026-09-27 15:32:20,352 DEBUG    edit  batch step  9/25  summed loss 1.4297
+2026-09-27 15:32:26,525 DEBUG    edit  batch step 10/25  summed loss 0.9884
+2026-09-27 15:32:31,732 DEBUG    edit  batch step 11/25  summed loss 0.8023
+2026-09-27 15:32:39,235 DEBUG    edit  batch step 12/25  summed loss 0.7110
+2026-09-27 15:32:46,143 DEBUG    edit  batch step 13/25  summed loss 0.6953
+2026-09-27 15:32:52,346 DEBUG    edit  batch step 14/25  summed loss 0.6807
+2026-09-27 15:32:58,644 DEBUG    edit  batch step 15/25  summed loss 0.6671
+2026-09-27 15:33:05,341 DEBUG    edit  batch step 16/25  summed loss 0.6555
+2026-09-27 15:33:13,720 DEBUG    edit  batch step 17/25  summed loss 0.6528
+2026-09-27 15:33:20,586 DEBUG    edit  batch step 18/25  summed loss 0.6535
+2026-09-27 15:33:27,424 DEBUG    edit  batch step 19/25  summed loss 0.6472
+2026-09-27 15:33:33,513 DEBUG    edit  batch step 20/25  summed loss 0.6400
+2026-09-27 15:33:39,169 DEBUG    edit  batch step 21/25  summed loss 0.6427
+2026-09-27 15:33:46,284 DEBUG    edit  batch step 22/25  summed loss 0.6381
+2026-09-27 15:33:53,070 DEBUG    edit  batch step 23/25  summed loss 0.6418
+2026-09-27 15:33:58,395 DEBUG    edit  batch step 24/25  summed loss 0.6366
+2026-09-27 15:34:05,444 DEBUG    edit  batch step 25/25  summed loss 0.6418
+2026-09-27 15:34:51,028 DEBUG    edit  batch step  1/25  summed loss 27.3716
+2026-09-27 15:34:56,977 DEBUG    edit  batch step  2/25  summed loss 12.0057
+2026-09-27 15:35:03,044 DEBUG    edit  batch step  3/25  summed loss 4.6470
+2026-09-27 15:35:09,273 DEBUG    edit  batch step  4/25  summed loss 3.0670
+2026-09-27 17:01:35,545 WARNING  edit  transport failure (ReadError: [Errno 54] Connection reset by peer) on v* step 5 attempt 1/8; retrying in 5s
+2026-09-27 22:41:11,315 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-28 03:36:04,589 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-28 11:48:58,293 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-28 18:12:02,077 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 01:19:02,694 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 11:05:05,077 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 12:59:47,791 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 13:23:22,237 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 13:55:40,546 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 14:24:23,369 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 14:56:41,989 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 15:25:25,084 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 15:57:43,649 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 16:26:26,053 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 16:58:42,951 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 17:27:27,576 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 17:59:46,191 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 18:28:25,107 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 19:00:43,525 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 19:29:21,493 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 20:01:48,978 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 20:30:22,687 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 20:57:20,342 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 21:30:41,013 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 22:03:00,864 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 22:32:19,192 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 23:04:37,934 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-29 23:33:16,921 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 00:00:09,871 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 00:33:38,004 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 01:07:03,256 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 01:35:28,149 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 02:23:39,408 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 03:12:09,666 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 04:00:38,419 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 04:33:01,258 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 04:54:04,785 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 05:26:27,267 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 05:58:45,773 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 06:32:48,607 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 07:05:10,727 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 07:37:31,183 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 08:02:13,111 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 08:34:32,064 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 09:03:14,777 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 11:05:01,468 ERROR    engineio.client  packet queue is empty, aborting
+2026-09-30 19:29:07,542 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 01:19:05,812 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 02:07:15,230 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 02:39:48,863 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 03:12:06,985 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 03:44:25,352 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 04:16:44,243 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 04:49:03,151 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 05:21:21,697 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 05:49:25,763 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 06:17:23,115 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 06:49:41,671 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 07:22:00,047 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 07:54:18,761 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 08:18:20,539 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 08:50:40,492 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 09:19:25,703 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 09:51:44,122 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 10:20:22,860 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 10:52:41,196 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 11:21:18,035 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 11:53:37,778 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 12:22:16,265 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 12:54:34,550 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 13:23:21,367 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 13:46:10,911 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 14:08:16,879 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 14:30:18,597 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 15:02:37,050 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 16:10:07,151 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 19:13:13,330 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 21:15:05,551 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-01 23:17:21,299 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-02 02:43:15,113 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-02 08:11:00,237 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-02 14:08:08,287 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-02 22:16:08,543 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-03 03:31:35,343 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-03 12:06:03,137 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-03 17:59:41,915 ERROR    engineio.client  packet queue is empty, aborting
+2026-10-03 18:02:45,187 ERROR    engineio.client  packet queue is empty, aborting

@@ -1,0 +1,114 @@
+2026-10-03 18:05:45,889 INFO     run_e033  run run_e033 -> logs/run_e033-2026-10-03-180545.log
+2026-10-03 18:05:45,889 INFO     run_e033  config {"edit_prompt": "{} works as a", "injected_type": "a profession", "layer": 5, "measure": "teacher-forced log P(true answer); LEVELS, not drops", "model": "meta-llama/Llama-3.1-70B", "n": 29, "note": "E-014's |ctl deltas deliberately NOT reused \u2014 wrong prompt shape", "probes": {"citizenship": "{} is a citizen of", "language": "The native language of {} is", "occupation": "By profession, {} is a"}, "reference_arm": "[E-025] birthplace edit at 8B", "relation_edited": "occupation", "steps": 25, "thread": ["T-081", "T-080"], "ticket": "E-033", "type_matched_probe": "occupation"}
+2026-10-03 18:05:45,889 INFO     run_e033  29 subjects carried from [E-025] with a target occupation
+2026-10-03 18:05:47,966 INFO     run_e033  optimising v* for 29 occupation edits at 25 steps (24 already checkpointed)
+2026-10-03 18:05:47,968 INFO     run_e033  resuming: 24 specs already optimised, 5 to go
+2026-10-03 18:06:36,711 DEBUG    edit  batch step  1/25  summed loss 33.9092
+2026-10-03 18:06:43,711 DEBUG    edit  batch step  2/25  summed loss 28.4609
+2026-10-03 18:06:50,438 DEBUG    edit  batch step  3/25  summed loss 24.8209
+2026-10-03 18:06:57,177 DEBUG    edit  batch step  4/25  summed loss 19.3232
+2026-10-03 18:07:03,635 DEBUG    edit  batch step  5/25  summed loss 15.6726
+2026-10-03 18:07:10,870 DEBUG    edit  batch step  6/25  summed loss 20.5122
+2026-10-03 18:07:18,002 DEBUG    edit  batch step  7/25  summed loss 19.3580
+2026-10-03 18:07:25,377 DEBUG    edit  batch step  8/25  summed loss 13.3149
+2026-10-03 18:07:32,169 DEBUG    edit  batch step  9/25  summed loss 15.0722
+2026-10-03 18:07:39,174 DEBUG    edit  batch step 10/25  summed loss 13.9408
+2026-10-03 18:07:46,042 DEBUG    edit  batch step 11/25  summed loss 10.4543
+2026-10-03 18:08:00,500 DEBUG    edit  batch step 12/25  summed loss 17.1443
+2026-10-03 18:08:09,125 DEBUG    edit  batch step 13/25  summed loss 14.4784
+2026-10-03 18:08:15,601 DEBUG    edit  batch step 14/25  summed loss 12.6926
+2026-10-03 18:08:22,552 DEBUG    edit  batch step 15/25  summed loss 20.6598
+2026-10-03 18:08:29,569 DEBUG    edit  batch step 16/25  summed loss 15.9335
+2026-10-03 18:08:38,258 DEBUG    edit  batch step 17/25  summed loss 17.2640
+2026-10-03 18:08:45,502 DEBUG    edit  batch step 18/25  summed loss 15.8236
+2026-10-03 18:08:52,666 DEBUG    edit  batch step 19/25  summed loss 20.3870
+2026-10-03 18:08:59,565 DEBUG    edit  batch step 20/25  summed loss 21.2494
+2026-10-03 18:09:08,257 DEBUG    edit  batch step 21/25  summed loss 17.0514
+2026-10-03 18:09:15,532 DEBUG    edit  batch step 22/25  summed loss 17.7820
+2026-10-03 18:09:22,065 DEBUG    edit  batch step 23/25  summed loss 19.0502
+2026-10-03 18:09:29,150 DEBUG    edit  batch step 24/25  summed loss 17.7266
+2026-10-03 18:09:37,116 DEBUG    edit  batch step 25/25  summed loss 17.2045
+2026-10-03 18:09:37,133 INFO     run_e033    took 4 min
+2026-10-03 18:11:19,911 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.4s
+2026-10-03 18:11:23,575 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.7s
+2026-10-03 18:11:26,508 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.9s
+2026-10-03 18:11:29,982 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.5s
+2026-10-03 18:11:33,648 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.7s
+2026-10-03 18:11:37,061 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.4s
+2026-10-03 18:11:40,508 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.4s
+2026-10-03 18:11:44,293 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.8s
+2026-10-03 18:11:47,135 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.8s
+2026-10-03 18:11:50,559 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.4s
+2026-10-03 18:11:50,561 INFO     run_e033    scored 5/29
+2026-10-03 18:11:53,505 DEBUG    remote  trace ok: 6 rows, 6 tok, 2.9s
+2026-10-03 18:11:57,335 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.8s
+2026-10-03 18:12:00,981 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.6s
+2026-10-03 18:12:04,768 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.8s
+2026-10-03 18:12:07,659 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.9s
+2026-10-03 18:12:11,054 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.4s
+2026-10-03 18:12:14,466 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.4s
+2026-10-03 18:12:18,100 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.6s
+2026-10-03 18:12:21,265 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.2s
+2026-10-03 18:12:24,965 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.7s
+2026-10-03 18:12:24,967 INFO     run_e033    scored 10/29
+2026-10-03 18:12:28,613 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.6s
+2026-10-03 18:12:32,523 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.9s
+2026-10-03 18:12:36,045 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.5s
+2026-10-03 18:12:39,411 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.4s
+2026-10-03 18:12:42,217 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.8s
+2026-10-03 18:12:45,564 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.3s
+2026-10-03 18:12:49,169 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.6s
+2026-10-03 18:12:52,866 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.7s
+2026-10-03 18:12:55,746 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.9s
+2026-10-03 18:12:58,931 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.2s
+2026-10-03 18:12:58,934 INFO     run_e033    scored 15/29
+2026-10-03 18:13:02,605 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.7s
+2026-10-03 18:13:06,589 DEBUG    remote  trace ok: 6 rows, 8 tok, 4.0s
+2026-10-03 18:13:11,000 DEBUG    remote  trace ok: 6 rows, 7 tok, 4.4s
+2026-10-03 18:13:14,841 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.8s
+2026-10-03 18:13:18,686 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.8s
+2026-10-03 18:13:22,098 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.4s
+2026-10-03 18:13:25,961 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.9s
+2026-10-03 18:13:29,654 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.7s
+2026-10-03 18:13:33,322 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.7s
+2026-10-03 18:13:37,227 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.9s
+2026-10-03 18:13:37,228 INFO     run_e033    scored 20/29
+2026-10-03 18:13:41,069 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.8s
+2026-10-03 18:13:44,717 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.6s
+2026-10-03 18:13:47,609 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.9s
+2026-10-03 18:13:51,063 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.5s
+2026-10-03 18:13:54,776 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.7s
+2026-10-03 18:13:58,109 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.3s
+2026-10-03 18:14:01,452 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.3s
+2026-10-03 18:14:04,786 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.3s
+2026-10-03 18:14:07,746 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.0s
+2026-10-03 18:14:11,089 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.3s
+2026-10-03 18:14:11,092 INFO     run_e033    scored 25/29
+2026-10-03 18:14:14,652 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.6s
+2026-10-03 18:14:18,579 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.9s
+2026-10-03 18:14:22,112 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.5s
+2026-10-03 18:14:25,518 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.4s
+2026-10-03 18:14:28,403 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.9s
+2026-10-03 18:14:31,894 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.5s
+2026-10-03 18:14:35,402 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.5s
+2026-10-03 18:14:39,217 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.8s
+2026-10-03 18:14:39,219 INFO     run_e033    scored 29/29
+2026-10-03 18:14:39,220 INFO     run_e033  
+2026-10-03 18:14:39,220 INFO     run_e033  E-033 — a OCCUPATION edit on meta-llama/Llama-3.1-70B (n=29, layer 5, 25 steps) — injected value is a profession, so the type-matched probe is occupation
+2026-10-03 18:14:39,220 INFO     run_e033  mean ‖dv‖ 2.49 · ‖k*‖ 0.46
+2026-10-03 18:14:39,221 INFO     run_e033  
+2026-10-03 18:14:39,221 INFO     run_e033  probe             baseline   post-edit     control type-matched?
+2026-10-03 18:14:39,221 INFO     run_e033  occupation           -4.06       -8.38       -4.08           YES
+2026-10-03 18:14:39,221 INFO     run_e033  citizenship          -1.74       -4.94       -1.75            no
+2026-10-03 18:14:39,221 INFO     run_e033  language             -0.94       -3.50       -0.95            no
+2026-10-03 18:14:39,222 INFO     run_e033  
+2026-10-03 18:14:39,222 INFO     run_e033  occupation (the type-matched probe) sits 3.44 nats below the nearer of the other two
+2026-10-03 18:14:39,222 INFO     run_e033  spread among the two NON-matched probes: 1.43 nats
+2026-10-03 18:14:39,222 INFO     run_e033  
+2026-10-03 18:14:39,222 INFO     run_e033  the mirror, for comparison — [E-025], birthplace edit at 8B:
+2026-10-03 18:14:39,222 INFO     run_e033     occupation     -6.16
+2026-10-03 18:14:39,222 INFO     run_e033     language       -6.20
+2026-10-03 18:14:39,222 INFO     run_e033     citizenship    -9.10   <- type-matched then
+2026-10-03 18:14:39,222 INFO     run_e033  
+2026-10-03 18:14:39,222 WARNING  run_e033  VERDICT: NO FLOOR — the two non-matched probes are 1.43 apart, so they have not converged and the two-effect account fails in a third way. Needs its own ticket rather than a sentence here.
+2026-10-03 18:14:39,225 INFO     run_e033  written: results/E-033-crossover-meta-llama_Llama-3.1-70B-occupation-L5.json

@@ -1,0 +1,189 @@
+2026-10-03 18:05:42,215 INFO     run_e033  run run_e033 -> logs/run_e033-2026-10-03-180542.log
+2026-10-03 18:05:42,215 INFO     run_e033  config {"edit_prompt": "{} was born in the country of", "injected_type": "a country", "layer": 5, "measure": "teacher-forced log P(true answer); LEVELS, not drops", "model": "meta-llama/Llama-3.1-8B", "n": 29, "note": "E-014's |ctl deltas deliberately NOT reused \u2014 wrong prompt shape", "probes": {"citizenship": "{} is a citizen of", "language": "The native language of {} is", "occupation": "By profession, {} is a"}, "reference_arm": "[E-025] birthplace edit at 8B", "relation_edited": "birthplace", "steps": 25, "thread": ["T-081", "T-080"], "ticket": "E-033", "type_matched_probe": "citizenship"}
+2026-10-03 18:05:42,215 INFO     run_e033  29 subjects carried from [E-025] with a target occupation
+2026-10-03 18:05:44,266 INFO     run_e033  optimising v* for 29 birthplace edits at 25 steps (9 already checkpointed)
+2026-10-03 18:05:44,267 INFO     run_e033  resuming: 9 specs already optimised, 20 to go
+2026-10-03 18:06:46,322 DEBUG    edit  batch step  1/25  summed loss 37.0817
+2026-10-03 18:06:53,332 DEBUG    edit  batch step  2/25  summed loss 19.1157
+2026-10-03 18:06:59,083 DEBUG    edit  batch step  3/25  summed loss 10.7657
+2026-10-03 18:07:04,851 DEBUG    edit  batch step  4/25  summed loss 7.9667
+2026-10-03 18:07:12,352 DEBUG    edit  batch step  5/25  summed loss 4.1134
+2026-10-03 18:07:18,356 DEBUG    edit  batch step  6/25  summed loss 2.8453
+2026-10-03 18:07:25,211 DEBUG    edit  batch step  7/25  summed loss 4.6059
+2026-10-03 18:07:31,354 DEBUG    edit  batch step  8/25  summed loss 2.3862
+2026-10-03 18:07:38,074 DEBUG    edit  batch step  9/25  summed loss 2.1360
+2026-10-03 18:07:46,378 DEBUG    edit  batch step 10/25  summed loss 2.0323
+2026-10-03 18:07:59,081 DEBUG    edit  batch step 11/25  summed loss 1.8904
+2026-10-03 18:08:06,906 DEBUG    edit  batch step 12/25  summed loss 1.8572
+2026-10-03 18:08:13,220 DEBUG    edit  batch step 13/25  summed loss 1.7942
+2026-10-03 18:08:19,391 DEBUG    edit  batch step 14/25  summed loss 1.7525
+2026-10-03 18:08:25,782 DEBUG    edit  batch step 15/25  summed loss 1.7193
+2026-10-03 18:08:33,337 DEBUG    edit  batch step 16/25  summed loss 1.7020
+2026-10-03 18:08:40,023 DEBUG    edit  batch step 17/25  summed loss 1.6699
+2026-10-03 18:08:46,019 DEBUG    edit  batch step 18/25  summed loss 1.6585
+2026-10-03 18:08:52,759 DEBUG    edit  batch step 19/25  summed loss 1.6403
+2026-10-03 18:08:58,619 DEBUG    edit  batch step 20/25  summed loss 1.6334
+2026-10-03 18:09:05,860 DEBUG    edit  batch step 21/25  summed loss 1.6182
+2026-10-03 18:09:12,519 DEBUG    edit  batch step 22/25  summed loss 1.6212
+2026-10-03 18:09:19,147 DEBUG    edit  batch step 23/25  summed loss 1.6111
+2026-10-03 18:09:25,316 DEBUG    edit  batch step 24/25  summed loss 1.6007
+2026-10-03 18:09:31,469 DEBUG    edit  batch step 25/25  summed loss 1.5922
+2026-10-03 18:10:28,938 DEBUG    edit  batch step  1/25  summed loss 51.9796
+2026-10-03 18:10:34,555 DEBUG    edit  batch step  2/25  summed loss 26.6229
+2026-10-03 18:10:40,679 DEBUG    edit  batch step  3/25  summed loss 13.5918
+2026-10-03 18:10:46,592 DEBUG    edit  batch step  4/25  summed loss 9.2809
+2026-10-03 18:10:52,539 DEBUG    edit  batch step  5/25  summed loss 7.5338
+2026-10-03 18:10:58,708 DEBUG    edit  batch step  6/25  summed loss 2.9164
+2026-10-03 18:11:04,687 DEBUG    edit  batch step  7/25  summed loss 2.3876
+2026-10-03 18:11:10,694 DEBUG    edit  batch step  8/25  summed loss 2.2762
+2026-10-03 18:11:18,364 DEBUG    edit  batch step  9/25  summed loss 2.2401
+2026-10-03 18:11:25,124 DEBUG    edit  batch step 10/25  summed loss 2.1952
+2026-10-03 18:11:32,232 DEBUG    edit  batch step 11/25  summed loss 2.1669
+2026-10-03 18:11:38,725 DEBUG    edit  batch step 12/25  summed loss 2.1445
+2026-10-03 18:11:44,890 DEBUG    edit  batch step 13/25  summed loss 2.1518
+2026-10-03 18:11:54,384 DEBUG    edit  batch step 14/25  summed loss 2.1394
+2026-10-03 18:12:02,931 DEBUG    edit  batch step 15/25  summed loss 2.1226
+2026-10-03 18:12:10,505 DEBUG    edit  batch step 16/25  summed loss 2.1244
+2026-10-03 18:12:16,454 DEBUG    edit  batch step 17/25  summed loss 2.1135
+2026-10-03 18:12:22,720 DEBUG    edit  batch step 18/25  summed loss 2.1231
+2026-10-03 18:12:28,673 DEBUG    edit  batch step 19/25  summed loss 2.1188
+2026-10-03 18:12:34,414 DEBUG    edit  batch step 20/25  summed loss 2.1172
+2026-10-03 18:12:40,324 DEBUG    edit  batch step 21/25  summed loss 2.1053
+2026-10-03 18:12:46,316 DEBUG    edit  batch step 22/25  summed loss 2.1143
+2026-10-03 18:12:52,968 DEBUG    edit  batch step 23/25  summed loss 2.1152
+2026-10-03 18:12:58,780 DEBUG    edit  batch step 24/25  summed loss 2.1128
+2026-10-03 18:13:05,124 DEBUG    edit  batch step 25/25  summed loss 2.1139
+2026-10-03 18:13:53,661 DEBUG    edit  batch step  1/25  summed loss 27.8118
+2026-10-03 18:13:59,944 DEBUG    edit  batch step  2/25  summed loss 16.4313
+2026-10-03 18:14:06,799 DEBUG    edit  batch step  3/25  summed loss 10.8018
+2026-10-03 18:14:12,785 DEBUG    edit  batch step  4/25  summed loss 7.2411
+2026-10-03 18:14:18,418 DEBUG    edit  batch step  5/25  summed loss 5.2834
+2026-10-03 18:14:25,520 DEBUG    edit  batch step  6/25  summed loss 3.5474
+2026-10-03 18:14:31,715 DEBUG    edit  batch step  7/25  summed loss 2.7651
+2026-10-03 18:14:45,160 DEBUG    edit  batch step  8/25  summed loss 2.5285
+2026-10-03 18:14:51,519 DEBUG    edit  batch step  9/25  summed loss 2.3549
+2026-10-03 18:14:58,609 DEBUG    edit  batch step 10/25  summed loss 2.1449
+2026-10-03 18:15:04,387 DEBUG    edit  batch step 11/25  summed loss 2.0305
+2026-10-03 18:15:11,309 DEBUG    edit  batch step 12/25  summed loss 1.9794
+2026-10-03 18:15:18,010 DEBUG    edit  batch step 13/25  summed loss 1.8974
+2026-10-03 18:15:23,932 DEBUG    edit  batch step 14/25  summed loss 1.8344
+2026-10-03 18:15:31,281 DEBUG    edit  batch step 15/25  summed loss 1.8084
+2026-10-03 18:15:38,236 DEBUG    edit  batch step 16/25  summed loss 1.7031
+2026-10-03 18:15:44,090 DEBUG    edit  batch step 17/25  summed loss 1.7435
+2026-10-03 18:15:53,023 DEBUG    edit  batch step 18/25  summed loss 1.8420
+2026-10-03 18:16:00,246 DEBUG    edit  batch step 19/25  summed loss 1.8391
+2026-10-03 18:16:06,739 DEBUG    edit  batch step 20/25  summed loss 1.8562
+2026-10-03 18:16:13,165 DEBUG    edit  batch step 21/25  summed loss 1.8619
+2026-10-03 18:16:19,721 DEBUG    edit  batch step 22/25  summed loss 1.8830
+2026-10-03 18:16:26,129 DEBUG    edit  batch step 23/25  summed loss 1.8732
+2026-10-03 18:16:32,313 DEBUG    edit  batch step 24/25  summed loss 1.8769
+2026-10-03 18:16:38,548 DEBUG    edit  batch step 25/25  summed loss 1.8793
+2026-10-03 18:17:10,026 DEBUG    edit  batch step  1/25  summed loss 19.8451
+2026-10-03 18:17:14,533 DEBUG    edit  batch step  2/25  summed loss 7.0348
+2026-10-03 18:17:19,244 DEBUG    edit  batch step  3/25  summed loss 1.6266
+2026-10-03 18:17:24,684 DEBUG    edit  batch step  4/25  summed loss 0.9359
+2026-10-03 18:17:29,758 DEBUG    edit  batch step  5/25  summed loss 0.7351
+2026-10-03 18:17:35,123 DEBUG    edit  batch step  6/25  summed loss 0.6689
+2026-10-03 18:17:40,357 DEBUG    edit  batch step  7/25  summed loss 0.6255
+2026-10-03 18:17:44,914 DEBUG    edit  batch step  8/25  summed loss 0.5837
+2026-10-03 18:17:49,520 DEBUG    edit  batch step  9/25  summed loss 0.5574
+2026-10-03 18:17:54,523 DEBUG    edit  batch step 10/25  summed loss 0.5348
+2026-10-03 18:18:02,233 DEBUG    edit  batch step 11/25  summed loss 0.5183
+2026-10-03 18:18:07,853 DEBUG    edit  batch step 12/25  summed loss 0.5088
+2026-10-03 18:18:14,451 DEBUG    edit  batch step 13/25  summed loss 0.4965
+2026-10-03 18:18:19,421 DEBUG    edit  batch step 14/25  summed loss 0.4927
+2026-10-03 18:18:24,434 DEBUG    edit  batch step 15/25  summed loss 0.4922
+2026-10-03 18:18:29,775 DEBUG    edit  batch step 16/25  summed loss 0.4828
+2026-10-03 18:18:37,189 DEBUG    edit  batch step 17/25  summed loss 0.4846
+2026-10-03 18:18:41,846 DEBUG    edit  batch step 18/25  summed loss 0.4762
+2026-10-03 18:18:46,799 DEBUG    edit  batch step 19/25  summed loss 0.4773
+2026-10-03 18:18:51,700 DEBUG    edit  batch step 20/25  summed loss 0.4803
+2026-10-03 18:18:56,335 DEBUG    edit  batch step 21/25  summed loss 0.4756
+2026-10-03 18:19:00,956 DEBUG    edit  batch step 22/25  summed loss 0.4808
+2026-10-03 18:19:05,732 DEBUG    edit  batch step 23/25  summed loss 0.4823
+2026-10-03 18:19:11,272 DEBUG    edit  batch step 24/25  summed loss 0.4849
+2026-10-03 18:19:16,299 DEBUG    edit  batch step 25/25  summed loss 0.4938
+2026-10-03 18:19:16,316 INFO     run_e033    took 14 min
+2026-10-03 18:20:43,782 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.9s
+2026-10-03 18:20:46,984 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.2s
+2026-10-03 18:20:49,648 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.7s
+2026-10-03 18:20:52,704 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.1s
+2026-10-03 18:20:55,288 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.6s
+2026-10-03 18:20:58,424 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.1s
+2026-10-03 18:21:01,112 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.7s
+2026-10-03 18:21:04,317 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.2s
+2026-10-03 18:21:06,957 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.6s
+2026-10-03 18:21:10,075 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.1s
+2026-10-03 18:21:10,077 INFO     run_e033    scored 5/29
+2026-10-03 18:21:12,762 DEBUG    remote  trace ok: 6 rows, 6 tok, 2.7s
+2026-10-03 18:21:16,016 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.2s
+2026-10-03 18:21:18,697 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.7s
+2026-10-03 18:21:22,073 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.4s
+2026-10-03 18:21:24,759 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.7s
+2026-10-03 18:21:27,918 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.2s
+2026-10-03 18:21:30,774 DEBUG    remote  trace ok: 6 rows, 6 tok, 2.9s
+2026-10-03 18:21:33,813 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.0s
+2026-10-03 18:21:39,566 DEBUG    remote  trace ok: 6 rows, 6 tok, 5.7s
+2026-10-03 18:21:42,693 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.1s
+2026-10-03 18:21:42,695 INFO     run_e033    scored 10/29
+2026-10-03 18:21:45,350 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.7s
+2026-10-03 18:21:48,385 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.0s
+2026-10-03 18:21:50,935 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.5s
+2026-10-03 18:21:54,259 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.3s
+2026-10-03 18:21:56,833 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.6s
+2026-10-03 18:22:00,116 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.3s
+2026-10-03 18:22:02,763 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.6s
+2026-10-03 18:22:06,097 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.3s
+2026-10-03 18:22:08,854 DEBUG    remote  trace ok: 6 rows, 9 tok, 2.8s
+2026-10-03 18:22:12,397 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.5s
+2026-10-03 18:22:12,400 INFO     run_e033    scored 15/29
+2026-10-03 18:22:15,071 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.7s
+2026-10-03 18:22:18,252 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.2s
+2026-10-03 18:22:20,887 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.6s
+2026-10-03 18:22:24,187 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.3s
+2026-10-03 18:22:26,922 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.7s
+2026-10-03 18:22:29,976 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.0s
+2026-10-03 18:22:32,878 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.9s
+2026-10-03 18:22:35,905 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.0s
+2026-10-03 18:22:38,703 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.8s
+2026-10-03 18:22:41,875 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.2s
+2026-10-03 18:22:41,878 INFO     run_e033    scored 20/29
+2026-10-03 18:22:44,633 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.8s
+2026-10-03 18:22:47,833 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.2s
+2026-10-03 18:22:50,881 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.0s
+2026-10-03 18:22:54,016 DEBUG    remote  trace ok: 6 rows, 9 tok, 3.1s
+2026-10-03 18:22:56,562 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.5s
+2026-10-03 18:22:59,773 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.2s
+2026-10-03 18:23:02,557 DEBUG    remote  trace ok: 6 rows, 6 tok, 2.8s
+2026-10-03 18:23:05,801 DEBUG    remote  trace ok: 6 rows, 6 tok, 3.2s
+2026-10-03 18:23:08,464 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.7s
+2026-10-03 18:23:11,572 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.1s
+2026-10-03 18:23:11,575 INFO     run_e033    scored 25/29
+2026-10-03 18:23:14,195 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.6s
+2026-10-03 18:23:17,406 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.2s
+2026-10-03 18:23:20,202 DEBUG    remote  trace ok: 6 rows, 7 tok, 2.8s
+2026-10-03 18:23:23,234 DEBUG    remote  trace ok: 6 rows, 7 tok, 3.0s
+2026-10-03 18:23:25,900 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.7s
+2026-10-03 18:23:28,955 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.1s
+2026-10-03 18:23:31,594 DEBUG    remote  trace ok: 6 rows, 8 tok, 2.6s
+2026-10-03 18:23:34,798 DEBUG    remote  trace ok: 6 rows, 8 tok, 3.2s
+2026-10-03 18:23:34,802 INFO     run_e033    scored 29/29
+2026-10-03 18:23:34,802 INFO     run_e033  
+2026-10-03 18:23:34,802 INFO     run_e033  E-033 — a BIRTHPLACE edit on meta-llama/Llama-3.1-8B (n=29, layer 5, 25 steps) — injected value is a country, so the type-matched probe is citizenship
+2026-10-03 18:23:34,803 INFO     run_e033  mean ‖dv‖ 6.95 · ‖k*‖ 3.99
+2026-10-03 18:23:34,803 INFO     run_e033  
+2026-10-03 18:23:34,803 INFO     run_e033  probe             baseline   post-edit     control type-matched?
+2026-10-03 18:23:34,804 INFO     run_e033  occupation           -4.36       -6.09       -4.46            no
+2026-10-03 18:23:34,804 INFO     run_e033  citizenship          -1.97       -8.77       -2.03           YES
+2026-10-03 18:23:34,805 INFO     run_e033  language             -0.70       -6.00       -0.78            no
+2026-10-03 18:23:34,805 INFO     run_e033  
+2026-10-03 18:23:34,805 INFO     run_e033  citizenship (the type-matched probe) sits 2.68 nats below the nearer of the other two
+2026-10-03 18:23:34,805 INFO     run_e033  spread among the two NON-matched probes: 0.09 nats
+2026-10-03 18:23:34,805 INFO     run_e033  
+2026-10-03 18:23:34,805 INFO     run_e033  the mirror, for comparison — [E-025], birthplace edit at 8B:
+2026-10-03 18:23:34,805 INFO     run_e033     occupation     -6.16
+2026-10-03 18:23:34,805 INFO     run_e033     language       -6.20
+2026-10-03 18:23:34,805 INFO     run_e033     citizenship    -9.10   <- type-matched then
+2026-10-03 18:23:34,806 INFO     run_e033  
+2026-10-03 18:23:34,806 INFO     run_e033  VERDICT: CROSSOVER — the displaced probe follows the INJECTED VALUE'S TYPE, not the edited relation. citizenship is 2.68 below the others, and the non-matched probes have converged to 0.09 apart. [E-025]'s mechanism holds for this relation.
+2026-10-03 18:23:34,808 INFO     run_e033  written: results/E-033-crossover-meta-llama_Llama-3.1-8B-birthplace-L5.json

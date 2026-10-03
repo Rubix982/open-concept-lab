@@ -2498,7 +2498,7 @@ agents/shared/decisions.md -> "[E-032] Result"
 
 ### E-033 · The relation crossover — is floor-plus-type-displacement general?
 
-**Status:** in-progress — 4 of 6 arms complete; see decisions.md "[E-033] Interim"
+**Status:** closed — all 6 arms; see decisions.md "[E-033] Final"
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-27
