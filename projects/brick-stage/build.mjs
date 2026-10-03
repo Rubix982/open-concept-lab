@@ -57,10 +57,12 @@ export async function buildStory(name, { quiet = false } = {}) {
   // function replacers, so a `$` in the story text is never read as a pattern
   const timeline = await fs.readFile(path.join(here, "lib", "timeline.cjs"), "utf8");
   const bricksKit = await fs.readFile(path.join(here, "lib", "bricks.js"), "utf8");
+  const minifigKit = await fs.readFile(path.join(here, "lib", "minifig.js"), "utf8");
   const page = (await fs.readFile(path.join(here, "lib", "player.html"), "utf8"))
     .replace("__TITLE__", () => story.meta.title)
     .replace("__TIMELINE__", () => timeline)
     .replace("__BRICKS__", () => bricksKit)
+    .replace("__MINIFIG__", () => minifigKit)
     .replace("__STORY__", () => JSON.stringify(slim));
   await fs.writeFile(path.join(out, "index.html"), page);
   log(`  wrote out/${name}/`);

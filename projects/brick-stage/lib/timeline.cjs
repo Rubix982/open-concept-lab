@@ -27,14 +27,29 @@
       if (t < m.t) break;
       const p = clamp01((t - m.t) / m.dur);
       if (p < 1) {
-        const e = easeInOut(p);
-        lift = Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop;
+        const e = m.arc ? p : easeInOut(p);                      // throws travel at an even pace
+        lift = Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop + (m.arc ? 4 * m.arc * p * (1 - p) : 0);
         active = { move: m, p, from: pos.slice() };
         pos = pos.map((v, i) => lerp(v, m.to[i], e));
       } else pos = m.to.slice();
     }
     return { x: pos[0], y: pos[1], z: pos[2], lift, active };
   }
+
+  // Total tumble so far from moves with `spin`, as [x, y, z] degrees.
+  function actorSpin(a, t) {
+    const out = [0, 0, 0];
+    for (const m of a.moves || []) {
+      if (!m.spin || t < m.t) continue;
+      const p = clamp01((t - m.t) / m.dur);
+      for (let i = 0; i < 3; i++) out[i] += m.spin[i] * p;
+    }
+    return out;
+  }
+  // A minifig's expression at time t.
+  function faceAt(a, t) { let e = "smile"; for (const f of a.faces || []) if (f.t <= t) e = f.expr; return e; }
+  // Who holds a prop at time t (null when nobody does).
+  function holderAt(a, t) { let h = null; for (const e of a.held || []) if (e.t <= t) h = e.by ? e : null; return h; }
 
   // Sum of turn() calls so far, in degrees.
   function actorTurn(a, t, actors) {
@@ -106,7 +121,7 @@
 
   // The light, as weights over the three moods (they sum to 1).
   function moodWeights(story, t) {
-    let w = { day: 1, sunset: 0, night: 0 };
+    let w = { day: 1, morning: 0, midday: 0, overcast: 0, sunset: 0, amber: 0, dusk: 0, night: 0 };
     for (const m of story.moods || []) {
       if (t < m.t) break;
       const p = easeInOut(clamp01((t - m.t) / Math.max(1, m.dur)));
@@ -173,7 +188,7 @@
         ev.push({ t: p.t0 + p.dur * 0.82, kind: "click", size: p.w * p.d * p.h });
         if (p.out) ev.push({ t: p.out.t0, kind: "whoosh", size: 1 });
       }
-      if (a.kind === "figure") {
+      if (a.kind === "figure" || a.kind === "minifig") {
         ev.push({ t: a.t0 + a.appear * 0.7, kind: "thud", size: 1 });
         for (const m of a.moves.slice(1)) for (let s = 1; s <= m.steps; s++) ev.push({ t: m.t + (m.dur * s) / (m.steps + 1), kind: "step", size: 1 });
       }
@@ -205,11 +220,13 @@
     const boxes = [];
     for (const [id, a] of Object.entries(story.actors)) {
       const pos = actorPos(a, t, story.actors), y0 = pos.y + pos.lift;
-      if (a.kind === "figure") {
+      if (a.kind === "figure" || a.kind === "minifig") {
         if (t < a.t0 + a.appear) continue;
-        boxes.push({ id, min: [pos.x - 0.7, y0, pos.z - 0.7], max: [pos.x + 0.7, y0 + 14, pos.z + 0.7] });
+        const [hx, hz, ht] = a.kind === "minifig" ? [0.95, 0.5, 11] : [0.7, 0.7, 14];   // half-width, half-depth, height in plates
+        boxes.push({ id, min: [pos.x - hx, y0, pos.z - hz], max: [pos.x + hx, y0 + ht, pos.z + hz] });
         continue;
       }
+      if (holderAt(a, t)) continue;
       const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
       for (const p of a.parts) {
         if (!partState(p, t).settled) continue;
@@ -239,7 +256,7 @@
     return [...seen].map(([pair, t]) => ({ pair, t }));
   }
 
-  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt };
+  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt, actorSpin, faceAt, holderAt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TL = api;
 })(typeof window !== "undefined" ? window : globalThis);

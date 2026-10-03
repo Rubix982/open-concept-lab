@@ -35,6 +35,32 @@ Each item is proven on something real before the next one starts.
 - [ ] Stage check against set pieces (room, button, door)
 - [ ] brick-check: tidy package.json and the npm dependencies, one test command
 
+## Milestone: The Bridge to Gus (`stories/bridge-to-gus.txt`)
+
+A 4–5 minute brickfilm with characters and a colour script, used to test the
+storytelling side of the framework. Built in vertical slices, each ending in
+footage:
+
+- [x] **Minifigures:** rigged figures (head, arms, C-shaped hands, legs),
+      walking, faces as expressions, outfits and hats. Characters, not checked
+      LEGO.
+- [x] **Props in hand:** `hold()` and `drop()`; a prop rides on a hand and moves
+      with the arm
+- [~] **Arcs and tumbles:** throws with height and spin; bending structures on
+      joints (the bridge sags, then folds)
+- [x] **Transparent parts:** trans-blue, trans-yellow, trans-orange, trans-clear
+- [ ] **Lights as actors:** a sunlight patch that moves, clouds dimming it, a lamp
+      cone, a lighthouse beam that sweeps, lamps switching on and off
+- [x] **A richer colour script:** overcast, amber, violet dusk, plus custom moods
+- [ ] **Sound in the render:** sound effects (creak, tik, yip, knock, click),
+      room ambience, music that rises
+- [ ] **Depth of field:** blurry giant props (a sock, a pencil) to sell the scale
+- [ ] **Scenery props:** non-LEGO shapes for the bedroom
+- [ ] Slice 1: Scenes 1–2 (bakery, the round-hands gag, river, lighthouse)
+- [ ] Slice 2: Scene 4 (the collapse, the light draining, the lamp going dark)
+- [ ] Slice 3: Scenes 5–6 (the minifig chain, the lighthouse beam)
+- [ ] The whole film, rendered with sound
+
 ## Pipeline 2: explain (manim-style)
 
 - [x] `render.mjs`: a story to MP4, frame-perfect, no screen recording

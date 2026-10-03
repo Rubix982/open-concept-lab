@@ -39,11 +39,20 @@ function load() {
   return (cat = { parts, colors, elements });
 }
 
-// Rebrickable mostly uses LDraw numbers, but not always (3023b is 3023).
-export function rebrickablePart(id) {
-  const { parts } = load();
-  for (const cand of [id, PARTS[id]?.bl, id.replace(/[a-z]$/, "")]) if (cand && parts.has(cand)) return cand;
-  return null;
+// Rebrickable mostly uses LDraw numbers, but not always (3023b is 3023), and
+// a part's colours can be split across its variants (white 2x2 round plates
+// are under 4032, not 4032b). These are the numbers to try, in order.
+// Sibling variants (4032a/4032b: design revisions of one part) count too.
+function candidates(id) {
+  const base = id.replace(/[a-z]$/, ""), { parts } = load();
+  const siblings = "abcdef".split("").map((l) => base + l).filter((c) => parts.has(c));
+  return [...new Set([id, PARTS[id]?.bl, base, ...siblings].filter(Boolean))];
+}
+export function rebrickablePart(id, color) {
+  const { parts, elements } = load();
+  const known = candidates(id).filter((c) => parts.has(c));
+  if (color != null) return known.find((c) => elements.has(`${c}|${color}`)) || known[0] || null;
+  return known[0] || null;
 }
 
 // For every part/colour in a list of parts: is it a real element, and what
@@ -58,7 +67,7 @@ export async function availability(parts) {
     lines.get(k).qty++;
   }
   const out = [...lines.values()].map((l) => {
-    const rb = rebrickablePart(l.part);
+    const rb = rebrickablePart(l.part, l.color);
     const ids = rb ? (elements.get(`${rb}|${l.color}`) || []) : [];
     return {
       ...l, rebrickable: rb, colorName: colors.get(l.color) ?? COLORS[l.color]?.[0],
@@ -77,7 +86,7 @@ export function colourName(code) { return load().colors.get(code); }
 export async function fitToCatalogue(parts) {
   await ensureCatalogue();
   const { elements } = load();
-  const has = (part, color) => { const rb = rebrickablePart(part); return rb && elements.has(`${rb}|${color}`); };
+  const has = (part, color) => { const rb = rebrickablePart(part, color); return rb && elements.has(`${rb}|${color}`); };
   const lab = (hex) => {
     const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v > 0.04045 ? ((v + 0.055) / 1.055) ** 2.4 : v / 12.92));
     const [x, y, z] = [[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]].map((r, i) => (r[0] * c[0] + r[1] * c[1] + r[2] * c[2]) / [0.9505, 1, 1.089][i]);

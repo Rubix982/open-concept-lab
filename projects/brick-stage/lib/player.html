@@ -113,6 +113,7 @@
 <script type="module">
 import * as THREE from "three";
 __BRICKS__
+__MINIFIG__
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
@@ -148,12 +149,15 @@ const KIT = brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes: S.me
 const brick = KIT.brick;
 const failing = new Map();       // actor id -> Set of part indices a model check flagged
 for (const r of Object.values(S.reports)) if (!r.ok && r.actor) failing.set(r.actor, new Set(r.errors.map((e) => e.part).filter((i) => i != null)));
-const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
+const actors = Object.entries(S.actors).filter(([, a]) => a.parts).map(([id, a]) => {   // brick models only
   const group = new THREE.Group(); scene.add(group);
   const mats = new Map(), bad = failing.get(id) || new Set();
   const matFor = (c, isBad) => {
     const key = c + (isBad ? "!" : "");
-    if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
+    // transparent parts are glassy: see-through, glossy, catching highlights
+    if (!mats.has(key)) mats.set(key, COLORS[c][3] === "trans"
+      ? new THREE.MeshPhysicalMaterial({ color: COLORS[c][2], roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.05, transparent: true, opacity: 0.6, emissive: 0x000000 })
+      : new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
     return mats.get(key);
   };
   // Big models skip studs that end up under another part: nobody sees them in
@@ -165,7 +169,8 @@ const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").m
     covered = (x, y, z) => occ.has(`${x},${y},${z}`);
   }
   const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i)), covered); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
-  const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
+  const ys = a.parts.flatMap((p) => [p.y, p.y + p.h]);
+  const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, (Math.min(...ys) + Math.max(...ys)) / 2, cz);   // tumbles turn about the middle
   // joints: their parts hang from a group at the pivot, which pose() rotates
   const joints = Object.entries(a.joints || {}).map(([name, j]) => {
     const jg = new THREE.Group(), at = toScene(...j.pivot).sub(pivot);
@@ -181,9 +186,36 @@ function evalBricks(t) {
       const r = THREE.MathUtils.degToRad(TL.jointAngle(a, j.name, t));
       j.jg.rotation.set(j.axis === "x" ? -r : 0, j.axis === "y" ? r : 0, j.axis === "z" ? r : 0);
     }
-    const pos = TL.actorPos(a, t, S.actors);
-    group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
-    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors));
+    const holder = TL.holderAt(a, t), flight = (a.moves || []).find((m) => m.fromHand && t >= m.t && t < m.t + m.dur + 1e9 && !(a.moves.some((n) => n.t > m.t && t >= n.t)));
+    const spin = TL.actorSpin(a, t).map((d) => THREE.MathUtils.degToRad(d));
+    if (holder) {
+      // riding in a minifig's hand: follow the hand's world transform
+      const sock = MF.get(holder.by)?.rig.sockets[holder.hand];
+      if (sock) {
+        sock.updateWorldMatrix(true, false);
+        group.position.setFromMatrixPosition(sock.matrixWorld);
+        const off = new THREE.Vector3(holder.offset[0], holder.offset[1] * PLATE, -holder.offset[2]);
+        if (holder.upright !== false) {
+          // hangs level from the hand, turning only with the figure
+          const yaw = MF.get(holder.by).rig.root.rotation.y;
+          group.position.add(off.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw));
+          group.rotation.set(0, yaw, 0);
+        } else {
+          const q = new THREE.Quaternion().setFromRotationMatrix(sock.matrixWorld);
+          group.position.add(off.applyQuaternion(q)); group.quaternion.copy(q);
+        }
+      }
+    } else if (flight && t < flight.t + flight.dur) {
+      // just dropped: fly from where the hand was to where it lands
+      const from = handPosAt(a, flight.t), p = TL.clamp01((t - flight.t) / flight.dur);
+      const to = toScene(flight.to[0], flight.to[1], flight.to[2]).add(pivot);
+      group.position.lerpVectors(from, to, p); group.position.y += 4 * (flight.arc || 0) * p * (1 - p) * PLATE;
+      group.rotation.set(spin[0], THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors)) + spin[1], spin[2]);
+    } else {
+      const pos = TL.actorPos(a, t, S.actors);
+      group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
+      group.rotation.set(spin[0], THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors)) + spin[1], spin[2]);
+    }
     const g = TL.glow(a, t);
     for (const m of mats) { m.emissive.set(a.highlights?.[0]?.color || "#ff8a2a"); m.emissiveIntensity = 0.32 * g; }
     a.parts.forEach((p, i) => {
@@ -192,7 +224,7 @@ function evalBricks(t) {
       if (!st.visible) return;
       const f = p.from, o = p.out ? p.out.to : [0, 0, 0], h = mesh.userData.home;
       const jo = mesh.userData.joint;
-      mesh.position.set(h.x - pivot.x - jo.x + f[0] * st.k + o[0] * st.out, h.y - jo.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - jo.z - f[2] * st.k - o[2] * st.out);
+      mesh.position.set(h.x - pivot.x - jo.x + f[0] * st.k + o[0] * st.out, h.y - pivot.y - jo.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - jo.z - f[2] * st.k - o[2] * st.out);
       const r = Math.max(st.k, st.out);
       mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
     });
@@ -404,6 +436,43 @@ for (const p of Object.values(PROPS)) {
   }
 }
 
+// ---------- minifigs
+const MFK = minifigKit(THREE, COLORS), MF = new Map();
+for (const [id, a] of Object.entries(S.actors)) if (a.kind === "minifig") {
+  const rig = MFK.build(a.look); scene.add(rig.root); MF.set(id, { a, rig });
+}
+function poseMinifig(a, rig, t) {
+  rig.root.visible = t >= a.t0;
+  const drop = 1 - settle(clamp01((t - a.t0) / a.appear)), pos = TL.actorPos(a, t, S.actors), pose = TL.figurePose(a, t);
+  rig.root.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)); rig.root.position.y += drop * 8;
+  rig.root.rotation.y = pose.heading;
+  const J = (n) => THREE.MathUtils.degToRad(TL.jointAngle(a, n, t));
+  // walking swings legs, and arms the other way; poses add on top
+  const w = pose.swing;
+  rig.legs[0].rotation.x = -(w + J("leg-r")); rig.legs[1].rotation.x = -(-w + J("leg-l"));
+  for (const arm of rig.arms) {
+    const base = arm.side === "r" ? -w * 0.7 : w * 0.7;
+    arm.sh.rotation.x = -(base + J(arm.side === "r" ? "arm-r" : "arm-l"));
+    arm.wrist.rotation.y = J(arm.side === "r" ? "hand-r" : "hand-l");
+  }
+  rig.head.rotation.y = J("head");
+  rig.upper.rotation.x = J("lean");
+  rig.setFace(TL.faceAt(a, t));
+}
+function evalMinifigs(t) { for (const { a, rig } of MF.values()) poseMinifig(a, rig, t); }
+// where a held prop was at the moment it was let go: pose the holder at that
+// moment, read its hand, then put the holder back
+function handPosAt(a, at) {
+  const h = [...(a.held || [])].reverse().find((e) => e.t < at && e.by);
+  const mf = h && MF.get(h.by);
+  if (!mf) return new THREE.Vector3();
+  poseMinifig(mf.a, mf.rig, at);
+  const sock = mf.rig.sockets[h.hand]; sock.updateWorldMatrix(true, false);
+  const p = new THREE.Vector3().setFromMatrixPosition(sock.matrixWorld);
+  poseMinifig(mf.a, mf.rig, t);
+  return p;
+}
+
 // ---------- pictogram figures
 const figures = Object.entries(S.actors).filter(([, a]) => a.kind === "figure").map(([id, a]) => {
   const mat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.55, emissive: 0xff8a2a, emissiveIntensity: 0 });
@@ -435,6 +504,13 @@ const MOODS = {
   day:    { bg: 0xf1f0ec, sky: 0xffffff, ground: 0xb8b2a6, hemi: 1.35, sun: 0xffffff, sunI: 2.3, pos: [-14, 30, 18], floor: 0xeceae4 },
   sunset: { bg: 0xf1bf98, sky: 0xffd6ae, ground: 0x80586a, hemi: 1.05, sun: 0xffa45c, sunI: 2.5, pos: [-34, 11, 8], floor: 0xe7c3a4 },
   night:  { bg: 0x1c2542, sky: 0x8090c8, ground: 0x20202c, hemi: 1.0, sun: 0xc8d6ff, sunI: 1.5, pos: [18, 34, 10], floor: 0x3a4462 },
+  // the colour script: pale gold morning, saturated midday, grey-blue overcast,
+  // deep amber late afternoon, violet dusk
+  morning:  { bg: 0xf4ead2, sky: 0xfff3d8, ground: 0xb9ae98, hemi: 1.4, sun: 0xffe2a8, sunI: 2.5, pos: [-26, 22, 20], floor: 0xeee2c8 },
+  midday:   { bg: 0xeef3f6, sky: 0xffffff, ground: 0xa9b0a6, hemi: 1.55, sun: 0xfffaf0, sunI: 2.8, pos: [-6, 40, 10], floor: 0xeceee8 },
+  overcast: { bg: 0xa8b2bd, sky: 0xc4ced8, ground: 0x6c7480, hemi: 1.05, sun: 0xb8c4d2, sunI: 0.9, pos: [-10, 34, 14], floor: 0x9aa4ae },
+  amber:    { bg: 0xe39a52, sky: 0xffc27a, ground: 0x7a4a3a, hemi: 1.0, sun: 0xff9a3c, sunI: 2.6, pos: [-38, 9, 6], floor: 0xd59060 },
+  dusk:     { bg: 0x4b3a72, sky: 0x8a74c4, ground: 0x2a2236, hemi: 0.75, sun: 0xb9a2ff, sunI: 0.9, pos: [24, 18, -10], floor: 0x50447a },
 };
 const usesMood = (S.moods || []).length > 0 && !R;
 const starGeo = new THREE.BufferGeometry(), starPos = [];
@@ -732,7 +808,7 @@ function frame(now) {
 // frame; render.mjs calls it directly through window.__renderAt.
 function draw(at) {
   t = at;
-  evalMood(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
+  evalMood(t); evalMinifigs(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
   evalCallouts(t); evalBubbles(t); evalBars(t); evalSubtitle(t);
   const ch = [...CH].reverse().find((c) => c.t <= t);

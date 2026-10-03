@@ -55,6 +55,9 @@ const DIRECTIONS = {
   },
 };
 
+// The light, for a colour script: from morning to night.
+export const MOODS = ["day", "morning", "midday", "overcast", "sunset", "amber", "dusk", "night"];
+
 export class Director {
   constructor(meta) {
     this.meta = meta;
@@ -162,12 +165,14 @@ export class Director {
   }
 
   // Walk (or glide) an actor to a new position. Advances time.
-  move(as, to, { dur = 1800, hop, steps } = {}) {
+  // `arc`: a throw's height in plates; `spin`: degrees turned on the way
+  // [x, y, z], for tumbles.
+  move(as, to, { dur = 1800, hop, steps, arc = 0, spin } = {}) {
     const a = this.actors[as];
     if (!a) throw new Error(`no actor "${as}"`);
-    if (a.kind === "figure") { hop ??= 0.25; steps ??= Math.max(2, Math.round(dur / 330)); }
-    hop ??= 0.6;
-    a.moves.push({ t: this.t, dur, to, hop, steps: steps ?? Math.max(2, Math.round(dur / 300)) });
+    if (a.kind === "figure" || a.kind === "minifig") { hop ??= a.kind === "minifig" ? 0.15 : 0.25; steps ??= Math.max(2, Math.round(dur / 330)); }
+    hop ??= arc || spin ? 0 : 0.6;
+    a.moves.push({ t: this.t, dur, to, hop, steps: steps ?? Math.max(2, Math.round(dur / 300)), arc, spin: spin || null });
     this._advance(this.t + dur);
     return this;
   }
@@ -208,9 +213,9 @@ export class Director {
     this.emitters.push({ t: this.t, dur, kind, on, at, offset, count, seed: this.emitters.length * 977 + 13 });
     return this;
   }
-  // Ease the light to a mood: "day", "sunset" or "night". Doesn't advance time.
+  // Ease the light to a mood. Doesn't advance time.
   mood(name, { dur = 2500 } = {}) {
-    if (!["day", "sunset", "night"].includes(name)) throw new Error(`unknown mood "${name}"`);
+    if (!MOODS.includes(name)) throw new Error(`unknown mood "${name}" (try ${MOODS.join(", ")})`);
     this.moods.push({ t: this.t, dur, name });
     return this;
   }
@@ -265,6 +270,48 @@ export class Director {
     this._advance(this.t + dur);
     return this;
   }
+  // A minifigure-style character (a rigged figure, not checked LEGO).
+  // look: { torso, legs, print, hat, hatColor, hatTilt, beard, face, extra }
+  // Joints for pose(): head (turns), arm-l, arm-r (swing forward), hand-l,
+  // hand-r (twist), leg-l, leg-r (swing forward), lean (the body tips forward).
+  minifig(id, at, { look = {}, facing = 0, dur = 700 } = {}) {
+    if (this.actors[id]) throw new Error(`an actor called "${id}" already exists`);
+    const joints = Object.fromEntries(["head", "arm-l", "arm-r", "hand-l", "hand-r", "leg-l", "leg-r", "lean"].map((j) => [j, {}]));
+    this.actors[id] = { kind: "minifig", t0: this.t, appear: dur, face: facing, look, moves: [{ t: -1, dur: 0, to: at, hop: 0 }], turns: [], poses: [], joints, faces: [{ t: -1, expr: look.face || "smile" }] };
+    this._advance(this.t + dur);
+    return this;
+  }
+  // Change a minifig's expression. Doesn't advance time.
+  face(id, expr) {
+    const a = this.actors[id];
+    if (a?.kind !== "minifig") throw new Error(`"${id}" isn't a minifig`);
+    a.faces.push({ t: this.t, expr });
+    return this;
+  }
+  // Put a prop (any brick actor) in a minifig's hand ("l" or "r"); it rides
+  // there, moving with the arm, until drop(). offset: studs, plates, studs
+  // from the hand. Doesn't advance time.
+  // `upright` (default): the prop hangs level, turning only with the figure,
+  // like a lantern; false: it tilts with the hand.
+  hold(fig, hand, prop, { offset = [0, 0, 0], upright = true } = {}) {
+    const f = this.actors[fig], p = this.actors[prop];
+    if (f?.kind !== "minifig") throw new Error(`"${fig}" isn't a minifig`);
+    if (!p) throw new Error(`no actor "${prop}"`);
+    (p.held ||= []).push({ t: this.t, by: fig, hand: hand === "l" ? "l" : "r", offset, upright });
+    return this;
+  }
+  // Let go: the prop flies (or falls) from the hand to `to`, then rests there.
+  // Advances time.
+  drop(prop, { to, dur = 900, arc = 0, spin } = {}) {
+    const p = this.actors[prop];
+    if (!p?.held?.length) throw new Error(`"${prop}" isn't being held`);
+    if (!to) throw new Error("drop() needs `to`: where the prop ends up");
+    p.held.push({ t: this.t, by: null });
+    p.moves.push({ t: this.t, dur, to, hop: 0, steps: 1, arc, spin: spin || null, fromHand: true });
+    this._advance(this.t + dur);
+    return this;
+  }
+
   button(id, at, { dur = 700 } = {}) { return this._prop(id, { kind: "button", at }, dur); }
   // A sliding door in the back wall: x along the wall in studs, sizes in studs and plates.
   door(id, { x, width = 8, height = 20, dur = 900 } = {}) { return this._prop(id, { kind: "door", x, width, height }, dur); }
@@ -358,9 +405,11 @@ export class Director {
     }
     return {
       meta: this.meta, duration: this.t + 600,
-      actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "figure"
+      actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "minifig"
+        ? { kind: "minifig", t0: a.t0, appear: a.appear, face: a.face, look: a.look, faces: a.faces, moves: a.moves, turns: a.turns, poses: a.poses, joints: a.joints, highlights: a.highlights || [] }
+        : a.kind === "figure"
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
-        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null }])),
+        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null, held: a.held || [] }])),
       callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
       letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,

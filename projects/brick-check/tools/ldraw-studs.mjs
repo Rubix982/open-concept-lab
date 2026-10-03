@@ -20,7 +20,7 @@ const mul = (A, B) => {
   return r;
 };
 // Top studs only: stud.dat, stud2.dat (hollow), and their logo-less variants.
-const isStud = (n) => /^stud2?a?\.dat$/i.test(n) || /^stud\.dat$/i.test(n);
+const isStud = (n) => /^stud(2|2a|10)?\.dat$/i.test(n);     // stud10 is the stud on round parts
 
 async function walk(name, M, out) {
   let text; try { text = await read(name); } catch { return; }

@@ -39,6 +39,8 @@ export const PARTS = {
   "3040b": { name: "Slope 45 2 x 1",    kind: "brick", w: 1,  d: 2, h: 3, mesh: true, studs: [[0, 1]], center: [0, -10], bl: "3040" },
   "3062b": { name: "Round Brick 1 x 1", kind: "brick", w: 1,  d: 1, h: 3, mesh: true },
   "6141":  { name: "Round Plate 1 x 1", kind: "plate", w: 1,  d: 1, h: 1, mesh: true, bl: "4073" },
+  "3941":  { name: "Round Brick 2 x 2", kind: "brick", w: 2,  d: 2, h: 3, mesh: true },
+  "4032b": { name: "Round Plate 2 x 2", kind: "plate", w: 2,  d: 2, h: 1, mesh: true, bl: "4032" },
   "98138": { name: "Round Tile 1 x 1",  kind: "tile",  w: 1,  d: 1, h: 1, mesh: true },
 };
 
@@ -89,6 +91,15 @@ export const COLORS = {
   378: ["Sand Green", 48, "#a0bcac"],
   379: ["Sand Blue", 55, "#6074a1"],
   484: ["Dark Orange", 68, "#a95500"],
+  // Transparent colours ("trans"): the river, a lighthouse dome, a flame.
+  // Only codes that mean the same colour in LDraw and Rebrickable (57 is
+  // LDraw's Trans_Orange and Rebrickable's Trans-Neon Orange: both orange).
+  33:  ["Trans-Dark Blue", 14, "#0020a0", "trans"],
+  36:  ["Trans-Red", 17, "#c91a09", "trans"],
+  46:  ["Trans-Yellow", 19, "#f5cd2f", "trans"],
+  47:  ["Trans-Clear", 12, "#fcfcfc", "trans"],
+  52:  ["Trans-Purple", 51, "#a5a5cb", "trans"],
+  57:  ["Trans-Neon Orange", 18, "#ff800d", "trans"],
 };
 
 export const ROTATIONS = [0, 90, 180, 270];
