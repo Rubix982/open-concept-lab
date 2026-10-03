@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "errors": [],
+  "warnings": [],
+  "stats": {
+    "parts": 96,
+    "steps": 11,
+    "studConnections": 608,
+    "pieces": 1,
+    "centreOfMass": [
+      12,
+      6.096
+    ],
+    "comMarginStuds": 5.904,
+    "height": 7
+  }
+}

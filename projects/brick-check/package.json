@@ -1,0 +1,10 @@
+{
+  "name": "brick-check",
+  "private": true,
+  "type": "module",
+  "description": "Design LEGO models in code, verify them against real part geometry, export LDraw and build instructions.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

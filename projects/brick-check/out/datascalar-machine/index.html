@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brick Check</title>
+<style>
+  :root {
+    --bg: #eef1f4; --panel: #ffffff; --ink: #1b2a34; --muted: #5f6b73; --line: #dde2e6;
+    --accent: #d01012; --ok: #2f7d4f; --stage: #dfe7ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12161a; --panel: #1b2026; --ink: #e8edf1; --muted: #98a3ab; --line: #2c333a;
+      --accent: #ff5a4f; --ok: #6cc591; --stage: #1a2129;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12161a; --panel: #1b2026; --ink: #e8edf1; --muted: #98a3ab; --line: #2c333a;
+    --accent: #ff5a4f; --ok: #6cc591; --stage: #1a2129;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--bg); color: var(--ink);
+    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .app { display: grid; grid-template-columns: 1fr 340px; height: 100vh; }
+  #stage { position: relative; background: var(--stage); min-height: 320px; }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+  .stepbadge { position: absolute; left: 16px; top: 14px; font-weight: 800; font-size: 44px;
+    line-height: 1; color: var(--ink); opacity: .85; font-variant-numeric: tabular-nums; pointer-events: none; }
+  .stepbadge small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .04em; }
+  .hint { position: absolute; right: 14px; bottom: 10px; font-size: 12px; color: var(--muted); pointer-events: none; }
+  aside { background: var(--panel); border-left: 1px solid var(--line); overflow-y: auto; padding: 18px 18px 28px; }
+  h1 { font-size: 19px; margin: 0 0 2px; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .nav { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  button { font: inherit; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: transparent; color: #fff; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #slider { width: 100%; margin: 4px 0 10px; }
+  .note { margin: 0 0 12px; min-height: 2.9em; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 8px; }
+  .callout { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
+  .pc { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 12px; }
+  .pc i { width: 14px; height: 14px; border-radius: 3px; flex: none; border: 1px solid rgba(0,0,0,.25); }
+  .pc b { font-variant-numeric: tabular-nums; }
+  .checks { list-style: none; padding: 0; margin: 0; }
+  .checks li { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .checks li:last-child { border-bottom: 0; }
+  .checks .m { color: var(--ok); font-weight: 700; width: 14px; flex: none; }
+  .checks .m.bad { color: var(--accent); }
+  .verdict { display: inline-block; font-weight: 700; color: var(--ok); }
+  .verdict.bad { color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  td { padding: 4px 2px; border-bottom: 1px solid var(--line); }
+  td.q { text-align: right; font-variant-numeric: tabular-nums; width: 3em; }
+  td i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; border: 1px solid rgba(0,0,0,.25); }
+  .dl a { color: var(--accent); margin-right: 12px; font-size: 13px; }
+  .fine { color: var(--muted); font-size: 12px; }
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: 56vh auto; height: auto; }
+    aside { border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="app">
+  <div id="stage">
+    <div class="stepbadge" id="badge"></div>
+    <div class="hint">drag to orbit · scroll to zoom</div>
+  </div>
+  <aside>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+
+    <div class="nav">
+      <button id="playbtn" class="primary">▶ Play the build</button>
+      <button id="all">Finished model</button>
+    </div>
+    <div class="nav">
+      <button id="prev" aria-label="Previous step">◀</button>
+      <button id="next">Next step ▶</button>
+    </div>
+    <input id="slider" type="range" min="1" value="1" aria-label="Step">
+    <p class="note" id="note"></p>
+
+    <h2>Parts for this step</h2>
+    <div class="callout" id="callout"></div>
+
+    <h2>What the checker verified <span class="verdict" id="verdict"></span></h2>
+    <ul class="checks" id="checks"></ul>
+
+    <h2>Every part</h2>
+    <table id="list"></table>
+
+    <h2>Files</h2>
+    <p class="dl" id="dl"></p>
+    <p class="fine">
+      The .ldr opens in BrickLink Studio, which can price the parts. The wanted list uploads to BrickLink
+      as a list only; it doesn't order anything. Not yet built with real bricks.
+    </p>
+  </aside>
+</div>
+
+<script src="design.js"></script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const D = window.DESIGN, $ = (id) => document.getElementById(id);
+const N = D.steps.length;
+let step = 1, showAll = false;
+
+// ---------- side panel (static parts)
+$("title").textContent = D.title;
+const R = D.report, S = R.stats;
+$("sub").textContent = `${S.parts} parts · ${N} steps`;
+$("slider").max = N;
+$("verdict").textContent = R.ok ? "· all pass" : "· fails";
+$("verdict").classList.toggle("bad", !R.ok);
+const ruleOk = (rule) => !R.errors.some((e) => e.rule === rule);
+const checks = [
+  ["collision", `No two parts overlap`],
+  ["buildable", `Every part has something to attach to when it's placed, and can be pressed into place in this order`],
+  ["one-piece", `It's one solid piece: ${S.studConnections} stud connections hold all ${S.parts} parts together`],
+  ["stands-up", `Centre of mass sits ${S.comMarginStuds.toFixed(1)} studs inside the footprint`],
+];
+$("checks").innerHTML = checks.map(([rule, text]) =>
+  `<li><span class="m ${ruleOk(rule) ? "" : "bad"}">${ruleOk(rule) ? "✓" : "✗"}</span><span>${text}</span></li>`).join("") +
+  `<li><span class="m ${R.warnings.length ? "bad" : ""}">${R.warnings.length ? "!" : "✓"}</span><span>${R.warnings.length ? R.warnings.length + " parts held by a single stud" : "No part is held by a single stud"}</span></li>`;
+const hex = (c) => D.colors[c][2];
+$("list").innerHTML = D.list.map((r) =>
+  `<tr><td><i style="background:${hex(r.color)}"></i>${r.colorName} ${r.name}</td><td class="fine">${r.part}</td><td class="q">×${r.qty}</td></tr>`).join("");
+$("dl").innerHTML = `<a href="${D.name}.ldr" download>${D.name}.ldr</a><a href="bricklink-wanted.xml" download>BrickLink wanted list</a>`;
+
+// ---------- scene
+const stage = $("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 1, 1, 20000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-300, 600, 400); scene.add(sun);
+
+let maxX = 0, maxZ = 0, maxY = 0;
+for (const p of D.parts) { maxX = Math.max(maxX, p.x + p.w); maxZ = Math.max(maxZ, p.z + p.d); maxY = Math.max(maxY, p.y + p.h); }
+// Same frame as LDraw (+X right, -Y up, +Z toward the viewer), turned upright: (X, -Y, -Z).
+const cx = maxX * 10, cz = -maxZ * 10;
+controls.target.set(cx, maxY * 3, cz);
+const span = Math.max(maxX, maxZ) * 20;
+camera.position.set(cx + span * 0.3, span * 0.85, cz + span * 1.35);
+
+const GAP = 0.5, studGeo = new THREE.CylinderGeometry(6, 6, 4, 20);
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 });
+const newEdgeMat = new THREE.LineBasicMaterial({ color: 0xd01012 });
+const groups = D.parts.map((p) => {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ color: hex(p.color), roughness: 0.45, metalness: 0 });
+  const W = p.w * 20 - GAP, H = p.h * 8 - GAP, Dp = p.d * 20 - GAP;
+  const box = new THREE.Mesh(new THREE.BoxGeometry(W, H, Dp), mat);
+  g.add(box);
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), edgeMat);
+  g.add(edges);
+  if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
+    const s = new THREE.Mesh(studGeo, mat);
+    s.position.set(-p.w * 10 + 10 + i * 20, H / 2 + 2, p.d * 10 - 10 - k * 20);
+    g.add(s);
+  }
+  g.position.set((p.x + p.w / 2) * 20, (p.y + p.h / 2) * 8, -(p.z + p.d / 2) * 20);
+  g.userData = { p, edges, baseY: g.position.y };
+  scene.add(g);
+  return g;
+});
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  // Back the camera off along its current direction until the whole model fits.
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const dist = Math.max(span * 0.55 / t, span * 0.62 / (t * camera.aspect));
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  camera.position.copy(controls.target).addScaledVector(dir, dist);
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+// ---------- piece-by-piece animation
+const DROP = 150, FALL = 420, STAGGER = 120, STEP_PAUSE = 700;   // LDU, ms
+const anim = new Map();                                     // group -> start time
+let play = null, shownStep = 0;
+
+function drop(g, t0) { g.visible = false; anim.set(g, t0); }
+function clearAnim() {
+  for (const g of anim.keys()) { g.position.y = g.userData.baseY; }
+  anim.clear(); play = null; controls.autoRotate = false;
+  $("playbtn").textContent = "▶ Play the build";
+}
+
+function updatePanel(s, all) {
+  shownStep = s;
+  for (const g of groups) g.userData.edges.material = !all && g.userData.p.step + 1 === s ? newEdgeMat : edgeMat;
+  $("slider").value = s;
+  $("badge").innerHTML = all ? `✓<small>FINISHED</small>` : `${s}<small>OF ${N}</small>`;
+  $("note").textContent = all ? `${S.parts} parts, ${S.studConnections} stud connections, one piece.` : D.steps[s - 1].note;
+  const counts = new Map();
+  for (const p of D.parts) if (all || p.step + 1 === s) {
+    const k = p.part + "|" + p.color; counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  $("callout").innerHTML = [...counts].map(([k, q]) => {
+    const [part, color] = k.split("|"), p = D.parts.find((x) => x.part === part);
+    return `<div class="pc"><i style="background:${hex(color)}"></i><span>${p.partName}</span><b>×${q}</b></div>`;
+  }).join("");
+  $("prev").disabled = !all && s === 1;
+  $("next").disabled = !all && s === N;
+}
+
+function setStep(s, all = false, animate = false) {
+  clearAnim();
+  step = Math.max(1, Math.min(N, s)); showAll = all;
+  const now = performance.now();
+  let k = 0;
+  for (const g of groups) {
+    const ps = g.userData.p.step + 1;
+    g.visible = all || ps <= step;
+    if (animate && !all && ps === step) drop(g, now + k++ * STAGGER);
+  }
+  updatePanel(step, all);
+}
+
+function playBuild() {
+  clearAnim();
+  for (const g of groups) g.visible = false;
+  const stepStart = [];
+  let t = performance.now() + 400;
+  for (let s = 1; s <= N; s++) {
+    stepStart[s] = t;
+    for (const g of groups) if (g.userData.p.step + 1 === s) { drop(g, t); t += STAGGER; }
+    t += STEP_PAUSE;
+  }
+  play = { stepStart, end: t };
+  controls.autoRotate = true; controls.autoRotateSpeed = 0.9;
+  $("playbtn").textContent = "■ Stop";
+  updatePanel(1, false);
+}
+
+$("playbtn").onclick = () => (play ? setStep(N, true) : playBuild());
+$("prev").onclick = () => setStep(showAll ? N : step - 1);
+$("next").onclick = () => (showAll ? setStep(1, false, true) : setStep(step + 1, false, true));
+$("all").onclick = () => setStep(N, true);
+$("slider").oninput = () => setStep(+$("slider").value);
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") $("next").click();
+  if (e.key === "ArrowLeft") $("prev").click();
+  if (e.key === " ") { e.preventDefault(); $("playbtn").click(); }
+});
+
+const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+const bgFor = () => getComputedStyle(document.documentElement).getPropertyValue("--stage").trim();
+function frame() {
+  const now = performance.now();
+  for (const [g, t0] of anim) {
+    const dt = now - t0;
+    if (dt < 0) { g.visible = false; continue; }
+    g.visible = true;
+    const p = Math.min(1, dt / FALL);
+    g.position.y = g.userData.baseY + (1 - easeOut(p)) * DROP;
+    if (p >= 1) { g.position.y = g.userData.baseY; anim.delete(g); }
+  }
+  if (play) {
+    let cur = 1;
+    for (let s = 1; s <= N; s++) if (play.stepStart[s] <= now) cur = s;
+    if (cur !== shownStep) { step = cur; showAll = false; updatePanel(cur, false); }
+    if (now >= play.end) { play = null; controls.autoRotate = false; $("playbtn").textContent = "↻ Play again"; step = N; showAll = true; updatePanel(N, true); }
+  }
+  scene.background = new THREE.Color(bgFor());
+  controls.update(); renderer.render(scene, camera); requestAnimationFrame(frame);
+}
+const qs = new URLSearchParams(location.search);
+qs.has("step") ? setStep(+qs.get("step")) : playBuild();
+frame();
+</script>
+</body>
+</html>
