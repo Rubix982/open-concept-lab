@@ -36,3 +36,17 @@ test("exported .ldr places real part geometry without overlaps", async () => {
     assert.ok(!overlap, `parts ${i} and ${j} interpenetrate`);
   }
 });
+
+test("slopes land on their footprint in all four rotations", async () => {
+  const { box } = await partBox("3039");
+  for (const rot of [0, 90, 180, 270]) {
+    const d = { title: "s", name: "s", steps: [{ note: "", parts: [{ part: "3039", color: 15, x: 3, y: 0, z: 5, rot }] }] };
+    const [line] = toLDR(d).split("\n").filter((l) => l.startsWith("1 "));
+    const t = line.split(/\s+/);
+    const [X, , Z, a, , c, , , , g, , k] = t.slice(2, 14).map(Number);
+    const xs = [box.min[0], box.max[0]].flatMap((x) => [box.min[2], box.max[2]].map((z) => [a * x + c * z + X, g * x + k * z + Z]));
+    const n = (v) => Math.round(v) + 0;
+    assert.deepEqual([n(Math.min(...xs.map((p) => p[0]))), n(Math.min(...xs.map((p) => p[1])))], [60, 100], `rot ${rot} min corner`);
+    assert.deepEqual([n(Math.max(...xs.map((p) => p[0]))), n(Math.max(...xs.map((p) => p[1])))], [100, 140], `rot ${rot} max corner`);
+  }
+});

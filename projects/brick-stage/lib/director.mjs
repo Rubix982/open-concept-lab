@@ -11,7 +11,18 @@ export const P = (part, color, x, y, z, rot = 0) => ({ part, color, x, y, z, rot
 
 // A model is a list of parts in build order. That order is what the camera
 // sees, and brick-check verifies it can really be built that way.
-export function model(name, parts) { return { name, parts }; }
+//
+// Joints let a character move part of itself: name a group of part indices,
+// a pivot [x, y, z] (studs, plates, studs) and an axis ("x" swings forward
+// and back, "z" sideways, "y" twists). The model is checked in its rest pose;
+// a joint is only physically real if the build uses a hinge there.
+export function model(name, parts, { joints = {} } = {}) {
+  for (const [j, spec] of Object.entries(joints)) {
+    if (!spec.parts?.length || !spec.pivot) throw new Error(`joint "${j}" of "${name}" needs parts and a pivot`);
+    for (const i of spec.parts) if (!parts[i]) throw new Error(`joint "${j}" of "${name}" names part ${i}, which doesn't exist`);
+  }
+  return { name, parts, joints };
+}
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -36,6 +47,12 @@ export class Director {
     this.captions = [];    // { t, kicker, text }
     this.cards = [];       // { t, dur, kicker, title, sub }
     this.callouts = [];    // { t, dur, text, on, at, offset }
+    this.bubbles = [];     // { t, dur, actor, text }
+    this.emitters = [];    // { t, dur, kind, on, at, offset, count, seed }
+    this.moods = [];       // { t, dur, name }
+    this.letterboxes = []; // { t, on, dur }
+    this.fades = [];       // { t, on, dur, color }
+    this.musicCues = [];   // { t, name }
     this.models = {};
     this.props = {};       // buttons, doors, signal lines
     this.roomSpec = null;
@@ -104,13 +121,15 @@ export class Director {
     const parts = m.parts.map((p, i) => {
       const f = footprint(p);
       return {
-        ...p, ...f, kind: PARTS[p.part].kind,
+        ...p, ...f, kind: PARTS[p.part].kind, mesh: !!PARTS[p.part].mesh,
         t0: this.t + i * stagger, dur,
         from: dirOf(r), spin: [(r() - 0.5) * 6, (r() - 0.5) * 8, (r() - 0.5) * 6],
       };
     });
-    if (host) { host.parts.push(...parts); host.modelParts = allParts; host.checkedAs = checkedAs; }
-    else this.actors[as] = { model: m.name, checkedAs, modelParts: allParts, parts, moves: [{ t: -1, dur: 0, to: at, hop: 0 }], turns: [] };
+    const shift = host ? host.parts.length : 0;
+    const joints = Object.fromEntries(Object.entries(m.joints || {}).map(([j, spec]) => [j, { ...spec, parts: spec.parts.map((i) => i + shift) }]));
+    if (host) { host.parts.push(...parts); host.modelParts = allParts; host.checkedAs = checkedAs; Object.assign(host.joints, joints); }
+    else this.actors[as] = { model: m.name, checkedAs, modelParts: allParts, parts, moves: [{ t: -1, dur: 0, to: at, hop: 0 }], turns: [], joints, poses: [] };
     this._advance(this.t + (m.parts.length - 1) * stagger + dur);
     return this;
   }
@@ -123,6 +142,51 @@ export class Director {
     hop ??= 0.6;
     a.moves.push({ t: this.t, dur, to, hop, steps: steps ?? Math.max(2, Math.round(dur / 300)) });
     this._advance(this.t + dur);
+    return this;
+  }
+
+  // Swing a named joint to an angle (degrees, absolute: 0 is the rest pose).
+  // Advances time.
+  pose(as, joint, deg, { dur = 600 } = {}) {
+    const a = this.actors[as];
+    if (!a) throw new Error(`no actor "${as}"`);
+    if (!a.joints?.[joint]) throw new Error(`"${as}" has no joint "${joint}"`);
+    a.poses.push({ t: this.t, dur, joint, deg });
+    this._advance(this.t + dur);
+    return this;
+  }
+
+  // A speech bubble over an actor. Advances time while it's on screen.
+  say(as, text, { dur = 2400 } = {}) {
+    if (!this.actors[as]) throw new Error(`no actor "${as}"`);
+    this.bubbles.push({ t: this.t, dur, actor: as, text });
+    this._advance(this.t + dur);
+    return this;
+  }
+  // Particles rising from an actor or a point: "hearts", "sparkles" or
+  // "confetti". Doesn't advance time.
+  emit(kind, { on, at, offset = [0, 0, 0], count = 14, dur = 2600 } = {}) {
+    if (!["hearts", "sparkles", "confetti"].includes(kind)) throw new Error(`unknown particles "${kind}"`);
+    if (on && !this.actors[on]) throw new Error(`no actor "${on}"`);
+    this.emitters.push({ t: this.t, dur, kind, on, at, offset, count, seed: this.emitters.length * 977 + 13 });
+    return this;
+  }
+  // Ease the light to a mood: "day", "sunset" or "night". Doesn't advance time.
+  mood(name, { dur = 2500 } = {}) {
+    if (!["day", "sunset", "night"].includes(name)) throw new Error(`unknown mood "${name}"`);
+    this.moods.push({ t: this.t, dur, name });
+    return this;
+  }
+  // Cinema bars top and bottom. Doesn't advance time.
+  letterbox(on = true, { dur = 900 } = {}) { this.letterboxes.push({ t: this.t, on, dur }); return this; }
+  // Fade the picture out to a colour, or back in. Advances time.
+  fadeOut({ dur = 1200, color = "#000" } = {}) { this.fades.push({ t: this.t, on: true, dur, color }); this._advance(this.t + dur); return this; }
+  fadeIn({ dur = 1200 } = {}) { this.fades.push({ t: this.t, on: false, dur }); this._advance(this.t + dur); return this; }
+  // A soft generated chord pad ("romance", "wonder"), or null to stop it.
+  // Doesn't advance time.
+  music(name) {
+    if (name && !["romance", "wonder"].includes(name)) throw new Error(`unknown music "${name}"`);
+    this.musicCues.push({ t: this.t, name });
     return this;
   }
 
@@ -213,8 +277,9 @@ export class Director {
       meta: this.meta, duration: this.t + 600,
       actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "figure"
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
-        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }])),
-      callouts: this.callouts,
+        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [] }])),
+      callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
+      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,
       reports,
     };

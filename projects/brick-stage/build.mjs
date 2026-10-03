@@ -7,6 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
 import { COLORS } from "../brick-check/lib/parts.mjs";
 import { toLDR } from "../brick-check/lib/ldraw.mjs";
+import { PARTS } from "../brick-check/lib/parts.mjs";
+import { partMesh } from "../brick-check/tools/ldraw-mesh.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const TL = createRequire(import.meta.url)("./lib/timeline.cjs");
@@ -32,9 +34,14 @@ export async function buildStory(name, { quiet = false } = {}) {
   for (const s of stage) log(`  ⚠ ${s.pair} overlap at ${(s.t / 1000).toFixed(1)} s`);
   if (!stage.length) log("  ✓ stage · no actors overlap");
 
+  // real geometry for every part that isn't a plain box (slopes, round parts)
+  const meshIds = [...new Set(Object.values(story.actors).flatMap((a) => (a.parts || []).filter((p) => p.mesh).map((p) => p.part)))];
+  const meshes = {};
+  for (const id of meshIds) meshes[id] = { tri: (await partMesh(id)).tri, center: PARTS[id].center || [0, 0] };
+
   const { reports, ...rest } = story;
   const slim = {
-    ...rest, stage, colors: COLORS,
+    ...rest, stage, colors: COLORS, meshes,
     reports: Object.fromEntries(Object.entries(reports).map(([k, r]) => [k, { ok: r.ok, stats: r.stats, errors: r.errors, actor: r.actor }])),
   };
   // function replacers, so a `$` in the story text is never read as a pattern
@@ -83,7 +90,7 @@ async function gallery(results) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const arg = process.argv[2] || "little-builder";
   if (arg === "--all") {
-    const names = (await fs.readdir(path.join(here, "stories"))).filter((f) => f.endsWith(".mjs")).map((f) => f.slice(0, -4)).sort();
+    const names = (await fs.readdir(path.join(here, "stories"))).filter((f) => f.endsWith(".mjs") && !f.startsWith("_")).map((f) => f.slice(0, -4)).sort();
     const results = [];
     for (const n of names) results.push(await buildStory(n));
     await gallery(results);

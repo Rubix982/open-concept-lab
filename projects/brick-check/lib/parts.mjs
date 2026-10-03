@@ -33,9 +33,19 @@ export const PARTS = {
   "3069b": { name: "Tile 1 x 2",        kind: "tile",  w: 2,  d: 1, h: 1 },
   "2431":  { name: "Tile 1 x 4",        kind: "tile",  w: 4,  d: 1, h: 1 },
   "3068b": { name: "Tile 2 x 2",        kind: "tile",  w: 2,  d: 2, h: 1 },
+  // Not boxes: drawn from their real LDraw geometry (`mesh`). A slope's studs
+  // are only on its high back row, and its origin sits 10 LDU off-centre.
+  "3039":  { name: "Slope 45 2 x 2",    kind: "brick", w: 2,  d: 2, h: 3, mesh: true, studs: [[0, 1], [1, 1]], center: [0, -10] },
+  "3040b": { name: "Slope 45 2 x 1",    kind: "brick", w: 1,  d: 2, h: 3, mesh: true, studs: [[0, 1]], center: [0, -10], bl: "3040" },
+  "3062b": { name: "Round Brick 1 x 1", kind: "brick", w: 1,  d: 1, h: 3, mesh: true },
+  "6141":  { name: "Round Plate 1 x 1", kind: "plate", w: 1,  d: 1, h: 1, mesh: true, bl: "4073" },
+  "98138": { name: "Round Tile 1 x 1",  kind: "tile",  w: 1,  d: 1, h: 1, mesh: true },
 };
 
 // `bl` is the BrickLink item id where it differs from the LDraw file name.
+// `studs` lists the top cells that carry a stud (default: all, none for a
+// tile); `center` is the footprint centre in the part's own LDU frame
+// (default: the origin).
 
 // LDraw colour code -> [name, BrickLink colour id, hex for the viewer]
 export const COLORS = {
@@ -52,10 +62,35 @@ export const COLORS = {
   19: ["Tan", 2, "#e4cd9e"],
   27: ["Lime", 34, "#bbe90b"],
   70: ["Reddish Brown", 88, "#5f3109"],
+  5:  ["Dark Pink", 47, "#c870a0"],
+  29: ["Bright Pink", 104, "#e4adc8"],
 };
 
-// Footprint after rotation about the vertical axis (0 or 90 degrees).
+export const ROTATIONS = [0, 90, 180, 270];
+
+// Footprint after rotation about the vertical axis.
 export function footprint(p) {
   const s = PARTS[p.part];
-  return p.rot === 90 ? { w: s.d, d: s.w, h: s.h } : { w: s.w, d: s.d, h: s.h };
+  return p.rot === 90 || p.rot === 270 ? { w: s.d, d: s.w, h: s.h } : { w: s.w, d: s.d, h: s.h };
+}
+
+// A local cell (i along the part's own x, k along its z) in the rotated
+// footprint, matching the LDraw rotation matrices in ldraw.mjs.
+export function rotateCell([i, k], s, rot) {
+  if (rot === 90) return [k, s.w - 1 - i];
+  if (rot === 180) return [s.w - 1 - i, s.d - 1 - k];
+  if (rot === 270) return [s.d - 1 - k, i];
+  return [i, k];
+}
+
+// Grid cells (x, z) on top of a placed part that carry a stud.
+export function topStuds(p) {
+  const s = PARTS[p.part];
+  let cells = s.studs;
+  if (!cells) {
+    if (s.kind === "tile") return [];
+    cells = [];
+    for (let i = 0; i < s.w; i++) for (let k = 0; k < s.d; k++) cells.push([i, k]);
+  }
+  return cells.map((c) => rotateCell(c, s, p.rot)).map(([i, k]) => [p.x + i, p.z + k]);
 }

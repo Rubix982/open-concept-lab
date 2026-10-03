@@ -83,3 +83,35 @@ test("a highlight glows during its window only", () => {
   assert.ok(TL.glow(a, 600) > 0.3);
   assert.equal(TL.glow(a, 1500), 0);
 });
+
+test("joints ease to absolute angles and back", () => {
+  const arm = model("arm-bot", [P("3003", 15, 0, 0, 0), P("3005", 15, 2, 0, 0)], { joints: { arm: { parts: [1], pivot: [2.5, 3, 0.5], axis: "x" } } });
+  const s = story({ title: "t" }, (d) => { d.build(arm, { stagger: 0, dur: 100 }); d.pose("arm-bot", "arm", 90, { dur: 400 }); d.pose("arm-bot", "arm", 0, { dur: 400 }); });
+  const a = s.actors["arm-bot"];
+  assert.equal(TL.jointAngle(a, "arm", 0), 0);
+  assert.equal(TL.jointAngle(a, "arm", 500), 90);
+  assert.equal(TL.jointAngle(a, "arm", 9999), 0);
+});
+
+test("a joint naming a missing part is refused", () => {
+  assert.throws(() => model("x", [P("3003", 15, 0, 0, 0)], { joints: { arm: { parts: [4], pivot: [0, 0, 0] } } }), /doesn't exist/);
+});
+
+test("moods blend, letterbox and fades ease in and out", () => {
+  const s = story({ title: "t" }, (d) => {
+    d.mood("sunset", { dur: 1000 }); d.letterbox(true, { dur: 500 }); d.wait(2000);
+    d.mood("night", { dur: 1000 }); d.fadeOut({ dur: 500 }); d.fadeIn({ dur: 500 });
+  });
+  const w = TL.moodWeights(s, 500);
+  assert.ok(Math.abs(w.day - 0.5) < 1e-9 && Math.abs(w.sunset - 0.5) < 1e-9);
+  assert.equal(TL.moodWeights(s, 99999).night, 1);
+  assert.equal(TL.level(s.letterboxes, 9999), 1);
+  assert.equal(TL.level(s.fades, 2500), 1);
+  assert.equal(TL.level(s.fades, 9999), 0);
+});
+
+test("music plays one chord a bar until it stops", () => {
+  const s = story({ title: "t" }, (d) => { d.music("romance"); d.wait(5000); d.music(null); d.wait(5000); });
+  const chords = TL.soundEvents(s).filter((e) => e.kind === "chord");
+  assert.deepEqual(chords.map((c) => c.t), [0, 2400, 4800]);
+});

@@ -20,7 +20,7 @@
   .cap .k { font-weight: 700; font-size: clamp(11px, 1.3vw, 16px); letter-spacing: .22em; color: var(--accent); }
   .cap .k:not(:empty)::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--accent); vertical-align: middle; margin-right: 10px; }
   .cap .t { font-weight: 300; font-size: clamp(24px, 4.2vw, 58px); letter-spacing: -.01em; margin-top: 6px; line-height: 1.08; }
-  .card { position: fixed; inset: 0; background: #f7f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  .card { position: fixed; inset: 0; z-index: 5; background: #f7f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center;
     pointer-events: none; opacity: 0; text-align: center; padding: 0 8vw; }
   .card .k { font-weight: 700; font-size: clamp(12px, 1.4vw, 17px); letter-spacing: .3em; color: var(--accent); }
   .card .t { font-weight: 300; font-size: clamp(30px, 5.6vw, 76px); margin-top: 14px; letter-spacing: -.015em; }
@@ -58,6 +58,13 @@
   .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
   .badge .list { margin-top: 6px; line-height: 1.6; }
   .badge a { color: var(--accent); }
+  .bubble { position: fixed; pointer-events: none; background: #fff; color: #1d1d1b; border-radius: 16px; padding: 8px 14px;
+    font-size: clamp(14px, 1.6vw, 20px); box-shadow: 0 3px 14px rgba(0,0,0,.16); white-space: nowrap; transform-origin: 50% 100%; }
+  .bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  .bar { position: fixed; left: 0; right: 0; height: 0; background: #000; pointer-events: none; z-index: 3; }
+  #barTop { top: 0; } #barBot { bottom: 0; }
+  #fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 4; }
+  body.clean .bar, body.clean #fade { z-index: 3; }
   .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
   @media (max-width: 720px) { .help { display: none; } .cap { top: 5vh; } }
 </style>
@@ -72,6 +79,7 @@
 <div class="cap"><div class="k" id="capK"></div><div class="t" id="capT"></div></div>
 <svg id="leaders"></svg>
 <div class="card" id="card"><div class="k" id="cardK"></div><div class="t" id="cardT"></div><div class="s" id="cardS"></div><div class="rule"></div></div>
+<div class="bar" id="barTop"></div><div class="bar" id="barBot"></div><div id="fade"></div>
 <div class="badge" id="badge"></div>
 <div class="chapter" id="chapter"></div>
 <div class="ui">
@@ -87,6 +95,7 @@
 <script type="module">
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
 const S = window.STORY, $ = (id) => document.getElementById(id);
 const COLORS = S.colors, PLATE = TL.PLATE, R = S.room, PROPS = S.props || {};
@@ -123,8 +132,31 @@ function bodyGeo(w, h, d) {
   if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
   return geoCache.get(k);
 }
+// Slopes and round parts use their real LDraw geometry, turned into the scene
+// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
+const meshGeoCache = new Map();
+function meshGeo(p) {
+  const key = `${p.part}@${p.rot}`;
+  if (meshGeoCache.has(key)) return meshGeoCache.get(key);
+  const m = S.meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
+  const pos = new Float32Array(m.tri.length);
+  for (let i = 0; i < m.tri.length; i += 3) {
+    const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
+    pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
+  }
+  let geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo = toCreasedNormals(geo, Math.PI / 6);
+  meshGeoCache.set(key, geo);
+  return geo;
+}
 function brick(p, mat) {
   const g = new THREE.Group();
+  if (p.mesh && S.meshes?.[p.part]) {
+    const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
+    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
+    return g;
+  }
   const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
   body.castShadow = body.receiveShadow = true; g.add(body);
   if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
@@ -145,12 +177,23 @@ const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").m
     if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
     return mats.get(key);
   };
-  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i))); group.add(m); return m; });
+  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i))); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
   const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
-  return { id, a, meshes, group, pivot, mats: [...mats.entries()].filter(([k]) => !k.endsWith("!")).map(([, m]) => m) };
+  // joints: their parts hang from a group at the pivot, which pose() rotates
+  const joints = Object.entries(a.joints || {}).map(([name, j]) => {
+    const jg = new THREE.Group(), at = toScene(...j.pivot).sub(pivot);
+    jg.position.copy(at); group.add(jg);
+    for (const i of j.parts) { group.remove(meshes[i]); jg.add(meshes[i]); meshes[i].userData.joint = at; }
+    return { name, axis: j.axis || "x", jg };
+  });
+  return { id, a, meshes, group, pivot, joints, mats: [...mats.entries()].filter(([k]) => !k.endsWith("!")).map(([, m]) => m) };
 });
 function evalBricks(t) {
-  for (const { a, meshes, group, pivot, mats } of actors) {
+  for (const { a, meshes, group, pivot, mats, joints } of actors) {
+    for (const j of joints) {
+      const r = THREE.MathUtils.degToRad(TL.jointAngle(a, j.name, t));
+      j.jg.rotation.set(j.axis === "x" ? -r : 0, j.axis === "y" ? r : 0, j.axis === "z" ? r : 0);
+    }
     const pos = TL.actorPos(a, t);
     group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
     group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t));
@@ -161,7 +204,8 @@ function evalBricks(t) {
       mesh.visible = st.visible;
       if (!st.visible) return;
       const f = p.from, o = p.out ? p.out.to : [0, 0, 0], h = mesh.userData.home;
-      mesh.position.set(h.x - pivot.x + f[0] * st.k + o[0] * st.out, h.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - f[2] * st.k - o[2] * st.out);
+      const jo = mesh.userData.joint;
+      mesh.position.set(h.x - pivot.x - jo.x + f[0] * st.k + o[0] * st.out, h.y - jo.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - jo.z - f[2] * st.k - o[2] * st.out);
       const r = Math.max(st.k, st.out);
       mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
     });
@@ -313,6 +357,111 @@ function evalFigures(t) {
   }
 }
 
+// ---------- moods: day, sunset, night (blended), with stars and a moon at night
+const MOODS = {
+  day:    { bg: 0xf1f0ec, sky: 0xffffff, ground: 0xb8b2a6, hemi: 1.35, sun: 0xffffff, sunI: 2.3, pos: [-14, 30, 18], floor: 0xeceae4 },
+  sunset: { bg: 0xf1bf98, sky: 0xffd6ae, ground: 0x80586a, hemi: 1.05, sun: 0xffa45c, sunI: 2.5, pos: [-34, 11, 8], floor: 0xe7c3a4 },
+  night:  { bg: 0x1c2542, sky: 0x8090c8, ground: 0x20202c, hemi: 1.0, sun: 0xc8d6ff, sunI: 1.5, pos: [18, 34, 10], floor: 0x3a4462 },
+};
+const usesMood = (S.moods || []).length > 0 && !R;
+const starGeo = new THREE.BufferGeometry(), starPos = [];
+{ const r = rngf(7); for (let i = 0; i < 500; i++) { const a = r() * Math.PI * 2, e = 0.08 + r() * 1.3; starPos.push(Math.cos(a) * Math.cos(e) * 150, 20 + Math.sin(e) * 120, Math.sin(a) * Math.cos(e) * 150); } }
+starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0, fog: false }));
+const moon = new THREE.Mesh(new THREE.SphereGeometry(6, 32, 24), new THREE.MeshBasicMaterial({ color: 0xfff1cc, transparent: true, opacity: 0, fog: false }));
+moon.position.set(46, 58, -150);
+if (usesMood) scene.add(stars, moon);
+const cA = new THREE.Color(), cB = new THREE.Color();
+const mix = (key, w) => { cA.setRGB(0, 0, 0); for (const [k, v] of Object.entries(w)) { cB.setHex(MOODS[k][key]); cA.r += cB.r * v; cA.g += cB.g * v; cA.b += cB.b * v; } return cA.clone(); };
+const num = (key, w) => Object.entries(w).reduce((s, [k, v]) => s + MOODS[k][key] * v, 0);
+function evalMood(t) {
+  if (!usesMood) return;
+  const w = TL.moodWeights(S, t);
+  const bg = mix("bg", w); scene.background = bg; scene.fog.color = bg;
+  hemi.color = mix("sky", w); hemi.groundColor = mix("ground", w); hemi.intensity = num("hemi", w);
+  sun.color = mix("sun", w); sun.intensity = num("sunI", w);
+  sun.position.set(...[0, 1, 2].map((i) => Object.entries(w).reduce((s, [k, v]) => s + MOODS[k].pos[i] * v, 0)));
+  floor.material.color = mix("floor", w);
+  grid.material.transparent = true; grid.material.opacity = 1 - 0.85 * (w.night + w.sunset * 0.5);
+  stars.material.opacity = w.night; moon.material.opacity = w.night;
+  // captions turn light as the night comes in
+  const ink = Math.round(29 + (240 - 29) * TL.clamp01((w.night - 0.35) / 0.4));
+  document.querySelector(".cap .t").style.color = `rgb(${ink},${ink},${Math.min(255, ink + 4)})`;
+}
+
+// ---------- particles: hearts, sparkles, confetti, each on a fixed path
+const heartShape = new THREE.Shape();
+heartShape.moveTo(0, -0.5);
+heartShape.bezierCurveTo(-0.15, -0.3, -0.6, -0.05, -0.6, 0.25);
+heartShape.bezierCurveTo(-0.6, 0.55, -0.25, 0.65, 0, 0.38);
+heartShape.bezierCurveTo(0.25, 0.65, 0.6, 0.55, 0.6, 0.25);
+heartShape.bezierCurveTo(0.6, -0.05, 0.15, -0.3, 0, -0.5);
+const heartGeo = new THREE.ExtrudeGeometry(heartShape, { depth: 0.18, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 3 });
+heartGeo.center();
+const sparkGeo = new THREE.OctahedronGeometry(0.22), confGeo = new THREE.PlaneGeometry(0.34, 0.2);
+const CONF = [0xe8711c, 0x1e5aa8, 0xfac80a, 0x58ab41, 0xd6453b, 0xffffff];
+const particles = (S.emitters || []).flatMap((e) => {
+  const r = rngf(e.seed);
+  return Array.from({ length: e.count }, () => {
+    const mat = e.kind === "hearts" ? new THREE.MeshStandardMaterial({ color: r() < 0.7 ? 0xe2384f : 0xff8fa8, roughness: 0.35, emissive: 0x5a0010, emissiveIntensity: 0.4 })
+      : e.kind === "sparkles" ? new THREE.MeshBasicMaterial({ color: 0xffe27a })
+      : new THREE.MeshStandardMaterial({ color: CONF[Math.floor(r() * CONF.length)], side: THREE.DoubleSide, roughness: 0.6 });
+    const m = new THREE.Mesh(e.kind === "hearts" ? heartGeo : e.kind === "sparkles" ? sparkGeo : confGeo, mat);
+    m.visible = false; m.castShadow = e.kind !== "sparkles"; scene.add(m);
+    const a = r() * Math.PI * 2, rad = 0.4 + r() * 1.8;
+    return { e, m, delay: r() * e.dur * 0.4, life: e.dur * (0.55 + r() * 0.4), dx: Math.cos(a) * rad, dz: Math.sin(a) * rad,
+      rise: 1.6 + r() * 1.8, sway: 0.25 + r() * 0.5, ph: r() * 6.28, size: e.kind === "hearts" ? 0.55 + r() * 0.5 : 0.8 + r() * 0.6, spin: (r() - 0.5) * 6 };
+  });
+});
+function anchorTop(on, at, offset, t) {
+  if (!on) return toScene(...at);
+  const a = S.actors[on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  const top = a.parts ? Math.max(...a.parts.map((p) => p.y + p.h)) : 14;
+  return toScene(pos.x + cx + offset[0], pos.y + pos.lift + top + offset[1], pos.z + cz + offset[2]);
+}
+function evalParticles(t) {
+  for (const q of particles) {
+    const tau = t - q.e.t - q.delay;
+    if (tau < 0 || tau > q.life) { q.m.visible = false; continue; }
+    const p = tau / q.life, s = tau / 1000, o = anchorTop(q.e.on, q.e.at, q.e.offset, t);
+    q.m.visible = true;
+    if (q.e.kind === "confetti") q.m.position.set(o.x + q.dx * 2.2 + Math.sin(s * 3 + q.ph) * 0.6, o.y + 7 - s * 2.6, o.z + q.dz * 2.2);
+    else q.m.position.set(o.x + q.dx + Math.sin(s * 2.4 + q.ph) * q.sway, o.y + 0.4 + s * q.rise, o.z + q.dz + Math.cos(s * 2 + q.ph) * q.sway * 0.5);
+    q.m.scale.setScalar(q.size * Math.sin(Math.PI * Math.min(1, p * 1.6)) ** 0.7 * (1 - Math.max(0, p - 0.7) / 0.3 * 0.6));
+    q.m.rotation.set(q.e.kind === "confetti" ? s * q.spin : 0, s * q.spin * 0.5 + q.ph, q.e.kind === "confetti" ? s * q.spin * 0.7 : Math.sin(s * 3 + q.ph) * 0.25);
+  }
+}
+
+// ---------- speech bubbles, letterbox, fades
+const bubbleEls = (S.bubbles || []).map((b) => {
+  const el = document.createElement("div"); el.className = "bubble"; el.textContent = b.text; el.style.opacity = 0; document.body.appendChild(el);
+  return { b, el };
+});
+function evalBubbles(t) {
+  for (const { b, el } of bubbleEls) {
+    const on = t >= b.t && t <= b.t + b.dur;
+    if (!on) { el.style.opacity = 0; continue; }
+    const pop = TL.clamp01((t - b.t) / 220), out = TL.clamp01((b.t + b.dur - t) / 250);
+    const v = anchorTop(b.actor, null, [0, 3, 0], t).project(camera);
+    el.style.opacity = Math.min(pop, out);
+    el.style.left = `${(v.x * 0.5 + 0.5) * innerWidth - el.offsetWidth / 2}px`;
+    const barPx = TL.level(S.letterboxes, t) * 0.11 * innerHeight;
+    el.style.top = `${Math.max(barPx + 10, (-v.y * 0.5 + 0.5) * innerHeight - el.offsetHeight - 12)}px`;
+    el.style.transform = `scale(${0.85 + 0.15 * TL.settle(pop)})`;
+  }
+}
+let fadeColor = "#000";
+function evalBars(t) {
+  const lb = TL.level(S.letterboxes, t);
+  $("barTop").style.height = $("barBot").style.height = `${lb * 11}vh`;
+  const cap = document.querySelector(".cap");
+  if (R) cap.style.bottom = `${13 + lb * 11}vh`; else cap.style.top = `${7 + lb * 11}vh`;
+  const f = TL.level(S.fades, t);
+  const last = [...(S.fades || [])].reverse().find((e) => e.t <= t && e.on);
+  if (last && last.color !== fadeColor) { fadeColor = last.color; $("fade").style.background = fadeColor; }
+  $("fade").style.opacity = f;
+}
+
 // ---------- camera
 function evalCamera(t) {
   const c = TL.cameraState(S, t);
@@ -387,7 +536,25 @@ function noise(dur, gain = 0.1, from = 800, to = 200) {
   g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
   src.connect(f).connect(g).connect(audio.destination); src.start(now);
 }
+function pad(freq, dur, gain = 0.03) {
+  const now = audio.currentTime;
+  for (const [type, det] of [["sine", 0], ["triangle", 4]]) {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, now); o.detune.setValueAtTime(det, now);
+    g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(gain, now + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.05);
+  }
+}
+const PIECES = {
+  romance: [[261.6, 329.6, 392, 493.9], [220, 261.6, 329.6, 392], [174.6, 220, 261.6, 329.6], [196, 246.9, 293.7, 349.2]],
+  wonder: [[261.6, 392, 587.3], [293.7, 440, 659.3], [349.2, 523.3, 784], [329.6, 493.9, 739.99]],
+};
 const VOICE = {
+  chord: (e) => { const ch = PIECES[e.piece][e.size % 4]; ch.forEach((f, i) => pad(f, 2.9, i === 0 ? 0.035 : 0.022)); },
+  say: () => { tone(660, 0.07, "sine", 0.06); setTimeout(() => audio && tone(880, 0.08, "sine", 0.05), 70); },
+  "emit-hearts": () => [1046, 1318, 1568].forEach((f, i) => setTimeout(() => audio && tone(f, 0.25, "sine", 0.05), i * 90)),
+  "emit-sparkles": () => [1568, 2093, 2637].forEach((f, i) => setTimeout(() => audio && tone(f, 0.18, "triangle", 0.035), i * 60)),
+  "emit-confetti": () => noise(0.4, 0.06, 3000, 900),
   click: (e) => { tone(2400 / Math.sqrt(1 + e.size * 0.15), 0.045, "triangle", 0.12); tone(180, 0.05, "sine", 0.08); },
   panel: () => tone(900 + Math.random() * 400, 0.03, "square", 0.025),
   step: () => tone(120, 0.06, "sine", 0.06, 0.6),
@@ -458,9 +625,9 @@ function frame(now) {
   if (playing) { t += now - last; if (t >= S.duration) { t = S.duration; setPlaying(false); } }
   last = now;
   if (playing) playSounds(before, t);
-  evalBricks(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalCamera(t); evalOverlay(t);
+  evalMood(t); evalBricks(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
-  evalCallouts(t);
+  evalCallouts(t); evalBubbles(t); evalBars(t);
   const ch = [...CH].reverse().find((c) => c.t <= t);
   $("chapter").textContent = ch ? ch.label : S.meta.title; $("chapter").style.opacity = ch || t < 1000 ? 1 : 0;
   $("scrub").value = t; $("time").textContent = `${fmt(t)} / ${fmt(S.duration)}`;

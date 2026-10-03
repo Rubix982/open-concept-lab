@@ -7,9 +7,12 @@ story is checked by [brick-check](../brick-check), so the order the pieces fly
 in is an order you could really build it in, and each model is exported as an
 LDraw file you can open in BrickLink Studio.
 
+New here? **[GUIDE.md](GUIDE.md)** gets a first story on screen in five minutes.
+
 ## Make one
 
 ```sh
+node new.mjs my-story "My Story"     # start a story from the template
 node dev.mjs little-builder          # live preview at http://localhost:5173
 node build.mjs little-builder        # checks the models and the stage, writes out/little-builder/
 node build.mjs --all                 # every story, plus a gallery at out/index.html
@@ -61,12 +64,41 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `move(actor, [x, y, z], { dur, hop, steps })` | walks or glides an actor | yes |
 | `turn(actor, degrees, { dur })` | turns an actor in place | yes |
 | `unbuild(actor, { to, stagger })` | throws the pieces away, last first | yes |
+| `pose(actor, joint, degrees, { dur })` | swings a joint to an angle (0 is the rest pose) | yes |
+| `say(actor, text, { dur })` | a speech bubble over an actor | yes |
+| `fadeOut({ dur, color })` · `fadeIn({ dur })` | fades the picture out and back | yes |
 | `wait(ms)` | holds | yes |
 | `shot({ at, az, el, dist }, dur)` | eases the camera to a shot | no |
 | `follow(actor, { az, el, dist, offset })` | keeps the camera on an actor as it moves | no |
 | `orbit(degrees, { dur })` | swings the camera around the current target | no |
 | `highlight(actor, { dur, color })` | a pulsing glow, to draw the eye | no |
 | `callout(text, { on, at, offset, dur })` | a label on a leader line, pinned to an actor or a point | no |
+| `emit(kind, { on, at, count, dur })` | particles: `hearts`, `sparkles` or `confetti` | no |
+| `mood(name, { dur })` | the light: `day`, `sunset` or `night` (stars and a moon) | no |
+| `letterbox(on, { dur })` | cinema bars | no |
+| `music(name)` | a generated chord pad, `romance` or `wonder`; `null` stops it | no |
+
+### Joints
+
+A model can name groups of parts that swing on a pivot:
+
+```js
+model("robot", parts, { joints: {
+  "right-arm": { parts: [8, 9, 11], pivot: [4.5, 10, 0.5], axis: "x" },
+} });
+```
+
+`axis` is `x` (forward and back), `z` (sideways) or `y` (twist). The model is
+checked in its rest pose. A joint is artistic licence unless the real build
+puts a hinge there. The robot in `stories/cast/robot.mjs` has both arms and
+its head on joints.
+
+### Parts
+
+Anything in brick-check's catalog: bricks, plates and tiles in the usual
+sizes, plus 45° slopes (studs on their top row only), and round 1x1 bricks,
+plates and tiles. Slopes and round parts are drawn from their real LDraw
+geometry. Parts can face 0, 90, 180 or 270 degrees.
 | `caption(text, kicker)` | shows a caption until the next one | no |
 | `together(s => { … })` | starts actions at once; moves on after the longest | yes |
 
@@ -90,10 +122,9 @@ object is in the chamber story.
 
 ## Rough edges
 
-- Only plain bricks, plates and tiles from brick-check's catalog, rotated
-  0° or 90°. No slopes, hinges or sideways building yet.
+- No sideways (SNOT) building, and no curved parts beyond the round 1x1s.
 - The stage check uses boxes, so it can flag two actors whose boxes touch
   even when the bricks themselves wouldn't. Set pieces (room, button, door)
   aren't part of it.
-- Characters can only be animated as a whole (walk, hop, turn). There's no
-  posing of limbs.
+- Joints aren't checked: the stage check uses each model's rest pose, so a
+  swung arm can pass through something without a warning.

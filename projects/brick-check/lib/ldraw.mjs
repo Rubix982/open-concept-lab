@@ -3,15 +3,24 @@
 // centre of its top face.
 import { PARTS, COLORS, footprint } from "./parts.mjs";
 
+// Rotations about the vertical axis, as LDraw 3x3 matrices (row-major).
+export const MATRIX = {
+  0: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+  90: [0, 0, 1, 0, 1, 0, -1, 0, 0],
+  180: [-1, 0, 0, 0, 1, 0, 0, 0, -1],
+  270: [0, 0, -1, 0, 1, 0, 1, 0, 0],
+};
+
 export function toLDR(design) {
   const lines = [`0 ${design.title}`, `0 Name: ${design.name}.ldr`, `0 Author: brick-check`, ``];
   design.steps.forEach((s) => {
     // Older LDraw tools expect ASCII.
     lines.push(`0 // ${s.note.replace(/×/g, "x").replace(/[—–]/g, "-").replace(/[‘’]/g, "'").replace(/[^\x20-\x7e]/g, "")}`);
     for (const p of s.parts) {
-      const f = footprint(p);
-      const X = (p.x + f.w / 2) * 20, Z = (p.z + f.d / 2) * 20, Y = -(p.y + f.h) * 8;
-      const R = p.rot === 90 ? "0 0 1 0 1 0 -1 0 0" : "1 0 0 0 1 0 0 0 1";
+      const f = footprint(p), M = MATRIX[p.rot], [cx, cz] = PARTS[p.part].center || [0, 0];
+      // The footprint centre lands on the grid; the part's own origin may sit off it.
+      const X = (p.x + f.w / 2) * 20 - (M[0] * cx + M[2] * cz), Z = (p.z + f.d / 2) * 20 - (M[6] * cx + M[8] * cz), Y = -(p.y + f.h) * 8;
+      const R = M.join(" ");
       lines.push(`1 ${p.color} ${X} ${Y} ${Z} ${R} ${p.part}.dat`);
     }
     lines.push(`0 STEP`);

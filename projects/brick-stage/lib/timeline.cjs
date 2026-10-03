@@ -77,6 +77,40 @@
     return v;
   }
 
+  // A joint's angle in degrees: each pose() eases from where the joint was.
+  function jointAngle(a, joint, t) {
+    let deg = 0;
+    for (const p of a.poses || []) {
+      if (p.joint !== joint || t < p.t) continue;
+      deg += (p.deg - deg) * easeInOut(clamp01((t - p.t) / Math.max(1, p.dur)));
+    }
+    return deg;
+  }
+
+  // On/off events (letterbox, fades) as a level 0..1.
+  function level(events, t) {
+    let v = 0;
+    for (const e of events || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    }
+    return v;
+  }
+
+  // The light, as weights over the three moods (they sum to 1).
+  function moodWeights(story, t) {
+    let w = { day: 1, sunset: 0, night: 0 };
+    for (const m of story.moods || []) {
+      if (t < m.t) break;
+      const p = easeInOut(clamp01((t - m.t) / Math.max(1, m.dur)));
+      w = Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v * (1 - p) + (k === m.name ? p : 0)]));
+    }
+    return w;
+  }
+
+  // Which bubbles are on screen.
+  function bubblesAt(story, t) { return (story.bubbles || []).filter((b) => t >= b.t && t <= b.t + b.dur); }
+
   // A highlight's glow (0..1): pulses twice over its duration.
   function glow(a, t) {
     let g = 0;
@@ -141,6 +175,15 @@
       ev.push({ t: p.t0 + p.dur * 0.6, kind: "install", size: 1 });
       for (const e of p.events) ev.push({ t: e.t, kind: `${p.kind}-${e.on ? "on" : "off"}`, size: 1 });
     }
+    for (const b of story.bubbles || []) ev.push({ t: b.t, kind: "say", size: b.text.length });
+    for (const e of story.emitters || []) ev.push({ t: e.t, kind: `emit-${e.kind}`, size: e.count });
+    // music: one chord per bar while a piece is playing
+    const BAR = 2400, music = story.music || [];
+    music.forEach((m, i) => {
+      if (!m.name) return;
+      const end = i + 1 < music.length ? music[i + 1].t : story.duration;
+      for (let k = 0, t = m.t; t < end; k++, t += BAR) ev.push({ t, kind: "chord", size: k, piece: m.name });
+    });
     if (story.room) {
       const n = 26;      // the floor wave, as a patter rather than one click per panel
       for (let i = 0; i < n; i++) ev.push({ t: story.room.t0 + (story.room.dur * 0.8 * i) / n + 200, kind: "panel", size: 1 });
@@ -189,7 +232,7 @@
     return [...seen].map(([pair, t]) => ({ pair, t }));
   }
 
-  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions };
+  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TL = api;
 })(typeof window !== "undefined" ? window : globalThis);

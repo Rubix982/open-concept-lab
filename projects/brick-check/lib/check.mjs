@@ -1,7 +1,7 @@
 // The checker. A design is { steps: [{ note, parts: [{part, color, x, y, z, rot}] }] }
 // on a grid: x, z in studs (min corner), y in plate heights above the table.
 // Every claim brick-check makes about a design comes from here.
-import { PARTS, COLORS, footprint } from "./parts.mjs";
+import { PARTS, COLORS, ROTATIONS, footprint, topStuds } from "./parts.mjs";
 
 export function flatten(design) {
   const out = [];
@@ -26,7 +26,7 @@ export function check(design) {
   for (const p of parts) {
     if (!PARTS[p.part]) err("vocabulary", `unknown part ${p.part}`, p.i);
     if (!(p.color in COLORS)) err("vocabulary", `unknown colour ${p.color}`, p.i);
-    if (p.rot !== 0 && p.rot !== 90) err("vocabulary", `rotation must be 0 or 90`, p.i);
+    if (!ROTATIONS.includes(p.rot)) err("vocabulary", `rotation must be one of ${ROTATIONS.join(", ")}`, p.i);
     if (![p.x, p.y, p.z].every(Number.isInteger) || p.y < 0) err("vocabulary", `off-grid position`, p.i);
   }
   if (errors.length) return { ok: false, errors, warnings, parts };
@@ -43,9 +43,8 @@ export function check(design) {
   const studs = new Map(); // "a-b" -> count, a below b
   const add = (a, b) => { const k = a + "-" + b; studs.set(k, (studs.get(k) || 0) + 1); };
   for (const p of parts) {
-    if (PARTS[p.part].kind === "tile") continue;
-    const f = footprint(p), top = p.y + f.h;
-    for (let x = p.x; x < p.x + f.w; x++) for (let z = p.z; z < p.z + f.d; z++) {
+    const top = p.y + footprint(p).h;
+    for (const [x, z] of topStuds(p)) {
       const q = occ.get(`${x},${top},${z}`);
       if (q !== undefined && parts[q].y === top) add(p.i, q);
     }

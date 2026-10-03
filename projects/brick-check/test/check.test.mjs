@@ -66,3 +66,16 @@ test("a single-stud joint is flagged", () => {
   const r = check(one(P("3003", 0, 0, 0), P("3004", 1, 3, 1)));
   assert.ok(r.warnings.some((w) => w.rule === "weak-joint"));
 });
+
+test("a slope only connects through its back-row studs", () => {
+  // 3039 at rot 0 has studs on its back row (z = 1); a plate over the front row has nothing to hold it
+  const front = check(one(P("3039", 0, 0, 0), P("3024", 0, 3, 0)));
+  assert.ok(rules(front).includes("one-piece"));
+  const back = check(one(P("3039", 0, 0, 0), P("3024", 0, 3, 1)));
+  assert.ok(back.ok, JSON.stringify(back.errors));
+});
+
+test("turning a slope round moves its studs with it", () => {
+  const turned = check(one(P("3039", 0, 0, 0, 180), P("3024", 0, 3, 0)));
+  assert.ok(turned.ok, JSON.stringify(turned.errors));
+});
