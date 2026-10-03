@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brick Stage</title>
+<style>
+  :root { --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --card: #fff; --line: #dcdad3; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161614; --ink: #ecebe6; --muted: #a3a29b; --card: #20201d; --line: #34332f; } }
+  :root[data-theme="dark"] { --bg: #161614; --ink: #ecebe6; --muted: #a3a29b; --card: #20201d; --line: #34332f; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 48px 16px; }
+  h1 { font-weight: 300; font-size: 40px; margin: 0 0 6px; } p { color: var(--muted); margin: 0 0 28px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .card { display: flex; flex-direction: column; gap: 6px; background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 8px; padding: 16px 18px; color: inherit; text-decoration: none; }
+  .card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+  .k { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .t { font-size: 22px; font-weight: 300; } .s { font-size: 13px; color: var(--muted); }
+</style></head><body><main>
+<h1>Brick Stage</h1>
+<p>Stories told with LEGO models that assemble themselves. Every model is checked as really buildable.</p>
+<div class="grid">
+    <a class="card" href="little-builder/index.html">
+      <span class="k">35 s · 3 models</span>
+      <span class="t">The Little Builder</span>
+      <span class="s">✓ every model buildable</span>
+    </a>
+    <a class="card" href="test-chamber/index.html">
+      <span class="k">41 s · 1 models</span>
+      <span class="t">Test Chamber</span>
+      <span class="s">✓ every model buildable</span>
+    </a></div>
+</main></body></html>

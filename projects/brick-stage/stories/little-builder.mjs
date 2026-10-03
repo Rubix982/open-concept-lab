@@ -50,6 +50,8 @@ export default story({ title: "The Little Builder", drift: 1.2 }, (s) => {
   s.shot({ at: [-9, 7, -4], az: 18, el: 12, dist: 22 }, 4000);
   s.build(robot("unit", ORANGE), { as: "unit", at: [-11, 0, -4], from: "everywhere" });
   s.caption("Unit is operational.");
+  s.highlight("unit", { dur: 1800 });
+  s.callout("Visor", { on: "unit", offset: [0, -4, -1], dur: 2200 });
   s.move("unit", [-11, 0, -4], { dur: 900, hop: 2.5, steps: 2 });
   s.wait(900);
 
@@ -87,7 +89,8 @@ export default story({ title: "The Little Builder", drift: 1.2 }, (s) => {
     g.move("unit", [-13, 0, -7], { dur: 900, hop: 2.5, steps: 2 });
     g.move("unit-2", [-6, 0, -8], { dur: 900, hop: 2.5, steps: 2 });
   });
-  s.wait(2200);
+  s.orbit(-35, { dur: 2600 });
+  s.wait(2600);
   s.clearCaption();
   s.card("END OF PROCEDURE", "Every model in this story", { sub: "can be built with real bricks.", dur: 3600 });
 });

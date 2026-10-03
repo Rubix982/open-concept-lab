@@ -35,6 +35,7 @@ export class Director {
     this.camera = [];      // { t, dur, shot }
     this.captions = [];    // { t, kicker, text }
     this.cards = [];       // { t, dur, kicker, title, sub }
+    this.callouts = [];    // { t, dur, text, on, at, offset }
     this.models = {};
     this.props = {};       // buttons, doors, signal lines
     this.roomSpec = null;
@@ -57,7 +58,33 @@ export class Director {
   clearCaption() { return this.caption("", ""); }
   // Ease the camera to a shot. Doesn't advance time.
   // shot: { at: [x, y, z] in studs, az, el (degrees), dist (studs) }
-  shot(shot, dur = 1600) { this.camera.push({ t: this.t, dur, shot }); return this; }
+  shot(shot, dur = 1600) { this.camera.push({ t: this.t, dur, shot }); this._lastShot = shot; return this; }
+  // Keep the camera on an actor as it moves. Doesn't advance time.
+  follow(actor, { az, el, dist, offset, dur = 1400 } = {}) {
+    const last = this._lastShot || { az: 20, el: 18, dist: 30 };
+    return this.shot({ follow: actor, offset, az: az ?? last.az, el: el ?? last.el, dist: dist ?? last.dist }, dur);
+  }
+  // Swing the camera around the current target by `deg`. Doesn't advance time.
+  orbit(deg, { dur = 3000, el, dist } = {}) {
+    const last = this._lastShot;
+    if (!last) throw new Error("orbit() needs a shot() or follow() before it");
+    return this.shot({ ...last, az: last.az + deg, el: el ?? last.el, dist: dist ?? last.dist }, dur);
+  }
+  // Make an actor glow, to draw the eye. Doesn't advance time.
+  highlight(actor, { dur = 1600, color = "#ff8a2a" } = {}) {
+    const a = this.actors[actor];
+    if (!a) throw new Error(`no actor "${actor}"`);
+    (a.highlights ||= []).push({ t: this.t, dur, color });
+    return this;
+  }
+  // A label with a leader line, pinned to an actor (on) or a point (at).
+  // Doesn't advance time.
+  callout(text, { on, at, offset = [0, 0, 0], dur = 2600 } = {}) {
+    if (on && !this.actors[on]) throw new Error(`no actor "${on}"`);
+    if (!on && !at) throw new Error("callout() needs `on` or `at`");
+    this.callouts.push({ t: this.t, dur, text, on, at, offset });
+    return this;
+  }
   wait(ms) { this._advance(this.t + ms); return this; }
 
   // Assemble a model at a position, piece by piece. Advances time.
@@ -179,13 +206,15 @@ export class Director {
     const reports = {};
     for (const [name, m] of Object.entries(this.models)) {
       const r = check({ steps: [{ note: name, parts: m.parts }] });
-      reports[name] = { ok: r.ok, errors: r.errors, warnings: r.warnings, stats: r.stats, parts: m.parts };
+      const actor = Object.keys(this.actors).find((k) => this.actors[k].checkedAs === name);
+      reports[name] = { ok: r.ok, errors: r.errors, warnings: r.warnings, stats: r.stats, parts: m.parts, actor };
     }
     return {
       meta: this.meta, duration: this.t + 600,
       actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "figure"
-        ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns }
-        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns }])),
+        ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
+        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }])),
+      callouts: this.callouts,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,
       reports,
     };

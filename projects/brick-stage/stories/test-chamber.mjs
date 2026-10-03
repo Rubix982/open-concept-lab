@@ -24,12 +24,14 @@ export default story({ title: "Test Chamber", drift: 0.6 }, (s) => {
 
   s.caption("Install the button.", "STEP 01");
   s.shot({ at: [16, 3, 14], az: -26, el: 30, dist: 46 }, 1400);
+  s.callout("Pressure plate", { at: [12, 2, 12], dur: 2400 });
   s.button("button", [12, 0, 12]);
   s.wait(400);
   s.caption("Install the exit.", "STEP 02");
   s.shot({ at: [34, 8, 26], az: -18, el: 18, dist: 48 }, 1500);
   s.wait(600);
   s.door("exit", { x: 36, width: 8, height: 20 });
+  s.callout("Exit", { at: [40, 21, 36], dur: 1800 });
   s.caption("Connect them.", "STEP 03");
   s.together((g) => {
     g.shot({ at: [24, 5, 20], az: -30, el: 32, dist: 66 }, 1800);
@@ -60,11 +62,12 @@ export default story({ title: "Test Chamber", drift: 0.6 }, (s) => {
   s.wait(900);
 
   s.caption("The subject uses the test object.", "TRIAL 2");
+  s.highlight("cube", { dur: 2000 });
   s.shot({ at: [12, 3, 18], az: -22, el: 26, dist: 44 }, 1800);
   s.move("subject", [9, 0, 23], { dur: 2600 });
   s.move("cube", [3, 7, 21], { dur: 600, hop: 0 });
   s.together((g) => {
-    g.move("subject", [13, 0, 17], { dur: 2000 });
+    g.move("subject", [14.5, 0, 18.5], { dur: 2000 });
     g.move("cube", [8, 7, 15], { dur: 2000, hop: 0 });
   });
   s.move("cube", [10, 1.2, 10], { dur: 700, hop: 0 });
@@ -72,7 +75,7 @@ export default story({ title: "Test Chamber", drift: 0.6 }, (s) => {
   s.together((g) => { g.activate("wire"); g.open("exit"); });
 
   s.caption("The subject completes the test.", "TRIAL 2");
-  s.shot({ at: [30, 6, 26], az: -26, el: 22, dist: 56 }, 2500);
+  s.follow("subject", { az: -24, el: 20, dist: 40, dur: 1500 });
   s.move("subject", [30, 0, 27], { dur: 2200 });
   s.move("subject", [40, 0, 33], { dur: 1500 });
   s.move("subject", [40, 0, 41], { dur: 1200 });

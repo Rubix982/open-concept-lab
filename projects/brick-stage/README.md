@@ -10,14 +10,29 @@ LDraw file you can open in BrickLink Studio.
 ## Make one
 
 ```sh
-node build.mjs little-builder        # checks the models, writes out/little-builder/
-open out/little-builder/index.html
-node build.mjs test-chamber          # the puzzle-chamber story
+node dev.mjs little-builder          # live preview at http://localhost:5173
+node build.mjs little-builder        # checks the models and the stage, writes out/little-builder/
+node build.mjs --all                 # every story, plus a gallery at out/index.html
+node --test test/*.test.mjs
 ```
 
-Player keys: **space** plays or pauses, **← →** jump 2 s, **R** restarts,
-**H** hides the controls (for recording), **F** goes fullscreen. Add `?t=12000`
-to the URL to open on a given moment.
+With `dev.mjs` running, every save rebuilds the story and the open page
+reloads at the moment you were watching.
+
+The build checks two things and says so in the terminal and on the page:
+
+- **Every model** goes through brick-check. A model that can't be built shows
+  its problem parts glowing red, with the reasons in the corner badge.
+- **The stage:** the whole timeline is run looking for actors that walk into
+  each other. Each overlap is listed with a link to the moment it happens.
+
+Player keys: **space** plays or pauses, **← →** jump 2 s, **[ ]** jump between
+chapters (one per caption), **M** sound, **R** restarts, **H** hides the
+controls (for recording), **F** goes fullscreen. Add `?t=12000` to the URL to
+open on a given moment.
+
+Sound is synthesised in the browser from the timeline: bricks click as they
+land, figures step, buttons thunk, doors slide. It starts muted; press M.
 
 ## Write a story
 
@@ -48,6 +63,10 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `unbuild(actor, { to, stagger })` | throws the pieces away, last first | yes |
 | `wait(ms)` | holds | yes |
 | `shot({ at, az, el, dist }, dur)` | eases the camera to a shot | no |
+| `follow(actor, { az, el, dist, offset })` | keeps the camera on an actor as it moves | no |
+| `orbit(degrees, { dur })` | swings the camera around the current target | no |
+| `highlight(actor, { dur, color })` | a pulsing glow, to draw the eye | no |
+| `callout(text, { on, at, offset, dur })` | a label on a leader line, pinned to an actor or a point | no |
 | `caption(text, kicker)` | shows a caption until the next one | no |
 | `together(s => { … })` | starts actions at once; moves on after the longest | yes |
 
@@ -73,7 +92,8 @@ object is in the chamber story.
 
 - Only plain bricks, plates and tiles from brick-check's catalog, rotated
   0° or 90°. No slopes, hinges or sideways building yet.
-- Each model is checked on its own. Collisions *between* actors on the stage
-  aren't checked.
+- The stage check uses boxes, so it can flag two actors whose boxes touch
+  even when the bricks themselves wouldn't. Set pieces (room, button, door)
+  aren't part of it.
 - Characters can only be animated as a whole (walk, hop, turn). There's no
   posing of limbs.

@@ -6,7 +6,7 @@
 <title>__TITLE__</title>
 <style>
   :root {
-    --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --bar: rgba(255,255,255,.86); --line: #dcdad3;
+    --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --bar: rgba(255,255,255,.86); --line: #dcdad3; --bad: #c0362c;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) { --bar: rgba(30,30,28,.86); --ink: #ecebe6; --muted: #a3a29b; --line: #3a3934; }
@@ -18,7 +18,7 @@
   canvas { display: block; width: 100vw; height: 100vh; }
   .cap { position: fixed; left: 6vw; top: 7vh; max-width: 70vw; pointer-events: none; }
   .cap .k { font-weight: 700; font-size: clamp(11px, 1.3vw, 16px); letter-spacing: .22em; color: var(--accent); }
-  .cap .k::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--accent); vertical-align: middle; margin-right: 10px; }
+  .cap .k:not(:empty)::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--accent); vertical-align: middle; margin-right: 10px; }
   .cap .t { font-weight: 300; font-size: clamp(24px, 4.2vw, 58px); letter-spacing: -.01em; margin-top: 6px; line-height: 1.08; }
   .card { position: fixed; inset: 0; background: #f7f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center;
     pointer-events: none; opacity: 0; text-align: center; padding: 0 8vw; }
@@ -26,28 +26,40 @@
   .card .t { font-weight: 300; font-size: clamp(30px, 5.6vw, 76px); margin-top: 14px; letter-spacing: -.015em; }
   .card .s { font-weight: 300; font-size: clamp(18px, 2.4vw, 30px); color: #6f6e68; margin-top: 8px; }
   .card .rule { width: 60px; height: 3px; background: var(--accent); margin-top: 26px; }
-  .ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(760px, calc(100vw - 32px));
-    display: flex; gap: 10px; align-items: center; background: var(--bar); color: var(--ink); border: 1px solid var(--line);
-    border-radius: 12px; padding: 8px 12px; backdrop-filter: blur(8px); transition: opacity .25s; }
-  body.clean .ui, body.clean .badge { opacity: 0; pointer-events: none; }
-  .ui button { font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
-  .ui button:focus-visible, .ui input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .ui input[type=range] { flex: 1; accent-color: var(--accent); }
-  .ui .time { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); min-width: 92px; text-align: right; }
-  .badge { position: fixed; right: 16px; top: 14px; font-size: 12px; color: #6f6e68; background: rgba(255,255,255,.7);
-    border: 1px solid #dcdad3; border-radius: 999px; padding: 4px 10px; transition: opacity .25s; }
-  .badge b { color: #2f7d4f; } .badge b.bad { color: #b3261e; }
-  .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
-  .badge .list { margin-top: 6px; line-height: 1.6; }
-  .badge a { color: var(--accent); }
   body.chamber .cap { top: auto; bottom: 13vh; left: 5vw; display: flex; flex-direction: column-reverse; }
   body.chamber .cap .t { font-weight: 800; font-style: italic; color: #fff; letter-spacing: -.01em;
     text-shadow: 0 1px 1px rgba(0,0,0,.35), 0 2px 18px rgba(0,0,0,.38); -webkit-text-stroke: 1.2px rgba(70,70,70,.45); }
   body.chamber .cap .k { color: rgba(255,255,255,.95); font-weight: 600; font-size: clamp(14px, 2vw, 26px); letter-spacing: .32em;
     margin: 4px 0 0 4vw; text-shadow: 0 1px 1px rgba(0,0,0,.4), 0 2px 12px rgba(0,0,0,.4); }
   body.chamber .cap .k::before { display: none; }
+
+  /* callouts: a label on a leader line, pinned to something on stage */
+  #leaders { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; }
+  .callout { position: fixed; pointer-events: none; background: rgba(255,255,255,.94); color: #1d1d1b; border-left: 3px solid var(--accent);
+    padding: 6px 12px; font-size: clamp(13px, 1.4vw, 18px); border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,.12); white-space: nowrap; }
+
+  .ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(820px, calc(100vw - 32px));
+    display: flex; gap: 10px; align-items: center; background: var(--bar); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; padding: 8px 12px; backdrop-filter: blur(8px); transition: opacity .25s; }
+  body.clean .ui, body.clean .badge { opacity: 0; pointer-events: none; }
+  .ui button { font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+  .ui button:focus-visible, .ui input:focus-visible, .badge a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .track { position: relative; flex: 1; display: flex; align-items: center; }
+  .track input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
+  .ticks { position: absolute; left: 7px; right: 7px; top: -9px; height: 8px; pointer-events: none; }
+  .ticks i { position: absolute; top: 0; width: 2px; height: 8px; background: var(--muted); opacity: .55; border-radius: 1px; }
+  .ui .time { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); min-width: 92px; text-align: right; }
+  .chapter { position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); font-size: 12px; color: var(--muted);
+    background: var(--bar); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; transition: opacity .25s; white-space: nowrap; }
+  body.clean .chapter { opacity: 0 !important; }
+  .badge { position: fixed; right: 16px; top: 14px; max-width: min(420px, calc(100vw - 32px)); font-size: 12px; color: #6f6e68;
+    background: rgba(255,255,255,.82); border: 1px solid #dcdad3; border-radius: 14px; padding: 4px 10px; transition: opacity .25s; }
+  .badge b { color: #2f7d4f; } .badge b.bad, .badge .bad { color: var(--bad); } .badge b.warn { color: #a86a00; }
+  .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
+  .badge .list { margin-top: 6px; line-height: 1.6; }
+  .badge a { color: var(--accent); }
   .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
-  @media (max-width: 640px) { .help { display: none; } .cap { top: 5vh; } }
+  @media (max-width: 720px) { .help { display: none; } .cap { top: 5vh; } }
 </style>
 <script type="importmap">
 { "imports": {
@@ -58,22 +70,29 @@
 </head>
 <body>
 <div class="cap"><div class="k" id="capK"></div><div class="t" id="capT"></div></div>
+<svg id="leaders"></svg>
 <div class="card" id="card"><div class="k" id="cardK"></div><div class="t" id="cardT"></div><div class="s" id="cardS"></div><div class="rule"></div></div>
 <div class="badge" id="badge"></div>
+<div class="chapter" id="chapter"></div>
 <div class="ui">
   <button id="play" aria-label="Play or pause">❚❚</button>
-  <input id="scrub" type="range" min="0" step="1" aria-label="Timeline">
+  <div class="track"><div class="ticks" id="ticks"></div><input id="scrub" type="range" min="0" step="1" aria-label="Timeline"></div>
   <span class="time" id="time"></span>
-  <span class="help">space · ← → · H hide · F full</span>
+  <button id="mute" aria-label="Sound on or off">🔇</button>
+  <span class="help">space · [ ] chapters · M sound · H hide</span>
 </div>
 
+<script>__TIMELINE__</script>
 <script>window.STORY = __STORY__;</script>
 <script type="module">
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 const S = window.STORY, $ = (id) => document.getElementById(id);
-const COLORS = S.colors, PLATE = 0.4;      // 1 stud across = 1 unit, 1 plate up = 0.4
+const COLORS = S.colors, PLATE = TL.PLATE, R = S.room, PROPS = S.props || {};
+const clamp01 = TL.clamp01, easeOut = TL.easeOut, settle = TL.settle;
+// story units -> scene: x stays, plates up become 0.4, story z points into the screen.
+const toScene = (x, yPlates, z) => new THREE.Vector3(x, yPlates * PLATE, -z);
 
 // ---------- scene
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -83,119 +102,80 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadow
 document.body.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const BG = new THREE.Color("#f1f0ec");
-scene.background = BG; scene.fog = new THREE.Fog(BG, 60, 140);
+scene.background = BG; scene.fog = new THREE.Fog(BG, 60, 160);
 const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 400);
-scene.add(new THREE.HemisphereLight(0xffffff, 0xb8b2a6, 1.35));
+const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b2a6, 1.35); scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffffff, 2.3);
 sun.position.set(-14, 30, 18); sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 160 });
 sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 160 });
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
-scene.add(sun);
+scene.add(sun, sun.target);
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: 0xeceae4, roughness: 1 }));
 floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 const grid = new THREE.GridHelper(200, 50, 0xd6d3ca, 0xe0ddd5); grid.position.y = 0.002; scene.add(grid);
 
-// ---------- bricks
-const geoCache = new Map(), matCache = new Map();
+// ---------- bricks (materials are per actor, so one actor can glow alone)
+const geoCache = new Map();
 const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
-function mat(color) {
-  if (!matCache.has(color)) matCache.set(color, new THREE.MeshStandardMaterial({ color: COLORS[color][2], roughness: 0.3, metalness: 0 }));
-  return matCache.get(color);
-}
 function bodyGeo(w, h, d) {
   const k = `${w}x${h}x${d}`;
   if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
   return geoCache.get(k);
 }
-function brick(p) {
-  const g = new THREE.Group(), m = mat(p.color);
-  const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), m);
+function brick(p, mat) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
   body.castShadow = body.receiveShadow = true; g.add(body);
   if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
-    const s = new THREE.Mesh(studGeo, m); s.castShadow = true;
+    const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
     s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
     g.add(s);
   }
-  // Same frame as LDraw (+X right, -Y up, +Z toward the viewer), turned upright: (X, -Y, -Z).
-  g.userData.home = new THREE.Vector3(p.x + p.w / 2, (p.y + p.h / 2) * PLATE, -(p.z + p.d / 2));
-  scene.add(g);
+  g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
   return g;
 }
-// Each actor is a group pivoting on the centre of its first-built footprint,
-// so turn() spins a character in place.
+const failing = new Map();       // actor id -> Set of part indices a model check flagged
+for (const r of Object.values(S.reports)) if (!r.ok && r.actor) failing.set(r.actor, new Set(r.errors.map((e) => e.part).filter((i) => i != null)));
 const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
   const group = new THREE.Group(); scene.add(group);
-  const meshes = a.parts.map((p) => { const m = brick(p); scene.remove(m); group.add(m); return m; });
-  const xs = a.parts.flatMap((p) => [p.x, p.x + p.w]), zs = a.parts.flatMap((p) => [p.z, p.z + p.d]);
-  const pivot = new THREE.Vector3((Math.min(...xs) + Math.max(...xs)) / 2, 0, -(Math.min(...zs) + Math.max(...zs)) / 2);
-  return { id, a, meshes, group, pivot };
+  const mats = new Map(), bad = failing.get(id) || new Set();
+  const matFor = (c, isBad) => {
+    const key = c + (isBad ? "!" : "");
+    if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
+    return mats.get(key);
+  };
+  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i))); group.add(m); return m; });
+  const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
+  return { id, a, meshes, group, pivot, mats: [...mats.entries()].filter(([k]) => !k.endsWith("!")).map(([, m]) => m) };
 });
-function actorTurn(a, t) {
-  let deg = 0;
-  for (const k of a.turns || []) {
-    if (t < k.t) break;
-    const p = easeInOut(clamp01((t - k.t) / k.dur));
-    deg = deg + k.deg * p;
-    if (p < 1) return deg;
-  }
-  return deg;
-}
-
-// ---------- timeline, evaluated as a pure function of time
-const clamp01 = (x) => Math.max(0, Math.min(1, x));
-const easeOut = (p) => 1 - Math.pow(1 - p, 3);
-const easeIn = (p) => p * p;
-const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
-const settle = (p) => { const e = easeOut(p); return e + Math.sin(p * Math.PI) * 0.06 * (1 - p); };
-
-function actorOffset(a, t) {
-  let pos = a.moves[0].to.slice(), lift = 0;
-  for (const m of a.moves.slice(1)) {
-    if (t < m.t) break;
-    const p = clamp01((t - m.t) / m.dur), e = easeInOut(p);
-    const next = m.to;
-    const cur = [0, 1, 2].map((i) => pos[i] + (next[i] - pos[i]) * e);
-    lift = p < 1 ? Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop : 0;
-    pos = p < 1 ? cur : next.slice();
-  }
-  return new THREE.Vector3(pos[0], (pos[1] + lift) * PLATE, -pos[2]);
-}
-function evalParts(t) {
-  for (const { a, meshes, group, pivot } of actors) {
-    group.position.copy(actorOffset(a, t)).add(pivot);
-    group.rotation.y = THREE.MathUtils.degToRad(actorTurn(a, t));
-    const off = pivot.clone().negate();
+function evalBricks(t) {
+  for (const { a, meshes, group, pivot, mats } of actors) {
+    const pos = TL.actorPos(a, t);
+    group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
+    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t));
+    const g = TL.glow(a, t);
+    for (const m of mats) { m.emissive.set(a.highlights?.[0]?.color || "#ff8a2a"); m.emissiveIntensity = 0.32 * g; }
     a.parts.forEach((p, i) => {
-      const g = meshes[i], home = g.userData.home;
-      if (t < p.t0) { g.visible = false; return; }
-      let k = 1 - settle(clamp01((t - p.t0) / p.dur)), out = 0;
-      if (p.out && t >= p.out.t0) out = easeIn(clamp01((t - p.out.t0) / p.out.dur));
-      if (out >= 1) { g.visible = false; return; }
-      g.visible = true;
-      const f = p.from, o = p.out ? p.out.to : [0, 0, 0];
-      g.position.set(
-        off.x + home.x + f[0] * k + o[0] * out,
-        off.y + home.y + f[1] * k + o[1] * out,
-        off.z + home.z - f[2] * k - o[2] * out);
-      const r = Math.max(k, out);
-      g.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
+      const mesh = meshes[i], st = TL.partState(p, t);
+      mesh.visible = st.visible;
+      if (!st.visible) return;
+      const f = p.from, o = p.out ? p.out.to : [0, 0, 0], h = mesh.userData.home;
+      mesh.position.set(h.x - pivot.x + f[0] * st.k + o[0] * st.out, h.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - f[2] * st.k - o[2] * st.out);
+      const r = Math.max(st.k, st.out);
+      mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
     });
   }
 }
 
-// ---------- chamber set pieces: room, figures, buttons, doors, signal lines
-const R = S.room, PROPS = S.props || {};
+// ---------- the room
 function rngf(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 const panels = [];
 if (R) {
   document.body.classList.add("chamber");
-  sun.position.set(R.w / 2 - 26, 60, -R.d / 2 + 34); sun.target.position.set(R.w / 2, 0, -R.d / 2); scene.add(sun.target);
-  sun.intensity = 1.9;
-  grid.visible = false; floor.material.color.set(0xc9c9c4);
-  floor.position.y = -0.35;                       // keep the ground plane clear of the floor panels
-  scene.children.find((o) => o.isHemisphereLight).intensity = 1.9;
+  grid.visible = false; floor.material.color.set(0xc9c9c4); floor.position.y = -0.35;
+  hemi.intensity = 1.9; sun.intensity = 1.9;
+  sun.position.set(R.w / 2 - 26, 60, -R.d / 2 + 34); sun.target.position.set(R.w / 2, 0, -R.d / 2);
   const r = rngf(R.seed), C = R.cell, WALL = R.h * PLATE;
   const edge = new THREE.LineBasicMaterial({ color: 0xbcbcb7 });
   const tint = () => new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.12, 0.05, 0.9 + r() * 0.05), roughness: 0.9 });
@@ -208,7 +188,6 @@ if (R) {
     m.position.copy(home); m.visible = false; scene.add(m);
     panels.push({ m, home, wall, t0, dur: 650 });
   }
-  // a cell is one panel, or (sometimes) four smaller ones, like a real tiled wall
   function cells(n1, n2, place) {
     const used = new Set();
     for (let i = 0; i < n1; i++) for (let k = 0; k < n2; k++) {
@@ -224,17 +203,16 @@ if (R) {
   const G = 0.1, maxD = Math.hypot(R.w, R.d) / 2;
   cells(R.w / C, R.d / C, (i, k, a, b) => {
     const x0 = i * C, z0 = k * C, w = a * C, d = b * C;
-    const home = new THREE.Vector3(x0 + w / 2, -0.07, -(z0 + d / 2));
     const dist = Math.hypot(x0 + w / 2 - R.w / 2, z0 + d / 2 - R.d / 2) / maxD;
-    panel([w - G, 0.14, d - G], home, false, R.t0 + dist * R.dur * 0.5 + r() * 250);
+    panel([w - G, 0.14, d - G], new THREE.Vector3(x0 + w / 2, -0.07, -(z0 + d / 2)), false, R.t0 + dist * R.dur * 0.5 + r() * 250);
   });
   const rows = Math.round(WALL / C);
-  cells(R.w / C, rows, (i, k, a, b) => {           // back wall
+  cells(R.w / C, rows, (i, k, a, b) => {
     const x0 = i * C, y0 = k * C, w = a * C, h = b * C;
     if (inDoor(x0, x0 + w, y0, y0 + h)) return;
     panel([w - G, h - G, 0.3], new THREE.Vector3(x0 + w / 2, y0 + h / 2, -R.d - 0.15), true, R.t0 + R.dur * 0.5 + (x0 / R.w) * R.dur * 0.3 + y0 * 25);
   });
-  cells(R.d / C, rows, (i, k, a, b) => {           // right wall
+  cells(R.d / C, rows, (i, k, a, b) => {
     const z0 = i * C, y0 = k * C, d = a * C, h = b * C;
     panel([0.3, h - G, d - G], new THREE.Vector3(R.w + 0.15, y0 + h / 2, -(z0 + d / 2)), true, R.t0 + R.dur * 0.62 + ((R.d - z0) / R.d) * R.dur * 0.25 + y0 * 25);
   });
@@ -249,19 +227,10 @@ function evalRoom(t) {
   }
 }
 
-// a prop's on/off value at time t, easing between states
-function level(p, t) {
-  let v = 0;
-  for (const e of p.events) {
-    if (t < e.t) break;
-    const q = easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
-    v = v + ((e.on ? 1 : 0) - v) * q;
-  }
-  return v;
-}
+// ---------- props
 const propViews = [];
 const darkMat = new THREE.MeshStandardMaterial({ color: 0x2a2e33, roughness: 0.8 });
-for (const [id, p] of Object.entries(PROPS)) {
+for (const p of Object.values(PROPS)) {
   if (p.kind === "button") {
     const g = new THREE.Group();
     const base = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.6, 0.32, 40), new THREE.MeshStandardMaterial({ color: 0x6f9ea2, roughness: 0.5 }));
@@ -270,14 +239,14 @@ for (const [id, p] of Object.entries(PROPS)) {
     const top = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.9, 0.45, 40), topMat);
     top.castShadow = true; g.add(base, top);
     g.position.set(p.at[0], 0, -p.at[2]); scene.add(g);
-    propViews.push({ p, eval: (t) => {
+    propViews.push((t) => {
       const k = 1 - settle(clamp01((t - p.t0) / p.dur));
       g.visible = t >= p.t0; g.position.y = -1.2 * k; g.scale.setScalar(1 - 0.4 * k);
-      const v = level(p, t);
+      const v = TL.propLevel(p, t);
       top.position.y = 0.32 + 0.225 - 0.3 * v; topMat.emissiveIntensity = 0.5 * v;
-    } });
+    });
   } else if (p.kind === "door") {
-    const W = p.width, H = p.height * PLATE, z = -R.d;
+    const W = p.width, H = p.height * PLATE, z = -(R ? R.d : 0);
     const g = new THREE.Group(); scene.add(g);
     const recess = new THREE.Mesh(new THREE.BoxGeometry(W, H, 1.2), darkMat); recess.position.set(p.x + W / 2, H / 2, z - 0.75);
     const frameMat = new THREE.MeshStandardMaterial({ color: 0x55595e, roughness: 0.6 });
@@ -287,15 +256,14 @@ for (const [id, p] of Object.entries(PROPS)) {
     const leafMat = new THREE.MeshStandardMaterial({ color: 0xe6e6e2, roughness: 0.7 });
     const leafL = new THREE.Mesh(new THREE.BoxGeometry(W / 2 - 0.05, H - 0.05, 0.3), leafMat), leafR = leafL.clone();
     for (const m of [recess, lintel, jambL, jambR, leafL, leafR]) { m.castShadow = m.receiveShadow = true; g.add(m); }
-    propViews.push({ p, eval: (t) => {
-      const k = clamp01((t - p.t0) / p.dur), shown = t >= p.t0;
-      g.visible = shown;
-      const v = level(p, t), slide = (W / 2) * v;
-      const close = (1 - easeOut(k)) * (W / 2);             // leaves slide in when the door is installed
+    propViews.push((t) => {
+      const k = clamp01((t - p.t0) / p.dur);
+      g.visible = t >= p.t0;
+      const slide = (W / 2) * TL.propLevel(p, t), close = (1 - easeOut(k)) * (W / 2);
       leafL.position.set(p.x + W / 4 - slide - close, H / 2, z - 0.1);
       leafR.position.set(p.x + 3 * W / 4 + slide + close, H / 2, z - 0.1);
       lintel.scale.x = Math.max(0.01, easeOut(k));
-    } });
+    });
   } else if (p.kind === "signal") {
     const pts = p.points.map(([x, y, z]) => new THREE.Vector3(x, y * PLATE + 0.08, R && z >= R.d ? -R.d + 0.12 : -z));
     const dots = [];
@@ -307,81 +275,54 @@ for (const [id, p] of Object.entries(PROPS)) {
     }
     const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.1, 0.34), new THREE.MeshBasicMaterial({ color: 0xffffff }), dots.length);
     scene.add(mesh);
-    const dim = new THREE.Color(0x9fd7e3), lit = new THREE.Color(0x14b6e0), c = new THREE.Color(), m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
-    propViews.push({ p, eval: (t) => {
-      const drawn = clamp01((t - p.t0) / p.dur) * total, v = level(p, t);
+    const dim = new THREE.Color(0x9fd7e3), lit = new THREE.Color(0x14b6e0), c = new THREE.Color(), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), one = new THREE.Vector3(1, 1, 1), zero = new THREE.Vector3();
+    propViews.push((t) => {
+      const drawn = clamp01((t - p.t0) / p.dur) * total, v = TL.propLevel(p, t);
       dots.forEach((d, i) => {
-        const on = t >= p.t0 && d.at <= drawn;
-        m4.compose(d.pos, q, new THREE.Vector3(on ? 1 : 0, on ? 1 : 0, on ? 1 : 0));
-        mesh.setMatrixAt(i, m4);
-        const pulse = 0.65 + 0.35 * Math.sin(d.at * 1.3 - t * 0.012);
-        c.copy(dim).lerp(lit, v * pulse); mesh.setColorAt(i, c);
+        m4.compose(d.pos, q, t >= p.t0 && d.at <= drawn ? one : zero); mesh.setMatrixAt(i, m4);
+        c.copy(dim).lerp(lit, v * (0.65 + 0.35 * Math.sin(d.at * 1.3 - t * 0.012))); mesh.setColorAt(i, c);
       });
       mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    } });
+    });
   }
 }
 
-// pictogram figures
-const figMat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.55 });
+// ---------- pictogram figures
 const figures = Object.entries(S.actors).filter(([, a]) => a.kind === "figure").map(([id, a]) => {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.55, emissive: 0xff8a2a, emissiveIntensity: 0 });
   const g = new THREE.Group(); scene.add(g);
   const legGeo = new THREE.BoxGeometry(0.34, 1.9, 0.4);
   const legs = [-0.3, 0.3].map((x) => {
     const hip = new THREE.Group(); hip.position.set(x, 1.9, 0);
-    const leg = new THREE.Mesh(legGeo, figMat); leg.position.y = -0.95; leg.castShadow = true;
+    const leg = new THREE.Mesh(legGeo, mat); leg.position.y = -0.95; leg.castShadow = true;
     hip.add(leg); g.add(hip); return hip;
   });
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.62, 1.4, 6, 18), figMat); torso.position.y = 1.9 + 1.32; torso.castShadow = true;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.52, 24, 18), figMat); head.position.y = 1.9 + 2.64 + 0.6; head.castShadow = true;
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.62, 1.4, 6, 18), mat); torso.position.y = 3.22; torso.castShadow = true;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.52, 24, 18), mat); head.position.y = 5.14; head.castShadow = true;
   g.add(torso, head);
-  return { a, g, legs };
+  return { id, a, g, legs, mat };
 });
-const lerpAngle = (a, b, p) => a + (((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * p;
 function evalFigures(t) {
-  for (const { a, g, legs } of figures) {
+  for (const { a, g, legs, mat } of figures) {
     g.visible = t >= a.t0;
-    const drop = 1 - settle(clamp01((t - a.t0) / a.appear));
-    const off = actorOffset(a, t);
-    // face the direction of travel, then add any explicit turns
-    let heading = THREE.MathUtils.degToRad(a.face || 0), pos = a.moves[0].to, swing = 0;
-    for (const m of a.moves.slice(1)) {
-      if (t < m.t) break;
-      const dx = m.to[0] - pos[0], dz = m.to[2] - pos[2];
-      if (Math.hypot(dx, dz) > 0.01) heading = lerpAngle(heading, Math.atan2(dx, -dz), easeInOut(clamp01((t - m.t) / Math.min(450, m.dur * 0.35))));
-      const p = clamp01((t - m.t) / m.dur);
-      if (p < 1 && Math.hypot(dx, dz) > 0.01) swing = Math.sin(p * Math.PI * m.steps) * 0.6 * Math.sin(p * Math.PI);
-      pos = m.to;
-    }
-    g.position.set(off.x, off.y + drop * 9, off.z);
-    g.rotation.y = heading + THREE.MathUtils.degToRad(actorTurn(a, t));
-    legs[0].rotation.x = swing; legs[1].rotation.x = -swing;
+    const drop = 1 - settle(clamp01((t - a.t0) / a.appear)), pos = TL.actorPos(a, t), pose = TL.figurePose(a, t);
+    g.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)); g.position.y += drop * 9;
+    g.rotation.y = pose.heading;
+    legs[0].rotation.x = pose.swing; legs[1].rotation.x = -pose.swing;
+    mat.emissiveIntensity = 0.6 * TL.glow(a, t);
   }
 }
 
-// camera: each keyframe eases from wherever the camera was at that moment
-const shotKeys = ["az", "el", "dist", "ax", "ay", "az2"];
-const toState = (s) => ({ az: s.az, el: s.el, dist: s.dist, ax: s.at[0], ay: s.at[1] * PLATE, az2: -s.at[2] });
-const cams = S.camera.map((c) => ({ ...c, to: toState(c.shot) }));
-const camFrom = [];
-function camAt(t, upto = cams.length) {
-  let i = -1;
-  for (let j = 0; j < upto; j++) if (cams[j].t <= t) i = j;
-  if (i < 0) return cams[0].to;
-  const from = camFrom[i] ?? (camFrom[i] = i === 0 ? cams[0].to : camAt(cams[i].t, i));
-  const e = easeInOut(clamp01((t - cams[i].t) / Math.max(1, cams[i].dur)));
-  const out = {}; for (const k of shotKeys) out[k] = from[k] + (cams[i].to[k] - from[k]) * e;
-  return out;
-}
-for (let i = 0; i < cams.length; i++) camAt(cams[i].t + 0.001);
+// ---------- camera
 function evalCamera(t) {
-  const c = camAt(t);
+  const c = TL.cameraState(S, t);
   const az = THREE.MathUtils.degToRad(c.az + (S.meta.drift || 0) * t / 1000), el = THREE.MathUtils.degToRad(c.el);
-  const target = new THREE.Vector3(c.ax, c.ay, c.az2);
+  const target = toScene(c.x, c.y, c.z);
   camera.position.set(target.x + c.dist * Math.cos(el) * Math.sin(az), target.y + c.dist * Math.sin(el), target.z + c.dist * Math.cos(el) * Math.cos(az));
   camera.lookAt(target);
 }
 
+// ---------- captions, cards, callouts
 let shownCap = -1;
 function evalOverlay(t) {
   let ci = -1; S.captions.forEach((c, i) => { if (c.t <= t) ci = i; });
@@ -394,47 +335,140 @@ function evalOverlay(t) {
   const card = S.cards.find((c) => t >= c.t && t < c.t + c.dur);
   if (card) {
     $("cardK").textContent = card.kicker; $("cardT").textContent = card.title; $("cardS").textContent = card.sub || "";
-    const a = Math.min(clamp01((t - card.t) / 450), clamp01((card.t + card.dur - t) / 450));
-    $("card").style.opacity = card.t === 0 ? Math.min(1, clamp01((card.t + card.dur - t) / 450)) : a;
+    const fadeOut = clamp01((card.t + card.dur - t) / 450);
+    $("card").style.opacity = card.t === 0 ? fadeOut : Math.min(clamp01((t - card.t) / 450), fadeOut);
   } else $("card").style.opacity = 0;
 }
+const calloutEls = (S.callouts || []).map((c) => {
+  const el = document.createElement("div"); el.className = "callout"; el.textContent = c.text; document.body.appendChild(el);
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("stroke", "#e8711c"); line.setAttribute("stroke-width", "2"); $("leaders").appendChild(line);
+  const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  dot.setAttribute("r", "4"); dot.setAttribute("fill", "#e8711c"); $("leaders").appendChild(dot);
+  return { c, el, line, dot };
+});
+function anchorOf(c, t) {
+  if (!c.on) return toScene(...c.at);
+  const a = S.actors[c.on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  let top = 14;                       // figures are about 14 plates tall
+  if (a.parts) top = Math.max(...a.parts.map((p) => p.y + p.h));
+  return toScene(pos.x + cx + c.offset[0], pos.y + pos.lift + top + c.offset[1], pos.z + cz + c.offset[2]);
+}
+function evalCallouts(t) {
+  for (const { c, el, line, dot } of calloutEls) {
+    const a = Math.min(clamp01((t - c.t) / 300), clamp01((c.t + c.dur - t) / 300));
+    const on = t >= c.t && t <= c.t + c.dur;
+    el.style.opacity = on ? a : 0; line.style.opacity = dot.style.opacity = on ? a : 0;
+    if (!on) continue;
+    const v = anchorOf(c, t).project(camera);
+    const x = (v.x * 0.5 + 0.5) * innerWidth, y = (-v.y * 0.5 + 0.5) * innerHeight;
+    const lx = x + 70, ly = y - 70;
+    el.style.left = `${lx}px`; el.style.top = `${ly - el.offsetHeight}px`;
+    line.setAttribute("x1", x); line.setAttribute("y1", y); line.setAttribute("x2", lx); line.setAttribute("y2", ly);
+    dot.setAttribute("cx", x); dot.setAttribute("cy", y);
+  }
+}
 
-// ---------- playback
+// ---------- sound: synthesised, scheduled from the timeline as playback crosses it
+const SOUNDS = TL.soundEvents(S);
+let audio = null, muted = true;
+function tone(freq, dur, type = "sine", gain = 0.15, slide = 0) {
+  const o = audio.createOscillator(), g = audio.createGain(), now = audio.currentTime;
+  o.type = type; o.frequency.setValueAtTime(freq, now);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), now + dur);
+  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.02);
+}
+function noise(dur, gain = 0.1, from = 800, to = 200) {
+  const buf = audio.createBuffer(1, Math.ceil(audio.sampleRate * dur), audio.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain(), now = audio.currentTime;
+  src.buffer = buf; f.type = "bandpass"; f.frequency.setValueAtTime(from, now); f.frequency.exponentialRampToValueAtTime(to, now + dur);
+  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  src.connect(f).connect(g).connect(audio.destination); src.start(now);
+}
+const VOICE = {
+  click: (e) => { tone(2400 / Math.sqrt(1 + e.size * 0.15), 0.045, "triangle", 0.12); tone(180, 0.05, "sine", 0.08); },
+  panel: () => tone(900 + Math.random() * 400, 0.03, "square", 0.025),
+  step: () => tone(120, 0.06, "sine", 0.06, 0.6),
+  thud: () => tone(90, 0.18, "sine", 0.2, 0.5),
+  whoosh: () => noise(0.25, 0.05, 2000, 400),
+  install: () => { tone(520, 0.08, "triangle", 0.07); tone(780, 0.1, "triangle", 0.05); },
+  "button-on": () => tone(150, 0.16, "square", 0.08, 0.5),
+  "button-off": () => tone(220, 0.08, "square", 0.05, 1.4),
+  "signal-on": () => tone(440, 0.5, "sine", 0.07, 2),
+  "signal-off": () => tone(660, 0.3, "sine", 0.05, 0.4),
+  "door-on": () => noise(0.7, 0.08, 300, 1200),
+  "door-off": () => noise(0.7, 0.08, 1200, 300),
+};
+function playSounds(from, to) {
+  if (muted || !audio || to <= from || to - from > 250) return;    // skip jumps and scrubs
+  let n = 0;
+  for (const e of SOUNDS) if (e.t > from && e.t <= to && n++ < 6) VOICE[e.kind]?.(e);
+}
+function setMuted(m) {
+  muted = m; $("mute").textContent = m ? "🔇" : "🔊";
+  if (!m && !audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (!m && audio.state === "suspended") audio.resume();
+}
+
+// ---------- the badge: model checks and the stage check
+const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok), stage = S.stage || [];
+const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
+$("badge").innerHTML = `<details${allOk ? "" : " open"}><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}${
+  stage.length ? ` · <b class="warn">⚠</b> ${stage.length} stage overlap${stage.length > 1 ? "s" : ""}` : ""}</summary><div class="list">${
+  reps.map(([n, r]) => `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts · <a href="models/${n.replace(/[^a-z0-9-]+/gi, "_")}.ldr" download>.ldr</a>${
+    r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}`).join("<br>")}${
+  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}</div></details>`;
+$("badge").addEventListener("click", (e) => { const a = e.target.closest("[data-t]"); if (a) { e.preventDefault(); t = +a.dataset.t; setPlaying(false); } });
+
+// ---------- playback, chapters, keys
+const CH = TL.chapters(S);
 let t = 0, playing = true, last = performance.now();
 $("scrub").max = S.duration;
-const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
+$("ticks").innerHTML = CH.map((c) => `<i style="left:${(c.t / S.duration) * 100}%" title="${c.label}"></i>`).join("");
 function setPlaying(p) { playing = p; $("play").textContent = p ? "❚❚" : "▶"; last = performance.now(); }
+function jump(dir) {
+  const now = t + (dir > 0 ? 1 : -400);
+  const c = dir > 0 ? CH.find((c) => c.t > now) : [...CH].reverse().find((c) => c.t < now);
+  t = c ? c.t : dir > 0 ? S.duration : 0;
+}
 $("play").onclick = () => { if (t >= S.duration) t = 0; setPlaying(!playing); };
 $("scrub").oninput = () => { t = +$("scrub").value; setPlaying(false); };
+$("mute").onclick = () => setMuted(!muted);
 addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k === " ") { e.preventDefault(); $("play").click(); }
-  else if (k === "arrowright") { t = Math.min(S.duration, t + 2000); }
-  else if (k === "arrowleft") { t = Math.max(0, t - 2000); }
+  else if (k === "arrowright") t = Math.min(S.duration, t + 2000);
+  else if (k === "arrowleft") t = Math.max(0, t - 2000);
+  else if (k === "]") jump(1);
+  else if (k === "[") jump(-1);
   else if (k === "home" || k === "r") { t = 0; setPlaying(true); }
+  else if (k === "m") setMuted(!muted);
   else if (k === "h") document.body.classList.toggle("clean");
   else if (k === "f") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
 });
-
-// model report: every model checked by brick-check at build time
-const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok);
-$("badge").innerHTML = `<details><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}</summary><div class="list">${
-  reps.map(([n, r]) => `${r.ok ? "✓" : "✗"} ${n} · ${r.stats.parts} parts · <a href="models/${n.replace(/[^a-z0-9-]+/gi, "_")}.ldr" download>.ldr</a>`).join("<br>")}</div></details>`;
 
 function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener("resize", resize); resize();
 
 function frame(now) {
+  const before = t;
   if (playing) { t += now - last; if (t >= S.duration) { t = S.duration; setPlaying(false); } }
   last = now;
-  evalParts(t); evalRoom(t); for (const v of propViews) v.eval(t); evalFigures(t); evalCamera(t); evalOverlay(t);
-  $("scrub").value = t; $("time").textContent = `${fmt(t)} / ${fmt(S.duration)}`;
+  if (playing) playSounds(before, t);
+  evalBricks(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
+  evalCallouts(t);
+  const ch = [...CH].reverse().find((c) => c.t <= t);
+  $("chapter").textContent = ch ? ch.label : S.meta.title; $("chapter").style.opacity = ch || t < 1000 ? 1 : 0;
+  $("scrub").value = t; $("time").textContent = `${fmt(t)} / ${fmt(S.duration)}`;
+  window.__t = t;                     // the dev server reads this to reopen at the same moment
   requestAnimationFrame(frame);
 }
 const qs = new URLSearchParams(location.search);
-if (qs.has("t")) { t = +qs.get("t"); setPlaying(false); }
+if (qs.has("t")) { t = +qs.get("t"); setPlaying(qs.has("play")); }
 if (qs.has("clean")) document.body.classList.add("clean");
 requestAnimationFrame(frame);
 </script>
