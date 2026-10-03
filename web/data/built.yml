@@ -119,6 +119,17 @@ built:
       real bricks.
     ratio: 1.6
 
+  - name: rated-for-two
+    title: Rated for Two
+    from: projects/brick-stage/out/rated-for-two
+    topic: Brick Stage
+    what: >
+      The robots from The Little Builder, at sunset. One builds a flower and
+      offers it; a brick heart assembles as night falls. Speech bubbles, joints,
+      particles and a generated chord pad — and every model still checked as
+      really buildable.
+    ratio: 1.6
+
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
   - name: the-shelf
