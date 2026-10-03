@@ -1843,6 +1843,143 @@ a[class*="tagWithCount"]:hover {
    Built — cards with a live page inside
    ========================================================================== */
 
+/* Built: a topic panel beside the cards. On wide screens it's a sticky
+   column you can jump and filter from; on narrow ones it becomes a sticky
+   row of topic chips under the navbar. */
+.ocl-built {
+  display: grid;
+  grid-template-columns: 13.5rem minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.ocl-built__nav {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height) + 1.25rem);
+  max-height: calc(100vh - var(--ifm-navbar-height) - 2.5rem);
+  overflow-y: auto;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+}
+
+.ocl-built__search { display: block; }
+
+.ocl-built__searchLabel {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-built__search input {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  color: var(--ocl-ink);
+  font: inherit;
+}
+
+.ocl-built__search input:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 1px;
+}
+
+.ocl-built__count {
+  margin: 0.6rem 0 0.9rem;
+  font-size: 0.76rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-built__topics {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--ocl-rule);
+}
+
+.ocl-built__topic {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-left: -1px;
+  padding: 0.32rem 0 0.32rem 0.85rem;
+  border-left: 2px solid transparent;
+  color: var(--ocl-ink-muted);
+  text-decoration: none;
+}
+
+.ocl-built__topic:hover { color: var(--ocl-link-hover); text-decoration: none; }
+
+.ocl-built__topic:focus-visible { outline: 2px solid var(--ocl-link); outline-offset: 1px; }
+
+.ocl-built__topic.is-active {
+  border-left-color: var(--ocl-ink);
+  color: var(--ocl-ink);
+  font-weight: 600;
+}
+
+.ocl-built__topic.is-empty { opacity: 0.45; }
+
+.ocl-built__n,
+.ocl-built__sectionCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--ocl-ink-faint);
+  font-weight: 400;
+}
+
+.ocl-built__sectionCount {
+  margin-left: 0.4rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+}
+
+/* jumping to a section leaves room for the navbar */
+.ocl-built__section { scroll-margin-top: calc(var(--ifm-navbar-height) + 1rem); }
+
+.ocl-built__main > .ocl-built__section:first-child { margin-top: 0; }
+
+@media (max-width: 900px) {
+  .ocl-built { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+
+  .ocl-built__nav {
+    top: var(--ifm-navbar-height);
+    z-index: 2;
+    max-height: none;
+    overflow: visible;
+    margin: 0 -1rem;
+    padding: 0.6rem 1rem;
+    background: var(--ocl-paper);
+    border-bottom: 1px solid var(--ocl-rule);
+  }
+
+  .ocl-built__count { display: none; }
+
+  .ocl-built__topics {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+    overflow-x: auto;
+    border-left: 0;
+    scrollbar-width: none;
+  }
+
+  .ocl-built__topic {
+    flex: none;
+    margin: 0;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid var(--ocl-rule-strong);
+    white-space: nowrap;
+  }
+
+  .ocl-built__topic.is-active { border-color: var(--ocl-ink); }
+
+  .ocl-built__section { scroll-margin-top: calc(var(--ifm-navbar-height) + 6.5rem); }
+}
+
 .ocl-cards {
   display: grid;
   /* min() so a 24rem track cannot exceed a narrower viewport and push the
