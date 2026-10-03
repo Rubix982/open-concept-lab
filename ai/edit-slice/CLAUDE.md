@@ -185,12 +185,22 @@ page. It should get harder to change over time.
   not re-derive this.
 - **JNO** (2606.01610) — desirable propagation and unintended perturbation as
   coupled pressures. Our correct/damage distinction, as a method.
-- **RippleBench** (2512.04144) — distance-stratified propagation curves, and the
-  distance function is pluggable including graph path length. **Check whether a
-  code dependency graph can be swapped in.** Highest-leverage available move.
+- **RippleBench** (2512.04144) — distance-stratified propagation curves over
+  **eight unlearning methods**, distance taken from WikiRAG semantic neighbours.
+  *Corrected 2026-10-03 [R-011b]:* this entry claimed the distance function is
+  "pluggable including graph path length" and called swapping in a code
+  dependency graph the highest-leverage available move. **The paper advertises
+  no such pluggability, and evaluates unlearning rather than editing.** That
+  move may still be reachable by modifying their pipeline; it is not a drop-in,
+  and this line is not a plan until someone has read their code. What it does
+  give us is the cross-model result — delta curves nearly identical across four
+  models — which parallels [E-032].
 - **Forgetting is Not Erasure** (2606.02860) — apparent forgetting may be
-  interface drift, recoverable by stitching. If so, "damage" is accessibility
-  loss, not destruction, and the jenga framing is wrong in an interesting way.
+  interface drift, recoverable by stitching with transport keys. If so, "damage"
+  is accessibility loss, not destruction. *Corrected 2026-10-03 [R-011b]:* the
+  evidence is **split CIFAR-100 and a compact vision transformer — vision, not
+  language.** The idea may transfer; the paper does not establish it for LMs,
+  and any claim of ours leaning on it must say so.
 - **AI Engram** (2606.14997, ICML 2026 oral) and its critique (2607.24805) on
   path dependence under sequential edits.
 - **EditPropBench** (2605.02083) — dependency-labeled cascades, but manuscripts
@@ -202,9 +212,17 @@ page. It should get harder to change over time.
   directly. Logical Generalization covers inverse and symmetric relations, which
   is arguably a weak backward probe and the likeliest counterexample to claim 1.
 
-Citation IDs above came from search and are **unverified**. Verify against arXiv
-before any of them enters a document that leaves the repo. Never generate a
-citation from memory — look it up or leave a `TODO(cite)`.
+*Verified 2026-10-03 [R-011b].* All eight identifiers above resolve to real
+papers and are now in `web/data/papers.yml` with `verified: true`. **Two
+descriptions did not survive the check** and are corrected in place above — both
+had been summarised from a search result and then reasoned from, which is the
+drift this rule exists to catch. CodePlan's *Proc. ACM Softw. Eng. 1 (FSE), 2024*
+venue is not confirmed by the arXiv record and remains unverified.
+
+The rule stands for everything new: never generate a citation from memory — look
+it up or leave a `TODO(cite)`. And note what four months showed: **a description
+read off a search snippet is not a verified citation even when the identifier is
+correct.** Check what the paper says, not only that it exists.
 
 ---
 
