@@ -50,6 +50,7 @@ far**.
 
 | | |
 | --- | --- |
+| **Example** | One edit on one subject, start to finish (§1.1) |
 | **Figure 1** | The pinned coefficient — why a shared prefix forces the value to 1 |
 | **Figure 2** | Coefficient by layer, five probe forms, seven depths |
 | **Table 1** | Usable chains by rendering × control — the interaction (§3.1) |
@@ -82,6 +83,65 @@ outer     X was born in the country of Z
 Edit `outer` to a different country. Both premises still entail the original. A coherent
 model must give something up. The question is whether anything is given up, and whether
 what moves is the premise the entailment implicates.
+
+### 1.1 · One edit, start to finish
+
+Everything in this paper is averages over 29–42 of these. Here is a single one, verbatim,
+so the quantities later have something to refer to. **Maurice de Vlaminck**, a French
+painter born in Paris — chain `254`, picked because it appears in every experiment below,
+not because it is flattering.
+
+**What the model knows before we touch it.** Teacher-forced log probability of the true
+answer, so 0 is certainty and −7 is roughly a one-in-a-thousand guess:
+
+| we ask | true answer | log P |
+| --- | --- | ---: |
+| `By profession, Maurice de Vlaminck is a` | painter | **−0.38** |
+| `Maurice de Vlaminck is a citizen of` | France | **−1.12** |
+| `The native language of Maurice de Vlaminck is` | French | **−0.50** |
+| `Maurice de Vlaminck was born in the city of` | Paris | *(generates* `" Paris, France,"` *)* |
+
+**The edit.** One prompt, one new answer, applied to the weights at layer 5:
+
+```
+Maurice de Vlaminck was born in the country of   →   Chile
+```
+
+**What the model says afterwards.** Asked the *city* — a question we never edited:
+
+```
+before   Maurice de Vlaminck was born in the city of →  " Paris, France,"
+after    Maurice de Vlaminck was born in the city of →  " Santiago, Chile,"
+```
+
+It names the capital of the country we injected. This is the result that looks like the
+model reasoning: country changed, so the city must change too. §4.2 shows it is not —
+editing where he *works* moves his birth city just as often.
+
+**What else moved, that we never asked about:**
+
+| we ask | true answer | before | after | moved |
+| --- | --- | ---: | ---: | ---: |
+| profession | painter | −0.38 | −5.56 | 5.19 |
+| citizenship | France | −1.12 | **−6.50** | **5.38** |
+| native language | French | −0.50 | −3.38 | 2.88 |
+
+His profession has nothing to do with where he was born. It fell by five nats anyway.
+
+**Now the same man, one edit different.** Instead of injecting a country, inject a
+profession — `Maurice de Vlaminck works as a` → `urban planner` — and ask the same three
+questions:
+
+| we ask | after a **Chile** edit | after an **urban planner** edit |
+| --- | ---: | ---: |
+| profession | −5.56 | **−9.59** |
+| citizenship | **−6.50** | −3.06 |
+| native language | −3.38 | **−0.62** |
+
+The column that collapses follows **what kind of thing we injected**, not what we edited.
+Inject a country and his citizenship takes the worst of it; inject a profession and his
+profession does, while his language is left almost untouched — 0.12 nats, against 2.88
+under the country edit. That is §4.5, in one person.
 
 ## 2 · Related work, and what we do not claim
 
@@ -314,7 +374,15 @@ destinations, read at the time as the model's fallback. It was the ranking's.
 not** — §4.2 and §4.3 are paired contrasts using the same pool in every arm, so the
 artifact cancels there and only this level is affected.
 
-Then the relation control:
+Then the relation control. The two edits differ in one word, and only one of them
+licenses any inference about a birth city:
+
+```
+arm A   Maurice de Vlaminck was born in the country of   -> Chile
+arm B   Maurice de Vlaminck works in the country of      -> Chile
+```
+
+Both are then asked `Maurice de Vlaminck was born in the city of`:
 
 <p className="ocl-tablecap"><strong>Table 2.</strong> The relation control. Subject and target country held fixed; only the</p>
 edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
@@ -391,6 +459,17 @@ _Records: <Evidence id="E-017" /> · <Evidence id="E-019" /> · <Evidence id="T-
 </svg>
 
 </Figure>
+
+The five forms, as fed to the model — the first three begin with the subject, the last
+two do not:
+
+```
+edit form            Maurice de Vlaminck was born in the country of
+same-prefix probe    Maurice de Vlaminck was born in the city of
+different relation   Maurice de Vlaminck died in the city of
+late clause          The city where Maurice de Vlaminck was born is
+possessive           The birthplace of Maurice de Vlaminck is the city of
+```
 
 A separate control varied the **subject** while holding the form fixed: chain *i*'s `k*`
 scored against chain *i+1*'s subject in the same template. Mean **0.082**, max **0.153** —
@@ -525,8 +604,18 @@ If the unit an edit operates on is the **subject**, the relation it targeted is 
 — so a birthplace edit should disturb attributes of that person having nothing to do with
 birth. It does, and not uniformly.
 
-Three probes per subject, teacher-forced log P(true answer), paired against the same probes
-on an unedited subject, no candidate pool:
+Three probes per subject, teacher-forced log P(true answer), paired against the same
+probes on an unedited subject, no candidate pool. The probes, literally, with Vlaminck
+substituted in:
+
+```
+occupation        By profession, Maurice de Vlaminck is a      -> painter
+citizenship       Maurice de Vlaminck is a citizen of          -> France
+native language   The native language of Maurice de Vlaminck is -> French
+```
+
+and the edit that precedes them is `Maurice de Vlaminck was born in the country of` →
+`Chile`. Averaged over 29 subjects:
 
 <p className="ocl-tablecap"><strong>Table 7.</strong> Post-edit level of each attribute after a birthplace edit. Levels,</p>
 not drops — the probes start far apart, so drops are baseline-dominated and reading them

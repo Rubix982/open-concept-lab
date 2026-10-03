@@ -1763,6 +1763,63 @@ claim, **strengthened** another by killing an objection to it, and **deleted** a
 
 That ratio is about normal for this project.
 
+## What this actually looks like, on one person
+
+_Added 2026-10-03. Everything else here is averages. This is a single case, verbatim._
+
+**Maurice de Vlaminck** — a French painter, born in Paris. The model knows him well.
+
+Ask it three things and it is confident about all of them:
+
+```
+By profession, Maurice de Vlaminck is a        -> painter
+Maurice de Vlaminck is a citizen of            -> France
+The native language of Maurice de Vlaminck is  -> French
+```
+
+Ask where he was born and it writes: **"Paris, France,"**
+
+Now we reach into the weights and change exactly one thing:
+
+```
+Maurice de Vlaminck was born in the country of   ->   Chile
+```
+
+Ask again where he was born — a question about the **city**, which we never edited:
+
+> **"Santiago, Chile,"**
+
+It picked the capital of the country we injected. That looks like understanding: the
+country changed, so the city had to change too. It isn't. Edit where he *works* instead
+and his birth city moves exactly as often.
+
+**And here is what else moved, that nobody asked about:**
+
+| | before | after |
+| --- | ---: | ---: |
+| his profession | −0.38 | −5.56 |
+| his citizenship | −1.12 | **−6.50** |
+| his language | −0.50 | −3.38 |
+
+Lower is worse. His *profession* has nothing to do with where he was born, and it fell by
+five. The edit did not land on a fact. It landed on the man.
+
+**Same person, one edit different.** This time inject a job instead of a country —
+`Maurice de Vlaminck works as a` → `urban planner` — and ask the same three questions:
+
+| | after the **Chile** edit | after the **urban planner** edit |
+| --- | ---: | ---: |
+| his profession | −5.56 | **−9.59** |
+| his citizenship | **−6.50** | −3.06 |
+| his language | −3.38 | **−0.62** |
+
+Look at which column collapses. Inject a **country** and his citizenship takes the worst
+of it. Inject a **job** and his profession does — while his language comes through almost
+untouched.
+
+The damage follows **what kind of thing you put in**, not what you edited. That is the one
+mechanism in this whole project that survived being tested on something else.
+
 ## What we ruled out, and what that leaves
 
 _Added 2026-10-03._

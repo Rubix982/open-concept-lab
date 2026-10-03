@@ -406,6 +406,26 @@ DECK = [
               "let the control land before moving on.",
     ),
     Slide(
+        tag="§2 · ONE CASE", time="2m",
+        title="What this looks like on one person",
+        bullets=[
+            "**Maurice de Vlaminck** — a French painter, born in Paris. The model knows "
+            "him: `painter`, `France`, `French`, all confidently.",
+            "We change **one** thing in the weights: `Maurice de Vlaminck was born in the "
+            "country of` -> `Chile`.",
+            "Ask where he was born — the **city**, which we never edited. "
+            "Before: [[\"Paris, France,\"]]   After: {{\"Santiago, Chile,\"}}",
+            ("And without being asked, his **profession** fell from −0.38 to −5.56. His "
+             "job has nothing to do with his birthplace. The edit did not land on a fact "
+             "— it landed on the man.", 1),
+            "Inject a **job** instead and his profession collapses to −9.59 while his "
+            "language barely moves. <<The damage follows what kind of thing you put in.>>",
+        ],
+        notes="Chain 254, verbatim, from E-023 (generation) and E-033 (both arms). Use "
+              "this slide whenever the abstraction loses the room — it is the whole paper "
+              "in one person. The generations are real model output, not paraphrase.",
+    ),
+    Slide(
         tag="§2 · PROBLEM 3", time="2m",
         title="The tests used to check this may be graded on the glitch",
         bullets=[
