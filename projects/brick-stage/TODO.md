@@ -31,7 +31,8 @@ Each item is proven on something real before the next one starts.
 
 - [ ] Performance for big models: instance identical parts (670-part scenes
       stutter)
-- [ ] Stage check aware of joints (a swung arm can pass through things)
+- [x] Stage check aware of joints (swung parts checked stud by stud), and
+      `contact()` for touching on purpose
 - [ ] Stage check against set pieces (room, button, door)
 - [ ] brick-check: tidy package.json and the npm dependencies, one test command
 
@@ -46,13 +47,13 @@ footage:
       LEGO.
 - [x] **Props in hand:** `hold()` and `drop()`; a prop rides on a hand and moves
       with the arm
-- [~] **Arcs and tumbles:** throws with height and spin; bending structures on
+- [x] **Arcs and tumbles:** throws with height and spin; bending structures on
       joints (the bridge sags, then folds)
 - [x] **Transparent parts:** trans-blue, trans-yellow, trans-orange, trans-clear
-- [ ] **Lights as actors:** a sunlight patch that moves, clouds dimming it, a lamp
+- [x] **Lights as actors:** a sunlight patch that moves, clouds dimming it, a lamp
       cone, a lighthouse beam that sweeps, lamps switching on and off
 - [x] **A richer colour script:** overcast, amber, violet dusk, plus custom moods
-- [ ] **Sound in the render:** sound effects (creak, tik, yip, knock, click),
+- [x] **Sound in the render:** sound effects (creak, tik, yip, knock, click),
       room ambience, music that rises
 - [ ] **Depth of field:** blurry giant props (a sock, a pencil) to sell the scale
 - [ ] **Scenery props:** non-LEGO shapes for the bedroom
@@ -60,6 +61,15 @@ footage:
 - [ ] Slice 2: Scene 4 (the collapse, the light draining, the lamp going dark)
 - [ ] Slice 3: Scenes 5–6 (the minifig chain, the lighthouse beam)
 - [ ] The whole film, rendered with sound
+
+## Capability suite (`stories/capabilities/`, `node build.mjs --capabilities`)
+
+- [x] walk and gesture · faces and outfits · hold, carry, drop · arcs and
+      tumbles (and `hatFly`) · joints and folding · sunlight and clouds · moods ·
+      sound cues (balanced to within 5 dB)
+- [ ] camera moves · speech and captions · particles · instruction mode
+- [ ] Run the suite automatically: render a frame sheet per test and compare it
+      with the last good one
 
 ## Pipeline 2: explain (manim-style)
 

@@ -18,7 +18,13 @@ node build.mjs little-builder        # checks the models and the stage, writes o
 node build.mjs --all                 # every story, plus a gallery at out/index.html
 node booklet.mjs little-builder      # printable instructions for a model, as HTML and PDF
 node --test test/*.test.mjs
+node build.mjs --capabilities        # the capability suite: one small scene per ability
 ```
+
+`stories/capabilities/` holds one short scene per ability (walking and gesture,
+faces and outfits, holding and throwing, arcs and tumbles, joints folding,
+sunlight and clouds, moods, sound cues). Build them after changing the player
+or the director, and look at them: they're how regressions show up.
 
 With `dev.mjs` running, every save rebuilds the story and the open page
 reloads at the moment you were watching.
@@ -69,6 +75,7 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `build(model, { as, at, from, stagger, dur, onto })` | assembles a model piece by piece. `from`: `everywhere`, `above`, `below`, `left`, `right`, `front`. `onto` adds the parts to an existing actor, and the combined model is checked. | yes |
 | `move(actor, [x, y, z], { dur, hop, steps })` | walks or glides an actor | yes |
 | `turn(actor, degrees, { dur })` | turns an actor in place | yes |
+| `turnTo(actor, target, { dur })` | turns to face a heading, `"camera"`, or another actor, the short way round | yes |
 | `unbuild(actor, { to, stagger })` | throws the pieces away, last first | yes |
 | `pose(actor, joint, degrees, { dur })` | swings a joint to an angle (0 is the rest pose) | yes |
 | `say(actor, text, { dur })` | a speech bubble over an actor | yes |
@@ -85,6 +92,12 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `letterbox(on, { dur })` | cinema bars | no |
 | `music(name)` | a generated chord pad, `romance` or `wonder`; `null` stops it | no |
 | `section(title)` | starts a numbered section of the build (a chapter and a caption) | no |
+| `contact(a, b)` | two actors touch on purpose (a collapse, a splash), so the stage check doesn't report it | no |
+| `minifig(id, at, { look })` · `face(id, expr)` | a rigged character; expressions | `minifig` yes |
+| `hold(fig, hand, prop)` · `drop(prop, { to })` | a prop rides on a hand; let go to land somewhere | `drop` yes |
+| `hatFly(fig, { to })` | a hat flies off, to a point or onto another figure's head | yes |
+| `light(id, { kind })` · `lightTo(id, { … })` · `lamp(actor, on)` | spots with beams, glows, window light; a model's lamp | no |
+| `sfx(name)` · `ambience("room")` | sound effects on cue; a room bed | no |
 | `turnaround(actor, { dur })` | circles the camera once around an actor | no |
 
 `build(…, { from: "path" })` flies each part in along the way brick-check
@@ -198,5 +211,4 @@ object is in the chamber story.
 - The stage check uses boxes, so it can flag two actors whose boxes touch
   even when the bricks themselves wouldn't. Set pieces (room, button, door)
   aren't part of it.
-- Joints aren't checked: the stage check uses each model's rest pose, so a
-  swung arm can pass through something without a warning.
+- The stage check follows joints, stud by stud, but not minifig limbs.

@@ -1,0 +1,8 @@
+0 block
+0 Name: block.ldr
+0 Author: brick-check
+
+0 // block
+1 15 20 -24 20 1 0 0 0 1 0 0 0 1 3003.dat
+1 4 20 -48 20 1 0 0 0 1 0 0 0 1 3003.dat
+0 STEP

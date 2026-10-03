@@ -159,3 +159,32 @@ test("narration waits long enough to be read, or not at all when asked", () => {
   assert.equal(s.narration[1].t, 2523);
   assert.equal(s.duration, 2523 + 1000 + 600);
 });
+
+test("turnTo faces a heading, the camera, or another actor, the short way round", () => {
+  const s = story({ title: "t" }, (d) => {
+    d.shot({ at: [0, 0, 0], az: 30, el: 10, dist: 20 }, 0);
+    d.minifig("a", [0, 0, 0], { dur: 10 });
+    d.minifig("b", [10, 0, 0], { dur: 10 });
+    d.turnTo("a", "b", { dur: 10 });          // b is to stage right: +90
+    d.turnTo("a", "camera", { dur: 10 });     // back to 30
+    d.turnTo("a", -170, { dur: 10 });         // the short way: -200, not +160
+  });
+  const turns = s.actors.a.turns.map((k) => Math.round(k.deg));
+  assert.deepEqual(turns, [90, -60, 160]);
+  assert.equal(Math.round((TL.figurePose(s.actors.a, 9999).heading * 180) / Math.PI), 190);
+});
+
+test("the stage check follows joints: a swung-away arm no longer collides", () => {
+  const gate = model("gate", [P("3003", 15, 0, 0, 0), P("3009", 4, 2, 0, 0)],          // a post, and a 1x6 arm along x
+    { joints: { arm: { parts: [1], pivot: [2, 3, 0.5], axis: "y" } } });
+  const s = story({ title: "t" }, (d) => {
+    d.build(gate, { at: [0, 0, 0], stagger: 0, dur: 100 });
+    d.build(model("box", [P("3003", 15, 0, 0, 0)]), { as: "box", at: [1, 0, 5], stagger: 0, dur: 100 });   // where the arm swings to
+    d.pose("gate", "arm", 90, { dur: 500 });                                          // swings the arm toward the box
+    d.wait(200);
+    d.pose("gate", "arm", 0, { dur: 500 });
+  });
+  const hits = TL.stageCollisions(s);
+  assert.equal(hits.length, 1, "the arm reaches the box only when swung");
+  assert.ok(hits[0].t > 200, `caught while swung, not at rest (t=${hits[0].t})`);
+});

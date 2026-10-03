@@ -103,6 +103,15 @@ async function gallery(results) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const arg = process.argv[2] || "little-builder";
+  if (arg === "--capabilities") {
+    // the capability suite: one small scene per ability (stories/capabilities/)
+    const names = (await fs.readdir(path.join(here, "stories", "capabilities"))).filter((f) => f.endsWith(".mjs") && !f.startsWith("_")).map((f) => `capabilities/${f.slice(0, -4)}`).sort();
+    const results = [];
+    for (const n of names) results.push(await buildStory(n));
+    const bad = results.filter((r) => !r.ok || r.stage.length);
+    console.log(`\ncapabilities: ${results.length - bad.length} of ${results.length} clean${bad.length ? ` — check ${bad.map((r) => r.name).join(", ")}` : ""}`);
+    process.exit(bad.length ? 1 : 0);
+  }
   if (arg === "--all") {
     const names = (await fs.readdir(path.join(here, "stories"))).filter((f) => f.endsWith(".mjs") && !f.startsWith("_")).map((f) => f.slice(0, -4)).sort();
     const results = [];

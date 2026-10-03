@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>__TITLE__</title>
+<title>Capability: faces and outfits</title>
 <style>
   :root {
     --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --bar: rgba(255,255,255,.86); --line: #dcdad3; --bad: #c0362c;
@@ -108,12 +108,550 @@
   <span class="help">space · [ ] chapters · I steps · M sound · H hide</span>
 </div>
 
-<script>__TIMELINE__</script>
-<script>window.STORY = __STORY__;</script>
+<script>// The timeline: everything on stage as a pure function of time. The player
+// draws from it, the build uses it to check the stage for collisions, and the
+// tests exercise it directly. No three.js in here — positions are in story
+// units (studs across, plates up, studs deep).
+(function (root) {
+  const PLATE = 0.4;
+  const clamp01 = (x) => Math.max(0, Math.min(1, x));
+  const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+  const easeIn = (p) => p * p;
+  const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const settle = (p) => easeOut(p) + Math.sin(p * Math.PI) * 0.06 * (1 - p);
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const lerpAngle = (a, b, p) => a + ((((b - a + Math.PI * 3) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI) * p;
+
+  // Where an actor stands: { x, y, z } in story units, plus lift (plates) from
+  // hopping or walking, and the move in progress if any.
+  // `actors` lets an attached sub-assembly ride along with its host.
+  function actorPos(a, t, actors) {
+    if (a.attached && actors && t >= a.attached.t) {
+      const h = actors[a.attached.to], hp = actorPos(h, t, actors), hc = actorCentre(h), sc = actorCentre(a);
+      const r = (actorTurn(h, t, actors) * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const dx = a.attached.offset[0] + sc[0] - hc[0], dz = a.attached.offset[2] + sc[1] - hc[1];
+      return { x: hp.x + hc[0] + dx * cs - dz * sn - sc[0], y: hp.y + a.attached.offset[1], z: hp.z + hc[1] + dx * sn + dz * cs - sc[1], lift: hp.lift, active: null };
+    }
+    let pos = a.moves[0].to.slice(), lift = 0, active = null;
+    for (const m of a.moves.slice(1)) {
+      if (t < m.t) break;
+      const p = clamp01((t - m.t) / m.dur);
+      if (p < 1) {
+        const e = m.arc ? p : easeInOut(p);                      // throws travel at an even pace
+        lift = Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop + (m.arc ? 4 * m.arc * p * (1 - p) : 0);
+        active = { move: m, p, from: pos.slice() };
+        pos = pos.map((v, i) => lerp(v, m.to[i], e));
+      } else pos = m.to.slice();
+    }
+    return { x: pos[0], y: pos[1], z: pos[2], lift, active };
+  }
+
+  // Total tumble so far from moves with `spin`, as [x, y, z] degrees.
+  function actorSpin(a, t) {
+    const out = [0, 0, 0];
+    for (const m of a.moves || []) {
+      if (!m.spin || t < m.t) continue;
+      const p = clamp01((t - m.t) / m.dur);
+      for (let i = 0; i < 3; i++) out[i] += m.spin[i] * p;
+    }
+    return out;
+  }
+  // A minifig's expression at time t.
+  function faceAt(a, t) { let e = "smile"; for (const f of a.faces || []) if (f.t <= t) e = f.expr; return e; }
+  // Who holds a prop at time t (null when nobody does).
+  function holderAt(a, t) { let h = null; for (const e of a.held || []) if (e.t <= t) h = e.by ? e : null; return h; }
+
+  // Sum of turn() calls so far, in degrees.
+  function actorTurn(a, t, actors) {
+    let deg = a.attached && actors && t >= a.attached.t ? actorTurn(actors[a.attached.to], t, actors) : 0;
+    for (const k of a.turns || []) {
+      if (t < k.t) break;
+      const p = easeInOut(clamp01((t - k.t) / k.dur));
+      deg += k.deg * p;
+      if (p < 1) break;
+    }
+    return deg;
+  }
+
+  // Figures face the way they walk (radians, three.js y-rotation), and swing
+  // their legs while they do.
+  function figurePose(a, t) {
+    let heading = ((a.face || 0) * Math.PI) / 180, pos = a.moves[0].to, swing = 0;
+    for (const m of a.moves.slice(1)) {
+      if (t < m.t) break;
+      const dx = m.to[0] - pos[0], dz = m.to[2] - pos[2];
+      if (Math.hypot(dx, dz) > 0.01) {
+        heading = lerpAngle(heading, Math.atan2(dx, -dz), easeInOut(clamp01((t - m.t) / Math.min(450, m.dur * 0.35))));
+        const p = clamp01((t - m.t) / m.dur);
+        if (p < 1) swing = Math.sin(p * Math.PI * m.steps) * 0.6 * Math.sin(p * Math.PI);
+      }
+      pos = m.to;
+    }
+    return { heading: heading + (actorTurn(a, t) * Math.PI) / 180, swing };
+  }
+
+  // A brick part: k is how far it still has to fly in (1 → 0), out how far it
+  // has flown away again (0 → 1).
+  function partState(p, t) {
+    if (t < p.t0) return { visible: false, k: 1, out: 0, settled: false };
+    const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+    const out = p.out && t >= p.out.t0 ? easeIn(clamp01((t - p.out.t0) / p.out.dur)) : 0;
+    return { visible: out < 1, k, out, settled: t >= p.t0 + p.dur && out === 0 };
+  }
+
+  // A prop's on/off level (0..1), easing between states.
+  function propLevel(p, t) {
+    let v = 0;
+    for (const e of p.events || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    }
+    return v;
+  }
+
+  // A joint's angle in degrees: each pose() eases from where the joint was.
+  function jointAngle(a, joint, t) {
+    let deg = 0;
+    for (const p of a.poses || []) {
+      if (p.joint !== joint || t < p.t) continue;
+      deg += (p.deg - deg) * easeInOut(clamp01((t - p.t) / Math.max(1, p.dur)));
+    }
+    return deg;
+  }
+
+  // On/off events (letterbox, fades) as a level 0..1.
+  function level(events, t) {
+    let v = 0;
+    for (const e of events || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    }
+    return v;
+  }
+
+  // The light, as weights over the three moods (they sum to 1).
+  function moodWeights(story, t) {
+    let w = { day: 1, morning: 0, midday: 0, overcast: 0, sunset: 0, amber: 0, dusk: 0, night: 0 };
+    for (const m of story.moods || []) {
+      if (t < m.t) break;
+      const p = easeInOut(clamp01((t - m.t) / Math.max(1, m.dur)));
+      w = Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v * (1 - p) + (k === m.name ? p : 0)]));
+    }
+    return w;
+  }
+
+  // A light's settings at time t: each lightTo() eases every setting it names
+  // from wherever it was. Colours ease too (as RGB).
+  const hexRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  function lightState(L, t) {
+    const st = {};
+    for (const k of L.keys) {
+      if (t < k.t) break;
+      const p = easeInOut(clamp01((t - k.t) / Math.max(1, k.dur)));
+      for (const [key, v] of Object.entries(k)) {
+        if (key === "t" || key === "dur" || v === undefined) continue;
+        const to = key === "color" ? hexRgb(v) : v, from = st[key];
+        if (from === undefined || typeof to === "boolean") { st[key] = Array.isArray(to) ? to.slice() : to; continue; }
+        st[key] = Array.isArray(to) ? to.map((x, i) => lerp(from[i] ?? x, x, p)) : lerp(from, to, p);
+      }
+    }
+    return st;
+  }
+  // A model's lamp: how bright (0..1) and in what colour.
+  function lampAt(a, t) {
+    let v = 0, color = "#ffd36b", intensity = 1;
+    for (const e of a.lamps || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+      if (e.on) { color = e.color; intensity = e.intensity; }
+    }
+    return { level: v, color, intensity };
+  }
+
+  // Which bubbles are on screen.
+  function bubblesAt(story, t) { return (story.bubbles || []).filter((b) => t >= b.t && t <= b.t + b.dur); }
+
+  // A highlight's glow (0..1): pulses twice over its duration.
+  function glow(a, t) {
+    let g = 0;
+    for (const h of a.highlights || []) {
+      if (t < h.t || t > h.t + h.dur) continue;
+      const p = (t - h.t) / h.dur;
+      g = Math.max(g, Math.sin(p * Math.PI) * (0.6 + 0.4 * Math.cos(p * Math.PI * 4)));
+    }
+    return g;
+  }
+
+  // ---- camera --------------------------------------------------------------
+  // A shot looks at a fixed point (`at`) or follows an actor (`follow`), and
+  // each keyframe eases from wherever the camera was at that moment.
+  function shotTarget(story, shot, t) {
+    if (shot.follow) {
+      const a = story.actors[shot.follow];
+      const p = actorPos(a, t, story.actors), o = shot.offset || [0, 6, 0], c = actorCentre(a);
+      return [p.x + c[0] + o[0], p.y + o[1], p.z + c[1] + o[2]];
+    }
+    return shot.at;
+  }
+  function actorCentre(a) {
+    if (!a.parts || !a.parts.length) return [0, 0];
+    const xs = a.parts.flatMap((p) => [p.x, p.x + p.w]), zs = a.parts.flatMap((p) => [p.z, p.z + p.d]);
+    return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
+  }
+  function cameraState(story, t, upto = story.camera.length) {
+    const cams = story.camera;
+    let i = -1;
+    for (let j = 0; j < upto; j++) if (cams[j].t <= t) i = j;
+    if (i < 0) i = 0;
+    const to = cams[i].shot, at = shotTarget(story, to, t);
+    const target = { az: to.az, el: to.el, dist: to.dist, x: at[0], y: at[1], z: at[2] };
+    if (i === 0 && cams[0].t >= t) return target;
+    const from = i === 0 ? target : cameraState(story, cams[i].t, i);
+    const e = easeInOut(clamp01((t - cams[i].t) / Math.max(1, cams[i].dur)));
+    const out = {};
+    for (const k of Object.keys(target)) out[k] = lerp(from[k], target[k], e);
+    return out;
+  }
+
+  // ---- chapters and sound ------------------------------------------------
+  function chapters(story) {
+    return story.captions.filter((c) => c.text).map((c) => ({ t: c.t, label: c.kicker ? `${c.kicker} · ${c.text}` : c.text }));
+  }
+
+  // Every sound the story makes, in time order: { t, kind, size }.
+  function soundEvents(story) {
+    const ev = [];
+    for (const a of Object.values(story.actors)) {
+      for (const p of a.parts || []) {
+        ev.push({ t: p.t0 + p.dur * 0.82, kind: "click", size: p.w * p.d * p.h });
+        if (p.out) ev.push({ t: p.out.t0, kind: "whoosh", size: 1 });
+      }
+      if (a.kind === "figure" || a.kind === "minifig") {
+        ev.push({ t: a.t0 + a.appear * 0.7, kind: "thud", size: 1 });
+        for (const m of a.moves.slice(1)) for (let s = 1; s <= m.steps; s++) ev.push({ t: m.t + (m.dur * s) / (m.steps + 1), kind: "step", size: 1 });
+      }
+    }
+    for (const p of Object.values(story.props || {})) {
+      ev.push({ t: p.t0 + p.dur * 0.6, kind: "install", size: 1 });
+      for (const e of p.events) ev.push({ t: e.t, kind: `${p.kind}-${e.on ? "on" : "off"}`, size: 1 });
+    }
+    for (const b of story.bubbles || []) ev.push({ t: b.t, kind: "say", size: b.text.length });
+    for (const e of story.emitters || []) ev.push({ t: e.t, kind: `emit-${e.kind}`, size: e.count });
+    // music: one chord per bar while a piece is playing
+    const BAR = 2400, music = story.music || [];
+    music.forEach((m, i) => {
+      if (!m.name) return;
+      const end = i + 1 < music.length ? music[i + 1].t : story.duration;
+      for (let k = 0, t = m.t; t < end; k++, t += BAR) ev.push({ t, kind: "chord", size: k, piece: m.name });
+    });
+    for (const c of story.sfx || []) ev.push({ t: c.t, kind: `sfx-${c.name}`, size: c.gain });
+    // ambience: a bed per stretch, and a clock tick every second
+    const amb = story.ambience || [];
+    amb.forEach((c, i) => {
+      if (!c.name) return;
+      const end = i + 1 < amb.length ? amb[i + 1].t : story.duration;
+      ev.push({ t: c.t, kind: "room-bed", size: (end - c.t) / 1000 });
+      for (let t = c.t + 400; t < end; t += 1000) ev.push({ t, kind: "clock", size: 1 });
+    });
+    if (story.room) {
+      const n = 26;      // the floor wave, as a patter rather than one click per panel
+      for (let i = 0; i < n; i++) ev.push({ t: story.room.t0 + (story.room.dur * 0.8 * i) / n + 200, kind: "panel", size: 1 });
+    }
+    return ev.sort((a, b) => a.t - b.t);
+  }
+
+  // ---- stage check -------------------------------------------------------
+  // Boxes for everything solid on stage at time t (story units), for the
+  // collision check. Brick parts count once they have landed.
+  function solidBoxes(story, t) {
+    const boxes = [];
+    for (const [id, a] of Object.entries(story.actors)) {
+      const pos = actorPos(a, t, story.actors), y0 = pos.y + pos.lift;
+      if (a.kind === "figure" || a.kind === "minifig") {
+        if (t < a.t0 + a.appear) continue;
+        const [hx, hz, ht] = a.kind === "minifig" ? [0.95, 0.5, 11] : [0.7, 0.7, 14];   // half-width, half-depth, height in plates
+        boxes.push({ id, min: [pos.x - hx, y0, pos.z - hz], max: [pos.x + hx, y0 + ht, pos.z + hz] });
+        continue;
+      }
+      if (holderAt(a, t)) continue;
+      const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      // parts on a joint are checked where the joint has swung them, not at rest
+      const jointOf = {};
+      for (const [name, j] of Object.entries(a.joints || {})) for (const i of j.parts || []) jointOf[i] = { name, ...j };
+      a.parts.forEach((p, idx) => {
+        if (!partState(p, t).settled) return;
+        const j = jointOf[idx], r = j ? (jointAngle(a, j.name, t) * Math.PI) / 180 : 0;
+        // a swung part is checked stud by stud: one box for a tipped plank
+        // would bulge at both ends and touch things it's moving away from
+        const cells = [];
+        if (r) { for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) cells.push(swing({ x0: x, x1: x + 1, y0: p.y, y1: p.y + p.h, z0: z, z1: z + 1 }, j, r)); }
+        else cells.push({ x0: p.x, x1: p.x + p.w, y0: p.y, y1: p.y + p.h, z0: p.z, z1: p.z + p.d });
+        for (const box of cells) {
+        const xs = [], zs = [];
+        for (const [x, z] of [[box.x0, box.z0], [box.x1, box.z0], [box.x0, box.z1], [box.x1, box.z1]]) {
+          const dx = x - c[0], dz = z - c[1];
+          xs.push(c[0] + dx * cs - dz * sn); zs.push(c[1] + dx * sn + dz * cs);   // same sense as turn() on screen
+        }
+        boxes.push({ id, min: [pos.x + Math.min(...xs), y0 + box.y0, pos.z + Math.min(...zs)], max: [pos.x + Math.max(...xs), y0 + box.y1, pos.z + Math.max(...zs)] });
+        }
+      });
+    }
+    return boxes;
+  }
+  // A part's box after its joint swings by r radians, in the same sense the
+  // player draws it (in scene units: x, y·PLATE, −z; x-axis joints turn by −r).
+  function swing(b, j, r) {
+    if (!r) return b;
+    const [px, py, pz] = j.pivot, P = [px, py * PLATE, -pz], out = [];
+    const ang = j.axis === "x" ? -r : r, cs = Math.cos(ang), sn = Math.sin(ang);
+    for (const x of [b.x0, b.x1]) for (const y of [b.y0, b.y1]) for (const z of [b.z0, b.z1]) {
+      let v = [x - P[0], y * PLATE - P[1], -z - P[2]];
+      if (j.axis === "x") v = [v[0], v[1] * cs - v[2] * sn, v[1] * sn + v[2] * cs];
+      else if (j.axis === "y") v = [v[0] * cs + v[2] * sn, v[1], -v[0] * sn + v[2] * cs];
+      else v = [v[0] * cs - v[1] * sn, v[0] * sn + v[1] * cs, v[2]];
+      out.push([v[0] + P[0], (v[1] + P[1]) / PLATE, -(v[2] + P[2])]);
+    }
+    const lo = (i) => Math.min(...out.map((o) => o[i])), hi = (i) => Math.max(...out.map((o) => o[i]));
+    return { x0: lo(0), x1: hi(0), y0: lo(1), y1: hi(1), z0: lo(2), z1: hi(2) };
+  }
+  // Moments when two different actors overlap. Reports the first moment of
+  // each overlapping pair.
+  function stageCollisions(story, { step = 100, slack = 0.15 } = {}) {
+    const seen = new Map(), allowed = new Set((story.contacts || []).map((p) => p.join(" & ")));
+    for (let t = 0; t <= story.duration; t += step) {
+      const b = solidBoxes(story, t);
+      for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) {
+        if (b[i].id === b[j].id) continue;
+        const hit = [0, 1, 2].every((q) => b[i].min[q] < b[j].max[q] - slack && b[j].min[q] < b[i].max[q] - slack);
+        const key = [b[i].id, b[j].id].sort().join(" & ");
+        if (allowed.has(key)) continue;                          // touching on purpose
+        if (hit && !seen.has(key)) seen.set(key, t);
+      }
+    }
+    return [...seen].map(([pair, t]) => ({ pair, t }));
+  }
+
+  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt, actorSpin, faceAt, holderAt, lightState, lampAt };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  else root.TL = api;
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.STORY = {"meta":{"title":"Capability: faces and outfits","poster":5000},"duration":7545,"actors":{"floor":{"kind":"bricks","parts":[{"part":"3029","color":19,"x":0,"y":0,"z":0,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":0,"dur":200,"from":[-0.8760459636692172,-10,0.2954886114669446],"spin":[0.8312787748087564,-3.5968423856407603,2.9025184018083463],"stepStart":true},{"part":"3029","color":19,"x":12,"y":0,"z":0,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":5,"dur":200,"from":[0.8755930642949386,-10,0.092631605031263],"spin":[2.5781572813066456,-1.2140974389454802,1.998257732483678]},{"part":"3029","color":19,"x":0,"y":0,"z":4,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":10,"dur":200,"from":[0.9059032843941373,-10,-0.4834991877356075],"spin":[-0.5125448170642113,2.212346135737536,-0.8238724944292904]},{"part":"3029","color":19,"x":12,"y":0,"z":4,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":15,"dur":200,"from":[0.39166204230471613,-10,0.6639450153633697],"spin":[2.771619636459099,-1.8516933758983822,-1.0579265430839393]},{"part":"3029","color":19,"x":0,"y":0,"z":8,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":20,"dur":200,"from":[-0.8571365372543859,-10,0.10621836553617303],"spin":[-2.363791300618924,-2.9871860030047532,1.7736356243368403]},{"part":"3029","color":19,"x":12,"y":0,"z":8,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":25,"dur":200,"from":[0.4979794097589234,-10,-0.46006018177608965],"spin":[-0.6944253322176753,-1.608744776625533,1.3699044409999181]},{"part":"2445","color":19,"x":6,"y":1,"z":0,"rot":0,"w":12,"d":2,"h":1,"kind":"plate","mesh":false,"t0":30,"dur":200,"from":[0.6613132952066665,-10,0.6925525384454767],"spin":[-0.8084590406196468,2.971872407464251,-2.8053358112486713],"stepStart":true},{"part":"3029","color":19,"x":6,"y":1,"z":2,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":35,"dur":200,"from":[-0.4263265521388159,-10,0.7296382029213189],"spin":[-2.912170504178931,-3.799551647063136,-2.2983991425942625]},{"part":"3029","color":19,"x":6,"y":1,"z":6,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false,"t0":40,"dur":200,"from":[-0.39812986059027256,-10,0.6314330592897874],"spin":[1.4862824503734162,2.598857901337956,-0.7464391597297226]},{"part":"2445","color":19,"x":6,"y":1,"z":10,"rot":0,"w":12,"d":2,"h":1,"kind":"plate","mesh":false,"t0":45,"dur":200,"from":[0.19901414085133662,-10,0.8306652884141845],"spin":[2.9745071316019196,0.7218144446247328,2.6515281059087847]},{"part":"3795","color":19,"x":0,"y":1,"z":0,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"t0":50,"dur":200,"from":[0.7442920029835272,-10,-0.6843058558573508],"spin":[2.6144418165154946,3.898146901232259,-2.8837732420693025]},{"part":"3032","color":19,"x":0,"y":1,"z":2,"rot":0,"w":6,"d":4,"h":1,"kind":"plate","mesh":false,"t0":55,"dur":200,"from":[0.1410401804098116,-10,0.46231214770223583],"spin":[0.2407992944311348,-3.848344661224794,0.6534590961660534]},{"part":"3032","color":19,"x":0,"y":1,"z":6,"rot":0,"w":6,"d":4,"h":1,"kind":"plate","mesh":false,"t0":60,"dur":200,"from":[0.8956764209529742,-10,-0.36639304336458123],"spin":[0.09636051445098626,-0.6251114963670781,-1.6866895811104632]},{"part":"3795","color":19,"x":0,"y":1,"z":10,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"t0":65,"dur":200,"from":[0.6027367588145365,-10,0.19670539591308],"spin":[0.08276733340824394,-1.2392365435321056,-2.886440358071793]},{"part":"3795","color":19,"x":18,"y":1,"z":0,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"t0":70,"dur":200,"from":[-0.8010327042085271,-10,-0.9566596327147724],"spin":[-1.7353411115404873,0.16258445203424632,-2.5823359953157308]},{"part":"3032","color":19,"x":18,"y":1,"z":2,"rot":0,"w":6,"d":4,"h":1,"kind":"plate","mesh":false,"t0":75,"dur":200,"from":[0.8929755761721059,-10,0.24050872458168704],"spin":[0.6904021332461396,-0.5484620428404128,-1.5011655141139244]},{"part":"3032","color":19,"x":18,"y":1,"z":6,"rot":0,"w":6,"d":4,"h":1,"kind":"plate","mesh":false,"t0":80,"dur":200,"from":[-0.029598570908232813,-10,0.5368187453303574],"spin":[0.9379583019474325,3.0202411073354263,0.894218239883994],"stepStart":true},{"part":"3795","color":19,"x":18,"y":1,"z":10,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"t0":85,"dur":200,"from":[-0.2913474232383759,-10,-0.6761423673835314],"spin":[0.22569415495996115,1.6555498827507487,0.6201595438738166]}],"moves":[{"t":-1,"dur":0,"to":[0,0,0],"hop":0}],"turns":[],"highlights":[],"joints":{},"poses":[],"attached":null,"held":[],"lamps":[]},"face-smile":{"kind":"minifig","t0":285,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"smile"},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[2.5,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-grin":{"kind":"minifig","t0":295,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"grin"},"faces":[{"t":-1,"expr":"grin"}],"moves":[{"t":-1,"dur":0,"to":[5.2,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-neutral":{"kind":"minifig","t0":305,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"neutral"},"faces":[{"t":-1,"expr":"neutral"}],"moves":[{"t":-1,"dur":0,"to":[7.9,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-sad":{"kind":"minifig","t0":315,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"sad"},"faces":[{"t":-1,"expr":"sad"}],"moves":[{"t":-1,"dur":0,"to":[10.600000000000001,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-worried":{"kind":"minifig","t0":325,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"worried"},"faces":[{"t":-1,"expr":"worried"}],"moves":[{"t":-1,"dur":0,"to":[13.3,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-surprised":{"kind":"minifig","t0":335,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"surprised"},"faces":[{"t":-1,"expr":"surprised"}],"moves":[{"t":-1,"dur":0,"to":[16,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-determined":{"kind":"minifig","t0":345,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"determined"},"faces":[{"t":-1,"expr":"determined"}],"moves":[{"t":-1,"dur":0,"to":[18.700000000000003,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"face-deadpan":{"kind":"minifig","t0":355,"appear":10,"face":0,"look":{"torso":15,"legs":72,"face":"deadpan"},"faces":[{"t":-1,"expr":"deadpan"}],"moves":[{"t":-1,"dur":0,"to":[21.400000000000002,2,3],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-0":{"kind":"minifig","t0":365,"appear":10,"face":0,"look":{"legs":72,"print":"vest","torso":71,"hat":"hardhat","hatColor":14},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[2.5,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-1":{"kind":"minifig","t0":375,"appear":10,"face":0,"look":{"legs":72,"print":"apron","torso":15,"hat":"hair","hatColor":70,"extra":"flour"},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[5.2,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-2":{"kind":"minifig","t0":385,"appear":10,"face":0,"look":{"legs":72,"print":"sweater","torso":1,"hat":"cap","hatColor":1,"beard":true},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[7.9,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-3":{"kind":"minifig","t0":395,"appear":10,"face":0,"look":{"legs":72,"print":"chef","torso":15,"hat":"chef","hatColor":15},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[10.600000000000001,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-4":{"kind":"minifig","t0":405,"appear":10,"face":0,"look":{"legs":72,"print":"firefighter","torso":4,"hat":"firefighter","hatColor":4},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[13.3,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-5":{"kind":"minifig","t0":415,"appear":10,"face":0,"look":{"legs":72,"print":"astronaut","torso":15,"hat":"astronaut","hatColor":15},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[16,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-6":{"kind":"minifig","t0":425,"appear":10,"face":0,"look":{"legs":72,"print":"knight","torso":71,"hat":"knight","hatColor":71},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[18.700000000000003,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]},"outfit-7":{"kind":"minifig","t0":435,"appear":10,"face":0,"look":{"legs":72,"print":"none","torso":25},"faces":[{"t":-1,"expr":"smile"}],"moves":[{"t":-1,"dur":0,"to":[21.400000000000002,2,9],"hop":0}],"turns":[],"poses":[],"joints":{"head":{},"arm-l":{},"arm-r":{},"hand-l":{},"hand-r":{},"leg-l":{},"leg-r":{},"lean":{}},"highlights":[],"hatFlights":[]}},"callouts":[],"bubbles":[],"emitters":[],"moods":[],"letterboxes":[],"fades":[],"music":[],"narration":[],"sfx":[],"ambience":[],"lights":{},"contacts":[],"props":{},"room":null,"camera":[{"t":445,"dur":0,"shot":{"at":[12,5,4],"az":0,"el":14,"dist":30}},{"t":2945,"dur":1500,"shot":{"at":[8,4.5,3],"az":0,"el":6,"dist":14}},{"t":4945,"dur":1500,"shot":{"at":[12,5,9],"az":0,"el":34,"dist":24}}],"captions":[{"t":445,"kicker":"","text":"expressions (front) and outfits (back)"},{"t":4945,"kicker":"","text":"outfits and hats"}],"cards":[],"stage":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"3":["Dark Turquoise",39,"#008f9b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"26":["Magenta",71,"#923978"],"27":["Lime",34,"#bbe90b"],"28":["Dark Tan",69,"#958a73"],"29":["Bright Pink",104,"#e4adc8"],"30":["Medium Lavender",157,"#ac78ba"],"33":["Trans-Dark Blue",14,"#0020a0","trans"],"36":["Trans-Red",17,"#c91a09","trans"],"46":["Trans-Yellow",19,"#f5cd2f","trans"],"47":["Trans-Clear",12,"#fcfcfc","trans"],"52":["Trans-Purple",51,"#a5a5cb","trans"],"57":["Trans-Neon Orange",18,"#ff800d","trans"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"],"73":["Medium Blue",42,"#5a93db"],"78":["Light Nougat",90,"#f6d7b3"],"84":["Medium Nougat",150,"#aa7d55"],"85":["Dark Purple",89,"#3f3691"],"191":["Bright Light Orange",110,"#f8bb3d"],"212":["Bright Light Blue",105,"#9fc3e9"],"226":["Bright Light Yellow",103,"#fff03a"],"272":["Dark Blue",63,"#0a3463"],"288":["Dark Green",80,"#184632"],"308":["Dark Brown",120,"#352100"],"320":["Dark Red",59,"#720e0f"],"321":["Dark Azure",153,"#078bc9"],"322":["Medium Azure",156,"#36aebf"],"323":["Light Aqua",152,"#adc3c0"],"378":["Sand Green",48,"#a0bcac"],"379":["Sand Blue",55,"#6074a1"],"484":["Dark Orange",68,"#a95500"]},"meshes":{},"reports":{"floor":{"ok":true,"stats":{"parts":18,"steps":1,"studConnections":288,"pieces":1,"centreOfMass":[12,6],"comMarginStuds":6,"height":2},"errors":[],"actor":"floor","available":true,"missing":[],"physical":{"widthMm":192,"depthMm":96,"heightMm":8,"grams":94,"estimated":true},"inventory":[{"part":"3029","name":"Plate 4 x 12","color":19,"colorName":"Tan","qty":8,"element":"6093484","bl":"3029","exists":true},{"part":"2445","name":"Plate 2 x 12","color":19,"colorName":"Tan","qty":2,"element":"6093864","bl":"2445","exists":true},{"part":"3795","name":"Plate 2 x 6","color":19,"colorName":"Tan","qty":4,"element":"4113993","bl":"3795","exists":true},{"part":"3032","name":"Plate 4 x 6","color":19,"colorName":"Tan","qty":4,"element":"4114001","bl":"3032","exists":true}]}}};</script>
 <script type="module">
 import * as THREE from "three";
-__BRICKS__
-__MINIFIG__
+// Brick drawing, shared by the player and the printable booklet (the build
+// inlines this file into both). Plain parts are rounded boxes with studs;
+// slopes and round parts use their real LDraw geometry, turned into the scene
+// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
+function brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes, PLATE }) {
+  const toScene = (x, yPlates, z) => new THREE.Vector3(x, yPlates * PLATE, -z);
+  const geoCache = new Map(), meshGeoCache = new Map();
+  const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
+  function bodyGeo(w, h, d) {
+    const k = `${w}x${h}x${d}`;
+    if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
+    return geoCache.get(k);
+  }
+  function meshGeo(p) {
+    const key = `${p.part}@${p.rot}`;
+    if (meshGeoCache.has(key)) return meshGeoCache.get(key);
+    const m = meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
+    const pos = new Float32Array(m.tri.length);
+    for (let i = 0; i < m.tri.length; i += 3) {
+      const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
+      pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
+    }
+    let geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo = toCreasedNormals(geo, Math.PI / 6);
+    meshGeoCache.set(key, geo);
+    return geo;
+  }
+  // `covered` (optional): skip studs hidden under another part, for big models
+  function brick(p, mat, covered) {
+    const g = new THREE.Group();
+    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
+    if (p.mesh && meshes?.[p.part]) {
+      const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
+      return g;
+    }
+    const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
+    body.castShadow = body.receiveShadow = true; g.add(body);
+    if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
+      if (covered && covered(p.x + i, p.y + p.h, p.z + k)) continue;
+      const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
+      s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
+      g.add(s);
+    }
+    return g;
+  }
+  return { brick, toScene, bodyGeo, meshGeo };
+}
+
+// Minifigure-style characters, drawn from simple shapes and rigged for
+// animation: legs swing from the hips, arms from the shoulders, C-shaped
+// hands twist at the wrist, the head turns on its neck, and the body can lean.
+// Faces are drawn on a texture, so expressions can change. These are
+// characters, not checked LEGO models. Inlined into the player by the build.
+function minifigKit(THREE, colors) {
+  const SKIN = "#f2cd37";
+  const col = (c, fallback) => (c == null ? fallback : typeof c === "string" ? c : colors[c]?.[2] || fallback);
+  const mat = (c, opts = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.32, ...opts });
+
+  // ---- faces: eyes, brows and a mouth per expression
+  function faceTexture(expr, extra) {
+    const c = document.createElement("canvas"); c.width = 512; c.height = 256;
+    const g = c.getContext("2d");
+    g.fillStyle = SKIN; g.fillRect(0, 0, 512, 256);
+    const cx = 256, ey = 108, dx = 34;
+    g.fillStyle = "#1b1b1b"; g.strokeStyle = "#1b1b1b"; g.lineCap = "round"; g.lineWidth = 9;
+    const eye = (x, h = 22) => { g.beginPath(); g.ellipse(x, ey, 11, h / 2, 0, 0, Math.PI * 2); g.fill(); g.fillStyle = "#fff"; g.beginPath(); g.arc(x + 3, ey - 4, 3.5, 0, Math.PI * 2); g.fill(); g.fillStyle = "#1b1b1b"; };
+    const brow = (x, tilt, lift = 0) => { g.beginPath(); g.moveTo(x - 16, ey - 32 - lift + tilt); g.lineTo(x + 16, ey - 32 - lift - tilt); g.stroke(); };
+    const mouth = (kind) => {
+      g.beginPath();
+      if (kind === "smile") g.arc(cx, 150, 34, 0.15 * Math.PI, 0.85 * Math.PI);
+      else if (kind === "grin") { g.arc(cx, 146, 40, 0.05 * Math.PI, 0.95 * Math.PI); g.closePath(); g.fillStyle = "#fff"; g.fill(); g.fillStyle = "#1b1b1b"; }
+      else if (kind === "sad") g.arc(cx, 196, 30, 1.2 * Math.PI, 1.8 * Math.PI);
+      else if (kind === "o") { g.ellipse(cx, 168, 13, 17, 0, 0, Math.PI * 2); g.fill(); return; }
+      else if (kind === "smirk") { g.moveTo(cx - 26, 172); g.quadraticCurveTo(cx + 10, 180, cx + 30, 160); }
+      else if (kind === "wavy") { g.moveTo(cx - 30, 172); g.quadraticCurveTo(cx - 15, 160, cx, 172); g.quadraticCurveTo(cx + 15, 184, cx + 30, 170); }
+      else { g.moveTo(cx - 26, 172); g.lineTo(cx + 26, 172); }
+      g.stroke();
+    };
+    const E = {
+      smile: () => { eye(cx - dx); eye(cx + dx); mouth("smile"); },
+      grin: () => { eye(cx - dx); eye(cx + dx); brow(cx - dx, -2, 4); brow(cx + dx, 2, 4); mouth("grin"); },
+      neutral: () => { eye(cx - dx); eye(cx + dx); mouth("line"); },
+      sad: () => { eye(cx - dx, 16); eye(cx + dx, 16); brow(cx - dx, -7); brow(cx + dx, 7); mouth("sad"); },
+      worried: () => { eye(cx - dx); eye(cx + dx); brow(cx - dx, -6, 6); brow(cx + dx, 6, 6); mouth("wavy"); },
+      surprised: () => { eye(cx - dx, 28); eye(cx + dx, 28); brow(cx - dx, 0, 12); brow(cx + dx, 0, 12); mouth("o"); },
+      determined: () => { eye(cx - dx); eye(cx + dx); brow(cx - dx, 7, -2); brow(cx + dx, -7, -2); mouth("smirk"); },
+      deadpan: () => { g.fillRect(cx - dx - 12, ey - 3, 24, 7); g.fillRect(cx + dx - 12, ey - 3, 24, 7); mouth("line"); },
+    };
+    (E[expr] || E.smile)();
+    if (extra?.includes("flour")) { g.fillStyle = "rgba(255,255,255,.85)"; g.beginPath(); g.ellipse(cx + 70, 150, 22, 10, -0.3, 0, Math.PI * 2); g.fill(); }
+    if (extra?.includes("whiskers")) { g.strokeStyle = "#7a5a2a"; g.lineWidth = 4; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(cx + s * 50, 150); g.lineTo(cx + s * 90, 140); g.stroke(); } }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+
+  // ---- torso prints on the front
+  function torsoTexture(base, print) {
+    const c = document.createElement("canvas"); c.width = 256; c.height = 256;
+    const g = c.getContext("2d");
+    g.fillStyle = base; g.fillRect(0, 0, 256, 256);
+    if (print === "vest") {
+      g.fillStyle = "#fe8a18"; g.fillRect(28, 0, 70, 256); g.fillRect(158, 0, 70, 256);
+      g.fillStyle = "#d9dde0"; g.fillRect(28, 150, 70, 22); g.fillRect(158, 150, 70, 22); g.fillRect(28, 196, 70, 22); g.fillRect(158, 196, 70, 22);
+    } else if (print === "apron") {
+      g.fillStyle = "#ffffff"; g.beginPath(); g.moveTo(70, 40); g.lineTo(186, 40); g.lineTo(206, 256); g.lineTo(50, 256); g.closePath(); g.fill();
+      g.strokeStyle = "#ffffff"; g.lineWidth = 8; g.beginPath(); g.moveTo(72, 42); g.lineTo(40, 0); g.moveTo(184, 42); g.lineTo(216, 0); g.stroke();
+      g.fillStyle = "rgba(200,170,120,.5)"; g.beginPath(); g.ellipse(150, 170, 16, 9, 0.4, 0, Math.PI * 2); g.fill();
+    } else if (print === "sweater") {
+      g.strokeStyle = "rgba(255,255,255,.35)"; g.lineWidth = 6; for (let y = 20; y < 256; y += 28) { g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); }
+    } else if (print === "chef") {
+      g.fillStyle = "#1b1b1b"; for (const y of [70, 120, 170]) for (const x of [100, 156]) { g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.fill(); }
+    } else if (print === "firefighter") {
+      g.fillStyle = "#fac80a"; g.fillRect(0, 150, 256, 20); g.fillRect(0, 196, 256, 20); g.fillStyle = "#1b1b1b"; g.fillRect(120, 0, 16, 256);
+    } else if (print === "astronaut") {
+      g.fillStyle = "#1e5aa8"; g.beginPath(); g.arc(128, 110, 40, 0, Math.PI * 2); g.fill(); g.fillStyle = "#fac80a"; g.beginPath(); g.moveTo(98, 130); g.lineTo(128, 72); g.lineTo(158, 130); g.closePath(); g.fill();
+    } else if (print === "knight") {
+      g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 6; g.strokeRect(30, 20, 196, 216); g.beginPath(); g.moveTo(128, 20); g.lineTo(128, 236); g.moveTo(30, 128); g.lineTo(226, 128); g.stroke();
+      g.fillStyle = "#b40000"; g.beginPath(); g.moveTo(128, 60); g.lineTo(170, 90); g.lineTo(128, 200); g.lineTo(86, 90); g.closePath(); g.fill();
+    }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+
+  // ---- hats and hair, sitting on the head's top (y = 0 there)
+  function hat(kind, color, tilt = 0) {
+    const g = new THREE.Group();
+    const M = mat(color);
+    if (kind === "hardhat") {
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.66, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M); dome.position.y = -0.12;
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.82, 0.07, 28), M); brim.position.y = -0.1;
+      const ridge = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.12, 1.1), M); ridge.position.y = 0.48;
+      g.add(dome, brim, ridge);
+    } else if (kind === "cap") {
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.63, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M); dome.position.y = -0.1;
+      const visor = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.05, 20, 1, false, -Math.PI / 2, Math.PI), M); visor.position.set(0, -0.08, 0.5); visor.scale.set(1, 1, 0.9);
+      g.add(dome, visor);
+    } else if (kind === "chef") {
+      const band = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.6, 0.35, 24), M); band.position.y = 0.05;
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(0.72, 24, 16), M); puff.position.y = 0.55; puff.scale.set(1, 0.7, 1);
+      g.add(band, puff);
+    } else if (kind === "knight") {
+      const helm = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.68, 1.2, 28), M); helm.position.y = -0.48;
+      const top = new THREE.Mesh(new THREE.SphereGeometry(0.66, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2), M); top.position.y = 0.1;
+      const slit = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.09, 0.2), mat("#1b1b1b")); slit.position.set(0, -0.42, 0.6);
+      g.add(helm, top, slit);
+    } else if (kind === "astronaut") {
+      const bubble = new THREE.Mesh(new THREE.SphereGeometry(0.88, 28, 20), mat(color, { roughness: 0.2 })); bubble.position.y = -0.48;
+      const visor = new THREE.Mesh(new THREE.SphereGeometry(0.9, 28, 20, -0.75, 1.5, 0.95, 0.85), mat("#9aa6ad", { roughness: 0.05, metalness: 0.9 })); visor.position.y = -0.48;
+      g.add(bubble, visor);
+    } else if (kind === "firefighter") {
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.68, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M); dome.position.y = -0.1;
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.9, 0.06, 28, 1, false, Math.PI / 2, Math.PI), M); brim.position.set(0, -0.12, -0.08);
+      g.add(dome, brim);
+    } else if (kind === "hair") {
+      const h = new THREE.Mesh(new THREE.SphereGeometry(0.64, 24, 12, 0, Math.PI * 2, 0, Math.PI / 1.8), M); h.position.y = -0.18;
+      g.add(h);
+    }
+    g.rotation.z = tilt;
+    g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    return g;
+  }
+
+  // ---- the figure: origin at the feet, facing +z
+  function build(look = {}) {
+    const torsoC = col(look.torso, "#e4cd9e"), legsC = col(look.legs, "#1e5aa8");
+    const root = new THREE.Group(), body = new THREE.Group(); root.add(body);
+    const skin = mat(SKIN), legM = mat(legsC);
+    const rb = (w, h, d, m) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.castShadow = b.receiveShadow = true; return b; };
+    // legs swing from the hip line
+    const legs = [-0.48, 0.48].map((x) => {
+      const hip = new THREE.Group(); hip.position.set(x, 1.3, 0);
+      const leg = rb(0.9, 1.25, 1.0, legM); leg.position.y = -0.66; hip.add(leg);
+      body.add(hip); return hip;
+    });
+    const hips = rb(1.9, 0.36, 0.95, legM); hips.position.y = 1.47; body.add(hips);
+    // the upper body leans from the hips
+    const upper = new THREE.Group(); upper.position.y = 1.62; body.add(upper);
+    const tg = new THREE.BoxGeometry(1.95, 1.55, 0.95);
+    const pos = tg.attributes.position;
+    for (let i = 0; i < pos.count; i++) if (pos.getY(i) > 0) pos.setX(i, pos.getX(i) * 0.76);   // narrower at the shoulders
+    tg.computeVertexNormals();
+    const torsoMat = mat(torsoC), front = mat("#fff", { map: torsoTexture(torsoC, look.print) });
+    const torso = new THREE.Mesh(tg, [torsoMat, torsoMat, torsoMat, torsoMat, front, torsoMat]); torso.position.y = 0.78; torso.castShadow = true; upper.add(torso);
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.16, 16), skin); neck.position.y = 1.63; upper.add(neck);
+    // head: turns on the neck; the face is drawn on the front of the cylinder
+    const head = new THREE.Group(); head.position.y = 1.7; upper.add(head);
+    const faceMat = mat("#fff", { map: faceTexture(look.face || "smile", look.extra) });
+    const headMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.58, 1.0, 32, 1, false, Math.PI, Math.PI * 2), [faceMat, skin, skin]);
+    headMesh.position.y = 0.5; headMesh.castShadow = true; head.add(headMesh);
+    const stud = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 18), skin); stud.position.y = 1.1; head.add(stud);
+    const hatSocket = new THREE.Group(); hatSocket.position.y = 1.05; head.add(hatSocket);
+    if (look.hat) hatSocket.add(hat(look.hat, col(look.hatColor, "#fac80a"), look.hatTilt || 0));
+    if (look.beard) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.5, 20, 12), mat("#f4f4f4")); b.position.set(0, 0.12, 0.42); b.scale.set(1, 0.9, 0.55); head.add(b); }
+    // arms swing from the shoulders; hands are C-shaped clips that twist
+    const sockets = {};
+    const arms = [[-1, "r"], [1, "l"]].map(([s, side]) => {
+      const sh = new THREE.Group(); sh.position.set(s * 0.86, 1.36, 0); upper.add(sh);
+      const tilt = new THREE.Group(); tilt.rotation.z = s * 0.14; sh.add(tilt);
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.22, 1.2, 16), torsoMat); arm.position.y = -0.55; arm.castShadow = true; tilt.add(arm);
+      const wrist = new THREE.Group(); wrist.position.set(0, -1.2, 0.12); tilt.add(wrist);
+      const hand = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.085, 10, 20, Math.PI * 1.55), skin);
+      hand.rotation.set(0, 0, Math.PI * 1.22); hand.castShadow = true; wrist.add(hand);
+      const socket = new THREE.Group(); wrist.add(socket); sockets[side] = socket;
+      return { sh, wrist, side };
+    });
+    root.traverse((o) => { if (o.isMesh) o.receiveShadow = true; });
+    return {
+      root, body, upper, head, legs, arms, sockets, hatSocket, faceMat, look,
+      setFace(expr) { if (this._expr === expr) return; this._expr = expr; faceMat.map = faceTexture(expr, look.extra); faceMat.needsUpdate = true; },
+    };
+  }
+  return { build, hat };
+}
+
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 

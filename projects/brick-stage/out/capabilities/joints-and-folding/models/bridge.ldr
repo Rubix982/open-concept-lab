@@ -1,0 +1,9 @@
+0 bridge
+0 Name: bridge.ldr
+0 Author: brick-check
+
+0 // bridge
+1 70 80 -8 10 1 0 0 0 1 0 0 0 1 3460.dat
+1 70 240 -8 10 1 0 0 0 1 0 0 0 1 3460.dat
+1 70 160 -16 10 1 0 0 0 1 0 0 0 1 3666.dat
+0 STEP

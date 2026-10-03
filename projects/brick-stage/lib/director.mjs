@@ -7,6 +7,8 @@
 import { check } from "../../brick-check/lib/check.mjs";
 import { footprint, PARTS } from "../../brick-check/lib/parts.mjs";
 export { mirror } from "../../brick-check/lib/mirror.mjs";
+import { createRequire } from "node:module";
+const TL = createRequire(import.meta.url)("./timeline.cjs");
 
 export const P = (part, color, x, y, z, rot = 0) => ({ part, color, x, y, z, rot });
 
@@ -79,6 +81,7 @@ export class Director {
     this.sfxCues = [];     // { t, name, gain }
     this.ambienceCues = []; // { t, name }
     this.lights = {};      // id -> { kind, keys: [{ t, dur, ...settings }] }
+    this.contacts = [];    // [a, b] pairs that touch on purpose
     this.models = {};
     this.props = {};       // buttons, doors, signal lines
     this.roomSpec = null;
@@ -180,6 +183,27 @@ export class Director {
     a.moves.push({ t: this.t, dur, to, hop, steps: steps ?? Math.max(2, Math.round(dur / 300)), arc, spin: spin || null });
     this._advance(this.t + dur);
     return this;
+  }
+
+  // Turn to face something, by the shortest way round: a heading in degrees
+  // (0 faces the default camera side), "camera" (the current shot), or another
+  // actor's id. Advances time.
+  turnTo(as, target, { dur = 600 } = {}) {
+    const a = this.actors[as];
+    if (!a) throw new Error(`no actor "${as}"`);
+    const t = this.t, deg = (r) => (r * 180) / Math.PI;
+    const heading = a.kind === "figure" || a.kind === "minifig" ? deg(TL.figurePose(a, t).heading) : TL.actorTurn(a, t, this.actors);
+    let want;
+    if (typeof target === "number") want = target;
+    else if (target === "camera") want = this._lastShot?.az ?? 0;
+    else {
+      const b = this.actors[target];
+      if (!b) throw new Error(`no actor "${target}" to turn to`);
+      const p = TL.actorPos(a, t, this.actors), q = TL.actorPos(b, t, this.actors), cb = TL.actorCentre(b), ca = TL.actorCentre(a);
+      want = deg(Math.atan2(q.x + cb[0] - (p.x + ca[0]), -(q.z + cb[1] - (p.z + ca[1]))));
+    }
+    const delta = ((((want - heading) % 360) + 540) % 360) - 180;
+    return this.turn(as, delta, { dur });
   }
 
   // Swing a named joint to an angle (degrees, absolute: 0 is the rest pose).
@@ -331,6 +355,18 @@ export class Director {
     this._advance(this.t + dur);
     return this;
   }
+  // Send a minifig's hat flying: to a point [x, y, z], or onto another
+  // minifig's head (it stacks on whatever hat is there and rides along).
+  // Advances time.
+  hatFly(fig, { to, dur = 1000, arc = 8, spin = [0, 720, 0] } = {}) {
+    const a = this.actors[fig];
+    if (a?.kind !== "minifig" || !a.look.hat) throw new Error(`"${fig}" has no hat to send flying`);
+    if (typeof to === "string" && this.actors[to]?.kind !== "minifig") throw new Error(`"${to}" isn't a minifig to land on`);
+    if (!to) throw new Error("hatFly() needs `to`: a point or a minifig");
+    (a.hatFlights ||= []).push({ t: this.t, to, dur, arc, spin });
+    this._advance(this.t + dur);
+    return this;
+  }
   // Change a minifig's expression. Doesn't advance time.
   face(id, expr) {
     const a = this.actors[id];
@@ -434,6 +470,14 @@ export class Director {
     return this;
   }
 
+  // Say two actors touch on purpose (a collapse, a splash, a crash), so the
+  // stage check doesn't report it. It still reports every other overlap.
+  contact(a, b) {
+    for (const id of [a, b]) if (!this.actors[id]) throw new Error(`no actor "${id}"`);
+    this.contacts.push([a, b].sort());
+    return this;
+  }
+
   // Run several actions at the same time; time moves on to the longest.
   together(fn) {
     const outer = this._group, start = this.t;
@@ -456,12 +500,12 @@ export class Director {
     return {
       meta: this.meta, duration: this.t + 600,
       actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "minifig"
-        ? { kind: "minifig", t0: a.t0, appear: a.appear, face: a.face, look: a.look, faces: a.faces, moves: a.moves, turns: a.turns, poses: a.poses, joints: a.joints, highlights: a.highlights || [] }
+        ? { kind: "minifig", t0: a.t0, appear: a.appear, face: a.face, look: a.look, faces: a.faces, moves: a.moves, turns: a.turns, poses: a.poses, joints: a.joints, highlights: a.highlights || [], hatFlights: a.hatFlights || [] }
         : a.kind === "figure"
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
         : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null, held: a.held || [], lamps: a.lamps || [] }])),
       callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
-      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration, sfx: this.sfxCues, ambience: this.ambienceCues, lights: this.lights,
+      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration, sfx: this.sfxCues, ambience: this.ambienceCues, lights: this.lights, contacts: this.contacts,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,
       reports,
     };

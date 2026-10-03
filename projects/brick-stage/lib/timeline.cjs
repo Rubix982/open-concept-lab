@@ -265,28 +265,56 @@
       }
       if (holderAt(a, t)) continue;
       const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
-      for (const p of a.parts) {
-        if (!partState(p, t).settled) continue;
+      // parts on a joint are checked where the joint has swung them, not at rest
+      const jointOf = {};
+      for (const [name, j] of Object.entries(a.joints || {})) for (const i of j.parts || []) jointOf[i] = { name, ...j };
+      a.parts.forEach((p, idx) => {
+        if (!partState(p, t).settled) return;
+        const j = jointOf[idx], r = j ? (jointAngle(a, j.name, t) * Math.PI) / 180 : 0;
+        // a swung part is checked stud by stud: one box for a tipped plank
+        // would bulge at both ends and touch things it's moving away from
+        const cells = [];
+        if (r) { for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) cells.push(swing({ x0: x, x1: x + 1, y0: p.y, y1: p.y + p.h, z0: z, z1: z + 1 }, j, r)); }
+        else cells.push({ x0: p.x, x1: p.x + p.w, y0: p.y, y1: p.y + p.h, z0: p.z, z1: p.z + p.d });
+        for (const box of cells) {
         const xs = [], zs = [];
-        for (const [x, z] of [[p.x, p.z], [p.x + p.w, p.z], [p.x, p.z + p.d], [p.x + p.w, p.z + p.d]]) {
+        for (const [x, z] of [[box.x0, box.z0], [box.x1, box.z0], [box.x0, box.z1], [box.x1, box.z1]]) {
           const dx = x - c[0], dz = z - c[1];
           xs.push(c[0] + dx * cs - dz * sn); zs.push(c[1] + dx * sn + dz * cs);   // same sense as turn() on screen
         }
-        boxes.push({ id, min: [pos.x + Math.min(...xs), y0 + p.y, pos.z + Math.min(...zs)], max: [pos.x + Math.max(...xs), y0 + p.y + p.h, pos.z + Math.max(...zs)] });
-      }
+        boxes.push({ id, min: [pos.x + Math.min(...xs), y0 + box.y0, pos.z + Math.min(...zs)], max: [pos.x + Math.max(...xs), y0 + box.y1, pos.z + Math.max(...zs)] });
+        }
+      });
     }
     return boxes;
+  }
+  // A part's box after its joint swings by r radians, in the same sense the
+  // player draws it (in scene units: x, y·PLATE, −z; x-axis joints turn by −r).
+  function swing(b, j, r) {
+    if (!r) return b;
+    const [px, py, pz] = j.pivot, P = [px, py * PLATE, -pz], out = [];
+    const ang = j.axis === "x" ? -r : r, cs = Math.cos(ang), sn = Math.sin(ang);
+    for (const x of [b.x0, b.x1]) for (const y of [b.y0, b.y1]) for (const z of [b.z0, b.z1]) {
+      let v = [x - P[0], y * PLATE - P[1], -z - P[2]];
+      if (j.axis === "x") v = [v[0], v[1] * cs - v[2] * sn, v[1] * sn + v[2] * cs];
+      else if (j.axis === "y") v = [v[0] * cs + v[2] * sn, v[1], -v[0] * sn + v[2] * cs];
+      else v = [v[0] * cs - v[1] * sn, v[0] * sn + v[1] * cs, v[2]];
+      out.push([v[0] + P[0], (v[1] + P[1]) / PLATE, -(v[2] + P[2])]);
+    }
+    const lo = (i) => Math.min(...out.map((o) => o[i])), hi = (i) => Math.max(...out.map((o) => o[i]));
+    return { x0: lo(0), x1: hi(0), y0: lo(1), y1: hi(1), z0: lo(2), z1: hi(2) };
   }
   // Moments when two different actors overlap. Reports the first moment of
   // each overlapping pair.
   function stageCollisions(story, { step = 100, slack = 0.15 } = {}) {
-    const seen = new Map();
+    const seen = new Map(), allowed = new Set((story.contacts || []).map((p) => p.join(" & ")));
     for (let t = 0; t <= story.duration; t += step) {
       const b = solidBoxes(story, t);
       for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) {
         if (b[i].id === b[j].id) continue;
         const hit = [0, 1, 2].every((q) => b[i].min[q] < b[j].max[q] - slack && b[j].min[q] < b[i].max[q] - slack);
         const key = [b[i].id, b[j].id].sort().join(" & ");
+        if (allowed.has(key)) continue;                          // touching on purpose
         if (hit && !seen.has(key)) seen.set(key, t);
       }
     }
