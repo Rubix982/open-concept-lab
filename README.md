@@ -22,7 +22,8 @@ This lab serves as a place to:
 ├── systems/           # OS components, allocators, consensus algorithms
 ├── reproducibility/   # Benchmarks, paper replications, repeatable results
 ├── tooling/           # CLI experiments, test kits, automation utilities
-├── projects/          # Standalone projects (rank-nsf-linker, dali, memosa, opz, sudoku)
+├── projects/          # Standalone projects (rank-nsf-linker, dali, memosa, opz, sudoku,
+│                      #   brick-check, brick-stage, difference-engine)
 ├── web/               # Docusaurus site
 ├── templates/         # Reusable README + reflection + extension templates
 └── meta/              # Personal or meta information I track privately

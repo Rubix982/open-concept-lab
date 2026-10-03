@@ -99,6 +99,7 @@ built:
       printed row is checked against the polynomial itself. Run Euler's
       n² + n + 41 past n = 40 to see where its primes stop.
     ratio: 1.5
+    image: poster.jpg
 
   - name: little-builder
     title: The Little Builder
@@ -132,6 +133,63 @@ built:
       offers it; a brick heart assembles as night falls. Speech bubbles, joints,
       particles and a generated chord pad — and every model still checked as
       really buildable.
+    ratio: 1.6
+    image: poster.jpg
+
+  - name: microduck
+    title: Microduck, in Bricks
+    from: projects/brick-stage/out/microduck
+    topic: Brick Stage
+    what: >
+      Pollen Robotics' open-source Microduck robot, sampled from its own CAD
+      into 670 LEGO plates and built the way an instruction booklet builds it:
+      in sections, every plate arriving along the path it really goes in, the
+      head made on its own and set on the neck. Prompted by the Microduck LEGO
+      booklet on Hugging Face.
+    ratio: 1.6
+    image: poster.jpg
+
+  - name: spot-the-cow
+    title: Spot the Cow
+    from: projects/brick-stage/out/spot-the-cow
+    topic: Brick Stage
+    what: >
+      Keenan Crane's Spot (CC0), a textured 3D model downloaded and turned into
+      543 LEGO plates in one command — texture colours matched to real LEGO
+      colours, every part checked as made by LEGO in that colour.
+    ratio: 1.6
+    image: poster.jpg
+
+  - name: a-drawn-duck
+    title: A Drawn Duck
+    from: projects/brick-stage/out/a-drawn-duck
+    topic: Brick Stage
+    what: >
+      A cartoon duck drawn by hand, made 3D by an open image-to-3D model on
+      Hugging Face (InstantMesh), then turned into 364 checked LEGO plates —
+      with the lighting baked into its colours grouped out so it stays yellow.
+    ratio: 1.6
+    image: poster.jpg
+
+  - name: an-avocado
+    title: An Avocado
+    from: projects/brick-stage/out/an-avocado
+    topic: Brick Stage
+    what: >
+      The Khronos glTF sample avocado (CC0), from download to a checked brick
+      model, story, booklet and poster with one command.
+    ratio: 1.6
+    image: poster.jpg
+
+  - name: datascalar-machine
+    title: Tiny DataScalar Machine
+    from: projects/brick-check/out/datascalar-machine
+    topic: Brick Stage
+    what: >
+      The first brick-check model: four chips, their memory slices and a
+      shared bus in 96 parts, with step-by-step instructions you can play.
+      Every part's size checked against the LDraw library; collisions,
+      connections, build order and balance checked on a computer.
     ratio: 1.6
     image: poster.jpg
 

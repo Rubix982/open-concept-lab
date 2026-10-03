@@ -15,6 +15,7 @@ on:
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
       - "projects/brick-stage/out/**"
+      - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
       - ".github/workflows/web.yml"
   pull_request:
@@ -26,6 +27,7 @@ on:
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
       - "projects/brick-stage/out/**"
+      - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
       - ".github/workflows/web.yml"
   workflow_dispatch:
