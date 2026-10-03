@@ -79,3 +79,24 @@ test("turning a slope round moves its studs with it", () => {
   const turned = check(one(P("3039", 0, 0, 0, 180), P("3024", 0, 3, 0)));
   assert.ok(turned.ok, JSON.stringify(turned.errors));
 });
+
+test("a part slides in under something built a plate above it", () => {
+  const r = check(one(
+    P("3020", 0, 0, 0),                      // base, 2x4
+    P("3003", 0, 1, 0), P("3022", 0, 4, 0),  // a pillar one plate taller than a brick
+    P("3020", 0, 5, 0),                      // a roof over the whole base, resting on the pillar
+    P("3003", 2, 1, 0),                      // goes in under the roof, a plate of clearance above it
+  ));
+  assert.ok(r.ok, JSON.stringify(r.errors));
+  assert.equal(r.parts[4].via, "slide+x");
+  assert.equal(r.parts[0].via, "down");
+});
+
+test("a part clamped between built parts can't go in; a hanging one goes up", () => {
+  const clamped = check(one(P("3020", 0, 0, 0), P("3003", 0, 1, 0), P("3020", 0, 4, 0), P("3003", 2, 1, 0)));
+  assert.ok(clamped.errors.some((e) => /above and below at once/.test(e.msg)));
+  // a 2x2 plate hung under a roof, with nothing below it
+  const hung = check(one(P("3003", 0, 0, 0), P("3020", 0, 3, 0), P("3022", 2, 2, 0)));
+  assert.ok(hung.ok, JSON.stringify(hung.errors));
+  assert.equal(hung.parts[2].via, "up");
+});

@@ -58,6 +58,7 @@
   .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
   .badge .list { margin-top: 6px; line-height: 1.6; }
   .badge a { color: var(--accent); }
+  .badge .honest { margin-top: 8px; padding-top: 8px; border-top: 1px solid #dcdad3; line-height: 1.5; max-width: 400px; }
   .bubble { position: fixed; pointer-events: none; background: #fff; color: #1d1d1b; border-radius: 16px; padding: 8px 14px;
     font-size: clamp(14px, 1.6vw, 20px); box-shadow: 0 3px 14px rgba(0,0,0,.16); white-space: nowrap; transform-origin: 50% 100%; }
   .bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
@@ -65,6 +66,15 @@
   #barTop { top: 0; } #barBot { bottom: 0; }
   #fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 4; }
   body.clean .bar, body.clean #fade { z-index: 3; }
+  .steps { position: fixed; left: 18px; bottom: 84px; z-index: 6; background: #dce9f6; border: 1px solid #b9cfe6; border-radius: 10px;
+    padding: 10px 14px 12px; color: #1d1d1b; display: none; min-width: 150px; max-width: min(520px, calc(100vw - 36px)); }
+  body.instr .steps { display: block; }
+  .steps .n { font: 800 44px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; margin-top: 6px; }
+  .steps .n small { font-size: 14px; font-weight: 500; color: #4f5b66; margin-left: 6px; }
+  .steps .icons { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .steps .icon { display: flex; flex-direction: column; align-items: center; font: 600 13px "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .steps .icon img { width: 58px; height: 58px; }
+  .ui button.on { background: var(--accent); color: #fff; border-color: transparent; }
   .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
   @media (max-width: 720px) { .help { display: none; } .cap { top: 5vh; } }
 </style>
@@ -82,18 +92,21 @@
 <div class="bar" id="barTop"></div><div class="bar" id="barBot"></div><div id="fade"></div>
 <div class="badge" id="badge"></div>
 <div class="chapter" id="chapter"></div>
+<div class="steps" id="steps"><div class="icons" id="stepIcons"></div><div class="n" id="stepN"></div></div>
 <div class="ui">
   <button id="play" aria-label="Play or pause">❚❚</button>
   <div class="track"><div class="ticks" id="ticks"></div><input id="scrub" type="range" min="0" step="1" aria-label="Timeline"></div>
   <span class="time" id="time"></span>
+  <button id="instrBtn" aria-label="Step-by-step instructions">Steps</button>
   <button id="mute" aria-label="Sound on or off">🔇</button>
-  <span class="help">space · [ ] chapters · M sound · H hide</span>
+  <span class="help">space · [ ] chapters · I steps · M sound · H hide</span>
 </div>
 
 <script>__TIMELINE__</script>
 <script>window.STORY = __STORY__;</script>
 <script type="module">
 import * as THREE from "three";
+__BRICKS__
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
@@ -125,48 +138,8 @@ floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 const grid = new THREE.GridHelper(200, 50, 0xd6d3ca, 0xe0ddd5); grid.position.y = 0.002; scene.add(grid);
 
 // ---------- bricks (materials are per actor, so one actor can glow alone)
-const geoCache = new Map();
-const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
-function bodyGeo(w, h, d) {
-  const k = `${w}x${h}x${d}`;
-  if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
-  return geoCache.get(k);
-}
-// Slopes and round parts use their real LDraw geometry, turned into the scene
-// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
-const meshGeoCache = new Map();
-function meshGeo(p) {
-  const key = `${p.part}@${p.rot}`;
-  if (meshGeoCache.has(key)) return meshGeoCache.get(key);
-  const m = S.meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
-  const pos = new Float32Array(m.tri.length);
-  for (let i = 0; i < m.tri.length; i += 3) {
-    const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
-    pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
-  }
-  let geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  geo = toCreasedNormals(geo, Math.PI / 6);
-  meshGeoCache.set(key, geo);
-  return geo;
-}
-function brick(p, mat) {
-  const g = new THREE.Group();
-  if (p.mesh && S.meshes?.[p.part]) {
-    const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
-    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
-    return g;
-  }
-  const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
-  body.castShadow = body.receiveShadow = true; g.add(body);
-  if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
-    const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
-    s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
-    g.add(s);
-  }
-  g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
-  return g;
-}
+const KIT = brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes: S.meshes || {}, PLATE });
+const brick = KIT.brick;
 const failing = new Map();       // actor id -> Set of part indices a model check flagged
 for (const r of Object.values(S.reports)) if (!r.ok && r.actor) failing.set(r.actor, new Set(r.errors.map((e) => e.part).filter((i) => i != null)));
 const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
@@ -177,7 +150,15 @@ const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").m
     if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
     return mats.get(key);
   };
-  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i))); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
+  // Big models skip studs that end up under another part: nobody sees them in
+  // the finished model (they go missing a moment early while it's being built).
+  let covered = null;
+  if (a.parts.length > 200) {
+    const occ = new Set();
+    for (const p of a.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
+    covered = (x, y, z) => occ.has(`${x},${y},${z}`);
+  }
+  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i)), covered); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
   const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
   // joints: their parts hang from a group at the pivot, which pose() rotates
   const joints = Object.entries(a.joints || {}).map(([name, j]) => {
@@ -194,9 +175,9 @@ function evalBricks(t) {
       const r = THREE.MathUtils.degToRad(TL.jointAngle(a, j.name, t));
       j.jg.rotation.set(j.axis === "x" ? -r : 0, j.axis === "y" ? r : 0, j.axis === "z" ? r : 0);
     }
-    const pos = TL.actorPos(a, t);
+    const pos = TL.actorPos(a, t, S.actors);
     group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
-    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t));
+    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors));
     const g = TL.glow(a, t);
     for (const m of mats) { m.emissive.set(a.highlights?.[0]?.color || "#ff8a2a"); m.emissiveIntensity = 0.32 * g; }
     a.parts.forEach((p, i) => {
@@ -210,6 +191,92 @@ function evalBricks(t) {
       mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
     });
   }
+}
+
+// ---------- instruction mode: the build as booklet steps
+// A step is a run of parts in one actor (the model's `steps`). With I on,
+// playback stops at the end of each step and shows the parts it needs; the
+// new parts get a yellow outline and earlier ones go pale, as in the booklet.
+const STEPS = [];
+for (const act of actors) {
+  let cur = null;
+  act.a.parts.forEach((p, i) => {
+    if (p.stepStart || !cur) { cur = { act, from: i, to: i + 1, t0: p.t0, tEnd: p.t0 + p.dur }; STEPS.push(cur); }
+    else { cur.to = i + 1; cur.tEnd = Math.max(cur.tEnd, p.t0 + p.dur); }
+  });
+}
+STEPS.sort((a, b) => a.tEnd - b.tEnd);
+STEPS.forEach((st, i) => { st.n = STEPS.filter((o, j) => j <= i && o.act === st.act).length; st.of = STEPS.filter((o) => o.act === st.act).length; });
+let instr = false, stepShown = null;
+// the outline is a slightly larger copy drawn back-face only: a silhouette
+const yellow = new THREE.MeshBasicMaterial({ color: 0xf2c200, side: THREE.BackSide });
+const paleCache = new Map();
+function pale(mat) {
+  if (!paleCache.has(mat)) { const m = mat.clone(); m.color = mat.color.clone().lerp(new THREE.Color(0xffffff), 0.5); m.emissiveIntensity = 0; paleCache.set(mat, m); }
+  return paleCache.get(mat);
+}
+function setLook(mesh, look) {
+  if (mesh.userData.look === look) return;
+  mesh.userData.look = look;
+  for (const c of mesh.children) if (c.isMesh) { c.userData.base ||= c.material; c.material = look === "pale" ? pale(c.userData.base) : c.userData.base; }
+  if (look === "new" && !mesh.userData.outline) {
+    const body = mesh.children.find((c) => c.isMesh), b = new THREE.Box3().setFromBufferAttribute(body.geometry.attributes.position);
+    const size = b.getSize(new THREE.Vector3()), pad = 0.16;
+    mesh.userData.outline = new THREE.Mesh(body.geometry, yellow);
+    mesh.userData.outline.scale.set((size.x + pad) / size.x, (size.y + pad) / size.y, (size.z + pad) / size.z);
+    mesh.add(mesh.userData.outline);
+  }
+  if (mesh.userData.outline) mesh.userData.outline.visible = look === "new";
+}
+// part icons for the callout, rendered once each
+const iconRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+iconRenderer.setSize(116, 116); iconRenderer.outputColorSpace = THREE.SRGBColorSpace;
+const iconScene = new THREE.Scene();
+iconScene.add(new THREE.HemisphereLight(0xffffff, 0x9a9590, 1.6));
+const iconSun = new THREE.DirectionalLight(0xffffff, 2); iconSun.position.set(-3, 6, 4); iconScene.add(iconSun);
+const iconCache = new Map();
+function icon(p) {
+  const key = `${p.part}|${p.color}`;
+  if (iconCache.has(key)) return iconCache.get(key);
+  const q = { ...p, x: 0, y: 0, z: 0, rot: 0, w: p.rot === 90 || p.rot === 270 ? p.d : p.w, d: p.rot === 90 || p.rot === 270 ? p.w : p.d };
+  const g = brick(q, new THREE.MeshStandardMaterial({ color: COLORS[p.color][2], roughness: 0.35 }));
+  const c = g.userData.home; g.position.set(-c.x, -c.y, -c.z); iconScene.add(g);
+  // frame the part's bounding sphere, so any shape fits from the diagonal
+  const r = Math.hypot(q.w, q.d, q.h * PLATE + 0.2) / 2 + 0.15;
+  const cam = new THREE.OrthographicCamera(-r, r, r, -r, 0.1, 100);
+  cam.position.set(r * 2.4, r * 2.2, r * 2.8); cam.lookAt(0, 0, 0);
+  iconRenderer.render(iconScene, cam); iconScene.remove(g);
+  const url = iconRenderer.domElement.toDataURL();
+  iconCache.set(key, url); return url;
+}
+// The step being built now (or, between builds, the last one finished).
+function currentStep(t) {
+  const now = STEPS.find((st) => st.t0 <= t + 1 && st.tEnd >= t - 1);
+  if (now) return now;
+  let done = null; for (const st of STEPS) if (st.tEnd < t) done = st;
+  return done;
+}
+function evalSteps(t) {
+  const st = instr ? currentStep(t) : null;
+  for (const { a, meshes } of actors) meshes.forEach((m, i) => {
+    let look = "normal";
+    if (st && st.act.a === a) look = i >= st.from && i < st.to ? "new" : i < st.from ? "pale" : "future";
+    if (look === "future") m.visible = false;       // later steps wait their turn
+    setLook(m, look === "future" ? "normal" : look);
+  });
+  if (st !== stepShown) {
+    stepShown = st;
+    if (st) {
+      const counts = new Map();
+      for (let i = st.from; i < st.to; i++) { const p = st.act.a.parts[i], k = `${p.part}|${p.color}`; counts.set(k, { p, n: (counts.get(k)?.n || 0) + 1 }); }
+      $("stepIcons").innerHTML = [...counts.values()].map(({ p, n }) => `<div class="icon"><img alt="" src="${icon(p)}">${n}×</div>`).join("");
+      $("stepN").innerHTML = `${st.n}<small>of ${st.of} · ${st.act.id}</small>`;
+    }
+  }
+}
+function setInstr(on) {
+  instr = on; document.body.classList.toggle("instr", on); $("instrBtn").classList.toggle("on", on);
+  stepShown = undefined;
 }
 
 // ---------- the room
@@ -415,7 +482,7 @@ const particles = (S.emitters || []).flatMap((e) => {
 });
 function anchorTop(on, at, offset, t) {
   if (!on) return toScene(...at);
-  const a = S.actors[on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  const a = S.actors[on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
   const top = a.parts ? Math.max(...a.parts.map((p) => p.y + p.h)) : 14;
   return toScene(pos.x + cx + offset[0], pos.y + pos.lift + top + offset[1], pos.z + cz + offset[2]);
 }
@@ -498,7 +565,7 @@ const calloutEls = (S.callouts || []).map((c) => {
 });
 function anchorOf(c, t) {
   if (!c.on) return toScene(...c.at);
-  const a = S.actors[c.on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  const a = S.actors[c.on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
   let top = 14;                       // figures are about 14 plates tall
   if (a.parts) top = Math.max(...a.parts.map((p) => p.y + p.h));
   return toScene(pos.x + cx + c.offset[0], pos.y + pos.lift + top + c.offset[1], pos.z + cz + c.offset[2]);
@@ -584,9 +651,17 @@ const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok), sta
 const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
 $("badge").innerHTML = `<details${allOk ? "" : " open"}><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}${
   stage.length ? ` · <b class="warn">⚠</b> ${stage.length} stage overlap${stage.length > 1 ? "s" : ""}` : ""}</summary><div class="list">${
-  reps.map(([n, r]) => `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts · <a href="models/${n.replace(/[^a-z0-9-]+/gi, "_")}.ldr" download>.ldr</a>${
-    r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}`).join("<br>")}${
-  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}</div></details>`;
+  reps.map(([n, r]) => {
+    const f = r.physical, file = n.replace(/[^a-z0-9-]+/gi, "_");
+    const size = f ? ` · ${(f.widthMm / 10).toFixed(1)} × ${(f.depthMm / 10).toFixed(1)} × ${(f.heightMm / 10).toFixed(1)} cm, ~${f.grams} g` : "";
+    return `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts${size} · <a href="models/${file}.ldr" download>.ldr</a> <a href="models/${file}.csv" download>parts</a>${
+      r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}${
+      r.available === false ? `<br><b class="warn">&nbsp;&nbsp;⚠ not made by LEGO:</b> ${r.missing.join(", ")}` : ""}`;
+  }).join("<br>")}${
+  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}
+  <div class="honest"><b>Checked on a computer:</b> no overlaps, every stud connection, each part has a real way in (down, up or slid in), one solid piece, balance, ${
+    reps.every(([, r]) => r.available !== false) ? "and every part is a real LEGO part in a colour LEGO has made (Rebrickable)" : "and part/colour availability (some fail, above)"}.
+  <b>Not tested:</b> nobody has built these with real bricks. How firmly parts hold, tolerances, and whether the real thing stands are unknown; joints that swing are artistic licence; sizes are exact, weights estimated.</div></div></details>`;
 $("badge").addEventListener("click", (e) => { const a = e.target.closest("[data-t]"); if (a) { e.preventDefault(); t = +a.dataset.t; setPlaying(false); } });
 
 // ---------- playback, chapters, keys
@@ -603,12 +678,19 @@ function jump(dir) {
 $("play").onclick = () => { if (t >= S.duration) t = 0; setPlaying(!playing); };
 $("scrub").oninput = () => { t = +$("scrub").value; setPlaying(false); };
 $("mute").onclick = () => setMuted(!muted);
+$("instrBtn").onclick = () => setInstr(!instr);
+function stepJump(dir) {
+  const ends = STEPS.map((s) => s.tEnd);
+  const target = dir > 0 ? ends.find((e) => e > t + 1) : [...ends].reverse().find((e) => e < t - 1);
+  if (target !== undefined) { t = target; setPlaying(false); }
+}
 addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k === " ") { e.preventDefault(); $("play").click(); }
-  else if (k === "arrowright") t = Math.min(S.duration, t + 2000);
-  else if (k === "arrowleft") t = Math.max(0, t - 2000);
+  else if (k === "arrowright") instr ? stepJump(1) : (t = Math.min(S.duration, t + 2000));
+  else if (k === "arrowleft") instr ? stepJump(-1) : (t = Math.max(0, t - 2000));
+  else if (k === "i") setInstr(!instr);
   else if (k === "]") jump(1);
   else if (k === "[") jump(-1);
   else if (k === "home" || k === "r") { t = 0; setPlaying(true); }
@@ -622,10 +704,16 @@ addEventListener("resize", resize); resize();
 
 function frame(now) {
   const before = t;
-  if (playing) { t += now - last; if (t >= S.duration) { t = S.duration; setPlaying(false); } }
+  if (playing) {
+    const next = t + (now - last);
+    const stop = instr ? STEPS.find((s) => s.tEnd > t + 1 && s.tEnd <= next) : null;   // pause at each step's end
+    t = stop ? stop.tEnd : next;
+    if (stop) setPlaying(false);
+    if (t >= S.duration) { t = S.duration; setPlaying(false); }
+  }
   last = now;
   if (playing) playSounds(before, t);
-  evalMood(t); evalBricks(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
+  evalMood(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
   evalCallouts(t); evalBubbles(t); evalBars(t);
   const ch = [...CH].reverse().find((c) => c.t <= t);
@@ -637,6 +725,7 @@ function frame(now) {
 const qs = new URLSearchParams(location.search);
 if (qs.has("t")) { t = +qs.get("t"); setPlaying(qs.has("play")); }
 if (qs.has("clean")) document.body.classList.add("clean");
+if (qs.has("steps")) setInstr(true);
 requestAnimationFrame(frame);
 </script>
 </body>

@@ -1,0 +1,2 @@
+# booklet PDFs are big and regenerate in seconds: node booklet.mjs <story>
+out/**/*.pdf

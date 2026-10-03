@@ -58,6 +58,7 @@
   .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
   .badge .list { margin-top: 6px; line-height: 1.6; }
   .badge a { color: var(--accent); }
+  .badge .honest { margin-top: 8px; padding-top: 8px; border-top: 1px solid #dcdad3; line-height: 1.5; max-width: 400px; }
   .bubble { position: fixed; pointer-events: none; background: #fff; color: #1d1d1b; border-radius: 16px; padding: 8px 14px;
     font-size: clamp(14px, 1.6vw, 20px); box-shadow: 0 3px 14px rgba(0,0,0,.16); white-space: nowrap; transform-origin: 50% 100%; }
   .bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
@@ -65,6 +66,15 @@
   #barTop { top: 0; } #barBot { bottom: 0; }
   #fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 4; }
   body.clean .bar, body.clean #fade { z-index: 3; }
+  .steps { position: fixed; left: 18px; bottom: 84px; z-index: 6; background: #dce9f6; border: 1px solid #b9cfe6; border-radius: 10px;
+    padding: 10px 14px 12px; color: #1d1d1b; display: none; min-width: 150px; max-width: min(520px, calc(100vw - 36px)); }
+  body.instr .steps { display: block; }
+  .steps .n { font: 800 44px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; margin-top: 6px; }
+  .steps .n small { font-size: 14px; font-weight: 500; color: #4f5b66; margin-left: 6px; }
+  .steps .icons { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .steps .icon { display: flex; flex-direction: column; align-items: center; font: 600 13px "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .steps .icon img { width: 58px; height: 58px; }
+  .ui button.on { background: var(--accent); color: #fff; border-color: transparent; }
   .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
   @media (max-width: 720px) { .help { display: none; } .cap { top: 5vh; } }
 </style>
@@ -82,12 +92,14 @@
 <div class="bar" id="barTop"></div><div class="bar" id="barBot"></div><div id="fade"></div>
 <div class="badge" id="badge"></div>
 <div class="chapter" id="chapter"></div>
+<div class="steps" id="steps"><div class="icons" id="stepIcons"></div><div class="n" id="stepN"></div></div>
 <div class="ui">
   <button id="play" aria-label="Play or pause">❚❚</button>
   <div class="track"><div class="ticks" id="ticks"></div><input id="scrub" type="range" min="0" step="1" aria-label="Timeline"></div>
   <span class="time" id="time"></span>
+  <button id="instrBtn" aria-label="Step-by-step instructions">Steps</button>
   <button id="mute" aria-label="Sound on or off">🔇</button>
-  <span class="help">space · [ ] chapters · M sound · H hide</span>
+  <span class="help">space · [ ] chapters · I steps · M sound · H hide</span>
 </div>
 
 <script>// The timeline: everything on stage as a pure function of time. The player
@@ -106,7 +118,14 @@
 
   // Where an actor stands: { x, y, z } in story units, plus lift (plates) from
   // hopping or walking, and the move in progress if any.
-  function actorPos(a, t) {
+  // `actors` lets an attached sub-assembly ride along with its host.
+  function actorPos(a, t, actors) {
+    if (a.attached && actors && t >= a.attached.t) {
+      const h = actors[a.attached.to], hp = actorPos(h, t, actors), hc = actorCentre(h), sc = actorCentre(a);
+      const r = (actorTurn(h, t, actors) * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const dx = a.attached.offset[0] + sc[0] - hc[0], dz = a.attached.offset[2] + sc[1] - hc[1];
+      return { x: hp.x + hc[0] + dx * cs - dz * sn - sc[0], y: hp.y + a.attached.offset[1], z: hp.z + hc[1] + dx * sn + dz * cs - sc[1], lift: hp.lift, active: null };
+    }
     let pos = a.moves[0].to.slice(), lift = 0, active = null;
     for (const m of a.moves.slice(1)) {
       if (t < m.t) break;
@@ -122,8 +141,8 @@
   }
 
   // Sum of turn() calls so far, in degrees.
-  function actorTurn(a, t) {
-    let deg = 0;
+  function actorTurn(a, t, actors) {
+    let deg = a.attached && actors && t >= a.attached.t ? actorTurn(actors[a.attached.to], t, actors) : 0;
     for (const k of a.turns || []) {
       if (t < k.t) break;
       const p = easeInOut(clamp01((t - k.t) / k.dur));
@@ -220,7 +239,7 @@
   function shotTarget(story, shot, t) {
     if (shot.follow) {
       const a = story.actors[shot.follow];
-      const p = actorPos(a, t), o = shot.offset || [0, 6, 0], c = actorCentre(a);
+      const p = actorPos(a, t, story.actors), o = shot.offset || [0, 6, 0], c = actorCentre(a);
       return [p.x + c[0] + o[0], p.y + o[1], p.z + c[1] + o[2]];
     }
     return shot.at;
@@ -289,13 +308,13 @@
   function solidBoxes(story, t) {
     const boxes = [];
     for (const [id, a] of Object.entries(story.actors)) {
-      const pos = actorPos(a, t), y0 = pos.y + pos.lift;
+      const pos = actorPos(a, t, story.actors), y0 = pos.y + pos.lift;
       if (a.kind === "figure") {
         if (t < a.t0 + a.appear) continue;
         boxes.push({ id, min: [pos.x - 0.7, y0, pos.z - 0.7], max: [pos.x + 0.7, y0 + 14, pos.z + 0.7] });
         continue;
       }
-      const deg = actorTurn(a, t), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
       for (const p of a.parts) {
         if (!partState(p, t).settled) continue;
         const xs = [], zs = [];
@@ -329,9 +348,58 @@
   else root.TL = api;
 })(typeof window !== "undefined" ? window : globalThis);
 </script>
-<script>window.STORY = {"meta":{"title":"Test Chamber","drift":0.6},"duration":41210,"actors":{"cube":{"kind":"bricks","parts":[{"part":"3001","color":71,"x":0,"y":0,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13000,"dur":750,"from":[10.427235297135866,13.120401661448563,4.2790141481176915],"spin":[-2.69763178923057,3.870024535744462,2.6267791928848157]},{"part":"3001","color":71,"x":0,"y":0,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13120,"dur":750,"from":[-8.112832979213263,15.24102597148033,-2.4299062308422554],"spin":[1.998257732483678,3.623613137576549,-1.4504975632068224]},{"part":"3001","color":72,"x":0,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","mesh":false,"t0":13240,"dur":750,"from":[-8.115631954017347,13.465129051432976,4.828809350285604],"spin":[1.1749861269141484,2.655780061453479,2.771619636459099]},{"part":"3001","color":72,"x":2,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","mesh":false,"t0":13360,"dur":750,"from":[-1.2637014706623237,7.109820398772832,10.79999904826126],"spin":[0.3186550966085191,-3.1517217341585653,-2.240389502253565]},{"part":"3001","color":71,"x":0,"y":6,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13480,"dur":750,"from":[2.6229991693055403,12.679267836386723,-8.901781785085769],"spin":[-0.6944253322176753,-1.608744776625533,1.3699044409999181]},{"part":"3001","color":71,"x":0,"y":6,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13600,"dur":750,"from":[4.382436151791117,14.32477289689876,-7.894294430646694],"spin":[2.2289043055981885,-3.7404477483315617,-1.2789796564164475]},{"part":"3031","color":71,"x":0,"y":9,"z":0,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"t0":13720,"dur":750,"from":[8.126198598649726,3.6929361786540897,-9.23851007534894],"spin":[-2.2983991425942625,-1.5925194423610902,1.8942991778693623]},{"part":"3068b","color":25,"x":1,"y":10,"z":1,"rot":0,"w":2,"d":2,"h":1,"kind":"tile","mesh":false,"t0":13840,"dur":750,"from":[-0.13207129705492726,14.118540682788948,-9.193341881503814],"spin":[0.5970424225540099,3.322661153656738,2.9745071316019196]},{"part":"3069b","color":71,"x":0,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":13960,"dur":750,"from":[-8.465429738503174,18.39511141749302,-5.389262739016724],"spin":[-2.0529175675720523,3.4859224220206597,2.9236101759241944]},{"part":"3069b","color":71,"x":2,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14080,"dur":750,"from":[12.064856903717828,12.464321589361507,1.4757367503659997],"spin":[0.2407992944311348,-3.848344661224794,0.6534590961660534]},{"part":"3069b","color":71,"x":0,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14200,"dur":750,"from":[12.240095171326915,8.336229986776457,-4.161682646447079],"spin":[-0.46883362227530856,-2.2489194414806177,1.8082102764436094]},{"part":"3069b","color":71,"x":2,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14320,"dur":750,"from":[-8.937418198434425,10.210372675195886,-6.353129281088073],"spin":[-2.886440358071793,-3.2041308168341085,-2.8699788981443173]},{"part":"3069b","color":71,"x":0,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","mesh":false,"t0":14440,"dur":750,"from":[2.391374707405354,9.230798253097868,9.506088772460915],"spin":[2.6789267285163176,0.9620348983267482,0.6904021332461396]},{"part":"3069b","color":71,"x":3,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","mesh":false,"t0":14560,"dur":750,"from":[-12.006069020110205,7.396188094772909,5.51729905803605],"spin":[1.6104562359910723,1.2506110692632433,2.2651808305015697]}],"moves":[{"t":-1,"dur":0,"to":[3,0,21],"hop":0},{"t":27160,"dur":600,"to":[3,7,21],"hop":0,"steps":2},{"t":27760,"dur":2000,"to":[8,7,15],"hop":0,"steps":7},{"t":29760,"dur":700,"to":[10,1.2,10],"hop":0,"steps":2}],"turns":[],"highlights":[{"t":24560,"dur":2000,"color":"#ff8a2a"}],"joints":{},"poses":[]},"subject":{"kind":"figure","t0":15610,"appear":700,"face":0,"moves":[{"t":-1,"dur":0,"to":[24,0,5],"hop":0},{"t":16810,"dur":2300,"to":[12,1.4,12],"hop":0.25,"steps":7},{"t":20560,"dur":2300,"to":[27,0,24],"hop":0.25,"steps":7},{"t":24560,"dur":2600,"to":[9,0,23],"hop":0.25,"steps":8},{"t":27760,"dur":2000,"to":[14.5,0,18.5],"hop":0.25,"steps":6},{"t":31610,"dur":2200,"to":[30,0,27],"hop":0.25,"steps":7},{"t":33810,"dur":1500,"to":[40,0,33],"hop":0.25,"steps":5},{"t":35310,"dur":1200,"to":[40,0,41],"hop":0.25,"steps":4}],"turns":[{"t":22860,"dur":800,"deg":-140}],"highlights":[]}},"callouts":[{"t":7600,"dur":2400,"text":"Pressure plate","at":[12,2,12],"offset":[0,0,0]},{"t":10200,"dur":1800,"text":"Exit","at":[40,21,36],"offset":[0,0,0]}],"bubbles":[],"emitters":[],"moods":[],"letterboxes":[],"fades":[],"music":[],"props":{"button":{"kind":"button","at":[12,0,12],"t0":7600,"dur":700,"events":[{"t":19110,"on":true,"dur":250},{"t":20560,"on":false,"dur":250},{"t":30460,"on":true,"dur":250}]},"exit":{"kind":"door","x":36,"width":8,"height":20,"t0":9300,"dur":900,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":1100},{"t":30710,"on":true,"dur":900},{"t":36510,"on":false,"dur":900}]},"wire":{"kind":"signal","points":[[14.5,0,12],[18,0,12],[18,0,27],[34,0,27],[34,0,36],[34,24,36],[40,24,36]],"t0":10200,"dur":2800,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":500},{"t":30710,"on":true,"dur":900}]}},"room":{"w":48,"d":36,"h":30,"cell":4,"seed":5,"t0":0,"dur":7600},"camera":[{"t":0,"dur":0,"shot":{"at":[24,4,18],"az":-30,"el":34,"dist":92}},{"t":0,"dur":8000,"shot":{"at":[23,6,17],"az":-34,"el":27,"dist":74}},{"t":7600,"dur":1400,"shot":{"at":[16,3,14],"az":-26,"el":30,"dist":46}},{"t":8700,"dur":1500,"shot":{"at":[34,8,26],"az":-18,"el":18,"dist":48}},{"t":10200,"dur":1800,"shot":{"at":[24,5,20],"az":-30,"el":32,"dist":66}},{"t":13000,"dur":1500,"shot":{"at":[6,3,22],"az":-24,"el":22,"dist":30}},{"t":15610,"dur":1500,"shot":{"at":[20,4,14],"az":-30,"el":28,"dist":56}},{"t":24560,"dur":1800,"shot":{"at":[12,3,18],"az":-22,"el":26,"dist":44}},{"t":31610,"dur":1500,"shot":{"follow":"subject","az":-24,"el":20,"dist":40}},{"t":37410,"dur":2600,"shot":{"at":[24,6,18],"az":-32,"el":30,"dist":78}}],"captions":[{"t":0,"kicker":"CONSTRUCTION","text":"Test Chamber 01"},{"t":7600,"kicker":"STEP 01","text":"Install the button."},{"t":8700,"kicker":"STEP 02","text":"Install the exit."},{"t":10200,"kicker":"STEP 03","text":"Connect them."},{"t":13000,"kicker":"STEP 04","text":"Assemble the test object."},{"t":15610,"kicker":"STEP 05","text":"Introduce the subject."},{"t":16810,"kicker":"TRIAL 1","text":"The subject attempts the test."},{"t":22860,"kicker":"TRIAL 1","text":"Insufficient."},{"t":24560,"kicker":"TRIAL 2","text":"The subject uses the test object."},{"t":31610,"kicker":"TRIAL 2","text":"The subject completes the test."},{"t":37410,"kicker":"COMPLETE","text":"Test Chamber 01"}],"cards":[],"stage":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"27":["Lime",34,"#bbe90b"],"29":["Bright Pink",104,"#e4adc8"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"]},"meshes":{},"reports":{"test-object":{"ok":true,"stats":{"parts":14,"steps":1,"studConnections":64,"pieces":1,"centreOfMass":[2,2],"comMarginStuds":2,"height":11},"errors":[],"actor":"cube"}}};</script>
+<script>window.STORY = {"meta":{"title":"Test Chamber","poster":33000,"drift":0.6},"duration":41210,"actors":{"cube":{"kind":"bricks","parts":[{"part":"3001","color":71,"x":0,"y":0,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13000,"dur":750,"from":[10.427235297135866,13.120401661448563,4.2790141481176915],"spin":[-2.69763178923057,3.870024535744462,2.6267791928848157],"stepStart":true},{"part":"3001","color":71,"x":0,"y":0,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13120,"dur":750,"from":[-8.112832979213263,15.24102597148033,-2.4299062308422554],"spin":[1.998257732483678,3.623613137576549,-1.4504975632068224]},{"part":"3001","color":72,"x":0,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","mesh":false,"t0":13240,"dur":750,"from":[-8.115631954017347,13.465129051432976,4.828809350285604],"spin":[1.1749861269141484,2.655780061453479,2.771619636459099]},{"part":"3001","color":72,"x":2,"y":3,"z":0,"rot":90,"w":2,"d":4,"h":3,"kind":"brick","mesh":false,"t0":13360,"dur":750,"from":[-1.2637014706623237,7.109820398772832,10.79999904826126],"spin":[0.3186550966085191,-3.1517217341585653,-2.240389502253565]},{"part":"3001","color":71,"x":0,"y":6,"z":0,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13480,"dur":750,"from":[2.6229991693055403,12.679267836386723,-8.901781785085769],"spin":[-0.6944253322176753,-1.608744776625533,1.3699044409999181],"stepStart":true},{"part":"3001","color":71,"x":0,"y":6,"z":2,"rot":0,"w":4,"d":2,"h":3,"kind":"brick","mesh":false,"t0":13600,"dur":750,"from":[4.382436151791117,14.32477289689876,-7.894294430646694],"spin":[2.2289043055981885,-3.7404477483315617,-1.2789796564164475]},{"part":"3031","color":71,"x":0,"y":9,"z":0,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"t0":13720,"dur":750,"from":[8.126198598649726,3.6929361786540897,-9.23851007534894],"spin":[-2.2983991425942625,-1.5925194423610902,1.8942991778693623]},{"part":"3068b","color":25,"x":1,"y":10,"z":1,"rot":0,"w":2,"d":2,"h":1,"kind":"tile","mesh":false,"t0":13840,"dur":750,"from":[-0.13207129705492726,14.118540682788948,-9.193341881503814],"spin":[0.5970424225540099,3.322661153656738,2.9745071316019196],"stepStart":true},{"part":"3069b","color":71,"x":0,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":13960,"dur":750,"from":[-8.465429738503174,18.39511141749302,-5.389262739016724],"spin":[-2.0529175675720523,3.4859224220206597,2.9236101759241944]},{"part":"3069b","color":71,"x":2,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14080,"dur":750,"from":[12.064856903717828,12.464321589361507,1.4757367503659997],"spin":[0.2407992944311348,-3.848344661224794,0.6534590961660534]},{"part":"3069b","color":71,"x":0,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14200,"dur":750,"from":[12.240095171326915,8.336229986776457,-4.161682646447079],"spin":[-0.46883362227530856,-2.2489194414806177,1.8082102764436094]},{"part":"3069b","color":71,"x":2,"y":10,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"tile","mesh":false,"t0":14320,"dur":750,"from":[-8.937418198434425,10.210372675195886,-6.353129281088073],"spin":[-2.886440358071793,-3.2041308168341085,-2.8699788981443173]},{"part":"3069b","color":71,"x":0,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","mesh":false,"t0":14440,"dur":750,"from":[2.391374707405354,9.230798253097868,9.506088772460915],"spin":[2.6789267285163176,0.9620348983267482,0.6904021332461396]},{"part":"3069b","color":71,"x":3,"y":10,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"tile","mesh":false,"t0":14560,"dur":750,"from":[-12.006069020110205,7.396188094772909,5.51729905803605],"spin":[1.6104562359910723,1.2506110692632433,2.2651808305015697]}],"moves":[{"t":-1,"dur":0,"to":[3,0,21],"hop":0},{"t":27160,"dur":600,"to":[3,7,21],"hop":0,"steps":2},{"t":27760,"dur":2000,"to":[8,7,15],"hop":0,"steps":7},{"t":29760,"dur":700,"to":[10,1.2,10],"hop":0,"steps":2}],"turns":[],"highlights":[{"t":24560,"dur":2000,"color":"#ff8a2a"}],"joints":{},"poses":[],"attached":null},"subject":{"kind":"figure","t0":15610,"appear":700,"face":0,"moves":[{"t":-1,"dur":0,"to":[24,0,5],"hop":0},{"t":16810,"dur":2300,"to":[12,1.4,12],"hop":0.25,"steps":7},{"t":20560,"dur":2300,"to":[27,0,24],"hop":0.25,"steps":7},{"t":24560,"dur":2600,"to":[9,0,23],"hop":0.25,"steps":8},{"t":27760,"dur":2000,"to":[14.5,0,18.5],"hop":0.25,"steps":6},{"t":31610,"dur":2200,"to":[30,0,27],"hop":0.25,"steps":7},{"t":33810,"dur":1500,"to":[40,0,33],"hop":0.25,"steps":5},{"t":35310,"dur":1200,"to":[40,0,41],"hop":0.25,"steps":4}],"turns":[{"t":22860,"dur":800,"deg":-140}],"highlights":[]}},"callouts":[{"t":7600,"dur":2400,"text":"Pressure plate","at":[12,2,12],"offset":[0,0,0]},{"t":10200,"dur":1800,"text":"Exit","at":[40,21,36],"offset":[0,0,0]}],"bubbles":[],"emitters":[],"moods":[],"letterboxes":[],"fades":[],"music":[],"props":{"button":{"kind":"button","at":[12,0,12],"t0":7600,"dur":700,"events":[{"t":19110,"on":true,"dur":250},{"t":20560,"on":false,"dur":250},{"t":30460,"on":true,"dur":250}]},"exit":{"kind":"door","x":36,"width":8,"height":20,"t0":9300,"dur":900,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":1100},{"t":30710,"on":true,"dur":900},{"t":36510,"on":false,"dur":900}]},"wire":{"kind":"signal","points":[[14.5,0,12],[18,0,12],[18,0,27],[34,0,27],[34,0,36],[34,24,36],[40,24,36]],"t0":10200,"dur":2800,"events":[{"t":19360,"on":true,"dur":900},{"t":20560,"on":false,"dur":500},{"t":30710,"on":true,"dur":900}]}},"room":{"w":48,"d":36,"h":30,"cell":4,"seed":5,"t0":0,"dur":7600},"camera":[{"t":0,"dur":0,"shot":{"at":[24,4,18],"az":-30,"el":34,"dist":92}},{"t":0,"dur":8000,"shot":{"at":[23,6,17],"az":-34,"el":27,"dist":74}},{"t":7600,"dur":1400,"shot":{"at":[16,3,14],"az":-26,"el":30,"dist":46}},{"t":8700,"dur":1500,"shot":{"at":[34,8,26],"az":-18,"el":18,"dist":48}},{"t":10200,"dur":1800,"shot":{"at":[24,5,20],"az":-30,"el":32,"dist":66}},{"t":13000,"dur":1500,"shot":{"at":[6,3,22],"az":-24,"el":22,"dist":30}},{"t":15610,"dur":1500,"shot":{"at":[20,4,14],"az":-30,"el":28,"dist":56}},{"t":24560,"dur":1800,"shot":{"at":[12,3,18],"az":-22,"el":26,"dist":44}},{"t":31610,"dur":1500,"shot":{"follow":"subject","az":-24,"el":20,"dist":40}},{"t":37410,"dur":2600,"shot":{"at":[24,6,18],"az":-32,"el":30,"dist":78}}],"captions":[{"t":0,"kicker":"CONSTRUCTION","text":"Test Chamber 01"},{"t":7600,"kicker":"STEP 01","text":"Install the button."},{"t":8700,"kicker":"STEP 02","text":"Install the exit."},{"t":10200,"kicker":"STEP 03","text":"Connect them."},{"t":13000,"kicker":"STEP 04","text":"Assemble the test object."},{"t":15610,"kicker":"STEP 05","text":"Introduce the subject."},{"t":16810,"kicker":"TRIAL 1","text":"The subject attempts the test."},{"t":22860,"kicker":"TRIAL 1","text":"Insufficient."},{"t":24560,"kicker":"TRIAL 2","text":"The subject uses the test object."},{"t":31610,"kicker":"TRIAL 2","text":"The subject completes the test."},{"t":37410,"kicker":"COMPLETE","text":"Test Chamber 01"}],"cards":[],"stage":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"27":["Lime",34,"#bbe90b"],"29":["Bright Pink",104,"#e4adc8"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"]},"meshes":{},"reports":{"test-object":{"ok":true,"stats":{"parts":14,"steps":1,"studConnections":64,"pieces":1,"centreOfMass":[2,2],"comMarginStuds":2,"height":11},"errors":[],"actor":"cube","available":true,"missing":[],"physical":{"widthMm":32,"depthMm":32,"heightMm":35,"grams":20,"estimated":true},"inventory":[{"part":"3001","name":"Brick 2 x 4","color":71,"colorName":"Light Bluish Gray","qty":4,"element":"4211385","bl":"3001","exists":true},{"part":"3001","name":"Brick 2 x 4","color":72,"colorName":"Dark Bluish Gray","qty":2,"element":"4211085","bl":"3001","exists":true},{"part":"3031","name":"Plate 4 x 4","color":71,"colorName":"Light Bluish Gray","qty":1,"element":"4243797","bl":"3031","exists":true},{"part":"3068b","name":"Tile 2 x 2","color":25,"colorName":"Orange","qty":1,"element":"4542142","bl":"3068b","exists":true},{"part":"3069b","name":"Tile 1 x 2","color":71,"colorName":"Light Bluish Gray","qty":6,"element":"4211414","bl":"3069b","exists":true}]}}};</script>
 <script type="module">
 import * as THREE from "three";
+// Brick drawing, shared by the player and the printable booklet (the build
+// inlines this file into both). Plain parts are rounded boxes with studs;
+// slopes and round parts use their real LDraw geometry, turned into the scene
+// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
+function brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes, PLATE }) {
+  const toScene = (x, yPlates, z) => new THREE.Vector3(x, yPlates * PLATE, -z);
+  const geoCache = new Map(), meshGeoCache = new Map();
+  const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
+  function bodyGeo(w, h, d) {
+    const k = `${w}x${h}x${d}`;
+    if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
+    return geoCache.get(k);
+  }
+  function meshGeo(p) {
+    const key = `${p.part}@${p.rot}`;
+    if (meshGeoCache.has(key)) return meshGeoCache.get(key);
+    const m = meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
+    const pos = new Float32Array(m.tri.length);
+    for (let i = 0; i < m.tri.length; i += 3) {
+      const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
+      pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
+    }
+    let geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo = toCreasedNormals(geo, Math.PI / 6);
+    meshGeoCache.set(key, geo);
+    return geo;
+  }
+  // `covered` (optional): skip studs hidden under another part, for big models
+  function brick(p, mat, covered) {
+    const g = new THREE.Group();
+    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
+    if (p.mesh && meshes?.[p.part]) {
+      const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
+      return g;
+    }
+    const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
+    body.castShadow = body.receiveShadow = true; g.add(body);
+    if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
+      if (covered && covered(p.x + i, p.y + p.h, p.z + k)) continue;
+      const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
+      s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
+      g.add(s);
+    }
+    return g;
+  }
+  return { brick, toScene, bodyGeo, meshGeo };
+}
+
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 
@@ -363,48 +431,8 @@ floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 const grid = new THREE.GridHelper(200, 50, 0xd6d3ca, 0xe0ddd5); grid.position.y = 0.002; scene.add(grid);
 
 // ---------- bricks (materials are per actor, so one actor can glow alone)
-const geoCache = new Map();
-const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
-function bodyGeo(w, h, d) {
-  const k = `${w}x${h}x${d}`;
-  if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
-  return geoCache.get(k);
-}
-// Slopes and round parts use their real LDraw geometry, turned into the scene
-// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
-const meshGeoCache = new Map();
-function meshGeo(p) {
-  const key = `${p.part}@${p.rot}`;
-  if (meshGeoCache.has(key)) return meshGeoCache.get(key);
-  const m = S.meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
-  const pos = new Float32Array(m.tri.length);
-  for (let i = 0; i < m.tri.length; i += 3) {
-    const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
-    pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
-  }
-  let geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  geo = toCreasedNormals(geo, Math.PI / 6);
-  meshGeoCache.set(key, geo);
-  return geo;
-}
-function brick(p, mat) {
-  const g = new THREE.Group();
-  if (p.mesh && S.meshes?.[p.part]) {
-    const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
-    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
-    return g;
-  }
-  const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
-  body.castShadow = body.receiveShadow = true; g.add(body);
-  if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
-    const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
-    s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
-    g.add(s);
-  }
-  g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
-  return g;
-}
+const KIT = brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes: S.meshes || {}, PLATE });
+const brick = KIT.brick;
 const failing = new Map();       // actor id -> Set of part indices a model check flagged
 for (const r of Object.values(S.reports)) if (!r.ok && r.actor) failing.set(r.actor, new Set(r.errors.map((e) => e.part).filter((i) => i != null)));
 const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
@@ -415,7 +443,15 @@ const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").m
     if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
     return mats.get(key);
   };
-  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i))); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
+  // Big models skip studs that end up under another part: nobody sees them in
+  // the finished model (they go missing a moment early while it's being built).
+  let covered = null;
+  if (a.parts.length > 200) {
+    const occ = new Set();
+    for (const p of a.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
+    covered = (x, y, z) => occ.has(`${x},${y},${z}`);
+  }
+  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i)), covered); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
   const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
   // joints: their parts hang from a group at the pivot, which pose() rotates
   const joints = Object.entries(a.joints || {}).map(([name, j]) => {
@@ -432,9 +468,9 @@ function evalBricks(t) {
       const r = THREE.MathUtils.degToRad(TL.jointAngle(a, j.name, t));
       j.jg.rotation.set(j.axis === "x" ? -r : 0, j.axis === "y" ? r : 0, j.axis === "z" ? r : 0);
     }
-    const pos = TL.actorPos(a, t);
+    const pos = TL.actorPos(a, t, S.actors);
     group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
-    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t));
+    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors));
     const g = TL.glow(a, t);
     for (const m of mats) { m.emissive.set(a.highlights?.[0]?.color || "#ff8a2a"); m.emissiveIntensity = 0.32 * g; }
     a.parts.forEach((p, i) => {
@@ -448,6 +484,92 @@ function evalBricks(t) {
       mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
     });
   }
+}
+
+// ---------- instruction mode: the build as booklet steps
+// A step is a run of parts in one actor (the model's `steps`). With I on,
+// playback stops at the end of each step and shows the parts it needs; the
+// new parts get a yellow outline and earlier ones go pale, as in the booklet.
+const STEPS = [];
+for (const act of actors) {
+  let cur = null;
+  act.a.parts.forEach((p, i) => {
+    if (p.stepStart || !cur) { cur = { act, from: i, to: i + 1, t0: p.t0, tEnd: p.t0 + p.dur }; STEPS.push(cur); }
+    else { cur.to = i + 1; cur.tEnd = Math.max(cur.tEnd, p.t0 + p.dur); }
+  });
+}
+STEPS.sort((a, b) => a.tEnd - b.tEnd);
+STEPS.forEach((st, i) => { st.n = STEPS.filter((o, j) => j <= i && o.act === st.act).length; st.of = STEPS.filter((o) => o.act === st.act).length; });
+let instr = false, stepShown = null;
+// the outline is a slightly larger copy drawn back-face only: a silhouette
+const yellow = new THREE.MeshBasicMaterial({ color: 0xf2c200, side: THREE.BackSide });
+const paleCache = new Map();
+function pale(mat) {
+  if (!paleCache.has(mat)) { const m = mat.clone(); m.color = mat.color.clone().lerp(new THREE.Color(0xffffff), 0.5); m.emissiveIntensity = 0; paleCache.set(mat, m); }
+  return paleCache.get(mat);
+}
+function setLook(mesh, look) {
+  if (mesh.userData.look === look) return;
+  mesh.userData.look = look;
+  for (const c of mesh.children) if (c.isMesh) { c.userData.base ||= c.material; c.material = look === "pale" ? pale(c.userData.base) : c.userData.base; }
+  if (look === "new" && !mesh.userData.outline) {
+    const body = mesh.children.find((c) => c.isMesh), b = new THREE.Box3().setFromBufferAttribute(body.geometry.attributes.position);
+    const size = b.getSize(new THREE.Vector3()), pad = 0.16;
+    mesh.userData.outline = new THREE.Mesh(body.geometry, yellow);
+    mesh.userData.outline.scale.set((size.x + pad) / size.x, (size.y + pad) / size.y, (size.z + pad) / size.z);
+    mesh.add(mesh.userData.outline);
+  }
+  if (mesh.userData.outline) mesh.userData.outline.visible = look === "new";
+}
+// part icons for the callout, rendered once each
+const iconRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+iconRenderer.setSize(116, 116); iconRenderer.outputColorSpace = THREE.SRGBColorSpace;
+const iconScene = new THREE.Scene();
+iconScene.add(new THREE.HemisphereLight(0xffffff, 0x9a9590, 1.6));
+const iconSun = new THREE.DirectionalLight(0xffffff, 2); iconSun.position.set(-3, 6, 4); iconScene.add(iconSun);
+const iconCache = new Map();
+function icon(p) {
+  const key = `${p.part}|${p.color}`;
+  if (iconCache.has(key)) return iconCache.get(key);
+  const q = { ...p, x: 0, y: 0, z: 0, rot: 0, w: p.rot === 90 || p.rot === 270 ? p.d : p.w, d: p.rot === 90 || p.rot === 270 ? p.w : p.d };
+  const g = brick(q, new THREE.MeshStandardMaterial({ color: COLORS[p.color][2], roughness: 0.35 }));
+  const c = g.userData.home; g.position.set(-c.x, -c.y, -c.z); iconScene.add(g);
+  // frame the part's bounding sphere, so any shape fits from the diagonal
+  const r = Math.hypot(q.w, q.d, q.h * PLATE + 0.2) / 2 + 0.15;
+  const cam = new THREE.OrthographicCamera(-r, r, r, -r, 0.1, 100);
+  cam.position.set(r * 2.4, r * 2.2, r * 2.8); cam.lookAt(0, 0, 0);
+  iconRenderer.render(iconScene, cam); iconScene.remove(g);
+  const url = iconRenderer.domElement.toDataURL();
+  iconCache.set(key, url); return url;
+}
+// The step being built now (or, between builds, the last one finished).
+function currentStep(t) {
+  const now = STEPS.find((st) => st.t0 <= t + 1 && st.tEnd >= t - 1);
+  if (now) return now;
+  let done = null; for (const st of STEPS) if (st.tEnd < t) done = st;
+  return done;
+}
+function evalSteps(t) {
+  const st = instr ? currentStep(t) : null;
+  for (const { a, meshes } of actors) meshes.forEach((m, i) => {
+    let look = "normal";
+    if (st && st.act.a === a) look = i >= st.from && i < st.to ? "new" : i < st.from ? "pale" : "future";
+    if (look === "future") m.visible = false;       // later steps wait their turn
+    setLook(m, look === "future" ? "normal" : look);
+  });
+  if (st !== stepShown) {
+    stepShown = st;
+    if (st) {
+      const counts = new Map();
+      for (let i = st.from; i < st.to; i++) { const p = st.act.a.parts[i], k = `${p.part}|${p.color}`; counts.set(k, { p, n: (counts.get(k)?.n || 0) + 1 }); }
+      $("stepIcons").innerHTML = [...counts.values()].map(({ p, n }) => `<div class="icon"><img alt="" src="${icon(p)}">${n}×</div>`).join("");
+      $("stepN").innerHTML = `${st.n}<small>of ${st.of} · ${st.act.id}</small>`;
+    }
+  }
+}
+function setInstr(on) {
+  instr = on; document.body.classList.toggle("instr", on); $("instrBtn").classList.toggle("on", on);
+  stepShown = undefined;
 }
 
 // ---------- the room
@@ -653,7 +775,7 @@ const particles = (S.emitters || []).flatMap((e) => {
 });
 function anchorTop(on, at, offset, t) {
   if (!on) return toScene(...at);
-  const a = S.actors[on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  const a = S.actors[on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
   const top = a.parts ? Math.max(...a.parts.map((p) => p.y + p.h)) : 14;
   return toScene(pos.x + cx + offset[0], pos.y + pos.lift + top + offset[1], pos.z + cz + offset[2]);
 }
@@ -736,7 +858,7 @@ const calloutEls = (S.callouts || []).map((c) => {
 });
 function anchorOf(c, t) {
   if (!c.on) return toScene(...c.at);
-  const a = S.actors[c.on], pos = TL.actorPos(a, t), [cx, cz] = TL.actorCentre(a);
+  const a = S.actors[c.on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
   let top = 14;                       // figures are about 14 plates tall
   if (a.parts) top = Math.max(...a.parts.map((p) => p.y + p.h));
   return toScene(pos.x + cx + c.offset[0], pos.y + pos.lift + top + c.offset[1], pos.z + cz + c.offset[2]);
@@ -822,9 +944,17 @@ const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok), sta
 const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
 $("badge").innerHTML = `<details${allOk ? "" : " open"}><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}${
   stage.length ? ` · <b class="warn">⚠</b> ${stage.length} stage overlap${stage.length > 1 ? "s" : ""}` : ""}</summary><div class="list">${
-  reps.map(([n, r]) => `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts · <a href="models/${n.replace(/[^a-z0-9-]+/gi, "_")}.ldr" download>.ldr</a>${
-    r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}`).join("<br>")}${
-  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}</div></details>`;
+  reps.map(([n, r]) => {
+    const f = r.physical, file = n.replace(/[^a-z0-9-]+/gi, "_");
+    const size = f ? ` · ${(f.widthMm / 10).toFixed(1)} × ${(f.depthMm / 10).toFixed(1)} × ${(f.heightMm / 10).toFixed(1)} cm, ~${f.grams} g` : "";
+    return `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts${size} · <a href="models/${file}.ldr" download>.ldr</a> <a href="models/${file}.csv" download>parts</a>${
+      r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}${
+      r.available === false ? `<br><b class="warn">&nbsp;&nbsp;⚠ not made by LEGO:</b> ${r.missing.join(", ")}` : ""}`;
+  }).join("<br>")}${
+  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}
+  <div class="honest"><b>Checked on a computer:</b> no overlaps, every stud connection, each part has a real way in (down, up or slid in), one solid piece, balance, ${
+    reps.every(([, r]) => r.available !== false) ? "and every part is a real LEGO part in a colour LEGO has made (Rebrickable)" : "and part/colour availability (some fail, above)"}.
+  <b>Not tested:</b> nobody has built these with real bricks. How firmly parts hold, tolerances, and whether the real thing stands are unknown; joints that swing are artistic licence; sizes are exact, weights estimated.</div></div></details>`;
 $("badge").addEventListener("click", (e) => { const a = e.target.closest("[data-t]"); if (a) { e.preventDefault(); t = +a.dataset.t; setPlaying(false); } });
 
 // ---------- playback, chapters, keys
@@ -841,12 +971,19 @@ function jump(dir) {
 $("play").onclick = () => { if (t >= S.duration) t = 0; setPlaying(!playing); };
 $("scrub").oninput = () => { t = +$("scrub").value; setPlaying(false); };
 $("mute").onclick = () => setMuted(!muted);
+$("instrBtn").onclick = () => setInstr(!instr);
+function stepJump(dir) {
+  const ends = STEPS.map((s) => s.tEnd);
+  const target = dir > 0 ? ends.find((e) => e > t + 1) : [...ends].reverse().find((e) => e < t - 1);
+  if (target !== undefined) { t = target; setPlaying(false); }
+}
 addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k === " ") { e.preventDefault(); $("play").click(); }
-  else if (k === "arrowright") t = Math.min(S.duration, t + 2000);
-  else if (k === "arrowleft") t = Math.max(0, t - 2000);
+  else if (k === "arrowright") instr ? stepJump(1) : (t = Math.min(S.duration, t + 2000));
+  else if (k === "arrowleft") instr ? stepJump(-1) : (t = Math.max(0, t - 2000));
+  else if (k === "i") setInstr(!instr);
   else if (k === "]") jump(1);
   else if (k === "[") jump(-1);
   else if (k === "home" || k === "r") { t = 0; setPlaying(true); }
@@ -860,10 +997,16 @@ addEventListener("resize", resize); resize();
 
 function frame(now) {
   const before = t;
-  if (playing) { t += now - last; if (t >= S.duration) { t = S.duration; setPlaying(false); } }
+  if (playing) {
+    const next = t + (now - last);
+    const stop = instr ? STEPS.find((s) => s.tEnd > t + 1 && s.tEnd <= next) : null;   // pause at each step's end
+    t = stop ? stop.tEnd : next;
+    if (stop) setPlaying(false);
+    if (t >= S.duration) { t = S.duration; setPlaying(false); }
+  }
   last = now;
   if (playing) playSounds(before, t);
-  evalMood(t); evalBricks(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
+  evalMood(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
   renderer.render(scene, camera);
   evalCallouts(t); evalBubbles(t); evalBars(t);
   const ch = [...CH].reverse().find((c) => c.t <= t);
@@ -875,6 +1018,7 @@ function frame(now) {
 const qs = new URLSearchParams(location.search);
 if (qs.has("t")) { t = +qs.get("t"); setPlaying(qs.has("play")); }
 if (qs.has("clean")) document.body.classList.add("clean");
+if (qs.has("steps")) setInstr(true);
 requestAnimationFrame(frame);
 </script>
 </body>

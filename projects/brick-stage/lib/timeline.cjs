@@ -14,7 +14,14 @@
 
   // Where an actor stands: { x, y, z } in story units, plus lift (plates) from
   // hopping or walking, and the move in progress if any.
-  function actorPos(a, t) {
+  // `actors` lets an attached sub-assembly ride along with its host.
+  function actorPos(a, t, actors) {
+    if (a.attached && actors && t >= a.attached.t) {
+      const h = actors[a.attached.to], hp = actorPos(h, t, actors), hc = actorCentre(h), sc = actorCentre(a);
+      const r = (actorTurn(h, t, actors) * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const dx = a.attached.offset[0] + sc[0] - hc[0], dz = a.attached.offset[2] + sc[1] - hc[1];
+      return { x: hp.x + hc[0] + dx * cs - dz * sn - sc[0], y: hp.y + a.attached.offset[1], z: hp.z + hc[1] + dx * sn + dz * cs - sc[1], lift: hp.lift, active: null };
+    }
     let pos = a.moves[0].to.slice(), lift = 0, active = null;
     for (const m of a.moves.slice(1)) {
       if (t < m.t) break;
@@ -30,8 +37,8 @@
   }
 
   // Sum of turn() calls so far, in degrees.
-  function actorTurn(a, t) {
-    let deg = 0;
+  function actorTurn(a, t, actors) {
+    let deg = a.attached && actors && t >= a.attached.t ? actorTurn(actors[a.attached.to], t, actors) : 0;
     for (const k of a.turns || []) {
       if (t < k.t) break;
       const p = easeInOut(clamp01((t - k.t) / k.dur));
@@ -128,7 +135,7 @@
   function shotTarget(story, shot, t) {
     if (shot.follow) {
       const a = story.actors[shot.follow];
-      const p = actorPos(a, t), o = shot.offset || [0, 6, 0], c = actorCentre(a);
+      const p = actorPos(a, t, story.actors), o = shot.offset || [0, 6, 0], c = actorCentre(a);
       return [p.x + c[0] + o[0], p.y + o[1], p.z + c[1] + o[2]];
     }
     return shot.at;
@@ -197,13 +204,13 @@
   function solidBoxes(story, t) {
     const boxes = [];
     for (const [id, a] of Object.entries(story.actors)) {
-      const pos = actorPos(a, t), y0 = pos.y + pos.lift;
+      const pos = actorPos(a, t, story.actors), y0 = pos.y + pos.lift;
       if (a.kind === "figure") {
         if (t < a.t0 + a.appear) continue;
         boxes.push({ id, min: [pos.x - 0.7, y0, pos.z - 0.7], max: [pos.x + 0.7, y0 + 14, pos.z + 0.7] });
         continue;
       }
-      const deg = actorTurn(a, t), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
       for (const p of a.parts) {
         if (!partState(p, t).settled) continue;
         const xs = [], zs = [];

@@ -9,6 +9,8 @@ import { COLORS } from "../brick-check/lib/parts.mjs";
 import { toLDR } from "../brick-check/lib/ldraw.mjs";
 import { PARTS } from "../brick-check/lib/parts.mjs";
 import { partMesh } from "../brick-check/tools/ldraw-mesh.mjs";
+import { availability } from "../brick-check/lib/availability.mjs";
+import { physical } from "../brick-check/lib/physical.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const TL = createRequire(import.meta.url)("./lib/timeline.cjs");
@@ -28,6 +30,14 @@ export async function buildStory(name, { quiet = false } = {}) {
     for (const e of r.errors) log(`      ✗ ${e.rule}: ${e.msg}`);
     const file = model.replace(/[^a-z0-9-]+/gi, "_");
     await fs.writeFile(path.join(out, "models", `${file}.ldr`), toLDR({ title: model, name: file, steps: [{ note: model, parts: r.parts }] }));
+    // real parts in real colours? (Rebrickable), and what it would weigh
+    const av = await availability(r.parts);
+    r.available = av.ok; r.missing = av.missing.map((l) => `${l.qty}× ${PARTS[l.part].name} in ${l.colorName}`);
+    r.physical = physical(r.parts);
+    r.inventory = av.lines.map((l) => ({ part: l.part, name: PARTS[l.part].name, color: l.color, colorName: l.colorName, qty: l.qty, element: l.elementIds[0] || null, bl: PARTS[l.part].bl || l.part, exists: l.exists }));
+    for (const m of r.missing) log(`      ⚠ not made by LEGO: ${m}`);
+    const csv = ["qty,part,name,colour,lego_element_id,bricklink_part", ...r.inventory.map((l) => `${l.qty},${l.part},"${l.name}",${l.colorName},${l.element ?? ""},${l.bl}`)];
+    await fs.writeFile(path.join(out, "models", `${file}.csv`), csv.join("\n") + "\n");
   }
   // the stage check: run the whole timeline and look for actors walking into each other
   const stage = TL.stageCollisions(story);
@@ -42,13 +52,15 @@ export async function buildStory(name, { quiet = false } = {}) {
   const { reports, ...rest } = story;
   const slim = {
     ...rest, stage, colors: COLORS, meshes,
-    reports: Object.fromEntries(Object.entries(reports).map(([k, r]) => [k, { ok: r.ok, stats: r.stats, errors: r.errors, actor: r.actor }])),
+    reports: Object.fromEntries(Object.entries(reports).map(([k, r]) => [k, { ok: r.ok, stats: r.stats, errors: r.errors, actor: r.actor, available: r.available, missing: r.missing, physical: r.physical, inventory: r.inventory }])),
   };
   // function replacers, so a `$` in the story text is never read as a pattern
   const timeline = await fs.readFile(path.join(here, "lib", "timeline.cjs"), "utf8");
+  const bricksKit = await fs.readFile(path.join(here, "lib", "bricks.js"), "utf8");
   const page = (await fs.readFile(path.join(here, "lib", "player.html"), "utf8"))
     .replace("__TITLE__", () => story.meta.title)
     .replace("__TIMELINE__", () => timeline)
+    .replace("__BRICKS__", () => bricksKit)
     .replace("__STORY__", () => JSON.stringify(slim));
   await fs.writeFile(path.join(out, "index.html"), page);
   log(`  wrote out/${name}/`);

@@ -16,6 +16,7 @@ node new.mjs my-story "My Story"     # start a story from the template
 node dev.mjs little-builder          # live preview at http://localhost:5173
 node build.mjs little-builder        # checks the models and the stage, writes out/little-builder/
 node build.mjs --all                 # every story, plus a gallery at out/index.html
+node booklet.mjs little-builder      # printable instructions for a model, as HTML and PDF
 node --test test/*.test.mjs
 ```
 
@@ -28,6 +29,11 @@ The build checks two things and says so in the terminal and on the page:
   its problem parts glowing red, with the reasons in the corner badge.
 - **The stage:** the whole timeline is run looking for actors that walk into
   each other. Each overlap is listed with a link to the moment it happens.
+
+Press **I** (or the Steps button) for **instruction mode**: playback stops at
+the end of each build step and shows the parts that step needs, with the new
+parts outlined in yellow and earlier ones pale, the way an instruction booklet
+draws them. In this mode, **← →** move between steps.
 
 Player keys: **space** plays or pauses, **← →** jump 2 s, **[ ]** jump between
 chapters (one per caption), **M** sound, **R** restarts, **H** hides the
@@ -67,6 +73,7 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `pose(actor, joint, degrees, { dur })` | swings a joint to an angle (0 is the rest pose) | yes |
 | `say(actor, text, { dur })` | a speech bubble over an actor | yes |
 | `fadeOut({ dur, color })` · `fadeIn({ dur })` | fades the picture out and back | yes |
+| `attach(sub, { onto, at })` | flies a finished sub-assembly onto another actor; from then on it moves with it, and the combined model is checked | yes |
 | `wait(ms)` | holds | yes |
 | `shot({ at, az, el, dist }, dur)` | eases the camera to a shot | no |
 | `follow(actor, { az, el, dist, offset })` | keeps the camera on an actor as it moves | no |
@@ -77,6 +84,11 @@ export default story({ title: "A Tower", drift: 1 }, (s) => {
 | `mood(name, { dur })` | the light: `day`, `sunset` or `night` (stars and a moon) | no |
 | `letterbox(on, { dur })` | cinema bars | no |
 | `music(name)` | a generated chord pad, `romance` or `wonder`; `null` stops it | no |
+| `section(title)` | starts a numbered section of the build (a chapter and a caption) | no |
+| `turnaround(actor, { dur })` | circles the camera once around an actor | no |
+
+`build(…, { from: "path" })` flies each part in along the way brick-check
+says it really goes in: straight down, up from below, or slid in from the side.
 
 ### Joints
 
@@ -92,6 +104,35 @@ model("robot", parts, { joints: {
 checked in its rest pose. A joint is artistic licence unless the real build
 puts a hinge there. The robot in `stories/cast/robot.mjs` has both arms and
 its head on joints.
+
+### From the Microduck booklet
+
+Several features come from reading the
+[Microduck booklet](https://huggingface.co/buckets/victor/microduck-lego-booklet)
+(unofficial fan-made instructions for a LEGO model of Pollen Robotics'
+Microduck), and doing what it does:
+
+- **Real parts in real colours.** Every model is checked against Rebrickable's
+  catalogue. The build warns about any part LEGO never made in that colour, and
+  each model's parts list (`models/<model>.csv`) carries LEGO element IDs.
+- **Insertion paths,** including "slide in" steps, recorded by the checker and
+  usable for animation (`from: "path"`).
+- **Sections and sub-assemblies** (`section()`, `attach()`).
+- **Booklet-style steps** in the player (I), and **printable booklets**
+  (`booklet.mjs`): cover, parts inventory with element IDs, every step at one
+  scale, a front/left/back/right turnaround, and what was and wasn't checked.
+- **Real-world size and estimated weight** for each model.
+- **Being honest about testing.** The player and every booklet say plainly that
+  nothing has been built with real bricks.
+- **Mirror images** for left/right pairs: `mirror(parts, { axis })`, exported
+  from the director.
+- **Shapes from CAD.** brick-check's `tools/brickify.mjs` samples a 3D mesh
+  into a buildable grid of plates, the booklet's "shape sampled from the
+  robot's own CAD model". `fitToCatalogue()` then recolours any plate LEGO
+  doesn't make in its colour. `stories/microduck.mjs` builds the result, made
+  from Pollen Robotics' open Microduck CAD (`node ../brick-check/tools/microduck-model.mjs`
+  regenerates it): 670 plates, built in sections, with the head made as a
+  sub-assembly and set on the neck.
 
 ### Parts
 

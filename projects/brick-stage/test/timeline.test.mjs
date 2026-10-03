@@ -115,3 +115,35 @@ test("music plays one chord a bar until it stops", () => {
   const chords = TL.soundEvents(s).filter((e) => e.kind === "chord");
   assert.deepEqual(chords.map((c) => c.t), [0, 2400, 4800]);
 });
+
+test("an attached sub-assembly lands where asked, then rides along with its host", () => {
+  const base = model("base", [P("3020", 15, 0, 0, 0)]);           // 2x4 plate
+  const top = model("top", [P("3003", 4, 0, 0, 0)]);              // 2x2 brick
+  const s = story({ title: "t" }, (d) => {
+    d.build(base, { at: [0, 0, 0], stagger: 0, dur: 100 });
+    d.build(top, { at: [10, 0, 5], stagger: 0, dur: 100 });
+    d.attach("top", { onto: "base", at: [1, 1, 0], dur: 1000 });
+    d.move("base", [20, 0, 0], { dur: 1000, hop: 0 });
+  });
+  // checked twice: the sub-assembly on its own (it's built on the table first), then the whole
+  assert.deepEqual(Object.keys(s.reports).sort(), ["base + top", "top (built on its own)"]);
+  assert.equal(s.reports["base + top"].ok, true);
+  assert.equal(s.reports["top (built on its own)"].ok, true);
+  const landed = TL.actorPos(s.actors.top, 1200, s.actors);   // the attach runs 200–1200 ms
+  const midway = TL.actorPos(s.actors.top, 700, s.actors);
+  assert.ok(midway.y >= 2, "it travels above the host, not through it");
+  assert.deepEqual([landed.x, landed.y, landed.z].map((v) => Math.round(v * 1000) / 1000), [1, 1, 0]);
+  const after = TL.actorPos(s.actors.top, 9999, s.actors);
+  assert.deepEqual([after.x, after.y, after.z].map((v) => Math.round(v * 1000) / 1000), [21, 1, 0]);
+});
+
+test("parts can fly in along their real insertion path", () => {
+  const roofed = model("roofed", [
+    P("3020", 15, 0, 0, 0), P("3003", 15, 0, 1, 0), P("3022", 15, 0, 4, 0), P("3020", 15, 0, 5, 0), P("3003", 4, 2, 1, 0),
+  ]);
+  const s = story({ title: "t" }, (d) => d.build(roofed, { from: "path" }));
+  const parts = s.actors.roofed.parts;
+  assert.equal(parts[0].via, "down");
+  assert.equal(parts[4].via, "slide+x");
+  assert.ok(parts[4].from[0] > 0 && Math.abs(parts[4].from[1]) < 2, "slides in from +x");
+});

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  :root { --ink: #1d1d1b; --muted: #5f6b73; --accent: #e8711c; --blue: #dce9f6; --blueline: #b9cfe6; --red: #c0362c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #888; font: 13px/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--ink); }
+  .page { width: 297mm; height: 210mm; background: #fff; margin: 0 auto 10mm; position: relative; overflow: hidden; page-break-after: always; padding: 14mm 14mm 12mm; }
+  @media print { body { background: #fff; } .page { margin: 0; } }
+  .foot { position: absolute; left: 14mm; right: 14mm; bottom: 7mm; display: flex; justify-content: space-between; font-size: 10px; color: #8a949b; }
+  h1 { font-size: 30px; margin: 0 0 6mm; }
+  h2 { font-size: 15px; margin: 0 0 3mm; }
+  /* cover */
+  .cover { display: grid; grid-template-columns: 40% 60%; padding: 0; }
+  .cover .left { background: #1d2129; color: #fff; padding: 16mm 12mm; display: flex; flex-direction: column; gap: 6mm; }
+  .cover .kicker { letter-spacing: .16em; font-size: 12px; color: #c9ced6; text-transform: uppercase; }
+  .cover .title { font-size: 46px; font-weight: 800; line-height: 1.05; }
+  .cover .tag { background: #ffd31a; color: #1d1d1b; border-radius: 8px; padding: 4mm 5mm; font-weight: 700; font-size: 16px; }
+  .cover .big { font-size: 34px; font-weight: 800; } .cover .big small { font-size: 14px; font-weight: 400; }
+  .warn { border: 2px solid var(--red); background: #fff; color: var(--ink); border-radius: 8px; padding: 3mm 4mm; }
+  .warn b { color: var(--red); }
+  .cover .fine { font-size: 10px; color: #aab1ba; margin-top: auto; }
+  .cover .right { background: #a6a6a6; display: flex; align-items: center; justify-content: center; }
+  .cover .right img { width: 100%; height: 100%; object-fit: contain; }
+  /* inventory */
+  .inv { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3mm; }
+  .cell { border: 1px solid #d9dee3; border-radius: 6px; padding: 2mm 2.5mm; display: flex; flex-direction: column; gap: 1mm; }
+  .cell img { width: 100%; height: 22mm; object-fit: contain; }
+  .cell .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .cell .q { font-weight: 800; font-size: 15px; } .cell .el { font-weight: 700; font-size: 12px; }
+  .cell .c { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .cell .c i { width: 9px; height: 9px; border-radius: 2px; border: 1px solid rgba(0,0,0,.3); display: inline-block; }
+  .cell.missing { border-color: var(--red); } .cell.missing .el { color: var(--red); }
+  /* steps */
+  .steps2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; height: 172mm; }
+  .step { display: flex; flex-direction: column; border-right: 1px solid #e3e6ea; padding-right: 8mm; }
+  .step:last-child { border-right: 0; padding-right: 0; }
+  .callout { align-self: flex-start; background: var(--blue); border: 1px solid var(--blueline); border-radius: 8px; padding: 3mm 4mm; display: flex; gap: 4mm; align-items: flex-end; }
+  .callout div { display: flex; flex-direction: column; align-items: center; font-weight: 700; font-size: 12px; }
+  .callout img { width: 15mm; height: 15mm; object-fit: contain; }
+  .num { font-size: 36px; font-weight: 800; margin: 1mm 0; }
+  .shot { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .shot img { max-width: 100%; max-height: 100%; }
+  /* turnaround + about */
+  .four { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; background: #a6a6a6; border-radius: 8px; padding: 4mm; }
+  .four img { width: 100%; }
+  .about { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10mm; }
+  .box { background: #eef4fb; border: 1px solid var(--blueline); border-radius: 8px; padding: 4mm 5mm; margin-bottom: 4mm; }
+  .ok { color: #2f7d4f; font-weight: 700; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="book"></div>
+<script>window.BOOK = __BOOK__;</script>
+<script type="module">
+import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
+__BRICKS__
+const B = window.BOOK, PLATE = 0.4;
+const KIT = brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes: B.meshes, PLATE });
+
+// ---- one renderer, reused for every picture
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = false;
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff, 0xa09a92, 1.5));
+const sun = new THREE.DirectionalLight(0xffffff, 2.1); sun.position.set(-20, 40, 30); scene.add(sun);
+const mats = new Map(), pales = new Map();
+const mat = (c) => mats.get(c) || mats.set(c, new THREE.MeshStandardMaterial({ color: B.colors[c][2], roughness: 0.35 })).get(c);
+const pale = (c) => pales.get(c) || pales.set(c, new THREE.MeshStandardMaterial({ color: new THREE.Color(B.colors[c][2]).lerp(new THREE.Color(0xffffff), 0.55), roughness: 0.5 })).get(c);
+const yellow = new THREE.MeshBasicMaterial({ color: 0xf2c200, side: THREE.BackSide });
+
+function group(parts, look) {
+  const g = new THREE.Group();
+  parts.forEach((p, i) => {
+    const kind = look(i);
+    const m = KIT.brick(p, kind === "pale" ? pale(p.color) : mat(p.color));
+    m.position.copy(m.userData.home);
+    if (kind === "new") {
+      const body = m.children[0], b = new THREE.Box3().setFromBufferAttribute(body.geometry.attributes.position), s = b.getSize(new THREE.Vector3());
+      const o = new THREE.Mesh(body.geometry, yellow); o.scale.set((s.x + 0.18) / s.x, (s.y + 0.18) / s.y, (s.z + 0.18) / s.z); m.add(o);
+    }
+    g.add(m);
+  });
+  return g;
+}
+// all pictures of the model use one scale, framed on the finished model
+const all = group(B.parts, () => "normal");
+const box = new THREE.Box3().setFromObject(all), centre = box.getCenter(new THREE.Vector3()), radius = box.getSize(new THREE.Vector3()).length() / 2;
+function shoot(g, { az = 35, el = 26, w = 1100, h = 860, bg = null } = {}) {
+  renderer.setSize(w, h, false);
+  renderer.setClearColor(bg ?? 0xffffff, bg === null ? 0 : 1);
+  scene.add(g);
+  const cam = new THREE.PerspectiveCamera(24, w / h, 0.1, 1000);
+  // fit the model's bounding sphere in whichever of the two fields of view is narrower
+  const vHalf = THREE.MathUtils.degToRad(12), hHalf = Math.atan(Math.tan(vHalf) * (w / h));
+  const d = (radius / Math.sin(Math.min(vHalf, hHalf))) * 0.92, a = THREE.MathUtils.degToRad(az), e = THREE.MathUtils.degToRad(el);
+  cam.position.set(centre.x + d * Math.cos(e) * Math.sin(a), centre.y + d * Math.sin(e), centre.z + d * Math.cos(e) * Math.cos(a));
+  cam.lookAt(centre);
+  renderer.render(scene, cam);
+  scene.remove(g);
+  return renderer.domElement.toDataURL("image/png");
+}
+// straight-on views for the turnaround, fitted to the model's real outline
+function shootSide(g, az, { w = 600, h = 760, bg = 0xa6a6a6 } = {}) {
+  renderer.setSize(w, h, false); renderer.setClearColor(bg, 1);
+  scene.add(g);
+  const size = box.getSize(new THREE.Vector3()), across = az % 180 === 0 ? size.x : size.z;
+  const half = Math.max(across / 2 / (w / h), size.y / 2) * 1.12;
+  const cam = new THREE.OrthographicCamera(-half * (w / h), half * (w / h), half, -half, 0.1, 1000);
+  const a = THREE.MathUtils.degToRad(az), d = radius * 4;
+  cam.position.set(centre.x + d * Math.sin(a), centre.y + d * 0.08, centre.z + d * Math.cos(a)); cam.lookAt(centre);
+  renderer.render(scene, cam); scene.remove(g);
+  return renderer.domElement.toDataURL("image/png");
+}
+const iconCache = new Map();
+function icon(p) {
+  const key = `${p.part}|${p.color}`;
+  if (iconCache.has(key)) return iconCache.get(key);
+  const q = { ...p, x: 0, y: 0, z: 0, rot: 0, w: p.rot % 180 ? p.d : p.w, d: p.rot % 180 ? p.w : p.d };
+  const g = new THREE.Group(), m = KIT.brick(q, mat(p.color)); m.position.set(0, 0, 0); g.add(m);
+  renderer.setSize(220, 220, false); renderer.setClearColor(0xffffff, 0);
+  scene.add(g);
+  const r = Math.hypot(q.w, q.d, q.h * PLATE + 0.2) / 2 + 0.15, cam = new THREE.OrthographicCamera(-r, r, r, -r, 0.1, 100);
+  cam.position.set(r * 2.4, r * 2.2, r * 2.8); cam.lookAt(0, 0, 0);
+  renderer.render(scene, cam); scene.remove(g);
+  const url = renderer.domElement.toDataURL("image/png"); iconCache.set(key, url); return url;
+}
+
+// ---- pages
+const foot = (n, left = true) => `<div class="foot">${left ? `<b>${n}</b><span>${B.notice}</span><span></span>` : `<span></span><span>${B.notice}</span><b>${n}</b>`}</div>`;
+let pageNo = 1;
+const pages = [];
+const f = B.physical;
+pages.push(`<section class="page cover"><div class="left">
+  <div class="kicker">A LEGO® brick model of</div><div class="title">${B.title}</div>
+  <div>${B.subtitle}</div>
+  <div class="tag">Unofficial fan-made building instructions</div>
+  <div class="big">${B.parts.length} <small>pieces</small></div>
+  <div>${B.steps.length} steps · ${(f.widthMm / 10).toFixed(1)} × ${(f.depthMm / 10).toFixed(1)} × ${(f.heightMm / 10).toFixed(1)} cm · about ${f.grams} g (estimated)</div>
+  <div class="warn"><b>Not physically build-tested.</b> Checked on a computer only (see the last page). Nobody has built it with real bricks yet.</div>
+  <div class="fine">Not produced, sponsored or endorsed by the LEGO Group. LEGO® is a trademark of the LEGO Group. Made with brick-stage.</div>
+</div><div class="right"><img alt="the finished model" src="${shoot(group(B.parts, () => "normal"), { w: 1300, h: 1250, bg: 0xa6a6a6 })}"></div></section>`);
+pageNo++;
+
+// parts inventory, 24 lines a page
+const inv = B.inventory;
+for (let i = 0; i < inv.length; i += 24) {
+  pages.push(`<section class="page"><h1>Parts inventory</h1><div class="inv">${inv.slice(i, i + 24).map((l) => `
+    <div class="cell${l.exists ? "" : " missing"}"><img alt="" src="${icon({ ...l, ...B.dims[l.part], rot: 0 })}">
+      <div class="row"><span class="q">${l.qty}×</span><span class="el">${l.element ?? "not made"}</span></div>
+      <div class="c"><i style="background:${B.colors[l.color][2]}"></i>${l.colorName}</div>
+      <div class="c">BrickLink ${l.bl}</div></div>`).join("")}</div>
+    <p style="margin-top:4mm;color:#5f6b73">${B.parts.length} pieces in ${inv.length} part/colour lines. Bold: the LEGO element ID (the number LEGO's Pick a Brick sells by), from Rebrickable.</p>
+    ${foot(pageNo++, pageNo % 2 === 0)}</section>`);
+}
+
+// steps, two to a page, all at one scale
+const shots = B.steps.map((st, k) => ({
+  k, st,
+  img: shoot(group(B.parts.slice(0, st.to), (i) => (i >= st.from ? "new" : "pale"))),
+  counts: (() => { const c = new Map(); for (let i = st.from; i < st.to; i++) { const p = B.parts[i], key = `${p.part}|${p.color}`; c.set(key, { p, n: (c.get(key)?.n || 0) + 1 }); } return [...c.values()]; })(),
+}));
+for (let i = 0; i < shots.length; i += 2) {
+  pages.push(`<section class="page"><div class="steps2">${shots.slice(i, i + 2).map(({ k, img, counts }) => `
+    <div class="step"><div class="callout">${counts.map(({ p, n }) => `<div><img alt="" src="${icon(p)}">${n}×</div>`).join("")}</div>
+      <div class="num">${k + 1}</div><div class="shot"><img alt="step ${k + 1}" src="${img}"></div></div>`).join("")}</div>
+    ${foot(pageNo++, pageNo % 2 === 0)}</section>`);
+}
+
+// about: what was checked, sources, turnaround
+const views = [0, 90, 180, 270].map((az) => shootSide(group(B.parts, () => "normal"), az));
+pages.push(`<section class="page"><h1>About this model</h1><div class="about"><div>
+  <p>${B.about}</p>
+  <p><span class="ok">Checked on a computer:</span> ${B.checked}</p>
+  <p class="warn"><b>Not tested:</b> nobody has built it with real bricks. How firmly the parts hold, part tolerances and whether the real model stands are unknown. The weight is an estimate.</p>
+  <h2 style="margin-top:6mm">The finished model: front, left, back and right</h2>
+  <div class="four">${views.map((v) => `<img alt="" src="${v}">`).join("")}</div>
+</div><div>
+  <div class="box"><h2>Files</h2>${B.files.map((x) => `<div>${x}</div>`).join("")}</div>
+  <div class="box"><h2>Sources</h2>${B.sources.map((x) => `<div>${x}</div>`).join("")}</div>
+  <p style="font-size:11px;color:#5f6b73">LEGO® is a trademark of the LEGO Group, which does not sponsor, authorise or endorse this booklet.</p>
+</div></div>${foot(pageNo++, pageNo % 2 === 0)}</section>`);
+
+document.getElementById("book").innerHTML = pages.join("");
+document.title = "BOOKLET READY · " + B.title;
+</script>
+</body>
+</html>

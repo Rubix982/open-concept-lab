@@ -6,6 +6,7 @@
 // Units: studs across, plates up (a brick is 3 plates). Times in ms.
 import { check } from "../../brick-check/lib/check.mjs";
 import { footprint, PARTS } from "../../brick-check/lib/parts.mjs";
+export { mirror } from "../../brick-check/lib/mirror.mjs";
 
 export const P = (part, color, x, y, z, rot = 0) => ({ part, color, x, y, z, rot });
 
@@ -16,12 +17,27 @@ export const P = (part, color, x, y, z, rot = 0) => ({ part, color, x, y, z, rot
 // a pivot [x, y, z] (studs, plates, studs) and an axis ("x" swings forward
 // and back, "z" sideways, "y" twists). The model is checked in its rest pose;
 // a joint is only physically real if the build uses a hinge there.
-export function model(name, parts, { joints = {} } = {}) {
+// Steps group parts the way an instruction booklet does. By default a new
+// step starts at a new layer once the step has 3 parts, or after 10 parts
+// (so a model built back and forth between layers doesn't become a booklet of
+// one-plate steps); pass `steps: [3, 5, …]` (parts per step) to choose.
+export { autoSteps };
+export function model(name, parts, { joints = {}, steps } = {}) {
   for (const [j, spec] of Object.entries(joints)) {
     if (!spec.parts?.length || !spec.pivot) throw new Error(`joint "${j}" of "${name}" needs parts and a pivot`);
     for (const i of spec.parts) if (!parts[i]) throw new Error(`joint "${j}" of "${name}" names part ${i}, which doesn't exist`);
   }
-  return { name, parts, joints };
+  return { name, parts, joints, steps: steps || autoSteps(parts) };
+}
+function autoSteps(parts) {
+  const out = [];
+  let n = 0;
+  parts.forEach((p, i) => {
+    if (i > 0 && ((p.y !== parts[i - 1].y && n >= 3) || n >= 10)) { out.push(n); n = 0; }
+    n++;
+  });
+  if (n) out.push(n);
+  return out;
 }
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
@@ -32,6 +48,7 @@ const DIRECTIONS = {
   left: (r) => [-18 - r() * 4, 3 + r() * 3, (r() - 0.5) * 3],
   right: (r) => [18 + r() * 4, 3 + r() * 3, (r() - 0.5) * 3],
   front: (r) => [(r() - 0.5) * 3, 3 + r() * 3, 16 + r() * 4],
+  back: (r) => [(r() - 0.5) * 3, 3 + r() * 3, -16 - r() * 4],
   everywhere: (r) => {
     const a = r() * Math.PI * 2, up = 0.25 + r() * 0.75, d = 14 + r() * 6;
     return [Math.cos(a) * d * (1 - up * 0.5), up * d, Math.sin(a) * d * (1 - up * 0.5)];
@@ -116,17 +133,26 @@ export class Director {
     if (host) delete this.models[host.checkedAs];
     this.models[checkedAs] = { name: checkedAs, parts: allParts };
     const r = rng(seed ?? this._seed++ * 7919);
-    const dirOf = DIRECTIONS[from];
-    if (!dirOf) throw new Error(`unknown direction "${from}"`);
+    // "path": each part arrives along the way brick-check says it really goes
+    // in — straight down, up from below, or slid in from the side.
+    let via = null;
+    if (from === "path") {
+      const res = check({ steps: [{ note: m.name, parts: allParts }] });
+      via = res.parts.slice(allParts.length - m.parts.length).map((p) => p.via || "down");
+    } else if (!DIRECTIONS[from]) throw new Error(`unknown direction "${from}"`);
+    const VIA = { down: [0, 1, 0], up: [0, -1, 0], "slide+x": [1, 0.15, 0], "slide-x": [-1, 0.15, 0], "slide+z": [0, 0.15, -1], "slide-z": [0, 0.15, 1] };
     const parts = m.parts.map((p, i) => {
       const f = footprint(p);
+      const d = via ? VIA[via[i]].map((v) => v * (via[i].startsWith("slide") ? 9 : 12)) : DIRECTIONS[from](r);
       return {
-        ...p, ...f, kind: PARTS[p.part].kind, mesh: !!PARTS[p.part].mesh,
+        ...p, ...f, kind: PARTS[p.part].kind, mesh: !!PARTS[p.part].mesh, via: via?.[i],
         t0: this.t + i * stagger, dur,
-        from: dirOf(r), spin: [(r() - 0.5) * 6, (r() - 0.5) * 8, (r() - 0.5) * 6],
+        from: d, spin: via ? [0, 0, 0] : [(r() - 0.5) * 6, (r() - 0.5) * 8, (r() - 0.5) * 6],
       };
     });
     const shift = host ? host.parts.length : 0;
+    let k = 0;
+    (m.steps || [m.parts.length]).forEach((n) => { if (parts[k]) parts[k].stepStart = true; k += n; });
     const joints = Object.fromEntries(Object.entries(m.joints || {}).map(([j, spec]) => [j, { ...spec, parts: spec.parts.map((i) => i + shift) }]));
     if (host) { host.parts.push(...parts); host.modelParts = allParts; host.checkedAs = checkedAs; Object.assign(host.joints, joints); }
     else this.actors[as] = { model: m.name, checkedAs, modelParts: allParts, parts, moves: [{ t: -1, dur: 0, to: at, hop: 0 }], turns: [], joints, poses: [] };
@@ -254,6 +280,52 @@ export class Director {
   open(id, { dur = 900 } = {}) { return this._set(id, true, dur); }
   close(id, { dur = 900 } = {}) { return this._set(id, false, dur); }
 
+  // Start a section of the build, like the booklet's numbered sections.
+  // Shows as a chapter and a caption kicker. Doesn't advance time.
+  section(title) {
+    this.sectionCount = (this.sectionCount || 0) + 1;
+    this.captions.push({ t: this.t, kicker: `SECTION ${this.sectionCount}`, text: title });
+    return this;
+  }
+  // Fly a finished sub-assembly onto another actor, at `at` in the host's own
+  // coordinates. From then on it moves with the host, and the combined model
+  // is what gets checked. Advances time.
+  attach(sub, { onto, at, dur = 1400, lift = 8 } = {}) {
+    const s = this.actors[sub], h = this.actors[onto];
+    if (!s || !h) throw new Error(`attach needs two actors ("${sub}" onto "${onto}")`);
+    if (s.attached) throw new Error(`"${sub}" is already attached`);
+    const hostAt = h.moves[h.moves.length - 1].to, target = [hostAt[0] + at[0], hostAt[1] + at[1], hostAt[2] + at[2]];
+    // lift clear of the host's tallest point, move across, set down — a
+    // straight line would pass through the host
+    const cur = s.moves[s.moves.length - 1].to;
+    const hostTop = hostAt[1] + Math.max(...h.modelParts.map((p) => p.y + footprint(p).h));
+    const high = Math.max(hostTop, target[1], cur[1]) + lift;
+    s.moves.push({ t: this.t, dur: dur * 0.3, to: [cur[0], high, cur[2]], hop: 0, steps: 1 });
+    s.moves.push({ t: this.t + dur * 0.3, dur: dur * 0.45, to: [target[0], high, target[2]], hop: 0, steps: 1 });
+    s.moves.push({ t: this.t + dur * 0.75, dur: dur * 0.25, to: target, hop: 0, steps: 1 });
+    s.attached = { to: onto, t: this.t + dur, offset: at };
+    // the sub-assembly is built on its own first, so it must stand on its own
+    this.models[`${s.checkedAs} (built on its own)`] = { name: `${s.checkedAs} (built on its own)`, parts: s.modelParts };
+    // then host + sub as one model, in the host's coordinates
+    const shifted = s.modelParts.map((p) => ({ ...p, x: p.x + at[0], y: p.y + at[1], z: p.z + at[2] }));
+    const name = `${h.checkedAs} + ${s.checkedAs}`;
+    delete this.models[h.checkedAs]; delete this.models[s.checkedAs];
+    h.modelParts = [...h.modelParts, ...shifted]; h.checkedAs = name; s.checkedAs = name;
+    this.models[name] = { name, parts: h.modelParts };
+    this._advance(this.t + dur);
+    return this;
+  }
+  // Circle the camera once around an actor. Doesn't advance time.
+  // `offset` aims above the actor's base (studs, plates, studs), for tall models.
+  turnaround(actor, { dur = 6000, el = 14, dist = 30, offset } = {}) {
+    const start = this._lastShot?.az ?? 0;
+    this.shot({ follow: actor, offset, az: start, el, dist }, 800);
+    const t0 = this.t;
+    for (let k = 1; k <= 4; k++) this.camera.push({ t: t0 + 800 + ((k - 1) * (dur - 800)) / 4, dur: (dur - 800) / 4, shot: { follow: actor, offset, az: start + 90 * k, el, dist } });
+    this._lastShot = { follow: actor, offset, az: start + 360, el, dist };
+    return this;
+  }
+
   // Run several actions at the same time; time moves on to the longest.
   together(fn) {
     const outer = this._group, start = this.t;
@@ -270,14 +342,14 @@ export class Director {
     const reports = {};
     for (const [name, m] of Object.entries(this.models)) {
       const r = check({ steps: [{ note: name, parts: m.parts }] });
-      const actor = Object.keys(this.actors).find((k) => this.actors[k].checkedAs === name);
+      const actor = Object.keys(this.actors).find((k) => this.actors[k].checkedAs === name && !this.actors[k].attached);
       reports[name] = { ok: r.ok, errors: r.errors, warnings: r.warnings, stats: r.stats, parts: m.parts, actor };
     }
     return {
       meta: this.meta, duration: this.t + 600,
       actors: Object.fromEntries(Object.entries(this.actors).map(([k, a]) => [k, a.kind === "figure"
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
-        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [] }])),
+        : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null }])),
       callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
       letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,

@@ -60,25 +60,43 @@ export function check(design) {
   const comps = new Set(parts.map((p) => find(p.i)));
   if (comps.size > 1) err("one-piece", `design falls apart into ${comps.size} separate pieces`, null);
 
-  // --- buildable in the order given
+  // --- buildable in the order given, and how each part goes in
+  // Each part needs a way in that doesn't pass through anything already built:
+  //   down  — pressed straight down onto what's below (the usual way)
+  //   up    — pushed up from below into what's above
+  //   slide — set down beside its place, slid in sideways under something
+  //           already built, then pressed down (needs a plate of clearance
+  //           above it, as in the Microduck booklet's "slide in" steps)
+  // A part that would have to connect above and below at once can't go in.
   const placed = new Set();
   const maxY = Math.max(...parts.map((p) => p.y + footprint(p).h));
+  let bx0 = Infinity, bx1 = -Infinity, bz0 = Infinity, bz1 = -Infinity;
+  for (const p of parts) { const f = footprint(p); bx0 = Math.min(bx0, p.x); bx1 = Math.max(bx1, p.x + f.w); bz0 = Math.min(bz0, p.z); bz1 = Math.max(bz1, p.z + f.d); }
+  const clear = (x0, x1, y0, y1, z0, z1) => {
+    for (let x = x0; x < x1; x++) for (let z = z0; z < z1; z++) for (let y = y0; y < y1; y++) {
+      const q = occ.get(`${x},${y},${z}`); if (q !== undefined && placed.has(q)) return false;
+    }
+    return true;
+  };
+  const name = (p) => `step ${p.step + 1}: part ${p.i} (${PARTS[p.part].name})`;
   for (const p of parts) {
-    const f = footprint(p);
-    const below = edges.filter((e) => e.above === p.i && placed.has(e.below));
-    const above = edges.filter((e) => e.below === p.i && placed.has(e.above));
-    if (p.y > 0 && !below.length && !above.length)
-      err("buildable", `step ${p.step + 1}: part ${p.i} (${PARTS[p.part].name}) has nothing to attach to when placed`, p.i);
-    const blocked = (y0, y1) => {
-      for (let x = p.x; x < p.x + f.w; x++) for (let z = p.z; z < p.z + f.d; z++)
-        for (let y = y0; y < y1; y++) { const q = occ.get(`${x},${y},${z}`); if (q !== undefined && placed.has(q)) return true; }
-      return false;
-    };
-    if (below.length || p.y === 0) {
-      if (blocked(p.y + f.h, maxY + 1))
-        err("buildable", `step ${p.step + 1}: part ${p.i} (${PARTS[p.part].name}) can't be pressed down — something is already built above it`, p.i);
-    } else if (above.length && blocked(0, p.y)) {
-      err("buildable", `step ${p.step + 1}: part ${p.i} (${PARTS[p.part].name}) can't be pushed up into place — something is already built below it`, p.i);
+    const f = footprint(p), X1 = p.x + f.w, Z1 = p.z + f.d, top = p.y + f.h;
+    const below = edges.some((e) => e.above === p.i && placed.has(e.below));
+    const above = edges.some((e) => e.below === p.i && placed.has(e.above));
+    if (p.y > 0 && !below && !above) err("buildable", `${name(p)} has nothing to attach to when placed`, p.i);
+    if (below && above) { err("buildable", `${name(p)} would have to connect above and below at once — it can't go in`, p.i); placed.add(p.i); continue; }
+    if (above) {
+      if (clear(p.x, X1, 0, p.y, p.z, Z1)) p.via = "up";
+      else err("buildable", `${name(p)} can't be pushed up into place — something is already built below it`, p.i);
+    } else if (clear(p.x, X1, top, maxY + 1, p.z, Z1)) {
+      p.via = "down";
+    } else {
+      // slide in at one plate above its place, out past the edge of the model
+      const y0 = p.y + 1, y1 = top + 1;
+      const ways = [["+x", [p.x, bx1 + 1, p.z, Z1]], ["-x", [bx0 - 1, X1, p.z, Z1]], ["+z", [p.x, X1, p.z, bz1 + 1]], ["-z", [p.x, X1, bz0 - 1, Z1]]];
+      const way = ways.find(([, [x0, x1, z0, z1]]) => clear(x0, x1, y0, y1, z0, z1));
+      if (way) p.via = `slide${way[0]}`;
+      else err("buildable", `${name(p)} can't be pressed down — something is already built above it`, p.i);
     }
     placed.add(p.i);
   }
