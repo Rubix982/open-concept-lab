@@ -1434,3 +1434,101 @@ paper's own abstract page. **Medium** for completeness: abstracts only, and a de
 can still be wrong in ways an abstract does not reveal.
 
 **Artifacts:** web/data/papers.yml (7 entries, all `verified: true`)
+
+## [R-012] Finding: reading the two papers moved both claims we made from their abstracts
+
+_Date: 2026-10-03_
+
+[R-011] put two papers into §2 on the strength of their abstracts. [R-012] read them. **Both
+pre-registered falsification conditions fired**, in opposite directions — one overlap is
+larger than we said, one is smaller.
+
+### He et al. (2601.04600) overlap MORE than §2 admits
+
+They edit **GPT-J-6B with ROME at layers 5–20** on MQuAKE and CounterFact. Generalization
+is paraphrase accuracy. Their numbers:
+
+| edit layer | MQuAKE edited-hop | CounterFact paraphrase |
+| ---: | ---: | ---: |
+| 5 | 92.5% | 76.3% |
+| 15 | 72.5% | 65.6% |
+| 20 | **31.7%** | 65.6% |
+
+That is [E-028]'s phenomenon, as already recorded. **What was not recorded is that they
+also measured our mechanism.** They report:
+
+> "the average cosine similarity between subject keys for original and rephrased prompts
+> declines steadily from roughly 0.80 at layer 5 to about 0.50 at layer 25"
+
+That is **[E-019] and [E-020]** — the coefficient decay for reordered probes, and the
+cosine underneath it. We measured 0.984 → 0.471; they measured 0.80 → 0.50. Same
+quantity, same shape, published January 2026. The layer sweep is not new either.
+
+**What survives, and it is sharper than "we had a control and they did not".** They do not
+control edit strength across layers. Their warrant for treating the effect as depth is:
+
+> "ROME achieves stable and high edit success rates"
+
+**Edit success is exactly the metric [E-028a] showed cannot measure edit strength** — lift
+on the injected target spans **0.17 nats** across two layers and a fourfold step budget
+while belief displacement spans **5.70**. It saturates by 25 steps and carries no further
+information. So their control is one we independently measured to be uninformative, and
+[E-028b] instead matched **belief displacement** at a 16× step budget and found the effect
+survives.
+
+That is a real contribution and a narrow one: not the phenomenon, not the mechanism, but
+**the demonstration that the field's standard efficacy check cannot license the inference
+they draw from it.** §2 and §7 should say that, rather than the vaguer "our control".
+
+**What remains unclaimed by them:** the analytic result. They report cosine *declining*
+for rephrased prompts; nothing in what we read states that prefix-sharing prompts sit at
+**exactly 1.000**, for any `C`, at every layer. [E-020]'s decomposition — that the norm
+ratio carries none of the decay — also appears to be ours.
+
+### Ravfogel et al. (2605.12426) is NOT a T-086 candidate
+
+§2 offers it as the first candidate explanation for type-matched displacement. **Reading it
+withdraws that.** Their own limitations section:
+
+> "Our setting treats relations as opaque tokens and attributes as **arbitrary entities**,
+> but real factual knowledge carries rich semantic structure, such as correlated relations,
+> **typed attributes**, polysemy, multi-token entities, and long-tailed frequencies."
+
+**Typed attributes are explicitly outside their setting.** Our finding is entirely about
+attribute type — a country, a profession, a language. Their construction has no notion of
+it, so it cannot predict our result, and the sentence in §2 claiming it would is wrong.
+
+Worse for the candidate reading: their subject embedding is a **block vector, one block per
+relation**, and the MLP selects the block for the queried relation. Their counterfactual
+perturbation experiment swaps one relation's attribute by minimum-norm perturbation and
+finds the MLP *"follows"* on the queried relation and stays *"stable"* on the others.
+
+**That is close to the opposite of what we measure.** A per-relation block account predicts
+perturbation stays local to the edited relation. [E-033] finds an edit damages everything
+about the subject, with the worst damage following the injected value's **type** rather
+than the edited relation.
+
+**So the honest framing is a tension, not a candidate.** A theoretical account of
+memorisation structure predicts relation-local perturbation; our measurement on real models
+finds subject-wide damage. One of: the single-layer construction does not carry to deep
+models (their own stated limitation), or ROME's rank-one update does not act on the
+structure the construction describes, or the account is incomplete in the way typed
+attributes would make it. That is more interesting than a candidate explanation and it is
+honest; [T-086] remains without one.
+
+**Not purely synthetic**, in fairness: their §5.3 probes Qwen2.5-0.5B, Qwen3-14B,
+Llama-3.1-8B, Llama-3.2-1B and Phi-4 on natural-language relational facts. The theory is
+single-layer; the probing is not.
+
+### What this cost and bought
+
+An afternoon of reading moved two claims that were already in the packet — one citation
+now covers more of our work than we credited, one supports less than we claimed. Both were
+written from abstracts eight hours earlier. **The lesson is not "read before citing", which
+we knew; it is that an abstract systematically under-reports overlap and over-reports
+applicability**, because abstracts sell the contribution and bury the setting.
+
+**Confidence: high** on both corrections — each rests on quoted sentences from the papers'
+own full texts. Both papers move to `skimmed`; neither has been read line by line.
+
+**Artifacts:** web/data/papers.yml (status updates); this entry

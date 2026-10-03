@@ -362,11 +362,11 @@ ravfogel2026geometric:
   year: 2026
   venue: arXiv 2605.12426
   url: https://arxiv.org/abs/2605.12426
-  status: to-read
+  status: skimmed
   relevance: high
   verified: true
   projects: [edit-slice]
-  gives_me: A candidate answer to T-086. Subject embeddings hold a linear superposition of their attribute vectors and the MLP acts as a relation-conditioned selector, not the associative key-value store ROME assumes. If that survives past the single-layer setting it predicts both the broad same-subject damage and why displacement follows the injected value's type.
+  gives_me: "A theoretical account our measurements contradict, which is more useful than the candidate explanation we first took it for. Its own limitations put TYPED ATTRIBUTES outside the setting, and its per-relation block structure predicts perturbation local to the edited relation — the opposite of E-033. See [R-012]."
 
 he2026romelimits:
   title: On the Limitations of Rank-One Model Editing in Answering Multi-hop Questions
@@ -374,11 +374,11 @@ he2026romelimits:
   year: 2026
   venue: arXiv 2601.04600
   url: https://arxiv.org/abs/2601.04600
-  status: to-read
+  status: skimmed
   relevance: high
   verified: true
   projects: [edit-slice]
-  gives_me: Reports that ROME's generalization deteriorates sharply when editing later layers — our E-028 phenomenon, found independently and published first. Read before the depth result is described as new.
+  gives_me: "Has E-028's depth phenomenon AND E-019/E-020's cosine decay (0.80 at layer 5 to 0.50 at 25), both published first. What it lacks is a working control: it reads the effect as depth on the warrant that edit success is stable, which E-028a shows cannot measure edit strength. See [R-012]."
 
 youssef2026tracing:
   title: Tracing and Reversing Edits in LLMs

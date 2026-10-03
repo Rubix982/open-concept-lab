@@ -164,29 +164,52 @@ containing hand-curated template *sets*, and keep one prompt per record
 
 **Backward probing is narrower than we first claimed.** RippleEdits' Logical Generalization covers inverse and symmetric relations, which is the closest existing thing to a grounds probe; reading its test-type definitions directly is what forced the narrowing.<Evidence id="f-R-001">R-001</Evidence>
 
-**The depth result is not ours, as a phenomenon.** §4.4 reports that an edit applied at
-layer 20 reaches 2.96× less far per nat of belief displaced.
-<Cite id="he2026romelimits" narrative /> report, among three ROME failure modes, that
-generalization *"deteriorates sharply when editing later layers"* — the same phenomenon,
-found independently and published eight months before our run. What may still be ours is
-the **control** rather than the observation: we hold delivery fixed at a coefficient of
-exactly 1.000 and match belief displacement to within 0.3 nats, which separates the effect
-from edit strength and from optimisation budget. Whether that separation is a contribution
-is a question for a reader outside the project, and it is §7's fourth.<Margin>Found by
+**Neither the depth result nor the layer sweep is ours.**
+<Cite id="he2026romelimits" narrative /> edit GPT-J-6B with ROME across layers 5–20 and
+report paraphrase generalization falling from 92.5% to 31.7% on MQuAKE — §4.4's
+phenomenon, published January 2026. They also report *"the average cosine similarity
+between subject keys for original and rephrased prompts declines steadily from roughly
+0.80 at layer 5 to about 0.50 at layer 25"*, which is §4.3's decay and the cosine
+decomposition beneath it. We measured 0.984 → 0.471; they measured 0.80 → 0.50. Same
+quantity, same shape, eight months earlier.
+
+**What survives is narrow, and sharper than "we had a control".** Their warrant for
+reading the effect as depth is that *"ROME achieves stable and high edit success rates"*
+across layers. **Edit success is the metric §4.4 shows cannot measure edit strength** —
+lift on the injected target spans 0.17 nats across two layers and a fourfold step budget
+while belief displacement spans 5.70. So the inference rests on a check we independently
+measured to be uninformative, and matching on displacement instead (a 16× step budget)
+is what licenses the comparison. The contribution is not the phenomenon and not the
+mechanism: it is that **the field's standard efficacy check cannot support the inference
+drawn from it.** §7's fourth question asks whether that is worth anything.<Margin>Both
+sentences above were written from this paper's abstract and corrected after reading it.
+An abstract under-reports overlap and over-reports applicability, because it sells the
+contribution and buries the setting.<Evidence id="f-R-012">R-012</Evidence></Margin>
+
+What remains unclaimed by them: that prefix-sharing probes sit at **exactly 1.000**, for
+any `C`, at every layer — and §4.3's finding that the norm ratio carries none of the
+decay.<Margin>Found by
 re-running prior art against where the project is now rather than where it started
 — after §4.4 was written. The paper is still unread; this is from its abstract, which is
 enough to establish the overlap and not to size it.<Evidence id="f-R-011">R-011</Evidence></Margin>
 
-**A candidate for the one thing nothing here predicts.**
-<Cite id="ravfogel2026geometric" narrative /> prove, in a controlled single-layer setting,
-that subject embeddings encode linear superpositions of their attribute vectors and the MLP
-acts as a relation-conditioned selector — explicitly *not* the associative key-value store
-ROME assumes. If that survives past the controlled setting it predicts both of §4.5's
-findings at once: perturbing the superposition damages everything about the subject, and
-damages most what lies nearest the injected direction. We record it as a candidate for
-§8's first thread and nothing more — it is theory in a single layer against our
-measurements on 8B to 405B, and a frame that explains both of your results at once is
-exactly the kind to distrust.
+**A theoretical account that our measurements contradict.**
+<Cite id="ravfogel2026geometric" narrative /> prove, in a single-layer setting, that
+subject embeddings encode linear superpositions of their attribute vectors and the MLP acts
+as a relation-conditioned selector — explicitly *not* the associative key-value store ROME
+assumes. An earlier draft of this section offered it as §8's first candidate explanation
+for type-matched displacement. **Reading the paper withdraws that.** Their own limitations
+name *"typed attributes"* as outside the setting: attributes are arbitrary entities with no
+type structure, so the construction cannot predict a result that is entirely about type.
+
+The disagreement runs deeper than absence. Their subject embedding is a **block per
+relation**, and their counterfactual perturbation experiment finds the MLP *"follows"* on
+the queried relation and stays *"stable"* on the others — perturbation local to the edited
+relation. §4.5 measures the opposite: damage to everything about the subject, worst where
+the *injected value's type* matches, not where the edited relation does. Either the
+single-layer construction does not carry to deep models, which they flag themselves, or
+ROME's rank-one update does not act on the structure it describes. **§8's first thread
+still has no candidate explanation.**
 
 **What is left.** None of the above examines what an edit does to a fact's *premises*, and
 none reports the coefficient structure of the update itself. ROME <Cite id="meng2022rome" />
@@ -862,10 +885,11 @@ so the category has to be added deliberately or it vanishes in the rename._
    coefficient rather than the model.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
-4. **Is a control a contribution?** <Cite id="he2026romelimits" /> reported the depth
-   phenomenon first. We measured it with delivery pinned at exactly 1.000 and displacement
-   matched, which rules out edit strength and optimisation budget as explanations. Is
-   that worth anything on its own, or does prior observation of the phenomenon settle it?
+4. **Is it a contribution to show that a standard check cannot support the inference
+   drawn from it?** <Cite id="he2026romelimits" /> reported the depth phenomenon and the
+   cosine decay first, and read the effect as depth on the warrant that edit success is
+   stable across layers. §4.4 shows edit success cannot measure edit strength. Matching on
+   belief displacement instead, the effect survives. Is that worth anything on its own?
 
 ## 8 · What is open
 

@@ -411,3 +411,61 @@ than settling it.
 **Status:** closed
 **Artifacts:** web/data/papers.yml; agents/shared/findings.md -> "[R-011]"
 **Closed:** 2026-10-03
+
+---
+
+### R-012 · Read the two papers the packet cites from their abstracts
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-03
+**Updated:** 2026-10-03
+
+**Description:**
+
+[R-011] put two papers into §2 of the write-up on the strength of their abstracts alone.
+Both carry weight they have not earned by being read, and one of them is cited **against
+our own claim**:
+
+1. **He et al., arXiv 2601.04600.** §2 says our depth result is not new as a phenomenon
+   because they report generalization deteriorating with later edit layers. The finding
+   entry admits this is "from its abstract, which is enough to establish the overlap and
+   not enough to size it." **Question: how much do they actually overlap [E-028], and does
+   our control survive as a distinct contribution?** Specifically — which models, which
+   layers, what measure of generalization, and do they hold edit strength or delivery
+   fixed in any way?
+2. **Ravfogel et al., arXiv 2605.12426.** §2 offers it as [T-086]'s first candidate.
+   **Question: does the superposition-plus-selector account actually predict [E-033]'s
+   type-matched displacement, or does it only sound like it does?** Specifically — is the
+   "type" of an attribute a direction in their construction, and what would have to be
+   true of a real LM for the prediction to carry?
+
+**Why now.** Both are in the packet. Citing a paper against your own claim while having
+read only its abstract is the weakest spot in it, and it is the first thing a careful
+reader finds.
+
+**Falsification.** If He et al. turn out to hold edit strength fixed too, the "our control
+is the contribution" sentence in §2 and §7's question 4 both come out. If Ravfogel's
+construction does not give attribute *types* a geometry, the T-086 candidate is weaker
+than §2 implies and that sentence softens.
+
+**Result (2026-10-03).** Both falsification conditions fired, in opposite directions.
+
+**He et al. overlap MORE.** They also report the cosine decay — 0.80 at layer 5 to 0.50 at
+25 for rephrased prompts — which is [E-019]/[E-020], not just [E-028]. The layer sweep is
+not new either. What survives is narrower and sharper: they read the effect as depth on the
+warrant that "ROME achieves stable and high edit success rates", and [E-028a] measured edit
+success to be incapable of tracking edit strength (0.17 nats of range against 5.70). The
+contribution is that the standard check cannot license their inference.
+
+**Ravfogel supports LESS.** Its own limitations place "typed attributes" outside the
+setting, so it cannot predict a result that is entirely about type. Its per-relation block
+structure predicts perturbation *local to the edited relation*; [E-033] measures
+subject-wide damage following the injected type. Reframed in §2 from candidate explanation
+to contradiction. [T-086] has no candidate.
+
+**Status:** closed
+**Artifacts:** agents/shared/findings.md -> "[R-012]"; web/data/papers.yml (both to
+`skimmed`, both `gives_me` rewritten); web/notebook/edit-slice/review.md §2 and §7
+**Closed:** 2026-10-03

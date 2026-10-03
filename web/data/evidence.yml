@@ -467,6 +467,22 @@ f-R-011:
   gist: "Re-ran prior art against where the project now is rather than where it started. Four entries added to the reading list, each verified field-by-field…"
   surface: finding
 
+f-R-011b:
+  id: "R-011b"
+  kind: "Finding"
+  title: "the project's founding citations all resolve — two were described wrong"
+  date: "2026-10-03"
+  gist: "CLAUDE.md has carried eight arXiv identifiers since day one under its own warning: Seven of the eight had never been checked and were absent from the…"
+  surface: finding
+
+f-R-012:
+  id: "R-012"
+  kind: "Finding"
+  title: "reading the two papers moved both claims we made from their abstracts"
+  date: "2026-10-03"
+  gist: "[R-011] put two papers into §2 on the strength of their abstracts. [R-012] read them. Both pre-registered falsification conditions fired, in opposite…"
+  surface: finding
+
 t-T-001:
   id: "T-001"
   kind: "Thread"

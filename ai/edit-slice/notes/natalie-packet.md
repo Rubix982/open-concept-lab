@@ -50,15 +50,20 @@ checklist used to assemble the packet and the answers to questions likely to com
 >    wasted effort?
 > 3. **Is a careful existence claim at n≈30–42 publishable anywhere**, or does this need
 >    the frequency work it currently forbids itself?
-> 4. **Is a control a contribution?** A prior-art sweep run while assembling this packet
->    turned up He et al. (arXiv 2601.04600, January 2026), who report that ROME's
->    generalization "deteriorates sharply when editing later layers" — the depth
->    phenomenon in §4.4, found independently and published eight months before my run.
->    What I have that they do not is the control: delivery pinned at exactly 1.000 and
->    belief displacement matched, which rules out edit strength and optimisation budget.
->    Is that worth anything on its own? I have left the finding in with the prior work
->    cited beside it rather than quietly dropping it, but I do not know how it reads from
->    outside.
+> 4. **Is it a contribution to show a standard check cannot support the inference drawn
+>    from it?** A prior-art sweep while assembling this packet turned up He et al. (arXiv
+>    2601.04600, January 2026). Reading it properly, they have more of my work than I
+>    first credited: the depth phenomenon in §4.4 *and* the cosine decay in §4.3 — 0.80 at
+>    layer 5 to 0.50 at 25, against my 0.98 to 0.47. Eight months earlier.
+>
+>    What they do not have is a working control. They read the effect as depth because
+>    "ROME achieves stable and high edit success rates" across layers — and §4.4 shows
+>    edit success cannot measure edit strength, spanning 0.17 nats where real displacement
+>    spans 5.70. Matching on displacement instead, at a 16x step budget, the effect
+>    survives. So what I have is not the phenomenon and not the mechanism, but the
+>    demonstration that the field's standard efficacy check cannot license the conclusion
+>    people draw from it. Is that worth anything on its own? I have left everything in
+>    with the prior work cited beside it rather than quietly dropping it.
 >
 > **The honest framing:** most of what I found is what does not work. Section 5.1
 > separates the eliminations — which constrain the space for anyone — from my own

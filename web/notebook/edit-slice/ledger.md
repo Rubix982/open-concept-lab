@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**39 decisions · 19 findings · 67 threads (2 active, 50 answered, 3 dropped, 4 open, 8 parked)**
+**39 decisions · 21 findings · 67 threads (2 active, 50 answered, 3 dropped, 4 open, 8 parked)**
 
 ## Decisions and results
 
@@ -254,6 +254,14 @@ _2026-09-20_ — Tests the thread's two structural claims against the record rat
 ### R-011 · the depth result has prior art, and T-086 has a candidate {#f-R-011}
 
 _2026-10-03_ — Re-ran prior art against where the project now is rather than where it started. Four entries added to the reading list, each verified field-by-field…
+
+### R-011b · the project's founding citations all resolve — two were described wrong {#f-R-011b}
+
+_2026-10-03_ — CLAUDE.md has carried eight arXiv identifiers since day one under its own warning: Seven of the eight had never been checked and were absent from the…
+
+### R-012 · reading the two papers moved both claims we made from their abstracts {#f-R-012}
+
+_2026-10-03_ — [R-011] put two papers into §2 on the strength of their abstracts. [R-012] read them. Both pre-registered falsification conditions fired, in opposite…
 
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._
