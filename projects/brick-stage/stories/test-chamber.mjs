@@ -16,7 +16,7 @@ const cube = model("test-object", [
 
 const WIRE = [[14.5, 0, 12], [18, 0, 12], [18, 0, 27], [34, 0, 27], [34, 0, 36], [34, 24, 36], [40, 24, 36]];
 
-export default story({ title: "Test Chamber", drift: 0.6 }, (s) => {
+export default story({ title: "Test Chamber", poster: 33000, drift: 0.6 }, (s) => {
   s.shot({ at: [24, 4, 18], az: -30, el: 34, dist: 92 }, 0);
   s.caption("Test Chamber 01", "CONSTRUCTION");
   s.shot({ at: [23, 6, 17], az: -34, el: 27, dist: 74 }, 8000);

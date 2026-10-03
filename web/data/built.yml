@@ -6,6 +6,8 @@
 #          GitHub Pages). Use one of `from` or `url`, not both.
 #   topic: groups the cards on /built.
 #   ratio: preview aspect ratio; drop to 4/3 for a page with a tall sidebar.
+#   image: a still to show instead of the live page (relative to the copied
+#          folder), for pages heavy enough to slow the list down.
 
 built:
   - name: belief-revision
@@ -107,6 +109,7 @@ built:
       builds a friend. Every model in the story is checked as really buildable
       with LEGO bricks, and each one can be downloaded as an LDraw file.
     ratio: 1.6
+    image: poster.jpg
 
   - name: test-chamber
     title: Test Chamber
@@ -118,6 +121,7 @@ built:
       installed, and a pictogram subject solves the test with a cube built from
       real bricks.
     ratio: 1.6
+    image: poster.jpg
 
   - name: rated-for-two
     title: Rated for Two
@@ -129,6 +133,7 @@ built:
       particles and a generated chord pad — and every model still checked as
       really buildable.
     ratio: 1.6
+    image: poster.jpg
 
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.

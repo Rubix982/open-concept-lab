@@ -7,6 +7,8 @@ import type { BuiltPage, LabData } from "@site/plugins/lab-data";
 function Card({ page }: { page: BuiltPage }): ReactNode {
   const based = useBaseUrl(page.src);
   const href = page.external ? page.src : based;
+  const imageBased = useBaseUrl(page.image ?? "");
+  const image = page.image && (/^https?:/.test(page.image) ? page.image : imageBased);
 
   return (
     <figure className="ocl-card">
@@ -14,15 +16,23 @@ function Card({ page }: { page: BuiltPage }): ReactNode {
         className="ocl-card__preview"
         style={{ aspectRatio: `${page.ratio}` }}
       >
-        <iframe
-          className="ocl-card__frame"
-          src={href}
-          title={`${page.title} — live preview`}
-          loading="lazy"
-          tabIndex={-1}
-          aria-hidden="true"
-          sandbox="allow-scripts allow-same-origin"
-        />
+        {/* A heavy page (a 3D scene) gets a still, linked to the page, so the
+            list doesn't run every scene at once. */}
+        {image ? (
+          <a href={href} target="_blank" rel="noreferrer" tabIndex={-1} aria-hidden="true">
+            <img className="ocl-card__image" src={image} alt="" loading="lazy" decoding="async" />
+          </a>
+        ) : (
+          <iframe
+            className="ocl-card__frame"
+            src={href}
+            title={`${page.title} — live preview`}
+            loading="lazy"
+            tabIndex={-1}
+            aria-hidden="true"
+            sandbox="allow-scripts allow-same-origin"
+          />
+        )}
       </div>
       <figcaption className="ocl-card__body">
         <h3 className="ocl-card__title">

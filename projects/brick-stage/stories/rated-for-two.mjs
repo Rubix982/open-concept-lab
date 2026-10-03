@@ -35,7 +35,7 @@ const path = model("path", [
   P("2445", TAN, 0, 1, 0), P("2445", TAN, 12, 1, 0),
 ]);
 
-export default story({ title: "Rated for Two", drift: 0.5 }, (s) => {
+export default story({ title: "Rated for Two", poster: 21800, drift: 0.5 }, (s) => {
   s.music("romance");
   s.shot({ at: [0, 12, -6], az: 8, el: 12, dist: 50 }, 0);
   // the stage assembles behind the opening card

@@ -37,6 +37,8 @@ export type BuiltPage = {
   /** Where the source lives, for the card's provenance line. */
   origin: string;
   ratio: number;
+  /** A still to show instead of running the page live, for heavy pages. */
+  image?: string;
 };
 
 export type Project = {
@@ -338,6 +340,7 @@ export default async function labData(
             from?: string;
             url?: string;
             ratio?: number;
+            image?: string;
           }[];
         }>(path.join(dataDir, "built.yml")))?.built ?? [];
 
@@ -352,6 +355,8 @@ export default async function labData(
           ? new URL(entry.url).host
           : (entry.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
         ratio: entry.ratio ?? 1.6,
+        // relative to the copied page's folder, or absolute for a hosted page
+        image: entry.image ? (/^https?:/.test(entry.image) ? entry.image : `/demos/${entry.name}/${entry.image}`) : undefined,
       }));
 
       const rawProjects =

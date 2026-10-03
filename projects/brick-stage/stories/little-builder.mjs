@@ -29,7 +29,7 @@ const base = [P("3029", LGRAY, 0, 0, 0), P("2445", LGRAY, 0, 0, 4)];
 const shelter = model("shelter", [...base, ...room(0)]);
 const extension = model("extension", room(6));
 
-export default story({ title: "The Little Builder", drift: 1.2 }, (s) => {
+export default story({ title: "The Little Builder", poster: 28600, drift: 1.2 }, (s) => {
   s.shot({ at: [-9, 8, -4], az: 28, el: 16, dist: 34 }, 0);
   s.card("PROCEDURE 01", "Assemble the unit.");
 
