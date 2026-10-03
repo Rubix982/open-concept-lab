@@ -63,7 +63,7 @@ export default story({ title: "The Bridge to Gus — Scene 1", drift: 0.3 }, (s)
   s.together((g) => { g.pose("bolt", "lean", 22, { dur: 600 }); g.pose("bolt", "arm-r", 95, { dur: 600 }); g.pose("bolt", "hand-r", 0, { dur: 600 }); });
   s.hold("bolt", "r", "cake", { offset: [0.5, -2.6, -0.9] });  // by the flame: the cake hangs out in front of him
   s.together((g) => { g.pose("bolt", "lean", 0, { dur: 700 }); g.pose("bolt", "arm-r", 100, { dur: 700 }); g.face("bolt", "grin"); });
-  s.move("bolt", [9.5, 2, 1.6], { dur: 700 });          // steps back so the cake swings clear of the counter
+  s.move("bolt", [9.5, 2, 2.6], { dur: 700 });          // steps back so the cake swings clear of the counter
 
   s.shot({ at: [9, 8, 4], az: 30, el: 10, dist: 20 }, 1200);
   s.together((g) => { g.face("maribel", "surprised"); g.say("maribel", "That's the fire part, Bolt.", { dur: 2000 }); });
