@@ -403,3 +403,91 @@ zhang2026actionable:
   verified: true
   projects: [edit-slice, rome-neighbors]
   gives_me: Current map of the field, organised as locate / steer / improve. Use it to check which of our open threads someone has already named, rather than as a source to cite.
+
+# --- added 2026-10-03 by [R-011]. These seven were cited in the project's CLAUDE.md
+# --- from day one under an explicit "unverified, verify before use" warning, and had
+# --- never been checked. All seven resolve. Two descriptions needed correcting.
+
+luo2026knowledgesmith:
+  title: "KnowledgeSmith: Uncovering Knowledge Updating in LLMs with Model Editing and Unlearning"
+  authors: Luo, Y., Zhou, Z., Chen, H., Qiu, K., Savvides, M., Li, S., Wang, J.
+  year: 2026
+  venue: ICLR
+  url: https://arxiv.org/abs/2510.02392
+  status: to-read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: Casts editing and unlearning as one constrained optimisation and reports a consistency-capacity trade-off across graph levels and data scales. The reason not to re-derive propagation-versus-structure from scratch.
+
+rinberg2025ripplebench:
+  title: "RippleBench: Capturing Ripple Effects Using Existing Knowledge Repositories"
+  authors: Rinberg, R., Bhalla, U., Shilov, I., Calmon, F. P., Gandikota, R.
+  year: 2025
+  venue: arXiv 2512.04144
+  url: https://arxiv.org/abs/2512.04144
+  status: to-read
+  relevance: high
+  verified: true
+  projects: [edit-slice]
+  gives_me: "Distance-stratified propagation curves for eight UNLEARNING methods, with distance from WikiRAG semantic neighbours. Its cross-model result is the close parallel to ours: delta curves nearly identical across four models, read as ripple being a property of the method rather than the base model. NOTE: distance is semantic retrieval, not a pluggable graph metric — see [R-011]."
+
+chaudhury2026forgetting:
+  title: "Forgetting is Not Erasure: Recovering Latent Knowledge via Transport Keys"
+  authors: Chaudhury, A.
+  year: 2026
+  venue: arXiv 2606.02860
+  url: https://arxiv.org/abs/2606.02860
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [edit-slice]
+  gives_me: "Apparent forgetting as interface drift rather than erasure, recovered by stitching with transport keys. If it carried to LMs, our damage would be accessibility loss rather than destruction. NOTE: the evidence is split CIFAR-100 and a compact ViT — vision, not language — see [R-011]."
+
+kwon2026engram:
+  title: "AI Engram: In Search of Memory Traces in Artificial Intelligence"
+  authors: Kwon, J., Kim, D.-K., Kim, J., Kim, Y., Kook, W., Cha, M.
+  year: 2026
+  venue: ICML (oral)
+  url: https://arxiv.org/abs/2606.14997
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [edit-slice]
+  gives_me: A closed-form estimator isolating memory traces, composable and erasable by linear arithmetic. The strongest current claim that edits are linear objects — which our type-matched displacement result bears on directly.
+
+schessl2026pathdependence:
+  title: "Forgetting Is Not a Fix: Path Dependence in Sequential Engram Editing"
+  authors: Schessl, F. M.
+  year: 2026
+  venue: arXiv 2607.24805
+  url: https://arxiv.org/abs/2607.24805
+  status: to-read
+  relevance: medium
+  verified: true
+  projects: [edit-slice]
+  gives_me: Falsifies the commutative-manifold hypothesis of kwon2026engram for sequential editing — cut order matters, and erased knowledge partially returns under later unrelated cuts. A worked example of attacking a single-edit result with the sequential case, which is the shape of attack our own work invites.
+
+kruthof2026editpropbench:
+  title: "EditPropBench: Measuring Factual Edit Propagation in Scientific Manuscripts"
+  authors: Kruthof, G.
+  year: 2026
+  venue: arXiv 2605.02083
+  url: https://arxiv.org/abs/2605.02083
+  status: to-read
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: Dependency-labelled cascades with sentence-level labels for required updates versus text that should not move — the structure we want, applied to manuscripts and LLM editors rather than weights.
+
+bairi2023codeplan:
+  title: "CodePlan: Repository-level Coding using LLMs and Planning"
+  authors: Bairi, R., Sonwane, A., Kanade, A., Vageesh D C, Iyer, A., Parthasarathy, S., Rajamani, S., Ashok, B., Shet, S.
+  year: 2023
+  venue: arXiv 2309.12499 (cs.SE)
+  url: https://arxiv.org/abs/2309.12499
+  status: skimmed
+  relevance: low
+  verified: true
+  projects: [edit-slice]
+  gives_me: "Incremental dependency analysis driving repository-level change, with the compiler as oracle. The reason claim 2 is 'exists in software engineering, unused in editing' rather than open. NOTE: CLAUDE.md cites a Proc. ACM Softw. Eng. 1 (FSE) 2024 venue that the arXiv record does not confirm."

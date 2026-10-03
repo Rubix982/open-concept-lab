@@ -1358,3 +1358,79 @@ cutoff precedes much of the relevant window — which is why every entry here wa
 rather than recalled.
 
 **Artifacts:** web/data/papers.yml (4 entries, all `verified: true`)
+
+## [R-011b] Finding: the project's founding citations all resolve — two were described wrong
+
+_Date: 2026-10-03_
+
+`CLAUDE.md` has carried eight arXiv identifiers since day one under its own warning:
+
+> Citation IDs above came from search and are **unverified**. Verify against arXiv before
+> any of them enters a document that leaves the repo.
+
+Seven of the eight had never been checked and were absent from the reading list. All seven
+were fetched and **all seven resolve to real papers**. No phantoms. They are now in
+`papers.yml` with `verified: true`.
+
+**Two descriptions did not survive contact, and both were load-bearing.**
+
+### RippleBench is about unlearning, and its distance function is not pluggable
+
+CLAUDE.md says:
+
+> **RippleBench** (2512.04144) — distance-stratified propagation curves, and the distance
+> function is pluggable including graph path length. **Check whether a code dependency
+> graph can be swapped in. Highest-leverage available move.**
+
+The paper (Rinberg et al.) builds distance from **WikiRAG semantic neighbours** and
+generates multiple-choice questions at varying semantic distance. The abstract describes
+no pluggable distance metric and no graph path length. It also evaluates **eight unlearning
+methods**, not editing methods.
+
+So *"swap in a code dependency graph"* — recorded as the **highest-leverage available
+move** — rests on a property the paper does not advertise. It may still be possible by
+modifying their pipeline, but it is not the drop-in the note implies, and the note should
+not be read as a plan until someone has looked at the code.
+
+**What it gives us instead is better than what we thought we wanted.** Its cross-model
+result — delta curves *nearly identical* across four models, read as ripple being a
+property of the **method** rather than the base model — is the close parallel to [E-032],
+where the pinning is exact across a 68× parameter range and the decay profile is
+approximately scale-invariant at matched depth. Two independent routes to the same shape
+of claim.
+
+### Forgetting is Not Erasure is a vision result
+
+CLAUDE.md lists it among the knowledge-editing literature, and the orphan arc's framing
+leaned on it: if forgetting is interface drift, our `damage` is accessibility loss rather
+than destruction.
+
+The evidence is **split CIFAR-100 with a ResNet-style network and a compact vision
+transformer**. No language model appears in the abstract. The idea may transfer and the
+stitching protocol is suggestive, but the paper does not establish it for LMs, and any
+sentence of ours leaning on it must say so.
+
+### The rest check out
+
+KnowledgeSmith (ICLR 2026) reports the consistency-capacity trade-off as described.
+EditPropBench is manuscripts and LLM editors rather than weights, exactly as noted. AI
+Engram is ICML 2026 oral, and 2607.24805 is indeed its sequential-editing critique —
+*"Forgetting Is Not a Fix: Path Dependence in Sequential Engram Editing"*, which falsifies
+the commutative-manifold hypothesis while leaving the single-edit results untouched. One
+loose end: CLAUDE.md cites CodePlan as *Proc. ACM Softw. Eng. 1 (FSE), 2024*; the arXiv
+record does not confirm that venue, so the venue claim stays unverified even though the
+paper is real.
+
+### Why this is worth an entry rather than a quiet fix
+
+Both corrections are of the same kind: a citation was summarised from a search result,
+the summary was plausible, and the project then **reasoned from the summary** — in one
+case naming it the highest-leverage move available. Nothing was fabricated; the drift was
+all in the description. That is the failure mode the rule in CLAUDE.md exists to catch,
+and it took four months to run the check it asks for.
+
+**Confidence: high** for the resolutions and the two corrections — each read off the
+paper's own abstract page. **Medium** for completeness: abstracts only, and a description
+can still be wrong in ways an abstract does not reveal.
+
+**Artifacts:** web/data/papers.yml (7 entries, all `verified: true`)
