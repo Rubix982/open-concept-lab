@@ -75,6 +75,17 @@ built:
       survive contact with the evidence.
     ratio: 1.6
 
+  - name: datascalar-race
+    title: DataScalar Race
+    from: hpc/datascalar-sim
+    topic: HPC
+    what: >
+      A 1997 bet that arithmetic would become free and moving data would not.
+      Races a traditional machine against DataScalar, where every chip runs
+      the same program and the chip that owns the data broadcasts it, then
+      shows the move cost at which that wasted compute starts saving energy.
+    ratio: 1.6
+
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
   - name: the-shelf

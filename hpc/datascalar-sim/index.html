@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataScalar Race</title>
+<style>
+  :root {
+    --bg: #f7f5f0; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a65; --line: #e2dfd7;
+    --op: #8aa4c8; --mem: #3f7d5a; --stall: #e8b4a0; --req: #c2553a; --bcast: #2f6fb0;
+    --accent: #2f6fb0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --panel: #1e1e1c; --ink: #ecebe6; --muted: #9a998f; --line: #34332f;
+      --op: #5b7397; --mem: #5fae80; --stall: #7a4a3a; --req: #e0775c; --bcast: #6aa6e8;
+      --accent: #6aa6e8;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 18px; max-width: 760px; }
+  .sub a { color: var(--accent); }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 18px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+  .controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .controls label b { color: var(--ink); font-weight: 600; }
+  .controls input[type=range], .controls select { width: 100%; }
+  .bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  button { font: inherit; padding: 6px 14px; border-radius: 7px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); color: #fff; border-color: transparent; }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .presets button { font-size: 13px; padding: 5px 12px; border-radius: 999px; }
+  .presets button.on { border-color: var(--accent); color: var(--accent); }
+  .preset-note { color: var(--muted); font-size: 13px; margin: 0 0 12px; min-height: 1.45em; max-width: 760px; }
+  #scrub { flex: 1 1 160px; min-width: 120px; }
+  .clock { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px 10px; margin-bottom: 14px; }
+  .panel h2 { font-size: 14px; margin: 0; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .panel h2 span { font-weight: 400; color: var(--muted); font-size: 12px; }
+  canvas { display: block; width: 100%; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .stat .k { font-size: 12px; color: var(--muted); }
+  .stat .v { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stat .d { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  .note { color: var(--muted); font-size: 12px; max-width: 760px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DataScalar Race</h1>
+  <p class="sub">
+    Memory is split across chips. A traditional machine runs the program once and fetches remote
+    data with a request and a response. <b>DataScalar</b> runs the same program on <i>every</i> chip:
+    whichever chip owns the data reads it and broadcasts it one way, so nobody asks.
+    The extra compute is wasted on purpose, which pays off if moving data costs more than arithmetic.
+    Based on Burger, Kaxiras &amp; Goodman,
+    <a href="https://www.cs.utexas.edu/ftp/dburger/papers/JSA99.pdf">DataScalar Architectures</a> (ISCA ’97 / JSA ’99).
+  </p>
+
+
+  <div class="presets" id="presets"></div>
+  <p class="preset-note" id="presetNote"></p>
+
+  <div class="bar">
+    <button id="play" class="primary">Play</button>
+    <button id="reset">Reset</button>
+    <label style="font-size:12px;color:var(--muted)">Speed
+      <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="3">3×</option></select></label>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Scrub through time">
+    <span class="clock" id="clock"></span>
+  </div>
+
+  <div class="panel">
+    <h2>Traditional <span>chip 0 runs the program · remote load = request → read → response</span></h2>
+    <canvas id="cTrad"></canvas>
+  </div>
+  <div class="panel">
+    <h2>DataScalar <span>every chip runs the program · owner reads and broadcasts</span></h2>
+    <canvas id="cDs"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--op)"></i>arithmetic</span>
+      <span><i style="background:var(--mem)"></i>local memory read</span>
+      <span><i style="background:var(--stall)"></i>stalled, waiting for data</span>
+      <span><i style="background:var(--req)"></i>request / response</span>
+      <span><i style="background:var(--bcast)"></i>broadcast</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label>Chips <b id="nV"></b><input id="n" type="range" min="2" max="8" value="4"></label>
+    <label>Access pattern
+      <select id="pattern">
+        <option value="streaming">Streaming (long same-owner runs)</option>
+        <option value="strided">Strided (owner hops often)</option>
+        <option value="random">Random</option>
+      </select></label>
+    <label>Arithmetic ops per load <b id="opsV"></b><input id="ops" type="range" min="0" max="12" value="2"></label>
+    <label>Chip-to-chip latency (cycles) <b id="LV"></b><input id="L" type="range" min="2" max="60" value="20"></label>
+    <label>Interconnect
+      <select id="bus">
+        <option value="shared">Shared bus (a broadcast is 1 message)</option>
+        <option value="p2p">Point-to-point (a broadcast is N−1 messages)</option>
+      </select></label>
+    <label>Energy to move a word ÷ energy of one op <b id="rV"></b><input id="r" type="range" min="-1" max="3" step="0.05" value="1"></label>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="panel">
+    <h2>When does wasting compute pay off? <span>DataScalar energy ÷ traditional energy, across costs of moving data</span></h2>
+    <canvas id="cEnergy"></canvas>
+  </div>
+
+  <p class="note">
+    Toy model: in-order chips, one word per load, memory split into contiguous slices, one cycle per
+    arithmetic op, no caches. Time is always in DataScalar's favour here because replicated compute runs
+    in parallel. The real cost is energy: every chip executes every instruction. The bottom chart shows
+    where that waste is cheaper than the traffic it removes.
+  </p>
+  <div id="probe" hidden></div>
+</main>
+
+<script src="sim.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const M = 2, C = 1, LOADS = 48;
+
+  let res, params, simT = 0, playing = false, last = 0, tMax = 1;
+
+  function readParams() {
+    return {
+      n: +$('n').value, pattern: $('pattern').value, opsPerLoad: +$('ops').value,
+      L: +$('L').value, bus: $('bus').value, loads: LOADS, m: M, c: C,
+      ratio: Math.pow(10, +$('r').value),
+    };
+  }
+
+  function fmtRatio(x) { return x < 1 ? x.toFixed(2) : x < 10 ? x.toFixed(1) : Math.round(x).toString(); }
+
+  const PRESETS = [
+    { label: "The paper's picture", set: { n: 2, pattern: 'streaming', ops: 0, L: 20, bus: 'shared', r: 1 },
+      note: 'Two chips, back-to-back loads. Traditional pays a request and a response for every remote word; the DataScalar owner just runs ahead and streams its broadcasts.' },
+    { label: 'Owner hops every load', set: { n: 4, pattern: 'random', ops: 2, L: 20, bus: 'shared', r: 1 },
+      note: 'Data scattered at random. Ownership changes hands almost every load, so the broadcasts can no longer run back to back — the speedup falls below 2×.' },
+    { label: 'Math-heavy program', set: { n: 4, pattern: 'streaming', ops: 12, L: 20, bus: 'shared', r: 1 },
+      note: 'Lots of arithmetic per load. Memory stops being the bottleneck, and every chip is now burning energy on work the others are also doing.' },
+    { label: 'Today: data moves dear', set: { n: 8, pattern: 'streaming', ops: 2, L: 40, bus: 'shared', r: 2.3 },
+      note: 'Eight chips on a shared bus, slower links, and moving a word costing ~200× an arithmetic op. The world DataScalar bet on: faster and cheaper. Now flip Interconnect to point-to-point and watch the energy win vanish.' },
+    { label: 'Where it loses', set: { n: 8, pattern: 'random', ops: 8, L: 10, bus: 'p2p', r: 0 },
+      note: 'Cheap, fast point-to-point links and plenty of math. Eight copies of every instruction, plus seven messages per broadcast, cost far more than the traffic they were meant to save.' },
+  ];
+  function applyPreset(i) {
+    const p = PRESETS[i];
+    $('n').value = p.set.n; $('pattern').value = p.set.pattern; $('ops').value = p.set.ops;
+    $('L').value = p.set.L; $('bus').value = p.set.bus; $('r').value = p.set.r;
+    markPreset(i); rebuild(false);
+    playing = true; last = 0; $('play').textContent = 'Pause'; requestAnimationFrame(tick);
+  }
+  function markPreset(i) {
+    [...$('presets').children].forEach((b, j) => b.classList.toggle('on', j === i));
+    $('presetNote').textContent = i === null ? '' : PRESETS[i].note;
+  }
+  $('presets').innerHTML = PRESETS.map((p, i) => `<button data-i="${i}">${p.label}</button>`).join('');
+  $('presets').onclick = e => { const b = e.target.closest('button'); if (b) applyPreset(+b.dataset.i); };
+
+  function rebuild(keepTime) {
+    params = readParams();
+    $('nV').textContent = params.n; $('opsV').textContent = params.opsPerLoad;
+    $('LV').textContent = params.L; $('rV').textContent = fmtRatio(params.ratio) + '×';
+    res = DSim.run(params);
+    tMax = Math.max(res.trad.finish, res.ds.finish);
+    if (!keepTime) simT = 0;
+    simT = Math.min(simT, tMax);
+    renderStats(); drawEnergy(); drawAll();
+  }
+
+  // ---------- canvases ----------
+  function fit(canvas, h) {
+    const dpr = window.devicePixelRatio || 1, w = canvas.clientWidth;
+    canvas.width = w * dpr; canvas.height = h * dpr; canvas.style.height = h + 'px';
+    const g = canvas.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { g, w, h };
+  }
+
+  function drawMachine(canvas, r, mode) {
+    const n = params.n, laneH = 16, laneGap = 6, top = 92;
+    const H = top + n * (laneH + laneGap) + 22;
+    const { g, w } = fit(canvas, H);
+    const left = 64, right = w - 12, span = right - left;
+    const X = t => left + (t / tMax) * span;
+
+    // chips row
+    const chipW = Math.min(110, (span - (n - 1) * 12) / n), chipH = 44, chipY = 10;
+    const totalW = n * chipW + (n - 1) * 12, x0 = left + (span - totalW) / 2;
+    const cx = j => x0 + j * (chipW + 12) + chipW / 2;
+    const state = j => {
+      for (const s of r.segs) if (s.node === j && s.t0 <= simT && simT < s.t1) return s.kind;
+      return null;
+    };
+    const runs = j => mode === 'ds' || j === 0;
+    for (let j = 0; j < n; j++) {
+      const st = state(j);
+      const fill = st === 'op' ? css('--op') : st === 'mem' ? css('--mem') : st === 'stall' ? css('--stall') : css('--panel');
+      g.fillStyle = fill; g.strokeStyle = css('--line'); g.lineWidth = 1.5;
+      roundRect(g, cx(j) - chipW / 2, chipY, chipW, chipH, 7); g.fill(); g.stroke();
+      g.fillStyle = css('--ink'); g.font = '600 12px system-ui'; g.textAlign = 'center';
+      g.fillText('chip ' + j, cx(j), chipY + 18);
+      g.fillStyle = st ? css('--ink') : css('--muted'); g.font = '11px system-ui';
+      const lo = j * (DSim.ADDR_SPACE / n), hi = (j + 1) * (DSim.ADDR_SPACE / n) - 1;
+      const label = chipW < 90 ? `${lo}–${hi}` : runs(j) ? `mem ${lo}–${hi}` : `mem ${lo}–${hi} only`;
+      g.fillText(label, cx(j), chipY + 34, chipW - 6);
+    }
+    // messages in flight
+    for (const msg of r.msgs) {
+      if (simT < msg.t0 || simT > msg.t1) continue;
+      const p = (simT - msg.t0) / Math.max(1e-9, msg.t1 - msg.t0);
+      const color = msg.kind === 'bcast' ? css('--bcast') : css('--req');
+      for (const to of msg.to) {
+        const xa = cx(msg.from), xb = cx(to), y = chipY + chipH + 8;
+        const arc = 22 + Math.abs(xb - xa) * 0.08;
+        g.strokeStyle = color; g.globalAlpha = 0.25; g.lineWidth = 1.5;
+        g.beginPath(); g.moveTo(xa, y); g.quadraticCurveTo((xa + xb) / 2, y + arc, xb, y); g.stroke();
+        g.globalAlpha = 1;
+        const q = 1 - p, px = q * q * xa + 2 * q * p * (xa + xb) / 2 + p * p * xb;
+        const py = q * q * y + 2 * q * p * (y + arc) + p * p * y;
+        g.fillStyle = color; g.beginPath(); g.arc(px, py, 4.5, 0, Math.PI * 2); g.fill();
+      }
+    }
+    // timelines
+    g.textAlign = 'right'; g.font = '11px system-ui';
+    for (let j = 0; j < n; j++) {
+      const y = top + j * (laneH + laneGap);
+      g.fillStyle = css('--muted'); g.fillText('chip ' + j, left - 8, y + 12);
+      g.fillStyle = css('--line'); g.fillRect(left, y + laneH / 2 - 0.5, span, 1);
+    }
+    for (const s of r.segs) {
+      if (s.t0 > simT) continue;
+      const y = top + s.node * (laneH + laneGap);
+      g.fillStyle = s.kind === 'op' ? css('--op') : s.kind === 'mem' ? css('--mem') : css('--stall');
+      const a = X(s.t0), b = X(Math.min(s.t1, simT));
+      g.fillRect(a, y, Math.max(0.6, b - a), laneH);
+    }
+    // finish marker + playhead
+    const fy = top + n * (laneH + laneGap);
+    g.strokeStyle = css('--ink'); g.setLineDash([3, 3]); g.lineWidth = 1;
+    g.beginPath(); g.moveTo(X(r.finish), top - 6); g.lineTo(X(r.finish), fy - 4); g.stroke(); g.setLineDash([]);
+    g.fillStyle = css('--ink'); g.textAlign = X(r.finish) > right - 80 ? 'right' : 'left';
+    g.font = '600 11px system-ui';
+    g.fillText(simT >= r.finish ? `done · ${r.finish} cycles` : `finishes at ${r.finish}`, X(r.finish) + (g.textAlign === 'left' ? 4 : -4), fy + 12);
+    if (simT < tMax) {
+      g.strokeStyle = css('--accent'); g.lineWidth = 1.5;
+      g.beginPath(); g.moveTo(X(simT), top - 6); g.lineTo(X(simT), fy - 4); g.stroke();
+    }
+  }
+
+  function roundRect(g, x, y, w, h, r) {
+    g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r);
+    g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+
+  function drawAll() {
+    drawMachine($('cTrad'), res.trad, 'trad');
+    drawMachine($('cDs'), res.ds, 'ds');
+    $('clock').textContent = `cycle ${Math.round(simT)} / ${tMax}`;
+    $('scrub').value = Math.round(simT / tMax * 1000);
+  }
+
+  function drawEnergy() {
+    const { g, w, h } = fit($('cEnergy'), 200);
+    const left = 44, right = w - 14, top = 12, bottom = h - 30;
+    const xs = [-1, 3];
+    const X = lr => left + (lr - xs[0]) / (xs[1] - xs[0]) * (right - left);
+    const Y = v => bottom - Math.min(v, yMax) / yMax * (bottom - top);
+    const ratioAt = lr => { const k = Math.pow(10, lr); return DSim.energy(res.ds, k) / DSim.energy(res.trad, k); };
+    const yMax = Math.min(8, Math.max(2, Math.ceil(ratioAt(xs[0]))));
+
+    g.font = '11px system-ui'; g.fillStyle = css('--muted'); g.strokeStyle = css('--line'); g.lineWidth = 1;
+    for (let v = 0; v <= yMax; v++) {
+      g.beginPath(); g.moveTo(left, Y(v)); g.lineTo(right, Y(v)); g.stroke();
+      g.textAlign = 'right'; g.fillText(v + '×', left - 6, Y(v) + 4);
+    }
+    g.textAlign = 'center';
+    for (let lr = -1; lr <= 3; lr++) g.fillText(fmtRatio(Math.pow(10, lr)) + '×', X(lr), bottom + 16);
+    g.fillText('cost of moving a word, in ops', (left + right) / 2, bottom + 28);
+
+    // shade the region where DataScalar wins
+    g.fillStyle = css('--mem'); g.globalAlpha = 0.10;
+    g.fillRect(left, Y(1), right - left, bottom - Y(1)); g.globalAlpha = 1;
+    g.strokeStyle = css('--ink'); g.lineWidth = 1; g.setLineDash([4, 3]);
+    g.beginPath(); g.moveTo(left, Y(1)); g.lineTo(right, Y(1)); g.stroke(); g.setLineDash([]);
+    g.fillStyle = css('--mem'); g.textAlign = 'left'; g.fillText('DataScalar uses less energy', left + 6, Y(1) + 14);
+
+    g.strokeStyle = css('--bcast'); g.lineWidth = 2; g.beginPath();
+    for (let i = 0; i <= 200; i++) {
+      const lr = xs[0] + (xs[1] - xs[0]) * i / 200, v = ratioAt(lr);
+      i ? g.lineTo(X(lr), Y(v)) : g.moveTo(X(lr), Y(v));
+    }
+    g.stroke();
+    const cur = Math.log10(params.ratio), v = ratioAt(cur);
+    g.fillStyle = css('--bcast'); g.beginPath(); g.arc(X(cur), Y(v), 5, 0, Math.PI * 2); g.fill();
+    g.fillStyle = css('--ink'); g.textAlign = X(cur) > right - 90 ? 'right' : 'left';
+    const below = Math.abs(v - 1) < 0.35 * yMax / 3 && v < 1;
+    g.fillText(v.toFixed(2) + '× (you are here)', X(cur) + (g.textAlign === 'left' ? 8 : -8), below ? Y(v) + 16 : Y(v) - 8);
+  }
+
+  function renderStats() {
+    const t = res.trad, d = res.ds, k = params.ratio;
+    const eT = DSim.energy(t, k), eD = DSim.energy(d, k);
+    const dM = t.wireMessages - d.wireMessages;
+    const cross = dM > 0 ? (d.instructionsExecuted - t.instructionsExecuted) / dM : null;
+    const cards = [
+      ['Speedup', (t.finish / d.finish).toFixed(2) + '×', `${t.finish} → ${d.finish} cycles`],
+      ['Latency on critical path', `${t.serialized * 2} → ${d.serialized}`, 'one-way trips: request+response vs ownership handoffs'],
+      ['Messages on the wire', `${t.wireMessages} → ${d.wireMessages}`, params.bus === 'shared' ? 'shared bus' : 'point-to-point'],
+      ['Instructions executed', `${t.instructionsExecuted} → ${d.instructionsExecuted}`, `${params.n}× redundant compute`],
+      ['Energy', (eD / eT).toFixed(2) + '×', eD < eT ? 'DataScalar is cheaper' : 'traditional is cheaper'],
+      ['Break-even move cost', cross === null ? 'never' : fmtRatio(cross) + '× an op', cross === null ? 'DataScalar sends more traffic' : 'above this, waste wins'],
+    ];
+    $('stats').innerHTML = cards.map(([k, v, d]) =>
+      `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('');
+    $('probe').textContent = JSON.stringify({ trad: t.finish, ds: d.finish, eRatio: +(eD / eT).toFixed(3) });
+  }
+
+  // ---------- animation ----------
+  function tick(ts) {
+    if (!playing) return;
+    const dt = last ? (ts - last) / 1000 : 0; last = ts;
+    simT += dt * (tMax / 12) * +$('speed').value;   // whole run ≈ 12 s at 1×
+    if (simT >= tMax) { simT = tMax; playing = false; $('play').textContent = 'Replay'; }
+    drawAll();
+    if (playing) requestAnimationFrame(tick);
+  }
+  $('play').onclick = () => {
+    if (simT >= tMax) simT = 0;
+    playing = !playing; last = 0;
+    $('play').textContent = playing ? 'Pause' : 'Play';
+    if (playing) requestAnimationFrame(tick);
+  };
+  $('reset').onclick = () => { playing = false; simT = 0; $('play').textContent = 'Play'; drawAll(); };
+  for (const id of ['n', 'pattern', 'ops', 'L', 'bus']) $(id).addEventListener('input', () => { markPreset(null); rebuild(false); });
+  $('scrub').addEventListener('input', () => {
+    playing = false; $('play').textContent = 'Play';
+    simT = +$('scrub').value / 1000 * tMax; drawAll();
+  });
+  $('r').addEventListener('input', () => { markPreset(null); rebuild(true); });
+  window.addEventListener('resize', () => { drawEnergy(); drawAll(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { drawEnergy(); drawAll(); });
+
+  rebuild(false);
+  // Open on a mid-run frame so the page explains itself before Play is pressed.
+  simT = Math.min(res.ds.finish * 0.9, tMax); drawAll();
+})();
+</script>
+</body>
+</html>
