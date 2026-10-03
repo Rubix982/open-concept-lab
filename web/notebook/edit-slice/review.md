@@ -56,11 +56,12 @@ far**.
 | **Table 2** | The relation control — the +0.0 pp paired difference (§4.2) |
 | **Table 3** | Observations against the mechanism (§4.1) |
 | **Table 4** | Position ablation — sufficient and necessary (§4.1) |
-| **Table 5** | Claim status — eleven claims, eight withdrawn or narrowed |
+| **Table 5** | Claim status — twelve claims, nine withdrawn or narrowed |
 | **Table 6** | Delivery is not effect — propagation at a fixed coefficient (§4.4) |
 | **Table 7** | Floor plus type-matched displacement — what else the edit moves (§4.5) |
-| **Table 8** | Open threads, what each would decide, and what it costs (§8) |
+| **Table 8** | The relation crossover — six arms, two models (§4.5) |
 | **Table 9** | The pinning across a 68× parameter range (§4.3) |
+| **Table 10** | Open threads, what each would decide, and what it costs (§8) |
 
 ## 1 · The question
 
@@ -518,7 +519,7 @@ stands as a **layer-5** result.
 
 ### 4.5 · What the edit does to the rest of the subject
 
-_Records: <Evidence id="E-024" /> · <Evidence id="E-025" /> · <Evidence id="E-029" />_
+_Records: <Evidence id="E-024" /> · <Evidence id="E-025" /> · <Evidence id="E-029" /> · <Evidence id="E-033" />_
 
 If the unit an edit operates on is the **subject**, the relation it targeted is incidental
 — so a birthplace edit should disturb attributes of that person having nothing to do with
@@ -538,14 +539,41 @@ as targeting is how this run's first conclusion went wrong.
 | citizenship | **yes** (a country) | yes | **−9.10** |
 
 Occupation and language finish **0.04 nats apart after starting 3.65 apart**. Citizenship
-finishes **2.95 below** both. So the structure is two effects, not a relatedness gradient:
+finishes **2.95 below** both. Semantic relatedness predicts language patterns with
+citizenship; it patterns with occupation instead. The edit is not reasoning about origin,
+it is competing for a slot.
 
-> A **floor** — everything about the subject is suppressed to roughly the same level,
-> whether or not it relates to the edited relation — plus **type-matched displacement**,
-> an additional penalty only where the probe's answer type matches the injected value.
+That reading proposed **two** effects — a floor, and type-matched displacement. Editing a
+*different relation* tests both, and they do not survive together.
 
-Semantic relatedness predicts language patterns with citizenship. It patterns with
-occupation instead. The edit is not reasoning about origin; it is competing for a slot.<Margin>This run's own headline said "semantic relatedness", computed on drops, and was
+<p className="ocl-tablecap"><strong>Table 8.</strong> The crossover. Inject a profession instead of a country and the</p>
+displaced probe should swap. Six arms: two models, two relations, two depths.
+
+| model | layer | depth frac | edited relation | type-matched probe moved most? | non-matched spread |
+| --- | ---: | ---: | --- | --- | ---: |
+| 70B | 5 | 0.06 | birthplace | **yes** · citizenship | 1.56 |
+| 70B | 13 | 0.16 | birthplace | **yes** · citizenship | 1.11 |
+| 70B | 5 | 0.06 | occupation | **yes** · occupation | 1.43 |
+| 70B | 13 | 0.16 | occupation | **yes** · occupation | 1.02 |
+| 8B | 5 | 0.16 | birthplace | **yes** · citizenship | **0.09** |
+| 8B | 5 | 0.16 | occupation | **yes** · occupation | 2.73 |
+
+**Type-matched displacement: 6 of 6.** Swap the injected value from a country to a
+profession and the hardest-hit probe swaps with it — occupation's displacement more than
+triples while citizenship's roughly halves. Difference-in-differences **+8.06 nats** at 8B
+and **+5.42** at 70B layer 13, matched by depth fraction rather than layer index.
+
+**The floor: 1 of 6, and it is withdrawn as a general claim.** Only the 8B birthplace cell
+shows the convergence that named it. That cell is not a fluke — a fresh optimisation
+reproduced it at **0.09** against the **0.04** above — so the floor is real, replicable, and
+**specific to one model-relation pair**. It is not a property of editing, and the
+"two effects" sentence above is superseded by this one:<Margin>Recorded rather than
+silently revised: §4.5 asserted a general floor for nine days on the strength of a single
+relation. The crossover was the first design that could have refuted it, and did. <Evidence id="E-033" /></Margin>
+
+> An edit displaces probes whose **answer type** matches the injected value. Whether
+> everything else converges to a common level is a fact about the particular model and
+> relation, not about the method.<Margin>This run's own headline said "semantic relatedness", computed on drops, and was
 retracted. The confound was named in the ticket that commissioned it while the code still
 computed on drops — naming a confound is not controlling for it.<Evidence id="E-025" /></Margin>
 
@@ -576,8 +604,9 @@ outcome varies most**. Whatever governs propagation magnitude is none of the thr
 | Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | <Evidence id="O-007" /> · <Evidence id="O-008" /> |
 | Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | <Evidence id="E-016-2">E-016</Evidence> · <Evidence id="E-018" /> |
 | The coefficient predicts how far an edit travels | **withdrawn** | never asserted here, then measured false: 2.96× at fixed delivery | <Evidence id="E-028d" /> |
+| An edit suppresses the whole subject to a floor | **withdrawn** | 1 of 6 arms; real but specific to one model-relation pair | <Evidence id="E-033" /> |
 
-Eleven claims, **eight withdrawn or narrowed**. That ratio is the honest summary.
+Twelve claims, **nine withdrawn or narrowed**. That ratio is the honest summary.
 
 The last row is one we never claimed and checked anyway. §6.3 carried it as an objection
 we could not answer; answering it took four runs and cost us the strongest available
@@ -727,7 +756,7 @@ Nine threads are open or active. They are listed because the useful question to 
 who knows the field is not *"is this right"* but *"which of these is worth a month"* — and
 we cannot rank them from inside.
 
-<p className="ocl-tablecap"><strong>Table 8.</strong> Open threads, what each would decide, and what it costs. Ordered by</p>
+<p className="ocl-tablecap"><strong>Table 10.</strong> Open threads, what each would decide, and what it costs. Ordered by</p>
 what we would spend next, which is a judgement we would like contradicted.
 
 | thread | the question | what a result would settle | cost |

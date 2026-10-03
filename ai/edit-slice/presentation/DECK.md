@@ -92,7 +92,7 @@ attractive thing we had.
 
 _Records: T-079 answered DENY across E-028b, E-028c and E-028d._
 
-## 7 · The record — eleven claims, eight withdrawn or narrowed
+## 7 · The record — twelve claims, nine withdrawn or narrowed
 
 Most of what we learned is what does not work. Every withdrawn claim is published with
 what killed it, including ones withdrawn after being written up.

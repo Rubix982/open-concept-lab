@@ -457,7 +457,7 @@ DECK = [
     ),
     Slide(
         tag="§3 · THE RECORD", time="1m",
-        title="Eleven claims. Eight withdrawn or narrowed.",
+        title="Twelve claims. Nine withdrawn or narrowed.",
         bullets=[
             "Most of what we learned is what **does not** work.",
             "Every withdrawn claim is published with what killed it — including the ones "
