@@ -98,6 +98,27 @@ built:
       n² + n + 41 past n = 40 to see where its primes stop.
     ratio: 1.5
 
+  - name: little-builder
+    title: The Little Builder
+    from: projects/brick-stage/out/little-builder
+    topic: Brick Stage
+    what: >
+      A small robot assembles itself, builds a shelter rated for one, then
+      builds a friend. Every model in the story is checked as really buildable
+      with LEGO bricks, and each one can be downloaded as an LDraw file.
+    ratio: 1.6
+
+  - name: test-chamber
+    title: Test Chamber
+    from: projects/brick-stage/out/test-chamber
+    topic: Brick Stage
+    what: >
+      An instruction video in the style of a puzzle-game tutorial: the chamber
+      assembles itself panel by panel, a button, door and signal line are
+      installed, and a pictogram subject solves the test with a cube built from
+      real bricks.
+    ratio: 1.6
+
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
   - name: the-shelf
