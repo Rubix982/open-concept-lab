@@ -21,3 +21,20 @@ for (const [id, s] of Object.entries(PARTS)) {
     assert.equal(box.min[1], expected.length ? -4 : 0, expected.length ? "studs rise 4 LDU" : "no studs on top");
   });
 }
+
+test("every colour code means the same colour in LDraw and in Rebrickable", async () => {
+  const fs = await import("node:fs/promises");
+  const { COLORS } = await import("../lib/parts.mjs");
+  const path = new URL("../.cache/ldraw/LDConfig.ldr", import.meta.url);
+  let text;
+  try { text = await fs.readFile(path, "utf8"); }
+  catch { const r = await fetch("https://library.ldraw.org/library/official/LDConfig.ldr"); text = await r.text(); await fs.writeFile(path, text); }
+  const ld = {};
+  for (const l of text.split(/\r?\n/)) { const m = l.match(/!COLOUR\s+(\S+)\s+CODE\s+(\d+)\s+VALUE\s+#([0-9A-Fa-f]{6})/); if (m) ld[m[2]] = m[3]; }
+  const rgb = (h) => [0, 2, 4].map((i) => parseInt(h.replace("#", "").substr(i, 2), 16));
+  for (const [code, [name, , hex]] of Object.entries(COLORS)) {
+    assert.ok(ld[code], `LDraw has no colour ${code} (${name})`);
+    const d = Math.hypot(...rgb(hex).map((v, i) => v - rgb(ld[code])[i]));
+    assert.ok(d < 90, `${name}: LDraw ${ld[code]} and ours ${hex} are different colours (${Math.round(d)})`);
+  }
+});

@@ -134,6 +134,37 @@ Microduck), and doing what it does:
   regenerates it): 670 plates, built in sections, with the head made as a
   sub-assembly and set on the neck.
 
+### From any 3D shape: the input pipeline
+
+No CAD needed. Any of these becomes a checked brick model plus a story:
+
+```sh
+node showcase.mjs avocado.glb "An Avocado" --height 40 --credit "Avocado by Microsoft, CC0"
+```
+
+`showcase.mjs`:
+1. loads the file (GLB/glTF, OBJ with materials and textures, STL, PLY, or a
+   MagicaVoxel `.vox`)
+2. matches its colours, including texture colours, to the nearest LEGO
+   colours, keeping the most-used few
+3. samples the shape into plates (brickify), keeping only parts LEGO makes in
+   each colour, and checks the result
+4. finds sections at the model's narrow points, with a top part that stands
+   alone becoming a sub-assembly
+5. writes an editable story (`stories/<name>.mjs`), the animation, a booklet
+   and a poster
+
+Where shapes can come from:
+- **A drawing or a photo.** `node ../brick-check/tools/image-to-3d.mjs picture.png`
+  sends it to an open image-to-3D model on Hugging Face: TripoSG (MIT), or
+  InstantMesh (Apache-2.0) as a fallback. Free Spaces share GPUs and are
+  sometimes down; set `HF_TOKEN` for more quota. The picture leaves your
+  machine.
+- **A download.** Free libraries like the Smithsonian's 3D scans (many CC0),
+  NASA's models, glTF sample models, or 3D-printing sites. Check each licence.
+- **A scan.** A phone scanning app exports a mesh.
+- **Voxel art.** MagicaVoxel `.vox` files map almost one-to-one onto bricks.
+
 ### Parts
 
 Anything in brick-check's catalog: bricks, plates and tiles in the usual

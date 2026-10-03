@@ -64,6 +64,31 @@ export const COLORS = {
   70: ["Reddish Brown", 88, "#5f3109"],
   5:  ["Dark Pink", 47, "#c870a0"],
   29: ["Bright Pink", 104, "#e4adc8"],
+  // LEGO's common current solid colours, for shapes sampled from scans and
+  // models. Code = LDraw code = Rebrickable id (checked against both in
+  // test/catalog.test.mjs); RGB from Rebrickable; BrickLink ids from
+  // BrickLink's colour guide.
+  3:   ["Dark Turquoise", 39, "#008f9b"],
+  26:  ["Magenta", 71, "#923978"],
+  28:  ["Dark Tan", 69, "#958a73"],
+  30:  ["Medium Lavender", 157, "#ac78ba"],
+  73:  ["Medium Blue", 42, "#5a93db"],
+  78:  ["Light Nougat", 90, "#f6d7b3"],
+  84:  ["Medium Nougat", 150, "#aa7d55"],
+  85:  ["Dark Purple", 89, "#3f3691"],
+  191: ["Bright Light Orange", 110, "#f8bb3d"],
+  212: ["Bright Light Blue", 105, "#9fc3e9"],
+  226: ["Bright Light Yellow", 103, "#fff03a"],
+  272: ["Dark Blue", 63, "#0a3463"],
+  288: ["Dark Green", 80, "#184632"],
+  308: ["Dark Brown", 120, "#352100"],
+  320: ["Dark Red", 59, "#720e0f"],
+  321: ["Dark Azure", 153, "#078bc9"],
+  322: ["Medium Azure", 156, "#36aebf"],
+  323: ["Light Aqua", 152, "#adc3c0"],
+  378: ["Sand Green", 48, "#a0bcac"],
+  379: ["Sand Blue", 55, "#6074a1"],
+  484: ["Dark Orange", 68, "#a95500"],
 };
 
 export const ROTATIONS = [0, 90, 180, 270];

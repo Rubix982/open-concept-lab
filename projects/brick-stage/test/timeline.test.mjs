@@ -147,3 +147,15 @@ test("parts can fly in along their real insertion path", () => {
   assert.equal(parts[4].via, "slide+x");
   assert.ok(parts[4].from[0] > 0 && Math.abs(parts[4].from[1]) < 2, "slides in from +x");
 });
+
+test("narration waits long enough to be read, or not at all when asked", () => {
+  const s = story({ title: "t" }, (d) => {
+    d.narrate("Five words to read aloud.");                 // 5 words ≈ 600 + 1923 ms
+    d.narrate("Under the next action.", { wait: false, dur: 3000 });
+    d.wait(1000);
+  });
+  assert.equal(s.narration.length, 2);
+  assert.equal(s.narration[0].dur, 2523);
+  assert.equal(s.narration[1].t, 2523);
+  assert.equal(s.duration, 2523 + 1000 + 600);
+});

@@ -70,6 +70,7 @@ export class Director {
     this.letterboxes = []; // { t, on, dur }
     this.fades = [];       // { t, on, dur, color }
     this.musicCues = [];   // { t, name }
+    this.narration = [];   // { t, dur, text }
     this.models = {};
     this.props = {};       // buttons, doors, signal lines
     this.roomSpec = null;
@@ -179,6 +180,16 @@ export class Director {
     if (!a.joints?.[joint]) throw new Error(`"${as}" has no joint "${joint}"`);
     a.poses.push({ t: this.t, dur, joint, deg });
     this._advance(this.t + dur);
+    return this;
+  }
+
+  // A line of narration: shown as a subtitle, written to the render's .srt,
+  // and your voiceover script. By default the story waits long enough to say
+  // it (about 2.6 words a second); pass `wait: false` to keep going under it.
+  narrate(text, { dur, wait = true } = {}) {
+    dur ??= Math.round(600 + (text.trim().split(/\s+/).length / 2.6) * 1000);
+    this.narration.push({ t: this.t, dur, text });
+    if (wait) this._advance(this.t + dur);
     return this;
   }
 
@@ -351,7 +362,7 @@ export class Director {
         ? { kind: "figure", t0: a.t0, appear: a.appear, face: a.face, moves: a.moves, turns: a.turns, highlights: a.highlights || [] }
         : { kind: "bricks", parts: a.parts, moves: a.moves, turns: a.turns, highlights: a.highlights || [], joints: a.joints || {}, poses: a.poses || [], attached: a.attached || null }])),
       callouts: this.callouts, bubbles: this.bubbles, emitters: this.emitters, moods: this.moods,
-      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues,
+      letterboxes: this.letterboxes, fades: this.fades, music: this.musicCues, narration: this.narration,
       props: this.props, room: this.roomSpec, camera: this.camera, captions: this.captions, cards: this.cards,
       reports,
     };

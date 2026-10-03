@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Drawn Duck</title>
+<style>
+  :root {
+    --bg: #f1f0ec; --ink: #1d1d1b; --muted: #6f6e68; --accent: #e8711c; --bar: rgba(255,255,255,.86); --line: #dcdad3; --bad: #c0362c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bar: rgba(30,30,28,.86); --ink: #ecebe6; --muted: #a3a29b; --line: #3a3934; }
+  }
+  :root[data-theme="dark"] { --bar: rgba(30,30,28,.86); --ink: #ecebe6; --muted: #a3a29b; --line: #3a3934; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); }
+  body { font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif; color: #1d1d1b; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .cap { position: fixed; left: 6vw; top: 7vh; max-width: 70vw; pointer-events: none; }
+  .cap .k { font-weight: 700; font-size: clamp(11px, 1.3vw, 16px); letter-spacing: .22em; color: var(--accent); }
+  .cap .k:not(:empty)::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--accent); vertical-align: middle; margin-right: 10px; }
+  .cap .t { font-weight: 300; font-size: clamp(24px, 4.2vw, 58px); letter-spacing: -.01em; margin-top: 6px; line-height: 1.08; }
+  .card { position: fixed; inset: 0; z-index: 5; background: #f7f6f2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none; opacity: 0; text-align: center; padding: 0 8vw; }
+  .card .k { font-weight: 700; font-size: clamp(12px, 1.4vw, 17px); letter-spacing: .3em; color: var(--accent); }
+  .card .t { font-weight: 300; font-size: clamp(30px, 5.6vw, 76px); margin-top: 14px; letter-spacing: -.015em; }
+  .card .s { font-weight: 300; font-size: clamp(18px, 2.4vw, 30px); color: #6f6e68; margin-top: 8px; }
+  .card .rule { width: 60px; height: 3px; background: var(--accent); margin-top: 26px; }
+  body.chamber .cap { top: auto; bottom: 13vh; left: 5vw; display: flex; flex-direction: column-reverse; }
+  body.chamber .cap .t { font-weight: 800; font-style: italic; color: #fff; letter-spacing: -.01em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.35), 0 2px 18px rgba(0,0,0,.38); -webkit-text-stroke: 1.2px rgba(70,70,70,.45); }
+  body.chamber .cap .k { color: rgba(255,255,255,.95); font-weight: 600; font-size: clamp(14px, 2vw, 26px); letter-spacing: .32em;
+    margin: 4px 0 0 4vw; text-shadow: 0 1px 1px rgba(0,0,0,.4), 0 2px 12px rgba(0,0,0,.4); }
+  body.chamber .cap .k::before { display: none; }
+
+  /* callouts: a label on a leader line, pinned to something on stage */
+  #leaders { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; }
+  .callout { position: fixed; pointer-events: none; background: rgba(255,255,255,.94); color: #1d1d1b; border-left: 3px solid var(--accent);
+    padding: 6px 12px; font-size: clamp(13px, 1.4vw, 18px); border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,.12); white-space: nowrap; }
+
+  .ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(820px, calc(100vw - 32px));
+    display: flex; gap: 10px; align-items: center; background: var(--bar); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 12px; padding: 8px 12px; backdrop-filter: blur(8px); transition: opacity .25s; }
+  body.clean .ui, body.clean .badge { opacity: 0; pointer-events: none; }
+  .ui button { font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+  .ui button:focus-visible, .ui input:focus-visible, .badge a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .track { position: relative; flex: 1; display: flex; align-items: center; }
+  .track input[type=range] { width: 100%; accent-color: var(--accent); margin: 0; }
+  .ticks { position: absolute; left: 7px; right: 7px; top: -9px; height: 8px; pointer-events: none; }
+  .ticks i { position: absolute; top: 0; width: 2px; height: 8px; background: var(--muted); opacity: .55; border-radius: 1px; }
+  .ui .time { font: 12px ui-monospace, Menlo, monospace; color: var(--muted); min-width: 92px; text-align: right; }
+  .chapter { position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); font-size: 12px; color: var(--muted);
+    background: var(--bar); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; transition: opacity .25s; white-space: nowrap; }
+  body.clean .chapter { opacity: 0 !important; }
+  body.render .hint, body.render .chapter, body.render .badge, body.render .ui, body.render .steps { display: none !important; }
+  .badge { position: fixed; right: 16px; top: 14px; max-width: min(420px, calc(100vw - 32px)); font-size: 12px; color: #6f6e68;
+    background: rgba(255,255,255,.82); border: 1px solid #dcdad3; border-radius: 14px; padding: 4px 10px; transition: opacity .25s; }
+  .badge b { color: #2f7d4f; } .badge b.bad, .badge .bad { color: var(--bad); } .badge b.warn { color: #a86a00; }
+  .badge details { display: inline; } .badge summary { cursor: pointer; list-style: none; display: inline; }
+  .badge .list { margin-top: 6px; line-height: 1.6; }
+  .badge a { color: var(--accent); }
+  .badge .honest { margin-top: 8px; padding-top: 8px; border-top: 1px solid #dcdad3; line-height: 1.5; max-width: 400px; }
+  .bubble { position: fixed; pointer-events: none; background: #fff; color: #1d1d1b; border-radius: 16px; padding: 8px 14px;
+    font-size: clamp(14px, 1.6vw, 20px); box-shadow: 0 3px 14px rgba(0,0,0,.16); white-space: nowrap; transform-origin: 50% 100%; }
+  .bubble::after { content: ""; position: absolute; left: 50%; bottom: -9px; margin-left: -8px; border: 8px solid transparent; border-top-color: #fff; border-bottom: 0; }
+  .bar { position: fixed; left: 0; right: 0; height: 0; background: #000; pointer-events: none; z-index: 3; }
+  #barTop { top: 0; } #barBot { bottom: 0; }
+  #fade { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 4; }
+  body.clean .bar, body.clean #fade { z-index: 3; }
+  .steps { position: fixed; left: 18px; bottom: 84px; z-index: 6; background: #dce9f6; border: 1px solid #b9cfe6; border-radius: 10px;
+    padding: 10px 14px 12px; color: #1d1d1b; display: none; min-width: 150px; max-width: min(520px, calc(100vw - 36px)); }
+  body.instr .steps { display: block; }
+  .steps .n { font: 800 44px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; margin-top: 6px; }
+  .steps .n small { font-size: 14px; font-weight: 500; color: #4f5b66; margin-left: 6px; }
+  .steps .icons { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .steps .icon { display: flex; flex-direction: column; align-items: center; font: 600 13px "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .steps .icon img { width: 58px; height: 58px; }
+  .ui button.on { background: var(--accent); color: #fff; border-color: transparent; }
+  .subtitle { position: fixed; left: 50%; bottom: 13vh; transform: translateX(-50%); max-width: min(900px, 86vw); text-align: center;
+    font: 500 clamp(16px, 2.1vw, 28px)/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #fff; background: rgba(0,0,0,.62);
+    padding: .25em .7em; border-radius: 6px; pointer-events: none; opacity: 0; z-index: 4; }
+  body.render.nosubs .subtitle { display: none; }
+  .help { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 720px) { .help { display: none; } .cap { top: 5vh; } }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="cap"><div class="k" id="capK"></div><div class="t" id="capT"></div></div>
+<svg id="leaders"></svg>
+<div class="card" id="card"><div class="k" id="cardK"></div><div class="t" id="cardT"></div><div class="s" id="cardS"></div><div class="rule"></div></div>
+<div class="bar" id="barTop"></div><div class="bar" id="barBot"></div><div id="fade"></div>
+<div class="badge" id="badge"></div>
+<div class="chapter" id="chapter"></div>
+<div class="subtitle" id="subtitle"></div>
+<div class="steps" id="steps"><div class="icons" id="stepIcons"></div><div class="n" id="stepN"></div></div>
+<div class="ui">
+  <button id="play" aria-label="Play or pause">❚❚</button>
+  <div class="track"><div class="ticks" id="ticks"></div><input id="scrub" type="range" min="0" step="1" aria-label="Timeline"></div>
+  <span class="time" id="time"></span>
+  <button id="instrBtn" aria-label="Step-by-step instructions">Steps</button>
+  <button id="mute" aria-label="Sound on or off">🔇</button>
+  <span class="help">space · [ ] chapters · I steps · M sound · H hide</span>
+</div>
+
+<script>// The timeline: everything on stage as a pure function of time. The player
+// draws from it, the build uses it to check the stage for collisions, and the
+// tests exercise it directly. No three.js in here — positions are in story
+// units (studs across, plates up, studs deep).
+(function (root) {
+  const PLATE = 0.4;
+  const clamp01 = (x) => Math.max(0, Math.min(1, x));
+  const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+  const easeIn = (p) => p * p;
+  const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const settle = (p) => easeOut(p) + Math.sin(p * Math.PI) * 0.06 * (1 - p);
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const lerpAngle = (a, b, p) => a + ((((b - a + Math.PI * 3) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI) * p;
+
+  // Where an actor stands: { x, y, z } in story units, plus lift (plates) from
+  // hopping or walking, and the move in progress if any.
+  // `actors` lets an attached sub-assembly ride along with its host.
+  function actorPos(a, t, actors) {
+    if (a.attached && actors && t >= a.attached.t) {
+      const h = actors[a.attached.to], hp = actorPos(h, t, actors), hc = actorCentre(h), sc = actorCentre(a);
+      const r = (actorTurn(h, t, actors) * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      const dx = a.attached.offset[0] + sc[0] - hc[0], dz = a.attached.offset[2] + sc[1] - hc[1];
+      return { x: hp.x + hc[0] + dx * cs - dz * sn - sc[0], y: hp.y + a.attached.offset[1], z: hp.z + hc[1] + dx * sn + dz * cs - sc[1], lift: hp.lift, active: null };
+    }
+    let pos = a.moves[0].to.slice(), lift = 0, active = null;
+    for (const m of a.moves.slice(1)) {
+      if (t < m.t) break;
+      const p = clamp01((t - m.t) / m.dur);
+      if (p < 1) {
+        const e = easeInOut(p);
+        lift = Math.abs(Math.sin(p * Math.PI * m.steps)) * m.hop;
+        active = { move: m, p, from: pos.slice() };
+        pos = pos.map((v, i) => lerp(v, m.to[i], e));
+      } else pos = m.to.slice();
+    }
+    return { x: pos[0], y: pos[1], z: pos[2], lift, active };
+  }
+
+  // Sum of turn() calls so far, in degrees.
+  function actorTurn(a, t, actors) {
+    let deg = a.attached && actors && t >= a.attached.t ? actorTurn(actors[a.attached.to], t, actors) : 0;
+    for (const k of a.turns || []) {
+      if (t < k.t) break;
+      const p = easeInOut(clamp01((t - k.t) / k.dur));
+      deg += k.deg * p;
+      if (p < 1) break;
+    }
+    return deg;
+  }
+
+  // Figures face the way they walk (radians, three.js y-rotation), and swing
+  // their legs while they do.
+  function figurePose(a, t) {
+    let heading = ((a.face || 0) * Math.PI) / 180, pos = a.moves[0].to, swing = 0;
+    for (const m of a.moves.slice(1)) {
+      if (t < m.t) break;
+      const dx = m.to[0] - pos[0], dz = m.to[2] - pos[2];
+      if (Math.hypot(dx, dz) > 0.01) {
+        heading = lerpAngle(heading, Math.atan2(dx, -dz), easeInOut(clamp01((t - m.t) / Math.min(450, m.dur * 0.35))));
+        const p = clamp01((t - m.t) / m.dur);
+        if (p < 1) swing = Math.sin(p * Math.PI * m.steps) * 0.6 * Math.sin(p * Math.PI);
+      }
+      pos = m.to;
+    }
+    return { heading: heading + (actorTurn(a, t) * Math.PI) / 180, swing };
+  }
+
+  // A brick part: k is how far it still has to fly in (1 → 0), out how far it
+  // has flown away again (0 → 1).
+  function partState(p, t) {
+    if (t < p.t0) return { visible: false, k: 1, out: 0, settled: false };
+    const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+    const out = p.out && t >= p.out.t0 ? easeIn(clamp01((t - p.out.t0) / p.out.dur)) : 0;
+    return { visible: out < 1, k, out, settled: t >= p.t0 + p.dur && out === 0 };
+  }
+
+  // A prop's on/off level (0..1), easing between states.
+  function propLevel(p, t) {
+    let v = 0;
+    for (const e of p.events || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    }
+    return v;
+  }
+
+  // A joint's angle in degrees: each pose() eases from where the joint was.
+  function jointAngle(a, joint, t) {
+    let deg = 0;
+    for (const p of a.poses || []) {
+      if (p.joint !== joint || t < p.t) continue;
+      deg += (p.deg - deg) * easeInOut(clamp01((t - p.t) / Math.max(1, p.dur)));
+    }
+    return deg;
+  }
+
+  // On/off events (letterbox, fades) as a level 0..1.
+  function level(events, t) {
+    let v = 0;
+    for (const e of events || []) {
+      if (t < e.t) break;
+      v += ((e.on ? 1 : 0) - v) * easeInOut(clamp01((t - e.t) / Math.max(1, e.dur)));
+    }
+    return v;
+  }
+
+  // The light, as weights over the three moods (they sum to 1).
+  function moodWeights(story, t) {
+    let w = { day: 1, sunset: 0, night: 0 };
+    for (const m of story.moods || []) {
+      if (t < m.t) break;
+      const p = easeInOut(clamp01((t - m.t) / Math.max(1, m.dur)));
+      w = Object.fromEntries(Object.entries(w).map(([k, v]) => [k, v * (1 - p) + (k === m.name ? p : 0)]));
+    }
+    return w;
+  }
+
+  // Which bubbles are on screen.
+  function bubblesAt(story, t) { return (story.bubbles || []).filter((b) => t >= b.t && t <= b.t + b.dur); }
+
+  // A highlight's glow (0..1): pulses twice over its duration.
+  function glow(a, t) {
+    let g = 0;
+    for (const h of a.highlights || []) {
+      if (t < h.t || t > h.t + h.dur) continue;
+      const p = (t - h.t) / h.dur;
+      g = Math.max(g, Math.sin(p * Math.PI) * (0.6 + 0.4 * Math.cos(p * Math.PI * 4)));
+    }
+    return g;
+  }
+
+  // ---- camera --------------------------------------------------------------
+  // A shot looks at a fixed point (`at`) or follows an actor (`follow`), and
+  // each keyframe eases from wherever the camera was at that moment.
+  function shotTarget(story, shot, t) {
+    if (shot.follow) {
+      const a = story.actors[shot.follow];
+      const p = actorPos(a, t, story.actors), o = shot.offset || [0, 6, 0], c = actorCentre(a);
+      return [p.x + c[0] + o[0], p.y + o[1], p.z + c[1] + o[2]];
+    }
+    return shot.at;
+  }
+  function actorCentre(a) {
+    if (!a.parts || !a.parts.length) return [0, 0];
+    const xs = a.parts.flatMap((p) => [p.x, p.x + p.w]), zs = a.parts.flatMap((p) => [p.z, p.z + p.d]);
+    return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...zs) + Math.max(...zs)) / 2];
+  }
+  function cameraState(story, t, upto = story.camera.length) {
+    const cams = story.camera;
+    let i = -1;
+    for (let j = 0; j < upto; j++) if (cams[j].t <= t) i = j;
+    if (i < 0) i = 0;
+    const to = cams[i].shot, at = shotTarget(story, to, t);
+    const target = { az: to.az, el: to.el, dist: to.dist, x: at[0], y: at[1], z: at[2] };
+    if (i === 0 && cams[0].t >= t) return target;
+    const from = i === 0 ? target : cameraState(story, cams[i].t, i);
+    const e = easeInOut(clamp01((t - cams[i].t) / Math.max(1, cams[i].dur)));
+    const out = {};
+    for (const k of Object.keys(target)) out[k] = lerp(from[k], target[k], e);
+    return out;
+  }
+
+  // ---- chapters and sound ------------------------------------------------
+  function chapters(story) {
+    return story.captions.filter((c) => c.text).map((c) => ({ t: c.t, label: c.kicker ? `${c.kicker} · ${c.text}` : c.text }));
+  }
+
+  // Every sound the story makes, in time order: { t, kind, size }.
+  function soundEvents(story) {
+    const ev = [];
+    for (const a of Object.values(story.actors)) {
+      for (const p of a.parts || []) {
+        ev.push({ t: p.t0 + p.dur * 0.82, kind: "click", size: p.w * p.d * p.h });
+        if (p.out) ev.push({ t: p.out.t0, kind: "whoosh", size: 1 });
+      }
+      if (a.kind === "figure") {
+        ev.push({ t: a.t0 + a.appear * 0.7, kind: "thud", size: 1 });
+        for (const m of a.moves.slice(1)) for (let s = 1; s <= m.steps; s++) ev.push({ t: m.t + (m.dur * s) / (m.steps + 1), kind: "step", size: 1 });
+      }
+    }
+    for (const p of Object.values(story.props || {})) {
+      ev.push({ t: p.t0 + p.dur * 0.6, kind: "install", size: 1 });
+      for (const e of p.events) ev.push({ t: e.t, kind: `${p.kind}-${e.on ? "on" : "off"}`, size: 1 });
+    }
+    for (const b of story.bubbles || []) ev.push({ t: b.t, kind: "say", size: b.text.length });
+    for (const e of story.emitters || []) ev.push({ t: e.t, kind: `emit-${e.kind}`, size: e.count });
+    // music: one chord per bar while a piece is playing
+    const BAR = 2400, music = story.music || [];
+    music.forEach((m, i) => {
+      if (!m.name) return;
+      const end = i + 1 < music.length ? music[i + 1].t : story.duration;
+      for (let k = 0, t = m.t; t < end; k++, t += BAR) ev.push({ t, kind: "chord", size: k, piece: m.name });
+    });
+    if (story.room) {
+      const n = 26;      // the floor wave, as a patter rather than one click per panel
+      for (let i = 0; i < n; i++) ev.push({ t: story.room.t0 + (story.room.dur * 0.8 * i) / n + 200, kind: "panel", size: 1 });
+    }
+    return ev.sort((a, b) => a.t - b.t);
+  }
+
+  // ---- stage check -------------------------------------------------------
+  // Boxes for everything solid on stage at time t (story units), for the
+  // collision check. Brick parts count once they have landed.
+  function solidBoxes(story, t) {
+    const boxes = [];
+    for (const [id, a] of Object.entries(story.actors)) {
+      const pos = actorPos(a, t, story.actors), y0 = pos.y + pos.lift;
+      if (a.kind === "figure") {
+        if (t < a.t0 + a.appear) continue;
+        boxes.push({ id, min: [pos.x - 0.7, y0, pos.z - 0.7], max: [pos.x + 0.7, y0 + 14, pos.z + 0.7] });
+        continue;
+      }
+      const deg = actorTurn(a, t, story.actors), c = actorCentre(a), r = (deg * Math.PI) / 180, cs = Math.cos(r), sn = Math.sin(r);
+      for (const p of a.parts) {
+        if (!partState(p, t).settled) continue;
+        const xs = [], zs = [];
+        for (const [x, z] of [[p.x, p.z], [p.x + p.w, p.z], [p.x, p.z + p.d], [p.x + p.w, p.z + p.d]]) {
+          const dx = x - c[0], dz = z - c[1];
+          xs.push(c[0] + dx * cs - dz * sn); zs.push(c[1] + dx * sn + dz * cs);   // same sense as turn() on screen
+        }
+        boxes.push({ id, min: [pos.x + Math.min(...xs), y0 + p.y, pos.z + Math.min(...zs)], max: [pos.x + Math.max(...xs), y0 + p.y + p.h, pos.z + Math.max(...zs)] });
+      }
+    }
+    return boxes;
+  }
+  // Moments when two different actors overlap. Reports the first moment of
+  // each overlapping pair.
+  function stageCollisions(story, { step = 100, slack = 0.15 } = {}) {
+    const seen = new Map();
+    for (let t = 0; t <= story.duration; t += step) {
+      const b = solidBoxes(story, t);
+      for (let i = 0; i < b.length; i++) for (let j = i + 1; j < b.length; j++) {
+        if (b[i].id === b[j].id) continue;
+        const hit = [0, 1, 2].every((q) => b[i].min[q] < b[j].max[q] - slack && b[j].min[q] < b[i].max[q] - slack);
+        const key = [b[i].id, b[j].id].sort().join(" & ");
+        if (hit && !seen.has(key)) seen.set(key, t);
+      }
+    }
+    return [...seen].map(([pair, t]) => ({ pair, t }));
+  }
+
+  const api = { PLATE, clamp01, easeOut, easeIn, easeInOut, settle, actorPos, actorTurn, figurePose, partState, propLevel, glow, actorCentre, cameraState, chapters, soundEvents, solidBoxes, stageCollisions, jointAngle, level, moodWeights, bubblesAt };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  else root.TL = api;
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>window.STORY = {"meta":{"title":"A Drawn Duck","drift":0.4,"sources":["Shape: drawn by hand, made 3D by InstantMesh (Apache-2.0)"]},"duration":25529,"actors":{"base":{"kind":"bricks","parts":[{"part":"3031","color":19,"x":3,"y":0,"z":4,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2800,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":19,"x":3,"y":0,"z":8,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2833,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":4,"y":0,"z":3,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2866,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":4,"y":0,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2899,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":7,"y":0,"z":4,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2932,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":7,"y":0,"z":8,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2965,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":8,"y":0,"z":5,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":2998,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3032","color":19,"x":2,"y":1,"z":4,"rot":0,"w":6,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3031,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":19,"x":2,"y":1,"z":8,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3064,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":3,"y":1,"z":3,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3097,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":3,"y":1,"z":9,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3130,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":8,"y":1,"z":4,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3163,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":1,"z":6,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3196,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":19,"x":1,"y":2,"z":5,"rot":0,"w":8,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3229,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3460","color":19,"x":1,"y":2,"z":7,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3262,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":2,"y":2,"z":3,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3295,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":7,"y":1,"z":3,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3328,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3795","color":19,"x":2,"y":2,"z":8,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3361,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":1,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3394,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":8,"y":2,"z":3,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3427,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":14,"x":8,"y":2,"z":8,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3460,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":1,"y":3,"z":3,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3493,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":2,"y":3,"z":9,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3526,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":3,"y":2,"z":10,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3559,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3024","color":19,"x":7,"y":2,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3592,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":5,"y":1,"z":10,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3625,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":8,"y":3,"z":2,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3658,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":72,"x":3,"y":3,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3691,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":4,"y":3,"z":3,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3724,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":7,"y":3,"z":4,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3757,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":7,"y":3,"z":8,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3790,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":19,"x":0,"y":4,"z":5,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3823,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":19,"x":0,"y":4,"z":7,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3856,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":19,"x":1,"y":4,"z":9,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3889,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":19,"x":3,"y":4,"z":10,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3922,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":4,"y":3,"z":11,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":3955,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":14,"x":7,"y":4,"z":10,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":3988,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":7,"y":4,"z":1,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4021,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":2,"y":3,"z":2,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4054,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3024","color":14,"x":7,"y":3,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4087,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":3,"y":2,"z":2,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4120,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":7,"y":2,"z":2,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4153,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":4,"y":1,"z":2,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4186,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3021","color":19,"x":1,"y":4,"z":3,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4219,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":1,"y":4,"z":8,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4252,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":2,"y":4,"z":2,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4285,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":2,"y":4,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4318,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":4,"y":4,"z":3,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4351,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":72,"x":7,"y":4,"z":5,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4384,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":72,"x":7,"y":4,"z":8,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4417,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":72,"x":8,"y":4,"z":6,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4450,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":19,"x":0,"y":5,"z":4,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4483,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":19,"x":0,"y":5,"z":8,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4516,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":19,"x":1,"y":5,"z":2,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4549,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":19,"x":1,"y":5,"z":9,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4582,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":2,"y":5,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4615,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":3,"y":4,"z":1,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4648,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":19,"x":3,"y":3,"z":1,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4681,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":5,"y":2,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4714,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":2,"y":5,"z":11,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4747,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":6,"y":5,"z":10,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4780,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":8,"y":5,"z":4,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4813,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":4,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4846,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3024","color":14,"x":8,"y":3,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":4879,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":1,"y":5,"z":3,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4912,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":2,"y":5,"z":4,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4945,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":5,"y":5,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":4978,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":72,"x":7,"y":5,"z":3,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5011,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":5,"z":9,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5044,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":5,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5077,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":0,"y":6,"z":3,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5110,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":19,"x":0,"y":6,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5143,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":19,"x":3,"y":6,"z":11,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5176,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":5,"y":5,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5209,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3021","color":14,"x":6,"y":6,"z":10,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5242,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":6,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5275,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":9,"y":5,"z":2,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5308,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":14,"x":9,"y":4,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5341,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":4,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5374,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":9,"y":3,"z":4,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5407,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":9,"y":2,"z":4,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5440,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3460","color":19,"x":1,"y":6,"z":2,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5473,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":19,"x":1,"y":6,"z":10,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5506,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":2,"y":6,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5539,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":72,"x":2,"y":6,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5572,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":2,"y":6,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5605,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":5,"y":6,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5638,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":6,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5671,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":72,"x":8,"y":6,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5704,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":8,"y":6,"z":10,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5737,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3024","color":14,"x":9,"y":5,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":5770,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":6,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5803,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":6,"z":2,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5836,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":19,"x":1,"y":7,"z":1,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5869,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3034","color":14,"x":8,"y":7,"z":4,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5902,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3022","color":19,"x":1,"y":7,"z":9,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5935,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":2,"y":7,"z":11,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":5968,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":19,"x":3,"y":7,"z":0,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6001,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":3,"y":6,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":6034,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":19,"x":3,"y":5,"z":0,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"up","t0":6067,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":3,"y":7,"z":10,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6100,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":3,"y":7,"z":12,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6133,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":5,"y":7,"z":0,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6166,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":6,"y":7,"z":12,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6199,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":7,"z":0,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6232,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":7,"y":7,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6265,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":7,"z":1,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6298,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":9,"y":7,"z":2,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6331,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":10,"y":7,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6364,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":19,"x":0,"y":7,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6397,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":0,"y":7,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6430,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":19,"x":1,"y":8,"z":10,"rot":0,"w":8,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6463,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3460","color":19,"x":2,"y":8,"z":0,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6496,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":5,"y":8,"z":12,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6529,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":0,"y":8,"z":3,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6562,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":0,"y":8,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6595,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":1,"y":8,"z":1,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6628,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":2,"y":8,"z":8,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6661,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":3,"y":8,"z":1,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6694,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":3,"y":8,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6727,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":3,"y":8,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6760,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":4,"y":8,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6793,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":5,"y":8,"z":0,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6826,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":72,"x":8,"y":8,"z":3,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6859,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":8,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6892,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":8,"z":2,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6925,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":9,"y":8,"z":10,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6958,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":19,"x":0,"y":9,"z":2,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":6991,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3034","color":14,"x":9,"y":9,"z":3,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7024,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":10,"y":8,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"up","t0":7057,"dur":750,"from":[0,-12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":10,"y":7,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"up","t0":7090,"dur":750,"from":[0,-12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":19,"x":1,"y":9,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7123,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":19,"x":1,"y":9,"z":6,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7156,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":2,"y":9,"z":2,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7189,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":72,"x":2,"y":9,"z":3,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7222,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":2,"y":9,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7255,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":72,"x":3,"y":9,"z":10,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7288,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":3,"y":9,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7321,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":4,"y":9,"z":12,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7354,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":4,"y":9,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7387,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":5,"y":9,"z":0,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7420,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":14,"x":7,"y":9,"z":1,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7453,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":72,"x":8,"y":9,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7486,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":8,"y":9,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7519,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":9,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7552,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":9,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7585,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":0,"y":9,"z":6,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7618,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":0,"y":9,"z":7,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7651,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":19,"x":0,"y":10,"z":2,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7684,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":0,"y":10,"z":3,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7717,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":19,"x":0,"y":10,"z":4,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7750,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":0,"y":10,"z":6,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7783,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":19,"x":0,"y":10,"z":7,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7816,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":19,"x":0,"y":10,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7849,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":1,"y":10,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7882,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":19,"x":1,"y":10,"z":10,"rot":0,"w":8,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7915,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":2,"y":10,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7948,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":3,"y":10,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":7981,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":4,"y":10,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8014,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":4,"y":10,"z":12,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8047,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":5,"y":10,"z":0,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8080,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":7,"y":10,"z":1,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8113,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":14,"x":8,"y":10,"z":2,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8146,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":10,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8179,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":9,"y":10,"z":10,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8212,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":10,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8245,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":10,"y":10,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8278,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":10,"y":10,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8311,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":7,"y":11,"z":1,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8344,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3034","color":19,"x":1,"y":11,"z":2,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8377,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":14,"x":1,"y":11,"z":10,"rot":0,"w":8,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8410,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":19,"x":1,"y":11,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8443,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":3,"y":11,"z":2,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8476,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":3,"y":11,"z":12,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8509,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":3,"y":11,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8542,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":4,"y":11,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8575,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":5,"y":11,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8608,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":6,"y":11,"z":0,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8641,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":72,"x":8,"y":11,"z":4,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8674,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":14,"x":9,"y":11,"z":2,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8707,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":9,"y":11,"z":10,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8740,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":10,"y":11,"z":4,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8773,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":0,"y":11,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8806,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":0,"y":11,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8839,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":0,"y":12,"z":3,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8872,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":0,"y":12,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8905,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":1,"y":12,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8938,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":1,"y":12,"z":2,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":8971,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":1,"y":12,"z":10,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9004,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":2,"y":12,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9037,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":72,"x":2,"y":12,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9070,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":2,"y":12,"z":11,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9103,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":12,"z":12,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9136,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":12,"z":0,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9169,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":12,"z":3,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9202,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3024","color":14,"x":7,"y":12,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9235,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":12,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9268,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":12,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9301,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":72,"x":8,"y":12,"z":4,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9334,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":12,"z":2,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9367,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":12,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9400,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":10,"y":12,"z":4,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9433,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":7,"y":13,"z":1,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9466,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3034","color":14,"x":1,"y":13,"z":2,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9499,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":1,"y":13,"z":10,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9532,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":2,"y":13,"z":1,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9565,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":2,"y":13,"z":11,"rot":0,"w":8,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9598,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":13,"z":0,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9631,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":3,"y":13,"z":2,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9664,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":13,"z":12,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9697,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":72,"x":6,"y":13,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9730,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":13,"z":0,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9763,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":13,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9796,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3020","color":72,"x":8,"y":13,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9829,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":13,"z":9,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9862,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":9,"y":13,"z":3,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9895,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":13,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9928,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":10,"y":13,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9961,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":0,"y":13,"z":3,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":9994,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":0,"y":13,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10027,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":1,"y":14,"z":2,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10060,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3021","color":14,"x":1,"y":14,"z":9,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10093,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":7,"y":14,"z":2,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10126,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":7,"y":14,"z":9,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10159,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":0,"y":14,"z":4,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10192,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":0,"y":14,"z":8,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10225,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":2,"y":14,"z":4,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10258,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":2,"y":14,"z":11,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10291,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":2,"y":14,"z":1,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10324,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":72,"x":4,"y":14,"z":2,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10357,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":72,"x":4,"y":14,"z":10,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10390,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":14,"z":12,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10423,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":4,"y":14,"z":0,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10456,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":8,"y":14,"z":6,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10489,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":8,"y":14,"z":8,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10522,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":14,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10555,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":9,"y":14,"z":3,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10588,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":10,"y":14,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10621,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":14,"x":2,"y":15,"z":3,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10654,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3020","color":72,"x":4,"y":15,"z":2,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10687,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":4,"y":15,"z":9,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10720,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":72,"x":7,"y":15,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10753,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":14,"x":1,"y":15,"z":3,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10786,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":2,"y":15,"z":2,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10819,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":15,"z":1,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10852,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":3,"y":15,"z":11,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10885,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":15,"z":1,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10918,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":15,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10951,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":8,"y":15,"z":2,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":10984,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":9,"y":15,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11017,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":3,"y":16,"z":3,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11050,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":6,"y":16,"z":5,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11083,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":1,"y":16,"z":4,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11116,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":2,"y":16,"z":3,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11149,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":2,"y":16,"z":10,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11182,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":16,"z":2,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11215,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":3,"y":16,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11248,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":72,"x":3,"y":16,"z":9,"rot":0,"w":6,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11281,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":16,"z":11,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11314,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":14,"x":4,"y":16,"z":1,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11347,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":16,"z":2,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11380,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":7,"y":16,"z":6,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11413,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":16,"z":8,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11446,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":16,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11479,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":8,"y":16,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11512,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":9,"y":16,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11545,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3034","color":14,"x":3,"y":17,"z":3,"rot":90,"w":2,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11578,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3021","color":14,"x":5,"y":17,"z":3,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11611,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":72,"x":6,"y":17,"z":6,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11644,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":14,"x":2,"y":17,"z":4,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11677,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":4,"y":17,"z":2,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11710,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":5,"y":17,"z":9,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11743,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":6,"y":17,"z":10,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11776,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":6,"y":17,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11809,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":7,"y":17,"z":4,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11842,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":8,"y":17,"z":6,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11875,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":4,"y":18,"z":6,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11908,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":3,"y":18,"z":5,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11941,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":3,"y":18,"z":6,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":11974,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3022","color":14,"x":4,"y":18,"z":3,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12007,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":5,"y":18,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12040,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":6,"y":18,"z":4,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12073,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":18,"z":5,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12106,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":19,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12139,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3020","color":191,"x":4,"y":19,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12172,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":4,"y":19,"z":9,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12205,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":6,"y":19,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12238,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":4,"y":20,"z":5,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12271,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":14,"x":6,"y":20,"z":5,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12304,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":20,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12337,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":20,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12370,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":20,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12403,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":5,"y":21,"z":4,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12436,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3666","color":14,"x":7,"y":21,"z":5,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12469,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":3,"y":21,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12502,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":4,"y":21,"z":9,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12535,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":5,"y":21,"z":10,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12568,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3795","color":14,"x":4,"y":22,"z":4,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12601,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3023b","color":191,"x":5,"y":22,"z":10,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12634,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3666","color":84,"x":6,"y":22,"z":6,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12667,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":191,"x":7,"y":22,"z":10,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12700,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":22,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12733,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":4,"y":22,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12766,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":6,"y":22,"z":4,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12799,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":22,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12832,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":22,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12865,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3460","color":84,"x":6,"y":23,"z":5,"rot":90,"w":1,"d":8,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12898,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":191,"x":7,"y":23,"z":10,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12931,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":3,"y":23,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12964,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":4,"y":23,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":12997,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3022","color":14,"x":4,"y":23,"z":9,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13030,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":72,"x":5,"y":23,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13063,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":191,"x":5,"y":23,"z":11,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13096,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":23,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13129,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":23,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13162,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":24,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13195,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":24,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13228,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":4,"y":24,"z":9,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13261,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":191,"x":5,"y":24,"z":11,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13294,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":84,"x":6,"y":24,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13327,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":24,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13360,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":24,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13393,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":191,"x":7,"y":24,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13426,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":191,"x":7,"y":24,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13459,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":25,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13492,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":25,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13525,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":4,"y":25,"z":9,"rot":0,"w":3,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13558,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":191,"x":5,"y":25,"z":11,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13591,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":191,"x":6,"y":25,"z":12,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13624,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":25,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13657,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":7,"y":25,"z":9,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13690,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":191,"x":7,"y":25,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13723,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":26,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13756,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":26,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13789,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":4,"y":26,"z":9,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13822,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":4,"y":26,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13855,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":191,"x":5,"y":26,"z":10,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13888,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":191,"x":6,"y":26,"z":11,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13921,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":84,"x":6,"y":26,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13954,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":26,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":13987,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":191,"x":7,"y":26,"z":12,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14020,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":27,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14053,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":27,"z":4,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14086,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":4,"y":27,"z":9,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14119,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":27,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14152,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":3,"y":28,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14185,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3020","color":19,"x":4,"y":28,"z":5,"rot":90,"w":2,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14218,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":4,"y":28,"z":9,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14251,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":5,"y":28,"z":4,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14284,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3021","color":14,"x":6,"y":28,"z":5,"rot":90,"w":2,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14317,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":19,"x":6,"y":28,"z":8,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14350,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":29,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14383,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":4,"y":29,"z":9,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14416,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":5,"y":29,"z":10,"rot":0,"w":2,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14449,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3623","color":14,"x":7,"y":29,"z":5,"rot":90,"w":1,"d":3,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14482,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":19,"x":7,"y":29,"z":8,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14515,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3031","color":14,"x":3,"y":30,"z":5,"rot":0,"w":4,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14548,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3710","color":14,"x":4,"y":30,"z":9,"rot":0,"w":4,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14581,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3024","color":14,"x":6,"y":30,"z":10,"rot":0,"w":1,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14614,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3710","color":14,"x":7,"y":30,"z":5,"rot":90,"w":1,"d":4,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14647,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":3,"y":31,"z":6,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14680,"dur":750,"from":[0,12,0],"spin":[0,0,0],"stepStart":true},{"part":"3623","color":14,"x":4,"y":31,"z":5,"rot":0,"w":3,"d":1,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14713,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3020","color":14,"x":4,"y":31,"z":8,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14746,"dur":750,"from":[0,12,0],"spin":[0,0,0]},{"part":"3023b","color":14,"x":7,"y":31,"z":6,"rot":90,"w":1,"d":2,"h":1,"kind":"plate","mesh":false,"via":"down","t0":14779,"dur":750,"from":[0,12,0],"spin":[0,0,0]}],"moves":[{"t":-1,"dur":0,"to":[0,0,0],"hop":0}],"turns":[],"highlights":[],"joints":{},"poses":[],"attached":null}},"callouts":[],"bubbles":[],"emitters":[],"moods":[],"letterboxes":[],"fades":[],"music":[],"narration":[],"props":{},"room":null,"camera":[{"t":0,"dur":0,"shot":{"at":[6,16,7],"az":30,"el":18,"dist":31}},{"t":2800,"dur":2000,"shot":{"at":[6,16,7],"az":20,"el":18,"dist":31}},{"t":17929,"dur":800,"shot":{"follow":"base","offset":[0,16,0],"az":20,"el":12,"dist":34}},{"t":18729,"dur":1550,"shot":{"follow":"base","offset":[0,16,0],"az":110,"el":12,"dist":34}},{"t":20279,"dur":1550,"shot":{"follow":"base","offset":[0,16,0],"az":200,"el":12,"dist":34}},{"t":21829,"dur":1550,"shot":{"follow":"base","offset":[0,16,0],"az":290,"el":12,"dist":34}},{"t":23379,"dur":1550,"shot":{"follow":"base","offset":[0,16,0],"az":380,"el":12,"dist":34}}],"captions":[{"t":2800,"kicker":"SECTION 1","text":"The whole model"},{"t":15529,"kicker":"","text":"364 plates. Checked on a computer, not yet with real bricks."},{"t":17929,"kicker":"","text":""}],"cards":[{"t":0,"dur":2800,"kicker":"A BRICK MODEL OF","title":"A Drawn Duck","sub":"364 LEGO plates · drawn by hand, made 3D by InstantMesh (Apache-2.0)"}],"stage":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"3":["Dark Turquoise",39,"#008f9b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"26":["Magenta",71,"#923978"],"27":["Lime",34,"#bbe90b"],"28":["Dark Tan",69,"#958a73"],"29":["Bright Pink",104,"#e4adc8"],"30":["Medium Lavender",157,"#ac78ba"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"],"73":["Medium Blue",42,"#5a93db"],"78":["Light Nougat",90,"#f6d7b3"],"84":["Medium Nougat",150,"#aa7d55"],"85":["Dark Purple",89,"#3f3691"],"191":["Bright Light Orange",110,"#f8bb3d"],"212":["Bright Light Blue",105,"#9fc3e9"],"226":["Bright Light Yellow",103,"#fff03a"],"272":["Dark Blue",63,"#0a3463"],"288":["Dark Green",80,"#184632"],"308":["Dark Brown",120,"#352100"],"320":["Dark Red",59,"#720e0f"],"321":["Dark Azure",153,"#078bc9"],"322":["Medium Azure",156,"#36aebf"],"323":["Light Aqua",152,"#adc3c0"],"378":["Sand Green",48,"#a0bcac"],"379":["Sand Blue",55,"#6074a1"],"484":["Dark Orange",68,"#a95500"]},"meshes":{},"reports":{"base":{"ok":true,"stats":{"parts":364,"steps":1,"studConnections":1551,"pieces":1,"centreOfMass":[5.468,6.88],"comMarginStuds":2.468,"height":32},"errors":[],"actor":"base","available":true,"missing":[],"physical":{"widthMm":88,"depthMm":104,"heightMm":104,"grams":284,"estimated":true},"inventory":[{"part":"3031","name":"Plate 4 x 4","color":19,"colorName":"Tan","qty":1,"element":"4243824","bl":"3031","exists":true},{"part":"3710","name":"Plate 1 x 4","color":19,"colorName":"Tan","qty":9,"element":"4113233","bl":"3710","exists":true},{"part":"3623","name":"Plate 1 x 3","color":19,"colorName":"Tan","qty":15,"element":"4121921","bl":"3623","exists":true},{"part":"3024","name":"Plate 1 x 1","color":19,"colorName":"Tan","qty":18,"element":"4159553","bl":"3024","exists":true},{"part":"3023b","name":"Plate 1 x 2","color":19,"colorName":"Tan","qty":8,"element":"4113917","bl":"3023","exists":true},{"part":"3032","name":"Plate 4 x 6","color":19,"colorName":"Tan","qty":1,"element":"4114001","bl":"3032","exists":true},{"part":"3666","name":"Plate 1 x 6","color":19,"colorName":"Tan","qty":9,"element":"4124067","bl":"3666","exists":true},{"part":"3623","name":"Plate 1 x 3","color":14,"colorName":"Yellow","qty":32,"element":"362324","bl":"3623","exists":true},{"part":"3034","name":"Plate 2 x 8","color":19,"colorName":"Tan","qty":5,"element":"4113988","bl":"3034","exists":true},{"part":"3460","name":"Plate 1 x 8","color":19,"colorName":"Tan","qty":6,"element":"4114324","bl":"3460","exists":true},{"part":"3795","name":"Plate 2 x 6","color":19,"colorName":"Tan","qty":7,"element":"4113993","bl":"3795","exists":true},{"part":"3024","name":"Plate 1 x 1","color":14,"colorName":"Yellow","qty":50,"element":"302424","bl":"3024","exists":true},{"part":"3023b","name":"Plate 1 x 2","color":14,"colorName":"Yellow","qty":27,"element":"302324","bl":"3023","exists":true},{"part":"3460","name":"Plate 1 x 8","color":14,"colorName":"Yellow","qty":10,"element":"346024","bl":"3460","exists":true},{"part":"3666","name":"Plate 1 x 6","color":72,"colorName":"Dark Bluish Gray","qty":6,"element":"4211056","bl":"3666","exists":true},{"part":"3710","name":"Plate 1 x 4","color":72,"colorName":"Dark Bluish Gray","qty":9,"element":"4211001","bl":"3710","exists":true},{"part":"3024","name":"Plate 1 x 1","color":72,"colorName":"Dark Bluish Gray","qty":8,"element":"4210719","bl":"3024","exists":true},{"part":"3021","name":"Plate 2 x 3","color":19,"colorName":"Tan","qty":6,"element":"4118790","bl":"3021","exists":true},{"part":"3020","name":"Plate 2 x 4","color":19,"colorName":"Tan","qty":5,"element":"4114309","bl":"3020","exists":true},{"part":"3020","name":"Plate 2 x 4","color":14,"colorName":"Yellow","qty":11,"element":"302024","bl":"3020","exists":true},{"part":"3023b","name":"Plate 1 x 2","color":72,"colorName":"Dark Bluish Gray","qty":4,"element":"4211063","bl":"3023","exists":true},{"part":"3021","name":"Plate 2 x 3","color":14,"colorName":"Yellow","qty":12,"element":"302124","bl":"3021","exists":true},{"part":"3666","name":"Plate 1 x 6","color":14,"colorName":"Yellow","qty":18,"element":"366624","bl":"3666","exists":true},{"part":"3710","name":"Plate 1 x 4","color":14,"colorName":"Yellow","qty":33,"element":"371024","bl":"3710","exists":true},{"part":"3034","name":"Plate 2 x 8","color":14,"colorName":"Yellow","qty":7,"element":"303424","bl":"3034","exists":true},{"part":"3022","name":"Plate 2 x 2","color":19,"colorName":"Tan","qty":1,"element":"4114084","bl":"3022","exists":true},{"part":"3795","name":"Plate 2 x 6","color":14,"colorName":"Yellow","qty":8,"element":"379524","bl":"3795","exists":true},{"part":"3795","name":"Plate 2 x 6","color":72,"colorName":"Dark Bluish Gray","qty":4,"element":"4211002","bl":"3795","exists":true},{"part":"3623","name":"Plate 1 x 3","color":72,"colorName":"Dark Bluish Gray","qty":3,"element":"4211133","bl":"3623","exists":true},{"part":"3020","name":"Plate 2 x 4","color":72,"colorName":"Dark Bluish Gray","qty":4,"element":"4211065","bl":"3020","exists":true},{"part":"3031","name":"Plate 4 x 4","color":14,"colorName":"Yellow","qty":7,"element":"4243817","bl":"3031","exists":true},{"part":"3022","name":"Plate 2 x 2","color":14,"colorName":"Yellow","qty":2,"element":"4613978","bl":"3022","exists":true},{"part":"3020","name":"Plate 2 x 4","color":191,"colorName":"Bright Light Orange","qty":1,"element":"6097511","bl":"3020","exists":true},{"part":"3023b","name":"Plate 1 x 2","color":191,"colorName":"Bright Light Orange","qty":4,"element":"6028736","bl":"3023","exists":true},{"part":"3666","name":"Plate 1 x 6","color":84,"colorName":"Medium Nougat","qty":1,"element":"6295464","bl":"3666","exists":true},{"part":"3460","name":"Plate 1 x 8","color":84,"colorName":"Medium Nougat","qty":1,"element":"6347603","bl":"3460","exists":true},{"part":"3623","name":"Plate 1 x 3","color":191,"colorName":"Bright Light Orange","qty":4,"element":"6073042","bl":"3623","exists":true},{"part":"3024","name":"Plate 1 x 1","color":191,"colorName":"Bright Light Orange","qty":5,"element":"6073040","bl":"3024","exists":true},{"part":"3024","name":"Plate 1 x 1","color":84,"colorName":"Medium Nougat","qty":2,"element":"6215606","bl":"3024","exists":true}]}}};</script>
+<script type="module">
+import * as THREE from "three";
+// Brick drawing, shared by the player and the printable booklet (the build
+// inlines this file into both). Plain parts are rounded boxes with studs;
+// slopes and round parts use their real LDraw geometry, turned into the scene
+// frame: LDU / 20, y and z flipped, rotated the way the LDraw export rotates it.
+function brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes, PLATE }) {
+  const toScene = (x, yPlates, z) => new THREE.Vector3(x, yPlates * PLATE, -z);
+  const geoCache = new Map(), meshGeoCache = new Map();
+  const studGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.18, 24);
+  function bodyGeo(w, h, d) {
+    const k = `${w}x${h}x${d}`;
+    if (!geoCache.has(k)) geoCache.set(k, new RoundedBoxGeometry(w - 0.03, h * PLATE - 0.02, d - 0.03, 3, 0.05));
+    return geoCache.get(k);
+  }
+  function meshGeo(p) {
+    const key = `${p.part}@${p.rot}`;
+    if (meshGeoCache.has(key)) return meshGeoCache.get(key);
+    const m = meshes[p.part], [cx, cz] = m.center, phi = THREE.MathUtils.degToRad(-p.rot), cs = Math.cos(phi), sn = Math.sin(phi);
+    const pos = new Float32Array(m.tri.length);
+    for (let i = 0; i < m.tri.length; i += 3) {
+      const lx = (m.tri[i] - cx) / 20, ly = -m.tri[i + 1] / 20 + (p.h * PLATE) / 2, lz = -(m.tri[i + 2] - cz) / 20;
+      pos[i] = lx * cs + lz * sn; pos[i + 1] = ly; pos[i + 2] = -lx * sn + lz * cs;
+    }
+    let geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo = toCreasedNormals(geo, Math.PI / 6);
+    meshGeoCache.set(key, geo);
+    return geo;
+  }
+  // `covered` (optional): skip studs hidden under another part, for big models
+  function brick(p, mat, covered) {
+    const g = new THREE.Group();
+    g.userData.home = toScene(p.x + p.w / 2, p.y + p.h / 2, p.z + p.d / 2);
+    if (p.mesh && meshes?.[p.part]) {
+      const m = new THREE.Mesh(meshGeo(p), mat); m.castShadow = m.receiveShadow = true; g.add(m);
+      return g;
+    }
+    const body = new THREE.Mesh(bodyGeo(p.w, p.h, p.d), mat);
+    body.castShadow = body.receiveShadow = true; g.add(body);
+    if (p.kind !== "tile") for (let i = 0; i < p.w; i++) for (let k = 0; k < p.d; k++) {
+      if (covered && covered(p.x + i, p.y + p.h, p.z + k)) continue;
+      const s = new THREE.Mesh(studGeo, mat); s.castShadow = true;
+      s.position.set(-p.w / 2 + 0.5 + i, p.h * PLATE / 2 + 0.09, p.d / 2 - 0.5 - k);
+      g.add(s);
+    }
+    return g;
+  }
+  return { brick, toScene, bodyGeo, meshGeo };
+}
+
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
+
+const S = window.STORY, $ = (id) => document.getElementById(id);
+const COLORS = S.colors, PLATE = TL.PLATE, R = S.room, PROPS = S.props || {};
+const clamp01 = TL.clamp01, easeOut = TL.easeOut, settle = TL.settle;
+// story units -> scene: x stays, plates up become 0.4, story z points into the screen.
+const toScene = (x, yPlates, z) => new THREE.Vector3(x, yPlates * PLATE, -z);
+
+// ---------- scene
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const BG = new THREE.Color("#f1f0ec");
+scene.background = BG; scene.fog = new THREE.Fog(BG, 60, 160);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 400);
+const hemi = new THREE.HemisphereLight(0xffffff, 0xb8b2a6, 1.35); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 2.3);
+sun.position.set(-14, 30, 18); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 160 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+scene.add(sun, sun.target);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: 0xeceae4, roughness: 1 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const grid = new THREE.GridHelper(200, 50, 0xd6d3ca, 0xe0ddd5); grid.position.y = 0.002; scene.add(grid);
+
+// ---------- bricks (materials are per actor, so one actor can glow alone)
+const KIT = brickKit({ THREE, RoundedBoxGeometry, toCreasedNormals, meshes: S.meshes || {}, PLATE });
+const brick = KIT.brick;
+const failing = new Map();       // actor id -> Set of part indices a model check flagged
+for (const r of Object.values(S.reports)) if (!r.ok && r.actor) failing.set(r.actor, new Set(r.errors.map((e) => e.part).filter((i) => i != null)));
+const actors = Object.entries(S.actors).filter(([, a]) => a.kind !== "figure").map(([id, a]) => {
+  const group = new THREE.Group(); scene.add(group);
+  const mats = new Map(), bad = failing.get(id) || new Set();
+  const matFor = (c, isBad) => {
+    const key = c + (isBad ? "!" : "");
+    if (!mats.has(key)) mats.set(key, new THREE.MeshStandardMaterial({ color: COLORS[c][2], roughness: 0.3, emissive: isBad ? 0xff1a00 : 0x000000, emissiveIntensity: isBad ? 0.55 : 0 }));
+    return mats.get(key);
+  };
+  // Big models skip studs that end up under another part: nobody sees them in
+  // the finished model (they go missing a moment early while it's being built).
+  let covered = null;
+  if (a.parts.length > 200) {
+    const occ = new Set();
+    for (const p of a.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
+    covered = (x, y, z) => occ.has(`${x},${y},${z}`);
+  }
+  const meshes = a.parts.map((p, i) => { const m = brick(p, matFor(p.color, bad.has(i)), covered); m.userData.joint = new THREE.Vector3(); group.add(m); return m; });
+  const [cx, cz] = TL.actorCentre(a), pivot = toScene(cx, 0, cz);
+  // joints: their parts hang from a group at the pivot, which pose() rotates
+  const joints = Object.entries(a.joints || {}).map(([name, j]) => {
+    const jg = new THREE.Group(), at = toScene(...j.pivot).sub(pivot);
+    jg.position.copy(at); group.add(jg);
+    for (const i of j.parts) { group.remove(meshes[i]); jg.add(meshes[i]); meshes[i].userData.joint = at; }
+    return { name, axis: j.axis || "x", jg };
+  });
+  return { id, a, meshes, group, pivot, joints, mats: [...mats.entries()].filter(([k]) => !k.endsWith("!")).map(([, m]) => m) };
+});
+function evalBricks(t) {
+  for (const { a, meshes, group, pivot, mats, joints } of actors) {
+    for (const j of joints) {
+      const r = THREE.MathUtils.degToRad(TL.jointAngle(a, j.name, t));
+      j.jg.rotation.set(j.axis === "x" ? -r : 0, j.axis === "y" ? r : 0, j.axis === "z" ? r : 0);
+    }
+    const pos = TL.actorPos(a, t, S.actors);
+    group.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)).add(pivot);
+    group.rotation.y = THREE.MathUtils.degToRad(TL.actorTurn(a, t, S.actors));
+    const g = TL.glow(a, t);
+    for (const m of mats) { m.emissive.set(a.highlights?.[0]?.color || "#ff8a2a"); m.emissiveIntensity = 0.32 * g; }
+    a.parts.forEach((p, i) => {
+      const mesh = meshes[i], st = TL.partState(p, t);
+      mesh.visible = st.visible;
+      if (!st.visible) return;
+      const f = p.from, o = p.out ? p.out.to : [0, 0, 0], h = mesh.userData.home;
+      const jo = mesh.userData.joint;
+      mesh.position.set(h.x - pivot.x - jo.x + f[0] * st.k + o[0] * st.out, h.y - jo.y + f[1] * st.k + o[1] * st.out, h.z - pivot.z - jo.z - f[2] * st.k - o[2] * st.out);
+      const r = Math.max(st.k, st.out);
+      mesh.rotation.set(p.spin[0] * r, p.spin[1] * r, p.spin[2] * r);
+    });
+  }
+}
+
+// ---------- instruction mode: the build as booklet steps
+// A step is a run of parts in one actor (the model's `steps`). With I on,
+// playback stops at the end of each step and shows the parts it needs; the
+// new parts get a yellow outline and earlier ones go pale, as in the booklet.
+const STEPS = [];
+for (const act of actors) {
+  let cur = null;
+  act.a.parts.forEach((p, i) => {
+    if (p.stepStart || !cur) { cur = { act, from: i, to: i + 1, t0: p.t0, tEnd: p.t0 + p.dur }; STEPS.push(cur); }
+    else { cur.to = i + 1; cur.tEnd = Math.max(cur.tEnd, p.t0 + p.dur); }
+  });
+}
+STEPS.sort((a, b) => a.tEnd - b.tEnd);
+STEPS.forEach((st, i) => { st.n = STEPS.filter((o, j) => j <= i && o.act === st.act).length; st.of = STEPS.filter((o) => o.act === st.act).length; });
+let instr = false, stepShown = null;
+// the outline is a slightly larger copy drawn back-face only: a silhouette
+const yellow = new THREE.MeshBasicMaterial({ color: 0xf2c200, side: THREE.BackSide });
+const paleCache = new Map();
+function pale(mat) {
+  if (!paleCache.has(mat)) { const m = mat.clone(); m.color = mat.color.clone().lerp(new THREE.Color(0xffffff), 0.5); m.emissiveIntensity = 0; paleCache.set(mat, m); }
+  return paleCache.get(mat);
+}
+function setLook(mesh, look) {
+  if (mesh.userData.look === look) return;
+  mesh.userData.look = look;
+  for (const c of mesh.children) if (c.isMesh) { c.userData.base ||= c.material; c.material = look === "pale" ? pale(c.userData.base) : c.userData.base; }
+  if (look === "new" && !mesh.userData.outline) {
+    const body = mesh.children.find((c) => c.isMesh), b = new THREE.Box3().setFromBufferAttribute(body.geometry.attributes.position);
+    const size = b.getSize(new THREE.Vector3()), pad = 0.16;
+    mesh.userData.outline = new THREE.Mesh(body.geometry, yellow);
+    mesh.userData.outline.scale.set((size.x + pad) / size.x, (size.y + pad) / size.y, (size.z + pad) / size.z);
+    mesh.add(mesh.userData.outline);
+  }
+  if (mesh.userData.outline) mesh.userData.outline.visible = look === "new";
+}
+// part icons for the callout, rendered once each
+const iconRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+iconRenderer.setSize(116, 116); iconRenderer.outputColorSpace = THREE.SRGBColorSpace;
+const iconScene = new THREE.Scene();
+iconScene.add(new THREE.HemisphereLight(0xffffff, 0x9a9590, 1.6));
+const iconSun = new THREE.DirectionalLight(0xffffff, 2); iconSun.position.set(-3, 6, 4); iconScene.add(iconSun);
+const iconCache = new Map();
+function icon(p) {
+  const key = `${p.part}|${p.color}`;
+  if (iconCache.has(key)) return iconCache.get(key);
+  const q = { ...p, x: 0, y: 0, z: 0, rot: 0, w: p.rot === 90 || p.rot === 270 ? p.d : p.w, d: p.rot === 90 || p.rot === 270 ? p.w : p.d };
+  const g = brick(q, new THREE.MeshStandardMaterial({ color: COLORS[p.color][2], roughness: 0.35 }));
+  const c = g.userData.home; g.position.set(-c.x, -c.y, -c.z); iconScene.add(g);
+  // frame the part's bounding sphere, so any shape fits from the diagonal
+  const r = Math.hypot(q.w, q.d, q.h * PLATE + 0.2) / 2 + 0.15;
+  const cam = new THREE.OrthographicCamera(-r, r, r, -r, 0.1, 100);
+  cam.position.set(r * 2.4, r * 2.2, r * 2.8); cam.lookAt(0, 0, 0);
+  iconRenderer.render(iconScene, cam); iconScene.remove(g);
+  const url = iconRenderer.domElement.toDataURL();
+  iconCache.set(key, url); return url;
+}
+// The step being built now (or, between builds, the last one finished).
+function currentStep(t) {
+  const now = STEPS.find((st) => st.t0 <= t + 1 && st.tEnd >= t - 1);
+  if (now) return now;
+  let done = null; for (const st of STEPS) if (st.tEnd < t) done = st;
+  return done;
+}
+function evalSteps(t) {
+  const st = instr ? currentStep(t) : null;
+  for (const { a, meshes } of actors) meshes.forEach((m, i) => {
+    let look = "normal";
+    if (st && st.act.a === a) look = i >= st.from && i < st.to ? "new" : i < st.from ? "pale" : "future";
+    if (look === "future") m.visible = false;       // later steps wait their turn
+    setLook(m, look === "future" ? "normal" : look);
+  });
+  if (st !== stepShown) {
+    stepShown = st;
+    if (st) {
+      const counts = new Map();
+      for (let i = st.from; i < st.to; i++) { const p = st.act.a.parts[i], k = `${p.part}|${p.color}`; counts.set(k, { p, n: (counts.get(k)?.n || 0) + 1 }); }
+      $("stepIcons").innerHTML = [...counts.values()].map(({ p, n }) => `<div class="icon"><img alt="" src="${icon(p)}">${n}×</div>`).join("");
+      $("stepN").innerHTML = `${st.n}<small>of ${st.of} · ${st.act.id}</small>`;
+    }
+  }
+}
+function setInstr(on) {
+  instr = on; document.body.classList.toggle("instr", on); $("instrBtn").classList.toggle("on", on);
+  stepShown = undefined;
+}
+
+// ---------- the room
+function rngf(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const panels = [];
+if (R) {
+  document.body.classList.add("chamber");
+  grid.visible = false; floor.material.color.set(0xc9c9c4); floor.position.y = -0.35;
+  hemi.intensity = 1.9; sun.intensity = 1.9;
+  sun.position.set(R.w / 2 - 26, 60, -R.d / 2 + 34); sun.target.position.set(R.w / 2, 0, -R.d / 2);
+  const r = rngf(R.seed), C = R.cell, WALL = R.h * PLATE;
+  const edge = new THREE.LineBasicMaterial({ color: 0xbcbcb7 });
+  const tint = () => new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.12, 0.05, 0.9 + r() * 0.05), roughness: 0.9 });
+  const doors = Object.values(PROPS).filter((p) => p.kind === "door");
+  const inDoor = (x0, x1, y0, y1) => doors.some((d) => x0 < d.x + d.width && x1 > d.x && y0 < d.height * PLATE && y1 > 0);
+  function panel(size, home, wall, t0) {
+    const geo = new THREE.BoxGeometry(...size);
+    const m = new THREE.Mesh(geo, tint()); m.receiveShadow = true; m.castShadow = !!wall;
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), edge));
+    m.position.copy(home); m.visible = false; scene.add(m);
+    panels.push({ m, home, wall, t0, dur: 650 });
+  }
+  function cells(n1, n2, place) {
+    const used = new Set();
+    for (let i = 0; i < n1; i++) for (let k = 0; k < n2; k++) {
+      if (used.has(i + "," + k)) continue;
+      let a = 1, b = 1; const roll = r();
+      if (roll < 0.22 && i + 1 < n1 && !used.has(i + 1 + "," + k)) a = 2;
+      else if (roll < 0.4 && k + 1 < n2 && !used.has(i + "," + (k + 1))) b = 2;
+      for (let u = 0; u < a; u++) for (let v = 0; v < b; v++) used.add(i + u + "," + (k + v));
+      if (a === 1 && b === 1 && roll > 0.72) for (const [u, v] of [[0, 0], [0.5, 0], [0, 0.5], [0.5, 0.5]]) place(i + u, k + v, 0.5, 0.5);
+      else place(i, k, a, b);
+    }
+  }
+  const G = 0.1, maxD = Math.hypot(R.w, R.d) / 2;
+  cells(R.w / C, R.d / C, (i, k, a, b) => {
+    const x0 = i * C, z0 = k * C, w = a * C, d = b * C;
+    const dist = Math.hypot(x0 + w / 2 - R.w / 2, z0 + d / 2 - R.d / 2) / maxD;
+    panel([w - G, 0.14, d - G], new THREE.Vector3(x0 + w / 2, -0.07, -(z0 + d / 2)), false, R.t0 + dist * R.dur * 0.5 + r() * 250);
+  });
+  const rows = Math.round(WALL / C);
+  cells(R.w / C, rows, (i, k, a, b) => {
+    const x0 = i * C, y0 = k * C, w = a * C, h = b * C;
+    if (inDoor(x0, x0 + w, y0, y0 + h)) return;
+    panel([w - G, h - G, 0.3], new THREE.Vector3(x0 + w / 2, y0 + h / 2, -R.d - 0.15), true, R.t0 + R.dur * 0.5 + (x0 / R.w) * R.dur * 0.3 + y0 * 25);
+  });
+  cells(R.d / C, rows, (i, k, a, b) => {
+    const z0 = i * C, y0 = k * C, d = a * C, h = b * C;
+    panel([0.3, h - G, d - G], new THREE.Vector3(R.w + 0.15, y0 + h / 2, -(z0 + d / 2)), true, R.t0 + R.dur * 0.62 + ((R.d - z0) / R.d) * R.dur * 0.25 + y0 * 25);
+  });
+}
+function evalRoom(t) {
+  for (const p of panels) {
+    if (t < p.t0) { p.m.visible = false; continue; }
+    const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+    p.m.visible = true;
+    if (p.wall) { p.m.position.set(p.home.x, p.home.y - (R.h * PLATE + 2) * k, p.home.z); p.m.rotation.set(0, 0, 0); }
+    else { p.m.position.set(p.home.x, p.home.y - 3 * k, p.home.z); p.m.rotation.set(1.3 * k, 0, 0.4 * k); }
+  }
+}
+
+// ---------- props
+const propViews = [];
+const darkMat = new THREE.MeshStandardMaterial({ color: 0x2a2e33, roughness: 0.8 });
+for (const p of Object.values(PROPS)) {
+  if (p.kind === "button") {
+    const g = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.6, 0.32, 40), new THREE.MeshStandardMaterial({ color: 0x6f9ea2, roughness: 0.5 }));
+    base.position.y = 0.16; base.castShadow = base.receiveShadow = true;
+    const topMat = new THREE.MeshStandardMaterial({ color: 0xd6453b, roughness: 0.35, emissive: 0xff2a10, emissiveIntensity: 0 });
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.9, 0.45, 40), topMat);
+    top.castShadow = true; g.add(base, top);
+    g.position.set(p.at[0], 0, -p.at[2]); scene.add(g);
+    propViews.push((t) => {
+      const k = 1 - settle(clamp01((t - p.t0) / p.dur));
+      g.visible = t >= p.t0; g.position.y = -1.2 * k; g.scale.setScalar(1 - 0.4 * k);
+      const v = TL.propLevel(p, t);
+      top.position.y = 0.32 + 0.225 - 0.3 * v; topMat.emissiveIntensity = 0.5 * v;
+    });
+  } else if (p.kind === "door") {
+    const W = p.width, H = p.height * PLATE, z = -(R ? R.d : 0);
+    const g = new THREE.Group(); scene.add(g);
+    const recess = new THREE.Mesh(new THREE.BoxGeometry(W, H, 1.2), darkMat); recess.position.set(p.x + W / 2, H / 2, z - 0.75);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x55595e, roughness: 0.6 });
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(W + 0.8, 0.5, 0.5), frameMat); lintel.position.set(p.x + W / 2, H + 0.25, z + 0.1);
+    const jambL = new THREE.Mesh(new THREE.BoxGeometry(0.4, H, 0.5), frameMat); jambL.position.set(p.x - 0.2, H / 2, z + 0.1);
+    const jambR = jambL.clone(); jambR.position.x = p.x + W + 0.2;
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0xe6e6e2, roughness: 0.7 });
+    const leafL = new THREE.Mesh(new THREE.BoxGeometry(W / 2 - 0.05, H - 0.05, 0.3), leafMat), leafR = leafL.clone();
+    for (const m of [recess, lintel, jambL, jambR, leafL, leafR]) { m.castShadow = m.receiveShadow = true; g.add(m); }
+    propViews.push((t) => {
+      const k = clamp01((t - p.t0) / p.dur);
+      g.visible = t >= p.t0;
+      const slide = (W / 2) * TL.propLevel(p, t), close = (1 - easeOut(k)) * (W / 2);
+      leafL.position.set(p.x + W / 4 - slide - close, H / 2, z - 0.1);
+      leafR.position.set(p.x + 3 * W / 4 + slide + close, H / 2, z - 0.1);
+      lintel.scale.x = Math.max(0.01, easeOut(k));
+    });
+  } else if (p.kind === "signal") {
+    const pts = p.points.map(([x, y, z]) => new THREE.Vector3(x, y * PLATE + 0.08, R && z >= R.d ? -R.d + 0.12 : -z));
+    const dots = [];
+    let total = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], L = a.distanceTo(b);
+      for (let s = 0; s < L; s += 0.85) dots.push({ pos: a.clone().lerp(b, s / L), at: total + s });
+      total += L;
+    }
+    const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.1, 0.34), new THREE.MeshBasicMaterial({ color: 0xffffff }), dots.length);
+    scene.add(mesh);
+    const dim = new THREE.Color(0x9fd7e3), lit = new THREE.Color(0x14b6e0), c = new THREE.Color(), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), one = new THREE.Vector3(1, 1, 1), zero = new THREE.Vector3();
+    propViews.push((t) => {
+      const drawn = clamp01((t - p.t0) / p.dur) * total, v = TL.propLevel(p, t);
+      dots.forEach((d, i) => {
+        m4.compose(d.pos, q, t >= p.t0 && d.at <= drawn ? one : zero); mesh.setMatrixAt(i, m4);
+        c.copy(dim).lerp(lit, v * (0.65 + 0.35 * Math.sin(d.at * 1.3 - t * 0.012))); mesh.setColorAt(i, c);
+      });
+      mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    });
+  }
+}
+
+// ---------- pictogram figures
+const figures = Object.entries(S.actors).filter(([, a]) => a.kind === "figure").map(([id, a]) => {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x1d1e21, roughness: 0.55, emissive: 0xff8a2a, emissiveIntensity: 0 });
+  const g = new THREE.Group(); scene.add(g);
+  const legGeo = new THREE.BoxGeometry(0.34, 1.9, 0.4);
+  const legs = [-0.3, 0.3].map((x) => {
+    const hip = new THREE.Group(); hip.position.set(x, 1.9, 0);
+    const leg = new THREE.Mesh(legGeo, mat); leg.position.y = -0.95; leg.castShadow = true;
+    hip.add(leg); g.add(hip); return hip;
+  });
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.62, 1.4, 6, 18), mat); torso.position.y = 3.22; torso.castShadow = true;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.52, 24, 18), mat); head.position.y = 5.14; head.castShadow = true;
+  g.add(torso, head);
+  return { id, a, g, legs, mat };
+});
+function evalFigures(t) {
+  for (const { a, g, legs, mat } of figures) {
+    g.visible = t >= a.t0;
+    const drop = 1 - settle(clamp01((t - a.t0) / a.appear)), pos = TL.actorPos(a, t), pose = TL.figurePose(a, t);
+    g.position.copy(toScene(pos.x, pos.y + pos.lift, pos.z)); g.position.y += drop * 9;
+    g.rotation.y = pose.heading;
+    legs[0].rotation.x = pose.swing; legs[1].rotation.x = -pose.swing;
+    mat.emissiveIntensity = 0.6 * TL.glow(a, t);
+  }
+}
+
+// ---------- moods: day, sunset, night (blended), with stars and a moon at night
+const MOODS = {
+  day:    { bg: 0xf1f0ec, sky: 0xffffff, ground: 0xb8b2a6, hemi: 1.35, sun: 0xffffff, sunI: 2.3, pos: [-14, 30, 18], floor: 0xeceae4 },
+  sunset: { bg: 0xf1bf98, sky: 0xffd6ae, ground: 0x80586a, hemi: 1.05, sun: 0xffa45c, sunI: 2.5, pos: [-34, 11, 8], floor: 0xe7c3a4 },
+  night:  { bg: 0x1c2542, sky: 0x8090c8, ground: 0x20202c, hemi: 1.0, sun: 0xc8d6ff, sunI: 1.5, pos: [18, 34, 10], floor: 0x3a4462 },
+};
+const usesMood = (S.moods || []).length > 0 && !R;
+const starGeo = new THREE.BufferGeometry(), starPos = [];
+{ const r = rngf(7); for (let i = 0; i < 500; i++) { const a = r() * Math.PI * 2, e = 0.08 + r() * 1.3; starPos.push(Math.cos(a) * Math.cos(e) * 150, 20 + Math.sin(e) * 120, Math.sin(a) * Math.cos(e) * 150); } }
+starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0, fog: false }));
+const moon = new THREE.Mesh(new THREE.SphereGeometry(6, 32, 24), new THREE.MeshBasicMaterial({ color: 0xfff1cc, transparent: true, opacity: 0, fog: false }));
+moon.position.set(46, 58, -150);
+if (usesMood) scene.add(stars, moon);
+const cA = new THREE.Color(), cB = new THREE.Color();
+const mix = (key, w) => { cA.setRGB(0, 0, 0); for (const [k, v] of Object.entries(w)) { cB.setHex(MOODS[k][key]); cA.r += cB.r * v; cA.g += cB.g * v; cA.b += cB.b * v; } return cA.clone(); };
+const num = (key, w) => Object.entries(w).reduce((s, [k, v]) => s + MOODS[k][key] * v, 0);
+function evalMood(t) {
+  if (!usesMood) return;
+  const w = TL.moodWeights(S, t);
+  const bg = mix("bg", w); scene.background = bg; scene.fog.color = bg;
+  hemi.color = mix("sky", w); hemi.groundColor = mix("ground", w); hemi.intensity = num("hemi", w);
+  sun.color = mix("sun", w); sun.intensity = num("sunI", w);
+  sun.position.set(...[0, 1, 2].map((i) => Object.entries(w).reduce((s, [k, v]) => s + MOODS[k].pos[i] * v, 0)));
+  floor.material.color = mix("floor", w);
+  grid.material.transparent = true; grid.material.opacity = 1 - 0.85 * (w.night + w.sunset * 0.5);
+  stars.material.opacity = w.night; moon.material.opacity = w.night;
+  // captions turn light as the night comes in
+  const ink = Math.round(29 + (240 - 29) * TL.clamp01((w.night - 0.35) / 0.4));
+  document.querySelector(".cap .t").style.color = `rgb(${ink},${ink},${Math.min(255, ink + 4)})`;
+}
+
+// ---------- particles: hearts, sparkles, confetti, each on a fixed path
+const heartShape = new THREE.Shape();
+heartShape.moveTo(0, -0.5);
+heartShape.bezierCurveTo(-0.15, -0.3, -0.6, -0.05, -0.6, 0.25);
+heartShape.bezierCurveTo(-0.6, 0.55, -0.25, 0.65, 0, 0.38);
+heartShape.bezierCurveTo(0.25, 0.65, 0.6, 0.55, 0.6, 0.25);
+heartShape.bezierCurveTo(0.6, -0.05, 0.15, -0.3, 0, -0.5);
+const heartGeo = new THREE.ExtrudeGeometry(heartShape, { depth: 0.18, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 3 });
+heartGeo.center();
+const sparkGeo = new THREE.OctahedronGeometry(0.22), confGeo = new THREE.PlaneGeometry(0.34, 0.2);
+const CONF = [0xe8711c, 0x1e5aa8, 0xfac80a, 0x58ab41, 0xd6453b, 0xffffff];
+const particles = (S.emitters || []).flatMap((e) => {
+  const r = rngf(e.seed);
+  return Array.from({ length: e.count }, () => {
+    const mat = e.kind === "hearts" ? new THREE.MeshStandardMaterial({ color: r() < 0.7 ? 0xe2384f : 0xff8fa8, roughness: 0.35, emissive: 0x5a0010, emissiveIntensity: 0.4 })
+      : e.kind === "sparkles" ? new THREE.MeshBasicMaterial({ color: 0xffe27a })
+      : new THREE.MeshStandardMaterial({ color: CONF[Math.floor(r() * CONF.length)], side: THREE.DoubleSide, roughness: 0.6 });
+    const m = new THREE.Mesh(e.kind === "hearts" ? heartGeo : e.kind === "sparkles" ? sparkGeo : confGeo, mat);
+    m.visible = false; m.castShadow = e.kind !== "sparkles"; scene.add(m);
+    const a = r() * Math.PI * 2, rad = 0.4 + r() * 1.8;
+    return { e, m, delay: r() * e.dur * 0.4, life: e.dur * (0.55 + r() * 0.4), dx: Math.cos(a) * rad, dz: Math.sin(a) * rad,
+      rise: 1.6 + r() * 1.8, sway: 0.25 + r() * 0.5, ph: r() * 6.28, size: e.kind === "hearts" ? 0.55 + r() * 0.5 : 0.8 + r() * 0.6, spin: (r() - 0.5) * 6 };
+  });
+});
+function anchorTop(on, at, offset, t) {
+  if (!on) return toScene(...at);
+  const a = S.actors[on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
+  const top = a.parts ? Math.max(...a.parts.map((p) => p.y + p.h)) : 14;
+  return toScene(pos.x + cx + offset[0], pos.y + pos.lift + top + offset[1], pos.z + cz + offset[2]);
+}
+function evalParticles(t) {
+  for (const q of particles) {
+    const tau = t - q.e.t - q.delay;
+    if (tau < 0 || tau > q.life) { q.m.visible = false; continue; }
+    const p = tau / q.life, s = tau / 1000, o = anchorTop(q.e.on, q.e.at, q.e.offset, t);
+    q.m.visible = true;
+    if (q.e.kind === "confetti") q.m.position.set(o.x + q.dx * 2.2 + Math.sin(s * 3 + q.ph) * 0.6, o.y + 7 - s * 2.6, o.z + q.dz * 2.2);
+    else q.m.position.set(o.x + q.dx + Math.sin(s * 2.4 + q.ph) * q.sway, o.y + 0.4 + s * q.rise, o.z + q.dz + Math.cos(s * 2 + q.ph) * q.sway * 0.5);
+    q.m.scale.setScalar(q.size * Math.sin(Math.PI * Math.min(1, p * 1.6)) ** 0.7 * (1 - Math.max(0, p - 0.7) / 0.3 * 0.6));
+    q.m.rotation.set(q.e.kind === "confetti" ? s * q.spin : 0, s * q.spin * 0.5 + q.ph, q.e.kind === "confetti" ? s * q.spin * 0.7 : Math.sin(s * 3 + q.ph) * 0.25);
+  }
+}
+
+// ---------- speech bubbles, letterbox, fades
+const bubbleEls = (S.bubbles || []).map((b) => {
+  const el = document.createElement("div"); el.className = "bubble"; el.textContent = b.text; el.style.opacity = 0; document.body.appendChild(el);
+  return { b, el };
+});
+function evalBubbles(t) {
+  for (const { b, el } of bubbleEls) {
+    const on = t >= b.t && t <= b.t + b.dur;
+    if (!on) { el.style.opacity = 0; continue; }
+    const pop = TL.clamp01((t - b.t) / 220), out = TL.clamp01((b.t + b.dur - t) / 250);
+    const v = anchorTop(b.actor, null, [0, 3, 0], t).project(camera);
+    el.style.opacity = Math.min(pop, out);
+    el.style.left = `${(v.x * 0.5 + 0.5) * innerWidth - el.offsetWidth / 2}px`;
+    const barPx = TL.level(S.letterboxes, t) * 0.11 * innerHeight;
+    el.style.top = `${Math.max(barPx + 10, (-v.y * 0.5 + 0.5) * innerHeight - el.offsetHeight - 12)}px`;
+    el.style.transform = `scale(${0.85 + 0.15 * TL.settle(pop)})`;
+  }
+}
+let fadeColor = "#000";
+let subShown = null;
+function evalSubtitle(t) {
+  const line = (S.narration || []).find((n) => t >= n.t && t < n.t + n.dur);
+  if (line !== subShown) { subShown = line; $("subtitle").textContent = line ? line.text : ""; }
+  $("subtitle").style.opacity = line ? Math.min(TL.clamp01((t - line.t) / 200), TL.clamp01((line.t + line.dur - t) / 200)) : 0;
+}
+function evalBars(t) {
+  const lb = TL.level(S.letterboxes, t);
+  $("barTop").style.height = $("barBot").style.height = `${lb * 11}vh`;
+  const cap = document.querySelector(".cap");
+  if (R) cap.style.bottom = `${13 + lb * 11}vh`; else cap.style.top = `${7 + lb * 11}vh`;
+  const f = TL.level(S.fades, t);
+  const last = [...(S.fades || [])].reverse().find((e) => e.t <= t && e.on);
+  if (last && last.color !== fadeColor) { fadeColor = last.color; $("fade").style.background = fadeColor; }
+  $("fade").style.opacity = f;
+}
+
+// ---------- camera
+function evalCamera(t) {
+  const c = TL.cameraState(S, t);
+  const az = THREE.MathUtils.degToRad(c.az + (S.meta.drift || 0) * t / 1000), el = THREE.MathUtils.degToRad(c.el);
+  const target = toScene(c.x, c.y, c.z);
+  camera.position.set(target.x + c.dist * Math.cos(el) * Math.sin(az), target.y + c.dist * Math.sin(el), target.z + c.dist * Math.cos(el) * Math.cos(az));
+  camera.lookAt(target);
+}
+
+// ---------- captions, cards, callouts
+let shownCap = -1;
+function evalOverlay(t) {
+  let ci = -1; S.captions.forEach((c, i) => { if (c.t <= t) ci = i; });
+  if (ci !== shownCap) {
+    shownCap = ci;
+    $("capK").textContent = ci >= 0 ? S.captions[ci].kicker : "";
+    $("capT").textContent = ci >= 0 ? S.captions[ci].text : "";
+  }
+  document.querySelector(".cap").style.opacity = ci >= 0 ? clamp01((t - S.captions[ci].t) / 350) : 0;
+  const card = S.cards.find((c) => t >= c.t && t < c.t + c.dur);
+  if (card) {
+    $("cardK").textContent = card.kicker; $("cardT").textContent = card.title; $("cardS").textContent = card.sub || "";
+    const fadeOut = clamp01((card.t + card.dur - t) / 450);
+    $("card").style.opacity = card.t === 0 ? fadeOut : Math.min(clamp01((t - card.t) / 450), fadeOut);
+  } else $("card").style.opacity = 0;
+}
+const calloutEls = (S.callouts || []).map((c) => {
+  const el = document.createElement("div"); el.className = "callout"; el.textContent = c.text; document.body.appendChild(el);
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("stroke", "#e8711c"); line.setAttribute("stroke-width", "2"); $("leaders").appendChild(line);
+  const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  dot.setAttribute("r", "4"); dot.setAttribute("fill", "#e8711c"); $("leaders").appendChild(dot);
+  return { c, el, line, dot };
+});
+function anchorOf(c, t) {
+  if (!c.on) return toScene(...c.at);
+  const a = S.actors[c.on], pos = TL.actorPos(a, t, S.actors), [cx, cz] = TL.actorCentre(a);
+  let top = 14;                       // figures are about 14 plates tall
+  if (a.parts) top = Math.max(...a.parts.map((p) => p.y + p.h));
+  return toScene(pos.x + cx + c.offset[0], pos.y + pos.lift + top + c.offset[1], pos.z + cz + c.offset[2]);
+}
+function evalCallouts(t) {
+  for (const { c, el, line, dot } of calloutEls) {
+    const a = Math.min(clamp01((t - c.t) / 300), clamp01((c.t + c.dur - t) / 300));
+    const on = t >= c.t && t <= c.t + c.dur;
+    el.style.opacity = on ? a : 0; line.style.opacity = dot.style.opacity = on ? a : 0;
+    if (!on) continue;
+    const v = anchorOf(c, t).project(camera);
+    const x = (v.x * 0.5 + 0.5) * innerWidth, y = (-v.y * 0.5 + 0.5) * innerHeight;
+    const lx = x + 70, ly = y - 70;
+    el.style.left = `${lx}px`; el.style.top = `${ly - el.offsetHeight}px`;
+    line.setAttribute("x1", x); line.setAttribute("y1", y); line.setAttribute("x2", lx); line.setAttribute("y2", ly);
+    dot.setAttribute("cx", x); dot.setAttribute("cy", y);
+  }
+}
+
+// ---------- sound: synthesised, scheduled from the timeline as playback crosses it
+const SOUNDS = TL.soundEvents(S);
+let audio = null, muted = true;
+function tone(freq, dur, type = "sine", gain = 0.15, slide = 0) {
+  const o = audio.createOscillator(), g = audio.createGain(), now = audio.currentTime;
+  o.type = type; o.frequency.setValueAtTime(freq, now);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), now + dur);
+  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.02);
+}
+function noise(dur, gain = 0.1, from = 800, to = 200) {
+  const buf = audio.createBuffer(1, Math.ceil(audio.sampleRate * dur), audio.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const src = audio.createBufferSource(), f = audio.createBiquadFilter(), g = audio.createGain(), now = audio.currentTime;
+  src.buffer = buf; f.type = "bandpass"; f.frequency.setValueAtTime(from, now); f.frequency.exponentialRampToValueAtTime(to, now + dur);
+  g.gain.setValueAtTime(gain, now); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  src.connect(f).connect(g).connect(audio.destination); src.start(now);
+}
+function pad(freq, dur, gain = 0.03) {
+  const now = audio.currentTime;
+  for (const [type, det] of [["sine", 0], ["triangle", 4]]) {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, now); o.detune.setValueAtTime(det, now);
+    g.gain.setValueAtTime(0.0001, now); g.gain.exponentialRampToValueAtTime(gain, now + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    o.connect(g).connect(audio.destination); o.start(now); o.stop(now + dur + 0.05);
+  }
+}
+const PIECES = {
+  romance: [[261.6, 329.6, 392, 493.9], [220, 261.6, 329.6, 392], [174.6, 220, 261.6, 329.6], [196, 246.9, 293.7, 349.2]],
+  wonder: [[261.6, 392, 587.3], [293.7, 440, 659.3], [349.2, 523.3, 784], [329.6, 493.9, 739.99]],
+};
+const VOICE = {
+  chord: (e) => { const ch = PIECES[e.piece][e.size % 4]; ch.forEach((f, i) => pad(f, 2.9, i === 0 ? 0.035 : 0.022)); },
+  say: () => { tone(660, 0.07, "sine", 0.06); setTimeout(() => audio && tone(880, 0.08, "sine", 0.05), 70); },
+  "emit-hearts": () => [1046, 1318, 1568].forEach((f, i) => setTimeout(() => audio && tone(f, 0.25, "sine", 0.05), i * 90)),
+  "emit-sparkles": () => [1568, 2093, 2637].forEach((f, i) => setTimeout(() => audio && tone(f, 0.18, "triangle", 0.035), i * 60)),
+  "emit-confetti": () => noise(0.4, 0.06, 3000, 900),
+  click: (e) => { tone(2400 / Math.sqrt(1 + e.size * 0.15), 0.045, "triangle", 0.12); tone(180, 0.05, "sine", 0.08); },
+  panel: () => tone(900 + Math.random() * 400, 0.03, "square", 0.025),
+  step: () => tone(120, 0.06, "sine", 0.06, 0.6),
+  thud: () => tone(90, 0.18, "sine", 0.2, 0.5),
+  whoosh: () => noise(0.25, 0.05, 2000, 400),
+  install: () => { tone(520, 0.08, "triangle", 0.07); tone(780, 0.1, "triangle", 0.05); },
+  "button-on": () => tone(150, 0.16, "square", 0.08, 0.5),
+  "button-off": () => tone(220, 0.08, "square", 0.05, 1.4),
+  "signal-on": () => tone(440, 0.5, "sine", 0.07, 2),
+  "signal-off": () => tone(660, 0.3, "sine", 0.05, 0.4),
+  "door-on": () => noise(0.7, 0.08, 300, 1200),
+  "door-off": () => noise(0.7, 0.08, 1200, 300),
+};
+function playSounds(from, to) {
+  if (muted || !audio || to <= from || to - from > 250) return;    // skip jumps and scrubs
+  let n = 0;
+  for (const e of SOUNDS) if (e.t > from && e.t <= to && n++ < 6) VOICE[e.kind]?.(e);
+}
+function setMuted(m) {
+  muted = m; $("mute").textContent = m ? "🔇" : "🔊";
+  if (!m && !audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (!m && audio.state === "suspended") audio.resume();
+}
+
+// ---------- the badge: model checks and the stage check
+const reps = Object.entries(S.reports), allOk = reps.every(([, r]) => r.ok), stage = S.stage || [];
+const fmt = (ms) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${Math.floor(ms / 100) % 10}`;
+$("badge").innerHTML = `<details${allOk ? "" : " open"}><summary><b class="${allOk ? "" : "bad"}">${allOk ? "✓" : "✗"}</b> ${reps.length} models · ${allOk ? "all buildable" : "not all buildable"}${
+  stage.length ? ` · <b class="warn">⚠</b> ${stage.length} stage overlap${stage.length > 1 ? "s" : ""}` : ""}</summary><div class="list">${
+  reps.map(([n, r]) => {
+    const f = r.physical, file = n.replace(/[^a-z0-9-]+/gi, "_");
+    const size = f ? ` · ${(f.widthMm / 10).toFixed(1)} × ${(f.depthMm / 10).toFixed(1)} × ${(f.heightMm / 10).toFixed(1)} cm, ~${f.grams} g` : "";
+    return `${r.ok ? "✓" : '<span class="bad">✗</span>'} ${n} · ${r.stats?.parts ?? "?"} parts${size} · <a href="models/${file}.ldr" download>.ldr</a> <a href="models/${file}.csv" download>parts</a>${
+      r.ok ? "" : `<br>${r.errors.slice(0, 4).map((e) => `<span class="bad">&nbsp;&nbsp;${e.msg}</span>`).join("<br>")}`}${
+      r.available === false ? `<br><b class="warn">&nbsp;&nbsp;⚠ not made by LEGO:</b> ${r.missing.join(", ")}` : ""}`;
+  }).join("<br>")}${
+  stage.map((s) => `<br><b class="warn">⚠</b> ${s.pair} overlap at <a href="#" data-t="${s.t}">${fmt(s.t)}</a>`).join("")}
+  <div class="honest"><b>Checked on a computer:</b> no overlaps, every stud connection, each part has a real way in (down, up or slid in), one solid piece, balance, ${
+    reps.every(([, r]) => r.available !== false) ? "and every part is a real LEGO part in a colour LEGO has made (Rebrickable)" : "and part/colour availability (some fail, above)"}.
+  <b>Not tested:</b> nobody has built these with real bricks. How firmly parts hold, tolerances, and whether the real thing stands are unknown; joints that swing are artistic licence; sizes are exact, weights estimated.</div></div></details>`;
+$("badge").addEventListener("click", (e) => { const a = e.target.closest("[data-t]"); if (a) { e.preventDefault(); t = +a.dataset.t; setPlaying(false); } });
+
+// ---------- playback, chapters, keys
+const CH = TL.chapters(S);
+let t = 0, playing = true, last = performance.now();
+$("scrub").max = S.duration;
+$("ticks").innerHTML = CH.map((c) => `<i style="left:${(c.t / S.duration) * 100}%" title="${c.label}"></i>`).join("");
+function setPlaying(p) { playing = p; $("play").textContent = p ? "❚❚" : "▶"; last = performance.now(); }
+function jump(dir) {
+  const now = t + (dir > 0 ? 1 : -400);
+  const c = dir > 0 ? CH.find((c) => c.t > now) : [...CH].reverse().find((c) => c.t < now);
+  t = c ? c.t : dir > 0 ? S.duration : 0;
+}
+$("play").onclick = () => { if (t >= S.duration) t = 0; setPlaying(!playing); };
+$("scrub").oninput = () => { t = +$("scrub").value; setPlaying(false); };
+$("mute").onclick = () => setMuted(!muted);
+$("instrBtn").onclick = () => setInstr(!instr);
+function stepJump(dir) {
+  const ends = STEPS.map((s) => s.tEnd);
+  const target = dir > 0 ? ends.find((e) => e > t + 1) : [...ends].reverse().find((e) => e < t - 1);
+  if (target !== undefined) { t = target; setPlaying(false); }
+}
+addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === " ") { e.preventDefault(); $("play").click(); }
+  else if (k === "arrowright") instr ? stepJump(1) : (t = Math.min(S.duration, t + 2000));
+  else if (k === "arrowleft") instr ? stepJump(-1) : (t = Math.max(0, t - 2000));
+  else if (k === "i") setInstr(!instr);
+  else if (k === "]") jump(1);
+  else if (k === "[") jump(-1);
+  else if (k === "home" || k === "r") { t = 0; setPlaying(true); }
+  else if (k === "m") setMuted(!muted);
+  else if (k === "h") document.body.classList.toggle("clean");
+  else if (k === "f") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+});
+
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+
+function frame(now) {
+  const before = t;
+  if (playing) {
+    const next = t + (now - last);
+    const stop = instr ? STEPS.find((s) => s.tEnd > t + 1 && s.tEnd <= next) : null;   // pause at each step's end
+    t = stop ? stop.tEnd : next;
+    if (stop) setPlaying(false);
+    if (t >= S.duration) { t = S.duration; setPlaying(false); }
+  }
+  last = now;
+  if (playing) playSounds(before, t);
+  draw(t);
+  if (!RENDER) requestAnimationFrame(frame);
+}
+// Everything on screen at time t, drawn once. The live loop calls it every
+// frame; render.mjs calls it directly through window.__renderAt.
+function draw(at) {
+  t = at;
+  evalMood(t); evalBricks(t); evalSteps(t); evalRoom(t); for (const v of propViews) v(t); evalFigures(t); evalParticles(t); evalCamera(t); evalOverlay(t);
+  renderer.render(scene, camera);
+  evalCallouts(t); evalBubbles(t); evalBars(t); evalSubtitle(t);
+  const ch = [...CH].reverse().find((c) => c.t <= t);
+  $("chapter").textContent = ch ? ch.label : S.meta.title; $("chapter").style.opacity = ch || t < 1000 ? 1 : 0;
+  $("scrub").value = t; $("time").textContent = `${fmt(t)} / ${fmt(S.duration)}`;
+  window.__t = t;                     // the dev server reads this to reopen at the same moment
+}
+// Render mode (?render): no live loop, no controls; render.mjs steps through
+// time itself and photographs each frame, captions and all.
+const RENDER = new URLSearchParams(location.search).has("render");
+window.__renderAt = (ms) => { draw(ms); return ms; };
+window.__duration = S.duration;
+window.__narration = S.narration || [];
+const qs = new URLSearchParams(location.search);
+if (qs.has("t")) { t = +qs.get("t"); setPlaying(qs.has("play")); }
+if (qs.has("clean") || RENDER) document.body.classList.add("clean");
+if (RENDER) { document.body.classList.add("render"); playing = false; if (!qs.has("subs")) document.body.classList.add("nosubs"); }
+if (qs.has("steps")) setInstr(true);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
