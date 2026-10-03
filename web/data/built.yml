@@ -86,6 +86,18 @@ built:
       shows the move cost at which that wasted compute starts saving energy.
     ratio: 1.6
 
+  - name: difference-engine
+    title: Difference Engine
+    from: projects/difference-engine
+    topic: Computing history
+    what: >
+      Babbage's No. 2 design in 3D. Two hundred parts assemble themselves from
+      every direction, then a turn of the crank tabulates a polynomial by
+      addition alone: half the columns add, the carries ripple up, and every
+      printed row is checked against the polynomial itself. Run Euler's
+      n² + n + 41 past n = 40 to see where its primes stop.
+    ratio: 1.5
+
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
   - name: the-shelf
