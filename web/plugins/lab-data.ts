@@ -39,6 +39,8 @@ export type BuiltPage = {
   ratio: number;
   /** A still to show instead of running the page live, for heavy pages. */
   image?: string;
+  /** When the card first appeared (YYYY-MM-DD), for "Recently added". */
+  added?: string;
 };
 
 export type Project = {
@@ -343,6 +345,7 @@ export default async function labData(
             in?: string;
             /** A file inside the folder other than index.html. */
             page?: string;
+            added?: string;
             ratio?: number;
             image?: string;
           }[];
@@ -365,6 +368,8 @@ export default async function labData(
             ? new URL(entry.url).host
             : (host.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
           ratio: entry.ratio ?? 1.6,
+          // js-yaml reads an unquoted date as a Date
+          added: entry.added ? (entry.added as unknown instanceof Date ? (entry.added as unknown as Date).toISOString().slice(0, 10) : String(entry.added)) : undefined,
           // relative to the copied page's folder, or absolute for a hosted page
           image: entry.image ? (/^https?:/.test(entry.image) ? entry.image : folder + entry.image) : undefined,
         };

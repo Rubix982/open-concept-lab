@@ -1980,6 +1980,110 @@ a[class*="tagWithCount"]:hover {
   .ocl-built__section { scroll-margin-top: calc(var(--ifm-navbar-height) + 6.5rem); }
 }
 
+/* Built: view switcher, compact cards, the index list, folding */
+.ocl-built__kbd {
+  margin-left: 0.35rem;
+  padding: 0 0.3rem;
+  border: 1px solid var(--ocl-rule-strong);
+  font-family: var(--ocl-mono);
+  font-size: 0.7rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.ocl-built__views {
+  display: flex;
+  margin: 0 0 1rem;
+  border: 1px solid var(--ocl-rule-strong);
+}
+
+.ocl-built__views button {
+  all: unset;
+  flex: 1;
+  padding: 0.3rem 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ocl-ink-muted);
+  cursor: pointer;
+}
+
+.ocl-built__views button + button { border-left: 1px solid var(--ocl-rule-strong); }
+
+.ocl-built__views button[aria-pressed="true"] { background: var(--ocl-ink); color: var(--ocl-paper); }
+
+.ocl-built__views button:focus-visible { outline: 2px solid var(--ocl-link); outline-offset: 1px; }
+
+.ocl-built__hit { background: color-mix(in oklab, var(--ocl-link) 22%, transparent); color: inherit; padding: 0; }
+
+.ocl-built__recent { margin-bottom: 1rem; }
+
+.ocl-cards.ocl-cards--compact {
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  gap: 1.1rem 1rem;
+}
+
+.ocl-card--compact .ocl-card__title { font-size: 0.95rem; }
+
+.ocl-card--compact .ocl-card__origin { font-size: 0.72rem; }
+
+.ocl-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1rem;
+  background: var(--ocl-paper-sunken);
+  color: var(--ocl-ink-muted);
+  font-family: var(--ocl-prose);
+  text-align: center;
+  text-decoration: none;
+}
+
+.ocl-built__more {
+  all: unset;
+  margin-top: 1.1rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ocl-rule-strong);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  color: var(--ocl-ink);
+  cursor: pointer;
+}
+
+.ocl-built__more:hover { border-color: var(--ocl-ink); }
+
+.ocl-built__more:focus-visible { outline: 2px solid var(--ocl-link); outline-offset: 1px; }
+
+.ocl-built__rows { margin: 0; padding: 0; list-style: none; }
+
+.ocl-built__row {
+  display: grid;
+  grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: baseline;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-built__rowTitle { font-family: var(--ocl-prose); font-size: 1.02rem; color: var(--ocl-ink); }
+
+.ocl-built__rowWhat {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  font-size: 0.9rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-built__rowMeta { font-family: var(--ocl-mono); font-size: 0.75rem; color: var(--ocl-ink-faint); }
+
+@media (max-width: 900px) {
+  .ocl-built__views { margin-top: 0.55rem; margin-bottom: 0; }
+  .ocl-built__row { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .ocl-built__rowMeta { display: none; }
+}
+
 .ocl-cards {
   display: grid;
   /* min() so a 24rem track cannot exceed a narrower viewport and push the

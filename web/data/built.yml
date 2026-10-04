@@ -11,9 +11,11 @@
 #   in:    another entry's name — this card is a page inside the folder that
 #          entry copies (no `from` of its own); `page` names the file.
 #   page:  a file in the folder other than index.html.
+#   added: the date the card first appeared (YYYY-MM-DD), for "Recently added".
 
 built:
   - name: belief-revision
+    added: 2026-09-10
     title: The Belief Problem
     from: mind/belief-revision.html
     topic: Mind
@@ -23,6 +25,7 @@ built:
     ratio: 1.6
 
   - name: researcher-stream
+    added: 2026-09-10
     title: The Researcher's Stream
     from: mind/researcher-stream.html
     topic: Mind
@@ -32,6 +35,7 @@ built:
     ratio: 1.6
 
   - name: one-crate
+    added: 2026-09-10
     title: One Crate
     from: economics/mango-supply-chain/one-crate.html
     topic: Economics
@@ -42,6 +46,7 @@ built:
     ratio: 1.6
 
   - name: claim-graph
+    added: 2026-09-10
     title: Claim Knowledge Graph Explorer
     from: ai/responsible-ai/knowledge-graph/graph.html
     topic: AI
@@ -51,6 +56,7 @@ built:
     ratio: 1.5
 
   - name: model-microscope
+    added: 2026-10-04
     title: Model Microscope
     from: ai/model-microscope/site
     topic: AI
@@ -64,6 +70,7 @@ built:
     image: poster.jpg
 
   - name: the-pitt-decoded
+    added: 2026-09-27
     title: The Pitt, Decoded
     from: medicine/the-pitt-resus-bay.html
     topic: Medicine
@@ -76,6 +83,7 @@ built:
     ratio: 1.6
 
   - name: apob
+    added: 2026-09-10
     title: ApoB and the Cardiometabolic Cascade
     from: medicine/apob-cardiometabolic.html
     topic: Medicine
@@ -85,6 +93,7 @@ built:
     ratio: 1.6
 
   - name: spine-crack
+    added: 2026-09-10
     title: Spine Cracking — What Actually Happens
     from: medicine/spine-crack.html
     topic: Medicine
@@ -94,6 +103,7 @@ built:
     ratio: 1.6
 
   - name: datascalar-race
+    added: 2026-10-03
     title: DataScalar Race
     from: hpc/datascalar-sim
     topic: HPC
@@ -105,6 +115,7 @@ built:
     ratio: 1.6
 
   - name: metal-gpu-bench
+    added: 2026-10-04
     title: GPU vs CPU, on Two Classic Workloads
     from: hpc/metal-gpu-bench/site
     topic: HPC
@@ -118,6 +129,7 @@ built:
     image: poster.jpg
 
   - name: difference-engine
+    added: 2026-10-03
     title: Difference Engine
     from: projects/difference-engine
     topic: Computing history
@@ -131,6 +143,7 @@ built:
     image: poster.jpg
 
   - name: little-builder
+    added: 2026-10-03
     title: The Little Builder
     from: projects/brick-stage/out/little-builder
     topic: Brick Stage
@@ -142,6 +155,7 @@ built:
     image: poster.jpg
 
   - name: test-chamber
+    added: 2026-10-03
     title: Test Chamber
     from: projects/brick-stage/out/test-chamber
     topic: Brick Stage
@@ -154,6 +168,7 @@ built:
     image: poster.jpg
 
   - name: rated-for-two
+    added: 2026-10-03
     title: Rated for Two
     from: projects/brick-stage/out/rated-for-two
     topic: Brick Stage
@@ -166,6 +181,7 @@ built:
     image: poster.jpg
 
   - name: microduck
+    added: 2026-10-04
     title: Microduck, in Bricks
     from: projects/brick-stage/out/microduck
     topic: Brick Stage
@@ -179,6 +195,7 @@ built:
     image: poster.jpg
 
   - name: spot-the-cow
+    added: 2026-10-04
     title: Spot the Cow
     from: projects/brick-stage/out/spot-the-cow
     topic: Brick Stage
@@ -190,6 +207,7 @@ built:
     image: poster.jpg
 
   - name: a-drawn-duck
+    added: 2026-10-04
     title: A Drawn Duck
     from: projects/brick-stage/out/a-drawn-duck
     topic: Brick Stage
@@ -201,6 +219,7 @@ built:
     image: poster.jpg
 
   - name: an-avocado
+    added: 2026-10-04
     title: An Avocado
     from: projects/brick-stage/out/an-avocado
     topic: Brick Stage
@@ -211,6 +230,7 @@ built:
     image: poster.jpg
 
   - name: datascalar-machine
+    added: 2026-10-04
     title: Tiny DataScalar Machine
     from: projects/brick-check/out/datascalar-machine
     topic: Brick Stage
@@ -225,6 +245,7 @@ built:
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
   - name: miniatures
+    added: 2026-10-04
     title: Routing for a Shared Prompt Cache
     from: systems/miniatures/site
     page: cache-router.html
@@ -239,6 +260,7 @@ built:
     image: posters/cache-router.jpg
 
   - name: mini-batching
+    added: 2026-10-04
     title: Continuous Batching
     in: miniatures
     page: batching.html
@@ -252,6 +274,7 @@ built:
     image: posters/batching.jpg
 
   - name: mini-disagg
+    added: 2026-10-04
     title: Splitting Prompt Reading from Writing
     in: miniatures
     page: disagg.html
@@ -265,6 +288,7 @@ built:
     image: posters/disagg.jpg
 
   - name: mini-straggler
+    added: 2026-10-04
     title: The One Slow GPU
     in: miniatures
     page: straggler.html
@@ -278,6 +302,7 @@ built:
     image: posters/straggler.jpg
 
   - name: mini-double-charge
+    added: 2026-10-04
     title: The Agent That Charged Twice
     in: miniatures
     page: double-charge.html
@@ -291,6 +316,7 @@ built:
     image: posters/double-charge.jpg
 
   - name: mini-herd
+    added: 2026-10-04
     title: A Hundred Agents, One Rate Limit
     in: miniatures
     page: herd.html
@@ -304,6 +330,7 @@ built:
     image: posters/herd.jpg
 
   - name: mini-local-first
+    added: 2026-10-04
     title: Local-First Sync
     in: miniatures
     page: local-first.html
@@ -315,7 +342,117 @@ built:
     ratio: 1.6
     image: posters/local-first.jpg
 
+  - name: explain-gpt2-fact
+    added: 2026-10-04
+    title: Where GPT-2 Keeps a Fact
+    from: projects/brick-stage/out/gpt2-fact
+    topic: Explainers
+    what: >
+      A blueprint explainer: the logit lens reads every layer (the →
+      London → Paris), then causal tracing breaks the model and repairs
+      it one piece at a time to find the fact in the MLPs at “el”. Every
+      number from Model Microscope.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-gpt2-stack
+    added: 2026-10-04
+    title: One Fact, Climbing 24 Layers
+    from: projects/brick-stage/out/gpt2-stack
+    topic: Explainers
+    what: >
+      The same fact in 3D: GPT-2's layers as a stack of glowing plates,
+      the camera orbiting, labels pinned to the plates, and the route of
+      the fact drawn as a tube from the memory to the answer.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-lego-charts
+    added: 2026-10-04
+    title: Explaining with Bricks
+    from: projects/brick-stage/out/lego-charts
+    topic: Explainers
+    what: >
+      Charts built from real LEGO parts that assemble on camera — bars,
+      a heat map, lollipop columns and a block diagram — each a checked,
+      buildable model, with the blueprint layer pinned on top.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-morph
+    added: 2026-10-04
+    title: "Morph: Charts That Rebuild Themselves"
+    from: projects/brick-stage/out/cap-morph
+    topic: Explainers
+    what: >
+      One brick chart flies apart and rebuilds as the next: matching
+      bricks arc to their new places, the rest change shape in flight.
+      Real cache-router data.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-charts
+    added: 2026-10-04
+    title: Eight More Brick Charts
+    from: projects/brick-stage/out/cap-charts
+    topic: Explainers
+    what: >
+      Stacked and grouped bars, a number line, a scatter, a waffle, an
+      attention matrix, a graph and a tree with tile roads — all checked
+      as buildable, all on data from this repo.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-marks
+    added: 2026-10-04
+    title: Math, Code and Marks
+    from: projects/brick-stage/out/cap-marks
+    topic: Explainers
+    what: >
+      LaTeX that writes itself on, a Go routing switch with a moving
+      focus bar, hand-drawn braces and circles, and a counter ticking
+      580 ms down to 28 ms.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-presenter
+    added: 2026-10-04
+    title: The Presenter
+    from: projects/brick-stage/out/cap-presenter
+    topic: Explainers
+    what: >
+      A LEGO minifigure host who walks in, waves, points at the bar it
+      is talking about, nods and leaves — every pose a pure function of
+      time.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-camera
+    added: 2026-10-04
+    title: Camera Language
+    from: projects/brick-stage/out/cap-camera
+    topic: Explainers
+    what: >
+      Shot presets, focus pulls onto one ridge of a brick heat map, an
+      orbit and blueprint transitions between chapters; cameras frame
+      the model themselves in any format.
+    ratio: 1.78
+    image: poster.jpg
+
+  - name: explain-voice
+    added: 2026-10-04
+    title: A Voice, Paced by Its Clips
+    from: projects/brick-stage/out/cap-voice
+    topic: Explainers
+    what: >
+      Spoken narration: each line synthesised, measured and used to pace
+      the scene, with the music and effects dipping under the voice in
+      the rendered video.
+    ratio: 1.78
+    image: poster.jpg
+
   - name: the-shelf
+    added: 2026-09-20
     title: The Shelf
     url: https://rubix982.github.io/the-shelf/
     topic: Archive
