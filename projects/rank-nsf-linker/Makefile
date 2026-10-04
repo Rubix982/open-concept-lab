@@ -120,8 +120,8 @@ pipeline:
 
 ## pipeline-from: Rerun the population pipeline from step STEP onward (e.g. make pipeline-from STEP=10)
 pipeline-from:
-	@test -n "$(STEP)" || (echo "Usage: make pipeline-from STEP=<1-22>" && exit 1)
-	PIPELINE_FROM_STEP=$(STEP) $(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
+	@test -n "$(STEP)" || (echo "Usage: make pipeline-from STEP=<n> [TO=<n>]" && exit 1)
+	PIPELINE_FROM_STEP=$(STEP) PIPELINE_TO_STEP=$(TO) $(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
 
 # Bring down all containers, networks
 ## down: Stop all containers and remove networks

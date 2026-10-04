@@ -1473,7 +1473,19 @@ func executeWorkflows(mainCtx *colly.Context) {
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
 	pipelineStart := time.Now()
+	// PIPELINE_TO_STEP=N stops after step N (to check a change without running the slow steps after it).
+	toStep := 0
+	if v := os.Getenv("PIPELINE_TO_STEP"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= totalSteps {
+			toStep = n
+		}
+	}
+
 	for i, step := range steps {
+		if toStep > 0 && i+1 > toStep {
+			logger.Infof(mainCtx, "⏸️  PIPELINE_TO_STEP=%d: stopping before step %d '%s'", toStep, i+1, step.name)
+			return
+		}
 		stepKey := fmt.Sprintf("step_%02d_%s", i+1, step.name)
 		alreadyDone := i+1 < fromStep ||
 			(fromStep == 0 && GetPipelineStatus(mainCtx, stepKey) == string(PIPELINE_STATUS_COMPLETED))

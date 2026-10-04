@@ -145,12 +145,14 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Linker: compares unaccented institution names (`institution_key` drops accented letters) and accepts
       several " | "-separated institutions per investigator
 - [x] Funder coverage per country comes from the loaded grants (`/explorer/funders`), not a static list
-- [ ] KAKEN (Japan, throttled, non-profit terms, attribution), RGC Hong Kong (facts only)
-- [ ] Our CSRankings copy (Aug 2025, 31,500 rows) is behind upstream (per-letter `csrankings-[a-z].csv`,
-      32,444 rows); step 1 should download the split files
-- [ ] `institution_key()` drops accented letters ("École" → "cole"); fixing it changes keys used by the
-      merge steps, so it needs a full re-run from step 14
-- [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
+- [x] KAKEN (Japan): 16,268 Informatics projects (2015+), English names and institutions (KAKEN institution
+      master); throttled, cached, facts only, attribution "based on KAKEN (NII)" (`scripts/grants/kaken.py`)
+- [ ] RGC Hong Kong: deferred. No reuse licence, pages marked noindex; ask RGC (rgc1@ugc.edu.hk) first
+- [x] CSRankings refreshed each run from gh-pages (34,655 rows, ORCIDs); `institutions.csv` replaces
+      country-info (written as country-info.csv); professors / professor_areas are replaced, not upserted
+- [x] `institution_key()` transliterates accents (migration 16)
+- [x] DAAD scholarship feed: 69 graduate/doctoral programmes open to Pakistani applicants
+      (`scripts/scholarships/daad.py` → data/scholarships/daad.csv); curated entries win on duplicates
 
 ## v1 state (2026-10-04, night)
 - Deployed locally: pipeline 23 steps, all succeeded. 15,667 faculty at 635 universities in 58 countries;
@@ -165,9 +167,11 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       funding section useful?) before adding more data sources
 - [ ] Public deploy: planned for the week of 2026-10-12; ask the user first (hosting, domain, KAKEN/RGC terms if loaded)
 - [ ] OpenAlex v2: run `server/scripts/openalex/works.py`, deploy steps 21–23, re-embed papers with abstracts
-- [ ] Horizon Europe ERC PIs (PDF-only per call; panel PE6 = computer science)
+- [x] Horizon Europe ERC PIs: 15 result PDFs (2021–2025 StG/CoG/AdG, `data/erc_he/sources.txt`), PE6 rows
+      joined with CORDIS Horizon Europe projects by call + acronym (209 grants). UK-hosted 2021–2023 winners
+      were funded by UKRI's guarantee and come through UKRI
 - [ ] Fields beyond computing (science, engineering, medicine, ~45 areas) via OpenAlex + NIH RePORTER
-- [ ] Semantic search for the paper list on the professor page (currently recency order)
+- [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
 ## Decisions
 - 2026-10-05: Israeli universities stay in the app (map, search, counts); the shareable overview page doesn't name Israel
