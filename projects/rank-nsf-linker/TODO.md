@@ -163,11 +163,14 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Shared links (?u=...) open the map on that university instead of the US
 - [ ] Share with 5–10 students and collect feedback (did it help them find someone to email? was the
       funding section useful?) before adding more data sources
-- [ ] Public deploy: ask the user first (hosting, domain, KAKEN/RGC terms if those are loaded)
+- [ ] Public deploy: planned for the week of 2026-10-12; ask the user first (hosting, domain, KAKEN/RGC terms if loaded)
 - [ ] OpenAlex v2: run `server/scripts/openalex/works.py`, deploy steps 21–23, re-embed papers with abstracts
 - [ ] Horizon Europe ERC PIs (PDF-only per call; panel PE6 = computer science)
 - [ ] Fields beyond computing (science, engineering, medicine, ~45 areas) via OpenAlex + NIH RePORTER
 - [ ] Semantic search for the paper list on the professor page (currently recency order)
+
+## Decisions
+- 2026-10-05: Israeli universities stay in the app (map, search, counts); the shareable overview page doesn't name Israel
 
 ## Known limitations (not tasks)
 - Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with `|| ''`
