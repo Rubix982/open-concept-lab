@@ -115,6 +115,11 @@ h2 { margin: 2.6rem 0 0.2rem; font: 600 1.2rem/1.3 var(--sans); letter-spacing: 
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; padding: 0.6rem 1.1rem; font-size: 0.78rem; color: var(--muted); border-top: 1px solid var(--rule); }
 .legend i { display: inline-block; width: 0.7rem; height: 0.7rem; margin-right: 0.35rem; vertical-align: -0.05rem; }
 
+.saved { margin-top: 1.5rem; padding: 0.7rem 1rem; border: 1px solid var(--rule-strong); border-left: 3px solid var(--warn); background: var(--raised); font-size: 0.86rem; color: var(--muted); }
+.saved b { color: var(--ink); }
+.saved.miss { border-left-color: var(--bad); }
+.saved + .panel { margin-top: 0.75rem; }
+
 .foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.8rem; color: var(--faint); max-width: 52rem; }
 .err { padding: 1rem; color: var(--bad); font-size: 0.9rem; }
 

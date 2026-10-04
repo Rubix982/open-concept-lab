@@ -106,8 +106,11 @@
   <p class="foot">The CRDT is Go (<code>sims/localfirst</code>), compiled to WebAssembly; every keystroke replays the whole history through it. <code>go run ./cmd/mini local-first</code> prints the example's two merges in a terminal. Its tests check convergence, delivery in any order, and the claims on this page.</p>
 </div>
 
-<script type="module">
-import { run, series, fail, fmt, esc, token, segmented, Player, compare } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { run, series, fail, fmt, esc, token, segmented, Player, compare } = Mini;
 
 series("local-first");
 const NAMES = ["Phone A", "Phone B"];
@@ -240,6 +243,7 @@ document.getElementById("reset").addEventListener("click", () => { stopDemo(); e
     res = first;
     render(-1);
   } catch (e) { fail(document.getElementById("panel"), e); }
+})();
 })();
 </script>
 </body>

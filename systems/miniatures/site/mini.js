@@ -3,8 +3,13 @@
 // Every simulation is Go (sims/), compiled to mini.wasm; a page calls
 // run(name, params) and gets back the same JSON the terminal runner prints.
 // The rest of this file is small UI pieces the pages share.
+//
+// A classic script (not a module), so pages also work opened from disk.
+// Everything is on window.Mini.
+(function () {
+"use strict";
 
-export const SERIES = [
+const SERIES = [
   ["cache-router", "Routing for a shared prompt cache"],
   ["batching", "Continuous batching"],
   ["disagg", "Splitting prompt reading from writing"],
@@ -43,17 +48,75 @@ function load() {
   return ready;
 }
 
+// ---- saved runs
+// Opened straight from disk (file://), a browser won't load the WebAssembly,
+// so pages fall back to runs saved by bake.mjs in baked/<name>.js: the default
+// settings, plus each option button changed once. Anything else asks for the
+// live version.
+const OFFLINE = location.protocol === "file:";
+const BAKING = new URLSearchParams(location.search).has("bake");
+const saved = {}, savedLoading = {};
+let live = !OFFLINE;
+
+function sortKeys(v) {
+  if (Array.isArray(v)) return v.map(sortKeys);
+  if (v && typeof v === "object") return Object.fromEntries(Object.keys(v).sort().map((k) => [k, sortKeys(v[k])]));
+  return v;
+}
+const keyOf = (params) => JSON.stringify(sortKeys(params));
+
+/** Called by baked/<name>.js. */
+function bake(name, table) { saved[name] = Object.assign(saved[name] || {}, table); }
+
+function loadSaved(name) {
+  savedLoading[name] ||= new Promise((resolve) => {
+    const s = document.createElement("script");
+    s.src = `baked/${name}.js`;
+    s.onload = s.onerror = () => resolve();
+    document.head.appendChild(s);
+  });
+  return savedLoading[name];
+}
+
+function notice(missing) {
+  let el = document.querySelector(".saved");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "saved";
+    const at = document.querySelector(".panel") || document.querySelector(".wrap");
+    at.parentNode.insertBefore(el, at);
+  }
+  el.classList.toggle("miss", Boolean(missing));
+  el.innerHTML = missing
+    ? "<b>That setting isn't saved.</b> This page is showing saved runs, because it was opened as a file and the simulation can't run here. The default settings and each option button are saved; for anything else, serve the folder (<code>python3 -m http.server</code>) or open the page on the site."
+    : "<b>Showing saved runs.</b> This page was opened as a file, so the simulation can't run here. The default settings and each option button are saved; sliders need the live version (serve the folder with <code>python3 -m http.server</code>, or open the page on the site).";
+}
+
 /** Run a simulation by name; params override its defaults. */
-export async function run(name, params = {}) {
-  await load();
-  const out = JSON.parse(globalThis.miniRun(name, JSON.stringify(params)));
-  if (out && out.error) throw new Error(out.error);
-  return out;
+async function run(name, params = {}) {
+  const key = keyOf(params);
+  if (live) {
+    try { await load(); } catch (e) { live = false; console.warn("live simulation unavailable, using saved runs:", e); }
+  }
+  if (live) {
+    const text = globalThis.miniRun(name, JSON.stringify(params));
+    const out = JSON.parse(text);
+    if (out && out.error) throw new Error(out.error);
+    if (BAKING) ((window.__baked ||= {})[name] ||= {})[key] = out;
+    return out;
+  }
+  await loadSaved(name);
+  const hit = saved[name] && saved[name][key];
+  notice(!hit);
+  if (hit) return structuredClone(hit);
+  const e = new Error("This setting isn't saved; it needs the live simulation.");
+  e.saved = true;
+  throw e;
 }
 
 // ---- page frame
 /** Fill <nav class="series"> with the series links. */
-export function series(current) {
+function series(current) {
   const nav = document.querySelector("nav.series");
   if (!nav) return;
   const i = SERIES.findIndex(([n]) => n === current);
@@ -63,14 +126,15 @@ export function series(current) {
     <span class="pn">${prev ? `<a href="${prev[0]}.html">← ${esc(prev[1])}</a>` : ""}${next ? `<a href="${next[0]}.html">${esc(next[1])} →</a>` : ""}</span>`;
 }
 
-export function fail(el, e) {
+function fail(el, e) {
+  if (e && e.saved) return; // the notice above the panel already says so
   el.innerHTML = `<div class="err">The simulation didn't load: ${esc(e.message || e)}. Serve this folder over HTTP (for example <code>python3 -m http.server</code>) rather than opening the file directly.</div>`;
   console.error(e);
 }
 
 // ---- formatting
-export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-export const fmt = {
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = {
   ms: (s) => s >= 10 ? `${s.toFixed(1)} s` : s >= 1 ? `${s.toFixed(2)} s` : `${Math.round(s * 1000)} ms`,
   pct: (x, d = 0) => `${(x * 100).toFixed(d)}%`,
   num: (x, d = 0) => x.toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d }),
@@ -81,16 +145,16 @@ export const fmt = {
 const cache = new Map();
 let themeKey = "";
 /** A CSS custom property's value, e.g. token("--ink"). */
-export function token(name) {
+function token(name) {
   const k = document.documentElement.dataset.theme + matchMedia("(prefers-color-scheme: dark)").matches;
   if (k !== themeKey) { cache.clear(); themeKey = k; }
   if (!cache.has(name)) cache.set(name, getComputedStyle(document.documentElement).getPropertyValue(name).trim());
   return cache.get(name);
 }
 /** Categorical colour i (wraps after ten). */
-export const cat = (i) => token(`--c${((i % 10) + 10) % 10}`);
+const cat = (i) => token(`--c${((i % 10) + 10) % 10}`);
 /** A colour with alpha, from a hex token. */
-export function alpha(hex, a) {
+function alpha(hex, a) {
   const h = hex.replace("#", "");
   const n = parseInt(h.length === 3 ? h.replace(/./g, "$&$&") : h, 16);
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
@@ -98,7 +162,7 @@ export function alpha(hex, a) {
 
 // ---- controls
 /** A labelled range slider. Returns {el, value}. */
-export function slider(parent, { label, min, max, step = 1, value, format = (v) => v, onInput }) {
+function slider(parent, { label, min, max, step = 1, value, format = (v) => v, onInput }) {
   const el = document.createElement("label");
   el.className = "ctl";
   el.innerHTML = `<span class="lab"><span>${esc(label)}</span><span class="val"></span></span><input type="range" min="${min}" max="${max}" step="${step}" value="${value}">`;
@@ -112,7 +176,7 @@ export function slider(parent, { label, min, max, step = 1, value, format = (v) 
 }
 
 /** A row of mutually exclusive buttons. options: [[value, label], ...]. */
-export function segmented(parent, { label, options, value, onChange }) {
+function segmented(parent, { label, options, value, onChange }) {
   const el = document.createElement("div");
   el.className = "ctl";
   el.innerHTML = `${label ? `<span class="lab"><span>${esc(label)}</span></span>` : ""}<span class="seg" role="group">${options.map(([v, l]) => `<button type="button" data-v="${esc(v)}">${esc(l)}</button>`).join("")}</span>`;
@@ -126,7 +190,7 @@ export function segmented(parent, { label, options, value, onChange }) {
 // ---- canvas
 /** A canvas that fills its container's width at a fixed CSS height and keeps
  *  itself sharp; call .draw() to repaint with draw(ctx, w, h). */
-export function stage(container, height, draw) {
+function stage(container, height, draw) {
   const canvas = document.createElement("canvas");
   container.appendChild(canvas);
   const ctx = canvas.getContext("2d");
@@ -149,7 +213,7 @@ export function stage(container, height, draw) {
 // ---- replay
 /** Play/pause, a scrubber and speed for a simulated clock running 0..duration
  *  seconds. onFrame(t) is called whenever the time changes. */
-export class Player {
+class Player {
   constructor(parent, { duration, speed = 1, speeds = [0.25, 1, 4, 16], onFrame, unit = "s" }) {
     this.duration = duration; this.speed = speed; this.t = 0; this.playing = false; this.onFrame = onFrame; this.unit = unit;
     const el = document.createElement("div");
@@ -191,7 +255,7 @@ export class Player {
 }
 
 /** Start playing once the panel scrolls into view (and not before). */
-export function autoplay(player, el) {
+function autoplay(player, el) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); player.play(); } }, { threshold: 0.3 });
   io.observe(el);
@@ -200,7 +264,7 @@ export function autoplay(player, el) {
 // ---- comparison table
 /** rows: [{key, label, cells: {...}}], cols: [{key, label, fmt, better: "low"|"high"}].
  *  Marks the best and worst value in each column; onPick(key) on row click. */
-export function compare(table, { rows, cols, current, onPick }) {
+function compare(table, { rows, cols, current, onPick }) {
   const best = {}, worst = {};
   for (const c of cols) {
     if (!c.better) continue;
@@ -220,13 +284,13 @@ export function compare(table, { rows, cols, current, onPick }) {
 
 // ---- small chart helpers for canvas
 /** Map a value into [a, b] pixels, optionally on a log scale. */
-export function scale(d0, d1, r0, r1, log = false) {
+function scale(d0, d1, r0, r1, log = false) {
   if (log) { const l0 = Math.log10(d0), l1 = Math.log10(d1); return (v) => r0 + ((Math.log10(Math.max(v, d0)) - l0) / (l1 - l0)) * (r1 - r0); }
   return (v) => r0 + ((v - d0) / (d1 - d0)) * (r1 - r0);
 }
 
 /** Axes with ticks; returns nothing, draws into ctx. */
-export function axes(ctx, { x, y, xTicks = [], yTicks = [], box, xLabel, yLabel }) {
+function axes(ctx, { x, y, xTicks = [], yTicks = [], box, xLabel, yLabel }) {
   ctx.save();
   ctx.font = `11px ${token("--sans") || "sans-serif"}`;
   ctx.fillStyle = token("--faint");
@@ -245,5 +309,8 @@ export function axes(ctx, { x, y, xTicks = [], yTicks = [], box, xLabel, yLabel 
 }
 
 /** Linear interpolation and easing for animations. */
-export const lerp = (a, b, k) => a + (b - a) * k;
-export const ease = (k) => (k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = (k) => (k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k));
+
+window.Mini = { SERIES, run, series, fail, esc, fmt, token, cat, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes, lerp, ease, bake };
+})();

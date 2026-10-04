@@ -51,8 +51,11 @@
   <p class="foot">The simulation is Go (<code>sims/herd</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini herd</code> prints the same comparison in a terminal. Its tests check the claims on this page.</p>
 </div>
 
-<script type="module">
-import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } = Mini;
 
 series("herd");
 const POLICIES = [["immediate", "Retry immediately"], ["fixed", "Wait 1 s"], ["exponential", "Exponential backoff"], ["jitter", "Exponential + jitter"], ["shared", "Shared budget + breaker"]];
@@ -272,6 +275,7 @@ async function refresh() {
   } catch (e) { fail(document.getElementById("fleet"), e); }
 }
 refresh();
+})();
 </script>
 </body>
 </html>

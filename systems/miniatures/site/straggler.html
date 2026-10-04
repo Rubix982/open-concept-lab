@@ -66,8 +66,11 @@
   <p class="foot">The simulation is Go (<code>sims/straggler</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini straggler</code> prints the same comparison in a terminal. Its tests check the claims on this page, including that the simulation matches the exact expected value over long runs.</p>
 </div>
 
-<script type="module">
-import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } = Mini;
 
 series("straggler");
 const params = { gpus: 16384, interval: 120, ckptCost: 1, slowProb: 1e-4, backup: false };
@@ -305,6 +308,7 @@ async function refresh() {
   } catch (e) { fail(document.getElementById("steps"), e); }
 }
 refresh();
+})();
 </script>
 </body>
 </html>

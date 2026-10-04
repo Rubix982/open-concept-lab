@@ -71,8 +71,11 @@
   <p class="foot">The simulation is Go (<code>sims/doublecharge</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini double-charge</code> prints the same comparison in a terminal. Its tests check the claims on this page, including that every check-then-insert double charge comes from overlapping attempts.</p>
 </div>
 
-<script type="module">
-import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, ease } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, ease } = Mini;
 
 series("double-charge");
 const POLICIES = [["no-key", "No key"], ["check-insert", "Key: check, then insert"], ["atomic", "Key: claimed atomically"]];
@@ -281,6 +284,7 @@ async function refresh() {
   } catch (e) { fail(document.getElementById("seq"), e); }
 }
 refresh();
+})();
 </script>
 </body>
 </html>

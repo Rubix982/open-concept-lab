@@ -22,11 +22,16 @@ real simulation in the browser.
 ```bash
 go run ./cmd/mini                  # list them
 go run ./cmd/mini cache-router     # broken vs fixed, side by side
-./build.sh                         # vet, test, rebuild site/mini.wasm
+./build.sh                         # vet, test, rebuild site/mini.wasm, re-bake saved runs
 cd site && python3 -m http.server  # then open http://localhost:8000
 ```
 
-(Open the pages over HTTP; browsers won't load the WebAssembly from `file://`.)
+Served over HTTP (or on the site), every page runs the simulation live and
+every slider re-runs it. Opened straight from disk, browsers won't load the
+WebAssembly, so the pages fall back to saved runs in `site/baked/`: the default
+settings plus each option button changed once, recorded by `node bake.mjs`
+from the real simulation. A setting that wasn't saved says so instead of
+breaking.
 
 ## Layout
 
@@ -37,6 +42,8 @@ sims/bridge/      exposes them to the browser as miniRun(name, params)
 cmd/mini/         terminal runner
 cmd/wasm/         the browser build
 site/             the pages; mini.js and common.css are shared
+site/baked/       saved runs for opening the pages from disk (bake.mjs)
+bake.mjs          records them by driving each page in headless Chrome
 ```
 
 ## Known rough edges

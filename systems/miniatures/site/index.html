@@ -60,10 +60,14 @@
   </div>
   <p class="foot">Source: <code>systems/miniatures/</code> in open-concept-lab.</p>
 </div>
-<script type="module">
-import { series } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { series } = Mini;
 series("");
 document.querySelector(".series .home").setAttribute("aria-current", "page");
+})();
 </script>
 </body>
 </html>

@@ -61,8 +61,11 @@
   <p class="foot">The simulation is Go (<code>sims/batching</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini batching</code> prints the same comparison in a terminal. Its tests check the claims on this page.</p>
 </div>
 
-<script type="module">
-import { run, series, fail, fmt, token, cat, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } from "./mini.js";
+<script src="mini.js"></script>
+<script>
+(async () => {
+"use strict";
+const { run, series, fail, fmt, token, cat, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } = Mini;
 
 series("batching");
 const POLICIES = [["static", "Static batching"], ["continuous", "Continuous batching"]];
@@ -258,6 +261,7 @@ async function refresh() {
   } catch (e) { fail(document.getElementById("lanes"), e); }
 }
 refresh();
+})();
 </script>
 </body>
 </html>
