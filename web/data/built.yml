@@ -49,7 +49,7 @@ built:
 
   - name: model-microscope
     title: Model Microscope
-    from: projects/model-microscope/site
+    from: ai/model-microscope/site
     topic: AI
     what: >
       GPT-2 opened up three ways on eighteen prepared prompts: what it would
