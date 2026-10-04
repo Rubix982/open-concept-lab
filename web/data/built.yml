@@ -47,6 +47,19 @@ built:
       papers, so you can ask which claim supported or contradicted which.
     ratio: 1.5
 
+  - name: model-microscope
+    title: Model Microscope
+    from: projects/model-microscope/site
+    topic: AI
+    what: >
+      GPT-2 opened up three ways on eighteen prepared prompts: what it would
+      say if it stopped at each layer, which words it looks back at, and —
+      by causal tracing, the method behind ROME — where a fact is actually
+      stored. Includes the cases where it fails: a negated fact, a sum, and
+      a CEO who changed after its training.
+    ratio: 1.5
+    image: poster.jpg
+
   - name: the-pitt-decoded
     title: The Pitt, Decoded
     from: medicine/the-pitt-resus-bay.html

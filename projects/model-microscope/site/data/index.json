@@ -1,0 +1,92 @@
+[
+ {
+  "id": "eiffel",
+  "group": "Facts",
+  "title": "Where is the Eiffel Tower?"
+ },
+ {
+  "id": "colosseum",
+  "group": "Facts",
+  "title": "Where is the Colosseum?"
+ },
+ {
+  "id": "jordan",
+  "group": "Facts",
+  "title": "Michael Jordan's sport"
+ },
+ {
+  "id": "iphone",
+  "group": "Facts",
+  "title": "Who makes the iPhone?"
+ },
+ {
+  "id": "japan",
+  "group": "Facts",
+  "title": "The capital of Japan"
+ },
+ {
+  "id": "shakespeare",
+  "group": "Facts",
+  "title": "Who wrote Hamlet?"
+ },
+ {
+  "id": "windows",
+  "group": "Facts",
+  "title": "Who makes Windows?"
+ },
+ {
+  "id": "hop-eiffel",
+  "group": "Two steps",
+  "title": "The capital of the Eiffel Tower's country"
+ },
+ {
+  "id": "hop-sushi",
+  "group": "Two steps",
+  "title": "The language of sushi's country"
+ },
+ {
+  "id": "dursley",
+  "group": "Copying",
+  "title": "Copying a name it has seen"
+ },
+ {
+  "id": "random",
+  "group": "Copying",
+  "title": "Repeating a random sequence"
+ },
+ {
+  "id": "ioi",
+  "group": "Copying",
+  "title": "Who gave the drink? (indirect object)"
+ },
+ {
+  "id": "plural",
+  "group": "Language",
+  "title": "Agreement across a clause"
+ },
+ {
+  "id": "opposite",
+  "group": "Language",
+  "title": "The opposite of hot"
+ },
+ {
+  "id": "years",
+  "group": "Language",
+  "title": "A later year"
+ },
+ {
+  "id": "arith",
+  "group": "Where it fails",
+  "title": "Adding two numbers"
+ },
+ {
+  "id": "negation",
+  "group": "Where it fails",
+  "title": "A fact, negated"
+ },
+ {
+  "id": "recent",
+  "group": "Where it fails",
+  "title": "A fact that changed after training"
+ }
+]

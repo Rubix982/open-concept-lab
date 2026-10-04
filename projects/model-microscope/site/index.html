@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Microscope</title>
+<meta name="description" content="GPT-2 medium examined three ways on prepared prompts: what it predicts at each layer, where it looks, and where a fact is stored.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --paper: #f9fafb; --raised: #ffffff; --sunken: #eef1f4;
+  --ink: #16283c; --muted: #55677a; --faint: #8090a0;
+  --rule: #dde1e5; --rule-strong: #b0bcc4; --link: #1c4c7c;
+  --lens: #1c4c7c;     /* logit lens */
+  --look: #8a4b0f;     /* attention */
+  --hidden: #5b3f99;   /* causal trace: whole layer */
+  --mlp: #2f6e3b;      /* causal trace: MLP */
+  --attn: #a23a2c;     /* causal trace: attention */
+  --prose: "Spectral", Georgia, serif;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #101a24; --raised: #16222e; --sunken: #0b1319;
+    --ink: #dce4ea; --muted: #93a5b3; --faint: #6d8092;
+    --rule: #253442; --rule-strong: #38495a; --link: #8fbbe4;
+    --lens: #6fa3d8; --look: #e0a050; --hidden: #a98ae6; --mlp: #6cc07c; --attn: #e8806f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #101a24; --raised: #16222e; --sunken: #0b1319;
+  --ink: #dce4ea; --muted: #93a5b3; --faint: #6d8092;
+  --rule: #253442; --rule-strong: #38495a; --link: #8fbbe4;
+  --lens: #6fa3d8; --look: #e0a050; --hidden: #a98ae6; --mlp: #6cc07c; --attn: #e8806f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 17px/1.55 var(--prose); }
+a { color: var(--link); }
+code, .mono { font-family: var(--mono); }
+
+.wrap { max-width: 82rem; margin: 0 auto; padding: 2.25rem 2rem 4rem; }
+.head h1 { margin: 0; font-weight: 500; font-size: 2.3rem; letter-spacing: -0.01em; }
+.head p { margin: 0.5rem 0 0; max-width: 46rem; color: var(--muted); }
+.head .fine { font: 0.82rem/1.5 var(--sans); color: var(--faint); margin-top: 0.6rem; }
+
+.layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2.5rem; margin-top: 2rem; align-items: start; }
+
+/* case list */
+.cases { position: sticky; top: 1rem; font: 0.86rem/1.4 var(--sans); max-height: calc(100vh - 2rem); overflow-y: auto; }
+.cases h3 { margin: 1.1rem 0 0.35rem; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); }
+.cases h3:first-child { margin-top: 0; }
+.cases ul { margin: 0; padding: 0; list-style: none; border-left: 1px solid var(--rule); }
+.cases button { all: unset; box-sizing: border-box; display: block; width: 100%; margin-left: -1px; padding: 0.3rem 0 0.3rem 0.8rem; border-left: 2px solid transparent; color: var(--muted); cursor: pointer; }
+.cases button:hover { color: var(--ink); }
+.cases button:focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
+.cases button[aria-current="true"] { border-left-color: var(--ink); color: var(--ink); font-weight: 600; }
+.casePick { display: none; }
+
+/* the case */
+.prompt { display: flex; flex-wrap: wrap; gap: 3px; align-items: baseline; margin: 0.2rem 0 0; }
+.tok { font: 0.92rem/1 var(--mono); padding: 0.32rem 0.38rem; background: var(--raised); border: 1px solid var(--rule); white-space: pre; color: var(--ink); cursor: pointer; }
+.tok.noised { border-color: var(--hidden); border-style: dashed; }
+.tok.query { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tok.answer { border: 1px solid var(--ink); font-weight: 500; cursor: default; }
+.says { margin: 0.9rem 0 0; font: 0.88rem/1.6 var(--sans); color: var(--muted); }
+.says b { color: var(--ink); font-weight: 600; }
+.note { margin: 1.2rem 0 0; padding: 0.85rem 1.1rem; background: var(--sunken); border-left: 3px solid var(--ink); max-width: 52rem; }
+.note p { margin: 0 0 0.5rem; }
+.note p:last-child { margin: 0; }
+.note .k { font: 600 0.72rem/1 var(--sans); letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); display: block; margin-bottom: 0.4rem; }
+
+section.lens { margin-top: 2.6rem; }
+section.lens > h2 { margin: 0; font-size: 1.25rem; font-weight: 500; display: flex; align-items: baseline; gap: 0.6rem; border-bottom: 1px solid var(--rule-strong); padding-bottom: 0.35rem; }
+section.lens > h2 .n { font: 500 0.75rem/1 var(--sans); color: var(--paper); background: var(--ink); padding: 0.25rem 0.45rem; }
+section.lens > p.how { margin: 0.6rem 0 1rem; color: var(--muted); max-width: 52rem; font-size: 0.97rem; }
+
+.scroll { overflow-x: auto; padding-bottom: 0.4rem; }
+table.grid { border-collapse: separate; border-spacing: 2px; font: 0.72rem/1 var(--mono); }
+table.grid th { font-weight: 400; color: var(--faint); padding: 0 0.35rem; white-space: pre; }
+table.grid thead th { padding-bottom: 0.35rem; vertical-align: bottom; color: var(--muted); }
+table.grid tbody th { text-align: right; font-family: var(--sans); }
+table.grid td { min-width: 4.4rem; max-width: 4.4rem; height: 1.45rem; padding: 0 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: pre; text-align: center; cursor: default; }
+table.grid td.hit { outline: 1.5px solid var(--ink); outline-offset: -1.5px; }
+table.grid.small td { min-width: 2.6rem; max-width: 2.6rem; }
+table.grid.tiny { border-spacing: 1px; }
+table.grid.tiny td { min-width: 0.55rem; max-width: 0.55rem; height: 1.1rem; padding: 0; }
+#traces { gap: 1.5rem 1.25rem; }
+table.grid tr.noised th { color: var(--hidden); }
+
+.row { display: flex; flex-wrap: wrap; gap: 2rem 2.5rem; align-items: flex-start; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; align-items: center; margin: 0 0 0.9rem; font: 0.82rem/1.3 var(--sans); color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--rule-strong); }
+.seg button { all: unset; padding: 0.28rem 0.65rem; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button:focus-visible { outline: 2px solid var(--link); }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.chart { font: 0.72rem var(--sans); }
+.chart text { fill: var(--muted); }
+.chart .axis { stroke: var(--rule-strong); }
+.chart .gridline { stroke: var(--rule); }
+.cap { font: 0.8rem/1.5 var(--sans); color: var(--muted); margin: 0.45rem 0 0; max-width: 40rem; }
+.panel h4 { margin: 0 0 0.5rem; font: 600 0.82rem/1.3 var(--sans); display: flex; gap: 0.45rem; align-items: center; }
+.panel h4 i { width: 0.75rem; height: 0.75rem; display: inline-block; }
+.warn { font: 0.85rem/1.5 var(--sans); padding: 0.6rem 0.85rem; border: 1px dashed var(--attn); color: var(--ink); margin: 0 0 1rem; max-width: 52rem; }
+.legend { display: flex; align-items: center; gap: 0.5rem; font: 0.75rem var(--sans); color: var(--faint); margin-top: 0.4rem; }
+.legend .bar { width: 8rem; height: 0.55rem; }
+
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--raised); color: var(--ink); border: 1px solid var(--rule-strong); padding: 0.5rem 0.65rem; font: 0.78rem/1.45 var(--sans); box-shadow: 0 4px 14px rgba(0,0,0,0.12); max-width: 18rem; display: none; }
+#tip .mono { font-size: 0.78rem; }
+#tip table { border-collapse: collapse; }
+#tip td { padding: 0 0.5rem 0 0; }
+
+.foot { margin-top: 3.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); font: 0.8rem/1.6 var(--sans); color: var(--faint); max-width: 52rem; }
+
+@media (max-width: 860px) {
+  .wrap { padding: 1.5rem 1rem 3rem; }
+  .head h1 { font-size: 1.8rem; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+  .cases { display: none; }
+  .casePick { display: block; width: 100%; padding: 0.5rem; font: 0.95rem var(--sans); background: var(--raised); color: var(--ink); border: 1px solid var(--rule-strong); border-radius: 0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <h1>Model Microscope</h1>
+    <p>A language model, opened up three ways on the same prompt: what it would say if it stopped at each layer, which words it looks back at, and which parts actually hold the fact. Pick a case on the left.</p>
+    <p class="fine">GPT-2 medium (355M parameters, 24 layers). Everything was computed ahead of time by <code>trace.py</code>; nothing runs in your browser.</p>
+  </header>
+
+  <div class="layout">
+    <nav class="cases" id="cases" aria-label="Cases"></nav>
+    <main>
+      <select class="casePick" id="casePick" aria-label="Choose a case"></select>
+      <div id="case"><p class="says">Loading…</p></div>
+    </main>
+  </div>
+
+  <footer class="foot">
+    Methods: the logit lens (nostalgebraist, 2020) reads each layer's state through the model's own final layer norm and output matrix.
+    Causal tracing follows Meng et al., <i>Locating and Editing Factual Associations in GPT</i> (ROME, 2022): the noised words get Gaussian noise at three times
+    the embedding spread, ten noise draws per cell, and an MLP or attention restoration covers a window of ten layers around the one shown.
+    Attention is shown as recorded; the first word soaking up attention is a known habit of these models (an "attention sink"), not a finding about the prompt.
+  </footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+// What to look for in each case. Written after reading the computed results.
+const NOTES = {
+  eiffel: `<p><b>Lens 1:</b> at the last word the guess goes "the" → <b>London</b> (layers 8–16) → <b>Paris</b> from layer 17. Before it has the specific city, it guesses a generic famous one. Four city prompts here show the same London phase.</p>
+    <p><b>Lens 3</b> shows the ROME pattern. The MLPs at the subject's <i>last</i> word bring the answer back, around layers 5–15, and that word is "el" from "Eiffel", not "Tower". Late attention at " of" (layers 15–22) then carries it to the end. <b>Lens 2</b> agrees: in those same late layers, " of" looks back at "el".</p>`,
+  colosseum: `<p>The same structure as the Eiffel Tower, with a different city. It's stored in the MLPs at "um", the last piece of "Colosseum" (strongest around layers 4–11). It's picked up by attention at " of" late, and London again comes before <b>Rome</b> in lens 1.</p>`,
+  jordan: `<p>Lens 1 shows the model narrowing down: "football" in the early layers, then "athlete", then <b>basketball</b> only from layer 21. The fact is stored early, in the MLPs at " Jordan" around layers 3–6. Scrambling "Michael Jordan" drops basketball to 3%.</p>`,
+  iphone: `<p>Watch lens 1 at the last word: <b>Microsoft</b> is the top guess around layer 16, a layer before <b>Apple</b> takes over at 17. The fact sits very early, in the MLPs at " iPhone" from layer 1. Scrambling "The iPhone" still leaves Apple at 8%, since the rest of the sentence hints at it.</p>`,
+  japan: `<p>London again (layers 8–14), then <b>Tokyo</b> from 15. It's a close call in the end, Tokyo 29% against Osaka 20%. Restoring the MLPs at " Japan" (layers 5–12) brings Tokyo back to its full strength or more.</p>`,
+  shakespeare: `<p>The easiest case here: <b>Shakespeare</b> is the top guess by layer 7. Even with "Hamlet" scrambled it still gets 14%, because "written by William" is a strong hint by itself. The MLPs at "let" (the end of "Hamlet") around layers 6–11 supply the rest.</p>`,
+  windows: `<p>Mind the baseline: with "Windows" scrambled, Microsoft still gets 19%, because "operating system developed by" narrows it down. So lens 3 here measures only the part "Windows" adds, and that part comes from its very first layers. <b>Apple</b> is a real runner-up at the end (21%).</p>`,
+  "hop-eiffel": `<p>Two steps: tower → France → capital. The model gets <b>Paris</b>, but did it go through France? Lens 1 suggests not. France never becomes the top guess anywhere. At the word " in" it's a strong runner-up (45% at layer 22), but Paris wins there too, and at the last word France only ever appears among the runners-up. The fact is stored in the same MLPs at "el" as in the one-step case, so this looks more like a shortcut, "Eiffel → Paris", than a chain of two facts.</p>`,
+  "hop-sushi": `<p>A two-step failure. Lens 1 at " from" shows the model <b>knows the country</b>: "Japan" is its top guess there in layers 17–22, reaching 78%. But at the last word it guesses "<b>English</b>" through layers 16–22, the default language, and ends on " a". "Japanese" comes second at 10%. It has both facts and doesn't chain them.</p>`,
+  dursley: `<p>Copying, not memory. The answer "ley" is the top guess by layer 10, and lens 2 shows the last word looking straight back at the earlier "ley" in the middle and late layers. Copying works like this: find where the current word appeared before and repeat what followed it. Lens 3 tells you little here. Scrambling "Dursley lived" still leaves 73%, because the second "Durs" is enough to finish the word.</p>`,
+  random: `<p>Four meaningless words, then repeated: no fact to know, only a pattern to copy. Lens 1 first follows meaning ("lemon" → "juice", layers 14–18), then switches to the copy, <b>fabric</b>, from layer 20. Lens 2 shows the switch: in layers 17–24, "lemon" attends to the earlier "fabric", the word that followed "lemon" last time.</p>`,
+  ioi: `<p>The task in Wang et al.'s "indirect object" study: give the drink to whoever is <i>not</i> the repeated name. <b>Mary</b> only becomes the top guess at layer 20, and lens 2 shows the late layers at " to" attending to "Mary". Lens 3 puts the decision in late attention at the last word, layers 18–21.</p>`,
+  plural: `<p>The verb has to agree with "keys", five words back, not with "cabinet" right before it. The model chooses plurals ("were" 22%, "are" 19%), with "door" as a middle-layer guess (a cabinet door). In lens 2 the last word looks back past "cabinet" to <b>"keys"</b> in layers 17–24. Lens 3 shows no single place where the number is stored, only a weak bump at " keys".</p>`,
+  opposite: `<p>Lens 1 reads "not" for most of the model (layers 2–14), then flips to <b>cold</b> at layer 15. The meaning of "hot" is available almost immediately: restoring its MLP at any early layer brings "cold" fully back. The work is in moving it to the end.</p>`,
+  years: `<p>A weak signal, on purpose. The model spreads its bet across many years (45 gets only 3.5%), so following one token shows little. Lens 1 is the interesting part: the top guess climbs, "23" → "30" → "33" → "45", and from layer 13 on it is always a year later than 1732. Lens 2 shows " 17" looking back at "32" in the middle and late layers.</p>`,
+  arith: `<p>GPT-2 can't add. It says "0" (3%) and gives the right answer, 68, only 0.3%, ranked about 100th. Lens 1 shows something telling: around layers 18–22 its best guess is <b>45</b>, a number copied from the prompt. Lens 3 has nothing to find, which is the point.</p>`,
+  negation: `<p>The word "not" changes nothing. The model still says <b>Paris</b>, and more confidently (82% against 69% without "not"). Every lens looks like the plain Eiffel case: London first, the fact at "el", late attention from " of" back to "el". The fact gets retrieved, and the negation never reaches the answer.</p>`,
+  recent: `<p>A stale belief. GPT-2's training text predates 2022, so it says <b>Jack</b> (Dorsey), at 14%. In lens 1 it gets there only at the last layer, after "David", "CEO" and "Twitter". "Elon" never appears anywhere in its top five. The fact is stored in the MLPs at " Twitter" in layers 1–7. That's the kind of location ROME edits to change a fact.</p>`,
+};
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const show = (t) => esc(t).replace(/\n/g, "↵").replace(/^ /, "␣");          // make a leading space visible
+const pct = (p) => p >= 0.995 ? "≈100%" : p >= 0.1 ? `${Math.round(p * 100)}%` : p >= 0.001 ? `${(p * 100).toFixed(1)}%` : "<0.1%";
+const fill = (v, hue) => `background:color-mix(in oklab, var(${hue}) ${Math.round(Math.max(0, Math.min(1, v)) * 100)}%, var(--raised));` +
+  (v > 0.55 ? "color:var(--paper);" : "");
+
+let index = [], data = null, query = null, attnMode = "mean", skipSink = true;
+const cache = {};
+
+// ---- tooltip
+const tip = $("#tip");
+function tipOn(e, html) { tip.innerHTML = html; tip.style.display = "block"; tipMove(e); }
+function tipMove(e) {
+  const r = tip.getBoundingClientRect(), pad = 14;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - pad;
+  tip.style.left = `${Math.max(8, x)}px`; tip.style.top = `${Math.max(8, y)}px`;
+}
+function tipOff() { tip.style.display = "none"; }
+document.addEventListener("mousemove", (e) => { if (tip.style.display === "block") tipMove(e); });
+function hover(el, html) {
+  el.addEventListener("mouseenter", (e) => tipOn(e, html()));
+  el.addEventListener("mouseleave", tipOff);
+}
+
+// ---- case list
+async function boot() {
+  index = await (await fetch("data/index.json")).json();
+  const groups = [...new Set(index.map((c) => c.group))];
+  $("#cases").innerHTML = groups.map((g) => `<h3>${esc(g)}</h3><ul>${index.filter((c) => c.group === g)
+    .map((c) => `<li><button data-id="${c.id}">${esc(c.title)}</button></li>`).join("")}</ul>`).join("");
+  $("#casePick").innerHTML = groups.map((g) => `<optgroup label="${esc(g)}">${index.filter((c) => c.group === g)
+    .map((c) => `<option value="${c.id}">${esc(c.title)}</option>`).join("")}</optgroup>`).join("");
+  $("#cases").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) location.hash = b.dataset.id; });
+  $("#casePick").addEventListener("change", (e) => { location.hash = e.target.value; });
+  addEventListener("hashchange", route);
+  route();
+}
+
+async function route() {
+  const id = location.hash.slice(1) || index[0].id;
+  if (!index.find((c) => c.id === id)) { location.hash = index[0].id; return; }
+  document.querySelectorAll("#cases button").forEach((b) => b.setAttribute("aria-current", b.dataset.id === id));
+  $("#casePick").value = id;
+  data = cache[id] ||= await (await fetch(`data/${id}.json`)).json();
+  query = data.tokens.length - 1;
+  attnMode = "mean";
+  render();
+}
+
+// ---- the page for one case
+function render() {
+  const d = data, T = d.tokens.length, L = d.layers;
+  const noised = new Set(d.trace.corrupt);
+  const note = NOTES[d.id];
+  const weak = d.clean < 0.05;
+  $("#case").innerHTML = `
+    <div class="prompt" id="prompt">${d.tokens.map((t, i) =>
+      `<span class="tok${noised.has(i) ? " noised" : ""}" data-i="${i}">${show(t)}</span>`).join("")}<span class="tok answer">${show(d.says[0][0])}</span></div>
+    <p class="says">The model says <b>${show(d.says[0][0]).trim()}</b> (${pct(d.says[0][1])}), then ${d.says.slice(1, 4).map(([t, p]) => `<span class="mono">${show(t)}</span> ${pct(p)}`).join(", ")}.
+      We follow <b class="mono">${show(d.targetToken)}</b>${d.says[0][0] === d.targetToken ? "" : `, which it gives ${pct(d.clean)}`}.
+      Words with a dashed border are the ones causal tracing scrambles.</p>
+    ${note ? `<div class="note"><span class="k">What to look for</span>${note}</div>` : ""}
+
+    <section class="lens">
+      <h2><span class="n">1</span>What it thinks, layer by layer</h2>
+      <p class="how">Each column is a word of the prompt; each row is a layer, with the output at the top. A cell shows what the model would predict next if it stopped at that layer, shaded by how sure it is. Hover a cell for its top five.</p>
+      <div class="scroll"><table class="grid" id="lensGrid"></table></div>
+      <div class="row" style="margin-top:1.4rem">
+        <div class="panel"><h4>The chance of <span class="mono">${show(d.targetToken)}</span> at the last word, by layer</h4><svg class="chart" id="track"></svg>
+        <p class="cap" id="trackCap"></p></div>
+      </div>
+    </section>
+
+    <section class="lens">
+      <h2><span class="n">2</span>Where it's looking</h2>
+      <p class="how">Choose a word in the prompt above (it starts on the last one). Each row is a layer; each column is an earlier word, shaded by how much attention the chosen word pays to it there. These models park most of their attention on the first word when nothing else is needed, so by default that column is hatched and each row is shaded against its strongest other word.</p>
+      <div class="controls">
+        <span>Looking from <b class="mono" id="qword"></b></span>
+        <span class="seg" role="group" aria-label="Combine heads">
+          <button data-m="mean">Average of 16 heads</button><button data-m="max">Strongest head</button>
+        </span>
+        <label><input type="checkbox" id="sink" checked> Leave out the first word when shading</label>
+        <span id="headNote"></span>
+      </div>
+      <div class="scroll"><table class="grid small" id="attnGrid"></table></div>
+    </section>
+
+    <section class="lens">
+      <h2><span class="n">3</span>Where the fact lives</h2>
+      <p class="how">The dashed words are scrambled with noise, and the answer's chance falls from ${pct(d.clean)} to ${pct(d.trace.pCorrupt)}. Then one piece of the clean run is put back at a time: a word's whole state at one layer, its MLP (the model's per-word memory), or its attention (the part that moves information between words). A dark cell means putting back that piece alone brings the answer back.</p>
+      ${weak ? `<div class="warn">The model gives <span class="mono">${show(d.targetToken)}</span> only ${pct(d.clean)} here, so there is almost nothing to bring back and these maps are mostly noise. That is the point of this case: there is no stored fact to find.</div>` : ""}
+      <div class="row" id="traces"></div>
+      <div class="legend"><span>${pct(d.trace.pCorrupt)} (scrambled)</span><span class="bar" style="background:linear-gradient(90deg,var(--raised),var(--ink))"></span><span>${pct(d.clean)} (clean) or more</span></div>
+    </section>`;
+
+  $("#prompt").addEventListener("click", (e) => {
+    const t = e.target.closest(".tok[data-i]"); if (!t) return;
+    query = +t.dataset.i; if (query !== T - 1 && attnMode === "max") attnMode = "mean"; drawAttention();
+  });
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => { attnMode = b.dataset.m; drawAttention(); }));
+  $("#sink").checked = skipSink;
+  $("#sink").addEventListener("change", (e) => { skipSink = e.target.checked; drawAttention(); });
+  drawLens(); drawTrack(); drawAttention(); drawTraces();
+}
+
+function drawLens() {
+  const d = data, T = d.tokens.length, L = d.layers;
+  const target = d.targetToken;
+  let html = `<thead><tr><th></th>${d.tokens.map((t) => `<th>${show(t)}</th>`).join("")}</tr></thead><tbody>`;
+  for (let l = L; l >= 0; l--) {
+    html += `<tr><th>${l === L ? "out" : l === 0 ? "embed" : l}</th>`;
+    for (let t = 0; t < T; t++) {
+      const [w, p] = d.lens[l][t][0];
+      html += `<td data-l="${l}" data-t="${t}" class="${t === T - 1 && w === target ? "hit" : ""}" style="${fill(Math.sqrt(p), "--lens")}">${show(w)}</td>`;
+    }
+    html += "</tr>";
+  }
+  const g = $("#lensGrid");
+  g.innerHTML = html + "</tbody>";
+  g.querySelectorAll("td").forEach((td) => hover(td, () => {
+    const l = +td.dataset.l, t = +td.dataset.t;
+    return `<div>After <b>${l === 0 ? "the embedding" : l === L ? "the last layer" : `layer ${l}`}</b>, at <span class="mono">${show(d.tokens[t])}</span>:</div>
+      <table>${d.lens[l][t].map(([w, p]) => `<tr><td class="mono">${show(w)}</td><td>${pct(p)}</td></tr>`).join("")}</table>`;
+  }));
+}
+
+function drawTrack() {
+  const d = data, L = d.layers, tr = d.targetTrack;
+  const W = 520, H = 170, m = { l: 44, r: 12, t: 10, b: 28 };
+  const x = (l) => m.l + (l / L) * (W - m.l - m.r);
+  // log scale of probability, 1e-5 .. 1
+  const y = (p) => m.t + (1 - (Math.log10(Math.max(p, 1e-5)) + 5) / 5) * (H - m.t - m.b);
+  const svg = $("#track");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", W); svg.style.maxWidth = "100%"; svg.style.height = "auto";
+  let s = "";
+  for (const p of [1, 0.1, 0.01, 0.001, 0.0001, 0.00001]) s += `<line class="gridline" x1="${m.l}" x2="${W - m.r}" y1="${y(p)}" y2="${y(p)}"/><text x="${m.l - 6}" y="${y(p) + 3}" text-anchor="end">${p >= 0.01 ? Math.round(p * 100) + "%" : p * 100 + "%"}</text>`;
+  for (let l = 0; l <= L; l += 4) s += `<text x="${x(l)}" y="${H - 8}" text-anchor="middle">${l === 0 ? "embed" : l === L ? "out" : l}</text>`;
+  s += `<polyline fill="none" stroke="var(--lens)" stroke-width="2" points="${tr.map((v, l) => `${x(l)},${y(v.p)}`).join(" ")}"/>`;
+  s += tr.map((v, l) => `<circle cx="${x(l)}" cy="${y(v.p)}" r="${v.rank === 1 ? 4 : 2.5}" fill="${v.rank === 1 ? "var(--lens)" : "var(--raised)"}" stroke="var(--lens)" stroke-width="1.5" data-l="${l}"/>`).join("");
+  svg.innerHTML = s;
+  svg.querySelectorAll("circle").forEach((c) => hover(c, () => {
+    const l = +c.dataset.l, v = tr[l];
+    return `${l === 0 ? "Embedding" : l === L ? "Output" : `Layer ${l}`}: <span class="mono">${show(d.targetToken)}</span> ${pct(v.p)}, ranked #${v.rank.toLocaleString()} of 50,257`;
+  }));
+  const firstTop = tr.findIndex((v) => v.rank === 1);
+  $("#trackCap").textContent = firstTop < 0
+    ? `${d.targetToken.trim()} never becomes the top guess at the last word. Filled dots would mark layers where it is first.`
+    : `Filled dots: layers where ${d.targetToken.trim()} is the top guess. It first gets there at ${firstTop === L ? "the output" : `layer ${firstTop}`}.`;
+}
+
+function drawAttention() {
+  const d = data, T = d.tokens.length, L = d.layers;
+  const last = query === T - 1;
+  document.querySelectorAll("#prompt .tok[data-i]").forEach((t) => t.classList.toggle("query", +t.dataset.i === query));
+  $("#qword").textContent = show(d.tokens[query]).replace(/&amp;/g, "&");
+  document.querySelectorAll(".seg button").forEach((b) => {
+    b.setAttribute("aria-pressed", b.dataset.m === attnMode);
+    b.disabled = b.dataset.m === "max" && !last;
+  });
+  $("#headNote").textContent = last ? "" : "Single heads are kept for the last word only.";
+  const row = (l) => attnMode === "max"
+    ? d.tokens.map((_, s) => s <= query ? Math.max(...d.attention.lastHeads[l].map((h) => h[s])) : null)
+    : d.attention.mean[l][query];
+  const best = (l, s) => attnMode === "max" ? d.attention.lastHeads[l].map((h, k) => [h[s], k]).sort((a, b) => b[0] - a[0])[0] : null;
+  let html = `<thead><tr><th></th>${d.tokens.map((t, s) => `<th style="${s > query ? "opacity:.3" : ""}">${show(t)}</th>`).join("")}</tr></thead><tbody>`;
+  for (let l = L - 1; l >= 0; l--) {
+    const r = row(l);
+    // The first word soaks up most attention in every layer. Leaving it out of
+    // the shading rescales the rest of the row to its own strongest word.
+    const top = skipSink && query > 0 ? Math.max(...r.slice(1, query + 1)) : 1;
+    html += `<tr><th>${l + 1}</th>${d.tokens.map((_, s) => s > query ? `<td></td>` :
+      skipSink && s === 0 && query > 0 ? `<td data-l="${l}" data-s="${s}" style="background:repeating-linear-gradient(45deg,var(--sunken) 0 3px,var(--raised) 3px 6px)"></td>` :
+      `<td data-l="${l}" data-s="${s}" style="${fill(Math.sqrt(r[s] / top), "--look")}"></td>`).join("")}</tr>`;
+  }
+  const g = $("#attnGrid");
+  g.innerHTML = html + "</tbody>";
+  g.querySelectorAll("td[data-l]").forEach((td) => hover(td, () => {
+    const l = +td.dataset.l, s = +td.dataset.s, b = best(l, s);
+    return `Layer ${l + 1}: <span class="mono">${show(d.tokens[query])}</span> → <span class="mono">${show(d.tokens[s])}</span><br>` +
+      (b ? `strongest head ${b[1]} gives it ${pct(b[0])}` : `${pct(d.attention.mean[l][query][s])} of its attention, averaged over heads`);
+  }));
+}
+
+function drawTraces() {
+  const d = data, T = d.tokens.length, L = d.layers, tr = d.trace;
+  const kinds = [["hidden", "--hidden", "Whole state at one layer"], ["mlp", "--mlp", "MLP (memory)"], ["attn", "--attn", "Attention (moving information)"]];
+  const lo = tr.pCorrupt, hi = Math.max(d.clean, lo + 1e-6);
+  $("#traces").innerHTML = kinds.map(([k, hue, name], ki) => {
+    // one label per four layers, spanning them, so the labels don't widen the columns
+    let html = `<thead><tr><th></th>${Array.from({ length: Math.ceil(L / 4) }, (_, k) => `<th colspan="${Math.min(4, L - k * 4)}" style="text-align:left;padding:0">${k * 4 + 1}</th>`).join("")}</tr></thead><tbody>`;
+    for (let t = 0; t < T; t++) {
+      // only the first map carries the word labels, so all three fit side by side
+      const label = ki === 0 || matchMedia("(max-width: 860px)").matches ? `${show(d.tokens[t])}${tr.corrupt.includes(t) ? "*" : ""}` : "";
+      html += `<tr class="${tr.corrupt.includes(t) ? "noised" : ""}"><th>${label}</th>` +
+        tr[k][t].map((p, l) => `<td data-k="${k}" data-t="${t}" data-l="${l}" style="${fill((p - lo) / (hi - lo), hue)}"></td>`).join("") + "</tr>";
+    }
+    return `<div class="panel"><h4><i style="background:var(${hue})"></i>${name}</h4><div class="scroll"><table class="grid tiny">${html}</tbody></table></div></div>`;
+  }).join("");
+  document.querySelectorAll("#traces td").forEach((td) => hover(td, () => {
+    const k = td.dataset.k, t = +td.dataset.t, l = +td.dataset.l, p = tr[k][t][l];
+    const what = k === "hidden" ? `the whole state of <span class="mono">${show(d.tokens[t])}</span> after layer ${l + 1}`
+      : `the ${k === "mlp" ? "MLP" : "attention"} output at <span class="mono">${show(d.tokens[t])}</span>, layers ${Math.max(1, l + 1 - tr.window / 2)}–${Math.min(L, l + tr.window / 2)}`;
+    return `Putting back ${what}: <span class="mono">${show(d.targetToken)}</span> returns to ${pct(p)}<br><span style="color:var(--faint)">clean ${pct(d.clean)} · scrambled ${pct(lo)}</span>`;
+  }));
+}
+
+boot().catch((e) => { $("#case").innerHTML = `<p class="warn">Could not load the data (${esc(e.message)}). Serve this folder over HTTP: <code>python3 -m http.server</code>.</p>`; });
+</script>
+</body>
+</html>
