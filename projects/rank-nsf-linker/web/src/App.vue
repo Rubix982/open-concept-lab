@@ -314,6 +314,7 @@ function removeArea(area: string) {
       <footer class="foot">
         Data from CSRankings, DBLP, IPEDS and public grant records (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC).
         <button type="button" class="link" @click="about?.showModal()">About the data</button>
+        <a class="link" href="/overview.html">Project overview</a>
       </footer>
     </section>
 
@@ -685,6 +686,10 @@ h1 {
 .foot .link {
   font-weight: 600;
   color: var(--ink-soft);
+}
+
+.foot .link + .link {
+  margin-left: 12px;
 }
 
 .map-wrap {
