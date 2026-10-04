@@ -137,8 +137,8 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       lab; the RNSR register maps each lab to its parent institutions, joined with " | " for the linker
 - [x] ERC (Horizon 2020 PIs, CORDIS): 2,029 computing grants → 239 faculty across Europe and Israel.
       Legal host names mapped to CSRankings names in `erc.py`. Horizon Europe ERC PIs are PDF-only (not loaded)
-- [ ] UKRI GtR (EPSRC research grants + fellowships in computing, ending 2015+): `ukri.py` running
-      (slow export, ~1 req/s for project details)
+- [x] UKRI GtR (EPSRC research grants + fellowships in computing, ending 2015+): 2,593 grants → 718 faculty
+      (481 of 1,160 UK faculty now have grant data)
 - [x] Linker: compares unaccented institution names (`institution_key` drops accented letters) and accepts
       several " | "-separated institutions per investigator
 - [x] Funder coverage per country comes from the loaded grants (`/explorer/funders`), not a static list
@@ -152,26 +152,15 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
 - [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)
 
-## Resume here (2026-10-04, evening)
-
-Left running when the session ended (both local, safe to leave):
-- `server/scripts/grants/ukri.py` fetching EPSRC project details (~2,000/2,593; cached in data/ukri/,
-  resumes if rerun). When `data/ukri.log` ends with `ukri_people.csv: N rows`, run `make pipeline-from STEP=18`.
-- Step 22 "Embed Explorer Work" embedding 389,858 DBLP papers (~100/s, done ~20:45 PKT). If it stopped,
-  rerun `make pipeline-from STEP=22` on the OLD binary, or after deploying the new code, the Embed step
-  number is 23. It only embeds what's missing.
-
-Written but NOT yet deployed or tested (built locally only):
-- OpenAlex: `server/scripts/openalex/works.py` (DOIs in data/openalex/dois.txt, 291,106; ~5,800 calls,
-  none made yet), migration 14, step "Load OpenAlex Works", and the embedder now adds paper abstracts
-  and re-embeds only items whose text changed (`explorer_embedded.text_hash`). The pipeline is now 23 steps.
-- Postgres `shm_size: 1gb` in docker-compose.dev.yaml (applied; fixed the step-22 crash).
-
-To finish v1: load UKRI → deploy go-server + web → screenshots (US, UK, EU, AU) → commit → ask before any
-public deploy. OpenAlex is the first v2 item.
+## v1 state (2026-10-04, night)
+- Deployed locally: pipeline 23 steps, all succeeded. 15,667 faculty at 635 universities in 58 countries;
+  7 funders (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC); 536,907 DBLP papers; 416,312 items in semantic search.
+- OpenAlex step is in the pipeline but skips until `server/scripts/openalex/works.py` has run (no calls made).
+- Postgres `shm_size: 1gb`; go-server image has curl for its healthcheck.
 
 ## Parked after v1 (2026-10-04)
-- [ ] v1 finish: load UKRI, deploy go-server + web, screenshots (US, UK, EU, AU), commit
+- [x] v1 finish: UKRI loaded, go-server + web deployed, screenshots checked (US, UK, CH, AU)
+- [x] Shared links (?u=...) open the map on that university instead of the US
 - [ ] Share with 5–10 students and collect feedback (did it help them find someone to email? was the
       funding section useful?) before adding more data sources
 - [ ] Public deploy: ask the user first (hosting, domain, KAKEN/RGC terms if those are loaded)

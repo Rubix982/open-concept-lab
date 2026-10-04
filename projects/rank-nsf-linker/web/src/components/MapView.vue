@@ -67,6 +67,11 @@ onMounted(() => {
     attributionControl: false,
     projection: "mercator",
   });
+  // A shared link (?u=...) opens with a university selected: start the map there, not on the US.
+  const start = props.universities.find((x) => x.id === props.selectedId);
+  if (start?.latitude != null && start.longitude != null) {
+    map.jumpTo({ center: [start.longitude, start.latitude], zoom: 5 });
+  }
   map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
   map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
 
