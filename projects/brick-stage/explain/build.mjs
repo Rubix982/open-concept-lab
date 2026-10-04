@@ -65,8 +65,10 @@ const html = `<!doctype html>
   html, body { margin: 0; background: #040817; color: #dbe6ff; font: 15px/1.4 "IBM Plex Sans", -apple-system, sans-serif; }
   .screen { container-type: inline-size; position: relative; width: min(100vw, calc((100vh - 56px) * ${tl.meta.w} / ${tl.meta.h})); margin: 0 auto; aspect-ratio: ${tl.meta.w} / ${tl.meta.h}; }
   canvas { display: block; width: 100%; height: 100%; }
-  #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: ${tl.meta.w > tl.meta.h ? 78 : 88}%; padding: 0.45em 0.9em; text-align: center;
-    font: 500 clamp(12px, ${tl.meta.w > tl.meta.h ? 1.55 : tl.meta.w === tl.meta.h ? 2.4 : 3.6}cqw, 30px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
+  /* captions sit low and light, a subtitle line rather than a box over the scene */
+  #caption { position: absolute; left: 50%; bottom: 2.6%; transform: translateX(-50%); max-width: ${tl.meta.w > tl.meta.h ? 72 : 88}%; padding: 0.25em 0.7em; text-align: center;
+    font: 500 clamp(12px, ${tl.meta.w > tl.meta.h ? 1.3 : tl.meta.w === tl.meta.h ? 2.2 : 3.4}cqw, 26px)/1.35 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.5); border: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     transition: opacity 0.25s; pointer-events: none; }
   #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, max(560px, calc((100vh - 56px) * ${tl.meta.w} / ${tl.meta.h}))); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
   #controls button { all: unset; cursor: pointer; padding: 5px 10px; border: 1px solid rgba(219, 230, 255, 0.25); color: #dbe6ff; }

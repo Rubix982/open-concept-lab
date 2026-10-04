@@ -12,8 +12,10 @@
   html, body { margin: 0; background: #040817; color: #dbe6ff; font: 15px/1.4 "IBM Plex Sans", -apple-system, sans-serif; }
   .screen { container-type: inline-size; position: relative; width: min(100vw, calc((100vh - 56px) * 1920 / 1080)); margin: 0 auto; aspect-ratio: 1920 / 1080; }
   canvas { display: block; width: 100%; height: 100%; }
-  #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: 78%; padding: 0.45em 0.9em; text-align: center;
-    font: 500 clamp(12px, 1.55cqw, 30px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
+  /* captions sit low and light, a subtitle line rather than a box over the scene */
+  #caption { position: absolute; left: 50%; bottom: 2.6%; transform: translateX(-50%); max-width: 72%; padding: 0.25em 0.7em; text-align: center;
+    font: 500 clamp(12px, 1.3cqw, 26px)/1.35 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.5); border: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     transition: opacity 0.25s; pointer-events: none; }
   #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, max(560px, calc((100vh - 56px) * 1920 / 1080))); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
   #controls button { all: unset; cursor: pointer; padding: 5px 10px; border: 1px solid rgba(219, 230, 255, 0.25); color: #dbe6ff; }
@@ -34,7 +36,7 @@
 <div class="screen"><canvas id="stage" aria-label="Meet the Presenter: an animated explainer"></canvas><div id="caption" aria-live="polite"></div></div>
 <div id="controls"></div>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
-<script>window.TIMELINE = {"meta":{"w":1920,"h":1080,"title":"Meet the Presenter","description":"A LEGO minifig host walks in and presents a brick chart.","music":true,"duration":24300},"objects":[{"id":"heading-0","type":"heading","born":0,"order":0,"props":{"opacity":1,"reveal":0,"text":"the presenter","x":96,"y":92}},{"id":"bars","type":"stage3d","born":0,"order":1,"props":{"opacity":1,"reveal":0,"kind":"bricks","x":520,"y":60,"w":1400,"h":1000,"az":-22,"el":20,"dist":46,"parts":[{"part":"3029","color":72,"x":0,"y":0,"z":0,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false},{"part":"3030","color":72,"x":12,"y":0,"z":0,"rot":0,"w":10,"d":4,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":0,"y":0,"z":4,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"2445","color":72,"x":6,"y":0,"z":4,"rot":0,"w":12,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3020","color":72,"x":18,"y":0,"z":4,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3666","color":72,"x":0,"y":1,"z":0,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":1,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":3,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":5,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":7,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":9,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":11,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":13,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":15,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":17,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":19,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3666","color":72,"x":21,"y":1,"z":0,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3003","color":4,"x":2,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":5,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":8,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":11,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":14,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":17,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":20,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":23,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":26,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":29,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":5,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":8,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":11,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":14,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3022","color":73,"x":12,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3022","color":73,"x":12,"y":3,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3022","color":10,"x":17,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false}],"anchors":{"bar0":[3,32,3],"foot0":[3,2,4.6],"bar1":[8,17,3],"foot1":[8,2,4.6],"bar2":[13,4,3],"foot2":[13,2,4.6],"bar3":[18,3,3],"foot3":[18,2,4.6]},"size":[21,32,6],"dur":2600}},{"id":"host","type":"stage3d","born":2600,"order":2,"props":{"opacity":1,"reveal":0,"kind":"presenter","x":40,"y":330,"w":560,"h":720,"plate":72,"facing":0,"talkOnNarration":true,"pointAt":null,"wave":0,"point":0,"talk":0,"shrug":0,"nod":0,"think":0,"look":{"torso":1,"legs":72,"print":"sweater","hat":"cap","hatColor":4,"face":"smile"},"face":"smile","side":"left","walk":0}},{"id":"v0","type":"text","born":2900,"order":3,"props":{"opacity":1,"reveal":0,"text":"580 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar0","dy":-34},"dur":400}},{"id":"l0","type":"text","born":2900,"order":4,"props":{"opacity":1,"reveal":0,"text":"Round robin","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot0","dy":28},"dur":400}},{"id":"v1","type":"text","born":2900,"order":5,"props":{"opacity":1,"reveal":0,"text":"281 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar1","dy":-34},"dur":400}},{"id":"l1","type":"text","born":2900,"order":6,"props":{"opacity":1,"reveal":0,"text":"Least loaded","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot1","dy":28},"dur":400}},{"id":"v2","type":"text","born":2900,"order":7,"props":{"opacity":1,"reveal":0,"text":"29 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar2","dy":-34},"dur":400}},{"id":"l2","type":"text","born":2900,"order":8,"props":{"opacity":1,"reveal":0,"text":"Cache affinity","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot2","dy":28},"dur":400}},{"id":"v3","type":"text","born":2900,"order":9,"props":{"opacity":1,"reveal":0,"text":"28 ms","x":960,"y":540,"size":24,"font":"mono","color":"accent","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar3","dy":-34},"dur":400}},{"id":"l3","type":"text","born":2900,"order":10,"props":{"opacity":1,"reveal":0,"text":"Affinity with a load cap","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot3","dy":28},"dur":400}}],"tweens":[{"id":"heading-0","prop":"reveal","to":1,"t0":0,"t1":700,"ease":"out"},{"id":"bars","prop":"reveal","to":1,"t0":0,"t1":2600,"ease":"out"},{"id":"host","prop":"reveal","to":1,"t0":2600,"t1":2900,"ease":"out"},{"id":"v0","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l0","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v1","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l1","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v2","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l2","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v3","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l3","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"host","prop":"side","to":"left","t0":3300,"t1":3301,"ease":"step"},{"id":"host","prop":"walk","to":0,"t0":3300,"t1":3301,"ease":"inout"},{"id":"host","prop":"facing","to":90,"t0":3300,"t1":3301,"ease":"inout"},{"id":"host","prop":"walk","to":1,"t0":3300,"t1":5150,"ease":"linear"},{"id":"host","prop":"facing","to":0,"t0":5120,"t1":5500,"ease":"inout"},{"id":"host","prop":"wave","to":1,"t0":5500,"t1":5900,"ease":"inout"},{"id":"host","prop":"wave","to":0,"t0":7700,"t1":8100,"ease":"inout"},{"id":"host","prop":"pointAt","to":{"obj":"bars","at":"bar0"},"t0":8100,"t1":8101,"ease":"step"},{"id":"host","prop":"point","to":1,"t0":8100,"t1":8500,"ease":"inout"},{"id":"host","prop":"point","to":0,"t0":11100,"t1":11500,"ease":"inout"},{"id":"host","prop":"face","to":"grin","t0":11500,"t1":11501,"ease":"step"},{"id":"host","prop":"pointAt","to":{"obj":"bars","at":"bar3"},"t0":11500,"t1":11501,"ease":"step"},{"id":"host","prop":"point","to":1,"t0":11500,"t1":11900,"ease":"inout"},{"id":"host","prop":"point","to":0,"t0":14500,"t1":14900,"ease":"inout"},{"id":"host","prop":"face","to":"surprised","t0":14900,"t1":14901,"ease":"step"},{"id":"host","prop":"shrug","to":1,"t0":14900,"t1":15300,"ease":"inout"},{"id":"host","prop":"shrug","to":0,"t0":16900,"t1":17300,"ease":"inout"},{"id":"host","prop":"face","to":"smile","t0":17300,"t1":17301,"ease":"step"},{"id":"host","prop":"nod","to":1,"t0":17300,"t1":17700,"ease":"inout"},{"id":"host","prop":"nod","to":0,"t0":18500,"t1":18900,"ease":"inout"},{"id":"host","prop":"think","to":1,"t0":18900,"t1":19300,"ease":"inout"},{"id":"host","prop":"think","to":0,"t0":20700,"t1":21100,"ease":"inout"},{"id":"host","prop":"side","to":"left","t0":21100,"t1":21101,"ease":"step"},{"id":"host","prop":"facing","to":-90,"t0":21100,"t1":21420,"ease":"inout"},{"id":"host","prop":"walk","to":0,"t0":21420,"t1":23100,"ease":"linear"}],"sounds":[{"t":0,"kind":"clicks","dur":2600}],"narration":[{"t":5500,"dur":2600,"text":"Hi! Let me walk you through this chart."},{"t":8100,"dur":3400,"text":"Round robin: 580 ms before the first word appears."},{"t":11500,"dur":3400,"text":"Affinity with a load cap: 28 ms."},{"t":14900,"dur":2400,"text":"Same GPUs, same traffic. Only the routing changed."},{"t":18900,"dur":2200,"text":"Where should the next prompt go? That's the next chart."}],"transitions":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"3":["Dark Turquoise",39,"#008f9b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"26":["Magenta",71,"#923978"],"27":["Lime",34,"#bbe90b"],"28":["Dark Tan",69,"#958a73"],"29":["Bright Pink",104,"#e4adc8"],"30":["Medium Lavender",157,"#ac78ba"],"33":["Trans-Dark Blue",14,"#0020a0","trans"],"36":["Trans-Red",17,"#c91a09","trans"],"46":["Trans-Yellow",19,"#f5cd2f","trans"],"47":["Trans-Clear",12,"#fcfcfc","trans"],"52":["Trans-Purple",51,"#a5a5cb","trans"],"57":["Trans-Neon Orange",18,"#ff800d","trans"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"],"73":["Medium Blue",42,"#5a93db"],"78":["Light Nougat",90,"#f6d7b3"],"84":["Medium Nougat",150,"#aa7d55"],"85":["Dark Purple",89,"#3f3691"],"191":["Bright Light Orange",110,"#f8bb3d"],"212":["Bright Light Blue",105,"#9fc3e9"],"226":["Bright Light Yellow",103,"#fff03a"],"272":["Dark Blue",63,"#0a3463"],"288":["Dark Green",80,"#184632"],"308":["Dark Brown",120,"#352100"],"320":["Dark Red",59,"#720e0f"],"321":["Dark Azure",153,"#078bc9"],"322":["Medium Azure",156,"#36aebf"],"323":["Light Aqua",152,"#adc3c0"],"378":["Sand Green",48,"#a0bcac"],"379":["Sand Blue",55,"#6074a1"],"484":["Dark Orange",68,"#a95500"]},"meshes":{}};</script>
+<script>window.TIMELINE = {"meta":{"w":1920,"h":1080,"title":"Meet the Presenter","description":"A LEGO minifig host walks in and presents a brick chart.","music":true,"duration":24300},"objects":[{"id":"heading-0","type":"heading","born":0,"order":0,"props":{"opacity":1,"reveal":0,"text":"the presenter","x":96,"y":92}},{"id":"bars","type":"stage3d","born":0,"order":1,"props":{"opacity":1,"reveal":0,"kind":"bricks","x":520,"y":60,"w":1400,"h":1000,"az":-22,"el":20,"dist":46,"zoom":1,"parts":[{"part":"3029","color":72,"x":0,"y":0,"z":0,"rot":0,"w":12,"d":4,"h":1,"kind":"plate","mesh":false},{"part":"3030","color":72,"x":12,"y":0,"z":0,"rot":0,"w":10,"d":4,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":0,"y":0,"z":4,"rot":0,"w":6,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"2445","color":72,"x":6,"y":0,"z":4,"rot":0,"w":12,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3020","color":72,"x":18,"y":0,"z":4,"rot":0,"w":4,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3666","color":72,"x":0,"y":1,"z":0,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":1,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":3,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":5,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":7,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":9,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":11,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":13,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":15,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":17,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3795","color":72,"x":19,"y":1,"z":0,"rot":90,"w":2,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3666","color":72,"x":21,"y":1,"z":0,"rot":90,"w":1,"d":6,"h":1,"kind":"plate","mesh":false},{"part":"3003","color":4,"x":2,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":5,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":8,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":11,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":14,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":17,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":20,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":23,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":26,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":4,"x":2,"y":29,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":5,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":8,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":11,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3003","color":25,"x":7,"y":14,"z":2,"rot":0,"w":2,"d":2,"h":3,"kind":"brick","mesh":false},{"part":"3022","color":73,"x":12,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3022","color":73,"x":12,"y":3,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false},{"part":"3022","color":10,"x":17,"y":2,"z":2,"rot":0,"w":2,"d":2,"h":1,"kind":"plate","mesh":false}],"anchors":{"bar0":[3,32,3],"foot0":[3,2,4.6],"bar1":[8,17,3],"foot1":[8,2,4.6],"bar2":[13,4,3],"foot2":[13,2,4.6],"bar3":[18,3,3],"foot3":[18,2,4.6]},"size":[21,32,6],"dur":2600}},{"id":"host","type":"stage3d","born":2600,"order":2,"props":{"opacity":1,"reveal":0,"kind":"presenter","x":40,"y":330,"w":560,"h":720,"plate":72,"facing":0,"talkOnNarration":true,"pointAt":null,"wave":0,"point":0,"talk":0,"shrug":0,"nod":0,"think":0,"look":{"torso":1,"legs":72,"print":"sweater","hat":"cap","hatColor":4,"face":"smile"},"face":"smile","side":"left","walk":0}},{"id":"v0","type":"text","born":2900,"order":3,"props":{"opacity":1,"reveal":0,"text":"580 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar0","dy":-34},"dur":400}},{"id":"l0","type":"text","born":2900,"order":4,"props":{"opacity":1,"reveal":0,"text":"Round robin","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot0","dy":28},"dur":400}},{"id":"v1","type":"text","born":2900,"order":5,"props":{"opacity":1,"reveal":0,"text":"281 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar1","dy":-34},"dur":400}},{"id":"l1","type":"text","born":2900,"order":6,"props":{"opacity":1,"reveal":0,"text":"Least loaded","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot1","dy":28},"dur":400}},{"id":"v2","type":"text","born":2900,"order":7,"props":{"opacity":1,"reveal":0,"text":"29 ms","x":960,"y":540,"size":24,"font":"mono","color":"ink","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar2","dy":-34},"dur":400}},{"id":"l2","type":"text","born":2900,"order":8,"props":{"opacity":1,"reveal":0,"text":"Cache affinity","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot2","dy":28},"dur":400}},{"id":"v3","type":"text","born":2900,"order":9,"props":{"opacity":1,"reveal":0,"text":"28 ms","x":960,"y":540,"size":24,"font":"mono","color":"accent","align":"center","weight":600,"anchor":{"obj":"bars","at":"bar3","dy":-34},"dur":400}},{"id":"l3","type":"text","born":2900,"order":10,"props":{"opacity":1,"reveal":0,"text":"Affinity with a load cap","x":960,"y":540,"size":17,"font":"sans","color":"dim","align":"center","weight":500,"anchor":{"obj":"bars","at":"foot3","dy":28},"dur":400}}],"tweens":[{"id":"heading-0","prop":"reveal","to":1,"t0":0,"t1":700,"ease":"out"},{"id":"bars","prop":"reveal","to":1,"t0":0,"t1":2600,"ease":"out"},{"id":"host","prop":"reveal","to":1,"t0":2600,"t1":2900,"ease":"out"},{"id":"v0","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l0","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v1","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l1","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v2","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l2","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"v3","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"l3","prop":"reveal","to":1,"t0":2900,"t1":3300,"ease":"out"},{"id":"host","prop":"side","to":"left","t0":3300,"t1":3301,"ease":"step"},{"id":"host","prop":"walk","to":0,"t0":3300,"t1":3301,"ease":"inout"},{"id":"host","prop":"facing","to":90,"t0":3300,"t1":3301,"ease":"inout"},{"id":"host","prop":"walk","to":1,"t0":3300,"t1":5150,"ease":"linear"},{"id":"host","prop":"facing","to":0,"t0":5120,"t1":5500,"ease":"inout"},{"id":"host","prop":"wave","to":1,"t0":5500,"t1":5900,"ease":"inout"},{"id":"host","prop":"wave","to":0,"t0":7700,"t1":8100,"ease":"inout"},{"id":"host","prop":"pointAt","to":{"obj":"bars","at":"bar0"},"t0":8100,"t1":8101,"ease":"step"},{"id":"host","prop":"point","to":1,"t0":8100,"t1":8500,"ease":"inout"},{"id":"host","prop":"point","to":0,"t0":11100,"t1":11500,"ease":"inout"},{"id":"host","prop":"face","to":"grin","t0":11500,"t1":11501,"ease":"step"},{"id":"host","prop":"pointAt","to":{"obj":"bars","at":"bar3"},"t0":11500,"t1":11501,"ease":"step"},{"id":"host","prop":"point","to":1,"t0":11500,"t1":11900,"ease":"inout"},{"id":"host","prop":"point","to":0,"t0":14500,"t1":14900,"ease":"inout"},{"id":"host","prop":"face","to":"surprised","t0":14900,"t1":14901,"ease":"step"},{"id":"host","prop":"shrug","to":1,"t0":14900,"t1":15300,"ease":"inout"},{"id":"host","prop":"shrug","to":0,"t0":16900,"t1":17300,"ease":"inout"},{"id":"host","prop":"face","to":"smile","t0":17300,"t1":17301,"ease":"step"},{"id":"host","prop":"nod","to":1,"t0":17300,"t1":17700,"ease":"inout"},{"id":"host","prop":"nod","to":0,"t0":18500,"t1":18900,"ease":"inout"},{"id":"host","prop":"think","to":1,"t0":18900,"t1":19300,"ease":"inout"},{"id":"host","prop":"think","to":0,"t0":20700,"t1":21100,"ease":"inout"},{"id":"host","prop":"side","to":"left","t0":21100,"t1":21101,"ease":"step"},{"id":"host","prop":"facing","to":-90,"t0":21100,"t1":21420,"ease":"inout"},{"id":"host","prop":"walk","to":0,"t0":21420,"t1":23100,"ease":"linear"}],"sounds":[{"t":0,"kind":"clicks","dur":2600}],"narration":[{"t":5500,"dur":2600,"text":"Hi! Let me walk you through this chart."},{"t":8100,"dur":3400,"text":"Round robin: 580 ms before the first word appears."},{"t":11500,"dur":3400,"text":"Affinity with a load cap: 28 ms."},{"t":14900,"dur":2400,"text":"Same GPUs, same traffic. Only the routing changed."},{"t":18900,"dur":2200,"text":"Where should the next prompt go? That's the next chart."}],"transitions":[],"colors":{"0":["Black",11,"#1b2a34"],"1":["Blue",7,"#1e5aa8"],"2":["Green",6,"#00852b"],"3":["Dark Turquoise",39,"#008f9b"],"4":["Red",5,"#b40000"],"5":["Dark Pink",47,"#c870a0"],"10":["Bright Green",36,"#58ab41"],"14":["Yellow",3,"#fac80a"],"15":["White",1,"#f4f4f4"],"19":["Tan",2,"#e4cd9e"],"25":["Orange",4,"#d67923"],"26":["Magenta",71,"#923978"],"27":["Lime",34,"#bbe90b"],"28":["Dark Tan",69,"#958a73"],"29":["Bright Pink",104,"#e4adc8"],"30":["Medium Lavender",157,"#ac78ba"],"33":["Trans-Dark Blue",14,"#0020a0","trans"],"36":["Trans-Red",17,"#c91a09","trans"],"46":["Trans-Yellow",19,"#f5cd2f","trans"],"47":["Trans-Clear",12,"#fcfcfc","trans"],"52":["Trans-Purple",51,"#a5a5cb","trans"],"57":["Trans-Neon Orange",18,"#ff800d","trans"],"70":["Reddish Brown",88,"#5f3109"],"71":["Light Bluish Gray",86,"#a0a5a9"],"72":["Dark Bluish Gray",85,"#6c6e68"],"73":["Medium Blue",42,"#5a93db"],"78":["Light Nougat",90,"#f6d7b3"],"84":["Medium Nougat",150,"#aa7d55"],"85":["Dark Purple",89,"#3f3691"],"191":["Bright Light Orange",110,"#f8bb3d"],"212":["Bright Light Blue",105,"#9fc3e9"],"226":["Bright Light Yellow",103,"#fff03a"],"272":["Dark Blue",63,"#0a3463"],"288":["Dark Green",80,"#184632"],"308":["Dark Brown",120,"#352100"],"320":["Dark Red",59,"#720e0f"],"321":["Dark Azure",153,"#078bc9"],"322":["Medium Azure",156,"#36aebf"],"323":["Light Aqua",152,"#adc3c0"],"378":["Sand Green",48,"#a0bcac"],"379":["Sand Blue",55,"#6074a1"],"484":["Dark Orange",68,"#a95500"]},"meshes":{}};</script>
 <script>
 // Brick drawing, shared by the player and the printable booklet (the build
 // inlines this file into both). Plain parts are rounded boxes with studs;
@@ -382,6 +384,21 @@ const STAGES = {};
 const EXPLORE = {};   // per stage: the viewer's own orbit while paused (live page only)
 let rendering = false;
 const wobble = (t, f, ph) => Math.sin(t * f + ph) * 0.6 + Math.sin(t * f * 2.31 + ph * 1.7) * 0.3 + Math.sin(t * f * 4.13 + ph * 0.3) * 0.1;
+function fitDistance(cam, box, T, az, el) {
+  const R = (v) => (v * Math.PI) / 180;
+  const dir = [Math.cos(R(el)) * Math.sin(R(az)), Math.sin(R(el)), Math.cos(R(el)) * Math.cos(R(az))]; // target → camera
+  // camera right and up for that direction (world up = y)
+  let right = [dir[2], 0, -dir[0]]; const rl = Math.hypot(right[0], right[2]) || 1; right = [right[0] / rl, 0, right[2] / rl];
+  const up = [dir[1] * right[2] - dir[2] * right[1], dir[2] * right[0] - dir[0] * right[2], dir[0] * right[1] - dir[1] * right[0]];
+  const tv = Math.tan(R(cam.fov) / 2), th = tv * cam.aspect;
+  let need = 0;
+  for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) {
+    const c = [x - T.x, y - T.y, z - T.z], along = c[0] * dir[0] + c[1] * dir[1] + c[2] * dir[2];
+    const lx = Math.abs(c[0] * right[0] + c[1] * right[1] + c[2] * right[2]), ly = Math.abs(c[0] * up[0] + c[1] * up[1] + c[2] * up[2]);
+    need = Math.max(need, along + lx / th, along + ly / tv);
+  }
+  return need * 1.12; // a little air round the edges
+}
 function aim(cam, p, t, base, focusAt) {
   const T = { x: p.tx ?? base.x, y: p.ty ?? base.y, z: p.tz ?? base.z };
   const k = clamp(p.focusK ?? 0);
@@ -390,6 +407,10 @@ function aim(cam, p, t, base, focusAt) {
     T.x = a.x + (b.x - a.x) * k; T.y = a.y + (b.y - a.y) * k; T.z = a.z + (b.z - a.z) * k;
   }
   let az = p.az, el = p.el, dist = p.dist;
+  // dist "auto": the nearest distance at which the model's box (base.box,
+  // { min: [x,y,z], max: [x,y,z] } in world units) fits the view, from this
+  // angle, in both directions; zoom multiplies it (0.5 = twice as close)
+  if (typeof dist !== "number") dist = (base.box ? fitDistance(cam, base.box, T, az, el) : 40) * (p.zoom ?? 1);
   const d = p.drift || 0;
   if (d) { const s = t / 1000; az += d * 3 * wobble(s, 0.7, 1.3); el += d * 1.8 * wobble(s, 0.53, 4.1); dist *= 1 + d * 0.02 * wobble(s, 0.41, 2.2); }
   const R = (v) => (v * Math.PI) / 180;
@@ -443,7 +464,7 @@ function Stack(o) {
   const api = {
     update(p, t, born) {
       // camera on a sphere around the middle of the stack (focus: "col:row")
-      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0 }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
+      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0, box: { min: [-plateW / 2, 0, -SP.depth / 2], max: [plateW / 2, (rows - 1) * SP.dy, SP.depth / 2] } }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
       const up = p.reveal * rows;
       const glow = p.glow || [];
       plates.forEach((pl, r) => {
@@ -522,7 +543,7 @@ function Bricks(o) {
     canvas: renderer.domElement,
     update(p, t) {
       // focus: an anchor name ([x, y, z] in studs, plates, studs)
-      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0 }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
+      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0, box: { min: [-W / 2, 0, -D / 2], max: [W / 2, Hp * PLATE, D / 2] } }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
       // each part drops into place in order; a drop lasts a few percent of the build
       const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
       pieces.forEach((g, i) => {
@@ -542,7 +563,8 @@ function Bricks(o) {
 
 // ---- object types
 const STAGE_KINDS = { stack: Stack, bricks: Bricks };
-const BOUNDS = {}; // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
+const BOUNDS = {};
+const MIN_TEXT = TL.meta.minText ?? 20; // px in the frame; 20 at 1920 wide is ~13 at 1280 // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
 Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
@@ -550,10 +572,13 @@ const DRAW = {
     const make = STAGE_KINDS[p.kind || "stack"];
     if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
     const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    if (st._t === t && st._drawn !== t) { st._drawn = t; } else {
     const ex = !rendering && !playing && EXPLORE[obj.id];
-    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: p.dist * ex.zoom };
+    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom };
     st.update(p, t, obj.born);
     st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = t;
+    }
     ctx.save();
     if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
@@ -566,7 +591,7 @@ const DRAW = {
     if (!make.overlays) return;
     // what the highlighted column would say at each plate, pinned beside it
     if (p.labels && p.hiCol >= 0) {
-      ctx.font = `500 15px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+      ctx.font = `500 18px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
       for (let r = 0; r < p.labels.length && r <= p.labelUpTo; r++) {
         const lab = p.labels[r]; if (!lab) continue;
         const k = clamp(p.labelUpTo - r + 1), [nx, ny] = st.project(p.hiCol, r, p.x, p.y);
@@ -581,7 +606,7 @@ const DRAW = {
     }
     // the words under their columns, at the bottom plate
     if (p.colLabels) {
-      ctx.font = `500 16px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.font = `500 18px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
       p.colLabels.forEach((l, c) => {
         const [x, y] = st.project(c, 0, p.x, p.y), on = c === p.hiCol || (p.colHl || []).includes(c);
         ctx.globalAlpha = clamp(p.reveal * 4) * ctx._alpha;
@@ -603,6 +628,8 @@ const DRAW = {
     noGlow(ctx);
   },
   text(ctx, p, t, obj) {
+    // a legibility floor: labels stay readable when the video is watched small
+    p = p.size < MIN_TEXT ? { ...p, size: MIN_TEXT } : p;
     const text = String(p.text), n = Math.floor(text.length * clamp(p.reveal));
     ctx.font = `${p.weight} ${p.size}px ${p.font === "mono" ? MONO : SANS}`;
     ctx.textBaseline = "middle";
@@ -898,6 +925,23 @@ const AFTER = [];
 function frame(ctx, t) {
   ctx.save();
   background(ctx, t);
+  // pre-pass: update every visible 3D stage first (cameras, anchors), so the
+  // order objects were created in doesn't matter for pinning or pointing
+  // stages that look at other stages (flag `after`, e.g. a presenter pointing
+  // at a chart) update in a second pass, once every other camera is set
+  for (const late of [false, true]) for (const obj of TL.objects) {
+    if (obj.type !== "stage3d" || t < obj.born) continue;
+    const p = propsAt(obj, t);
+    if (p.opacity <= 0.002) continue;
+    const make = STAGE_KINDS[p.kind || "stack"];
+    if (!make || Boolean(make.after) !== late) continue;
+    const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    const ex = !rendering && !playing && EXPLORE[obj.id];
+    const q = ex ? { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom } : p;
+    st.update(q, t, obj.born);
+    st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = -1;
+  }
   for (const obj of TL.objects) {
     if (t < obj.born) continue;
     const p = propsAt(obj, t);
@@ -1539,6 +1583,16 @@ BP.register("arrowTo", (ctx, p) => {
         if (best >= 0) { used.add(best); out.set(j, best); }
       });
     }
+    // third pass, "transmute": leftovers pair with leftovers, nearest first,
+    // whatever the part — the brick flies over and changes shape on the way,
+    // so even different kinds of chart turn into each other
+    const freeA = a.map((_, i) => i).filter((i) => !used.has(i));
+    b.forEach((q, j) => {
+      if (out.has(j) || !freeA.length) return;
+      let bi = 0, bd = Infinity;
+      freeA.forEach((i, k) => { const d = ha[i].distanceToSquared(hb[j]); if (d < bd) { bd = d; bi = k; } });
+      out.set(j, freeA[bi]); freeA.splice(bi, 1);
+    });
     return out;
   }
 
@@ -1568,8 +1622,9 @@ BP.register("arrowTo", (ctx, p) => {
     const owner = models.map(() => []);
     const newPiece = (p, mi, j) => {
       const g = KIT.brick(p, BP.plastic(p.color));
-      g.visible = false; scene.add(g);
-      const piece = { g, base: p, at: models.map(() => null), mat: new Map() };
+      g.visible = false; g.userData.rot0 = p.rot || 0; scene.add(g);
+      const piece = { g, gs: models.map(() => null), base: p, at: models.map(() => null), mat: new Map() };
+      piece.gs[mi] = g;
       pieces.push(piece);
       return piece;
     };
@@ -1578,8 +1633,12 @@ BP.register("arrowTo", (ctx, p) => {
       const m = match(models[mi - 1].parts, models[mi].parts, homes[mi - 1], homes[mi]);
       models[mi].parts.forEach((q, j) => {
         let idx;
-        if (m.has(j)) idx = owner[mi - 1][m.get(j)];
-        else { newPiece(q, mi, j); idx = pieces.length - 1; }
+        if (m.has(j)) {
+          idx = owner[mi - 1][m.get(j)];
+          const pc = pieces[idx], prev = models[mi - 1].parts[m.get(j)];
+          if (prev.part === q.part && prev.rot === q.rot) pc.gs[mi] = pc.gs[mi - 1];
+          else { const g2 = KIT.brick(q, BP.plastic(q.color)); g2.visible = false; g2.userData.rot0 = q.rot || 0; scene.add(g2); pc.gs[mi] = g2; } // transmutes
+        } else { newPiece(q, mi, j); idx = pieces.length - 1; }
         pieces[idx].at[mi] = { home: homes[mi][j], color: q.color, rot: q.rot, j };
         owner[mi][j] = idx;
       });
@@ -1593,6 +1652,11 @@ BP.register("arrowTo", (ctx, p) => {
 
     const N0 = models[0].parts.length;
     const tmp = new THREE.Vector3();
+    const show = (pc, g) => {
+      if (pc.g === g) return;
+      for (const x of pc.gs) if (x && x !== g) x.visible = false;
+      pc.g = g; pc.color = undefined;
+    };
     const place = (pc, pos, color, rotY, scale) => {
       const g = pc.g;
       g.visible = scale > 0.01;
@@ -1607,21 +1671,24 @@ BP.register("arrowTo", (ctx, p) => {
 
     return {
       canvas: renderer.domElement,
-      update(p) {
+      update(p, t) {
         const v = clamp(p.morph || 0, 0, M - 1), step = Math.min(M - 2, Math.floor(v)), k = M > 1 ? v - Math.max(0, step) : 0;
         cur.v = v;
         // camera, aimed at the middle height of whichever models are in play
         const hA = models[Math.max(0, step)].size[1] * PLATE, hB = models[Math.min(M - 1, Math.max(0, step) + 1)].size[1] * PLATE;
-        const az = rad(p.az), el = rad(p.el), ty = p.ty ?? (hA + (hB - hA) * EASE.inout(k)) / 2;
-        cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-        cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+        const e = EASE.inout(k), mA = models[Math.max(0, step)], mB = models[Math.min(M - 1, Math.max(0, step) + 1)];
+        const mix = (i) => mA.size[i] + (mB.size[i] - mA.size[i]) * e;
+        const ty = (hA + (hB - hA) * e) / 2, w = mix(0), dd = mix(2), hh = (hA + (hB - hA) * e);
+        // the shared camera: focus, drift and automatic framing (dist "auto") as in the bricks stage
+        BP.aim(cam, p, t ?? 0, { x: 0, y: ty, z: 0, box: { min: [-w / 2, 0, -dd / 2], max: [w / 2, hh, dd / 2] } }, () => null);
 
         if (v <= 0 || M === 1) {
           // building model 0, part by part, like the bricks stage
           const at = p.reveal * (N0 + N0 * 0.05), sp = Math.max(1, N0 * 0.05);
           for (const pc of pieces) {
             const a = pc.at[0];
-            if (!a) { pc.g.visible = false; continue; }
+            if (!a) { for (const x of pc.gs) if (x) x.visible = false; continue; }
+            show(pc, pc.gs[0]);
             const kk = clamp((at - a.j) / sp), e = EASE.out(kk);
             tmp.copy(a.home); tmp.y += (1 - e) * 5;
             place(pc, tmp, a.color, 0, kk > 0 ? 1 : 0);
@@ -1630,7 +1697,7 @@ BP.register("arrowTo", (ctx, p) => {
           const A = step, B = step + 1;
           for (const pc of pieces) {
             const a = pc.at[A], b = pc.at[B];
-            const r0 = rad(-((pc.base.rot || 0))), rotOf = (s) => rad(-(s.rot || 0)) - r0;
+            const rotOf = (s) => rad(-(s.rot || 0)) + rad(pc.g.userData.rot0 || 0);
             if (a && b) {
               // fly an arc: lift, travel, settle
               // pieces that stay put (most of the base) don't hop
@@ -1638,18 +1705,24 @@ BP.register("arrowTo", (ctx, p) => {
               const d = delay(b.home, B), u = clamp((k - d) / 0.5), e = EASE.inout(u);
               const lift = Math.sin(Math.PI * u) * (2.5 + 0.12 * dist) * moving;
               tmp.lerpVectors(a.home, b.home, e); tmp.y += lift;
-              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, 1);
+              const swap = pc.gs[A] !== pc.gs[B];
+              show(pc, u < 0.5 ? pc.gs[A] : pc.gs[B]);
+              // a transmuting brick squashes as it changes shape at the top of the arc
+              const squash = swap ? 1 - 0.45 * Math.sin(Math.PI * u) : 1;
+              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, squash);
             } else if (a) {
+              show(pc, pc.gs[A]);
               // not needed: lift off and shrink away, early in the step
               const d = delay(a.home, A) * 0.6, u = clamp((k - d) / 0.35), e = EASE.inout(u);
               tmp.copy(a.home); tmp.y += e * 7;
               place(pc, tmp, a.color, rotOf(a) + e * 0.8, 1 - e);
             } else if (b) {
+              show(pc, pc.gs[B]);
               // new: drops in, late in the step
               const d = 0.45 + delay(b.home, B) * 0.6, u = clamp((k - d) / 0.3), e = EASE.out(u);
               tmp.copy(b.home); tmp.y += (1 - e) * 6;
               place(pc, tmp, b.color, rotOf(b), u > 0 ? 0.25 + 0.75 * e : 0);
-            } else pc.g.visible = false;
+            } else for (const x of pc.gs) if (x) x.visible = false;
           }
         }
         renderer.render(scene, cam);
@@ -1811,7 +1884,7 @@ BP.register("arrowTo", (ctx, p) => {
     return null;
   }
 
-  BP.stage("presenter", Presenter, { overlays: false });
+  BP.stage("presenter", Presenter, { overlays: false, after: true });
 })();
 
 </script>

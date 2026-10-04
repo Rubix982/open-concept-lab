@@ -120,5 +120,5 @@
     return null;
   }
 
-  BP.stage("presenter", Presenter, { overlays: false });
+  BP.stage("presenter", Presenter, { overlays: false, after: true });
 })();

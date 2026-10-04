@@ -34,9 +34,9 @@ live page.
 
 - **Pointing** uses the arm on the target's side, swung out at the target's
   angle from the shoulder, with the body (±28°) and head turned toward it.
-- **Order matters for pointing.** Create the presenter after the stage it
-  points at; it reads that stage's camera for the current frame. Created
-  before, it would aim at the previous frame's position.
+- **Order doesn't matter for pointing.** The presenter's stage is flagged
+  `after`, so the player updates it once every other 3D camera has moved for
+  the frame; it always aims at where the target is now.
 - **Talking** is automatic while a caption is on screen (`talkOnNarration`):
   a head bob, a little sway and a gesturing free hand, eased at each line's
   start and end. A `talk` gesture forces it.

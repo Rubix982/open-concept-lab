@@ -22,7 +22,7 @@ export default explainer({ title: "Camera and Transitions", description: "Capabi
   s.together((g) => {
     g.heading("camera: one model, every shot");
     g.dial(1, "shots", { of: 3 });
-    g.bricks("heat", heatGrid(d.trace.mlp.map((r) => r.map(norm)), { ramp: RAMPS.green, maxPlates: 7 }), { az: -20, el: 40, dist: 40, dur: 3200 });
+    g.bricks("heat", heatGrid(d.trace.mlp.map((r) => r.map(norm)), { ramp: RAMPS.green, maxPlates: 7 }), { az: -20, el: 40, dist: "auto", dur: 3200 });
     g.sfx("clicks", { dur: 3200 });
   });
   caption('s.shot("heat", "hero")');

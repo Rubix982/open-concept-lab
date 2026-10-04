@@ -98,7 +98,7 @@ export function explainer(meta, write) {
     /** A LEGO model from brickcharts.mjs (barChart, heatGrid, columns, blocks),
      *  built part by part on camera. Pin 2D things to its anchors with
      *  { anchor: { obj: id, at: "bar2" } }, or run a path through several. */
-    s.bricks = (id, chart, o = {}) => add(id, "stage3d", { kind: "bricks", x: 0, y: 0, w: W, h: H, az: 25, el: 28, dist: 40, parts: chart.parts, anchors: chart.anchors, size: chart.size, ...o }, o.dur ?? Math.min(6000, 400 + chart.parts.length * 12));
+    s.bricks = (id, chart, o = {}) => add(id, "stage3d", { kind: "bricks", x: 0, y: 0, w: W, h: H, az: 25, el: 28, dist: "auto", zoom: 1, parts: chart.parts, anchors: chart.anchors, size: chart.size, ...o }, o.dur ?? Math.min(6000, 400 + chart.parts.length * 12));
     /** A box with a label in its corner. */
     s.box = (id, o) => add(id, "box", { x: 0, y: 0, w: 200, h: 100, label: "", color: "ink", dash: false, ...o }, o.dur ?? 700);
     /** A small note with a leader line to a point. */
@@ -147,18 +147,20 @@ export function explainer(meta, write) {
     s.shot = (id, preset, o = {}) => {
       need(id);
       const d0 = base(id, "dist"), az = cur(id, "az");
+      // a stage that frames itself (dist "auto") is moved with zoom instead
+      const far = (z) => (typeof d0 === "number" ? { dist: d0 * z } : { zoom: z });
       const [name, arg] = String(preset).split(/:(.*)/s);
       const move = (props, dur = o.dur ?? 1800, ease = o.ease) => s.set(id, props, { dur, ease });
       if (name === "orbit") return move({ az: az + (o.deg ?? 90) }, o.dur ?? 8000, o.ease || "linear");
       if (name === "closeup") {
         if (!arg) throw new Error('shot: "closeup:<anchor>"');
-        return s.together((g) => { g.lookAt(id, arg, { dur: o.dur ?? 1800 }); g.set(id, { dist: d0 * (o.zoom ?? 0.42), el: o.el ?? 30, ...(o.az != null ? { az: o.az } : {}) }, { dur: o.dur ?? 1800 }); });
+        return s.together((g) => { g.lookAt(id, arg, { dur: o.dur ?? 1800 }); g.set(id, { ...far(o.zoom ?? 0.42), el: o.el ?? 30, ...(o.az != null ? { az: o.az } : {}) }, { dur: o.dur ?? 1800 }); });
       }
       const presets = {
-        hero: { az: o.az ?? (az >= 0 ? 38 : -38), el: o.el ?? 13, dist: d0 * (o.zoom ?? 0.92) },
-        top: { az: o.az ?? 0, el: o.el ?? 82, dist: d0 * (o.zoom ?? 1.05) },
-        side: { az: o.az ?? (az >= 0 ? 88 : -88), el: o.el ?? 6, dist: d0 * (o.zoom ?? 1) },
-        wide: { az: o.az ?? base(id, "az"), el: o.el ?? base(id, "el"), dist: d0 * (o.zoom ?? 1) },
+        hero: { az: o.az ?? (az >= 0 ? 38 : -38), el: o.el ?? 13, ...far(o.zoom ?? 0.92) },
+        top: { az: o.az ?? 0, el: o.el ?? 82, ...far(o.zoom ?? 1.05) },
+        side: { az: o.az ?? (az >= 0 ? 88 : -88), el: o.el ?? 6, ...far(o.zoom ?? 1) },
+        wide: { az: o.az ?? base(id, "az"), el: o.el ?? base(id, "el"), ...far(o.zoom ?? 1) },
       };
       if (!presets[name]) throw new Error(`shot: unknown preset "${preset}" (hero, top, side, wide, closeup:<anchor>, orbit)`);
       if (cur(id, "focusK") > 0 && cur(id, "focus") && o.keepFocus !== true) {

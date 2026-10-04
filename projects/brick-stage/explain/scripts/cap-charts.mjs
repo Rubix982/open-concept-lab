@@ -29,7 +29,7 @@ export default explainer({ title: "More Brick Charts", description: "Stacked and
     s.together((g) => {
       g.heading(title);
       g.dial(n, short, { of: 8 });
-      g.bricks(id, chart, { dist: fit(chart), ...cam, dur: Math.min(3200, 600 + chart.parts.length * 10) });
+      g.bricks(id, chart, { dist: "auto", ...cam, dur: Math.min(3200, 600 + chart.parts.length * 10) });
       g.sfx("clicks", { dur: 2400 });
       g.narrate(said, { dur: 3600 });
     });
@@ -48,7 +48,7 @@ export default explainer({ title: "More Brick Charts", description: "Stacked and
   const sb = axes(stackedBars(outcomes, { colors: [LEGO.brightGreen, LEGO.red, LEGO.darkTan], maxPlates: 27, gap: 4 }), { ticks: [100, 200, 300, 400, 500] });
   chapter("stacked bars: who got charged how often", "stacked", "sb", sb, { az: -25, el: 20 }, (g, id) => {
     charge.forEach((p, i) => {
-      label(g, id(`sbl${i}`), p.label, `foot${i}`, { obj: "sb", dy: 26, size: 15, color: "dim" });
+      label(g, id(`sbl${i}`), ({ "No idempotency key": "no key", "Key: check, then insert": "check, then insert", "Key: claimed atomically": "atomic claim" })[p.label] ?? p.label, `foot${i}`, { obj: "sb", dy: 26, size: 15, color: "dim" });
       if (p.twice) label(g, id(`sbt${i}`), `${p.twice} twice`, `seg${i}:1`, { obj: "sb", dx: 64, dy: 0, color: "accent", size: 16 });
     });
     [100, 300, 500].forEach((v, k) => label(g, id(`sby${k}`), String(v), `ytick${[0, 2, 4][k]}`, { obj: "sb", dx: -26, dy: 0, align: "right", size: 14, color: "dim" }));
@@ -67,7 +67,7 @@ export default explainer({ title: "More Brick Charts", description: "Stacked and
   // ---- number line
   const guesses = years.says.slice(0, 3).map(([t, p]) => ({ year: 1700 + Number(t), p }));
   const nl = numberLine(1720, 1760, { length: 41, ticks: [1720, 1732, 1740, 1750, 1760], marks: guesses.map((x, i) => ({ value: x.year, color: i ? LEGO.mediumBlue : LEGO.orange, height: i ? 1 : 2 })) });
-  chapter("number line: “from 1732 to 17__”", "number line", "nl", nl, { az: -6, el: 30, dist: fit(nl, 0.62) }, (g, id) => {
+  chapter("number line: “from 1732 to 17__”", "number line", "nl", nl, { az: -6, el: 30, dist: "auto" }, (g, id) => {
     [1720, 1732, 1740, 1750, 1760].forEach((y, i) => label(g, id(`nlt${i}`), String(y), `tick${i}`, { obj: "nl", dy: 24, size: 15, color: y === 1732 ? "accent" : "dim" }));
     guesses.forEach((x, i) => label(g, id(`nlm${i}`), `${x.year} · ${(x.p * 100).toFixed(1)}%`, `mark${i}`, { obj: "nl", dy: -28 - i * 22, size: 15, color: i ? "cyan" : "accent" }));
   }, "GPT-2's top three guesses for the end year: all after 1732, but none of them sure.");
@@ -76,7 +76,7 @@ export default explainer({ title: "More Brick Charts", description: "Stacked and
   const nb = bench.nbody.map((r) => [Math.log2(r.n) - 8, r.cpuMs / r.gpuMs, 0]);
   const st = bench.stencil.map((r) => [Math.log2(r.size) - 8, r.cpuMs / r.gpuMs, 1]);
   const sc = scatter([...nb, ...st], { xMax: 8, length: 25, colors: [LEGO.orange, LEGO.mediumBlue], maxPlates: 20 });
-  chapter("scatter: how much faster the GPU is", "scatter", "sc", sc, { az: -15, el: 16, dist: fit(sc, 0.8) }, (g, id) => {
+  chapter("scatter: how much faster the GPU is", "scatter", "sc", sc, { az: -15, el: 16, dist: "auto" }, (g, id) => {
     const big = nb.length - 1;
     label(g, id("scn"), `gravity, 65,536 bodies: ${nb[big][1].toFixed(0)}×`, `pt${big}`, { obj: "sc", color: "accent", size: 15 });
     label(g, id("scs"), `heat, 8192²: ${st[st.length - 1][1].toFixed(1)}×`, `pt${nb.length + st.length - 1}`, { obj: "sc", color: "cyan", size: 15 });

@@ -84,7 +84,8 @@ export default explainer({ title: "Explaining with Bricks", description: "Four k
   s.together((g) => g.clear(["cols", "line", "c0", "c1", "c2"]));
 
   // ---- 4 · a block diagram
-  const gpus = [0, 1, 2, 3].map((i) => ({ id: `gpu${i}`, x: 22, z: 1 + i * 4, w: 4, d: 2, h: 2, color: LEGO.darkGray, cap: i === 2 ? LEGO.brightGreen : LEGO.lightGray }));
+  // GPU 1 at the back, so the column reads 1 → 4 from the top of the frame
+  const gpus = [0, 1, 2, 3].map((i) => ({ id: `gpu${i}`, x: 22, z: 1 + (3 - i) * 4, w: 4, d: 2, h: 2, color: LEGO.darkGray, cap: i === 2 ? LEGO.brightGreen : LEGO.lightGray }));
   const diagram = blocks([
     { id: "prompt", x: 2, z: 7, w: 2, d: 2, h: 1, color: LEGO.orange, cap: LEGO.yellow },
     { id: "router", x: 11, z: 6, w: 4, d: 2, h: 2, color: LEGO.mediumBlue, cap: LEGO.white },

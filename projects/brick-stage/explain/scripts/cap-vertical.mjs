@@ -18,7 +18,7 @@ export default explainer({ title: "Vertical Format", format: "vertical", music: 
   });
   s.chip("ans", target, { value: d.clean, y: 450, size: 40 });
   s.together((g) => {
-    g.bricks("cols", columns(track, { log: true, min: 1e-5, gap: 0, maxPlates: 27, colors: track.map((_, l) => (l >= firstTop ? LEGO.orange : LEGO.mediumBlue)) }), { y: 520, h: 1080, az: -52, el: 22, dist: 64, drift: 0.4, dur: 2600 });
+    g.bricks("cols", columns(track, { log: true, min: 1e-5, gap: 0, maxPlates: 27, colors: track.map((_, l) => (l >= firstTop ? LEGO.orange : LEGO.mediumBlue)) }), { y: 520, h: 1080, az: -52, el: 22, dist: "auto", drift: 0.4, dur: 2600 });
     g.sfx("clicks", { dur: 2600 });
     g.narrate("Each column: the chance of Paris at one layer.", { dur: 2800 });
   });

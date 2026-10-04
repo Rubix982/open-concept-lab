@@ -29,6 +29,16 @@
         if (best >= 0) { used.add(best); out.set(j, best); }
       });
     }
+    // third pass, "transmute": leftovers pair with leftovers, nearest first,
+    // whatever the part — the brick flies over and changes shape on the way,
+    // so even different kinds of chart turn into each other
+    const freeA = a.map((_, i) => i).filter((i) => !used.has(i));
+    b.forEach((q, j) => {
+      if (out.has(j) || !freeA.length) return;
+      let bi = 0, bd = Infinity;
+      freeA.forEach((i, k) => { const d = ha[i].distanceToSquared(hb[j]); if (d < bd) { bd = d; bi = k; } });
+      out.set(j, freeA[bi]); freeA.splice(bi, 1);
+    });
     return out;
   }
 
@@ -58,8 +68,9 @@
     const owner = models.map(() => []);
     const newPiece = (p, mi, j) => {
       const g = KIT.brick(p, BP.plastic(p.color));
-      g.visible = false; scene.add(g);
-      const piece = { g, base: p, at: models.map(() => null), mat: new Map() };
+      g.visible = false; g.userData.rot0 = p.rot || 0; scene.add(g);
+      const piece = { g, gs: models.map(() => null), base: p, at: models.map(() => null), mat: new Map() };
+      piece.gs[mi] = g;
       pieces.push(piece);
       return piece;
     };
@@ -68,8 +79,12 @@
       const m = match(models[mi - 1].parts, models[mi].parts, homes[mi - 1], homes[mi]);
       models[mi].parts.forEach((q, j) => {
         let idx;
-        if (m.has(j)) idx = owner[mi - 1][m.get(j)];
-        else { newPiece(q, mi, j); idx = pieces.length - 1; }
+        if (m.has(j)) {
+          idx = owner[mi - 1][m.get(j)];
+          const pc = pieces[idx], prev = models[mi - 1].parts[m.get(j)];
+          if (prev.part === q.part && prev.rot === q.rot) pc.gs[mi] = pc.gs[mi - 1];
+          else { const g2 = KIT.brick(q, BP.plastic(q.color)); g2.visible = false; g2.userData.rot0 = q.rot || 0; scene.add(g2); pc.gs[mi] = g2; } // transmutes
+        } else { newPiece(q, mi, j); idx = pieces.length - 1; }
         pieces[idx].at[mi] = { home: homes[mi][j], color: q.color, rot: q.rot, j };
         owner[mi][j] = idx;
       });
@@ -83,6 +98,11 @@
 
     const N0 = models[0].parts.length;
     const tmp = new THREE.Vector3();
+    const show = (pc, g) => {
+      if (pc.g === g) return;
+      for (const x of pc.gs) if (x && x !== g) x.visible = false;
+      pc.g = g; pc.color = undefined;
+    };
     const place = (pc, pos, color, rotY, scale) => {
       const g = pc.g;
       g.visible = scale > 0.01;
@@ -97,21 +117,24 @@
 
     return {
       canvas: renderer.domElement,
-      update(p) {
+      update(p, t) {
         const v = clamp(p.morph || 0, 0, M - 1), step = Math.min(M - 2, Math.floor(v)), k = M > 1 ? v - Math.max(0, step) : 0;
         cur.v = v;
         // camera, aimed at the middle height of whichever models are in play
         const hA = models[Math.max(0, step)].size[1] * PLATE, hB = models[Math.min(M - 1, Math.max(0, step) + 1)].size[1] * PLATE;
-        const az = rad(p.az), el = rad(p.el), ty = p.ty ?? (hA + (hB - hA) * EASE.inout(k)) / 2;
-        cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-        cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+        const e = EASE.inout(k), mA = models[Math.max(0, step)], mB = models[Math.min(M - 1, Math.max(0, step) + 1)];
+        const mix = (i) => mA.size[i] + (mB.size[i] - mA.size[i]) * e;
+        const ty = (hA + (hB - hA) * e) / 2, w = mix(0), dd = mix(2), hh = (hA + (hB - hA) * e);
+        // the shared camera: focus, drift and automatic framing (dist "auto") as in the bricks stage
+        BP.aim(cam, p, t ?? 0, { x: 0, y: ty, z: 0, box: { min: [-w / 2, 0, -dd / 2], max: [w / 2, hh, dd / 2] } }, () => null);
 
         if (v <= 0 || M === 1) {
           // building model 0, part by part, like the bricks stage
           const at = p.reveal * (N0 + N0 * 0.05), sp = Math.max(1, N0 * 0.05);
           for (const pc of pieces) {
             const a = pc.at[0];
-            if (!a) { pc.g.visible = false; continue; }
+            if (!a) { for (const x of pc.gs) if (x) x.visible = false; continue; }
+            show(pc, pc.gs[0]);
             const kk = clamp((at - a.j) / sp), e = EASE.out(kk);
             tmp.copy(a.home); tmp.y += (1 - e) * 5;
             place(pc, tmp, a.color, 0, kk > 0 ? 1 : 0);
@@ -120,7 +143,7 @@
           const A = step, B = step + 1;
           for (const pc of pieces) {
             const a = pc.at[A], b = pc.at[B];
-            const r0 = rad(-((pc.base.rot || 0))), rotOf = (s) => rad(-(s.rot || 0)) - r0;
+            const rotOf = (s) => rad(-(s.rot || 0)) + rad(pc.g.userData.rot0 || 0);
             if (a && b) {
               // fly an arc: lift, travel, settle
               // pieces that stay put (most of the base) don't hop
@@ -128,18 +151,24 @@
               const d = delay(b.home, B), u = clamp((k - d) / 0.5), e = EASE.inout(u);
               const lift = Math.sin(Math.PI * u) * (2.5 + 0.12 * dist) * moving;
               tmp.lerpVectors(a.home, b.home, e); tmp.y += lift;
-              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, 1);
+              const swap = pc.gs[A] !== pc.gs[B];
+              show(pc, u < 0.5 ? pc.gs[A] : pc.gs[B]);
+              // a transmuting brick squashes as it changes shape at the top of the arc
+              const squash = swap ? 1 - 0.45 * Math.sin(Math.PI * u) : 1;
+              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, squash);
             } else if (a) {
+              show(pc, pc.gs[A]);
               // not needed: lift off and shrink away, early in the step
               const d = delay(a.home, A) * 0.6, u = clamp((k - d) / 0.35), e = EASE.inout(u);
               tmp.copy(a.home); tmp.y += e * 7;
               place(pc, tmp, a.color, rotOf(a) + e * 0.8, 1 - e);
             } else if (b) {
+              show(pc, pc.gs[B]);
               // new: drops in, late in the step
               const d = 0.45 + delay(b.home, B) * 0.6, u = clamp((k - d) / 0.3), e = EASE.out(u);
               tmp.copy(b.home); tmp.y += (1 - e) * 6;
               place(pc, tmp, b.color, rotOf(b), u > 0 ? 0.25 + 0.75 * e : 0);
-            } else pc.g.visible = false;
+            } else for (const x of pc.gs) if (x) x.visible = false;
           }
         }
         renderer.render(scene, cam);

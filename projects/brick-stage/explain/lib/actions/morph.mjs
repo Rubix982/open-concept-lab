@@ -20,7 +20,7 @@ export function install(s, { add }) {
     const { models: _m, ...rest } = o;
     const n0 = models[0].parts.length;
     return add(id, "stage3d", {
-      kind: "morph", x: 0, y: 0, w: 1920, h: 1080, az: 25, el: 28, dist: 40,
+      kind: "morph", x: 0, y: 0, w: 1920, h: 1080, az: 25, el: 28, dist: "auto", zoom: 1,
       models, anchors, morph: 0, ...rest,
     }, o.dur ?? Math.min(6000, 400 + n0 * 12));
   };

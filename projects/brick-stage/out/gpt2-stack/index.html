@@ -12,8 +12,10 @@
   html, body { margin: 0; background: #040817; color: #dbe6ff; font: 15px/1.4 "IBM Plex Sans", -apple-system, sans-serif; }
   .screen { container-type: inline-size; position: relative; width: min(100vw, calc((100vh - 56px) * 1920 / 1080)); margin: 0 auto; aspect-ratio: 1920 / 1080; }
   canvas { display: block; width: 100%; height: 100%; }
-  #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: 78%; padding: 0.45em 0.9em; text-align: center;
-    font: 500 clamp(12px, 1.55cqw, 30px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
+  /* captions sit low and light, a subtitle line rather than a box over the scene */
+  #caption { position: absolute; left: 50%; bottom: 2.6%; transform: translateX(-50%); max-width: 72%; padding: 0.25em 0.7em; text-align: center;
+    font: 500 clamp(12px, 1.3cqw, 26px)/1.35 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.5); border: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     transition: opacity 0.25s; pointer-events: none; }
   #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, max(560px, calc((100vh - 56px) * 1920 / 1080))); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
   #controls button { all: unset; cursor: pointer; padding: 5px 10px; border: 1px solid rgba(219, 230, 255, 0.25); color: #dbe6ff; }
@@ -217,6 +219,21 @@ const STAGES = {};
 const EXPLORE = {};   // per stage: the viewer's own orbit while paused (live page only)
 let rendering = false;
 const wobble = (t, f, ph) => Math.sin(t * f + ph) * 0.6 + Math.sin(t * f * 2.31 + ph * 1.7) * 0.3 + Math.sin(t * f * 4.13 + ph * 0.3) * 0.1;
+function fitDistance(cam, box, T, az, el) {
+  const R = (v) => (v * Math.PI) / 180;
+  const dir = [Math.cos(R(el)) * Math.sin(R(az)), Math.sin(R(el)), Math.cos(R(el)) * Math.cos(R(az))]; // target → camera
+  // camera right and up for that direction (world up = y)
+  let right = [dir[2], 0, -dir[0]]; const rl = Math.hypot(right[0], right[2]) || 1; right = [right[0] / rl, 0, right[2] / rl];
+  const up = [dir[1] * right[2] - dir[2] * right[1], dir[2] * right[0] - dir[0] * right[2], dir[0] * right[1] - dir[1] * right[0]];
+  const tv = Math.tan(R(cam.fov) / 2), th = tv * cam.aspect;
+  let need = 0;
+  for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) {
+    const c = [x - T.x, y - T.y, z - T.z], along = c[0] * dir[0] + c[1] * dir[1] + c[2] * dir[2];
+    const lx = Math.abs(c[0] * right[0] + c[1] * right[1] + c[2] * right[2]), ly = Math.abs(c[0] * up[0] + c[1] * up[1] + c[2] * up[2]);
+    need = Math.max(need, along + lx / th, along + ly / tv);
+  }
+  return need * 1.12; // a little air round the edges
+}
 function aim(cam, p, t, base, focusAt) {
   const T = { x: p.tx ?? base.x, y: p.ty ?? base.y, z: p.tz ?? base.z };
   const k = clamp(p.focusK ?? 0);
@@ -225,6 +242,10 @@ function aim(cam, p, t, base, focusAt) {
     T.x = a.x + (b.x - a.x) * k; T.y = a.y + (b.y - a.y) * k; T.z = a.z + (b.z - a.z) * k;
   }
   let az = p.az, el = p.el, dist = p.dist;
+  // dist "auto": the nearest distance at which the model's box (base.box,
+  // { min: [x,y,z], max: [x,y,z] } in world units) fits the view, from this
+  // angle, in both directions; zoom multiplies it (0.5 = twice as close)
+  if (typeof dist !== "number") dist = (base.box ? fitDistance(cam, base.box, T, az, el) : 40) * (p.zoom ?? 1);
   const d = p.drift || 0;
   if (d) { const s = t / 1000; az += d * 3 * wobble(s, 0.7, 1.3); el += d * 1.8 * wobble(s, 0.53, 4.1); dist *= 1 + d * 0.02 * wobble(s, 0.41, 2.2); }
   const R = (v) => (v * Math.PI) / 180;
@@ -278,7 +299,7 @@ function Stack(o) {
   const api = {
     update(p, t, born) {
       // camera on a sphere around the middle of the stack (focus: "col:row")
-      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0 }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
+      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0, box: { min: [-plateW / 2, 0, -SP.depth / 2], max: [plateW / 2, (rows - 1) * SP.dy, SP.depth / 2] } }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
       const up = p.reveal * rows;
       const glow = p.glow || [];
       plates.forEach((pl, r) => {
@@ -357,7 +378,7 @@ function Bricks(o) {
     canvas: renderer.domElement,
     update(p, t) {
       // focus: an anchor name ([x, y, z] in studs, plates, studs)
-      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0 }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
+      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0, box: { min: [-W / 2, 0, -D / 2], max: [W / 2, Hp * PLATE, D / 2] } }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
       // each part drops into place in order; a drop lasts a few percent of the build
       const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
       pieces.forEach((g, i) => {
@@ -377,7 +398,8 @@ function Bricks(o) {
 
 // ---- object types
 const STAGE_KINDS = { stack: Stack, bricks: Bricks };
-const BOUNDS = {}; // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
+const BOUNDS = {};
+const MIN_TEXT = TL.meta.minText ?? 20; // px in the frame; 20 at 1920 wide is ~13 at 1280 // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
 Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
@@ -385,10 +407,13 @@ const DRAW = {
     const make = STAGE_KINDS[p.kind || "stack"];
     if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
     const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    if (st._t === t && st._drawn !== t) { st._drawn = t; } else {
     const ex = !rendering && !playing && EXPLORE[obj.id];
-    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: p.dist * ex.zoom };
+    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom };
     st.update(p, t, obj.born);
     st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = t;
+    }
     ctx.save();
     if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
@@ -401,7 +426,7 @@ const DRAW = {
     if (!make.overlays) return;
     // what the highlighted column would say at each plate, pinned beside it
     if (p.labels && p.hiCol >= 0) {
-      ctx.font = `500 15px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+      ctx.font = `500 18px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
       for (let r = 0; r < p.labels.length && r <= p.labelUpTo; r++) {
         const lab = p.labels[r]; if (!lab) continue;
         const k = clamp(p.labelUpTo - r + 1), [nx, ny] = st.project(p.hiCol, r, p.x, p.y);
@@ -416,7 +441,7 @@ const DRAW = {
     }
     // the words under their columns, at the bottom plate
     if (p.colLabels) {
-      ctx.font = `500 16px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.font = `500 18px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
       p.colLabels.forEach((l, c) => {
         const [x, y] = st.project(c, 0, p.x, p.y), on = c === p.hiCol || (p.colHl || []).includes(c);
         ctx.globalAlpha = clamp(p.reveal * 4) * ctx._alpha;
@@ -438,6 +463,8 @@ const DRAW = {
     noGlow(ctx);
   },
   text(ctx, p, t, obj) {
+    // a legibility floor: labels stay readable when the video is watched small
+    p = p.size < MIN_TEXT ? { ...p, size: MIN_TEXT } : p;
     const text = String(p.text), n = Math.floor(text.length * clamp(p.reveal));
     ctx.font = `${p.weight} ${p.size}px ${p.font === "mono" ? MONO : SANS}`;
     ctx.textBaseline = "middle";
@@ -733,6 +760,23 @@ const AFTER = [];
 function frame(ctx, t) {
   ctx.save();
   background(ctx, t);
+  // pre-pass: update every visible 3D stage first (cameras, anchors), so the
+  // order objects were created in doesn't matter for pinning or pointing
+  // stages that look at other stages (flag `after`, e.g. a presenter pointing
+  // at a chart) update in a second pass, once every other camera is set
+  for (const late of [false, true]) for (const obj of TL.objects) {
+    if (obj.type !== "stage3d" || t < obj.born) continue;
+    const p = propsAt(obj, t);
+    if (p.opacity <= 0.002) continue;
+    const make = STAGE_KINDS[p.kind || "stack"];
+    if (!make || Boolean(make.after) !== late) continue;
+    const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    const ex = !rendering && !playing && EXPLORE[obj.id];
+    const q = ex ? { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom } : p;
+    st.update(q, t, obj.born);
+    st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = -1;
+  }
   for (const obj of TL.objects) {
     if (t < obj.born) continue;
     const p = propsAt(obj, t);
@@ -1374,6 +1418,16 @@ BP.register("arrowTo", (ctx, p) => {
         if (best >= 0) { used.add(best); out.set(j, best); }
       });
     }
+    // third pass, "transmute": leftovers pair with leftovers, nearest first,
+    // whatever the part — the brick flies over and changes shape on the way,
+    // so even different kinds of chart turn into each other
+    const freeA = a.map((_, i) => i).filter((i) => !used.has(i));
+    b.forEach((q, j) => {
+      if (out.has(j) || !freeA.length) return;
+      let bi = 0, bd = Infinity;
+      freeA.forEach((i, k) => { const d = ha[i].distanceToSquared(hb[j]); if (d < bd) { bd = d; bi = k; } });
+      out.set(j, freeA[bi]); freeA.splice(bi, 1);
+    });
     return out;
   }
 
@@ -1403,8 +1457,9 @@ BP.register("arrowTo", (ctx, p) => {
     const owner = models.map(() => []);
     const newPiece = (p, mi, j) => {
       const g = KIT.brick(p, BP.plastic(p.color));
-      g.visible = false; scene.add(g);
-      const piece = { g, base: p, at: models.map(() => null), mat: new Map() };
+      g.visible = false; g.userData.rot0 = p.rot || 0; scene.add(g);
+      const piece = { g, gs: models.map(() => null), base: p, at: models.map(() => null), mat: new Map() };
+      piece.gs[mi] = g;
       pieces.push(piece);
       return piece;
     };
@@ -1413,8 +1468,12 @@ BP.register("arrowTo", (ctx, p) => {
       const m = match(models[mi - 1].parts, models[mi].parts, homes[mi - 1], homes[mi]);
       models[mi].parts.forEach((q, j) => {
         let idx;
-        if (m.has(j)) idx = owner[mi - 1][m.get(j)];
-        else { newPiece(q, mi, j); idx = pieces.length - 1; }
+        if (m.has(j)) {
+          idx = owner[mi - 1][m.get(j)];
+          const pc = pieces[idx], prev = models[mi - 1].parts[m.get(j)];
+          if (prev.part === q.part && prev.rot === q.rot) pc.gs[mi] = pc.gs[mi - 1];
+          else { const g2 = KIT.brick(q, BP.plastic(q.color)); g2.visible = false; g2.userData.rot0 = q.rot || 0; scene.add(g2); pc.gs[mi] = g2; } // transmutes
+        } else { newPiece(q, mi, j); idx = pieces.length - 1; }
         pieces[idx].at[mi] = { home: homes[mi][j], color: q.color, rot: q.rot, j };
         owner[mi][j] = idx;
       });
@@ -1428,6 +1487,11 @@ BP.register("arrowTo", (ctx, p) => {
 
     const N0 = models[0].parts.length;
     const tmp = new THREE.Vector3();
+    const show = (pc, g) => {
+      if (pc.g === g) return;
+      for (const x of pc.gs) if (x && x !== g) x.visible = false;
+      pc.g = g; pc.color = undefined;
+    };
     const place = (pc, pos, color, rotY, scale) => {
       const g = pc.g;
       g.visible = scale > 0.01;
@@ -1442,21 +1506,24 @@ BP.register("arrowTo", (ctx, p) => {
 
     return {
       canvas: renderer.domElement,
-      update(p) {
+      update(p, t) {
         const v = clamp(p.morph || 0, 0, M - 1), step = Math.min(M - 2, Math.floor(v)), k = M > 1 ? v - Math.max(0, step) : 0;
         cur.v = v;
         // camera, aimed at the middle height of whichever models are in play
         const hA = models[Math.max(0, step)].size[1] * PLATE, hB = models[Math.min(M - 1, Math.max(0, step) + 1)].size[1] * PLATE;
-        const az = rad(p.az), el = rad(p.el), ty = p.ty ?? (hA + (hB - hA) * EASE.inout(k)) / 2;
-        cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-        cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+        const e = EASE.inout(k), mA = models[Math.max(0, step)], mB = models[Math.min(M - 1, Math.max(0, step) + 1)];
+        const mix = (i) => mA.size[i] + (mB.size[i] - mA.size[i]) * e;
+        const ty = (hA + (hB - hA) * e) / 2, w = mix(0), dd = mix(2), hh = (hA + (hB - hA) * e);
+        // the shared camera: focus, drift and automatic framing (dist "auto") as in the bricks stage
+        BP.aim(cam, p, t ?? 0, { x: 0, y: ty, z: 0, box: { min: [-w / 2, 0, -dd / 2], max: [w / 2, hh, dd / 2] } }, () => null);
 
         if (v <= 0 || M === 1) {
           // building model 0, part by part, like the bricks stage
           const at = p.reveal * (N0 + N0 * 0.05), sp = Math.max(1, N0 * 0.05);
           for (const pc of pieces) {
             const a = pc.at[0];
-            if (!a) { pc.g.visible = false; continue; }
+            if (!a) { for (const x of pc.gs) if (x) x.visible = false; continue; }
+            show(pc, pc.gs[0]);
             const kk = clamp((at - a.j) / sp), e = EASE.out(kk);
             tmp.copy(a.home); tmp.y += (1 - e) * 5;
             place(pc, tmp, a.color, 0, kk > 0 ? 1 : 0);
@@ -1465,7 +1532,7 @@ BP.register("arrowTo", (ctx, p) => {
           const A = step, B = step + 1;
           for (const pc of pieces) {
             const a = pc.at[A], b = pc.at[B];
-            const r0 = rad(-((pc.base.rot || 0))), rotOf = (s) => rad(-(s.rot || 0)) - r0;
+            const rotOf = (s) => rad(-(s.rot || 0)) + rad(pc.g.userData.rot0 || 0);
             if (a && b) {
               // fly an arc: lift, travel, settle
               // pieces that stay put (most of the base) don't hop
@@ -1473,18 +1540,24 @@ BP.register("arrowTo", (ctx, p) => {
               const d = delay(b.home, B), u = clamp((k - d) / 0.5), e = EASE.inout(u);
               const lift = Math.sin(Math.PI * u) * (2.5 + 0.12 * dist) * moving;
               tmp.lerpVectors(a.home, b.home, e); tmp.y += lift;
-              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, 1);
+              const swap = pc.gs[A] !== pc.gs[B];
+              show(pc, u < 0.5 ? pc.gs[A] : pc.gs[B]);
+              // a transmuting brick squashes as it changes shape at the top of the arc
+              const squash = swap ? 1 - 0.45 * Math.sin(Math.PI * u) : 1;
+              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, squash);
             } else if (a) {
+              show(pc, pc.gs[A]);
               // not needed: lift off and shrink away, early in the step
               const d = delay(a.home, A) * 0.6, u = clamp((k - d) / 0.35), e = EASE.inout(u);
               tmp.copy(a.home); tmp.y += e * 7;
               place(pc, tmp, a.color, rotOf(a) + e * 0.8, 1 - e);
             } else if (b) {
+              show(pc, pc.gs[B]);
               // new: drops in, late in the step
               const d = 0.45 + delay(b.home, B) * 0.6, u = clamp((k - d) / 0.3), e = EASE.out(u);
               tmp.copy(b.home); tmp.y += (1 - e) * 6;
               place(pc, tmp, b.color, rotOf(b), u > 0 ? 0.25 + 0.75 * e : 0);
-            } else pc.g.visible = false;
+            } else for (const x of pc.gs) if (x) x.visible = false;
           }
         }
         renderer.render(scene, cam);
@@ -1646,7 +1719,7 @@ BP.register("arrowTo", (ctx, p) => {
     return null;
   }
 
-  BP.stage("presenter", Presenter, { overlays: false });
+  BP.stage("presenter", Presenter, { overlays: false, after: true });
 })();
 
 </script>

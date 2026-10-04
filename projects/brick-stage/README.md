@@ -290,6 +290,12 @@ Each has a capability script that proves it on real data — build any with
 | Camera, transitions, formats | `s.shot`, `s.lookAt`, `s.transition`; `explainer({ format: "vertical" })`; `node explain/poster.mjs <name>` | `cap-camera`, `cap-vertical` | [camera](explain/docs/camera.md) |
 | Spoken narration | `explainer({ voice: { name, rate } })`, `s.voice(text, { file })` | `cap-voice` | [voice](explain/docs/voice.md) |
 
+Cameras frame themselves: a 3D stage with `dist: "auto"` (the default for
+`s.bricks` and `s.morph`) sits at the nearest distance where the whole model
+fits the frame from the current angle, in any format; `zoom` scales it and
+the shot presets use it. Text never draws below `meta.minText` (20 px in the
+frame) so labels stay readable when the video is watched small.
+
 ## Rough edges
 
 - No sideways (SNOT) building, and no curved parts beyond the round 1x1s.

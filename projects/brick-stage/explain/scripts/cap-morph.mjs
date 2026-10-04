@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { explainer } from "../lib/script.mjs";
-import { barChart, LEGO } from "../lib/brickcharts.mjs";
+import { barChart, columns, LEGO } from "../lib/brickcharts.mjs";
 
 const read = (rel) => fs.readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
 const baked = read("../../../../systems/miniatures/site/baked/cache-router.js");
@@ -57,5 +57,23 @@ export default explainer({ title: "Morph: one model, three questions", descripti
         : `Plain affinity piles work on one GPU (${pct(stats[2].maxBusy)}); the load cap spreads it (${pct(stats[3].maxBusy)}).`, { dur: 3800 });
     });
   }
+  // across kinds: the bars rebuild as round columns, one per GPU — bricks that
+  // aren't the same part change shape mid-flight ("transmute")
+  const busy = stats[3].busy;
+  const perGpu = columns(busy, { maxValue: 1, maxPlates: 24, gap: 1, colors: busy.map(() => LEGO.brightGreen), cap: busy.map(() => LEGO.white) });
+  s.together((g) => {
+    g.clear(["bars", ...labels(Q.length - 1), ...stats.map((_, i) => `name${i}`)], { dur: 400 });
+    g.heading("morph · across kinds of chart");
+  });
+  s.morph("split", null, null, { models: [models[Q.length - 1], perGpu], az: -10, el: 20, dist: "auto", dur: 600 });
+  s.together((g) => {
+    g.set("split", { morph: 1, az: 20 }, { dur: 4600 });
+    g.sfx("morph", { dur: 4600 });
+    g.narrate("Across kinds of chart, bricks change shape in flight: four bars become one column per GPU.", { dur: 4600 });
+  });
+  s.together((g) => {
+    busy.forEach((b, i) => g.text(`gpu${i}`, `${Math.round(b * 100)}%`, { anchor: { obj: "split", at: `b:top${i}`, dy: -26 }, size: 18, font: "mono", dur: 400 }));
+    g.narrate("With the load cap, every GPU carries a similar share.", { dur: 3000 });
+  });
   s.wait(1500);
 });

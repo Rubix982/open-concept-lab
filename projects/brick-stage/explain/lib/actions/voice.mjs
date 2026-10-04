@@ -30,7 +30,9 @@ export function clip(text, o = {}) {
   const v = { ...DEFAULTS, ...o };
   const src = o.file ? path.resolve(o.file) : null;
   const key = crypto.createHash("sha1").update(JSON.stringify(src ? { file: src, mtime: fs.statSync(src).mtimeMs } : { text, name: v.name, rate: v.rate })).digest("hex").slice(0, 16);
-  const wav = path.join(CACHE, `${key}.wav`), ogg = path.join(CACHE, `${key}.ogg`);
+  const wav = path.join(CACHE, `${key}.wav`), ogg = path.join(CACHE, `${key}.ogg`), meta = path.join(CACHE, `${key}.json`);
+  // a cached clip carries its length, so rebuilding needs none of the tools
+  if (fs.existsSync(ogg) && fs.existsSync(meta)) return { key, ogg, ms: JSON.parse(fs.readFileSync(meta, "utf8")).ms };
   if (!fs.existsSync(ogg) || !fs.existsSync(wav)) {
     let input = src;
     if (!input) {
@@ -41,10 +43,14 @@ export function clip(text, o = {}) {
     execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", wav, "-c:a", "libopus", "-b:a", "40k", ogg]);
     if (!src) fs.rmSync(input, { force: true });
   }
-  return { key, ogg, ms: Math.round(seconds(wav) * 1000) };
+  const ms = Math.round(seconds(wav) * 1000);
+  fs.writeFileSync(meta, JSON.stringify({ ms, text: src ? null : text }));
+  return { key, ogg, ms };
 }
 
 export function install(s, { span, tl }) {
+  const quiet = s.narrate; // the plain, caption-only narrate
+  let warned = false;
   const voiced = tl.meta.voice ? { ...DEFAULTS, ...(tl.meta.voice === true ? {} : tl.meta.voice) } : null;
   // the music bed moves into the plugin, so it can duck under the voice
   const bed = () => {
@@ -55,7 +61,14 @@ export function install(s, { span, tl }) {
   };
 
   s.voice = (text, o = {}) => {
-    const c = clip(text, { ...(voiced || {}), ...o });
+    let c;
+    try { c = clip(text, { ...(voiced || {}), ...o }); }
+    catch (e) {
+      // no `say` (not macOS), no ffmpeg/ffprobe, or an unreadable file: keep
+      // the line as a caption at reading pace rather than failing the build
+      if (!warned) { warned = true; console.warn(`  ⚠ voice unavailable (${String(e.message).split("\n")[0].slice(0, 80)}); narration stays as captions. Needs macOS say, ffmpeg and ffprobe.`); }
+      return quiet(text, o);
+    }
     (tl.voiceClips ||= {})[c.key] = c.ogg;
     bed();
     const dur = Math.max(o.dur ?? 0, c.ms + (o.pad ?? PAD));
@@ -68,7 +81,6 @@ export function install(s, { span, tl }) {
   if (voiced) {
     // every narrate() is spoken (an explicit dur still applies if it's longer);
     // narrate(text, { silent: true }) keeps a caption without a voice
-    const quiet = s.narrate;
     s.narrate = (text, o = {}) => (o.silent ? quiet(text, o) : s.voice(text, o));
   }
 }

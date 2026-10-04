@@ -127,6 +127,21 @@ const STAGES = {};
 const EXPLORE = {};   // per stage: the viewer's own orbit while paused (live page only)
 let rendering = false;
 const wobble = (t, f, ph) => Math.sin(t * f + ph) * 0.6 + Math.sin(t * f * 2.31 + ph * 1.7) * 0.3 + Math.sin(t * f * 4.13 + ph * 0.3) * 0.1;
+function fitDistance(cam, box, T, az, el) {
+  const R = (v) => (v * Math.PI) / 180;
+  const dir = [Math.cos(R(el)) * Math.sin(R(az)), Math.sin(R(el)), Math.cos(R(el)) * Math.cos(R(az))]; // target → camera
+  // camera right and up for that direction (world up = y)
+  let right = [dir[2], 0, -dir[0]]; const rl = Math.hypot(right[0], right[2]) || 1; right = [right[0] / rl, 0, right[2] / rl];
+  const up = [dir[1] * right[2] - dir[2] * right[1], dir[2] * right[0] - dir[0] * right[2], dir[0] * right[1] - dir[1] * right[0]];
+  const tv = Math.tan(R(cam.fov) / 2), th = tv * cam.aspect;
+  let need = 0;
+  for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) {
+    const c = [x - T.x, y - T.y, z - T.z], along = c[0] * dir[0] + c[1] * dir[1] + c[2] * dir[2];
+    const lx = Math.abs(c[0] * right[0] + c[1] * right[1] + c[2] * right[2]), ly = Math.abs(c[0] * up[0] + c[1] * up[1] + c[2] * up[2]);
+    need = Math.max(need, along + lx / th, along + ly / tv);
+  }
+  return need * 1.12; // a little air round the edges
+}
 function aim(cam, p, t, base, focusAt) {
   const T = { x: p.tx ?? base.x, y: p.ty ?? base.y, z: p.tz ?? base.z };
   const k = clamp(p.focusK ?? 0);
@@ -135,6 +150,10 @@ function aim(cam, p, t, base, focusAt) {
     T.x = a.x + (b.x - a.x) * k; T.y = a.y + (b.y - a.y) * k; T.z = a.z + (b.z - a.z) * k;
   }
   let az = p.az, el = p.el, dist = p.dist;
+  // dist "auto": the nearest distance at which the model's box (base.box,
+  // { min: [x,y,z], max: [x,y,z] } in world units) fits the view, from this
+  // angle, in both directions; zoom multiplies it (0.5 = twice as close)
+  if (typeof dist !== "number") dist = (base.box ? fitDistance(cam, base.box, T, az, el) : 40) * (p.zoom ?? 1);
   const d = p.drift || 0;
   if (d) { const s = t / 1000; az += d * 3 * wobble(s, 0.7, 1.3); el += d * 1.8 * wobble(s, 0.53, 4.1); dist *= 1 + d * 0.02 * wobble(s, 0.41, 2.2); }
   const R = (v) => (v * Math.PI) / 180;
@@ -188,7 +207,7 @@ function Stack(o) {
   const api = {
     update(p, t, born) {
       // camera on a sphere around the middle of the stack (focus: "col:row")
-      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0 }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
+      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0, box: { min: [-plateW / 2, 0, -SP.depth / 2], max: [plateW / 2, (rows - 1) * SP.dy, SP.depth / 2] } }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
       const up = p.reveal * rows;
       const glow = p.glow || [];
       plates.forEach((pl, r) => {
@@ -267,7 +286,7 @@ function Bricks(o) {
     canvas: renderer.domElement,
     update(p, t) {
       // focus: an anchor name ([x, y, z] in studs, plates, studs)
-      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0 }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
+      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0, box: { min: [-W / 2, 0, -D / 2], max: [W / 2, Hp * PLATE, D / 2] } }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
       // each part drops into place in order; a drop lasts a few percent of the build
       const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
       pieces.forEach((g, i) => {
@@ -287,7 +306,8 @@ function Bricks(o) {
 
 // ---- object types
 const STAGE_KINDS = { stack: Stack, bricks: Bricks };
-const BOUNDS = {}; // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
+const BOUNDS = {};
+const MIN_TEXT = TL.meta.minText ?? 20; // px in the frame; 20 at 1920 wide is ~13 at 1280 // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
 Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
@@ -295,10 +315,13 @@ const DRAW = {
     const make = STAGE_KINDS[p.kind || "stack"];
     if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
     const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    if (st._t === t && st._drawn !== t) { st._drawn = t; } else {
     const ex = !rendering && !playing && EXPLORE[obj.id];
-    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: p.dist * ex.zoom };
+    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom };
     st.update(p, t, obj.born);
     st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = t;
+    }
     ctx.save();
     if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
@@ -311,7 +334,7 @@ const DRAW = {
     if (!make.overlays) return;
     // what the highlighted column would say at each plate, pinned beside it
     if (p.labels && p.hiCol >= 0) {
-      ctx.font = `500 15px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+      ctx.font = `500 18px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
       for (let r = 0; r < p.labels.length && r <= p.labelUpTo; r++) {
         const lab = p.labels[r]; if (!lab) continue;
         const k = clamp(p.labelUpTo - r + 1), [nx, ny] = st.project(p.hiCol, r, p.x, p.y);
@@ -326,7 +349,7 @@ const DRAW = {
     }
     // the words under their columns, at the bottom plate
     if (p.colLabels) {
-      ctx.font = `500 16px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.font = `500 18px ${MONO}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
       p.colLabels.forEach((l, c) => {
         const [x, y] = st.project(c, 0, p.x, p.y), on = c === p.hiCol || (p.colHl || []).includes(c);
         ctx.globalAlpha = clamp(p.reveal * 4) * ctx._alpha;
@@ -348,6 +371,8 @@ const DRAW = {
     noGlow(ctx);
   },
   text(ctx, p, t, obj) {
+    // a legibility floor: labels stay readable when the video is watched small
+    p = p.size < MIN_TEXT ? { ...p, size: MIN_TEXT } : p;
     const text = String(p.text), n = Math.floor(text.length * clamp(p.reveal));
     ctx.font = `${p.weight} ${p.size}px ${p.font === "mono" ? MONO : SANS}`;
     ctx.textBaseline = "middle";
@@ -643,6 +668,23 @@ const AFTER = [];
 function frame(ctx, t) {
   ctx.save();
   background(ctx, t);
+  // pre-pass: update every visible 3D stage first (cameras, anchors), so the
+  // order objects were created in doesn't matter for pinning or pointing
+  // stages that look at other stages (flag `after`, e.g. a presenter pointing
+  // at a chart) update in a second pass, once every other camera is set
+  for (const late of [false, true]) for (const obj of TL.objects) {
+    if (obj.type !== "stage3d" || t < obj.born) continue;
+    const p = propsAt(obj, t);
+    if (p.opacity <= 0.002) continue;
+    const make = STAGE_KINDS[p.kind || "stack"];
+    if (!make || Boolean(make.after) !== late) continue;
+    const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    const ex = !rendering && !playing && EXPLORE[obj.id];
+    const q = ex ? { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: typeof p.dist === "number" ? p.dist * ex.zoom : p.dist, zoom: (p.zoom ?? 1) * ex.zoom } : p;
+    st.update(q, t, obj.born);
+    st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
+    st._t = t; st._drawn = -1;
+  }
   for (const obj of TL.objects) {
     if (t < obj.born) continue;
     const p = propsAt(obj, t);
