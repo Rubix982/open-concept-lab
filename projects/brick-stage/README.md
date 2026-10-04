@@ -205,6 +205,46 @@ standing in them are.
 Brick models can be carried around a room with `move()`, as the test
 object is in the chamber story.
 
+## Explainers: the blueprint pipeline (`explain/`)
+
+The second pipeline draws ideas rather than bricks: navy blueprint paper, thin
+bright line art, mono labels, a step dial, things that draw themselves on. A
+script is a pure function of time like a story, so the same `render.mjs` turns
+it into a frame-perfect MP4 with a synthesised soundtrack and captions.
+
+```bash
+node explain/build.mjs gpt2-fact      # → out/gpt2-fact/index.html (works from disk)
+node render.mjs gpt2-fact             # → out/gpt2-fact/gpt2-fact.mp4 + .srt
+```
+
+A script (`explain/scripts/<name>.mjs`) reads its numbers from real data and
+writes actions on a clock:
+
+```js
+s.heading("where a model keeps a fact");
+s.tokens("prompt", tokens, { x: 960, y: 480 });           // chips that type on
+s.chip("answer", "Paris", { value: 0.69, y: 640 });        // a value you can tween
+s.together((g) => {                                        // in parallel
+  g.lattice("lattice", { cols: 11, rows: 25, colLabels: tokens });
+  g.narrate("Each word becomes a column of numbers.");     // caption while it draws
+});
+s.set("answer", { value: 0.004 }, { dur: 1400 });           // tween anything numeric
+s.dial(2, "logit lens");                                   // the step dial
+```
+
+Objects: `heading`, `text` (types itself on), `tokens`, `chip`, `lattice`
+(columns × layers, with flowing pulses and per-row labels), `heat` (a heat map
+that sweeps in, with a `focus` box), `chart` (draws itself, log axes, marks),
+`list` (a side list with a moving pointer), `dial`, `path` (draws on, pulses
+travel along it), `box`, `note` (text with a leader line). Changes: `set`,
+`fade`, `clear`. Time: `together`, `after(ms, …)` inside a group, `wait`,
+`narrate` (captions; the clock waits for reading unless it's in a group).
+Sound: `sfx("tick" | "draw" | "type" | "chime" | "glitch" | "whoosh" | "thud" |
+"rise" | "sweep")` over a quiet four-chord bed.
+
+The first one, `gpt2-fact`, explains where GPT-2 keeps "the Eiffel Tower is in
+Paris", with every number read from Model Microscope's results.
+
 ## Rough edges
 
 - No sideways (SNOT) building, and no curved parts beyond the round 1x1s.

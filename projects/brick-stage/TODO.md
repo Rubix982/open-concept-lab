@@ -77,12 +77,16 @@ footage:
       (Rated for Two: 1080p60, 1,839 frames)
 - [x] Narration lines → subtitles (`s.narrate("…")`; scenes wait for the
       line; the render writes an .srt, `--subs` burns them in)
-- [ ] Audio in the render: the story's sound effects and music as a track
+- [x] Audio in the render: sound effects and a music bed as a track (both players)
 - [ ] Pace scenes from a recorded voice track
-- [ ] Explainer vocabulary: `text()` that writes itself on, `math()` (LaTeX),
-      `arrow(a, b)`, `label()`, `counter()`, boxes
+- [x] Explainer vocabulary, blueprint style (`explain/`): text that writes
+      itself on, token chips, paths and arrows with pulses, notes, boxes,
+      counters (tweened values), lattices, heat maps, a step dial, side lists
+- [ ] `math()` (LaTeX) in the blueprint style
 - [ ] `morph(a → b)`: bricks fly from one model into another
-- [ ] Brick charts and diagrams: bar charts, number lines, grids
-- [ ] A real first video: the Difference Engine or DataScalar
+- [~] Charts and diagrams: line charts with log axes and heat maps done
+      (blueprint); bar charts and number lines still to do
+- [x] A real first video: "Where GPT-2 keeps a fact" (`explain/scripts/gpt2-fact.mjs`),
+      every number from Model Microscope; rendered with `render.mjs`
 - [ ] A story-writing guide for AI (and people): the actions, pacing, common
       mistakes
