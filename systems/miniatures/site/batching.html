@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuous Batching</title>
+<meta name="description" content="One GPU writing many replies at once: static batching leaves seats empty while people wait; continuous batching refills them every step. Simulated live in Go compiled to WebAssembly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+/* the player's speed buttons don't fit a phone on one line */
+@media (max-width: 720px) {
+  .player { flex-wrap: wrap; }
+  .player input[type=range] { flex: 1 1 100%; order: -1; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+
+  <header class="head">
+    <div class="kicker">Serving LLMs · 2</div>
+    <h1>Continuous batching</h1>
+    <p class="lede">A GPU writes replies one word-piece (token) at a time, but it can move eight replies forward in one step for barely more than the cost of one. So it works in batches. The question is when a new request gets a seat: when the whole batch is done, or as soon as any one reply finishes.</p>
+    <div class="under"><span><b>Underneath:</b> scheduling: reserving a resource for a group vs. reassigning it every step</span><span><b>Seen in:</b> Orca (OSDI 2022), and the schedulers in vLLM, TGI and TensorRT-LLM</span></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <div class="controls" id="controls"></div>
+    <div class="stage" id="lanes"></div>
+    <div id="player"></div>
+    <div class="legend" id="legend"></div>
+    <div class="live">
+      <div class="stat"><div class="k">Seats in use</div><div class="v" id="sUse">–</div><div class="s">of all seat-time so far</div></div>
+      <div class="stat"><div class="k">Seat empty, someone waiting</div><div class="v" id="sWaste">–</div><div class="s">of all seat-time so far</div></div>
+      <div class="stat"><div class="k">Wait for first token</div><div class="v" id="sTTFT">–</div><div class="s">average so far</div></div>
+      <div class="stat"><div class="k">Tokens written</div><div class="v" id="sTok">–</div><div class="s">per second so far</div></div>
+    </div>
+    <div class="stage" id="scatter"></div>
+  </section>
+
+  <h2>Both policies, same requests</h2>
+  <p class="sub">Exactly the same requests arrive at the same moments under both. Click a row to watch it.</p>
+  <div class="scrollx"><table class="compare" id="compare"></table></div>
+
+  <div class="notes">
+    <div class="note"><h3>What to notice</h3>
+      <p><b>Static batching</b> seats up to eight requests and runs them until the longest reply is done. The short replies finish in a second or two and their seats sit empty, shown hatched red, while new requests pile up in the waiting row. At the default settings half of all seat-time is wasted this way, and the average wait for a first token is 16.4 seconds.</p>
+      <p><b>Continuous batching</b> checks the queue before every step and fills any empty seat at once. It never leaves a seat empty while someone is waiting. The average wait for a first token drops to 0.4 seconds and replies finish in 3.7 seconds on average instead of 19.3.</p>
+      <p>Raise the load to 2 requests a second and the gap shows up in raw output too: about 181 tokens a second against 103. Make reply lengths more even and static batching wastes less, because a batch's replies finish closer together.</p>
+    </div>
+    <div class="note"><h3>How the model works</h3>
+      <p>One GPU with eight seats. Each step writes one token for every reply in the batch and takes 20 ms plus 2 ms per reply. A request that joins also has its prompt (200–600 tokens) read in that step, at 20,000 tokens a second.</p>
+      <p>Reply lengths are log-normal around a median of 80 tokens: most are short, a few run past 500, clipped at 1,200. Requests arrive at random (a Poisson stream) for 60 seconds; the run ends when the last reply is written.</p>
+      <p>The idea is iteration-level scheduling from Yu et al., <i>Orca: A Distributed Serving System for Transformer-Based Generative Models</i> (OSDI 2022), now standard in LLM servers.</p>
+    </div>
+  </div>
+
+  <p class="foot">The simulation is Go (<code>sims/batching</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini batching</code> prints the same comparison in a terminal. Its tests check the claims on this page.</p>
+</div>
+
+<script type="module">
+import { run, series, fail, fmt, token, cat, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } from "./mini.js";
+
+series("batching");
+const POLICIES = [["static", "Static batching"], ["continuous", "Continuous batching"]];
+const params = { policy: "static", rate: 1.5, spread: 1.0, slots: 8 };
+let res = null, player = null, view = null;
+
+// ---- controls
+const ctl = document.getElementById("controls");
+const pol = segmented(ctl, { label: "Who gets a seat", options: POLICIES, value: params.policy, onChange: (v) => { params.policy = v; refresh(); } });
+slider(ctl, { label: "Requests per second", min: 0.5, max: 3, step: 0.1, value: params.rate, format: (v) => v.toFixed(1), onInput: (v) => { params.rate = v; refresh(); } });
+slider(ctl, { label: "How uneven reply lengths are", min: 0, max: 1.8, step: 0.1, value: params.spread, format: (v) => v.toFixed(1), onInput: (v) => { params.spread = v; refresh(); } });
+slider(ctl, { label: "Seats in the batch", min: 2, max: 16, step: 1, value: params.slots, onInput: (v) => { params.slots = v; refresh(); } });
+
+// ---- precompute what the drawing needs from the trace
+function prepare(r) {
+  const S = r.params.slots;
+  const spans = Array.from({ length: S }, () => []);
+  r.trace.forEach((q, i) => spans[q.slot].push({ s: q.start, e: q.end, i, out: q.out }));
+  spans.forEach((l) => l.sort((a, b) => a.s - b.s));
+  // per seat: empty while someone waited (waste) and empty with nobody waiting (idle), merged
+  const waste = Array.from({ length: S }, () => []), idle = Array.from({ length: S }, () => []);
+  const ptr = Array(S).fill(0);
+  const push = (list, s, e) => { const last = list[list.length - 1]; if (last && Math.abs(last[1] - s) < 1e-9) last[1] = e; else list.push([s, e]); };
+  for (const st of r.steps) {
+    for (let k = 0; k < S; k++) {
+      const l = spans[k];
+      while (ptr[k] < l.length && l[ptr[k]].e <= st.s + 1e-9) ptr[k]++;
+      const busy = ptr[k] < l.length && l[ptr[k]].s <= st.s + 1e-9;
+      if (!busy) push(st.q > 0 ? waste[k] : idle[k], st.s, st.e);
+    }
+  }
+  // cumulative tokens and seat-time, by step end
+  const cum = []; let tok = 0, used = 0, wasted = 0, total = 0;
+  for (const st of r.steps) {
+    const d = st.e - st.s;
+    tok += st.n; used += st.n * d; total += S * d; wasted += Math.min(S - st.n, st.q) * d;
+    cum.push({ e: st.e, tok, used, total, wasted });
+  }
+  const end = Math.max(r.params.duration, ...r.trace.map((q) => q.end));
+  return { spans, waste, idle, cum, end };
+}
+
+// ---- hatch pattern for wasted seats
+let hatch = null, hatchKey = "";
+function hatchFill(ctx) {
+  const key = token("--bad");
+  if (hatch && hatchKey === key) return hatch;
+  const c = document.createElement("canvas"); c.width = c.height = 8;
+  const x = c.getContext("2d");
+  x.fillStyle = alpha(key, 0.10); x.fillRect(0, 0, 8, 8);
+  x.strokeStyle = alpha(key, 0.75); x.lineWidth = 1.5;
+  x.beginPath(); x.moveTo(-2, 10); x.lineTo(10, -2); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(6, 10); x.lineTo(10, 6); x.stroke();
+  hatch = ctx.createPattern(c, "repeat"); hatchKey = key;
+  return hatch;
+}
+
+// ---- the seat lanes
+// rebuilt when the seat count changes, since the canvas height depends on it
+let lanes = null, lanesFor = 0;
+function makeLanes() {
+  const el = document.getElementById("lanes");
+  el.replaceChildren();
+  lanesFor = res.params.slots;
+  lanes = stage(el, (w) => 76 + lanesFor * (w < 640 ? 22 : 26), drawLanes);
+}
+function drawLanes(ctx, w, h) {
+  if (!res) return;
+  const t = player.t, S = res.params.slots, narrow = w < 640;
+  const win = narrow ? 10 : 24;
+  const L = narrow ? 34 : 70, R = w - 12;
+  const t0 = Math.max(0, t - win), t1 = Math.max(win, t);
+  const x = scale(t1 - win, t1, L, R);
+  const qTop = 10, qH = 26, top = qTop + qH + 16, rowH = (h - top - 22) / S;
+
+  // waiting row
+  const waiting = res.trace.map((q, i) => [q, i]).filter(([q]) => q.t <= t && q.start > t);
+  ctx.font = `600 11px ${token("--sans")}`; ctx.fillStyle = token("--faint"); ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.fillText(narrow ? "WAIT" : "WAITING", 6, qTop + qH / 2);
+  const maxDots = Math.floor((R - L - 40) / 12);
+  waiting.slice(0, maxDots).forEach(([, i], k) => { ctx.beginPath(); ctx.arc(L + 6 + k * 12, qTop + qH / 2, 4.5, 0, Math.PI * 2); ctx.fillStyle = cat(i); ctx.fill(); });
+  ctx.fillStyle = waiting.length ? token("--bad") : token("--faint"); ctx.font = `600 12px ${token("--mono")}`; ctx.textAlign = "right";
+  ctx.fillText(waiting.length > maxDots ? `+${waiting.length - maxDots} · ${waiting.length}` : `${waiting.length}`, R, qTop + qH / 2);
+  ctx.strokeStyle = token("--rule"); ctx.beginPath(); ctx.moveTo(L, top - 8.5); ctx.lineTo(R, top - 8.5); ctx.stroke();
+
+  const clipL = x(t0), clipR = x(t);
+  for (let k = 0; k < S; k++) {
+    const y = top + k * rowH, bh = Math.max(6, rowH - 6);
+    ctx.fillStyle = k % 2 ? "transparent" : alpha(token("--ink"), 0.025);
+    ctx.fillRect(L, y, R - L, rowH);
+    ctx.fillStyle = token("--muted"); ctx.font = `500 11px ${token("--mono")}`; ctx.textAlign = "left";
+    ctx.fillText(narrow ? `${k + 1}` : `Seat ${k + 1}`, 6, y + rowH / 2);
+    // idle (nobody waiting) and wasted (somebody waiting) stretches
+    for (const [s, e] of view.idle[k]) {
+      if (e < t0 || s > t) continue;
+      ctx.fillStyle = alpha(token("--ink"), 0.05);
+      ctx.fillRect(Math.max(clipL, x(s)), y + 3, Math.min(clipR, x(e)) - Math.max(clipL, x(s)), bh);
+    }
+    ctx.fillStyle = hatchFill(ctx);
+    for (const [s, e] of view.waste[k]) {
+      if (e < t0 || s > t) continue;
+      ctx.fillRect(Math.max(clipL, x(s)), y + 3, Math.min(clipR, x(e)) - Math.max(clipL, x(s)), bh);
+    }
+    // replies being written
+    for (const sp of view.spans[k]) {
+      if (sp.e < t0 || sp.s > t) continue;
+      const a = Math.max(clipL, x(sp.s)), b = Math.min(clipR, x(sp.e));
+      ctx.fillStyle = alpha(cat(sp.i), sp.e <= t ? 0.55 : 0.9);
+      ctx.fillRect(a, y + 3, Math.max(1, b - a - 1), bh);
+      if (b - a > 46 && !narrow) {
+        ctx.fillStyle = "#fff"; ctx.font = `500 10px ${token("--mono")}`; ctx.textAlign = "left";
+        ctx.fillText(`${sp.out} tok`, a + 4, y + rowH / 2);
+      }
+    }
+  }
+  // time axis and the "now" line
+  ctx.fillStyle = token("--faint"); ctx.font = `11px ${token("--sans")}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+  const tick = narrow ? 2 : 4;
+  for (let v = Math.ceil((t1 - win) / tick) * tick; v <= t1; v += tick) ctx.fillText(`${v}s`, x(v), h - 16);
+  ctx.strokeStyle = alpha(token("--ink"), 0.5); ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(clipR + 0.5, qTop); ctx.lineTo(clipR + 0.5, h - 18); ctx.stroke(); ctx.setLineDash([]);
+}
+
+// ---- wait for first token, every request
+const scatter = stage(document.getElementById("scatter"), 180, (ctx, w, h) => {
+  if (!res) return;
+  const t = player.t, box = { l: 52, r: w - 14, t: 22, b: h - 30 };
+  const x = scale(0, view.end, box.l, box.r), y = scale(0.03, 100, box.b, box.t, true);
+  const ticks = []; for (let v = 0; v <= view.end; v += view.end > 120 ? 30 : 15) ticks.push([v, `${v}s`]);
+  axes(ctx, { x, y, box, xTicks: ticks, yTicks: [[0.1, "0.1s"], [1, "1s"], [10, "10s"], [100, "100s"]], yLabel: "Wait for first token, each request, by when it arrived" });
+  res.trace.forEach((q, i) => {
+    if (q.first > t) return;
+    ctx.beginPath(); ctx.arc(x(q.t), y(q.first - q.t), 2.6, 0, Math.PI * 2);
+    ctx.fillStyle = alpha(cat(i), 0.85); ctx.fill();
+  });
+  ctx.strokeStyle = alpha(token("--ink"), 0.35); ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(x(t), box.t); ctx.lineTo(x(t), box.b); ctx.stroke(); ctx.setLineDash([]);
+});
+
+// ---- live numbers
+function live(t) {
+  const set = (id, v) => (document.getElementById(id).textContent = v);
+  let c = null;
+  for (let lo = 0, hi = view.cum.length - 1; lo <= hi;) { const m = (lo + hi) >> 1; if (view.cum[m].e <= t) { c = view.cum[m]; lo = m + 1; } else hi = m - 1; }
+  if (!c || c.total === 0) { ["sUse", "sWaste", "sTTFT", "sTok"].forEach((id) => set(id, "–")); return; }
+  set("sUse", fmt.pct(c.used / c.total));
+  set("sWaste", fmt.pct(c.wasted / c.total));
+  set("sTok", fmt.num(c.tok / t));
+  const firsts = res.trace.filter((q) => q.first <= t);
+  set("sTTFT", firsts.length ? fmt.ms(firsts.reduce((a, q) => a + q.first - q.t, 0) / firsts.length) : "–");
+}
+
+function legend() {
+  document.getElementById("legend").innerHTML =
+    `<span><i style="background:${cat(0)}"></i>a reply being written (one colour per request; label = its length)</span>` +
+    `<span><i style="background:repeating-linear-gradient(45deg,${token("--bad")} 0 2px,transparent 2px 5px)"></i>seat empty while someone waits</span>` +
+    `<span><i style="background:${alpha(token("--ink"), 0.08)}"></i>seat empty, nobody waiting</span>`;
+}
+
+function table() {
+  compare(document.getElementById("compare"), {
+    rows: res.stats.map((s) => ({ key: s.policy, label: s.label, cells: s })),
+    cols: [
+      { key: "throughput", label: "Tokens / s", fmt: (v) => fmt.num(v), better: "high" },
+      { key: "ttftMean", label: "First token, avg", fmt: fmt.ms, better: "low" },
+      { key: "latencyMean", label: "Whole reply, avg", fmt: fmt.ms, better: "low" },
+      { key: "latencyP99", label: "Slowest 1%", fmt: fmt.ms, better: "low" },
+      { key: "utilisation", label: "Seats in use", fmt: (v) => fmt.pct(v), better: "high" },
+      { key: "wasted", label: "Empty while waiting", fmt: (v) => fmt.pct(v), better: "low" },
+      { key: "makespan", label: "Last reply done", fmt: fmt.ms, better: "low" },
+    ],
+    current: params.policy,
+    onPick: (k) => { params.policy = k; pol.value = k; refresh(); },
+  });
+}
+
+let seq = 0;
+async function refresh() {
+  const my = ++seq;
+  try {
+    const out = await run("batching", params);
+    if (my !== seq) return;
+    res = out; view = prepare(res);
+    if (res.params.slots !== lanesFor) makeLanes();
+    const was = player?.playing;
+    if (!player) {
+      player = new Player(document.getElementById("player"), { duration: view.end, speed: 4, onFrame: (t) => { lanes?.draw(); scatter.draw(); live(t); } });
+      autoplay(player, document.getElementById("panel"));
+    }
+    player.setDuration(Math.ceil(view.end));
+    legend(); table();
+    player.seek(0);
+    if (was) player.play();
+  } catch (e) { fail(document.getElementById("lanes"), e); }
+}
+refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Systems in Miniature</title>
+<meta name="description" content="Seven small distributed-systems simulations from today's AI infrastructure and backends, each a failure and its fix, written in Go and run live in the browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+.groups { margin-top: 2.4rem; display: grid; gap: 2.4rem; }
+.group h2 { margin: 0 0 0.9rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--rule-strong); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr)); gap: 1rem; }
+.card { display: block; padding: 1.1rem 1.2rem 1.15rem; background: var(--raised); border: 1px solid var(--rule); color: var(--ink); text-decoration: none; }
+.card:hover { border-color: var(--ink); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card .n { font: 600 0.75rem/1 var(--mono); color: var(--accent); }
+.card h3 { margin: 0.45rem 0 0.4rem; font: 600 1.08rem/1.3 var(--sans); }
+.card p { margin: 0; color: var(--muted); font: 0.98rem/1.55 var(--prose); }
+.card .u { margin-top: 0.7rem; font-size: 0.78rem; color: var(--faint); }
+.how { margin-top: 2.6rem; max-width: 48rem; color: var(--muted); }
+.how p { margin: 0 0 0.7rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+  <header class="head">
+    <div class="kicker">Seven small simulations</div>
+    <h1>Systems in Miniature</h1>
+    <p class="lede">Problems from today's AI infrastructure and backends, each shrunk until it fits on one page: first the thing going wrong, then the fix, with the numbers to show the difference. Every one runs live; change the load and watch it break.</p>
+  </header>
+
+  <div class="groups">
+    <section class="group">
+      <h2>Serving and training language models</h2>
+      <div class="cards">
+        <a class="card" href="cache-router.html"><span class="n">1</span><h3>Routing for a shared prompt cache</h3><p>Send a request to a GPU that has already read its prompt, and it skips straight to the new part. Round robin throws that away; plain affinity overloads one GPU.</p><div class="u">Underneath: consistent hashing with bounded loads</div></a>
+        <a class="card" href="batching.html"><span class="n">2</span><h3>Continuous batching</h3><p>A GPU writing many replies at once. Wait for the slowest reply in every batch, or swap finished ones out at every step.</p><div class="u">Underneath: scheduling and queueing</div></a>
+        <a class="card" href="disagg.html"><span class="n">3</span><h3>Splitting prompt reading from writing</h3><p>Reading a long prompt hogs the GPU and makes everyone else's reply stutter. Give reading and writing their own machines.</p><div class="u">Underneath: interference and isolation</div></a>
+        <a class="card" href="straggler.html"><span class="n">4</span><h3>The one slow GPU</h3><p>Thousands of GPUs train in lockstep, so every step waits for the slowest, and something fails every few hours. How often to save your work.</p><div class="u">Underneath: stragglers, and the Young–Daly checkpoint interval</div></a>
+      </div>
+    </section>
+    <section class="group">
+      <h2>Everyday backend, in modern dress</h2>
+      <div class="cards">
+        <a class="card" href="double-charge.html"><span class="n">5</span><h3>The agent that charged twice</h3><p>An AI agent pays, the reply times out, it tries again. Idempotency keys stop the double charge, unless they're checked the naive way.</p><div class="u">Underneath: exactly-once effects over an unreliable network</div></a>
+        <a class="card" href="herd.html"><span class="n">6</span><h3>A hundred agents, one rate limit</h3><p>A fleet of agents shares one API budget. They get rejected together, retry together, and get rejected again, unless they spread out.</p><div class="u">Underneath: the thundering herd, backoff and jitter</div></a>
+        <a class="card" href="local-first.html"><span class="n">7</span><h3>Local-first sync</h3><p>Two phones edit the same note offline. "Last save wins" loses someone's work; a CRDT keeps both. Type into it yourself.</p><div class="u">Underneath: CRDTs</div></a>
+      </div>
+    </section>
+  </div>
+
+  <div class="how">
+    <h2>How these are made</h2>
+    <p>Each simulation is a small Go program with tests that check the claim on its page. The same code is compiled to WebAssembly, so what runs in your browser is exactly what the tests check. Nothing is pre-recorded, and every slider re-runs it.</p>
+    <p>The models are deliberately small: a few rules, chosen so the effect is real and visible. They show why the fix works, not how fast any particular system is.</p>
+    <p>In a terminal: <code>go run ./cmd/mini</code> lists them; <code>go run ./cmd/mini herd</code> prints one side by side.</p>
+  </div>
+  <p class="foot">Source: <code>systems/miniatures/</code> in open-concept-lab.</p>
+</div>
+<script type="module">
+import { series } from "./mini.js";
+series("");
+document.querySelector(".series .home").setAttribute("aria-current", "page");
+</script>
+</body>
+</html>

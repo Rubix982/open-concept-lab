@@ -8,6 +8,9 @@
 #   ratio: preview aspect ratio; drop to 4/3 for a page with a tall sidebar.
 #   image: a still to show instead of the live page (relative to the copied
 #          folder), for pages heavy enough to slow the list down.
+#   in:    another entry's name — this card is a page inside the folder that
+#          entry copies (no `from` of its own); `page` names the file.
+#   page:  a file in the folder other than index.html.
 
 built:
   - name: belief-revision
@@ -208,6 +211,97 @@ built:
 
   # Hosted elsewhere, so nothing is copied — `url:` embeds it from where it
   # already lives and the card notes the host.
+  - name: miniatures
+    title: Routing for a Shared Prompt Cache
+    from: systems/miniatures/site
+    page: cache-router.html
+    topic: Systems in Miniature
+    what: >
+      Eight GPUs serve chat requests that share long prompts. Round
+      robin keeps re-reading the same prompts; sending each prompt to
+      the GPU that already has it cuts the wait for the first token from
+      about half a second to 30 ms, until the most popular app overloads
+      one GPU and a load cap spreads it.
+    ratio: 1.6
+    image: posters/cache-router.jpg
+
+  - name: mini-batching
+    title: Continuous Batching
+    in: miniatures
+    page: batching.html
+    topic: Systems in Miniature
+    what: >
+      One GPU writing many replies at once. Waiting for the slowest
+      reply in each batch leaves seats empty half the time someone is
+      queuing; swapping finished replies out at every step cuts the wait
+      for the first word from 16 s to under half a second.
+    ratio: 1.6
+    image: posters/batching.jpg
+
+  - name: mini-disagg
+    title: Splitting Prompt Reading from Writing
+    in: miniatures
+    page: disagg.html
+    topic: Systems in Miniature
+    what: >
+      Reading a long prompt freezes every other reply on the same GPU.
+      The average gap between words looks fine while only 1% of replies
+      stay on time; giving reading and writing their own GPUs brings
+      that to 100%, but only if the split fits the traffic.
+    ratio: 1.6
+    image: posters/disagg.jpg
+
+  - name: mini-straggler
+    title: The One Slow GPU
+    in: miniatures
+    page: straggler.html
+    topic: Systems in Miniature
+    what: >
+      Sixteen thousand GPUs train in lockstep, so every step waits for
+      the slowest, and something fails every three hours. Two weeks of
+      training, with the work each failure throws away, and how often to
+      save it.
+    ratio: 1.6
+    image: posters/straggler.jpg
+
+  - name: mini-double-charge
+    title: The Agent That Charged Twice
+    in: miniatures
+    page: double-charge.html
+    topic: Systems in Miniature
+    what: >
+      An AI agent pays, the reply is lost, and it tries again. Without
+      an idempotency key 64 of 500 customers are charged twice; checking
+      the key the naive way still lets 32 through; claiming it
+      atomically, none.
+    ratio: 1.6
+    image: posters/double-charge.jpg
+
+  - name: mini-herd
+    title: A Hundred Agents, One Rate Limit
+    in: miniatures
+    page: herd.html
+    topic: Systems in Miniature
+    what: >
+      A fleet of agents shares one API budget. Retrying straight away
+      fires thousands of calls into an outage; backoff with jitter calms
+      the startup but oversleeps afterwards; a shared budget with a
+      breaker sends 16.
+    ratio: 1.6
+    image: posters/herd.jpg
+
+  - name: mini-local-first
+    title: Local-First Sync
+    in: miniatures
+    page: local-first.html
+    topic: Systems in Miniature
+    what: >
+      Two phones edit the same note offline; type into them yourself.
+      Keeping whichever copy was saved last loses words and brings back
+      a fixed typo; a CRDT keeps every edit from both.
+    ratio: 1.6
+    image: posters/local-first.jpg
+
   - name: the-shelf
     title: The Shelf
     url: https://rubix982.github.io/the-shelf/

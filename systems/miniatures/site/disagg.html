@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prefill, Decode, Apart</title>
+<meta name="description" content="Four GPUs reading prompts and writing replies: on the same GPU, every long prompt freezes the replies; split across GPUs, they stream smoothly — simulated live in Go compiled to WebAssembly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  /* phones: let button rows and the player wrap instead of widening the page */
+  @media (max-width: 720px) {
+    .seg { flex-wrap: wrap; max-width: 100%; }
+    .player { flex-wrap: wrap; }
+    .player input[type=range] { order: 3; flex-basis: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+
+  <header class="head">
+    <div class="kicker">Serving LLMs · 3</div>
+    <h1>Splitting prompt reading from writing</h1>
+    <p class="lede">A chat model does two different jobs for every request. First it reads the whole prompt in one heavy burst, which produces the first word of the reply. Then it writes the rest one word at a time, in quick small steps shared with every other reply in progress. Run both jobs on the same GPU and each long prompt that arrives freezes every reply being written there.</p>
+    <div class="under"><span><b>Underneath:</b> interference between two kinds of work, and giving each its own machines</span><span><b>Seen in:</b> DistServe (OSDI 2024), Splitwise (ISCA 2024); chunking: Sarathi-Serve (OSDI 2024)</span></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <div class="controls" id="controls"></div>
+    <div class="stage" id="timeline"></div>
+    <div id="player"></div>
+    <div class="legend" id="legend"></div>
+    <div class="live">
+      <div class="stat"><div class="k">On time</div><div class="v" id="sOk">–</div><div class="s">of replies finished so far</div></div>
+      <div class="stat"><div class="k">Wait for first word</div><div class="v" id="sTtft">–</div><div class="s">median so far</div></div>
+      <div class="stat"><div class="k">Gap between words</div><div class="v" id="sTpot">–</div><div class="s">median of each reply's average</div></div>
+      <div class="stat"><div class="k">Longest freeze</div><div class="v" id="sGap">–</div><div class="s">any reply so far</div></div>
+    </div>
+    <div class="stage" id="stream"></div>
+  </section>
+
+  <h2>All three, same requests</h2>
+  <p class="sub" id="sloLine">Every arrangement sees exactly the same requests. Click a row to watch it.</p>
+  <div class="scrollx"><table class="compare" id="compare"></table></div>
+
+  <div class="notes">
+    <div class="note"><h3>What to notice</h3>
+      <p><b>Same GPU, whole prompts:</b> the orange blocks are iterations that read a prompt, and while one runs, every reply on that GPU waits. A long prompt freezes them for about 0.4 seconds, so at the default load almost every reply freezes at least once: only 1% are on time. Yet the median gap between words is 41 ms, inside the 50 ms target. The average hides the freezes.</p>
+      <p><b>Prompts in chunks</b> reads at most 512 prompt tokens per iteration, so no freeze is longer than about 60 ms. The price is that prompts take longer to read, because they share every iteration with the writing: the slowest tenth wait over a second for their first word, and 89% are on time.</p>
+      <p><b>Separate GPUs:</b> two GPUs only read prompts and two only write replies, so writing never stops for reading: 100% on time. The one visible pause, about 0.1 s, is right after the first word, while the prompt's memory is shipped to the writing GPU. Try one reading GPU, or three: either side runs short, and on-time drops to about 10%. Splitting only helps if the split fits the traffic.</p>
+    </div>
+    <div class="note"><h3>How the model works</h3>
+      <p>Each GPU works in iterations. An iteration writes one word for every reply in progress and may also read prompt tokens: 12 ms, plus 0.4 ms per reply, plus 0.05 ms per prompt token read. Waiting prompts go to the reading GPU with the least work queued, and replies to the writing GPU with the fewest replies.</p>
+      <p>Three requests in ten have a long prompt (3,000–8,000 tokens), the rest 200–1,200; replies are 100–400 words. Shipping a prompt's memory (its KV cache) to another GPU takes 0.01 ms per prompt token.</p>
+      <p>A reply is <i>on time</i> if its first word comes within 2 s, its average gap is within 50 ms, and it never freezes for more than 250 ms. The model charges chunking only the fixed cost of extra iterations; real chunked reading also re-reads earlier chunks' memory, so it flatters chunking a little.</p>
+    </div>
+  </div>
+
+  <p class="foot">The simulation is Go (<code>sims/disagg</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini disagg</code> prints the same comparison in a terminal. Its tests check the claims on this page.</p>
+</div>
+
+<script type="module">
+import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale } from "./mini.js";
+
+series("disagg");
+const POLICIES = [["colocated", "Same GPU, whole prompts"], ["chunked", "Same GPU, in chunks"], ["disaggregated", "Separate GPUs"]];
+const params = { policy: "disaggregated", rate: 14, longShare: 0.3, prefillGPUs: 2 };
+let res = null, player = null;
+
+// ---- controls
+const ctl = document.getElementById("controls");
+const pol = segmented(ctl, { label: "Arrangement", options: POLICIES, value: params.policy, onChange: (v) => { params.policy = v; refresh(); } });
+slider(ctl, { label: "Requests per second", min: 4, max: 20, step: 1, value: params.rate, onInput: (v) => { params.rate = v; refresh(); } });
+slider(ctl, { label: "Long prompts", min: 0, max: 0.6, step: 0.05, value: params.longShare, format: (v) => fmt.pct(v), onInput: (v) => { params.longShare = v; refresh(); } });
+segmented(ctl, { label: "Separate GPUs: reading / writing", options: [["1", "1 / 3"], ["2", "2 / 2"], ["3", "3 / 1"]], value: String(params.prefillGPUs), onChange: (v) => { params.prefillGPUs = +v; if (params.policy !== "disaggregated") { params.policy = "disaggregated"; pol.value = "disaggregated"; } refresh(); } });
+
+const ms = (s) => fmt.ms(s);
+const role = (g) => (res.params.policy !== "disaggregated" ? "reads + writes" : g < res.params.prefillGPUs ? "reads prompts" : "writes replies");
+
+// iterations per GPU, sorted by start, for windowed drawing
+let byGpu = [];
+function index() {
+  byGpu = Array.from({ length: res.params.gpus }, () => []);
+  for (const it of res.iters) byGpu[it[0]].push(it);
+}
+function firstFrom(list, t) { // first iteration ending after t
+  let lo = 0, hi = list.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (list[m][1] + list[m][2] < t) lo = m + 1; else hi = m; }
+  return lo;
+}
+
+// ---- GPU timeline: the last few seconds, scrolling
+const timeline = stage(document.getElementById("timeline"), (w) => (w < 640 ? 210 : 250), (ctx, w, h) => {
+  if (!res) return;
+  const t = player.t, n = res.params.gpus, narrow = w < 640;
+  const win = narrow ? 2 : 3.5;
+  const box = { l: narrow ? 62 : 150, r: w - 14, t: 30, b: h - 26 };
+  const x = scale(t - win, t, box.l, box.r);
+  const rowH = (box.b - box.t) / n;
+  const decode = token("--c0"), prefill = token("--c1");
+  ctx.font = `600 11px ${token("--sans")}`; ctx.fillStyle = token("--faint"); ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+  ctx.fillText(narrow ? "EACH GPU, LAST 2 s" : `WHAT EACH GPU IS DOING — THE LAST ${win} SECONDS (block width = how long that iteration took)`, 10, 18);
+  for (let g = 0; g < n; g++) {
+    const y = box.t + g * rowH;
+    ctx.fillStyle = g % 2 ? "transparent" : alpha(token("--ink"), 0.025);
+    ctx.fillRect(0, y, w, rowH);
+    ctx.fillStyle = token("--muted"); ctx.font = `500 12px ${token("--mono")}`; ctx.textBaseline = "middle";
+    ctx.fillText(`GPU ${g + 1}`, 10, y + rowH / 2 - (narrow ? 0 : 7));
+    if (!narrow) { ctx.fillStyle = token("--faint"); ctx.font = `11px ${token("--sans")}`; ctx.fillText(role(g), 10, y + rowH / 2 + 9); }
+    const list = byGpu[g];
+    for (let i = firstFrom(list, t - win); i < list.length; i++) {
+      const [, s0, d, pf, nw] = list[i];
+      if (s0 > t) break;
+      const x0 = Math.max(box.l, x(s0)), x1 = Math.min(x(t), x(s0 + d));
+      if (x1 <= x0) continue;
+      const heavy = pf > 0;
+      ctx.fillStyle = heavy ? alpha(prefill, Math.min(0.95, 0.35 + pf / 9000)) : alpha(decode, 0.55);
+      const pad = 6;
+      ctx.fillRect(x0 + 0.5, y + pad, Math.max(1, x1 - x0 - 1), rowH - 2 * pad);
+      // a long freeze: say how long, if there's room
+      if (heavy && nw > 0 && x1 - x0 > 46 && s0 + d <= t) {
+        ctx.fillStyle = "#fff"; ctx.font = `600 10.5px ${token("--mono")}`; ctx.textAlign = "center";
+        ctx.fillText(`${Math.round(d * 1000)} ms`, (x0 + x1) / 2, y + rowH / 2);
+        ctx.textAlign = "left";
+      }
+    }
+  }
+  // time axis
+  ctx.fillStyle = token("--faint"); ctx.font = `11px ${token("--sans")}`; ctx.textBaseline = "top"; ctx.textAlign = "center";
+  for (let k = Math.ceil(t - win); k <= t; k++) if (k >= 0) ctx.fillText(`${k}s`, x(k), box.b + 6);
+  ctx.strokeStyle = alpha(token("--ink"), 0.5); ctx.beginPath(); ctx.moveTo(x(t) - 0.5, box.t); ctx.lineTo(x(t) - 0.5, box.b); ctx.stroke();
+});
+
+// ---- token stream for the sampled replies
+const stream = stage(document.getElementById("stream"), (w) => 40 + (res?.samples.length ?? 6) * (w < 640 ? 30 : 34) + 30, (ctx, w, h) => {
+  if (!res) return;
+  const t = player.t, narrow = w < 640;
+  const box = { l: narrow ? 64 : 150, r: w - 14, t: 34, b: h - 26 };
+  let span = 1;
+  for (const s of res.samples) { const r = res.reqs[s.id]; if (s.tokens.length) span = Math.max(span, s.tokens[s.tokens.length - 1] - r.t); }
+  span = Math.ceil(span);
+  const x = scale(0, span, box.l, box.r);
+  const rowH = (box.b - box.t) / res.samples.length;
+  const pauseLimit = res.params.sloPause;
+  ctx.font = `600 11px ${token("--sans")}`; ctx.fillStyle = token("--faint"); ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+  ctx.fillText(narrow ? "SIX REPLIES, WORD BY WORD" : "SIX REPLIES, WORD BY WORD — one tick per word, from the moment the request arrived; red = a freeze over 250 ms", 10, 18);
+  res.samples.forEach((s, k) => {
+    const r = res.reqs[s.id], y = box.t + k * rowH, cy = y + rowH / 2;
+    ctx.fillStyle = token("--muted"); ctx.font = `500 11px ${token("--mono")}`; ctx.textBaseline = "middle";
+    ctx.fillText(narrow ? `#${k + 1}` : `#${k + 1} · ${(r.prompt / 1000).toFixed(1)}k prompt`, 10, cy);
+    if (t < r.t) { ctx.fillStyle = token("--faint"); ctx.font = `11px ${token("--sans")}`; ctx.fillText("not arrived yet", box.l, cy); return; }
+    // waiting for the first word
+    const firstT = s.tokens[0] ?? Infinity;
+    ctx.strokeStyle = alpha(token("--ink"), 0.25); ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(x(0), cy); ctx.lineTo(x(Math.min(t, firstT) - r.t), cy); ctx.stroke(); ctx.setLineDash([]);
+    let prev = null;
+    for (const tk of s.tokens) {
+      if (tk > t) break;
+      const px = x(tk - r.t);
+      if (prev !== null && tk - prev > pauseLimit) {
+        ctx.fillStyle = alpha(token("--bad"), 0.25);
+        ctx.fillRect(x(prev - r.t), cy - 8, px - x(prev - r.t), 16);
+      }
+      ctx.fillStyle = prev === null ? token("--ink") : token("--c0");
+      ctx.fillRect(Math.round(px), cy - (prev === null ? 9 : 6), 1, prev === null ? 18 : 12);
+      prev = tk;
+    }
+  });
+  ctx.fillStyle = token("--faint"); ctx.font = `11px ${token("--sans")}`; ctx.textBaseline = "top"; ctx.textAlign = "center";
+  const step = span > 12 ? 4 : span > 6 ? 2 : 1;
+  for (let k = 0; k <= span; k += step) ctx.fillText(`${k}s`, x(k), box.b + 6);
+  ctx.textAlign = "left";
+});
+
+// ---- live numbers
+function live(t) {
+  const set = (id, v) => (document.getElementById(id).textContent = v);
+  const done = res.reqs.filter((r) => r.end >= 0 && r.end <= t);
+  if (!done.length) { ["sOk", "sTtft", "sTpot", "sGap"].forEach((id) => set(id, "–")); return; }
+  const med = (xs) => xs.sort((a, b) => a - b)[Math.floor((xs.length - 1) / 2)];
+  set("sOk", fmt.pct(done.filter((r) => r.ok).length / done.length));
+  set("sTtft", ms(med(done.map((r) => r.first - r.t))));
+  set("sTpot", ms(med(done.map((r) => r.tpot))));
+  set("sGap", ms(Math.max(...done.map((r) => r.maxGap))));
+}
+
+function legend() {
+  document.getElementById("legend").innerHTML =
+    `<span><i style="background:${alpha(token("--c0"), 0.55)}"></i>writing replies only</span>` +
+    `<span><i style="background:${alpha(token("--c1"), 0.8)}"></i>reading a prompt (darker = longer prompt; replies on this GPU wait)</span>`;
+}
+
+function table() {
+  const p = res.params;
+  document.getElementById("sloLine").textContent = `Every arrangement sees exactly the same requests. On time = first word within ${p.sloTTFT} s, average gap within ${Math.round(p.sloTPOT * 1000)} ms, and no freeze over ${Math.round(p.sloPause * 1000)} ms. Click a row to watch it.`;
+  compare(document.getElementById("compare"), {
+    rows: res.stats.map((s) => ({ key: s.policy, label: s.label, cells: s })),
+    cols: [
+      { key: "goodput", label: "On time", fmt: (v) => fmt.pct(v), better: "high" },
+      { key: "ttftP50", label: "First word, median", fmt: ms, better: "low" },
+      { key: "ttftP90", label: "First word, slowest 10%", fmt: ms, better: "low" },
+      { key: "tpotP50", label: "Average gap, median", fmt: ms, better: "low" },
+      { key: "gapP90", label: "Longest freeze, 90th pct", fmt: ms, better: "low" },
+      { key: "gapMax", label: "Worst freeze", fmt: ms, better: "low" },
+    ],
+    current: params.policy,
+    onPick: (k) => { params.policy = k; pol.value = k; refresh(); },
+  });
+}
+
+let seq = 0;
+async function refresh() {
+  const my = ++seq;
+  try {
+    const out = await run("disagg", params);
+    if (my !== seq) return;
+    res = out; index();
+    const was = player?.playing, at = player?.t ?? 0;
+    if (!player) {
+      player = new Player(document.getElementById("player"), { duration: res.end, speed: 1, speeds: [0.25, 1, 4], onFrame: (t) => { timeline.draw(); stream.draw(); live(t); } });
+      autoplay(player, document.getElementById("panel"));
+    }
+    player.setDuration(Math.ceil(res.end));
+    legend(); table();
+    player.seek(Math.min(at, player.duration));
+    if (was) player.play();
+  } catch (e) { fail(document.getElementById("timeline"), e); }
+}
+refresh();
+</script>
+</body>
+</html>

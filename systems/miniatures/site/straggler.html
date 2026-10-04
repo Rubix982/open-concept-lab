@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The One Slow GPU</title>
+<meta name="description" content="Training on thousands of GPUs: every step waits for the slowest one, and every failure throws work back to the last checkpoint. Simulated live in Go compiled to WebAssembly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+.part { padding: 0.9rem 1.1rem 0.2rem; border-top: 1px solid var(--rule); font-size: 0.82rem; color: var(--muted); }
+.part b { color: var(--ink); font-weight: 600; }
+.panel > .part:first-of-type { border-top: 0; }
+.ctl .seg { align-self: flex-start; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+
+  <header class="head">
+    <div class="kicker">Training LLMs · 4</div>
+    <h1>The one slow GPU</h1>
+    <p class="lede">Training a large model splits every step across thousands of GPUs, and each step ends only when the last GPU has finished and they have all shared their results. So one slow GPU holds up every other one. And with thousands of GPUs, something somewhere fails every few hours, throwing the run back to its last saved checkpoint.</p>
+    <div class="under"><span><b>Underneath:</b> waiting for the slowest of many; the Young–Daly checkpoint interval</span><span><b>Seen in:</b> every large synchronous training run. Meta reported 419 unexpected interruptions in 54 days of training Llama 3 on 16,384 GPUs</span></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <div class="controls" id="controls"></div>
+
+    <div class="part"><b>One step at a time.</b> <span id="stepNote"></span></div>
+    <div class="stage" id="steps"></div>
+
+    <div class="part"><b>Two weeks of training,</b> one row per day. Green is training that was kept; red hatching is training thrown away by a failure; blue slivers are checkpoints being written.</div>
+    <div class="stage" id="timeline"></div>
+    <div id="player"></div>
+    <div class="live">
+      <div class="stat"><div class="k">Failures</div><div class="v" id="sFail">–</div><div class="s">so far</div></div>
+      <div class="stat"><div class="k">Training thrown away</div><div class="v" id="sLost">–</div><div class="s">redone after failures</div></div>
+      <div class="stat"><div class="k">Writing checkpoints</div><div class="v" id="sCkpt">–</div><div class="s">of the time so far</div></div>
+      <div class="stat"><div class="k">Time kept</div><div class="v" id="sKept">–</div><div class="s">training that survived, so far</div></div>
+    </div>
+
+    <div class="part"><b>How often to checkpoint.</b> Share of time that ends up as kept training, for every interval (failures and checkpoints only, from the exact expected value). The dashed line is the Young–Daly interval; the dot is your setting.</div>
+    <div class="stage" id="curve"></div>
+  </section>
+
+  <h2>Five ways to run the same two weeks</h2>
+  <p class="sub">Every row sees the same failures at the same moments. Goodput is the share of GPU time that becomes kept training: time kept × step efficiency. Click a row's settings to apply them.</p>
+  <div class="scrollx"><table class="compare" id="compare"></table></div>
+
+  <div class="notes">
+    <div class="note"><h3>What to notice</h3>
+      <p><b>Scale makes a rare problem constant.</b> A GPU here is slow on one step in 10,000. On 8 GPUs that almost never matters: steps run at 97.5% of their ideal speed. On 16,384 GPUs, 81% of steps wait for at least one slow GPU, the average step takes 1.54 s instead of 1.10 s, and step efficiency falls to 71%.</p>
+      <p><b>Backup GPUs</b> run 2% extra and close the step as soon as enough have reported, so the slow few are never waited for. At 16,384 GPUs that lifts step efficiency to 90%. On 8 GPUs one extra GPU costs more than it saves (87% against 97.5%).</p>
+      <p><b>Checkpoint interval has a sweet spot.</b> With a failure every 3.1 hours, checkpointing every 3 minutes spends 23% of the time writing checkpoints, while every 2 hours throws away 29% to failures. The Young–Daly interval, about 19 minutes, keeps 87.5% of the time.</p>
+    </div>
+    <div class="note"><h3>How the model works</h3>
+      <p>Each step every GPU computes for 1 s plus a small random delay (1% on average), and with a chance of 1 in 10,000 runs 1.5× slower that step. Then they synchronise for 0.1 s. The slowest GPU of 16,384 is drawn directly from the distribution of the maximum, so every step is a few arithmetic operations at any scale. The step view shows 192 GPUs; every slow GPU and the slowest healthy one are always among them.</p>
+      <p>Failures are random, with the cluster's mean time between failures set from Meta's figure (<i>The Llama 3 Herd of Models</i>, 2024): 419 in 54 days on 16,384 GPUs, one every 3.1 hours, and proportionally rarer on smaller clusters. A failure loses everything since the last checkpoint plus a 5-minute restart; a checkpoint takes 1 minute. Young and Daly's rule says checkpoint every √(2 × checkpoint cost × time between failures); the exact best here is 18.6 minutes against Young–Daly's 19.3.</p>
+      <p>Backup workers follow Chen et al., <i>Revisiting Distributed Synchronous SGD</i> (2016). The extra GPUs also fail, and are charged as cost.</p>
+    </div>
+  </div>
+
+  <p class="foot">The simulation is Go (<code>sims/straggler</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini straggler</code> prints the same comparison in a terminal. Its tests check the claims on this page, including that the simulation matches the exact expected value over long runs.</p>
+</div>
+
+<script type="module">
+import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, scale, axes } from "./mini.js";
+
+series("straggler");
+const params = { gpus: 16384, interval: 120, ckptCost: 1, slowProb: 1e-4, backup: false };
+let res = null, player = null;
+
+// ---- controls
+const ctl = document.getElementById("controls");
+const ivMin = 2, ivMax = 480;  // interval slider: 2 min … 8 h on a log scale
+const toIv = (v) => ivMin * Math.pow(ivMax / ivMin, v / 100);
+const fromIv = (m) => (100 * Math.log(m / ivMin)) / Math.log(ivMax / ivMin);
+const minutes = (m) => (m >= 90 ? `${(m / 60).toFixed(1)} h` : m >= 10 ? `${Math.round(m)} min` : `${m.toFixed(1)} min`);
+const gpuS = slider(ctl, { label: "GPUs", min: 3, max: 14, step: 1, value: Math.log2(params.gpus), format: (v) => fmt.num(2 ** v), onInput: (v) => { params.gpus = 2 ** v; refresh(); } });
+const ivS = slider(ctl, { label: "Checkpoint every", min: 0, max: 100, step: 1, value: fromIv(params.interval), format: (v) => minutes(toIv(v)), onInput: (v) => { params.interval = +toIv(v).toFixed(2); refresh(); } });
+slider(ctl, { label: "Checkpoint takes", min: 0.5, max: 10, step: 0.5, value: params.ckptCost, format: (v) => `${v} min`, onInput: (v) => { params.ckptCost = v; refresh(); } });
+slider(ctl, { label: "A GPU is slow on a step", min: 0, max: 50, step: 1, value: params.slowProb * 1e5, format: (v) => (v === 0 ? "never" : `1 in ${fmt.num(Math.round(1e5 / v))}`), onInput: (v) => { params.slowProb = v * 1e-5; refresh(); } });
+const mode = segmented(ctl, { label: "Slow GPUs", options: [["wait", "Wait for every GPU"], ["backup", "2% backup GPUs"]], value: "wait", onChange: (v) => { params.backup = v === "backup"; refresh(); } });
+
+// ---- step view: its own loop, one step every ~1.6 s
+let stepIdx = 0, stepT0 = performance.now(), stepRunning = false;
+const STEP_REAL = 1.7; // seconds of real time per simulated step
+const steps = stage(document.getElementById("steps"), (w) => (w < 640 ? 470 : 270), (ctx, w, h) => {
+  if (!res) return;
+  const narrow = w < 640;
+  const st = res.steps[stepIdx % res.steps.length];
+  const p = res.params, ideal = p.base + p.sync;
+  const T = Math.max(...res.steps.map((s) => s.end)) * 1.08;
+  const k = Math.min(1, (performance.now() - stepT0) / 1000 / STEP_REAL);
+  const now = k * T;
+  // grid of GPU cells
+  const gw = narrow ? w - 28 : Math.min(560, w * 0.5), gh = narrow ? 200 : h - 78;
+  const n = st.f.length, cols = Math.ceil(Math.sqrt((n * gw) / gh)), rows = Math.ceil(n / cols);
+  const cs = Math.min(gw / cols, gh / rows), gx = 14, gy = 12;
+  const bad = token("--bad"), warn = token("--warn"), good = token("--good"), ink = token("--ink");
+  for (let i = 0; i < n; i++) {
+    const x = gx + (i % cols) * cs, y = gy + Math.floor(i / cols) * cs, s = cs - 2;
+    const done = st.f[i] <= now, kind = st.k[i];
+    if (kind === 2) { // slow but not waited for
+      ctx.setLineDash([2, 2]); ctx.strokeStyle = alpha(warn, 0.9); ctx.lineWidth = 1.2; ctx.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); ctx.setLineDash([]);
+      continue;
+    }
+    if (done) ctx.fillStyle = kind === 1 ? warn : alpha(good, 0.75);
+    else ctx.fillStyle = kind === 1 ? alpha(warn, 0.25) : alpha(ink, 0.09);
+    ctx.fillRect(x, y, s, s);
+    if (kind === 1 && !done) { ctx.strokeStyle = warn; ctx.lineWidth = 1.5; ctx.strokeRect(x + 0.75, y + 0.75, s - 1.5, s - 1.5); }
+  }
+  // the step's clock below the grid
+  const by = gy + rows * cs + 14, bl = gx, br = gx + gw;
+  const x = scale(0, T, bl, br);
+  ctx.fillStyle = alpha(ink, 0.07); ctx.fillRect(bl, by, br - bl, 10);
+  const inSync = now > st.compute;
+  ctx.fillStyle = st.waited ? alpha(warn, 0.8) : alpha(good, 0.7);
+  ctx.fillRect(bl, by, x(Math.min(now, st.compute)) - bl, 10);
+  if (inSync) { ctx.fillStyle = token("--accent"); ctx.fillRect(x(st.compute), by, x(Math.min(now, st.end)) - x(st.compute), 10); }
+  ctx.strokeStyle = ink; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x(ideal), by - 4); ctx.lineTo(x(ideal), by + 14); ctx.stroke();
+  ctx.font = `11px ${token("--sans")}`; ctx.fillStyle = token("--muted"); ctx.textBaseline = "top";
+  ctx.textAlign = "left";
+  ctx.fillText(`ideal ${ideal.toFixed(2)} s`, x(ideal) + 4, by + 14);
+  ctx.textAlign = "left";
+  const label = now < st.compute ? "computing…" : now < st.end ? "synchronising…" : st.waited ? `waited for a slow GPU: ${st.end.toFixed(2)} s` : `step took ${st.end.toFixed(2)} s`;
+  ctx.fillStyle = ink; ctx.font = `500 12px ${token("--sans")}`;
+  ctx.fillText(`Step ${(stepIdx % res.steps.length) + 1} of ${res.steps.length} · ${label}`, bl, by + 30);
+
+  // step efficiency against cluster size
+  const cl = narrow ? 52 : gx + gw + 70, cr = w - 18, ct = narrow ? by + 76 : 26, cb = h - 30;
+  const box = { l: cl, r: cr, t: ct, b: cb };
+  const sx = scale(8, 16384, cl, cr, true), sy = scale(0.5, 1.06, cb, ct);
+  axes(ctx, { x: sx, y: sy, box, xTicks: [[8, "8"], [128, "128"], [2048, "2,048"], [16384, "16k"]], yTicks: [[0.5, "50%"], [0.75, "75%"], [1, "100%"]], yLabel: "Step efficiency by number of GPUs" });
+  const line = (key, color, on) => {
+    ctx.strokeStyle = color; ctx.lineWidth = on ? 2.4 : 1.4; ctx.globalAlpha = on ? 1 : 0.55;
+    ctx.beginPath(); res.scale.forEach((pt, i) => (i ? ctx.lineTo(sx(pt.n), sy(pt[key])) : ctx.moveTo(sx(pt.n), sy(pt[key])))); ctx.stroke();
+    ctx.globalAlpha = 1;
+    // label at the small-cluster end, where the two lines are far apart
+    const first = res.scale[0], above = first[key] >= Math.max(first.plain, first.backup);
+    ctx.fillStyle = color; ctx.font = `11px ${token("--sans")}`; ctx.textAlign = "left"; ctx.textBaseline = above ? "bottom" : "top";
+    ctx.fillText(key === "plain" ? "wait for every GPU" : "2% backup GPUs", sx(first.n) + 2, sy(first[key]) + (above ? -5 : 5));
+  };
+  line("plain", warn, !p.backup);
+  line("backup", token("--accent"), p.backup);
+  ctx.strokeStyle = alpha(ink, 0.4); ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(sx(p.gpus), ct); ctx.lineTo(sx(p.gpus), cb); ctx.stroke(); ctx.setLineDash([]);
+  const cur = res.stats.find((s) => s.policy === "yours");
+  ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(sx(p.gpus), sy(cur.stepEff), 4.5, 0, Math.PI * 2); ctx.fill();
+});
+
+function stepLoop(now) {
+  if (!res) return requestAnimationFrame(stepLoop);
+  if ((now - stepT0) / 1000 > STEP_REAL + 0.45) { stepIdx++; stepT0 = now; }
+  steps.draw();
+  if (stepRunning) requestAnimationFrame(stepLoop);
+}
+new IntersectionObserver((es) => {
+  const vis = es.some((e) => e.isIntersecting);
+  if (vis && !stepRunning && !matchMedia("(prefers-reduced-motion: reduce)").matches) { stepRunning = true; stepT0 = performance.now(); requestAnimationFrame(stepLoop); }
+  if (!vis) stepRunning = false;
+}).observe(document.getElementById("steps"));
+
+// ---- timeline: one row per day, drawn up to the player's time
+const failAfter = (h) => { // first failure at or after hour h
+  const f = res.timeline.fails;
+  let lo = 0, hi = f.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (f[m] < h - 1e-6) lo = m + 1; else hi = m; }
+  return f[lo] ?? Infinity;
+};
+const timeline = stage(document.getElementById("timeline"), (w) => 30 + 14 * (w < 640 ? 17 : 21), (ctx, w, h) => {
+  if (!res) return;
+  const days = res.params.days, rowH = (h - 30) / days, l = w < 640 ? 34 : 50, r = w - 12;
+  const tNow = player.t * 24, hx = (hour) => l + ((hour % 24) / 24) * (r - l);
+  ctx.font = `11px ${token("--sans")}`; ctx.fillStyle = token("--faint"); ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  for (const hr of [0, 6, 12, 18, 24]) ctx.fillText(hr === 24 ? "24h" : `${hr}h`, l + (hr / 24) * (r - l), 10);
+  ctx.textAlign = "right";
+  for (let d = 0; d < days; d++) {
+    const y = 22 + d * rowH;
+    ctx.fillStyle = token("--faint"); ctx.fillText(w < 640 ? `${d + 1}` : `Day ${d + 1}`, l - 6, y + rowH / 2);
+    ctx.strokeStyle = token("--rule"); ctx.lineWidth = 1; ctx.strokeRect(l + 0.5, y + 2.5, r - l, rowH - 5);
+  }
+  const good = alpha(token("--good"), 0.6), bad = token("--bad"), accent = token("--accent"), faint = alpha(token("--faint"), 0.55);
+  const draw = (a, b, color, hatch) => { // a segment, split across day rows
+    while (a < b) {
+      const d = Math.floor(a / 24), end = Math.min(b, (d + 1) * 24);
+      const y = 22 + d * rowH + 3, hh = rowH - 6, x0 = hx(a), x1 = end === (d + 1) * 24 ? r : hx(end);
+      ctx.fillStyle = color; ctx.fillRect(x0, y, Math.max(1, x1 - x0), hh);
+      if (hatch) {
+        ctx.save(); ctx.beginPath(); ctx.rect(x0, y, Math.max(1, x1 - x0), hh); ctx.clip();
+        ctx.strokeStyle = bad; ctx.lineWidth = 1;
+        for (let xx = x0 - hh; xx < x1; xx += 5) { ctx.beginPath(); ctx.moveTo(xx, y + hh); ctx.lineTo(xx + hh, y); ctx.stroke(); }
+        ctx.restore();
+      }
+      a = end;
+    }
+  };
+  for (const [k, a, b0] of res.timeline.segs) {
+    if (a >= tNow) break;
+    const b = Math.min(b0, tNow);
+    // lost work looks kept until its failure happens
+    if (k === 0 || (k === 2 && failAfter(b0) > tNow)) draw(a, b, good);
+    else if (k === 2) draw(a, b, alpha(bad, 0.18), true);
+    else if (k === 1) draw(a, b, accent);
+    else draw(a, b, faint);
+  }
+  for (const f of res.timeline.fails) {
+    if (f > tNow) break;
+    const d = Math.floor(f / 24), y = 22 + d * rowH;
+    ctx.fillStyle = bad; ctx.fillRect(hx(f) - 1, y + 1, 2, rowH - 2);
+  }
+});
+
+function live(tDays) {
+  const tNow = tDays * 24;
+  let lost = 0, ckpt = 0, kept = 0, fails = 0;
+  for (const [k, a, b0] of res.timeline.segs) {
+    if (a >= tNow) break;
+    const b = Math.min(b0, tNow);
+    if (k === 0 || (k === 2 && failAfter(b0) > tNow)) kept += b - a;
+    else if (k === 2) lost += b - a;
+    else if (k === 1) ckpt += b - a;
+  }
+  for (const f of res.timeline.fails) { if (f > tNow) break; fails++; }
+  const set = (id, v) => (document.getElementById(id).textContent = v);
+  set("sFail", tNow > 0 ? fmt.num(fails) : "–");
+  set("sLost", tNow > 0 ? `${lost.toFixed(1)} h` : "–");
+  set("sCkpt", tNow > 0 ? fmt.pct(ckpt / tNow, 1) : "–");
+  set("sKept", tNow > 0 ? fmt.pct(kept / tNow, 1) : "–");
+}
+
+// ---- goodput against checkpoint interval
+const curve = stage(document.getElementById("curve"), 220, (ctx, w, h) => {
+  if (!res) return;
+  const box = { l: 52, r: w - 16, t: 24, b: h - 32 };
+  const x = scale(0.5, 2880, box.l, box.r, true);
+  const lo = Math.max(0, Math.floor(Math.min(...res.curve.map((c) => c.eff)) * 10) / 10);
+  const y = scale(lo, 1, box.b, box.t);
+  const yt = []; for (let v = lo; v <= 1.0001; v += 0.1) yt.push([v, `${Math.round(v * 100)}%`]);
+  axes(ctx, { x, y, box, xTicks: [[1, "1 min"], [10, "10 min"], [60, "1 h"], [600, "10 h"], [2880, "2 days"]], yTicks: yt, xLabel: "checkpoint every", yLabel: "Share of time kept" });
+  ctx.strokeStyle = token("--ink"); ctx.lineWidth = 2;
+  ctx.beginPath(); res.curve.forEach((c, i) => (i ? ctx.lineTo(x(c.min), y(c.eff)) : ctx.moveTo(x(c.min), y(c.eff)))); ctx.stroke();
+  const yd = res.derived.youngDaly;
+  ctx.strokeStyle = token("--good"); ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x(yd), box.t); ctx.lineTo(x(yd), box.b); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = token("--good"); ctx.font = `500 11px ${token("--sans")}`; ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(`Young–Daly ${minutes(yd)}`, x(yd) + 5, box.t + 2);
+  const me = res.stats.find((s) => s.policy === "yours");
+  ctx.fillStyle = token("--warn"); ctx.beginPath(); ctx.arc(x(me.interval), y(me.ckptEffExp), 5, 0, Math.PI * 2); ctx.fill();
+  ctx.textBaseline = "bottom"; ctx.textAlign = x(me.interval) > w - 140 ? "right" : "left";
+  ctx.fillText(`yours: ${fmt.pct(me.ckptEffExp, 1)}`, x(me.interval) + (ctx.textAlign === "left" ? 8 : -8), y(me.ckptEffExp) - 6);
+});
+
+function table() {
+  compare(document.getElementById("compare"), {
+    rows: res.stats.map((s) => ({ key: s.policy, label: s.label, cells: s })),
+    cols: [
+      { key: "failures", label: "Failures" },
+      { key: "ckptShare", label: "Writing checkpoints", fmt: (v) => fmt.pct(v, 1), better: "low" },
+      { key: "lostShare", label: "Lost to failures", fmt: (v) => fmt.pct(v, 1), better: "low" },
+      { key: "ckptEff", label: "Time kept", fmt: (v) => fmt.pct(v, 1), better: "high" },
+      { key: "stepEff", label: "Step efficiency", fmt: (v) => fmt.pct(v, 1), better: "high" },
+      { key: "goodput", label: "Goodput", fmt: (v) => fmt.pct(v, 1), better: "high" },
+    ],
+    current: "yours",
+    onPick: (k) => {
+      const s = res.stats.find((r) => r.policy === k);
+      if (!s || k === "yours") return;
+      params.interval = +s.interval.toFixed(2); params.backup = s.backup;
+      ivS.value = fromIv(params.interval); mode.value = s.backup ? "backup" : "wait";
+      refresh();
+    },
+  });
+}
+
+function stepNote() {
+  const p = res.params, d = res.derived, me = res.stats.find((s) => s.policy === "yours");
+  document.getElementById("stepNote").textContent =
+    `Each square is a GPU (${d.shown < p.gpus + d.backups ? `${d.shown} of ${fmt.num(p.gpus + d.backups)} shown` : "all shown"}); it turns green when it finishes, orange if it was slow. ` +
+    (p.backup ? `Dashed squares are slow GPUs the step didn't wait for. ` : "") +
+    `At ${fmt.num(p.gpus)} GPUs, ${fmt.pct(me.slowShare)} of steps wait for a slow one; the average step takes ${me.meanStep.toFixed(2)} s against an ideal ${(p.base + p.sync).toFixed(2)} s.`;
+}
+
+let seq = 0;
+async function refresh() {
+  const my = ++seq;
+  try {
+    const out = await run("straggler", params);
+    if (my !== seq) return;
+    res = out; stepIdx = 0; stepT0 = performance.now();
+    const was = player?.playing;
+    if (!player) {
+      player = new Player(document.getElementById("player"), { duration: res.params.days, speed: 1, unit: "days", onFrame: (t) => { timeline.draw(); live(t); } });
+      autoplay(player, document.getElementById("timeline"));
+    }
+    player.setDuration(res.params.days);
+    stepNote(); table(); curve.draw(); steps.draw();
+    player.seek(was ? 0 : player.t);
+    if (was) player.play();
+  } catch (e) { fail(document.getElementById("steps"), e); }
+}
+refresh();
+</script>
+</body>
+</html>

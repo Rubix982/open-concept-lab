@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Double Charge</title>
+<meta name="description" content="An AI agent retries a payment over a lossy network. Without an idempotency key it charges twice; with a key checked the naive way it still does, sometimes. Simulated live in Go compiled to WebAssembly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  /* narrow screens: let the button rows wrap instead of widening the page */
+  @media (max-width: 720px) {
+    .seg { flex-wrap: wrap; }
+    .seg button + button { border-left: 0; }
+    .player { flex-wrap: wrap; }
+    .player input[type=range] { flex: 1 1 60%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+
+  <header class="head">
+    <div class="kicker">Everyday backend · 5</div>
+    <h1>The agent that charged twice</h1>
+    <p class="lede">An AI agent buys things through a payment tool. It sends "charge $20" and waits, and no reply comes. Maybe the request was lost, maybe the reply was lost, maybe the server is just slow. The agent can't tell which, so it tries again, and sometimes the customer pays twice.</p>
+    <div class="under"><span><b>Underneath:</b> exactly-once effects over a network that only promises "at least once"; a check-then-act race</span><span><b>Seen in:</b> Stripe's <code>Idempotency-Key</code> header, and any payment or booking API an agent calls</span></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <div class="controls" id="controls"></div>
+    <div style="padding:0.9rem 1.1rem 0;font-size:0.8rem;color:var(--muted)"><b style="color:var(--ink)">Four purchases, slowed down.</b> Time runs downward. The agent is on the left, the payment server on the right; every arrow is a message crossing the network.</div>
+    <div class="stage" id="seq"></div>
+    <div id="seqPlayer"></div>
+    <div class="legend" id="seqLegend"></div>
+  </section>
+
+  <section class="panel">
+    <div style="padding:0.9rem 1.1rem 0;font-size:0.8rem;color:var(--muted)"><b style="color:var(--ink)">All 500 purchases.</b> One square each, starting a tenth of a second apart, coloured by how many times the customer was charged.</div>
+    <div class="stage" id="grid"></div>
+    <div class="legend" id="gridLegend"></div>
+    <div id="gridPlayer"></div>
+    <div class="live">
+      <div class="stat"><div class="k">Charged once</div><div class="v" id="sOnce">–</div><div class="s">what should happen</div></div>
+      <div class="stat"><div class="k">Charged twice or more</div><div class="v" id="sTwice" style="color:var(--bad)">–</div><div class="s">customers overcharged</div></div>
+      <div class="stat"><div class="k">Never charged</div><div class="v" id="sNever">–</div><div class="s">purchases that didn't happen</div></div>
+      <div class="stat"><div class="k">Extra money taken</div><div class="v" id="sExtra">–</div><div class="s">at $20 a purchase</div></div>
+    </div>
+  </section>
+
+  <h2>All three servers, same network</h2>
+  <p class="sub">Every policy faces exactly the same lost messages and slow moments. Click a row to watch it.</p>
+  <div class="scrollx"><table class="compare" id="compare"></table></div>
+
+  <div class="notes">
+    <div class="note"><h3>What to notice</h3>
+      <p><b>No key:</b> every retry that reaches the server is a brand-new charge. At the default settings 64 of 500 customers pay twice or more, $1,340 taken by mistake.</p>
+      <p><b>A key, checked then inserted:</b> the agent sends the same key with every attempt, and the server looks it up before charging. That fixes the lost replies, but the server only writes the key down <i>after</i> the charge finishes. When it's slow, the retry arrives mid-charge, finds nothing written down, and charges again. 32 customers still pay twice. Set "server slow" to 0% and this drops to zero; set "messages lost" to 0% and it does no better than having no key at all.</p>
+      <p><b>A key, claimed atomically:</b> the server writes "in progress" against the key <i>before</i> charging, in one step that can't be interleaved. A retry that arrives mid-charge waits for the first attempt and gets its result. Zero double charges, whatever you do to the sliders.</p>
+      <p>Retrying is what saves the purchases. With one try and no retries, 45 purchases never happen, and 58 more go through while the agent thinks they failed.</p>
+    </div>
+    <div class="note"><h3>How the model works</h3>
+      <p>Each message, request or reply, is lost 8% of the time and otherwise takes 50–150 ms. The server takes 0.1–0.3 s to make a charge, but 6% of the time it takes 1.2–3.5 s. The agent waits 1 s for a reply, then retries with the same key, up to 4 tries in all, and accepts a late reply to any of its attempts.</p>
+      <p>Every purchase has its own key, so purchases don't affect each other; each is played through with explicit timestamps for every message, which is what makes the race real rather than scripted.</p>
+      <p>An idempotency key is a unique ID the client attaches to a request, so the server can recognise a repeat. Stripe's API takes one in an <code>Idempotency-Key</code> header for exactly this reason.</p>
+    </div>
+  </div>
+
+  <p class="foot">The simulation is Go (<code>sims/doublecharge</code>), compiled to WebAssembly and run in your browser; <code>go run ./cmd/mini double-charge</code> prints the same comparison in a terminal. Its tests check the claims on this page, including that every check-then-insert double charge comes from overlapping attempts.</p>
+</div>
+
+<script type="module">
+import { run, series, fail, fmt, token, alpha, slider, segmented, stage, Player, autoplay, compare, ease } from "./mini.js";
+
+series("double-charge");
+const POLICIES = [["no-key", "No key"], ["check-insert", "Key: check, then insert"], ["atomic", "Key: claimed atomically"]];
+const params = { policy: "check-insert", loss: 0.08, slow: 0.06, timeout: 1.0, tries: 4 };
+let res = null, cases = [], seqPlayer = null, gridPlayer = null;
+
+// ---- controls
+const ctl = document.getElementById("controls");
+const pol = segmented(ctl, { label: "Payment server", options: POLICIES, value: params.policy, onChange: (v) => { params.policy = v; refresh(); } });
+slider(ctl, { label: "Messages lost", min: 0, max: 0.3, step: 0.01, value: params.loss, format: (v) => fmt.pct(v), onInput: (v) => { params.loss = v; refresh(); } });
+slider(ctl, { label: "Server slow", min: 0, max: 0.3, step: 0.01, value: params.slow, format: (v) => fmt.pct(v), onInput: (v) => { params.slow = v; refresh(); } });
+slider(ctl, { label: "Agent waits", min: 0.4, max: 3, step: 0.1, value: params.timeout, format: (v) => `${v.toFixed(1)} s`, onInput: (v) => { params.timeout = v; refresh(); } });
+slider(ctl, { label: "Tries", min: 1, max: 6, step: 1, value: params.tries, onInput: (v) => { params.tries = v; refresh(); } });
+
+// ---- pick four purchases that show the four things a timeout can mean.
+// The first attempt's fate is the same under every policy, so the same
+// purchases are shown whichever server you pick.
+function pickCases() {
+  const T = res.trace, a0 = (t) => t.att[0];
+  const find = (f) => T.find((t) => t.att.length && f(t));
+  const picks = [
+    ["Goes fine", find((t) => a0(t).reply >= 0 && t.att.length === 1)],
+    ["Request lost", find((t) => a0(t).kind === "lost" && t.att.length > 1)],
+    ["Reply lost", find((t) => a0(t).arrive >= 0 && a0(t).reply < 0 && !a0(t).slow && t.att.length > 1)],
+    ["Server slow", find((t) => a0(t).slow && t.att.length > 1)],
+  ];
+  return picks.filter(([, t]) => t).map(([label, t]) => ({ label, t }));
+}
+
+// ---- the sequence diagrams
+const seq = stage(document.getElementById("seq"), (w) => (w < 640 ? 2 * 300 : 380), (ctx, w, h) => {
+  if (!res || !cases.length) return;
+  const tau = seqPlayer.t;
+  const cols = w < 640 ? 2 : 4, rows = Math.ceil(cases.length / cols);
+  const cw = w / cols, ch = h / rows;
+  const span = seqPlayer.duration;
+  cases.forEach((c, i) => {
+    const ox = (i % cols) * cw, oy = Math.floor(i / cols) * ch;
+    const top = oy + 56, bot = oy + ch - 34;
+    const ax = ox + cw * 0.2, sx = ox + cw * (cw < 200 ? 0.66 : 0.7);
+    const roomLeft = cw * 0.2 > 90;
+    // number the charges in the order they happened, not the order of attempts
+    const chargeRank = new Map(c.t.att.filter((a) => a.charged).sort((p, q) => p.done - q.done).map((a, r) => [a, r]));
+    const y = (s) => top + ((s - c.t.start) / span) * (bot - top);
+    const now = c.t.start + tau;
+    // heading
+    ctx.fillStyle = token("--ink"); ctx.font = `600 12.5px ${token("--sans")}`; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    ctx.fillText(c.label, ox + cw / 2, oy + 18);
+    ctx.fillStyle = token("--faint"); ctx.font = `500 10.5px ${token("--sans")}`;
+    ctx.fillText("agent", ax, oy + 36); ctx.fillText("server", sx, oy + 36);
+    // lifelines
+    ctx.strokeStyle = token("--rule-strong"); ctx.lineWidth = 1;
+    for (const x of [ax, sx]) { ctx.beginPath(); ctx.moveTo(x + 0.5, top); ctx.lineTo(x + 0.5, bot); ctx.stroke(); }
+    if (i % cols) { ctx.strokeStyle = token("--rule"); ctx.beginPath(); ctx.moveTo(ox + 0.5, oy + 6); ctx.lineTo(ox + 0.5, oy + ch - 6); ctx.stroke(); }
+
+    c.t.att.forEach((a, k) => {
+      if (a.send > now) return;
+      // timeout tick on the agent's line
+      const to = a.send + res.params.timeout;
+      if (to <= now && (c.t.fin < 0 || c.t.fin > to)) {
+        ctx.strokeStyle = token("--warn"); ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(ax - 7, y(to)); ctx.lineTo(ax + 7, y(to)); ctx.stroke();
+        ctx.fillStyle = token("--warn"); ctx.font = `500 10px ${token("--sans")}`; ctx.textBaseline = "middle";
+        const msg = k + 1 < c.t.att.length ? (roomLeft ? "no reply · retry" : "retry") : "no reply";
+        if (roomLeft) { ctx.textAlign = "right"; ctx.fillText(msg, ax - 10, y(to)); }
+        else { ctx.textAlign = "right"; ctx.fillText(msg, ax - 9, y(to) - 9); }
+      }
+      // request arrow
+      const reqCol = k === 0 ? token("--ink") : token("--accent");
+      if (a.arrive < 0) arrow(ctx, ax, y(a.send), sx, y(a.send + 0.1), now, a.send, a.send + 0.1, reqCol, true, `try ${k + 1}`);
+      else arrow(ctx, ax, y(a.send), sx, y(a.arrive), now, a.send, a.arrive, reqCol, false, `try ${k + 1}`);
+      if (a.arrive < 0 || a.arrive > now) return;
+      // the server's work on this attempt
+      const end = Math.min(now, a.done);
+      const second = a.charged && chargeRank.get(a) >= 1;
+      const col = a.kind === "charge" ? (second ? token("--bad") : token("--good")) : token("--faint");
+      const bx = sx - 5 + k * 5; // later attempts' bars sit a little to the right
+      ctx.fillStyle = alpha(col, a.kind === "charge" ? 0.45 : 0.2);
+      ctx.fillRect(bx, y(a.arrive), 8, Math.max(1.5, y(end) - y(a.arrive)));
+      if (a.kind === "waited") { ctx.strokeStyle = col; ctx.setLineDash([2, 2]); ctx.strokeRect(bx + 0.5, y(a.arrive) + 0.5, 8, Math.max(1.5, y(end) - y(a.arrive))); ctx.setLineDash([]); }
+      if (a.done <= now) {
+        ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.font = `600 10.5px ${token("--mono")}`;
+        const lx = sx + 10 + k * 5;
+        if (a.charged) { ctx.fillStyle = second ? token("--bad") : token("--good"); ctx.fillText(second ? (cw < 200 ? "+$20" : "$20 again") : "$20", lx, y(a.done)); }
+        else { ctx.fillStyle = token("--faint"); ctx.font = `500 10px ${token("--sans")}`; ctx.fillText(a.kind === "waited" ? (cw < 200 ? "waited" : "waited, same result") : (cw < 200 ? "seen" : "seen: same result"), lx, y(a.done)); }
+        // reply arrow
+        if (a.reply < 0) arrow(ctx, sx, y(a.done), ax, y(a.done + 0.1), now, a.done, a.done + 0.1, token("--muted"), true);
+        else arrow(ctx, sx, y(a.done), ax, y(a.reply), now, a.done, a.reply, token("--muted"), false);
+      } else if (a.kind === "charge") {
+        ctx.fillStyle = col; ctx.font = `500 10px ${token("--sans")}`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+        ctx.fillText("charging…", sx + 10 + k * 5, y(now));
+      }
+    });
+    // outcome
+    const doneAt = c.t.fin >= 0 ? c.t.fin : c.t.gaveUp;
+    if (doneAt <= now) {
+      ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.font = `600 11px ${token("--sans")}`;
+      const n = c.t.charges;
+      ctx.fillStyle = n === 1 ? token("--good") : n > 1 ? token("--bad") : token("--warn");
+      ctx.fillText(`${c.t.fin >= 0 ? "agent got a reply" : "agent gave up"} · charged ${n === 1 ? "once" : n === 0 ? "never" : n + " times"}`, ox + cw / 2, oy + ch - 12);
+    }
+  });
+});
+
+// an arrow from (x0,y0) to (x1,y1) that grows between times t0 and t1; a lost
+// message stops halfway with a cross
+function arrow(ctx, x0, y0, x1, y1, now, t0, t1, color, lost, label) {
+  const k = ease((now - t0) / Math.max(1e-6, t1 - t0));
+  if (k <= 0) return;
+  const reach = lost ? Math.min(k, 1) * 0.5 : Math.min(k, 1);
+  const xe = x0 + (x1 - x0) * reach, ye = y0 + (y1 - y0) * reach;
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(xe, ye); ctx.stroke();
+  if (lost) {
+    if (k >= 1) {
+      ctx.strokeStyle = token("--bad"); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(xe - 5, ye - 5); ctx.lineTo(xe + 5, ye + 5); ctx.moveTo(xe + 5, ye - 5); ctx.lineTo(xe - 5, ye + 5); ctx.stroke();
+      ctx.fillStyle = token("--bad"); ctx.font = `500 10px ${token("--sans")}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText("lost", xe, ye + 7);
+    }
+  } else if (k >= 1) {
+    const a = Math.atan2(y1 - y0, x1 - x0);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 - 7 * Math.cos(a - 0.4), y1 - 7 * Math.sin(a - 0.4)); ctx.lineTo(x1 - 7 * Math.cos(a + 0.4), y1 - 7 * Math.sin(a + 0.4)); ctx.closePath(); ctx.fill();
+  }
+  if (label && k > 0.15) {
+    ctx.fillStyle = color; ctx.font = `500 10px ${token("--sans")}`; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText(label, x0 + 4, y0 + 3);
+  }
+}
+
+// ---- the grid of every purchase
+function chargesBy(t, now) { let n = 0; for (const a of t.att) if (a.charged && a.done <= now) n++; return n; }
+const grid = stage(document.getElementById("grid"), (w) => {
+  const n = res?.trace.length ?? 500, cell = w < 640 ? 17 : 21, cols = Math.floor((w - 32) / cell);
+  return Math.ceil(n / cols) * cell + 28;
+}, (ctx, w, h) => {
+  if (!res) return;
+  const now = gridPlayer.t, cell = w < 640 ? 17 : 21, cols = Math.floor((w - 32) / cell), ox = (w - cols * cell) / 2;
+  res.trace.forEach((t, i) => {
+    const x = ox + (i % cols) * cell, y = 14 + Math.floor(i / cols) * cell, s = cell - 3;
+    if (t.start > now) { ctx.strokeStyle = token("--rule"); ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, s, s); return; }
+    const n = chargesBy(t, now), over = (t.fin >= 0 && t.fin <= now) || (t.gaveUp >= 0 && t.gaveUp <= now);
+    if (n === 0 && !over) { ctx.strokeStyle = token("--ink"); ctx.lineWidth = 1.5; ctx.strokeRect(x + 1, y + 1, s - 1, s - 1); }
+    else { ctx.fillStyle = n === 1 ? alpha(token("--good"), 0.75) : n > 1 ? token("--bad") : token("--warn"); ctx.fillRect(x, y, s, s); }
+    const sent = t.att.filter((a) => a.send <= now).length;
+    if (sent > 1) { ctx.fillStyle = n > 1 ? "#fff" : token("--ink"); ctx.font = `600 ${Math.round(s * 0.55)}px ${token("--mono")}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(String(sent), x + s / 2, y + s / 2 + 0.5); }
+  });
+});
+
+function live(now) {
+  let once = 0, twice = 0, never = 0, extra = 0;
+  for (const t of res.trace) {
+    if (t.start > now) continue;
+    const n = chargesBy(t, now), over = (t.fin >= 0 && t.fin <= now) || (t.gaveUp >= 0 && t.gaveUp <= now);
+    if (n === 1) once++; else if (n > 1) { twice++; extra += n - 1; } else if (over) never++;
+  }
+  const set = (id, v) => (document.getElementById(id).textContent = v);
+  set("sOnce", fmt.num(once)); set("sTwice", fmt.num(twice)); set("sNever", fmt.num(never)); set("sExtra", `$${fmt.num(extra * res.params.price)}`);
+}
+
+function legends() {
+  const sw = (c) => `<i style="background:${c}"></i>`;
+  document.getElementById("seqLegend").innerHTML =
+    `<span>${sw(token("--good"))}first charge</span><span>${sw(token("--bad"))}a second charge</span><span>${sw(token("--faint"))}server recognised the key</span><span style="color:var(--warn)">— the agent's wait ran out</span><span style="color:var(--bad)">× message lost</span>`;
+  document.getElementById("gridLegend").innerHTML =
+    `<span>${sw(alpha(token("--good"), 0.75))}charged once</span><span>${sw(token("--bad"))}charged twice or more</span><span>${sw(token("--warn"))}never charged</span><span><i style="border:1.5px solid var(--ink)"></i>waiting for a reply</span><span>a number = how many tries it took</span>`;
+}
+
+function table() {
+  compare(document.getElementById("compare"), {
+    rows: res.stats.map((s) => ({ key: s.policy, label: s.label, cells: s })),
+    cols: [
+      { key: "once", label: "Charged once", fmt: (v) => fmt.num(v), better: "high" },
+      { key: "twice", label: "Twice or more", fmt: (v) => fmt.num(v), better: "low" },
+      { key: "never", label: "Never", fmt: (v) => fmt.num(v), better: "low" },
+      { key: "extraDollars", label: "Extra money taken", fmt: (v) => `$${fmt.num(v)}`, better: "low" },
+      { key: "gaveUp", label: "Agent gave up", fmt: (v) => fmt.num(v) },
+      { key: "attempts", label: "Tries per purchase", fmt: (v) => v.toFixed(2) },
+    ],
+    current: params.policy,
+    onPick: (k) => { params.policy = k; pol.value = k; refresh(); },
+  });
+}
+
+let seq_ = 0;
+async function refresh() {
+  const my = ++seq_;
+  try {
+    const out = await run("double-charge", params);
+    if (my !== seq_) return;
+    res = out;
+    cases = pickCases();
+    const span = Math.min(8, Math.max(2.5, ...cases.map(({ t }) => Math.max(t.fin, t.gaveUp, ...t.att.map((a) => Math.max(a.done, a.reply))) - t.start + 0.4)));
+    const was1 = seqPlayer?.playing, was2 = gridPlayer?.playing;
+    if (!seqPlayer) {
+      seqPlayer = new Player(document.getElementById("seqPlayer"), { duration: span, speed: 0.5, speeds: [0.25, 0.5, 1, 2], onFrame: () => seq.draw() });
+      gridPlayer = new Player(document.getElementById("gridPlayer"), { duration: res.end, speed: 4, onFrame: (t) => { grid.draw(); live(t); } });
+      autoplay(seqPlayer, document.getElementById("seq"));
+      autoplay(gridPlayer, document.getElementById("grid"));
+    }
+    seqPlayer.setDuration(span); gridPlayer.setDuration(res.end);
+    legends(); table();
+    seqPlayer.seek(0); gridPlayer.seek(0);
+    if (was1) seqPlayer.play();
+    if (was2) gridPlayer.play();
+  } catch (e) { fail(document.getElementById("seq"), e); }
+}
+refresh();
+</script>
+</body>
+</html>

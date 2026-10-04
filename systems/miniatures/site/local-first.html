@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local-First Sync</title>
+<meta name="description" content="Two phones edit the same note offline, then sync: last-writer-wins loses work, a CRDT keeps all of it. The CRDT is Go, compiled to WebAssembly, running as you type.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;1,400&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .bar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted); }
+  .bar .hint { margin-left: auto; }
+  .phones { display: grid; grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr); gap: 0; align-items: center; padding: 1.4rem 1.1rem; }
+  .phone { border: 2px solid var(--rule-strong); border-radius: 22px; padding: 0.9rem 0.9rem 1rem; background: var(--paper); max-width: 26rem; width: 100%; justify-self: center; }
+  .phone.off { border-style: dashed; }
+  .phone .top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.6rem; }
+  .phone .who { font-weight: 600; font-size: 0.92rem; display: flex; align-items: center; gap: 0.45rem; }
+  .phone .who i { width: 0.7rem; height: 0.7rem; border-radius: 50%; display: inline-block; }
+  .phone textarea { width: 100%; min-height: 7.5rem; resize: vertical; padding: 0.7rem 0.75rem; font: 1.05rem/1.5 var(--prose); color: var(--ink); background: var(--raised); border: 1px solid var(--rule); border-radius: 10px; }
+  .phone textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .phone .foot2 { display: flex; justify-content: space-between; margin-top: 0.55rem; font-size: 0.78rem; color: var(--faint); }
+  .phone .wait { color: var(--warn); font-weight: 600; }
+  .phone .seg button { padding: 0.25rem 0.6rem; font-size: 0.78rem; }
+  .link { text-align: center; font-size: 0.75rem; color: var(--faint); }
+  .link .wire { height: 0; border-top: 2px solid var(--good); margin: 0.4rem 0.6rem; }
+  .link.off .wire { border-top: 2px dashed var(--rule-strong); }
+  .link .what { min-height: 2.2em; }
+  .link.on .what { color: var(--good); }
+  .outcomes { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--rule); }
+  .outcome { padding: 1rem 1.1rem 1.1rem; }
+  .outcome + .outcome { border-left: 1px solid var(--rule); }
+  .outcome h3 { margin: 0 0 0.15rem; font: 600 0.8rem/1.3 var(--sans); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+  .outcome .why { margin: 0 0 0.6rem; font-size: 0.8rem; color: var(--faint); }
+  .doc { font: 1.08rem/1.65 var(--prose); padding: 0.65rem 0.8rem; background: var(--paper); border: 1px solid var(--rule); min-height: 3.5rem; white-space: pre-wrap; word-break: break-word; }
+  .doc span.lost { color: var(--bad); text-decoration: line-through; text-decoration-thickness: 2px; background: color-mix(in oklab, var(--bad) 12%, transparent); }
+  .doc span.back { background: color-mix(in oklab, var(--warn) 28%, transparent); text-decoration: underline wavy var(--warn); text-underline-offset: 3px; }
+  .doc .a0 { color: var(--c0); font-weight: 600; }
+  .doc .a1 { color: var(--c1); font-weight: 600; }
+  #player .player { border-top: 1px solid var(--rule); }
+  #player[hidden] { display: none; }
+  @media (max-width: 720px) {
+    #player .player { flex-wrap: wrap; }
+    #player .player input[type=range] { flex: 1 1 100%; order: 3; }
+    .phones { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; padding: 1rem; }
+    .link .wire { width: 60%; margin: 0.3rem auto; }
+    .outcomes { grid-template-columns: minmax(0, 1fr); }
+    .outcome + .outcome { border-left: 0; border-top: 1px solid var(--rule); }
+    .bar .hint { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="series" aria-label="Series"></nav>
+
+  <header class="head">
+    <div class="kicker">Everyday backend · 7</div>
+    <h1>Local-first sync</h1>
+    <p class="lede">Two phones share one note. On the train, both go offline and both keep editing. When they reconnect, the app has to merge two versions of the same text. The simple way, keeping whichever copy was saved last, quietly throws away the other person's work. A CRDT, a data type designed to merge cleanly, keeps every edit from both phones.</p>
+    <div class="under"><span><b>Underneath:</b> a sequence CRDT (RGA) and Lamport clocks</span><span><b>Seen in:</b> Automerge and Yjs, the libraries behind many collaborative and offline-first apps</span></div>
+  </header>
+
+  <section class="panel" id="panel">
+    <div class="bar">
+      <button type="button" class="btn primary" id="demo">Play the example</button>
+      <button type="button" class="btn" id="reset">Start over</button>
+      <span class="hint">Or try it: switch both phones offline, edit each differently, then bring them back online.</span>
+    </div>
+    <div id="player" hidden></div>
+    <div class="phones">
+      <div class="phone" id="p0"></div>
+      <div class="link" id="link"><div class="what"></div><div class="wire"></div></div>
+      <div class="phone" id="p1"></div>
+    </div>
+    <div class="live">
+      <div class="stat"><div class="k">Phones agree</div><div class="v" id="sAgree">–</div><div class="s">same text on both</div></div>
+      <div class="stat"><div class="k">Changes waiting</div><div class="v" id="sWait">–</div><div class="s">not yet on the other phone</div></div>
+      <div class="stat"><div class="k">Lost by last writer wins</div><div class="v" id="sLost">–</div><div class="s">typed characters thrown away</div></div>
+      <div class="stat"><div class="k">Lost by the CRDT</div><div class="v" id="sKept">0</div><div class="s">always</div></div>
+    </div>
+    <div class="outcomes">
+      <div class="outcome"><h3>Last writer wins</h3><p class="why" id="lwwWhy"></p><div class="doc" id="lww"></div></div>
+      <div class="outcome"><h3>CRDT</h3><p class="why">Every edit from both phones, merged character by character.</p><div class="doc" id="crdt"></div></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <h2>The two merges, on what's in the phones now</h2>
+  <p class="sub">"Typed text kept" counts characters someone typed and nobody deleted; "deletions kept" counts characters someone deleted that stay deleted.</p>
+  <div class="scrollx"><table class="compare" id="compare"></table></div>
+
+  <div class="notes">
+    <div class="note"><h3>What to notice</h3>
+      <p>In the example, phone A fixes "Teh" and adds "sly"; phone B fixes "jumsp" and adds "small", in the same place. <b>Last writer wins</b> keeps phone B's copy because it was saved last, so A's fix and A's word vanish, and the "Teh" that A deleted comes back.</p>
+      <p>The <b>CRDT</b> keeps both fixes and both words. Where both phones typed at the same spot, it puts one word before the other. Every phone uses the same tie-break, so they all agree. Each word stays in one piece instead of being shuffled letter by letter.</p>
+      <p>Try deleting a word on one phone while the other edits inside it. The edit still arrives; it just has nothing left around it.</p>
+    </div>
+    <div class="note"><h3>How the model works</h3>
+      <p>Each character gets a permanent id: a counter plus the phone that typed it. A Lamport clock means each phone's counter jumps past any counter it has seen. Typing records "put this character after the one with id X", and deleting records "hide the character with id X". Hidden characters stay in the list as markers so later edits can still point at them.</p>
+      <p>When two characters were put after the same one, the larger id goes first. Since every phone applies the same rule, they all end up with the same text, whatever order the edits arrive in. The tests check this for hundreds of random edit histories. This is RGA, the Replicated Growable Array (Roh and colleagues, 2011).</p>
+      <p>Last writer wins here keeps the copy saved most recently, exactly as it was when saved. See Kleppmann and colleagues, <i>Local-first software</i> (Ink &amp; Switch, 2019), for why this matters for apps that work offline.</p>
+    </div>
+  </div>
+
+  <p class="foot">The CRDT is Go (<code>sims/localfirst</code>), compiled to WebAssembly; every keystroke replays the whole history through it. <code>go run ./cmd/mini local-first</code> prints the example's two merges in a terminal. Its tests check convergence, delivery in any order, and the claims on this page.</p>
+</div>
+
+<script type="module">
+import { run, series, fail, fmt, esc, token, segmented, Player, compare } from "./mini.js";
+
+series("local-first");
+const NAMES = ["Phone A", "Phone B"];
+let base = "", events = [], res = null, demo = [], demoTimes = [], online = [true, true];
+const tas = [], segs = [], foots = [];
+
+// ---- the phones
+for (const r of [0, 1]) {
+  const el = document.getElementById(`p${r}`);
+  el.innerHTML = `<div class="top"><span class="who"><i style="background:var(--c${r})"></i>${NAMES[r]}</span><span class="net"></span></div>
+    <textarea spellcheck="false" aria-label="${NAMES[r]}'s note"></textarea><div class="foot2"><span class="made"></span><span class="wait"></span></div>`;
+  tas[r] = el.querySelector("textarea");
+  foots[r] = { made: el.querySelector(".made"), wait: el.querySelector(".wait") };
+  segs[r] = segmented(el.querySelector(".net"), { options: [["on", "Online"], ["off", "Offline"]], value: "on", onChange: (v) => { stopDemo(); setOnline(r, v === "on"); } });
+  tas[r].addEventListener("input", () => { stopDemo(); typed(r); });
+}
+
+// code-point arrays, so an emoji is one character, as in the Go code
+const cps = (s) => Array.from(s);
+
+function typed(r) {
+  const before = cps(res.phones[r].text), after = cps(tas[r].value);
+  let a = 0;
+  while (a < before.length && a < after.length && before[a] === after[a]) a++;
+  let b = 0;
+  while (b < before.length - a && b < after.length - a && before[before.length - 1 - b] === after[after.length - 1 - b]) b++;
+  const del = before.length - a - b, ins = after.slice(a, after.length - b).join("");
+  if (!del && !ins) return;
+  events.push({ k: "edit", r, at: a, del, ins });
+  if (online[0] && online[1]) events.push({ k: "sync", from: r, to: 1 - r });
+  update(r);
+}
+
+function setOnline(r, on) {
+  online[r] = on;
+  events.push({ k: on ? "online" : "offline", r });
+  if (online[0] && online[1]) events.push({ k: "sync", from: 0, to: 1 }, { k: "sync", from: 1, to: 0 });
+  update();
+}
+
+// ---- running the history through the Go CRDT
+async function update(editing = -1) {
+  try {
+    res = await run("local-first", { base, events });
+  } catch (e) { fail(document.getElementById("panel"), e); return; }
+  render(editing);
+}
+
+const span = (s) => `<span class="${s.a >= 0 ? `a${s.a}` : ""}${s.x ? ` ${s.x}` : ""}">${esc(s.t)}</span>`;
+
+function render(editing) {
+  for (const r of [0, 1]) {
+    const ph = res.phones[r];
+    if (r !== editing && tas[r].value !== ph.text) tas[r].value = ph.text;
+    online[r] = ph.online;
+    segs[r].value = ph.online ? "on" : "off";
+    document.getElementById(`p${r}`).classList.toggle("off", !ph.online);
+    foots[r].made.textContent = `${ph.edits} change${ph.edits === 1 ? "" : "s"} made`;
+    foots[r].wait.textContent = ph.pending ? `${ph.pending} waiting to sync` : "";
+  }
+  const both = online[0] && online[1];
+  const link = document.getElementById("link");
+  link.className = `link ${both ? "on" : "off"}`;
+  link.querySelector(".what").textContent = both ? "connected: edits flow both ways" : "disconnected";
+
+  document.getElementById("crdt").innerHTML = res.merged.map(span).join("");
+  document.getElementById("lww").innerHTML = res.lww.map(span).join("");
+  document.getElementById("lwwWhy").textContent = res.winner < 0
+    ? "Nobody has edited yet."
+    : `Keeps ${NAMES[res.winner]}'s copy, the one saved last, and throws the other away.`;
+
+  const lww = res.stats[0];
+  document.getElementById("sAgree").textContent = res.synced ? "Yes" : "No";
+  document.getElementById("sAgree").style.color = res.synced ? token("--good") : token("--warn");
+  document.getElementById("sWait").textContent = `${res.phones[0].pending} · ${res.phones[1].pending}`;
+  document.getElementById("sLost").textContent = String(lww.lost);
+  document.getElementById("sLost").style.color = lww.lost ? token("--bad") : "";
+
+  compare(document.getElementById("compare"), {
+    rows: res.stats.map((s) => ({ key: s.mode, label: s.label, cells: s })),
+    cols: [
+      { key: "keptTyped", label: "Typed text kept", fmt: (v) => fmt.pct(v), better: "high" },
+      { key: "keptDeletes", label: "Deletions kept", fmt: (v) => fmt.pct(v), better: "high" },
+      { key: "lost", label: "Characters lost", better: "low" },
+      { key: "back", label: "Deleted, came back", better: "low" },
+    ],
+  });
+}
+
+document.getElementById("legend").innerHTML =
+  `<span><i style="background:var(--c0)"></i>typed on phone A</span><span><i style="background:var(--c1)"></i>typed on phone B</span>` +
+  `<span><i style="background:var(--bad)"></i><s>struck through</s>: typed, then thrown away</span><span><i style="background:var(--warn)"></i>underlined: deleted, then brought back</span>`;
+
+// ---- the example, replayed as typing
+const playerEl = document.getElementById("player");
+const player = new Player(playerEl, {
+  duration: 1, speed: 1, speeds: [0.5, 1, 2, 4],
+  onFrame: (t) => {
+    let k = 0;
+    while (k < demo.length && demoTimes[k] <= t) k++;
+    if (events.length === k && events.every((e, i) => e === demo[i])) return;
+    events = demo.slice(0, k);
+    update();
+  },
+});
+function stopDemo() {
+  if (playerEl.hidden) return;
+  player.pause();
+  playerEl.hidden = true;
+  events = events.slice(); // keep what's on screen as the new starting point
+}
+document.getElementById("demo").addEventListener("click", () => {
+  playerEl.hidden = false;
+  events = [];
+  player.seek(0);
+  player.play();
+});
+document.getElementById("reset").addEventListener("click", () => { stopDemo(); events = []; update(); });
+
+// ---- start
+(async () => {
+  try {
+    const first = await run("local-first", { demo: true });
+    base = first.base;
+    demo = first.demo;
+    // typing is quick; going on- and offline and syncing get a pause to read
+    let t = 0.4;
+    demoTimes = demo.map((e) => (t += e.k === "edit" ? 0.16 : e.k === "sync" ? 1.1 : 0.9));
+    player.setDuration(t + 1);
+    res = first;
+    render(-1);
+  } catch (e) { fail(document.getElementById("panel"), e); }
+})();
+</script>
+</body>
+</html>

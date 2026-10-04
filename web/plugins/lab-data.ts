@@ -339,25 +339,36 @@ export default async function labData(
             what: string;
             from?: string;
             url?: string;
+            /** Another entry's name: this card is a page inside that entry's copied folder. */
+            in?: string;
+            /** A file inside the folder other than index.html. */
+            page?: string;
             ratio?: number;
             image?: string;
           }[];
         }>(path.join(dataDir, "built.yml")))?.built ?? [];
 
-      const built: BuiltPage[] = rawBuilt.map((entry) => ({
-        name: entry.name,
-        title: entry.title,
-        topic: entry.topic,
-        what: entry.what.trim(),
-        src: entry.url ?? `/demos/${entry.name}/`,
-        external: Boolean(entry.url),
-        origin: entry.url
-          ? new URL(entry.url).host
-          : (entry.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
-        ratio: entry.ratio ?? 1.6,
-        // relative to the copied page's folder, or absolute for a hosted page
-        image: entry.image ? (/^https?:/.test(entry.image) ? entry.image : `/demos/${entry.name}/${entry.image}`) : undefined,
-      }));
+      const byName = new Map(rawBuilt.map((entry) => [entry.name, entry]));
+      const built: BuiltPage[] = rawBuilt.map((entry) => {
+        // a card for one page of a folder another entry already copies
+        const host = entry.in ? byName.get(entry.in) : entry;
+        if (!host) throw new Error(`built.yml: ${entry.name} is "in" ${entry.in}, which isn't an entry`);
+        const folder = `/demos/${host.name}/`;
+        return {
+          name: entry.name,
+          title: entry.title,
+          topic: entry.topic,
+          what: entry.what.trim(),
+          src: entry.url ?? folder + (entry.page ?? ""),
+          external: Boolean(entry.url),
+          origin: entry.url
+            ? new URL(entry.url).host
+            : (host.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
+          ratio: entry.ratio ?? 1.6,
+          // relative to the copied page's folder, or absolute for a hosted page
+          image: entry.image ? (/^https?:/.test(entry.image) ? entry.image : folder + entry.image) : undefined,
+        };
+      });
 
       const rawProjects =
         (await readYaml<{
