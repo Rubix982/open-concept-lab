@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { api, type Award, type Faculty, type Paper } from "@/api";
-import { LINE_COLOR, formatMoney, formatYear } from "@/lines";
+import { LINE_COLOR, formatMoney, formatYear, webUrl } from "@/lines";
 import { areaIndex, funderName, fundersFor } from "@/store";
 import { countryName } from "@/countries";
 
@@ -79,7 +79,7 @@ function untilLabel(date: string | null): string {
         <h2>{{ displayName }}</h2>
         <p class="uni">{{ person.university }}</p>
         <p class="links">
-          <a v-if="person.homepage" :href="person.homepage" target="_blank" rel="noopener">Homepage</a>
+          <a v-if="webUrl(person.homepage)" :href="webUrl(person.homepage)" target="_blank" rel="noopener">Homepage</a>
           <a
             v-if="person.scholar_id"
             :href="`https://scholar.google.com/citations?user=${encodeURIComponent(person.scholar_id)}`"
@@ -127,7 +127,7 @@ function untilLabel(date: string | null): string {
         <p v-else-if="!papers.length" class="hint">No recent papers loaded for this professor yet.</p>
         <ol v-else class="papers">
           <li v-for="p in papers" :key="p.title">
-            <a v-if="p.url" :href="p.url" target="_blank" rel="noopener">{{ p.title }}</a>
+            <a v-if="webUrl(p.url)" :href="webUrl(p.url)" target="_blank" rel="noopener">{{ p.title }}</a>
             <span v-else>{{ p.title }}</span>
             <span class="meta">{{ p.venue }} {{ p.year }}</span>
           </li>
@@ -141,7 +141,7 @@ function untilLabel(date: string | null): string {
         </p>
         <ol class="awards">
           <li v-for="a in awards" :key="a.id" :class="{ active: a.active }">
-            <a :href="a.url" target="_blank" rel="noopener" class="award-title">{{ a.title }}</a>
+            <a :href="webUrl(a.url)" target="_blank" rel="noopener" class="award-title">{{ a.title }}</a>
             <p class="meta">
               {{ funderName(a.funder) }}, <span class="num">{{ formatMoney(a.amount, a.currency) }}</span>,
               {{ formatYear(a.starts) }}&ndash;{{ formatYear(a.ends) }}<template v-if="a.role">, {{ a.role }}</template>

@@ -2,8 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, funders, nationality } from "@/store";
-import { COUNTRIES } from "@/countries";
+import { areaIndex, areas, funders } from "@/store";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import GrantRow from "@/components/GrantRow.vue";
@@ -231,13 +230,6 @@ function removeArea(area: string) {
         <button type="button" :aria-label="`Remove ${areaIndex.get(a)?.name ?? a}`" @click="removeArea(a)">×</button>
       </span>
       <span v-if="!selectedAreas.length" class="filter-hint">All areas</span>
-      <label class="from">
-        Applying from
-        <select v-model="nationality" aria-label="Your nationality, for scholarship eligibility">
-          <option value="">Choose country</option>
-          <option v-for="c in COUNTRIES" :key="c.code" :value="c.code">{{ c.name }}</option>
-        </select>
-      </label>
       <span v-if="goal" class="goal-chip">
         Results for <strong>“{{ goal }}”</strong>&nbsp;
         <button type="button" class="link" @click="clearGoal">Clear search</button>
@@ -322,6 +314,7 @@ function removeArea(area: string) {
       <footer class="foot">
         Data from CSRankings, DBLP, IPEDS and public grant records (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC).
         <button type="button" class="link" @click="about?.showModal()">About the data</button>
+        <a class="link" href="/overview.html">Project overview</a>
       </footer>
     </section>
 
@@ -528,25 +521,6 @@ h1 {
   font-size: 0.85rem;
 }
 
-.from {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 6px;
-  font-size: var(--t-xs);
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-
-.from select {
-  border: 1.5px solid var(--rule-strong);
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  padding: 2px 8px;
-  font-size: var(--t-xs);
-  max-width: 170px;
-}
-
 .filter-hint {
   font-size: var(--t-xs);
   color: var(--ink-faint);
@@ -712,6 +686,10 @@ h1 {
 .foot .link {
   font-weight: 600;
   color: var(--ink-soft);
+}
+
+.foot .link + .link {
+  margin-left: 12px;
 }
 
 .map-wrap {

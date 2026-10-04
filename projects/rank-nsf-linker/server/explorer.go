@@ -50,7 +50,7 @@ SELECT f.name, f.university, p.homepage, NULLIF(NULLIF(p.scholar_id, ''), 'NOSCH
        f.areas, f.area_pubs, f.recent_pubs,
        COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding
 FROM (
-  SELECT x.name, a.university, array_agg(x.area ORDER BY x.pubs DESC) AS areas,
+  SELECT x.name, a.university, array_agg(x.area ORDER BY x.pubs DESC, x.area) AS areas,
          jsonb_object_agg(x.area, round(x.pubs::numeric)) AS area_pubs, sum(x.pubs) AS recent_pubs
   FROM x_pubs x JOIN x_aff a USING (name)
   GROUP BY x.name, a.university
@@ -93,7 +93,8 @@ INSERT INTO explorer_universities (id, name, city, state, country, latitude, lon
                                    grad_tuition_in_state, grad_tuition_out_of_state, grad_enrollment,
                                    faculty_count, funded_faculty, area_faculty, area_funded)
 SELECT institution_key(u.institution), u.institution, COALESCE(ii.city, u.city), ii.state,
-       COALESCE(u.countryabbrv, 'us'), u.latitude, u.longitude, COALESCE(ii.website, u.homepage),
+       u.countryabbrv, COALESCE(uc.latitude, ii.latitude, u.latitude), COALESCE(uc.longitude, ii.longitude, u.longitude),
+       COALESCE(ii.website, u.homepage),
        CASE ii.carnegie_classification WHEN '15' THEN 'R1' WHEN '16' THEN 'R2' END,
        t.grad_tuition_in_state, t.grad_tuition_out_of_state, e.graduate_total,
        fc.faculty, fc.funded, ac.area_faculty, ac.area_funded
@@ -104,6 +105,7 @@ JOIN (SELECT university, jsonb_object_agg(area, n) area_faculty, jsonb_object_ag
       FROM (SELECT university, area, count(*) n, count(*) FILTER (WHERE active_awards > 0) nf
             FROM explorer_faculty, unnest(areas) area GROUP BY university, area) z
       GROUP BY university) ac ON ac.university = fc.university
+LEFT JOIN uc_curated uc ON uc.institution = u.institution
 LEFT JOIN ipeds_institutions ii ON ii.unitid = u.ipeds_unitid
 LEFT JOIN ipeds_tuition_fees t ON t.unitid = u.ipeds_unitid
 LEFT JOIN ipeds_enrollment e ON e.unitid = u.ipeds_unitid
@@ -122,6 +124,9 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	}
 	defer tx.Rollback()
 
+	if err := loadCuratedCoordinates(tx); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(buildExplorerSQL); err != nil {
 		return fmt.Errorf("failed to build explorer tables: %w", err)
 	}

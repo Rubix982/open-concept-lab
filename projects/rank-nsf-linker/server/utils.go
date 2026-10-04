@@ -579,6 +579,9 @@ func normalizeInstitutionName(name string) string {
 	if strings.HasPrefix(strings.ToLower(name), "univ. ") {
 		name = "University " + strings.TrimSpace(name[6:])
 	}
+	if strings.EqualFold(name, "univ") { // "Univ" or "Univ." on its own (the period is stripped above)
+		name = "University"
+	}
 	if strings.HasPrefix(strings.ToLower(name), "texas a and m") {
 		// Special case for Texas A&M (case-insensitive)
 		// Preserve any trailing text after "Texas A And M"

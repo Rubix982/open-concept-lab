@@ -36,6 +36,8 @@ RUN mkdir -p /app/target/
 
 # Install Python3 and pip for scraper
 RUN apk add --no-cache python3 py3-pip
+# curl for the compose healthcheck
+RUN apk add --no-cache curl
 
 # Copy built binary from builder stage
 COPY --from=builder /app/go-server .

@@ -37,3 +37,13 @@ export function formatMoney(n: number, currency = "USD"): string {
 export function formatYear(date: string | null): string {
   return date ? date.slice(0, 4) : "";
 }
+
+// Links from data (homepages, grant and paper pages) go through this: only http(s) URLs are
+// rendered, so a "javascript:" value in the source data can't run. Bare domains get https://.
+export function webUrl(url: string | null | undefined): string | undefined {
+  const u = (url ?? "").trim();
+  if (!u) return undefined;
+  if (/^https?:\/\//i.test(u)) return u;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return undefined; // another scheme: javascript:, data:, ...
+  return `https://${u.replace(/^\/+/, "")}`;
+}

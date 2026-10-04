@@ -138,10 +138,72 @@ type workPayload struct {
 	UniversityID string   `json:"university_id"`
 }
 
+// docHash identifies the fields that belong to the work itself, not to its professor.
+func (p workPayload) docHash() string {
+	b, _ := json.Marshal([]any{p.Name, p.Kind, p.Ref, p.Title, p.Year, p.URL})
+	sum := sha1.Sum(b)
+	return hex.EncodeToString(sum[:])
+}
+
+// hash identifies a payload's content; area order doesn't count (Qdrant filters areas as a set).
 func (p workPayload) hash() string {
+	p.Areas = append([]string(nil), p.Areas...)
+	sort.Strings(p.Areas)
 	b, _ := json.Marshal(p)
 	sum := sha1.Sum(b)
 	return hex.EncodeToString(sum[:])
+}
+
+// qdrantPointIDs lists every point id in the work collection, in small pages: Qdrant 1.3 runs out of
+// memory on large scrolls.
+func qdrantPointIDs() (map[string]bool, error) {
+	ids := map[string]bool{}
+	var offset any
+	for {
+		var page struct {
+			Result struct {
+				Points []struct {
+					ID string `json:"id"`
+				} `json:"points"`
+				NextPageOffset any `json:"next_page_offset"`
+			} `json:"result"`
+		}
+		body := map[string]any{"limit": 2000, "with_payload": false, "with_vector": false}
+		if offset != nil {
+			body["offset"] = offset
+		}
+		if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/scroll", body, &page); err != nil {
+			return nil, fmt.Errorf("failed to list Qdrant points: %w", err)
+		}
+		for _, p := range page.Result.Points {
+			ids[p.ID] = true
+		}
+		if page.Result.NextPageOffset == nil {
+			return ids, nil
+		}
+		offset = page.Result.NextPageOffset
+	}
+}
+
+// qdrantPayloads reads the payloads of the given points, 500 at a time.
+func qdrantPayloads(ids []string) (map[string]workPayload, error) {
+	out := map[string]workPayload{}
+	for i := 0; i < len(ids); i += 500 {
+		var res struct {
+			Result []struct {
+				ID      string      `json:"id"`
+				Payload workPayload `json:"payload"`
+			} `json:"result"`
+		}
+		if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points",
+			map[string]any{"ids": ids[i:min(i+500, len(ids))], "with_payload": true, "with_vector": false}, &res); err != nil {
+			return nil, fmt.Errorf("failed to read Qdrant payloads: %w", err)
+		}
+		for _, p := range res.Result {
+			out[p.ID] = p.Payload
+		}
+	}
+	return out, nil
 }
 
 func textHash(text string) string {
@@ -227,16 +289,16 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		return fmt.Errorf("failed to read work docs: %w", err)
 	}
 
-	type heldPoint struct{ payloadHash, textHash string } // textHash "" = embedded from the base text
+	type heldPoint struct{ payloadHash, textHash, docHash string } // "" = recorded before that column existed
 	held := map[string]heldPoint{}
-	rows, err = db.Query(`SELECT id::text, payload_hash, COALESCE(text_hash, '') FROM explorer_embedded`)
+	rows, err = db.Query(`SELECT id::text, payload_hash, COALESCE(text_hash, ''), COALESCE(doc_hash, '') FROM explorer_embedded`)
 	if err != nil {
 		return fmt.Errorf("failed to read explorer_embedded: %w", err)
 	}
 	for rows.Next() {
 		var id string
 		var h heldPoint
-		if err := rows.Scan(&id, &h.payloadHash, &h.textHash); err != nil {
+		if err := rows.Scan(&id, &h.payloadHash, &h.textHash, &h.docHash); err != nil {
 			rows.Close()
 			return err
 		}
@@ -245,6 +307,26 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	rows.Close()
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("failed to read explorer_embedded: %w", err)
+	}
+
+	// explorer_embedded can claim points Qdrant lost (a crash before its write-ahead log was flushed):
+	// forget those so they are embedded again.
+	inQdrant, err := qdrantPointIDs()
+	if err != nil {
+		return err
+	}
+	var lost []string
+	for id := range held {
+		if !inQdrant[id] {
+			lost = append(lost, id)
+			delete(held, id)
+		}
+	}
+	if len(lost) > 0 {
+		if _, err := db.Exec(`DELETE FROM explorer_embedded WHERE id = ANY($1::uuid[])`, pq.Array(lost)); err != nil {
+			return err
+		}
+		logger.Warnf(mainCtx, "⚠️ %d points recorded as embedded were missing from Qdrant; re-embedding them", len(lost))
 	}
 
 	var toEmbed, toRepayload []doc
@@ -265,23 +347,60 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 			toDelete = append(toDelete, id)
 		}
 	}
+	// A stale hash doesn't always mean a stale payload (area order used to count): compare with what
+	// Qdrant holds and only rewrite real changes. Rewriting hundreds of thousands of payloads makes
+	// Qdrant 1.3 rebuild its index and run out of memory.
+	candidates := make([]string, len(toRepayload))
+	for i, d := range toRepayload {
+		candidates[i] = d.id
+	}
+	stored, err := qdrantPayloads(candidates)
+	if err != nil {
+		return err
+	}
+	var current []string
+	changed := toRepayload[:0]
+	for _, d := range toRepayload {
+		if p, ok := stored[d.id]; ok && d.payload.hash() == p.hash() {
+			current = append(current, d.id)
+			continue
+		}
+		changed = append(changed, d)
+	}
+	toRepayload = changed
+	if len(current) > 0 {
+		hashes := make([]string, len(current))
+		docHashes := make([]string, len(current))
+		for i, id := range current {
+			hashes[i], docHashes[i] = docs[id].payload.hash(), docs[id].payload.docHash()
+		}
+		if _, err := db.Exec(`
+			UPDATE explorer_embedded e SET payload_hash = v.h, doc_hash = v.dh
+			FROM (SELECT unnest($1::uuid[]) id, unnest($2::text[]) h, unnest($3::text[]) dh) v
+			WHERE e.id = v.id`, pq.Array(current), pq.Array(hashes), pq.Array(docHashes)); err != nil {
+			return fmt.Errorf("failed to record current payloads: %w", err)
+		}
+	}
+
 	logger.Infof(mainCtx, "🧠 Semantic index: %d to embed, %d payloads to refresh, %d to delete (%d held)",
 		len(toEmbed), len(toRepayload), len(toDelete), len(held))
 
 	// record remembers what Qdrant holds; texts is nil for a payload-only refresh (text unchanged).
-	record := func(ids, hashes, texts []string) error {
+	record := func(ids, hashes, docHashes, texts []string) error {
 		if texts == nil {
 			_, err := db.Exec(`
-				INSERT INTO explorer_embedded (id, payload_hash)
-				SELECT unnest($1::uuid[]), unnest($2::text[])
-				ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash`, pq.Array(ids), pq.Array(hashes))
+				INSERT INTO explorer_embedded (id, payload_hash, doc_hash)
+				SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[])
+				ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash`,
+				pq.Array(ids), pq.Array(hashes), pq.Array(docHashes))
 			return err
 		}
 		_, err := db.Exec(`
-			INSERT INTO explorer_embedded (id, payload_hash, text_hash)
-			SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[])
-			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, text_hash = EXCLUDED.text_hash`,
-			pq.Array(ids), pq.Array(hashes), pq.Array(texts))
+			INSERT INTO explorer_embedded (id, payload_hash, doc_hash, text_hash)
+			SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[])
+			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash,
+			  text_hash = EXCLUDED.text_hash`,
+			pq.Array(ids), pq.Array(hashes), pq.Array(docHashes), pq.Array(texts))
 		return err
 	}
 
@@ -300,15 +419,16 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		ids := make([]string, len(batch))
 		hashes := make([]string, len(batch))
 		textHashes := make([]string, len(batch))
+		docHashes := make([]string, len(batch))
 		for j, d := range batch {
 			points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
-			ids[j], hashes[j], textHashes[j] = d.id, d.payload.hash(), textHash(d.text)
+			ids[j], hashes[j], textHashes[j], docHashes[j] = d.id, d.payload.hash(), textHash(d.text), d.payload.docHash()
 		}
 		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
 			map[string]any{"points": points}, nil); err != nil {
 			return fmt.Errorf("failed to upsert points: %w", err)
 		}
-		if err := record(ids, hashes, textHashes); err != nil {
+		if err := record(ids, hashes, docHashes, textHashes); err != nil {
 			return fmt.Errorf("failed to record embedded points: %w", err)
 		}
 		if done := i + len(batch); done%(embedBatchSize*40) < embedBatchSize || done == len(toEmbed) {
@@ -316,13 +436,48 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		}
 	}
 
+	// A payload changes when its professor's areas or university change, and those are shared by all
+	// of that professor's work: refresh them with one set_payload per professor, not one per point.
+	type group struct {
+		areas        []string
+		universityID string
+		ids, hashes  []string
+		docHashes    []string
+	}
+	groups := map[string]*group{}
 	for _, d := range toRepayload {
-		if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/payload?wait=true",
-			map[string]any{"payload": d.payload, "points": []string{d.id}}, nil); err != nil {
-			return fmt.Errorf("failed to refresh payload: %w", err)
+		if h := held[d.id]; h.docHash != "" && h.docHash != d.payload.docHash() {
+			// the work itself changed (title, year, url): replace its whole payload
+			if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/payload?wait=true",
+				map[string]any{"payload": d.payload, "points": []string{d.id}}, nil); err != nil {
+				return fmt.Errorf("failed to refresh payload: %w", err)
+			}
+			if err := record([]string{d.id}, []string{d.payload.hash()}, []string{d.payload.docHash()}, nil); err != nil {
+				return err
+			}
+			continue
 		}
-		if err := record([]string{d.id}, []string{d.payload.hash()}, nil); err != nil {
-			return err
+		key := d.payload.UniversityID + "|" + strings.Join(d.payload.Areas, ",")
+		g := groups[key]
+		if g == nil {
+			g = &group{areas: d.payload.Areas, universityID: d.payload.UniversityID}
+			groups[key] = g
+		}
+		g.ids = append(g.ids, d.id)
+		g.hashes = append(g.hashes, d.payload.hash())
+		g.docHashes = append(g.docHashes, d.payload.docHash())
+	}
+	for _, g := range groups {
+		for i := 0; i < len(g.ids); i += 1000 {
+			j := min(i+1000, len(g.ids))
+			if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/payload?wait=true",
+				map[string]any{"payload": map[string]any{"areas": g.areas, "university_id": g.universityID},
+					"points": g.ids[i:j]}, nil); err != nil {
+				return fmt.Errorf("failed to refresh payload: %w", err)
+			}
+			if err := record(g.ids[i:j], g.hashes[i:j], g.docHashes[i:j], nil); err != nil {
+				return err
+			}
 		}
 	}
 

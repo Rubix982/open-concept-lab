@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../mesh-transformer-jax"
+		},
+		{
+			"path": "../the-shelf"
 		}
 	],
 	"settings": {

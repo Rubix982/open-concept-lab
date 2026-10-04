@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Advisor Atlas</title>
+<meta name="description" content="Advisor Atlas: a map of computer science faculty, their recent work and funding, for students looking for a PhD advisor.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=Overpass+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column with a transit-map spine; the four research-area "lines" are the only colour. */
+:root {
+  --paper: #f3f5f4;
+  --surface: #ffffff;
+  --ink: #1d2a3a;
+  --ink-soft: #4b5868;
+  --ink-faint: #7c8794;
+  --rule: #d9dfe3;
+  --line-ai: #2f6fdb;
+  --line-systems: #1e9e6a;
+  --line-theory: #8e4fd1;
+  --line-inter: #c98a0c;
+  --bar-national: #1d2a3a;
+  --bar-erc: #c98a0c;
+  --bar-none: #c4ccd3;
+  --font: "Overpass", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Overpass Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.375rem;
+  --t-xl: 2rem;
+  --t-xxl: clamp(2.5rem, 7vw, 4rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121a24; --surface: #1a2430; --ink: #e8edf2; --ink-soft: #b3bdc8; --ink-faint: #8794a2;
+    --rule: #2c3846; --line-ai: #6b9cf0; --line-systems: #45c08e; --line-theory: #b388ea; --line-inter: #e2a93a;
+    --bar-national: #e8edf2; --bar-erc: #e2a93a; --bar-none: #3a4757; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121a24; --surface: #1a2430; --ink: #e8edf2; --ink-soft: #b3bdc8; --ink-faint: #8794a2;
+  --rule: #2c3846; --line-ai: #6b9cf0; --line-systems: #45c08e; --line-theory: #b388ea; --line-inter: #e2a93a;
+  --bar-national: #e8edf2; --bar-erc: #e2a93a; --bar-none: #3a4757; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  padding-inline: 16px;
+  padding-block: 0 64px;
+}
+.page { max-width: 760px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.15; margin: 0; }
+p { margin: 0; }
+a { color: inherit; text-decoration-color: var(--ink-faint); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--line-ai); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Masthead: the four area lines run across the top like a route map */
+.lines { display: grid; grid-template-columns: repeat(4, 1fr); height: 6px; margin-inline: -16px; }
+.lines span:nth-child(1) { background: var(--line-ai); }
+.lines span:nth-child(2) { background: var(--line-systems); }
+.lines span:nth-child(3) { background: var(--line-theory); }
+.lines span:nth-child(4) { background: var(--line-inter); }
+
+header { padding-block: 48px 36px; display: grid; gap: 16px; }
+header h1 { font-size: var(--t-xxl); font-weight: 800; letter-spacing: -0.02em; }
+.lede { font-size: var(--t-lg); line-height: 1.45; color: var(--ink-soft); max-width: 40ch; }
+.status {
+  display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+  font-size: var(--t-xs); font-weight: 700; color: var(--ink-soft);
+  border: 1.5px solid var(--rule); border-radius: 999px; padding: 4px 12px 2px;
+  background: var(--surface);
+}
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-systems); }
+
+.links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; font-size: var(--t-sm); font-weight: 700; }
+.btn {
+  background: var(--ink); color: var(--paper); text-decoration: none; border-radius: 999px;
+  padding: 9px 18px 7px; border: 2px solid var(--ink);
+}
+.btn:hover { background: var(--surface); color: var(--ink); }
+.note { font-size: var(--t-xs); color: var(--ink-faint); }
+
+section { padding-block: 36px; border-top: 2px solid var(--ink); display: grid; gap: 18px; }
+h2 { font-size: var(--t-xl); font-weight: 800; }
+.intro { color: var(--ink-soft); max-width: 62ch; }
+
+/* The student's route: a real sequence, drawn as stations on a line */
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.route li { display: grid; grid-template-columns: 32px 1fr; gap: 16px; position: relative; padding-bottom: 22px; }
+.route li:last-child { padding-bottom: 0; }
+.route li::before {
+  content: ""; position: absolute; left: 15px; top: 26px; bottom: -2px; width: 3px; background: var(--c);
+}
+.route li:last-child::before { display: none; }
+.stop {
+  width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--c); background: var(--surface);
+  display: grid; place-items: center; font-weight: 800; font-size: var(--t-sm); padding-top: 2px;
+}
+.route h3 { font-size: var(--t-md); font-weight: 800; padding-top: 4px; }
+.route p { color: var(--ink-soft); font-size: var(--t-sm); margin-top: 2px; max-width: 58ch; }
+
+/* Coverage figures */
+.figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 24px; }
+.figure { display: grid; gap: 2px; border-left: 3px solid var(--c, var(--ink)); padding-left: 12px; }
+.figure strong { font-size: var(--t-xl); font-weight: 800; line-height: 1.1; }
+.figure span { font-size: var(--t-xs); color: var(--ink-soft); line-height: 1.35; }
+
+/* Funders table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
+th, td { text-align: left; padding: 9px 12px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: var(--t-xs); font-weight: 700; color: var(--ink-soft); }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td small { display: block; color: var(--ink-faint); font-size: var(--t-xs); line-height: 1.35; }
+
+/* Coverage chart: horizontal bars on one 0–100% scale */
+.chart { display: grid; gap: 8px; }
+.bar-row { display: grid; grid-template-columns: 7.5rem 1fr 3.5rem; align-items: center; gap: 12px; font-size: var(--t-sm); }
+.bar-row .label { min-width: 0; }
+.bar-row .label small { display: block; color: var(--ink-faint); font-size: var(--t-xs); line-height: 1.2; }
+.track { height: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 2px; position: relative; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--b); border-radius: 1px; }
+.bar-row .pct { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.axis { display: grid; grid-template-columns: 7.5rem 1fr 3.5rem; gap: 12px; font-size: var(--t-xs); color: var(--ink-faint); }
+.axis div { display: flex; justify-content: space-between; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: var(--t-xs); color: var(--ink-soft); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 2px; background: var(--b); display: inline-block; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px 32px; }
+.cols > div { min-width: 0; display: grid; gap: 8px; align-content: start; }
+h3.small { font-size: var(--t-md); font-weight: 800; }
+ul.plain { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--ink-soft); font-size: var(--t-sm); }
+ul.plain strong { color: var(--ink); }
+code { font-family: var(--mono); font-size: 0.85em; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 5px; }
+.sources { font-size: var(--t-xs); color: var(--ink-soft); line-height: 1.55; }
+footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--t-xs); color: var(--ink-faint); }
+
+@media (max-width: 480px) {
+  .bar-row, .axis { grid-template-columns: 5.5rem 1fr 3rem; gap: 8px; }
+  header { padding-block: 36px 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+<main class="page">
+  <header>
+    <h1>Advisor Atlas</h1>
+    <p class="lede">A map of computer science faculty around the world, for students looking for a PhD advisor and a way to pay for the degree.</p>
+    <span class="status">v1, October 2026</span>
+    <div class="links">
+      <a class="btn" href="/">Open the map</a>
+      <a href="https://github.com/Rubix982/open-concept-lab/tree/main/projects/rank-nsf-linker" target="_blank" rel="noopener">Source code on GitHub</a>
+    </div>
+  </header>
+
+  <section aria-labelledby="route-h">
+    <h2 id="route-h">How a student uses it</h2>
+    <p class="intro">Built first for students in Pakistan applying abroad, who usually do this with spreadsheets and guesswork. A student describes what they want to research and follows four stops.</p>
+    <ol class="route">
+      <li style="--c: var(--line-ai)"><span class="stop">1</span><div><h3>Say what you want to research</h3><p>Type a goal such as "mechanistic interpretability", or narrow by research area. Search reads meaning, not just keywords.</p></div></li>
+      <li style="--c: var(--line-systems)"><span class="stop">2</span><div><h3>See where the faculty are</h3><p>Universities on a map, sized by how many faculty work in your areas, with the professors whose recent work is closest to your goal.</p></div></li>
+      <li style="--c: var(--line-theory)"><span class="stop">3</span><div><h3>Read their recent work</h3><p>Each professor's papers since 2020 and their research grants, so you can write to them about something they're working on now.</p></div></li>
+      <li style="--c: var(--line-inter)"><span class="stop">4</span><div><h3>Find the money</h3><p>Which faculty hold active grants (they hire research assistants), plus scholarships for studying in each university's country.</p></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="cov-h">
+    <h2 id="cov-h">What's in it</h2>
+    <div class="figures">
+      <div class="figure" style="--c: var(--line-ai)"><strong class="num">15,667</strong><span>faculty from CSRankings, across 27 research areas</span></div>
+      <div class="figure" style="--c: var(--line-systems)"><strong class="num">635</strong><span>universities in 58 countries</span></div>
+      <div class="figure" style="--c: var(--line-theory)"><strong class="num">536,907</strong><span>papers since 2020, from DBLP</span></div>
+      <div class="figure" style="--c: var(--line-inter)"><strong class="num">5,505</strong><span>faculty with grant records; 2,329 with a grant active now</span></div>
+      <div class="figure"><strong class="num">416,312</strong><span>grants and papers searchable by meaning</span></div>
+      <div class="figure"><strong class="num">29</strong><span>scholarship programmes, shown for the country you'd study in</span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="fund-h">
+    <h2 id="fund-h">Grant data by funder</h2>
+    <p class="intro">Only computing-related grants are loaded for funders outside the US. A grant is linked to a professor only when the name matches and the university (or, for NSF, the email domain) confirms it.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Funder</th><th>Covers</th><th class="n">Grants</th><th class="n">Faculty linked</th></tr></thead>
+        <tbody>
+          <tr><td>NSF</td><td>United States<small>all awards, 2010–2025</small></td><td class="n">192,089</td><td class="n">5,794</td></tr>
+          <tr><td>UKRI (EPSRC)</td><td>United Kingdom<small>research grants and fellowships ending 2015+</small></td><td class="n">2,593</td><td class="n">718</td></tr>
+          <tr><td>Australian Research Council</td><td>Australia</td><td class="n">2,077</td><td class="n">328</td></tr>
+          <tr><td>European Research Council</td><td>EU and associated countries<small>Horizon 2020 grants</small></td><td class="n">2,029</td><td class="n">239</td></tr>
+          <tr><td>Swiss National Science Foundation</td><td>Switzerland</td><td class="n">1,518</td><td class="n">135</td></tr>
+          <tr><td>ANR</td><td>France</td><td class="n">1,795</td><td class="n">124</td></tr>
+          <tr><td>Marsden Fund</td><td>New Zealand</td><td class="n">1,313</td><td class="n">41</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="where-h">
+    <h2 id="where-h">How much of each country is covered</h2>
+    <p class="intro">Share of a country's CS faculty with at least one grant on record. A low bar means missing data, not unfunded faculty.</p>
+    <div class="legend">
+      <span style="--b: var(--bar-national)"><i></i>National funder loaded</span>
+      <span style="--b: var(--bar-erc)"><i></i>Only ERC grants</span>
+      <span style="--b: var(--bar-none)"><i></i>No funder loaded yet</span>
+    </div>
+    <div class="chart" role="img" aria-label="Share of faculty with grant data by country: United States 76%, Switzerland 75%, Australia 53%, United Kingdom 41%, France 32%, New Zealand 26%, Austria 8%, Germany 6%, Netherlands 3%, Canada 2%, China under 1%, South Korea 0%, India 0%.">
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United States<small class="num">5,777 faculty</small></span><span class="track"><span class="fill" style="width:75.7%"></span></span><span class="pct">76%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Switzerland<small class="num">163 faculty</small></span><span class="track"><span class="fill" style="width:75.5%"></span></span><span class="pct">75%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Australia<small class="num">475 faculty</small></span><span class="track"><span class="fill" style="width:53.1%"></span></span><span class="pct">53%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United Kingdom<small class="num">1,160 faculty</small></span><span class="track"><span class="fill" style="width:41.5%"></span></span><span class="pct">41%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">France<small class="num">157 faculty</small></span><span class="track"><span class="fill" style="width:32.5%"></span></span><span class="pct">32%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">New Zealand<small class="num">73 faculty</small></span><span class="track"><span class="fill" style="width:26%"></span></span><span class="pct">26%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Austria<small class="num">166 faculty</small></span><span class="track"><span class="fill" style="width:7.8%"></span></span><span class="pct">8%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Germany<small class="num">959 faculty</small></span><span class="track"><span class="fill" style="width:6.2%"></span></span><span class="pct">6%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Netherlands<small class="num">299 faculty</small></span><span class="track"><span class="fill" style="width:2.7%"></span></span><span class="pct">3%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">Canada<small class="num">732 faculty</small></span><span class="track"><span class="fill" style="width:1.8%"></span></span><span class="pct">2%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">China<small class="num">2,107 faculty</small></span><span class="track"><span class="fill" style="width:0.15%"></span></span><span class="pct">&lt;1%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">South Korea<small class="num">426 faculty</small></span><span class="track"><span class="fill" style="width:0%"></span></span><span class="pct">0%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">India<small class="num">393 faculty</small></span><span class="track"><span class="fill" style="width:0%"></span></span><span class="pct">0%</span></div>
+      <div class="axis" aria-hidden="true"><span></span><div><span>0%</span><span>50%</span><span>100%</span></div><span></span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="gaps-h">
+    <h2 id="gaps-h">Limits and what's next</h2>
+    <div class="cols">
+      <div>
+        <h3 class="small">Known limits</h3>
+        <ul class="plain">
+          <li><strong>Computer science only.</strong> Faculty come from CSRankings, which covers computing research.</li>
+          <li><strong>Germany, Canada and Asia lack national grant data.</strong> Germany's DFG does not allow its records to be collected; Japan and Hong Kong are next.</li>
+          <li><strong>France is thin in CSRankings itself</strong>, so few French faculty can be linked.</li>
+          <li><strong>Grants miss industry and university funding</strong>, so "no active grant" never means "no funding".</li>
+          <li><strong>Search matches paper titles</strong>; abstracts arrive with OpenAlex.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="small">Next</h3>
+        <ul class="plain">
+          <li><strong>Put it in front of 10 students</strong> and change it based on what they say.</li>
+          <li><strong>Publish it</strong> at a public address.</li>
+          <li><strong>OpenAlex abstracts</strong> for 291,106 papers (built, not yet run).</li>
+          <li><strong>Japan (KAKEN) and Hong Kong grants</strong>, within their terms of use.</li>
+          <li><strong>Fields beyond computing</strong>: science, engineering and medicine.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-h">
+    <h2 id="src-h">Sources</h2>
+    <p class="sources">CSRankings (faculty and areas); DBLP (papers, CC0); IPEDS, US Department of Education (tuition and enrolment); NSF Award Search; UKRI Gateway to Research, Open Government Licence v2.0; Australian Research Council; Royal Society Te Apārangi (Marsden Fund); Agence nationale de la recherche, ODbL, with the French RNSR register of research units; Swiss National Science Foundation; CORDIS, European Commission. Scholarships are a curated list linking to each programme's official page.</p>
+  </section>
+
+  <footer>Built as a side project in <code>open-concept-lab/projects/rank-nsf-linker</code>. Figures as of 4 October 2026.</footer>
+</main>
+</body>
+</html>

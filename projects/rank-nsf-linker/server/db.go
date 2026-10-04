@@ -458,7 +458,7 @@ func processNsfAwardPerYear(
 
 		logger.Infof(mainCtx, "➡️  Processing award: %s", nsfJsonData.AwdId)
 		nsfJsonData = cleanNsfJsonData(nsfJsonData)
-		region, countryabbrv := getRegionAndCountry(nsfJsonData.Institute.Country)
+		region, countryabbrv := getRegionAndCountry(db, nsfJsonData.Institute.Country)
 
 		universityUpsertQuery := `
 				INSERT INTO universities (institution, street_address, city, phone, zip_code, country, region, countryabbrv)
@@ -475,7 +475,7 @@ func processNsfAwardPerYear(
 		institute.Name = normalizeInstitutionName(institute.Name)
 		_, err = db.Exec(universityUpsertQuery, institute.Name, institute.StreetAddress,
 			institute.City, institute.PhoneNumber, institute.ZipCode, institute.Country,
-			region, countryabbrv)
+			nullIfEmpty(region), nullIfEmpty(countryabbrv))
 		if err != nil {
 			logger.Warnf(mainCtx, "⚠️  University upsert failed (%s, normalized '%s'): %v", originalInstName, institute.Name, err)
 			continue
@@ -679,28 +679,58 @@ func cleanNsfJsonData(data NsfJsonData) NsfJsonData {
 	return data
 }
 
-func getRegionAndCountry(country string) (string, string) {
-	switch country {
-	case "Germany":
-		return "europe", "gr"
-	case "France":
-		return "europe", "fr"
-	case "United Kingdom":
-		return "europe", "gb"
-	case "Canada":
-		return "northamerica", "ca"
-	case "United States":
+// countryLookup maps a country name (as NSF writes it) to its region and ISO alpha-2 code, from the
+// countries table loaded in step 4. Loaded once per pipeline run.
+var countryLookup struct {
+	sync.Once
+	byName map[string][2]string
+}
+
+// countryNameAliases covers names NSF uses that differ from the countries table.
+var countryNameAliases = map[string]string{"Türkiye": "Turkey"}
+
+// getRegionAndCountry returns the region and lower-case alpha-2 code for a country name. NSF leaves
+// the country empty for US institutions; an unknown name returns empty strings (stored as NULL)
+// rather than guessing "us".
+func getRegionAndCountry(db *sql.DB, country string) (string, string) {
+	country = strings.TrimSpace(country)
+	if country == "" {
 		return "northamerica", "us"
-	case "Australia":
-		return "oceania", "au"
-	case "New Zealand":
-		return "oceania", "nz"
-	case "Uruguay":
-		return "southamerica", "uy"
-	case "Brazil":
-		return "southamerica", "br"
+	}
+	countryLookup.Do(func() {
+		countryLookup.byName = map[string][2]string{}
+		rows, err := db.Query(`SELECT name, lower(alpha_2), COALESCE(region, ''), COALESCE(sub_region, '') FROM countries
+			WHERE name IS NOT NULL AND alpha_2 IS NOT NULL`)
+		if err != nil {
+			return
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var name, code, region, sub string
+			if rows.Scan(&name, &code, &region, &sub) != nil {
+				continue
+			}
+			countryLookup.byName[name] = [2]string{regionSlug(region, sub), code}
+		}
+	})
+	if alias, ok := countryNameAliases[country]; ok {
+		country = alias
+	}
+	if rc, ok := countryLookup.byName[country]; ok {
+		return rc[0], rc[1]
+	}
+	return "", ""
+}
+
+// regionSlug turns a UN region into the region names used elsewhere in the universities table.
+func regionSlug(region, subRegion string) string {
+	switch {
+	case subRegion == "Northern America":
+		return "northamerica"
+	case subRegion == "Latin America and the Caribbean":
+		return "southamerica"
 	default:
-		return "northamerica", "us"
+		return strings.ToLower(region) // europe, asia, africa, oceania
 	}
 }
 
@@ -825,26 +855,18 @@ func clearFinalDataStatesInPostgres(mainCtx *colly.Context) error {
 		return fmt.Errorf("cannot get DB: %w", err)
 	}
 
+	// Fill a missing region or country code from the countries table (by country name).
 	regionCountryAbbrvQueryUpdate := `
-	UPDATE universities
-	SET 
-		region = CASE
-			WHEN country = 'United States' THEN 'northamerica'
-			WHEN country = 'Canada' THEN 'northamerica'
-			WHEN country = 'Germany' THEN 'europe'
-			WHEN country = 'Japan' THEN 'asia'
-			WHEN country = 'Australia' THEN 'oceania'
-			ELSE region
-		END,
-		countryabbrv = CASE
-			WHEN country = 'United States' THEN 'us'
-			WHEN country = 'Canada' THEN 'ca'
-			WHEN country = 'Germany' THEN 'de'
-			WHEN country = 'Japan' THEN 'jp'
-			WHEN country = 'Australia' THEN 'au'
-			ELSE countryabbrv
-		END
-	WHERE region IS NULL OR countryabbrv IS NULL;`
+	UPDATE universities u
+	SET
+		region = COALESCE(u.region, CASE
+			WHEN c.sub_region = 'Northern America' THEN 'northamerica'
+			WHEN c.sub_region = 'Latin America and the Caribbean' THEN 'southamerica'
+			ELSE lower(c.region) END),
+		countryabbrv = COALESCE(u.countryabbrv, lower(c.alpha_2))
+	FROM countries c
+	WHERE c.name = CASE WHEN u.country = 'Türkiye' THEN 'Turkey' ELSE u.country END
+	  AND (u.region IS NULL OR u.countryabbrv IS NULL);`
 
 	_, err = db.Exec(regionCountryAbbrvQueryUpdate)
 	if err != nil {
