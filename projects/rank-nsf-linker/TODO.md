@@ -151,3 +151,21 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [ ] US STEM + medicine: NIH RePORTER, OpenAlex (key from the user), ~45 field areas
 - [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
 - [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)
+
+## Resume here (2026-10-04, evening)
+
+Left running when the session ended (both local, safe to leave):
+- `server/scripts/grants/ukri.py` fetching EPSRC project details (~2,000/2,593; cached in data/ukri/,
+  resumes if rerun). When `data/ukri.log` ends with `ukri_people.csv: N rows`, run `make pipeline-from STEP=18`.
+- Step 22 "Embed Explorer Work" embedding 389,858 DBLP papers (~100/s, done ~20:45 PKT). If it stopped,
+  rerun `make pipeline-from STEP=22` on the OLD binary, or after deploying the new code, the Embed step
+  number is 23. It only embeds what's missing.
+
+Written but NOT yet deployed or tested (built locally only):
+- OpenAlex: `server/scripts/openalex/works.py` (DOIs in data/openalex/dois.txt, 291,106; ~5,800 calls,
+  none made yet), migration 14, step "Load OpenAlex Works", and the embedder now adds paper abstracts
+  and re-embeds only items whose text changed (`explorer_embedded.text_hash`). The pipeline is now 23 steps.
+- Postgres `shm_size: 1gb` in docker-compose.dev.yaml (applied; fixed the step-22 crash).
+
+To finish v1: load UKRI → deploy go-server + web → screenshots (US, UK, EU, AU) → commit → ask before any
+public deploy. OpenAlex is the first v2 item.

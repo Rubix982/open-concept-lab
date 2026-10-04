@@ -7,6 +7,7 @@ services:
     image: host.docker.internal:5128/cgr.dev/chainguard/postgres
     container_name: pg17-local
     restart: unless-stopped
+    shm_size: 1gb # parallel queries over the ~400k explorer work docs outgrow Docker's 64 MB default
     ports:
       - "5432:5432"
     environment:

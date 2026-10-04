@@ -1408,6 +1408,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Load Funder Grants", loadFunderGrants},
 		{"Link Funder Grants", linkFunderGrants},
 		{"Load DBLP Papers", loadDblpPapers},
+		{"Load OpenAlex Works", loadOpenAlexWorks},
 		{"Build Explorer Tables", buildExplorerTables},
 		{"Embed Explorer Work", embedExplorerWork},
 	}

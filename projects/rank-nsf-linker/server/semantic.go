@@ -144,6 +144,11 @@ func (p workPayload) hash() string {
 	return hex.EncodeToString(sum[:])
 }
 
+func textHash(text string) string {
+	sum := sha1.Sum([]byte(text))
+	return hex.EncodeToString(sum[:])
+}
+
 // embedExplorerWork brings the Qdrant collection in line with explorer_work_docs: embeds new
 // grants/papers, refreshes payloads whose professor areas or university changed, and deletes
 // points for work that is gone. explorer_embedded remembers what Qdrant holds.
@@ -182,21 +187,28 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	}
 
 	type doc struct {
-		id      string
-		text    string
-		payload workPayload
+		id       string
+		text     string
+		baseText string // the title-only text vectors were embedded from before text_hash existed
+		payload  workPayload
 	}
 	rows, err := db.Query(`
 		SELECT md5(d.name || '|' || d.kind || '|' || d.ref)::uuid::text,
 		       d.name, d.kind, d.ref, COALESCE(d.title, ''), d.year, d.url, f.areas, COALESCE(u.id, ''),
 		       -- '|| ''''' detoasts first: on Postgres 18.2 left() on a TOASTed value can split a UTF-8 character
 		       COALESCE(d.title, '') || CASE WHEN d.kind = 'award'
-		         THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700) ELSE '' END
+		         THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700) ELSE '' END,
+		       -- papers: the OpenAlex abstract, when the DOI matched one
+		       COALESCE(d.title, '') || CASE
+		         WHEN d.kind = 'award' THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700)
+		         WHEN ow.abstract IS NOT NULL THEN '. ' || left(ow.abstract || '', 700)
+		         ELSE '' END
 		FROM explorer_work_docs d
 		JOIN explorer_faculty f ON f.name = d.name
 		LEFT JOIN explorer_universities u ON u.name = f.university
 		LEFT JOIN award a ON d.kind = 'award' AND a.id = d.ref
-		LEFT JOIN funder_grants fg ON d.kind = 'award' AND d.ref = fg.funder || ':' || fg.grant_id`)
+		LEFT JOIN funder_grants fg ON d.kind = 'award' AND d.ref = fg.funder || ':' || fg.grant_id
+		LEFT JOIN openalex_works ow ON d.kind = 'paper' AND ow.doi = lower(substring(d.url from 'doi\.org/(.+)$'))`)
 	if err != nil {
 		return fmt.Errorf("failed to read work docs: %w", err)
 	}
@@ -204,7 +216,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	for rows.Next() {
 		var d doc
 		if err := rows.Scan(&d.id, &d.payload.Name, &d.payload.Kind, &d.payload.Ref, &d.payload.Title, &d.payload.Year,
-			&d.payload.URL, pq.Array(&d.payload.Areas), &d.payload.UniversityID, &d.text); err != nil {
+			&d.payload.URL, pq.Array(&d.payload.Areas), &d.payload.UniversityID, &d.baseText, &d.text); err != nil {
 			rows.Close()
 			return err
 		}
@@ -215,14 +227,16 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		return fmt.Errorf("failed to read work docs: %w", err)
 	}
 
-	held := map[string]string{} // id -> payload hash already in Qdrant
-	rows, err = db.Query(`SELECT id::text, payload_hash FROM explorer_embedded`)
+	type heldPoint struct{ payloadHash, textHash string } // textHash "" = embedded from the base text
+	held := map[string]heldPoint{}
+	rows, err = db.Query(`SELECT id::text, payload_hash, COALESCE(text_hash, '') FROM explorer_embedded`)
 	if err != nil {
 		return fmt.Errorf("failed to read explorer_embedded: %w", err)
 	}
 	for rows.Next() {
-		var id, h string
-		if err := rows.Scan(&id, &h); err != nil {
+		var id string
+		var h heldPoint
+		if err := rows.Scan(&id, &h.payloadHash, &h.textHash); err != nil {
 			rows.Close()
 			return err
 		}
@@ -236,10 +250,12 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	var toEmbed, toRepayload []doc
 	for id, d := range docs {
 		h, ok := held[id]
+		textChanged := ok && ((h.textHash == "" && d.text != d.baseText) ||
+			(h.textHash != "" && h.textHash != textHash(d.text)))
 		switch {
-		case !ok:
+		case !ok || textChanged:
 			toEmbed = append(toEmbed, d)
-		case h != d.payload.hash():
+		case h.payloadHash != d.payload.hash():
 			toRepayload = append(toRepayload, d)
 		}
 	}
@@ -252,11 +268,20 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	logger.Infof(mainCtx, "🧠 Semantic index: %d to embed, %d payloads to refresh, %d to delete (%d held)",
 		len(toEmbed), len(toRepayload), len(toDelete), len(held))
 
-	record := func(ids []string, hashes []string) error {
+	// record remembers what Qdrant holds; texts is nil for a payload-only refresh (text unchanged).
+	record := func(ids, hashes, texts []string) error {
+		if texts == nil {
+			_, err := db.Exec(`
+				INSERT INTO explorer_embedded (id, payload_hash)
+				SELECT unnest($1::uuid[]), unnest($2::text[])
+				ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash`, pq.Array(ids), pq.Array(hashes))
+			return err
+		}
 		_, err := db.Exec(`
-			INSERT INTO explorer_embedded (id, payload_hash)
-			SELECT unnest($1::uuid[]), unnest($2::text[])
-			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash`, pq.Array(ids), pq.Array(hashes))
+			INSERT INTO explorer_embedded (id, payload_hash, text_hash)
+			SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[])
+			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, text_hash = EXCLUDED.text_hash`,
+			pq.Array(ids), pq.Array(hashes), pq.Array(texts))
 		return err
 	}
 
@@ -274,15 +299,16 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		points := make([]map[string]any, len(batch))
 		ids := make([]string, len(batch))
 		hashes := make([]string, len(batch))
+		textHashes := make([]string, len(batch))
 		for j, d := range batch {
 			points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
-			ids[j], hashes[j] = d.id, d.payload.hash()
+			ids[j], hashes[j], textHashes[j] = d.id, d.payload.hash(), textHash(d.text)
 		}
 		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
 			map[string]any{"points": points}, nil); err != nil {
 			return fmt.Errorf("failed to upsert points: %w", err)
 		}
-		if err := record(ids, hashes); err != nil {
+		if err := record(ids, hashes, textHashes); err != nil {
 			return fmt.Errorf("failed to record embedded points: %w", err)
 		}
 		if done := i + len(batch); done%(embedBatchSize*40) < embedBatchSize || done == len(toEmbed) {
@@ -295,7 +321,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 			map[string]any{"payload": d.payload, "points": []string{d.id}}, nil); err != nil {
 			return fmt.Errorf("failed to refresh payload: %w", err)
 		}
-		if err := record([]string{d.id}, []string{d.payload.hash()}); err != nil {
+		if err := record([]string{d.id}, []string{d.payload.hash()}, nil); err != nil {
 			return err
 		}
 	}
