@@ -120,3 +120,21 @@ button {
     animation: none !important;
   }
 }
+
+/* Mapbox controls, restyled to match the page. */
+.mapboxgl-ctrl-group {
+  border-radius: var(--radius-box) !important;
+  box-shadow: 0 1px 4px rgba(29, 42, 58, 0.2) !important;
+  overflow: hidden;
+}
+.mapboxgl-ctrl-group button {
+  width: 34px !important;
+  height: 34px !important;
+}
+.mapboxgl-ctrl-group button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+.mapboxgl-ctrl-group button:focus:not(:focus-visible) {
+  box-shadow: none !important;
+}

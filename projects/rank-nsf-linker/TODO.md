@@ -93,7 +93,14 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [x] Phone layout; shareable URLs (`?areas=ml,nlp&q=…&u=…&p=…`); old offline service worker removed
 - [ ] Recent papers: DBLP dump (`data/dblp/dblp.xml.gz`, 1.1 GB) — download in progress; then
       `make pipeline-from STEP=18`. The DBLP API is rate-limited and bot-guarded, so no live calls
-- [ ] Semantic goal matching (embedder service + vectors) — keyword matching misses synonyms ("LLM")
+- [x] Semantic goal matching (`server/semantic.go`): grants and papers embedded with all-MiniLM-L6-v2
+      (embedder service) into Qdrant `explorer_work`, filtered by area/university; step 20 is incremental.
+      Cosine ≥ 0.35 counts as a match; recency half-life 5.5 y; event grants (conference/workshop) × 0.6.
+      Falls back to keyword matching if the embedder or Qdrant is down. ~150 ms per search
+- [x] Map waits for all data (loading state, retry on error); old offline service worker replaced by a
+      self-removing `sw.js` (browsers that cached the old app get the new one)
+- [ ] Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with
+      `|| ''` (detoast first) in semantic.go and explorer_api.go
 - [ ] Non-US universities have no tuition / R1 data (IPEDS is US-only)
 - [ ] Publishing: not deployed anywhere public yet
 

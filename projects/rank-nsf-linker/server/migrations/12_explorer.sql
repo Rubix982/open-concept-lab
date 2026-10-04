@@ -176,3 +176,10 @@ CREATE TABLE IF NOT EXISTS dblp_papers (
   PRIMARY KEY (name, dblp_key)
 );
 DROP TABLE IF EXISTS dblp_cache;
+
+-- Points held in the Qdrant collection explorer_work (semantic goal matching), with a hash of
+-- each point's payload so the "Embed Explorer Work" step only re-embeds or re-labels what changed.
+CREATE TABLE IF NOT EXISTS explorer_embedded (
+  id UUID PRIMARY KEY,
+  payload_hash TEXT NOT NULL
+);

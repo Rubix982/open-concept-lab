@@ -244,6 +244,9 @@ services:
       SKIP_IPEDS: 1
       # Rerun the population pipeline from step N (see executeWorkflows in server/db.go)
       PIPELINE_FROM_STEP: ${PIPELINE_FROM_STEP:-}
+      # Semantic goal matching (server/semantic.go)
+      EMBEDDER_SERVICE_URL: http://embedder:8000
+      QDRANT_REST_URL: http://qdrant-local:6333
     ports:
       - "8080:8080"
     restart: unless-stopped

@@ -90,8 +90,9 @@ function money(n?: number) {
         <section class="funding">
           <h3>Paying for a PhD here</h3>
           <p>
-            <strong class="num">{{ funded }}</strong> of the {{ faculty.length }} faculty
-            {{ hasAreas ? "in your areas" : "listed below" }} have an active NSF grant.
+            <strong class="num">{{ funded }}</strong> of the {{ faculty.length }}
+            {{ query.goal ? "faculty matching your goal" : hasAreas ? "faculty in your areas" : "faculty listed below" }}
+            have an active NSF grant.
             PhD students are usually paid as research or teaching assistants, which also covers tuition, and
             faculty with active grants are the ones hiring research assistants.
           </p>

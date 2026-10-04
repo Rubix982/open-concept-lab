@@ -1400,6 +1400,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Link NSF Investigators To Professors", linkInvestigatorsToProfessors},
 		{"Load DBLP Papers", loadDblpPapers},
 		{"Build Explorer Tables", buildExplorerTables},
+		{"Embed Explorer Work", embedExplorerWork},
 	}
 
 	totalSteps := len(steps)

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -88,6 +89,10 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 		}
 		areas = append(areas, a)
 	}
+	if err := rows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
+		return
+	}
 	writeJSON(w, http.StatusOK, areas)
 }
 
@@ -124,6 +129,23 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 	areas := areasParam(r)
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
 
+	// Semantic matching when available: count matching faculty per university; the SQL then
+	// skips its keyword count.
+	var semantic map[string]int
+	keywordGoal := q
+	if q != "" && semanticAvailable() {
+		matches, err := semanticFacultyMatches(q, areas, "", 4000)
+		if err != nil {
+			logger.Warnf(buildCollyContext(w, r), "⚠️ semantic matching failed, using keywords: %v", err)
+		} else {
+			semantic = map[string]int{}
+			for _, m := range matches {
+				semantic[m.University]++
+			}
+			keywordGoal = ""
+		}
+	}
+
 	rows, err := db.Query(`
 		WITH goal AS (SELECT CASE WHEN $2 = '' THEN NULL ELSE websearch_to_tsquery('english', $2) END AS q),
 		matched AS (
@@ -139,7 +161,7 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 		SELECT u.id, u.name, u.city, u.state, u.country, u.latitude, u.longitude, u.carnegie,
 		       u.faculty_count, u.funded_faculty, m.faculty, m.funded, m.goal_matches
 		FROM matched m JOIN explorer_universities u ON u.name = m.university
-		ORDER BY m.goal_matches DESC, m.funded DESC, m.faculty DESC, u.name`, pq.Array(areas), q)
+		ORDER BY m.goal_matches DESC, m.funded DESC, m.faculty DESC, u.name`, pq.Array(areas), keywordGoal)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load universities", err)
 		return
@@ -155,6 +177,25 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		unis = append(unis, u)
+	}
+	if err := rows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
+		return
+	}
+	if semantic != nil {
+		for i := range unis {
+			unis[i].GoalMatches = semantic[unis[i].ID]
+		}
+		sort.SliceStable(unis, func(i, j int) bool {
+			a, b := unis[i], unis[j]
+			if a.GoalMatches != b.GoalMatches {
+				return a.GoalMatches > b.GoalMatches
+			}
+			if a.Funded != b.Funded {
+				return a.Funded > b.Funded
+			}
+			return a.Faculty > b.Faculty
+		})
 	}
 	writeJSON(w, http.StatusOK, unis)
 }
@@ -227,6 +268,24 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		limit = min(n, maxFacultyLimit)
 	}
 
+	if q != "" && semanticAvailable() {
+		depth := 2000
+		if universityID != "" {
+			depth = 800
+		}
+		matches, err := semanticFacultyMatches(q, areas, universityID, depth)
+		if err == nil {
+			faculty, err := facultyForMatches(db, matches, limit)
+			if err != nil {
+				writeError(w, r, http.StatusInternalServerError, "failed to load faculty", err)
+				return
+			}
+			writeJSON(w, http.StatusOK, faculty)
+			return
+		}
+		logger.Warnf(buildCollyContext(w, r), "⚠️ semantic matching failed, using keywords: %v", err)
+	}
+
 	rows, err := db.Query(`
 		WITH goal AS (SELECT CASE WHEN $2 = '' THEN NULL ELSE websearch_to_tsquery('english', $2) END AS q),
 		best AS ( -- each professor's single best-matching award or paper, favouring recent work:
@@ -275,7 +334,60 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		}
 		faculty = append(faculty, f)
 	}
+	if err := rows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
+		return
+	}
 	writeJSON(w, http.StatusOK, faculty)
+}
+
+// facultyForMatches loads the explorer rows for the best semantic matches, keeping their order.
+func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]exploreFaculty, error) {
+	if len(matches) > limit {
+		matches = matches[:limit]
+	}
+	names := make([]string, len(matches))
+	for i, m := range matches {
+		names[i] = m.Name
+	}
+	rows, err := db.Query(`
+		SELECT f.name, f.university, u.id, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date
+		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
+		WHERE f.name = ANY($1)`, pq.Array(names))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	byName := map[string]exploreFaculty{}
+	for rows.Next() {
+		var f exploreFaculty
+		var areaPubs []byte
+		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward); err != nil {
+			return nil, err
+		}
+		f.AreaPubs = areaPubs
+		byName[f.Name] = f
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	faculty := make([]exploreFaculty, 0, len(matches))
+	for _, m := range matches {
+		f, ok := byName[m.Name]
+		if !ok {
+			continue
+		}
+		score := m.Rank
+		work := m.Work
+		f.GoalScore = &score
+		f.Match = &exploreWork{Kind: &work.Kind, Title: &work.Title, Year: work.Year, URL: work.URL}
+		faculty = append(faculty, f)
+	}
+	return faculty, nil
 }
 
 type exploreAward struct {
@@ -319,7 +431,7 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(`
 		SELECT DISTINCT ON (a.id) a.id, a.award_title_text, COALESCE(a.award_amount, 0),
 		       NULLIF(a.award_effective_date, '')::date, NULLIF(a.award_expiry_date, '')::date,
-		       p.pi_role, left(COALESCE(a.abstract, ''), 700)
+		       p.pi_role, left(COALESCE(a.abstract, '') || '', 700) -- detoast first; see semantic.go
 		FROM nsf_investigators i
 		JOIN award_pi_rel p ON p.nsf_id = i.nsf_id
 		JOIN award a ON a.id = p.award_id
@@ -343,6 +455,10 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		a.Abstract = strings.TrimSpace(strings.ReplaceAll(a.Abstract, "<br/>", " "))
 		a.URL = "https://www.nsf.gov/awardsearch/showAward?AWD_ID=" + url.QueryEscape(a.ID)
 		awards = append(awards, a)
+	}
+	if err := rows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
+		return
 	}
 	// Active first, then newest.
 	sortAwards(awards)
@@ -400,6 +516,10 @@ func getExplorerFacultyPapers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		papers = append(papers, p)
+	}
+	if err := rows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
+		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"dblp_url": "https://dblp.org/search?q=" + url.QueryEscape(name),

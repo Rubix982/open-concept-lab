@@ -42,6 +42,8 @@ const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
 const loading = ref(true);
 const error = ref("");
+// The map renders only once the area list and the first university load have both arrived.
+const ready = ref(false);
 let inflight: AbortController | null = null;
 
 async function load() {
@@ -57,6 +59,7 @@ async function load() {
     universities.value = u;
     faculty.value = f;
     loading.value = false;
+    if (areas.value.length) ready.value = true;
   } catch (e) {
     if ((e as Error).name === "AbortError") return;
     error.value = (e as Error).message;
@@ -64,13 +67,22 @@ async function load() {
   }
 }
 
-onMounted(async () => {
+async function loadAreas() {
   try {
     areas.value = await api.areas();
+    if (!loading.value && !error.value) ready.value = true;
   } catch (e) {
     error.value = (e as Error).message;
   }
-});
+}
+
+function retry() {
+  error.value = "";
+  if (!areas.value.length) loadAreas();
+  load();
+}
+
+onMounted(loadAreas);
 watch(query, load, { immediate: true, deep: true });
 
 // ---- derived ----
@@ -132,7 +144,8 @@ const about = ref<HTMLDialogElement | null>(null);
     <main class="panel" aria-label="Search">
       <section class="step">
         <h2 class="step-title"><span class="n">1</span> Pick research areas</h2>
-        <AreaPicker v-model="selectedAreas" :areas="areas" />
+        <p v-if="!areas.length" class="hint">Loading areas</p>
+        <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
       </section>
 
       <section class="step">
@@ -144,7 +157,7 @@ const about = ref<HTMLDialogElement | null>(null);
           rows="2"
           placeholder="For example: making large language models explain their answers"
         ></textarea>
-        <p class="hint">Matched against professors' NSF grants and recent paper titles. Optional.</p>
+        <p class="hint">Optional. Matched by meaning against professors' NSF grants and recent papers, so your own words work.</p>
       </section>
 
     </main>
@@ -155,9 +168,10 @@ const about = ref<HTMLDialogElement | null>(null);
           {{ summary }}<template v-if="selectedNames.length"> in {{ selectedNames.join(", ") }}</template>.
           <button v-if="selectedAreas.length || goal" type="button" class="link" @click="clearAll">Clear</button>
         </p>
-        <p v-if="error" class="error">{{ error }}</p>
+        <p v-if="error && ready" class="error">{{ error }}</p>
+        <p v-if="!ready && !error" class="hint">Loading</p>
 
-        <div class="tabs" role="tablist">
+        <div v-if="ready" class="tabs" role="tablist">
           <button
             role="tab"
             type="button"
@@ -171,7 +185,7 @@ const about = ref<HTMLDialogElement | null>(null);
           </button>
         </div>
 
-        <ol v-if="tab === 'universities'" class="uni-list">
+        <ol v-if="ready && tab === 'universities'" class="uni-list">
           <li v-for="u in rankedUniversities" :key="u.id">
             <button type="button" :class="{ on: u.id === openUni }" @click="openUniversity(u.id)">
               <span class="uni-name">{{ u.name }}</span>
@@ -185,7 +199,7 @@ const about = ref<HTMLDialogElement | null>(null);
           </li>
         </ol>
 
-        <ul v-else class="fac-list">
+        <ul v-else-if="ready" class="fac-list">
           <FacultyRow
             v-for="f in faculty"
             :key="f.name"
@@ -198,14 +212,30 @@ const about = ref<HTMLDialogElement | null>(null);
     </section>
 
     <div class="map-wrap">
+      <div v-if="!ready" class="loader" role="status">
+        <template v-if="error && !universities.length">
+          <p class="loader-text">{{ error }}</p>
+          <button type="button" class="retry" @click="retry">Try again</button>
+        </template>
+        <template v-else>
+          <div class="loader-lines" aria-hidden="true">
+            <span style="--c: var(--line-ai)"></span>
+            <span style="--c: var(--line-systems)"></span>
+            <span style="--c: var(--line-theory)"></span>
+            <span style="--c: var(--line-inter)"></span>
+          </div>
+          <p class="loader-text">Loading universities and faculty</p>
+        </template>
+      </div>
       <MapView
+        v-else
         :universities="universities"
         :color="mapColor"
         :use-goal="!!goal"
         :selected-id="openUni"
         @select="openUniversity($event)"
       />
-      <p class="legend">
+      <p v-if="ready" class="legend">
         Dot size: {{ goal ? "faculty matching your goal" : "faculty in your areas" }}. Heavy ring: R1 university.
       </p>
     </div>
@@ -238,8 +268,9 @@ const about = ref<HTMLDialogElement | null>(null);
         Education's IPEDS survey, so they're shown for US universities only.
       </p>
       <p>
-        Goal matching looks for your words in grant abstracts and paper titles. Try different phrasings, and
-        always read a professor's own page before writing to them.
+        Goal matching compares the meaning of your goal with each professor's grant abstracts and paper titles,
+        and favours recent work. It's a starting point: read a professor's own page and recent papers before
+        writing to them.
       </p>
       <form method="dialog"><button class="close-about">Close</button></form>
     </dialog>
@@ -441,6 +472,55 @@ textarea:focus-visible {
   grid-area: map;
   position: relative;
   min-height: 0;
+}
+
+.loader {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  background: #e9edec;
+  padding: 24px;
+  text-align: center;
+}
+
+.loader-lines {
+  display: grid;
+  gap: 7px;
+  width: 180px;
+}
+
+/* The four area lines draw in, one after another. */
+.loader-lines span {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--c);
+  transform-origin: left;
+  animation: draw 1.6s ease-in-out infinite;
+}
+.loader-lines span:nth-child(2) { animation-delay: 0.15s; }
+.loader-lines span:nth-child(3) { animation-delay: 0.3s; }
+.loader-lines span:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes draw {
+  0% { transform: scaleX(0); }
+  45%, 70% { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+.loader-text {
+  font-weight: 700;
+  color: var(--ink-soft);
+  max-width: 40ch;
+}
+
+.retry {
+  border: 1.5px solid var(--ink);
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  padding: 4px 14px 3px;
+  font-weight: 700;
 }
 
 .legend {
