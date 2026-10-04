@@ -132,8 +132,22 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       initial-only names need a CS field or an uncommon surname). UI names the funder and its currency.
 - [x] ARC (Australia, FoR 46 + 08): 2,077 grants → 328 faculty (147 with an active grant)
 - [x] Marsden (NZ, manual xlsx in `data/marsden/`): 1,313 grants → 41 faculty
-- [ ] Next importers: UKRI GtR (UK), ANR (France), CORDIS ERC PIs (EU), SNSF (Switzerland), KAKEN (Japan,
-      throttled, non-profit terms, attribution), RGC Hong Kong (facts only)
+- [x] SNSF (Switzerland, FoR 46 / IT disciplines): 1,518 grants → 135 faculty (123 of 163 Swiss faculty funded)
+- [x] ANR (France, CE23/25/33/39/46/48 or PE6 labs): 1,795 grants → 124 faculty. Investigators are listed by
+      lab; the RNSR register maps each lab to its parent institutions, joined with " | " for the linker
+- [x] ERC (Horizon 2020 PIs, CORDIS): 2,029 computing grants → 239 faculty across Europe and Israel.
+      Legal host names mapped to CSRankings names in `erc.py`. Horizon Europe ERC PIs are PDF-only (not loaded)
+- [ ] UKRI GtR (EPSRC research grants + fellowships in computing, ending 2015+): `ukri.py` running
+      (slow export, ~1 req/s for project details)
+- [x] Linker: compares unaccented institution names (`institution_key` drops accented letters) and accepts
+      several " | "-separated institutions per investigator
+- [x] Funder coverage per country comes from the loaded grants (`/explorer/funders`), not a static list
+- [ ] KAKEN (Japan, throttled, non-profit terms, attribution), RGC Hong Kong (facts only)
+- [ ] Our CSRankings copy (Aug 2025, 31,500 rows) is behind upstream (per-letter `csrankings-[a-z].csv`,
+      32,444 rows); step 1 should download the split files
+- [ ] France is thin in CSRankings itself (no Sorbonne / Paris-Saclay entries), so ANR links stay limited
+- [ ] `institution_key()` drops accented letters ("École" → "cole"); fixing it changes keys used by the
+      merge steps, so it needs a full re-run from step 14
 - [ ] US STEM + medicine: NIH RePORTER, OpenAlex (key from the user), ~45 field areas
 - [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
 - [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)

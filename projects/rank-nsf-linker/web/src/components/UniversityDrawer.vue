@@ -50,6 +50,7 @@ const isUS = computed(() => (uni.value?.country ?? "us") === "us");
 // Funders whose grants are loaded for this university's country (NSF for the US, ARC for Australia, ...).
 const grantFunders = computed(() => uni.value?.grant_funders ?? (isUS.value ? ["nsf"] : []));
 const grantFunderNames = computed(() => grantFunders.value.map(funderName).join(" or "));
+const ercOnly = computed(() => grantFunders.value.length === 1 && grantFunders.value[0] === "erc");
 const countryLabel = computed(() => countryName(uni.value?.country));
 function levelLabel(levels: string[]) {
   const names: Record<string, string> = { masters: "Master's", phd: "PhD", postdoc: "Postdoc" };
@@ -122,6 +123,11 @@ function money(n?: number) {
               {{ query.goal ? "faculty matching your search" : hasAreas ? "faculty in your areas" : "faculty listed below" }}
               have an active {{ grantFunderNames }} grant. PhD students are usually paid as research or teaching assistants, which
               also covers tuition, and faculty with active grants are the ones hiring research assistants.
+            </p>
+            <p v-if="ercOnly" class="sub">
+              ERC grants are rare, highly competitive awards, and most PhD positions in {{ countryLabel }} are paid
+              from national agencies and university budgets that aren't in Advisor Atlas yet. Read "no ERC grant"
+              as "no data", not "no funding".
             </p>
           </template>
           <p v-else>

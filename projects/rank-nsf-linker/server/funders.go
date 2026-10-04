@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	colly "github.com/gocolly/colly/v2"
 	"github.com/lib/pq"
@@ -20,11 +22,34 @@ import (
 // the pipeline loads whatever is there, so a funder is added by running its script.
 
 // grantFundersByCountry lists, per university country, the funders whose grants are loaded
-// for it: the explorer only speaks about grants where it has the data.
-var grantFundersByCountry = map[string][]string{
-	"us": {"nsf"},
-	"nz": {"marsden"},
-	"au": {"arc"},
+// for it: the explorer only speaks about grants where it has the data. NSF is always there; the
+// others come from funder_grants.country (the host institution's country), cached briefly.
+var fundersCache struct {
+	sync.Mutex
+	at        time.Time
+	byCountry map[string][]string
+}
+
+func grantFundersByCountry(db *sql.DB) map[string][]string {
+	fundersCache.Lock()
+	defer fundersCache.Unlock()
+	if fundersCache.byCountry != nil && time.Since(fundersCache.at) < time.Minute {
+		return fundersCache.byCountry
+	}
+	m := map[string][]string{"us": {"nsf"}}
+	rows, err := db.Query(`SELECT DISTINCT lower(country), funder FROM funder_grants
+		WHERE country IS NOT NULL AND country <> '' ORDER BY 1, 2`)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var country, funder string
+			if rows.Scan(&country, &funder) == nil {
+				m[country] = append(m[country], funder)
+			}
+		}
+	}
+	fundersCache.at, fundersCache.byCountry = time.Now(), m
+	return m
 }
 
 // funderNames are the names students see.
@@ -41,7 +66,12 @@ var funderNames = map[string]string{
 
 // getExplorerFunders: GET /explorer/funders — funder names and the countries each one covers.
 func getExplorerFunders(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry})
+	db, err := GetDB()
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry(db)})
 }
 
 const grantsDataDir = "grants"
@@ -180,15 +210,25 @@ SELECT funder, grant_id, full_name, institution,
 FROM (SELECT *, person_name_tokens(COALESCE(last_name, full_name)) l FROM funder_grant_people) x
 WHERE array_length(l, 1) >= 1 AND COALESCE(first_name, '') <> '';
 
--- Every key an institution name can match: itself, its parent university, its alias's canonical name.
+-- Every key an institution can match: each name it lists (a French lab lists its parent university,
+-- CNRS, Inria, ... as "LIP6 | Sorbonne Université | CNRS"), each name's parent university, and its
+-- alias's canonical name.
 CREATE TEMP TABLE fl_inst ON COMMIT DROP AS
+WITH n AS (
+  SELECT DISTINCT institution, trim(name) AS name
+  FROM fl_people, unnest(string_to_array(institution, ' | ')) name
+  WHERE institution IS NOT NULL
+)
 SELECT DISTINCT institution, k FROM (
-  SELECT institution, institution_key(institution) k FROM fl_people WHERE institution IS NOT NULL
+  SELECT institution, institution_key(name) k FROM n
   UNION ALL
-  SELECT institution, institution_key(institution_parent_name(institution)) FROM fl_people WHERE institution IS NOT NULL
+  SELECT institution, institution_key(institution_parent_name(name)) FROM n
   UNION ALL
-  SELECT p.institution, institution_key(a.canonical) FROM fl_people p
-  JOIN institution_aliases a ON institution_key(a.alias) = institution_key(p.institution)
+  -- institution_key drops accented letters; compare the transliterated name too ("École" = "Ecole")
+  SELECT institution, institution_key(unaccent(name)) FROM n
+  UNION ALL
+  SELECT n.institution, institution_key(a.canonical) FROM n
+  JOIN institution_aliases a ON institution_key(a.alias) = institution_key(n.name)
 ) x WHERE k <> '';
 CREATE INDEX ON fl_inst (institution);
 
@@ -201,9 +241,14 @@ WHERE array_length(t, 1) >= 2;
 CREATE INDEX ON fl_cs (last_tok);
 
 CREATE TEMP TABLE fl_cs_inst ON COMMIT DROP AS
-SELECT DISTINCT name, institution_key(affiliation) AS k FROM (
-  SELECT name, affiliation FROM professors UNION SELECT name, affiliation FROM professor_areas
-) a WHERE affiliation IS NOT NULL;
+WITH a AS (
+  SELECT name, affiliation FROM professors WHERE affiliation IS NOT NULL
+  UNION SELECT name, affiliation FROM professor_areas WHERE affiliation IS NOT NULL
+)
+SELECT DISTINCT name, k FROM (
+  SELECT name, institution_key(affiliation) AS k FROM a
+  UNION SELECT name, institution_key(unaccent(affiliation)) FROM a
+) x;
 CREATE INDEX ON fl_cs_inst (name, k);
 
 CREATE TEMP TABLE fl_cand ON COMMIT DROP AS

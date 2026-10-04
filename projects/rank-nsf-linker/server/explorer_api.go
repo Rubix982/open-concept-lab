@@ -229,7 +229,7 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 	}
 	u.AreaFaculty, u.AreaFunded = areaFaculty, areaFunded
 	if u.Country != nil {
-		u.GrantFunders = grantFundersByCountry[*u.Country]
+		u.GrantFunders = grantFundersByCountry(db)[*u.Country]
 	}
 	writeJSON(w, http.StatusOK, u)
 }
