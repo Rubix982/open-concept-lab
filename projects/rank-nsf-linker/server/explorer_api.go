@@ -455,7 +455,7 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		FROM nsf_investigators i
 		JOIN award_pi_rel p ON p.nsf_id = i.nsf_id
 		JOIN award a ON a.id = p.award_id
-		WHERE i.professor = $1
+		WHERE i.professor IN (SELECT name FROM professor_variants WHERE canonical = $1 UNION SELECT $1)
 		ORDER BY a.id`, name)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load awards", err)
@@ -486,7 +486,7 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		SELECT g.funder || ':' || g.grant_id, g.funder, COALESCE(g.currency, ''), g.title, COALESCE(g.amount, 0),
 		       g.starts, g.ends, p.role, left(COALESCE(g.abstract, '') || '', 700), COALESCE(g.url, '')
 		FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
-		WHERE p.professor = $1`, name)
+		WHERE p.professor IN (SELECT name FROM professor_variants WHERE canonical = $1 UNION SELECT $1)`, name)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load grants", err)
 		return
@@ -547,8 +547,9 @@ func getExplorerFacultyPapers(w http.ResponseWriter, r *http.Request) {
 	}
 	name := r.URL.Query().Get("name")
 	rows, err := db.Query(`
-		SELECT title, venue, year, url FROM dblp_papers
-		WHERE name = $1 ORDER BY year DESC, title LIMIT $2`, name, maxRecentPapers)
+		SELECT DISTINCT ON (year, title) title, venue, year, url FROM dblp_papers
+		WHERE name IN (SELECT name FROM professor_variants WHERE canonical = $1 UNION SELECT $1)
+		ORDER BY year DESC, title LIMIT $2`, name, maxRecentPapers)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load papers", err)
 		return

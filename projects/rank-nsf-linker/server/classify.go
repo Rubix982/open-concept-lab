@@ -13,21 +13,28 @@ const (
 	InstitutionTypeUniversity          = "university"
 	InstitutionTypeUniversityAffiliate = "university_affiliate" // a university's grant-receiving arm: regents, research foundations
 	InstitutionTypeBusiness            = "business"
-	InstitutionTypeOrganization        = "organization" // museums, societies, hospitals, government labs
+	InstitutionTypeOrganization        = "organization" // museums, societies, hospitals, government labs, research institutes
+	InstitutionTypeIndividual          = "individual"   // a person awarded directly (fellowships): "Rosales, Detbra"
 )
 
 // Rules are evaluated top to bottom; the first match wins.
 //  1. Anything CSRankings lists faculty for is a university.
+//     1b. A name written "Last, First" is a person awarded directly.
 //  2. University consortia are organizations; regents / trustees / foundations
 //     of a single university are affiliates.
 //  3. Recipients of SBIR/STTR (small-business programs) are businesses.
 //  4. Names ending in a legal-entity suffix are businesses.
-//  5. Names that read as an academic institution are universities.
+//  5. Names that read as an academic institution are universities. A bare "Institute" is not enough
+//     (Santa Fe Institute, Broad Institute are research institutes); degree-granting US institutes are
+//     promoted when "Link IPEDS Institutions" finds them.
 //  6. Everything else is an organization.
 const classifyInstitutionsSQL = `
 UPDATE universities u SET institution_type = CASE
   WHEN u.institution IN (SELECT affiliation FROM professor_areas)
     THEN '` + InstitutionTypeUniversity + `'
+  WHEN u.institution ~ '^[A-Z][A-Za-z''-]+( [A-Z][A-Za-z''-]+)?, [A-Z][A-Za-z.''-]*( [A-Z][A-Za-z.''-]*)*$'
+   AND u.institution !~* '(univ|college|institut|school|foundation|society|museum|center|centre|laborator|council|association|academy|hospital|department|dept|county|city|state|office|board|education|secretary|management|innovation|technolog|media|project|systems|tags|\minc?\M|llc|l\.l\.c|\mnfp\M|\mpbc\M|corp)'
+    THEN '` + InstitutionTypeIndividual + `'
   WHEN u.institution ~* '(associated universities|association of universities|universities research association|universities space research)'
     THEN '` + InstitutionTypeOrganization + `'
   WHEN u.institution ~* '(foundation|research corporation|research institute|regents of|board of regents|trustees of|board of trustees|sponsored programs|research council|experiment station|agrilife|auxiliary|center for research)'
@@ -40,7 +47,7 @@ UPDATE universities u SET institution_type = CASE
   WHEN u.institution ~* '\m(inc|incorporated|llc|l l c|corp|corporation|co|company|ltd|limited|pbc|plc|gmbh|lp|llp)\M\.?\s*$'
    AND u.institution !~* '(universit|college)'
     THEN '` + InstitutionTypeBusiness + `'
-  WHEN u.institution ~* '(universit|college|institute|instituto|\minstitut\M|polytechn|school of|ecole|école|hochschule|technion|\meth\M|epfl|kaist|\miit\M|\msuny\M|\mcuny\M)'
+  WHEN u.institution ~* '(universit|college|institute of technology|technological institute|institute of science|polytechn|school of|ecole|école|hochschule|technion|\meth\M|epfl|kaist|\miit\M|\msuny\M|\mcuny\M)'
     THEN '` + InstitutionTypeUniversity + `'
   ELSE '` + InstitutionTypeOrganization + `'
 END;

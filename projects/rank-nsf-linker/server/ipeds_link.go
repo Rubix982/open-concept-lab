@@ -65,7 +65,8 @@ func loadCuratedIpedsLinks(tx *sql.Tx) error {
 //
 // Runs before the merge step. Each IPEDS institution ends up on one row after merging.
 // Linked rows are universities (IPEDS lists only postsecondary institutions), take IPEDS's
-// website when theirs disagrees, and IPEDS's coordinates when missing.
+// website when theirs disagrees, and IPEDS's address and coordinates: geocoding and NSF addresses
+// are sometimes another campus's ("University of Nevada" with a Las Vegas ZIP).
 const linkIpedsSQL = `
 CREATE TEMP TABLE ip_names ON COMMIT DROP AS
 SELECT DISTINCT unitid, institution_key(n) AS k, stripped
@@ -169,8 +170,14 @@ UPDATE universities u SET
   homepage  = CASE WHEN i.website IS NOT NULL
                     AND registrable_domain(i.website) IS DISTINCT FROM registrable_domain(u.homepage)
                    THEN i.website ELSE u.homepage END,
-  latitude  = CASE WHEN u.latitude IS NULL THEN i.latitude::real ELSE u.latitude END,
-  longitude = CASE WHEN u.latitude IS NULL THEN i.longitude::real ELSE u.longitude END
+  latitude  = COALESCE(i.latitude::real, u.latitude),
+  longitude = COALESCE(i.longitude::real, u.longitude),
+  street_address = COALESCE(i.address, u.street_address),
+  city      = COALESCE(i.city, u.city),
+  zip_code  = COALESCE(i.zip, u.zip_code),
+  country   = 'United States',
+  countryabbrv = 'us',
+  region    = 'northamerica'
 FROM ip_final l
 JOIN ipeds_institutions i ON i.unitid = l.unitid
 WHERE u.institution = l.institution;

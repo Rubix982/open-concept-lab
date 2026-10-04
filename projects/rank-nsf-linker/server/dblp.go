@@ -40,6 +40,23 @@ type dblpRecord struct {
 	EE        []string `xml:"ee"`
 }
 
+// dblpPerson is a person record (<www key="homepages/...">): all their name spellings and their
+// current and former affiliations.
+type dblpPerson struct {
+	Key     string   `xml:"key,attr"`
+	Authors []string `xml:"author"`
+	Notes   []struct {
+		Type  string `xml:"type,attr"`
+		Label string `xml:"label,attr"`
+		Text  string `xml:",chardata"`
+	} `xml:"note"`
+}
+
+type dblpAffiliation struct {
+	name, affiliation string
+	former            bool
+}
+
 type dblpRow struct {
 	key, title, venue, url string
 	year                   int
@@ -116,6 +133,7 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 
 	minYear := time.Now().Year() - dblpRecentYears
 	papers := map[string][]dblpRow{}
+	var affiliations []dblpAffiliation
 	records := 0
 	for {
 		tok, err := dec.Token()
@@ -131,6 +149,26 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 		}
 		switch se.Name.Local {
 		case "article", "inproceedings", "incollection":
+		case "www":
+			// Person records: keep the affiliations of CSRankings people, under each of their names.
+			var p dblpPerson
+			if err := dec.DecodeElement(&p, &se); err != nil {
+				return fmt.Errorf("failed to parse DBLP person record: %w", err)
+			}
+			if !strings.HasPrefix(p.Key, "homepages/") {
+				continue
+			}
+			for _, a := range p.Authors {
+				if !names[a] {
+					continue
+				}
+				for _, n := range p.Notes {
+					if n.Type == "affiliation" && strings.TrimSpace(n.Text) != "" {
+						affiliations = append(affiliations, dblpAffiliation{a, strings.TrimSpace(html.UnescapeString(n.Text)), n.Label == "former"})
+					}
+				}
+			}
+			continue
 		case "dblp":
 			continue
 		default:
@@ -207,10 +245,29 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 	if err := stmt.Close(); err != nil {
 		return fmt.Errorf("failed to close COPY: %w", err)
 	}
+	if _, err := tx.Exec(`TRUNCATE dblp_affiliations`); err != nil {
+		return fmt.Errorf("failed to clear dblp_affiliations: %w", err)
+	}
+	astmt, err := tx.Prepare(pq.CopyIn("dblp_affiliations", "name", "affiliation", "former"))
+	if err != nil {
+		return fmt.Errorf("failed to start COPY: %w", err)
+	}
+	for _, a := range affiliations {
+		if _, err := astmt.Exec(a.name, a.affiliation, a.former); err != nil {
+			return fmt.Errorf("failed to COPY affiliation: %w", err)
+		}
+	}
+	if _, err := astmt.Exec(); err != nil {
+		return fmt.Errorf("failed to flush COPY: %w", err)
+	}
+	if err := astmt.Close(); err != nil {
+		return fmt.Errorf("failed to close COPY: %w", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit DBLP papers: %w", err)
 	}
 
-	logger.Infof(mainCtx, "📄 DBLP: read %d records; kept %d papers (%d+) for %d CSRankings faculty", records, kept, minYear, len(papers))
+	logger.Infof(mainCtx, "📄 DBLP: read %d records; kept %d papers (%d+) for %d CSRankings faculty; %d affiliations",
+		records, kept, minYear, len(papers), len(affiliations))
 	return nil
 }
