@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galaxies, Colliding</title>
+<meta name="description" content="Four galaxies on intersecting orbits, simulated as 65,536 gravitating bodies on the GPU (WebGPU), over a starfield.">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  .frame { position: fixed; inset: 0; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* the galaxies add light over the sky: black in their layer is "no light" */
+  #sim { mix-blend-mode: screen; }
+  #note { position: fixed; left: 16px; bottom: 14px; font: 13px/1.4 -apple-system, sans-serif; color: rgba(220, 230, 255, 0.55); }
+  body.render #note { display: none; }
+</style>
+</head>
+<body>
+<div class="frame"><canvas id="sky"></canvas><canvas id="sim"></canvas></div>
+<p id="note"></p>
+<script>
+// Galaxies, colliding — a cinematic cut of the metal-gpu-bench N-body.
+//
+// The same tiled WGSL kernel as ../site (one thread per body, 256-body tiles in
+// workgroup memory), with four disc galaxies of different masses, sizes, spins
+// and colours on intersecting orbits, drawn as additive glowing points with
+// fading trails over a starfield. Everything is deterministic: frame i is
+// always STEPS·i steps of the same seeded run, so render.mjs can photograph
+// frames one by one (window.__frame(i)) and the video is exact.
+//
+// URL options: ?bodies=65536  ?steps=1 (per frame)  ?slow=1 (stretch time)  ?seed=11  ?fps=60  ?secs=40
+(function () {
+  "use strict";
+  const Q = new URLSearchParams(location.search);
+  const N = Math.max(4096, Math.min(131072, +(Q.get("bodies") || 65536)));
+  const STEPS = Math.max(1, Math.min(12, +(Q.get("steps") || 1)));
+  const SEED = +(Q.get("seed") || 11);
+  const FPS = +(Q.get("fps") || 60), SECS = +(Q.get("secs") || 40), FRAMES = Math.round(FPS * SECS);
+  const SLOW = Math.max(0.25, Math.min(8, +(Q.get("slow") || 1)));
+  const DT = 0.0006 / SLOW, SOFT = 0.0009, G = 1;
+  const FADE = Math.pow(0.78, 1 / SLOW);   // trails cover the same stretch of simulated time
+
+  // ---------------------------------------------------------------- the scene
+  // A seeded random generator, so the same seed is the same universe.
+  let s = SEED * 7919 + 13;
+  const rnd = () => (s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  const gauss = () => { let u = 0, v = 0; while (u === 0) u = rnd(); v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+
+  // The main pair as on the gpu-bench page (heavy cores, an off-centre close
+  // pass, bound so they swing back and merge, which is what throws out the long
+  // tidal arms), plus two satellites starting far out on slow, curving orbits
+  // that fall in during the second half.
+  const GAL = (() => {
+    const theta = 0.35, sep = 1.25, offset = 0.32, ratio = 0.72;
+    const M1 = { core: 6, disc: 2.2 }, M2 = { core: 6 * ratio, disc: 2.2 * ratio };
+    const ux = Math.cos(theta), uy = Math.sin(theta), px = -uy, py = ux;
+    const m1 = M1.core + M1.disc, m2 = M2.core + M2.disc, tot = m1 + m2;
+    const v = 0.75 * Math.sqrt(tot / sep);
+    const pair = [
+      { x: -sep / 2 * ux + offset / 2 * px, y: -sep / 2 * uy + offset / 2 * py, vx: v * ux * m2 / tot, vy: v * uy * m2 / tot, ...M1, r: 0.38, spin: 1 },
+      { x: sep / 2 * ux - offset / 2 * px, y: sep / 2 * uy - offset / 2 * py, vx: -v * ux * m1 / tot, vy: -v * uy * m1 / tot, ...M2, r: 0.38 * Math.sqrt(ratio), spin: -1 },
+    ];
+    // satellites: far out, mostly sideways, slow enough to fall in late
+    const sat = (ang, R, core, disc, r, spin, dir) => {
+      const vt = 0.42 * Math.sqrt(tot / R) * dir, vr = -0.12 * Math.sqrt(tot / R);
+      const cx = Math.cos(ang), cy = Math.sin(ang);
+      return { x: R * cx, y: R * cy, vx: vr * cx - vt * cy, vy: vr * cy + vt * cx, core, disc, r, spin };
+    };
+    return [...pair, sat(1.95, 2.35, 1.5, 0.55, 0.2, 1, 1), sat(-1.2, 2.5, 1.2, 0.45, 0.17, -1, 1)];
+  })();
+  // take out the net drift, so the tangle stays centred
+  { let M = 0, px = 0, py = 0, cx = 0, cy = 0;
+    for (const g of GAL) { const m = g.core + g.disc; M += m; px += m * g.vx; py += m * g.vy; cx += m * g.x; cy += m * g.y; }
+    for (const g of GAL) { g.vx -= px / M; g.vy -= py / M; g.x -= cx / M; g.y -= cy / M; } }
+
+  function bodies() {
+    const f = new Float32Array(N * 6);
+    const total = GAL.reduce((a, g) => a + g.disc, 0);
+    let o = 0;
+    GAL.forEach((g, gi) => {
+      const n = gi === GAL.length - 1 ? N - o : Math.round((N * g.disc) / total);
+      f.set([g.x, g.y, g.vx, g.vy, g.core, gi], o * 6);
+      for (let k = 1; k < n; k++) {
+        // an exponential disc with a little thickness noise, two faint arms
+        const u = k / n, r = 0.03 + g.r * Math.pow(u, 0.75), a = rnd() * 2 * Math.PI;
+        const vc = Math.sqrt((g.core + g.disc * u) / Math.sqrt(r * r + SOFT)) * g.spin;
+        f.set([g.x + r * Math.cos(a), g.y + r * Math.sin(a), g.vx + vc * Math.sin(a), g.vy - vc * Math.cos(a), g.disc / (n - 1), gi], (o + k) * 6);
+      }
+      o += n;
+    });
+    return f;
+  }
+
+  // the camera: a slow push in on the first encounter, then a pull back to
+  // take in the tails (half-height of the view in world units, and a drift)
+  const camAt = (i) => {
+    const t = i / Math.max(1, FRAMES - 1), e = (k) => k * k * (3 - 2 * k);
+    const zoom = 1.05 + 1.25 * e(Math.min(1, t / 0.85));
+    return { half: zoom, cx: 0.06 * Math.sin(t * 2.1), cy: 0.04 * Math.cos(t * 1.7), rot: 0.06 * t };
+  };
+
+  // ---------------------------------------------------------------- the sky
+  const sky = document.getElementById("sky"), sim = document.getElementById("sim");
+  const W = Math.round(innerWidth * (devicePixelRatio || 1)), H = Math.round(innerHeight * (devicePixelRatio || 1));
+  sky.width = sim.width = W; sky.height = sim.height = H;
+  const sctx = sky.getContext("2d");
+  const STARS = [], SMUDGES = [], CLOUDS = [];
+  { const n = Math.round((W * H) / 420);
+    for (let k = 0; k < n; k++) {
+      const b = Math.pow(rnd(), 3.2);                       // most stars faint, a few bright
+      const temp = rnd();                                   // colour: red → white → blue
+      const col = temp < 0.12 ? [255, 190, 150] : temp < 0.3 ? [255, 225, 190] : temp < 0.8 ? [235, 240, 255] : [175, 200, 255];
+      STARS.push({ x: rnd(), y: rnd(), r: 0.45 + 2.2 * b, a: 0.04 + 0.96 * Math.pow(b, 1.15), col, f: 0.6 + 2.2 * rnd(), ph: rnd() * 6.28, depth: 0.2 + 0.8 * rnd() });
+    }
+    for (let k = 0; k < 14; k++) SMUDGES.push({ x: rnd(), y: rnd(), r: 3 + 9 * rnd(), e: 0.25 + 0.6 * rnd(), rot: rnd() * 3.14, a: 0.05 + 0.08 * rnd(), warm: rnd() < 0.5 });
+    const tints = [[40, 60, 160], [90, 40, 140], [20, 90, 120], [120, 50, 90]];
+    for (let k = 0; k < 6; k++) CLOUDS.push({ x: rnd(), y: rnd(), r: 0.25 + 0.35 * rnd(), a: 0.035 + 0.04 * rnd(), c: tints[k % tints.length] }); }
+
+  const SKY = Q.get("sky") === "1";
+  function drawSky(i, cam) {
+    if (!SKY) { if (i === 0) { sctx.fillStyle = "#000"; sctx.fillRect(0, 0, W, H); } return; }
+    const t = i / FPS, k = 1.75 / cam.half;                 // the sky moves a little with the camera
+    sctx.fillStyle = "#010208"; sctx.fillRect(0, 0, W, H);
+    for (const c of CLOUDS) {
+      const x = (c.x + cam.cx * 0.04) * W, y = (c.y - cam.cy * 0.04) * H, r = c.r * Math.max(W, H) * Math.pow(k, 0.08);
+      const g = sctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(${c.c},${c.a})`); g.addColorStop(1, `rgba(${c.c},0)`);
+      sctx.fillStyle = g; sctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+    }
+    for (const m of SMUDGES) {
+      const x = m.x * W, y = m.y * H, r = m.r * (W / 1920);
+      sctx.save(); sctx.translate(x, y); sctx.rotate(m.rot); sctx.scale(1, m.e);
+      const g = sctx.createRadialGradient(0, 0, 0, 0, 0, r);
+      g.addColorStop(0, m.warm ? `rgba(255,220,180,${m.a * 2.2})` : `rgba(200,215,255,${m.a * 2.2})`); g.addColorStop(1, "rgba(0,0,0,0)");
+      sctx.fillStyle = g; sctx.beginPath(); sctx.arc(0, 0, r, 0, Math.PI * 2); sctx.fill(); sctx.restore();
+    }
+    const sc = W / 1920;
+    for (const st of STARS) {
+      // parallax: nearer stars drift more with the camera
+      const x = ((st.x - 0.5) * Math.pow(k, 0.1 * st.depth) + 0.5 + cam.cx * 0.06 * st.depth) * W;
+      const y = ((st.y - 0.5) * Math.pow(k, 0.1 * st.depth) + 0.5 - cam.cy * 0.06 * st.depth) * H;
+      const tw = 0.82 + 0.18 * Math.sin(t * st.f + st.ph);
+      const a = st.a * tw, r = Math.max(0.6, st.r * Math.max(sc, 0.75));
+      sctx.fillStyle = `rgba(${st.col},${a})`;
+      if (r > 1.9) { // only the brightest few get a halo
+        const g = sctx.createRadialGradient(x, y, 0, x, y, r * 3.2);
+        g.addColorStop(0, `rgba(${st.col},${a})`); g.addColorStop(0.35, `rgba(${st.col},${a * 0.35})`); g.addColorStop(1, `rgba(${st.col},0)`);
+        sctx.fillStyle = g; sctx.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4);
+      } else sctx.fillRect(x - r / 2, y - r / 2, r, r);
+    }
+    // a soft vignette
+    const v = sctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
+    v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.55)");
+    sctx.fillStyle = v; sctx.fillRect(0, 0, W, H);
+  }
+
+  // ---------------------------------------------------------------- the GPU
+  const WGSL = `
+struct B { pos: vec2f, vel: vec2f, mass: f32, gal: f32 };
+struct Prm { n: u32, dt: f32, soft: f32, g: f32 };
+@group(0) @binding(0) var<storage, read> src: array<B>;
+@group(0) @binding(1) var<storage, read_write> dst: array<B>;
+@group(0) @binding(2) var<uniform> prm: Prm;
+var<workgroup> tile: array<vec3f, 256>;
+@compute @workgroup_size(256)
+fn step(@builtin(global_invocation_id) gid: vec3u, @builtin(local_invocation_index) li: u32) {
+  let i = gid.x; var p: B; if (i < prm.n) { p = src[i]; }
+  var f = vec2f(0.0);
+  let tiles = (prm.n + 255u) / 256u;
+  for (var t = 0u; t < tiles; t++) {
+    let j = t * 256u + li;
+    if (j < prm.n) { let q = src[j]; tile[li] = vec3f(q.pos, q.mass); } else { tile[li] = vec3f(0.0); }
+    workgroupBarrier();
+    for (var k = 0u; k < 256u; k++) { let q = tile[k]; let r = q.xy - p.pos; let inv = inverseSqrt(dot(r, r) + prm.soft); f += q.z * r * (inv * inv * inv); }
+    workgroupBarrier();
+  }
+  if (i >= prm.n) { return; }
+  p.vel += prm.g * f * prm.dt; p.pos += p.vel * prm.dt; dst[i] = p;
+}
+struct View { sx: f32, sy: f32, px: f32, py: f32, gain: f32, vref: f32, cx: f32, cy: f32, cs: f32, sn: f32, a: f32, b: f32 };
+@group(0) @binding(0) var<storage, read> ps: array<B>;
+@group(0) @binding(1) var<uniform> view: View;
+struct VO { @builtin(position) pos: vec4f, @location(0) c: vec3f, @location(1) uv: vec2f };
+fn tint(g: f32) -> mat2x3f {
+  // as on the gpu-bench page: blue when slow, white-gold when fast
+  return mat2x3f(vec3f(0.16, 0.32, 1.0), vec3f(1.0, 0.82, 0.62));
+}
+@vertex fn vpts(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> VO {
+  var corner = array<vec2f, 6>(vec2f(-1, -1), vec2f(1, -1), vec2f(-1, 1), vec2f(-1, 1), vec2f(1, -1), vec2f(1, 1));
+  let p = ps[ii]; let k = corner[vi]; var o: VO;
+  let d = p.pos - vec2f(view.cx, view.cy);
+  let q = vec2f(d.x * view.cs - d.y * view.sn, d.x * view.sn + d.y * view.cs);
+  o.pos = vec4f(q.x * view.sx + k.x * view.px, q.y * view.sy + k.y * view.py, 0.0, 1.0);
+  let t = clamp(length(p.vel) / view.vref, 0.0, 1.0);
+  let tc = tint(p.gal);
+  o.c = mix(tc[0], tc[1], t) * view.gain; o.uv = k; return o;
+}
+@fragment fn fpts(i: VO) -> @location(0) vec4f { let a = exp(-3.0 * dot(i.uv, i.uv)); return vec4f(i.c * a, 0.0); }
+@vertex fn vfull(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4f {
+  var p = array<vec2f, 3>(vec2f(-1, -1), vec2f(3, -1), vec2f(-1, 3)); return vec4f(p[vi], 0.0, 1.0);
+}
+@fragment fn ffade() -> @location(0) vec4f { return vec4f(0.0); }
+@group(0) @binding(0) var acc: texture_2d<f32>;
+@fragment fn fshow(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let c = textureLoad(acc, vec2i(fc.xy), 0).rgb;
+  // exposure, then a gentle bloom from the four neighbours two pixels out
+  var b = vec3f(0.0);
+  for (var k = 0; k < 4; k++) { let o = array<vec2i, 4>(vec2i(3, 0), vec2i(-3, 0), vec2i(0, 3), vec2i(0, -3))[k]; b += textureLoad(acc, vec2i(fc.xy) + o, 0).rgb; }
+  let m = 1.0 - exp(-(c * 2.0 + b * 0.04));
+  return vec4f(m, 1.0);
+}`;
+
+  const note = document.getElementById("note");
+  let device, api;
+  async function setup() {
+    if (!navigator.gpu) throw new Error("this browser has no WebGPU");
+    const adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+    if (!adapter) throw new Error("no WebGPU adapter");
+    device = await adapter.requestDevice();
+    const ctx = sim.getContext("webgpu"), format = navigator.gpu.getPreferredCanvasFormat();
+    ctx.configure({ device, format, alphaMode: "opaque" });
+    const bytes = N * 24;
+    const bufs = [0, 1].map(() => device.createBuffer({ size: bytes, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST }));
+    device.queue.writeBuffer(bufs[0], 0, bodies());
+    const prm = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+    const pv = new ArrayBuffer(16); new Uint32Array(pv, 0, 1)[0] = N; new Float32Array(pv, 4, 3).set([DT, SOFT, G]);
+    device.queue.writeBuffer(prm, 0, pv);
+    const mod = device.createShaderModule({ code: WGSL });
+    const cp = device.createComputePipeline({ layout: "auto", compute: { module: mod, entryPoint: "step" } });
+    const cb = [0, 1].map((k) => device.createBindGroup({ layout: cp.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: bufs[k] } }, { binding: 1, resource: { buffer: bufs[1 - k] } }, { binding: 2, resource: { buffer: prm } }] }));
+    const acc = device.createTexture({ size: [W, H], format: "rgba16float", usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING });
+    const add = { color: { srcFactor: "one", dstFactor: "one", operation: "add" }, alpha: { srcFactor: "one", dstFactor: "one", operation: "add" } };
+    const fadeB = { color: { srcFactor: "zero", dstFactor: "constant", operation: "add" }, alpha: { srcFactor: "zero", dstFactor: "constant", operation: "add" } };
+    const pts = device.createRenderPipeline({ layout: "auto", vertex: { module: mod, entryPoint: "vpts" }, fragment: { module: mod, entryPoint: "fpts", targets: [{ format: "rgba16float", blend: add }] }, primitive: { topology: "triangle-list" } });
+    const fade = device.createRenderPipeline({ layout: "auto", vertex: { module: mod, entryPoint: "vfull" }, fragment: { module: mod, entryPoint: "ffade", targets: [{ format: "rgba16float", blend: fadeB }] }, primitive: { topology: "triangle-list" } });
+    const show = device.createRenderPipeline({ layout: "auto", vertex: { module: mod, entryPoint: "vfull" }, fragment: { module: mod, entryPoint: "fshow", targets: [{ format }] }, primitive: { topology: "triangle-list" } });
+    const viewBuf = device.createBuffer({ size: 48, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+    const pb = [0, 1].map((k) => device.createBindGroup({ layout: pts.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: bufs[k] } }, { binding: 1, resource: { buffer: viewBuf } }] }));
+    const sb = device.createBindGroup({ layout: show.getBindGroupLayout(0), entries: [{ binding: 0, resource: acc.createView() }] });
+    const px = 1.1 * (W / 1920);                           // sprite size in pixels, scaled with the frame
+    let cur = 0, done = -1;
+
+    // frame i: advance the simulation to step STEPS·i, draw it
+    async function frame(i) {
+      if (i !== done + 1) throw new Error(`frames must run in order (asked ${i} after ${done})`);
+      const cam = camAt(i);
+      drawSky(i, cam);
+      const enc = device.createCommandEncoder();
+      if (i > 0) for (let k = 0; k < STEPS; k++) { const p = enc.beginComputePass(); p.setPipeline(cp); p.setBindGroup(0, cb[cur]); p.dispatchWorkgroups(Math.ceil(N / 256)); p.end(); cur = 1 - cur; }
+      const sy = 1 / cam.half, sx = sy * H / W;
+      device.queue.writeBuffer(viewBuf, 0, new Float32Array([sx, sy, (px / W) * 2, (px / H) * 2, 0.12 * Math.sqrt(32768 / N), 9.0, cam.cx, cam.cy, Math.cos(cam.rot), Math.sin(cam.rot), 0, 0]));
+      const r = enc.beginRenderPass({ colorAttachments: [{ view: acc.createView(), loadOp: i === 0 ? "clear" : "load", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 0 } }] });
+      r.setPipeline(fade); r.setBlendConstant([FADE, FADE, FADE, FADE]); r.draw(3);
+      r.setPipeline(pts); r.setBindGroup(0, pb[cur]); r.draw(6, N);
+      r.end();
+      const p2 = enc.beginRenderPass({ colorAttachments: [{ view: ctx.getCurrentTexture().createView(), loadOp: "clear", storeOp: "store", clearValue: { r: 0, g: 0, b: 0, a: 1 } }] });
+      p2.setPipeline(show); p2.setBindGroup(0, sb); p2.draw(3); p2.end();
+      device.queue.submit([enc.finish()]);
+      await device.queue.onSubmittedWorkDone();
+      done = i;
+    }
+    return { frame };
+  }
+
+  // the render contract for render.mjs
+  window.__info = { N, STEPS, SEED, FPS, FRAMES, W, H };
+  window.__frame = async (i) => { document.body.classList.add("render"); await api.frame(i); return true; };
+
+  setup().then((a) => {
+    api = a;
+    window.__ready = true;
+    if (/[?&]render\b/.test(location.search)) return;       // the renderer drives it
+    // live preview: one frame per animation frame, looping
+    let i = 0, busy = false;
+    note.textContent = `${N.toLocaleString()} bodies · ${GAL.length} galaxies · live on your GPU`;
+    const tick = async () => {
+      if (!busy) { busy = true; if (i >= FRAMES) { location.reload(); return; } await api.frame(i++); busy = false; }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }).catch((e) => { note.textContent = `Can't run here: ${e.message}. Open it in Chrome or Safari with WebGPU.`; window.__error = e.message; });
+})();
+</script>
+</body>
+</html>
