@@ -14,5 +14,5 @@ export function funderName(code: string | null | undefined): string {
 }
 
 export function fundersFor(country: string | null | undefined): string[] {
-  return funders.value.by_country[(country ?? "us").toLowerCase()] ?? [];
+  return country ? (funders.value.by_country[country.toLowerCase()] ?? []) : [];
 }

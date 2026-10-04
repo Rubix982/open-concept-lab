@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { webUrl } from "@/lines";
 import { computed, ref, watch } from "vue";
 import { api, type Faculty, type Query, type Scholarship, type UniversityDetail } from "@/api";
 import { countryName } from "@/countries";
@@ -46,7 +47,7 @@ watch(
     }
   },
 );
-const isUS = computed(() => (uni.value?.country ?? "us") === "us");
+const isUS = computed(() => uni.value?.country === "us");
 // Funders whose grants are loaded for this university's country (NSF for the US, ARC for Australia, ...).
 const grantFunders = computed(() => uni.value?.grant_funders ?? (isUS.value ? ["nsf"] : []));
 const grantFunderNames = computed(() => grantFunders.value.map(funderName).join(" or "));
@@ -143,7 +144,7 @@ function money(n?: number) {
           </p>
           <ul class="sch-list">
             <li v-for="sch in scholarships" :key="sch.id">
-              <a :href="sch.url" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
+              <a :href="webUrl(sch.url)" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
               <p class="sub">
                 {{ sch.provider }}. {{ levelLabel(sch.levels) }}. Covers {{ sch.covers }}.
                 <template v-if="sch.application_window">Application window: {{ sch.application_window }}.</template>
@@ -171,7 +172,7 @@ function money(n?: number) {
           </ul>
         </section>
 
-        <a v-if="uni.homepage" class="home" :href="uni.homepage.startsWith('http') ? uni.homepage : `https://${uni.homepage}`" target="_blank" rel="noopener">
+        <a v-if="webUrl(uni.homepage)" class="home" :href="webUrl(uni.homepage)" target="_blank" rel="noopener">
           University website
         </a>
       </template>

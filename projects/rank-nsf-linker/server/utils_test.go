@@ -15,7 +15,7 @@ func TestNormalizeInstitutionName(t *testing.T) {
 		{"Univ Texas", "University Texas"},
 		{"Univ. Texas", "University Texas"},
 		{"Stanford University", "Stanford University"},
-		{"Harvard & MIT", "Harvard and MIT"},
+		{"Harvard & MIT", "Harvard & MIT"}, // "&" is kept for display ("Texas A&M"); matching keys spell it "and"
 		{"Georgia Inst. of Tech.", "Georgia Inst of Tech"},
 		{"California Institute of Technology", "California Institute of Technology"},
 		{"Texas A and M University", "Texas A&M University"},
@@ -27,10 +27,10 @@ func TestNormalizeInstitutionName(t *testing.T) {
 		{"Univ. of California: Berkeley", "University Of California Berkeley"},
 		{"Univ of California (Berkeley)", "University Of California Berkeley"},
 		{"Univ. of California/Berkeley", "University Of California Berkeley"},
-		{"Univ of California-Los Angeles", "University Of California Los Angeles"},
-		{"Univ. of California-Los Angeles", "University Of California Los Angeles"},
-		{"Univ of California & Los Angeles", "University Of California and Los Angeles"},
-		{"Univ. of California & Los Angeles", "University Of California and Los Angeles"},
+		{"Univ of California-Los Angeles", "University Of California - Los Angeles"},
+		{"Univ. of California-Los Angeles", "University Of California - Los Angeles"},
+		{"Univ of California & Los Angeles", "University Of California & Los Angeles"},
+		{"Univ. of California & Los Angeles", "University Of California & Los Angeles"},
 		{"Univ of California, Los Angeles", "University Of California Los Angeles"},
 		{"Univ. of California, Los Angeles", "University Of California Los Angeles"},
 		{"Univ of California Los Angeles", "University Of California Los Angeles"},
@@ -44,7 +44,7 @@ func TestNormalizeInstitutionName(t *testing.T) {
 		// Edge cases
 		{"", ""},
 		{"   ", ""},
-		{"&", "and"},
+		{"&", "&"},
 		{"Univ", "University"},
 		{"Univ.", "University"},
 	}

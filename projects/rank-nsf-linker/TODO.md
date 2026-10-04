@@ -31,7 +31,7 @@ Numbers in brackets are what the audit measured; re-measure after each item.
    - [x] Texas A&M normalizer bug fixed (every campus collapsed into `Texas A&M`)
    - [x] Clean full reload from empty tables: all 15 steps pass in 3m49s; Texas A&M campuses separate
    - [x] `Georgia Tech Research Corporation` (96 awards) → Georgia Institute of Technology
-   - [ ] 8 pre-existing failures in `utils_test.go` expect `&`→`and` from the display normalizer
+   - [x] `utils_test.go` passes: tests match the display normaliser (keeps `&` and ` - `); a lone "Univ" now expands
 
 3. **Link professors to NSF awards**
    [only 498 of 18,885 CSRankings faculty (2.6%) linked; exact-name match only, any institution]
@@ -91,7 +91,7 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [x] Curated IPEDS links (`backup/ipeds_links.csv`): UW, Pitt, Penn State, Ohio State, … now show R1 / tuition
 - [x] Fixed: IPEDS graduate tuition columns were shifted (out-of-state showed in-state)
 - [x] Phone layout; shareable URLs (`?areas=ml,nlp&q=…&u=…&p=…`); old offline service worker removed
-- [ ] Recent papers: DBLP dump (`data/dblp/dblp.xml.gz`, 1.1 GB) — download in progress; then
+- [x] Recent papers: DBLP dump (`data/dblp/dblp.xml.gz`, 1.1 GB) loaded; then
       `make pipeline-from STEP=18`. The DBLP API is rate-limited and bot-guarded, so no live calls
 - [x] Semantic goal matching (`server/semantic.go`): grants and papers embedded with all-MiniLM-L6-v2
       (embedder service) into Qdrant `explorer_work`, filtered by area/university; step 20 is incremental.
@@ -109,11 +109,18 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 
 ## Also found
 
-- [ ] ~9 of 17 API routes query tables/columns that don't exist (`nsf_awards`, `professors.area`)
-- [ ] Country codes disagree: Germany is `gr` in one step, `de` in another; unknown countries default to `us`
-- [ ] Homepage view prefixes `https://` onto `http://` URLs
-- [ ] Frontend checks `"in-progress"` vs constant `"in_progress"`
-- [ ] Popups build HTML from raw strings (XSS)
+- [x] Legacy API routes (10 of 15 failing, none used by the frontend) removed with `routes.go`; the app uses `/explorer/*`
+- [x] Country codes come from the `countries` table (NSF step and the step-10 fill-in); unknown countries stay empty instead of `us` (server and frontend)
+- [x] Data links go through `webUrl()`: http(s) only (no `javascript:`), bare domains get https://
+- [x] `in-progress` / `in_progress` mismatch was in the old frontend, deleted in the rewrite
+- [x] Map popups are built with textContent (old raw-HTML popups were in the deleted frontend)
+- [x] Map coordinates: 64 universities were in the wrong place (UCLA in Ann Arbor, RWTH Aachen near St. Louis)
+      because geocoding matched town names. Explorer now prefers `backup/university_coordinates.csv`
+      (`server/scripts/geo/check_coordinates.py`: OpenStreetMap, then Wikidata), then IPEDS, then geocoding
+- [x] Search index: area order made 90k payloads look changed; areas now ordered deterministically, change
+      checks compare content, lost points are re-embedded. Qdrant 1.3 (4 GB) runs out of memory on large
+      payload rewrites and scrolls, so these are paged small
+- [ ] Qdrant 1.3.0 is old and fragile under bulk updates; consider upgrading (needs a re-embed)
 - [ ] Semantic search (scraper → Qdrant) has no API route
 
 ## Done

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Grant } from "@/api";
-import { formatMoney, formatYear } from "@/lines";
+import { formatMoney, formatYear, webUrl } from "@/lines";
 import { funderName } from "@/store";
 
 const props = defineProps<{ grant: Grant }>();
@@ -17,7 +17,7 @@ const status = computed(() => {
 
 <template>
   <li class="grant" :class="{ active: grant.active }">
-    <a :href="grant.url" target="_blank" rel="noopener" class="title">{{ grant.title }}</a>
+    <a :href="webUrl(grant.url)" target="_blank" rel="noopener" class="title">{{ grant.title }}</a>
     <p class="meta">
       <strong>{{ status }}</strong>, {{ funderName(grant.funder) }},
       <span class="num">{{ formatMoney(grant.amount, grant.currency) }}</span>,

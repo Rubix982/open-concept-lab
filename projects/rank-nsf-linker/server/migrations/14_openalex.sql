@@ -14,3 +14,7 @@ CREATE TABLE IF NOT EXISTS openalex_works (
 -- Hash of the text each vector was embedded from, so a changed text (a new abstract) is re-embedded.
 -- NULL: embedded before this column existed, from the title-only text.
 ALTER TABLE explorer_embedded ADD COLUMN IF NOT EXISTS text_hash TEXT;
+
+-- Hash of a point's own fields (title, year, url). NULL: recorded before this column existed.
+-- Lets a payload refresh tell a professor-level change (areas, university) from a change to the work itself.
+ALTER TABLE explorer_embedded ADD COLUMN IF NOT EXISTS doc_hash TEXT;
