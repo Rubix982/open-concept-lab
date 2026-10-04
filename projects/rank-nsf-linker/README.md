@@ -9,6 +9,7 @@ This system helps prospective students, collaborators, or researchers **identify
   - [🔗 Algorithm: Mapping CS Faculty to NSF Awards \& Google Scholar Publications](#-algorithm-mapping-cs-faculty-to-nsf-awards--google-scholar-publications)
     - [🧠 Step-by-Step Algorithm](#-step-by-step-algorithm)
   - [🛠️ Expand Features to Support Further Use Cases](#️-expand-features-to-support-further-use-cases)
+- [Running the population pipeline](#running-the-population-pipeline)
 - [Debugging](#debugging)
   - [http: server gave HTTP response to HTTPS client](#http-server-gave-http-response-to-https-client)
 
@@ -129,6 +130,45 @@ This algorithm enhances the core faculty selection tool by connecting researcher
 | 📤 **Export Options** (CSV, JSON)                        | Helps bloggers, journalists, students do deeper dives                |
 | 🔄 **Daily/Weekly Sync with NSF API**                    | Keep data fresh                                                      |
 | 💡 **“Suggested Researchers” Engine**                    | “If you liked this grant/lab, here are similar ones”                 |
+
+# Running the population pipeline
+
+The Go server (`go-server` container) loads Postgres on startup in 17 steps
+(`executeWorkflows` in `server/db.go`). Each step records its status in `pipeline_status`.
+
+| Command | What it does |
+| --- | --- |
+| `make up` | Start everything; the pipeline runs if it has never completed |
+| `make pipeline` | Restart `go-server`; resumes at the first step that has not completed |
+| `make pipeline-from STEP=N` | Rerun step N and everything after it (e.g. `STEP=16` to re-merge institutions) |
+
+A full run from empty tables takes about 8 minutes (NSF 2010–2025, ~192k awards).
+
+**Data the pipeline reads**
+
+- `data/` — CSRankings CSVs, NSF award JSONs (`data/nsfdata/<year>/`), IPEDS CSVs (`data/ipeds_data/<year>/`)
+- `backup/institution_aliases.csv` — hand-curated institution spellings (`alias,canonical,note`) for cases the
+  matching rule can't solve. `backup/` is mounted, so after editing it run `make pipeline-from STEP=16`; no rebuild.
+
+**IPEDS.** nces.ed.gov is often unreachable, so `SKIP_IPEDS=1` (dev compose) skips the download and the
+pipeline ingests whatever is in `data/ipeds_data/`. To fill that from the parquet cache in `data/ipeds_cache/`:
+
+```bash
+cd server/scripts/ipeds
+python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt   # once
+cd ../../.. && server/scripts/ipeds/.venv/bin/python server/scripts/ipeds/parquet_to_csv.py 2023
+```
+
+**How records are linked**
+
+- Institutions: one matching rule, `institution_key()` (`server/migrations/8_institution_aliases.sql`);
+  every merged spelling is kept in `institution_aliases`. Rows carry `institution_type`
+  (`university`, `university_affiliate`, `business`, `organization`) and, for US universities, `ipeds_unitid`.
+- People: NSF investigators live in `nsf_investigators`; `professor` is their CSRankings match, set only when a
+  shared name is backed by evidence (an award at the professor's university, or a matching email domain).
+  See `server/link.go`.
+
+Open work is tracked in `TODO.md`.
 
 # Debugging
 

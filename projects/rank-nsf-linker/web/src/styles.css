@@ -1,0 +1,140 @@
+:root {
+  --paper: #f3f5f4;
+  --surface: #ffffff;
+  --ink: #1d2a3a;
+  --ink-soft: #4b5868;
+  --ink-faint: #7c8794;
+  --rule: #d9dfdd;
+  --rule-strong: #b9c2c0;
+
+  --line-ai: #2f6fdb;
+  --line-systems: #1e9e6a;
+  --line-theory: #8e4fd1;
+  --line-inter: #c98a0c;
+
+  --focus: #2f6fdb;
+  --danger: #b4321f;
+
+  --font: "Overpass", "Helvetica Neue", Arial, sans-serif;
+
+  /* type scale: 13 / 15 / 17 / 21 / 28 */
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 1.75rem;
+
+  --panel-w: 380px;
+  --drawer-w: 460px;
+  --radius-pill: 999px;
+  --radius-box: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.15;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Funding marker: filled = an active NSF grant, ring = none. */
+.fund-dot {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  flex: none;
+}
+.fund-dot.on {
+  background: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Mapbox controls, restyled to match the page. */
+.mapboxgl-ctrl-group {
+  border-radius: var(--radius-box) !important;
+  box-shadow: 0 1px 4px rgba(29, 42, 58, 0.2) !important;
+  overflow: hidden;
+}
+.mapboxgl-ctrl-group button {
+  width: 34px !important;
+  height: 34px !important;
+}
+.mapboxgl-ctrl-group button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+.mapboxgl-ctrl-group button:focus:not(:focus-visible) {
+  box-shadow: none !important;
+}

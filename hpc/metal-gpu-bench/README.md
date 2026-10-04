@@ -55,3 +55,22 @@ They load a precompiled `Shaders.metallib`, which needs Xcode's `metal` tool:
   measured tables use the projects' own kernels.
 - The recording is 2,048 bodies and a 64 × 64 downsample of the plate, to
   keep `frames.js` under 2 MB.
+
+## Cinema: a video of the simulation
+
+`cinema/index.html` is a full-screen cut of the galaxy simulation for video:
+four galaxies (the main pair from the page on a close pass, plus two
+satellites that fall in later), 65,536 bodies in the page's colours (blue when
+slow, white-gold when fast) on black, with a slow camera pull-back. Add `?sky=1`
+for a starfield behind them. Open it in Chrome or Safari to watch it live on
+your GPU.
+
+```bash
+node cinema/render.mjs                                  # 1920×1080, 60 fps, 40 s → cinema/out/
+node cinema/render.mjs --size 1080x1350 --secs 32       # portrait, for social feeds
+node cinema/render.mjs --bodies 32768 --steps 2 --seed 7  # fewer bodies, faster story, another sky
+```
+
+It is deterministic: frame *i* is always *i × steps* steps of the same seeded
+run, photographed one frame at a time in headless Chrome (WebGPU on Metal) and
+encoded with ffmpeg, so a busy machine only takes longer.

@@ -51,9 +51,7 @@ FROM
   LEFT JOIN professor_areas pf ON pf.name = p.name 
   AND pf.affiliation = p.affiliation 
 WHERE
-  LOWER(u.institution) LIKE '%college%'
-  OR LOWER(u.institution) LIKE '%university%'
-  OR LOWER(u.institution) LIKE '%institute%'
+  u.institution_type = 'university'
 GROUP BY 
   u.institution
 ORDER BY 

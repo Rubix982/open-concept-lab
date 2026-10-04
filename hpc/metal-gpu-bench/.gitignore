@@ -14,3 +14,6 @@ bench/bench
 
 # Raw recordings (baked into site/data/frames.js by bench/export.py)
 results/frames-*.json
+
+# cinema renders (big; regenerate with node cinema/render.mjs)
+cinema/out/

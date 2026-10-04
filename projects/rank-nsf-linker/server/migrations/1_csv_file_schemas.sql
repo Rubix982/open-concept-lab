@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS universities (
   -- TODO: We should add another field here to link to a main IPEDs related table for the future
 );
 
+-- university / university_affiliate / business / organization; set by the "Classify Institutions" step
+ALTER TABLE universities ADD COLUMN IF NOT EXISTS institution_type TEXT;
+
 CREATE INDEX IF NOT EXISTS universities_institution_trgm_idx ON universities USING gin (institution gin_trgm_ops);
 
 CREATE TABLE IF NOT EXISTS professors (

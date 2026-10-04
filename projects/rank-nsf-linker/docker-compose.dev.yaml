@@ -7,6 +7,7 @@ services:
     image: host.docker.internal:5128/cgr.dev/chainguard/postgres
     container_name: pg17-local
     restart: unless-stopped
+    shm_size: 1gb # parallel queries over the ~400k explorer work docs outgrow Docker's 64 MB default
     ports:
       - "5432:5432"
     environment:
@@ -240,6 +241,13 @@ services:
       POSTGRES_DB_NAME: rank-nsf-linker
       # Persistent Cache for Hugging Face Models
       HF_HOME: /app/data/hf_cache
+      # nces.ed.gov is unreachable from here; IPEDS is supplementary, so skip it in dev
+      SKIP_IPEDS: 1
+      # Rerun the population pipeline from step N (see executeWorkflows in server/db.go)
+      PIPELINE_FROM_STEP: ${PIPELINE_FROM_STEP:-}
+      # Semantic goal matching (server/semantic.go)
+      EMBEDDER_SERVICE_URL: http://embedder:8000
+      QDRANT_REST_URL: http://qdrant-local:6333
     ports:
       - "8080:8080"
     restart: unless-stopped

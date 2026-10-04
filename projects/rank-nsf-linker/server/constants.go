@@ -28,7 +28,7 @@ const (
 	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
 	// Data Fetching Configuration
-	NSFAwardsStartYear = 2025
+	NSFAwardsStartYear = 2010
 	NSFAwardsEndYear   = 2025
 
 	// IPEDS Data Fetching Configuration
