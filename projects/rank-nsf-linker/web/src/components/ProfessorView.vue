@@ -88,7 +88,7 @@ function untilLabel(date: string | null): string {
             rel="noopener"
             >Google Scholar</a
           >
-          <a v-if="dblpUrl" :href="dblpUrl" target="_blank" rel="noopener">DBLP</a>
+          <a v-if="dblpUrl && person.source !== 'openalex'" :href="dblpUrl" target="_blank" rel="noopener">DBLP</a>
         </p>
       </header>
 
