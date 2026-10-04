@@ -63,12 +63,12 @@ const html = `<!doctype html>
 <style>
   :root { color-scheme: dark; }
   html, body { margin: 0; background: #040817; color: #dbe6ff; font: 15px/1.4 "IBM Plex Sans", -apple-system, sans-serif; }
-  .screen { position: relative; width: min(100vw, calc((100vh - 56px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; }
+  .screen { container-type: inline-size; position: relative; width: min(100vw, calc((100vh - 56px) * ${tl.meta.w} / ${tl.meta.h})); margin: 0 auto; aspect-ratio: ${tl.meta.w} / ${tl.meta.h}; }
   canvas { display: block; width: 100%; height: 100%; }
-  #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: 78%; padding: 0.45em 0.9em; text-align: center;
-    font: 500 clamp(13px, 1.55vw, 26px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
+  #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: ${tl.meta.w > tl.meta.h ? 78 : 88}%; padding: 0.45em 0.9em; text-align: center;
+    font: 500 clamp(12px, ${tl.meta.w > tl.meta.h ? 1.55 : tl.meta.w === tl.meta.h ? 2.4 : 3.6}cqw, 30px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
     transition: opacity 0.25s; pointer-events: none; }
-  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, calc((100vh - 56px) * 16 / 9)); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
+  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, max(560px, calc((100vh - 56px) * ${tl.meta.w} / ${tl.meta.h}))); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
   #controls button { all: unset; cursor: pointer; padding: 5px 10px; border: 1px solid rgba(219, 230, 255, 0.25); color: #dbe6ff; }
   #controls button:hover { border-color: #dbe6ff; }
   #controls button:focus-visible, #controls input:focus-visible { outline: 2px solid #7cc8ff; outline-offset: 1px; }

@@ -120,6 +120,28 @@ function chipLayout(list, size, gap, x, y) {
 // and chips can be pinned to its points (anchor: { obj, col, row }).
 let THREE = null;
 const STAGES = {};
+// ---- camera, shared by every 3D stage: a target (tx, ty, tz; or `focus`, an
+// anchor eased in by focusK from focusFrom), a point on a sphere around it
+// (az, el, dist), and an optional handheld drift (deterministic, so renders
+// repeat exactly).
+const EXPLORE = {};   // per stage: the viewer's own orbit while paused (live page only)
+let rendering = false;
+const wobble = (t, f, ph) => Math.sin(t * f + ph) * 0.6 + Math.sin(t * f * 2.31 + ph * 1.7) * 0.3 + Math.sin(t * f * 4.13 + ph * 0.3) * 0.1;
+function aim(cam, p, t, base, focusAt) {
+  const T = { x: p.tx ?? base.x, y: p.ty ?? base.y, z: p.tz ?? base.z };
+  const k = clamp(p.focusK ?? 0);
+  if (p.focus || p.focusFrom) {
+    const a = (p.focusFrom && focusAt(p.focusFrom)) || T, b = (p.focus && focusAt(p.focus)) || T;
+    T.x = a.x + (b.x - a.x) * k; T.y = a.y + (b.y - a.y) * k; T.z = a.z + (b.z - a.z) * k;
+  }
+  let az = p.az, el = p.el, dist = p.dist;
+  const d = p.drift || 0;
+  if (d) { const s = t / 1000; az += d * 3 * wobble(s, 0.7, 1.3); el += d * 1.8 * wobble(s, 0.53, 4.1); dist *= 1 + d * 0.02 * wobble(s, 0.41, 2.2); }
+  const R = (v) => (v * Math.PI) / 180;
+  cam.position.set(T.x + dist * Math.cos(R(el)) * Math.sin(R(az)), T.y + dist * Math.sin(R(el)), T.z + dist * Math.cos(R(el)) * Math.cos(R(az)));
+  cam.lookAt(T.x, T.y, T.z); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+}
+
 const SP = { dx: 1, dy: 0.55, depth: 2.2 }; // plate spacing in world units
 function Stack(o) {
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 32, o.w / o.h, 0.1, 400);
@@ -165,10 +187,8 @@ function Stack(o) {
   const tmp = new THREE.Vector3();
   const api = {
     update(p, t, born) {
-      // camera on a sphere around the middle of the stack
-      const az = (p.az * Math.PI) / 180, el = (p.el * Math.PI) / 180, ty = p.ty ?? ((rows - 1) * SP.dy) / 2;
-      cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-      cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+      // camera on a sphere around the middle of the stack (focus: "col:row")
+      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0 }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
       const up = p.reveal * rows;
       const glow = p.glow || [];
       plates.forEach((pl, r) => {
@@ -245,10 +265,9 @@ function Bricks(o) {
   const tmp = new THREE.Vector3(), N = pieces.length;
   return {
     canvas: renderer.domElement,
-    update(p) {
-      const az = (p.az * Math.PI) / 180, el = (p.el * Math.PI) / 180, ty = p.ty ?? (Hp * PLATE) / 2;
-      cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-      cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+    update(p, t) {
+      // focus: an anchor name ([x, y, z] in studs, plates, studs)
+      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0 }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
       // each part drops into place in order; a drop lasts a few percent of the build
       const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
       pieces.forEach((g, i) => {
@@ -268,6 +287,7 @@ function Bricks(o) {
 
 // ---- object types
 const STAGE_KINDS = { stack: Stack, bricks: Bricks };
+const BOUNDS = {}; // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
 Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
@@ -275,8 +295,10 @@ const DRAW = {
     const make = STAGE_KINDS[p.kind || "stack"];
     if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
     const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    const ex = !rendering && !playing && EXPLORE[obj.id];
+    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: p.dist * ex.zoom };
     st.update(p, t, obj.born);
-    st.x = p.x; st.y = p.y; st.anchors = p.anchors;
+    st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
     ctx.save();
     if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
@@ -314,22 +336,24 @@ const DRAW = {
       ctx.globalAlpha = ctx._alpha;
     }
   },
-  heading(ctx, p) {
+  heading(ctx, p, t, obj) {
     const text = p.text, n = Math.ceil(text.length * clamp(p.reveal * 1.25));
     ctx.font = `600 38px ${SANS}`; ctx.fillStyle = C.ink; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
     glow(ctx, "rgba(160,190,255,0.35)", 8);
     ctx.fillText(text.slice(0, n), p.x, p.y);
     const w = ctx.measureText(text).width;
+    BOUNDS[obj.id] = { x: p.x, y: p.y - 32, w, h: 40 };
     ctx.strokeStyle = C.ink; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(p.x, p.y + 16); ctx.lineTo(p.x + w * 0.42 * EASE.out(clamp(p.reveal)), p.y + 16); ctx.stroke();
     noGlow(ctx);
   },
-  text(ctx, p, t) {
+  text(ctx, p, t, obj) {
     const text = String(p.text), n = Math.floor(text.length * clamp(p.reveal));
     ctx.font = `${p.weight} ${p.size}px ${p.font === "mono" ? MONO : SANS}`;
     ctx.textBaseline = "middle";
     const full = ctx.measureText(text).width;
     const x0 = p.align === "center" ? p.x - full / 2 : p.align === "right" ? p.x - full : p.x;
+    BOUNDS[obj.id] = { x: x0, y: p.y - p.size * 0.55, w: full, h: p.size * 1.1 };
     ctx.textAlign = "left"; ctx.fillStyle = color(p.color);
     if (p.color === "accent") glow(ctx, C.accent, 12); else glow(ctx, "rgba(160,190,255,0.25)", 6);
     ctx.fillText(text.slice(0, n), x0, p.y);
@@ -339,8 +363,10 @@ const DRAW = {
     }
     noGlow(ctx);
   },
-  tokens(ctx, p, t) {
+  tokens(ctx, p, t, obj) {
     const L = chipLayout(p.list, p.size, p.gap, p.x, p.y), hl = new Set(p.hl || []);
+    // the whole row, plus each chip as a "line" (1-based, like code lines)
+    BOUNDS[obj.id] = { x: L[0].x, y: L[0].y, w: L.at(-1).x + L.at(-1).w - L[0].x, h: L[0].h, lines: [null, ...L.map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h }))] };
     const shown = p.reveal * p.list.length;
     ctx.font = `500 ${p.size}px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "center";
     L.forEach((r, i) => {
@@ -362,11 +388,12 @@ const DRAW = {
     });
     ctx.globalAlpha = ctx._alpha;
   },
-  chip(ctx, p) {
+  chip(ctx, p, t, obj) {
     ctx.font = `600 ${p.size}px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
     const val = p.value == null ? "" : `  ${p.value >= 0.995 ? "≈100" : p.value >= 0.1 ? Math.round(p.value * 100) : (p.value * 100).toFixed(1)}%`;
     const label = visText(p.label), tw = ctx.measureText(label + val).width, padX = p.size * 0.6, dot = p.size * 0.9;
     const w = tw + padX * 2 + dot, h = p.size * 1.7, x = p.x - w / 2, y = p.y - h / 2;
+    BOUNDS[obj.id] = { x, y, w, h };
     const k = EASE.out(clamp(p.reveal));
     ctx.globalAlpha = k * ctx._alpha;
     const c = p.accent ? C.accent : C.ink;
@@ -641,6 +668,78 @@ function frame(ctx, t) {
   ctx.restore();
 }
 
+
+// ---- transitions between chapters (s.transition): a sheet of blueprint
+// paper covers the frame by the midpoint and uncovers it by the end, so
+// whatever changes under the midpoint is hidden. Drawn after every object.
+const TRANS = TL.transitions || [];
+function sheet(ctx, t) { background(ctx, t); }
+const TRANSITIONS = {
+  wipe(ctx, k, c, t) {
+    const x0 = k < 0.5 ? 0 : W * EASE.inout((k - 0.5) * 2), x1 = k < 0.5 ? W * EASE.inout(k * 2) : W;
+    ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, x1 - x0, H); ctx.clip(); sheet(ctx, t); ctx.restore();
+    const edge = k < 0.5 ? x1 : x0;
+    ctx.strokeStyle = C.accent; ctx.lineWidth = 3; glow(ctx, C.accent, 18);
+    ctx.beginPath(); ctx.moveTo(edge, 0); ctx.lineTo(edge, H); ctx.stroke(); noGlow(ctx);
+    ctx.strokeStyle = C.faint; ctx.lineWidth = 1;
+    for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(edge - (y % 200 === 0 ? 18 : 8), y); ctx.lineTo(edge, y); ctx.stroke(); }
+  },
+  iris(ctx, k, c, t) {
+    const R = Math.hypot(W, H) / 2 + 20, r = R * (1 - c);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.arc(W / 2, H / 2, Math.max(0.5, r), 0, Math.PI * 2, true); ctx.clip("evenodd"); sheet(ctx, t); ctx.restore();
+    if (r > 1) {
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; glow(ctx, C.ink, 14);
+      ctx.beginPath(); ctx.arc(W / 2, H / 2, r, 0, Math.PI * 2); ctx.stroke(); noGlow(ctx);
+      ctx.strokeStyle = C.faint; ctx.lineWidth = 1;
+      for (let i = 0; i < 48; i++) { const a = (i / 48) * Math.PI * 2, l = i % 4 ? 8 : 18; ctx.beginPath(); ctx.moveTo(W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r); ctx.lineTo(W / 2 + Math.cos(a) * (r + l), H / 2 + Math.sin(a) * (r + l)); ctx.stroke(); }
+    }
+  },
+  grid(ctx, k, c, t) {
+    ctx.save(); ctx.globalAlpha = clamp(c * 1.25); sheet(ctx, t); ctx.restore();
+    // the grid redraws itself: lines run down (and across) in sequence
+    const cols = Math.ceil(W / 80), rows = Math.ceil(H / 80);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; glow(ctx, "rgba(170,200,255,0.7)", 8);
+    for (let i = 0; i <= cols; i++) { const f = clamp(c * 1.6 - (i / cols) * 0.6); if (f <= 0) continue; ctx.globalAlpha = 0.55 * (1 - Math.abs(k - 0.5) * 1.2); ctx.beginPath(); ctx.moveTo(i * 80 + 0.5, 0); ctx.lineTo(i * 80 + 0.5, H * f); ctx.stroke(); }
+    for (let j = 0; j <= rows; j++) { const f = clamp(c * 1.6 - (j / rows) * 0.6); if (f <= 0) continue; ctx.globalAlpha = 0.4 * (1 - Math.abs(k - 0.5) * 1.2); ctx.beginPath(); ctx.moveTo(0, j * 80 + 0.5); ctx.lineTo(W * f, j * 80 + 0.5); ctx.stroke(); }
+    noGlow(ctx); ctx.globalAlpha = 1;
+  },
+  glitch(ctx, k, c, t) {
+    const fr = Math.floor(t / 45);
+    for (let i = 0; i < 16; i++) {
+      const y = Math.floor(hash(fr * 31 + i * 7) * H), h = 8 + Math.floor(hash(fr * 17 + i) * 70), dx = (hash(fr * 13 + i * 3) - 0.5) * 180 * c;
+      ctx.drawImage(ctx.canvas, 0, y, W, h, dx, y, W, h);
+    }
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.18 * c; ctx.fillStyle = C.accent; ctx.fillRect((hash(fr) - 0.5) * 30, 0, W, H);
+    ctx.globalAlpha = 0.14 * c; ctx.fillStyle = C.cyan; ctx.fillRect((hash(fr + 9) - 0.5) * -30, 0, W, H);
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = Math.pow(c, 3); sheet(ctx, t); ctx.restore();
+    ctx.fillStyle = C.ink;
+    for (let i = 0; i < 10 * c; i++) { ctx.globalAlpha = 0.5 * c; ctx.fillRect(hash(fr * 3 + i) * W, hash(fr * 5 + i) * H, 40 + hash(i + fr) * 260, 2); }
+    ctx.globalAlpha = 1;
+  },
+  "blueprint-fold"(ctx, k, c, t) {
+    // a sheet folds in from the right edge, a crease down its middle, and out to the left
+    const w = W * c, x = k < 0.5 ? W - w : 0;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, 0, w, H); ctx.clip(); sheet(ctx, t);
+    const g = ctx.createLinearGradient(x, 0, x + w, 0);
+    g.addColorStop(0, "rgba(0,0,0,0.35)"); g.addColorStop(0.5, "rgba(0,0,0,0)"); g.addColorStop(0.5, "rgba(120,150,255,0.10)"); g.addColorStop(1, "rgba(0,0,0,0.25)");
+    ctx.fillStyle = g; ctx.fillRect(x, 0, w, H);
+    ctx.strokeStyle = C.faint; ctx.setLineDash([10, 8]); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x + w / 2, 0); ctx.lineTo(x + w / 2, H); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2; glow(ctx, C.ink, 10);
+    ctx.beginPath(); ctx.moveTo(k < 0.5 ? x : x + w, 0); ctx.lineTo(k < 0.5 ? x : x + w, H); ctx.stroke(); noGlow(ctx);
+  },
+};
+AFTER.push((ctx, t) => {
+  for (const tr of TRANS) {
+    if (t < tr.t || t > tr.t + tr.dur) continue;
+    const k = (t - tr.t) / tr.dur, c = k < 0.5 ? EASE.inout(k * 2) : EASE.inout((1 - k) * 2);
+    (TRANSITIONS[tr.kind] || TRANSITIONS.wipe)(ctx, k, c, t);
+  }
+});
+
 // ---- sound: the same voices live and in the render
 function synth(ctx, out) {
   let seed = 7;
@@ -680,6 +779,11 @@ const VOICE = {
   thud: (s, e, at) => s.tone(at, 85, 0.5, "sine", 0.14, 0.55, 0.002),
   rise: (s, e, at) => { s.tone(at, 220, 1.4, "triangle", 0.03, 2); s.noise(at, 1.4, 0.015, 400, 3000, "lowpass", 0.7); },
   clicks: (s, e, at) => { const d = (e.dur || 2000) / 1000, n = Math.min(80, Math.floor(d / 0.07)); for (let i = 0; i < n; i++) { const a = at + (i / n) * d + s.rnd() * 0.03; s.noise(a, 0.03, 0.05, 3800 + s.rnd() * 1500, 2600, "bandpass", 3); s.tone(a, 1900 + s.rnd() * 400, 0.02, "triangle", 0.012); } },
+  "t-wipe": (s, e, at) => { const d = (e.dur || 1200) / 1000; s.noise(at, d * 0.55, 0.035, 250, 3200, "lowpass", 0.8); s.noise(at + d * 0.5, d * 0.5, 0.025, 3200, 300, "lowpass", 0.8); },
+  "t-iris": (s, e, at) => { const d = (e.dur || 1200) / 1000; s.tone(at, 330, d * 0.5, "triangle", 0.03, 0.5); s.tone(at + d * 0.5, 165, d * 0.5, "triangle", 0.03, 2); },
+  "t-grid": (s, e, at) => { const d = (e.dur || 1400) / 1000; for (let i = 0; i < 14; i++) s.tone(at + (i / 14) * d * 0.5, 1200 + i * 60, 0.03, "sine", 0.018); s.noise(at + d * 0.5, d * 0.4, 0.02, 3000, 900); },
+  "t-glitch": (s, e, at) => { for (let i = 0; i < 14; i++) s.noise(at + i * 0.05 + s.rnd() * 0.03, 0.04, 0.05, 700 + s.rnd() * 3500, 400, "bandpass", 7); s.tone(at, 110, 0.4, "square", 0.02, 0.6); },
+  "t-blueprint-fold": (s, e, at) => { const d = (e.dur || 1400) / 1000; s.noise(at, d * 0.45, 0.04, 1800, 500, "bandpass", 0.9); s.tone(at + d * 0.48, 95, 0.35, "sine", 0.1, 0.6, 0.002); s.noise(at + d * 0.55, d * 0.4, 0.03, 500, 1800, "bandpass", 0.9); },
   sweep: (s, e, at) => { const d = (e.dur || 2000) / 1000; for (let i = 0; i < Math.floor(d / 0.11); i++) s.tone(at + i * 0.11, 900 + i * 18, 0.03, "sine", 0.016); },
 };
 // a slow four-chord bed under the whole thing
@@ -693,11 +797,16 @@ function music(s, from, to) {
     s.tone(Math.max(0, at), ch[0] / 2, bar, "sine", 0.03, 0, 1.2);
   }
 }
+const AUDIO_HOOKS = [];
 async function renderAudio(fromMs, toMs, rate = 48000) {
   const len = Math.ceil(((toMs - fromMs) / 1000 + 1) * rate);
   const ctx = new OfflineAudioContext(1, len, rate), master = ctx.createGain();
   master.gain.value = 0.9; master.connect(ctx.destination);
-  const s = synth(ctx, master);
+  // effects (and the built-in bed) go through their own bus, so plugins can
+  // duck them, e.g. under a voice: BP.audioHooks get (ctx, { fx, master }, from, to)
+  const fx = ctx.createGain(); fx.gain.setValueAtTime(1, 0); fx.connect(master);
+  const s = synth(ctx, fx);
+  for (const h of AUDIO_HOOKS) h(ctx, { fx, master }, fromMs, toMs);
   if (TL.meta.music !== false) music(s, fromMs, toMs);
   for (const e of TL.sounds) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000, ctx, master);
   // voices that start before the range but are still sounding (long clips)
@@ -740,7 +849,7 @@ async function startSound() {
 }
 function stopSound() { try { src?.stop(); } catch {} src = null; }
 
-function play() { if (t >= DUR - 50) draw(0); playing = true; last = performance.now(); $("play").textContent = "Pause"; startSound(); requestAnimationFrame(loop); }
+function play() { for (const k in EXPLORE) delete EXPLORE[k]; if (t >= DUR - 50) draw(0); playing = true; last = performance.now(); $("play").textContent = "Pause"; startSound(); requestAnimationFrame(loop); }
 function pause() { playing = false; stopSound(); $("play").textContent = t >= DUR - 50 ? "Replay" : "Play"; }
 function loop(now) {
   if (!playing) return;
@@ -748,6 +857,46 @@ function loop(now) {
   if (t >= DUR) { pause(); return; }
   requestAnimationFrame(loop);
 }
+
+
+// ---- explore: while paused, drag a 3D stage to orbit it, scroll to zoom;
+// play snaps back to the scripted camera. Never active in renders.
+function stageAt(fx, fy) {
+  let hit = null;
+  for (const obj of TL.objects) {
+    if (obj.type !== "stage3d" || t < obj.born || !STAGES[obj.id]) continue;
+    const p = propsAt(obj, t);
+    if (p.opacity <= 0.05) continue;
+    if (fx >= p.x && fx <= p.x + p.w && fy >= p.y && fy <= p.y + p.h) hit = obj.id;
+  }
+  return hit;
+}
+function framePoint(e) { const r = canvas.getBoundingClientRect(); return [((e.clientX - r.left) * W) / r.width, ((e.clientY - r.top) * H) / r.height]; }
+let dragging = null;
+canvas.addEventListener("pointerdown", (e) => {
+  if (playing || rendering) return;
+  const id = stageAt(...framePoint(e)); if (!id) return;
+  dragging = { id, x: e.clientX, y: e.clientY };
+  EXPLORE[id] ||= { daz: 0, del: 0, zoom: 1 };
+  canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing";
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (!dragging) { if (!playing && !rendering) canvas.style.cursor = stageAt(...framePoint(e)) ? "grab" : ""; return; }
+  const ex = EXPLORE[dragging.id];
+  ex.daz -= (e.clientX - dragging.x) * 0.35; ex.del += (e.clientY - dragging.y) * 0.25;
+  dragging.x = e.clientX; dragging.y = e.clientY;
+  draw(t);
+});
+const endDrag = () => { dragging = null; canvas.style.cursor = ""; };
+canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
+canvas.addEventListener("wheel", (e) => {
+  if (playing || rendering) return;
+  const id = stageAt(...framePoint(e)); if (!id) return;
+  e.preventDefault();
+  const ex = (EXPLORE[id] ||= { daz: 0, del: 0, zoom: 1 });
+  ex.zoom = clamp(ex.zoom * Math.exp(e.deltaY * 0.0012), 0.25, 4);
+  draw(t);
+}, { passive: false });
 
 // chapters, from the dial's steps
 const chapters = [{ t: 0, label: "start" }].concat((tweens.dial || []).filter((x) => x.prop === "label").map((x) => ({ t: x.t0, label: x.to })));
@@ -777,9 +926,10 @@ const fonts = [`600 38px ${SANS}`, `500 16px ${SANS}`, `500 16px ${MONO}`, `600 
 // kinds, sound voices, after-frame hooks, and work to finish before start
 window.BP = {
   TL, W, H, DUR, C, color, MONO, SANS, ADV, clamp, EASE, hash, GLYPHS, glow, noGlow, roundRect, partial, at, smooth, arrowHead, visText, chipLayout, propsAt,
-  DRAW, STAGES, STAGE_KINDS, VOICE, AFTER, PLATE,
+  DRAW, STAGES, STAGE_KINDS, VOICE, AFTER, PLATE, BOUNDS, audioHooks: AUDIO_HOOKS,
   get THREE() { return THREE; }, get ADDONS() { return ADDONS; },
   kit, plastic, Bricks, Stack,             // the LEGO kit (brick(p, material)), plastic(colorCode), the built-in stages
+  aim, TRANSITIONS, EXPLORE,               // aim(camera, props, t, baseTarget, focusAt) for plugin stages; transition kinds by name
   threeTypes: new Set(["stage3d"]),       // object types that need three.js
   ready: [],                              // functions returning promises, run after three.js loads
   /** register(type, draw): a 2D object type, draw(ctx, props, t, obj) */
@@ -802,7 +952,7 @@ BP.start = function start() {
   Promise.all([three, ...fonts.map((f) => document.fonts.load(f).catch(() => {}))])
     .then(() => Promise.all(BP.ready.map((f) => f())))
     .then(() => {
-      window.__renderAt = (ms) => { document.body.classList.add("render"); draw(ms); };
+      window.__renderAt = (ms) => { rendering = true; playing = false; document.body.classList.add("render"); draw(ms); };
       controls();
       draw(0);
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;

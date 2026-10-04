@@ -272,6 +272,24 @@ size. `explain/build.mjs` runs each model through brick-check, the same checks
 as a story's models, and stops on a failure. `lego-charts` shows all four
 kinds, with data from Systems in Miniature and Model Microscope.
 
+### The library: plugins and capability demos
+
+The explain player is a small core plus plugins. A feature is a browser file
+(`explain/lib/plugins/<name>.js`, registering draw types, 3D stage kinds,
+voices, after-frame hooks), optional build hooks (`<name>.build.mjs`: check
+models, inline libraries) and script verbs (`explain/lib/actions/<name>.mjs`).
+Each has a capability script that proves it on real data — build any with
+`node explain/build.mjs <name>` and open `out/<name>/index.html` (works from disk):
+
+| Feature | Verbs | Demo | Doc |
+| ------- | ----- | ---- | --- |
+| Brick charts | `s.bricks` + `barChart`, `heatGrid`, `columns`, `blocks`, `stackedBars`, `groupedBars`, `numberLine`, `scatter`, `waffle`, `matrix`, `graph`, `tree`, `axes` | `lego-charts`, `cap-charts` | [charts](explain/docs/charts.md) |
+| Morph | `s.morph(id, A, B)`, then `set(id, { morph: 1 })` | `cap-morph` | [morph](explain/docs/morph.md) |
+| Math, code, marks | `s.math`, `s.code`, `s.focus`, `s.count`, `s.underline`, `s.strike`, `s.circle`, `s.highlight`, `s.brace`, `s.arrowTo` | `cap-marks` | [marks](explain/docs/marks.md) |
+| Presenter | `s.presenter`, `s.present`, `s.face`, `s.walkIn`, `s.walkOut` | `cap-presenter` | [presenter](explain/docs/presenter.md) |
+| Camera, transitions, formats | `s.shot`, `s.lookAt`, `s.transition`; `explainer({ format: "vertical" })`; `node explain/poster.mjs <name>` | `cap-camera`, `cap-vertical` | [camera](explain/docs/camera.md) |
+| Spoken narration | `explainer({ voice: { name, rate } })`, `s.voice(text, { file })` | `cap-voice` | [voice](explain/docs/voice.md) |
+
 ## Rough edges
 
 - No sideways (SNOT) building, and no curved parts beyond the round 1x1s.

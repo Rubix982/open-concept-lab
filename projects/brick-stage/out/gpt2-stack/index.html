@@ -10,12 +10,12 @@
 <style>
   :root { color-scheme: dark; }
   html, body { margin: 0; background: #040817; color: #dbe6ff; font: 15px/1.4 "IBM Plex Sans", -apple-system, sans-serif; }
-  .screen { position: relative; width: min(100vw, calc((100vh - 56px) * 16 / 9)); margin: 0 auto; aspect-ratio: 16 / 9; }
+  .screen { container-type: inline-size; position: relative; width: min(100vw, calc((100vh - 56px) * 1920 / 1080)); margin: 0 auto; aspect-ratio: 1920 / 1080; }
   canvas { display: block; width: 100%; height: 100%; }
   #caption { position: absolute; left: 50%; bottom: 5.5%; transform: translateX(-50%); max-width: 78%; padding: 0.45em 0.9em; text-align: center;
-    font: 500 clamp(13px, 1.55vw, 26px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
+    font: 500 clamp(12px, 1.55cqw, 30px)/1.4 "IBM Plex Sans", sans-serif; color: #f2f6ff; background: rgba(4, 9, 28, 0.72); border: 1px solid rgba(219, 230, 255, 0.16);
     transition: opacity 0.25s; pointer-events: none; }
-  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, calc((100vh - 56px) * 16 / 9)); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
+  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; width: min(100vw, max(560px, calc((100vh - 56px) * 1920 / 1080))); margin: 0 auto; padding: 10px 14px; box-sizing: border-box; font-size: 13px; color: #9fb0d6; }
   #controls button { all: unset; cursor: pointer; padding: 5px 10px; border: 1px solid rgba(219, 230, 255, 0.25); color: #dbe6ff; }
   #controls button:hover { border-color: #dbe6ff; }
   #controls button:focus-visible, #controls input:focus-visible { outline: 2px solid #7cc8ff; outline-offset: 1px; }
@@ -34,7 +34,7 @@
 <div class="screen"><canvas id="stage" aria-label="One fact, climbing 24 layers: an animated explainer"></canvas><div id="caption" aria-live="polite"></div></div>
 <div id="controls"></div>
 <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
-<script>window.TIMELINE = {"meta":{"w":1920,"h":1080,"title":"One fact, climbing 24 layers","description":"GPT-2's layers as a 3D stack: where 'the Eiffel Tower is in Paris' is looked up and carried to the answer.","music":true,"duration":61300},"objects":[{"id":"heading-0","type":"heading","born":0,"order":0,"props":{"opacity":1,"reveal":0,"text":"one fact, climbing 24 layers","x":96,"y":92}},{"id":"stack","type":"stage3d","born":0,"order":1,"props":{"opacity":1,"reveal":0,"x":0,"y":0,"w":1920,"h":1080,"rows":25,"cols":11,"az":-38,"el":14,"dist":30,"hiCol":-1,"scan":-1,"labels":null,"labelUpTo":-1,"glow":[],"route":null,"routeK":0,"colLabels":["The"," E","iff","el"," Tower"," is"," located"," in"," the"," city"," of"],"dur":3600}},{"id":"dial","type":"dial","born":3600,"order":2,"props":{"opacity":1,"reveal":0,"n":1,"label":"the stack","of":4,"x":1780,"y":110,"spin":0}},{"id":"nm","type":"note","born":26616.285714285714,"order":3,"props":{"opacity":1,"reveal":0,"text":"MLPs at “el”, layers 6–12\nthe fact is looked up","x":0,"y":0,"to":null,"align":"right","size":24,"color":"green","anchor":{"obj":"stack","col":3,"row":9,"ox":-300,"oy":110},"dur":900}},{"id":"na","type":"note","born":32359.142857142855,"order":4,"props":{"opacity":1,"reveal":0,"text":"attention at “of”, layers 13–24\ncarries it to the end","x":0,"y":0,"to":null,"align":"left","size":24,"color":"violet","anchor":{"obj":"stack","col":10,"row":19,"ox":280,"oy":70},"dur":900}},{"id":"ans","type":"chip","born":41016.28571428571,"order":5,"props":{"opacity":1,"reveal":0,"label":"Paris","value":0.691,"x":960,"y":540,"size":30,"accent":true,"anchor":{"obj":"stack","col":10,"row":24,"dy":-56}}},{"id":"heading-6","type":"heading","born":55600,"order":6,"props":{"opacity":1,"reveal":0,"text":"sources","x":96,"y":92}},{"id":"src1","type":"text","born":56300,"order":7,"props":{"opacity":1,"reveal":0,"text":"Causal tracing: Meng, Bau, Andonian & Belinkov, Locating and Editing Factual Associations in GPT (2022)","x":96,"y":300,"size":24,"font":"sans","color":"ink","align":"left","weight":500}},{"id":"src2","type":"text","born":56300,"order":8,"props":{"opacity":1,"reveal":0,"text":"Logit lens: nostalgebraist (2020)","x":96,"y":350,"size":24,"font":"sans","color":"ink","align":"left","weight":500}},{"id":"src3","type":"text","born":56300,"order":9,"props":{"opacity":1,"reveal":0,"text":"Data: Model Microscope · gpt2-medium, 24 layers","x":96,"y":400,"size":24,"font":"sans","color":"dim","align":"left","weight":500}}],"tweens":[{"id":"heading-0","prop":"reveal","to":1,"t0":0,"t1":700,"ease":"out"},{"id":"stack","prop":"reveal","to":1,"t0":0,"t1":3600,"ease":"out"},{"id":"stack","prop":"az","to":34,"t0":3600,"t1":55600,"ease":"inout"},{"id":"dial","prop":"reveal","to":1,"t0":3600,"t1":4100,"ease":"out"},{"id":"stack","prop":"hiCol","to":10,"t0":9157.142857142857,"t1":9657.142857142857,"ease":"inout"},{"id":"dial","prop":"n","to":2,"t0":14714.285714285714,"t1":15214.285714285714,"ease":"inout"},{"id":"dial","prop":"label","to":"logit lens","t0":14714.285714285714,"t1":14715.285714285714,"ease":"step"},{"id":"stack","prop":"labels","to":[{"text":"helicop","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"London","hot":false,"warm":true},{"text":"London","hot":false,"warm":true},{"text":"London","hot":false,"warm":true},{"text":"N","hot":false,"warm":false},{"text":"N","hot":false,"warm":false},{"text":"North","hot":false,"warm":false},{"text":"North","hot":false,"warm":false},{"text":"La","hot":false,"warm":false},{"text":"London","hot":false,"warm":true},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false}],"t0":14714.285714285714,"t1":14715.285714285714,"ease":"step"},{"id":"stack","prop":"labelUpTo","to":24,"t0":14715.285714285714,"t1":21215.285714285714,"ease":"linear"},{"id":"stack","prop":"scan","to":24,"t0":14715.285714285714,"t1":21215.285714285714,"ease":"linear"},{"id":"stack","prop":"scan","to":-1,"t0":21215.285714285714,"t1":21216.285714285714,"ease":"inout"},{"id":"dial","prop":"n","to":3,"t0":21216.285714285714,"t1":21716.285714285714,"ease":"inout"},{"id":"dial","prop":"label","to":"causal tracing","t0":21216.285714285714,"t1":21217.285714285714,"ease":"step"},{"id":"stack","prop":"labelUpTo","to":-1,"t0":21216.285714285714,"t1":21816.285714285714,"ease":"inout"},{"id":"stack","prop":"glow","to":[{"col":3,"r0":6,"r1":12,"color":"green"}],"t0":21216.285714285714,"t1":21217.285714285714,"ease":"step"},{"id":"nm","prop":"reveal","to":1,"t0":26616.285714285714,"t1":27516.285714285714,"ease":"out"},{"id":"stack","prop":"glow","to":[{"col":3,"r0":6,"r1":12,"color":"green"},{"col":10,"r0":13,"r1":24,"color":"violet"}],"t0":32359.142857142855,"t1":32360.142857142855,"ease":"step"},{"id":"na","prop":"reveal","to":1,"t0":32359.142857142855,"t1":33259.142857142855,"ease":"out"},{"id":"dial","prop":"n","to":4,"t0":37416.28571428571,"t1":37916.28571428571,"ease":"inout"},{"id":"dial","prop":"label","to":"the route","t0":37416.28571428571,"t1":37417.28571428571,"ease":"step"},{"id":"stack","prop":"route","to":[[3,6],[3,12],[5.5,17],[10,19],[10,24]],"t0":37416.28571428571,"t1":37417.28571428571,"ease":"step"},{"id":"stack","prop":"routeK","to":1,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"stack","prop":"el","to":24,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"stack","prop":"dist","to":33,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"ans","prop":"reveal","to":1,"t0":41016.28571428571,"t1":41516.28571428571,"ease":"out"},{"id":"stack","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"nm","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"na","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"ans","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"dial","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"heading-0","prop":"opacity","to":0,"t0":55600,"t1":55900,"ease":"inout"},{"id":"heading-6","prop":"reveal","to":1,"t0":55600,"t1":56300,"ease":"out"},{"id":"src1","prop":"reveal","to":1,"t0":56300,"t1":57700,"ease":"out"},{"id":"src2","prop":"reveal","to":1,"t0":56300,"t1":57620,"ease":"out"},{"id":"src3","prop":"reveal","to":1,"t0":56300,"t1":57700,"ease":"out"}],"sounds":[{"t":0,"kind":"rise"},{"t":9657.142857142857,"kind":"tick"},{"t":14714.285714285714,"kind":"tick"},{"t":14715.285714285714,"kind":"sweep","dur":6500},{"t":21216.285714285714,"kind":"tick"},{"t":21216.285714285714,"kind":"glitch"},{"t":26616.285714285714,"kind":"tick"},{"t":32359.142857142855,"kind":"tick"},{"t":37416.28571428571,"kind":"tick"},{"t":37416.28571428571,"kind":"rise"},{"t":41016.28571428571,"kind":"chime"},{"t":56300,"kind":"chime"}],"narration":[{"t":0,"dur":3600,"text":"Ask GPT-2 where the Eiffel Tower is, and 69% of its bet goes on Paris."},{"t":4100,"dur":5057.142857142857,"text":"Each word is a column through 24 layers; each layer rewrites every column."},{"t":9657.142857142857,"dur":5057.142857142857,"text":"The last column decides what comes next. So read it at every layer."},{"t":14715.285714285714,"dur":3400,"text":"It starts as “the”, becomes London around layer 8…"},{"t":18115.285714285714,"dur":3100,"text":"…and only from layer 17 is it Paris."},{"t":21216.285714285714,"dur":5400,"text":"Scramble “Eiffel” and the answer falls to 0.4%. Restore one piece at a time:"},{"t":26616.285714285714,"dur":5742.857142857143,"text":"the memory at “el”, the end of “Eiffel”, brings it most of the way back…"},{"t":32359.142857142855,"dur":5057.142857142857,"text":"…and attention at the last word, from layer 13 on, finishes the job."},{"t":37416.28571428571,"dur":3600,"text":"Looked up in one place, carried to another, and out comes the answer."},{"t":41516.28571428571,"dur":5057.142857142857,"text":"That memory is the spot ROME edits to move the tower somewhere else."}]};</script>
+<script>window.TIMELINE = {"meta":{"w":1920,"h":1080,"title":"One fact, climbing 24 layers","description":"GPT-2's layers as a 3D stack: where 'the Eiffel Tower is in Paris' is looked up and carried to the answer.","music":true,"duration":61300},"objects":[{"id":"heading-0","type":"heading","born":0,"order":0,"props":{"opacity":1,"reveal":0,"text":"one fact, climbing 24 layers","x":96,"y":92}},{"id":"stack","type":"stage3d","born":0,"order":1,"props":{"opacity":1,"reveal":0,"x":0,"y":0,"w":1920,"h":1080,"rows":25,"cols":11,"az":-38,"el":14,"dist":30,"hiCol":-1,"scan":-1,"labels":null,"labelUpTo":-1,"glow":[],"route":null,"routeK":0,"colLabels":["The"," E","iff","el"," Tower"," is"," located"," in"," the"," city"," of"],"dur":3600}},{"id":"dial","type":"dial","born":3600,"order":2,"props":{"opacity":1,"reveal":0,"n":1,"label":"the stack","of":4,"x":1780,"y":110,"spin":0}},{"id":"nm","type":"note","born":26616.285714285714,"order":3,"props":{"opacity":1,"reveal":0,"text":"MLPs at “el”, layers 6–12\nthe fact is looked up","x":0,"y":0,"to":null,"align":"right","size":24,"color":"green","anchor":{"obj":"stack","col":3,"row":9,"ox":-300,"oy":110},"dur":900}},{"id":"na","type":"note","born":32359.142857142855,"order":4,"props":{"opacity":1,"reveal":0,"text":"attention at “of”, layers 13–24\ncarries it to the end","x":0,"y":0,"to":null,"align":"left","size":24,"color":"violet","anchor":{"obj":"stack","col":10,"row":19,"ox":280,"oy":70},"dur":900}},{"id":"ans","type":"chip","born":41016.28571428571,"order":5,"props":{"opacity":1,"reveal":0,"label":"Paris","value":0.691,"x":960,"y":540,"size":30,"accent":true,"anchor":{"obj":"stack","col":10,"row":24,"dy":-56}}},{"id":"heading-6","type":"heading","born":55600,"order":6,"props":{"opacity":1,"reveal":0,"text":"sources","x":96,"y":92}},{"id":"src1","type":"text","born":56300,"order":7,"props":{"opacity":1,"reveal":0,"text":"Causal tracing: Meng, Bau, Andonian & Belinkov, Locating and Editing Factual Associations in GPT (2022)","x":96,"y":300,"size":24,"font":"sans","color":"ink","align":"left","weight":500}},{"id":"src2","type":"text","born":56300,"order":8,"props":{"opacity":1,"reveal":0,"text":"Logit lens: nostalgebraist (2020)","x":96,"y":350,"size":24,"font":"sans","color":"ink","align":"left","weight":500}},{"id":"src3","type":"text","born":56300,"order":9,"props":{"opacity":1,"reveal":0,"text":"Data: Model Microscope · gpt2-medium, 24 layers","x":96,"y":400,"size":24,"font":"sans","color":"dim","align":"left","weight":500}}],"tweens":[{"id":"heading-0","prop":"reveal","to":1,"t0":0,"t1":700,"ease":"out"},{"id":"stack","prop":"reveal","to":1,"t0":0,"t1":3600,"ease":"out"},{"id":"stack","prop":"az","to":34,"t0":3600,"t1":55600,"ease":"inout"},{"id":"dial","prop":"reveal","to":1,"t0":3600,"t1":4100,"ease":"out"},{"id":"stack","prop":"hiCol","to":10,"t0":9157.142857142857,"t1":9657.142857142857,"ease":"inout"},{"id":"dial","prop":"n","to":2,"t0":14714.285714285714,"t1":15214.285714285714,"ease":"inout"},{"id":"dial","prop":"label","to":"logit lens","t0":14714.285714285714,"t1":14715.285714285714,"ease":"step"},{"id":"stack","prop":"labels","to":[{"text":"helicop","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"the","hot":false,"warm":false},{"text":"London","hot":false,"warm":true},{"text":"London","hot":false,"warm":true},{"text":"London","hot":false,"warm":true},{"text":"N","hot":false,"warm":false},{"text":"N","hot":false,"warm":false},{"text":"North","hot":false,"warm":false},{"text":"North","hot":false,"warm":false},{"text":"La","hot":false,"warm":false},{"text":"London","hot":false,"warm":true},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false},{"text":"Paris","hot":true,"warm":false}],"t0":14714.285714285714,"t1":14715.285714285714,"ease":"step"},{"id":"stack","prop":"labelUpTo","to":24,"t0":14715.285714285714,"t1":21215.285714285714,"ease":"linear"},{"id":"stack","prop":"scan","to":24,"t0":14715.285714285714,"t1":21215.285714285714,"ease":"linear"},{"id":"stack","prop":"scan","to":-1,"t0":21215.285714285714,"t1":21216.285714285714,"ease":"inout"},{"id":"dial","prop":"n","to":3,"t0":21216.285714285714,"t1":21716.285714285714,"ease":"inout"},{"id":"dial","prop":"label","to":"causal tracing","t0":21216.285714285714,"t1":21217.285714285714,"ease":"step"},{"id":"stack","prop":"labelUpTo","to":-1,"t0":21216.285714285714,"t1":21816.285714285714,"ease":"inout"},{"id":"stack","prop":"glow","to":[{"col":3,"r0":6,"r1":12,"color":"green"}],"t0":21216.285714285714,"t1":21217.285714285714,"ease":"step"},{"id":"nm","prop":"reveal","to":1,"t0":26616.285714285714,"t1":27516.285714285714,"ease":"out"},{"id":"stack","prop":"glow","to":[{"col":3,"r0":6,"r1":12,"color":"green"},{"col":10,"r0":13,"r1":24,"color":"violet"}],"t0":32359.142857142855,"t1":32360.142857142855,"ease":"step"},{"id":"na","prop":"reveal","to":1,"t0":32359.142857142855,"t1":33259.142857142855,"ease":"out"},{"id":"dial","prop":"n","to":4,"t0":37416.28571428571,"t1":37916.28571428571,"ease":"inout"},{"id":"dial","prop":"label","to":"the route","t0":37416.28571428571,"t1":37417.28571428571,"ease":"step"},{"id":"stack","prop":"route","to":[[3,6],[3,12],[5.5,17],[10,19],[10,24]],"t0":37416.28571428571,"t1":37417.28571428571,"ease":"step"},{"id":"stack","prop":"routeK","to":1,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"stack","prop":"el","to":24,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"stack","prop":"dist","to":33,"t0":37416.28571428571,"t1":40616.28571428571,"ease":"inout"},{"id":"ans","prop":"reveal","to":1,"t0":41016.28571428571,"t1":41516.28571428571,"ease":"out"},{"id":"stack","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"nm","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"na","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"ans","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"dial","prop":"opacity","to":0,"t0":55600,"t1":56100,"ease":"inout"},{"id":"heading-0","prop":"opacity","to":0,"t0":55600,"t1":55900,"ease":"inout"},{"id":"heading-6","prop":"reveal","to":1,"t0":55600,"t1":56300,"ease":"out"},{"id":"src1","prop":"reveal","to":1,"t0":56300,"t1":57700,"ease":"out"},{"id":"src2","prop":"reveal","to":1,"t0":56300,"t1":57620,"ease":"out"},{"id":"src3","prop":"reveal","to":1,"t0":56300,"t1":57700,"ease":"out"}],"sounds":[{"t":0,"kind":"rise"},{"t":9657.142857142857,"kind":"tick"},{"t":14714.285714285714,"kind":"tick"},{"t":14715.285714285714,"kind":"sweep","dur":6500},{"t":21216.285714285714,"kind":"tick"},{"t":21216.285714285714,"kind":"glitch"},{"t":26616.285714285714,"kind":"tick"},{"t":32359.142857142855,"kind":"tick"},{"t":37416.28571428571,"kind":"tick"},{"t":37416.28571428571,"kind":"rise"},{"t":41016.28571428571,"kind":"chime"},{"t":56300,"kind":"chime"}],"narration":[{"t":0,"dur":3600,"text":"Ask GPT-2 where the Eiffel Tower is, and 69% of its bet goes on Paris."},{"t":4100,"dur":5057.142857142857,"text":"Each word is a column through 24 layers; each layer rewrites every column."},{"t":9657.142857142857,"dur":5057.142857142857,"text":"The last column decides what comes next. So read it at every layer."},{"t":14715.285714285714,"dur":3400,"text":"It starts as “the”, becomes London around layer 8…"},{"t":18115.285714285714,"dur":3100,"text":"…and only from layer 17 is it Paris."},{"t":21216.285714285714,"dur":5400,"text":"Scramble “Eiffel” and the answer falls to 0.4%. Restore one piece at a time:"},{"t":26616.285714285714,"dur":5742.857142857143,"text":"the memory at “el”, the end of “Eiffel”, brings it most of the way back…"},{"t":32359.142857142855,"dur":5057.142857142857,"text":"…and attention at the last word, from layer 13 on, finishes the job."},{"t":37416.28571428571,"dur":3600,"text":"Looked up in one place, carried to another, and out comes the answer."},{"t":41516.28571428571,"dur":5057.142857142857,"text":"That memory is the spot ROME edits to move the tower somewhere else."}],"transitions":[]};</script>
 <script>
 // Brick drawing, shared by the player and the printable booklet (the build
 // inlines this file into both). Plain parts are rounded boxes with studs;
@@ -210,6 +210,28 @@ function chipLayout(list, size, gap, x, y) {
 // and chips can be pinned to its points (anchor: { obj, col, row }).
 let THREE = null;
 const STAGES = {};
+// ---- camera, shared by every 3D stage: a target (tx, ty, tz; or `focus`, an
+// anchor eased in by focusK from focusFrom), a point on a sphere around it
+// (az, el, dist), and an optional handheld drift (deterministic, so renders
+// repeat exactly).
+const EXPLORE = {};   // per stage: the viewer's own orbit while paused (live page only)
+let rendering = false;
+const wobble = (t, f, ph) => Math.sin(t * f + ph) * 0.6 + Math.sin(t * f * 2.31 + ph * 1.7) * 0.3 + Math.sin(t * f * 4.13 + ph * 0.3) * 0.1;
+function aim(cam, p, t, base, focusAt) {
+  const T = { x: p.tx ?? base.x, y: p.ty ?? base.y, z: p.tz ?? base.z };
+  const k = clamp(p.focusK ?? 0);
+  if (p.focus || p.focusFrom) {
+    const a = (p.focusFrom && focusAt(p.focusFrom)) || T, b = (p.focus && focusAt(p.focus)) || T;
+    T.x = a.x + (b.x - a.x) * k; T.y = a.y + (b.y - a.y) * k; T.z = a.z + (b.z - a.z) * k;
+  }
+  let az = p.az, el = p.el, dist = p.dist;
+  const d = p.drift || 0;
+  if (d) { const s = t / 1000; az += d * 3 * wobble(s, 0.7, 1.3); el += d * 1.8 * wobble(s, 0.53, 4.1); dist *= 1 + d * 0.02 * wobble(s, 0.41, 2.2); }
+  const R = (v) => (v * Math.PI) / 180;
+  cam.position.set(T.x + dist * Math.cos(R(el)) * Math.sin(R(az)), T.y + dist * Math.sin(R(el)), T.z + dist * Math.cos(R(el)) * Math.cos(R(az)));
+  cam.lookAt(T.x, T.y, T.z); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+}
+
 const SP = { dx: 1, dy: 0.55, depth: 2.2 }; // plate spacing in world units
 function Stack(o) {
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 32, o.w / o.h, 0.1, 400);
@@ -255,10 +277,8 @@ function Stack(o) {
   const tmp = new THREE.Vector3();
   const api = {
     update(p, t, born) {
-      // camera on a sphere around the middle of the stack
-      const az = (p.az * Math.PI) / 180, el = (p.el * Math.PI) / 180, ty = p.ty ?? ((rows - 1) * SP.dy) / 2;
-      cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-      cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+      // camera on a sphere around the middle of the stack (focus: "col:row")
+      aim(cam, p, t, { x: 0, y: ((rows - 1) * SP.dy) / 2, z: 0 }, (f) => { const [c, r] = String(f).split(":").map(Number); return Number.isFinite(c) && Number.isFinite(r) ? P(c, r) : null; });
       const up = p.reveal * rows;
       const glow = p.glow || [];
       plates.forEach((pl, r) => {
@@ -302,12 +322,16 @@ function Stack(o) {
 // shaded as plastic under a soft key light, assembling in build order.
 let KIT = null, ADDONS = null;
 const PLATE = 0.4;
+// the shared LEGO kit and plastic materials, for any stage that draws bricks
+function kit() { return (KIT ||= brickKit({ THREE, RoundedBoxGeometry: ADDONS.RoundedBoxGeometry, toCreasedNormals: ADDONS.toCreasedNormals, meshes: TL.meshes || {}, PLATE })); }
+const MATS = new Map();
+function plastic(c) { if (!MATS.has(c)) MATS.set(c, new THREE.MeshStandardMaterial({ color: (TL.colors[c] || TL.colors[71])[2], roughness: 0.28, metalness: 0 })); return MATS.get(c); }
 function Bricks(o) {
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 30, o.w / o.h, 0.1, 500);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1); renderer.setSize(o.w, o.h, false); renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  KIT ||= brickKit({ THREE, RoundedBoxGeometry: ADDONS.RoundedBoxGeometry, toCreasedNormals: ADDONS.toCreasedNormals, meshes: TL.meshes || {}, PLATE });
+  KIT ||= kit();
   scene.add(new THREE.HemisphereLight(0xe8eeff, 0x1a2550, 1.6));
   const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-18, 34, 22); key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048); const sc = key.shadow.camera; sc.left = sc.bottom = -40; sc.right = sc.top = 40; sc.near = 1; sc.far = 120;
@@ -317,8 +341,7 @@ function Bricks(o) {
   const center = new THREE.Vector3(W / 2, 0, -D / 2);
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.ShadowMaterial({ opacity: 0.35 }));
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.001; shadow.receiveShadow = true; scene.add(shadow);
-  const mats = new Map();
-  const mat = (c) => { if (!mats.has(c)) mats.set(c, new THREE.MeshStandardMaterial({ color: (TL.colors[c] || TL.colors[71])[2], roughness: 0.28, metalness: 0 })); return mats.get(c); };
+  const mat = plastic;
   // hide studs covered by a part sitting on them
   const occ = new Set();
   for (const p of o.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
@@ -332,10 +355,9 @@ function Bricks(o) {
   const tmp = new THREE.Vector3(), N = pieces.length;
   return {
     canvas: renderer.domElement,
-    update(p) {
-      const az = (p.az * Math.PI) / 180, el = (p.el * Math.PI) / 180, ty = p.ty ?? (Hp * PLATE) / 2;
-      cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
-      cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+    update(p, t) {
+      // focus: an anchor name ([x, y, z] in studs, plates, studs)
+      aim(cam, p, t, { x: 0, y: (Hp * PLATE) / 2, z: 0 }, (f) => { const a = o.anchors && o.anchors[f]; return a ? new THREE.Vector3(a[0], a[1] * PLATE, -a[2]).sub(center) : null; });
       // each part drops into place in order; a drop lasts a few percent of the build
       const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
       pieces.forEach((g, i) => {
@@ -355,6 +377,7 @@ function Bricks(o) {
 
 // ---- object types
 const STAGE_KINDS = { stack: Stack, bricks: Bricks };
+const BOUNDS = {}; // id → { x, y, w, h } as last drawn, so marks can target text, chips, headings and tokens
 Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
@@ -362,8 +385,10 @@ const DRAW = {
     const make = STAGE_KINDS[p.kind || "stack"];
     if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
     const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
+    const ex = !rendering && !playing && EXPLORE[obj.id];
+    if (ex) p = { ...p, az: p.az + ex.daz, el: clamp(p.el + ex.del, -5, 89), dist: p.dist * ex.zoom };
     st.update(p, t, obj.born);
-    st.x = p.x; st.y = p.y; st.anchors = p.anchors;
+    st.x = p.x; st.y = p.y; st.w = p.w; st.h = p.h; st.anchors = p.anchors;
     ctx.save();
     if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
@@ -401,22 +426,24 @@ const DRAW = {
       ctx.globalAlpha = ctx._alpha;
     }
   },
-  heading(ctx, p) {
+  heading(ctx, p, t, obj) {
     const text = p.text, n = Math.ceil(text.length * clamp(p.reveal * 1.25));
     ctx.font = `600 38px ${SANS}`; ctx.fillStyle = C.ink; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
     glow(ctx, "rgba(160,190,255,0.35)", 8);
     ctx.fillText(text.slice(0, n), p.x, p.y);
     const w = ctx.measureText(text).width;
+    BOUNDS[obj.id] = { x: p.x, y: p.y - 32, w, h: 40 };
     ctx.strokeStyle = C.ink; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(p.x, p.y + 16); ctx.lineTo(p.x + w * 0.42 * EASE.out(clamp(p.reveal)), p.y + 16); ctx.stroke();
     noGlow(ctx);
   },
-  text(ctx, p, t) {
+  text(ctx, p, t, obj) {
     const text = String(p.text), n = Math.floor(text.length * clamp(p.reveal));
     ctx.font = `${p.weight} ${p.size}px ${p.font === "mono" ? MONO : SANS}`;
     ctx.textBaseline = "middle";
     const full = ctx.measureText(text).width;
     const x0 = p.align === "center" ? p.x - full / 2 : p.align === "right" ? p.x - full : p.x;
+    BOUNDS[obj.id] = { x: x0, y: p.y - p.size * 0.55, w: full, h: p.size * 1.1 };
     ctx.textAlign = "left"; ctx.fillStyle = color(p.color);
     if (p.color === "accent") glow(ctx, C.accent, 12); else glow(ctx, "rgba(160,190,255,0.25)", 6);
     ctx.fillText(text.slice(0, n), x0, p.y);
@@ -426,8 +453,10 @@ const DRAW = {
     }
     noGlow(ctx);
   },
-  tokens(ctx, p, t) {
+  tokens(ctx, p, t, obj) {
     const L = chipLayout(p.list, p.size, p.gap, p.x, p.y), hl = new Set(p.hl || []);
+    // the whole row, plus each chip as a "line" (1-based, like code lines)
+    BOUNDS[obj.id] = { x: L[0].x, y: L[0].y, w: L.at(-1).x + L.at(-1).w - L[0].x, h: L[0].h, lines: [null, ...L.map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h }))] };
     const shown = p.reveal * p.list.length;
     ctx.font = `500 ${p.size}px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "center";
     L.forEach((r, i) => {
@@ -449,11 +478,12 @@ const DRAW = {
     });
     ctx.globalAlpha = ctx._alpha;
   },
-  chip(ctx, p) {
+  chip(ctx, p, t, obj) {
     ctx.font = `600 ${p.size}px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
     const val = p.value == null ? "" : `  ${p.value >= 0.995 ? "≈100" : p.value >= 0.1 ? Math.round(p.value * 100) : (p.value * 100).toFixed(1)}%`;
     const label = visText(p.label), tw = ctx.measureText(label + val).width, padX = p.size * 0.6, dot = p.size * 0.9;
     const w = tw + padX * 2 + dot, h = p.size * 1.7, x = p.x - w / 2, y = p.y - h / 2;
+    BOUNDS[obj.id] = { x, y, w, h };
     const k = EASE.out(clamp(p.reveal));
     ctx.globalAlpha = k * ctx._alpha;
     const c = p.accent ? C.accent : C.ink;
@@ -728,6 +758,78 @@ function frame(ctx, t) {
   ctx.restore();
 }
 
+
+// ---- transitions between chapters (s.transition): a sheet of blueprint
+// paper covers the frame by the midpoint and uncovers it by the end, so
+// whatever changes under the midpoint is hidden. Drawn after every object.
+const TRANS = TL.transitions || [];
+function sheet(ctx, t) { background(ctx, t); }
+const TRANSITIONS = {
+  wipe(ctx, k, c, t) {
+    const x0 = k < 0.5 ? 0 : W * EASE.inout((k - 0.5) * 2), x1 = k < 0.5 ? W * EASE.inout(k * 2) : W;
+    ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, x1 - x0, H); ctx.clip(); sheet(ctx, t); ctx.restore();
+    const edge = k < 0.5 ? x1 : x0;
+    ctx.strokeStyle = C.accent; ctx.lineWidth = 3; glow(ctx, C.accent, 18);
+    ctx.beginPath(); ctx.moveTo(edge, 0); ctx.lineTo(edge, H); ctx.stroke(); noGlow(ctx);
+    ctx.strokeStyle = C.faint; ctx.lineWidth = 1;
+    for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(edge - (y % 200 === 0 ? 18 : 8), y); ctx.lineTo(edge, y); ctx.stroke(); }
+  },
+  iris(ctx, k, c, t) {
+    const R = Math.hypot(W, H) / 2 + 20, r = R * (1 - c);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.arc(W / 2, H / 2, Math.max(0.5, r), 0, Math.PI * 2, true); ctx.clip("evenodd"); sheet(ctx, t); ctx.restore();
+    if (r > 1) {
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; glow(ctx, C.ink, 14);
+      ctx.beginPath(); ctx.arc(W / 2, H / 2, r, 0, Math.PI * 2); ctx.stroke(); noGlow(ctx);
+      ctx.strokeStyle = C.faint; ctx.lineWidth = 1;
+      for (let i = 0; i < 48; i++) { const a = (i / 48) * Math.PI * 2, l = i % 4 ? 8 : 18; ctx.beginPath(); ctx.moveTo(W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r); ctx.lineTo(W / 2 + Math.cos(a) * (r + l), H / 2 + Math.sin(a) * (r + l)); ctx.stroke(); }
+    }
+  },
+  grid(ctx, k, c, t) {
+    ctx.save(); ctx.globalAlpha = clamp(c * 1.25); sheet(ctx, t); ctx.restore();
+    // the grid redraws itself: lines run down (and across) in sequence
+    const cols = Math.ceil(W / 80), rows = Math.ceil(H / 80);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; glow(ctx, "rgba(170,200,255,0.7)", 8);
+    for (let i = 0; i <= cols; i++) { const f = clamp(c * 1.6 - (i / cols) * 0.6); if (f <= 0) continue; ctx.globalAlpha = 0.55 * (1 - Math.abs(k - 0.5) * 1.2); ctx.beginPath(); ctx.moveTo(i * 80 + 0.5, 0); ctx.lineTo(i * 80 + 0.5, H * f); ctx.stroke(); }
+    for (let j = 0; j <= rows; j++) { const f = clamp(c * 1.6 - (j / rows) * 0.6); if (f <= 0) continue; ctx.globalAlpha = 0.4 * (1 - Math.abs(k - 0.5) * 1.2); ctx.beginPath(); ctx.moveTo(0, j * 80 + 0.5); ctx.lineTo(W * f, j * 80 + 0.5); ctx.stroke(); }
+    noGlow(ctx); ctx.globalAlpha = 1;
+  },
+  glitch(ctx, k, c, t) {
+    const fr = Math.floor(t / 45);
+    for (let i = 0; i < 16; i++) {
+      const y = Math.floor(hash(fr * 31 + i * 7) * H), h = 8 + Math.floor(hash(fr * 17 + i) * 70), dx = (hash(fr * 13 + i * 3) - 0.5) * 180 * c;
+      ctx.drawImage(ctx.canvas, 0, y, W, h, dx, y, W, h);
+    }
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.18 * c; ctx.fillStyle = C.accent; ctx.fillRect((hash(fr) - 0.5) * 30, 0, W, H);
+    ctx.globalAlpha = 0.14 * c; ctx.fillStyle = C.cyan; ctx.fillRect((hash(fr + 9) - 0.5) * -30, 0, W, H);
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = Math.pow(c, 3); sheet(ctx, t); ctx.restore();
+    ctx.fillStyle = C.ink;
+    for (let i = 0; i < 10 * c; i++) { ctx.globalAlpha = 0.5 * c; ctx.fillRect(hash(fr * 3 + i) * W, hash(fr * 5 + i) * H, 40 + hash(i + fr) * 260, 2); }
+    ctx.globalAlpha = 1;
+  },
+  "blueprint-fold"(ctx, k, c, t) {
+    // a sheet folds in from the right edge, a crease down its middle, and out to the left
+    const w = W * c, x = k < 0.5 ? W - w : 0;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, 0, w, H); ctx.clip(); sheet(ctx, t);
+    const g = ctx.createLinearGradient(x, 0, x + w, 0);
+    g.addColorStop(0, "rgba(0,0,0,0.35)"); g.addColorStop(0.5, "rgba(0,0,0,0)"); g.addColorStop(0.5, "rgba(120,150,255,0.10)"); g.addColorStop(1, "rgba(0,0,0,0.25)");
+    ctx.fillStyle = g; ctx.fillRect(x, 0, w, H);
+    ctx.strokeStyle = C.faint; ctx.setLineDash([10, 8]); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x + w / 2, 0); ctx.lineTo(x + w / 2, H); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2; glow(ctx, C.ink, 10);
+    ctx.beginPath(); ctx.moveTo(k < 0.5 ? x : x + w, 0); ctx.lineTo(k < 0.5 ? x : x + w, H); ctx.stroke(); noGlow(ctx);
+  },
+};
+AFTER.push((ctx, t) => {
+  for (const tr of TRANS) {
+    if (t < tr.t || t > tr.t + tr.dur) continue;
+    const k = (t - tr.t) / tr.dur, c = k < 0.5 ? EASE.inout(k * 2) : EASE.inout((1 - k) * 2);
+    (TRANSITIONS[tr.kind] || TRANSITIONS.wipe)(ctx, k, c, t);
+  }
+});
+
 // ---- sound: the same voices live and in the render
 function synth(ctx, out) {
   let seed = 7;
@@ -767,6 +869,11 @@ const VOICE = {
   thud: (s, e, at) => s.tone(at, 85, 0.5, "sine", 0.14, 0.55, 0.002),
   rise: (s, e, at) => { s.tone(at, 220, 1.4, "triangle", 0.03, 2); s.noise(at, 1.4, 0.015, 400, 3000, "lowpass", 0.7); },
   clicks: (s, e, at) => { const d = (e.dur || 2000) / 1000, n = Math.min(80, Math.floor(d / 0.07)); for (let i = 0; i < n; i++) { const a = at + (i / n) * d + s.rnd() * 0.03; s.noise(a, 0.03, 0.05, 3800 + s.rnd() * 1500, 2600, "bandpass", 3); s.tone(a, 1900 + s.rnd() * 400, 0.02, "triangle", 0.012); } },
+  "t-wipe": (s, e, at) => { const d = (e.dur || 1200) / 1000; s.noise(at, d * 0.55, 0.035, 250, 3200, "lowpass", 0.8); s.noise(at + d * 0.5, d * 0.5, 0.025, 3200, 300, "lowpass", 0.8); },
+  "t-iris": (s, e, at) => { const d = (e.dur || 1200) / 1000; s.tone(at, 330, d * 0.5, "triangle", 0.03, 0.5); s.tone(at + d * 0.5, 165, d * 0.5, "triangle", 0.03, 2); },
+  "t-grid": (s, e, at) => { const d = (e.dur || 1400) / 1000; for (let i = 0; i < 14; i++) s.tone(at + (i / 14) * d * 0.5, 1200 + i * 60, 0.03, "sine", 0.018); s.noise(at + d * 0.5, d * 0.4, 0.02, 3000, 900); },
+  "t-glitch": (s, e, at) => { for (let i = 0; i < 14; i++) s.noise(at + i * 0.05 + s.rnd() * 0.03, 0.04, 0.05, 700 + s.rnd() * 3500, 400, "bandpass", 7); s.tone(at, 110, 0.4, "square", 0.02, 0.6); },
+  "t-blueprint-fold": (s, e, at) => { const d = (e.dur || 1400) / 1000; s.noise(at, d * 0.45, 0.04, 1800, 500, "bandpass", 0.9); s.tone(at + d * 0.48, 95, 0.35, "sine", 0.1, 0.6, 0.002); s.noise(at + d * 0.55, d * 0.4, 0.03, 500, 1800, "bandpass", 0.9); },
   sweep: (s, e, at) => { const d = (e.dur || 2000) / 1000; for (let i = 0; i < Math.floor(d / 0.11); i++) s.tone(at + i * 0.11, 900 + i * 18, 0.03, "sine", 0.016); },
 };
 // a slow four-chord bed under the whole thing
@@ -780,13 +887,20 @@ function music(s, from, to) {
     s.tone(Math.max(0, at), ch[0] / 2, bar, "sine", 0.03, 0, 1.2);
   }
 }
+const AUDIO_HOOKS = [];
 async function renderAudio(fromMs, toMs, rate = 48000) {
   const len = Math.ceil(((toMs - fromMs) / 1000 + 1) * rate);
   const ctx = new OfflineAudioContext(1, len, rate), master = ctx.createGain();
   master.gain.value = 0.9; master.connect(ctx.destination);
-  const s = synth(ctx, master);
+  // effects (and the built-in bed) go through their own bus, so plugins can
+  // duck them, e.g. under a voice: BP.audioHooks get (ctx, { fx, master }, from, to)
+  const fx = ctx.createGain(); fx.gain.setValueAtTime(1, 0); fx.connect(master);
+  const s = synth(ctx, fx);
+  for (const h of AUDIO_HOOKS) h(ctx, { fx, master }, fromMs, toMs);
   if (TL.meta.music !== false) music(s, fromMs, toMs);
-  for (const e of TL.sounds) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000);
+  for (const e of TL.sounds) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000, ctx, master);
+  // voices that start before the range but are still sounding (long clips)
+  for (const e of TL.sounds) if (e.t < fromMs && e.long && e.t + e.long > fromMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000, ctx, master);
   return ctx.startRendering();
 }
 function wavBase64(buf, n) {
@@ -825,7 +939,7 @@ async function startSound() {
 }
 function stopSound() { try { src?.stop(); } catch {} src = null; }
 
-function play() { if (t >= DUR - 50) draw(0); playing = true; last = performance.now(); $("play").textContent = "Pause"; startSound(); requestAnimationFrame(loop); }
+function play() { for (const k in EXPLORE) delete EXPLORE[k]; if (t >= DUR - 50) draw(0); playing = true; last = performance.now(); $("play").textContent = "Pause"; startSound(); requestAnimationFrame(loop); }
 function pause() { playing = false; stopSound(); $("play").textContent = t >= DUR - 50 ? "Replay" : "Play"; }
 function loop(now) {
   if (!playing) return;
@@ -833,6 +947,46 @@ function loop(now) {
   if (t >= DUR) { pause(); return; }
   requestAnimationFrame(loop);
 }
+
+
+// ---- explore: while paused, drag a 3D stage to orbit it, scroll to zoom;
+// play snaps back to the scripted camera. Never active in renders.
+function stageAt(fx, fy) {
+  let hit = null;
+  for (const obj of TL.objects) {
+    if (obj.type !== "stage3d" || t < obj.born || !STAGES[obj.id]) continue;
+    const p = propsAt(obj, t);
+    if (p.opacity <= 0.05) continue;
+    if (fx >= p.x && fx <= p.x + p.w && fy >= p.y && fy <= p.y + p.h) hit = obj.id;
+  }
+  return hit;
+}
+function framePoint(e) { const r = canvas.getBoundingClientRect(); return [((e.clientX - r.left) * W) / r.width, ((e.clientY - r.top) * H) / r.height]; }
+let dragging = null;
+canvas.addEventListener("pointerdown", (e) => {
+  if (playing || rendering) return;
+  const id = stageAt(...framePoint(e)); if (!id) return;
+  dragging = { id, x: e.clientX, y: e.clientY };
+  EXPLORE[id] ||= { daz: 0, del: 0, zoom: 1 };
+  canvas.setPointerCapture(e.pointerId); canvas.style.cursor = "grabbing";
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (!dragging) { if (!playing && !rendering) canvas.style.cursor = stageAt(...framePoint(e)) ? "grab" : ""; return; }
+  const ex = EXPLORE[dragging.id];
+  ex.daz -= (e.clientX - dragging.x) * 0.35; ex.del += (e.clientY - dragging.y) * 0.25;
+  dragging.x = e.clientX; dragging.y = e.clientY;
+  draw(t);
+});
+const endDrag = () => { dragging = null; canvas.style.cursor = ""; };
+canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
+canvas.addEventListener("wheel", (e) => {
+  if (playing || rendering) return;
+  const id = stageAt(...framePoint(e)); if (!id) return;
+  e.preventDefault();
+  const ex = (EXPLORE[id] ||= { daz: 0, del: 0, zoom: 1 });
+  ex.zoom = clamp(ex.zoom * Math.exp(e.deltaY * 0.0012), 0.25, 4);
+  draw(t);
+}, { passive: false });
 
 // chapters, from the dial's steps
 const chapters = [{ t: 0, label: "start" }].concat((tweens.dial || []).filter((x) => x.prop === "label").map((x) => ({ t: x.t0, label: x.to })));
@@ -862,8 +1016,10 @@ const fonts = [`600 38px ${SANS}`, `500 16px ${SANS}`, `500 16px ${MONO}`, `600 
 // kinds, sound voices, after-frame hooks, and work to finish before start
 window.BP = {
   TL, W, H, DUR, C, color, MONO, SANS, ADV, clamp, EASE, hash, GLYPHS, glow, noGlow, roundRect, partial, at, smooth, arrowHead, visText, chipLayout, propsAt,
-  DRAW, STAGES, STAGE_KINDS, VOICE, AFTER, PLATE,
+  DRAW, STAGES, STAGE_KINDS, VOICE, AFTER, PLATE, BOUNDS, audioHooks: AUDIO_HOOKS,
   get THREE() { return THREE; }, get ADDONS() { return ADDONS; },
+  kit, plastic, Bricks, Stack,             // the LEGO kit (brick(p, material)), plastic(colorCode), the built-in stages
+  aim, TRANSITIONS, EXPLORE,               // aim(camera, props, t, baseTarget, focusAt) for plugin stages; transition kinds by name
   threeTypes: new Set(["stage3d"]),       // object types that need three.js
   ready: [],                              // functions returning promises, run after three.js loads
   /** register(type, draw): a 2D object type, draw(ctx, props, t, obj) */
@@ -886,7 +1042,7 @@ BP.start = function start() {
   Promise.all([three, ...fonts.map((f) => document.fonts.load(f).catch(() => {}))])
     .then(() => Promise.all(BP.ready.map((f) => f())))
     .then(() => {
-      window.__renderAt = (ms) => { document.body.classList.add("render"); draw(ms); };
+      window.__renderAt = (ms) => { rendering = true; playing = false; document.body.classList.add("render"); draw(ms); };
       controls();
       draw(0);
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -897,7 +1053,683 @@ BP.start = function start() {
 })();
 
 </script>
+<script>
+// ---- plugin: marks.js
+// Math, code and emphasis for the blueprint layer.
+//   math       LaTeX via MathJax 3 (SVG), drawn as an image that writes itself on
+//   code       a code panel: line numbers, small syntax highlighter, focus bar
+//   counter    a number that ticks from one value to another
+//   underline, circle, brace, strike, highlight, arrowTo
+//              marks that draw themselves on, around a box {x, y, w, h}, a 3D
+//              anchor (resolved by the core into x, y), or another object of
+//              this plugin: anchor { id, fx, fy } (a point in its bounds, 0..1)
+//              or { id, line } (a line of a code panel).
+(function () {
+"use strict";
+const { C, color, MONO, SANS, clamp, EASE, glow, noGlow, partial, smooth, arrowHead, hash, roundRect } = BP;
+const BOUNDS = (BP.BOUNDS ||= {}); // id → { x, y, w, h, lines? } as last drawn
 
+// ---- where a mark goes: its own box, or a box/point from another object
+function target(p) {
+  const a = p.anchor;
+  if (a && a.id != null && BOUNDS[a.id]) {
+    const b = BOUNDS[a.id];
+    if (a.line != null && b.lines) {
+      const l = b.lines[a.line]; if (l) return { x: l.x + l.w / 2 + (a.dx || 0), y: l.y + l.h / 2 + (a.dy || 0), w: p.w ?? l.w, h: p.h ?? l.h };
+    }
+    if (a.fx != null) return { x: b.x + b.w * a.fx + (a.dx || 0), y: b.y + b.h * (a.fy ?? 0.5) + (a.dy || 0), w: p.w ?? 40, h: p.h ?? 40 };
+    return { x: b.x + b.w / 2 + (a.dx || 0), y: b.y + b.h / 2 + (a.dy || 0), w: p.w ?? b.w, h: p.h ?? b.h };
+  }
+  return { x: p.x, y: p.y, w: p.w ?? 120, h: p.h ?? 40 };
+}
+
+// ---- math: pre-rendered to images before the player starts
+const MATH = (BP.MATH = new Map()); // key → { img, w, h } or { fail: true }
+const mathKey = (p) => `${p.tex}|${p.size}|${p.color}`;
+function loadMathJax() {
+  if (window.MathJax?.tex2svg) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    window.MathJax = { svg: { fontCache: "none" }, startup: { typeset: false }, options: { enableMenu: false } };
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js";
+    s.onload = () => (window.MathJax.startup?.promise || Promise.resolve()).then(() => resolve(true), () => resolve(false));
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+    setTimeout(() => resolve(Boolean(window.MathJax?.tex2svg)), 12000);
+  });
+}
+async function renderMath(p) {
+  const key = mathKey(p);
+  if (MATH.has(key)) return;
+  try {
+    // the promise form waits for extensions MathJax loads on demand (\color...)
+    const node = await window.MathJax.tex2svgPromise(p.tex, { display: true }), svg = node.querySelector("svg");
+    const vb = svg.getAttribute("viewBox").split(/\s+/).map(Number);
+    const w = (vb[2] / 1000) * p.size, h = (vb[3] / 1000) * p.size;
+    svg.setAttribute("width", w); svg.setAttribute("height", h);
+    svg.setAttribute("color", color(p.color));
+    svg.style.color = color(p.color);
+    let src = new XMLSerializer().serializeToString(svg).replace(/currentColor/g, color(p.color));
+    const img = new Image();
+    return new Promise((resolve) => {
+      img.onload = () => { MATH.set(key, { img, w, h }); resolve(); };
+      img.onerror = () => { console.error("math image failed"); MATH.set(key, { fail: true }); resolve(); };
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src);
+    });
+  } catch (e) { console.error("math render failed:", String(e)); MATH.set(key, { fail: true }); }
+}
+const mathObjs = BP.TL.objects.filter((o) => o.type === "math");
+if (mathObjs.length) BP.ready.push(async () => {
+  const ok = await loadMathJax();
+  for (const o of mathObjs) {
+    // every colour the object is ever given, so a colour change needs no render
+    const colors = new Set([o.props.color, ...BP.TL.tweens.filter((t) => t.id === o.id && t.prop === "color").map((t) => t.to)]);
+    for (const c of colors) {
+      const p = { ...o.props, color: c };
+      if (ok) await renderMath(p); else { console.error("MathJax did not load"); MATH.set(mathKey(p), { fail: true }); }
+    }
+  }
+});
+
+BP.register("math", (ctx, p, t, obj) => {
+  const m = MATH.get(mathKey(p));
+  const k = clamp(p.reveal);
+  if (!m || m.fail) { // offline: the TeX itself
+    ctx.font = `500 ${Math.round(p.size * 0.6)}px ${MONO}`; ctx.fillStyle = color(p.color); ctx.textBaseline = "middle";
+    ctx.textAlign = p.align; const s = p.tex.slice(0, Math.ceil(p.tex.length * k)); ctx.fillText(s, p.x, p.y);
+    const w = ctx.measureText(p.tex).width; BOUNDS[obj.id] = { x: p.align === "center" ? p.x - w / 2 : p.x, y: p.y - p.size * 0.4, w, h: p.size * 0.8 };
+    return;
+  }
+  const x = p.align === "center" ? p.x - m.w / 2 : p.align === "right" ? p.x - m.w : p.x, y = p.y - m.h / 2;
+  BOUNDS[obj.id] = { x, y, w: m.w, h: m.h };
+  const edge = 46, rx = (m.w + edge) * EASE.inout(k) - edge; // the reveal front, with a soft leading edge
+  if (p.color !== "ink" && p.color !== "dim") glow(ctx, color(p.color), 10); else glow(ctx, "rgba(160,190,255,0.3)", 8);
+  if (rx > 0) ctx.drawImage(m.img, 0, 0, m.img.width, m.img.height, x, y, Math.min(rx, m.w), m.h);
+  noGlow(ctx);
+  const sx = m.img.width / m.w;
+  for (let i = 0; i < 6; i++) { // fade across the edge in slices
+    const a = rx + (i * edge) / 6, b = a + edge / 6;
+    if (b <= 0 || a >= m.w) continue;
+    const a0 = Math.max(0, a), b0 = Math.min(m.w, b);
+    ctx.globalAlpha = ctx._alpha * (1 - (i + 0.5) / 6);
+    ctx.drawImage(m.img, a0 * sx, 0, (b0 - a0) * sx, m.img.height, x + a0, y, b0 - a0, m.h);
+  }
+  ctx.globalAlpha = ctx._alpha;
+  if (k > 0 && k < 1) { // the pen
+    const px = x + clamp(rx, 0, m.w);
+    ctx.strokeStyle = C.accent; ctx.lineWidth = 2; glow(ctx, C.accent, 12);
+    ctx.beginPath(); ctx.moveTo(px, y + 4); ctx.lineTo(px, y + m.h - 4); ctx.stroke(); noGlow(ctx);
+  }
+});
+
+// ---- code: a tiny tokenizer per language
+const KW = {
+  go: "break case chan const continue default defer else fallthrough for func go goto if import interface map package range return select struct switch type var nil true false",
+  js: "async await break case catch class const continue default delete do else export extends false finally for from function if import in instanceof let new null of return super switch this throw true try typeof undefined var void while yield",
+  python: "and as assert async await break class continue def del elif else except False finally for from global if import in is lambda None nonlocal not or pass raise return True try while with yield",
+};
+const TYPES = { go: "int int64 uint64 float64 string bool byte error any", js: "", python: "int float str bool list dict set tuple" };
+function tokenize(line, lang) {
+  const kw = new Set((KW[lang] || KW.js).split(" ")), types = new Set((TYPES[lang] || "").split(" ").filter(Boolean));
+  const comment = lang === "python" ? "#" : "//";
+  const out = [];
+  const re = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`[^`]*`)|(\d+(?:\.\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\s+)|(.)/g;
+  const ci = line.indexOf(comment);
+  // a comment marker outside a string starts a comment (good enough for samples)
+  let code = line, rest = "";
+  if (ci >= 0 && (line.slice(0, ci).split('"').length % 2 === 1)) { code = line.slice(0, ci); rest = line.slice(ci); }
+  let m;
+  while ((m = re.exec(code))) {
+    const [tok, str, num, word] = m;
+    let kind = "plain";
+    if (str) kind = "string"; else if (num) kind = "number";
+    else if (word) kind = kw.has(word) ? "keyword" : types.has(word) ? "type" : code[re.lastIndex] === "(" ? "call" : "plain";
+    else if (/[{}()[\]]/.test(tok)) kind = "punct";
+    out.push([tok, kind]);
+  }
+  if (rest) out.push([rest, "comment"]);
+  return out;
+}
+const TOK_COLOR = { keyword: () => C.cyan, string: () => C.green, number: () => C.gold, comment: () => C.dim, type: () => C.violet, call: () => C.ink, punct: () => C.dim, plain: () => C.ink };
+
+BP.register("code", (ctx, p, t, obj) => {
+  const lines = (obj._lines ||= p.source.split("\n").map((l) => tokenize(l, p.lang)));
+  const n = lines.length, lh = p.size * 1.55, padX = 22, gutter = p.size * 2.6, top = 46;
+  ctx.font = `400 ${p.size}px ${MONO}`;
+  const charW = ctx.measureText("M").width;
+  const longest = Math.max(...p.source.split("\n").map((l) => l.length));
+  const w = p.w ?? Math.max(360, gutter + padX * 2 + longest * charW), h = top + n * lh + 18;
+  const x = p.x, y = p.y, k = clamp(p.reveal);
+  // frame draws on, then the title tab
+  ctx.strokeStyle = C.faint; ctx.lineWidth = 1.5;
+  partial(ctx, [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]], clamp(k * 3));
+  if (k > 0.15) {
+    ctx.fillStyle = "rgba(10,20,52,0.55)"; ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
+    ctx.strokeStyle = C.faint; ctx.beginPath(); ctx.moveTo(x, y + top - 12); ctx.lineTo(x + w, y + top - 12); ctx.stroke();
+    ctx.font = `500 14px ${MONO}`; ctx.fillStyle = C.dim; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+    ctx.fillText(p.title || "", x + padX, y + (top - 12) / 2);
+    ctx.fillStyle = C.faint; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(x + w - 22 - i * 16, y + (top - 12) / 2, 4, 0, Math.PI * 2); ctx.fill(); }
+  }
+  const linesBounds = [];
+  for (let i = 0; i < n; i++) linesBounds.push({ x: x + gutter, y: y + top + i * lh - 2, w: Math.max(40, p.source.split("\n")[i].length * charW + 12), h: lh });
+  BOUNDS[obj.id] = { x, y, w, h, lines: [null, ...linesBounds] }; // lines are 1-based
+  // focus bar, moving smoothly to focusAt
+  const focus = new Set(p.focus || []);
+  if (focus.size && p.focusAt > 0) {
+    const fy = y + top + (p.focusAt - 1) * lh - 2, fh = lh * (p.focusSpan || 1);
+    ctx.fillStyle = "rgba(124,200,255,0.08)"; ctx.fillRect(x + 1, fy, w - 2, fh);
+    ctx.fillStyle = C.accent; glow(ctx, C.accent, 8); ctx.fillRect(x + 1, fy, 3, fh); noGlow(ctx);
+  }
+  // lines type on, one after another
+  const typed = k * 1.15 * n;
+  ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  for (let i = 0; i < n; i++) {
+    const shown = clamp(typed - i); if (shown <= 0) break;
+    const ly = y + top + i * lh + lh / 2 - 2, dim = focus.size && !focus.has(i + 1);
+    ctx.font = `400 ${p.size * 0.85}px ${MONO}`; ctx.fillStyle = C.faint; ctx.textAlign = "right";
+    ctx.globalAlpha = ctx._alpha * (dim ? 0.5 : 1);
+    ctx.fillText(String(i + 1), x + gutter - 14, ly);
+    ctx.textAlign = "left"; ctx.font = `400 ${p.size}px ${MONO}`;
+    const total = lines[i].reduce((a, [s]) => a + s.length, 0), upto = Math.ceil(total * shown);
+    let cx = x + gutter, used = 0;
+    ctx.globalAlpha = ctx._alpha * (dim ? 0.32 : 1);
+    for (const [s, kind] of lines[i]) {
+      if (used >= upto) break;
+      const part = s.slice(0, upto - used); used += s.length;
+      ctx.fillStyle = TOK_COLOR[kind]();
+      ctx.fillText(part, cx, ly); cx += ctx.measureText(part).width;
+    }
+    if (shown < 1 && Math.floor(t / 250) % 2 === 0) { ctx.fillStyle = C.ink; ctx.fillRect(cx + 2, ly - p.size * 0.5, p.size * 0.5, p.size); }
+  }
+  ctx.globalAlpha = ctx._alpha;
+});
+
+// ---- counter
+const FORMATS = {
+  int: (v) => Math.round(v).toLocaleString("en-US"),
+  comma: (v) => Math.round(v).toLocaleString("en-US"),
+  ms: (v) => (v >= 1000 ? `${(v / 1000).toFixed(2)} s` : `${Math.round(v)} ms`),
+  pct: (v) => `${(v * 100).toFixed(v < 0.1 ? 1 : 0)}%`,
+  x: (v) => `${v.toFixed(v < 10 ? 1 : 0)}×`,
+  s: (v) => `${v.toFixed(1)} s`,
+  fixed1: (v) => v.toFixed(1), fixed2: (v) => v.toFixed(2),
+};
+BP.register("counter", (ctx, p, t, obj) => {
+  const f = FORMATS[p.format] || FORMATS.int, text = (p.prefix || "") + f(p.value) + (p.suffix || "");
+  ctx.globalAlpha = ctx._alpha * clamp(p.reveal * 12);
+  ctx.font = `600 ${p.size}px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = p.align;
+  const c = color(p.color); ctx.fillStyle = c; glow(ctx, c, p.color === "ink" ? 6 : 14);
+  ctx.fillText(text, p.x, p.y); noGlow(ctx);
+  const w = ctx.measureText(text).width, x0 = p.align === "center" ? p.x - w / 2 : p.align === "right" ? p.x - w : p.x;
+  BOUNDS[obj.id] = { x: x0, y: p.y - p.size * 0.55, w, h: p.size * 1.1 };
+  if (p.label) { ctx.font = `500 ${Math.round(p.size * 0.32)}px ${SANS}`; ctx.fillStyle = C.dim; ctx.fillText(p.label, p.x, p.y + p.size * 0.85); }
+  ctx.globalAlpha = ctx._alpha;
+});
+
+// ---- marks
+const markColor = (p) => color(p.color || "accent");
+BP.register("underline", (ctx, p, t, obj) => {
+  const b = target(p), c = markColor(p), y = b.y + b.h / 2 + (p.gap ?? 6);
+  const pts = []; for (let i = 0; i <= 24; i++) { const u = i / 24; pts.push([b.x - b.w / 2 + u * b.w, y + (p.wavy ? Math.sin(u * Math.PI * 6) * 3 : (hash(i + obj.id.length * 31) - 0.5) * 1.6)]); }
+  ctx.strokeStyle = c; ctx.lineWidth = p.width ?? 3; ctx.lineCap = "round"; glow(ctx, c, 10);
+  partial(ctx, pts, clamp(p.reveal)); noGlow(ctx);
+});
+BP.register("strike", (ctx, p) => {
+  const b = target(p), c = markColor(p);
+  ctx.strokeStyle = c; ctx.lineWidth = p.width ?? 3; ctx.lineCap = "round"; glow(ctx, c, 10);
+  partial(ctx, [[b.x - b.w / 2 - 6, b.y + 3], [b.x + b.w / 2 + 6, b.y - 3]], clamp(p.reveal)); noGlow(ctx);
+});
+BP.register("circle", (ctx, p, t, obj) => {
+  const b = target(p), c = markColor(p), pad = p.pad ?? 10;
+  const rx = b.w / 2 + pad, ry = b.h / 2 + pad, seed = obj.id.split("").reduce((a, ch) => a + ch.charCodeAt(0), 0);
+  const pts = [], turns = 1.08, N = 90, a0 = -Math.PI * 0.62;
+  for (let i = 0; i <= N; i++) { // a slightly irregular hand-drawn loop, a little past full
+    const u = i / N, a = a0 + u * Math.PI * 2 * turns, wob = 1 + (hash(seed + Math.floor(u * 7)) - 0.5) * 0.07 + Math.sin(u * 9 + seed) * 0.02;
+    pts.push([b.x + Math.cos(a) * rx * wob, b.y + Math.sin(a) * ry * wob * (1 + u * 0.04)]);
+  }
+  ctx.strokeStyle = c; ctx.lineWidth = p.width ?? 3; ctx.lineCap = "round"; glow(ctx, c, 12);
+  partial(ctx, pts, EASE.inout(clamp(p.reveal))); noGlow(ctx);
+});
+BP.register("highlight", (ctx, p) => {
+  const b = target(p), c = markColor(p), k = EASE.out(clamp(p.reveal)), pad = p.pad ?? 6;
+  ctx.globalAlpha = ctx._alpha * (p.alpha ?? 0.2); ctx.fillStyle = c;
+  ctx.fillRect(b.x - b.w / 2 - pad, b.y - b.h / 2 - pad, (b.w + pad * 2) * k, b.h + pad * 2);
+  ctx.globalAlpha = ctx._alpha;
+});
+BP.register("brace", (ctx, p) => {
+  // a curly brace along one side of the box: below (default), above, left or right
+  const b = target(p), c = markColor(p), side = p.side || "below", d = p.depth ?? 16, gap = p.gap ?? 8;
+  const horiz = side === "below" || side === "above", s = side === "below" || side === "right" ? 1 : -1;
+  const L = horiz ? b.w : b.h, base = horiz ? b.y + s * (b.h / 2 + gap) : b.x + s * (b.w / 2 + gap);
+  const pt = (u, v) => (horiz ? [b.x - b.w / 2 + u * L, base + s * v] : [base + s * v, b.y - b.h / 2 + u * L]);
+  // a curly brace: curl out from each end, run straight, curl into the point
+  const q = (a, b, cc, n) => { const out = []; for (let i = 0; i <= n; i++) { const u = i / n; out.push([(1 - u) ** 2 * a[0] + 2 * (1 - u) * u * b[0] + u * u * cc[0], (1 - u) ** 2 * a[1] + 2 * (1 - u) * u * b[1] + u * u * cc[1]]); } return out; };
+  const e = Math.min(0.08, (d * 1.2) / L), h = d / 2;
+  const pts = [
+    ...q([0, 0], [0, h], [e, h], 12), ...q([e, h], [0.25, h], [0.5 - e, h], 12),
+    ...q([0.5 - e, h], [0.5, h], [0.5, d], 10), ...q([0.5, d], [0.5, h], [0.5 + e, h], 10),
+    ...q([0.5 + e, h], [0.75, h], [1 - e, h], 12), ...q([1 - e, h], [1, h], [1, 0], 12),
+  ].map(([u, v]) => pt(u, v));
+  ctx.strokeStyle = c; ctx.lineWidth = p.width ?? 2.5; ctx.lineJoin = "round"; glow(ctx, c, 10);
+  partial(ctx, pts, EASE.inout(clamp(p.reveal * 1.2))); noGlow(ctx);
+  if (p.label && p.reveal > 0.5) {
+    const [lx, ly] = pt(0.5, d + 14);
+    ctx.globalAlpha = ctx._alpha * clamp((p.reveal - 0.5) * 3);
+    ctx.font = `500 ${p.size ?? 22}px ${SANS}`; ctx.fillStyle = c; ctx.textBaseline = horiz ? (s > 0 ? "top" : "bottom") : "middle";
+    ctx.textAlign = horiz ? "center" : s > 0 ? "left" : "right"; glow(ctx, c, 6);
+    ctx.fillText(p.label, lx, ly); noGlow(ctx); ctx.globalAlpha = ctx._alpha;
+  }
+});
+BP.register("arrowTo", (ctx, p) => {
+  // from a fixed point (fx, fy) to the target, bending to one side, with a label at the start
+  const b = target(p), c = markColor(p), to = [b.x + (p.tdx || 0), b.y + (p.tdy || 0)];
+  const mid = [(p.fx + to[0]) / 2, (p.fy + to[1]) / 2], dx = to[0] - p.fx, dy = to[1] - p.fy, bend = p.bend ?? 0.25;
+  const ctrl = [mid[0] - dy * bend, mid[1] + dx * bend];
+  const pts = []; for (let i = 0; i <= 40; i++) { const u = i / 40; pts.push([(1 - u) ** 2 * p.fx + 2 * (1 - u) * u * ctrl[0] + u * u * to[0], (1 - u) ** 2 * p.fy + 2 * (1 - u) * u * ctrl[1] + u * u * to[1]]); }
+  // stop short of the target so the head doesn't sit on it
+  const end = pts.length - 3;
+  ctx.strokeStyle = c; ctx.lineWidth = p.width ?? 2.5; ctx.lineCap = "round"; glow(ctx, c, 10);
+  const { tip, dir } = partial(ctx, pts.slice(0, end), EASE.inout(clamp(p.reveal * 1.25)));
+  if (p.reveal > 0.05) arrowHead(ctx, tip, dir, 13);
+  noGlow(ctx);
+  if (p.label) {
+    ctx.globalAlpha = ctx._alpha * clamp(p.reveal * 4);
+    ctx.font = `500 ${p.size ?? 22}px ${SANS}`; ctx.fillStyle = c; ctx.textBaseline = "middle"; ctx.textAlign = p.labelAlign || (dx >= 0 ? "right" : "left");
+    ctx.fillText(p.label, p.fx + (dx >= 0 ? -12 : 12), p.fy); ctx.globalAlpha = ctx._alpha;
+  }
+});
+})();
+
+</script>
+<script>
+// ---- plugin: morph.js
+// Morph: one checked brick model rebuilds itself into another, on camera.
+// A stage of kind "morph" holds a chain of models (props.models); props.morph
+// runs 0 → models.length − 1. Parts are matched model to model (same part,
+// nearest first, colour may change); matched parts lift, fly an arc and
+// settle in their new home, staggered left to right; parts the next model
+// doesn't need lift off and shrink away; new parts drop in.
+// Uses the core's LEGO kit (BP.kit), plastic (BP.plastic) and the same light
+// as the built-in bricks stage.
+(function () {
+  "use strict";
+  const { clamp, EASE, PLATE } = BP;
+
+  // match model a's parts to model b's: same part and colour, then same part
+  // (colour changes in flight); nearest home first. Returns b index → a index.
+  function match(a, b, ha, hb) {
+    const used = new Set(), out = new Map();
+    for (const pass of [(p, q) => p.part === q.part && p.color === q.color, (p, q) => p.part === q.part]) {
+      // cheap candidate lists per part id
+      const byPart = new Map();
+      a.forEach((p, i) => { if (!used.has(i)) (byPart.get(p.part) || byPart.set(p.part, []).get(p.part)).push(i); });
+      b.forEach((q, j) => {
+        if (out.has(j)) return;
+        let best = -1, bd = Infinity;
+        for (const i of byPart.get(q.part) || []) {
+          if (used.has(i) || !pass(a[i], q)) continue;
+          const d = ha[i].distanceToSquared(hb[j]);
+          if (d < bd) { bd = d; best = i; }
+        }
+        if (best >= 0) { used.add(best); out.set(j, best); }
+      });
+    }
+    return out;
+  }
+
+  function make(o) {
+    const THREE = BP.THREE, KIT = BP.kit();
+    const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 30, o.w / o.h, 0.1, 500);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(1); renderer.setSize(o.w, o.h, false); renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    scene.add(new THREE.HemisphereLight(0xe8eeff, 0x1a2550, 1.6));
+    const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-18, 34, 22); key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048); const sc = key.shadow.camera; sc.left = sc.bottom = -45; sc.right = sc.top = 45; sc.near = 1; sc.far = 140;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x9fb8ff, 0.9); rim.position.set(20, 12, -24); scene.add(rim);
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.ShadowMaterial({ opacity: 0.35 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.001; shadow.receiveShadow = true; scene.add(shadow);
+
+    const models = o.models, M = models.length;
+    // each model is centred on the origin, on the table
+    const centers = models.map((m) => new THREE.Vector3(m.size[0] / 2, 0, -m.size[2] / 2));
+    const homeOf = (p, m) => new THREE.Vector3(p.x + p.w / 2, (p.y + p.h / 2) * PLATE, -(p.z + p.d / 2)).sub(centers[m]);
+    const homes = models.map((m, mi) => m.parts.map((p) => homeOf(p, mi)));
+
+    // pieces: one 3D brick per part of model 0, reused by matched parts later
+    // pieces[k] = { g, at: [{ home, color, rot } | null per model], order: [per model] }
+    const pieces = [];
+    const owner = models.map(() => []);
+    const newPiece = (p, mi, j) => {
+      const g = KIT.brick(p, BP.plastic(p.color));
+      g.visible = false; scene.add(g);
+      const piece = { g, base: p, at: models.map(() => null), mat: new Map() };
+      pieces.push(piece);
+      return piece;
+    };
+    models[0].parts.forEach((p, j) => { const k = newPiece(p, 0, j); k.at[0] = { home: homes[0][j], color: p.color, rot: p.rot, j }; owner[0][j] = pieces.length - 1; });
+    for (let mi = 1; mi < M; mi++) {
+      const m = match(models[mi - 1].parts, models[mi].parts, homes[mi - 1], homes[mi]);
+      models[mi].parts.forEach((q, j) => {
+        let idx;
+        if (m.has(j)) idx = owner[mi - 1][m.get(j)];
+        else { newPiece(q, mi, j); idx = pieces.length - 1; }
+        pieces[idx].at[mi] = { home: homes[mi][j], color: q.color, rot: q.rot, j };
+        owner[mi][j] = idx;
+      });
+    }
+    // stagger: each piece's start within a step, left to right across its destination
+    // left to right across the destination, and bottom to top within a column,
+    // so a growing bar fills like a cascade rather than arriving in one block
+    const span = (mi) => { const xs = homes[mi].map((h) => h.x), ys = homes[mi].map((h) => h.y); return [Math.min(...xs), Math.max(...xs) - Math.min(...xs) || 1, Math.max(...ys) || 1]; };
+    const spans = models.map((_, mi) => span(mi));
+    const delay = (h, mi) => 0.3 * clamp((h.x - spans[mi][0]) / spans[mi][1]) + 0.14 * clamp(h.y / spans[mi][2]) + 0.02 * ((Math.abs(h.z * 7.3) % 1));
+
+    const N0 = models[0].parts.length;
+    const tmp = new THREE.Vector3();
+    const place = (pc, pos, color, rotY, scale) => {
+      const g = pc.g;
+      g.visible = scale > 0.01;
+      g.position.copy(pos); g.rotation.y = rotY; g.scale.setScalar(Math.max(0.001, scale));
+      if (pc.color !== color) {
+        pc.color = color;
+        g.traverse((m) => { if (m.isMesh) m.material = BP.plastic(color); });
+      }
+    };
+    const rad = (deg) => (deg * Math.PI) / 180;
+    let cur = { v: 0 };
+
+    return {
+      canvas: renderer.domElement,
+      update(p) {
+        const v = clamp(p.morph || 0, 0, M - 1), step = Math.min(M - 2, Math.floor(v)), k = M > 1 ? v - Math.max(0, step) : 0;
+        cur.v = v;
+        // camera, aimed at the middle height of whichever models are in play
+        const hA = models[Math.max(0, step)].size[1] * PLATE, hB = models[Math.min(M - 1, Math.max(0, step) + 1)].size[1] * PLATE;
+        const az = rad(p.az), el = rad(p.el), ty = p.ty ?? (hA + (hB - hA) * EASE.inout(k)) / 2;
+        cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
+        cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+
+        if (v <= 0 || M === 1) {
+          // building model 0, part by part, like the bricks stage
+          const at = p.reveal * (N0 + N0 * 0.05), sp = Math.max(1, N0 * 0.05);
+          for (const pc of pieces) {
+            const a = pc.at[0];
+            if (!a) { pc.g.visible = false; continue; }
+            const kk = clamp((at - a.j) / sp), e = EASE.out(kk);
+            tmp.copy(a.home); tmp.y += (1 - e) * 5;
+            place(pc, tmp, a.color, 0, kk > 0 ? 1 : 0);
+          }
+        } else {
+          const A = step, B = step + 1;
+          for (const pc of pieces) {
+            const a = pc.at[A], b = pc.at[B];
+            const r0 = rad(-((pc.base.rot || 0))), rotOf = (s) => rad(-(s.rot || 0)) - r0;
+            if (a && b) {
+              // fly an arc: lift, travel, settle
+              // pieces that stay put (most of the base) don't hop
+              const dist = a.home.distanceTo(b.home), moving = clamp(dist / 0.6);
+              const d = delay(b.home, B), u = clamp((k - d) / 0.5), e = EASE.inout(u);
+              const lift = Math.sin(Math.PI * u) * (2.5 + 0.12 * dist) * moving;
+              tmp.lerpVectors(a.home, b.home, e); tmp.y += lift;
+              place(pc, tmp, u < 0.5 ? a.color : b.color, rotOf(a) + (rotOf(b) - rotOf(a)) * e, 1);
+            } else if (a) {
+              // not needed: lift off and shrink away, early in the step
+              const d = delay(a.home, A) * 0.6, u = clamp((k - d) / 0.35), e = EASE.inout(u);
+              tmp.copy(a.home); tmp.y += e * 7;
+              place(pc, tmp, a.color, rotOf(a) + e * 0.8, 1 - e);
+            } else if (b) {
+              // new: drops in, late in the step
+              const d = 0.45 + delay(b.home, B) * 0.6, u = clamp((k - d) / 0.3), e = EASE.out(u);
+              tmp.copy(b.home); tmp.y += (1 - e) * 6;
+              place(pc, tmp, b.color, rotOf(b), u > 0 ? 0.25 + 0.75 * e : 0);
+            } else pc.g.visible = false;
+          }
+        }
+        renderer.render(scene, cam);
+      },
+      // anchors: "m<i>:name" (or "a:"/"b:") pin to one model; a plain name
+      // follows whichever model is nearer in the morph
+      anchor(a, x0, y0) {
+        if (!a) return [-999, -999];
+        let pt, m;
+        if (Array.isArray(a)) { pt = a; m = 0; }
+        else if (a.p) { pt = a.p; m = a.m; }
+        else {
+          const want = Math.round(cur.v);
+          m = a.by[want] ? want : a.by.findIndex(Boolean);
+          pt = a.by[m];
+        }
+        tmp.set(pt[0], pt[1] * PLATE, -pt[2]).sub(centers[m]).project(cam);
+        return [x0 + (tmp.x * 0.5 + 0.5) * o.w, y0 + (-tmp.y * 0.5 + 0.5) * o.h];
+      },
+    };
+  }
+  BP.stage("morph", make, { glow: false, overlays: false });
+
+  // the sound of a morph: a burst of plastic clicks under a soft whoosh
+  BP.voice("morph", (s, e, at) => {
+    const d = (e.dur || 2500) / 1000;
+    s.noise(at, d * 0.8, 0.03, 300, 2600, "lowpass", 0.7);
+    const n = Math.min(90, Math.floor(d / 0.045));
+    for (let i = 0; i < n; i++) {
+      const a = at + d * (0.15 + 0.8 * (i / n)) + s.rnd() * 0.03;
+      s.noise(a, 0.025, 0.045, 3600 + s.rnd() * 1800, 2400, "bandpass", 3);
+      s.tone(a, 1800 + s.rnd() * 600, 0.02, "triangle", 0.01);
+    }
+  });
+})();
+
+</script>
+<script>
+// ---- plugin: presenter.js
+// The presenter stage: one LEGO minifigure (lib/minifig.js) on a 4×4 plate,
+// lit like the brick stages, framed in its own rect. Gesture strengths (0..1,
+// tweened by actions/presenter.mjs) become joint angles here, as a pure
+// function of time. Pointing reads another stage's anchor, so create the
+// presenter after the stage it points at (it then sees that frame's camera).
+(function () {
+  const { clamp, EASE, TL } = BP;
+  const D2R = Math.PI / 180;
+  let MFK = null;
+
+  // smooth 0→1→0 envelope for a caption line, so talking eases in and out
+  function talking(t) {
+    let k = 0;
+    for (const n of TL.narration) if (t > n.t && t < n.t + n.dur) k = Math.max(k, clamp((t - n.t) / 300) * clamp((n.t + n.dur - t) / 300));
+    return k;
+  }
+
+  function Presenter(o) {
+    const THREE = BP.THREE;
+    MFK ||= minifigKit(THREE, TL.colors);
+    const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(26, o.w / o.h, 0.1, 200);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setPixelRatio(1); renderer.setSize(o.w, o.h, false); renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // the brick stages' light: a cool sky, a warm key with shadows, a blue rim
+    scene.add(new THREE.HemisphereLight(0xe8eeff, 0x1a2550, 1.6));
+    const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-10, 20, 14); key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024); const sc = key.shadow.camera; sc.left = sc.bottom = -12; sc.right = sc.top = 12; sc.near = 1; sc.far = 60;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x9fb8ff, 1.1); rim.position.set(8, 8, -14); scene.add(rim);
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.35 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.001; shadow.receiveShadow = true; scene.add(shadow);
+    // a 4×4 plate to stand on (a real part, from the shared brick kit)
+    const plate = BP.kit().brick({ part: "3031", x: -2, y: 0, z: -2, w: 4, d: 4, h: 1, kind: "plate", rot: 0 }, BP.plastic(o.plate ?? 72));
+    plate.position.copy(plate.userData.home); scene.add(plate);
+    const rig = MFK.build(o.look || {});
+    rig.root.position.y = BP.PLATE; scene.add(rig.root);
+    rig.root.scale.setScalar(0.9);
+    // the camera: a little above chest height, looking slightly down
+    const lookY = 2.1, dist = 15.5;
+    cam.position.set(0, lookY + 2.6, dist); cam.lookAt(0, lookY, 0); cam.updateProjectionMatrix();
+    // how far to walk so the figure starts just outside the rect
+    const halfW = Math.tan((cam.fov * D2R) / 2) * dist * cam.aspect;
+    const offstage = halfW + 2.5;
+
+    const api = {
+      canvas: renderer.domElement,
+      update(p, t) {
+        const sideSign = p.side === "right" ? 1 : -1;
+        const walk = clamp(p.walk ?? 1), moving = walk > 0 && walk < 1;
+        rig.root.position.x = (1 - walk) * offstage * sideSign;
+        rig.root.visible = walk > 0.001;
+        plate.visible = true;
+
+        // pointing: turn the body toward the target's screen side, raise the arm toward it
+        // pointing uses the arm on the target's side, swung out sideways at the
+        // target's angle from the shoulder, with the body and head turned toward it
+        let yaw = p.facing * D2R, pointElev = 0, pointRight = false;
+        const pt = p.point > 0 && p.pointAt ? target(p.pointAt) : null;
+        if (pt) {
+          const cx = p.x + p.w / 2, cy = p.y + p.h * 0.36;
+          const dx = pt[0] - cx, dy = pt[1] - cy;
+          pointRight = dx > 0; // the figure faces the camera: its left arm is on screen right
+          yaw += clamp(dx / 900, -1, 1) * 28 * D2R * EASE.inout(clamp(p.point));
+          pointElev = clamp(90 + (Math.atan2(-dy, Math.abs(dx)) * 180) / Math.PI, 25, 165); // from hanging
+        }
+        rig.root.rotation.y = yaw;
+
+        // walking: legs swing, arms counter-swing; whole steps so it settles at rest
+        const steps = 6, swing = moving ? Math.sin(walk * steps * Math.PI * 2) * 32 * D2R : 0;
+        rig.legs[0].rotation.x = -swing; rig.legs[1].rotation.x = swing;
+        const bobWalk = moving ? Math.abs(Math.sin(walk * steps * Math.PI * 2)) * 0.08 : 0;
+
+        // gestures → shoulder angles: x = raise forward (deg), z = raise out to the side (deg)
+        const talk = Math.max(clamp(p.talk), p.talkOnNarration ? talking(t) : 0);
+        const w = clamp(p.wave), pt0 = clamp(p.point), sh = clamp(p.shrug), nd = clamp(p.nod), th = clamp(p.think);
+        let rX = 0, rZ = 0, lX = 0, lZ = 0, wristR = 0;
+        // walking counter-swing
+        rX += -swing * 0.7 / D2R; lX += swing * 0.7 / D2R;
+        // wave: right arm up and out, rocking at the shoulder
+        rZ += w * (125 + 18 * Math.sin(t / 115)); rX += w * 20; wristR += w * 60;
+        // point: out to the side toward the target, a little forward so it reads
+        if (pointRight) { lZ += pt0 * pointElev; lX += pt0 * 18; }
+        else { rZ += pt0 * pointElev; rX += pt0 * 18; }
+        // shrug: both arms out a little, palms up
+        rZ += sh * 32; lZ += sh * 32; rX += sh * 28; lX += sh * 28;
+        // think: right hand to the chin
+        rX += th * 118; rZ += th * -22; wristR += th * 90;
+        // talk: the free hand gestures a little
+        lX += talk * (18 + 14 * Math.sin(t / 290));
+        rX += talk * (1 - Math.max(w, pointRight ? 0 : pt0, th)) * (10 + 8 * Math.sin(t / 340 + 1));
+        if (pointRight) lX -= talk * pt0 * (18 + 14 * Math.sin(t / 290)); // the pointing hand holds still
+        for (const arm of rig.arms) {
+          const right = arm.side === "r";
+          arm.sh.rotation.x = -(right ? rX : lX) * D2R;
+          arm.sh.rotation.z = (right ? -rZ : lZ) * D2R;
+          arm.wrist.rotation.y = (right ? wristR : 0) * D2R;
+        }
+        // head and upper body
+        rig.head.rotation.x = (nd * Math.sin(t / 150) * 16 + talk * Math.sin(t / 135) * 4 - th * 6) * D2R;
+        rig.head.rotation.z = (sh * 9 + th * 8) * D2R;
+        rig.head.rotation.y = pt ? (pointRight ? 0.45 : -0.45) * EASE.inout(pt0) : 0;
+        rig.upper.rotation.x = (-sh * 5 + talk * Math.sin(t / 420) * 1.5) * D2R;
+        rig.upper.rotation.z = (talk * Math.sin(t / 380) * 2 + Math.sin(t / 1300) * 0.8) * D2R;
+        rig.root.position.y = BP.PLATE + bobWalk + sh * 0.06 * Math.abs(Math.sin(t / 200));
+        rig.setFace(p.face || "smile");
+        renderer.render(scene, cam);
+      },
+    };
+    return api;
+  }
+
+  // a target in frame pixels: { obj, at } on a stage, { obj, col, row } on a stack, or { x, y }
+  function target(a) {
+    if (a.x != null && a.y != null && !a.obj) return [a.x, a.y];
+    const st = BP.STAGES[a.obj];
+    if (!st) return null;
+    if (a.at != null && st.anchor && st.anchors) return st.anchor(st.anchors[a.at], st.x, st.y);
+    if (st.project) return st.project(a.col, a.row, st.x, st.y);
+    return null;
+  }
+
+  BP.stage("presenter", Presenter, { overlays: false });
+})();
+
+</script>
+<script>
+// ---- plugin: voice.js
+// Spoken narration: plays the clips embedded by voice.build.mjs at their
+// timeline times, and a four-chord music bed that ducks under the voice.
+// Both run through the core's renderAudio, so the live page (Sound on) and
+// render.mjs's MP4 get the same mix, sample for sample.
+(function () {
+  if (!window.VOICE_CLIPS) return;
+  const BUF = {};
+  // decode every clip before the page starts
+  BP.ready.push(async () => {
+    const ctx = new OfflineAudioContext(1, 1, 48000);
+    await Promise.all(Object.entries(window.VOICE_CLIPS).map(async ([key, b64]) => {
+      const bin = atob(b64), bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      BUF[key] = await ctx.decodeAudioData(bytes.buffer);
+    }));
+  });
+
+  // a clip; `at` < 0 means the line started before this render range
+  BP.voice("clip", (s, e, at, ctx, out) => {
+    const b = BUF[e.clip];
+    if (!b) return;
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = b; g.gain.value = e.gain ?? 1;
+    src.connect(g).connect(out);
+    if (at >= 0) src.start(at);
+    else if (-at < b.duration) src.start(0, -at);
+  });
+
+  // effects dip under the voice too (the core's fx bus)
+  BP.audioHooks.push((ctx, { fx }, fromMs) => {
+    const off = fromMs / 1000, end = ctx.length / ctx.sampleRate;
+    for (const c of BP.TL.sounds) {
+      if (c.kind !== "clip") continue;
+      const a = c.t / 1000 - off, b = (c.t + c.long) / 1000 - off;
+      if (b < 0 || a > end) continue;
+      fx.gain.setTargetAtTime(0.5, Math.max(0, a - 0.15), 0.08);
+      fx.gain.setTargetAtTime(1, Math.max(0, b + 0.1), 0.25);
+    }
+  });
+  // the music bed: slow chords, ducked about 8 dB while anyone is speaking
+  const CHORDS = [[110, 164.81, 220, 261.63], [87.31, 130.81, 174.61, 220], [130.81, 196, 261.63, 329.63], [98, 146.83, 196, 246.94]];
+  const BAR = 8, DUCK = 0.4;
+  BP.voice("bed", (s, e, at, ctx, out) => {
+    const off = -at;                           // timeline seconds at ctx time 0
+    const end = ctx.length / ctx.sampleRate;   // ctx seconds available
+    const bus = ctx.createGain();
+    bus.gain.setValueAtTime(1, 0);
+    bus.connect(out);
+    // duck under every clip that overlaps this range
+    for (const c of BP.TL.sounds) {
+      if (c.kind !== "clip") continue;
+      const a = c.t / 1000 - off, b = (c.t + c.long) / 1000 - off;
+      if (b < 0 || a > end) continue;
+      bus.gain.setTargetAtTime(DUCK, Math.max(0, a - 0.15), 0.08);
+      bus.gain.setTargetAtTime(1, Math.max(0, b + 0.1), 0.25);
+    }
+    const pad = (start, f, dur, gain) => {
+      for (const [type, det] of [["sine", 0], ["triangle", 6], ["sine", -5]]) {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type; o.frequency.value = f; o.detune.value = det;
+        const t0 = Math.max(0, start), into = t0 - start; // already this far into the bar
+        g.gain.setValueAtTime(into > 1.6 ? gain : 0.0001, t0);
+        if (into < 1.6) g.gain.exponentialRampToValueAtTime(gain, start + 1.6);
+        if (start + dur - 1.6 > t0) g.gain.setValueAtTime(gain, start + dur - 1.6);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+        o.connect(g).connect(bus); o.start(t0); o.stop(start + dur + 0.05);
+      }
+    };
+    for (let b = Math.max(0, Math.floor(off / BAR) - 1); b * BAR - off < end; b++) {
+      const start = b * BAR - off, ch = CHORDS[b % CHORDS.length];
+      if (start + BAR + 1.5 < 0) continue;
+      for (const f of ch) pad(start, f, BAR + 1.5, 0.009);
+      pad(start, ch[0] / 2, BAR, 0.02);
+    }
+  });
+})();
+
+</script>
 <script>BP.start();</script>
 </body>
 </html>
