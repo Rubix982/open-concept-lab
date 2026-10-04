@@ -873,8 +873,46 @@ func clearFinalDataStatesInPostgres(mainCtx *colly.Context) error {
 		return fmt.Errorf("failed to update universities table: %w", err)
 	}
 
+	if err := applyCSRankingsCountries(db); err != nil {
+		return err
+	}
+
 	logger.Infof(mainCtx, "✅ Cleared final data states in Postgres successfully")
 
+	return nil
+}
+
+// applyCSRankingsCountries sets region and country code from CSRankings' country-info.csv for every
+// row whose name matches one of its institutions (ignoring punctuation and accents). CSRankings is the
+// authority for its own institutions; geocoding put some of them in the wrong country
+// ("Babeș Bolyai University" in the US while country-info spells it "Babeș-Bolyai University").
+func applyCSRankingsCountries(db *sql.DB) error {
+	f, err := os.Open(filepath.Join(getRootDirPath(DATA_DIR), COUNTRY_INFO_FILENAME))
+	if err != nil {
+		return fmt.Errorf("failed to open %s: %w", COUNTRY_INFO_FILENAME, err)
+	}
+	defer f.Close()
+	records, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read %s: %w", COUNTRY_INFO_FILENAME, err)
+	}
+	var names, regions, codes []string
+	for i, rec := range records {
+		if i == 0 || len(rec) < 3 || rec[2] == "" {
+			continue
+		}
+		names, regions, codes = append(names, rec[0]), append(regions, rec[1]), append(codes, strings.ToLower(rec[2]))
+	}
+	_, err = db.Exec(`
+		UPDATE universities u SET region = c.region, countryabbrv = c.code
+		FROM (SELECT DISTINCT ON (k) k, region, code FROM (
+		        SELECT institution_key(unaccent(n)) k, r region, c code
+		        FROM unnest($1::text[], $2::text[], $3::text[]) AS t(n, r, c)) x ORDER BY k) c
+		WHERE institution_key(unaccent(u.institution)) = c.k
+		  AND u.countryabbrv IS DISTINCT FROM c.code`, pq.Array(names), pq.Array(regions), pq.Array(codes))
+	if err != nil {
+		return fmt.Errorf("failed to apply CSRankings countries: %w", err)
+	}
 	return nil
 }
 
@@ -1430,6 +1468,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Load Funder Grants", loadFunderGrants},
 		{"Link Funder Grants", linkFunderGrants},
 		{"Load DBLP Papers", loadDblpPapers},
+		{"Link NSF Investigators By DBLP Affiliation", linkNsfByDblpAffiliation},
 		{"Load OpenAlex Works", loadOpenAlexWorks},
 		{"Build Explorer Tables", buildExplorerTables},
 		{"Embed Explorer Work", embedExplorerWork},

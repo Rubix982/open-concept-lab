@@ -14,9 +14,8 @@ Numbers in brackets are what the audit measured; re-measure after each item.
    - [x] Steps "Copy Labs" / "Copy Organizations" removed: they moved every `Inc`/`Llc` row out of
          `universities` (orphaning its awards) and filed Carnegie Institution / Mass General under CMU / MIT.
          `labs` and `organizations` tables are now unused; `institution_type` replaces them
-   - [ ] Known gaps: individuals as awardees (`Fu, Beverly`) land in `organization`;
-         research institutes (`Broad Institute`) and `University Corporation For Atmospheric Res` count as
-         `university` — IPEDS (item 5) can confirm US rows
+   - [x] Individuals awarded directly ("Rosales, Detbra") are `individual` (51); a bare "Institute" no longer
+         makes a university (Santa Fe, Broad → `organization`); degree-granting US institutes are promoted by IPEDS
 
 2. **Merge duplicate universities**
    [386 groups differing only in case/punctuation; step 15 fails on an FK violation:
@@ -42,10 +41,13 @@ Numbers in brackets are what the audit measured; re-measure after each item.
          Initial-only names need both. Linked per NSF id, so awards from earlier universities follow
    - [x] CSRankings name variants of one person ("Dawn Song" / "Dawn Xiaodong Song") grouped by scholar id / homepage
    - [x] → 916 faculty linked on 2025 data (848 with CSRankings publication data); samples reviewed, all correct
-   - [ ] 47 exact-name pairs stay unlinked: ~half are different people (two Eric Larsons), ~half moved
-         universities after CSRankings recorded them (Jiayu Zhou MSU → UMich) — nothing confirms them
-   - [ ] CSRankings name variants inflate counts: `professors` has 31,500 rows for 25,283 people
-   - [ ] Old dedup deleted `Ronald J. Brachman`; he is now kept (and his variants group by homepage)
+   - [x] Moved professors: step "Link NSF Investigators By DBLP Affiliation" links an unlinked investigator when
+         full name matches and an award institution is in the professor's DBLP current/former affiliations (104).
+         Remaining same-name pairs have no evidence and are left unlinked on purpose (different people)
+   - [x] Name variants: `professor_variants` groups CSRankings spellings (shared Scholar id, or homepage + same
+         first and last name); explorer shows one person (31,500 names → 25,722 people), grants and papers of all
+         spellings count
+   - [x] `Ronald J. Brachman` is kept (3 spellings, one explorer entry)
 
 4. **Load older NSF years**
    [2010–2025 on disk, 2.3 GB; config loaded 2025 only (`NSFAwardsStartYear`)]
@@ -53,12 +55,11 @@ Numbers in brackets are what the audit measured; re-measure after each item.
          full reload 7m55s (NSF load 4m). Indexes on `award.institution` etc. (migrations/10)
    - [x] Linkage: **4,961 of 6,882 US CSRankings faculty (72%)** have NSF awards (5,742 people overall);
          75% of awards are at a CSRankings university
-   - [ ] Remaining unlinked NSF universities are mostly not in CSRankings (Alaska Fairbanks, UNC Charlotte,
-         San Diego State, Howard, Villanova) — nothing to link to
-   - [ ] Decide: CSRankings has one `CUNY`; NSF has `Cuny City College`, `Cuny Queens College`, … Aliasing them
-         links faculty but collapses campuses into one map dot
-   - [ ] Small aliases left: `University Of Colorado At Denver-Downtown Campus`, `Southern Illinois University
-         At Carbondale`, `The University Corporation Northridge` (CSUN)
+   - [x] Remaining unlinked NSF universities are not in CSRankings (Alaska Fairbanks, UNC Charlotte, …): no faculty
+         to link, by design
+   - [x] CUNY: senior colleges and the Graduate Center alias to CSRankings' single `CUNY`; community colleges stay separate
+   - [x] Small aliases: CU Denver downtown → University of Colorado - Denver; CSUN's corporation → CSUN
+         (SIU Carbondale was already merged)
 
 5. **Use IPEDS records**
    [2023 parquet cache in `data/ipeds_cache/2023/`; ingest expected CSVs; nces.ed.gov unreachable]
@@ -72,10 +73,10 @@ Numbers in brackets are what the audit measured; re-measure after each item.
          (Caltech, Ucla, OHSU, NJIT, UNC Charlotte, …)
    - [x] → 179 of 198 US CSRankings universities and 136 of 146 R1s linked; no wrong merges
          (UNLV / UNR, Wichita State / WSU Tech stay separate)
-   - [ ] Campus-suffix names collide across campuses (Pitt-Pittsburgh vs Pitt-Johnstown → both
-         "University of Pittsburgh"), so Pitt, UNM, UNH, Kent State, Indiana stay unlinked — a small curated
-         IPEDS map (university → UNITID) would close the gap
-   - [ ] Some rows carry another campus's address (`University of Nevada` has a Las Vegas ZIP)
+   - [x] Campus-suffix collisions closed by `backup/ipeds_links.csv` (Pitt, UW, UNM, …; + IUPUI, LIU Post): every US
+         CSRankings university is linked to IPEDS
+   - [x] IPEDS-linked rows take IPEDS's address and coordinates (University of Nevada: Reno 89557)
+   - [x] CSRankings' `country-info.csv` sets the country of its own institutions (Babeș-Bolyai was US via geocoding)
    - [x] IPEDS fields in the university drawer (R1/R2, graduate tuition and enrollment)
 
 ## Student explorer (v1, "Advisor Atlas")
@@ -99,13 +100,8 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
       Falls back to keyword matching if the embedder or Qdrant is down. ~150 ms per search
 - [x] Map waits for all data (loading state, retry on error); old offline service worker replaced by a
       self-removing `sw.js` (browsers that cached the old app get the new one)
-- [ ] Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with
-      `|| ''` (detoast first) in semantic.go and explorer_api.go
-- [ ] Non-US universities have no tuition / R1 data (IPEDS is US-only)
 - [x] Explicit search (Enter / Search button); results view with Faculty, Grants (active by default,
       collaborative awards merged) and Universities tabs; map fits to matching universities (`/explorer/grants`)
-- [ ] Publishing: not deployed anywhere public yet
-- [ ] Europe: see "European funding data" below
 
 ## Also found
 
@@ -121,7 +117,7 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
       checks compare content, lost points are re-embedded. Qdrant 1.3 (4 GB) runs out of memory on large
       payload rewrites and scrolls, so these are paged small
 - [ ] Qdrant 1.3.0 is old and fragile under bulk updates; consider upgrading (needs a re-embed)
-- [ ] Semantic search (scraper → Qdrant) has no API route
+- [x] The old scraper's semantic search (no API route) is superseded by the explorer's goal search
 
 ## Done
 
@@ -152,12 +148,9 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [ ] KAKEN (Japan, throttled, non-profit terms, attribution), RGC Hong Kong (facts only)
 - [ ] Our CSRankings copy (Aug 2025, 31,500 rows) is behind upstream (per-letter `csrankings-[a-z].csv`,
       32,444 rows); step 1 should download the split files
-- [ ] France is thin in CSRankings itself (no Sorbonne / Paris-Saclay entries), so ANR links stay limited
 - [ ] `institution_key()` drops accented letters ("École" → "cole"); fixing it changes keys used by the
       merge steps, so it needs a full re-run from step 14
-- [ ] US STEM + medicine: NIH RePORTER, OpenAlex (key from the user), ~45 field areas
 - [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
-- [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)
 
 ## v1 state (2026-10-04, night)
 - Deployed locally: pipeline 23 steps, all succeeded. 15,667 faculty at 635 universities in 58 countries;
@@ -170,10 +163,22 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Shared links (?u=...) open the map on that university instead of the US
 - [ ] Share with 5–10 students and collect feedback (did it help them find someone to email? was the
       funding section useful?) before adding more data sources
-- [ ] Public deploy: ask the user first (hosting, domain, KAKEN/RGC terms if those are loaded)
+- [ ] Public deploy: planned for the week of 2026-10-12; ask the user first (hosting, domain, KAKEN/RGC terms if loaded)
 - [ ] OpenAlex v2: run `server/scripts/openalex/works.py`, deploy steps 21–23, re-embed papers with abstracts
-- [ ] Germany: no national funder data (DFG GEPRIS disallows crawling); ERC is the only signal there
 - [ ] Horizon Europe ERC PIs (PDF-only per call; panel PE6 = computer science)
-- [ ] Fields beyond computing (science, engineering, medicine) via OpenAlex + NIH RePORTER
+- [ ] Fields beyond computing (science, engineering, medicine, ~45 areas) via OpenAlex + NIH RePORTER
 - [ ] Semantic search for the paper list on the professor page (currently recency order)
+
+## Decisions
+- 2026-10-05: Israeli universities stay in the app (map, search, counts); the shareable overview page doesn't name Israel
+
+## Known limitations (not tasks)
+- Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with `|| ''`
+  (detoast first) in semantic.go and explorer_api.go. Remove once Postgres fixes it
+- Non-US universities have no tuition / R1 data (IPEDS is US-only)
+- France is thin in CSRankings itself (no Sorbonne / Paris-Saclay entries), so ANR links stay limited
+- Germany has no national grant data (DFG GEPRIS disallows collection); ERC is the only signal there
+- Funders not loaded, by decision: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallows
+  collection), Korea NTIS (key needs a Korean affiliation)
+- Same-name NSF investigators with no institution, email or DBLP-affiliation evidence stay unlinked on purpose
 

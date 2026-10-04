@@ -13,13 +13,44 @@ import (
 //   - explorer_universities: one row per university with such faculty — IPEDS facts
 //     (R1/R2, graduate tuition and enrollment) and faculty counts per area.
 const buildExplorerSQL = `
-TRUNCATE explorer_faculty, explorer_universities, explorer_work_docs;
+TRUNCATE explorer_faculty, explorer_universities, explorer_work_docs, professor_variants;
 
+-- One person, several CSRankings names ("Dylan A. Shell" / "Dylan Shell"). Names are one person when
+-- they share a Google Scholar id, or a homepage and both first and last name (a department homepage
+-- shared by colleagues doesn't merge them). The name with the most publications leads the group.
+CREATE TEMP TABLE x_names ON COMMIT DROP AS
+SELECT n.name, NULLIF(NULLIF(p.scholar_id, ''), 'NOSCHOLARPAGE') AS sid, NULLIF(p.homepage, '') AS hp,
+       t[1] AS first_tok, t[array_length(t, 1)] AS last_tok,
+       COALESCE((SELECT sum(pa.count) FROM professor_areas pa WHERE pa.name = n.name), 0) AS pubs
+FROM (SELECT name FROM professors UNION SELECT name FROM professor_areas) n
+LEFT JOIN (SELECT DISTINCT ON (name) name, scholar_id, homepage FROM professors ORDER BY name) p USING (name)
+CROSS JOIN LATERAL (SELECT person_name_tokens(n.name) AS t) tok;
+
+CREATE TEMP TABLE x_groups ON COMMIT DROP AS
+WITH g1 AS (
+  SELECT name, sid, pubs,
+         CASE WHEN hp IS NOT NULL AND first_tok IS NOT NULL THEN 'h:' || hp || '|' || first_tok || '|' || last_tok
+              ELSE 'n:' || name END AS k1
+  FROM x_names
+), g2 AS (
+  SELECT name, pubs, COALESCE('s:' || min(sid) OVER (PARTITION BY k1), k1) AS k2 FROM g1
+)
+SELECT name, g2.pubs, COALESCE('s:' || min(x.sid) OVER (PARTITION BY g2.k2), g2.k2) AS k
+FROM g2 JOIN x_names x USING (name);
+
+INSERT INTO professor_variants (name, canonical)
+SELECT name, first_value(name) OVER (PARTITION BY k ORDER BY pubs DESC, length(name) DESC, name)
+FROM x_groups;
+
+-- Per area, the most papers any of a person's names has (variants can be credited the same papers).
 CREATE TEMP TABLE x_pubs ON COMMIT DROP AS
-SELECT pa.name, v.area, sum(pa.count) AS pubs
-FROM professor_areas pa JOIN research_area_venues v ON v.venue = pa.area
-WHERE pa.year >= extract(year FROM current_date)::int - 10
-GROUP BY pa.name, v.area;
+SELECT pv.canonical AS name, z.area, max(z.pubs) AS pubs
+FROM (SELECT pa.name, v.area, sum(pa.count) AS pubs
+      FROM professor_areas pa JOIN research_area_venues v ON v.venue = pa.area
+      WHERE pa.year >= extract(year FROM current_date)::int - 10
+      GROUP BY pa.name, v.area) z
+JOIN professor_variants pv ON pv.name = z.name
+GROUP BY pv.canonical, z.area;
 
 -- A professor's university: CSRankings' current affiliation, else their most recent publication affiliation.
 CREATE TEMP TABLE x_aff ON COMMIT DROP AS
@@ -30,18 +61,20 @@ ORDER BY pa.name, (p.affiliation = pa.affiliation) DESC, pa.year DESC;
 -- Every grant of every linked professor: NSF (id = award id) and other funders
 -- (id = '<funder>:<grant id>'), each in its own currency.
 CREATE TEMP TABLE x_awards ON COMMIT DROP AS
-SELECT DISTINCT i.professor AS name, a.id, a.award_title_text, a.abstract, a.award_amount::numeric AS award_amount,
+SELECT DISTINCT COALESCE(pv.canonical, i.professor) AS name, a.id, a.award_title_text, a.abstract, a.award_amount::numeric AS award_amount,
        NULLIF(a.award_effective_date, '')::date AS starts, NULLIF(a.award_expiry_date, '')::date AS ends,
        'nsf'::text AS funder, 'USD'::text AS currency,
        'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || a.id AS url
 FROM nsf_investigators i
 JOIN award_pi_rel r ON r.nsf_id = i.nsf_id
 JOIN award a ON a.id = r.award_id
+LEFT JOIN professor_variants pv ON pv.name = i.professor
 WHERE i.professor IS NOT NULL
 UNION
-SELECT DISTINCT p.professor, g.funder || ':' || g.grant_id, g.title, g.abstract, g.amount,
+SELECT DISTINCT COALESCE(pv.canonical, p.professor), g.funder || ':' || g.grant_id, g.title, g.abstract, g.amount,
        g.starts, g.ends, g.funder, g.currency, g.url
 FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
+LEFT JOIN professor_variants pv ON pv.name = p.professor
 WHERE p.professor IS NOT NULL;
 
 INSERT INTO explorer_faculty (name, university, homepage, scholar_id, areas, area_pubs, recent_pubs,
@@ -84,9 +117,10 @@ FROM x_awards x WHERE x.name IN (SELECT name FROM explorer_faculty)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO explorer_work_docs (name, kind, ref, title, year, url, doc)
-SELECT p.name, 'paper', p.dblp_key, p.title, p.year, p.url,
+SELECT pv.canonical, 'paper', p.dblp_key, p.title, p.year, p.url,
        setweight(to_tsvector('english', p.title), 'A')
-FROM dblp_papers p WHERE p.name IN (SELECT name FROM explorer_faculty)
+FROM dblp_papers p JOIN professor_variants pv ON pv.name = p.name
+WHERE pv.canonical IN (SELECT name FROM explorer_faculty)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO explorer_universities (id, name, city, state, country, latitude, longitude, homepage, carnegie,
