@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
-import { INK_HEX, LINE_HEX } from "@/lines";
+import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
 import { areaIndex, areas } from "@/store";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
@@ -185,112 +185,135 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
 );
 
 const about = ref<HTMLDialogElement | null>(null);
+const pickerOpen = ref(false);
+
+function removeArea(area: string) {
+  selectedAreas.value = selectedAreas.value.filter((a) => a !== area);
+}
 </script>
 
 <template>
-  <div class="shell" :class="{ 'has-drawer': openUni }">
+  <div class="shell">
     <header class="top">
       <h1>Advisor Atlas</h1>
-      <p class="lede">
-        Find professors working on what you want to research, read what they're working on now, and see
-        whether they have grants that fund PhD students.
-      </p>
-      <button type="button" class="about-btn" @click="about?.showModal()">About the data</button>
+      <form class="search" role="search" @submit.prevent="submitGoal">
+        <label class="visually-hidden" for="goal">What do you want to research?</label>
+        <input
+          id="goal"
+          v-model="goalInput"
+          type="search"
+          enterkeyhint="search"
+          autocomplete="off"
+          placeholder="What do you want to research? For example: mechanistic interpretability"
+        />
+        <button type="submit">Search</button>
+      </form>
+      <button type="button" class="info" aria-label="About the data" title="About the data" @click="about?.showModal()">
+        i
+      </button>
     </header>
 
-    <main class="panel" aria-label="Search">
-      <section class="step">
-        <h2 class="step-title"><span class="n">1</span> Pick research areas</h2>
-        <p v-if="!areas.length" class="hint">Loading areas</p>
-        <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
-      </section>
+    <div class="filters">
+      <button
+        type="button"
+        class="filter-btn"
+        :class="{ on: pickerOpen }"
+        :aria-expanded="pickerOpen"
+        aria-controls="area-picker"
+        @click="pickerOpen = !pickerOpen"
+      >
+        Research areas<template v-if="selectedAreas.length"> ({{ selectedAreas.length }})</template>
+      </button>
+      <span v-for="a in selectedAreas" :key="a" class="chip" :style="{ '--c': LINE_COLOR[areaIndex.get(a)?.group ?? ''] }">
+        {{ areaIndex.get(a)?.name ?? a }}
+        <button type="button" :aria-label="`Remove ${areaIndex.get(a)?.name ?? a}`" @click="removeArea(a)">×</button>
+      </span>
+      <span v-if="!selectedAreas.length" class="filter-hint">All areas</span>
+      <span v-if="goal" class="goal-chip">
+        Results for <strong>“{{ goal }}”</strong>&nbsp;
+        <button type="button" class="link" @click="clearGoal">Clear search</button>
+      </span>
+    </div>
 
-      <section class="step">
-        <h2 class="step-title"><span class="n">2</span> Describe your research goal</h2>
-        <form class="goal-form" role="search" @submit.prevent="submitGoal">
-          <label class="visually-hidden" for="goal">Your research goal</label>
-          <input
-            id="goal"
-            v-model="goalInput"
-            type="search"
-            enterkeyhint="search"
-            autocomplete="off"
-            placeholder="e.g. mechanistic interpretability"
-          />
-          <button type="submit" class="search-btn">Search</button>
-        </form>
-        <p v-if="goal" class="active-goal">
-          Showing results for <strong>“{{ goal }}”</strong>.
-          <button type="button" class="link" @click="clearGoal">Clear search</button>
-        </p>
-        <p class="hint">
-          Optional. Press Enter to search. Matched by meaning against professors' NSF grants and recent papers,
-          so your own words work.
-        </p>
-      </section>
-
-    </main>
+    <div v-if="pickerOpen" id="area-picker" class="picker-pop">
+      <p v-if="!areas.length" class="hint">Loading areas</p>
+      <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
+      <div class="picker-actions">
+        <button v-if="selectedAreas.length" type="button" class="link" @click="selectedAreas = []">Clear areas</button>
+        <button type="button" class="done" @click="pickerOpen = false">Done</button>
+      </div>
+    </div>
 
     <section v-show="!openUni" class="results" aria-label="Results">
-        <h2 class="step-title"><span class="n">3</span> {{ goal ? "Results" : "Compare" }}</h2>
-        <p class="summary" aria-live="polite">
-          {{ summary }}<template v-if="selectedNames.length"> in {{ selectedNames.join(", ") }}</template>.
-          <button v-if="selectedAreas.length || goal" type="button" class="link" @click="clearAll">Clear</button>
+      <template v-if="ready && !goal && !selectedAreas.length">
+        <p class="intro">
+          Search for what you want to research to find professors working on it, the grants funding that work,
+          and the universities where they are. Narrow by research area at any time.
         </p>
-        <p v-if="error && ready" class="error">{{ error }}</p>
-        <p v-if="!ready && !error" class="hint">Loading</p>
+      </template>
+      <p class="summary" aria-live="polite">
+        {{ summary }}<template v-if="selectedNames.length"> in {{ selectedNames.join(", ") }}</template>.
+        <button v-if="selectedAreas.length || goal" type="button" class="link" @click="clearAll">Clear all</button>
+      </p>
+      <p v-if="error && ready" class="error">{{ error }}</p>
+      <p v-if="!ready && !error" class="hint">Loading</p>
 
-        <div v-if="ready" class="tabs" role="tablist">
-          <button
-            v-for="t in tabs"
-            :key="t.id"
-            role="tab"
-            type="button"
-            :aria-selected="tab === t.id"
-            @click="tab = t.id"
-          >
-            {{ t.label }}
+      <div v-if="ready" class="tabs" role="tablist">
+        <button
+          v-for="t in tabs"
+          :key="t.id"
+          role="tab"
+          type="button"
+          :aria-selected="tab === t.id"
+          @click="tab = t.id"
+        >
+          {{ t.label }}
+        </button>
+      </div>
+
+      <ol v-if="ready && tab === 'universities'" class="uni-list">
+        <li v-for="u in rankedUniversities" :key="u.id">
+          <button type="button" :class="{ on: u.id === openUni }" @click="openUniversity(u.id)">
+            <span class="uni-name">{{ u.name }}</span>
+            <span v-if="u.carnegie" class="r-badge">{{ u.carnegie }}</span>
+            <span class="uni-meta">
+              <template v-if="goal">{{ u.goal_matches }} matching, </template>
+              {{ u.faculty }} {{ selectedAreas.length ? "in your areas" : "faculty" }},
+              {{ u.funded }} funded
+            </span>
           </button>
-        </div>
+        </li>
+      </ol>
 
-        <ol v-if="ready && tab === 'universities'" class="uni-list">
-          <li v-for="u in rankedUniversities" :key="u.id">
-            <button type="button" :class="{ on: u.id === openUni }" @click="openUniversity(u.id)">
-              <span class="uni-name">{{ u.name }}</span>
-              <span v-if="u.carnegie" class="r-badge">{{ u.carnegie }}</span>
-              <span class="uni-meta">
-                <template v-if="goal">{{ u.goal_matches }} matching, </template>
-                {{ u.faculty }} {{ selectedAreas.length ? "in your areas" : "faculty" }},
-                {{ u.funded }} funded
-              </span>
-            </button>
-          </li>
-        </ol>
-
-        <template v-else-if="ready && tab === 'grants'">
-          <label class="toggle">
-            <input v-model="includePastGrants" type="checkbox" />
-            Include grants that have ended
-          </label>
-          <p v-if="grantsLoading" class="hint">Searching NSF grants</p>
-          <p v-else-if="!grants.length" class="hint">
-            No {{ includePastGrants ? "" : "active " }}NSF grants match. Try other words, or include ended grants.
-          </p>
-          <ul class="grant-list">
-            <GrantRow v-for="g in grants" :key="g.id" :grant="g" @open-person="openProfessorFromList" />
-          </ul>
-        </template>
-
-        <ul v-else-if="ready" class="fac-list">
-          <FacultyRow
-            v-for="f in faculty"
-            :key="f.name"
-            :person="f"
-            :selected-areas="selectedAreas"
-            show-university
-            @open="openProfessorFromList"
-          />
+      <template v-else-if="ready && tab === 'grants'">
+        <label class="toggle">
+          <input v-model="includePastGrants" type="checkbox" />
+          Include grants that have ended
+        </label>
+        <p v-if="grantsLoading" class="hint">Searching grants</p>
+        <p v-else-if="!grants.length" class="hint">
+          No {{ includePastGrants ? "" : "active " }}grants match. Try other words, or include ended grants.
+        </p>
+        <ul class="grant-list">
+          <GrantRow v-for="g in grants" :key="g.id" :grant="g" @open-person="openProfessorFromList" />
         </ul>
+      </template>
+
+      <ul v-else-if="ready" class="fac-list">
+        <FacultyRow
+          v-for="f in faculty"
+          :key="f.name"
+          :person="f"
+          :selected-areas="selectedAreas"
+          show-university
+          @open="openProfessorFromList"
+        />
+      </ul>
+
+      <footer class="foot">
+        Data from CSRankings, NSF, IPEDS and DBLP.
+        <button type="button" class="link" @click="about?.showModal()">About the data</button>
+      </footer>
     </section>
 
     <div class="map-wrap">
@@ -319,7 +342,7 @@ const about = ref<HTMLDialogElement | null>(null);
         @select="openUniversity($event)"
       />
       <p v-if="ready" class="legend">
-        Dot size: {{ goal ? "faculty matching your goal" : "faculty in your areas" }}. Heavy ring: R1 university.
+        Dot size: {{ goal ? "faculty matching your search" : "faculty in your areas" }}. Heavy ring: R1 university.
       </p>
     </div>
 
@@ -351,7 +374,7 @@ const about = ref<HTMLDialogElement | null>(null);
         Education's IPEDS survey, so they're shown for US universities only.
       </p>
       <p>
-        Goal matching compares the meaning of your goal with each professor's grant abstracts and paper titles,
+        Search compares the meaning of what you type with each professor's grant abstracts and paper titles,
         and favours recent work. It's a starting point: read a professor's own page and recent papers before
         writing to them.
       </p>
@@ -363,21 +386,23 @@ const about = ref<HTMLDialogElement | null>(null);
 <style scoped>
 .shell {
   display: grid;
-  grid-template-columns: var(--panel-w) 1fr var(--drawer-w);
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr var(--drawer-w);
+  grid-template-rows: auto auto 1fr;
   grid-template-areas:
-    "top top top"
-    "panel map side";
+    "top top"
+    "filters filters"
+    "map side";
   height: 100vh;
   height: 100dvh;
+  position: relative;
 }
 
 .top {
   grid-area: top;
   display: flex;
-  align-items: baseline;
-  gap: 20px;
-  padding: 14px 24px 12px;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 20px;
   background: var(--ink);
   color: #fff;
 }
@@ -389,34 +414,142 @@ h1 {
   white-space: nowrap;
 }
 
-.lede {
-  font-size: var(--t-xs);
-  color: #c9d1da;
-  max-width: 72ch;
+.search {
+  flex: 1;
+  max-width: 760px;
+  display: flex;
 }
 
-.about-btn {
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: var(--radius-box) 0 0 var(--radius-box);
+  padding: 9px 13px 8px;
+  font-size: var(--t-md);
+  color: var(--ink);
+  background: #fff;
+}
+
+.search input:focus-visible {
+  outline: 3px solid var(--line-ai);
+  outline-offset: 0;
+}
+
+.search button {
+  border: 0;
+  border-radius: 0 var(--radius-box) var(--radius-box) 0;
+  background: var(--line-ai);
+  color: #fff;
+  font-weight: 800;
+  padding: 0 18px;
+}
+
+.info {
   margin-left: auto;
-  border: 1.5px solid #6b7887;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid #8794a3;
   background: transparent;
   color: #fff;
+  font-weight: 800;
+  font-size: var(--t-xs);
+  padding: 2px 0 0;
+  flex: none;
+}
+
+.filters {
+  grid-area: filters;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  padding: 8px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+  min-height: 46px;
+}
+
+.filter-btn {
+  white-space: nowrap;
+  border: 1.5px solid var(--ink);
+  background: var(--surface);
   border-radius: var(--radius-pill);
   padding: 3px 12px 2px;
   font-size: var(--t-xs);
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.filter-btn.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.chip {
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--c);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 3px 4px 2px 10px;
+  font-size: var(--t-xs);
+  font-weight: 700;
 }
 
-.panel {
-  grid-area: panel;
+.chip button {
+  border: 0;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.filter-hint {
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+.goal-chip {
+  margin-left: auto;
+  font-size: var(--t-xs);
+}
+
+.picker-pop {
+  position: absolute;
+  z-index: 20;
+  top: var(--picker-top, 104px);
+  left: 12px;
+  width: min(720px, calc(100vw - 24px));
+  max-height: calc(100vh - 130px);
   overflow-y: auto;
-  background: var(--paper);
-  border-right: 1px solid var(--rule);
-  padding: 18px 22px 40px;
+  background: var(--surface);
+  border-radius: var(--radius-box);
+  box-shadow: 0 6px 28px rgba(29, 42, 58, 0.25);
+  padding: 16px 18px 12px;
 }
 
-.step + .step {
-  margin-top: 20px;
+.picker-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.done {
+  border: 0;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 4px 16px 3px;
+  font-weight: 700;
 }
 
 .results {
@@ -424,75 +557,15 @@ h1 {
   overflow-y: auto;
   background: var(--surface);
   border-left: 1px solid var(--rule);
-  padding: 18px 22px 40px;
+  padding: 16px 22px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.step-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.intro {
   font-size: var(--t-md);
-  font-weight: 800;
+  line-height: 1.5;
   margin-bottom: 12px;
-}
-
-/* Step numbers read as stations along the panel. */
-.n {
-  display: inline-grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2.5px solid var(--ink);
-  font-size: var(--t-xs);
-  font-weight: 800;
-  padding-top: 2px;
-}
-
-.goal-form {
-  display: flex;
-  gap: 6px;
-}
-
-.goal-form input {
-  flex: 1;
-  min-width: 0;
-  border: 1.5px solid var(--rule-strong);
-  border-radius: var(--radius-box);
-  background: var(--surface);
-  padding: 8px 11px 7px;
-}
-
-.goal-form input:focus-visible {
-  outline-offset: 0;
-}
-
-.search-btn {
-  border: 0;
-  background: var(--ink);
-  color: #fff;
-  border-radius: var(--radius-box);
-  padding: 0 14px;
-  font-weight: 700;
-}
-
-.active-goal {
-  margin-top: 8px;
-  font-size: var(--t-xs);
-}
-
-.toggle {
-  display: flex;
-  gap: 7px;
-  align-items: center;
-  margin: 10px 0 2px;
-  font-size: var(--t-xs);
-  font-weight: 600;
-}
-
-.grant-list {
-  margin: 0;
-  padding: 0;
 }
 
 .hint {
@@ -536,8 +609,18 @@ h1 {
   color: #fff;
 }
 
+.toggle {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin: 10px 0 2px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
 .uni-list,
-.fac-list {
+.fac-list,
+.grant-list {
   margin: 0;
   padding: 0;
 }
@@ -580,6 +663,18 @@ h1 {
 .uni-meta {
   grid-column: 1 / -1;
   font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.foot {
+  margin-top: auto;
+  padding-top: 18px;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.foot .link {
+  font-weight: 600;
   color: var(--ink-soft);
 }
 
@@ -692,7 +787,7 @@ h1 {
   font-weight: 700;
 }
 
-/* Phones and narrow windows: map on top, panel below, drawer covers the screen. */
+/* Phones and narrow windows: search, filters, map, then results; drawer covers the screen. */
 @media (max-width: 900px) {
   .shell {
     display: flex;
@@ -700,53 +795,53 @@ h1 {
     height: auto;
   }
 
+  .top {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 14px;
+  }
+
+  .search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 8px 14px;
+  }
+
+  .goal-chip {
+    white-space: nowrap;
+  }
+
   .map-wrap {
     order: 1;
-  }
-
-  .panel {
-    order: 2;
-  }
-
-  .results {
-    order: 3;
-  }
-
-  .map-wrap {
     height: 42vh;
   }
 
-  .panel,
   .results {
+    order: 2;
     overflow: visible;
-  }
-
-  .results {
     border-left: 0;
     border-top: 1px solid var(--rule);
-    padding: 16px 16px 40px;
+    padding: 14px 14px 20px;
+  }
+
+  .picker-pop {
+    position: fixed;
+    inset: 0;
+    width: auto;
+    max-height: none;
+    border-radius: 0;
   }
 
   .legend {
     font-size: 0.75rem;
     top: 8px;
     left: 8px;
-  }
-
-  .top {
-    flex-wrap: wrap;
-    gap: 4px 12px;
-    padding: 12px 16px;
-  }
-
-  .lede {
-    order: 3;
-    flex-basis: 100%;
-  }
-
-  .panel {
-    padding: 16px 16px 40px;
-    border-right: 0;
   }
 
   .drawer-slot {
