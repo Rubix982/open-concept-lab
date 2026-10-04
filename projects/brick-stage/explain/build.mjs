@@ -38,6 +38,17 @@ if (brickStages.length) {
   tl.meshes = {};
   for (const id of meshIds) tl.meshes[id] = { tri: (await partMesh(id)).tri, center: PARTS[id].center || [0, 0] };
 }
+// plugins: lib/plugins/*.js are inlined after the core player; a matching
+// *.build.mjs may check or extend the timeline and return extra <script>s
+const pluginDir = path.join(here, "lib", "plugins");
+const pluginFiles = (await fs.readdir(pluginDir).catch(() => [])).sort();
+const plugins = [], extraHead = [];
+for (const f of pluginFiles.filter((f) => f.endsWith(".js"))) plugins.push(`// ---- plugin: ${f}\n` + (await fs.readFile(path.join(pluginDir, f), "utf8")));
+for (const f of pluginFiles.filter((f) => f.endsWith(".build.mjs"))) {
+  const mod = await import(pathToFileURL(path.join(pluginDir, f)).href);
+  const extra = await mod.build?.(tl, { here, log: (m) => console.log(`  ${m}`) });
+  if (extra) extraHead.push(extra);
+}
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 const html = `<!doctype html>
@@ -80,9 +91,12 @@ const html = `<!doctype html>
 <script>
 ${bricksKit}
 </script>
+${extraHead.join("\n")}
 <script>
 ${player}
 </script>
+${plugins.map((p) => `<script>\n${p}\n</script>`).join("\n")}
+<script>BP.start();</script>
 </body>
 </html>
 `;

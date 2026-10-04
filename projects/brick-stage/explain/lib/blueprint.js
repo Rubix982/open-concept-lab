@@ -212,12 +212,16 @@ function Stack(o) {
 // shaded as plastic under a soft key light, assembling in build order.
 let KIT = null, ADDONS = null;
 const PLATE = 0.4;
+// the shared LEGO kit and plastic materials, for any stage that draws bricks
+function kit() { return (KIT ||= brickKit({ THREE, RoundedBoxGeometry: ADDONS.RoundedBoxGeometry, toCreasedNormals: ADDONS.toCreasedNormals, meshes: TL.meshes || {}, PLATE })); }
+const MATS = new Map();
+function plastic(c) { if (!MATS.has(c)) MATS.set(c, new THREE.MeshStandardMaterial({ color: (TL.colors[c] || TL.colors[71])[2], roughness: 0.28, metalness: 0 })); return MATS.get(c); }
 function Bricks(o) {
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 30, o.w / o.h, 0.1, 500);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1); renderer.setSize(o.w, o.h, false); renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  KIT ||= brickKit({ THREE, RoundedBoxGeometry: ADDONS.RoundedBoxGeometry, toCreasedNormals: ADDONS.toCreasedNormals, meshes: TL.meshes || {}, PLATE });
+  KIT ||= kit();
   scene.add(new THREE.HemisphereLight(0xe8eeff, 0x1a2550, 1.6));
   const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-18, 34, 22); key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048); const sc = key.shadow.camera; sc.left = sc.bottom = -40; sc.right = sc.top = 40; sc.near = 1; sc.far = 120;
@@ -227,8 +231,7 @@ function Bricks(o) {
   const center = new THREE.Vector3(W / 2, 0, -D / 2);
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.ShadowMaterial({ opacity: 0.35 }));
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.001; shadow.receiveShadow = true; scene.add(shadow);
-  const mats = new Map();
-  const mat = (c) => { if (!mats.has(c)) mats.set(c, new THREE.MeshStandardMaterial({ color: (TL.colors[c] || TL.colors[71])[2], roughness: 0.28, metalness: 0 })); return mats.get(c); };
+  const mat = plastic;
   // hide studs covered by a part sitting on them
   const occ = new Set();
   for (const p of o.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
@@ -264,14 +267,18 @@ function Bricks(o) {
 }
 
 // ---- object types
+const STAGE_KINDS = { stack: Stack, bricks: Bricks };
+Stack.glow = true; Stack.overlays = true;
 const DRAW = {
 
   stage3d(ctx, p, t, obj) {
-    const st = STAGES[obj.id] || (STAGES[obj.id] = p.kind === "bricks" ? Bricks({ ...p }) : Stack({ ...p }));
+    const make = STAGE_KINDS[p.kind || "stack"];
+    if (!make) throw new Error(`no 3D stage kind "${p.kind}" (is its plugin built in?)`);
+    const st = STAGES[obj.id] || (STAGES[obj.id] = make({ ...p }));
     st.update(p, t, obj.born);
     st.x = p.x; st.y = p.y; st.anchors = p.anchors;
     ctx.save();
-    if (p.kind !== "bricks") { // line art glows: a blurred additive copy under the sharp one
+    if (make.glow) { // line art glows: a blurred additive copy under the sharp one
       ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
       ctx.drawImage(st.canvas, p.x, p.y, p.w, p.h);
       ctx.filter = "none"; ctx.globalCompositeOperation = "source-over";
@@ -279,7 +286,7 @@ const DRAW = {
     ctx.globalAlpha = ctx._alpha;
     ctx.drawImage(st.canvas, p.x, p.y, p.w, p.h);
     ctx.restore();
-    if (p.kind === "bricks") return;
+    if (!make.overlays) return;
     // what the highlighted column would say at each plate, pinned beside it
     if (p.labels && p.hiCol >= 0) {
       ctx.font = `500 15px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
@@ -605,6 +612,7 @@ function background(ctx, t) {
   for (let y = 120; y < H - 100; y += 20) { const w = y % 100 === 0 ? 8 : 4; ctx.beginPath(); ctx.moveTo(W - m, y); ctx.lineTo(W - m - w, y); ctx.stroke(); }
 }
 
+const AFTER = [];
 function frame(ctx, t) {
   ctx.save();
   background(ctx, t);
@@ -626,6 +634,7 @@ function frame(ctx, t) {
     DRAW[obj.type](ctx, p, t, obj);
     ctx.restore();
   }
+  for (const f of AFTER) f(ctx, t);
   // fade in from black, out at the end
   const f = Math.max(clamp(1 - t / 600), clamp((t - (DUR - 700)) / 700));
   if (f > 0) { ctx.fillStyle = `rgba(3,6,18,${f})`; ctx.fillRect(0, 0, W, H); }
@@ -690,7 +699,9 @@ async function renderAudio(fromMs, toMs, rate = 48000) {
   master.gain.value = 0.9; master.connect(ctx.destination);
   const s = synth(ctx, master);
   if (TL.meta.music !== false) music(s, fromMs, toMs);
-  for (const e of TL.sounds) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000);
+  for (const e of TL.sounds) if (e.t >= fromMs && e.t < toMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000, ctx, master);
+  // voices that start before the range but are still sounding (long clips)
+  for (const e of TL.sounds) if (e.t < fromMs && e.long && e.t + e.long > fromMs) VOICE[e.kind]?.(s, e, (e.t - fromMs) / 1000, ctx, master);
   return ctx.startRendering();
 }
 function wavBase64(buf, n) {
@@ -762,21 +773,41 @@ window.__narration = TL.narration;
 window.__renderAudio = async (fromMs, toMs, rate = 48000) => wavBase64(await renderAudio(fromMs, toMs, rate), Math.round(((toMs - fromMs) / 1000) * rate));
 
 const fonts = [`600 38px ${SANS}`, `500 16px ${SANS}`, `500 16px ${MONO}`, `600 16px ${MONO}`, `400 16px ${MONO}`];
-const needs3d = TL.objects.some((o) => o.type === "stage3d");
-const needsBricks = TL.objects.some((o) => o.type === "stage3d" && o.props.kind === "bricks");
-const three = needs3d ? import("three").then(async (m) => {
-  THREE = m;
-  if (needsBricks) {
-    const [rb, bu] = await Promise.all([import("three/addons/geometries/RoundedBoxGeometry.js"), import("three/addons/utils/BufferGeometryUtils.js")]);
-    ADDONS = { RoundedBoxGeometry: rb.RoundedBoxGeometry, toCreasedNormals: bu.toCreasedNormals };
-  }
-}) : Promise.resolve();
-Promise.all([three, ...fonts.map((f) => document.fonts.load(f).catch(() => {}))]).then(() => {
-  window.__renderAt = (ms) => { document.body.classList.add("render"); draw(ms); };
-  controls();
-  draw(0);
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!reduced && !/[?&]paused\b/.test(location.search)) play();
-  else draw(Math.min(DUR, 9000));
-});
+// ---- the plugin API (explain/lib/plugins/*.js): new draw types, 3D stage
+// kinds, sound voices, after-frame hooks, and work to finish before start
+window.BP = {
+  TL, W, H, DUR, C, color, MONO, SANS, ADV, clamp, EASE, hash, GLYPHS, glow, noGlow, roundRect, partial, at, smooth, arrowHead, visText, chipLayout, propsAt,
+  DRAW, STAGES, STAGE_KINDS, VOICE, AFTER, PLATE,
+  get THREE() { return THREE; }, get ADDONS() { return ADDONS; },
+  kit, plastic, Bricks, Stack,             // the LEGO kit (brick(p, material)), plastic(colorCode), the built-in stages
+  threeTypes: new Set(["stage3d"]),       // object types that need three.js
+  ready: [],                              // functions returning promises, run after three.js loads
+  /** register(type, draw): a 2D object type, draw(ctx, props, t, obj) */
+  register(type, fn) { if (DRAW[type]) throw new Error(`draw type "${type}" exists`); DRAW[type] = fn; },
+  /** stage(kind, make): a 3D stage kind; make(props) → { canvas, update(p, t, born), anchor?(a, x0, y0), project?() } */
+  stage(kind, make, flags = {}) { STAGE_KINDS[kind] = Object.assign(make, flags); },
+  /** voice(name, fn): a sound; fn(synth, event, atSeconds) */
+  voice(name, fn) { VOICE[name] = fn; },
+};
+BP.start = function start() {
+  const needs3d = TL.objects.some((o) => BP.threeTypes.has(o.type));
+  const needsBricks = TL.objects.some((o) => o.type === "stage3d" && o.props.kind !== "stack");
+  const three = needs3d ? import("three").then(async (m) => {
+    THREE = m;
+    if (needsBricks) {
+      const [rb, bu] = await Promise.all([import("three/addons/geometries/RoundedBoxGeometry.js"), import("three/addons/utils/BufferGeometryUtils.js")]);
+      ADDONS = { RoundedBoxGeometry: rb.RoundedBoxGeometry, toCreasedNormals: bu.toCreasedNormals };
+    }
+  }) : Promise.resolve();
+  Promise.all([three, ...fonts.map((f) => document.fonts.load(f).catch(() => {}))])
+    .then(() => Promise.all(BP.ready.map((f) => f())))
+    .then(() => {
+      window.__renderAt = (ms) => { document.body.classList.add("render"); draw(ms); };
+      controls();
+      draw(0);
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduced && !/[?&]paused\b/.test(location.search)) play();
+      else draw(Math.min(DUR, 9000));
+    });
+};
 })();

@@ -13,7 +13,18 @@
 // duration, except inside together(), where actions start at the same time
 // and the clock moves on by the longest. Positions are in a 1920×1080 frame.
 
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
 const WPM = 175; // narration reading pace
+
+// Extensions: every explain/lib/actions/*.mjs exports install(s, api) and adds
+// verbs to the clock — s.morph(), s.math()... api = { add, span, need, tl, clock }.
+const actionsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "actions");
+const ACTIONS = fs.existsSync(actionsDir)
+  ? await Promise.all(fs.readdirSync(actionsDir).filter((f) => f.endsWith(".mjs")).sort().map((f) => import(pathToFileURL(path.join(actionsDir, f)).href)))
+  : [];
 
 export function explainer(meta, write) {
   const tl = { meta: { w: 1920, h: 1080, ...meta }, objects: [], tweens: [], sounds: [], narration: [] };
@@ -131,6 +142,7 @@ export function explainer(meta, write) {
     };
     /** A sound cue: tick, draw, chime, glitch, whoosh, thud, rise. */
     s.sfx = (kind, o = {}) => { tl.sounds.push({ t: s.t, kind, ...o }); return s; };
+    for (const m of ACTIONS) m.install(s, { add, span, need, tl, clock, ids });
     return s;
   }
 
