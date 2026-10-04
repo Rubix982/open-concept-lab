@@ -5,18 +5,19 @@ import { LINE_COLOR, formatMoney, formatYear, webUrl } from "@/lines";
 import { areaIndex, funderName, fundersFor } from "@/store";
 import { countryName } from "@/countries";
 
-const props = defineProps<{ name: string; backLabel: string }>();
+const props = defineProps<{ name: string; backLabel: string; goal?: string }>();
 defineEmits<{ back: [] }>();
 
 const person = ref<Faculty | null>(null);
 const awards = ref<Award[]>([]);
 const papers = ref<Paper[] | null>(null);
+const matchedPapers = computed(() => (props.goal ? (papers.value ?? []).filter((p) => p.match).length : 0));
 const dblpUrl = ref("");
 const error = ref("");
 
 watch(
-  () => props.name,
-  async (name) => {
+  () => [props.name, props.goal ?? ""] as const,
+  async ([name, goal]) => {
     person.value = null;
     papers.value = null;
     error.value = "";
@@ -29,7 +30,7 @@ watch(
       return;
     }
     api
-      .papers(name)
+      .papers(name, goal)
       .then((r) => {
         papers.value = r.papers;
         dblpUrl.value = r.dblp_url;
@@ -93,7 +94,11 @@ function untilLabel(date: string | null): string {
 
       <section>
         <h3>Research areas</h3>
-        <p class="hint">Papers at top venues in the last 10 years, from CSRankings</p>
+        <p v-if="person.source === 'openalex'" class="hint">
+          Papers since 2021, from OpenAlex. Listed as a researcher at this university by OpenAlex; check their
+          department page to confirm they supervise PhD students.
+        </p>
+        <p v-else class="hint">Papers at top venues in the last 10 years, from CSRankings</p>
         <ul class="areas">
           <li v-for="a in areaList" :key="a.area" :style="{ '--c': a.color }">
             <span class="area-name">{{ a.name }}</span>
@@ -122,11 +127,14 @@ function untilLabel(date: string | null): string {
       </section>
 
       <section>
-        <h3>Recent papers</h3>
+        <h3>{{ matchedPapers ? "Papers closest to your search" : "Recent papers" }}</h3>
+        <p v-if="matchedPapers" class="hint">
+          {{ matchedPapers }} of their recent papers match “{{ goal }}”; the rest follow, newest first.
+        </p>
         <p v-if="papers === null" class="hint">Loading papers</p>
         <p v-else-if="!papers.length" class="hint">No recent papers loaded for this professor yet.</p>
         <ol v-else class="papers">
-          <li v-for="p in papers" :key="p.title">
+          <li v-for="p in papers" :key="p.title" :class="{ matched: p.match }">
             <a v-if="webUrl(p.url)" :href="webUrl(p.url)" target="_blank" rel="noopener">{{ p.title }}</a>
             <span v-else>{{ p.title }}</span>
             <span class="meta">{{ p.venue }} {{ p.year }}</span>
@@ -235,6 +243,11 @@ h3 {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.papers li.matched {
+  border-left: 3px solid var(--line-ai);
+  padding-left: 10px;
 }
 
 .papers li,

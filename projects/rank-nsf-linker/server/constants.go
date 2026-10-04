@@ -24,8 +24,10 @@ const (
 	EMBEDDER_SCRIPT       = "embedder.py"
 
 	// URLs
-	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/master/"
-	NSFURLPrefix          = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
+	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/gh-pages/"
+
+	CSRANKINGS_INSTITUTIONS_FILENAME = "institutions.csv"
+	NSFURLPrefix                     = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
 	// Data Fetching Configuration
 	NSFAwardsStartYear = 2010
@@ -37,12 +39,12 @@ const (
 	IPEDSLatestYear          = 2024
 )
 
+// Files downloaded as-is from CSRankings (country-info.csv is written from institutions.csv;
+// geolocation.csv is no longer published).
 var CSVURLs = []string{
 	CSRANKINGS_FILENAME,
 	GEN_AUTHOR_FILENAME,
 	COUNTRIES_FILENAME,
-	COUNTRY_INFO_FILENAME,
-	GEOLOCATION_FILENAME,
 }
 
 // Environment flag constants

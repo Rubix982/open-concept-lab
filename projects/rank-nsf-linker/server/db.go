@@ -245,6 +245,14 @@ func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 		logger.Infof(mainCtx, "📦 Merged total records: %d", len(merged))
 		logger.Infof(mainCtx, "⬇️ Inserting into Postgres table: %s", tableName)
 
+		if tableName == "professors" {
+			// Replace the faculty list: people who left CSRankings, or moved, must not keep old rows.
+			// Links to them (nsf_investigators.professor) are cleared and rebuilt by the linking steps.
+			if _, err := db.Exec(`DELETE FROM professors`); err != nil {
+				return fmt.Errorf("failed to clear professors before reload: %w", err)
+			}
+		}
+
 		if originalTableName == "geolocation" {
 			/// Special case to merge country-info universities with geolocation into a single table
 			for _, row := range merged {
@@ -1239,70 +1247,23 @@ func syncProfessorInterestsToProfessorsAndUniversities(mainCtx *colly.Context) e
 
 	logger.Infof(mainCtx, "✅ Copied %d valid rows into staging table", validRows)
 
-	// Batch UPSERT into final table
-	const upsertBatchSize = 1000
-	offset := 0
-
-	for {
-		rows, err := db.Query(`
-            SELECT s.name, s.affiliation, s.area, s.count, s.adjusted_count, s.year
-            FROM staging_professor_areas s
-            ORDER BY s.name
-            OFFSET $1 LIMIT $2
-        `, offset, upsertBatchSize)
-		if err != nil {
-			return fmt.Errorf("failed to fetch staging batch: %v", err)
-		}
-
-		batchCount := 0
-		txUpsert, err := db.Begin()
-		if err != nil {
-			return fmt.Errorf("failed to start upsert transaction: %v", err)
-		}
-
-		stmtUpsert, err := txUpsert.Prepare(`
-            INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (name, affiliation, area, year)
-            DO UPDATE SET
-                count = EXCLUDED.count,
-                adjusted_count = EXCLUDED.adjusted_count;
-        `)
-		if err != nil {
-			return fmt.Errorf("failed to prepare upsert statement: %v", err)
-		}
-
-		for rows.Next() {
-			var name, affiliation, area string
-			var count, adjustedCount float64
-			var year int
-
-			if err := rows.Scan(&name, &affiliation, &area, &count, &adjustedCount, &year); err != nil {
-				logger.Warnf(mainCtx, "⚠️ Failed to scan row for upsert: %v", err)
-				continue
-			}
-
-			if _, err := stmtUpsert.Exec(name, affiliation, area, count, adjustedCount, year); err != nil {
-				logger.Warnf(mainCtx, "⚠️ Failed to upsert row: %v", err)
-				continue
-			}
-			batchCount++
-		}
-
-		if err := stmtUpsert.Close(); err != nil {
-			return fmt.Errorf("failed to close upsert statement: %v", err)
-		}
-
-		if err := txUpsert.Commit(); err != nil {
-			return fmt.Errorf("failed to commit upsert transaction: %v", err)
-		}
-
-		rows.Close()
-
-		if batchCount == 0 {
-			break
-		}
-		offset += batchCount
+	// Replace the table with this CSV: rows CSRankings dropped (people who left, old affiliations)
+	// must go too, which an upsert would keep.
+	txSync, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start sync transaction: %v", err)
+	}
+	defer txSync.Rollback()
+	if _, err := txSync.Exec(`
+		DELETE FROM professor_areas;
+		INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
+		SELECT DISTINCT ON (name, affiliation, area, year) name, affiliation, area, count, adjusted_count, year
+		FROM staging_professor_areas
+		ORDER BY name, affiliation, area, year;`); err != nil {
+		return fmt.Errorf("failed to load professor_areas: %v", err)
+	}
+	if err := txSync.Commit(); err != nil {
+		return fmt.Errorf("failed to commit professor_areas: %v", err)
 	}
 
 	logger.Infof(mainCtx, "✅ Synchronized professor interests successfully from CSV")
@@ -1460,6 +1421,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
+		{"Load OpenAlex Researchers", loadOpenAlexResearchers},
 		{"Remove Edge Case Entries", removeEdgeCaseEntries},
 		{"Classify Institutions", classifyInstitutions},
 		{"Link IPEDS Institutions", linkIpedsInstitutions},
@@ -1468,6 +1430,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Load Funder Grants", loadFunderGrants},
 		{"Link Funder Grants", linkFunderGrants},
 		{"Load DBLP Papers", loadDblpPapers},
+		{"Load OpenAlex Researcher Works", loadOpenAlexResearcherWorks},
 		{"Link NSF Investigators By DBLP Affiliation", linkNsfByDblpAffiliation},
 		{"Load OpenAlex Works", loadOpenAlexWorks},
 		{"Build Explorer Tables", buildExplorerTables},

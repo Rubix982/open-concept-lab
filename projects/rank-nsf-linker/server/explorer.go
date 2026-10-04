@@ -78,10 +78,11 @@ LEFT JOIN professor_variants pv ON pv.name = p.professor
 WHERE p.professor IS NOT NULL;
 
 INSERT INTO explorer_faculty (name, university, homepage, scholar_id, areas, area_pubs, recent_pubs,
-                              active_awards, total_awards, active_funding, last_award_date, funding)
+                              active_awards, total_awards, active_funding, last_award_date, funding, source)
 SELECT f.name, f.university, p.homepage, NULLIF(NULLIF(p.scholar_id, ''), 'NOSCHOLARPAGE'),
        f.areas, f.area_pubs, f.recent_pubs,
-       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding
+       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding,
+       COALESCE(p.source, 'csrankings')
 FROM (
   SELECT x.name, a.university, array_agg(x.area ORDER BY x.pubs DESC, x.area) AS areas,
          jsonb_object_agg(x.area, round(x.pubs::numeric)) AS area_pubs, sum(x.pubs) AS recent_pubs

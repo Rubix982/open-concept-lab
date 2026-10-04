@@ -33,6 +33,9 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
     <button type="button" class="hit" @click="$emit('open', person.name)">
       <span class="name">{{ displayName }}</span>
       <span v-if="showUniversity" class="uni">{{ person.university }}</span>
+      <span v-if="person.source === 'openalex'" class="src" title="Listed as a researcher here by OpenAlex; not a verified faculty list">
+        Researcher (OpenAlex)
+      </span>
     </button>
     <div class="tags">
       <span v-for="t in tags" :key="t.area" class="tag" :style="{ '--c': t.color }">{{ t.name }}</span>
@@ -80,6 +83,13 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
 
 .hit:hover .name {
   text-decoration-color: var(--ink);
+}
+
+.src {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
 }
 
 .uni {

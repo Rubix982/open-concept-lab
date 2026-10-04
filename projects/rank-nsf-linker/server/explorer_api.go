@@ -249,6 +249,7 @@ type exploreFaculty struct {
 	ActiveFunding int64           `json:"active_funding"`
 	LastAward     *time.Time      `json:"last_award_date"`
 	Funding       json.RawMessage `json:"funding"` // per funder: active/total grants and active amount, own currency
+	Source        string          `json:"source"`  // "csrankings" (verified CS faculty) or "openalex" (researchers, other fields)
 	GoalScore     *float64        `json:"goal_score,omitempty"`
 	Match         *exploreWork    `json:"match,omitempty"` // the professor's award or paper closest to the goal
 }
@@ -307,7 +308,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 			ORDER BY d.name, score DESC, d.year DESC NULLS LAST
 		)
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding,
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source,
 		       best.score, best.kind, best.ref, best.title, best.year, best.url
 		FROM explorer_faculty f
 		CROSS JOIN goal
@@ -333,7 +334,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		var match exploreWork
 		var matchRef *string
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding,
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source,
 			&f.GoalScore, &match.Kind, &matchRef, &match.Title, &match.Year, &match.URL); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read faculty", err)
 			return
@@ -366,7 +367,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 	}
 	rows, err := db.Query(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = ANY($1)`, pq.Array(names))
 	if err != nil {
@@ -379,7 +380,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 		var f exploreFaculty
 		var areaPubs, funding []byte
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding); err != nil {
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source); err != nil {
 			return nil, err
 		}
 		f.AreaPubs, f.Funding = areaPubs, funding
@@ -434,10 +435,10 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 	var areaPubs, funding []byte
 	err = db.QueryRow(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = $1`, name).Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID,
-		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding)
+		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "professor not found", nil)
 		return
@@ -531,10 +532,13 @@ func sortAwards(awards []exploreAward) {
 }
 
 type dblpPaper struct {
+	key   string
 	Title string  `json:"title"`
 	Venue *string `json:"venue"`
 	Year  int     `json:"year"`
 	URL   *string `json:"url"`
+	Match bool    `json:"match"` // close to the student's goal (only when a goal is given)
+	score float64
 }
 
 // getExplorerFacultyPapers returns a professor's most recent publications, loaded from the
@@ -546,8 +550,9 @@ func getExplorerFacultyPapers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	name := r.URL.Query().Get("name")
+	goal := strings.TrimSpace(r.URL.Query().Get("goal"))
 	rows, err := db.Query(`
-		SELECT DISTINCT ON (year, title) title, venue, year, url FROM dblp_papers
+		SELECT DISTINCT ON (year, title) dblp_key, title, venue, year, url FROM dblp_papers
 		WHERE name IN (SELECT name FROM professor_variants WHERE canonical = $1 UNION SELECT $1)
 		ORDER BY year DESC, title LIMIT $2`, name, maxRecentPapers)
 	if err != nil {
@@ -559,7 +564,7 @@ func getExplorerFacultyPapers(w http.ResponseWriter, r *http.Request) {
 	papers := []dblpPaper{}
 	for rows.Next() {
 		var p dblpPaper
-		if err := rows.Scan(&p.Title, &p.Venue, &p.Year, &p.URL); err != nil {
+		if err := rows.Scan(&p.key, &p.Title, &p.Venue, &p.Year, &p.URL); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read papers", err)
 			return
 		}
@@ -569,9 +574,50 @@ func getExplorerFacultyPapers(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
 		return
 	}
+	if goal != "" {
+		rankPapersByGoal(db, name, goal, papers)
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"dblp_url": "https://dblp.org/search?q=" + url.QueryEscape(name),
 		"papers":   papers,
+	})
+}
+
+// rankPapersByGoal orders papers by closeness to the student's goal (semantic when available,
+// else keyword rank), most relevant first; papers with no score keep their date order after them.
+func rankPapersByGoal(db *sql.DB, name, goal string, papers []dblpPaper) {
+	scores := map[string]float64{}
+	threshold := semanticMinScore
+	if semanticAvailable() {
+		if s, err := scorePersonWork(goal, name, "paper", 200); err == nil {
+			scores = s
+		}
+	}
+	if len(scores) == 0 {
+		threshold = 0.01
+		rows, err := db.Query(`
+			SELECT ref, ts_rank(doc, plainto_tsquery('english', $2)) FROM explorer_work_docs
+			WHERE name = $1 AND kind = 'paper' AND doc @@ plainto_tsquery('english', $2)`, name, goal)
+		if err == nil {
+			for rows.Next() {
+				var ref string
+				var rank float64
+				if rows.Scan(&ref, &rank) == nil {
+					scores[ref] = rank
+				}
+			}
+			rows.Close()
+		}
+	}
+	for i := range papers {
+		papers[i].score = scores[papers[i].key]
+		papers[i].Match = papers[i].score >= threshold
+	}
+	sort.SliceStable(papers, func(i, j int) bool {
+		if papers[i].Match != papers[j].Match {
+			return papers[i].Match
+		}
+		return papers[i].Match && papers[i].score > papers[j].score
 	})
 }
 

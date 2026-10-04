@@ -36,6 +36,8 @@ watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, { i
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
+const curatedScholarships = computed(() => scholarships.value.filter((s) => s.source !== "daad"));
+const feedScholarships = computed(() => scholarships.value.filter((s) => s.source === "daad"));
 watch(
   () => uni.value?.country,
   async () => {
@@ -84,6 +86,7 @@ function money(n?: number) {
       v-if="professor"
       :name="professor"
       :back-label="uni?.name ?? 'university'"
+      :goal="query.goal"
       @back="emit('openProfessor', null)"
     />
 
@@ -98,7 +101,7 @@ function money(n?: number) {
 
         <dl class="facts">
           <div>
-            <dt>CS faculty</dt>
+            <dt>Faculty and researchers listed</dt>
             <dd class="num">{{ uni.faculty_total }}</dd>
           </div>
           <div v-if="uni.grad_enrollment">
@@ -143,16 +146,30 @@ function money(n?: number) {
             No scholarships in our list for study in {{ countryLabel }}.
           </p>
           <ul class="sch-list">
-            <li v-for="sch in scholarships" :key="sch.id">
+            <li v-for="sch in curatedScholarships" :key="sch.id">
               <a :href="webUrl(sch.url)" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
               <p class="sub">
-                {{ sch.provider }}. {{ levelLabel(sch.levels) }}. Covers {{ sch.covers }}.
+                {{ sch.provider }}. {{ levelLabel(sch.levels) }}.
+                <template v-if="sch.covers">Covers {{ sch.covers }}.</template>
                 <template v-if="sch.application_window">Application window: {{ sch.application_window }}.</template>
               </p>
               <p v-if="sch.notes" class="sub">{{ sch.notes }}</p>
               <p class="elig">Check eligibility on the official page</p>
             </li>
           </ul>
+          <details v-if="feedScholarships.length" class="sch-more">
+            <summary>More from the DAAD scholarship database ({{ feedScholarships.length }})</summary>
+            <ul class="sch-list">
+              <li v-for="sch in feedScholarships" :key="sch.id">
+                <a :href="webUrl(sch.url)" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
+                <p class="sub">
+                  {{ sch.provider }}. {{ levelLabel(sch.levels) }}.
+                  <template v-if="sch.application_window">{{ sch.application_window }}</template>
+                </p>
+                <p v-if="sch.notes" class="sub">{{ sch.notes }}</p>
+              </li>
+            </ul>
+          </details>
           <p class="sub">Rules and deadlines change every year: always confirm on the official page.</p>
         </section>
 
@@ -279,6 +296,17 @@ h3 {
 
 .sch-name {
   font-weight: 700;
+}
+
+.sch-more {
+  margin-top: 10px;
+}
+
+.sch-more summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: var(--t-sm);
+  padding: 6px 0;
 }
 
 .elig {

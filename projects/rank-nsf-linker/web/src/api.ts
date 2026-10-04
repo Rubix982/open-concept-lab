@@ -45,6 +45,7 @@ export type Work = {
 
 export type Faculty = {
   name: string;
+  source?: "csrankings" | "openalex"; // openalex: a researcher in another field, not verified faculty
   university: string;
   university_id: string | null;
   country: string | null;
@@ -91,6 +92,7 @@ export type Paper = {
   venue: string | null;
   year: number;
   url: string | null;
+  match?: boolean; // close to the student's goal (only when a goal was given)
 };
 
 export type GrantPerson = { name: string; university: string; university_id: string | null };
@@ -110,6 +112,7 @@ export type Scholarship = {
   verified: boolean;
   notes: string;
   eligibility: "eligible" | "check";
+  source: string; // "curated", or a feed ("daad")
 };
 
 export type Query = { areas: string[]; goal: string };
@@ -153,6 +156,8 @@ export const api = {
     get<Scholarship[]>(
       `/scholarships?country=${encodeURIComponent(country)}`,
     ),
-  papers: (name: string) =>
-    get<{ dblp_url: string; papers: Paper[] }>(`/faculty/papers?name=${encodeURIComponent(name)}`),
+  papers: (name: string, goal = "") =>
+    get<{ dblp_url: string; papers: Paper[] }>(
+      `/faculty/papers?name=${encodeURIComponent(name)}${goal ? `&goal=${encodeURIComponent(goal)}` : ""}`,
+    ),
 };

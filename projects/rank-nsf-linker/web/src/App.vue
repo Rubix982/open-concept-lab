@@ -312,7 +312,7 @@ function removeArea(area: string) {
       </ul>
 
       <footer class="foot">
-        Data from CSRankings, DBLP, IPEDS and public grant records (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC).
+        Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC, KAKEN).
         <button type="button" class="link" @click="about?.showModal()">About the data</button>
         <a class="link" href="/overview.html">Project overview</a>
       </footer>
@@ -367,8 +367,9 @@ function removeArea(area: string) {
       </p>
       <p>
         <strong>Grants</strong> come from public records: NSF (US, 2010–2025), the Australian Research Council,
-        New Zealand's Marsden Fund, UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation and the
-        European Research Council (Horizon 2020). Only computing-related grants are loaded. A grant is linked to a
+        New Zealand's Marsden Fund, UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation, the
+        European Research Council (Horizon 2020 and Horizon Europe) and Japan's KAKEN. Outside the US, only
+        computing-related grants are loaded. A grant is linked to a
         professor only when the name matches and the university (or, for NSF, the email domain) confirms it.
         Funding from industry, other agencies and universities isn't included, so "no active grant" doesn't mean
         "no funding".
@@ -376,7 +377,9 @@ function removeArea(area: string) {
       <p class="sources">
         Sources: NSF Award Search; Australian Research Council; Royal Society Te Apārangi (Marsden Fund); UKRI
         Gateway to Research, Open Government Licence v2.0; Agence nationale de la recherche, ODbL; Swiss National
-        Science Foundation; CORDIS, European Commission.
+        Science Foundation; CORDIS, European Commission; ERC lists of principal investigators. Japanese grants:
+        created by Advisor Atlas, based on KAKEN (NII), with a link to each project. Researchers outside computer
+        science and paper abstracts: OpenAlex (CC0). Scholarships: curated, plus the DAAD scholarship database.
       </p>
       <p><strong>Recent papers</strong> come from <a href="https://dblp.org" target="_blank" rel="noopener">DBLP</a>.</p>
       <p>

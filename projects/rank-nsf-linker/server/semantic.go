@@ -546,6 +546,35 @@ func searchWork(goal string, areas []string, universityID, kind string, depth in
 	return res.Result, nil
 }
 
+// scorePersonWork rates one professor's work of one kind ("paper", "award") against a goal:
+// ref -> similarity, for every item Qdrant holds for them (no score threshold).
+func scorePersonWork(goal, name, kind string, limit int) (map[string]float64, error) {
+	vectors, err := embedTexts([]string{goal})
+	if err != nil {
+		return nil, err
+	}
+	req := map[string]any{
+		"vector":       vectors[0],
+		"limit":        limit,
+		"with_payload": []string{"ref"},
+		"filter": map[string]any{"must": []map[string]any{
+			{"key": "name", "match": map[string]any{"value": name}},
+			{"key": "kind", "match": map[string]any{"value": kind}},
+		}},
+	}
+	var res struct {
+		Result []workHit `json:"result"`
+	}
+	if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/search", req, &res); err != nil {
+		return nil, err
+	}
+	scores := make(map[string]float64, len(res.Result))
+	for _, h := range res.Result {
+		scores[h.Payload.Ref] = h.Score
+	}
+	return scores, nil
+}
+
 // recencyWeight halves a match's weight every recencyHalfLife years and discounts event grants.
 func recencyWeight(p workPayload) float64 {
 	age := 15.0
