@@ -927,9 +927,10 @@ func (f *IPEDSFetcher) ingestTuitionFees(db *sql.DB, dir string) error {
 		"TUITION2": "tuition_in_state", "TUITION3": "tuition_out_of_state",
 		"FEE1": "fees_in_district", "FEE2": "fees_in_state", "FEE3": "fees_out_of_state",
 		"HRCHG1": "per_credit_in_district", "HRCHG2": "per_credit_in_state",
-		"HRCHG3": "per_credit_out_of_state", "TUITION5": "grad_tuition_in_state",
-		"TUITION6": "grad_tuition_out_of_state", "FEE5": "grad_fees_in_state",
-		"FEE6": "grad_fees_out_of_state",
+		// Graduate: 5 = in-district, 6 = in-state, 7 = out-of-state (international students pay 7).
+		"HRCHG3": "per_credit_out_of_state", "TUITION6": "grad_tuition_in_state",
+		"TUITION7": "grad_tuition_out_of_state", "FEE6": "grad_fees_in_state",
+		"FEE7": "grad_fees_out_of_state",
 	}
 
 	indices := make(map[string]int)
@@ -951,7 +952,19 @@ func (f *IPEDSFetcher) ingestTuitionFees(db *sql.DB, dir string) error {
 			grad_fees_in_state, grad_fees_out_of_state
 		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
 		ON CONFLICT (unitid, year) DO UPDATE SET
-			tuition_in_state = EXCLUDED.tuition_in_state
+			tuition_in_district = EXCLUDED.tuition_in_district,
+			tuition_in_state = EXCLUDED.tuition_in_state,
+			tuition_out_of_state = EXCLUDED.tuition_out_of_state,
+			fees_in_district = EXCLUDED.fees_in_district,
+			fees_in_state = EXCLUDED.fees_in_state,
+			fees_out_of_state = EXCLUDED.fees_out_of_state,
+			per_credit_in_district = EXCLUDED.per_credit_in_district,
+			per_credit_in_state = EXCLUDED.per_credit_in_state,
+			per_credit_out_of_state = EXCLUDED.per_credit_out_of_state,
+			grad_tuition_in_state = EXCLUDED.grad_tuition_in_state,
+			grad_tuition_out_of_state = EXCLUDED.grad_tuition_out_of_state,
+			grad_fees_in_state = EXCLUDED.grad_fees_in_state,
+			grad_fees_out_of_state = EXCLUDED.grad_fees_out_of_state
 	`)
 	if err != nil {
 		return err
@@ -969,8 +982,8 @@ func (f *IPEDSFetcher) ingestTuitionFees(db *sql.DB, dir string) error {
 			getValue("TUITION1"), getValue("TUITION2"), getValue("TUITION3"),
 			getValue("FEE1"), getValue("FEE2"), getValue("FEE3"),
 			getValue("HRCHG1"), getValue("HRCHG2"), getValue("HRCHG3"),
-			getValue("TUITION5"), getValue("TUITION6"),
-			getValue("FEE5"), getValue("FEE6"),
+			getValue("TUITION6"), getValue("TUITION7"),
+			getValue("FEE6"), getValue("FEE7"),
 		)
 		if err != nil {
 			return fmt.Errorf("row %d: %w", i, err)

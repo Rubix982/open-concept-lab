@@ -1,6 +1,8 @@
-// src/env.d.ts
 /// <reference types="vite/client" />
-/// <reference types="vite-plugin-pwa/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_MAPBOX_TOKEN: string;
+}
 
 declare module "*.vue" {
   import type { DefineComponent } from "vue";

@@ -76,12 +76,26 @@ Numbers in brackets are what the audit measured; re-measure after each item.
          "University of Pittsburgh"), so Pitt, UNM, UNH, Kent State, Indiana stay unlinked — a small curated
          IPEDS map (university → UNITID) would close the gap
    - [ ] Some rows carry another campus's address (`University of Nevada` has a Las Vegas ZIP)
-   - [ ] Show IPEDS fields in the map popup (R1/R2, grad tuition, grad enrollment, faculty salary by rank)
+   - [x] IPEDS fields in the university drawer (R1/R2, graduate tuition and enrollment)
 
-## Next: the map itself
-- [ ] The popup has never shown faculty: the frontend expects `faculty[]` on each university; the view has none
-- [ ] Map numbers inflated (Arizona State shows 99,630 faculty) — the view's joins fan out
-- [ ] `/universities/top` matches US News spellings by substring; should rank from data (e.g. R1, faculty, funding)
+## Student explorer (v1, "Advisor Atlas")
+Flow: pick research areas → universities and faculty → their recent work, ranked by the student's goal
+→ funding. Backend: steps 18–19 + `server/explorer_api.go` (`/explorer/*`, all < 100 ms).
+Frontend: `web/src` rewritten (area picker, map, results, university drawer, professor view).
+- [x] Map loads in ~2 s (was 15.7 s); popup showed no faculty (fixed: university drawer lists them)
+- [x] 27 CSRankings areas served from `research_area_venues` (single copy of the taxonomy)
+- [x] Goal matching: Postgres full-text over each professor's NSF grants and recent papers; best single
+      match, decayed by age (halves ~every 5.5 years)
+- [x] Funding: active NSF grants per professor and per university, graduate tuition (in-state / out-of-state),
+      GRFP note with eligibility
+- [x] Curated IPEDS links (`backup/ipeds_links.csv`): UW, Pitt, Penn State, Ohio State, … now show R1 / tuition
+- [x] Fixed: IPEDS graduate tuition columns were shifted (out-of-state showed in-state)
+- [x] Phone layout; shareable URLs (`?areas=ml,nlp&q=…&u=…&p=…`); old offline service worker removed
+- [ ] Recent papers: DBLP dump (`data/dblp/dblp.xml.gz`, 1.1 GB) — download in progress; then
+      `make pipeline-from STEP=18`. The DBLP API is rate-limited and bot-guarded, so no live calls
+- [ ] Semantic goal matching (embedder service + vectors) — keyword matching misses synonyms ("LLM")
+- [ ] Non-US universities have no tuition / R1 data (IPEDS is US-only)
+- [ ] Publishing: not deployed anywhere public yet
 
 ## Also found
 

@@ -1398,6 +1398,8 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Link IPEDS Institutions", linkIpedsInstitutions},
 		{"Merge Duplicate Institutions", mergeDuplicateInstitutions},
 		{"Link NSF Investigators To Professors", linkInvestigatorsToProfessors},
+		{"Load DBLP Papers", loadDblpPapers},
+		{"Build Explorer Tables", buildExplorerTables},
 	}
 
 	totalSteps := len(steps)

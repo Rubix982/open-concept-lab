@@ -1,10 +1,52 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/csv"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
 
 	colly "github.com/gocolly/colly/v2"
 )
+
+// Flagships no name rule can pick out ("University of Washington-Seattle Campus" vs
+// "-Bothell Campus"). Columns: institution (universities row), unitid, note.
+const ipedsLinksFile = "ipeds_links.csv"
+
+func loadCuratedIpedsLinks(tx *sql.Tx) error {
+	if _, err := tx.Exec(`CREATE TEMP TABLE ip_curated (institution TEXT, unitid INTEGER) ON COMMIT DROP`); err != nil {
+		return fmt.Errorf("failed to create ip_curated: %w", err)
+	}
+	path := filepath.Join(getRootDirPath(BACKUP_DIR), ipedsLinksFile)
+	f, err := os.Open(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("failed to open %s: %w", path, err)
+	}
+	defer f.Close()
+
+	records, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read %s: %w", path, err)
+	}
+	for i, rec := range records {
+		if i == 0 || len(rec) < 2 {
+			continue // header or incomplete row
+		}
+		unitid, err := strconv.Atoi(rec[1])
+		if err != nil {
+			return fmt.Errorf("%s row %d: bad unitid %q", path, i+1, rec[1])
+		}
+		if _, err := tx.Exec(`INSERT INTO ip_curated (institution, unitid) VALUES ($1, $2)`, rec[0], unitid); err != nil {
+			return fmt.Errorf("failed to insert curated IPEDS link: %w", err)
+		}
+	}
+	return nil
+}
 
 // linkIpedsSQL links US universities rows to IPEDS institutions (universities.ipeds_unitid).
 //
@@ -111,6 +153,14 @@ SELECT alias, canonical, 'ipeds' FROM ip_same
 ON CONFLICT (alias) DO UPDATE SET canonical = EXCLUDED.canonical, source = 'ipeds'
 WHERE institution_aliases.source <> 'curated';
 
+-- Curated links (backup/ipeds_links.csv, loaded into ip_curated) override both rows and IPEDS ids.
+CREATE TEMP TABLE ip_final ON COMMIT DROP AS
+SELECT unitid, institution FROM (SELECT unitid, institution FROM ip_rep UNION ALL SELECT unitid, alias FROM ip_same) l
+WHERE l.unitid NOT IN (SELECT unitid FROM ip_curated) AND l.institution NOT IN (SELECT institution FROM ip_curated)
+UNION ALL
+SELECT c.unitid, c.institution FROM ip_curated c
+WHERE c.institution IN (SELECT institution FROM universities) AND c.unitid IN (SELECT unitid FROM ipeds_institutions);
+
 UPDATE universities SET ipeds_unitid = NULL WHERE ipeds_unitid IS NOT NULL;
 UPDATE universities u SET
   ipeds_unitid = l.unitid,
@@ -121,7 +171,7 @@ UPDATE universities u SET
                    THEN i.website ELSE u.homepage END,
   latitude  = CASE WHEN u.latitude IS NULL THEN i.latitude::real ELSE u.latitude END,
   longitude = CASE WHEN u.latitude IS NULL THEN i.longitude::real ELSE u.longitude END
-FROM (SELECT unitid, institution FROM ip_rep UNION ALL SELECT unitid, alias FROM ip_same) l
+FROM ip_final l
 JOIN ipeds_institutions i ON i.unitid = l.unitid
 WHERE u.institution = l.institution;
 `
@@ -149,6 +199,9 @@ func linkIpedsInstitutions(mainCtx *colly.Context) error {
 
 	// Curated spellings ("Suny At Albany") are evidence here too; the merge step reloads them.
 	if _, err := loadCuratedInstitutionAliases(tx); err != nil {
+		return err
+	}
+	if err := loadCuratedIpedsLinks(tx); err != nil {
 		return err
 	}
 	if _, err := tx.Exec(linkIpedsSQL); err != nil {

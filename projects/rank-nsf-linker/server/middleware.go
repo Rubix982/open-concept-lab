@@ -110,5 +110,8 @@ func GetRouter() *chi.Mux {
 	// Search API
 	r.Post("/search/faculty", searchFacultyByResearch)
 
+	// Student-facing explorer (explorer_api.go)
+	mountExplorerRoutes(r)
+
 	return r
 }
