@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Advisor Atlas</title>
-<meta name="description" content="Advisor Atlas: a map of computer science faculty, their recent work and funding, for students looking for a PhD advisor.">
+<meta name="description" content="Advisor Atlas: a map of faculty and researchers, their recent work and funding, for students looking for a PhD advisor.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -160,8 +160,8 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
 <main class="page">
   <header>
     <h1>Advisor Atlas</h1>
-    <p class="lede">A map of computer science faculty around the world, for students looking for a PhD advisor and a way to pay for the degree.</p>
-    <span class="status">v1, October 2026</span>
+    <p class="lede">A map of faculty and researchers around the world, for students looking for a PhD advisor and a way to pay for the degree.</p>
+    <span class="status">v2, October 2026</span>
     <div class="links">
       <a class="btn" href="/">Open the map</a>
       <a href="https://github.com/Rubix982/open-concept-lab/tree/main/projects/rank-nsf-linker" target="_blank" rel="noopener">Source code on GitHub</a>
@@ -172,39 +172,41 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
     <h2 id="route-h">How a student uses it</h2>
     <p class="intro">Built first for students in Pakistan applying abroad, who usually do this with spreadsheets and guesswork. A student describes what they want to research and follows four stops.</p>
     <ol class="route">
-      <li style="--c: var(--line-ai)"><span class="stop">1</span><div><h3>Say what you want to research</h3><p>Type a goal such as "mechanistic interpretability", or narrow by research area. Search reads meaning, not just keywords.</p></div></li>
+      <li style="--c: var(--line-ai)"><span class="stop">1</span><div><h3>Say what you want to research</h3><p>Type a goal such as "mechanistic interpretability", or narrow by research area: 27 in computer science, plus 14 in the sciences, engineering and medicine. Search reads meaning, not just keywords.</p></div></li>
       <li style="--c: var(--line-systems)"><span class="stop">2</span><div><h3>See where the faculty are</h3><p>Universities on a map, sized by how many faculty work in your areas, with the professors whose recent work is closest to your goal.</p></div></li>
-      <li style="--c: var(--line-theory)"><span class="stop">3</span><div><h3>Read their recent work</h3><p>Each professor's papers since 2020 and their research grants, so you can write to them about something they're working on now.</p></div></li>
-      <li style="--c: var(--line-inter)"><span class="stop">4</span><div><h3>Find the money</h3><p>Which faculty hold active grants (they hire research assistants), plus scholarships for studying in each university's country.</p></div></li>
+      <li style="--c: var(--line-theory)"><span class="stop">3</span><div><h3>Read their recent work</h3><p>Each professor's recent papers, closest to your search first, and their research grants, so you can write to them about something they're working on now.</p></div></li>
+      <li style="--c: var(--line-inter)"><span class="stop">4</span><div><h3>Find the money</h3><p>Which faculty hold active grants (they hire research assistants), plus scholarships for studying in each university's country, including the DAAD database for Germany.</p></div></li>
     </ol>
   </section>
 
   <section aria-labelledby="cov-h">
     <h2 id="cov-h">What's in it</h2>
     <div class="figures">
-      <div class="figure" style="--c: var(--line-ai)"><strong class="num">15,667</strong><span>faculty from CSRankings, across 27 research areas</span></div>
-      <div class="figure" style="--c: var(--line-systems)"><strong class="num">635</strong><span>universities in 58 countries</span></div>
-      <div class="figure" style="--c: var(--line-theory)"><strong class="num">536,907</strong><span>papers since 2020, from DBLP</span></div>
-      <div class="figure" style="--c: var(--line-inter)"><strong class="num">5,505</strong><span>faculty with grant records; 2,329 with a grant active now</span></div>
-      <div class="figure"><strong class="num">416,312</strong><span>grants and papers searchable by meaning</span></div>
-      <div class="figure"><strong class="num">29</strong><span>scholarship programmes, shown for the country you'd study in</span></div>
+      <div class="figure" style="--c: var(--line-ai)"><strong class="num">48,077</strong><span>faculty and researchers: 18,015 in computer science, 30,062 in 14 other fields</span></div>
+      <div class="figure" style="--c: var(--line-systems)"><strong class="num">676</strong><span>universities in 61 countries</span></div>
+      <div class="figure" style="--c: var(--line-theory)"><strong class="num">570,385</strong><span>recent papers, 290,485 with abstracts</span></div>
+      <div class="figure" style="--c: var(--line-inter)"><strong class="num">18,647</strong><span>people with grant records; 8,297 with a grant active now</span></div>
+      <div class="figure"><strong class="num">646,857</strong><span>grants and papers searchable by meaning</span></div>
+      <div class="figure"><strong class="num">98</strong><span>scholarship programmes: 29 curated, 69 from the DAAD database</span></div>
     </div>
   </section>
 
   <section aria-labelledby="fund-h">
     <h2 id="fund-h">Grant data by funder</h2>
-    <p class="intro">Only computing-related grants are loaded for funders outside the US. A grant is linked to a professor only when the name matches and the university (or, for NSF, the email domain) confirms it.</p>
+    <p class="intro">Outside the US, only computing-related grants are loaded. A grant is linked to a person only when the name matches and the university (or, for NSF, the email domain or their publication record) confirms it.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Funder</th><th>Covers</th><th class="n">Grants</th><th class="n">Faculty linked</th></tr></thead>
         <tbody>
-          <tr><td>NSF</td><td>United States<small>all awards, 2010–2025</small></td><td class="n">192,089</td><td class="n">5,794</td></tr>
-          <tr><td>UKRI (EPSRC)</td><td>United Kingdom<small>research grants and fellowships ending 2015+</small></td><td class="n">2,593</td><td class="n">718</td></tr>
-          <tr><td>Australian Research Council</td><td>Australia</td><td class="n">2,077</td><td class="n">328</td></tr>
-          <tr><td>European Research Council</td><td>EU and associated countries<small>Horizon 2020 grants</small></td><td class="n">2,029</td><td class="n">239</td></tr>
-          <tr><td>Swiss National Science Foundation</td><td>Switzerland</td><td class="n">1,518</td><td class="n">135</td></tr>
-          <tr><td>ANR</td><td>France</td><td class="n">1,795</td><td class="n">124</td></tr>
-          <tr><td>Marsden Fund</td><td>New Zealand</td><td class="n">1,313</td><td class="n">41</td></tr>
+          <tr><td>NSF</td><td>United States<small>all awards, 2010–2025</small></td><td class="n">192,089</td><td class="n">16,083</td></tr>
+          <tr><td>NIH</td><td>United States<small>projects active in fiscal years 2025–2026</small></td><td class="n">77,190</td><td class="n">3,488</td></tr>
+          <tr><td>UKRI (EPSRC)</td><td>United Kingdom<small>research grants and fellowships ending 2015+</small></td><td class="n">2,593</td><td class="n">727</td></tr>
+          <tr><td>KAKEN (JSPS)</td><td>Japan<small>informatics projects, 2015+</small></td><td class="n">15,655</td><td class="n">369</td></tr>
+          <tr><td>Australian Research Council</td><td>Australia</td><td class="n">2,077</td><td class="n">338</td></tr>
+          <tr><td>European Research Council</td><td>EU and associated countries<small>Horizon 2020 and Horizon Europe</small></td><td class="n">2,238</td><td class="n">298</td></tr>
+          <tr><td>Swiss National Science Foundation</td><td>Switzerland</td><td class="n">1,518</td><td class="n">139</td></tr>
+          <tr><td>ANR</td><td>France</td><td class="n">1,795</td><td class="n">135</td></tr>
+          <tr><td>Marsden Fund</td><td>New Zealand</td><td class="n">1,313</td><td class="n">87</td></tr>
         </tbody>
       </table>
     </div>
@@ -212,26 +214,27 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
 
   <section aria-labelledby="where-h">
     <h2 id="where-h">How much of each country is covered</h2>
-    <p class="intro">Share of a country's CS faculty with at least one grant on record. A low bar means missing data, not unfunded faculty.</p>
+    <p class="intro">Share of a country's computer science faculty with at least one grant on record. A low bar means missing data, not unfunded faculty.</p>
     <div class="legend">
       <span style="--b: var(--bar-national)"><i></i>National funder loaded</span>
       <span style="--b: var(--bar-erc)"><i></i>Only ERC grants</span>
       <span style="--b: var(--bar-none)"><i></i>No funder loaded yet</span>
     </div>
-    <div class="chart" role="img" aria-label="Share of faculty with grant data by country: United States 76%, Switzerland 75%, Australia 53%, United Kingdom 41%, France 32%, New Zealand 26%, Austria 8%, Germany 6%, Netherlands 3%, Canada 2%, China under 1%, South Korea 0%, India 0%.">
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United States<small class="num">5,777 faculty</small></span><span class="track"><span class="fill" style="width:75.7%"></span></span><span class="pct">76%</span></div>
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Switzerland<small class="num">163 faculty</small></span><span class="track"><span class="fill" style="width:75.5%"></span></span><span class="pct">75%</span></div>
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Australia<small class="num">475 faculty</small></span><span class="track"><span class="fill" style="width:53.1%"></span></span><span class="pct">53%</span></div>
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United Kingdom<small class="num">1,160 faculty</small></span><span class="track"><span class="fill" style="width:41.5%"></span></span><span class="pct">41%</span></div>
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">France<small class="num">157 faculty</small></span><span class="track"><span class="fill" style="width:32.5%"></span></span><span class="pct">32%</span></div>
-      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">New Zealand<small class="num">73 faculty</small></span><span class="track"><span class="fill" style="width:26%"></span></span><span class="pct">26%</span></div>
-      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Austria<small class="num">166 faculty</small></span><span class="track"><span class="fill" style="width:7.8%"></span></span><span class="pct">8%</span></div>
-      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Germany<small class="num">959 faculty</small></span><span class="track"><span class="fill" style="width:6.2%"></span></span><span class="pct">6%</span></div>
-      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Netherlands<small class="num">299 faculty</small></span><span class="track"><span class="fill" style="width:2.7%"></span></span><span class="pct">3%</span></div>
-      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">Canada<small class="num">732 faculty</small></span><span class="track"><span class="fill" style="width:1.8%"></span></span><span class="pct">2%</span></div>
-      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">China<small class="num">2,107 faculty</small></span><span class="track"><span class="fill" style="width:0.15%"></span></span><span class="pct">&lt;1%</span></div>
-      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">South Korea<small class="num">426 faculty</small></span><span class="track"><span class="fill" style="width:0%"></span></span><span class="pct">0%</span></div>
-      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">India<small class="num">393 faculty</small></span><span class="track"><span class="fill" style="width:0%"></span></span><span class="pct">0%</span></div>
+    <div class="chart" role="img" aria-label="Share of computer science faculty with grant data by country: Japan 84%, United States 74%, Switzerland 72%, Australia 53%, United Kingdom 40%, France 34%, New Zealand 26%, Austria 10%, Germany 8%, Netherlands 4%, Canada 3%, China under 1%, India under 1%, South Korea under 1%.">
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Japan<small class="num">277 faculty</small></span><span class="track"><span class="fill" style="width:84.5%"></span></span><span class="pct">84%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United States<small class="num">6,178 faculty</small></span><span class="track"><span class="fill" style="width:74.3%"></span></span><span class="pct">74%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Switzerland<small class="num">178 faculty</small></span><span class="track"><span class="fill" style="width:71.9%"></span></span><span class="pct">72%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">Australia<small class="num">531 faculty</small></span><span class="track"><span class="fill" style="width:53.1%"></span></span><span class="pct">53%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">United Kingdom<small class="num">1,315 faculty</small></span><span class="track"><span class="fill" style="width:39.6%"></span></span><span class="pct">40%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">France<small class="num">192 faculty</small></span><span class="track"><span class="fill" style="width:34.4%"></span></span><span class="pct">34%</span></div>
+      <div class="bar-row" style="--b: var(--bar-national)"><span class="label">New Zealand<small class="num">85 faculty</small></span><span class="track"><span class="fill" style="width:25.9%"></span></span><span class="pct">26%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Austria<small class="num">179 faculty</small></span><span class="track"><span class="fill" style="width:10.1%"></span></span><span class="pct">10%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Germany<small class="num">1,067 faculty</small></span><span class="track"><span class="fill" style="width:8.0%"></span></span><span class="pct">8%</span></div>
+      <div class="bar-row" style="--b: var(--bar-erc)"><span class="label">Netherlands<small class="num">362 faculty</small></span><span class="track"><span class="fill" style="width:3.6%"></span></span><span class="pct">4%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">Canada<small class="num">791 faculty</small></span><span class="track"><span class="fill" style="width:3.4%"></span></span><span class="pct">3%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">China<small class="num">2,974 faculty</small></span><span class="track"><span class="fill" style="width:0.9%"></span></span><span class="pct">&lt;1%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">India<small class="num">428 faculty</small></span><span class="track"><span class="fill" style="width:0.5%"></span></span><span class="pct">&lt;1%</span></div>
+      <div class="bar-row" style="--b: var(--bar-none)"><span class="label">South Korea<small class="num">531 faculty</small></span><span class="track"><span class="fill" style="width:0.2%"></span></span><span class="pct">&lt;1%</span></div>
       <div class="axis" aria-hidden="true"><span></span><div><span>0%</span><span>50%</span><span>100%</span></div><span></span></div>
     </div>
   </section>
@@ -242,11 +245,10 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
       <div>
         <h3 class="small">Known limits</h3>
         <ul class="plain">
-          <li><strong>Computer science only.</strong> Faculty come from CSRankings, which covers computing research.</li>
-          <li><strong>Germany, Canada and Asia lack national grant data.</strong> Germany's DFG does not allow its records to be collected; Japan and Hong Kong are next.</li>
+          <li><strong>Outside computer science, researchers are a first cut.</strong> They come from OpenAlex for US R1 universities only, chosen by citations; they are not a verified faculty list.</li>
+          <li><strong>Germany, Canada, China, Korea and India lack national grant data.</strong> Germany's DFG does not allow collection; Hong Kong's RGC needs permission first.</li>
           <li><strong>France is thin in CSRankings itself</strong>, so few French faculty can be linked.</li>
           <li><strong>Grants miss industry and university funding</strong>, so "no active grant" never means "no funding".</li>
-          <li><strong>Search matches paper titles</strong>; abstracts arrive with OpenAlex.</li>
         </ul>
       </div>
       <div>
@@ -254,9 +256,8 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
         <ul class="plain">
           <li><strong>Put it in front of 10 students</strong> and change it based on what they say.</li>
           <li><strong>Publish it</strong> at a public address.</li>
-          <li><strong>OpenAlex abstracts</strong> for 291,106 papers (built, not yet run).</li>
-          <li><strong>Japan (KAKEN) and Hong Kong grants</strong>, within their terms of use.</li>
-          <li><strong>Fields beyond computing</strong>: science, engineering and medicine.</li>
+          <li><strong>More fields and countries</strong> for researchers outside computer science.</li>
+          <li><strong>Hong Kong grants</strong>, once RGC agrees.</li>
         </ul>
       </div>
     </div>
@@ -264,10 +265,10 @@ footer { padding-top: 24px; border-top: 1px solid var(--rule); font-size: var(--
 
   <section aria-labelledby="src-h">
     <h2 id="src-h">Sources</h2>
-    <p class="sources">CSRankings (faculty and areas); DBLP (papers, CC0); IPEDS, US Department of Education (tuition and enrolment); NSF Award Search; UKRI Gateway to Research, Open Government Licence v2.0; Australian Research Council; Royal Society Te Apārangi (Marsden Fund); Agence nationale de la recherche, ODbL, with the French RNSR register of research units; Swiss National Science Foundation; CORDIS, European Commission. Scholarships are a curated list linking to each programme's official page.</p>
+    <p class="sources">CSRankings (faculty and areas); DBLP (papers, CC0); OpenAlex (researchers outside computer science, abstracts; CC0); IPEDS, US Department of Education (tuition and enrolment); NSF Award Search; NIH RePORTER; UKRI Gateway to Research, Open Government Licence v2.0; Australian Research Council; Royal Society Te Apārangi (Marsden Fund); Agence nationale de la recherche, ODbL, with the French RNSR register of research units; Swiss National Science Foundation; CORDIS, European Commission, and the ERC's lists of principal investigators; Japanese grants: created by Advisor Atlas, based on KAKEN (NII). Scholarships: a curated list and the DAAD scholarship database, each linking to the official page.</p>
   </section>
 
-  <footer>Built as a side project in <code>open-concept-lab/projects/rank-nsf-linker</code>. Figures as of 4 October 2026.</footer>
+  <footer>Built as a side project in <code>open-concept-lab/projects/rank-nsf-linker</code>. Figures as of 5 October 2026.</footer>
 </main>
 </body>
 </html>

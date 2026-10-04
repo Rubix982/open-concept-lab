@@ -116,7 +116,8 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [x] Search index: area order made 90k payloads look changed; areas now ordered deterministically, change
       checks compare content, lost points are re-embedded. Qdrant 1.3 (4 GB) runs out of memory on large
       payload rewrites and scrolls, so these are paged small
-- [ ] Qdrant 1.3.0 is old and fragile under bulk updates; consider upgrading (needs a re-embed)
+- [x] Qdrant upgraded to 1.12.6 on a new volume `qdrant_data_v112` (1.3.0 ran out of memory on bulk updates;
+      the old volume stays for rollback). Full re-embed: 646,857 items
 - [x] The old scraper's semantic search (no API route) is superseded by the explorer's goal search
 
 ## Done
@@ -166,11 +167,17 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [ ] Share with 5–10 students and collect feedback (did it help them find someone to email? was the
       funding section useful?) before adding more data sources
 - [ ] Public deploy: planned for the week of 2026-10-12; ask the user first (hosting, domain, KAKEN/RGC terms if loaded)
-- [ ] OpenAlex v2: run `server/scripts/openalex/works.py`, deploy steps 21–23, re-embed papers with abstracts
+- [x] OpenAlex abstracts: 261,250 of 291,106 DOIs found, 223,804 with abstracts (5,822 calls, free allowance);
+      paper texts embed title + abstract (re-embedded only where the text changed)
 - [x] Horizon Europe ERC PIs: 15 result PDFs (2021–2025 StG/CoG/AdG, `data/erc_he/sources.txt`), PE6 rows
       joined with CORDIS Horizon Europe projects by call + acronym (209 grants). UK-hosted 2021–2023 winners
       were funded by UKRI's guarantee and come through UKRI
-- [ ] Fields beyond computing (science, engineering, medicine, ~45 areas) via OpenAlex + NIH RePORTER
+- [x] Fields beyond computing, first cut: 14 OpenAlex fields (Sciences / Engineering / Medicine groups) at 140 US R1
+      universities; the 20 most-cited researchers per university and field who look like faculty (main
+      institution, 30–1,500 works, h-index ≥ 15, publishing recently) → 30,062 researchers, 10 recent papers each.
+      Labelled "Researcher (OpenAlex)", not verified faculty (`scripts/openalex/fields.py`, migration 17)
+- [x] NIH RePORTER: 77,190 projects active in FY2025–26 → 3,488 people (`scripts/grants/nih.py`)
+- [ ] Researchers outside CS beyond US R1 universities, and more fields (psychology, economics, …)
 - [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
 ## Decisions
