@@ -122,13 +122,14 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [x] IPEDS step no longer closes the shared DB pool (broke every later step)
 - [x] Per-step checkpoints: `make pipeline` resumes, `make pipeline-from STEP=N` reruns from N
 
-## European funding data (proposed, not started)
-CSRankings already lists European faculty; only the funding layer is US-only. Candidate sources,
-each linkable to faculty with the same name + institution evidence as NSF:
-- [ ] EU: CORDIS open data (Horizon Europe / H2020, incl. ERC and MSCA doctoral networks)
-- [ ] UK: UKRI Gateway to Research (public API; projects, PIs, organisations)
-- [ ] Germany: DFG GEPRIS (projects, PIs, Research Training Groups) — no official bulk export; check terms
-- [ ] France: ANR funded projects (open data on data.gouv.fr)
-- [ ] Switzerland: SNSF Data Portal (open data)
-- [ ] Student scholarships (curated, per destination country and nationality): DAAD, Erasmus Mundus,
-      Chevening, Commonwealth, Eiffel, Italian government (MAECI) scholarships
+## Funding beyond the US
+Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-stem-and-medicine.md).
+- [x] Curated scholarships (`backup/scholarships.csv`, 29 programmes, official links), served by destination and
+      nationality (`/explorer/scholarships`); "Applying from" in the filter bar; drawer section per university
+- [x] NSF wording only for US universities; non-US faculty no longer show "no NSF grants"
+- [ ] Generic funder model (grants + named investigators + link to faculty), then importers in order:
+      ANR (France), UKRI GtR (UK), ARC (Australia), CORDIS ERC PIs (EU), SNSF (Switzerland)
+- [ ] Needs the user: RGC Hong Kong reuse permission; CiNii app ID (KAKEN Japan); Marsden (NZ) manual download
+- [ ] US STEM + medicine: NIH RePORTER, OpenAlex (key from the user), ~45 field areas
+- [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
+- [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)

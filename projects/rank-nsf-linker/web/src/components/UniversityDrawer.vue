@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { api, type Faculty, type Query, type UniversityDetail } from "@/api";
+import { api, type Faculty, type Query, type Scholarship, type UniversityDetail } from "@/api";
+import { COUNTRIES, countryName } from "@/countries";
+import { nationality } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 
@@ -30,6 +32,26 @@ async function load() {
 }
 
 watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, { immediate: true });
+
+// Scholarships a student can apply for to study here, given their nationality.
+const scholarships = ref<Scholarship[]>([]);
+watch(
+  () => [uni.value?.country, nationality.value],
+  async () => {
+    if (!uni.value?.country) return;
+    try {
+      scholarships.value = await api.scholarships(uni.value.country, nationality.value);
+    } catch {
+      scholarships.value = [];
+    }
+  },
+);
+const isUS = computed(() => (uni.value?.country ?? "us") === "us");
+const countryLabel = computed(() => countryName(uni.value?.country));
+function levelLabel(levels: string[]) {
+  const names: Record<string, string> = { masters: "Master's", phd: "PhD", postdoc: "Postdoc" };
+  return levels.map((l) => names[l] ?? l).filter(Boolean).join(", ");
+}
 
 const hasAreas = computed(() => props.query.areas.length > 0);
 const funded = computed(() => faculty.value.filter((f) => f.active_awards > 0).length);
@@ -89,17 +111,49 @@ function money(n?: number) {
 
         <section class="funding">
           <h3>Paying for a PhD here</h3>
-          <p>
-            <strong class="num">{{ funded }}</strong> of the {{ faculty.length }}
-            {{ query.goal ? "faculty matching your goal" : hasAreas ? "faculty in your areas" : "faculty listed below" }}
-            have an active NSF grant.
-            PhD students are usually paid as research or teaching assistants, which also covers tuition, and
-            faculty with active grants are the ones hiring research assistants.
+          <template v-if="isUS">
+            <p>
+              <strong class="num">{{ funded }}</strong> of the {{ faculty.length }}
+              {{ query.goal ? "faculty matching your search" : hasAreas ? "faculty in your areas" : "faculty listed below" }}
+              have an active NSF grant. PhD students are usually paid as research or teaching assistants, which
+              also covers tuition, and faculty with active grants are the ones hiring research assistants.
+            </p>
+          </template>
+          <p v-else>
+            Grant data for universities in {{ countryLabel }} isn't in Advisor Atlas yet, so faculty funding isn't
+            shown. Ask faculty directly about funded PhD positions, and see the scholarships below.
           </p>
-          <p class="sub">
-            US citizens and permanent residents can also apply for the
-            <a href="https://www.nsfgrfp.org/" target="_blank" rel="noopener">NSF Graduate Research Fellowship</a>.
+        </section>
+
+        <section class="scholarships">
+          <h3>Funding you can apply for</h3>
+          <label v-if="!nationality" class="from">
+            Choose where you're applying from to see what you're eligible for:
+            <select v-model="nationality">
+              <option value="">Choose country</option>
+              <option v-for="c in COUNTRIES" :key="c.code" :value="c.code">{{ c.name }}</option>
+            </select>
+          </label>
+          <p v-if="!scholarships.length" class="sub">
+            No scholarships in our list for study in {{ countryLabel }}<template v-if="nationality">
+              for applicants from {{ countryName(nationality) }}</template>.
           </p>
+          <ul class="sch-list">
+            <li v-for="sch in scholarships" :key="sch.id">
+              <a :href="sch.url" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
+              <p class="sub">
+                {{ sch.provider }}. {{ levelLabel(sch.levels) }}. Covers {{ sch.covers }}.
+                <template v-if="sch.application_window">Application window: {{ sch.application_window }}.</template>
+              </p>
+              <p v-if="sch.notes" class="sub">{{ sch.notes }}</p>
+              <p class="elig" :class="sch.eligibility">
+                {{ sch.eligibility === "eligible" && nationality
+                  ? `Open to applicants from ${countryName(nationality)}`
+                  : "Check eligibility on the official page" }}
+              </p>
+            </li>
+          </ul>
+          <p class="sub">Rules and deadlines change every year: always confirm on the official page.</p>
         </section>
 
         <section>
@@ -210,6 +264,51 @@ h3 {
 
 .funding p + p {
   margin-top: 8px;
+}
+
+.from {
+  display: grid;
+  gap: 6px;
+  font-size: var(--t-xs);
+  margin-bottom: 10px;
+}
+
+.from select {
+  justify-self: start;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+}
+
+.sch-list {
+  margin: 0;
+  padding: 0;
+}
+
+.sch-list li {
+  list-style: none;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.sch-name {
+  font-weight: 700;
+}
+
+.elig {
+  margin-top: 4px;
+  font-size: var(--t-xs);
+  font-weight: 700;
+}
+
+.elig.eligible::before {
+  content: "";
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--line-systems);
+  margin-right: 6px;
 }
 
 .list {

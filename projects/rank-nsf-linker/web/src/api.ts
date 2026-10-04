@@ -45,6 +45,7 @@ export type Faculty = {
   name: string;
   university: string;
   university_id: string | null;
+  country: string | null;
   homepage: string | null;
   scholar_id: string | null;
   areas: string[];
@@ -80,6 +81,21 @@ export type Paper = {
 export type GrantPerson = { name: string; university: string; university_id: string | null };
 
 export type Grant = Award & { similarity: number; people: GrantPerson[] };
+
+export type Scholarship = {
+  id: string;
+  name: string;
+  provider: string;
+  destinations: string[];
+  levels: string[];
+  eligible_nationalities: string[];
+  covers: string;
+  application_window: string;
+  url: string;
+  verified: boolean;
+  notes: string;
+  eligibility: "eligible" | "check";
+};
 
 export type Query = { areas: string[]; goal: string };
 
@@ -117,6 +133,10 @@ export const api = {
     get<{ faculty: Faculty; awards: Award[] }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
   grants: (q: Query & { active: boolean; limit?: number }, signal?: AbortSignal) =>
     get<Grant[]>(`/grants${params({ ...q, active: q.active ? 1 : 0 })}`, signal),
+  scholarships: (country: string, nationality: string) =>
+    get<Scholarship[]>(
+      `/scholarships?country=${encodeURIComponent(country)}&nationality=${encodeURIComponent(nationality)}`,
+    ),
   papers: (name: string) =>
     get<{ dblp_url: string; papers: Paper[] }>(`/faculty/papers?name=${encodeURIComponent(name)}`),
 };

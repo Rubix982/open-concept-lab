@@ -36,7 +36,7 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
       <span class="kind">{{ person.match.kind === "paper" ? "Paper" : "NSF grant" }}<template v-if="person.match.year">, {{ person.match.year }}</template>:</span>
       {{ person.match.title }}
     </p>
-    <p class="funding">
+    <p v-if="!person.country || person.country === 'us'" class="funding">
       <span class="fund-dot" :class="{ on: person.active_awards > 0 }" aria-hidden="true"></span>
       <span v-if="person.active_awards > 0">
         {{ person.active_awards }} active NSF {{ person.active_awards === 1 ? "grant" : "grants" }},

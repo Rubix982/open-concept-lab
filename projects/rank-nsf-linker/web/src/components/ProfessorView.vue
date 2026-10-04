@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { api, type Award, type Faculty, type Paper } from "@/api";
 import { LINE_COLOR, formatMoney, formatYear } from "@/lines";
 import { areaIndex } from "@/store";
+import { countryName } from "@/countries";
 
 const props = defineProps<{ name: string; backLabel: string }>();
 defineEmits<{ back: [] }>();
@@ -100,7 +101,11 @@ function untilLabel(date: string | null): string {
 
       <section>
         <h3>Funding</h3>
-        <p v-if="activeAwards.length" class="funding-note">
+        <p v-if="person.country && person.country !== 'us' && !awards.length" class="funding-note">
+          Grant data for {{ countryName(person.country) }} isn't in Advisor Atlas yet, so this professor's funding
+          isn't shown. Ask them about funded PhD positions.
+        </p>
+        <p v-else-if="activeAwards.length" class="funding-note">
           <span class="fund-dot on" aria-hidden="true"></span>
           {{ activeAwards.length }} active NSF {{ activeAwards.length === 1 ? "grant" : "grants" }}, running until
           {{ untilLabel(fundedUntil) }}. Grants like these usually pay PhD students as research assistants, so
@@ -128,7 +133,9 @@ function untilLabel(date: string | null): string {
 
       <section>
         <h3>NSF grants</h3>
-        <p v-if="!awards.length" class="hint">No NSF grants linked to this professor.</p>
+        <p v-if="!awards.length" class="hint">
+          {{ person.country && person.country !== "us" ? "NSF funds US research only." : "No NSF grants linked to this professor." }}
+        </p>
         <ol class="awards">
           <li v-for="a in awards" :key="a.id" :class="{ active: a.active }">
             <a :href="a.url" target="_blank" rel="noopener" class="award-title">{{ a.title }}</a>

@@ -24,6 +24,7 @@ import (
 //	GET /explorer/faculty/profile?name=<name>
 //	GET /explorer/faculty/papers?name=<name>
 //	GET /explorer/grants?q=<goal>&areas=ml&active=1
+//	GET /explorer/scholarships?country=DE&nationality=PK&level=phd
 
 const (
 	maxRecentPapers = 12
@@ -233,6 +234,7 @@ type exploreFaculty struct {
 	Name          string          `json:"name"`
 	University    string          `json:"university"`
 	UniversityID  *string         `json:"university_id"`
+	Country       *string         `json:"country"` // ISO alpha-2, lowercase; grant data is US (NSF) only so far
 	Homepage      *string         `json:"homepage"`
 	ScholarID     *string         `json:"scholar_id"`
 	Areas         []string        `json:"areas"`
@@ -298,7 +300,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 			WHERE goal.q IS NOT NULL AND d.doc @@ goal.q
 			ORDER BY d.name, score DESC, d.year DESC NULLS LAST
 		)
-		SELECT f.name, f.university, u.id, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
+		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
 		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date,
 		       best.score, best.kind, best.title, best.year, best.url
 		FROM explorer_faculty f
@@ -323,7 +325,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		var f exploreFaculty
 		var areaPubs []byte
 		var match exploreWork
-		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
+		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
 			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward,
 			&f.GoalScore, &match.Kind, &match.Title, &match.Year, &match.URL); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read faculty", err)
@@ -352,7 +354,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 		names[i] = m.Name
 	}
 	rows, err := db.Query(`
-		SELECT f.name, f.university, u.id, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
+		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
 		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = ANY($1)`, pq.Array(names))
@@ -365,7 +367,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 	for rows.Next() {
 		var f exploreFaculty
 		var areaPubs []byte
-		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
+		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
 			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward); err != nil {
 			return nil, err
 		}
@@ -414,10 +416,10 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 	var f exploreFaculty
 	var areaPubs []byte
 	err = db.QueryRow(`
-		SELECT f.name, f.university, u.id, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
+		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
 		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
-		WHERE f.name = $1`, name).Scan(&f.Name, &f.University, &f.UniversityID, &f.Homepage, &f.ScholarID,
+		WHERE f.name = $1`, name).Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID,
 		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "professor not found", nil)
@@ -539,6 +541,7 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty/profile", getExplorerFacultyProfile)
 	r.Get("/explorer/faculty/papers", getExplorerFacultyPapers)
 	r.Get("/explorer/grants", getExplorerGrants)
+	r.Get("/explorer/scholarships", getExplorerScholarships)
 }
 
 type grantPerson struct {
