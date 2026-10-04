@@ -6,7 +6,9 @@ access (one request every few seconds here, every page cached in data/kaken/); A
 "Created by Advisor Atlas, based on KAKEN (NII)" with a link to each project. Only facts are kept
 (title, investigators, institution, amount, years, link) — no report text.
 
-Projects: review section / research field "Informatics", running in 2015 or later.
+Projects: research field "Informatics" (the pre-2018 classification) and every review section under
+Broad Section J (informatics, 2018 onward: "Medium-sized Section 60:...", "Basic Section 60050:
+Software-related", ...; names from KAKEN's review-section master), ending in 2015 or later.
 Names: KAKEN's English member record gives family and given names for most investigators; otherwise
 the katakana reading is romanised (Hepburn) so names compare with CSRankings' romaji spellings.
 Institutions are in Japanese; KAKEN's institution master (data/kaken/institution_master_kakenhi.xml,
@@ -40,12 +42,27 @@ def app_id() -> str:
     sys.exit("CINII_APP_ID is not set in server/.env")
 
 
-def fetch_page(start: int, key: str) -> bytes:
-    path = CACHE / f"informatics-{FROM_YEAR}-{start:06d}.xml"
+def review_sections() -> list[str]:
+    """English names of Broad Section J and every section under it, from the review-section master."""
+    path = CACHE / "review_section_master_kakenhi.xml"
+    if not path.exists():
+        sys.exit("data/kaken/review_section_master_kakenhi.xml missing (bitbucket.org/niijp/grants_masterxml_kaken)")
+    names = []
+    for el in ET.parse(path).getroot().iter("review_section"):
+        mext = next((c.text for c in el.findall("code") if c.get("type") == "mext"), "")
+        en = next((n.text for n in el.findall("name") if n.get("lang") == "en"), "")
+        if en and (mext == "J" or re.match(r"6[012](\d{3})?$", mext or "")):
+            names.append(en.strip())
+    return sorted(set(names))
+
+
+def fetch_page(query: str, start: int, key: str) -> bytes:
+    slug = "informatics" if query == "Informatics" else re.sub(r"[^0-9A-Za-z]+", "-", query)[:60]
+    path = CACHE / f"{slug}-{FROM_YEAR}-{start:06d}.xml"
     if path.exists():
         return path.read_bytes()
     q = urllib.parse.urlencode({"appid": key, "format": "xml", "rw": PAGE, "st": start, "lang": "en",
-                                "qd": "Informatics", "s1": FROM_YEAR, "o1": 3})
+                                "qd": query, "s1": FROM_YEAR, "o1": 3})
     req = urllib.request.Request(f"{API}?{q}", headers=UA)
     for attempt in range(4):
         try:
@@ -141,23 +158,33 @@ def main() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     english_institution = institution_names()
     key = app_id()
-    first = ET.fromstring(fetch_page(1, key))
-    total = int(text(first, "totalResults") or 0)
-    pages = [first] + [ET.fromstring(fetch_page(start, key)) for start in range(1 + PAGE, total + 1, PAGE)]
-    print(f"{total} KAKEN informatics projects in {len(pages)} pages")
+    pages = []
+    for query in ["Informatics"] + review_sections():
+        first = ET.fromstring(fetch_page(query, 1, key))
+        total = int(text(first, "totalResults") or 0)
+        pages += [first] + [ET.fromstring(fetch_page(query, start, key)) for start in range(1 + PAGE, total + 1, PAGE)]
+        print(f"  {query}: {total}")
+    print(f"{len(pages)} pages")
+    seen_numbers = set()
 
     grants, people = [], []
     for page in pages:
         for award in page.findall("grantAward"):
             number = award.get("awardNumber") or ""
             en, ja = summary(award, "en"), summary(award, "ja")
-            if not number or ja is None:
+            if not number or ja is None or number in seen_numbers:
                 continue
+            seen_numbers.add(number)
             title = text(en, "title") if en is not None else ""
             title = title or text(ja, "title")
+            # Ongoing projects carry their period only as attributes (no endFiscalYear element yet)
             period = ja.find("periodOfAward")
-            start = text(period, "startFiscalYear") if period is not None else ""
-            end = text(period, "endFiscalYear") if period is not None else ""
+            start = end = ""
+            if period is not None:
+                start = text(period, "startFiscalYear") or period.get("searchStartFiscalYear") or ""
+                end = text(period, "endFiscalYear") or period.get("searchEndFiscalYear") or ""
+            if end and int(end) < FROM_YEAR:
+                continue  # the API's period filter needs both ends, so older projects come back too
             amount = ja.find("overallAwardAmount")
             grants.append({
                 "funder": "kaken", "grant_id": number, "title": title, "abstract": "",

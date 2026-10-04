@@ -33,7 +33,7 @@ DATA = ROOT / "data" / "openalex"
 CACHE = DATA / "fields"
 API = "https://api.openalex.org/"
 PAUSE = 0.3
-TOP_PER_FIELD = 40
+TOP_PER_FIELD = 20  # most-cited per university and field; more would swamp the explorer
 WORKS_FROM = "2021-01-01"
 
 # OpenAlex field id -> (area id, area name, group). Computer Science (17) comes from CSRankings.
@@ -175,7 +175,8 @@ def main() -> None:
             break
         wanted = set(group)
         for wk in body.get("results", []):
-            authors = {a["author"]["id"].rsplit("/", 1)[-1] for a in wk.get("authorships") or [] if a.get("author")}
+            authors = {(a.get("author") or {}).get("id", "").rsplit("/", 1)[-1]
+                       for a in wk.get("authorships") or [] if (a.get("author") or {}).get("id")}
             venue = ((wk.get("primary_location") or {}).get("source") or {}).get("display_name") or ""
             for aid in authors & wanted:
                 works.append({"openalex_id": aid, "work_id": wk["id"].rsplit("/", 1)[-1],

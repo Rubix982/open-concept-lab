@@ -14,6 +14,10 @@ import (
 // explorer and the semantic index treat them like CSRankings faculty. A name CSRankings already
 // lists is skipped: same-name people can't be told apart here.
 
+// openAlexMaxWorksPerPerson caps each OpenAlex researcher's papers (fewer than DBLP's 30: there are
+// many more of them, and each paper is a vector in the semantic index).
+const openAlexMaxWorksPerPerson = 10
+
 var (
 	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index"}
 	fieldsWorksColumns  = []string{"openalex_id", "work_id", "title", "year", "venue", "doi"}
@@ -131,7 +135,7 @@ func loadOpenAlexResearcherWorks(mainCtx *colly.Context) error {
 		  JOIN professors pr ON pr.name = p.name AND pr.source = 'openalex'
 		  WHERE w.title <> '' AND w.year ~ '^[0-9]{4}$'
 		) x WHERE n <= %d
-		ON CONFLICT DO NOTHING`, dblpMaxPapersPerPerson))
+		ON CONFLICT DO NOTHING`, openAlexMaxWorksPerPerson))
 	if err != nil {
 		return fmt.Errorf("failed to load OpenAlex researcher works: %w", err)
 	}

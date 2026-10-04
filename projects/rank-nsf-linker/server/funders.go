@@ -320,7 +320,7 @@ func linkFunderGrants(mainCtx *colly.Context) error {
 		if err := rows.Scan(&funder, &people, &linked, &profs); err != nil {
 			return err
 		}
-		logger.Infof(mainCtx, "🔗 %s: linked %d of %d investigators to %d CSRankings faculty", funder, linked, people, profs)
+		logger.Infof(mainCtx, "🔗 %s: linked %d of %d investigators to %d faculty and researchers", funder, linked, people, profs)
 	}
 	return rows.Err()
 }
