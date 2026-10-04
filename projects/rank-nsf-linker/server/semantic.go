@@ -190,11 +190,13 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		SELECT md5(d.name || '|' || d.kind || '|' || d.ref)::uuid::text,
 		       d.name, d.kind, d.ref, COALESCE(d.title, ''), d.year, d.url, f.areas, COALESCE(u.id, ''),
 		       -- '|| ''''' detoasts first: on Postgres 18.2 left() on a TOASTed value can split a UTF-8 character
-		       COALESCE(d.title, '') || CASE WHEN d.kind = 'award' THEN '. ' || left(COALESCE(a.abstract, '') || '', 700) ELSE '' END
+		       COALESCE(d.title, '') || CASE WHEN d.kind = 'award'
+		         THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700) ELSE '' END
 		FROM explorer_work_docs d
 		JOIN explorer_faculty f ON f.name = d.name
 		LEFT JOIN explorer_universities u ON u.name = f.university
-		LEFT JOIN award a ON d.kind = 'award' AND a.id = d.ref`)
+		LEFT JOIN award a ON d.kind = 'award' AND a.id = d.ref
+		LEFT JOIN funder_grants fg ON d.kind = 'award' AND d.ref = fg.funder || ':' || fg.grant_id`)
 	if err != nil {
 		return fmt.Errorf("failed to read work docs: %w", err)
 	}

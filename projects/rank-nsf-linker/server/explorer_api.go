@@ -118,6 +118,7 @@ type exploreUniversity struct {
 	GoalMatches           int             `json:"goal_matches"` // faculty whose NSF work matches the goal text
 	AreaFaculty           json.RawMessage `json:"area_faculty,omitempty"`
 	AreaFunded            json.RawMessage `json:"area_funded,omitempty"`
+	GrantFunders          []string        `json:"grant_funders,omitempty"` // funders whose grants are loaded for this country
 }
 
 // getExplorerUniversities lists universities with faculty in the selected areas (all areas if
@@ -227,6 +228,9 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		return
 	}
 	u.AreaFaculty, u.AreaFunded = areaFaculty, areaFunded
+	if u.Country != nil {
+		u.GrantFunders = grantFundersByCountry[*u.Country]
+	}
 	writeJSON(w, http.StatusOK, u)
 }
 
@@ -244,15 +248,17 @@ type exploreFaculty struct {
 	TotalAwards   int             `json:"total_awards"`
 	ActiveFunding int64           `json:"active_funding"`
 	LastAward     *time.Time      `json:"last_award_date"`
+	Funding       json.RawMessage `json:"funding"` // per funder: active/total grants and active amount, own currency
 	GoalScore     *float64        `json:"goal_score,omitempty"`
 	Match         *exploreWork    `json:"match,omitempty"` // the professor's award or paper closest to the goal
 }
 
 type exploreWork struct {
-	Kind  *string `json:"kind"` // "award" | "paper"
-	Title *string `json:"title"`
-	Year  *int    `json:"year"`
-	URL   *string `json:"url"`
+	Funder *string `json:"funder,omitempty"` // for awards: "nsf", "marsden", "arc", ...
+	Kind   *string `json:"kind"`             // "award" | "paper"
+	Title  *string `json:"title"`
+	Year   *int    `json:"year"`
+	URL    *string `json:"url"`
 }
 
 // getExplorerFaculty ranks faculty in the selected areas: by how well their NSF work matches
@@ -293,7 +299,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		WITH goal AS (SELECT CASE WHEN $2 = '' THEN NULL ELSE websearch_to_tsquery('english', $2) END AS q),
 		best AS ( -- each professor's single best-matching award or paper, favouring recent work:
 		          -- the text match decays by half about every 5.5 years
-			SELECT DISTINCT ON (d.name) d.name, d.kind, d.title, d.year, d.url,
+			SELECT DISTINCT ON (d.name) d.name, d.kind, d.ref, d.title, d.year, d.url,
 			       ts_rank_cd(d.doc, goal.q, 1)
 			         * exp(-greatest(extract(year FROM current_date) - COALESCE(d.year, 2010), 0) / 8.0) AS score
 			FROM explorer_work_docs d, goal
@@ -301,8 +307,8 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 			ORDER BY d.name, score DESC, d.year DESC NULLS LAST
 		)
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date,
-		       best.score, best.kind, best.title, best.year, best.url
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding,
+		       best.score, best.kind, best.ref, best.title, best.year, best.url
 		FROM explorer_faculty f
 		CROSS JOIN goal
 		LEFT JOIN best ON best.name = f.name
@@ -323,16 +329,21 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 	faculty := []exploreFaculty{}
 	for rows.Next() {
 		var f exploreFaculty
-		var areaPubs []byte
+		var areaPubs, funding []byte
 		var match exploreWork
+		var matchRef *string
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward,
-			&f.GoalScore, &match.Kind, &match.Title, &match.Year, &match.URL); err != nil {
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding,
+			&f.GoalScore, &match.Kind, &matchRef, &match.Title, &match.Year, &match.URL); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read faculty", err)
 			return
 		}
-		f.AreaPubs = areaPubs
+		f.AreaPubs, f.Funding = areaPubs, funding
 		if match.Title != nil {
+			if match.Kind != nil && *match.Kind == "award" && matchRef != nil {
+				funder := funderOfRef(*matchRef)
+				match.Funder = &funder
+			}
 			f.Match = &match
 		}
 		faculty = append(faculty, f)
@@ -355,7 +366,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 	}
 	rows, err := db.Query(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = ANY($1)`, pq.Array(names))
 	if err != nil {
@@ -366,12 +377,12 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 	byName := map[string]exploreFaculty{}
 	for rows.Next() {
 		var f exploreFaculty
-		var areaPubs []byte
+		var areaPubs, funding []byte
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward); err != nil {
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding); err != nil {
 			return nil, err
 		}
-		f.AreaPubs = areaPubs
+		f.AreaPubs, f.Funding = areaPubs, funding
 		byName[f.Name] = f
 	}
 	if err := rows.Err(); err != nil {
@@ -388,6 +399,10 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 		work := m.Work
 		f.GoalScore = &score
 		f.Match = &exploreWork{Kind: &work.Kind, Title: &work.Title, Year: work.Year, URL: work.URL}
+		if work.Kind == "award" {
+			funder := funderOfRef(work.Ref)
+			f.Match.Funder = &funder
+		}
 		faculty = append(faculty, f)
 	}
 	return faculty, nil
@@ -395,8 +410,10 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 
 type exploreAward struct {
 	ID       string     `json:"id"`
+	Funder   string     `json:"funder"`   // "nsf", "marsden", "arc", ...
+	Currency string     `json:"currency"` // ISO 4217
 	Title    string     `json:"title"`
-	Amount   int64      `json:"amount"`
+	Amount   float64    `json:"amount"`
 	Starts   *time.Time `json:"starts"`
 	Ends     *time.Time `json:"ends"`
 	Active   bool       `json:"active"`
@@ -414,13 +431,13 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 
 	var f exploreFaculty
-	var areaPubs []byte
+	var areaPubs, funding []byte
 	err = db.QueryRow(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = $1`, name).Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID,
-		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward)
+		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "professor not found", nil)
 		return
@@ -429,7 +446,7 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "failed to load professor", err)
 		return
 	}
-	f.AreaPubs = areaPubs
+	f.AreaPubs, f.Funding = areaPubs, funding
 
 	rows, err := db.Query(`
 		SELECT DISTINCT ON (a.id) a.id, a.award_title_text, COALESCE(a.award_amount, 0),
@@ -457,12 +474,39 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		a.Active = a.Ends != nil && a.Ends.After(now)
 		a.Abstract = strings.TrimSpace(strings.ReplaceAll(a.Abstract, "<br/>", " "))
 		a.URL = "https://www.nsf.gov/awardsearch/showAward?AWD_ID=" + url.QueryEscape(a.ID)
+		a.Funder, a.Currency = "nsf", "USD"
 		awards = append(awards, a)
 	}
 	if err := rows.Err(); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
 		return
 	}
+	// Grants from other funders (Marsden, ARC, ...).
+	frows, err := db.Query(`
+		SELECT g.funder || ':' || g.grant_id, g.funder, COALESCE(g.currency, ''), g.title, COALESCE(g.amount, 0),
+		       g.starts, g.ends, p.role, left(COALESCE(g.abstract, '') || '', 700), COALESCE(g.url, '')
+		FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
+		WHERE p.professor = $1`, name)
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to load grants", err)
+		return
+	}
+	defer frows.Close()
+	for frows.Next() {
+		var a exploreAward
+		if err := frows.Scan(&a.ID, &a.Funder, &a.Currency, &a.Title, &a.Amount, &a.Starts, &a.Ends, &a.Role,
+			&a.Abstract, &a.URL); err != nil {
+			writeError(w, r, http.StatusInternalServerError, "failed to read grants", err)
+			return
+		}
+		a.Active = a.Ends != nil && a.Ends.After(now)
+		awards = append(awards, a)
+	}
+	if err := frows.Err(); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to read grants", err)
+		return
+	}
+
 	// Active first, then newest.
 	sortAwards(awards)
 
@@ -542,6 +586,7 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty/papers", getExplorerFacultyPapers)
 	r.Get("/explorer/grants", getExplorerGrants)
 	r.Get("/explorer/scholarships", getExplorerScholarships)
+	r.Get("/explorer/funders", getExplorerFunders)
 }
 
 type grantPerson struct {
@@ -631,6 +676,29 @@ func getExplorerGrants(w http.ResponseWriter, r *http.Request) {
 		}
 		a.Active = a.Ends != nil && a.Ends.After(now)
 		a.URL = "https://www.nsf.gov/awardsearch/showAward?AWD_ID=" + url.QueryEscape(a.ID)
+		a.Funder, a.Currency = "nsf", "USD"
+		awards[a.ID] = a
+	}
+	rows.Close()
+
+	// Other funders' grants are referenced as "<funder>:<grant id>".
+	rows, err = db.Query(`
+		SELECT funder || ':' || grant_id, funder, COALESCE(currency, ''), title, COALESCE(amount, 0), starts, ends,
+		       left(COALESCE(abstract, '') || '', 400), COALESCE(url, '')
+		FROM funder_grants WHERE funder || ':' || grant_id = ANY($1)`, pq.Array(ids))
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to load grants", err)
+		return
+	}
+	for rows.Next() {
+		var a exploreAward
+		if err := rows.Scan(&a.ID, &a.Funder, &a.Currency, &a.Title, &a.Amount, &a.Starts, &a.Ends, &a.Abstract,
+			&a.URL); err != nil {
+			rows.Close()
+			writeError(w, r, http.StatusInternalServerError, "failed to read grants", err)
+			return
+		}
+		a.Active = a.Ends != nil && a.Ends.After(now)
 		awards[a.ID] = a
 	}
 	rows.Close()
@@ -696,4 +764,12 @@ func hasPerson(people []grantPerson, name string) bool {
 		}
 	}
 	return false
+}
+
+// funderOfRef: "marsden:20-UOA-001" -> "marsden"; a bare NSF award id -> "nsf".
+func funderOfRef(ref string) string {
+	if i := strings.Index(ref, ":"); i > 0 {
+		return ref[:i]
+	}
+	return "nsf"
 }

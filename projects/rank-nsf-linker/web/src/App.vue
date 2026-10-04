@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, nationality } from "@/store";
+import { areaIndex, areas, funders, nationality } from "@/store";
 import { COUNTRIES } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
@@ -82,6 +82,7 @@ async function load() {
 }
 
 async function loadAreas() {
+  api.funders().then((f) => (funders.value = f)).catch(() => {});
   try {
     areas.value = await api.areas();
     if (!loading.value && !error.value) ready.value = true;
@@ -151,7 +152,7 @@ const summary = computed(() => {
   const g = grants.value.length;
   const grantText = grantsLoading.value
     ? ""
-    : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}NSF ${g === 1 ? "grant" : "grants"}`;
+    : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}${g === 1 ? "grant" : "grants"}`;
   return goal.value
     ? `${people.toLocaleString()} faculty at ${n} universities work on this${grantText}`
     : `${people.toLocaleString()} faculty at ${n} universities`;
@@ -176,7 +177,7 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
   goal.value
     ? [
         { id: "faculty", label: "Faculty" },
-        { id: "grants", label: "NSF grants" },
+        { id: "grants", label: "Grants" },
         { id: "universities", label: "Universities" },
       ]
     : [
@@ -319,7 +320,7 @@ function removeArea(area: string) {
       </ul>
 
       <footer class="foot">
-        Data from CSRankings, NSF, IPEDS and DBLP.
+        Data from CSRankings, NSF, the Australian Research Council, the Marsden Fund, IPEDS and DBLP.
         <button type="button" class="link" @click="about?.showModal()">About the data</button>
       </footer>
     </section>
@@ -372,9 +373,10 @@ function removeArea(area: string) {
         their papers at top venues. Areas count papers from the last 10 years.
       </p>
       <p>
-        <strong>Grants</strong> are NSF awards from 2010 to 2025, linked to a professor only when the name matches
-        and either the university or the email domain confirms it. Funding from industry, other agencies and
-        universities isn't included, so "no active grant" doesn't mean "no funding".
+        <strong>Grants</strong> come from NSF (US, 2010–2025), the Australian Research Council and New Zealand's
+        Marsden Fund. A grant is linked to a professor only when the name matches and the university (or, for NSF,
+        the email domain) confirms it. Funding from industry, other agencies and universities isn't included, so
+        "no active grant" doesn't mean "no funding".
       </p>
       <p><strong>Recent papers</strong> come from <a href="https://dblp.org" target="_blank" rel="noopener">DBLP</a>.</p>
       <p>

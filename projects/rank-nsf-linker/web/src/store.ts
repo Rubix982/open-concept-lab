@@ -1,5 +1,5 @@
 import { computed, ref, watch } from "vue";
-import type { Area } from "@/api";
+import type { Area, Funders } from "@/api";
 
 // The area taxonomy, loaded once and shared by every component that labels an area.
 export const areas = ref<Area[]>([]);
@@ -23,3 +23,14 @@ watch(nationality, (v) => {
     // private mode or blocked storage: keep it for this visit only
   }
 });
+
+// Funder names, and which funders' grants are loaded for each country (from /explorer/funders).
+export const funders = ref<Funders>({ names: { nsf: "NSF" }, by_country: { us: ["nsf"] } });
+
+export function funderName(code: string | null | undefined): string {
+  return (code && funders.value.names[code]) || (code ?? "").toUpperCase();
+}
+
+export function fundersFor(country: string | null | undefined): string[] {
+  return funders.value.by_country[(country ?? "us").toLowerCase()] ?? [];
+}

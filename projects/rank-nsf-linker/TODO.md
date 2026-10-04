@@ -102,7 +102,7 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [ ] Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with
       `|| ''` (detoast first) in semantic.go and explorer_api.go
 - [ ] Non-US universities have no tuition / R1 data (IPEDS is US-only)
-- [x] Explicit search (Enter / Search button); results view with Faculty, NSF grants (active by default,
+- [x] Explicit search (Enter / Search button); results view with Faculty, Grants (active by default,
       collaborative awards merged) and Universities tabs; map fits to matching universities (`/explorer/grants`)
 - [ ] Publishing: not deployed anywhere public yet
 - [ ] Europe: see "European funding data" below
@@ -127,9 +127,13 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Curated scholarships (`backup/scholarships.csv`, 29 programmes, official links), served by destination and
       nationality (`/explorer/scholarships`); "Applying from" in the filter bar; drawer section per university
 - [x] NSF wording only for US universities; non-US faculty no longer show "no NSF grants"
-- [ ] Generic funder model (grants + named investigators + link to faculty), then importers in order:
-      ANR (France), UKRI GtR (UK), ARC (Australia), CORDIS ERC PIs (EU), SNSF (Switzerland)
-- [ ] Needs the user: RGC Hong Kong reuse permission; CiNii app ID (KAKEN Japan); Marsden (NZ) manual download
+- [x] Generic funder model: `funder_grants` + `funder_grant_people` (migration 13), common CSV from
+      `server/scripts/grants/*.py`, steps 18 (Load Funder Grants) and 19 (Link Funder Grants: name + institution,
+      initial-only names need a CS field or an uncommon surname). UI names the funder and its currency.
+- [x] ARC (Australia, FoR 46 + 08): 2,077 grants → 328 faculty (147 with an active grant)
+- [x] Marsden (NZ, manual xlsx in `data/marsden/`): 1,313 grants → 41 faculty
+- [ ] Next importers: UKRI GtR (UK), ANR (France), CORDIS ERC PIs (EU), SNSF (Switzerland), KAKEN (Japan,
+      throttled, non-profit terms, attribution), RGC Hong Kong (facts only)
 - [ ] US STEM + medicine: NIH RePORTER, OpenAlex (key from the user), ~45 field areas
 - [ ] DAAD database JSON (71 programmes for Pakistan) as a scholarship feed
 - [ ] Skip: China NSFC, Singapore, Italy PRIN (blocked PDFs), DFG GEPRIS (disallowed), Korea NTIS (key needs Korean affiliation)

@@ -155,8 +155,15 @@ func runMigrations(ctx *colly.Context) error {
 		}
 	}
 
-	// For the order, we need to ensure that the migrations are run in the correct sequence
-	sort.Strings(sqlFiles)
+	// Run in numeric order of the "<n>_" prefix: a plain string sort puts 10_… before 1_….
+	migrationNumber := func(name string) int {
+		n, err := strconv.Atoi(strings.SplitN(name, "_", 2)[0])
+		if err != nil {
+			return 1 << 30
+		}
+		return n
+	}
+	sort.SliceStable(sqlFiles, func(i, j int) bool { return migrationNumber(sqlFiles[i]) < migrationNumber(sqlFiles[j]) })
 
 	for _, fname := range sqlFiles {
 		path := filepath.Join(MIGRATIONS_DIR, fname)
@@ -1398,6 +1405,8 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Link IPEDS Institutions", linkIpedsInstitutions},
 		{"Merge Duplicate Institutions", mergeDuplicateInstitutions},
 		{"Link NSF Investigators To Professors", linkInvestigatorsToProfessors},
+		{"Load Funder Grants", loadFunderGrants},
+		{"Link Funder Grants", linkFunderGrants},
 		{"Load DBLP Papers", loadDblpPapers},
 		{"Build Explorer Tables", buildExplorerTables},
 		{"Embed Explorer Work", embedExplorerWork},

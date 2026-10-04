@@ -101,7 +101,7 @@ onMounted(() => {
     const line = document.createElement("div");
     line.textContent = props.useGoal
       ? `${p.goal} faculty with work matching your goal`
-      : `${p.faculty} faculty in your areas, ${p.funded} with an active NSF grant`;
+      : `${p.faculty} faculty in your areas, ${p.funded} with an active research grant`;
     el.append(name, line);
     hover?.remove();
     hover = new mapboxgl.Popup({ closeButton: false, offset: 12, className: "uni-tip" })

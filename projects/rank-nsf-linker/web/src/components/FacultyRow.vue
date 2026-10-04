@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { Faculty } from "@/api";
 import { LINE_COLOR, formatMoney } from "@/lines";
-import { areaIndex } from "@/store";
+import { areaIndex, funderName, fundersFor } from "@/store";
 
 const props = defineProps<{ person: Faculty; showUniversity?: boolean; selectedAreas: string[] }>();
 defineEmits<{ open: [name: string] }>();
@@ -19,6 +19,11 @@ const tags = computed(() => {
   });
 });
 
+// The funder with the most active grants (then most grants overall) speaks for the row.
+const funding = computed(() => props.person.funding?.[0] ?? null);
+const covered = computed(() => fundersFor(props.person.country));
+const coveredNames = computed(() => covered.value.map(funderName).join(" or "));
+
 // CSRankings disambiguates namesakes with a number ("Wei Wang 0001"); students don't need it.
 const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
 </script>
@@ -33,17 +38,17 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
       <span v-for="t in tags" :key="t.area" class="tag" :style="{ '--c': t.color }">{{ t.name }}</span>
     </div>
     <p v-if="person.match" class="match">
-      <span class="kind">{{ person.match.kind === "paper" ? "Paper" : "NSF grant" }}<template v-if="person.match.year">, {{ person.match.year }}</template>:</span>
+      <span class="kind">{{ person.match.kind === "paper" ? "Paper" : `${funderName(person.match.funder ?? "nsf")} grant` }}<template v-if="person.match.year">, {{ person.match.year }}</template>:</span>
       {{ person.match.title }}
     </p>
-    <p v-if="!person.country || person.country === 'us'" class="funding">
-      <span class="fund-dot" :class="{ on: person.active_awards > 0 }" aria-hidden="true"></span>
-      <span v-if="person.active_awards > 0">
-        {{ person.active_awards }} active NSF {{ person.active_awards === 1 ? "grant" : "grants" }},
-        <span class="num">{{ formatMoney(person.active_funding) }}</span>
+    <p v-if="funding || covered.length" class="funding">
+      <span class="fund-dot" :class="{ on: (funding?.active ?? 0) > 0 }" aria-hidden="true"></span>
+      <span v-if="funding && funding.active > 0">
+        {{ funding.active }} active {{ funderName(funding.funder) }} {{ funding.active === 1 ? "grant" : "grants" }},
+        <span class="num">{{ formatMoney(funding.active_amount, funding.currency) }}</span>
       </span>
-      <span v-else-if="person.total_awards > 0">No active NSF grant ({{ person.total_awards }} past)</span>
-      <span v-else>No NSF grants on record</span>
+      <span v-else-if="funding">No active {{ funderName(funding.funder) }} grant ({{ funding.total }} past)</span>
+      <span v-else>No {{ coveredNames }} grants on record</span>
     </p>
   </li>
 </template>

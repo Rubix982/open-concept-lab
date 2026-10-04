@@ -27,19 +27,28 @@ SELECT DISTINCT ON (pa.name) pa.name, COALESCE(p.affiliation, pa.affiliation) AS
 FROM professor_areas pa LEFT JOIN professors p ON p.name = pa.name
 ORDER BY pa.name, (p.affiliation = pa.affiliation) DESC, pa.year DESC;
 
+-- Every grant of every linked professor: NSF (id = award id) and other funders
+-- (id = '<funder>:<grant id>'), each in its own currency.
 CREATE TEMP TABLE x_awards ON COMMIT DROP AS
-SELECT DISTINCT i.professor AS name, a.id, a.award_title_text, a.abstract, a.award_amount,
-       NULLIF(a.award_effective_date, '')::date AS starts, NULLIF(a.award_expiry_date, '')::date AS ends
+SELECT DISTINCT i.professor AS name, a.id, a.award_title_text, a.abstract, a.award_amount::numeric AS award_amount,
+       NULLIF(a.award_effective_date, '')::date AS starts, NULLIF(a.award_expiry_date, '')::date AS ends,
+       'nsf'::text AS funder, 'USD'::text AS currency,
+       'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || a.id AS url
 FROM nsf_investigators i
 JOIN award_pi_rel r ON r.nsf_id = i.nsf_id
 JOIN award a ON a.id = r.award_id
-WHERE i.professor IS NOT NULL;
+WHERE i.professor IS NOT NULL
+UNION
+SELECT DISTINCT p.professor, g.funder || ':' || g.grant_id, g.title, g.abstract, g.amount,
+       g.starts, g.ends, g.funder, g.currency, g.url
+FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
+WHERE p.professor IS NOT NULL;
 
 INSERT INTO explorer_faculty (name, university, homepage, scholar_id, areas, area_pubs, recent_pubs,
-                              active_awards, total_awards, active_funding, last_award_date)
+                              active_awards, total_awards, active_funding, last_award_date, funding)
 SELECT f.name, f.university, p.homepage, NULLIF(NULLIF(p.scholar_id, ''), 'NOSCHOLARPAGE'),
        f.areas, f.area_pubs, f.recent_pubs,
-       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start
+       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding
 FROM (
   SELECT x.name, a.university, array_agg(x.area ORDER BY x.pubs DESC) AS areas,
          jsonb_object_agg(x.area, round(x.pubs::numeric)) AS area_pubs, sum(x.pubs) AS recent_pubs
@@ -51,14 +60,24 @@ LEFT JOIN (
   SELECT name,
          count(*) FILTER (WHERE ends >= current_date) AS active,
          count(*) AS total,
-         COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date), 0) AS active_funding,
+         -- USD, NSF only; other currencies are in funding
+         COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date AND funder = 'nsf'), 0) AS active_funding,
          max(starts) AS last_start
   FROM x_awards GROUP BY name
-) w ON w.name = f.name;
+) w ON w.name = f.name
+LEFT JOIN (
+  SELECT name, jsonb_agg(jsonb_build_object('funder', funder, 'currency', currency, 'active', active,
+                                            'total', total, 'active_amount', active_amount)
+                         ORDER BY active DESC, total DESC) AS funding
+  FROM (SELECT name, funder, currency,
+               count(*) FILTER (WHERE ends >= current_date) AS active, count(*) AS total,
+               COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date), 0) AS active_amount
+        FROM x_awards GROUP BY name, funder, currency) z
+  GROUP BY name
+) fu ON fu.name = f.name;
 
 INSERT INTO explorer_work_docs (name, kind, ref, title, year, url, doc)
-SELECT x.name, 'award', x.id, x.award_title_text, extract(year FROM x.starts)::int,
-       'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || x.id,
+SELECT x.name, 'award', x.id, x.award_title_text, extract(year FROM x.starts)::int, x.url,
        setweight(to_tsvector('english', COALESCE(x.award_title_text, '')), 'A')
        || setweight(to_tsvector('english', COALESCE(x.abstract, '')), 'B')
 FROM x_awards x WHERE x.name IN (SELECT name FROM explorer_faculty)
@@ -117,6 +136,6 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 		       (SELECT count(*) FROM explorer_universities)`).Scan(&faculty, &funded, &universities); err != nil {
 		return fmt.Errorf("failed to count explorer rows: %w", err)
 	}
-	logger.Infof(mainCtx, "🧭 Explorer: %d faculty (%d with active NSF funding) at %d universities", faculty, funded, universities)
+	logger.Infof(mainCtx, "🧭 Explorer: %d faculty (%d with an active grant) at %d universities", faculty, funded, universities)
 	return nil
 }

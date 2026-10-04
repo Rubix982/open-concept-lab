@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import type { Grant } from "@/api";
 import { formatMoney, formatYear } from "@/lines";
+import { funderName } from "@/store";
 
 const props = defineProps<{ grant: Grant }>();
 defineEmits<{ openPerson: [name: string, universityId: string | null] }>();
@@ -18,8 +19,8 @@ const status = computed(() => {
   <li class="grant" :class="{ active: grant.active }">
     <a :href="grant.url" target="_blank" rel="noopener" class="title">{{ grant.title }}</a>
     <p class="meta">
-      <strong>{{ status }}</strong>,
-      <span class="num">{{ formatMoney(grant.amount) }}</span>,
+      <strong>{{ status }}</strong>, {{ funderName(grant.funder) }},
+      <span class="num">{{ formatMoney(grant.amount, grant.currency) }}</span>,
       started {{ formatYear(grant.starts) }}
     </p>
     <p v-if="grant.abstract" class="abstract">{{ grant.abstract }}&hellip;</p>

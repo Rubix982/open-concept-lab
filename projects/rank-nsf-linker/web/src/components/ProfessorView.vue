@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { api, type Award, type Faculty, type Paper } from "@/api";
 import { LINE_COLOR, formatMoney, formatYear } from "@/lines";
-import { areaIndex } from "@/store";
+import { areaIndex, funderName, fundersFor } from "@/store";
 import { countryName } from "@/countries";
 
 const props = defineProps<{ name: string; backLabel: string }>();
@@ -54,6 +54,9 @@ const areaList = computed(() =>
 );
 
 const activeAwards = computed(() => awards.value.filter((a) => a.active));
+const activeFunderNames = computed(() =>
+  [...new Set(activeAwards.value.map((a) => funderName(a.funder)))].join(" and "),
+);
 const fundedUntil = computed(() => {
   const ends = activeAwards.value.map((a) => a.ends ?? "").sort();
   return ends[ends.length - 1] ?? "";
@@ -101,19 +104,19 @@ function untilLabel(date: string | null): string {
 
       <section>
         <h3>Funding</h3>
-        <p v-if="person.country && person.country !== 'us' && !awards.length" class="funding-note">
+        <p v-if="!fundersFor(person.country).length && !awards.length" class="funding-note">
           Grant data for {{ countryName(person.country) }} isn't in Advisor Atlas yet, so this professor's funding
           isn't shown. Ask them about funded PhD positions.
         </p>
         <p v-else-if="activeAwards.length" class="funding-note">
           <span class="fund-dot on" aria-hidden="true"></span>
-          {{ activeAwards.length }} active NSF {{ activeAwards.length === 1 ? "grant" : "grants" }}, running until
+          {{ activeAwards.length }} active {{ activeFunderNames }} {{ activeAwards.length === 1 ? "grant" : "grants" }}, running until
           {{ untilLabel(fundedUntil) }}. Grants like these usually pay PhD students as research assistants, so
           it's worth asking about openings when you write.
         </p>
         <p v-else class="funding-note">
           <span class="fund-dot" aria-hidden="true"></span>
-          No active NSF grant on record. They may be funded by industry or other agencies, which this data
+          No active {{ fundersFor(person.country).map(funderName).join(" or ") || "research" }} grant on record. They may be funded by industry or other agencies, which this data
           doesn't cover, so ask.
         </p>
       </section>
@@ -132,15 +135,15 @@ function untilLabel(date: string | null): string {
       </section>
 
       <section>
-        <h3>NSF grants</h3>
+        <h3>Research grants</h3>
         <p v-if="!awards.length" class="hint">
-          {{ person.country && person.country !== "us" ? "NSF funds US research only." : "No NSF grants linked to this professor." }}
+          No grants linked to this professor in the funders Advisor Atlas covers.
         </p>
         <ol class="awards">
           <li v-for="a in awards" :key="a.id" :class="{ active: a.active }">
             <a :href="a.url" target="_blank" rel="noopener" class="award-title">{{ a.title }}</a>
             <p class="meta">
-              <span class="num">{{ formatMoney(a.amount) }}</span>,
+              {{ funderName(a.funder) }}, <span class="num">{{ formatMoney(a.amount, a.currency) }}</span>,
               {{ formatYear(a.starts) }}&ndash;{{ formatYear(a.ends) }}<template v-if="a.role">, {{ a.role }}</template>
               <strong v-if="a.active">, active</strong>
             </p>

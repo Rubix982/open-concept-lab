@@ -34,7 +34,7 @@ function toggle(area: string) {
           class="stop"
           :class="{ on: modelValue.includes(a.area) }"
           :aria-pressed="modelValue.includes(a.area)"
-          :title="`${a.faculty} faculty, ${a.funded} with an active NSF grant`"
+          :title="`${a.faculty} faculty, ${a.funded} with an active research grant`"
           @click="toggle(a.area)"
         >
           {{ a.name }}

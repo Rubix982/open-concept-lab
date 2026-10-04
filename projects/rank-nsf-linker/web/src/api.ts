@@ -32,9 +32,11 @@ export type UniversityDetail = UniversitySummary & {
   grad_enrollment?: number;
   area_faculty: Record<string, number>;
   area_funded: Record<string, number>;
+  grant_funders?: string[];
 };
 
 export type Work = {
+  funder?: string;
   kind: "award" | "paper";
   title: string;
   year: number | null;
@@ -55,12 +57,25 @@ export type Faculty = {
   total_awards: number;
   active_funding: number;
   last_award_date: string | null;
+  funding: FundingEntry[] | null;
   goal_score?: number;
   match?: Work;
 };
 
+export type FundingEntry = {
+  funder: string;
+  currency: string;
+  active: number;
+  total: number;
+  active_amount: number;
+};
+
+export type Funders = { names: Record<string, string>; by_country: Record<string, string[]> };
+
 export type Award = {
   id: string;
+  funder: string;
+  currency: string;
   title: string;
   amount: number;
   starts: string | null;
@@ -124,6 +139,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 export const api = {
   areas: () => get<Area[]>("/areas"),
+  funders: () => get<Funders>("/funders"),
   universities: (q: Query, signal?: AbortSignal) =>
     get<UniversitySummary[]>(`/universities${params(q)}`, signal),
   university: (id: string) => get<UniversityDetail>(`/universities/${encodeURIComponent(id)}`),

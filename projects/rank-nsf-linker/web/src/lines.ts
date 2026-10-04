@@ -20,10 +20,18 @@ export const INK_HEX = "#1D2A3A";
 
 export const GROUP_ORDER = ["AI", "Systems", "Theory", "Interdisciplinary"];
 
-export function formatMoney(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}k`;
-  return `$${n}`;
+// "$2.6M", "A$7.8M", "NZ$853K", "€1.2M"
+export function formatMoney(n: number, currency = "USD"): string {
+  try {
+    return new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: currency || "USD",
+      notation: "compact",
+      maximumFractionDigits: n >= 10_000_000 ? 0 : 1,
+    }).format(n);
+  } catch {
+    return `${Math.round(n).toLocaleString("en")} ${currency}`;
+  }
 }
 
 export function formatYear(date: string | null): string {

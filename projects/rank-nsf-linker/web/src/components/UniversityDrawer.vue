@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { api, type Faculty, type Query, type Scholarship, type UniversityDetail } from "@/api";
 import { COUNTRIES, countryName } from "@/countries";
-import { nationality } from "@/store";
+import { funderName, nationality } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 
@@ -47,6 +47,9 @@ watch(
   },
 );
 const isUS = computed(() => (uni.value?.country ?? "us") === "us");
+// Funders whose grants are loaded for this university's country (NSF for the US, ARC for Australia, ...).
+const grantFunders = computed(() => uni.value?.grant_funders ?? (isUS.value ? ["nsf"] : []));
+const grantFunderNames = computed(() => grantFunders.value.map(funderName).join(" or "));
 const countryLabel = computed(() => countryName(uni.value?.country));
 function levelLabel(levels: string[]) {
   const names: Record<string, string> = { masters: "Master's", phd: "PhD", postdoc: "Postdoc" };
@@ -54,7 +57,9 @@ function levelLabel(levels: string[]) {
 }
 
 const hasAreas = computed(() => props.query.areas.length > 0);
-const funded = computed(() => faculty.value.filter((f) => f.active_awards > 0).length);
+const funded = computed(
+  () => faculty.value.filter((f) => f.active_awards > 0 || f.funding?.some((x) => x.active > 0)).length,
+);
 const place = computed(() => [uni.value?.city, uni.value?.state].filter(Boolean).join(", "));
 const carnegieLabel = computed(() =>
   uni.value?.carnegie === "R1"
@@ -111,11 +116,11 @@ function money(n?: number) {
 
         <section class="funding">
           <h3>Paying for a PhD here</h3>
-          <template v-if="isUS">
+          <template v-if="grantFunders.length">
             <p>
               <strong class="num">{{ funded }}</strong> of the {{ faculty.length }}
               {{ query.goal ? "faculty matching your search" : hasAreas ? "faculty in your areas" : "faculty listed below" }}
-              have an active NSF grant. PhD students are usually paid as research or teaching assistants, which
+              have an active {{ grantFunderNames }} grant. PhD students are usually paid as research or teaching assistants, which
               also covers tuition, and faculty with active grants are the ones hiring research assistants.
             </p>
           </template>
