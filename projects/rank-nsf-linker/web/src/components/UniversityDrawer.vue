@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { api, type Faculty, type Query, type Scholarship, type UniversityDetail } from "@/api";
-import { COUNTRIES, countryName } from "@/countries";
-import { funderName, nationality } from "@/store";
+import { countryName } from "@/countries";
+import { funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 
@@ -33,14 +33,14 @@ async function load() {
 
 watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, { immediate: true });
 
-// Scholarships a student can apply for to study here, given their nationality.
+// Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
 watch(
-  () => [uni.value?.country, nationality.value],
+  () => uni.value?.country,
   async () => {
     if (!uni.value?.country) return;
     try {
-      scholarships.value = await api.scholarships(uni.value.country, nationality.value);
+      scholarships.value = await api.scholarships(uni.value.country);
     } catch {
       scholarships.value = [];
     }
@@ -138,16 +138,8 @@ function money(n?: number) {
 
         <section class="scholarships">
           <h3>Funding you can apply for</h3>
-          <label v-if="!nationality" class="from">
-            Choose where you're applying from to see what you're eligible for:
-            <select v-model="nationality">
-              <option value="">Choose country</option>
-              <option v-for="c in COUNTRIES" :key="c.code" :value="c.code">{{ c.name }}</option>
-            </select>
-          </label>
           <p v-if="!scholarships.length" class="sub">
-            No scholarships in our list for study in {{ countryLabel }}<template v-if="nationality">
-              for applicants from {{ countryName(nationality) }}</template>.
+            No scholarships in our list for study in {{ countryLabel }}.
           </p>
           <ul class="sch-list">
             <li v-for="sch in scholarships" :key="sch.id">
@@ -157,11 +149,7 @@ function money(n?: number) {
                 <template v-if="sch.application_window">Application window: {{ sch.application_window }}.</template>
               </p>
               <p v-if="sch.notes" class="sub">{{ sch.notes }}</p>
-              <p class="elig" :class="sch.eligibility">
-                {{ sch.eligibility === "eligible" && nationality
-                  ? `Open to applicants from ${countryName(nationality)}`
-                  : "Check eligibility on the official page" }}
-              </p>
+              <p class="elig">Check eligibility on the official page</p>
             </li>
           </ul>
           <p class="sub">Rules and deadlines change every year: always confirm on the official page.</p>
@@ -277,20 +265,6 @@ h3 {
   margin-top: 8px;
 }
 
-.from {
-  display: grid;
-  gap: 6px;
-  font-size: var(--t-xs);
-  margin-bottom: 10px;
-}
-
-.from select {
-  justify-self: start;
-  border: 1.5px solid var(--rule-strong);
-  border-radius: var(--radius-pill);
-  padding: 3px 10px;
-}
-
 .sch-list {
   margin: 0;
   padding: 0;
@@ -310,16 +284,6 @@ h3 {
   margin-top: 4px;
   font-size: var(--t-xs);
   font-weight: 700;
-}
-
-.elig.eligible::before {
-  content: "";
-  display: inline-block;
-  width: 0.6em;
-  height: 0.6em;
-  border-radius: 50%;
-  background: var(--line-systems);
-  margin-right: 6px;
 }
 
 .list {

@@ -149,9 +149,9 @@ export const api = {
     get<{ faculty: Faculty; awards: Award[] }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
   grants: (q: Query & { active: boolean; limit?: number }, signal?: AbortSignal) =>
     get<Grant[]>(`/grants${params({ ...q, active: q.active ? 1 : 0 })}`, signal),
-  scholarships: (country: string, nationality: string) =>
+  scholarships: (country: string) =>
     get<Scholarship[]>(
-      `/scholarships?country=${encodeURIComponent(country)}&nationality=${encodeURIComponent(nationality)}`,
+      `/scholarships?country=${encodeURIComponent(country)}`,
     ),
   papers: (name: string) =>
     get<{ dblp_url: string; papers: Paper[] }>(`/faculty/papers?name=${encodeURIComponent(name)}`),
