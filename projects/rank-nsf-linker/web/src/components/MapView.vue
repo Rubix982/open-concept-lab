@@ -9,6 +9,7 @@ const props = defineProps<{
   color: string; // the selected line's colour, or ink when areas span lines
   useGoal: boolean; // size by goal matches instead of faculty count
   selectedId: string | null;
+  focus?: { key: string; ids: string[] }; // fit the map to these universities when key changes
 }>();
 const emit = defineEmits<{ select: [id: string] }>();
 
@@ -78,7 +79,8 @@ onMounted(() => {
       paint: {
         "circle-radius": ["case", [">", ["get", "weight"], 0], ["+", 3.5, ["*", 13, ["get", "size"]]], 2.5],
         "circle-color": props.color,
-        "circle-opacity": ["case", [">", ["get", "weight"], 0], 0.82, 0.18],
+        "circle-opacity": ["case", [">", ["get", "weight"], 0], 0.82, 0.07],
+        "circle-stroke-opacity": ["case", [">", ["get", "weight"], 0], 1, 0.15],
         // R1 universities carry a heavy ink ring.
         "circle-stroke-color": ["case", ["get", "selected"], "#ffffff", ["get", "r1"], "#1D2A3A", "#ffffff"],
         "circle-stroke-width": ["case", ["get", "selected"], 4, ["get", "r1"], 2.2, 1],
@@ -118,6 +120,24 @@ onMounted(() => {
 });
 
 watch(() => [props.universities, props.color, props.useGoal, props.selectedId], paint);
+
+// A new search: fit the map to the universities with matches.
+let lastFocus = "";
+watch(
+  () => props.focus,
+  (f) => {
+    if (!map || !f || !f.key || !f.ids.length || f.key === lastFocus) return;
+    lastFocus = f.key;
+    const pts = props.universities.filter(
+      (u) => f.ids.includes(u.id) && u.latitude != null && u.longitude != null,
+    );
+    if (!pts.length) return;
+    const b = new mapboxgl.LngLatBounds();
+    pts.forEach((u) => b.extend([u.longitude!, u.latitude!]));
+    map.fitBounds(b, { padding: 60, maxZoom: 7, duration: 700 });
+  },
+  { deep: true },
+);
 
 // Fly to a university chosen from a list.
 watch(

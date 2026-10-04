@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { api, type Faculty, type Query, type UniversitySummary } from "@/api";
+import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_HEX } from "@/lines";
 import { areaIndex, areas } from "@/store";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
+import GrantRow from "@/components/GrantRow.vue";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
 
@@ -13,7 +14,8 @@ const url = new URLSearchParams(location.search);
 const selectedAreas = ref<string[]>(url.get("areas")?.split(",").filter(Boolean) ?? []);
 const goalInput = ref(url.get("q") ?? "");
 const goal = ref(goalInput.value);
-const tab = ref<"universities" | "faculty">(url.get("view") === "faculty" ? "faculty" : "universities");
+type Tab = "universities" | "faculty" | "grants";
+const tab = ref<Tab>((["faculty", "grants"].includes(url.get("view") ?? "") ? url.get("view") : "universities") as Tab);
 const openUni = ref<string | null>(url.get("u"));
 const openProf = ref<string | null>(url.get("p"));
 
@@ -23,23 +25,34 @@ watch([selectedAreas, goal, tab, openUni, openProf], () => {
   const p = new URLSearchParams();
   if (selectedAreas.value.length) p.set("areas", selectedAreas.value.join(","));
   if (goal.value) p.set("q", goal.value);
-  if (tab.value === "faculty") p.set("view", "faculty");
+  if (tab.value !== "universities") p.set("view", tab.value);
   if (openUni.value) p.set("u", openUni.value);
   if (openProf.value) p.set("p", openProf.value);
   const s = p.toString();
   history.replaceState(null, "", s ? `?${s}` : location.pathname);
 });
 
-// The goal box searches after typing pauses.
-let goalTimer: number | undefined;
-watch(goalInput, (v) => {
-  clearTimeout(goalTimer);
-  goalTimer = window.setTimeout(() => (goal.value = v.trim()), 450);
-});
+// The goal box searches when submitted (Enter or the Search button), not while typing.
+function submitGoal() {
+  const g = goalInput.value.trim();
+  if (!g) return clearGoal();
+  goal.value = g;
+  openUniversity(null);
+  if (tab.value === "universities") tab.value = "faculty";
+}
+
+function clearGoal() {
+  goalInput.value = "";
+  goal.value = "";
+  if (tab.value === "grants") tab.value = "faculty";
+}
 
 // ---- data ----
 const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
+const grants = ref<Grant[]>([]);
+const grantsLoading = ref(false);
+const includePastGrants = ref(false);
 const loading = ref(true);
 const error = ref("");
 // The map renders only once the area list and the first university load have both arrived.
@@ -82,8 +95,30 @@ function retry() {
   load();
 }
 
+let grantsInflight: AbortController | null = null;
+async function loadGrants() {
+  grantsInflight?.abort();
+  if (!goal.value) {
+    grants.value = [];
+    return;
+  }
+  grantsInflight = new AbortController();
+  grantsLoading.value = true;
+  try {
+    grants.value = await api.grants(
+      { ...query.value, active: !includePastGrants.value, limit: 40 },
+      grantsInflight.signal,
+    );
+  } catch (e) {
+    if ((e as Error).name !== "AbortError") error.value = (e as Error).message;
+  } finally {
+    grantsLoading.value = false;
+  }
+}
+
 onMounted(loadAreas);
 watch(query, load, { immediate: true, deep: true });
+watch([query, includePastGrants], loadGrants, { immediate: true, deep: true });
 
 // ---- derived ----
 const selectedNames = computed(() =>
@@ -100,14 +135,24 @@ const rankedUniversities = computed(() =>
   universities.value.filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0)).slice(0, 80),
 );
 
+// Universities with matching faculty: the map fits to them on each new search.
+const goalFocus = computed(() => ({
+  key: goal.value,
+  ids: goal.value && !loading.value ? universities.value.filter((u) => u.goal_matches > 0).map((u) => u.id) : [],
+}));
+
 const summary = computed(() => {
-  if (loading.value) return "Searching";
+  if (loading.value) return goal.value ? `Searching for “${goal.value}”` : "Loading";
   const n = universities.value.filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0)).length;
   const people = goal.value
     ? universities.value.reduce((s, u) => s + u.goal_matches, 0)
     : universities.value.reduce((s, u) => s + u.faculty, 0);
+  const g = grants.value.length;
+  const grantText = grantsLoading.value
+    ? ""
+    : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}NSF ${g === 1 ? "grant" : "grants"}`;
   return goal.value
-    ? `${people.toLocaleString()} faculty at ${n} universities have work matching your goal`
+    ? `${people.toLocaleString()} faculty at ${n} universities work on this${grantText}`
     : `${people.toLocaleString()} faculty at ${n} universities`;
 });
 
@@ -116,16 +161,28 @@ function openUniversity(id: string | null, professor: string | null = null) {
   openProf.value = professor;
 }
 
-function openProfessorFromList(name: string) {
+function openProfessorFromList(name: string, universityId?: string | null) {
   const person = faculty.value.find((f) => f.name === name);
-  openUniversity(person?.university_id ?? null, name);
+  openUniversity(universityId ?? person?.university_id ?? null, name);
 }
 
 function clearAll() {
   selectedAreas.value = [];
-  goalInput.value = "";
-  goal.value = "";
+  clearGoal();
 }
+
+const tabs = computed<{ id: Tab; label: string }[]>(() =>
+  goal.value
+    ? [
+        { id: "faculty", label: "Faculty" },
+        { id: "grants", label: "NSF grants" },
+        { id: "universities", label: "Universities" },
+      ]
+    : [
+        { id: "universities", label: "Universities" },
+        { id: "faculty", label: "Faculty" },
+      ],
+);
 
 const about = ref<HTMLDialogElement | null>(null);
 </script>
@@ -150,20 +207,32 @@ const about = ref<HTMLDialogElement | null>(null);
 
       <section class="step">
         <h2 class="step-title"><span class="n">2</span> Describe your research goal</h2>
-        <label class="visually-hidden" for="goal">Your research goal</label>
-        <textarea
-          id="goal"
-          v-model="goalInput"
-          rows="2"
-          placeholder="For example: making large language models explain their answers"
-        ></textarea>
-        <p class="hint">Optional. Matched by meaning against professors' NSF grants and recent papers, so your own words work.</p>
+        <form class="goal-form" role="search" @submit.prevent="submitGoal">
+          <label class="visually-hidden" for="goal">Your research goal</label>
+          <input
+            id="goal"
+            v-model="goalInput"
+            type="search"
+            enterkeyhint="search"
+            autocomplete="off"
+            placeholder="e.g. mechanistic interpretability"
+          />
+          <button type="submit" class="search-btn">Search</button>
+        </form>
+        <p v-if="goal" class="active-goal">
+          Showing results for <strong>“{{ goal }}”</strong>.
+          <button type="button" class="link" @click="clearGoal">Clear search</button>
+        </p>
+        <p class="hint">
+          Optional. Press Enter to search. Matched by meaning against professors' NSF grants and recent papers,
+          so your own words work.
+        </p>
       </section>
 
     </main>
 
     <section v-show="!openUni" class="results" aria-label="Results">
-        <h2 class="step-title"><span class="n">3</span> Compare</h2>
+        <h2 class="step-title"><span class="n">3</span> {{ goal ? "Results" : "Compare" }}</h2>
         <p class="summary" aria-live="polite">
           {{ summary }}<template v-if="selectedNames.length"> in {{ selectedNames.join(", ") }}</template>.
           <button v-if="selectedAreas.length || goal" type="button" class="link" @click="clearAll">Clear</button>
@@ -173,15 +242,14 @@ const about = ref<HTMLDialogElement | null>(null);
 
         <div v-if="ready" class="tabs" role="tablist">
           <button
+            v-for="t in tabs"
+            :key="t.id"
             role="tab"
             type="button"
-            :aria-selected="tab === 'universities'"
-            @click="tab = 'universities'"
+            :aria-selected="tab === t.id"
+            @click="tab = t.id"
           >
-            Universities
-          </button>
-          <button role="tab" type="button" :aria-selected="tab === 'faculty'" @click="tab = 'faculty'">
-            Faculty
+            {{ t.label }}
           </button>
         </div>
 
@@ -198,6 +266,20 @@ const about = ref<HTMLDialogElement | null>(null);
             </button>
           </li>
         </ol>
+
+        <template v-else-if="ready && tab === 'grants'">
+          <label class="toggle">
+            <input v-model="includePastGrants" type="checkbox" />
+            Include grants that have ended
+          </label>
+          <p v-if="grantsLoading" class="hint">Searching NSF grants</p>
+          <p v-else-if="!grants.length" class="hint">
+            No {{ includePastGrants ? "" : "active " }}NSF grants match. Try other words, or include ended grants.
+          </p>
+          <ul class="grant-list">
+            <GrantRow v-for="g in grants" :key="g.id" :grant="g" @open-person="openProfessorFromList" />
+          </ul>
+        </template>
 
         <ul v-else-if="ready" class="fac-list">
           <FacultyRow
@@ -233,6 +315,7 @@ const about = ref<HTMLDialogElement | null>(null);
         :color="mapColor"
         :use-goal="!!goal"
         :selected-id="openUni"
+        :focus="goalFocus"
         @select="openUniversity($event)"
       />
       <p v-if="ready" class="legend">
@@ -366,18 +449,50 @@ h1 {
   padding-top: 2px;
 }
 
-textarea {
-  width: 100%;
-  resize: vertical;
+.goal-form {
+  display: flex;
+  gap: 6px;
+}
+
+.goal-form input {
+  flex: 1;
+  min-width: 0;
   border: 1.5px solid var(--rule-strong);
   border-radius: var(--radius-box);
   background: var(--surface);
-  padding: 9px 11px;
-  line-height: 1.4;
+  padding: 8px 11px 7px;
 }
 
-textarea:focus-visible {
+.goal-form input:focus-visible {
   outline-offset: 0;
+}
+
+.search-btn {
+  border: 0;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--radius-box);
+  padding: 0 14px;
+  font-weight: 700;
+}
+
+.active-goal {
+  margin-top: 8px;
+  font-size: var(--t-xs);
+}
+
+.toggle {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin: 10px 0 2px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.grant-list {
+  margin: 0;
+  padding: 0;
 }
 
 .hint {

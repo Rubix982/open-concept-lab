@@ -77,6 +77,10 @@ export type Paper = {
   url: string | null;
 };
 
+export type GrantPerson = { name: string; university: string; university_id: string | null };
+
+export type Grant = Award & { similarity: number; people: GrantPerson[] };
+
 export type Query = { areas: string[]; goal: string };
 
 function params(q: Partial<Query> & Record<string, unknown>): string {
@@ -111,6 +115,8 @@ export const api = {
     get<Faculty[]>(`/faculty${params(q)}`, signal),
   profile: (name: string) =>
     get<{ faculty: Faculty; awards: Award[] }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
+  grants: (q: Query & { active: boolean; limit?: number }, signal?: AbortSignal) =>
+    get<Grant[]>(`/grants${params({ ...q, active: q.active ? 1 : 0 })}`, signal),
   papers: (name: string) =>
     get<{ dblp_url: string; papers: Paper[] }>(`/faculty/papers?name=${encodeURIComponent(name)}`),
 };

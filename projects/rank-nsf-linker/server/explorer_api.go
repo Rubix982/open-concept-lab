@@ -23,6 +23,7 @@ import (
 //	GET /explorer/faculty?areas=ml&q=<goal>&university=<id>&limit=50
 //	GET /explorer/faculty/profile?name=<name>
 //	GET /explorer/faculty/papers?name=<name>
+//	GET /explorer/grants?q=<goal>&areas=ml&active=1
 
 const (
 	maxRecentPapers = 12
@@ -537,4 +538,159 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty", getExplorerFaculty)
 	r.Get("/explorer/faculty/profile", getExplorerFacultyProfile)
 	r.Get("/explorer/faculty/papers", getExplorerFacultyPapers)
+	r.Get("/explorer/grants", getExplorerGrants)
+}
+
+type grantPerson struct {
+	Name         string  `json:"name"`
+	University   string  `json:"university"`
+	UniversityID *string `json:"university_id"`
+}
+
+type exploreGrant struct {
+	exploreAward
+	Similarity float64       `json:"similarity"`
+	People     []grantPerson `json:"people"` // CSRankings faculty on the award
+}
+
+// getExplorerGrants lists NSF awards on the goal's topic (?q=, required) held by faculty in the
+// selected areas: active ones by default (?active=0 for all), most similar first.
+func getExplorerGrants(w http.ResponseWriter, r *http.Request) {
+	db, err := GetDB()
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
+		return
+	}
+	areas := areasParam(r)
+	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	activeOnly := r.URL.Query().Get("active") != "0"
+	limit := 40
+	if n, err := strconv.Atoi(r.URL.Query().Get("limit")); err == nil && n > 0 {
+		limit = min(n, maxFacultyLimit)
+	}
+	if q == "" {
+		writeJSON(w, http.StatusOK, []exploreGrant{})
+		return
+	}
+
+	var matches []grantMatch
+	if semanticAvailable() {
+		matches, err = semanticGrantMatches(q, areas, 1500)
+		if err != nil {
+			logger.Warnf(buildCollyContext(w, r), "⚠️ semantic grant search failed, using keywords: %v", err)
+			matches = nil
+		}
+	}
+	if matches == nil {
+		rows, err := db.Query(`
+			SELECT d.ref, max(ts_rank_cd(d.doc, websearch_to_tsquery('english', $2), 1)) AS score, array_agg(d.name)
+			FROM explorer_work_docs d JOIN explorer_faculty f ON f.name = d.name
+			WHERE d.kind = 'award' AND d.doc @@ websearch_to_tsquery('english', $2)
+			  AND (cardinality($1::text[]) = 0 OR f.areas && $1::text[])
+			GROUP BY d.ref ORDER BY score DESC LIMIT 1500`, pq.Array(areas), q)
+		if err != nil {
+			writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
+			return
+		}
+		for rows.Next() {
+			var m grantMatch
+			if err := rows.Scan(&m.AwardID, &m.Similarity, pq.Array(&m.People)); err != nil {
+				rows.Close()
+				writeError(w, r, http.StatusInternalServerError, "failed to read grants", err)
+				return
+			}
+			matches = append(matches, m)
+		}
+		rows.Close()
+	}
+
+	ids := make([]string, len(matches))
+	for i, m := range matches {
+		ids[i] = m.AwardID
+	}
+	rows, err := db.Query(`
+		SELECT a.id, a.award_title_text, COALESCE(a.award_amount, 0),
+		       NULLIF(a.award_effective_date, '')::date, NULLIF(a.award_expiry_date, '')::date,
+		       left(COALESCE(a.abstract, '') || '', 400) -- detoast first; see semantic.go
+		FROM award a WHERE a.id = ANY($1)`, pq.Array(ids))
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to load grants", err)
+		return
+	}
+	awards := map[string]exploreAward{}
+	now := time.Now()
+	for rows.Next() {
+		var a exploreAward
+		if err := rows.Scan(&a.ID, &a.Title, &a.Amount, &a.Starts, &a.Ends, &a.Abstract); err != nil {
+			rows.Close()
+			writeError(w, r, http.StatusInternalServerError, "failed to read grants", err)
+			return
+		}
+		a.Active = a.Ends != nil && a.Ends.After(now)
+		a.URL = "https://www.nsf.gov/awardsearch/showAward?AWD_ID=" + url.QueryEscape(a.ID)
+		awards[a.ID] = a
+	}
+	rows.Close()
+
+	var names []string
+	for _, m := range matches {
+		names = append(names, m.People...)
+	}
+	people := map[string]grantPerson{}
+	rows, err = db.Query(`
+		SELECT f.name, f.university, u.id FROM explorer_faculty f
+		LEFT JOIN explorer_universities u ON u.name = f.university WHERE f.name = ANY($1)`, pq.Array(names))
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to load grant people", err)
+		return
+	}
+	for rows.Next() {
+		var p grantPerson
+		if err := rows.Scan(&p.Name, &p.University, &p.UniversityID); err != nil {
+			rows.Close()
+			writeError(w, r, http.StatusInternalServerError, "failed to read grant people", err)
+			return
+		}
+		people[p.Name] = p
+	}
+	rows.Close()
+
+	// NSF files a collaborative project as one award per university with the same title; show
+	// it once, with every PI and the combined amount.
+	grants := []exploreGrant{}
+	byTitle := map[string]int{}
+	for _, m := range matches {
+		a, ok := awards[m.AwardID]
+		if !ok || (activeOnly && !a.Active) {
+			continue
+		}
+		key := strings.ToLower(strings.TrimSpace(a.Title))
+		i, seen := byTitle[key]
+		if !seen {
+			if len(grants) >= limit {
+				continue
+			}
+			grants = append(grants, exploreGrant{exploreAward: a, Similarity: m.Similarity})
+			i = len(grants) - 1
+			byTitle[key] = i
+		} else {
+			grants[i].Amount += a.Amount
+			grants[i].Active = grants[i].Active || a.Active
+		}
+		for _, n := range m.People {
+			if p, ok := people[n]; ok && !hasPerson(grants[i].People, p.Name) {
+				grants[i].People = append(grants[i].People, p)
+			}
+		}
+	}
+	writeJSON(w, http.StatusOK, grants)
+}
+
+func hasPerson(people []grantPerson, name string) bool {
+	for _, p := range people {
+		if p.Name == name {
+			return true
+		}
+	}
+	return false
 }

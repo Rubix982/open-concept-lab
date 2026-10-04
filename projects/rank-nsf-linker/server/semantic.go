@@ -176,7 +176,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 			return fmt.Errorf("failed to reset explorer_embedded: %w", err)
 		}
 	}
-	for _, field := range []string{"areas", "university_id", "name"} {
+	for _, field := range []string{"areas", "university_id", "name", "kind"} {
 		_ = postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/index",
 			map[string]any{"field_name": field, "field_schema": "keyword"}, nil)
 	}
@@ -322,10 +322,14 @@ type semanticMatch struct {
 	Work       workPayload
 }
 
-// semanticFacultyMatches embeds the goal and returns professors whose grants/papers match it,
-// best first. areas and universityID narrow the search; depth bounds how many grants/papers
-// are considered.
-func semanticFacultyMatches(goal string, areas []string, universityID string, depth int) ([]semanticMatch, error) {
+type workHit struct {
+	Score   float64     `json:"score"`
+	Payload workPayload `json:"payload"`
+}
+
+// searchWork embeds the goal and returns grants/papers whose meaning is close to it, narrowed
+// to areas, a university and a kind ("award" or "paper") when given.
+func searchWork(goal string, areas []string, universityID, kind string, depth int) ([]workHit, error) {
 	vectors, err := embedTexts([]string{goal})
 	if err != nil {
 		return nil, err
@@ -338,6 +342,9 @@ func semanticFacultyMatches(goal string, areas []string, universityID string, de
 	if universityID != "" {
 		must = append(must, map[string]any{"key": "university_id", "match": map[string]any{"value": universityID}})
 	}
+	if kind != "" {
+		must = append(must, map[string]any{"key": "kind", "match": map[string]any{"value": kind}})
+	}
 	req := map[string]any{
 		"vector":          vectors[0],
 		"limit":           depth,
@@ -348,26 +355,37 @@ func semanticFacultyMatches(goal string, areas []string, universityID string, de
 		req["filter"] = map[string]any{"must": must}
 	}
 	var res struct {
-		Result []struct {
-			Score   float64     `json:"score"`
-			Payload workPayload `json:"payload"`
-		} `json:"result"`
+		Result []workHit `json:"result"`
 	}
 	if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/search", req, &res); err != nil {
 		return nil, err
 	}
+	return res.Result, nil
+}
 
-	thisYear := float64(time.Now().Year())
+// recencyWeight halves a match's weight every recencyHalfLife years and discounts event grants.
+func recencyWeight(p workPayload) float64 {
+	age := 15.0
+	if p.Year != nil {
+		age = math.Max(0, float64(time.Now().Year()-*p.Year))
+	}
+	w := math.Pow(0.5, age/recencyHalfLife)
+	if eventGrant.MatchString(p.Title) {
+		w *= 0.6 // a grant to host a meeting is not a research direction
+	}
+	return w
+}
+
+// semanticFacultyMatches returns professors whose grants/papers match the goal, best first.
+// areas and universityID narrow the search; depth bounds how many grants/papers are considered.
+func semanticFacultyMatches(goal string, areas []string, universityID string, depth int) ([]semanticMatch, error) {
+	hits, err := searchWork(goal, areas, universityID, "", depth)
+	if err != nil {
+		return nil, err
+	}
 	best := map[string]semanticMatch{}
-	for _, hit := range res.Result {
-		age := 15.0
-		if hit.Payload.Year != nil {
-			age = math.Max(0, thisYear-float64(*hit.Payload.Year))
-		}
-		rank := hit.Score * math.Pow(0.5, age/recencyHalfLife)
-		if eventGrant.MatchString(hit.Payload.Title) {
-			rank *= 0.6 // a grant to host a meeting is not a research direction
-		}
+	for _, hit := range hits {
+		rank := hit.Score * recencyWeight(hit.Payload)
 		if cur, ok := best[hit.Payload.Name]; !ok || rank > cur.Rank {
 			best[hit.Payload.Name] = semanticMatch{
 				Name: hit.Payload.Name, University: hit.Payload.UniversityID,
@@ -380,5 +398,36 @@ func semanticFacultyMatches(goal string, areas []string, universityID string, de
 		matches = append(matches, m)
 	}
 	sort.Slice(matches, func(i, j int) bool { return matches[i].Rank > matches[j].Rank })
+	return matches, nil
+}
+
+// grantMatch is one NSF award close to a goal, with the explorer professors on it.
+type grantMatch struct {
+	AwardID    string
+	Similarity float64
+	People     []string
+}
+
+// semanticGrantMatches returns NSF awards whose title/abstract match the goal, most similar first.
+func semanticGrantMatches(goal string, areas []string, depth int) ([]grantMatch, error) {
+	hits, err := searchWork(goal, areas, "", "award", depth)
+	if err != nil {
+		return nil, err
+	}
+	byAward := map[string]*grantMatch{}
+	var order []string
+	for _, h := range hits {
+		g, ok := byAward[h.Payload.Ref]
+		if !ok {
+			g = &grantMatch{AwardID: h.Payload.Ref, Similarity: h.Score}
+			byAward[h.Payload.Ref] = g
+			order = append(order, h.Payload.Ref)
+		}
+		g.People = append(g.People, h.Payload.Name)
+	}
+	matches := make([]grantMatch, len(order))
+	for i, id := range order {
+		matches[i] = *byAward[id]
+	}
 	return matches, nil
 }

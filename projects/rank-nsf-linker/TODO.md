@@ -102,7 +102,10 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [ ] Postgres 18.2: `left()`/`substr()` on TOASTed text can split a UTF-8 character; worked around with
       `|| ''` (detoast first) in semantic.go and explorer_api.go
 - [ ] Non-US universities have no tuition / R1 data (IPEDS is US-only)
+- [x] Explicit search (Enter / Search button); results view with Faculty, NSF grants (active by default,
+      collaborative awards merged) and Universities tabs; map fits to matching universities (`/explorer/grants`)
 - [ ] Publishing: not deployed anywhere public yet
+- [ ] Europe: see "European funding data" below
 
 ## Also found
 
@@ -118,3 +121,14 @@ Frontend: `web/src` rewritten (area picker, map, results, university drawer, pro
 - [x] IPEDS download failures no longer stop the pipeline; `SKIP_IPEDS` switch
 - [x] IPEDS step no longer closes the shared DB pool (broke every later step)
 - [x] Per-step checkpoints: `make pipeline` resumes, `make pipeline-from STEP=N` reruns from N
+
+## European funding data (proposed, not started)
+CSRankings already lists European faculty; only the funding layer is US-only. Candidate sources,
+each linkable to faculty with the same name + institution evidence as NSF:
+- [ ] EU: CORDIS open data (Horizon Europe / H2020, incl. ERC and MSCA doctoral networks)
+- [ ] UK: UKRI Gateway to Research (public API; projects, PIs, organisations)
+- [ ] Germany: DFG GEPRIS (projects, PIs, Research Training Groups) — no official bulk export; check terms
+- [ ] France: ANR funded projects (open data on data.gouv.fr)
+- [ ] Switzerland: SNSF Data Portal (open data)
+- [ ] Student scholarships (curated, per destination country and nationality): DAAD, Erasmus Mundus,
+      Chevening, Commonwealth, Eiffel, Italian government (MAECI) scholarships
