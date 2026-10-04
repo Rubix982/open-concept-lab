@@ -245,6 +245,33 @@ Sound: `sfx("tick" | "draw" | "type" | "chime" | "glitch" | "whoosh" | "thud" |
 The first one, `gpt2-fact`, explains where GPT-2 keeps "the Eiffel Tower is in
 Paris", with every number read from Model Microscope's results.
 
+### Brick charts: data in, a LEGO model out (`explain/lib/brickcharts.mjs`)
+
+Charts and diagrams built from real parts, assembling on camera in plastic
+shading on the blueprint, with the 2D layer pinned to points on the model:
+
+```js
+import { barChart, heatGrid, columns, blocks, LEGO, RAMPS } from "../lib/brickcharts.mjs";
+const bars = barChart([580, 281, 29, 28], { colors: [LEGO.red, LEGO.orange, LEGO.mediumBlue, LEGO.brightGreen] });
+s.bricks("bars", bars, { az: -28, el: 22, dist: 46 });                    // builds part by part
+s.text("v0", "580 ms", { anchor: { obj: "bars", at: "bar0", dy: -34 } }); // pinned to the bar's top
+s.path("line", [], { anchors: [{ obj: "cols", at: "top0" }, { obj: "cols", at: "top1" }] });
+s.set("bars", { az: 18 }, { dur: 6000 });                                  // orbit while it plays
+```
+
+| Builder | Model | Anchors |
+| ------- | ----- | ------- |
+| `barChart(values)` | columns of 2×2 bricks topped up with plates | `bar<i>` (top), `foot<i>` |
+| `heatGrid(values[r][c])` | 1×1 columns, colour from a LEGO ramp, height from the value | `cell:<r>:<c>`, `row<r>`, `col<c>` |
+| `columns(values, { log })` | 1×1 round bricks capped with round tiles (a lollipop chart) | `top<i>`, `foot<i>` |
+| `blocks(nodes)` | brick blocks with tiles on top, for diagrams | `<id>`, `<id>.front` |
+
+Every chart stands on a two-layer base laid like plywood (bottom runs left to
+right, top runs front to back, seams never aligned), so it is one piece at any
+size. `explain/build.mjs` runs each model through brick-check, the same checks
+as a story's models, and stops on a failure. `lego-charts` shows all four
+kinds, with data from Systems in Miniature and Model Microscope.
+
 ## Rough edges
 
 - No sideways (SNOT) building, and no curved parts beyond the round 1x1s.

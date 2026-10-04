@@ -78,6 +78,10 @@ export function explainer(meta, write) {
     /** A 3D stage: a stack of layer plates (rows) with a node per word (cols),
      *  seen by an orbiting camera (az, el, dist — tween them with set). */
     s.stage3d = (id, o) => add(id, "stage3d", { x: 0, y: 0, w: 1920, h: 1080, rows: 25, cols: 11, az: 30, el: 18, dist: 24, hiCol: -1, scan: -1, labels: null, labelUpTo: -1, glow: [], route: null, routeK: 0, colLabels: null, ...o }, o.dur ?? 2400);
+    /** A LEGO model from brickcharts.mjs (barChart, heatGrid, columns, blocks),
+     *  built part by part on camera. Pin 2D things to its anchors with
+     *  { anchor: { obj: id, at: "bar2" } }, or run a path through several. */
+    s.bricks = (id, chart, o = {}) => add(id, "stage3d", { kind: "bricks", x: 0, y: 0, w: 1920, h: 1080, az: 25, el: 28, dist: 40, parts: chart.parts, anchors: chart.anchors, size: chart.size, ...o }, o.dur ?? Math.min(6000, 400 + chart.parts.length * 12));
     /** A box with a label in its corner. */
     s.box = (id, o) => add(id, "box", { x: 0, y: 0, w: 200, h: 100, label: "", color: "ink", dash: false, ...o }, o.dur ?? 700);
     /** A small note with a leader line to a point. */

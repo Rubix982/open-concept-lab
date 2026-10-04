@@ -14,6 +14,30 @@ const name = process.argv[2];
 if (!name) { console.log("usage: node explain/build.mjs <script>"); process.exit(1); }
 const tl = (await import(pathToFileURL(path.join(here, "scripts", `${name}.mjs`)).href)).default;
 const player = await fs.readFile(path.join(here, "lib", "blueprint.js"), "utf8");
+const bricksKit = await fs.readFile(path.join(here, "..", "lib", "bricks.js"), "utf8");
+
+// brick stages: every model goes through brick-check, like a story's models
+const brickStages = tl.objects.filter((o) => o.type === "stage3d" && o.props.kind === "bricks");
+if (brickStages.length) {
+  const { check } = await import("../../brick-check/lib/check.mjs");
+  const { PARTS, COLORS, footprint } = await import("../../brick-check/lib/parts.mjs");
+  const { partMesh } = await import("../../brick-check/tools/ldraw-mesh.mjs");
+  const meshIds = new Set();
+  for (const o of brickStages) {
+    const r = check({ steps: [{ note: o.id, parts: o.props.parts }] });
+    const n = o.props.parts.length;
+    console.log(`  ${r.ok ? "✓" : "✗"} ${o.id} · ${n} parts${r.ok ? " · buildable" : ": " + [...new Set(r.errors.map((e) => e.rule))].join(", ")}`);
+    if (!r.ok) process.exitCode = 1;
+    o.props.parts = o.props.parts.map((p) => {
+      const f = footprint(p), def = PARTS[p.part];
+      if (def.mesh) meshIds.add(p.part);
+      return { ...p, w: f.w, d: f.d, h: f.h, kind: def.kind, mesh: Boolean(def.mesh) };
+    });
+  }
+  tl.colors = COLORS;
+  tl.meshes = {};
+  for (const id of meshIds) tl.meshes[id] = { tri: (await partMesh(id)).tri, center: PARTS[id].center || [0, 0] };
+}
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 const html = `<!doctype html>
@@ -51,7 +75,11 @@ const html = `<!doctype html>
 <body>
 <div class="screen"><canvas id="stage" aria-label="${esc(tl.meta.title)}: an animated explainer"></canvas><div id="caption" aria-live="polite"></div></div>
 <div id="controls"></div>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script>window.TIMELINE = ${JSON.stringify(tl)};</script>
+<script>
+${bricksKit}
+</script>
 <script>
 ${player}
 </script>

@@ -84,8 +84,11 @@ footage:
       counters (tweened values), lattices, heat maps, a step dial, side lists
 - [ ] `math()` (LaTeX) in the blueprint style
 - [ ] `morph(a → b)`: bricks fly from one model into another
-- [~] Charts and diagrams: line charts with log axes and heat maps done
-      (blueprint); bar charts and number lines still to do
+- [x] Brick charts (`explain/lib/brickcharts.mjs`): bars, heat maps, lollipop
+      columns and block diagrams as checked LEGO models, built on camera, with
+      blueprint labels and arrows pinned to them (`lego-charts`)
+- [ ] Brick charts still to do: number lines, stacked bars, scatter plots,
+      morphing one chart into another brick by brick
 - [x] A real first video: "Where GPT-2 keeps a fact" (`explain/scripts/gpt2-fact.mjs`),
       every number from Model Microscope; rendered with `render.mjs`
 - [ ] A story-writing guide for AI (and people): the actions, pacing, common

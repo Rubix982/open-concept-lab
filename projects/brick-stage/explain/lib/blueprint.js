@@ -207,20 +207,79 @@ function Stack(o) {
   return api;
 }
 
+
+// A stage of real LEGO parts (from brickcharts.mjs, checked at build time),
+// shaded as plastic under a soft key light, assembling in build order.
+let KIT = null, ADDONS = null;
+const PLATE = 0.4;
+function Bricks(o) {
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(o.fov || 30, o.w / o.h, 0.1, 500);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1); renderer.setSize(o.w, o.h, false); renderer.setClearColor(0x000000, 0);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  KIT ||= brickKit({ THREE, RoundedBoxGeometry: ADDONS.RoundedBoxGeometry, toCreasedNormals: ADDONS.toCreasedNormals, meshes: TL.meshes || {}, PLATE });
+  scene.add(new THREE.HemisphereLight(0xe8eeff, 0x1a2550, 1.6));
+  const key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(-18, 34, 22); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); const sc = key.shadow.camera; sc.left = sc.bottom = -40; sc.right = sc.top = 40; sc.near = 1; sc.far = 120;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x9fb8ff, 0.9); rim.position.set(20, 12, -24); scene.add(rim);
+  const [W, Hp, D] = o.size;
+  const center = new THREE.Vector3(W / 2, 0, -D / 2);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.ShadowMaterial({ opacity: 0.35 }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.001; shadow.receiveShadow = true; scene.add(shadow);
+  const mats = new Map();
+  const mat = (c) => { if (!mats.has(c)) mats.set(c, new THREE.MeshStandardMaterial({ color: (TL.colors[c] || TL.colors[71])[2], roughness: 0.28, metalness: 0 })); return mats.get(c); };
+  // hide studs covered by a part sitting on them
+  const occ = new Set();
+  for (const p of o.parts) for (let x = p.x; x < p.x + p.w; x++) for (let z = p.z; z < p.z + p.d; z++) occ.add(`${x},${p.y},${z}`);
+  const covered = (x, y, z) => occ.has(`${x},${y},${z}`);
+  const pieces = o.parts.map((p) => {
+    const g = KIT.brick(p, mat(p.color), covered);
+    g.userData.home = g.userData.home.clone().sub(center);
+    g.position.copy(g.userData.home); g.visible = false; scene.add(g);
+    return g;
+  });
+  const tmp = new THREE.Vector3(), N = pieces.length;
+  return {
+    canvas: renderer.domElement,
+    update(p) {
+      const az = (p.az * Math.PI) / 180, el = (p.el * Math.PI) / 180, ty = p.ty ?? (Hp * PLATE) / 2;
+      cam.position.set(p.dist * Math.cos(el) * Math.sin(az), ty + p.dist * Math.sin(el), p.dist * Math.cos(el) * Math.cos(az));
+      cam.lookAt(0, ty, 0); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+      // each part drops into place in order; a drop lasts a few percent of the build
+      const at = p.reveal * (N + N * 0.05), span = Math.max(1, N * 0.05);
+      pieces.forEach((g, i) => {
+        const k = clamp((at - i) / span);
+        g.visible = k > 0;
+        if (k > 0) { const e = EASE.out(k); g.position.copy(g.userData.home); g.position.y += (1 - e) * 5; }
+      });
+      renderer.render(scene, cam);
+    },
+    // an anchor ([x, y, z] in studs, plates, studs) in frame pixels
+    anchor(a, x0, y0) {
+      tmp.set(a[0], a[1] * PLATE, -a[2]).sub(center).project(cam);
+      return [x0 + (tmp.x * 0.5 + 0.5) * o.w, y0 + (-tmp.y * 0.5 + 0.5) * o.h];
+    },
+  };
+}
+
 // ---- object types
 const DRAW = {
 
   stage3d(ctx, p, t, obj) {
-    const st = STAGES[obj.id] || (STAGES[obj.id] = Stack({ ...p, w: p.w, h: p.h }));
+    const st = STAGES[obj.id] || (STAGES[obj.id] = p.kind === "bricks" ? Bricks({ ...p }) : Stack({ ...p }));
     st.update(p, t, obj.born);
-    st.x = p.x; st.y = p.y;
-    // glow: a blurred additive copy under the sharp one
+    st.x = p.x; st.y = p.y; st.anchors = p.anchors;
     ctx.save();
-    ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
-    ctx.drawImage(st.canvas, p.x, p.y, p.w, p.h);
-    ctx.filter = "none"; ctx.globalAlpha = ctx._alpha;
+    if (p.kind !== "bricks") { // line art glows: a blurred additive copy under the sharp one
+      ctx.globalCompositeOperation = "lighter"; ctx.filter = "blur(7px)"; ctx.globalAlpha = 0.9 * ctx._alpha;
+      ctx.drawImage(st.canvas, p.x, p.y, p.w, p.h);
+      ctx.filter = "none"; ctx.globalCompositeOperation = "source-over";
+    }
+    ctx.globalAlpha = ctx._alpha;
     ctx.drawImage(st.canvas, p.x, p.y, p.w, p.h);
     ctx.restore();
+    if (p.kind === "bricks") return;
     // what the highlighted column would say at each plate, pinned beside it
     if (p.labels && p.hiCol >= 0) {
       ctx.font = `500 15px ${MONO}`; ctx.textBaseline = "middle"; ctx.textAlign = "left";
@@ -483,7 +542,7 @@ const DRAW = {
     ctx.globalAlpha = ctx._alpha;
   },
   path(ctx, p, t, obj) {
-    const pts = obj._dense || (obj._dense = p.curve ? smooth(p.pts) : p.pts);
+    const pts = (!Array.isArray(p.anchors) && obj._dense) || (obj._dense = p.curve ? smooth(p.pts) : p.pts);
     const c = color(p.color);
     ctx.strokeStyle = c; ctx.lineWidth = p.width; glow(ctx, c, 10);
     const { tip, dir } = partial(ctx, pts, clamp(p.reveal));
@@ -553,8 +612,10 @@ function frame(ctx, t) {
     if (t < obj.born) continue;
     const p = propsAt(obj, t);
     if (p.opacity <= 0.002) continue;
+    const where = (a) => { const st = STAGES[a.obj]; return a.at != null ? st.anchor(st.anchors[a.at], st.x, st.y) : st.project(a.col, a.row, st.x, st.y); };
+    if (Array.isArray(p.anchors) && p.anchors.every((a) => STAGES[a.obj])) { p.pts = p.anchors.map(where); obj._dense = null; }
     if (p.anchor && STAGES[p.anchor.obj]) {
-      const st = STAGES[p.anchor.obj], pt = st.project(p.anchor.col, p.anchor.row, st.x, st.y);
+      const st = STAGES[p.anchor.obj], pt = where(p.anchor);
       if (obj.type === "note") p.to = pt;
       else { p.x = pt[0] + (p.anchor.dx || 0); p.y = pt[1] + (p.anchor.dy || 0); }
       if (obj.type === "note" && p.anchor.ox != null) { p.x = pt[0] + p.anchor.ox; p.y = pt[1] + p.anchor.oy; }
@@ -609,6 +670,7 @@ const VOICE = {
   whoosh: (s, e, at) => s.noise(at, 0.7, 0.03, 300, 2400, "lowpass", 0.7),
   thud: (s, e, at) => s.tone(at, 85, 0.5, "sine", 0.14, 0.55, 0.002),
   rise: (s, e, at) => { s.tone(at, 220, 1.4, "triangle", 0.03, 2); s.noise(at, 1.4, 0.015, 400, 3000, "lowpass", 0.7); },
+  clicks: (s, e, at) => { const d = (e.dur || 2000) / 1000, n = Math.min(80, Math.floor(d / 0.07)); for (let i = 0; i < n; i++) { const a = at + (i / n) * d + s.rnd() * 0.03; s.noise(a, 0.03, 0.05, 3800 + s.rnd() * 1500, 2600, "bandpass", 3); s.tone(a, 1900 + s.rnd() * 400, 0.02, "triangle", 0.012); } },
   sweep: (s, e, at) => { const d = (e.dur || 2000) / 1000; for (let i = 0; i < Math.floor(d / 0.11); i++) s.tone(at + i * 0.11, 900 + i * 18, 0.03, "sine", 0.016); },
 };
 // a slow four-chord bed under the whole thing
@@ -701,7 +763,14 @@ window.__renderAudio = async (fromMs, toMs, rate = 48000) => wavBase64(await ren
 
 const fonts = [`600 38px ${SANS}`, `500 16px ${SANS}`, `500 16px ${MONO}`, `600 16px ${MONO}`, `400 16px ${MONO}`];
 const needs3d = TL.objects.some((o) => o.type === "stage3d");
-const three = needs3d ? import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js").then((m) => { THREE = m; }) : Promise.resolve();
+const needsBricks = TL.objects.some((o) => o.type === "stage3d" && o.props.kind === "bricks");
+const three = needs3d ? import("three").then(async (m) => {
+  THREE = m;
+  if (needsBricks) {
+    const [rb, bu] = await Promise.all([import("three/addons/geometries/RoundedBoxGeometry.js"), import("three/addons/utils/BufferGeometryUtils.js")]);
+    ADDONS = { RoundedBoxGeometry: rb.RoundedBoxGeometry, toCreasedNormals: bu.toCreasedNormals };
+  }
+}) : Promise.resolve();
 Promise.all([three, ...fonts.map((f) => document.fonts.load(f).catch(() => {}))]).then(() => {
   window.__renderAt = (ms) => { document.body.classList.add("render"); draw(ms); };
   controls();
