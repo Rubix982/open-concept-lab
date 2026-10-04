@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPU vs CPU</title>
+<meta name="description" content="Two classic HPC workloads, gravity between many bodies and heat spreading across a plate, run on your GPU and CPU side by side, with native Apple Metal measurements from an M2 Pro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root {
+  --paper: #f7f8fa; --raised: #ffffff; --sunken: #eceff3;
+  --ink: #142335; --muted: #4f6275; --faint: #8392a3;
+  --rule: #dde2e8; --rule-strong: #b3bfca; --link: #1c4c7c; --accent: #2f5bd3;
+  --gpu: #2f5bd3; --cpu: #c2560c; --bad: #c43d2f;
+  --night: #0b1220;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --prose: "Spectral", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1620; --raised: #15202c; --sunken: #0a1118;
+    --ink: #e1e8ee; --muted: #9aabb9; --faint: #6c7f90;
+    --rule: #233140; --rule-strong: #364858; --link: #8fbbe4; --accent: #6f8cf5;
+    --gpu: #6f8cf5; --cpu: #d9722f; --bad: #ff7b6b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1620; --raised: #15202c; --sunken: #0a1118;
+  --ink: #e1e8ee; --muted: #9aabb9; --faint: #6c7f90;
+  --rule: #233140; --rule-strong: #364858; --link: #8fbbe4; --accent: #6f8cf5;
+  --gpu: #6f8cf5; --cpu: #d9722f; --bad: #ff7b6b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--link); }
+code, .num { font-family: var(--mono); }
+.wrap { max-width: 68rem; margin: 0 auto; padding: 2rem 2rem 4rem; }
+.kicker { font: 600 0.74rem/1 var(--sans); letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
+h1 { margin: 0.5rem 0 0; font: 600 2.2rem/1.15 var(--sans); letter-spacing: -0.02em; }
+.lede { margin: 0.8rem 0 0; max-width: 46rem; font: 1.12rem/1.6 var(--prose); color: var(--muted); }
+h2 { margin: 3rem 0 0.3rem; font: 600 1.35rem/1.3 var(--sans); letter-spacing: -0.01em; }
+.sub { margin: 0 0 1rem; max-width: 48rem; color: var(--muted); font: 1.02rem/1.6 var(--prose); }
+.banner { margin-top: 1.4rem; padding: 0.7rem 1rem; border: 1px dashed var(--rule-strong); font-size: 0.88rem; color: var(--muted); max-width: 48rem; }
+.banner b { color: var(--ink); }
+
+.panel { background: var(--raised); border: 1px solid var(--rule); }
+.controls { display: flex; flex-wrap: wrap; gap: 0.9rem 1.6rem; align-items: flex-end; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--rule); }
+.ctl { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.78rem; color: var(--muted); }
+.ctl .lab { display: flex; justify-content: space-between; gap: 0.8rem; }
+.ctl .val { font-family: var(--mono); color: var(--ink); }
+.ctl input[type=range] { width: 12rem; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--rule-strong); }
+.seg button { all: unset; padding: 0.38rem 0.75rem; cursor: pointer; font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.seg button + button { border-left: 1px solid var(--rule-strong); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+.seg button:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.btn { all: unset; cursor: pointer; padding: 0.38rem 0.8rem; border: 1px solid var(--rule-strong); font-size: 0.82rem; }
+.btn:hover { border-color: var(--ink); }
+.stage { position: relative; background: var(--night); }
+.stage canvas { display: block; width: 100%; }
+.stage canvas[hidden] { display: none; }
+.stage .tag { position: absolute; left: 0.7rem; top: 0.6rem; font: 500 0.75rem/1 var(--mono); color: #c9d4e3; background: rgba(11, 18, 32, 0.7); padding: 0.3rem 0.45rem; pointer-events: none; }
+.stage .hint { position: absolute; right: 0.7rem; bottom: 0.6rem; font: 0.75rem/1 var(--sans); color: #9fb0c6; pointer-events: none; }
+.stats { display: flex; flex-wrap: wrap; border-top: 1px solid var(--rule); }
+.stat { flex: 1 1 9.5rem; padding: 0.7rem 1.1rem; border-right: 1px solid var(--rule); }
+.stat:last-child { border-right: 0; }
+.stat .k { font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); }
+.stat .v { font: 600 1.35rem/1.25 var(--mono); font-variant-numeric: tabular-nums; margin-top: 0.15rem; }
+.stat .s { font-size: 0.75rem; color: var(--faint); }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1rem; margin-top: 1rem; }
+.note { padding: 1rem 1.15rem; background: var(--sunken); border-left: 3px solid var(--accent); font: 1rem/1.6 var(--prose); }
+.note h3 { margin: 0 0 0.4rem; font: 600 0.78rem/1.2 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.note p { margin: 0 0 0.55rem; }
+.note p:last-child { margin: 0; }
+
+.machine { font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; }
+.machine b { color: var(--ink); font-weight: 600; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr)); gap: 1rem; }
+.chart { background: var(--raised); border: 1px solid var(--rule); padding: 0.9rem 1rem 0.6rem; position: relative; }
+.chart h3 { margin: 0; font: 600 0.95rem/1.3 var(--sans); }
+.chart .cap { margin: 0.15rem 0 0.4rem; font-size: 0.8rem; color: var(--muted); }
+.legend { display: flex; gap: 1rem; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; }
+.legend i { display: inline-block; width: 0.85rem; height: 2px; vertical-align: 0.25rem; margin-right: 0.35rem; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart svg text { fill: var(--faint); font: 11px var(--sans); }
+.chart svg .grid { stroke: var(--rule); }
+.chart svg .lbl { font: 600 11px var(--sans); fill: var(--muted); }
+.tip { position: absolute; pointer-events: none; background: var(--raised); border: 1px solid var(--rule-strong); padding: 0.45rem 0.6rem; font: 0.78rem/1.45 var(--sans); box-shadow: 0 4px 14px rgba(0,0,0,0.12); display: none; white-space: nowrap; z-index: 2; }
+.tip b { font-family: var(--mono); font-weight: 600; }
+details { margin-top: 1rem; font-size: 0.88rem; }
+summary { cursor: pointer; color: var(--muted); }
+table { border-collapse: collapse; margin-top: 0.6rem; font-size: 0.85rem; background: var(--raised); border: 1px solid var(--rule); }
+th, td { padding: 0.4rem 0.8rem; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 500; font-size: 0.74rem; color: var(--faint); text-transform: uppercase; letter-spacing: 0.04em; }
+td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.scrollx { overflow-x: auto; }
+.caveat { margin-top: 1rem; font-size: 0.85rem; color: var(--muted); max-width: 52rem; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.82rem; color: var(--faint); max-width: 52rem; }
+.foot p { margin: 0 0 0.5rem; }
+.runhead { margin: 1.6rem 0 0.6rem; font: 600 1rem/1.3 var(--sans); }
+#results { margin-top: 1.6rem; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: 1rem; margin: 0.4rem 0 1.2rem; }
+.tile { background: var(--raised); border: 1px solid var(--rule); padding: 0.9rem 1.1rem; }
+.tile .k { font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); }
+.tile .v { font: 600 2rem/1.15 var(--mono); margin-top: 0.25rem; }
+.tile .s { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+.launch { display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; padding: 1.2rem 1.1rem; }
+.launch p { margin: 0; font-size: 0.88rem; color: var(--muted); max-width: 42rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.live[hidden], #nbLaunch[hidden], #stLaunch[hidden] { display: none; }
+.player { display: flex; align-items: center; gap: 0.8rem; padding: 0.55rem 1.1rem; border-bottom: 1px solid var(--rule); font-size: 0.8rem; color: var(--muted); }
+.player input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+.player .t { font-family: var(--mono); min-width: 9.5rem; text-align: right; color: var(--ink); }
+.player .btn { min-width: 3.4rem; text-align: center; }
+tbody tr:hover td { background: var(--sunken); }
+
+.hero { position: relative; height: 62vh; min-height: 420px; max-height: 760px; background: #05060d; overflow: hidden; color: #e6ecf5; }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero .hud { position: absolute; left: 1.25rem; top: 1.1rem; max-width: min(30rem, calc(100% - 2.5rem)); padding: 0.65rem 0.8rem; background: rgba(5, 8, 18, 0.62); border: 1px solid rgba(160, 180, 220, 0.18); font: 0.78rem/1.5 var(--mono); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.hero .hud .lines b { display: block; font: 600 0.8rem/1.4 var(--sans); color: #fff; margin-bottom: 0.15rem; }
+.hero .hud .lines span { display: block; color: #b9c6da; }
+.hero .hbtn, .hero .tabs button, .hero .hplay { all: unset; cursor: pointer; font: 500 0.78rem/1 var(--sans); color: #e6ecf5; border: 1px solid rgba(200, 215, 240, 0.35); padding: 0.42rem 0.7rem; }
+.hero .hbtn { margin-top: 0.55rem; display: inline-block; }
+.hero .hbtn:hover, .hero .tabs button:hover { border-color: #fff; }
+.hero .hbtn:focus-visible, .hero .tabs button:focus-visible, .hero .hplay:focus-visible { outline: 2px solid #8fb0ff; outline-offset: 2px; }
+.hero .tabs { position: absolute; right: 1.25rem; top: 1.1rem; display: flex; background: rgba(5, 8, 18, 0.62); }
+.hero .tabs button + button { border-left: 0; }
+.hero .tabs button[aria-pressed="true"] { background: #e6ecf5; color: #05060d; border-color: #e6ecf5; }
+.hero .title { position: absolute; left: 1.25rem; bottom: 1.2rem; right: 1.25rem; pointer-events: none; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7); }
+.hero .title .kicker { color: #8fb0ff; }
+.hero .title h1 { color: #fff; font-size: clamp(1.6rem, 3.6vw, 2.8rem); max-width: 22ch; }
+.hero .hhint { position: absolute; right: 1.25rem; bottom: 1.2rem; font: 0.78rem var(--sans); color: #b9c6da; pointer-events: none; }
+.hero .hplay { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 0.7rem 1.4rem; font-size: 0.95rem; background: rgba(5, 8, 18, 0.7); }
+.hero .hplay[hidden], .hero .hbtn[hidden] { display: none; }
+
+@media (max-width: 720px) {
+  .hero { height: 70vh; min-height: 380px; }
+  .hero .hud { left: 0.75rem; top: 3.4rem; right: 0.75rem; max-width: none; font-size: 0.72rem; }
+  .hero .tabs { right: 0.75rem; top: 0.75rem; }
+  .hero .title { left: 0.75rem; bottom: 0.9rem; }
+  .hero .hhint { display: none; }
+  .wrap { padding: 1.25rem 1rem 3rem; }
+  h1 { font-size: 1.7rem; }
+  .ctl { flex: 1 1 100%; }
+  .ctl input[type=range] { width: 100%; }
+  .stat .v { font-size: 1.1rem; }
+  .stat { flex-basis: 50%; border-bottom: 1px solid var(--rule); }
+}
+</style>
+</head>
+<body>
+<section class="hero" id="hero" aria-label="A GPU at work">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hud" id="heroHud"><div class="lines"><b>Starting…</b></div><button type="button" class="hbtn" id="heroCpu" hidden>Run the same on one CPU core</button></div>
+  <div class="tabs" id="heroTabs" role="group" aria-label="Scene"><button type="button" data-scene="galaxy" aria-pressed="true">Galaxies</button><button type="button" data-scene="heat" aria-pressed="false">Heat</button></div>
+  <div class="title"><div class="kicker">HPC · GPU compute</div><h1>GPU vs CPU, on two classic workloads</h1></div>
+  <span class="hhint" id="heroHint"></span>
+  <button type="button" class="hplay" id="heroPlay" hidden>Play</button>
+</section>
+<div class="wrap">
+  <header>
+    <p class="lede">Gravity between thousands of bodies, and heat spreading across a metal plate, each run on an Apple M2 Pro's graphics cores and on all of its CPU cores. One workload ends up twenty times faster on the GPU and the other barely twice as fast, and the reason is the most useful idea in GPU programming.</p>
+  </header>
+
+  <div id="results"><p class="machine">The results are in <code>data/native.js</code>; if this message stays, that file is missing. Run <code>cd bench && make run</code>.</p></div>
+
+  <h2>Why the gap is so different</h2>
+  <div class="notes" id="why"></div>
+
+  <div id="browserResults"></div>
+
+
+  <div class="notes">
+    <div class="note"><h3>What the two kernels do</h3>
+      <p><b>Gravity:</b> for each body, add up G·m / (r² + ε²)<sup>3/2</sup> times the direction to every other body, then nudge its velocity and position. ε (the "softening") keeps two bodies that pass very close from producing an infinite force.</p>
+      <p><b>Heat:</b> new = old + 0.24 × (left + right + up + down − 4 × old). The 0.24 sits just under 0.25, the largest value for which this update stays stable. The edges are held cold.</p>
+    </div>
+    <div class="note"><h3>Reading the live numbers</h3>
+      <p>"Run the same on one CPU core", at the top, is JavaScript on one core in a background worker, so its gap to the GPU is bigger than the native comparison above, which uses every core. Browser timings include handing work to the GPU and waiting for it, and they move with whatever else the machine is doing.</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p>Source: <code>hpc/metal-gpu-bench</code> in open-concept-lab. Native numbers: <code>cd bench && make run</code> on a Mac. It compiles the project's Metal shaders from source at runtime, so only the Command Line Tools are needed, writes <code>results/bench-&lt;date&gt;.json</code>, and <code>export.py</code> bakes it into <code>site/data/native.js</code> for this page.</p>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<script src="data/native.js"></script>
+<script src="data/frames.js"></script>
+<script src="results.js"></script>
+<script src="hero.js"></script>
+<script src="live.js"></script>
+</body>
+</html>

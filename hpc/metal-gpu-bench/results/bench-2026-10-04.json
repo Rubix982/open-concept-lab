@@ -1,0 +1,113 @@
+{
+  "date" : "2026-10-04",
+  "loadAverage1m" : 6.54296875,
+  "machine" : {
+    "cpu" : "Apple M2 Pro",
+    "cpuThreads" : 12,
+    "gpu" : "Apple M2 Pro",
+    "memoryGB" : 16,
+    "model" : "Mac14,10"
+  },
+  "method" : "Best of repeated single steps (the least disturbed by other work on the machine). CPU: one pthread per core, wall time. GPU: one compute dispatch per command buffer, GPU execution time (GPUEndTime - GPUStartTime), after ~500 ms of warm-up dispatches so the GPU clock has ramped up. Kernels compiled from nbody\/Shaders.metal and stencil\/Shaders.metal at runtime.",
+  "nbody" : [
+    {
+      "cpuInteractionsPerSec" : 859001226.3176378,
+      "cpuMs" : 1.2195000052452087,
+      "gpuInteractionsPerSec" : 2436875923.5960112,
+      "gpuMs" : 0.42987498454749584,
+      "n" : 1024
+    },
+    {
+      "cpuInteractionsPerSec" : 1627086439.7333567,
+      "cpuMs" : 2.5765416622161865,
+      "gpuInteractionsPerSec" : 4867876561.3393841,
+      "gpuMs" : 0.86120836203917861,
+      "n" : 2048
+    },
+    {
+      "cpuInteractionsPerSec" : 2497254188.3866968,
+      "cpuMs" : 6.7166250348091125,
+      "gpuInteractionsPerSec" : 21404523830.510441,
+      "gpuMs" : 0.78362500062212348,
+      "n" : 4096
+    },
+    {
+      "cpuInteractionsPerSec" : 2301235526.0361366,
+      "cpuMs" : 29.158541679382324,
+      "gpuInteractionsPerSec" : 40943128595.160629,
+      "gpuMs" : 1.6388750518672168,
+      "n" : 8192
+    },
+    {
+      "cpuInteractionsPerSec" : 2732820115.5725942,
+      "cpuMs" : 98.220541656017303,
+      "gpuInteractionsPerSec" : 90372988271.624023,
+      "gpuMs" : 2.9701250023208559,
+      "n" : 16384
+    },
+    {
+      "cpuInteractionsPerSec" : 4211225156.7170482,
+      "cpuMs" : 254.96358329057693,
+      "gpuInteractionsPerSec" : 83697162969.708313,
+      "gpuMs" : 12.828500010073185,
+      "n" : 32768
+    },
+    {
+      "cpuInteractionsPerSec" : 4418516383.4910717,
+      "cpuMs" : 972.02350002527237,
+      "gpuInteractionsPerSec" : 95813538745.286804,
+      "gpuMs" : 44.825625023804605,
+      "n" : 65536
+    }
+  ],
+  "stencil" : [
+    {
+      "cpuCellsPerSec" : 316662834.62397152,
+      "cpuMs" : 0.20695829391479492,
+      "gpuCellsPerSec" : 13443259944.152067,
+      "gpuGBps8" : 107.54607955321654,
+      "gpuMs" : 0.0048750080168247223,
+      "size" : 256
+    },
+    {
+      "cpuCellsPerSec" : 2367880355.5250225,
+      "cpuMs" : 0.11070829629898071,
+      "gpuCellsPerSec" : 12240204458.315996,
+      "gpuGBps8" : 97.921635666527976,
+      "gpuMs" : 0.02141663571819663,
+      "size" : 512
+    },
+    {
+      "cpuCellsPerSec" : 6305641914.3026733,
+      "cpuMs" : 0.16629171371459961,
+      "gpuCellsPerSec" : 26462498104.275837,
+      "gpuGBps8" : 211.6999848342067,
+      "gpuMs" : 0.039624981582164764,
+      "size" : 1024
+    },
+    {
+      "cpuCellsPerSec" : 10761523948.551748,
+      "cpuMs" : 0.38975000381469727,
+      "gpuCellsPerSec" : 18030323792.972126,
+      "gpuGBps8" : 144.24259034377701,
+      "gpuMs" : 0.23262499598786235,
+      "size" : 2048
+    },
+    {
+      "cpuCellsPerSec" : 8725257564.0032368,
+      "cpuMs" : 1.9228333234786987,
+      "gpuCellsPerSec" : 21589983075.275463,
+      "gpuGBps8" : 172.7198646022037,
+      "gpuMs" : 0.77708333265036345,
+      "size" : 4096
+    },
+    {
+      "cpuCellsPerSec" : 11569413251.929321,
+      "cpuMs" : 5.8005416989326477,
+      "gpuCellsPerSec" : 20435098805.145016,
+      "gpuGBps8" : 163.48079044116014,
+      "gpuMs" : 3.2839999767020345,
+      "size" : 8192
+    }
+  ]
+}

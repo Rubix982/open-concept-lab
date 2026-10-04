@@ -1,0 +1,99 @@
+{
+ "date": "2026-10-04",
+ "browser": "Chrome (headless)/153.0.8010.12",
+ "loadAverage1m": 11.87060546875,
+ "method": "Best steady-state rate of each engine over about 2 seconds, measured once in headless Chrome/153.0.8010.12 on this Mac, with no drawing. WebGPU: compute dispatches timed until the GPU reports them done. JavaScript: one core, in a worker. Rates are force calculations (N × (N − 1) per step) or cell updates per second. The JavaScript engine wasn't run above 4,096 bodies; one step would take seconds.",
+ "nbody": [
+  {
+   "label": "1,024 bodies",
+   "n": 1024,
+   "gpu": 5545863503.485552,
+   "cpu": 210004528.32156798
+  },
+  {
+   "label": "4,096 bodies",
+   "n": 4096,
+   "gpu": 21565440000,
+   "cpu": 236324339.52641207
+  },
+  {
+   "label": "16,384 bodies",
+   "n": 16384,
+   "gpu": 50645107810.615715
+  }
+ ],
+ "stencil": [
+  {
+   "label": "512 × 512",
+   "size": 512,
+   "gpu": 25321994957.84292,
+   "cpu": 212464743.75261334
+  },
+  {
+   "label": "1024 × 1024",
+   "size": 1024,
+   "gpu": 35320454626.03878,
+   "cpu": 224962669.85570824
+  },
+  {
+   "label": "2048 × 2048",
+   "size": 2048,
+   "gpu": 22968807684.240364,
+   "cpu": 306036006.17241347
+  },
+  {
+   "label": "4096 × 4096",
+   "size": 4096,
+   "gpu": 19905171538.829838,
+   "cpu": 310574157.760485
+  }
+ ],
+ "webgpu": true,
+ "hero": {
+  "webgpu": true,
+  "label": "WebGPU → Metal",
+  "galaxy": [
+   {
+    "n": 16384,
+    "gpuStepsPerSec": 595.8549219117542,
+    "gpuRate": 159938825186.18555,
+    "cpuStepsPerSec": 1.5320192013166496,
+    "cpuRate": 411223172.30359626
+   },
+   {
+    "n": 32768,
+    "gpuStepsPerSec": 155.03875961828658,
+    "gpuRate": 166466520233.1614
+   },
+   {
+    "n": 65536,
+    "gpuStepsPerSec": 41.1522633542974,
+    "gpuRate": 176744928308.3554
+   }
+  ],
+  "heat": [
+   {
+    "size": 1024,
+    "gpuStepsPerSec": 16305.73249645729,
+    "gpuRate": 17097799758.2052,
+    "cpuStepsPerSec": 297.3977695167286,
+    "cpuRate": 311844163.5687732
+   },
+   {
+    "size": 2048,
+    "gpuStepsPerSec": 4325.153371069949,
+    "gpuRate": 18141008084.89217,
+    "cpuStepsPerSec": 77.68875940087797,
+    "cpuRate": 325850274.3101401
+   },
+   {
+    "size": 4096,
+    "gpuStepsPerSec": 878.552971846852,
+    "gpuRate": 14739672976.116554,
+    "cpuStepsPerSec": 18.872375561335108,
+    "cpuRate": 316625921.22564036
+   }
+  ]
+ },
+ "heroMethod": "The page's top animation at full size, compute only: the galaxy kernel tiles 256 bodies at a time through workgroup memory (unlike the plain kernel above), and the heat kernel is the stencil with three held-hot sources. Best rate over about 3 seconds after a warm-up. CPU: the same JavaScript on one core, where a step takes under two seconds; above 16,384 bodies it wasn't run."
+}

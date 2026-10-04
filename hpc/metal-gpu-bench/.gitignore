@@ -8,3 +8,9 @@ stencil/Shaders.metallib
 
 # Benchmark results — machine-specific
 results/*.txt
+
+# Headless bench binary
+bench/bench
+
+# Raw recordings (baked into site/data/frames.js by bench/export.py)
+results/frames-*.json

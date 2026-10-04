@@ -104,6 +104,18 @@ built:
       shows the move cost at which that wasted compute starts saving energy.
     ratio: 1.6
 
+  - name: metal-gpu-bench
+    title: GPU vs CPU, on Two Classic Workloads
+    from: hpc/metal-gpu-bench/site
+    topic: HPC
+    what: >
+      Gravity between tens of thousands of bodies and heat spreading across a
+      plate, live on your GPU, with native Metal measurements from an M2 Pro.
+      One workload runs 22× faster on the GPU, the other under 2×:
+      compute-bound versus memory-bound, shown with real numbers.
+    ratio: 1.6
+    image: poster.jpg
+
   - name: difference-engine
     title: Difference Engine
     from: projects/difference-engine
