@@ -7,6 +7,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -262,24 +263,29 @@ func (f *IPEDSFetcher) DownloadAll(ctx *colly.Context) error {
 func (f *IPEDSFetcher) IngestToDatabase(ctx *colly.Context, db *sql.DB) error {
 	logger.Info(ctx, "[*] Starting database ingestion...")
 
-	ingestFuncs := map[string]func(*sql.DB, string) error{
-		"institutions":                     f.ingestInstitutions,
-		"enrollment_fall":                  f.ingestEnrollment,
-		"staff_instructional":              f.ingestStaff,
-		"finance_public":                   f.ingestFinance,
-		"completions":                      f.ingestCompletions,
-		"admissions":                       f.ingestAdmissions,
-		"institutional_characteristics":    f.ingestInstitutionalCharacteristics,
-		"institutional_characteristics_ay": f.ingestTuitionFees,
-		"graduation_rates":                 f.ingestGraduationRates,
-		"graduation_rates_pell":            f.ingestGraduationPell,
-		"salaries_instructional":           f.ingestFacultySalaries,
-		"financial_aid_summary":            f.ingestFinancialAid,
-		"outcome_measures":                 f.ingestOutcomeMeasures,
-		"academic_libraries":               f.ingestLibraries,
+	// Every other ipeds_* table references ipeds_institutions, so institutions must load first.
+	ingestFuncs := []struct {
+		key string
+		fn  func(*sql.DB, string) error
+	}{
+		{"institutions", f.ingestInstitutions},
+		{"enrollment_fall", f.ingestEnrollment},
+		{"staff_instructional", f.ingestStaff},
+		{"finance_public", f.ingestFinance},
+		{"completions", f.ingestCompletions},
+		{"admissions", f.ingestAdmissions},
+		{"institutional_characteristics", f.ingestInstitutionalCharacteristics},
+		{"institutional_characteristics_ay", f.ingestTuitionFees},
+		{"graduation_rates", f.ingestGraduationRates},
+		{"graduation_rates_pell", f.ingestGraduationPell},
+		{"salaries_instructional", f.ingestFacultySalaries},
+		{"financial_aid_summary", f.ingestFinancialAid},
+		{"outcome_measures", f.ingestOutcomeMeasures},
+		{"academic_libraries", f.ingestLibraries},
 	}
 
-	for key, ingestFunc := range ingestFuncs {
+	for _, ingest := range ingestFuncs {
+		key, ingestFunc := ingest.key, ingest.fn
 		extractDir := filepath.Join(f.dataDir, key)
 		if _, err := os.Stat(extractDir); os.IsNotExist(err) {
 			logger.Infof(ctx, "[!] Skipping %s - directory not found\n", key)
@@ -344,8 +350,8 @@ func (f *IPEDSFetcher) ingestInstitutions(db *sql.DB, dir string) error {
 		"WEBADDR": "website", "SECTOR": "sector", "ICLEVEL": "institutional_level",
 		"CONTROL": "control", "HBCU": "historically_black", "HOSPITAL": "has_hospital",
 		"MEDICAL": "has_medical_school", "TRIBAL": "tribal_college", "LANDGRNT": "landgrant",
-		"CCBASIC": "carnegie_classification", "LOCALE": "locale", "INSTSIZE": "institution_size",
-		"CBSA": "metro_area", "COUNTYNM": "county_name", "OBEREG": "geographic_region",
+		"C21BASIC": "carnegie_classification", // 2021 Carnegie basic: 15 = R1, 16 = R2 "LOCALE": "locale", "INSTSIZE": "institution_size",
+		"CBSA":     "metro_area", "COUNTYNM": "county_name", "OBEREG": "geographic_region",
 		"LATITUDE": "latitude", "LONGITUD": "longitude", "F1SYSTYP": "system_type",
 		"F1SYSNAM": "system_name",
 	}
@@ -370,7 +376,8 @@ func (f *IPEDSFetcher) ingestInstitutions(db *sql.DB, dir string) error {
 		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
 		ON CONFLICT (unitid) DO UPDATE SET
 			institution_name = EXCLUDED.institution_name,
-			state = EXCLUDED.state
+			state = EXCLUDED.state,
+			carnegie_classification = EXCLUDED.carnegie_classification
 	`)
 	if err != nil {
 		return err
@@ -389,7 +396,7 @@ func (f *IPEDSFetcher) ingestInstitutions(db *sql.DB, dir string) error {
 			getValue("WEBADDR"), getValue("SECTOR"), getValue("ICLEVEL"),
 			getValue("CONTROL"), getValue("HBCU"), getValue("HOSPITAL"),
 			getValue("MEDICAL"), getValue("TRIBAL"), getValue("LANDGRNT"),
-			getValue("CCBASIC"), getValue("LOCALE"), getValue("INSTSIZE"),
+			getValue("C21BASIC"), getValue("LOCALE"), getValue("INSTSIZE"),
 			getValue("CBSA"), getValue("COUNTYNM"), getValue("OBEREG"),
 			getValue("LATITUDE"), getValue("LONGITUD"), getValue("F1SYSTYP"),
 			getValue("F1SYSNAM"),
@@ -1056,11 +1063,11 @@ func (f *IPEDSFetcher) ingestGraduationPell(db *sql.DB, dir string) error {
 
 	headers := records[0]
 	columnMap := map[string]string{
-		"UNITID": "unitid", "PGRTYPE": "cohort_type",
-		"PGCOHRT": "pell_cohort_size", "PGTOTLT": "pell_completers_total",
-		"PGTOTLM": "pell_completers_men", "PGTOTLW": "pell_completers_women",
-		"SGCOHRT": "loan_cohort_size", "SGTOTLT": "loan_completers_total",
-		"SGTOTLM": "loan_completers_men", "SGTOTLW": "loan_completers_women",
+		// GR_PELL_SSL: adjusted cohorts and completers within 150% of normal time, Pell
+		// recipients (PG*) and subsidized-loan recipients without Pell (SS*); no gender split.
+		"UNITID": "unitid", "PSGRTYPE": "cohort_type",
+		"PGADJCT": "pell_cohort_size", "PGCMTOT": "pell_completers_total",
+		"SSADJCT": "loan_cohort_size", "SSCMTOT": "loan_completers_total",
 	}
 
 	indices := make(map[string]int)
@@ -1095,10 +1102,10 @@ func (f *IPEDSFetcher) ingestGraduationPell(db *sql.DB, dir string) error {
 		}
 
 		_, err := stmt.Exec(
-			getValue("UNITID"), f.year, getValue("PGRTYPE"),
-			getValue("PGCOHRT"), getValue("PGTOTLT"), getValue("PGTOTLM"),
-			getValue("PGTOTLW"), getValue("SGCOHRT"), getValue("SGTOTLT"),
-			getValue("SGTOTLM"), getValue("SGTOTLW"),
+			getValue("UNITID"), f.year, getValue("PSGRTYPE"),
+			getValue("PGADJCT"), getValue("PGCMTOT"), nil,
+			nil, getValue("SSADJCT"), getValue("SSCMTOT"),
+			nil, nil,
 		)
 		if err != nil {
 			return fmt.Errorf("row %d: %w", i, err)
@@ -1109,6 +1116,9 @@ func (f *IPEDSFetcher) ingestGraduationPell(db *sql.DB, dir string) error {
 }
 
 // ingestFacultySalaries ingests SAL_IS (Faculty Salaries) data
+// ingestFacultySalaries reads the wide SAL_IS layout (one row per institution and rank, one
+// column per gender) into one row per rank and gender: 0 = all, 1 = men, 2 = women.
+// average_salary is the 9-month-equated average: 9-month salary outlays / staff on 9-month contracts.
 func (f *IPEDSFetcher) ingestFacultySalaries(db *sql.DB, dir string) error {
 	records, err := f.readCSVFromDir(dir)
 	if err != nil {
@@ -1119,21 +1129,17 @@ func (f *IPEDSFetcher) ingestFacultySalaries(db *sql.DB, dir string) error {
 		return fmt.Errorf("no data rows")
 	}
 
-	headers := records[0]
-	columnMap := map[string]string{
-		"UNITID": "unitid", "ARANK": "academic_rank",
-		"SALGEND": "gender", "SALTOTL": "faculty_count",
-		"SALARY": "average_salary",
-	}
-
 	indices := make(map[string]int)
-	for old := range columnMap {
-		for i, h := range headers {
-			if strings.TrimSpace(h) == old {
-				indices[old] = i
-				break
-			}
+	for i, h := range records[0] {
+		indices[strings.TrimSpace(h)] = i
+	}
+	number := func(row []string, col string) (float64, bool) {
+		idx, ok := indices[col]
+		if !ok || idx >= len(row) {
+			return 0, false
 		}
+		v, err := strconv.ParseFloat(strings.TrimSpace(row[idx]), 64)
+		return v, err == nil
 	}
 
 	stmt, err := db.Prepare(`
@@ -1141,6 +1147,7 @@ func (f *IPEDSFetcher) ingestFacultySalaries(db *sql.DB, dir string) error {
 			unitid, year, academic_rank, gender, faculty_count, average_salary
 		) VALUES ($1,$2,$3,$4,$5,$6)
 		ON CONFLICT (unitid, year, academic_rank, gender) DO UPDATE SET
+			faculty_count = EXCLUDED.faculty_count,
 			average_salary = EXCLUDED.average_salary
 	`)
 	if err != nil {
@@ -1148,18 +1155,34 @@ func (f *IPEDSFetcher) ingestFacultySalaries(db *sql.DB, dir string) error {
 	}
 	defer stmt.Close()
 
+	genders := []struct {
+		code   int
+		suffix string
+	}{{0, "T"}, {1, "M"}, {2, "W"}}
+
 	for i := 1; i < len(records); i++ {
 		row := records[i]
-		getValue := func(col string) interface{} {
-			return getValueFromMap(indices, row, col)
+		unitid, ok1 := number(row, "UNITID")
+		rank, ok2 := number(row, "ARANK")
+		if !ok1 || !ok2 {
+			continue
 		}
-
-		_, err := stmt.Exec(
-			getValue("UNITID"), f.year, getValue("ARANK"),
-			getValue("SALGEND"), getValue("SALTOTL"), getValue("SALARY"),
-		)
-		if err != nil {
-			return fmt.Errorf("row %d: %w", i, err)
+		for _, g := range genders {
+			var count, salary interface{}
+			if n, ok := number(row, "SAINST"+g.suffix); ok {
+				count = int(n)
+			}
+			outlay, okOutlay := number(row, "SA09MO"+g.suffix)
+			staff, okStaff := number(row, "SA09MC"+g.suffix)
+			if okOutlay && okStaff && staff > 0 {
+				salary = int(math.Round(outlay / staff))
+			}
+			if count == nil && salary == nil {
+				continue
+			}
+			if _, err := stmt.Exec(int(unitid), f.year, int(rank), g.code, count, salary); err != nil {
+				return fmt.Errorf("row %d: %w", i, err)
+			}
 		}
 	}
 
@@ -1374,7 +1397,7 @@ func (f *IPEDSFetcher) ingestLibraries(db *sql.DB, dir string) error {
 // Helper function
 func nullIfEmpty(s string) interface{} {
 	s = strings.TrimSpace(s)
-	if s == "" {
+	if s == "" || s == "." { // IPEDS writes "." for not applicable
 		return nil
 	}
 	return s
@@ -1399,7 +1422,7 @@ func RunIPEDSIngestion(ctx *colly.Context, rootDataDir string, year int) error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer db.Close()
+	// db is the shared global pool; closing it here would break every later pipeline step
 
 	fetcher := NewIPEDSFetcher(year, rootDataDir)
 	return fetcher.IngestToDatabase(ctx, db)

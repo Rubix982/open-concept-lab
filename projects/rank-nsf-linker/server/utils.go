@@ -582,12 +582,10 @@ func normalizeInstitutionName(name string) string {
 	if strings.HasPrefix(strings.ToLower(name), "texas a and m") {
 		// Special case for Texas A&M (case-insensitive)
 		// Preserve any trailing text after "Texas A And M"
+		suffix := strings.TrimSpace(name[len("texas a and m"):])
 		name = "Texas A&M"
-		if len(name) > len("Texas A And M") {
-			suffix := strings.TrimSpace(name[len("Texas A And M"):])
-			if suffix != "" {
-				name += " " + suffix
-			}
+		if suffix != "" {
+			name += " " + suffix
 		}
 	}
 

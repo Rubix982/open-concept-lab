@@ -39,7 +39,7 @@ define container_running
 	@docker ps --format '{{.Names}}' | grep -q "^$(1)$$"
 endef
 
-.PHONY: all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
+.PHONY: pipeline pipeline-from all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
 	status rebuild rm-all registry up-infra lint lint-fix semgrep lint-all install-tools
 
 all: build
@@ -113,6 +113,15 @@ up: registry up-infra
 	else \
 		echo "✅ Main services already running."; \
 	fi
+
+## pipeline: Restart go-server; resumes the population pipeline at the first unfinished step
+pipeline:
+	$(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
+
+## pipeline-from: Rerun the population pipeline from step STEP onward (e.g. make pipeline-from STEP=10)
+pipeline-from:
+	@test -n "$(STEP)" || (echo "Usage: make pipeline-from STEP=<1-17>" && exit 1)
+	PIPELINE_FROM_STEP=$(STEP) $(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
 
 # Bring down all containers, networks
 ## down: Stop all containers and remove networks

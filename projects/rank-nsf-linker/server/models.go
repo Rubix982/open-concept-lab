@@ -28,6 +28,9 @@ type NsfJsonData struct {
 	PrincipalInvestigators                 []struct {
 		Role      string `json:"pi_role"`
 		Name      string `json:"pi_full_name"`
+		FirstName string `json:"pi_first_name"`
+		LastName  string `json:"pi_last_name"`
+		MidInit   string `json:"pi_mid_init"`
 		EmailAddr string `json:"pi_email_addr"`
 		NSFId     string `json:"nsf_id"`
 		StartDate string `json:"pi_start_date"`

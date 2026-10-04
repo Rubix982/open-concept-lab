@@ -171,11 +171,16 @@ func downloadNSFData(mainCtx *colly.Context) error {
 }
 
 func downloadIPEDSData(mainCtx *colly.Context) error {
+	if os.Getenv("SKIP_IPEDS") != "" {
+		logger.Infof(mainCtx, "ℹ️  SKIP_IPEDS is set, skipping IPEDS download (cached data is still ingested).")
+		return nil
+	}
 	dataDir := getRootDirPath(DATA_DIR)
 
 	for year := IPEDSCurrentlyRangedYear; year <= IPEDSLatestYear; year++ {
+		// IPEDS is supplementary; a failed year must not block the rest of the pipeline
 		if err := NewIPEDSFetcher(year, dataDir).DownloadAll(mainCtx); err != nil {
-			return fmt.Errorf("failed to process ipeds download for the year '%d'. Error: %v", year, err)
+			logger.Warnf(mainCtx, "⚠️ Skipping IPEDS download for the year '%d'. Error: %v", year, err)
 		}
 	}
 	return nil
