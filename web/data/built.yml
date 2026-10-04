@@ -112,7 +112,8 @@ built:
       Gravity between tens of thousands of bodies and heat spreading across a
       plate, live on your GPU, with native Metal measurements from an M2 Pro.
       One workload runs 22× faster on the GPU, the other under 2×:
-      compute-bound versus memory-bound, shown with real numbers.
+      compute-bound versus memory-bound, shown with real numbers, and a video
+      recorded on that GPU for browsers without WebGPU.
     ratio: 1.6
     image: poster.jpg
 

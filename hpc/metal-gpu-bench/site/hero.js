@@ -4,9 +4,10 @@
 //     additive glowing sprites, fading trails) or heat on a plate (stencil
 //     compute shader, inferno colours, paint with the pointer). A HUD button
 //     runs the same arithmetic on one CPU core instead, drawn the same way.
-//   No WebGPU → the recording of the same scenes made on this Mac's GPU with
-//     Metal (bench --frames → data/frames.js), drawn with WebGL2 in the same
-//     style; Canvas 2D if even WebGL2 is missing.
+//   No WebGPU → a video of the same live scenes, recorded on this Mac's GPU
+//     (bench/record-video.mjs → media/*.mp4); it plays in any browser. If the
+//     video can't play, the Metal recording (bench --frames → data/frames.js)
+//     drawn with WebGL2 in the same style, or Canvas 2D as a last resort.
 //
 // A classic script with no fetch, so the page works from file://. It never
 // holds up the results below it.
@@ -103,10 +104,11 @@
     hint.textContent = state.scene === "heat" ? "drag to add heat" : "";
     canvas.style.touchAction = state.scene === "heat" ? "none" : "";
     engine = state.mode === "live" ? (state.scene === "galaxy" ? liveGalaxy() : liveHeat()) :
+      state.mode === "video" ? videoScene() :
       state.mode === "gl" ? (state.scene === "galaxy" ? glGalaxy() : glHeat()) : (state.scene === "galaxy" ? c2dGalaxy() : c2dHeat());
     cpuBtn.hidden = state.mode !== "live";
     cpuBtn.textContent = state.engine === "gpu" ? "Run the same on one CPU core" : "Back to the GPU";
-    if (!state.playing) { engine.frame(performance.now(), true); playBtn.hidden = false; }
+    if (!state.playing && state.mode !== "video") { engine.frame(performance.now(), true); playBtn.hidden = false; }
     kick();
   }
   var rs;
@@ -394,6 +396,39 @@
     };
   };
 
+  // ============================================================ video
+  // A clip of the live WebGPU scene, recorded on this Mac. The browser does
+  // the playing, so frame() only keeps the HUD in step.
+  var CLIPS = window.HERO_CLIPS, video = null;
+  function videoScene() {
+    if (!video) {
+      video = document.createElement("video");
+      video.muted = true; video.loop = true; video.playsInline = true; video.setAttribute("playsinline", "");
+      video.setAttribute("aria-label", "A recording of the GPU simulation");
+      video.className = "herovideo";
+      hero.insertBefore(video, canvas.nextSibling);
+      video.addEventListener("error", function () {
+        // the clip won't play here: fall back to drawing the Metal recording
+        video.remove(); video = null;
+        gl = canvas.getContext("webgl2", { antialias: false, premultipliedAlpha: false });
+        state.mode = gl ? "gl" : ((c2 = canvas.getContext("2d")) ? "2d" : null);
+        canvas.hidden = false;
+        if (state.mode) restart();
+      });
+    }
+    canvas.hidden = true;
+    var name = state.scene === "galaxy" ? "galaxy" : "heat";
+    video.poster = "media/" + name + ".jpg";
+    video.src = "media/" + name + ".mp4";
+    if (state.playing) { var p = video.play(); if (p && p.catch) p.catch(function () { playBtn.hidden = false; }); }
+    else playBtn.hidden = false;
+    var info = CLIPS && CLIPS[name];
+    var lines = info ? info.lines.map(function (l) { return l.replace(/ · [\d,]+ steps$/, ""); }) : [];
+    setHud(["Recorded live on this Mac's GPU (" + ((REC && REC.machine.gpu) || "Apple M2 Pro") + ", WebGPU → Metal)"].concat(lines, ["a video: WebGPU isn't available in this browser"]));
+    return { frame: function () {}, destroy: function () { if (video) { video.pause(); } } };
+  }
+  playBtn.addEventListener("click", function () { if (video) video.play(); });
+
   // ============================================================ recordings
   var REC = window.NATIVE_FRAMES;
   function bytes(b64) { var s = atob(b64), o = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
@@ -642,6 +677,7 @@
   (async function () {
     sizeCanvas();
     if (await initWebGPU()) state.mode = "live";
+    else if (CLIPS && document.createElement("video").canPlayType('video/mp4; codecs="avc1.64001f"')) state.mode = "video";
     else if (REC) {
       gl = canvas.getContext("webgl2", { antialias: false, premultipliedAlpha: false });
       if (gl) state.mode = "gl";

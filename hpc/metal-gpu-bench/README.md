@@ -12,7 +12,9 @@ Open `site/index.html`. It works straight from disk (`file://`) or over HTTP.
   WebGPU it runs on your GPU (tiled N-body kernel, additive glow, trails;
   stencil kernel with paintable heat), and "Run the same on one CPU core"
   runs the same JavaScript on one core for comparison. Without WebGPU it
-  plays the recording made on this Mac's GPU with Metal, drawn with WebGL2.
+  plays a video of those same live scenes recorded on this Mac's GPU
+  (`site/media/*.mp4`, about 1.1 MB together), so every visitor sees them; if
+  even the video can't play, it draws the Metal recording with WebGL2.
 - **Below:** the measured results from `data/native.js`, with no computation:
   native Metal vs C on all cores, the browser engines, and the top animation
   measured at full size.
@@ -26,6 +28,7 @@ make                    # builds ./bench
 ./bench --frames        # records both kernels on the GPU            -> results/frames-<date>.json
 node browser-bench.mjs  # WebGPU vs JavaScript in headless Chrome    -> results/browser-<date>.json
 python3 export.py       # bakes them into site/data/native.js and site/data/frames.js
+node record-video.mjs   # films the live WebGPU scenes (needs ffmpeg) -> site/media/, site/data/clips.js
 ```
 
 `./bench` compiles `nbody/Shaders.metal` and `stencil/Shaders.metal` from

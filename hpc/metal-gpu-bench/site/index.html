@@ -126,6 +126,8 @@ tbody tr:hover td { background: var(--sunken); }
 
 .hero { position: relative; height: 62vh; min-height: 420px; max-height: 760px; background: #05060d; overflow: hidden; color: #e6ecf5; }
 .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero canvas[hidden] { display: none; }
+.hero .herovideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #05060d; }
 .hero .hud { position: absolute; left: 1.25rem; top: 1.1rem; max-width: min(30rem, calc(100% - 2.5rem)); padding: 0.65rem 0.8rem; background: rgba(5, 8, 18, 0.62); border: 1px solid rgba(160, 180, 220, 0.18); font: 0.78rem/1.5 var(--mono); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .hero .hud .lines b { display: block; font: 600 0.8rem/1.4 var(--sans); color: #fff; margin-bottom: 0.15rem; }
 .hero .hud .lines span { display: block; color: #b9c6da; }
@@ -197,6 +199,7 @@ tbody tr:hover td { background: var(--sunken); }
 <div class="tip" id="tip"></div>
 <script src="data/native.js"></script>
 <script src="data/frames.js"></script>
+<script src="data/clips.js"></script>
 <script src="results.js"></script>
 <script src="hero.js"></script>
 <script src="live.js"></script>
