@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
@@ -47,10 +49,43 @@ func RequestLogger(next http.Handler) http.Handler {
 	})
 }
 
+// explorerReady reports whether the explorer tables hold data, cached for 30 seconds. The build step
+// replaces them in one transaction, so once they exist they can be served while later steps
+// (embedding, which only affects search ranking) still run.
+var explorerReadyCache struct {
+	sync.Mutex
+	at    time.Time
+	ready bool
+}
+
+func explorerReady() bool {
+	explorerReadyCache.Lock()
+	defer explorerReadyCache.Unlock()
+	if explorerReadyCache.ready || time.Since(explorerReadyCache.at) < 30*time.Second {
+		return explorerReadyCache.ready
+	}
+	explorerReadyCache.at = time.Now()
+	db, err := GetDB()
+	if err != nil {
+		return false
+	}
+	var ready bool
+	if db.QueryRow(`SELECT EXISTS (SELECT 1 FROM explorer_faculty) AND EXISTS (SELECT 1 FROM explorer_universities)`).
+		Scan(&ready) == nil {
+		explorerReadyCache.ready = ready
+	}
+	return explorerReadyCache.ready
+}
+
 func PreventRequestIfPipelineIsNotCompleted(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/health" {
+			next.ServeHTTP(w, r)
+			return
+		}
 		pipelineStatus := GetPipelineStatus(colly.NewContext(), cast.ToString(PIPELINE_POPULATE_POSTGRES))
-		if pipelineStatus == cast.ToString(PIPELINE_STATUS_COMPLETED) {
+		if pipelineStatus == cast.ToString(PIPELINE_STATUS_COMPLETED) ||
+			(strings.HasPrefix(r.URL.Path, "/explorer/") && explorerReady()) {
 			next.ServeHTTP(w, r)
 			return
 		}
