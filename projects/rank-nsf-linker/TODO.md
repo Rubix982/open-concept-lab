@@ -169,3 +169,15 @@ Written but NOT yet deployed or tested (built locally only):
 
 To finish v1: load UKRI → deploy go-server + web → screenshots (US, UK, EU, AU) → commit → ask before any
 public deploy. OpenAlex is the first v2 item.
+
+## Parked after v1 (2026-10-04)
+- [ ] v1 finish: load UKRI, deploy go-server + web, screenshots (US, UK, EU, AU), commit
+- [ ] Share with 5–10 students and collect feedback (did it help them find someone to email? was the
+      funding section useful?) before adding more data sources
+- [ ] Public deploy: ask the user first (hosting, domain, KAKEN/RGC terms if those are loaded)
+- [ ] OpenAlex v2: run `server/scripts/openalex/works.py`, deploy steps 21–23, re-embed papers with abstracts
+- [ ] Germany: no national funder data (DFG GEPRIS disallows crawling); ERC is the only signal there
+- [ ] Horizon Europe ERC PIs (PDF-only per call; panel PE6 = computer science)
+- [ ] Fields beyond computing (science, engineering, medicine) via OpenAlex + NIH RePORTER
+- [ ] Semantic search for the paper list on the professor page (currently recency order)
+
