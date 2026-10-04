@@ -4,15 +4,15 @@ window.HERO_CLIPS = {
  "browser": "Google Chrome for Testing 153.0.8010.12",
  "galaxy": {
   "lines": [
-   "16,384 bodies · 262 steps",
-   "267 steps/s · 71.6 G force calculations/s"
+   "16,384 bodies · encounter #202 · 1,461 steps",
+   "189 steps/s · 50.7 G force calculations/s"
   ],
-  "seconds": 16
+  "seconds": 24
  },
  "heat": {
   "lines": [
-   "1024 × 576 cells · 60,793 steps",
-   "11,136 steps/s · 6.6 G cell updates/s"
+   "1024 × 576 cells · 61,910 steps",
+   "9,369 steps/s · 5.5 G cell updates/s"
   ],
   "seconds": 10
  }

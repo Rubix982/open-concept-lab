@@ -8,7 +8,10 @@ The same two workloads on an Apple Silicon GPU and CPU: **N-body gravity**
 
 Open `site/index.html`. It works straight from disk (`file://`) or over HTTP.
 
-- **Top:** a live GPU render, either a galaxy collision or heat on a plate. On
+- **Top:** a live GPU render, either a galaxy collision or heat on a plate.
+  Every visit draws a different collision (approach angle, offset, spins,
+  mass ratio); `?seed=202` repeats one, `?bodies=` and `?pace=` fix the size
+  and speed. On
   WebGPU it runs on your GPU (tiled N-body kernel, additive glow, trails;
   stencil kernel with paintable heat), and "Run the same on one CPU core"
   runs the same JavaScript on one core for comparison. Without WebGPU it
@@ -29,6 +32,7 @@ make                    # builds ./bench
 node browser-bench.mjs  # WebGPU vs JavaScript in headless Chrome    -> results/browser-<date>.json
 python3 export.py       # bakes them into site/data/native.js and site/data/frames.js
 node record-video.mjs   # films the live WebGPU scenes (needs ffmpeg) -> site/media/, site/data/clips.js
+                        #   galaxy: encounter #202, 16,384 bodies, one step a frame (SEED=, BODIES= to change)
 ```
 
 `./bench` compiles `nbody/Shaders.metal` and `stencil/Shaders.metal` from

@@ -25,24 +25,43 @@
   var state = { scene: "galaxy", mode: null, engine: "gpu", playing: !reduced, visible: true, gpuLabel: "" };
 
   // ------------------------------------------------------------ scenes
-  // Two disc galaxies around heavy cores, spinning clockwise and passing
-  // close: the same set-up as galaxy_init in bench/bench.m.
-  function galaxies(N) {
-    var half = N >> 1, f = new Float32Array(N * 6), s = 7;
+  // Two disc galaxies around heavy cores on a close pass. Every visit draws a
+  // different encounter from a seed (?seed=123 in the address repeats one):
+  // the direction they approach from, how far off-centre they pass, which way
+  // each spins, and how their masses compare. The recording in data/frames.js
+  // used an earlier, fixed set-up (galaxy_init in bench/bench.m).
+  var SEED = (function () {
+    var m = /[?&]seed=(\d+)/.exec(location.search);
+    return m ? +m[1] : Math.floor(Math.random() * 1e6);
+  })();
+  function galaxies(N, seed) {
+    var half = N >> 1, f = new Float32Array(N * 6), s = (seed == null ? SEED : seed) + 7;
     var rnd = function () { return (s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff; };
-    var cx = [-0.45, 0.45], cy = [0.2, -0.2], vx = [0.55, -0.55], vy = [-0.12, 0.12], Mc = 3, Md = 1, soft = 0.0009;
+    for (var w = 0; w < 5; w++) rnd();
+    var theta = rnd() * 2 * Math.PI;                 // approach direction
+    var sep = 1.1 + 0.25 * rnd();                    // starting distance apart
+    var offset = 0.18 + 0.22 * rnd();                // how far off a head-on hit
+    var ratio = 0.55 + 0.45 * rnd();                 // mass of the second / the first
+    var spin = [rnd() < 0.5 ? 1 : -1, rnd() < 0.5 ? 1 : -1];
+    var Mc = [6, 6 * ratio], Md = [2.2, 2.2 * ratio], R = [0.36, 0.36 * Math.sqrt(ratio)], soft = 0.0009;
+    var ux = Math.cos(theta), uy = Math.sin(theta), px = -uy, py = ux;
+    // put the pair on an approach, centre of mass at rest
+    var Mt = [Mc[0] + Md[0], Mc[1] + Md[1]], tot = Mt[0] + Mt[1];
+    var v = 0.75 * Math.sqrt(tot / sep);             // a bit under escape speed: they come back
+    var pos = [[-sep / 2 * ux + offset / 2 * px, -sep / 2 * uy + offset / 2 * py], [sep / 2 * ux - offset / 2 * px, sep / 2 * uy - offset / 2 * py]];
+    var vel = [[v * ux * Mt[1] / tot, v * uy * Mt[1] / tot], [-v * ux * Mt[0] / tot, -v * uy * Mt[0] / tot]];
     for (var g = 0; g < 2; g++) {
       var o = g * half;
-      f.set([cx[g], cy[g], vx[g], vy[g], Mc, 0], o * 6);
+      f.set([pos[g][0], pos[g][1], vel[g][0], vel[g][1], Mc[g], 0], o * 6);
       for (var k = 1; k < half; k++) {
-        var u = k / half, r = 0.04 + 0.26 * Math.pow(u, 0.8), a = rnd() * 2 * Math.PI;
-        var v = Math.sqrt((Mc + Md * u) / Math.sqrt(r * r + soft));
-        f.set([cx[g] + r * Math.cos(a), cy[g] + r * Math.sin(a), vx[g] + v * Math.sin(a), vy[g] - v * Math.cos(a), Md / (half - 1), 0], (o + k) * 6);
+        var u = k / half, r = 0.03 + R[g] * Math.pow(u, 0.75), a = rnd() * 2 * Math.PI;
+        var vc = Math.sqrt((Mc[g] + Md[g] * u) / Math.sqrt(r * r + soft)) * spin[g];
+        f.set([pos[g][0] + r * Math.cos(a), pos[g][1] + r * Math.sin(a), vel[g][0] + vc * Math.sin(a), vel[g][1] - vc * Math.cos(a), Md[g] / (half - 1), 0], (o + k) * 6);
       }
     }
     return f;
   }
-  var GAL = { dt: 0.0008, soft: 0.0009, G: 1, view: 0.95 };   // view: world units shown half-height
+  var GAL = { dt: 0.0006, soft: 0.0009, G: 1, view: 1.05 };   // view: world units shown half-height
 
   // heat sources that wander so the plate is alive without a touch
   function movingSources(t, W, H) {
@@ -208,7 +227,7 @@
     var show = device.createRenderPipeline({ layout: "auto", vertex: { module: mod, entryPoint: "vfull" }, fragment: { module: mod, entryPoint: "fshow", targets: [{ format: format }] }, primitive: { topology: "triangle-list" } });
     var viewBuf = device.createBuffer({ size: 32, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
     var sy = 1 / GAL.view, sx = sy * h / w, ps = 1.1 * dpr();
-    device.queue.writeBuffer(viewBuf, 0, new Float32Array([sx, sy, ps / w * 2, ps / h * 2, 0.12 * Math.sqrt(32768 / N), 4.5, 0, 0]));
+    device.queue.writeBuffer(viewBuf, 0, new Float32Array([sx, sy, ps / w * 2, ps / h * 2, 0.12 * Math.sqrt(32768 / N), 9.0, 0, 0]));
     var pbinds = [0, 1].map(function (k) { return device.createBindGroup({ layout: pts.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: bufs[k] } }, { binding: 1, resource: { buffer: viewBuf } }] }); });
     var sbind = device.createBindGroup({ layout: show.getBindGroupLayout(0), entries: [{ binding: 0, resource: acc.createView() }] });
     var cur = 0, perFrame = 2, simSteps = 0, hist = [], first = true, t0 = performance.now();
@@ -221,7 +240,7 @@
     }
     var api = {
       frame: async function (now, still) {
-        if (performance.now() - t0 > 60000 && !still) { restart(); return; }   // start a fresh collision now and then
+        if (performance.now() - t0 > 25000 && !still && !/[?&]seed=/.test(location.search)) { SEED = Math.floor(Math.random() * 1e6); restart(); return; }   // a new encounter now and then
         var enc = device.createCommandEncoder(), k = 0;
         if (!cpu) {
           k = still ? 900 : perFrame;
@@ -243,12 +262,12 @@
           hist.push([k, ms]); if (hist.length > 30) hist.shift();
           // keep a frame near 14 ms: more steps when there's room, fewer bodies when there isn't
           if (!still) {
-            if (ms > 22 && perFrame === 1 && N > 8192 && hist.length > 20) { restartWith(N / 2); return; }
-            perFrame = Math.max(1, Math.min(4, ms < 7 ? perFrame + 1 : ms > 16 ? perFrame - 1 : perFrame));
+            if (!FIXED_N && ms > 22 && perFrame === 1 && N > 8192 && hist.length > 20) { restartWith(N / 2); return; }
+            perFrame = Math.max(1, Math.min(PACE, ms < 7 ? perFrame + 1 : ms > 16 ? perFrame - 1 : perFrame));
           }
           var S = 0, T = 0; hist.forEach(function (x) { S += x[0]; T += x[1]; });
           var sps = S / (T / 1000);
-          setHud([state.gpuLabel ? "Running live on your GPU (" + state.gpuLabel + ")" : "Running live on your GPU", N.toLocaleString() + " bodies · " + simSteps.toLocaleString() + " steps",
+          setHud([state.gpuLabel ? "Running live on your GPU (" + state.gpuLabel + ")" : "Running live on your GPU", N.toLocaleString() + " bodies · encounter #" + SEED + " · " + simSteps.toLocaleString() + " steps",
             rateTxt(sps) + " steps/s · " + big(sps * N * (N - 1)) + " force calculations/s"]);
         } else {
           var S2 = 0, T2 = 0; wkHist.forEach(function (x) { S2 += x[0]; T2 += x[1]; });
@@ -263,7 +282,12 @@
     var restartWith = function (n) { GAL_FORCE_N = n; restart(); };
     return api;
   }
-  var GAL_FORCE_N = 0;
+  // ?bodies=16384 fixes the size (and turns off the automatic step-down)
+  var GAL_FORCE_N = (function () { var m = /[?&]bodies=(\d+)/.exec(location.search); return m ? Math.max(1024, Math.min(65536, +m[1])) : 0; })();
+  var FIXED_N = !!GAL_FORCE_N;
+  // steps per frame for the galaxies: slow enough that the meeting plays out
+  // over seconds (?pace=1 for the slowest, as in the recorded video)
+  var PACE = (function () { var m = /[?&]pace=(\d+)/.exec(location.search); return m ? Math.max(1, Math.min(8, +m[1])) : 2; })();
 
   var GAL_CPU = function () {
     var f, n, dt, soft, G, next;

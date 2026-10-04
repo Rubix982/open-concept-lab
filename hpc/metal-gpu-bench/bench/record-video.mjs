@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const W = 1280, H = 720;
-const scenes = [["galaxy", 16], ["heat", 10]];   // [scene, seconds]
+const scenes = [["galaxy", 24], ["heat", 10]];   // [scene, seconds]
 
 const cache = path.join(os.homedir(), "Library/Caches/ms-playwright");
 const chrome = [process.env.CHROME, "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -51,7 +51,8 @@ for (const [scene, seconds] of scenes) {
     };
     const send = (method, params = {}) => new Promise((r) => { pend[++id] = r; ws.send(JSON.stringify({ id, method, params })); });
     await send("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: 1, mobile: false });
-    await send("Page.navigate", { url: "file://" + path.join(root, "site/index.html") });
+    // one chosen encounter (the page picks a random one each visit; ?seed= fixes it)
+    await send("Page.navigate", { url: "file://" + path.join(root, "site/index.html") + "?seed=" + (process.env.SEED || 202) + "&bodies=" + (process.env.BODIES || 16384) + "&pace=1" });
     await wait(1500);
     const r = await send("Runtime.evaluate", { returnByValue: true, awaitPromise: true, expression: `(async () => {
       const h = document.getElementById("hero");
