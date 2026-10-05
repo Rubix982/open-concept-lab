@@ -245,7 +245,7 @@ what the API returns and the pages render. The data is far richer than the pages
    browse without a search, progressive disclosure, no walls of numbers. Write up as a design note with
    action items; build the clearly safe ones
 5. [x] C4 scholarships: level filter and deadline view (open now / opens in, read from the window text)
-6. C2 shortlist and compare (browser storage only)
+6. [x] C2 shortlist and compare (browser storage only): "Save to your list" on profiles and universities, "Your list" compares people
 7. C5 Pakistan path
 8. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
 9. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time

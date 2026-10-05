@@ -11,6 +11,7 @@ import {
 import { LINE_COLOR, formatMoney, formatYear, webUrl } from "@/lines";
 import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
 import { countryName } from "@/countries";
+import { isSaved, toggleSaved } from "@/shortlist";
 
 const props = defineProps<{ name: string; backLabel: string; goal?: string }>();
 const emit = defineEmits<{ back: []; open: [name: string] }>();
@@ -245,6 +246,27 @@ function untilLabel(date: string | null): string {
       <header>
         <h2>{{ displayName }}</h2>
         <p class="uni">{{ person.university }}</p>
+        <button
+          type="button"
+          class="save"
+          :class="{ on: isSaved('person', person.name) }"
+          :aria-pressed="isSaved('person', person.name)"
+          @click="
+            toggleSaved({
+              kind: 'person',
+              id: person.name,
+              label: displayName,
+              sub: person.university,
+              universityId: person.university_id,
+            })
+          "
+        >
+          {{
+            isSaved("person", person.name)
+              ? "Saved to your list"
+              : "Save to your list"
+          }}
+        </button>
         <p v-if="previously.length" class="prev">
           Previously at {{ previously.join(", ") }}
         </p>
@@ -529,6 +551,25 @@ function untilLabel(date: string | null): string {
   color: var(--ink-soft);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.save {
+  margin-top: 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 3px 12px 2px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.save.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
 }
 
 h2 {

@@ -9,6 +9,7 @@ import {
   type UniversityDetail,
 } from "@/api";
 import { countryName } from "@/countries";
+import { isSaved, toggleSaved } from "@/shortlist";
 import { areaIndex, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
@@ -248,6 +249,26 @@ function money(n?: number) {
           <h2>{{ uni.name }}</h2>
           <p class="place">{{ place }}</p>
           <p v-if="carnegieLabel" class="carnegie">{{ carnegieLabel }}</p>
+          <button
+            type="button"
+            class="save"
+            :class="{ on: isSaved('university', uni.id) }"
+            :aria-pressed="isSaved('university', uni.id)"
+            @click="
+              toggleSaved({
+                kind: 'university',
+                id: uni.id,
+                label: uni.name,
+                sub: place,
+              })
+            "
+          >
+            {{
+              isSaved("university", uni.id)
+                ? "Saved to your list"
+                : "Save to your list"
+            }}
+          </button>
         </header>
 
         <dl class="facts">
@@ -665,6 +686,25 @@ h3 {
 }
 
 .funders li,
+.save {
+  margin-top: 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 3px 12px 2px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.save.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
 .training {
   margin-top: 14px;
 }

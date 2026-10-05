@@ -14,6 +14,8 @@ import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import GrantRow from "@/components/GrantRow.vue";
 import FundingView from "@/components/FundingView.vue";
+import ShortlistDialog from "@/components/ShortlistDialog.vue";
+import { saved } from "@/shortlist";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
 
@@ -351,6 +353,7 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
 );
 
 const about = ref<HTMLDialogElement | null>(null);
+const shortlist = ref<InstanceType<typeof ShortlistDialog> | null>(null);
 const pickerOpen = ref(false);
 
 function removeArea(area: string) {
@@ -376,6 +379,9 @@ function removeArea(area: string) {
         />
         <button type="submit">Search</button>
       </form>
+      <button type="button" class="your-list" @click="shortlist?.open()">
+        Your list<template v-if="saved.length"> ({{ saved.length }})</template>
+      </button>
       <button
         type="button"
         class="info"
@@ -673,6 +679,12 @@ function removeArea(area: string) {
       @open-professor="openProf = $event"
     />
 
+    <ShortlistDialog
+      ref="shortlist"
+      @open-person="openProfessorFromList"
+      @open-university="openUniversity($event)"
+    />
+
     <dialog ref="about" class="about">
       <h2>About the data</h2>
       <p>
@@ -787,8 +799,20 @@ h1 {
   padding: 0 18px;
 }
 
-.info {
+.your-list {
   margin-left: auto;
+  border: 1.5px solid #8794a3;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--t-xs);
+  padding: 4px 12px 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.info {
   width: 26px;
   height: 26px;
   border-radius: 50%;
