@@ -169,21 +169,28 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       resumes on cache), then pipeline from step 22
 - [x] 11 more fields and ~210 subfields as research areas (70,290 people, 234 areas)
 
+## Next: grant data for many more countries (asked 2026-10-05, to plan)
+- [ ] Survey national funders with open, reusable award data per country (by students affected),
+      check each licence, then add importers to the fetcher one by one
+
 ## Next: the pipeline fetches everything (agreed 2026-10-05, after subfields)
 Today only CSRankings, NSF and IPEDS are fetched by the pipeline; everything else is fetched by hand
 and only loaded. On a fresh pod those steps skip or fail. Goal: the pipeline fetches, extracts and
 loads every source it serves, and heals itself.
-- [ ] Separate fetcher container (Python, the existing scripts); the pipeline runs one fetch step per
+- [x] Separate fetcher container (Python, the existing scripts); the pipeline runs one fetch step per
       source before the load steps
-- [ ] Sources to move in: the 11 grant importers (scripts/grants, incl. ERC Horizon Europe PDFs listed
+- [x] Sources to move in: the 11 grant importers (scripts/grants, incl. ERC Horizon Europe PDFs listed
       in data/erc_he/sources.txt), DBLP dump, OpenAlex works.py / fields.py / extra_universities.py
       (and the universities.csv export it needs, done from the database inside the step), DAAD
       scholarships, geocoding caches, coordinate checks
-- [ ] Each fetch: skip when fresh (age threshold per source), resume from its cache, retry next run
+- [x] Each fetch: skip when fresh (age threshold per source), resume from its cache, retry next run
       on failure; never replace good data with a partial result
-- [ ] Limits inside the pipeline: OpenAlex 10k calls/day (a fetch can span days: finish later, don't
+- [x] Limits inside the pipeline: OpenAlex 10k calls/day (a fetch can span days: finish later, don't
       fail), NIH / RGC / KAKEN ~1 request/s; API keys from the server environment only
-- [ ] Serving keeps the last good data while a fetch runs; a fresh pod with empty data/ ends up complete
+- [x] Serving keeps the last good data while a fetch runs; a scheduler reruns the pipeline when data is
+      older than PIPELINE_REFRESH_DAYS or a fetch was left partial
+- [ ] Prove it: a fresh pod with an empty data/ ends up complete (not yet tried end to end)
+- [ ] Geocoding and the Pakistani-universities list stay curated inputs (committed), not fetched
 
 ## Parked after v1 (2026-10-04)
 - [x] v1 finish: UKRI loaded, go-server + web deployed, screenshots checked (US, UK, CH, AU)
