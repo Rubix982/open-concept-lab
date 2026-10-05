@@ -236,13 +236,16 @@ what the API returns and the pages render. The data is far richer than the pages
 
 ### Unattended run, 2026-10-05 (work order; each step committed and pushed on its own)
 1. Finish B: load the OpenAlex researcher abstracts when `fields.py works` ends; pipeline from step 13; verify
-2. C1 filters + sort on search results and university lists
-3. C3 "Before you write" checklist on a profile
-4. C4 scholarships: level filter and deadline view
-5. C2 shortlist and compare (browser storage only)
-6. C5 Pakistan path
-7. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
-8. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
+2. [x] C1 filters + sort on search results and university lists (+ 17 misplaced universities fixed)
+3. [x] C3 "Before you write" checklist on a profile
+4. Funding landscape (asked 2026-10-05): ~90% of active grant money (NIH 64,515 active grants, KAKEN,
+   ANR, ERC, …) isn't linked to anyone on the map, and the Grants tab only searches linked grants. For a search:
+   money by funder, grants started per year, universities receiving it, the grants with PI and institution
+5. C4 scholarships: level filter and deadline view
+6. C2 shortlist and compare (browser storage only)
+7. C5 Pakistan path
+8. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
+9. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
 Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
 
 ### C. Student use cases not served yet
