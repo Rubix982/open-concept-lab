@@ -155,11 +155,13 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] DAAD scholarship feed: 69 graduate/doctoral programmes open to Pakistani applicants
       (`scripts/scholarships/daad.py` → data/scholarships/daad.csv); curated entries win on duplicates
 
-## v1 state (2026-10-04, night)
-- Deployed locally: pipeline 23 steps, all succeeded. 15,667 faculty at 635 universities in 58 countries;
-  7 funders (NSF, ARC, Marsden, UKRI, ANR, SNSF, ERC); 536,907 DBLP papers; 416,312 items in semantic search.
-- OpenAlex step is in the pipeline but skips until `server/scripts/openalex/works.py` has run (no calls made).
-- Postgres `shm_size: 1gb`; go-server image has curl for its healthcheck.
+## State (2026-10-05, morning)
+- Pipeline 26 steps, all succeeded; semantic index stable (a rerun embeds nothing).
+- 48,077 people at 676 universities in 61 countries: 18,015 CS faculty (CSRankings) + 30,062 researchers in
+  14 other fields at US R1s (OpenAlex). 18,647 with grant records, 8,297 active.
+- Funders: NSF, NIH, UKRI, KAKEN, ARC, ERC (H2020 + Horizon Europe), SNSF, ANR, Marsden.
+- 646,857 searchable items (76,472 grants, 570,385 papers; 290,485 papers with abstracts). Qdrant 1.12.6: 537 MB.
+- Known data caveat: OpenAlex affiliations are sometimes stale (a researcher can show at a previous university).
 
 ## Parked after v1 (2026-10-04)
 - [x] v1 finish: UKRI loaded, go-server + web deployed, screenshots checked (US, UK, CH, AU)
