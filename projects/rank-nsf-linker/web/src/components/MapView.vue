@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import mapboxgl from "mapbox-gl";
-import { fundersFor } from "@/store";
+import { funders, fundersFor } from "@/store";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { UniversitySummary } from "@/api";
 
@@ -12,6 +12,7 @@ const props = defineProps<{
   goalLabel?: string; // what goal_matches counts, for the tooltip (default: matching faculty)
   selectedId: string | null;
   focus?: { key: string; ids: string[] }; // fit the map to these universities when key changes
+  countries?: string[]; // every country with universities listed (shading ignores the filters)
 }>();
 const emit = defineEmits<{ select: [id: string] }>();
 
@@ -62,7 +63,88 @@ function paint() {
   if (!map || !ready.value) return;
   (map.getSource("unis") as mapboxgl.GeoJSONSource).setData(features());
   map.setPaintProperty("unis", "circle-color", props.color);
+  shadeCountries();
 }
+
+// ---- base map: Mapbox "light", recoloured so water, land and borders read at a glance ----
+const WATER = "#a9cbe3";
+const LAND = "#f2f2ec";
+const LISTED = "#dde8d2"; // a country with universities in Advisor Atlas
+const FUNDED = "#bcd6b0"; // ... and grant data loaded for it
+const BORDER = "#5d6876";
+
+function restyleBase() {
+  if (!map) return;
+  const set = (layer: string, prop: string, value: unknown) => {
+    if (map!.getLayer(layer))
+      map!.setPaintProperty(layer, prop as never, value as never);
+  };
+  set("land", "background-color", LAND);
+  set("water", "fill-color", WATER);
+  set("waterway", "line-color", WATER);
+  set("admin-0-boundary", "line-color", BORDER);
+  set("admin-0-boundary", "line-width", [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    1,
+    0.8,
+    5,
+    1.6,
+    8,
+    2.2,
+  ]);
+  set("admin-0-boundary-disputed", "line-color", BORDER);
+  set("admin-1-boundary", "line-color", "#a7b0ba");
+  set("country-label", "text-color", "#3b4654");
+  // Countries shaded by what Advisor Atlas holds for them.
+  map.addSource("countries", {
+    type: "vector",
+    url: "mapbox://mapbox.country-boundaries-v1",
+  });
+  // under water, so lakes stay blue, and under borders and labels
+  const below = map.getLayer("water") ? "water" : undefined;
+  map.addLayer(
+    {
+      id: "country-shade",
+      type: "fill",
+      source: "countries",
+      "source-layer": "country_boundaries",
+      // one worldview, so disputed areas aren't drawn twice
+      filter: [
+        "any",
+        ["==", ["get", "worldview"], "all"],
+        ["in", "US", ["get", "worldview"]],
+      ],
+      paint: { "fill-color": LAND, "fill-opacity": 1 },
+    },
+    below,
+  );
+}
+
+function shadeCountries() {
+  if (!map?.getLayer("country-shade")) return;
+  // every country listed, not only the filtered ones
+  const listed = new Set(
+    (props.countries ?? props.universities.map((u) => u.country ?? ""))
+      .filter(Boolean)
+      .map((c) => c.toUpperCase()),
+  );
+  const funded = [...listed].filter((c) => fundersFor(c).length);
+  const plain = [...listed].filter((c) => !fundersFor(c).length);
+  const expr: unknown[] = ["match", ["get", "iso_3166_1"]];
+  if (funded.length) expr.push(funded, FUNDED);
+  if (plain.length) expr.push(plain, LISTED);
+  expr.push(LAND);
+  map.setPaintProperty(
+    "country-shade",
+    "fill-color",
+    (expr.length > 3 ? expr : LAND) as never,
+  );
+}
+// Which countries have grant data arrives with /explorer/funders, possibly after the first paint.
+watch(funders, shadeCountries);
+watch(() => props.countries, shadeCountries);
 
 onMounted(() => {
   mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -93,6 +175,7 @@ onMounted(() => {
   );
 
   map.on("load", () => {
+    restyleBase();
     map!.addSource("unis", { type: "geojson", data: features() });
     map!.addLayer({
       id: "unis",

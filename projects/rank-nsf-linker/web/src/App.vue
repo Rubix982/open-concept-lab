@@ -246,6 +246,11 @@ const mapColor = computed(() => {
     : INK_HEX;
 });
 
+// Every country with universities listed, for the map's shading (filters don't change it).
+const listedCountries = computed(() => [
+  ...new Set(universities.value.map((u) => u.country ?? "").filter(Boolean)),
+]);
+
 // On the Funding tab the dots show money (grants on the search) instead of people.
 const fundingCounts = ref<Record<string, number> | null>(null);
 const fundingMap = computed(
@@ -790,6 +795,7 @@ const areaChips = computed(() => {
         :color="mapColor"
         :use-goal="!!goal"
         :goal-label="fundingMap ? 'grants on this search' : undefined"
+        :countries="listedCountries"
         :selected-id="openUni"
         :focus="goalFocus"
         @select="openUniversity($event)"
@@ -803,6 +809,10 @@ const areaChips = computed(() => {
               ? "faculty matching your search"
               : "faculty in your areas"
         }}. Heavy ring: R1 university.
+        <br />
+        <span class="swatch" style="background: #bcd6b0"></span> Grant data
+        loaded <span class="swatch" style="background: #dde8d2"></span> Listed,
+        no grant data yet
       </p>
     </div>
 
@@ -1343,6 +1353,20 @@ h1 {
   padding: 5px 10px 4px;
   font-size: var(--t-xs);
   color: var(--ink-soft);
+}
+
+.legend .swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 3px 0 6px;
+  border: 1px solid #5d6876;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+.legend .swatch:first-of-type {
+  margin-left: 0;
 }
 
 .drawer-slot {
