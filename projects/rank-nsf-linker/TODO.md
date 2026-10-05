@@ -282,7 +282,7 @@ What we hold and don't show (by value to a student)
 - [x] G5 Starting points without a search: a few example searches under the intro; topic chips
 - [x] G6 Country summary when a country is chosen: one paragraph (universities, people, which funders
       are covered, scholarships)
-- [ ] G7 (decision for Saif) Grants and Funding tabs overlap: Funding lists every grant, Grants only
+- [x] G7 (Saif: yes, 2026-10-05) Grants and Funding tabs overlap: Funding lists every grant, Grants only
       those linked to people. Recommend folding Grants into Funding: three tabs instead of four
 - Deferred: research-area trends per university over time (professor_areas by year): noisy at small
   counts, easy to over-read

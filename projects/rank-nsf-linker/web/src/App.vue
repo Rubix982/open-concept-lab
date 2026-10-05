@@ -12,7 +12,6 @@ import { areaIndex, areas, funderName, funders, fundersFor } from "@/store";
 import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
-import GrantRow from "@/components/GrantRow.vue";
 import FundingView from "@/components/FundingView.vue";
 import ShortlistDialog from "@/components/ShortlistDialog.vue";
 import { saved } from "@/shortlist";
@@ -26,10 +25,11 @@ const selectedAreas = ref<string[]>(
 );
 const goalInput = ref(url.get("q") ?? "");
 const goal = ref(goalInput.value);
-type Tab = "universities" | "faculty" | "grants" | "funding";
+// "Grants" was folded into "Funding"; old links with view=grants open Funding.
+type Tab = "universities" | "faculty" | "funding";
 const tab = ref<Tab>(
   (["faculty", "grants", "funding"].includes(url.get("view") ?? "")
-    ? url.get("view")
+    ? url.get("view")?.replace("grants", "funding")
     : "universities") as Tab,
 );
 const openUni = ref<string | null>(url.get("u"));
@@ -101,18 +101,23 @@ const query = computed<Query>(() => ({
   goal: goal.value,
 }));
 
-watch([selectedAreas, goal, tab, openUni, openProf, filterParams], () => {
-  const p = new URLSearchParams();
-  if (selectedAreas.value.length) p.set("areas", selectedAreas.value.join(","));
-  if (goal.value) p.set("q", goal.value);
-  if (tab.value !== "universities") p.set("view", tab.value);
-  if (openUni.value) p.set("u", openUni.value);
-  if (openProf.value) p.set("p", openProf.value);
-  for (const [k, v] of Object.entries(filterParams.value))
-    if (v !== undefined) p.set(k, String(v));
-  const s = p.toString();
-  history.replaceState(null, "", s ? `?${s}` : location.pathname);
-});
+watch(
+  [selectedAreas, goal, tab, openUni, openProf, filterParams],
+  () => {
+    const p = new URLSearchParams();
+    if (selectedAreas.value.length)
+      p.set("areas", selectedAreas.value.join(","));
+    if (goal.value) p.set("q", goal.value);
+    if (tab.value !== "universities") p.set("view", tab.value);
+    if (openUni.value) p.set("u", openUni.value);
+    if (openProf.value) p.set("p", openProf.value);
+    for (const [k, v] of Object.entries(filterParams.value))
+      if (v !== undefined) p.set(k, String(v));
+    const s = p.toString();
+    history.replaceState(null, "", s ? `?${s}` : location.pathname);
+  },
+  { immediate: true },
+); // immediate: an old ?view=grants link is rewritten to view=funding
 
 // The goal box searches when submitted (Enter or the Search button), not while typing.
 function submitGoal() {
@@ -141,7 +146,7 @@ function trySearch(q: string) {
 function clearGoal() {
   goalInput.value = "";
   goal.value = "";
-  if (tab.value === "grants" || tab.value === "funding") tab.value = "faculty";
+  if (tab.value === "funding") tab.value = "faculty";
 }
 
 // ---- data ----
@@ -149,7 +154,7 @@ const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
 const grants = ref<Grant[]>([]);
 const grantsLoading = ref(false);
-const includePastGrants = ref(false);
+const includePastGrants = ref(true); // the Funding tab opens on every grant; a toggle narrows to running
 const loading = ref(true);
 const error = ref("");
 // The map renders only once the area list and the first university load have both arrived.
@@ -342,7 +347,6 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
   goal.value
     ? [
         { id: "faculty", label: "Faculty" },
-        { id: "grants", label: "Grants" },
         { id: "funding", label: "Funding" },
         { id: "universities", label: "Universities" },
       ]
@@ -498,7 +502,7 @@ function removeArea(area: string) {
         </button>
       </div>
 
-      <div v-if="ready && tab !== 'grants'" class="narrow">
+      <div v-if="ready" class="narrow">
         <label>
           <span class="visually-hidden">Country</span>
           <select v-model="country">
@@ -588,27 +592,11 @@ function removeArea(area: string) {
         @open-university="openUniversity($event)"
         @open-person="openProfessorFromList"
         @counts="fundingCounts = $event"
+        :grants="grants"
+        :grants-loading="grantsLoading"
+        :only-active="!includePastGrants"
+        @update:only-active="includePastGrants = !$event"
       />
-
-      <template v-else-if="ready && tab === 'grants'">
-        <label class="toggle">
-          <input v-model="includePastGrants" type="checkbox" />
-          Include grants that have ended
-        </label>
-        <p v-if="grantsLoading" class="hint">Searching grants</p>
-        <p v-else-if="!grants.length" class="hint">
-          No {{ includePastGrants ? "" : "active " }}grants match. Try other
-          words, or include ended grants.
-        </p>
-        <ul class="grant-list">
-          <GrantRow
-            v-for="g in grants"
-            :key="g.id"
-            :grant="g"
-            @open-person="openProfessorFromList"
-          />
-        </ul>
-      </template>
 
       <ul v-else-if="ready" class="fac-list">
         <FacultyRow
@@ -1052,8 +1040,7 @@ h1 {
 }
 
 .uni-list,
-.fac-list,
-.grant-list {
+.fac-list {
   margin: 0;
   padding: 0;
 }

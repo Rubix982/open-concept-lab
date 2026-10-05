@@ -1,20 +1,32 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { api, type Landscape } from "@/api";
+import { api, type Grant, type Landscape } from "@/api";
+import GrantRow from "@/components/GrantRow.vue";
 import { formatMoney, formatYear, webUrl } from "@/lines";
 import { funderName } from "@/store";
 import { countryName } from "@/countries";
 
-// "Where the money goes" for a search: every grant loaded, whether or not its people are on the map.
+// "Where the money goes" for a search: every grant loaded, whether or not its people are on the map,
+// plus the grants of people in Advisor Atlas closest in meaning (what the Grants tab used to show).
 // Shown a little at a time: one sentence, then short lists that open up.
-const props = defineProps<{ goal: string; country?: string }>();
+const props = defineProps<{
+  goal: string;
+  country?: string;
+  grants: Grant[]; // grants held by people on the map, closest in meaning first
+  grantsLoading: boolean;
+  onlyActive: boolean;
+}>();
 const emit = defineEmits<{
   openUniversity: [id: string];
   openPerson: [name: string, universityId: string | null];
   counts: [byUniversity: Record<string, number> | null];
+  "update:onlyActive": [value: boolean];
 }>();
-
-const onlyActive = ref(false);
+const onlyActive = computed(() => props.onlyActive);
+const showAllHeld = ref(false);
+const heldGrants = computed(() =>
+  showAllHeld.value ? props.grants : props.grants.slice(0, 6),
+);
 const data = ref<Landscape | null>(null);
 const loading = ref(false);
 const error = ref("");
@@ -116,8 +128,14 @@ function years(g: Landscape["grants"][number]) {
 <template>
   <div class="funding">
     <label class="toggle"
-      ><input v-model="onlyActive" type="checkbox" /> Only grants running
-      now</label
+      ><input
+        :checked="onlyActive"
+        type="checkbox"
+        @change="
+          emit('update:onlyActive', ($event.target as HTMLInputElement).checked)
+        "
+      />
+      Only grants running now</label
     >
     <p v-if="loading && !data" class="hint">Searching every grant loaded</p>
     <p v-else-if="error" class="error">{{ error }}</p>
@@ -129,7 +147,8 @@ function years(g: Landscape["grants"][number]) {
         >
         <template v-else>
           <strong>{{ data.total.toLocaleString() }}</strong>
-          {{ data.total === 1 ? "grant mentions" : "grants mention" }} “{{
+          {{ onlyActive ? "running " : ""
+          }}{{ data.total === 1 ? "grant mentions" : "grants mention" }} “{{
             goal
           }}”<template v-if="country"> in {{ countryName(country) }}</template
           ><template v-if="!onlyActive"
@@ -254,9 +273,44 @@ function years(g: Landscape["grants"][number]) {
         </button>
       </section>
 
-      <section v-if="data.grants.length">
-        <h3>The grants</h3>
-        <p class="hint">Closest matches first, favouring recent ones.</p>
+      <section>
+        <h3>Grants held by people in Advisor Atlas</h3>
+        <p class="hint">
+          Closest in meaning to your search; open a name to see their profile.
+        </p>
+        <p v-if="grantsLoading && !grants.length" class="hint">
+          Searching grants
+        </p>
+        <p v-else-if="!grants.length" class="hint">
+          None {{ onlyActive ? "running " : "" }}match closely. Try other
+          words{{ onlyActive ? ", or include ended grants" : "" }}.
+        </p>
+        <ul class="held">
+          <GrantRow
+            v-for="g in heldGrants"
+            :key="g.id"
+            :grant="g"
+            @open-person="(n, u) => emit('openPerson', n, u)"
+          />
+        </ul>
+        <button
+          v-if="grants.length > 6"
+          type="button"
+          class="link more"
+          @click="showAllHeld = !showAllHeld"
+        >
+          {{ showAllHeld ? "Fewer" : `All ${grants.length}` }}
+        </button>
+      </section>
+
+      <details v-if="data.grants.length" class="more-grants">
+        <summary>
+          More grants that mention “{{ goal }}”, including researchers not in
+          Advisor Atlas
+        </summary>
+        <p class="hint">
+          Matched on words, closest first, favouring recent ones.
+        </p>
         <ul class="grants">
           <li v-for="g in grants" :key="g.funder + g.id">
             <a
@@ -301,7 +355,7 @@ function years(g: Landscape["grants"][number]) {
         >
           {{ showAllGrants ? "Fewer grants" : `Show ${data.grants.length}` }}
         </button>
-      </section>
+      </details>
 
       <p class="hint coverage">
         Matched on the words in each grant's title and summary. Outside the US
@@ -438,6 +492,18 @@ h3 {
   padding: 4px 0;
   font-size: var(--t-sm);
   border-bottom: 1px solid var(--rule);
+}
+
+.held {
+  margin: 0;
+  padding: 0;
+}
+
+.more-grants > summary {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 0;
 }
 
 .places li {
