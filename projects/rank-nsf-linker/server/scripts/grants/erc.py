@@ -19,7 +19,7 @@ import io
 import re
 import zipfile
 
-from common import DATA, read_xlsx, write
+from common import DATA, ROOT, download, read_xlsx, write
 from erc_lists import parse_pdf
 
 SRC = DATA / "cordis"
@@ -139,7 +139,22 @@ def zipped(z: zipfile.ZipFile, name: str) -> list[dict]:
         return list(csv.DictReader(io.TextIOWrapper(f, encoding="utf-8-sig", newline=""), delimiter=";"))
 
 
+CORDIS = "https://cordis.europa.eu/data/"
+HE_SOURCES = ROOT / "backup" / "erc_he_sources.txt"  # curated: one line per result PDF
+
+
+def fetch() -> None:
+    for name in ("cordis-h2020-erc-pi.xlsx", "cordis-h2020projects-csv.zip", "cordis-HORIZONprojects-csv.zip"):
+        # H2020 is closed and doesn't change; Horizon Europe grows
+        download(CORDIS + name, SRC / name, max_age_days=365 if "h2020" in name else 30)
+    for line in HE_SOURCES.read_text().splitlines():
+        if line.strip():
+            year, call, url = line.split(maxsplit=2)
+            download(url, DATA / "erc_he" / f"erc-{year}-{call}.pdf", max_age_days=3650)  # published once
+
+
 def main() -> None:
+    fetch()
     sheet = next(iter(read_xlsx(SRC / "cordis-h2020-erc-pi.xlsx").values()))
     header = [h.strip() for h in sheet[0]]
     pis = [dict(zip(header, r)) for r in sheet[1:]]
@@ -191,14 +206,14 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
     """Horizon Europe ERC computer-science (PE6) grants from the result PDFs + CORDIS projects."""
     src = DATA / "erc_he"
     he = SRC / "cordis-HORIZONprojects-csv.zip"
-    if not (src / "sources.txt").exists() or not he.exists():
-        print("Horizon Europe ERC: data/erc_he/sources.txt or the CORDIS Horizon Europe zip missing; skipped")
+    if not HE_SOURCES.exists() or not he.exists():
+        print("Horizon Europe ERC: backup/erc_he_sources.txt or the CORDIS Horizon Europe zip missing; skipped")
         return [], []
     z = zipfile.ZipFile(he)
     by_call = {(p["masterCall"].upper(), p["acronym"].strip().lower()): p for p in zipped(z, "project.csv")
                if p["masterCall"].upper().startswith("ERC-")}
     grants, people, unmatched = [], [], 0
-    for line in (src / "sources.txt").read_text().splitlines():
+    for line in HE_SOURCES.read_text().splitlines():
         if not line.strip():
             continue
         year, call, _url = line.split(maxsplit=2)

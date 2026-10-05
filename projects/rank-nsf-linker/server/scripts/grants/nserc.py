@@ -18,7 +18,7 @@ import csv
 import re
 from collections import defaultdict
 
-from common import DATA, split_name, write
+from common import DATA, download, get_json, split_name, write
 
 SRC = DATA / "nserc"
 COMMITTEES = {"computer science", "electrical and computer engineering", "s&f committee for computing sciences",
@@ -49,7 +49,29 @@ def person(raw: str) -> tuple[str, str, str]:
     return split_name(raw)
 
 
+PACKAGE = "https://open.canada.ca/data/api/action/package_show?id=c1b0f627-8c29-427c-ab73-33968ad9176e"
+YEARS = 3  # the newest fiscal years: running grants all appear in them
+
+
+def fetch() -> None:
+    """The newest fiscal years' Awards and Co-Applicants files from the Open Government Portal.
+    Older years stay in data/nserc/ once downloaded; they're published once and don't change."""
+    by_year: dict[int, dict[str, str]] = defaultdict(dict)
+    for r in get_json(PACKAGE)["result"]["resources"]:
+        name = r["name"] if isinstance(r["name"], str) else r["name"].get("en", "")
+        m = re.match(r"(\d{4}) (Awards|Co-Applicants)", name.strip())
+        if m:
+            by_year[int(m.group(1))][m.group(2)] = r["url"]
+    for year in sorted(by_year)[-YEARS:]:
+        files = by_year[year]
+        if "Awards" in files:
+            download(files["Awards"], SRC / f"NSERC_FY{year}_Expenditures.csv", max_age_days=90)
+        if "Co-Applicants" in files:
+            download(files["Co-Applicants"], SRC / f"NSERC_FY{year}_CO-APP.csv", max_age_days=90)
+
+
 def main() -> None:
+    fetch()
     grants: dict[str, dict] = {}
     paid: dict[str, float] = defaultdict(float)
     last_fy: dict[str, int] = {}

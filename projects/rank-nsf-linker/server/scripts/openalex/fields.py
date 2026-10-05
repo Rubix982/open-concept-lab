@@ -33,6 +33,9 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fetchlib import PARTIAL, secret  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / "data" / "openalex"
 CACHE = DATA / "fields"
@@ -77,10 +80,7 @@ EXTRA_FIELDS = {**FIELDS, "17": ("computing", "Computer science (OpenAlex)", "En
 
 
 def api_key() -> str:
-    for line in (ROOT / "server" / ".env").read_text().splitlines():
-        if line.startswith("OPENALEX_API_KEY="):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    sys.exit("OPENALEX_API_KEY is not set in server/.env")
+    return secret("OPENALEX_API_KEY")
 
 
 class Client:
@@ -112,6 +112,10 @@ class Client:
                         print("  remaining today:", resp.headers.get("X-RateLimit-Remaining"))
                 break
             except urllib.error.HTTPError as e:
+                if e.code == 429 and int(e.headers.get("Retry-After") or 0) > 600:
+                    with self.lock:  # the day's allowance is spent: no more calls this run
+                        self.max_calls = self.calls
+                    return None
                 if e.code == 429 or e.code >= 500:
                     time.sleep(30 * (attempt + 1))
                     continue
@@ -216,7 +220,7 @@ def main() -> None:
             w.writerows(sorted((k, v[0], v[1]) for k, v in subfields.items()))
     print(f"{out.relative_to(ROOT)}: {len(people)} researchers ({c.calls} calls this run)")
     if stopped:
-        return
+        sys.exit(PARTIAL)
 
     if step != "works":
         return
@@ -293,6 +297,8 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     tmp.replace(out)
     WORKS_DONE.write_text("\n".join(sorted(asked)))
     print(f"data/openalex/fields_works.csv: {kept_rows + added} author-work rows ({added} new, {c.calls} calls this run)")
+    if stopped:
+        sys.exit(PARTIAL)
 
 
 def works_params(group: list[str], page: int) -> dict:

@@ -1,0 +1,15 @@
+2021 stg https://erc.europa.eu/sites/default/files/document/file/erc_2021_stg_results_all_domains.pdf
+2021 cog https://erc.europa.eu/sites/default/files/document/file/erc_2021_cog_results_all_domains.pdf
+2021 adg https://erc.europa.eu/sites/default/files/document/file/erc-2021-adg-results-all-domains.pdf
+2022 stg https://erc.europa.eu/sites/default/files/2022-11/erc_2022_stg_results_all_domains.pdf
+2022 cog https://erc.europa.eu/sites/default/files/2023-01/erc-2022-cog-results-all-domains.pdf
+2022 adg https://erc.europa.eu/sites/default/files/2023-03/erc-2022-adg-results-all-domains.pdf
+2023 stg https://erc.europa.eu/sites/default/files/2023-09/erc-2023-stg-results-all-domains.pdf
+2023 cog https://erc.europa.eu/sites/default/files/2023-11/erc-2023-cog-results-all-domains.pdf
+2023 adg https://erc.europa.eu/sites/default/files/2024-04/erc-2023-adg-results-all-domains.pdf
+2024 stg https://erc.europa.eu/sites/default/files/2024-09/erc-2024-stg-results-all-domains.pdf
+2024 cog https://erc.europa.eu/sites/default/files/2024-12/erc-2024-cog-results-all-domains.pdf
+2024 adg https://erc.europa.eu/sites/default/files/2025-06/erc-2024-adg-results-all-domains.pdf
+2025 stg https://erc.europa.eu/system/files/2025-09/erc-2025-stg-results-all-domains.pdf
+2025 cog https://erc.europa.eu/system/files/2025-12/erc-2025-cog-results-all-domains.pdf
+2025 adg https://erc.europa.eu/system/files/2026-06/erc-2025-adg-results-all-domains.pdf

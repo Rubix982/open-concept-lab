@@ -20,6 +20,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fetchlib import PARTIAL, secret  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[3]
 CACHE = ROOT / "data" / "openalex" / "extra"
 OUT = ROOT / "backup" / "extra_universities.csv"
@@ -28,10 +31,7 @@ FIELDS = ["institution", "country", "openalex_id", "latitude", "longitude", "hom
 
 
 def api_key() -> str:
-    for line in (ROOT / "server" / ".env").read_text().splitlines():
-        if line.startswith("OPENALEX_API_KEY="):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    sys.exit("OPENALEX_API_KEY is not set in server/.env")
+    return secret("OPENALEX_API_KEY")
 
 
 def cached(name: str, url: str, pause: float, show: str):

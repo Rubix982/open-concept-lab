@@ -23,7 +23,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from common import DATA, write
+from common import DATA, secret, write
 
 ROOT = Path(__file__).resolve().parents[3]
 CACHE = DATA / "kaken"
@@ -36,10 +36,7 @@ XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 
 
 def app_id() -> str:
-    for line in (ROOT / "server" / ".env").read_text().splitlines():
-        if line.startswith("CINII_APP_ID="):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    sys.exit("CINII_APP_ID is not set in server/.env")
+    return secret("CINII_APP_ID")
 
 
 def review_sections() -> list[str]:
