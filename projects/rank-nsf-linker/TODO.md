@@ -246,8 +246,11 @@ what the API returns and the pages render. The data is far richer than the pages
    action items; build the clearly safe ones
 5. [x] C4 scholarships: level filter and deadline view (open now / opens in, read from the window text)
 6. [x] C2 shortlist and compare (browser storage only): "Save to your list" on profiles and universities, "Your list" compares people
-7. C5 Pakistan path
-8. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
+7. [x] C5 Pakistan path: 25 universities from OpenAlex (researchers in 15 fields incl. CS), HEC
+   Indigenous PhD Fellowship
+8. [x] D1 NSERC (Canada, Open Government Licence): 4,029 computing grants FY2022–2024
+   [x] D2 NWO (Netherlands, CC0, NWOpen API): all projects since 2016. SweCRIS left out: no published
+   reuse terms found (revisit if the Swedish Research Council publishes a licence)
 9. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
 Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
 

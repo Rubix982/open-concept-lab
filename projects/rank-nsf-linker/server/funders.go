@@ -65,6 +65,7 @@ var funderNames = map[string]string{
 	"nih":     "NIH",
 	"rgc":     "RGC",
 	"nserc":   "NSERC",
+	"nwo":     "NWO",
 }
 
 // getExplorerFunders: GET /explorer/funders — funder names and the countries each one covers.

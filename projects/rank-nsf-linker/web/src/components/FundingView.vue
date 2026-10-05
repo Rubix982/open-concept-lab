@@ -304,8 +304,9 @@ function years(g: Landscape["grants"][number]) {
       </section>
 
       <p class="hint coverage">
-        Matched on the words in each grant's title and summary. Grants outside
-        the US are computing-related only; NIH lists running projects only.
+        Matched on the words in each grant's title and summary. Outside the US
+        and the Netherlands only computing grants are loaded; NIH lists running
+        projects only.
       </p>
     </template>
   </div>
