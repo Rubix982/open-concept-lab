@@ -2,12 +2,14 @@ package main
 
 import (
 	"archive/zip"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 
 	colly "github.com/gocolly/colly/v2"
 )
@@ -58,40 +60,88 @@ func downloadCSVs(mainCtx *colly.Context) error {
 		}
 	}
 
+	// Refresh every file on each run; a failed download keeps the copy already on disk.
 	for _, fileName := range CSVURLs {
-		url := CSRANKINGS_RAW_GITHUB + fileName
-		logger.Infof(mainCtx, "Downloading %s from %s\n", fileName, url)
-
-		fileSavePath := fmt.Sprintf("/app/data/%s", fileName)
-		if _, err := os.Stat(fileSavePath); err == nil {
-			logger.Infof(mainCtx, "[✓] %s already exists. Skipping download.\n", fileName)
+		if err := downloadFile(CSRANKINGS_RAW_GITHUB+fileName, path.Join(dataDir, fileName)); err != nil {
+			logger.Warnf(mainCtx, "[!] %s not refreshed (keeping the local copy): %v", fileName, err)
 			continue
 		}
-
-		resp, err := http.Get(url)
-		if err != nil || resp.StatusCode != 200 {
-			logger.Infof(mainCtx, "[!] Failed to download %s. Status: %d\n", fileName, resp.StatusCode)
-			continue
-		}
-		defer resp.Body.Close()
-
-		out, err := os.Create(fileSavePath)
-		if err != nil {
-			logger.Infof(mainCtx, "[!] Error creating file %s: %v\n", fileName, err)
-			continue
-		}
-		defer out.Close()
-
-		_, err = io.Copy(out, resp.Body)
-		if err != nil {
-			logger.Infof(mainCtx, "[!] Error writing file %s: %v\n", fileName, err)
-			continue
-		}
-
-		logger.Infof(mainCtx, "[✓] %s downloaded.\n", fileName)
+		logger.Infof(mainCtx, "[✓] %s downloaded", fileName)
 	}
 
+	// CSRankings replaced country-info.csv with institutions.csv (institution, region, countryabbrv,
+	// homepage). The pipeline reads country-info.csv, so write its three columns there.
+	institutions := path.Join(dataDir, CSRANKINGS_INSTITUTIONS_FILENAME)
+	if err := downloadFile(CSRANKINGS_RAW_GITHUB+CSRANKINGS_INSTITUTIONS_FILENAME, institutions); err != nil {
+		logger.Warnf(mainCtx, "[!] %s not refreshed (keeping %s): %v", CSRANKINGS_INSTITUTIONS_FILENAME, COUNTRY_INFO_FILENAME, err)
+	} else if err := writeCountryInfo(institutions, path.Join(dataDir, COUNTRY_INFO_FILENAME)); err != nil {
+		return err
+	}
+	// geolocation.csv is no longer published; the local copy stays (coordinates now come from
+	// backup/university_coordinates.csv and IPEDS first).
 	return nil
+}
+
+// downloadFile replaces dest with url's body, only after the whole body has arrived.
+func downloadFile(url, dest string) error {
+	client := &http.Client{Timeout: 5 * time.Minute}
+	resp, err := client.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("HTTP %d", resp.StatusCode)
+	}
+	tmp := dest + ".part"
+	out, err := os.Create(tmp)
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, resp.Body); err != nil {
+		out.Close()
+		os.Remove(tmp)
+		return err
+	}
+	if err := out.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmp, dest)
+}
+
+// writeCountryInfo writes institution,region,countryabbrv from CSRankings' institutions.csv.
+func writeCountryInfo(src, dest string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	records, err := csv.NewReader(in).ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read %s: %w", src, err)
+	}
+	out, err := os.Create(dest + ".part")
+	if err != nil {
+		return err
+	}
+	w := csv.NewWriter(out)
+	for _, rec := range records {
+		if len(rec) >= 3 {
+			if err := w.Write(rec[:3]); err != nil {
+				out.Close()
+				return err
+			}
+		}
+	}
+	w.Flush()
+	if err := w.Error(); err != nil {
+		out.Close()
+		return err
+	}
+	if err := out.Close(); err != nil {
+		return err
+	}
+	return os.Rename(dest+".part", dest)
 }
 
 // DownloadNSFData fetches and extracts NSF award data per year.

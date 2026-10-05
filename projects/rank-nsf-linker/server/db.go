@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"maps"
 	"os"
@@ -244,6 +245,14 @@ func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 
 		logger.Infof(mainCtx, "📦 Merged total records: %d", len(merged))
 		logger.Infof(mainCtx, "⬇️ Inserting into Postgres table: %s", tableName)
+
+		if tableName == "professors" {
+			// Replace the faculty list: people who left CSRankings, or moved, must not keep old rows.
+			// Links to them (nsf_investigators.professor) are cleared and rebuilt by the linking steps.
+			if _, err := db.Exec(`DELETE FROM professors`); err != nil {
+				return fmt.Errorf("failed to clear professors before reload: %w", err)
+			}
+		}
 
 		if originalTableName == "geolocation" {
 			/// Special case to merge country-info universities with geolocation into a single table
@@ -554,7 +563,7 @@ func processNsfAwardPerYear(
 
 		awardValues := []any{
 			nsfJsonData.AwdId, year, nsfJsonData.AwardingAgencyCode, nsfJsonData.TranType,
-			nsfJsonData.AwardInstrumentText, nsfJsonData.AwardTitleText,
+			nsfJsonData.AwardInstrumentText, html.UnescapeString(nsfJsonData.AwardTitleText),
 			nsfJsonData.FederalCatalogDomesticAssistanceNumber, nsfJsonData.OrgCode,
 			programOfficerId, nsfJsonData.AwardEffectiveDate, nsfJsonData.AwardExpiryDate,
 			nsfJsonData.TotalIntendedAwardAmount, nsfJsonData.AwardAmount,
@@ -1239,70 +1248,23 @@ func syncProfessorInterestsToProfessorsAndUniversities(mainCtx *colly.Context) e
 
 	logger.Infof(mainCtx, "✅ Copied %d valid rows into staging table", validRows)
 
-	// Batch UPSERT into final table
-	const upsertBatchSize = 1000
-	offset := 0
-
-	for {
-		rows, err := db.Query(`
-            SELECT s.name, s.affiliation, s.area, s.count, s.adjusted_count, s.year
-            FROM staging_professor_areas s
-            ORDER BY s.name
-            OFFSET $1 LIMIT $2
-        `, offset, upsertBatchSize)
-		if err != nil {
-			return fmt.Errorf("failed to fetch staging batch: %v", err)
-		}
-
-		batchCount := 0
-		txUpsert, err := db.Begin()
-		if err != nil {
-			return fmt.Errorf("failed to start upsert transaction: %v", err)
-		}
-
-		stmtUpsert, err := txUpsert.Prepare(`
-            INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (name, affiliation, area, year)
-            DO UPDATE SET
-                count = EXCLUDED.count,
-                adjusted_count = EXCLUDED.adjusted_count;
-        `)
-		if err != nil {
-			return fmt.Errorf("failed to prepare upsert statement: %v", err)
-		}
-
-		for rows.Next() {
-			var name, affiliation, area string
-			var count, adjustedCount float64
-			var year int
-
-			if err := rows.Scan(&name, &affiliation, &area, &count, &adjustedCount, &year); err != nil {
-				logger.Warnf(mainCtx, "⚠️ Failed to scan row for upsert: %v", err)
-				continue
-			}
-
-			if _, err := stmtUpsert.Exec(name, affiliation, area, count, adjustedCount, year); err != nil {
-				logger.Warnf(mainCtx, "⚠️ Failed to upsert row: %v", err)
-				continue
-			}
-			batchCount++
-		}
-
-		if err := stmtUpsert.Close(); err != nil {
-			return fmt.Errorf("failed to close upsert statement: %v", err)
-		}
-
-		if err := txUpsert.Commit(); err != nil {
-			return fmt.Errorf("failed to commit upsert transaction: %v", err)
-		}
-
-		rows.Close()
-
-		if batchCount == 0 {
-			break
-		}
-		offset += batchCount
+	// Replace the table with this CSV: rows CSRankings dropped (people who left, old affiliations)
+	// must go too, which an upsert would keep.
+	txSync, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start sync transaction: %v", err)
+	}
+	defer txSync.Rollback()
+	if _, err := txSync.Exec(`
+		DELETE FROM professor_areas;
+		INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
+		SELECT DISTINCT ON (name, affiliation, area, year) name, affiliation, area, count, adjusted_count, year
+		FROM staging_professor_areas
+		ORDER BY name, affiliation, area, year;`); err != nil {
+		return fmt.Errorf("failed to load professor_areas: %v", err)
+	}
+	if err := txSync.Commit(); err != nil {
+		return fmt.Errorf("failed to commit professor_areas: %v", err)
 	}
 
 	logger.Infof(mainCtx, "✅ Synchronized professor interests successfully from CSV")
@@ -1443,14 +1405,36 @@ func GetPipelineStatus(mainCtx *colly.Context, step string) string {
 	return status
 }
 
+// executeWorkflows runs the pipeline on server start: from PIPELINE_FROM_STEP when set, else only
+// if it hasn't completed before (a failed run resumes at the step that failed).
 func executeWorkflows(mainCtx *colly.Context) {
-	steps := []struct {
-		name string
-		fn   func(*colly.Context) error
-	}{
+	fromStep := 0
+	if v := os.Getenv("PIPELINE_FROM_STEP"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > len(pipelineSteps()) {
+			logger.Errorf(mainCtx, "❌ PIPELINE_FROM_STEP must be between 1 and %d, got '%s'", len(pipelineSteps()), v)
+			return
+		}
+		fromStep = n
+	}
+	if isDataAlreadyPopulated := GetPipelineStatus(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE)); fromStep == 0 && isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
+		logger.Infof(mainCtx, "ℹ️  Postgres population already completed previously, skipping.")
+		return
+	}
+	runPipeline(mainCtx, fromStep)
+}
+
+type pipelineStep struct {
+	name string
+	fn   func(*colly.Context) error
+}
+
+func pipelineSteps() []pipelineStep {
+	return []pipelineStep{
 		{"Download Pre-Req CSVs", downloadCSVs},
 		{"Download NSF Data", downloadNSFData},
 		{"Download IPEDS Data", downloadIPEDSData},
+		{"Fetch Source Data", fetchBaseSources},
 		{"Populate From CSVs", populatePostgresFromCSVs},
 		{"Remove Tags From Professor Names", removeTagsFromProfessorNames},
 		{"Populate From NSF JSONs", populatePostgresFromNsfJsons},
@@ -1460,6 +1444,7 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Clear Final Data States", clearFinalDataStatesInPostgres},
 		{"Sync Professors Affiliations to Universities", syncProfessorsAffiliationsToUniversities},
 		{"Sync Professor Interests", syncProfessorInterestsToProfessorsAndUniversities},
+		{"Load OpenAlex Researchers", loadOpenAlexResearchers},
 		{"Remove Edge Case Entries", removeEdgeCaseEntries},
 		{"Classify Institutions", classifyInstitutions},
 		{"Link IPEDS Institutions", linkIpedsInstitutions},
@@ -1468,12 +1453,18 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Load Funder Grants", loadFunderGrants},
 		{"Link Funder Grants", linkFunderGrants},
 		{"Load DBLP Papers", loadDblpPapers},
+		{"Load OpenAlex Researcher Works", loadOpenAlexResearcherWorks},
 		{"Link NSF Investigators By DBLP Affiliation", linkNsfByDblpAffiliation},
 		{"Load OpenAlex Works", loadOpenAlexWorks},
 		{"Build Explorer Tables", buildExplorerTables},
+		{"Fetch OpenAlex Data", fetchOpenAlexSources},
 		{"Embed Explorer Work", embedExplorerWork},
 	}
+}
 
+// runPipeline runs every step from fromStep (1-based; 0 = resume after the last completed step).
+func runPipeline(mainCtx *colly.Context, fromStep int) {
+	steps := pipelineSteps()
 	totalSteps := len(steps)
 	successfulSteps := 0
 
@@ -1487,30 +1478,29 @@ func executeWorkflows(mainCtx *colly.Context) {
 		}
 	}
 
-	// PIPELINE_FROM_STEP=N (1-based) forces a rerun of step N and everything after it,
-	// treating earlier steps as done. Without it, steps already marked completed are skipped,
-	// so a failed run resumes at the step that failed.
-	fromStep := 0
-	if v := os.Getenv("PIPELINE_FROM_STEP"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 1 || n > totalSteps {
-			logger.Errorf(mainCtx, "❌ PIPELINE_FROM_STEP must be between 1 and %d, got '%s'", totalSteps, v)
-			return
-		}
-		fromStep = n
-		logger.Infof(mainCtx, "⏩ PIPELINE_FROM_STEP=%d: rerunning from step '%s'", fromStep, steps[fromStep-1].name)
-	}
-
-	if isDataAlreadyPopulated := GetPipelineStatus(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE)); fromStep == 0 && isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
-		logger.Infof(mainCtx, "ℹ️  Postgres population already completed previously, skipping.")
-		return
+	// fromStep=N forces a rerun of step N and everything after it, treating earlier steps as done.
+	// fromStep=0 skips steps already marked completed, so a failed run resumes where it failed.
+	if fromStep > 0 {
+		logger.Infof(mainCtx, "⏩ Rerunning from step %d '%s'", fromStep, steps[fromStep-1].name)
 	}
 
 	logger.Infof(mainCtx, "🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
 	pipelineStart := time.Now()
+	// PIPELINE_TO_STEP=N stops after step N (to check a change without running the slow steps after it).
+	toStep := 0
+	if v := os.Getenv("PIPELINE_TO_STEP"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 1 && n <= totalSteps {
+			toStep = n
+		}
+	}
+
 	for i, step := range steps {
+		if toStep > 0 && i+1 > toStep {
+			logger.Infof(mainCtx, "⏸️  PIPELINE_TO_STEP=%d: stopping before step %d '%s'", toStep, i+1, step.name)
+			return
+		}
 		stepKey := fmt.Sprintf("step_%02d_%s", i+1, step.name)
 		alreadyDone := i+1 < fromStep ||
 			(fromStep == 0 && GetPipelineStatus(mainCtx, stepKey) == string(PIPELINE_STATUS_COMPLETED))

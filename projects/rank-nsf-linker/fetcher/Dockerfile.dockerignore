@@ -1,0 +1,7 @@
+# Only the scripts and the service go into the image (data/ is several GB and mounted instead).
+*
+!server/scripts/**
+!fetcher/app.py
+server/scripts/**/__pycache__
+server/scripts/ipeds/ipeds_data
+server/scripts/ipeds/ipeds_cache

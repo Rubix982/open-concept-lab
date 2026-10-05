@@ -33,12 +33,14 @@ var fundersCache struct {
 func grantFundersByCountry(db *sql.DB) map[string][]string {
 	fundersCache.Lock()
 	defer fundersCache.Unlock()
-	if fundersCache.byCountry != nil && time.Since(fundersCache.at) < time.Minute {
+	if fundersCache.byCountry != nil && time.Since(fundersCache.at) < time.Hour { // cleared on rebuild
 		return fundersCache.byCountry
 	}
 	m := map[string][]string{"us": {"nsf"}}
-	rows, err := db.Query(`SELECT DISTINCT lower(country), funder FROM funder_grants
-		WHERE country IS NOT NULL AND country <> '' ORDER BY 1, 2`)
+	// A funder counts for a country with at least 2 grants there: the one ERC grant hosted in the
+	// US made "no NSF or ERC or NIH grant" the sentence for US faculty.
+	rows, err := db.Query(`SELECT lower(country), funder FROM funder_grants
+		WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2 HAVING count(*) >= 2 ORDER BY 1, 2`)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -62,6 +64,10 @@ var funderNames = map[string]string{
 	"erc":     "ERC",
 	"snsf":    "SNSF",
 	"kaken":   "KAKEN",
+	"nih":     "NIH",
+	"rgc":     "RGC",
+	"nserc":   "NSERC",
+	"nwo":     "NWO",
 }
 
 // getExplorerFunders: GET /explorer/funders — funder names and the countries each one covers.
@@ -126,7 +132,7 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 
 	if _, err := tx.Exec(`
 		INSERT INTO funder_grants
-		SELECT DISTINCT ON (funder, grant_id) funder, grant_id, title, NULLIF(abstract, ''),
+		SELECT DISTINCT ON (funder, grant_id) funder, grant_id, html_unescape(title), NULLIF(html_unescape(abstract), ''),
 		       NULLIF(amount, '')::numeric, NULLIF(currency, ''),
 		       NULLIF(starts, '')::date, NULLIF(ends, '')::date, NULLIF(url, ''), lower(NULLIF(country, '')),
 		       NULLIF(scheme, ''), NULLIF(field, '')
@@ -320,7 +326,7 @@ func linkFunderGrants(mainCtx *colly.Context) error {
 		if err := rows.Scan(&funder, &people, &linked, &profs); err != nil {
 			return err
 		}
-		logger.Infof(mainCtx, "🔗 %s: linked %d of %d investigators to %d CSRankings faculty", funder, linked, people, profs)
+		logger.Infof(mainCtx, "🔗 %s: linked %d of %d investigators to %d faculty and researchers", funder, linked, people, profs)
 	}
 	return rows.Err()
 }

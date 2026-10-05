@@ -8,11 +8,13 @@ Input: data/openalex/dois.txt, one lower-case DOI per line, exported from the da
 Output columns: doi, openalex_id, abstract, topic, subfield, field, cited_by.
 
 Abstracts are only used to improve semantic matching; the explorer does not display them.
-DOIs are looked up 50 per request, at most a few requests a second; each response is cached in
-data/openalex/works/, so an interrupted run resumes. Pass --max-calls N to cap this run's API calls.
+DOIs are looked up 50 per request, at most a few requests a second. Each response is cached in
+data/openalex/works/ together with the DOIs it asked for, so a rerun (interrupted, or with a changed
+DOI list) only requests DOIs never asked before. Pass --max-calls N to cap this run's API calls.
 """
 
 import csv
+import hashlib
 import json
 import sys
 import time
@@ -20,6 +22,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fetchlib import PARTIAL, secret  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / "data" / "openalex"
@@ -31,10 +36,7 @@ FIELDS = "id,doi,abstract_inverted_index,primary_topic,cited_by_count"
 
 
 def api_key() -> str:
-    for line in (ROOT / "server" / ".env").read_text().splitlines():
-        if line.startswith("OPENALEX_API_KEY="):
-            return line.split("=", 1)[1].strip().strip('"').strip("'")
-    sys.exit("OPENALEX_API_KEY is not set in server/.env")
+    return secret("OPENALEX_API_KEY")
 
 
 def abstract(inverted: dict | None) -> str:
@@ -47,7 +49,7 @@ def abstract(inverted: dict | None) -> str:
     return " ".join(words[i] for i in sorted(words))
 
 
-def fetch(batch: list[str], key: str) -> bytes:
+def fetch(batch: list[str], key: str, show_limits: bool = False) -> bytes | None:
     query = urllib.parse.urlencode({
         "filter": "doi:" + "|".join(batch), "per_page": BATCH, "select": FIELDS, "api_key": key,
     })
@@ -55,8 +57,12 @@ def fetch(batch: list[str], key: str) -> bytes:
     for attempt in range(6):
         try:
             with urllib.request.urlopen(req, timeout=120) as resp:
+                if show_limits:  # usage against the daily allowance (headers carry no key)
+                    print("  rate limits:", {k: v for k, v in resp.headers.items() if "limit" in k.lower()})
                 return resp.read()
         except urllib.error.HTTPError as e:
+            if e.code == 429 and int(e.headers.get("Retry-After") or 0) > 600:
+                return None  # the day's allowance is spent
             if e.code == 429 or e.code >= 500:
                 wait = 30 * (attempt + 1)
                 print(f"  HTTP {e.code}; waiting {wait} s")
@@ -76,20 +82,32 @@ def main() -> None:
     dois = [d for d in dois if "," not in d and "|" not in d]
     CACHE.mkdir(parents=True, exist_ok=True)
     key = api_key()
-    batches = [dois[i:i + BATCH] for i in range(0, len(dois), BATCH)]
-    calls = 0
-    print(f"{len(dois)} DOIs in {len(batches)} batches")
-    for n, batch in enumerate(batches):
-        path = CACHE / f"{n:06d}.json"
-        if path.exists():
-            continue
+    asked: set[str] = set()
+    for path in CACHE.glob("*.json"):
+        try:
+            asked.update(json.loads(path.read_text()).get("requested", []))
+        except ValueError:
+            pass
+    todo = [d for d in dois if d not in asked]
+    batches = [todo[i:i + BATCH] for i in range(0, len(todo), BATCH)]
+    print(f"{len(dois)} DOIs, {len(asked)} already asked; {len(batches)} batches to request")
+    calls, stopped = 0, False
+    for batch in batches:
         if max_calls is not None and calls >= max_calls:
             print(f"stopped after {calls} calls (--max-calls); rerun to continue")
+            stopped = True
             break
-        path.write_bytes(fetch(batch, key))
+        raw = fetch(batch, key, show_limits=calls == 0)
+        if raw is None:
+            print(f"daily allowance spent after {calls} calls; rerun later")
+            stopped = True
+            break
+        body = json.loads(raw)
+        name = hashlib.sha1("|".join(batch).encode()).hexdigest()[:16]
+        (CACHE / f"{name}.json").write_text(json.dumps({"requested": batch, "results": body.get("results", [])}))
         calls += 1
         if calls % 200 == 0:
-            print(f"  {n + 1}/{len(batches)} batches ({calls} calls this run)")
+            print(f"  {calls}/{len(batches)} batches")
         time.sleep(PAUSE)
 
     rows = {}
@@ -113,6 +131,8 @@ def main() -> None:
         w.writerows(rows.values())
     with_abstract = sum(1 for r in rows.values() if r["abstract"])
     print(f"data/openalex/works.csv: {len(rows)} works, {with_abstract} with an abstract")
+    if stopped:
+        sys.exit(PARTIAL)
 
 
 if __name__ == "__main__":

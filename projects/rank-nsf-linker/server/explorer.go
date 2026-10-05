@@ -61,27 +61,43 @@ ORDER BY pa.name, (p.affiliation = pa.affiliation) DESC, pa.year DESC;
 -- Every grant of every linked professor: NSF (id = award id) and other funders
 -- (id = '<funder>:<grant id>'), each in its own currency.
 CREATE TEMP TABLE x_awards ON COMMIT DROP AS
-SELECT DISTINCT COALESCE(pv.canonical, i.professor) AS name, a.id, a.award_title_text, a.abstract, a.award_amount::numeric AS award_amount,
-       NULLIF(a.award_effective_date, '')::date AS starts, NULLIF(a.award_expiry_date, '')::date AS ends,
-       'nsf'::text AS funder, 'USD'::text AS currency,
-       'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || a.id AS url
-FROM nsf_investigators i
-JOIN award_pi_rel r ON r.nsf_id = i.nsf_id
-JOIN award a ON a.id = r.award_id
-LEFT JOIN professor_variants pv ON pv.name = i.professor
-WHERE i.professor IS NOT NULL
-UNION
-SELECT DISTINCT COALESCE(pv.canonical, p.professor), g.funder || ':' || g.grant_id, g.title, g.abstract, g.amount,
-       g.starts, g.ends, g.funder, g.currency, g.url
-FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
-LEFT JOIN professor_variants pv ON pv.name = p.professor
-WHERE p.professor IS NOT NULL;
+SELECT name, id, award_title_text, abstract, award_amount, starts, ends, funder, currency, url, bool_or(lead) AS lead
+FROM (
+  SELECT COALESCE(pv.canonical, i.professor) AS name, a.id, a.award_title_text, a.abstract,
+         a.award_amount::numeric AS award_amount,
+         NULLIF(a.award_effective_date, '')::date AS starts, NULLIF(a.award_expiry_date, '')::date AS ends,
+         'nsf'::text AS funder, 'USD'::text AS currency,
+         'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || a.id AS url,
+         r.pi_role !~* 'co-' AS lead
+  FROM nsf_investigators i
+  JOIN award_pi_rel r ON r.nsf_id = i.nsf_id
+  JOIN award a ON a.id = r.award_id
+  LEFT JOIN professor_variants pv ON pv.name = i.professor
+  WHERE i.professor IS NOT NULL
+  UNION ALL
+  SELECT COALESCE(pv.canonical, p.professor), g.funder || ':' || g.grant_id, g.title, g.abstract, g.amount,
+         g.starts, g.ends, g.funder, g.currency, g.url, p.role = 'PI'
+  FROM funder_grant_people p JOIN funder_grants g USING (funder, grant_id)
+  LEFT JOIN professor_variants pv ON pv.name = p.professor
+  WHERE p.professor IS NOT NULL
+) z
+GROUP BY name, id, award_title_text, abstract, award_amount, starts, ends, funder, currency, url;
+
+-- First top-venue paper (CSRankings), across a person's name spellings: early-career faculty build labs.
+CREATE TEMP TABLE x_first ON COMMIT DROP AS
+SELECT pv.canonical AS name, min(pa.year) AS first_year
+FROM professor_areas pa JOIN professor_variants pv ON pv.name = pa.name
+WHERE pa.area !~ '^oas?:'
+GROUP BY pv.canonical;
 
 INSERT INTO explorer_faculty (name, university, homepage, scholar_id, areas, area_pubs, recent_pubs,
-                              active_awards, total_awards, active_funding, last_award_date, funding)
+                              active_awards, total_awards, active_funding, last_award_date, funding, source,
+                              first_year, orcid, openalex_id)
 SELECT f.name, f.university, p.homepage, NULLIF(NULLIF(p.scholar_id, ''), 'NOSCHOLARPAGE'),
        f.areas, f.area_pubs, f.recent_pubs,
-       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding
+       COALESCE(w.active, 0), COALESCE(w.total, 0), COALESCE(w.active_funding, 0), w.last_start, fu.funding,
+       COALESCE(p.source, 'csrankings'), xf.first_year,
+       CASE WHEN p.orcid !~ '^0000-0000-0000-' THEN NULLIF(p.orcid, '') END, p.openalex_id
 FROM (
   SELECT x.name, a.university, array_agg(x.area ORDER BY x.pubs DESC, x.area) AS areas,
          jsonb_object_agg(x.area, round(x.pubs::numeric)) AS area_pubs, sum(x.pubs) AS recent_pubs
@@ -89,22 +105,26 @@ FROM (
   GROUP BY x.name, a.university
 ) f
 LEFT JOIN professors p ON p.name = f.name
+LEFT JOIN x_first xf ON xf.name = f.name AND COALESCE(p.source, 'csrankings') = 'csrankings'
 LEFT JOIN (
   SELECT name,
          count(*) FILTER (WHERE ends >= current_date) AS active,
          count(*) AS total,
-         -- USD, NSF only; other currencies are in funding
-         COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date AND funder = 'nsf'), 0) AS active_funding,
+         -- USD, NSF grants the person leads; other currencies are in funding
+         COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date AND funder = 'nsf' AND lead), 0) AS active_funding,
          max(starts) AS last_start
   FROM x_awards GROUP BY name
 ) w ON w.name = f.name
 LEFT JOIN (
+  -- active_amount counts only grants the person leads: a co-investigator's share isn't published, and
+  -- the whole amount of a large programme grant would overstate it.
   SELECT name, jsonb_agg(jsonb_build_object('funder', funder, 'currency', currency, 'active', active,
-                                            'total', total, 'active_amount', active_amount)
+                                            'lead_active', lead_active, 'total', total, 'active_amount', active_amount)
                          ORDER BY active DESC, total DESC) AS funding
   FROM (SELECT name, funder, currency,
-               count(*) FILTER (WHERE ends >= current_date) AS active, count(*) AS total,
-               COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date), 0) AS active_amount
+               count(*) FILTER (WHERE ends >= current_date) AS active,
+               count(*) FILTER (WHERE ends >= current_date AND lead) AS lead_active, count(*) AS total,
+               COALESCE(sum(award_amount) FILTER (WHERE ends >= current_date AND lead), 0) AS active_amount
         FROM x_awards GROUP BY name, funder, currency) z
   GROUP BY name
 ) fu ON fu.name = f.name;
@@ -144,6 +164,30 @@ LEFT JOIN ipeds_institutions ii ON ii.unitid = u.ipeds_unitid
 LEFT JOIN ipeds_tuition_fees t ON t.unitid = u.ipeds_unitid
 LEFT JOIN ipeds_enrollment e ON e.unitid = u.ipeds_unitid
 ON CONFLICT (id) DO NOTHING;
+
+-- Each person's newest paper, shown on faculty rows when no goal is searched.
+UPDATE explorer_faculty f SET latest_work = l.w
+FROM (SELECT DISTINCT ON (name) name, jsonb_build_object('title', title, 'year', year, 'url', url) AS w
+      FROM explorer_work_docs WHERE kind = 'paper'
+      ORDER BY name, year DESC NULLS LAST, title) l
+WHERE l.name = f.name;
+
+-- US: doctoral degrees awarded in the latest IPEDS year (all fields).
+UPDATE explorer_universities eu SET doctoral_degrees = c.doctoral_degrees, doctoral_year = c.year
+FROM universities u
+JOIN (SELECT DISTINCT ON (unitid) unitid, year, doctoral_degrees FROM ipeds_completions
+      WHERE doctoral_degrees > 0 ORDER BY unitid, year DESC) c ON c.unitid = u.ipeds_unitid
+WHERE eu.name = u.institution;
+
+-- Per funder: how many listed people have its grants, and how many have one running now.
+UPDATE explorer_universities eu SET funders = x.funders
+FROM (SELECT university, jsonb_agg(jsonb_build_object('funder', funder, 'people', people, 'active_people', active_people)
+                                   ORDER BY active_people DESC, people DESC) AS funders
+      FROM (SELECT f.university, e->>'funder' AS funder, count(*) AS people,
+                   count(*) FILTER (WHERE (e->>'active')::int > 0) AS active_people
+            FROM explorer_faculty f, jsonb_array_elements(f.funding) e GROUP BY 1, 2) z
+      GROUP BY university) x
+WHERE x.university = eu.name;
 `
 
 func buildExplorerTables(mainCtx *colly.Context) error {
@@ -164,9 +208,13 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if _, err := tx.Exec(buildExplorerSQL); err != nil {
 		return fmt.Errorf("failed to build explorer tables: %w", err)
 	}
+	if _, err := tx.Exec(buildGrantLandscapeSQL); err != nil {
+		return fmt.Errorf("failed to build the grant landscape: %w", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
 	}
+	clearAreasCache()
 
 	var faculty, funded, universities int
 	if err := db.QueryRow(`

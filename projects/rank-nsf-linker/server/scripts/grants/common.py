@@ -11,9 +11,15 @@ Standard library only.
 """
 
 import csv
+import json
 import re
+import sys
+import urllib.request
 import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from fetchlib import PARTIAL, UA, download, secret  # noqa: E402,F401 (re-exported for the normalisers)
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / "data"
@@ -42,6 +48,11 @@ def split_name(full: str) -> tuple[str, str, str]:
     if len(parts) == 1:
         return name, "", name
     return name, " ".join(parts[:-1]), parts[-1]
+
+
+def get_json(url: str) -> dict:
+    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120) as r:
+        return json.loads(r.read())
 
 
 def write(funder: str, grants: list[dict], people: list[dict]) -> None:

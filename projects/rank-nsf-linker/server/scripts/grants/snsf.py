@@ -12,7 +12,7 @@ engineering, or an older SNSF discipline in IT / electrical engineering / microe
 
 import csv
 
-from common import DATA, write
+from common import DATA, download, write
 
 SRC = DATA / "snsf"
 CS_DISCIPLINES = {"20504", "20506", "20508"}
@@ -38,6 +38,8 @@ def codes(value: str) -> list[str]:
 
 
 def main() -> None:
+    for name in ("grants", "persons"):
+        download(f"https://data.snf.ch/datasets/{name}.csv", SRC / f"{name}.csv", max_age_days=30)
     grants, kept = [], set()
     for r in rows("grants"):
         end = (r["EffectiveGrantEndDate"] or "")[:10]

@@ -1,7 +1,7 @@
 """Marsden Fund (Royal Society Te Apārangi, New Zealand) -> data/grants/marsden_*.csv
 
-Input: the yearly announcement-supplement spreadsheets, downloaded by hand into data/marsden/
-(the site blocks scripts). Layouts differ by year; every year has a project sheet (title, panel,
+Input: the yearly announcement-supplement spreadsheets, kept in backup/marsden/ (committed: the
+site blocks scripts, so a new year's file is added by hand each November). Layouts differ by year; every year has a project sheet (title, panel,
 category, funding, abstract) and/or a team sheet (investigator, role, institution; a blank
 Project ID continues the project above). Computer science is mostly panel MIS (Mathematical
 and Information Sciences). All panels are kept.
@@ -11,7 +11,7 @@ dates below are that approximation.
 """
 
 import re
-from common import DATA, read_xlsx, split_name, write
+from common import ROOT, read_xlsx, split_name, write
 
 PAGE = "https://www.royalsociety.org.nz/what-we-do/funds-and-opportunities/marsden/awarded-grants/marsden-fund-awards-{year}"
 
@@ -35,7 +35,7 @@ def main() -> None:
     grants: dict[str, dict] = {}
     people: dict[tuple, dict] = {}
 
-    for path in sorted((DATA / "marsden").glob("*.xlsx")):
+    for path in sorted((ROOT / "backup" / "marsden").glob("*.xlsx")):
         for sheet, rows in read_xlsx(path).items():
             h = header_row(rows)
             if h is None:

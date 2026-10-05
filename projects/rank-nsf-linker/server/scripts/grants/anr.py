@@ -17,7 +17,7 @@ on ERC panel PE6. ANR gives no end date; projects are assumed to run four years.
 import csv
 import re
 
-from common import DATA, split_name, write
+from common import DATA, download, get_json, split_name, write
 
 SRC = DATA / "anr"
 CS_COMMITTEES = {"CE23", "CE25", "CE33", "CE39", "CE46", "CE48"}
@@ -56,7 +56,24 @@ def institutions(unit: dict | None, organisation: str) -> str:
     return " | ".join(out)
 
 
+DATASET = "https://www.data.gouv.fr/api/1/datasets/60ca2086030c7b7e52e2c02e/"
+RNSR = ("https://data.enseignementsup-recherche.gouv.fr/api/explore/v2.1/catalog/datasets/"
+        "fr-esr-structures-recherche-publiques-actives/exports/csv?delimiter=%3B")
+
+
+def fetch() -> None:
+    """The newest 'since 2010' projects and partners CSVs from the data.gouv.fr dataset, and RNSR."""
+    resources = get_json(DATASET)["resources"]
+    for kind in ("projets", "partenaires"):
+        match = sorted((r for r in resources if r["format"] == "csv" and "depuis-2010" in r["title"]
+                        and r["title"].endswith(f"-{kind}.csv")), key=lambda r: r["title"])
+        if match:
+            download(match[-1]["url"], SRC / f"{kind}.csv", max_age_days=30)
+    download(RNSR, SRC / "rnsr.csv", max_age_days=30)
+
+
 def main() -> None:
+    fetch()
     units = {u["numero_national_de_structure"]: u for u in rows("rnsr.csv")}
     partners: dict[str, list[dict]] = {}
     for p in rows("partenaires.csv"):

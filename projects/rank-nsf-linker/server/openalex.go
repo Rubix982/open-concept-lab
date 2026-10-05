@@ -47,6 +47,25 @@ func loadOpenAlexWorks(mainCtx *colly.Context) error {
 		ORDER BY lower(doi)`); err != nil {
 		return fmt.Errorf("failed to insert OpenAlex works: %w", err)
 	}
+	// Abstracts of OpenAlex researchers' papers (fields.py) — same table, keyed by DOI.
+	if extra := openAlexFieldsPath("fields_works.csv"); fileExists(extra) {
+		if _, err := tx.Exec(`CREATE TEMP TABLE ow_fields (openalex_id text, work_id text, title text, year text,
+			venue text, doi text, abstract text) ON COMMIT DROP`); err != nil {
+			return err
+		}
+		if _, err := copyCSVInto(tx, extra, "ow_fields", fieldsWorksColumns); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(`
+			INSERT INTO openalex_works (doi, openalex_id, abstract)
+			SELECT DISTINCT ON (d) d, work_id, NULLIF(abstract, '')
+			FROM (SELECT lower(regexp_replace(doi, '^https?://(dx\.)?doi\.org/', '')) AS d, work_id, abstract
+			      FROM ow_fields WHERE doi <> '') x
+			ORDER BY d, (abstract <> '') DESC
+			ON CONFLICT (doi) DO UPDATE SET abstract = COALESCE(openalex_works.abstract, EXCLUDED.abstract)`); err != nil {
+			return fmt.Errorf("failed to add researcher abstracts: %w", err)
+		}
+	}
 	if err := tx.Commit(); err != nil {
 		return err
 	}

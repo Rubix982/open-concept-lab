@@ -103,7 +103,9 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 	}
 
 	names := map[string]bool{}
-	rows, err := db.Query(`SELECT name FROM professors`)
+	// OpenAlex researchers (other fields) are not looked up in DBLP: a same-name computer scientist
+	// would lend them their papers.
+	rows, err := db.Query(`SELECT name FROM professors WHERE source = 'csrankings'`)
 	if err != nil {
 		return fmt.Errorf("failed to load professor names: %w", err)
 	}

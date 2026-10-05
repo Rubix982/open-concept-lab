@@ -3,8 +3,11 @@ AUEB,37.99389,23.73222,wikidata
 Beijing Jiaotong University,39.94433,116.33685,openstreetmap
 Brandenburg University of Technology,51.76720,14.32640,wikidata
 Brno University of Technology,49.22655,16.59543,openstreetmap
+CMI,13.08784,80.27847,openalex
 Central South University,28.15784,112.93230,openstreetmap
+Charles University,50.08804,14.42076,openalex
 Chongqing University,29.56995,106.45961,openstreetmap
+Federal University of Rio Grande,-32.07454,-52.16714,"manual: FURG Carreiros campus, Rio Grande"
 GSSI,42.34559,13.40047,openstreetmap
 Griffith University,-27.96334,153.38469,openstreetmap
 HKUST,22.33750,114.26300,wikidata
@@ -13,7 +16,12 @@ IMDEA Networks Institute,40.33672,-3.77074,openstreetmap
 IMDEA Software Institute,40.40697,-3.83575,wikidata
 IMSc,12.99422,80.24707,wikidata
 JUST,32.55105,35.85277,openstreetmap
+KAIST,36.34913,127.38493,openalex
+KAUST,22.30978,39.10436,"manual: KAUST campus, Thuwal"
+KU Leuven,50.87959,4.70093,openalex
 Kempelen Institute - KInIT,48.14350,17.10829,openstreetmap
+Korea University,37.566,126.9784,openalex
+LUMS,31.47040,74.40910,"manual: LUMS campus, DHA Lahore"
 MBZUAI,24.43278,54.61806,wikidata
 MUST,22.15340,113.56800,wikidata
 Malmö University,55.60889,12.99322,openstreetmap
@@ -28,20 +36,25 @@ Qatar Computing Research Institute,25.31413,51.43234,wikidata
 RWTH Aachen University,50.77917,6.06892,openstreetmap
 SUFE,31.30673,121.49486,wikidata
 Sabancı University,40.89272,29.37863,openstreetmap
+Shandong University,36.66833,116.99722,openalex
 Sichuan University,30.56018,103.99735,openstreetmap
 Simula UiB,60.38077,5.33064,openstreetmap
 Sungkyunkwan University,37.58705,126.99063,openstreetmap
 THWS,49.78761,9.93379,openstreetmap
 TOBB ETÜ,39.91323,32.80581,openstreetmap
+TU Freiberg,50.91089,13.33881,openalex
 Tata Inst of Fundamental Research,18.90712,72.80496,openstreetmap
 TeIAS,35.75887,51.40069,openstreetmap
 The Hong Kong Polytechnic University,22.30500,114.18000,wikidata
 Tianjin University,38.99693,117.30628,openstreetmap
+UESTC,30.66667,104.06667,openalex
 USP - ICMC,-23.56105,-46.72523,openstreetmap
 Universidad Nacional de Córdoba,-31.43696,-64.18768,openstreetmap
+Universidad de Zaragoza,41.65606,-0.87734,openalex
 Universidade Federal de Viçosa,-20.75386,-42.88159,openstreetmap
 University of A Coruña,43.37065,-8.42022,openstreetmap
 University of Antwerp,51.18439,4.41994,openstreetmap
+University of Bamberg,49.89873,10.90067,openalex
 University of Basel,47.56127,7.57530,openstreetmap
 University of Catania,37.50360,15.08670,wikidata
 University of Dhaka,23.73124,90.39153,openstreetmap
@@ -59,7 +72,11 @@ University of Regensburg,49.00308,12.09627,openstreetmap
 University of Sannio,41.12737,14.78141,wikidata
 University of Tübingen,48.53406,9.07124,openstreetmap
 University of Wollongong,-34.40506,150.87835,openstreetmap
+Université Jean Monnet,45.43389,4.39,openalex
+Université Laval,46.81228,-71.21454,openalex
+Université Paris Dauphine,48.85341,2.3488,openalex
 Université du Québec à Montréal,45.50986,-73.56934,openstreetmap
+Waseda University,35.6895,139.69171,openalex
 Western Sydney University,-34.06543,150.79325,openstreetmap
 Yangzhou University,32.34418,119.39469,openstreetmap
 Özyeğin University,41.03205,29.25979,openstreetmap

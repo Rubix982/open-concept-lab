@@ -708,27 +708,38 @@ func (f *IPEDSFetcher) ingestCompletions(db *sql.DB, dir string) error {
 
 	unitidIdx := getIdx("UNITID")
 	awlevelIdx := getIdx("AWLEVEL")
+	cipIdx := getIdx("CIPCODE")
+	majorIdx := getIdx("MAJORNUM")
+	totalIdx := getIdx("CTOTALT")
+	if unitidIdx < 0 || awlevelIdx < 0 || cipIdx < 0 || majorIdx < 0 || totalIdx < 0 {
+		return fmt.Errorf("completions: missing UNITID, AWLEVEL, CIPCODE, MAJORNUM or CTOTALT")
+	}
 
-	// Aggregate by unitid
+	// Degrees awarded per unitid and award level, from the all-programs rows (CIPCODE 99) of first
+	// majors, so second majors and programme subtotals aren't counted twice.
 	degreeCount := make(map[string]map[string]int)
 
 	for i := 1; i < len(records); i++ {
 		row := records[i]
-		if unitidIdx >= len(row) {
+		if len(row) <= max(unitidIdx, awlevelIdx, cipIdx, majorIdx, totalIdx) {
+			continue
+		}
+		if strings.TrimSpace(row[cipIdx]) != "99" || strings.TrimSpace(row[majorIdx]) != "1" {
 			continue
 		}
 
 		unitid := strings.TrimSpace(row[unitidIdx])
-		awlevel := ""
-		if awlevelIdx < len(row) {
-			awlevel = strings.TrimSpace(row[awlevelIdx])
+		awlevel := strings.TrimSpace(row[awlevelIdx])
+		n, err := strconv.Atoi(strings.TrimSpace(row[totalIdx]))
+		if err != nil {
+			continue
 		}
 
 		if _, exists := degreeCount[unitid]; !exists {
 			degreeCount[unitid] = make(map[string]int)
 		}
 
-		degreeCount[unitid][awlevel]++
+		degreeCount[unitid][awlevel] += n
 	}
 
 	stmt, err := db.Prepare(`
@@ -737,7 +748,9 @@ func (f *IPEDSFetcher) ingestCompletions(db *sql.DB, dir string) error {
 			masters_degrees, doctoral_degrees
 		) VALUES ($1,$2,$3,$4,$5,$6,$7)
 		ON CONFLICT (unitid, year) DO UPDATE SET
-			total_degrees = EXCLUDED.total_degrees
+			total_degrees = EXCLUDED.total_degrees, associates_degrees = EXCLUDED.associates_degrees,
+			bachelors_degrees = EXCLUDED.bachelors_degrees, masters_degrees = EXCLUDED.masters_degrees,
+			doctoral_degrees = EXCLUDED.doctoral_degrees
 	`)
 	if err != nil {
 		return err
@@ -753,7 +766,7 @@ func (f *IPEDSFetcher) ingestCompletions(db *sql.DB, dir string) error {
 		associates := levels["3"]
 		bachelors := levels["5"]
 		masters := levels["7"]
-		doctoral := levels["17"] + levels["19"]
+		doctoral := levels["17"] // research doctorates (PhD); 18 and 19 are professional and other
 
 		_, err := stmt.Exec(
 			unitid, f.year, total, associates, bachelors, masters, doctoral,
