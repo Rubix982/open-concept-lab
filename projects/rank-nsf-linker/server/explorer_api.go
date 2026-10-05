@@ -151,7 +151,7 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 	var semantic map[string]int
 	keywordGoal := q
 	if q != "" && semanticAvailable() {
-		matches, err := semanticFacultyMatches(q, areas, "", 4000)
+		matches, err := semanticFacultyMatches(q, areas, nil, 4000)
 		if err != nil {
 			logger.Warnf(buildCollyContext(w, r), "⚠️ semantic matching failed, using keywords: %v", err)
 		} else {
@@ -315,11 +315,25 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 	filt := facultyFilterParams(r)
 
 	if q != "" && semanticAvailable() {
+		// A university or a country is searched within, not filtered out of the global top matches:
+		// a small country's researchers would rarely make the top 2,000 worldwide.
 		depth := 2000
+		var within []string
 		if universityID != "" {
-			depth = 800
+			depth, within = 800, []string{universityID}
+		} else if filt.Country != "" {
+			rows, err := db.Query(`SELECT id FROM explorer_universities WHERE country = $1`, filt.Country)
+			if err == nil {
+				for rows.Next() {
+					var id string
+					if rows.Scan(&id) == nil {
+						within = append(within, id)
+					}
+				}
+				rows.Close()
+			}
 		}
-		matches, err := semanticFacultyMatches(q, areas, universityID, depth)
+		matches, err := semanticFacultyMatches(q, areas, within, depth)
 		if err == nil {
 			faculty, err := facultyForMatches(db, matches, limit, filt)
 			if err != nil {

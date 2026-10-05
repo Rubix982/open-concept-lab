@@ -512,7 +512,8 @@ type workHit struct {
 
 // searchWork embeds the goal and returns grants/papers whose meaning is close to it, narrowed
 // to areas, a university and a kind ("award" or "paper") when given.
-func searchWork(goal string, areas []string, universityID, kind string, depth int) ([]workHit, error) {
+// universityIDs, when given, limits the search to work at those universities (one, or a country's).
+func searchWork(goal string, areas []string, universityIDs []string, kind string, depth int) ([]workHit, error) {
 	vectors, err := embedTexts([]string{goal})
 	if err != nil {
 		return nil, err
@@ -522,8 +523,8 @@ func searchWork(goal string, areas []string, universityID, kind string, depth in
 	if len(areas) > 0 {
 		must = append(must, map[string]any{"key": "areas", "match": map[string]any{"any": areas}})
 	}
-	if universityID != "" {
-		must = append(must, map[string]any{"key": "university_id", "match": map[string]any{"value": universityID}})
+	if len(universityIDs) > 0 {
+		must = append(must, map[string]any{"key": "university_id", "match": map[string]any{"any": universityIDs}})
 	}
 	if kind != "" {
 		must = append(must, map[string]any{"key": "kind", "match": map[string]any{"value": kind}})
@@ -589,9 +590,9 @@ func recencyWeight(p workPayload) float64 {
 }
 
 // semanticFacultyMatches returns professors whose grants/papers match the goal, best first.
-// areas and universityID narrow the search; depth bounds how many grants/papers are considered.
-func semanticFacultyMatches(goal string, areas []string, universityID string, depth int) ([]semanticMatch, error) {
-	hits, err := searchWork(goal, areas, universityID, "", depth)
+// areas and universityIDs narrow the search; depth bounds how many grants/papers are considered.
+func semanticFacultyMatches(goal string, areas []string, universityIDs []string, depth int) ([]semanticMatch, error) {
+	hits, err := searchWork(goal, areas, universityIDs, "", depth)
 	if err != nil {
 		return nil, err
 	}
@@ -622,7 +623,7 @@ type grantMatch struct {
 
 // semanticGrantMatches returns NSF awards whose title/abstract match the goal, most similar first.
 func semanticGrantMatches(goal string, areas []string, depth int) ([]grantMatch, error) {
-	hits, err := searchWork(goal, areas, "", "award", depth)
+	hits, err := searchWork(goal, areas, nil, "award", depth)
 	if err != nil {
 		return nil, err
 	}
