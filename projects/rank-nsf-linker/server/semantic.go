@@ -254,44 +254,9 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		baseText string // the title-only text vectors were embedded from before text_hash existed
 		payload  workPayload
 	}
-	rows, err := db.Query(`
-		SELECT md5(d.name || '|' || d.kind || '|' || d.ref)::uuid::text,
-		       d.name, d.kind, d.ref, COALESCE(d.title, ''), d.year, d.url, f.areas, COALESCE(u.id, ''),
-		       -- '|| ''''' detoasts first: on Postgres 18.2 left() on a TOASTed value can split a UTF-8 character
-		       COALESCE(d.title, '') || CASE WHEN d.kind = 'award'
-		         THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700) ELSE '' END,
-		       -- papers: the OpenAlex abstract, when the DOI matched one
-		       COALESCE(d.title, '') || CASE
-		         WHEN d.kind = 'award' THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700)
-		         WHEN ow.abstract IS NOT NULL THEN '. ' || left(ow.abstract || '', 700)
-		         ELSE '' END
-		FROM explorer_work_docs d
-		JOIN explorer_faculty f ON f.name = d.name
-		LEFT JOIN explorer_universities u ON u.name = f.university
-		LEFT JOIN award a ON d.kind = 'award' AND a.id = d.ref
-		LEFT JOIN funder_grants fg ON d.kind = 'award' AND d.ref = fg.funder || ':' || fg.grant_id
-		LEFT JOIN openalex_works ow ON d.kind = 'paper' AND ow.doi = lower(substring(d.url from 'doi\.org/(.+)$'))`)
-	if err != nil {
-		return fmt.Errorf("failed to read work docs: %w", err)
-	}
-	docs := map[string]doc{}
-	for rows.Next() {
-		var d doc
-		if err := rows.Scan(&d.id, &d.payload.Name, &d.payload.Kind, &d.payload.Ref, &d.payload.Title, &d.payload.Year,
-			&d.payload.URL, pq.Array(&d.payload.Areas), &d.payload.UniversityID, &d.baseText, &d.text); err != nil {
-			rows.Close()
-			return err
-		}
-		docs[d.id] = d
-	}
-	rows.Close()
-	if err := rows.Err(); err != nil {
-		return fmt.Errorf("failed to read work docs: %w", err)
-	}
-
 	type heldPoint struct{ payloadHash, textHash, docHash string } // "" = recorded before that column existed
 	held := map[string]heldPoint{}
-	rows, err = db.Query(`SELECT id::text, payload_hash, COALESCE(text_hash, ''), COALESCE(doc_hash, '') FROM explorer_embedded`)
+	rows, err := db.Query(`SELECT id::text, payload_hash, COALESCE(text_hash, ''), COALESCE(doc_hash, '') FROM explorer_embedded`)
 	if err != nil {
 		return fmt.Errorf("failed to read explorer_embedded: %w", err)
 	}
@@ -328,25 +293,66 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		}
 		logger.Warnf(mainCtx, "⚠️ %d points recorded as embedded were missing from Qdrant; re-embedding them", len(lost))
 	}
+	inQdrant = nil
 
+	rows, err = db.Query(`
+		SELECT md5(d.name || '|' || d.kind || '|' || d.ref)::uuid::text,
+		       d.name, d.kind, d.ref, COALESCE(d.title, ''), d.year, d.url, f.areas, COALESCE(u.id, ''),
+		       -- '|| ''''' detoasts first: on Postgres 18.2 left() on a TOASTed value can split a UTF-8 character
+		       COALESCE(d.title, '') || CASE WHEN d.kind = 'award'
+		         THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700) ELSE '' END,
+		       -- papers: the OpenAlex abstract, when the DOI matched one
+		       COALESCE(d.title, '') || CASE
+		         WHEN d.kind = 'award' THEN '. ' || left(COALESCE(a.abstract, fg.abstract, '') || '', 700)
+		         WHEN ow.abstract IS NOT NULL THEN '. ' || left(ow.abstract || '', 700)
+		         ELSE '' END
+		FROM explorer_work_docs d
+		JOIN explorer_faculty f ON f.name = d.name
+		LEFT JOIN explorer_universities u ON u.name = f.university
+		LEFT JOIN award a ON d.kind = 'award' AND a.id = d.ref
+		LEFT JOIN funder_grants fg ON d.kind = 'award' AND d.ref = fg.funder || ':' || fg.grant_id
+		LEFT JOIN openalex_works ow ON d.kind = 'paper' AND ow.doi = lower(substring(d.url from 'doi\.org/(.+)$'))`)
+	if err != nil {
+		return fmt.Errorf("failed to read work docs: %w", err)
+	}
+	// Decide per row while reading, keeping only the docs that need work: holding every doc's text
+	// (and its title-only base text) at once ran the container out of memory at ~830k docs.
+	seen := make(map[string]struct{}, len(held))
+	pending := map[string]workPayload{} // payloads to compare with Qdrant before rewriting
 	var toEmbed, toRepayload []doc
-	for id, d := range docs {
-		h, ok := held[id]
+	for rows.Next() {
+		var d doc
+		if err := rows.Scan(&d.id, &d.payload.Name, &d.payload.Kind, &d.payload.Ref, &d.payload.Title, &d.payload.Year,
+			&d.payload.URL, pq.Array(&d.payload.Areas), &d.payload.UniversityID, &d.baseText, &d.text); err != nil {
+			rows.Close()
+			return err
+		}
+		seen[d.id] = struct{}{}
+		h, ok := held[d.id]
 		textChanged := ok && ((h.textHash == "" && d.text != d.baseText) ||
 			(h.textHash != "" && h.textHash != textHash(d.text)))
+		d.baseText = ""
 		switch {
 		case !ok || textChanged:
 			toEmbed = append(toEmbed, d)
 		case h.payloadHash != d.payload.hash():
+			d.text = ""
 			toRepayload = append(toRepayload, d)
+			pending[d.id] = d.payload
 		}
 	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("failed to read work docs: %w", err)
+	}
+
 	var toDelete []string
 	for id := range held {
-		if _, ok := docs[id]; !ok {
+		if _, ok := seen[id]; !ok {
 			toDelete = append(toDelete, id)
 		}
 	}
+
 	// A stale hash doesn't always mean a stale payload (area order used to count): compare with what
 	// Qdrant holds and only rewrite real changes. Rewriting hundreds of thousands of payloads makes
 	// Qdrant 1.3 rebuild its index and run out of memory.
@@ -372,7 +378,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		hashes := make([]string, len(current))
 		docHashes := make([]string, len(current))
 		for i, id := range current {
-			hashes[i], docHashes[i] = docs[id].payload.hash(), docs[id].payload.docHash()
+			hashes[i], docHashes[i] = pending[id].hash(), pending[id].docHash()
 		}
 		if _, err := db.Exec(`
 			UPDATE explorer_embedded e SET payload_hash = v.h, doc_hash = v.dh
@@ -492,7 +498,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		}
 	}
 
-	logger.Infof(mainCtx, "🧠 Semantic index ready: %d grants and papers", len(docs))
+	logger.Infof(mainCtx, "🧠 Semantic index ready: %d grants and papers", len(seen))
 	return nil
 }
 
