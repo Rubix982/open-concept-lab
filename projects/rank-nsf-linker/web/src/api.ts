@@ -36,7 +36,12 @@ export type UniversityDetail = UniversitySummary & {
   doctoral_degrees?: number; // IPEDS, all fields, latest year (US)
   doctoral_year?: number;
   funders?: { funder: string; people: number; active_people: number }[];
-  recently_funded?: { name: string; funder: string; title: string; year: number }[];
+  recently_funded?: {
+    name: string;
+    funder: string;
+    title: string;
+    year: number;
+  }[];
 };
 
 export type Work = {
@@ -65,7 +70,11 @@ export type Faculty = {
   funding: FundingEntry[] | null;
   goal_score?: number;
   match?: Work;
-  latest_work?: { title: string; year: number | null; url: string | null } | null;
+  latest_work?: {
+    title: string;
+    year: number | null;
+    url: string | null;
+  } | null;
   first_year?: number | null; // first top-venue paper (CSRankings faculty)
   orcid?: string | null;
   openalex_id?: string | null;
@@ -80,7 +89,10 @@ export type FundingEntry = {
   active_amount: number; // of the active grants they lead
 };
 
-export type Funders = { names: Record<string, string>; by_country: Record<string, string[]> };
+export type Funders = {
+  names: Record<string, string>;
+  by_country: Record<string, string[]>;
+};
 
 export type Award = {
   id: string;
@@ -100,7 +112,12 @@ export type Award = {
 };
 
 export type Collaborator = { name: string; university: string; papers: number };
-export type SimilarPerson = { name: string; university: string; score: number; source: string };
+export type SimilarPerson = {
+  name: string;
+  university: string;
+  score: number;
+  source: string;
+};
 
 export type Paper = {
   title: string;
@@ -113,7 +130,11 @@ export type Paper = {
   cited_by?: number | null;
 };
 
-export type GrantPerson = { name: string; university: string; university_id: string | null };
+export type GrantPerson = {
+  name: string;
+  university: string;
+  university_id: string | null;
+};
 
 export type Grant = Award & { similarity: number; people: GrantPerson[] };
 
@@ -135,12 +156,51 @@ export type Scholarship = {
 
 export type Query = { areas: string[]; goal: string };
 
+// Where money for a search goes, across every grant loaded (linked to someone on the map or not).
+export type Landscape = {
+  total: number;
+  active: number;
+  funders: {
+    funder: string;
+    currency: string | null;
+    grants: number;
+    active: number;
+    amount: number | null;
+    active_amount: number | null;
+  }[];
+  years: { year: number; funder: string; grants: number }[];
+  places: {
+    institution: string;
+    university_id: string | null;
+    country: string | null;
+    grants: number;
+    active: number;
+    people: number;
+  }[];
+  grants: {
+    funder: string;
+    id: string;
+    title: string;
+    snippet: string | null;
+    amount: number | null;
+    currency: string | null;
+    starts: string | null;
+    ends: string | null;
+    url: string | null;
+    lead: string | null;
+    institution: string | null;
+    university_id: string | null;
+    profile: string | null;
+  }[];
+};
+
 function params(q: Partial<Query> & Record<string, unknown>): string {
   const p = new URLSearchParams();
   if (q.areas?.length) p.set("areas", q.areas.join(","));
   if (q.goal?.trim()) p.set("q", q.goal.trim());
   for (const [k, v] of Object.entries(q)) {
-    if (k !== "areas" && k !== "goal" && v !== undefined && v !== "") p.set(k, String(v));
+    if (k !== "areas" && k !== "goal" && v !== undefined && v !== "")
+      p.set(k, String(v));
   }
   const s = p.toString();
   return s ? `?${s}` : "";
@@ -149,7 +209,9 @@ function params(q: Partial<Query> & Record<string, unknown>): string {
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   const res = await fetch(`/api/explorer${path}`, { signal });
   if (res.status === 503) {
-    throw new Error("The data is still loading on the server. Try again in a few minutes.");
+    throw new Error(
+      "The data is still loading on the server. Try again in a few minutes.",
+    );
   }
   if (!res.ok) {
     const body = await res.json().catch(() => null);
@@ -159,13 +221,24 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export const api = {
+  landscape: (
+    q: { goal: string; active?: boolean; country?: string },
+    signal?: AbortSignal,
+  ) =>
+    get<Landscape>(
+      `/landscape?q=${encodeURIComponent(q.goal)}${q.active ? "&active=1" : ""}${q.country ? `&country=${q.country}` : ""}`,
+      signal,
+    ),
   areas: () => get<Area[]>("/areas"),
   funders: () => get<Funders>("/funders"),
   universities: (q: Query, signal?: AbortSignal) =>
     get<UniversitySummary[]>(`/universities${params(q)}`, signal),
-  university: (id: string) => get<UniversityDetail>(`/universities/${encodeURIComponent(id)}`),
-  faculty: (q: Query & { university?: string; limit?: number }, signal?: AbortSignal) =>
-    get<Faculty[]>(`/faculty${params(q)}`, signal),
+  university: (id: string) =>
+    get<UniversityDetail>(`/universities/${encodeURIComponent(id)}`),
+  faculty: (
+    q: Query & { university?: string; limit?: number },
+    signal?: AbortSignal,
+  ) => get<Faculty[]>(`/faculty${params(q)}`, signal),
   profile: (name: string) =>
     get<{
       faculty: Faculty;
@@ -175,13 +248,19 @@ export const api = {
       topics: { topic: string; papers: number }[];
     }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
   similar: (name: string) =>
-    get<{ similar: SimilarPerson[] }>(`/faculty/similar?name=${encodeURIComponent(name)}`),
-  grants: (q: Query & { active: boolean; limit?: number }, signal?: AbortSignal) =>
-    get<Grant[]>(`/grants${params({ ...q, active: q.active ? 1 : 0 })}`, signal),
-  scholarships: (country: string) =>
-    get<Scholarship[]>(
-      `/scholarships?country=${encodeURIComponent(country)}`,
+    get<{ similar: SimilarPerson[] }>(
+      `/faculty/similar?name=${encodeURIComponent(name)}`,
     ),
+  grants: (
+    q: Query & { active: boolean; limit?: number },
+    signal?: AbortSignal,
+  ) =>
+    get<Grant[]>(
+      `/grants${params({ ...q, active: q.active ? 1 : 0 })}`,
+      signal,
+    ),
+  scholarships: (country: string) =>
+    get<Scholarship[]>(`/scholarships?country=${encodeURIComponent(country)}`),
   papers: (name: string, goal = "") =>
     get<{ dblp_url: string; papers: Paper[] }>(
       `/faculty/papers?name=${encodeURIComponent(name)}${goal ? `&goal=${encodeURIComponent(goal)}` : ""}`,

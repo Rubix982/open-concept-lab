@@ -819,6 +819,7 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty/profile", getExplorerFacultyProfile)
 	r.Get("/explorer/faculty/papers", getExplorerFacultyPapers)
 	r.Get("/explorer/faculty/similar", getExplorerSimilar)
+	r.Get("/explorer/landscape", getExplorerLandscape)
 	r.Get("/explorer/grants", getExplorerGrants)
 	r.Get("/explorer/scholarships", getExplorerScholarships)
 	r.Get("/explorer/funders", getExplorerFunders)

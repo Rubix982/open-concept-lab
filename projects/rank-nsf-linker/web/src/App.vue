@@ -13,6 +13,7 @@ import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import GrantRow from "@/components/GrantRow.vue";
+import FundingView from "@/components/FundingView.vue";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
 
@@ -23,9 +24,9 @@ const selectedAreas = ref<string[]>(
 );
 const goalInput = ref(url.get("q") ?? "");
 const goal = ref(goalInput.value);
-type Tab = "universities" | "faculty" | "grants";
+type Tab = "universities" | "faculty" | "grants" | "funding";
 const tab = ref<Tab>(
-  (["faculty", "grants"].includes(url.get("view") ?? "")
+  (["faculty", "grants", "funding"].includes(url.get("view") ?? "")
     ? url.get("view")
     : "universities") as Tab,
 );
@@ -88,7 +89,7 @@ function submitGoal() {
 function clearGoal() {
   goalInput.value = "";
   goal.value = "";
-  if (tab.value === "grants") tab.value = "faculty";
+  if (tab.value === "grants" || tab.value === "funding") tab.value = "faculty";
 }
 
 // ---- data ----
@@ -272,6 +273,7 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
     ? [
         { id: "faculty", label: "Faculty" },
         { id: "grants", label: "Grants" },
+        { id: "funding", label: "Funding" },
         { id: "universities", label: "Universities" },
       ]
     : [
@@ -420,13 +422,13 @@ function removeArea(area: string) {
             </option>
           </select>
         </label>
-        <label class="check"
+        <label v-if="tab !== 'funding'" class="check"
           ><input v-model="onlyFunded" type="checkbox" /> Active grant</label
         >
         <label v-if="tab === 'faculty'" class="check"
           ><input v-model="onlyEarly" type="checkbox" /> Early career</label
         >
-        <label class="check"
+        <label v-if="tab !== 'funding'" class="check"
           ><input v-model="onlyR1" type="checkbox" /> R1 (US)</label
         >
         <label v-if="tab === 'faculty'">
@@ -483,6 +485,14 @@ function removeArea(area: string) {
           </button>
         </li>
       </ol>
+
+      <FundingView
+        v-else-if="ready && tab === 'funding'"
+        :goal="goal"
+        :country="country"
+        @open-university="openUniversity($event)"
+        @open-person="openProfessorFromList"
+      />
 
       <template v-else-if="ready && tab === 'grants'">
         <label class="toggle">

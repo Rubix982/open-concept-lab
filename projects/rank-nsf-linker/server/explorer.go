@@ -208,6 +208,9 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if _, err := tx.Exec(buildExplorerSQL); err != nil {
 		return fmt.Errorf("failed to build explorer tables: %w", err)
 	}
+	if _, err := tx.Exec(buildGrantLandscapeSQL); err != nil {
+		return fmt.Errorf("failed to build the grant landscape: %w", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
 	}
