@@ -244,7 +244,7 @@ what the API returns and the pages render. The data is far richer than the pages
 4b. [x] Second visibility audit (design note below; building G1–G6, G7 waits for Saif) (asked 2026-10-05): data we hold but don't surface, and calm exploration:
    browse without a search, progressive disclosure, no walls of numbers. Write up as a design note with
    action items; build the clearly safe ones
-5. C4 scholarships: level filter and deadline view
+5. [x] C4 scholarships: level filter and deadline view (open now / opens in, read from the window text)
 6. C2 shortlist and compare (browser storage only)
 7. C5 Pakistan path
 8. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse

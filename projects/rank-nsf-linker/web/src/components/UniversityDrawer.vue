@@ -48,11 +48,76 @@ watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, {
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
+// A level to narrow by (only the levels present are offered).
+const schLevel = ref("");
+const schLevels = computed(() =>
+  ["masters", "phd", "postdoc"].filter((l) =>
+    scholarships.value.some((s) => s.levels.includes(l)),
+  ),
+);
+const atLevel = (s: Scholarship) =>
+  !schLevel.value || s.levels.includes(schLevel.value);
+
+// Application windows are free text ("approx. Jun–Aug"); read the first month range when there is one.
+const MONTHS = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+];
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+type Window = { open: boolean; label: string; order: number };
+function windowOf(text: string): Window | null {
+  const m =
+    /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s*[–-]\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.exec(
+      text,
+    );
+  if (!m) return null;
+  const from = MONTHS.indexOf(m[1].toLowerCase());
+  const to = MONTHS.indexOf(m[2].toLowerCase());
+  const now = new Date().getMonth();
+  const open = from <= to ? now >= from && now <= to : now >= from || now <= to;
+  if (open)
+    return {
+      open,
+      label: `Open now, until about ${MONTH_NAMES[to]}`,
+      order: 0,
+    };
+  const wait = (from - now + 12) % 12;
+  return { open, label: `Opens about ${MONTH_NAMES[from]}`, order: wait };
+}
+const byWindow = (a: Scholarship, b: Scholarship) =>
+  (windowOf(a.application_window)?.order ?? 99) -
+  (windowOf(b.application_window)?.order ?? 99);
+
 const curatedScholarships = computed(() =>
-  scholarships.value.filter((s) => s.source !== "daad"),
+  scholarships.value
+    .filter((s) => s.source !== "daad" && atLevel(s))
+    .sort(byWindow),
 );
 const feedScholarships = computed(() =>
-  scholarships.value.filter((s) => s.source === "daad"),
+  scholarships.value.filter((s) => s.source === "daad" && atLevel(s)),
 );
 watch(
   () => uni.value?.country,
@@ -335,6 +400,29 @@ function money(n?: number) {
           <p v-if="!scholarships.length" class="sub">
             No scholarships in our list for study in {{ countryLabel }}.
           </p>
+          <p
+            v-if="schLevels.length > 1"
+            class="levels"
+            role="group"
+            aria-label="Level"
+          >
+            <button
+              type="button"
+              :class="{ on: !schLevel }"
+              @click="schLevel = ''"
+            >
+              All
+            </button>
+            <button
+              v-for="l in schLevels"
+              :key="l"
+              type="button"
+              :class="{ on: schLevel === l }"
+              @click="schLevel = l"
+            >
+              {{ levelLabel([l]) }}
+            </button>
+          </p>
           <ul class="sch-list">
             <li v-for="sch in curatedScholarships" :key="sch.id">
               <a
@@ -344,10 +432,17 @@ function money(n?: number) {
                 class="sch-name"
                 >{{ sch.name }}</a
               >
+              <p
+                v-if="windowOf(sch.application_window)"
+                class="window"
+                :class="{ open: windowOf(sch.application_window)?.open }"
+              >
+                {{ windowOf(sch.application_window)?.label }}
+              </p>
               <p class="sub">
                 {{ sch.provider }}. {{ levelLabel(sch.levels) }}.
                 <template v-if="shown(sch.covers)"
-                  >Covers {{ sch.covers }}.</template
+                  >Covers {{ sch.covers }}.{{ " " }}</template
                 >
                 <template v-if="shown(sch.application_window)"
                   >Application window: {{ sch.application_window }}.</template
@@ -577,6 +672,40 @@ h3 {
 .recent .more {
   margin-top: 4px;
   font-size: var(--t-xs);
+}
+
+.levels {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 10px;
+}
+
+.levels button {
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 3px 10px 2px;
+  font: inherit;
+  font-size: var(--t-xs);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.levels button.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.window {
+  margin: 2px 0;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.window.open {
+  color: var(--line-systems);
 }
 
 .recent li {

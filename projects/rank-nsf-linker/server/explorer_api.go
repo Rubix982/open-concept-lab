@@ -224,7 +224,7 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		return
 	}
 	var u exploreUniversity
-	var areaFaculty, areaFunded, funders []byte
+	var areaFaculty, areaFunded, funders, training []byte
 	err = db.QueryRow(`
 		SELECT id, name, city, state, country, latitude, longitude, homepage, carnegie,
 		       grad_tuition_in_state, grad_tuition_out_of_state, grad_enrollment,
@@ -232,7 +232,7 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		FROM explorer_universities WHERE id = $1`, id).Scan(
 		&u.ID, &u.Name, &u.City, &u.State, &u.Country, &u.Latitude, &u.Longitude, &u.Homepage, &u.Carnegie,
 		&u.GradTuitionInState, &u.GradTuitionOutOfState, &u.GradEnrollment,
-		&u.FacultyTotal, &u.FundedTotal, &areaFaculty, &areaFunded, &u.DoctoralDegrees, &u.DoctoralYear, &funders, &u.Training)
+		&u.FacultyTotal, &u.FundedTotal, &areaFaculty, &areaFunded, &u.DoctoralDegrees, &u.DoctoralYear, &funders, &training)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "university not found", nil)
 		return
@@ -241,7 +241,7 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		writeError(w, r, http.StatusInternalServerError, "failed to load university", err)
 		return
 	}
-	u.AreaFaculty, u.AreaFunded, u.Funders = areaFaculty, areaFunded, funders
+	u.AreaFaculty, u.AreaFunded, u.Funders, u.Training = areaFaculty, areaFunded, funders, training
 	if rows, err := db.Query(`
 		SELECT d.name, d.title, d.year, d.ref
 		FROM explorer_work_docs d JOIN explorer_faculty f ON f.name = d.name
