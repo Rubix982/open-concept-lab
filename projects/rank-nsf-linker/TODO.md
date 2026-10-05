@@ -201,7 +201,7 @@ loads every source it serves, and heals itself.
       institution, 30–1,500 works, h-index ≥ 15, publishing recently) → 30,062 researchers, 10 recent papers each.
       Labelled "Researcher (OpenAlex)", not verified faculty (`scripts/openalex/fields.py`, migration 17)
 - [x] NIH RePORTER: 77,190 projects active in FY2025–26 → 3,488 people (`scripts/grants/nih.py`)
-- [ ] Researchers outside CS beyond US R1 universities, and more fields (psychology, economics, …)
+- [ ] Researchers outside CS beyond US R1 and Pakistani universities (more fields: done, 25 fields)
       (Pakistan done: 25 universities via backup/extra_universities.csv; other countries and fields open)
 - [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
