@@ -10,9 +10,6 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Copy the env file
-COPY .env /app/
-
 # Copy the migration folder
 COPY migrations /app/
 
@@ -41,7 +38,6 @@ RUN apk add --no-cache curl
 
 # Copy built binary from builder stage
 COPY --from=builder /app/go-server .
-COPY --from=builder /app/.env /app/.env
 COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/scripts /app/scripts
 COPY --from=builder /app/certs /app/certs

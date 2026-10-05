@@ -155,17 +155,21 @@ def main() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     english_institution = institution_names()
     key = app_id()
-    pages = []
-    for query in ["Informatics"] + review_sections():
-        first = ET.fromstring(fetch_page(query, 1, key))
-        total = int(text(first, "totalResults") or 0)
-        pages += [first] + [ET.fromstring(fetch_page(query, start, key)) for start in range(1 + PAGE, total + 1, PAGE)]
-        print(f"  {query}: {total}")
-    print(f"{len(pages)} pages")
-    seen_numbers = set()
 
+    # One page at a time: the cached pages are about 1 GB of XML, and parsing them all at once ran
+    # the fetcher out of memory.
+    def pages():
+        for query in ["Informatics"] + review_sections():
+            first = ET.fromstring(fetch_page(query, 1, key))
+            total = int(text(first, "totalResults") or 0)
+            print(f"  {query}: {total}")
+            yield first
+            for start in range(1 + PAGE, total + 1, PAGE):
+                yield ET.fromstring(fetch_page(query, start, key))
+
+    seen_numbers = set()
     grants, people = [], []
-    for page in pages:
+    for page in pages():
         for award in page.findall("grantAward"):
             number = award.get("awardNumber") or ""
             en, ja = summary(award, "en"), summary(award, "ja")

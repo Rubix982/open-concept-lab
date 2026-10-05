@@ -204,6 +204,27 @@ services:
     networks:
       - default
 
+  fetcher:
+    container_name: fetcher
+    build:
+      context: .
+      dockerfile: fetcher/Dockerfile
+    image: rank-nsf-linker-fetcher:latest
+    volumes:
+      - ./data:/app/data:rw
+      - ./backup:/app/backup:rw
+    # API keys (OPENALEX_API_KEY, CINII_APP_ID) are read at run time, not built into the image
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health')"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    networks:
+      - default
+
   go-server:
     image: host.docker.internal:5128/go-server:latest
     container_name: go-server
@@ -251,6 +272,8 @@ services:
       # Semantic goal matching (server/semantic.go)
       EMBEDDER_SERVICE_URL: http://embedder:8000
       QDRANT_REST_URL: http://qdrant-local:6333
+      # Data fetching (fetcher/app.py); unset or unreachable = use the data already on disk
+      FETCHER_URL: http://fetcher:8090
     ports:
       - "8080:8080"
     restart: unless-stopped

@@ -1405,14 +1405,36 @@ func GetPipelineStatus(mainCtx *colly.Context, step string) string {
 	return status
 }
 
+// executeWorkflows runs the pipeline on server start: from PIPELINE_FROM_STEP when set, else only
+// if it hasn't completed before (a failed run resumes at the step that failed).
 func executeWorkflows(mainCtx *colly.Context) {
-	steps := []struct {
-		name string
-		fn   func(*colly.Context) error
-	}{
+	fromStep := 0
+	if v := os.Getenv("PIPELINE_FROM_STEP"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > len(pipelineSteps()) {
+			logger.Errorf(mainCtx, "❌ PIPELINE_FROM_STEP must be between 1 and %d, got '%s'", len(pipelineSteps()), v)
+			return
+		}
+		fromStep = n
+	}
+	if isDataAlreadyPopulated := GetPipelineStatus(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE)); fromStep == 0 && isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
+		logger.Infof(mainCtx, "ℹ️  Postgres population already completed previously, skipping.")
+		return
+	}
+	runPipeline(mainCtx, fromStep)
+}
+
+type pipelineStep struct {
+	name string
+	fn   func(*colly.Context) error
+}
+
+func pipelineSteps() []pipelineStep {
+	return []pipelineStep{
 		{"Download Pre-Req CSVs", downloadCSVs},
 		{"Download NSF Data", downloadNSFData},
 		{"Download IPEDS Data", downloadIPEDSData},
+		{"Fetch Source Data", fetchBaseSources},
 		{"Populate From CSVs", populatePostgresFromCSVs},
 		{"Remove Tags From Professor Names", removeTagsFromProfessorNames},
 		{"Populate From NSF JSONs", populatePostgresFromNsfJsons},
@@ -1435,9 +1457,14 @@ func executeWorkflows(mainCtx *colly.Context) {
 		{"Link NSF Investigators By DBLP Affiliation", linkNsfByDblpAffiliation},
 		{"Load OpenAlex Works", loadOpenAlexWorks},
 		{"Build Explorer Tables", buildExplorerTables},
+		{"Fetch OpenAlex Data", fetchOpenAlexSources},
 		{"Embed Explorer Work", embedExplorerWork},
 	}
+}
 
+// runPipeline runs every step from fromStep (1-based; 0 = resume after the last completed step).
+func runPipeline(mainCtx *colly.Context, fromStep int) {
+	steps := pipelineSteps()
 	totalSteps := len(steps)
 	successfulSteps := 0
 
@@ -1451,23 +1478,10 @@ func executeWorkflows(mainCtx *colly.Context) {
 		}
 	}
 
-	// PIPELINE_FROM_STEP=N (1-based) forces a rerun of step N and everything after it,
-	// treating earlier steps as done. Without it, steps already marked completed are skipped,
-	// so a failed run resumes at the step that failed.
-	fromStep := 0
-	if v := os.Getenv("PIPELINE_FROM_STEP"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 1 || n > totalSteps {
-			logger.Errorf(mainCtx, "❌ PIPELINE_FROM_STEP must be between 1 and %d, got '%s'", totalSteps, v)
-			return
-		}
-		fromStep = n
-		logger.Infof(mainCtx, "⏩ PIPELINE_FROM_STEP=%d: rerunning from step '%s'", fromStep, steps[fromStep-1].name)
-	}
-
-	if isDataAlreadyPopulated := GetPipelineStatus(mainCtx, string(POPULATION_SUCCEEDED_MESSAGE)); fromStep == 0 && isDataAlreadyPopulated == string(POPULATION_STATUS_SUCCEEDED) {
-		logger.Infof(mainCtx, "ℹ️  Postgres population already completed previously, skipping.")
-		return
+	// fromStep=N forces a rerun of step N and everything after it, treating earlier steps as done.
+	// fromStep=0 skips steps already marked completed, so a failed run resumes where it failed.
+	if fromStep > 0 {
+		logger.Infof(mainCtx, "⏩ Rerunning from step %d '%s'", fromStep, steps[fromStep-1].name)
 	}
 
 	logger.Infof(mainCtx, "🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
