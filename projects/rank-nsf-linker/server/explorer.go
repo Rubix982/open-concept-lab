@@ -214,6 +214,7 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
 	}
+	clearAreasCache()
 
 	var faculty, funded, universities int
 	if err := db.QueryRow(`

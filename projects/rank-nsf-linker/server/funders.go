@@ -33,12 +33,14 @@ var fundersCache struct {
 func grantFundersByCountry(db *sql.DB) map[string][]string {
 	fundersCache.Lock()
 	defer fundersCache.Unlock()
-	if fundersCache.byCountry != nil && time.Since(fundersCache.at) < time.Minute {
+	if fundersCache.byCountry != nil && time.Since(fundersCache.at) < time.Hour { // cleared on rebuild
 		return fundersCache.byCountry
 	}
 	m := map[string][]string{"us": {"nsf"}}
-	rows, err := db.Query(`SELECT DISTINCT lower(country), funder FROM funder_grants
-		WHERE country IS NOT NULL AND country <> '' ORDER BY 1, 2`)
+	// A funder counts for a country with at least 2 grants there: the one ERC grant hosted in the
+	// US made "no NSF or ERC or NIH grant" the sentence for US faculty.
+	rows, err := db.Query(`SELECT lower(country), funder FROM funder_grants
+		WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2 HAVING count(*) >= 2 ORDER BY 1, 2`)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {

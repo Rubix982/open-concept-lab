@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	chi "github.com/go-chi/chi/v5"
@@ -65,7 +66,31 @@ type exploreArea struct {
 	Funded  int     `json:"funded"`
 }
 
+// The areas list only changes when the explorer tables are rebuilt (buildExplorerTables clears
+// it), but counting faculty per area took ~2 s on every page load.
+var areasCache struct {
+	sync.Mutex
+	areas        []exploreArea
+	universities []exploreUniversity // the unfiltered universities list
+}
+
+func clearAreasCache() {
+	areasCache.Lock()
+	areasCache.areas, areasCache.universities = nil, nil
+	areasCache.Unlock()
+	fundersCache.Lock()
+	fundersCache.byCountry = nil
+	fundersCache.Unlock()
+}
+
 func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
+	areasCache.Lock()
+	cached := areasCache.areas
+	areasCache.Unlock()
+	if cached != nil {
+		writeJSON(w, http.StatusOK, cached)
+		return
+	}
 	db, err := GetDB()
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
@@ -100,6 +125,9 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "failed to read results", err)
 		return
 	}
+	areasCache.Lock()
+	areasCache.areas = areas
+	areasCache.Unlock()
 	writeJSON(w, http.StatusOK, areas)
 }
 
@@ -149,6 +177,17 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 	}
 	areas := areasParam(r)
 	q := strings.TrimSpace(r.URL.Query().Get("q"))
+	// The first view (no areas, no search) is the same for everyone until the next rebuild.
+	plain := len(areas) == 0 && q == ""
+	if plain {
+		areasCache.Lock()
+		cached := areasCache.universities
+		areasCache.Unlock()
+		if cached != nil {
+			writeJSON(w, http.StatusOK, cached)
+			return
+		}
+	}
 
 	// Semantic matching when available: count matching faculty per university; the SQL then
 	// skips its keyword count.
@@ -217,6 +256,11 @@ func getExplorerUniversities(w http.ResponseWriter, r *http.Request) {
 			}
 			return a.Faculty > b.Faculty
 		})
+	}
+	if plain {
+		areasCache.Lock()
+		areasCache.universities = unis
+		areasCache.Unlock()
 	}
 	writeJSON(w, http.StatusOK, unis)
 }
@@ -497,6 +541,36 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int, filt facu
 		faculty = append(faculty, f)
 		if len(faculty) == limit {
 			break
+		}
+	}
+	// The search returns no titles (see searchWork); fill in the matched work of those shown.
+	names, kinds, refs := make([]string, len(faculty)), make([]string, len(faculty)), make([]string, len(faculty))
+	for i, f := range faculty {
+		names[i], kinds[i], refs[i] = f.Name, *f.Match.Kind, ""
+		for _, m := range matches {
+			if m.Name == f.Name {
+				refs[i] = m.Work.Ref
+				break
+			}
+		}
+	}
+	if docs, err := db.Query(`
+		SELECT d.name, d.title, d.url FROM explorer_work_docs d
+		JOIN unnest($1::text[], $2::text[], $3::text[]) AS w(name, kind, ref)
+		  ON d.name = w.name AND d.kind = w.kind AND d.ref = w.ref`, pq.Array(names), pq.Array(kinds), pq.Array(refs)); err == nil {
+		titles := map[string][2]*string{}
+		for docs.Next() {
+			var n string
+			var t, u *string
+			if docs.Scan(&n, &t, &u) == nil {
+				titles[n] = [2]*string{t, u}
+			}
+		}
+		docs.Close()
+		for i := range faculty {
+			if tu, ok := titles[faculty[i].Name]; ok {
+				faculty[i].Match.Title, faculty[i].Match.URL = tu[0], tu[1]
+			}
 		}
 	}
 	sortFaculty(faculty, filt.Sort)

@@ -354,9 +354,9 @@ function untilLabel(date: string | null): string {
       <section>
         <h3>Research areas</h3>
         <p v-if="person.source === 'openalex'" class="hint">
-          Papers since 2021, from OpenAlex. Listed as a researcher at this
-          university by OpenAlex; check their department page to confirm they
-          supervise PhD students.
+          Their main research areas, from OpenAlex. Listed as a researcher at
+          this university by OpenAlex; check their department page to confirm
+          they supervise PhD students.
         </p>
         <p v-else class="hint">
           Papers at top venues in the last 10 years, from CSRankings
@@ -364,7 +364,8 @@ function untilLabel(date: string | null): string {
         <ul class="areas">
           <li v-for="a in areaList" :key="a.area" :style="{ '--c': a.color }">
             <span class="area-name">{{ a.name }}</span>
-            <span class="num"
+            <!-- OpenAlex researchers' papers aren't split by area: every area got the full count -->
+            <span v-if="person.source !== 'openalex'" class="num"
               >{{ a.pubs }} {{ a.pubs === 1 ? "paper" : "papers" }}</span
             >
           </li>

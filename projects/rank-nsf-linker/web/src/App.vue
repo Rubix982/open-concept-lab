@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import {
   api,
   type Faculty,
@@ -102,6 +102,10 @@ const query = computed<Query>(() => ({
   goal: goal.value,
 }));
 
+// Navigation (a search, a tab, a university or a profile opened) adds a history entry, so the
+// browser's Back and Forward move through it; filter changes only rewrite the current entry.
+let restoring = false;
+let lastNav = "";
 watch(
   [selectedAreas, goal, tab, openUni, openProf, filterParams],
   () => {
@@ -115,10 +119,43 @@ watch(
     for (const [k, v] of Object.entries(filterParams.value))
       if (v !== undefined) p.set(k, String(v));
     const s = p.toString();
-    history.replaceState(null, "", s ? `?${s}` : location.pathname);
+    const nav = JSON.stringify([
+      goal.value,
+      tab.value,
+      openUni.value,
+      openProf.value,
+    ]);
+    const target = s ? `?${s}` : location.pathname;
+    if (!restoring && lastNav && nav !== lastNav)
+      history.pushState(null, "", target);
+    else history.replaceState(null, "", target); // first load (an old ?view=grants becomes funding)
+    lastNav = nav;
   },
   { immediate: true },
-); // immediate: an old ?view=grants link is rewritten to view=funding
+);
+
+// Back / Forward: put the page back the way that history entry had it.
+window.addEventListener("popstate", () => {
+  const q = new URLSearchParams(location.search);
+  restoring = true;
+  selectedAreas.value = q.get("areas")?.split(",").filter(Boolean) ?? [];
+  goal.value = goalInput.value = q.get("q") ?? "";
+  const view = (q.get("view") ?? "").replace("grants", "funding");
+  tab.value = (
+    ["faculty", "funding"].includes(view) ? view : "universities"
+  ) as Tab;
+  openUni.value = q.get("u");
+  openProf.value = q.get("p");
+  country.value = q.get("country") ?? "";
+  onlyFunded.value = q.get("funded") === "1";
+  onlyEarly.value = q.get("early") === "1";
+  onlyR1.value = q.get("r1") === "1";
+  onlyNewLab.value = q.get("newlab") === "1";
+  sortBy.value = (
+    ["recent", "funding"].includes(q.get("sort") ?? "") ? q.get("sort") : ""
+  ) as Sort;
+  nextTick(() => (restoring = false));
+});
 
 // The goal box searches when submitted (Enter or the Search button), not while typing.
 function submitGoal() {
@@ -717,6 +754,28 @@ const areaChips = computed(() => {
         {{ countryNote }}
       </p>
 
+      <p
+        v-if="
+          ready &&
+          !loading &&
+          tab === 'universities' &&
+          !rankedUniversities.length
+        "
+        class="empty"
+      >
+        No university matches<template v-if="goal"> “{{ goal }}”</template> with
+        these filters. Try broader words, or
+        <button
+          type="button"
+          class="link"
+          @click="
+            clearAll();
+            clearFilters();
+          "
+        >
+          start over</button
+        >.
+      </p>
       <ol v-if="ready && tab === 'universities'" class="uni-list">
         <li v-for="u in rankedUniversities" :key="u.id">
           <button
@@ -762,6 +821,23 @@ const areaChips = computed(() => {
           @open="openProfessorFromList"
         />
       </ul>
+      <p
+        v-if="ready && !loading && tab === 'faculty' && !faculty.length"
+        class="empty"
+      >
+        No one matches<template v-if="goal"> “{{ goal }}”</template> with these
+        filters. Try broader words, or
+        <button
+          type="button"
+          class="link"
+          @click="
+            clearAll();
+            clearFilters();
+          "
+        >
+          start over</button
+        >.
+      </p>
 
       <footer class="foot">
         Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
@@ -1057,6 +1133,14 @@ h1 {
   font-size: var(--t-xs);
 }
 
+/* On phones the filter row scrolls sideways and "Clear search" ran off its end; the summary's
+   "Clear all" and the search box's × already clear a search there. */
+@media (max-width: 700px) {
+  .goal-chip {
+    display: none;
+  }
+}
+
 .picker-pop {
   position: absolute;
   z-index: 20;
@@ -1131,6 +1215,13 @@ h1 {
 .country-note {
   margin: 4px 0 8px;
   font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.empty {
+  margin: 14px 0;
+  font-size: var(--t-sm);
   line-height: 1.5;
   color: var(--ink-soft);
 }

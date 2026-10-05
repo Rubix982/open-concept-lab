@@ -197,10 +197,17 @@ const carnegieLabel = computed(() =>
 // The university's strongest areas by faculty count (from the explorer), with their line colours.
 // Computer science areas only: researchers in other fields come from OpenAlex capped at 20 per
 // field and university, so their counts would read as equal strengths everywhere.
-const OPENALEX_GROUPS = new Set(["Sciences", "Engineering", "Medicine", "Social sciences & humanities"]);
+const OPENALEX_GROUPS = new Set([
+  "Sciences",
+  "Engineering",
+  "Medicine",
+  "Social sciences & humanities",
+]);
 const strengths = computed(() => {
   const entries = Object.entries(uni.value?.area_faculty ?? {})
-    .filter(([area]) => !OPENALEX_GROUPS.has(areaIndex.value.get(area)?.group ?? ""))
+    .filter(
+      ([area]) => !OPENALEX_GROUPS.has(areaIndex.value.get(area)?.group ?? ""),
+    )
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
   const top = entries[0]?.[1] ?? 1;
@@ -247,7 +254,16 @@ function money(n?: number) {
     />
 
     <div v-else class="uni">
-      <p v-if="error" class="error">{{ error }}</p>
+      <p v-if="error" class="error">
+        {{
+          /not found/i.test(error)
+            ? "We couldn't find this university. The link may be old, or the university renamed."
+            : error
+        }}
+        <button type="button" class="link" @click="emit('close')">
+          Back to the map
+        </button>
+      </p>
       <template v-if="uni">
         <header>
           <h2>{{ uni.name }}</h2>

@@ -93,6 +93,48 @@ func embedTexts(texts []string) ([][]float32, error) {
 	return res.Embeddings, nil
 }
 
+// A search sends three requests at once (universities, faculty, grants) that embed the same query;
+// each took seconds while the embedder was busy. Queries are embedded once: concurrent callers wait
+// for the first, later ones reuse the vector (the last 256 queries are kept).
+var queryVectors struct {
+	sync.Mutex
+	m map[string]*queryVector
+}
+
+type queryVector struct {
+	done chan struct{}
+	vec  []float32
+	err  error
+}
+
+func embedQuery(text string) ([]float32, error) {
+	queryVectors.Lock()
+	if queryVectors.m == nil || len(queryVectors.m) > 256 {
+		queryVectors.m = map[string]*queryVector{}
+	}
+	q, ok := queryVectors.m[text]
+	if !ok {
+		q = &queryVector{done: make(chan struct{})}
+		queryVectors.m[text] = q
+	}
+	queryVectors.Unlock()
+	if !ok {
+		vectors, err := embedTexts([]string{text})
+		if err == nil {
+			q.vec = vectors[0]
+		}
+		q.err = err
+		close(q.done)
+		if err != nil { // don't keep a failure
+			queryVectors.Lock()
+			delete(queryVectors.m, text)
+			queryVectors.Unlock()
+		}
+	}
+	<-q.done
+	return q.vec, q.err
+}
+
 var semanticState struct {
 	sync.Mutex
 	checked time.Time
@@ -523,7 +565,7 @@ type workHit struct {
 // to areas, a university and a kind ("award" or "paper") when given.
 // universityIDs, when given, limits the search to work at those universities (one, or a country's).
 func searchWork(goal string, areas []string, universityIDs []string, kind string, depth int) ([]workHit, error) {
-	vectors, err := embedTexts([]string{goal})
+	vector, err := embedQuery(goal)
 	if err != nil {
 		return nil, err
 	}
@@ -539,9 +581,11 @@ func searchWork(goal string, areas []string, universityIDs []string, kind string
 		must = append(must, map[string]any{"key": "kind", "match": map[string]any{"value": kind}})
 	}
 	req := map[string]any{
-		"vector":          vectors[0],
-		"limit":           depth,
-		"with_payload":    true,
+		"vector": vector,
+		"limit":  depth,
+		// Only what matching needs: payloads are stored on disk, and the long title and url fields made
+		// a 4,000-hit search take 5.7 s instead of 0.2 s. Titles come from Postgres for the few shown.
+		"with_payload":    []string{"name", "university_id", "year", "kind", "ref"},
 		"score_threshold": semanticMinScore,
 	}
 	if len(must) > 0 {
@@ -559,12 +603,12 @@ func searchWork(goal string, areas []string, universityIDs []string, kind string
 // scorePersonWork rates one professor's work of one kind ("paper", "award") against a goal:
 // ref -> similarity, for every item Qdrant holds for them (no score threshold).
 func scorePersonWork(goal, name, kind string, limit int) (map[string]float64, error) {
-	vectors, err := embedTexts([]string{goal})
+	vector, err := embedQuery(goal)
 	if err != nil {
 		return nil, err
 	}
 	req := map[string]any{
-		"vector":       vectors[0],
+		"vector":       vector,
 		"limit":        limit,
 		"with_payload": []string{"ref"},
 		"filter": map[string]any{"must": []map[string]any{
