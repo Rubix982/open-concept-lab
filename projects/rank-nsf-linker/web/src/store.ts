@@ -35,6 +35,8 @@ export function newLabLabel(funder: string, scheme: string | null): string {
       return "ANR young researcher grant";
     case "ukri":
       return "UKRI new investigator award";
+    case "nserc":
+      return "NSERC Discovery Launch Supplement";
     default:
       return `${funderName(funder)} ${scheme ?? "early-career grant"}`;
   }

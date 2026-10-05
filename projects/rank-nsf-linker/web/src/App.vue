@@ -623,7 +623,7 @@ function removeArea(area: string) {
 
       <footer class="foot">
         Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
-        (NSF, NIH, ARC, Marsden, UKRI, ANR, SNSF, ERC, KAKEN, RGC).
+        (NSF, NIH, NSERC, ARC, Marsden, UKRI, ANR, SNSF, ERC, KAKEN, RGC).
         <button type="button" class="link" @click="about?.showModal()">
           About the data
         </button>
@@ -696,15 +696,16 @@ function removeArea(area: string) {
       </p>
       <p>
         <strong>Grants</strong> come from public records: NSF (US, 2010–2025),
-        NIH (US, active projects), the Australian Research Council, New
-        Zealand's Marsden Fund, UKRI's EPSRC (UK), ANR (France), the Swiss
-        National Science Foundation, the European Research Council (Horizon 2020
-        and Horizon Europe), Japan's KAKEN and Hong Kong's Research Grants
-        Council. Outside the US, only computing-related grants are loaded. A
-        grant is linked to a professor only when the name matches and the
-        university (or, for NSF, the email domain) confirms it. Funding from
-        industry, other agencies and universities isn't included, so "no active
-        grant" doesn't mean "no funding".
+        NIH (US, active projects), Canada's NSERC (2022–2024 payments), the
+        Australian Research Council, New Zealand's Marsden Fund, UKRI's EPSRC
+        (UK), ANR (France), the Swiss National Science Foundation, the European
+        Research Council (Horizon 2020 and Horizon Europe), Japan's KAKEN and
+        Hong Kong's Research Grants Council. Outside the US, only
+        computing-related grants are loaded. A grant is linked to a professor
+        only when the name matches and the university (or, for NSF, the email
+        domain) confirms it. Funding from industry, other agencies and
+        universities isn't included, so "no active grant" doesn't mean "no
+        funding".
       </p>
       <p class="sources">
         Sources: NSF Award Search; Australian Research Council; Royal Society Te
@@ -713,9 +714,12 @@ function removeArea(area: string) {
         Science Foundation; CORDIS, European Commission; ERC lists of principal
         investigators. Japanese grants: created by Advisor Atlas, based on KAKEN
         (NII), with a link to each project. Hong Kong grants: Research Grants
-        Council project records (facts only). Researchers outside computer
-        science and paper abstracts: OpenAlex (CC0). Scholarships: curated, plus
-        the DAAD scholarship database.
+        Council project records (facts only). Canadian grants: NSERC Awards
+        Data; contains information licensed under the Open Government Licence –
+        Canada. Researchers outside computer science, Pakistani universities
+        beyond LUMS, and paper abstracts: OpenAlex (CC0); campus locations ©
+        OpenStreetMap contributors (ODbL). Scholarships: curated, plus the DAAD
+        scholarship database.
       </p>
       <p>
         <strong>Recent papers</strong> come from

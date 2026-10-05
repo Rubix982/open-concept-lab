@@ -82,9 +82,10 @@ WHERE g.university_id IS NULL AND g.profile = f.name;
 -- Signals (NSF programme reference 1045 is CAREER). training: pays PhD students (NIH institutional training grants, NSF Research Traineeships).
 -- new_lab: a PI starting out, with money (NSF CAREER, ERC Starting, ARC DECRA, NIH R00 = the faculty
 -- phase of K99/R00, KAKEN early-career and young-scientist grants, SNSF Ambizione/Eccellenza/PRIMA,
--- ANR JCJC, UKRI new-investigator awards).
+-- ANR JCJC, UKRI new-investigator awards, NSERC Discovery Launch Supplement; NSERC CREATE trains).
 UPDATE explorer_grants SET signal = 'training'
 WHERE (funder = 'nih' AND scheme IN ('T32', 'TL1', 'T90'))
+   OR (funder = 'nserc' AND scheme = 'Collaborative Research and Training Experience')
    OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)']);
 UPDATE explorer_grants SET signal = 'new_lab'
 WHERE signal IS NULL AND (
@@ -96,7 +97,8 @@ WHERE signal IS NULL AND (
    OR (funder = 'kaken' AND (scheme ILIKE '%Early-Career%' OR scheme ILIKE '%Young Scientists%'))
    OR (funder = 'snsf' AND scheme ~* 'ambizione|eccellenza|prima')
    OR (funder = 'anr' AND scheme IN ('JCJC', 'JC'))
-   OR (funder = 'ukri' AND scheme ILIKE '%new investigator%'));
+   OR (funder = 'ukri' AND scheme ILIKE '%new investigator%')
+   OR (funder = 'nserc' AND scheme = 'Discovery Launch Supplement'));
 
 UPDATE explorer_faculty f SET new_lab = x.grant
 FROM (SELECT DISTINCT ON (profile) profile,
