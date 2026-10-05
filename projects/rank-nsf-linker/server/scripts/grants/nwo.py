@@ -4,7 +4,9 @@ Source: the NWOpen API (https://nwopen-api.nwo.nl/NWOpen-API/api/Projects), ever
 funded since 2016, CC0. The API has no discipline field, so all fields are loaded (like NSF and NIH).
 One request a second; each page is cached in data/nwo/, so a rerun fetches only what is missing.
 People: the project leader / main applicant is "PI", other members "CoI"; their organisation is the
-first part of NWO's "University||Faculty||Department" path.
+first two levels of NWO's "University||Faculty||Department" path, as "A | B" (NWO's own institutes,
+such as CWI, sit under "NWO-institutenorganisatie"). Dutch university names are matched to the map's
+English ones through backup/institution_aliases.csv.
 """
 
 import json
@@ -67,7 +69,8 @@ def main() -> None:
                 people.append({"funder": "nwo", "grant_id": pid, "full_name": full, "first_name": first_name,
                                "last_name": last,
                                "role": "PI" if (m.get("role") or "").lower() in LEAD_ROLES else "CoI",
-                               "institution": (m.get("organisation") or "").split("||")[0].strip(),
+                               "institution": " | ".join(x.strip() for x in (m.get("organisation") or "").split("||")[:2]
+                                                         if x.strip()),
                                "orcid": (m.get("orcid") or "")})
         if n % 50 == 0:
             print(f"  page {n}/{pages}")
