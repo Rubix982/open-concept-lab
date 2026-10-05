@@ -15,12 +15,14 @@ TRUNCATE explorer_grants;
 -- "abstract || ''" makes Postgres read the whole value: left() on a compressed value reads only a slice,
 -- which can end inside a multi-byte character ("invalid byte sequence for encoding UTF8").
 INSERT INTO explorer_grants (funder, id, title, snippet, amount, currency, starts, ends, url, country,
-                             lead, institution, profile)
+                             lead, institution, profile, programs)
 SELECT 'nsf', a.id, a.award_title_text, left(NULLIF(a.abstract, '') || '', 400), a.award_amount, 'USD',
        NULLIF(a.award_effective_date, '')::date, NULLIF(a.award_expiry_date, '')::date,
        'https://www.nsf.gov/awardsearch/showAward?AWD_ID=' || a.id, 'us',
-       pi.full_name, NULLIF(a.institution, ''), pi.profile
+       pi.full_name, NULLIF(a.institution, ''), pi.profile, pe.programs
 FROM award a
+LEFT JOIN (SELECT award_id, array_agg(DISTINCT name) AS programs FROM program_element
+           WHERE COALESCE(name, '') <> '' GROUP BY award_id) pe ON pe.award_id = a.id
 LEFT JOIN (
   SELECT DISTINCT ON (r.award_id) r.award_id, i.full_name, f.name AS profile
   FROM award_pi_rel r
@@ -32,9 +34,9 @@ LEFT JOIN (
 WHERE COALESCE(a.award_title_text, '') <> '';
 
 INSERT INTO explorer_grants (funder, id, title, snippet, amount, currency, starts, ends, url, country,
-                             lead, institution, profile)
+                             lead, institution, profile, scheme)
 SELECT g.funder, g.grant_id, g.title, left(NULLIF(g.abstract, '') || '', 400), g.amount, g.currency, g.starts, g.ends,
-       g.url, g.country, p.full_name, p.institution, p.profile
+       g.url, g.country, p.full_name, p.institution, p.profile, NULLIF(g.scheme, '')
 FROM funder_grants g
 LEFT JOIN (
   SELECT DISTINCT ON (fp.funder, fp.grant_id) fp.funder, fp.grant_id, fp.full_name,
@@ -76,6 +78,43 @@ UPDATE explorer_grants g SET university_id = i.id FROM xg_inst i WHERE i.institu
 UPDATE explorer_grants g SET university_id = u.id
 FROM explorer_faculty f JOIN explorer_universities u ON u.name = f.university
 WHERE g.university_id IS NULL AND g.profile = f.name;
+
+-- Signals (NSF programme reference 1045 is CAREER). training: pays PhD students (NIH institutional training grants, NSF Research Traineeships).
+-- new_lab: a PI starting out, with money (NSF CAREER, ERC Starting, ARC DECRA, NIH R00 = the faculty
+-- phase of K99/R00, KAKEN early-career and young-scientist grants, SNSF Ambizione/Eccellenza/PRIMA,
+-- ANR JCJC, UKRI new-investigator awards).
+UPDATE explorer_grants SET signal = 'training'
+WHERE (funder = 'nih' AND scheme IN ('T32', 'TL1', 'T90'))
+   OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)']);
+UPDATE explorer_grants SET signal = 'new_lab'
+WHERE signal IS NULL AND (
+      (funder = 'nsf' AND (title ILIKE 'CAREER:%' OR programs && ARRAY['CAREER: FACULTY EARLY CAR DEV']
+                           OR id IN (SELECT award_id FROM program_reference WHERE code = '1045')))
+   OR (funder = 'erc' AND scheme = 'ERC-STG')
+   OR (funder = 'arc' AND scheme = 'Discovery Early Career Researcher Award')
+   OR (funder = 'nih' AND scheme = 'R00')
+   OR (funder = 'kaken' AND (scheme ILIKE '%Early-Career%' OR scheme ILIKE '%Young Scientists%'))
+   OR (funder = 'snsf' AND scheme ~* 'ambizione|eccellenza|prima')
+   OR (funder = 'anr' AND scheme IN ('JCJC', 'JC'))
+   OR (funder = 'ukri' AND scheme ILIKE '%new investigator%'));
+
+UPDATE explorer_faculty f SET new_lab = x.grant
+FROM (SELECT DISTINCT ON (profile) profile,
+             jsonb_build_object('funder', funder, 'scheme', scheme, 'title', title, 'url', url,
+                                'starts', starts, 'ends', ends) AS grant
+      FROM explorer_grants
+      WHERE signal = 'new_lab' AND ends >= current_date AND profile IS NOT NULL
+      ORDER BY profile, starts DESC) x
+WHERE x.profile = f.name;
+
+UPDATE explorer_universities u SET training = x.grants
+FROM (SELECT university_id, jsonb_agg(jsonb_build_object('funder', funder, 'title', title, 'url', url,
+                                                         'lead', lead, 'profile', profile, 'ends', ends)
+                                      ORDER BY ends DESC) AS grants
+      FROM explorer_grants
+      WHERE signal = 'training' AND ends >= current_date AND university_id IS NOT NULL
+      GROUP BY university_id) x
+WHERE x.university_id = u.id;
 
 UPDATE explorer_grants SET doc =
   setweight(to_tsvector('english', title), 'A') ||
@@ -215,6 +254,27 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		rows.Close()
 	}
 	out["places"] = places
+
+	// NSF programmes funding these grants: names a student can look up for calls and deadlines.
+	type program struct {
+		Name    string `json:"name"`
+		Grants  int    `json:"grants"`
+		Running int    `json:"running"`
+	}
+	programs := []program{}
+	rows, err = tx.Query(`
+		SELECT p, count(*), count(*) FILTER (WHERE running) FROM m, unnest(m.programs) p
+		GROUP BY p ORDER BY count(*) FILTER (WHERE running) DESC, count(*) DESC LIMIT 8`)
+	if err == nil {
+		for rows.Next() {
+			var p program
+			if rows.Scan(&p.Name, &p.Grants, &p.Running) == nil {
+				programs = append(programs, p)
+			}
+		}
+		rows.Close()
+	}
+	out["programs"] = programs
 
 	grants := []landscapeGrant{}
 	rows, err = tx.Query(`

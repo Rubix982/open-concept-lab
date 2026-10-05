@@ -42,6 +42,25 @@ export type UniversityDetail = UniversitySummary & {
     title: string;
     year: number;
   }[];
+  // Running grants that pay PhD students (NIH training grants, NSF Research Traineeships).
+  training?: {
+    funder: string;
+    title: string;
+    url: string | null;
+    lead: string | null;
+    profile: string | null;
+    ends: string | null;
+  }[];
+};
+
+// A running grant for a PI starting out (NSF CAREER, ERC Starting, ARC DECRA, NIH R00, ...).
+export type NewLab = {
+  funder: string;
+  scheme: string | null;
+  title: string;
+  url: string | null;
+  starts: string | null;
+  ends: string | null;
 };
 
 export type Work = {
@@ -78,6 +97,7 @@ export type Faculty = {
   first_year?: number | null; // first top-venue paper (CSRankings faculty)
   orcid?: string | null;
   openalex_id?: string | null;
+  new_lab?: NewLab | null;
 };
 
 export type FundingEntry = {
@@ -177,6 +197,7 @@ export type Landscape = {
     active: number;
     people: number;
   }[];
+  programs: { name: string; grants: number; running: number }[];
   grants: {
     funder: string;
     id: string;

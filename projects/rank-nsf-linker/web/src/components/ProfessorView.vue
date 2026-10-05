@@ -9,7 +9,7 @@ import {
   type SimilarPerson,
 } from "@/api";
 import { LINE_COLOR, formatMoney, formatYear, webUrl } from "@/lines";
-import { areaIndex, funderName, fundersFor } from "@/store";
+import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
 import { countryName } from "@/countries";
 
 const props = defineProps<{ name: string; backLabel: string; goal?: string }>();
@@ -150,7 +150,10 @@ const steps = computed<Step[]>(() => {
   if (leadGrant.value) {
     out.push({
       id: "fund",
-      text: `They lead an active ${funderName(leadGrant.value.funder)} grant until ${untilLabel(leadGrant.value.ends)}. Ask whether it can fund a PhD student:`,
+      text:
+        p.new_lab?.title === leadGrant.value.title
+          ? `They lead this ${newLabLabel(p.new_lab.funder, p.new_lab.scheme)} until ${untilLabel(leadGrant.value.ends)}, a grant for PIs starting out. Ask whether it can fund a PhD student:`
+          : `They lead an active ${funderName(leadGrant.value.funder)} grant until ${untilLabel(leadGrant.value.ends)}. Ask whether it can fund a PhD student:`,
       link: webUrl(leadGrant.value.url) || undefined,
       linkText: leadGrant.value.title,
     });
@@ -170,7 +173,14 @@ const steps = computed<Step[]>(() => {
       text: `There's no grant data for ${countryName(p.country)} here. Ask whether they have a funded PhD position, and look at scholarships for this university.`,
     });
   }
-  if (earlyCareer.value) {
+  if (p.new_lab && p.new_lab.title !== leadGrant.value?.title) {
+    out.push({
+      id: "early",
+      text: `Their ${newLabLabel(p.new_lab.funder, p.new_lab.scheme)} is for PIs starting out. Ask whether it funds a student:`,
+      link: webUrl(p.new_lab.url) || undefined,
+      linkText: p.new_lab.title,
+    });
+  } else if (earlyCareer.value) {
     out.push({
       id: "early",
       text: "They're early in their career: new labs often recruit their first students, and replies tend to be quicker.",
@@ -238,7 +248,13 @@ function untilLabel(date: string | null): string {
         <p v-if="previously.length" class="prev">
           Previously at {{ previously.join(", ") }}
         </p>
-        <p v-if="earlyCareer" class="early">
+        <p v-if="person.new_lab" class="early">
+          New lab, funded:
+          {{ newLabLabel(person.new_lab.funder, person.new_lab.scheme) }},
+          running until {{ untilLabel(person.new_lab.ends) }}. PIs starting out
+          with money like this are usually recruiting their first students.
+        </p>
+        <p v-else-if="earlyCareer" class="early">
           Early career: first top-venue paper in {{ person.first_year }}. Newer
           faculty are often building a lab and looking for students.
         </p>

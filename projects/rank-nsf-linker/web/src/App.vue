@@ -37,6 +37,7 @@ const country = ref(url.get("country") ?? "");
 const onlyFunded = ref(url.get("funded") === "1");
 const onlyEarly = ref(url.get("early") === "1");
 const onlyR1 = ref(url.get("r1") === "1");
+const onlyNewLab = ref(url.get("newlab") === "1");
 type Sort = "" | "recent" | "funding";
 const sortBy = ref<Sort>(
   (["recent", "funding"].includes(url.get("sort") ?? "")
@@ -48,15 +49,22 @@ const filterParams = computed(() => ({
   funded: onlyFunded.value ? 1 : undefined,
   early: onlyEarly.value ? 1 : undefined,
   r1: onlyR1.value ? 1 : undefined,
+  newlab: onlyNewLab.value ? 1 : undefined,
   sort: sortBy.value || undefined,
 }));
 const filtersOn = computed(
   () =>
-    !!(country.value || onlyFunded.value || onlyEarly.value || onlyR1.value),
+    !!(
+      country.value ||
+      onlyFunded.value ||
+      onlyEarly.value ||
+      onlyR1.value ||
+      onlyNewLab.value
+    ),
 );
 function clearFilters() {
   country.value = "";
-  onlyFunded.value = onlyEarly.value = onlyR1.value = false;
+  onlyFunded.value = onlyEarly.value = onlyR1.value = onlyNewLab.value = false;
 }
 
 const query = computed<Query>(() => ({
@@ -242,7 +250,11 @@ const summary = computed(() => {
   // Person-level filters only apply to the faculty list (the university counts aren't filtered by them).
   if (
     tab.value === "faculty" &&
-    (onlyFunded.value || onlyEarly.value || onlyR1.value || country.value)
+    (onlyFunded.value ||
+      onlyEarly.value ||
+      onlyR1.value ||
+      onlyNewLab.value ||
+      country.value)
   ) {
     const f = faculty.value.length;
     return `${f >= 60 ? "60+" : f} ${f === 1 ? "person matches" : "people match"} your filters${goal.value ? ` for “${goal.value}”` : ""}`;
@@ -427,6 +439,12 @@ function removeArea(area: string) {
         >
         <label v-if="tab === 'faculty'" class="check"
           ><input v-model="onlyEarly" type="checkbox" /> Early career</label
+        >
+        <label
+          v-if="tab === 'faculty'"
+          class="check"
+          title="Holds a running grant for PIs starting out: NSF CAREER, ERC Starting, ARC DECRA, NIH R00, ..."
+          ><input v-model="onlyNewLab" type="checkbox" /> New lab, funded</label
         >
         <label v-if="tab !== 'funding'" class="check"
           ><input v-model="onlyR1" type="checkbox" /> R1 (US)</label

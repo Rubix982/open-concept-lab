@@ -124,6 +124,7 @@ type exploreUniversity struct {
 	DoctoralYear          *int            `json:"doctoral_year,omitempty"`
 	Funders               json.RawMessage `json:"funders,omitempty"` // [{funder, people, active_people}]
 	RecentlyFunded        []recentGrant   `json:"recently_funded,omitempty"`
+	Training              json.RawMessage `json:"training,omitempty"` // running grants that pay PhD students (NIH T32, NSF NRT)
 }
 
 // recentGrant is a grant that started recently: its holder is likely to be hiring.
@@ -227,11 +228,11 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 	err = db.QueryRow(`
 		SELECT id, name, city, state, country, latitude, longitude, homepage, carnegie,
 		       grad_tuition_in_state, grad_tuition_out_of_state, grad_enrollment,
-		       faculty_count, funded_faculty, area_faculty, area_funded, doctoral_degrees, doctoral_year, funders
+		       faculty_count, funded_faculty, area_faculty, area_funded, doctoral_degrees, doctoral_year, funders, training
 		FROM explorer_universities WHERE id = $1`, id).Scan(
 		&u.ID, &u.Name, &u.City, &u.State, &u.Country, &u.Latitude, &u.Longitude, &u.Homepage, &u.Carnegie,
 		&u.GradTuitionInState, &u.GradTuitionOutOfState, &u.GradEnrollment,
-		&u.FacultyTotal, &u.FundedTotal, &areaFaculty, &areaFunded, &u.DoctoralDegrees, &u.DoctoralYear, &funders)
+		&u.FacultyTotal, &u.FundedTotal, &areaFaculty, &areaFunded, &u.DoctoralDegrees, &u.DoctoralYear, &funders, &u.Training)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "university not found", nil)
 		return
@@ -282,6 +283,7 @@ type exploreFaculty struct {
 	FirstYear     *int            `json:"first_year"`            // first top-venue paper (CSRankings faculty)
 	Orcid         *string         `json:"orcid"`
 	OpenalexID    *string         `json:"openalex_id"`
+	NewLab        json.RawMessage `json:"new_lab,omitempty"` // a running starting-PI grant (NSF CAREER, ERC Starting, ...)
 	GoalScore     *float64        `json:"goal_score,omitempty"`
 	Match         *exploreWork    `json:"match,omitempty"` // the professor's award or paper closest to the goal
 }
@@ -342,7 +344,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 			ORDER BY d.name, score DESC, d.year DESC NULLS LAST
 		)
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id,
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id, f.new_lab,
 		       best.score, best.kind, best.ref, best.title, best.year, best.url
 		FROM explorer_faculty f
 		CROSS JOIN goal
@@ -352,8 +354,8 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		  AND ($3 = '' OR u.id = $3)
 		  AND (goal.q IS NULL OR best.name IS NOT NULL)
 		  AND `+filt.sql(5)+`
-		ORDER BY CASE $9 WHEN 'recent' THEN f.recent_pubs END DESC NULLS LAST,
-		         CASE $9 WHEN 'funding' THEN f.last_award_date END DESC NULLS LAST,
+		ORDER BY CASE $10 WHEN 'recent' THEN f.recent_pubs END DESC NULLS LAST,
+		         CASE $10 WHEN 'funding' THEN f.last_award_date END DESC NULLS LAST,
 		         best.score DESC NULLS LAST, (f.active_awards > 0) DESC,
 		         (SELECT COALESCE(sum((f.area_pubs ->> a)::real), 0) FROM unnest($1::text[]) a) DESC,
 		         f.recent_pubs DESC
@@ -367,16 +369,16 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 	faculty := []exploreFaculty{}
 	for rows.Next() {
 		var f exploreFaculty
-		var areaPubs, funding, latest []byte
+		var areaPubs, funding, latest, newLab []byte
 		var match exploreWork
 		var matchRef *string
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID,
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID, &newLab,
 			&f.GoalScore, &match.Kind, &matchRef, &match.Title, &match.Year, &match.URL); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read faculty", err)
 			return
 		}
-		f.AreaPubs, f.Funding, f.LatestWork = areaPubs, funding, latest
+		f.AreaPubs, f.Funding, f.LatestWork, f.NewLab = areaPubs, funding, latest, newLab
 		if match.Title != nil {
 			if match.Kind != nil && *match.Kind == "award" && matchRef != nil {
 				funder := funderOfRef(*matchRef)
@@ -400,6 +402,7 @@ type facultyFilter struct {
 	Funded  bool
 	Early   bool
 	R1      bool
+	NewLab  bool
 	Sort    string
 }
 
@@ -410,20 +413,22 @@ func facultyFilterParams(r *http.Request) facultyFilter {
 		Funded:  v.Get("funded") == "1",
 		Early:   v.Get("early") == "1",
 		R1:      v.Get("r1") == "1",
+		NewLab:  v.Get("newlab") == "1",
 		Sort:    v.Get("sort"),
 	}
 }
 
-// sql is the filter over explorer_faculty f and explorer_universities u, its four values bound as
-// $first..$first+3 (see args).
+// sql is the filter over explorer_faculty f and explorer_universities u, its five values bound as
+// $first..$first+4 (see args).
 func (ff facultyFilter) sql(first int) string {
 	return fmt.Sprintf(`($%[1]d = '' OR u.country = $%[1]d)
 		  AND (NOT $%[2]d OR f.active_awards > 0)
 		  AND (NOT $%[3]d OR f.first_year >= extract(year FROM current_date)::int - 6)
-		  AND (NOT $%[4]d OR u.carnegie = 'R1')`, first, first+1, first+2, first+3)
+		  AND (NOT $%[4]d OR u.carnegie = 'R1')
+		  AND (NOT $%[5]d OR f.new_lab IS NOT NULL)`, first, first+1, first+2, first+3, first+4)
 }
 
-func (ff facultyFilter) args() []any { return []any{ff.Country, ff.Funded, ff.Early, ff.R1} }
+func (ff facultyFilter) args() []any { return []any{ff.Country, ff.Funded, ff.Early, ff.R1, ff.NewLab} }
 
 // facultyForMatches loads the explorer rows for the best semantic matches that pass the filter,
 // keeping their order (or re-sorting when the filter asks for it).
@@ -434,7 +439,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int, filt facu
 	}
 	rows, err := db.Query(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id, f.new_lab
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = ANY($1) AND `+filt.sql(2), append([]any{pq.Array(names)}, filt.args()...)...)
 	if err != nil {
@@ -445,12 +450,12 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int, filt facu
 	byName := map[string]exploreFaculty{}
 	for rows.Next() {
 		var f exploreFaculty
-		var areaPubs, funding, latest []byte
+		var areaPubs, funding, latest, newLab []byte
 		if err := rows.Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID, pq.Array(&f.Areas),
-			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID); err != nil {
+			&areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID, &newLab); err != nil {
 			return nil, err
 		}
-		f.AreaPubs, f.Funding, f.LatestWork = areaPubs, funding, latest
+		f.AreaPubs, f.Funding, f.LatestWork, f.NewLab = areaPubs, funding, latest, newLab
 		byName[f.Name] = f
 	}
 	if err := rows.Err(); err != nil {
@@ -526,13 +531,13 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 
 	var f exploreFaculty
-	var areaPubs, funding, latest []byte
+	var areaPubs, funding, latest, newLab []byte
 	err = db.QueryRow(`
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
-		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id
+		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id, f.new_lab
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
 		WHERE f.name = $1`, name).Scan(&f.Name, &f.University, &f.UniversityID, &f.Country, &f.Homepage, &f.ScholarID,
-		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID)
+		pq.Array(&f.Areas), &areaPubs, &f.RecentPubs, &f.ActiveAwards, &f.TotalAwards, &f.ActiveFunding, &f.LastAward, &funding, &f.Source, &latest, &f.FirstYear, &f.Orcid, &f.OpenalexID, &newLab)
 	if err == sql.ErrNoRows {
 		writeError(w, r, http.StatusNotFound, "professor not found", nil)
 		return
@@ -541,7 +546,7 @@ func getExplorerFacultyProfile(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "failed to load professor", err)
 		return
 	}
-	f.AreaPubs, f.Funding, f.LatestWork = areaPubs, funding, latest
+	f.AreaPubs, f.Funding, f.LatestWork, f.NewLab = areaPubs, funding, latest, newLab
 
 	rows, err := db.Query(`
 		SELECT DISTINCT ON (a.id) a.id, a.award_title_text, COALESCE(a.award_amount, 0),

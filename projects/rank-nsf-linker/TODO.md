@@ -241,7 +241,7 @@ what the API returns and the pages render. The data is far richer than the pages
 4. [x] Funding landscape (asked 2026-10-05): ~90% of active grant money (NIH 64,515 active grants, KAKEN,
    ANR, ERC, …) isn't linked to anyone on the map, and the Grants tab only searches linked grants. For a search:
    money by funder, grants started per year, universities receiving it, the grants with PI and institution
-4b. Second visibility audit (asked 2026-10-05): data we hold but don't surface, and calm exploration:
+4b. [x] Second visibility audit (design note below; building G1–G6, G7 waits for Saif) (asked 2026-10-05): data we hold but don't surface, and calm exploration:
    browse without a search, progressive disclosure, no walls of numbers. Write up as a design note with
    action items; build the clearly safe ones
 5. C4 scholarships: level filter and deadline view
@@ -250,6 +250,39 @@ what the API returns and the pages render. The data is far richer than the pages
 8. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
 9. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
 Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
+
+### Design note: calm exploration (second visibility audit, 2026-10-05)
+The data answers more questions than the screens ask. The aim is to show more of it without
+walls of numbers.
+
+Principles
+- One question per view: the map says where, Faculty says who, Funding says where the money goes, a
+  profile says whether to write. A view that tries to answer two questions answers neither.
+- A sentence first, numbers second. Lists open at 5–8 rows; the rest is one click away.
+- Signals, not statistics: turn a table into one short tag a student acts on ("new lab, funded",
+  "funded PhD programme"). A tag is earned only when it changes what the student does next.
+- Browsing must work without knowing the right words: example searches and topics to start from.
+- Say plainly what's missing (no grant data for a country, NIH running projects only) where it matters,
+  once, not on every row.
+- Leave out what doesn't help a PhD applicant, on purpose: IPEDS undergraduate admissions, graduation
+  rates, faculty salaries, libraries and finances are loaded but stay off the screen.
+
+What we hold and don't show (by value to a student)
+- [x] G1 Hiring signals from grant schemes: a new PI with money. NSF CAREER (12,310 via programme reference 1045; 3,320 running), ERC
+      Starting (794), ARC DECRA (194), NIH K99/R00 (2,419), KAKEN early-career (3,071). Tag on faculty
+      rows and profiles; "Starting a lab" filter
+- [x] G2 Funded PhD programmes: NIH T32 training grants (1,821), NSF Research Traineeships (400, 96
+      running). These pay PhD students directly. "Funded PhD programmes here" on the university panel
+- [x] G3 NSF programme names (248k rows: "Robust Intelligence", "Secure & Trustworthy Cyberspace"):
+      "Programmes that fund this" in the Funding tab, the program on each NSF grant
+- [ ] G4 Funding on the map: in the Funding tab, size dots by running grants on the search, not faculty
+- [ ] G5 Starting points without a search: a few example searches under the intro; topic chips
+- [ ] G6 Country summary when a country is chosen: one paragraph (universities, people, which funders
+      are covered, scholarships)
+- [ ] G7 (decision for Saif) Grants and Funding tabs overlap: Funding lists every grant, Grants only
+      those linked to people. Recommend folding Grants into Funding: three tabs instead of four
+- Deferred: research-area trends per university over time (professor_areas by year): noisy at small
+  counts, easy to over-read
 
 ### C. Student use cases not served yet
 - [ ] Filters: country / region, "has an active grant", early-career, R1; sort by recent activity or funding

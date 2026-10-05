@@ -53,6 +53,12 @@ const funders = computed(
 const maxFunder = computed(() =>
   Math.max(1, ...(data.value?.funders ?? []).map((f) => f.grants)),
 );
+// CAREER is a signal (see "New lab, funded"), not a topic programme.
+const programs = computed(() =>
+  (data.value?.programs ?? [])
+    .filter((p) => !p.name.startsWith("CAREER"))
+    .slice(0, 5),
+);
 const places = computed(
   () =>
     (showAllPlaces.value
@@ -162,6 +168,23 @@ function years(g: Landscape["grants"][number]) {
               : `All ${data.funders.length} funders`
           }}
         </button>
+      </section>
+
+      <section v-if="programs.length">
+        <h3>NSF programmes that fund this</h3>
+        <p class="hint">
+          As NSF names them. Search a name on nsf.gov for its current call and
+          deadlines.
+        </p>
+        <ul class="programs">
+          <li v-for="p in programs" :key="p.name">
+            <span>{{ p.name }}</span>
+            <span class="sub"
+              >{{ p.grants }} {{ p.grants === 1 ? "grant" : "grants" }},
+              {{ p.running }} running</span
+            >
+          </li>
+        </ul>
       </section>
 
       <section v-if="trend.length">
@@ -397,6 +420,21 @@ h3 {
   font-size: var(--t-xs);
   color: var(--ink-faint);
   margin-top: 4px;
+}
+
+.programs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.programs li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: var(--t-sm);
+  border-bottom: 1px solid var(--rule);
 }
 
 .places li {

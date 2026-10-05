@@ -18,3 +18,11 @@ CREATE TABLE IF NOT EXISTS explorer_grants (
   PRIMARY KEY (funder, id)
 );
 CREATE INDEX IF NOT EXISTS explorer_grants_doc_idx ON explorer_grants USING gin (doc);
+
+-- Signals a student can act on (see landscape.go): 'training' (a grant that pays PhD students: NIH T32,
+-- NSF Research Traineeship) and 'new_lab' (a starting PI with money: NSF CAREER, ERC Starting, ...).
+ALTER TABLE explorer_grants ADD COLUMN IF NOT EXISTS scheme TEXT;
+ALTER TABLE explorer_grants ADD COLUMN IF NOT EXISTS programs TEXT[];   -- NSF programme names
+ALTER TABLE explorer_grants ADD COLUMN IF NOT EXISTS signal TEXT;
+ALTER TABLE explorer_faculty ADD COLUMN IF NOT EXISTS new_lab JSONB;    -- their newest running 'new_lab' grant
+ALTER TABLE explorer_universities ADD COLUMN IF NOT EXISTS training JSONB; -- running 'training' grants
