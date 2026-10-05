@@ -164,6 +164,22 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - 646,857 searchable items (76,472 grants, 570,385 papers; 290,485 papers with abstracts). Qdrant 1.12.6: 537 MB.
 - Known data caveat: OpenAlex affiliations are sometimes stale (a researcher can show at a previous university).
 
+## Next: the pipeline fetches everything (agreed 2026-10-05, after subfields)
+Today only CSRankings, NSF and IPEDS are fetched by the pipeline; everything else is fetched by hand
+and only loaded. On a fresh pod those steps skip or fail. Goal: the pipeline fetches, extracts and
+loads every source it serves, and heals itself.
+- [ ] Separate fetcher container (Python, the existing scripts); the pipeline runs one fetch step per
+      source before the load steps
+- [ ] Sources to move in: the 11 grant importers (scripts/grants, incl. ERC Horizon Europe PDFs listed
+      in data/erc_he/sources.txt), DBLP dump, OpenAlex works.py / fields.py / extra_universities.py
+      (and the universities.csv export it needs, done from the database inside the step), DAAD
+      scholarships, geocoding caches, coordinate checks
+- [ ] Each fetch: skip when fresh (age threshold per source), resume from its cache, retry next run
+      on failure; never replace good data with a partial result
+- [ ] Limits inside the pipeline: OpenAlex 10k calls/day (a fetch can span days: finish later, don't
+      fail), NIH / RGC / KAKEN ~1 request/s; API keys from the server environment only
+- [ ] Serving keeps the last good data while a fetch runs; a fresh pod with empty data/ ends up complete
+
 ## Parked after v1 (2026-10-04)
 - [x] v1 finish: UKRI loaded, go-server + web deployed, screenshots checked (US, UK, CH, AU)
 - [x] Shared links (?u=...) open the map on that university instead of the US
