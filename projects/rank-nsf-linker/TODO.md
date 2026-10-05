@@ -235,7 +235,7 @@ what the API returns and the pages render. The data is far richer than the pages
       CTOTALT from the all-programs rows, research doctorates only
 
 ### Unattended run, 2026-10-05 (work order; each step committed and pushed on its own)
-1. Finish B: load the OpenAlex researcher abstracts when `fields.py works` ends; pipeline from step 13; verify
+1. [x] Finish B: load the OpenAlex researcher abstracts when `fields.py works` ends; pipeline from step 13; verify
 2. [x] C1 filters + sort on search results and university lists (+ 17 misplaced universities fixed)
 3. [x] C3 "Before you write" checklist on a profile
 4. [x] Funding landscape (asked 2026-10-05): ~90% of active grant money (NIH 64,515 active grants, KAKEN,
@@ -251,7 +251,7 @@ what the API returns and the pages render. The data is far richer than the pages
 8. [x] D1 NSERC (Canada, Open Government Licence): 4,029 computing grants FY2022–2024
    [x] D2 NWO (Netherlands, CC0, NWOpen API): all projects since 2016. SweCRIS left out: no published
    reuse terms found (revisit if the Swedish Research Council publishes a licence)
-9. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
+9. Loose ends: [x] MIT, Caltech, RIT, AFIT linked to IPEDS; [ ] semantic index in RAM (quantization) once embedding finishes
 Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
 
 ### Design note: calm exploration (second visibility audit, 2026-10-05)
@@ -288,15 +288,15 @@ What we hold and don't show (by value to a student)
   counts, easy to over-read
 
 ### C. Student use cases not served yet
-- [ ] Filters: country / region, "has an active grant", early-career, R1; sort by recent activity or funding
-- [ ] Shortlist and compare (kept in the browser): save professors and universities, compare side by side
-- [ ] "Before you write" checklist on a profile: their newest relevant paper, active grants, overlap with your goal
+- [x] Filters: country / region, "has an active grant", early-career, R1; sort by recent activity or funding
+- [x] Shortlist and compare (kept in the browser): save professors and universities, compare side by side
+- [x] "Before you write" checklist on a profile: their newest relevant paper, active grants, overlap with your goal
       (no email sending)
-- [ ] Scholarships: filter by level (master's / PhD), deadlines view
-- [ ] Pakistan: LUMS and other Pakistani faculty are in the data; a "study in Pakistan first" path (MS + HEC)
+- [x] Scholarships: filter by level (master's / PhD), deadlines view
+- [x] Pakistan: LUMS and other Pakistani faculty are in the data; a "study in Pakistan first" path (MS + HEC)
 
 ### D. Coverage gaps worth closing (by students affected)
-- [ ] Canada: 791 CS faculty, 3% with grant data. NSERC awards are open data (open.canada.ca)
-- [ ] Sweden (SweCRIS API, open), Netherlands (NWO project database): check terms
+- [x] Canada: 791 CS faculty, 3% with grant data (now 73%, NSERC). NSERC awards are open data (open.canada.ca)
+- [x] Sweden (SweCRIS API, open), Netherlands (NWO project database): check terms (NWO loaded, CC0; SweCRIS: no published terms)
 - [ ] China, Korea, India, Singapore, Brazil, Taiwan: no usable national grant data (see Known limitations)
 
