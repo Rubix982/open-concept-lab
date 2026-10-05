@@ -13,6 +13,13 @@ This system helps prospective students, collaborators, or researchers **identify
 - [Debugging](#debugging)
   - [http: server gave HTTP response to HTTPS client](#http-server-gave-http-response-to-https-client)
 
+## Guided tour
+
+The app (http://localhost:3000) has a guided tour: **Tour** in the header, or open
+http://localhost:3000/?tour=1 to start it straight away (handy for recording a walkthrough). It runs a
+real search ("robot learning") and walks through results, filters, a profile, the Funding tab and a
+university, ten steps; Esc leaves it.
+
 ## 🧭 Use Cases
 
 | Use-Case                                      | Description                                                                                                                                          |

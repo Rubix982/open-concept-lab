@@ -19,6 +19,14 @@ import (
 // many more of them, and each paper is a vector in the semantic index).
 const openAlexMaxWorksPerPerson = 10
 
+// notAPaper matches OpenAlex "works" that are front matter or data deposits, not papers: they
+// crowded out real papers in search ("Data for EMSL Project 50414 from April 2021" topped
+// "robot learning"). The cached responses don't carry OpenAlex's work type, so titles decide.
+const notAPaper = `^\s*(contributors|list of contributors|introduction|preface|foreword|editorial|erratum|corrigendum|` +
+	`references|index|front matter|back matter|contents|table of contents|acknowledg(e)?ments|author index|` +
+	`title page|cover|copyright)\s*\.?\s*$` +
+	`|^data for |^dataset\y|subset for:|^supplementary (data|material|information)|^(erratum|correction|retraction)( to|:)`
+
 var (
 	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index"}
 	fieldsWorksColumns  = []string{"openalex_id", "work_id", "title", "year", "venue", "doi", "abstract"}
@@ -137,9 +145,9 @@ func loadOpenAlexResearcherWorks(mainCtx *colly.Context) error {
 		  FROM oa_works w
 		  JOIN oa_people p ON p.openalex_id = w.openalex_id
 		  JOIN professors pr ON pr.name = p.name AND pr.source = 'openalex'
-		  WHERE w.title <> '' AND w.year ~ '^[0-9]{4}$'
+		  WHERE w.title <> '' AND w.year ~ '^[0-9]{4}$' AND w.title !~* $1
 		) x WHERE n <= %d
-		ON CONFLICT DO NOTHING`, openAlexMaxWorksPerPerson))
+		ON CONFLICT DO NOTHING`, openAlexMaxWorksPerPerson), notAPaper)
 	if err != nil {
 		return fmt.Errorf("failed to load OpenAlex researcher works: %w", err)
 	}

@@ -33,7 +33,7 @@ async function open() {
     }),
   );
 }
-defineExpose({ open });
+defineExpose({ open, close: () => dialog.value?.close() });
 
 const thisYear = new Date().getFullYear();
 // From the precomputed funding summary (as on faculty rows), so it reads the same everywhere.

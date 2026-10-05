@@ -14,6 +14,7 @@ import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import FundingView from "@/components/FundingView.vue";
 import ShortlistDialog from "@/components/ShortlistDialog.vue";
+import TourGuide, { type TourStep } from "@/components/TourGuide.vue";
 import { saved } from "@/shortlist";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
@@ -357,6 +358,107 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
 );
 
 const about = ref<HTMLDialogElement | null>(null);
+
+// ---- guided tour (?tour=1 starts it, e.g. from a shared link or for a recording) ----
+const touring = ref(url.get("tour") === "1");
+const TOUR_GOAL = "robot learning";
+const TOUR_UNIVERSITY = "universitymichigan";
+async function until(ok: () => boolean, ms = 12000) {
+  const end = Date.now() + ms;
+  while (!ok() && Date.now() < end)
+    await new Promise((r) => setTimeout(r, 150));
+}
+async function tourSearch() {
+  pickerOpen.value = false;
+  clearFilters();
+  selectedAreas.value = [];
+  if (goal.value !== TOUR_GOAL) trySearch(TOUR_GOAL);
+  openUniversity(null);
+  tab.value = "faculty";
+  await until(
+    () =>
+      !loading.value && goal.value === TOUR_GOAL && faculty.value.length > 0,
+  );
+}
+const tourSteps: TourStep[] = [
+  {
+    title: "Find a PhD advisor, step by step",
+    body: "Advisor Atlas shows who is researching what you want to study, how their work is funded, and where they are. This short tour uses a real search; you can leave at any time with Esc.",
+  },
+  {
+    target: ".search",
+    title: "Say what you want to research",
+    body: `Type it in your own words: a topic, a method, a problem. The tour searches for “${TOUR_GOAL}”.`,
+    before: () => {
+      openUniversity(null);
+      goalInput.value = TOUR_GOAL;
+    },
+  },
+  {
+    target: ".fac-list",
+    title: "People working on it",
+    body: "Faculty and researchers whose recent papers and grants are closest in meaning to your search, newest work first. “New lab, funded” marks someone starting a lab with money: they are usually recruiting students.",
+    before: tourSearch,
+  },
+  {
+    target: ".narrow",
+    title: "Narrow it down",
+    body: "Choose a country, or show only people with an active grant, early in their career, or starting a funded lab. Sort by recent papers or newest grant.",
+    before: tourSearch,
+  },
+  {
+    target: ".prof",
+    title: "A professor's page",
+    body: "What they are working on now, their papers closest to your search, their grants and who they work with. Names link to other profiles.",
+    before: async () => {
+      await tourSearch();
+      const first = faculty.value[0];
+      if (first) openProfessorFromList(first.name, first.university_id);
+    },
+  },
+  {
+    target: ".prof .before",
+    title: "Before you write",
+    body: "Which paper to read first, how their work fits yours, and what to ask about funding. Tick the items as you go; the ticks stay in your browser.",
+  },
+  {
+    target: ".prof .save",
+    title: "Save to your list",
+    body: "Keep professors and universities to compare side by side later, in “Your list” at the top.",
+  },
+  {
+    target: ".funding",
+    title: "Where the money goes",
+    body: "Who pays for this topic, whether it is growing, and which universities hold the grants, counting every grant loaded, even those of researchers not on the map. The map's dots now show money, not people.",
+    before: async () => {
+      await tourSearch();
+      tab.value = "funding";
+    },
+  },
+  {
+    target: ".drawer-slot",
+    title: "A university",
+    body: "Its research strengths, PhDs awarded (US), who funds its faculty, funded PhD programmes that pay students directly, and scholarships you can apply for.",
+    before: () => {
+      tab.value = "universities";
+      openUniversity(TOUR_UNIVERSITY);
+    },
+  },
+  {
+    target: ".your-list",
+    title: "Over to you",
+    body: "Try your own search. Your saved professors and universities are under “Your list”, and the tour is always under “Tour”.",
+    before: () => openUniversity(null),
+  },
+];
+function startTour() {
+  shortlist.value?.close();
+  about.value?.close();
+  touring.value = true;
+}
+function endTour() {
+  touring.value = false;
+}
 const shortlist = ref<InstanceType<typeof ShortlistDialog> | null>(null);
 const pickerOpen = ref(false);
 
@@ -383,6 +485,7 @@ function removeArea(area: string) {
         />
         <button type="submit">Search</button>
       </form>
+      <button type="button" class="tour-btn" @click="startTour">Tour</button>
       <button type="button" class="your-list" @click="shortlist?.open()">
         Your list<template v-if="saved.length"> ({{ saved.length }})</template>
       </button>
@@ -458,6 +561,9 @@ function removeArea(area: string) {
           Search for what you want to research to find professors working on it,
           the grants funding that work, and the universities where they are.
           Narrow by research area at any time.
+          <button type="button" class="link" @click="startTour">
+            Take the tour
+          </button>
         </p>
         <p class="examples">
           <span>Try:</span>
@@ -667,6 +773,8 @@ function removeArea(area: string) {
       @open-professor="openProf = $event"
     />
 
+    <TourGuide v-if="touring" :steps="tourSteps" @end="endTour" />
+
     <ShortlistDialog
       ref="shortlist"
       @open-person="openProfessorFromList"
@@ -792,8 +900,20 @@ h1 {
   padding: 0 18px;
 }
 
-.your-list {
+.tour-btn {
   margin-left: auto;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--t-xs);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.your-list {
   border: 1.5px solid #8794a3;
   border-radius: 999px;
   background: transparent;
