@@ -20,7 +20,8 @@ let hover: mapboxgl.Popup | null = null;
 const ready = ref(false);
 
 function features(): GeoJSON.FeatureCollection {
-  const weightOf = (u: UniversitySummary) => (props.useGoal ? u.goal_matches : u.faculty);
+  const weightOf = (u: UniversitySummary) =>
+    props.useGoal ? u.goal_matches : u.faculty;
   const max = Math.max(1, ...props.universities.map(weightOf));
   return {
     type: "FeatureCollection",
@@ -31,7 +32,10 @@ function features(): GeoJSON.FeatureCollection {
         return {
           type: "Feature" as const,
           id: u.id,
-          geometry: { type: "Point" as const, coordinates: [u.longitude!, u.latitude!] },
+          geometry: {
+            type: "Point" as const,
+            coordinates: [u.longitude!, u.latitude!],
+          },
           properties: {
             id: u.id,
             name: u.name,
@@ -64,7 +68,10 @@ onMounted(() => {
   map = new mapboxgl.Map({
     container: container.value!,
     style: "mapbox://styles/mapbox/light-v11",
-    bounds: [[-125, 24.5], [-66.5, 49.5]], // contiguous US, where NSF and IPEDS data apply
+    bounds: [
+      [-125, 24.5],
+      [-66.5, 49.5],
+    ], // contiguous US, where NSF and IPEDS data apply
     fitBoundsOptions: { padding: 24 },
     minZoom: 1.5,
     attributionControl: false,
@@ -75,8 +82,14 @@ onMounted(() => {
   if (start?.latitude != null && start.longitude != null) {
     map.jumpTo({ center: [start.longitude, start.latitude], zoom: 5 });
   }
-  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
-  map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-left");
+  map.addControl(
+    new mapboxgl.NavigationControl({ showCompass: false }),
+    "bottom-right",
+  );
+  map.addControl(
+    new mapboxgl.AttributionControl({ compact: true }),
+    "bottom-left",
+  );
 
   map.on("load", () => {
     map!.addSource("unis", { type: "geojson", data: features() });
@@ -85,13 +98,32 @@ onMounted(() => {
       type: "circle",
       source: "unis",
       paint: {
-        "circle-radius": ["case", [">", ["get", "weight"], 0], ["+", 3.5, ["*", 13, ["get", "size"]]], 2.5],
+        "circle-radius": [
+          "case",
+          [">", ["get", "weight"], 0],
+          ["+", 3.5, ["*", 13, ["get", "size"]]],
+          2.5,
+        ],
         "circle-color": props.color,
         "circle-opacity": ["case", [">", ["get", "weight"], 0], 0.82, 0.07],
         "circle-stroke-opacity": ["case", [">", ["get", "weight"], 0], 1, 0.15],
         // R1 universities carry a heavy ink ring.
-        "circle-stroke-color": ["case", ["get", "selected"], "#ffffff", ["get", "r1"], "#1D2A3A", "#ffffff"],
-        "circle-stroke-width": ["case", ["get", "selected"], 4, ["get", "r1"], 2.2, 1],
+        "circle-stroke-color": [
+          "case",
+          ["get", "selected"],
+          "#ffffff",
+          ["get", "r1"],
+          "#1D2A3A",
+          "#ffffff",
+        ],
+        "circle-stroke-width": [
+          "case",
+          ["get", "selected"],
+          4,
+          ["get", "r1"],
+          2.2,
+          1,
+        ],
       },
     });
     ready.value = true;
@@ -114,7 +146,11 @@ onMounted(() => {
         : `${p.faculty} faculty in your areas; no grant data for this country yet`;
     el.append(name, line);
     hover?.remove();
-    hover = new mapboxgl.Popup({ closeButton: false, offset: 12, className: "uni-tip" })
+    hover = new mapboxgl.Popup({
+      closeButton: false,
+      offset: 12,
+      className: "uni-tip",
+    })
       .setLngLat((f.geometry as GeoJSON.Point).coordinates as [number, number])
       .setDOMContent(el)
       .addTo(map!);
@@ -129,25 +165,36 @@ onMounted(() => {
   });
 });
 
-watch(() => [props.universities, props.color, props.useGoal, props.selectedId], paint);
+watch(
+  () => [props.universities, props.color, props.useGoal, props.selectedId],
+  paint,
+);
 
 // A new search: fit the map to the universities with matches.
 let lastFocus = "";
-watch(
-  () => props.focus,
-  (f) => {
-    if (!map || !f || !f.key || !f.ids.length || f.key === lastFocus) return;
-    lastFocus = f.key;
-    const pts = props.universities.filter(
-      (u) => f.ids.includes(u.id) && u.latitude != null && u.longitude != null,
-    );
-    if (!pts.length) return;
-    const b = new mapboxgl.LngLatBounds();
-    pts.forEach((u) => b.extend([u.longitude!, u.latitude!]));
-    map.fitBounds(b, { padding: 60, maxZoom: 7, duration: 700 });
-  },
-  { deep: true },
-);
+// Also called once the map has loaded: a shared link (?q=… or ?country=…) sets the focus before that.
+function applyFocus() {
+  const f = props.focus;
+  if (
+    !map ||
+    !ready.value ||
+    !f ||
+    !f.key ||
+    !f.ids.length ||
+    f.key === lastFocus
+  )
+    return;
+  lastFocus = f.key;
+  const pts = props.universities.filter(
+    (u) => f.ids.includes(u.id) && u.latitude != null && u.longitude != null,
+  );
+  if (!pts.length) return;
+  const b = new mapboxgl.LngLatBounds();
+  pts.forEach((u) => b.extend([u.longitude!, u.latitude!]));
+  map.fitBounds(b, { padding: 60, maxZoom: 7, duration: 700 });
+}
+watch(() => props.focus, applyFocus, { deep: true });
+watch(ready, applyFocus);
 
 // Fly to a university chosen from a list.
 watch(
@@ -155,7 +202,11 @@ watch(
   (id) => {
     const u = props.universities.find((x) => x.id === id);
     if (map && u?.latitude != null && u.longitude != null) {
-      map.easeTo({ center: [u.longitude, u.latitude], zoom: Math.max(map.getZoom(), 5), duration: 600 });
+      map.easeTo({
+        center: [u.longitude, u.latitude],
+        zoom: Math.max(map.getZoom(), 5),
+        duration: 600,
+      });
     }
   },
 );
@@ -164,7 +215,12 @@ onBeforeUnmount(() => map?.remove());
 </script>
 
 <template>
-  <div ref="container" class="map" role="region" aria-label="Map of universities"></div>
+  <div
+    ref="container"
+    class="map"
+    role="region"
+    aria-label="Map of universities"
+  ></div>
 </template>
 
 <style scoped>

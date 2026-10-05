@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
+import {
+  api,
+  type Faculty,
+  type Grant,
+  type Query,
+  type UniversitySummary,
+} from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
 import { areaIndex, areas, funders, fundersFor } from "@/store";
+import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import GrantRow from "@/components/GrantRow.vue";
@@ -11,23 +18,60 @@ import UniversityDrawer from "@/components/UniversityDrawer.vue";
 
 // ---- state, mirrored in the URL so a search can be shared ----
 const url = new URLSearchParams(location.search);
-const selectedAreas = ref<string[]>(url.get("areas")?.split(",").filter(Boolean) ?? []);
+const selectedAreas = ref<string[]>(
+  url.get("areas")?.split(",").filter(Boolean) ?? [],
+);
 const goalInput = ref(url.get("q") ?? "");
 const goal = ref(goalInput.value);
 type Tab = "universities" | "faculty" | "grants";
-const tab = ref<Tab>((["faculty", "grants"].includes(url.get("view") ?? "") ? url.get("view") : "universities") as Tab);
+const tab = ref<Tab>(
+  (["faculty", "grants"].includes(url.get("view") ?? "")
+    ? url.get("view")
+    : "universities") as Tab,
+);
 const openUni = ref<string | null>(url.get("u"));
 const openProf = ref<string | null>(url.get("p"));
+// Narrowing filters, also in the URL.
+const country = ref(url.get("country") ?? "");
+const onlyFunded = ref(url.get("funded") === "1");
+const onlyEarly = ref(url.get("early") === "1");
+const onlyR1 = ref(url.get("r1") === "1");
+type Sort = "" | "recent" | "funding";
+const sortBy = ref<Sort>(
+  (["recent", "funding"].includes(url.get("sort") ?? "")
+    ? url.get("sort")
+    : "") as Sort,
+);
+const filterParams = computed(() => ({
+  country: country.value || undefined,
+  funded: onlyFunded.value ? 1 : undefined,
+  early: onlyEarly.value ? 1 : undefined,
+  r1: onlyR1.value ? 1 : undefined,
+  sort: sortBy.value || undefined,
+}));
+const filtersOn = computed(
+  () =>
+    !!(country.value || onlyFunded.value || onlyEarly.value || onlyR1.value),
+);
+function clearFilters() {
+  country.value = "";
+  onlyFunded.value = onlyEarly.value = onlyR1.value = false;
+}
 
-const query = computed<Query>(() => ({ areas: selectedAreas.value, goal: goal.value }));
+const query = computed<Query>(() => ({
+  areas: selectedAreas.value,
+  goal: goal.value,
+}));
 
-watch([selectedAreas, goal, tab, openUni, openProf], () => {
+watch([selectedAreas, goal, tab, openUni, openProf, filterParams], () => {
   const p = new URLSearchParams();
   if (selectedAreas.value.length) p.set("areas", selectedAreas.value.join(","));
   if (goal.value) p.set("q", goal.value);
   if (tab.value !== "universities") p.set("view", tab.value);
   if (openUni.value) p.set("u", openUni.value);
   if (openProf.value) p.set("p", openProf.value);
+  for (const [k, v] of Object.entries(filterParams.value))
+    if (v !== undefined) p.set(k, String(v));
   const s = p.toString();
   history.replaceState(null, "", s ? `?${s}` : location.pathname);
 });
@@ -67,7 +111,10 @@ async function load() {
   try {
     const [u, f] = await Promise.all([
       api.universities(query.value, inflight.signal),
-      api.faculty({ ...query.value, limit: 60 }, inflight.signal),
+      api.faculty(
+        { ...query.value, ...filterParams.value, limit: 60 },
+        inflight.signal,
+      ),
     ]);
     universities.value = u;
     faculty.value = f;
@@ -81,7 +128,10 @@ async function load() {
 }
 
 async function loadAreas() {
-  api.funders().then((f) => (funders.value = f)).catch(() => {});
+  api
+    .funders()
+    .then((f) => (funders.value = f))
+    .catch(() => {});
   try {
     areas.value = await api.areas();
     if (!loading.value && !error.value) ready.value = true;
@@ -118,7 +168,7 @@ async function loadGrants() {
 }
 
 onMounted(loadAreas);
-watch(query, load, { immediate: true, deep: true });
+watch([query, filterParams], load, { immediate: true, deep: true });
 watch([query, includePastGrants], loadGrants, { immediate: true, deep: true });
 
 // ---- derived ----
@@ -128,33 +178,78 @@ const selectedNames = computed(() =>
 
 // Dots take the line colour when every chosen area is on one line.
 const mapColor = computed(() => {
-  const groups = new Set(selectedAreas.value.map((a) => areaIndex.value.get(a)?.group));
-  return groups.size === 1 ? (LINE_HEX[[...groups][0] ?? ""] ?? INK_HEX) : INK_HEX;
+  const groups = new Set(
+    selectedAreas.value.map((a) => areaIndex.value.get(a)?.group),
+  );
+  return groups.size === 1
+    ? (LINE_HEX[[...groups][0] ?? ""] ?? INK_HEX)
+    : INK_HEX;
 });
 
+// Countries with listed universities, most universities first, for the country filter.
+const countryOptions = computed(() => {
+  const n = new Map<string, number>();
+  for (const u of universities.value)
+    if (u.country && u.faculty > 0)
+      n.set(u.country, (n.get(u.country) ?? 0) + 1);
+  return [...n.entries()]
+    .map(([code, count]) => ({ code, count, name: countryName(code) }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+});
+
+// The university filters (the faculty filters run on the server). Early career has no university meaning.
+const shownUniversities = computed(() =>
+  universities.value.filter(
+    (u) =>
+      (!country.value || u.country === country.value) &&
+      (!onlyR1.value || u.carnegie === "R1") &&
+      (!onlyFunded.value || u.funded > 0),
+  ),
+);
+
 const rankedUniversities = computed(() =>
-  universities.value.filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0)).slice(0, 80),
+  shownUniversities.value
+    .filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0))
+    .slice(0, 80),
 );
 
 // Universities with matching faculty: the map fits to them on each new search.
 const goalFocus = computed(() => ({
-  key: goal.value,
-  ids: goal.value && !loading.value ? universities.value.filter((u) => u.goal_matches > 0).map((u) => u.id) : [],
+  key: `${goal.value}|${country.value}`,
+  ids:
+    !loading.value && (goal.value || country.value)
+      ? shownUniversities.value
+          .filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0))
+          .map((u) => u.id)
+      : [],
 }));
 
 const summary = computed(() => {
-  if (loading.value) return goal.value ? `Searching for “${goal.value}”` : "Loading";
-  const n = universities.value.filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0)).length;
+  if (loading.value)
+    return goal.value ? `Searching for “${goal.value}”` : "Loading";
+  const n = shownUniversities.value.filter((u) =>
+    goal.value ? u.goal_matches > 0 : u.faculty > 0,
+  ).length;
   const people = goal.value
-    ? universities.value.reduce((s, u) => s + u.goal_matches, 0)
-    : universities.value.reduce((s, u) => s + u.faculty, 0);
+    ? shownUniversities.value.reduce((s, u) => s + u.goal_matches, 0)
+    : shownUniversities.value.reduce((s, u) => s + u.faculty, 0);
   const g = grants.value.length;
   const grantText = grantsLoading.value
     ? ""
     : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}${g === 1 ? "grant" : "grants"}`;
+  const unis = `${n} ${n === 1 ? "university" : "universities"}`;
+  // Person-level filters only apply to the faculty list (the university counts aren't filtered by them).
+  if (
+    tab.value === "faculty" &&
+    (onlyFunded.value || onlyEarly.value || onlyR1.value || country.value)
+  ) {
+    const f = faculty.value.length;
+    return `${f >= 60 ? "60+" : f} ${f === 1 ? "person matches" : "people match"} your filters${goal.value ? ` for “${goal.value}”` : ""}`;
+  }
+  if (onlyFunded.value) return `${unis} with faculty holding an active grant`;
   return goal.value
-    ? `${people.toLocaleString()} faculty at ${n} universities work on this${grantText}`
-    : `${people.toLocaleString()} faculty at ${n} universities`;
+    ? `${people.toLocaleString()} faculty at ${unis} work on this${grantText}`
+    : `${people.toLocaleString()} faculty at ${unis}`;
 });
 
 function openUniversity(id: string | null, professor: string | null = null) {
@@ -198,7 +293,9 @@ function removeArea(area: string) {
     <header class="top">
       <h1>Advisor Atlas</h1>
       <form class="search" role="search" @submit.prevent="submitGoal">
-        <label class="visually-hidden" for="goal">What do you want to research?</label>
+        <label class="visually-hidden" for="goal"
+          >What do you want to research?</label
+        >
         <input
           id="goal"
           v-model="goalInput"
@@ -209,7 +306,13 @@ function removeArea(area: string) {
         />
         <button type="submit">Search</button>
       </form>
-      <button type="button" class="info" aria-label="About the data" title="About the data" @click="about?.showModal()">
+      <button
+        type="button"
+        class="info"
+        aria-label="About the data"
+        title="About the data"
+        @click="about?.showModal()"
+      >
         i
       </button>
     </header>
@@ -223,16 +326,31 @@ function removeArea(area: string) {
         aria-controls="area-picker"
         @click="pickerOpen = !pickerOpen"
       >
-        Research areas<template v-if="selectedAreas.length"> ({{ selectedAreas.length }})</template>
+        Research areas<template v-if="selectedAreas.length">
+          ({{ selectedAreas.length }})</template
+        >
       </button>
-      <span v-for="a in selectedAreas" :key="a" class="chip" :style="{ '--c': LINE_COLOR[areaIndex.get(a)?.group ?? ''] }">
+      <span
+        v-for="a in selectedAreas"
+        :key="a"
+        class="chip"
+        :style="{ '--c': LINE_COLOR[areaIndex.get(a)?.group ?? ''] }"
+      >
         {{ areaIndex.get(a)?.name ?? a }}
-        <button type="button" :aria-label="`Remove ${areaIndex.get(a)?.name ?? a}`" @click="removeArea(a)">×</button>
+        <button
+          type="button"
+          :aria-label="`Remove ${areaIndex.get(a)?.name ?? a}`"
+          @click="removeArea(a)"
+        >
+          ×
+        </button>
       </span>
       <span v-if="!selectedAreas.length" class="filter-hint">All areas</span>
       <span v-if="goal" class="goal-chip">
         Results for <strong>“{{ goal }}”</strong>&nbsp;
-        <button type="button" class="link" @click="clearGoal">Clear search</button>
+        <button type="button" class="link" @click="clearGoal">
+          Clear search
+        </button>
       </span>
     </div>
 
@@ -240,21 +358,41 @@ function removeArea(area: string) {
       <p v-if="!areas.length" class="hint">Loading areas</p>
       <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
       <div class="picker-actions">
-        <button v-if="selectedAreas.length" type="button" class="link" @click="selectedAreas = []">Clear areas</button>
-        <button type="button" class="done" @click="pickerOpen = false">Done</button>
+        <button
+          v-if="selectedAreas.length"
+          type="button"
+          class="link"
+          @click="selectedAreas = []"
+        >
+          Clear areas
+        </button>
+        <button type="button" class="done" @click="pickerOpen = false">
+          Done
+        </button>
       </div>
     </div>
 
     <section v-show="!openUni" class="results" aria-label="Results">
       <template v-if="ready && !goal && !selectedAreas.length">
         <p class="intro">
-          Search for what you want to research to find professors working on it, the grants funding that work,
-          and the universities where they are. Narrow by research area at any time.
+          Search for what you want to research to find professors working on it,
+          the grants funding that work, and the universities where they are.
+          Narrow by research area at any time.
         </p>
       </template>
       <p class="summary" aria-live="polite">
-        {{ summary }}<template v-if="selectedNames.length"> in {{ selectedNames.join(", ") }}</template>.
-        <button v-if="selectedAreas.length || goal" type="button" class="link" @click="clearAll">Clear all</button>
+        {{ summary
+        }}<template v-if="selectedNames.length">
+          in {{ selectedNames.join(", ") }}</template
+        >.
+        <button
+          v-if="selectedAreas.length || goal"
+          type="button"
+          class="link"
+          @click="clearAll"
+        >
+          Clear all
+        </button>
       </p>
       <p v-if="error && ready" class="error">{{ error }}</p>
       <p v-if="!ready && !error" class="hint">Loading</p>
@@ -272,15 +410,74 @@ function removeArea(area: string) {
         </button>
       </div>
 
+      <div v-if="ready && tab !== 'grants'" class="narrow">
+        <label>
+          <span class="visually-hidden">Country</span>
+          <select v-model="country">
+            <option value="">All countries</option>
+            <option v-for="c in countryOptions" :key="c.code" :value="c.code">
+              {{ c.name }} ({{ c.count }})
+            </option>
+          </select>
+        </label>
+        <label class="check"
+          ><input v-model="onlyFunded" type="checkbox" /> Active grant</label
+        >
+        <label v-if="tab === 'faculty'" class="check"
+          ><input v-model="onlyEarly" type="checkbox" /> Early career</label
+        >
+        <label class="check"
+          ><input v-model="onlyR1" type="checkbox" /> R1 (US)</label
+        >
+        <label v-if="tab === 'faculty'">
+          <span class="visually-hidden">Sort</span>
+          <select v-model="sortBy">
+            <option value="">{{ goal ? "Best match" : "Most active" }}</option>
+            <option value="recent">Most papers lately</option>
+            <option value="funding">Newest grant</option>
+          </select>
+        </label>
+        <button
+          v-if="filtersOn"
+          type="button"
+          class="link"
+          @click="clearFilters"
+        >
+          Clear filters
+        </button>
+      </div>
+      <p
+        v-if="ready && tab === 'faculty' && onlyEarly"
+        class="hint narrow-hint"
+      >
+        Early career: first top-venue paper in the last six years (computer
+        science faculty only). New faculty are often building a lab and
+        recruiting.
+      </p>
+      <p
+        v-if="ready && country && !fundersFor(country).length && onlyFunded"
+        class="hint narrow-hint"
+      >
+        There's no grant data for {{ countryName(country) }} yet, so "Active
+        grant" hides everyone there.
+      </p>
+
       <ol v-if="ready && tab === 'universities'" class="uni-list">
         <li v-for="u in rankedUniversities" :key="u.id">
-          <button type="button" :class="{ on: u.id === openUni }" @click="openUniversity(u.id)">
+          <button
+            type="button"
+            :class="{ on: u.id === openUni }"
+            @click="openUniversity(u.id)"
+          >
             <span class="uni-name">{{ u.name }}</span>
             <span v-if="u.carnegie" class="r-badge">{{ u.carnegie }}</span>
             <span class="uni-meta">
               <template v-if="goal">{{ u.goal_matches }} matching, </template>
-              {{ u.faculty }} {{ selectedAreas.length ? "in your areas" : "faculty" }},
-              <template v-if="fundersFor(u.country).length">{{ u.funded }} funded</template>
+              {{ u.faculty }}
+              {{ selectedAreas.length ? "in your areas" : "faculty" }},
+              <template v-if="fundersFor(u.country).length"
+                >{{ u.funded }} funded</template
+              >
               <template v-else>no grant data</template>
             </span>
           </button>
@@ -294,10 +491,16 @@ function removeArea(area: string) {
         </label>
         <p v-if="grantsLoading" class="hint">Searching grants</p>
         <p v-else-if="!grants.length" class="hint">
-          No {{ includePastGrants ? "" : "active " }}grants match. Try other words, or include ended grants.
+          No {{ includePastGrants ? "" : "active " }}grants match. Try other
+          words, or include ended grants.
         </p>
         <ul class="grant-list">
-          <GrantRow v-for="g in grants" :key="g.id" :grant="g" @open-person="openProfessorFromList" />
+          <GrantRow
+            v-for="g in grants"
+            :key="g.id"
+            :grant="g"
+            @open-person="openProfessorFromList"
+          />
         </ul>
       </template>
 
@@ -313,8 +516,11 @@ function removeArea(area: string) {
       </ul>
 
       <footer class="foot">
-        Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records (NSF, NIH, ARC, Marsden, UKRI, ANR, SNSF, ERC, KAKEN, RGC).
-        <button type="button" class="link" @click="about?.showModal()">About the data</button>
+        Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
+        (NSF, NIH, ARC, Marsden, UKRI, ANR, SNSF, ERC, KAKEN, RGC).
+        <button type="button" class="link" @click="about?.showModal()">
+          About the data
+        </button>
         <a class="link" href="/overview.html">Project overview</a>
       </footer>
     </section>
@@ -337,7 +543,7 @@ function removeArea(area: string) {
       </div>
       <MapView
         v-else
-        :universities="universities"
+        :universities="shownUniversities"
         :color="mapColor"
         :use-goal="!!goal"
         :selected-id="openUni"
@@ -345,7 +551,9 @@ function removeArea(area: string) {
         @select="openUniversity($event)"
       />
       <p v-if="ready" class="legend">
-        Dot size: {{ goal ? "faculty matching your search" : "faculty in your areas" }}. Heavy ring: R1 university.
+        Dot size:
+        {{ goal ? "faculty matching your search" : "faculty in your areas" }}.
+        Heavy ring: R1 university.
       </p>
     </div>
 
@@ -363,36 +571,48 @@ function removeArea(area: string) {
       <h2>About the data</h2>
       <p>
         <strong>Faculty and research areas</strong> come from
-        <a href="https://csrankings.org" target="_blank" rel="noopener">CSRankings</a>: computer science faculty and
-        their papers at top venues. Areas count papers from the last 10 years.
+        <a href="https://csrankings.org" target="_blank" rel="noopener"
+          >CSRankings</a
+        >: computer science faculty and their papers at top venues. Areas count
+        papers from the last 10 years.
       </p>
       <p>
-        <strong>Grants</strong> come from public records: NSF (US, 2010–2025), NIH (US, active projects), the Australian Research Council,
-        New Zealand's Marsden Fund, UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation, the
-        European Research Council (Horizon 2020 and Horizon Europe), Japan's KAKEN and Hong Kong's Research Grants
-        Council. Outside the US, only
-        computing-related grants are loaded. A grant is linked to a
-        professor only when the name matches and the university (or, for NSF, the email domain) confirms it.
-        Funding from industry, other agencies and universities isn't included, so "no active grant" doesn't mean
-        "no funding".
+        <strong>Grants</strong> come from public records: NSF (US, 2010–2025),
+        NIH (US, active projects), the Australian Research Council, New
+        Zealand's Marsden Fund, UKRI's EPSRC (UK), ANR (France), the Swiss
+        National Science Foundation, the European Research Council (Horizon 2020
+        and Horizon Europe), Japan's KAKEN and Hong Kong's Research Grants
+        Council. Outside the US, only computing-related grants are loaded. A
+        grant is linked to a professor only when the name matches and the
+        university (or, for NSF, the email domain) confirms it. Funding from
+        industry, other agencies and universities isn't included, so "no active
+        grant" doesn't mean "no funding".
       </p>
       <p class="sources">
-        Sources: NSF Award Search; Australian Research Council; Royal Society Te Apārangi (Marsden Fund); UKRI
-        Gateway to Research, Open Government Licence v2.0; Agence nationale de la recherche, ODbL; Swiss National
-        Science Foundation; CORDIS, European Commission; ERC lists of principal investigators. Japanese grants:
-        created by Advisor Atlas, based on KAKEN (NII), with a link to each project. Hong Kong grants: Research Grants
+        Sources: NSF Award Search; Australian Research Council; Royal Society Te
+        Apārangi (Marsden Fund); UKRI Gateway to Research, Open Government
+        Licence v2.0; Agence nationale de la recherche, ODbL; Swiss National
+        Science Foundation; CORDIS, European Commission; ERC lists of principal
+        investigators. Japanese grants: created by Advisor Atlas, based on KAKEN
+        (NII), with a link to each project. Hong Kong grants: Research Grants
         Council project records (facts only). Researchers outside computer
-        science and paper abstracts: OpenAlex (CC0). Scholarships: curated, plus the DAAD scholarship database.
-      </p>
-      <p><strong>Recent papers</strong> come from <a href="https://dblp.org" target="_blank" rel="noopener">DBLP</a>.</p>
-      <p>
-        <strong>University facts</strong> (R1/R2, graduate tuition and enrollment) come from the US Department of
-        Education's IPEDS survey, so they're shown for US universities only.
+        science and paper abstracts: OpenAlex (CC0). Scholarships: curated, plus
+        the DAAD scholarship database.
       </p>
       <p>
-        Search compares the meaning of what you type with each professor's grant abstracts and paper titles,
-        and favours recent work. It's a starting point: read a professor's own page and recent papers before
-        writing to them.
+        <strong>Recent papers</strong> come from
+        <a href="https://dblp.org" target="_blank" rel="noopener">DBLP</a>.
+      </p>
+      <p>
+        <strong>University facts</strong> (R1/R2, graduate tuition and
+        enrollment) come from the US Department of Education's IPEDS survey, so
+        they're shown for US universities only.
+      </p>
+      <p>
+        Search compares the meaning of what you type with each professor's grant
+        abstracts and paper titles, and favours recent work. It's a starting
+        point: read a professor's own page and recent papers before writing to
+        them.
       </p>
       <form method="dialog"><button class="close-about">Close</button></form>
     </dialog>
@@ -625,6 +845,37 @@ h1 {
   color: #fff;
 }
 
+.narrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  margin: 10px 0 4px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.narrow select {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-box);
+  background: #fff;
+  color: var(--ink);
+  max-width: 190px;
+}
+
+.narrow .check {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.narrow-hint {
+  margin: 2px 0 6px;
+}
+
 .toggle {
   display: flex;
   gap: 7px;
@@ -729,14 +980,28 @@ h1 {
   transform-origin: left;
   animation: draw 1.6s ease-in-out infinite;
 }
-.loader-lines span:nth-child(2) { animation-delay: 0.15s; }
-.loader-lines span:nth-child(3) { animation-delay: 0.3s; }
-.loader-lines span:nth-child(4) { animation-delay: 0.45s; }
+.loader-lines span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.loader-lines span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.loader-lines span:nth-child(4) {
+  animation-delay: 0.45s;
+}
 
 @keyframes draw {
-  0% { transform: scaleX(0); }
-  45%, 70% { transform: scaleX(1); }
-  100% { transform: scaleX(1); opacity: 0; }
+  0% {
+    transform: scaleX(0);
+  }
+  45%,
+  70% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
 }
 
 .loader-text {

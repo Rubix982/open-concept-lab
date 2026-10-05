@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"sort"
@@ -309,6 +310,8 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		limit = min(n, maxFacultyLimit)
 	}
 
+	filt := facultyFilterParams(r)
+
 	if q != "" && semanticAvailable() {
 		depth := 2000
 		if universityID != "" {
@@ -316,7 +319,7 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		}
 		matches, err := semanticFacultyMatches(q, areas, universityID, depth)
 		if err == nil {
-			faculty, err := facultyForMatches(db, matches, limit)
+			faculty, err := facultyForMatches(db, matches, limit, filt)
 			if err != nil {
 				writeError(w, r, http.StatusInternalServerError, "failed to load faculty", err)
 				return
@@ -348,10 +351,13 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 		WHERE (cardinality($1::text[]) = 0 OR f.areas && $1::text[])
 		  AND ($3 = '' OR u.id = $3)
 		  AND (goal.q IS NULL OR best.name IS NOT NULL)
-		ORDER BY best.score DESC NULLS LAST, (f.active_awards > 0) DESC,
+		  AND `+filt.sql(5)+`
+		ORDER BY CASE $9 WHEN 'recent' THEN f.recent_pubs END DESC NULLS LAST,
+		         CASE $9 WHEN 'funding' THEN f.last_award_date END DESC NULLS LAST,
+		         best.score DESC NULLS LAST, (f.active_awards > 0) DESC,
 		         (SELECT COALESCE(sum((f.area_pubs ->> a)::real), 0) FROM unnest($1::text[]) a) DESC,
 		         f.recent_pubs DESC
-		LIMIT $4`, pq.Array(areas), q, universityID, limit)
+		LIMIT $4`, append([]any{pq.Array(areas), q, universityID, limit}, append(filt.args(), filt.Sort)...)...)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load faculty", err)
 		return
@@ -387,11 +393,41 @@ func getExplorerFaculty(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, faculty)
 }
 
-// facultyForMatches loads the explorer rows for the best semantic matches, keeping their order.
-func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]exploreFaculty, error) {
-	if len(matches) > limit {
-		matches = matches[:limit]
+// facultyFilter narrows a faculty list: country code, an active grant, early career (first top-venue
+// paper in the last six years), R1 universities (US); sort "recent" (papers) or "funding" (newest grant).
+type facultyFilter struct {
+	Country string
+	Funded  bool
+	Early   bool
+	R1      bool
+	Sort    string
+}
+
+func facultyFilterParams(r *http.Request) facultyFilter {
+	v := r.URL.Query()
+	return facultyFilter{
+		Country: strings.ToLower(strings.TrimSpace(v.Get("country"))),
+		Funded:  v.Get("funded") == "1",
+		Early:   v.Get("early") == "1",
+		R1:      v.Get("r1") == "1",
+		Sort:    v.Get("sort"),
 	}
+}
+
+// sql is the filter over explorer_faculty f and explorer_universities u, its four values bound as
+// $first..$first+3 (see args).
+func (ff facultyFilter) sql(first int) string {
+	return fmt.Sprintf(`($%[1]d = '' OR u.country = $%[1]d)
+		  AND (NOT $%[2]d OR f.active_awards > 0)
+		  AND (NOT $%[3]d OR f.first_year >= extract(year FROM current_date)::int - 6)
+		  AND (NOT $%[4]d OR u.carnegie = 'R1')`, first, first+1, first+2, first+3)
+}
+
+func (ff facultyFilter) args() []any { return []any{ff.Country, ff.Funded, ff.Early, ff.R1} }
+
+// facultyForMatches loads the explorer rows for the best semantic matches that pass the filter,
+// keeping their order (or re-sorting when the filter asks for it).
+func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int, filt facultyFilter) ([]exploreFaculty, error) {
 	names := make([]string, len(matches))
 	for i, m := range matches {
 		names[i] = m.Name
@@ -400,7 +436,7 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 		SELECT f.name, f.university, u.id, u.country, f.homepage, f.scholar_id, f.areas, f.area_pubs, f.recent_pubs,
 		       f.active_awards, f.total_awards, f.active_funding, f.last_award_date, f.funding, f.source, f.latest_work, f.first_year, f.orcid, f.openalex_id
 		FROM explorer_faculty f LEFT JOIN explorer_universities u ON u.name = f.university
-		WHERE f.name = ANY($1)`, pq.Array(names))
+		WHERE f.name = ANY($1) AND `+filt.sql(2), append([]any{pq.Array(names)}, filt.args()...)...)
 	if err != nil {
 		return nil, err
 	}
@@ -436,8 +472,24 @@ func facultyForMatches(db *sql.DB, matches []semanticMatch, limit int) ([]explor
 			f.Match.Funder = &funder
 		}
 		faculty = append(faculty, f)
+		if len(faculty) == limit {
+			break
+		}
 	}
+	sortFaculty(faculty, filt.Sort)
 	return faculty, nil
+}
+
+func sortFaculty(faculty []exploreFaculty, by string) {
+	switch by {
+	case "recent":
+		sort.SliceStable(faculty, func(i, j int) bool { return faculty[i].RecentPubs > faculty[j].RecentPubs })
+	case "funding":
+		sort.SliceStable(faculty, func(i, j int) bool {
+			a, b := faculty[i].LastAward, faculty[j].LastAward
+			return a != nil && (b == nil || a.After(*b))
+		})
+	}
 }
 
 type exploreAward struct {

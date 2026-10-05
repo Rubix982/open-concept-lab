@@ -234,6 +234,17 @@ what the API returns and the pages render. The data is far richer than the pages
 - [x] Found on the way: IPEDS "PhD degrees" counted program rows, not degrees (Georgia Tech 38 → 556). Now sums
       CTOTALT from the all-programs rows, research doctorates only
 
+### Unattended run, 2026-10-05 (work order; each step committed and pushed on its own)
+1. Finish B: load the OpenAlex researcher abstracts when `fields.py works` ends; pipeline from step 13; verify
+2. C1 filters + sort on search results and university lists
+3. C3 "Before you write" checklist on a profile
+4. C4 scholarships: level filter and deadline view
+5. C2 shortlist and compare (browser storage only)
+6. C5 Pakistan path
+7. D1 NSERC (Canada, Open Government Licence); D2 SweCRIS / NWO only if their terms allow reuse
+8. Loose ends: MIT and other unmatched IPEDS records; warm the semantic index so "similar" is fast first time
+Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
+
 ### C. Student use cases not served yet
 - [ ] Filters: country / region, "has an active grant", early-career, R1; sort by recent activity or funding
 - [ ] Shortlist and compare (kept in the browser): save professors and universities, compare side by side
