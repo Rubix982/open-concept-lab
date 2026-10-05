@@ -233,9 +233,8 @@ watch([query, filterParams], load, { immediate: true, deep: true });
 watch([query, includePastGrants], loadGrants, { immediate: true, deep: true });
 
 // ---- derived ----
-const selectedNames = computed(() =>
-  selectedAreas.value.map((a) => areaIndex.value.get(a)?.name ?? a),
-);
+// Names for the summary line, with whole fields as one name (see areaChips).
+const selectedNames = computed(() => areaChips.value.map((c) => c.label));
 
 // Dots take the line colour when every chosen area is on one line.
 const mapColor = computed(() => {
@@ -468,9 +467,47 @@ function endTour() {
 const shortlist = ref<InstanceType<typeof ShortlistDialog> | null>(null);
 const pickerOpen = ref(false);
 
-function removeArea(area: string) {
-  selectedAreas.value = selectedAreas.value.filter((a) => a !== area);
+function removeArea(...remove: string[]) {
+  selectedAreas.value = selectedAreas.value.filter((a) => !remove.includes(a));
 }
+
+// Chosen areas as chips: a field whose subfields are all chosen ("All of Neuroscience") is one chip.
+const areaChips = computed(() => {
+  const chosen = new Set(selectedAreas.value);
+  const byField = new Map<string, string[]>();
+  for (const a of areas.value)
+    if (a.field)
+      byField.set(a.field, [...(byField.get(a.field) ?? []), a.area]);
+  const chips: {
+    key: string;
+    label: string;
+    group: string;
+    areas: string[];
+  }[] = [];
+  const covered = new Set<string>();
+  for (const [field, list] of byField) {
+    if (list.length > 1 && list.every((a) => chosen.has(a))) {
+      chips.push({
+        key: `field:${field}`,
+        label: `${field} (all)`,
+        group: areaIndex.value.get(list[0])?.group ?? "",
+        areas: list,
+      });
+      list.forEach((a) => covered.add(a));
+    }
+  }
+  for (const a of selectedAreas.value) {
+    if (!covered.has(a)) {
+      chips.push({
+        key: a,
+        label: areaIndex.value.get(a)?.name ?? a,
+        group: areaIndex.value.get(a)?.group ?? "",
+        areas: [a],
+      });
+    }
+  }
+  return chips;
+});
 </script>
 
 <template>
@@ -520,16 +557,16 @@ function removeArea(area: string) {
         >
       </button>
       <span
-        v-for="a in selectedAreas"
-        :key="a"
+        v-for="c in areaChips"
+        :key="c.key"
         class="chip"
-        :style="{ '--c': LINE_COLOR[areaIndex.get(a)?.group ?? ''] }"
+        :style="{ '--c': LINE_COLOR[c.group] }"
       >
-        {{ areaIndex.get(a)?.name ?? a }}
+        {{ c.label }}
         <button
           type="button"
-          :aria-label="`Remove ${areaIndex.get(a)?.name ?? a}`"
-          @click="removeArea(a)"
+          :aria-label="`Remove ${c.label}`"
+          @click="removeArea(...c.areas)"
         >
           ×
         </button>
