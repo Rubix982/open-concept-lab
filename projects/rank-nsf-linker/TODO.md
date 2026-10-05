@@ -169,6 +169,12 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       resumes on cache), then pipeline from step 22
 - [x] 11 more fields and ~210 subfields as research areas (70,290 people, 234 areas)
 
+## Rough edges (2026-10-06)
+- [ ] Funding tab matches words, not meaning: embedding all 335k grants (~4 h) would fix it
+- NSERC and NWO end dates are estimated where the funder publishes none (documented in the importers)
+- [x] Map dot hover and click checked (tooltip, drawer, URL)
+- [x] Embedding progress is logged about once a minute (it was tied to batch counts)
+
 ## Next: grant data for many more countries (asked 2026-10-05, to plan)
 - [ ] Survey national funders with open, reusable award data per country (by students affected),
       check each licence, then add importers to the fetcher one by one
@@ -213,6 +219,7 @@ loads every source it serves, and heals itself.
 - [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
 ## Decisions
+- Map borders: Mapbox's default (US) worldview, disputed borders dashed; kept as is (Saif, 2026-10-06)
 - 2026-10-05: Israeli universities stay in the app (map, search, counts); the shareable overview page doesn't name Israel
 
 ## Known limitations (not tasks)

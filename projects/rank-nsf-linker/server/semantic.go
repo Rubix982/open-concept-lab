@@ -455,7 +455,7 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		return err
 	}
 
-	start := time.Now()
+	start, lastLog := time.Now(), time.Now()
 	for i := 0; i < len(toEmbed); i += embedBatchSize {
 		batch := toEmbed[i:min(i+embedBatchSize, len(toEmbed))]
 		texts := make([]string, len(batch))
@@ -482,9 +482,12 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		if err := record(ids, hashes, docHashes, textHashes); err != nil {
 			return fmt.Errorf("failed to record embedded points: %w", err)
 		}
-		if done := i + len(batch); done%(embedBatchSize*40) < embedBatchSize || done == len(toEmbed) {
+		// Progress about once a minute (and at the end), whatever the batch size.
+		if done := i + len(batch); time.Since(lastLog) > time.Minute || done == len(toEmbed) {
+			lastLog = time.Now()
 			logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", done, len(toEmbed), time.Since(start).Round(time.Second))
 		}
+
 	}
 
 	// A payload changes when its professor's areas or university change, and those are shared by all
