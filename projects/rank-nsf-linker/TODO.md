@@ -148,7 +148,8 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Funder coverage per country comes from the loaded grants (`/explorer/funders`), not a static list
 - [x] KAKEN (Japan): 16,268 Informatics projects (2015+), English names and institutions (KAKEN institution
       master); throttled, cached, facts only, attribution "based on KAKEN (NII)" (`scripts/grants/kaken.py`)
-- [ ] RGC Hong Kong: deferred. No reuse licence, pages marked noindex; ask RGC (rgc1@ugc.edu.hk) first
+- [x] RGC Hong Kong (user approved 2026-10-05): 914 computing projects (GRF, ECS; 2015–2026), facts only, no
+      abstracts, 1 request/s, cached (`scripts/grants/rgc.py`) → 204 faculty; 66% of Hong Kong CS faculty have grant data
 - [x] CSRankings refreshed each run from gh-pages (34,655 rows, ORCIDs); `institutions.csv` replaces
       country-info (written as country-info.csv); professors / professor_areas are replaced, not upserted
 - [x] `institution_key()` transliterates accents (migration 16)
