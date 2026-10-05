@@ -49,6 +49,9 @@ LEFT JOIN (
 WHERE COALESCE(g.title, '') <> ''
 ON CONFLICT DO NOTHING;
 
+-- A few institutions come out of PDF lists garbled (".W.O"): drop names without a real word.
+UPDATE explorer_grants SET institution = NULL WHERE institution !~ '[[:alpha:]]{3}';
+
 -- Institutions on the map: a key per university name and alias; keys shared by two universities dropped.
 CREATE TEMP TABLE xg_uni ON COMMIT DROP AS
 SELECT k, min(id) AS id FROM (
