@@ -11,6 +11,7 @@ const props = defineProps<{ goal: string; country?: string }>();
 const emit = defineEmits<{
   openUniversity: [id: string];
   openPerson: [name: string, universityId: string | null];
+  counts: [byUniversity: Record<string, number> | null];
 }>();
 
 const onlyActive = ref(false);
@@ -34,6 +35,7 @@ watch(
         { goal, country, active },
         inflight.signal,
       );
+      emit("counts", data.value.by_university);
     } catch (e) {
       if ((e as Error).name !== "AbortError")
         error.value = (e as Error).message;

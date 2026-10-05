@@ -8,7 +8,7 @@ import {
   type UniversitySummary,
 } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, funders, fundersFor } from "@/store";
+import { areaIndex, areas, funderName, funders, fundersFor } from "@/store";
 import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
@@ -52,6 +52,33 @@ const filterParams = computed(() => ({
   newlab: onlyNewLab.value ? 1 : undefined,
   sort: sortBy.value || undefined,
 }));
+// One line about a chosen country: what's listed, which grants we have, scholarships.
+const countryScholarships = ref<number | null>(null);
+watch(
+  country,
+  async (c) => {
+    countryScholarships.value = null;
+    if (!c) return;
+    try {
+      countryScholarships.value = (await api.scholarships(c)).length;
+    } catch {
+      countryScholarships.value = null;
+    }
+  },
+  { immediate: true },
+);
+const countryNote = computed(() => {
+  if (!country.value) return "";
+  const f = fundersFor(country.value).map(funderName);
+  const grants = f.length
+    ? `Grant data from ${f.join(", ")}.`
+    : "No grant data for this country yet.";
+  const sch =
+    countryScholarships.value === null
+      ? ""
+      : ` ${countryScholarships.value} ${countryScholarships.value === 1 ? "scholarship" : "scholarships"} listed for study here (open a university to see them).`;
+  return `${countryName(country.value)}: ${grants}${sch}`;
+});
 const filtersOn = computed(
   () =>
     !!(
@@ -92,6 +119,21 @@ function submitGoal() {
   goal.value = g;
   openUniversity(null);
   if (tab.value === "universities") tab.value = "faculty";
+}
+
+// Starting points for someone who doesn't know the words yet, across fields.
+const EXAMPLES = [
+  "mechanistic interpretability",
+  "robot learning",
+  "low-resource languages",
+  "climate modelling",
+  "protein design",
+  "quantum error correction",
+  "malaria vaccine",
+];
+function trySearch(q: string) {
+  goalInput.value = q;
+  submitGoal();
 }
 
 function clearGoal() {
@@ -194,6 +236,20 @@ const mapColor = computed(() => {
     ? (LINE_HEX[[...groups][0] ?? ""] ?? INK_HEX)
     : INK_HEX;
 });
+
+// On the Funding tab the dots show money (grants on the search) instead of people.
+const fundingCounts = ref<Record<string, number> | null>(null);
+const fundingMap = computed(
+  () => tab.value === "funding" && !!goal.value && !!fundingCounts.value,
+);
+const mapUniversities = computed(() =>
+  fundingMap.value
+    ? shownUniversities.value.map((u) => ({
+        ...u,
+        goal_matches: fundingCounts.value?.[u.id] ?? 0,
+      }))
+    : shownUniversities.value,
+);
 
 // Countries with listed universities, most universities first, for the country filter.
 const countryOptions = computed(() => {
@@ -393,6 +449,18 @@ function removeArea(area: string) {
           the grants funding that work, and the universities where they are.
           Narrow by research area at any time.
         </p>
+        <p class="examples">
+          <span>Try:</span>
+          <button
+            v-for="q in EXAMPLES"
+            :key="q"
+            type="button"
+            class="example"
+            @click="trySearch(q)"
+          >
+            {{ q }}
+          </button>
+        </p>
       </template>
       <p class="summary" aria-live="polite">
         {{ summary
@@ -481,6 +549,9 @@ function removeArea(area: string) {
         There's no grant data for {{ countryName(country) }} yet, so "Active
         grant" hides everyone there.
       </p>
+      <p v-if="ready && countryNote && tab !== 'funding'" class="country-note">
+        {{ countryNote }}
+      </p>
 
       <ol v-if="ready && tab === 'universities'" class="uni-list">
         <li v-for="u in rankedUniversities" :key="u.id">
@@ -510,6 +581,7 @@ function removeArea(area: string) {
         :country="country"
         @open-university="openUniversity($event)"
         @open-person="openProfessorFromList"
+        @counts="fundingCounts = $event"
       />
 
       <template v-else-if="ready && tab === 'grants'">
@@ -571,17 +643,23 @@ function removeArea(area: string) {
       </div>
       <MapView
         v-else
-        :universities="shownUniversities"
+        :universities="mapUniversities"
         :color="mapColor"
         :use-goal="!!goal"
+        :goal-label="fundingMap ? 'grants on this search' : undefined"
         :selected-id="openUni"
         :focus="goalFocus"
         @select="openUniversity($event)"
       />
       <p v-if="ready" class="legend">
         Dot size:
-        {{ goal ? "faculty matching your search" : "faculty in your areas" }}.
-        Heavy ring: R1 university.
+        {{
+          fundingMap
+            ? "grants on this search"
+            : goal
+              ? "faculty matching your search"
+              : "faculty in your areas"
+        }}. Heavy ring: R1 university.
       </p>
     </div>
 
@@ -830,6 +908,37 @@ h1 {
   font-size: var(--t-md);
   line-height: 1.5;
   margin-bottom: 12px;
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 14px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.example {
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: #fff;
+  padding: 3px 10px 2px;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.example:hover {
+  border-color: var(--ink);
+}
+
+.country-note {
+  margin: 4px 0 8px;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
 
 .hint {

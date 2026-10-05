@@ -275,9 +275,9 @@ What we hold and don't show (by value to a student)
       running). These pay PhD students directly. "Funded PhD programmes here" on the university panel
 - [x] G3 NSF programme names (248k rows: "Robust Intelligence", "Secure & Trustworthy Cyberspace"):
       "Programmes that fund this" in the Funding tab, the program on each NSF grant
-- [ ] G4 Funding on the map: in the Funding tab, size dots by running grants on the search, not faculty
-- [ ] G5 Starting points without a search: a few example searches under the intro; topic chips
-- [ ] G6 Country summary when a country is chosen: one paragraph (universities, people, which funders
+- [x] G4 Funding on the map: in the Funding tab, size dots by running grants on the search, not faculty
+- [x] G5 Starting points without a search: a few example searches under the intro; topic chips
+- [x] G6 Country summary when a country is chosen: one paragraph (universities, people, which funders
       are covered, scholarships)
 - [ ] G7 (decision for Saif) Grants and Funding tabs overlap: Funding lists every grant, Grants only
       those linked to people. Recommend folding Grants into Funding: three tabs instead of four

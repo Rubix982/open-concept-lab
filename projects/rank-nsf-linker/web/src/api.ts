@@ -198,6 +198,7 @@ export type Landscape = {
     people: number;
   }[];
   programs: { name: string; grants: number; running: number }[];
+  by_university: Record<string, number>; // matching grants per university on the map
   grants: {
     funder: string;
     id: string;

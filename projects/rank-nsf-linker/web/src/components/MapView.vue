@@ -9,6 +9,7 @@ const props = defineProps<{
   universities: UniversitySummary[];
   color: string; // the selected line's colour, or ink when areas span lines
   useGoal: boolean; // size by goal matches instead of faculty count
+  goalLabel?: string; // what goal_matches counts, for the tooltip (default: matching faculty)
   selectedId: string | null;
   focus?: { key: string; ids: string[] }; // fit the map to these universities when key changes
 }>();
@@ -140,7 +141,7 @@ onMounted(() => {
     name.textContent = p.name;
     const line = document.createElement("div");
     line.textContent = props.useGoal
-      ? `${p.goal} faculty with work matching your goal`
+      ? `${p.goal} ${props.goalLabel ?? "faculty with work matching your goal"}`
       : p.covered
         ? `${p.faculty} faculty in your areas, ${p.funded} with an active research grant`
         : `${p.faculty} faculty in your areas; no grant data for this country yet`;

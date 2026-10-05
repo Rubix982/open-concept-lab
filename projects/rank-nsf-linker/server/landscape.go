@@ -255,6 +255,21 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	}
 	out["places"] = places
 
+	// Per university on the map, for sizing the map's dots by money instead of people.
+	byUni := map[string]int{}
+	rows, err = tx.Query(`SELECT university_id, count(*) FROM m WHERE university_id IS NOT NULL GROUP BY 1`)
+	if err == nil {
+		for rows.Next() {
+			var id string
+			var n int
+			if rows.Scan(&id, &n) == nil {
+				byUni[id] = n
+			}
+		}
+		rows.Close()
+	}
+	out["by_university"] = byUni
+
 	// NSF programmes funding these grants: names a student can look up for calls and deadlines.
 	type program struct {
 		Name    string `json:"name"`
