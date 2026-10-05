@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { webUrl } from "@/lines";
+import { LINE_COLOR, webUrl } from "@/lines";
 import { computed, ref, watch } from "vue";
 import { api, type Faculty, type Query, type Scholarship, type UniversityDetail } from "@/api";
 import { countryName } from "@/countries";
-import { funderName } from "@/store";
+import { areaIndex, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 
@@ -52,7 +52,12 @@ watch(
 const isUS = computed(() => uni.value?.country === "us");
 // Funders whose grants are loaded for this university's country (NSF for the US, ARC for Australia, ...).
 const grantFunders = computed(() => uni.value?.grant_funders ?? (isUS.value ? ["nsf"] : []));
-const grantFunderNames = computed(() => grantFunders.value.map(funderName).join(" or "));
+// Named in "have an active … grant": the funders this university's faculty actually hold grants from.
+const grantFunderNames = computed(() => {
+  const held = (uni.value?.funders ?? []).filter((f) => f.people > 0).map((f) => f.funder);
+  const names = (held.length ? held : grantFunders.value).map(funderName);
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} or ${names[names.length - 1]}` : (names[0] ?? "");
+});
 const ercOnly = computed(() => grantFunders.value.length === 1 && grantFunders.value[0] === "erc");
 const countryLabel = computed(() => countryName(uni.value?.country));
 function levelLabel(levels: string[]) {
@@ -73,6 +78,21 @@ const carnegieLabel = computed(() =>
       : "",
 );
 
+// The university's strongest areas by faculty count (from the explorer), with their line colours.
+const strengths = computed(() => {
+  const entries = Object.entries(uni.value?.area_faculty ?? {}).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const top = entries[0]?.[1] ?? 1;
+  return entries.map(([area, n]) => {
+    const info = areaIndex.value.get(area);
+    return { area, n, name: info?.name ?? area, width: (100 * n) / top, color: LINE_COLOR[info?.group ?? ""] ?? "var(--ink-soft)" };
+  });
+});
+
+// Curated entries sometimes say "see official page"; that adds nothing on a card that links there.
+function shown(v: string | undefined) {
+  return !!v && !/^see (the )?(official|programme) page/i.test(v.trim());
+}
+
 function money(n?: number) {
   return n ? `$${n.toLocaleString("en-US")}` : "";
 }
@@ -88,6 +108,7 @@ function money(n?: number) {
       :back-label="uni?.name ?? 'university'"
       :goal="query.goal"
       @back="emit('openProfessor', null)"
+      @open="(n: string) => emit('openProfessor', n)"
     />
 
     <div v-else class="uni">
@@ -108,6 +129,10 @@ function money(n?: number) {
             <dt>Graduate students</dt>
             <dd class="num">{{ uni.grad_enrollment.toLocaleString("en-US") }}</dd>
           </div>
+          <div v-if="uni.doctoral_degrees">
+            <dt>PhDs awarded, all fields ({{ uni.doctoral_year }})</dt>
+            <dd class="num">{{ uni.doctoral_degrees.toLocaleString("en-US") }}</dd>
+          </div>
           <div v-if="uni.grad_tuition_out_of_state">
             <dt>Graduate tuition per year</dt>
             <dd class="num">
@@ -119,6 +144,18 @@ function money(n?: number) {
           </div>
         </dl>
 
+        <section v-if="strengths.length" class="strengths">
+          <h3>Research strengths</h3>
+          <p class="sub">Faculty and researchers listed here, by area</p>
+          <ul>
+            <li v-for="a in strengths" :key="a.area">
+              <span class="s-name">{{ a.name }}</span>
+              <span class="s-track"><span class="s-fill" :style="{ width: a.width + '%', background: a.color }"></span></span>
+              <span class="num">{{ a.n }}</span>
+            </li>
+          </ul>
+        </section>
+
         <section class="funding">
           <h3>Paying for a PhD here</h3>
           <template v-if="grantFunders.length">
@@ -128,6 +165,21 @@ function money(n?: number) {
               have an active {{ grantFunderNames }} grant. PhD students are usually paid as research or teaching assistants, which
               also covers tuition, and faculty with active grants are the ones hiring research assistants.
             </p>
+            <ul v-if="uni.funders?.length" class="funders">
+              <li v-for="fd in uni.funders" :key="fd.funder">
+                <strong>{{ funderName(fd.funder) }}</strong>: {{ fd.people }} {{ fd.people === 1 ? "person" : "people" }} with
+                grants on record, {{ fd.active_people }} with one running now
+              </li>
+            </ul>
+            <div v-if="uni.recently_funded?.length" class="recent">
+              <p class="sub">Recently funded (likely hiring):</p>
+              <ul>
+                <li v-for="g in uni.recently_funded" :key="g.name + g.title">
+                  <button type="button" class="link" @click="emit('openProfessor', g.name)">{{ g.name.replace(/\s+\d{4}$/, "") }}</button>,
+                  {{ funderName(g.funder) }} {{ g.year }}: {{ g.title }}
+                </li>
+              </ul>
+            </div>
             <p v-if="ercOnly" class="sub">
               ERC grants are rare, highly competitive awards, and most PhD positions in {{ countryLabel }} are paid
               from national agencies and university budgets that aren't in Advisor Atlas yet. Read "no ERC grant"
@@ -150,8 +202,8 @@ function money(n?: number) {
               <a :href="webUrl(sch.url)" target="_blank" rel="noopener" class="sch-name">{{ sch.name }}</a>
               <p class="sub">
                 {{ sch.provider }}. {{ levelLabel(sch.levels) }}.
-                <template v-if="sch.covers">Covers {{ sch.covers }}.</template>
-                <template v-if="sch.application_window">Application window: {{ sch.application_window }}.</template>
+                <template v-if="shown(sch.covers)">Covers {{ sch.covers }}.</template>
+                <template v-if="shown(sch.application_window)">Application window: {{ sch.application_window }}.</template>
               </p>
               <p v-if="sch.notes" class="sub">{{ sch.notes }}</p>
               <p class="elig">Check eligibility on the official page</p>
@@ -296,6 +348,66 @@ h3 {
 
 .sch-name {
   font-weight: 700;
+}
+
+.strengths ul,
+.funders,
+.recent ul {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.strengths li {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) 1fr 2.5rem;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: var(--t-xs);
+}
+
+.s-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.s-track {
+  height: 8px;
+  background: var(--rule);
+  border-radius: 2px;
+  position: relative;
+}
+
+.s-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+}
+
+.strengths .num {
+  text-align: right;
+}
+
+.funders li,
+.recent li {
+  font-size: var(--t-xs);
+  padding: 3px 0;
+  line-height: 1.45;
+}
+
+.recent .link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .sch-more {

@@ -128,7 +128,7 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 
 	if _, err := tx.Exec(`
 		INSERT INTO funder_grants
-		SELECT DISTINCT ON (funder, grant_id) funder, grant_id, title, NULLIF(abstract, ''),
+		SELECT DISTINCT ON (funder, grant_id) funder, grant_id, html_unescape(title), NULLIF(html_unescape(abstract), ''),
 		       NULLIF(amount, '')::numeric, NULLIF(currency, ''),
 		       NULLIF(starts, '')::date, NULLIF(ends, '')::date, NULLIF(url, ''), lower(NULLIF(country, '')),
 		       NULLIF(scheme, ''), NULLIF(field, '')

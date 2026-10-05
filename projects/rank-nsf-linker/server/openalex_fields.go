@@ -20,7 +20,7 @@ const openAlexMaxWorksPerPerson = 10
 
 var (
 	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index"}
-	fieldsWorksColumns  = []string{"openalex_id", "work_id", "title", "year", "venue", "doi"}
+	fieldsWorksColumns  = []string{"openalex_id", "work_id", "title", "year", "venue", "doi", "abstract"}
 )
 
 func openAlexFieldsPath(name string) string {
@@ -50,7 +50,7 @@ func loadOpenAlexResearchers(mainCtx *colly.Context) error {
 		CREATE TEMP TABLE oa_people (openalex_id text, name text, university text, area text, orcid text,
 		  works text, cited_by text, h_index text) ON COMMIT DROP;
 		CREATE TEMP TABLE oa_works (openalex_id text, work_id text, title text, year text, venue text,
-		  doi text) ON COMMIT DROP;`); err != nil {
+		  doi text, abstract text) ON COMMIT DROP;`); err != nil {
 		return fmt.Errorf("failed to prepare OpenAlex researcher staging: %w", err)
 	}
 	if _, err := copyCSVInto(tx, people, "oa_people", fieldsPeopleColumns); err != nil {
@@ -72,8 +72,8 @@ func loadOpenAlexResearchers(mainCtx *colly.Context) error {
 		  AND p.name NOT IN (SELECT name FROM professors)
 		ORDER BY p.name, NULLIF(p.cited_by, '')::int DESC NULLS LAST;
 
-		INSERT INTO professors (name, affiliation, orcid, source)
-		SELECT name, university, NULLIF(orcid, ''), 'openalex' FROM oa_kept;
+		INSERT INTO professors (name, affiliation, orcid, source, openalex_id)
+		SELECT name, university, NULLIF(orcid, ''), 'openalex', openalex_id FROM oa_kept;
 
 		INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
 		SELECT k.name, k.university, v.venue, count(w.work_id)::real, count(w.work_id)::real,
@@ -115,7 +115,7 @@ func loadOpenAlexResearcherWorks(mainCtx *colly.Context) error {
 		CREATE TEMP TABLE oa_people (openalex_id text, name text, university text, area text, orcid text,
 		  works text, cited_by text, h_index text) ON COMMIT DROP;
 		CREATE TEMP TABLE oa_works (openalex_id text, work_id text, title text, year text, venue text,
-		  doi text) ON COMMIT DROP;`); err != nil {
+		  doi text, abstract text) ON COMMIT DROP;`); err != nil {
 		return err
 	}
 	if _, err := copyCSVInto(tx, people, "oa_people", fieldsPeopleColumns); err != nil {

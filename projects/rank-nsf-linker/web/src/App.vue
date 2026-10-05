@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { api, type Faculty, type Grant, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, funders } from "@/store";
+import { areaIndex, areas, funders, fundersFor } from "@/store";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import GrantRow from "@/components/GrantRow.vue";
@@ -280,7 +280,8 @@ function removeArea(area: string) {
             <span class="uni-meta">
               <template v-if="goal">{{ u.goal_matches }} matching, </template>
               {{ u.faculty }} {{ selectedAreas.length ? "in your areas" : "faculty" }},
-              {{ u.funded }} funded
+              <template v-if="fundersFor(u.country).length">{{ u.funded }} funded</template>
+              <template v-else>no grant data</template>
             </span>
           </button>
         </li>

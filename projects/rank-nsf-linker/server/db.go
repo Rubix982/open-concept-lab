@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"maps"
 	"os"
@@ -562,7 +563,7 @@ func processNsfAwardPerYear(
 
 		awardValues := []any{
 			nsfJsonData.AwdId, year, nsfJsonData.AwardingAgencyCode, nsfJsonData.TranType,
-			nsfJsonData.AwardInstrumentText, nsfJsonData.AwardTitleText,
+			nsfJsonData.AwardInstrumentText, html.UnescapeString(nsfJsonData.AwardTitleText),
 			nsfJsonData.FederalCatalogDomesticAssistanceNumber, nsfJsonData.OrgCode,
 			programOfficerId, nsfJsonData.AwardEffectiveDate, nsfJsonData.AwardExpiryDate,
 			nsfJsonData.TotalIntendedAwardAmount, nsfJsonData.AwardAmount,

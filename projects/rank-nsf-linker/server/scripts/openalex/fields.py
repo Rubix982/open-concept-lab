@@ -165,28 +165,47 @@ def main() -> None:
         return
     works, ids = [], [p["openalex_id"] for p in people]
     for i in range(0, len(ids), 50):
-        group = ids[i:i + 50]
-        body = c.get("works", "works", {
-            "filter": f"authorships.author.id:{'|'.join(group)},from_publication_date:{WORKS_FROM}",
-            "sort": "publication_date:desc", "per_page": 200,
-            "select": "id,doi,title,publication_year,abstract_inverted_index,authorships,primary_location"})
+        group, wanted = ids[i:i + 50], set(ids[i:i + 50])
+        for page in range(1, 4):  # 50 authors can have more than 200 recent works
+            params = {"filter": f"authorships.author.id:{'|'.join(group)},from_publication_date:{WORKS_FROM}",
+                      "sort": "publication_date:desc", "per_page": 200,
+                      "select": "id,doi,title,publication_year,abstract_inverted_index,authorships,primary_location"}
+            if page > 1:
+                params["page"] = page
+            body = c.get("works", "works", params)
+            if body is None:
+                print(f"stopped at the call budget ({c.calls} calls); rerun to continue")
+                break
+            for wk in body.get("results", []):
+                authors = {(a.get("author") or {}).get("id", "").rsplit("/", 1)[-1]
+                           for a in wk.get("authorships") or [] if (a.get("author") or {}).get("id")}
+                venue = ((wk.get("primary_location") or {}).get("source") or {}).get("display_name") or ""
+                abstract = abstract_text(wk.get("abstract_inverted_index"))
+                for aid in authors & wanted:
+                    works.append({"openalex_id": aid, "work_id": wk["id"].rsplit("/", 1)[-1],
+                                  "title": (wk.get("title") or "").strip(), "year": wk.get("publication_year") or "",
+                                  "venue": venue, "doi": (wk.get("doi") or ""), "abstract": abstract})
+            if (body.get("meta") or {}).get("count", 0) <= page * 200:
+                break
+        else:
+            continue
         if body is None:
-            print(f"stopped at the call budget ({c.calls} calls); rerun to continue")
             break
-        wanted = set(group)
-        for wk in body.get("results", []):
-            authors = {(a.get("author") or {}).get("id", "").rsplit("/", 1)[-1]
-                       for a in wk.get("authorships") or [] if (a.get("author") or {}).get("id")}
-            venue = ((wk.get("primary_location") or {}).get("source") or {}).get("display_name") or ""
-            for aid in authors & wanted:
-                works.append({"openalex_id": aid, "work_id": wk["id"].rsplit("/", 1)[-1],
-                              "title": (wk.get("title") or "").strip(), "year": wk.get("publication_year") or "",
-                              "venue": venue, "doi": (wk.get("doi") or "")})
     with (DATA / "fields_works.csv").open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["openalex_id", "work_id", "title", "year", "venue", "doi"])
+        w = csv.DictWriter(f, fieldnames=["openalex_id", "work_id", "title", "year", "venue", "doi", "abstract"])
         w.writeheader()
         w.writerows(works)
     print(f"data/openalex/fields_works.csv: {len(works)} author-work rows ({c.calls} calls this run)")
+
+
+def abstract_text(inverted: dict | None) -> str:
+    if not inverted:
+        return ""
+    words = {}
+    for word, positions in inverted.items():
+        for p in positions:
+            words[p] = word
+    return " ".join(words[i] for i in sorted(words))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import mapboxgl from "mapbox-gl";
+import { fundersFor } from "@/store";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { UniversitySummary } from "@/api";
 
@@ -39,6 +40,8 @@ function features(): GeoJSON.FeatureCollection {
             size: Math.sqrt(weight / max),
             faculty: u.faculty,
             funded: u.funded,
+            // no grant data loaded for this country: say so rather than "0 with a grant"
+            covered: fundersFor(u.country).length > 0,
             goal: u.goal_matches,
             r1: u.carnegie === "R1",
             selected: u.id === props.selectedId,
@@ -106,7 +109,9 @@ onMounted(() => {
     const line = document.createElement("div");
     line.textContent = props.useGoal
       ? `${p.goal} faculty with work matching your goal`
-      : `${p.faculty} faculty in your areas, ${p.funded} with an active research grant`;
+      : p.covered
+        ? `${p.faculty} faculty in your areas, ${p.funded} with an active research grant`
+        : `${p.faculty} faculty in your areas; no grant data for this country yet`;
     el.append(name, line);
     hover?.remove();
     hover = new mapboxgl.Popup({ closeButton: false, offset: 12, className: "uni-tip" })

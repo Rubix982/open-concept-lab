@@ -227,5 +227,21 @@ func getExplorerScholarships(w http.ResponseWriter, r *http.Request) {
 		s.Eligibility = e
 		out = append(out, s)
 	}
+	// Programmes for this country first, then regional (EU), then open-destination ones (HEC, ...).
+	sort.SliceStable(out, func(i, j int) bool { return destinationRank(out[i], country) < destinationRank(out[j], country) })
 	writeJSON(w, http.StatusOK, out)
+}
+
+// destinationRank: 0 when the programme names this country, 1 for a region (EU), 2 for anywhere.
+func destinationRank(s scholarship, country string) int {
+	rank := 2
+	for _, d := range s.Destinations {
+		switch {
+		case d == country:
+			return 0
+		case d == "EU":
+			rank = 1
+		}
+	}
+	return rank
 }

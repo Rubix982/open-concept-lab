@@ -643,3 +643,74 @@ func semanticGrantMatches(goal string, areas []string, depth int) ([]grantMatch,
 	}
 	return matches, nil
 }
+
+type similarPerson struct {
+	Name       string  `json:"name"`
+	University string  `json:"university"`
+	Score      float64 `json:"score"`
+	Source     string  `json:"source"`
+}
+
+// getExplorerSimilar: GET /explorer/faculty/similar?name= — people whose work is closest to this
+// person's: Qdrant recommends from their own papers and grants (average vector), excluding them,
+// and the hits are grouped by person.
+func getExplorerSimilar(w http.ResponseWriter, r *http.Request) {
+	db, err := GetDB()
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
+		return
+	}
+	name := r.URL.Query().Get("name")
+	if !semanticAvailable() {
+		writeJSON(w, http.StatusOK, map[string]any{"similar": []similarPerson{}})
+		return
+	}
+	rows, err := db.Query(`
+		SELECT md5(name || '|' || kind || '|' || ref)::uuid::text FROM explorer_work_docs
+		WHERE name = $1 ORDER BY year DESC NULLS LAST LIMIT 20`, name)
+	if err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to load work", err)
+		return
+	}
+	var ids []string
+	for rows.Next() {
+		var id string
+		if rows.Scan(&id) == nil {
+			ids = append(ids, id)
+		}
+	}
+	rows.Close()
+	if len(ids) == 0 {
+		writeJSON(w, http.StatusOK, map[string]any{"similar": []similarPerson{}})
+		return
+	}
+	var res struct {
+		Result []workHit `json:"result"`
+	}
+	if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+workCollection+"/points/recommend", map[string]any{
+		"positive": ids, "strategy": "average_vector", "limit": 80, "with_payload": []string{"name"},
+		"filter": map[string]any{"must_not": []map[string]any{{"key": "name", "match": map[string]any{"value": name}}}},
+	}, &res); err != nil {
+		writeError(w, r, http.StatusBadGateway, "semantic search failed", err)
+		return
+	}
+	best := map[string]float64{}
+	var order []string
+	for _, h := range res.Result {
+		if _, seen := best[h.Payload.Name]; !seen {
+			order = append(order, h.Payload.Name)
+			best[h.Payload.Name] = h.Score
+		}
+	}
+	if len(order) > 6 {
+		order = order[:6]
+	}
+	people := []similarPerson{}
+	for _, n := range order {
+		p := similarPerson{Name: n, Score: best[n]}
+		if db.QueryRow(`SELECT university, source FROM explorer_faculty WHERE name = $1`, n).Scan(&p.University, &p.Source) == nil {
+			people = append(people, p)
+		}
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"similar": people})
+}

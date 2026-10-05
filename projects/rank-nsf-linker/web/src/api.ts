@@ -33,6 +33,10 @@ export type UniversityDetail = UniversitySummary & {
   area_faculty: Record<string, number>;
   area_funded: Record<string, number>;
   grant_funders?: string[];
+  doctoral_degrees?: number; // IPEDS, all fields, latest year (US)
+  doctoral_year?: number;
+  funders?: { funder: string; people: number; active_people: number }[];
+  recently_funded?: { name: string; funder: string; title: string; year: number }[];
 };
 
 export type Work = {
@@ -61,14 +65,19 @@ export type Faculty = {
   funding: FundingEntry[] | null;
   goal_score?: number;
   match?: Work;
+  latest_work?: { title: string; year: number | null; url: string | null } | null;
+  first_year?: number | null; // first top-venue paper (CSRankings faculty)
+  orcid?: string | null;
+  openalex_id?: string | null;
 };
 
 export type FundingEntry = {
   funder: string;
   currency: string;
   active: number;
+  lead_active?: number; // active grants this person leads
   total: number;
-  active_amount: number;
+  active_amount: number; // of the active grants they lead
 };
 
 export type Funders = { names: Record<string, string>; by_country: Record<string, string[]> };
@@ -85,7 +94,13 @@ export type Award = {
   role: string | null;
   abstract: string;
   url: string;
+  institution?: string; // where the grant is held
+  lead?: boolean; // this person leads it
+  team?: { name: string; role: string; profile: string | null }[];
 };
+
+export type Collaborator = { name: string; university: string; papers: number };
+export type SimilarPerson = { name: string; university: string; score: number; source: string };
 
 export type Paper = {
   title: string;
@@ -93,6 +108,9 @@ export type Paper = {
   year: number;
   url: string | null;
   match?: boolean; // close to the student's goal (only when a goal was given)
+  snippet?: string | null; // start of the abstract (OpenAlex)
+  topic?: string | null;
+  cited_by?: number | null;
 };
 
 export type GrantPerson = { name: string; university: string; university_id: string | null };
@@ -149,7 +167,15 @@ export const api = {
   faculty: (q: Query & { university?: string; limit?: number }, signal?: AbortSignal) =>
     get<Faculty[]>(`/faculty${params(q)}`, signal),
   profile: (name: string) =>
-    get<{ faculty: Faculty; awards: Award[] }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
+    get<{
+      faculty: Faculty;
+      awards: Award[];
+      collaborators: Collaborator[];
+      previously: string[];
+      topics: { topic: string; papers: number }[];
+    }>(`/faculty/profile?name=${encodeURIComponent(name)}`),
+  similar: (name: string) =>
+    get<{ similar: SimilarPerson[] }>(`/faculty/similar?name=${encodeURIComponent(name)}`),
   grants: (q: Query & { active: boolean; limit?: number }, signal?: AbortSignal) =>
     get<Grant[]>(`/grants${params({ ...q, active: q.active ? 1 : 0 })}`, signal),
   scholarships: (country: string) =>

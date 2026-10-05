@@ -202,32 +202,37 @@ Walked the UI across 12 countries (US, UK, DE, FR, CN, JP, KR, IN, SG, BR, AE, P
 what the API returns and the pages render. The data is far richer than the pages.
 
 ### A. Wrong or misleading on screen (fix first)
-- [ ] Same-name people at two universities are merged: CSRankings lists "Yang Zhang" at UNC and at NUS; the NUS
+- [x] Same-name people at two universities are merged: CSRankings lists "Yang Zhang" at UNC and at NUS; the NUS
       row shows the UNC person's NSF grant. Key people by name + affiliation when names collide
-- [ ] ORCID placeholder `0000-0000-0000-0000` on 15,526 CSRankings rows: treat as missing
-- [ ] HTML entities in grant titles (`&quot;`): 58 funder grants, 10 NSF awards. Unescape at load
-- [ ] Per-person funding sums whole grant amounts (Bronstein: £8.6M programme grant). Show role (PI / co-investigator)
+      (Not a merge: that Yang Zhang moved from Michigan to NUS. Grants now say "Held at <institution>" when it
+      differs from the current university)
+- [x] ORCID placeholder `0000-0000-0000-0000` on 15,526 CSRankings rows: treat as missing
+- [x] HTML entities in grant titles (`&quot;`): 58 funder grants, 10 NSF awards. Unescape at load
+- [x] Per-person funding sums whole grant amounts (Bronstein: £8.6M programme grant). Show role (PI / co-investigator)
       and the grant's amount, not a personal total
-- [ ] Map tooltip and university list say "0 with an active research grant" in countries with no grant data
+- [x] Map tooltip and university list say "0 with an active research grant" in countries with no grant data
       (China, Singapore, Korea, …). Say "no grant data for <country>" instead
-- [ ] Scholarship copy: "Covers see official page." / "Application window: see official page." Hide empty fields
-- [ ] Scholarship order: the generic HEC programme leads every country; show programmes for that country first
+- [x] Scholarship copy: "Covers see official page." / "Application window: see official page." Hide empty fields
+- [x] Scholarship order: the generic HEC programme leads every country; show programmes for that country first
 
 ### B. Data we have but don't show
-- [ ] Faculty rows are name + area tags only. Add their newest (or goal-matched) paper title and the funding line
-- [ ] Paper abstracts (95–98% of CS faculty papers): expandable preview on the profile
-- [ ] OpenAlex per paper: topic (256,885 papers) and citation count; topic tags on the profile ("working on now")
-- [ ] Collaborators: 67,706 co-author pairs inside the dataset (26,100 people). "Works with" on the profile, linked
-- [ ] Former affiliations from DBLP (3,136 people): "previously at …"
-- [ ] Grant co-investigators and roles (funder_grant_people): show who else is on each grant
-- [ ] University panel: area strengths (`area_faculty`, already in the API, not rendered); grants by funder; PhD
+- [x] Faculty rows are name + area tags only. Add their newest (or goal-matched) paper title and the funding line
+- [x] Paper abstracts (95–98% of CS faculty papers): expandable preview on the profile
+- [x] OpenAlex per paper: topic (256,885 papers) and citation count; topic tags on the profile ("working on now")
+- [x] Collaborators: 67,706 co-author pairs inside the dataset (26,100 people). "Works with" on the profile, linked
+- [x] Former affiliations from DBLP (3,136 people): "previously at …"
+- [x] Grant co-investigators and roles (funder_grant_people): show who else is on each grant
+- [x] University panel: area strengths (`area_faculty`, already in the API, not rendered); grants by funder; PhD
       degrees awarded per year (IPEDS completions, US); list of faculty with grants started in the last 12 months
-- [ ] Early-career faculty (4,122 CS faculty whose first top-venue paper is 2019+): usually building labs and
-      recruiting. Badge + filter
-- [ ] "Researchers with similar work": nearest people in the semantic index, from a profile
+- [x] Early-career faculty (4,122 CS faculty whose first top-venue paper is 2019+): usually building labs and
+      recruiting. Badge + filter (badge and profile line done; the filter is in C)
+- [x] "Researchers with similar work": nearest people in the semantic index, from a profile
 - [ ] OpenAlex researchers: abstracts are in the cached works responses but were not saved (1% have abstracts);
       34% have no papers (50 authors per call capped at 200 works). Save abstracts; page per author group.
       Link their OpenAlex and ORCID pages (no homepage or Scholar link today)
+      (links done; abstracts and paging: fields.py works rerun in progress, then pipeline from step 13)
+- [x] Found on the way: IPEDS "PhD degrees" counted program rows, not degrees (Georgia Tech 38 → 556). Now sums
+      CTOTALT from the all-programs rows, research doctorates only
 
 ### C. Student use cases not served yet
 - [ ] Filters: country / region, "has an active grant", early-career, R1; sort by recent activity or funding
