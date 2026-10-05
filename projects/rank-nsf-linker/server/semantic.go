@@ -236,7 +236,10 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	}
 	if err := postJSON(http.MethodGet, qdrantURL()+"/collections/"+workCollection, nil, &exists); err != nil {
 		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection,
-			map[string]any{"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine"}}, nil); err != nil {
+			map[string]any{"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine"},
+				// int8 copies kept in RAM: the first search on a cold, memory-mapped index took seconds
+				"quantization_config": map[string]any{"scalar": map[string]any{"type": "int8", "quantile": 0.99, "always_ram": true}}},
+			nil); err != nil {
 			return fmt.Errorf("failed to create Qdrant collection: %w", err)
 		}
 		if _, err := db.Exec(`TRUNCATE explorer_embedded`); err != nil {

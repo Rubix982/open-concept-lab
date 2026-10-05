@@ -251,7 +251,7 @@ what the API returns and the pages render. The data is far richer than the pages
 8. [x] D1 NSERC (Canada, Open Government Licence): 4,029 computing grants FY2022–2024
    [x] D2 NWO (Netherlands, CC0, NWOpen API): all projects since 2016. SweCRIS left out: no published
    reuse terms found (revisit if the Swedish Research Council publishes a licence)
-9. Loose ends: [x] MIT, Caltech, RIT, AFIT linked to IPEDS; [ ] semantic index in RAM (quantization) once embedding finishes
+9. Loose ends: [x] MIT, Caltech, RIT, AFIT linked to IPEDS; [x] semantic index in RAM (int8 quantization): cold "similar" 3.6 s -> 0.1–0.6 s
 Rules: no accounts, payments, public deploys or merges to main; free data and allowances only.
 
 ### Design note: calm exploration (second visibility audit, 2026-10-05)
