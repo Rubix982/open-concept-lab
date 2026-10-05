@@ -198,6 +198,23 @@ func loadExtraUniversities(tx *sql.Tx) error {
 	return nil
 }
 
+// restoreSubfieldAreas re-adds the subfield areas after migrations (see main).
+func restoreSubfieldAreas() error {
+	db, err := GetDB()
+	if err != nil {
+		return err
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if err := loadSubfieldAreas(tx); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
 // loadSubfieldAreas adds OpenAlex subfields (data/openalex/subfields.csv) as research areas, each in
 // its field's group: area 'sf<id>', venue 'oas:<id>', area_field the field's name.
 func loadSubfieldAreas(tx *sql.Tx) error {

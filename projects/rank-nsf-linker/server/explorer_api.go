@@ -74,7 +74,7 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query(`
 		SELECT v.area_group, v.area, v.area_name, v.area_field,
 		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0)
-		FROM (SELECT DISTINCT area_group, area, area_name, area_field, venue LIKE 'oa%' AS openalex
+		FROM (SELECT DISTINCT area_group, area, area_name, area_field, venue ~ '^oas?:' AS openalex
 		      FROM research_area_venues) v
 		LEFT JOIN explorer_faculty f ON v.area = ANY (f.areas)
 		GROUP BY v.area_group, v.area, v.area_name, v.area_field, v.openalex

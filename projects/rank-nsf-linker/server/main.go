@@ -72,6 +72,11 @@ func main() {
 		logger.Errorf(mainCtx, "failed to execute migrations: %v", runMigrationsErr)
 		return
 	}
+	// Migration 12 reloads research_area_venues from scratch, which drops the OpenAlex subfield areas
+	// the pipeline added: put them back from data/openalex/subfields.csv.
+	if err := restoreSubfieldAreas(); err != nil {
+		logger.Warnf(mainCtx, "⚠️ could not restore subfield areas: %v", err)
+	}
 
 	// If we actually go to populate the DB, we mark the pipeline as in progress anyways, so
 	// we can mark it as completed here.

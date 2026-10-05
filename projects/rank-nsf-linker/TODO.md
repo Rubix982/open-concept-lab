@@ -164,6 +164,11 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - 646,857 searchable items (76,472 grants, 570,385 papers; 290,485 papers with abstracts). Qdrant 1.12.6: 537 MB.
 - Known data caveat: OpenAlex affiliations are sometimes stale (a researcher can show at a previous university).
 
+## Subfields: finish tomorrow (2026-10-06, after the OpenAlex allowance resets)
+- [ ] `fields.py works` for the ~65 groups of new researchers still without papers (saved groups,
+      resumes on cache), then pipeline from step 22
+- [x] 11 more fields and ~210 subfields as research areas (70,290 people, 234 areas)
+
 ## Next: the pipeline fetches everything (agreed 2026-10-05, after subfields)
 Today only CSRankings, NSF and IPEDS are fetched by the pipeline; everything else is fetched by hand
 and only loaded. On a fresh pod those steps skip or fail. Goal: the pipeline fetches, extracts and

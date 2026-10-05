@@ -30,9 +30,10 @@ const groups = computed(() =>
   }).filter((g) => g.fields.length),
 );
 
-// The first 8, plus any selected beyond them, unless the field is opened.
+// The first 8, plus any selected beyond them, unless the field is opened. Computer science
+// areas (no field) are always listed in full.
 function shown(group: string, field: string, list: Area[]): Area[] {
-  if (opened.value.has(`${group}|${field}`) || list.length <= SHOWN)
+  if (!field || opened.value.has(`${group}|${field}`) || list.length <= SHOWN)
     return list;
   return [
     ...list.slice(0, SHOWN),
@@ -81,7 +82,7 @@ function toggle(area: string) {
             {{ a.name }}
           </button>
           <button
-            v-if="f.list.length > SHOWN"
+            v-if="f.field && f.list.length > SHOWN"
             type="button"
             class="more"
             :aria-expanded="opened.has(`${g.group}|${f.field}`)"

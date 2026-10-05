@@ -153,6 +153,7 @@ function clearGoal() {
 // ---- data ----
 const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
+const loadedGoal = ref<string | null>(null); // the search the current lists were loaded for
 const grants = ref<Grant[]>([]);
 const grantsLoading = ref(false);
 const includePastGrants = ref(true); // the Funding tab opens on every grant; a toggle narrows to running
@@ -177,6 +178,7 @@ async function load() {
     ]);
     universities.value = u;
     faculty.value = f;
+    loadedGoal.value = query.value.goal;
     loading.value = false;
     if (areas.value.length) ready.value = true;
   } catch (e) {
@@ -375,9 +377,12 @@ async function tourSearch() {
   if (goal.value !== TOUR_GOAL) trySearch(TOUR_GOAL);
   openUniversity(null);
   tab.value = "faculty";
+  // Wait for the lists of this search, not the ones already on screen from before it.
   await until(
     () =>
-      !loading.value && goal.value === TOUR_GOAL && faculty.value.length > 0,
+      !loading.value &&
+      loadedGoal.value === TOUR_GOAL &&
+      faculty.value.length > 0,
   );
 }
 const tourSteps: TourStep[] = [
@@ -408,6 +413,7 @@ const tourSteps: TourStep[] = [
   },
   {
     target: ".prof",
+    ready: ".prof header h2",
     title: "A professor's page",
     body: "What they are working on now, their papers closest to your search, their grants and who they work with. Names link to other profiles.",
     before: async () => {

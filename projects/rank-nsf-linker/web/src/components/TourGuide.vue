@@ -7,6 +7,7 @@ export type TourStep = {
   title: string;
   body: string;
   target?: string; // CSS selector; none = a centred card
+  ready?: string; // wait for this selector (content loaded) before pointing at target
   before?: () => void | Promise<void>;
 };
 
@@ -54,6 +55,7 @@ async function show(i: number) {
   waiting.value = true;
   rect.value = null;
   await step.before?.();
+  if (step.ready) await waitFor(step.ready);
   const el = step.target ? await waitFor(step.target) : null;
   if (mine !== run) return; // another step started meanwhile
   if (el) {
