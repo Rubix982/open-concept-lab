@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -52,6 +53,9 @@ func loadOpenAlexResearchers(mainCtx *colly.Context) error {
 		CREATE TEMP TABLE oa_works (openalex_id text, work_id text, title text, year text, venue text,
 		  doi text, abstract text) ON COMMIT DROP;`); err != nil {
 		return fmt.Errorf("failed to prepare OpenAlex researcher staging: %w", err)
+	}
+	if err := loadExtraUniversities(tx); err != nil {
+		return err
 	}
 	if _, err := copyCSVInto(tx, people, "oa_people", fieldsPeopleColumns); err != nil {
 		return err
@@ -144,6 +148,34 @@ func loadOpenAlexResearcherWorks(mainCtx *colly.Context) error {
 	}
 	n, _ := res.RowsAffected()
 	logger.Infof(mainCtx, "🔬 OpenAlex researcher works added to papers: %d", n)
+	return nil
+}
+
+// Universities CSRankings doesn't list, chosen from OpenAlex (backup/extra_universities.csv, written by
+// scripts/openalex/extra_universities.py), so their researchers have somewhere on the map to be.
+var extraUniversityColumns = []string{"institution", "country", "openalex_id", "latitude", "longitude", "homepage", "source"}
+
+func loadExtraUniversities(tx *sql.Tx) error {
+	path := filepath.Join(getRootDirPath(BACKUP_DIR), "extra_universities.csv")
+	if !fileExists(path) {
+		return nil
+	}
+	if _, err := tx.Exec(`CREATE TEMP TABLE extra_unis (institution text, country text, openalex_id text,
+		latitude text, longitude text, homepage text, source text) ON COMMIT DROP`); err != nil {
+		return err
+	}
+	if _, err := copyCSVInto(tx, path, "extra_unis", extraUniversityColumns); err != nil {
+		return err
+	}
+	_, err := tx.Exec(`
+		INSERT INTO universities (institution, countryabbrv, region, latitude, longitude, homepage)
+		SELECT e.institution, e.country, lower(c.region), e.latitude::double precision, e.longitude::double precision,
+		       NULLIF(e.homepage, '')
+		FROM extra_unis e LEFT JOIN countries c ON lower(c.alpha_2) = e.country
+		ON CONFLICT (institution) DO NOTHING`)
+	if err != nil {
+		return fmt.Errorf("failed to add extra universities: %w", err)
+	}
 	return nil
 }
 

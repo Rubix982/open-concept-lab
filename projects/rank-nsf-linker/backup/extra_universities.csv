@@ -1,0 +1,26 @@
+institution,country,openalex_id,latitude,longitude,homepage,source
+Abdul Wali Khan University Mardan,pk,I181063083,34.19068,72.03680,http://www.awkum.edu.pk/,openalex+openstreetmap
+Aga Khan University,pk,I118185606,24.92385,67.06208,https://www.aku.edu/,openalex+openstreetmap
+Bahauddin Zakariya University,pk,I127670440,30.26402,71.50829,https://bzu.edu.pk/,openalex+openstreetmap
+COMSATS University Islamabad,pk,I16076960,33.64976,73.15492,https://www.comsats.edu.pk/,openalex+openstreetmap
+Dow University of Health Sciences,pk,I39727005,24.94421,67.14205,http://www.duhs.edu.pk/,openalex+openstreetmap
+Ghulam Ishaq Khan Institute of Engineering Sciences and Technology,pk,I5400463,34.07444,72.64592,https://giki.edu.pk,openalex+openstreetmap
+"Government College University, Faisalabad",pk,I194348271,31.41579,73.06888,https://gcuf.edu.pk,openalex+openstreetmap
+"Government College University, Lahore",pk,I43879129,31.57315,74.30835,http://www.gcu.edu.pk/,openalex+openstreetmap
+Institute of Business Administration Karachi,pk,I134784518,24.94060,67.11442,https://www.iba.edu.pk/,openalex+openstreetmap
+"International Islamic University, Islamabad",pk,I121243025,33.66361,73.02664,https://www.iiu.edu.pk/,openalex+openstreetmap
+Islamia University of Bahawalpur,pk,I174731842,29.39830,71.69102,https://www.iub.edu.pk/,openalex+openstreetmap
+LUMS,pk,I207789805,31.47033,74.40974,https://www.lums.edu.pk,openalex+openstreetmap
+National University of Computer and Emerging Sciences,pk,I201384688,33.65630,72.98740,http://www.nu.edu.pk,manual: Islamabad campus (H-11)
+National University of Sciences and Technology,pk,I929597975,33.64482,72.99178,https://nust.edu.pk,openalex+openstreetmap
+Pakistan Institute of Engineering and Applied Sciences,pk,I134276161,33.65316,73.26694,https://www.pieas.edu.pk,openalex+openstreetmap
+Quaid-i-Azam University,pk,I12469534,33.74700,73.13830,http://www.qau.edu.pk/,"manual: campus, Islamabad"
+Riphah International University,pk,I195024194,33.61693,72.97234,https://riphah.edu.pk,openalex+openstreetmap
+University of Agriculture Faisalabad,pk,I61623833,31.43394,73.06893,https://web.uaf.edu.pk/,openalex+openstreetmap
+University of Engineering and Technology Lahore,pk,I142732210,31.57840,74.35670,https://www.uet.edu.pk/,"manual: main campus, G.T. Road, Lahore"
+University of Karachi,pk,I193670377,24.94373,67.12062,https://www.uok.edu.pk,openalex+openstreetmap
+University of Lahore,pk,I142204992,31.39160,74.23960,https://www.uol.edu.pk/,"manual: main campus, Raiwind Road, Lahore"
+University of Management and Technology,pk,I87482320,31.44970,74.29330,https://www.umt.edu.pk/,"manual: main campus, Johar Town, Lahore"
+University of Peshawar,pk,I36001604,34.01055,71.48332,https://www.uop.edu.pk/,openalex+openstreetmap
+University of Sargodha,pk,I160968435,32.07284,72.68419,https://uos.edu.pk/,openalex+openstreetmap
+University of the Punjab,pk,I172780181,31.49326,74.29503,https://www.pu.edu.pk,openalex+openstreetmap

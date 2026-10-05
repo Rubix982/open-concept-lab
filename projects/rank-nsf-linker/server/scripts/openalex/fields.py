@@ -9,7 +9,10 @@ who look like faculty:
   - publishing in the last three years.
 These are researchers, not verified faculty; the explorer labels them as such.
 
-Input: data/openalex/universities.csv (name, the explorer's R1 universities), exported from the database.
+Input: data/openalex/universities.csv (name, the explorer's R1 universities), exported from the database,
+and backup/extra_universities.csv (universities CSRankings doesn't list, e.g. Pakistan's; see
+extra_universities.py). For those, computer science is fetched too and the faculty thresholds are
+lower (smaller research systems: h-index >= 8, 15+ works).
 Steps (each response cached in data/openalex/fields/, reruns resume):
   institutions  resolve each university to an OpenAlex institution id (1 call per university)
   authors       researchers per university and field (1 call per pair)
@@ -53,6 +56,8 @@ FIELDS = {
     "28": ("neuroscience", "Neuroscience", "Medicine"),
     "24": ("immunology", "Immunology and microbiology", "Medicine"),
 }
+# Only at extra universities, where CSRankings has no computer science faculty.
+EXTRA_FIELDS = {**FIELDS, "17": ("computing", "Computer science (OpenAlex)", "Engineering")}
 
 
 def api_key() -> str:
@@ -109,16 +114,21 @@ def resolve_institutions(c: Client) -> dict[str, dict]:
         hit = next((i for i in body.get("results", []) if i.get("type") in ("education", "facility")), None)
         if hit:
             out[row["name"]] = {"id": hit["id"].rsplit("/", 1)[-1], "openalex_name": hit["display_name"]}
+    extra = ROOT / "backup" / "extra_universities.csv"
+    if extra.exists():
+        for row in csv.DictReader(extra.open(encoding="utf-8")):
+            out[row["institution"]] = {"id": row["openalex_id"], "openalex_name": row["institution"], "extra": True}
     return out
 
 
-def looks_like_faculty(a: dict, inst_id: str) -> bool:
+def looks_like_faculty(a: dict, inst_id: str, extra: bool = False) -> bool:
     insts = a.get("last_known_institutions") or []
     if not insts or insts[0]["id"].rsplit("/", 1)[-1] != inst_id:
         return False
     stats = a.get("summary_stats") or {}
     recent = [y for y in a.get("counts_by_year") or [] if y["year"] >= date.today().year - 3 and y["works_count"]]
-    return 30 <= (a.get("works_count") or 0) <= 1500 and (stats.get("h_index") or 0) >= 15 and bool(recent)
+    min_works, min_h = (15, 8) if extra else (30, 15)
+    return min_works <= (a.get("works_count") or 0) <= 1500 and (stats.get("h_index") or 0) >= min_h and bool(recent)
 
 
 def main() -> None:
@@ -130,7 +140,7 @@ def main() -> None:
 
     people, seen = [], set()
     for uni, inst in institutions.items():
-        for field_id, (area, _name, _group) in FIELDS.items():
+        for field_id, (area, _name, _group) in (EXTRA_FIELDS if inst.get("extra") else FIELDS).items():
             body = c.get("authors", "authors", {
                 "filter": f"last_known_institutions.id:{inst['id']},topics.field.id:{field_id}",
                 "sort": "cited_by_count:desc", "per_page": 200,
@@ -142,7 +152,7 @@ def main() -> None:
             kept = 0
             for a in body.get("results", []):
                 aid = a["id"].rsplit("/", 1)[-1]
-                if aid in seen or not looks_like_faculty(a, inst["id"]):
+                if aid in seen or not looks_like_faculty(a, inst["id"], inst.get("extra", False)):
                     continue
                 seen.add(aid)
                 people.append({"openalex_id": aid, "name": a["display_name"], "university": uni, "area": area,
