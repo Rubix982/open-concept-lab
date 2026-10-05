@@ -130,13 +130,16 @@ class Client:
         return body
 
 
-def resolve_institutions(c: Client) -> dict[str, dict]:
-    out = {}
+def resolve_institutions(c: Client) -> tuple[dict[str, dict], int]:
+    """OpenAlex institutions for the universities, and how many couldn't be looked up (call budget
+    spent). Those are skipped, never silently dropped: the caller treats the run as partial."""
+    out, unresolved = {}, 0
     for row in csv.DictReader((DATA / "universities.csv").open(encoding="utf-8")):
         body = c.get("institutions", "institutions", {"search": row["name"], "filter": "country_code:us",
                                                        "per_page": 5, "select": "id,display_name,type,ror"})
         if body is None:
-            break
+            unresolved += 1
+            continue
         hit = next((i for i in body.get("results", []) if i.get("type") in ("education", "facility")), None)
         if hit:
             out[row["name"]] = {"id": hit["id"].rsplit("/", 1)[-1], "openalex_name": hit["display_name"]}
@@ -144,7 +147,7 @@ def resolve_institutions(c: Client) -> dict[str, dict]:
     if extra.exists():
         for row in csv.DictReader(extra.open(encoding="utf-8")):
             out[row["institution"]] = {"id": row["openalex_id"], "openalex_name": row["institution"], "extra": True}
-    return out
+    return out, unresolved
 
 
 def looks_like_faculty(a: dict, inst_id: str, extra: bool = False) -> bool:
@@ -161,7 +164,9 @@ def main() -> None:
     max_calls = int(sys.argv[sys.argv.index("--max-calls") + 1]) if "--max-calls" in sys.argv else None
     step = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "authors"
     c = Client(max_calls)
-    institutions = resolve_institutions(c)
+    institutions, unresolved = resolve_institutions(c)
+    if unresolved:
+        print(f"{unresolved} universities not looked up yet (call budget); this run is partial")
     print(f"{len(institutions)} universities resolved to OpenAlex institutions")
 
     # Fetch every university-and-field page first, eight at a time (OpenAlex takes ~4 s per page and
@@ -177,7 +182,7 @@ def main() -> None:
         for _ in pool.map(lambda p: c.get("authors", "authors", p) is not None, missing):
             pass
 
-    people, seen, subfields, stopped = [], set(), {}, False
+    people, seen, subfields, stopped = [], set(), {}, unresolved > 0
     for uni, inst in institutions.items():
         for field_id, (area, _name, _group) in (EXTRA_FIELDS if inst.get("extra") else FIELDS).items():
             body = c.get("authors", "authors", authors_params(inst, field_id))
@@ -206,7 +211,13 @@ def main() -> None:
     if previous.exists():
         order = {r["openalex_id"]: i for i, r in enumerate(csv.DictReader(previous.open(encoding="utf-8")))}
         people.sort(key=lambda p: order.get(p["openalex_id"], len(order)))
-    # A run stopped by the call budget doesn't replace the full list the pipeline loads.
+    # A run stopped by the call budget, or one that would lose more than a tenth of the researchers
+    # listed now, doesn't replace the list the pipeline loads.
+    if previous.exists() and not stopped:
+        before = sum(1 for _ in csv.DictReader(previous.open(encoding="utf-8")))
+        if len(people) < 0.9 * before:
+            print(f"only {len(people)} researchers against {before} before: kept the previous list")
+            stopped = True
     out = DATA / ("fields_people.partial.csv" if stopped else "fields_people.csv")
     with out.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["openalex_id", "name", "university", "area", "orcid", "works",
@@ -234,70 +245,79 @@ WORKS_DONE = DATA / "fields_works_done.txt"  # researchers whose works were aske
 WORKS_GROUPS = DATA / "fields_works_groups.json"
 
 
+def cached_works(keep: set[str]):
+    """Every (researcher, work) in the cached works pages, for researchers in keep. The cache is the
+    record of everything ever fetched, so the works file is rebuilt from it, never copied from the
+    previous file (a bad run once shrank that file and the next copy kept the loss)."""
+    for path in sorted((CACHE / "works").glob("*.json")):
+        try:
+            body = json.loads(path.read_text())
+        except ValueError:
+            continue
+        for wk in body.get("results", []):
+            authors = {(a.get("author") or {}).get("id", "").rsplit("/", 1)[-1]
+                       for a in wk.get("authorships") or [] if (a.get("author") or {}).get("id")}
+            mine = authors & keep
+            if not mine:
+                continue
+            venue = ((wk.get("primary_location") or {}).get("source") or {}).get("display_name") or ""
+            row = {"work_id": wk["id"].rsplit("/", 1)[-1], "title": (wk.get("title") or "").strip(),
+                   "year": wk.get("publication_year") or "", "venue": venue, "doi": wk.get("doi") or "",
+                   "abstract": abstract_text(wk.get("abstract_inverted_index"))}
+            for aid in mine:
+                yield {"openalex_id": aid, **row}
+
+
 def fetch_works(c: Client, people: list[dict]) -> None:
-    """Works since WORKS_FROM for researchers who have none on file yet. Kept works are copied over
-    as they are, the missing are fetched in groups of 50 (sorted, so a run stopped by the call
-    budget resumes on the same groups), and the file only ever grows: a stopped run still writes
-    everything it has."""
+    """Works since WORKS_FROM for every researcher. Researchers with no cached works are asked for
+    in groups of 50, kept in fields_works_groups.json so a run stopped by the call budget resumes
+    on the same groups; then the file is rebuilt from the whole cache."""
     out = DATA / "fields_works.csv"
     keep = {p["openalex_id"] for p in people}
     asked = set(WORKS_DONE.read_text().split()) if WORKS_DONE.exists() else set()
-    have: set[str] = set()
+    have = {r["openalex_id"] for r in cached_works(keep)}
+    need = keep - have - asked
+    saved = json.loads(WORKS_GROUPS.read_text()) if WORKS_GROUPS.exists() else []
+    grouped = {aid for g in saved for aid in g}
+    fresh = sorted(need - grouped)
+    saved += [fresh[i:i + 50] for i in range(0, len(fresh), 50)]
+    WORKS_GROUPS.write_text(json.dumps(saved))
+    groups = [g for g in saved if need & set(g)]
+    print(f"  cached works for {len(have)} researchers; {len(need)} to ask ({len(groups)} groups)")
+    firsts = [works_params(g, 1) for g in groups]
+    missing = [p for p in firsts if not c.cache_file("works", "works", p).exists()]
+    with ThreadPoolExecutor(8) as pool:
+        for _ in pool.map(lambda p: c.get("works", "works", p) is not None, missing):
+            pass
+    stopped = False
+    for group in groups:  # later pages, and which groups are now fully asked
+        complete, body = False, None
+        for page in range(1, 4):  # 50 authors can have more than 200 recent works
+            body = c.get("works", "works", works_params(group, page))
+            if body is None:  # over budget: ask again next run
+                stopped = True
+                break
+            if (body.get("meta") or {}).get("count", 0) <= page * 200:
+                complete = True
+                break
+        if (complete or page == 3) and body is not None:
+            asked.update(group)
     tmp = out.with_suffix(".csv.tmp")
-    kept_rows = 0
+    rows, seen = 0, set()
     with tmp.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=WORKS_COLUMNS)
         w.writeheader()
-        if out.exists():
-            for r in csv.DictReader(out.open(encoding="utf-8")):
-                if r["openalex_id"] in keep:
-                    w.writerow(r)
-                    have.add(r["openalex_id"])
-                    kept_rows += 1
-        need = keep - have - asked
-        saved = json.loads(WORKS_GROUPS.read_text()) if WORKS_GROUPS.exists() else []
-        grouped = {aid for g in saved for aid in g}
-        fresh = sorted(need - grouped)
-        saved += [fresh[i:i + 50] for i in range(0, len(fresh), 50)]
-        WORKS_GROUPS.write_text(json.dumps(saved))
-        groups = [g for g in saved if need & set(g)]
-        print(f"  {kept_rows} works kept for {len(have)} researchers; {len(need)} researchers to ask "
-              f"({len(groups)} groups)")
-        # First pages eight at a time; later pages (groups with more than 200 works) in the loop.
-        firsts = [works_params(g, 1) for g in groups]
-        missing = [p for p in firsts if not c.cache_file("works", "works", p).exists()]
-        with ThreadPoolExecutor(8) as pool:
-            for _ in pool.map(lambda p: c.get("works", "works", p) is not None, missing):
-                pass
-        added, stopped = 0, False
-        for group in groups:
-            wanted, complete = set(group) & need, False
-            for page in range(1, 4):  # 50 authors can have more than 200 recent works
-                body = c.get("works", "works", works_params(group, page))
-                if body is None:  # over budget: keep what is cached, ask again next run
-                    stopped = True
-                    break
-                for wk in body.get("results", []):
-                    authors = {(a.get("author") or {}).get("id", "").rsplit("/", 1)[-1]
-                               for a in wk.get("authorships") or [] if (a.get("author") or {}).get("id")}
-                    venue = ((wk.get("primary_location") or {}).get("source") or {}).get("display_name") or ""
-                    abstract = abstract_text(wk.get("abstract_inverted_index"))
-                    for aid in authors & wanted:
-                        w.writerow({"openalex_id": aid, "work_id": wk["id"].rsplit("/", 1)[-1],
-                                    "title": (wk.get("title") or "").strip(), "year": wk.get("publication_year") or "",
-                                    "venue": venue, "doi": (wk.get("doi") or ""), "abstract": abstract})
-                        added += 1
-                if (body.get("meta") or {}).get("count", 0) <= page * 200:
-                    complete = True
-                    break
-            if (complete or page == 3) and body is not None:
-                asked.update(group)
-        if stopped:
-            print(f"call budget reached ({c.calls} calls); cached pages used, rerun later for the rest")
+        for r in cached_works(keep):
+            key = (r["openalex_id"], r["work_id"])
+            if key not in seen:
+                seen.add(key)
+                w.writerow(r)
+                rows += 1
     tmp.replace(out)
     WORKS_DONE.write_text("\n".join(sorted(asked)))
-    print(f"data/openalex/fields_works.csv: {kept_rows + added} author-work rows ({added} new, {c.calls} calls this run)")
+    print(f"data/openalex/fields_works.csv: {rows} author-work rows ({c.calls} calls this run)")
     if stopped:
+        print("call budget reached; rerun later for the rest")
         sys.exit(PARTIAL)
 
 

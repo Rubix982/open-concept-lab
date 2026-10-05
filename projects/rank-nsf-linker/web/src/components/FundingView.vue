@@ -142,7 +142,16 @@ function years(g: Landscape["grants"][number]) {
 
     <template v-else-if="data">
       <p class="lead-line" :class="{ dim: loading }">
-        <template v-if="!data.total"
+        <template v-if="!goal">
+          <strong>{{ data.total.toLocaleString() }}</strong>
+          {{ onlyActive ? "running grants" : "grants" }} from
+          {{ data.funders.length }} funders<template v-if="country">
+            in {{ countryName(country) }}</template
+          ><template v-if="!onlyActive"
+            >, {{ data.active.toLocaleString() }} running now</template
+          >. Search for a topic to see who funds it.
+        </template>
+        <template v-else-if="!data.total"
           >No grant mentions “{{ goal }}”. Try fewer or broader words.</template
         >
         <template v-else>
@@ -273,7 +282,7 @@ function years(g: Landscape["grants"][number]) {
         </button>
       </section>
 
-      <section>
+      <section v-if="goal">
         <h3>Grants held by people in Advisor Atlas</h3>
         <p class="hint">
           Closest in meaning to your search; open a name to see their profile.
@@ -304,11 +313,12 @@ function years(g: Landscape["grants"][number]) {
       </section>
 
       <details v-if="data.grants.length" class="more-grants">
-        <summary>
+        <summary v-if="goal">
           More grants that mention “{{ goal }}”, including researchers not in
           Advisor Atlas
         </summary>
-        <p class="hint">
+        <summary v-else>The newest grants</summary>
+        <p v-if="goal" class="hint">
           Matched on words, closest first, favouring recent ones.
         </p>
         <ul class="grants">

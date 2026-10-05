@@ -127,10 +127,15 @@ func fetchOpenAlexSources(mainCtx *colly.Context) error {
 		return nil
 	}
 	outputs := []string{"fields_people.csv", "fields_works.csv", "subfields.csv", "works.csv"}
-	before := contentHashes(outputs)
+	before, people := contentHashes(outputs), countLines(openAlexFieldsPath("fields_people.csv"))
 	runFetchGroup(mainCtx, "openalex")
 	if after := contentHashes(outputs); after == before {
 		logger.Infof(mainCtx, "📥 OpenAlex: nothing new")
+		return nil
+	}
+	// The fetch scripts refuse to shrink their outputs; this is the second lock on that door.
+	if now := countLines(openAlexFieldsPath("fields_people.csv")); now < people*9/10 {
+		logger.Warnf(mainCtx, "⚠️ OpenAlex researchers fell from %d to %d: not loading them", people, now)
 		return nil
 	}
 	logger.Infof(mainCtx, "📥 OpenAlex: new data; loading it")
@@ -211,6 +216,26 @@ func writeLines(db *sql.DB, path, header, query string) error {
 		return err
 	}
 	return os.Rename(tmp, path)
+}
+
+func countLines(path string) int {
+	f, err := os.Open(path)
+	if err != nil {
+		return 0
+	}
+	defer f.Close()
+	n, buf := 0, make([]byte, 1<<20)
+	for {
+		k, err := f.Read(buf)
+		for _, b := range buf[:k] {
+			if b == '\n' {
+				n++
+			}
+		}
+		if err != nil {
+			return n
+		}
+	}
 }
 
 // contentHashes fingerprints the files' contents: a script may rewrite a file without changing it,

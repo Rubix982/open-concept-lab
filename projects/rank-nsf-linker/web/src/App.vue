@@ -147,7 +147,6 @@ function trySearch(q: string) {
 function clearGoal() {
   goalInput.value = "";
   goal.value = "";
-  if (tab.value === "funding") tab.value = "faculty";
 }
 
 // ---- data ----
@@ -254,7 +253,7 @@ const listedCountries = computed(() => [
 // On the Funding tab the dots show money (grants on the search) instead of people.
 const fundingCounts = ref<Record<string, number> | null>(null);
 const fundingMap = computed(
-  () => tab.value === "funding" && !!goal.value && !!fundingCounts.value,
+  () => tab.value === "funding" && !!fundingCounts.value,
 );
 const mapUniversities = computed(() =>
   fundingMap.value
@@ -360,6 +359,7 @@ const tabs = computed<{ id: Tab; label: string }[]>(() =>
     : [
         { id: "universities", label: "Universities" },
         { id: "faculty", label: "Faculty" },
+        { id: "funding", label: "Funding" },
       ],
 );
 
@@ -439,7 +439,7 @@ const tourSteps: TourStep[] = [
   {
     target: ".funding",
     title: "Where the money goes",
-    body: "Who pays for this topic, whether it is growing, and which universities hold the grants, counting every grant loaded, even those of researchers not on the map. The map's dots now show money, not people.",
+    body: "Who pays for this topic, whether it is growing, and which universities hold the grants, counting every grant loaded, even those of researchers not on the map. The map's dots now show money, not people. Open Funding without a search for the whole picture.",
     before: async () => {
       await tourSearch();
       tab.value = "funding";
@@ -793,8 +793,10 @@ const areaChips = computed(() => {
         v-else
         :universities="mapUniversities"
         :color="mapColor"
-        :use-goal="!!goal"
-        :goal-label="fundingMap ? 'grants on this search' : undefined"
+        :use-goal="!!goal || fundingMap"
+        :goal-label="
+          fundingMap ? (goal ? 'grants on this search' : 'grants') : undefined
+        "
         :countries="listedCountries"
         :selected-id="openUni"
         :focus="goalFocus"
@@ -804,7 +806,9 @@ const areaChips = computed(() => {
         Dot size:
         {{
           fundingMap
-            ? "grants on this search"
+            ? goal
+              ? "grants on this search"
+              : "grants"
             : goal
               ? "faculty matching your search"
               : "faculty in your areas"

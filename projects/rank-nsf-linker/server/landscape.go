@@ -169,8 +169,9 @@ type landscapeGrant struct {
 
 // getExplorerLandscape: where money for a search goes, across every grant loaded (linked to someone on
 // the map or not): totals by funder, grants started per year, the institutions receiving them, and the
-// best-matching grants. Keyword match on title and the start of the abstract.
-// Params: q (required), active=1 (running grants only), country.
+// best-matching grants. Keyword match on title and the start of the abstract; without q, every
+// grant (newest first).
+// Params: q, active=1 (running grants only), country.
 func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	db, err := GetDB()
 	if err != nil {
@@ -179,10 +180,6 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	}
 	v := r.URL.Query()
 	q := strings.TrimSpace(v.Get("q"))
-	if q == "" {
-		writeJSON(w, http.StatusOK, map[string]any{"total": 0})
-		return
-	}
 	active := v.Get("active") == "1"
 	country := strings.ToLower(strings.TrimSpace(v.Get("country")))
 
@@ -194,9 +191,12 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	defer tx.Rollback()
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE m ON COMMIT DROP AS
-		SELECT g.*, ts_rank_cd(g.doc, q, 1) AS rank, g.ends >= current_date AS running
+		SELECT g.funder, g.id, g.title, g.snippet, g.amount, g.currency, g.starts, g.ends, g.url, g.country,
+		       g.lead, g.institution, g.university_id, g.profile, g.programs,
+		       CASE WHEN $1 = '' THEN 1 ELSE ts_rank_cd(g.doc, q, 1) END AS rank, g.ends >= current_date AS running
 		FROM explorer_grants g, websearch_to_tsquery('english', $1) q
-		WHERE g.doc @@ q AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
+		-- no search: every grant (the Funding tab's overview)
+		WHERE ($1 = '' OR g.doc @@ q) AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
 		q, active, country); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
@@ -302,7 +302,8 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		SELECT funder, id, title, snippet, amount, currency, starts::text, ends::text, url, lead, institution,
 		       university_id, profile
 		FROM m
-		ORDER BY rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC
+		ORDER BY rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC,
+		         starts DESC NULLS LAST
 		LIMIT 40`)
 	if err == nil {
 		for rows.Next() {
