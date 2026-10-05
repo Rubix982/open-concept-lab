@@ -181,6 +181,7 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
       Labelled "Researcher (OpenAlex)", not verified faculty (`scripts/openalex/fields.py`, migration 17)
 - [x] NIH RePORTER: 77,190 projects active in FY2025–26 → 3,488 people (`scripts/grants/nih.py`)
 - [ ] Researchers outside CS beyond US R1 universities, and more fields (psychology, economics, …)
+      (Pakistan done: 25 universities via backup/extra_universities.csv; other countries and fields open)
 - [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
 ## Decisions
@@ -227,10 +228,10 @@ what the API returns and the pages render. The data is far richer than the pages
 - [x] Early-career faculty (4,122 CS faculty whose first top-venue paper is 2019+): usually building labs and
       recruiting. Badge + filter (badge and profile line done; the filter is in C)
 - [x] "Researchers with similar work": nearest people in the semantic index, from a profile
-- [ ] OpenAlex researchers: abstracts are in the cached works responses but were not saved (1% have abstracts);
+- [x] OpenAlex researchers: abstracts are in the cached works responses but were not saved (1% have abstracts);
       34% have no papers (50 authors per call capped at 200 works). Save abstracts; page per author group.
       Link their OpenAlex and ORCID pages (no homepage or Scholar link today)
-      (links done; abstracts and paging: fields.py works rerun in progress, then pipeline from step 13)
+      (done: 429,168 author-paper rows, 74% with abstracts; 83% of researchers have papers)
 - [x] Found on the way: IPEDS "PhD degrees" counted program rows, not degrees (Georgia Tech 38 → 556). Now sums
       CTOTALT from the all-programs rows, research doctorates only
 
