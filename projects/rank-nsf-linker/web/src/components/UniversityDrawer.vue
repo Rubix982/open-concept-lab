@@ -197,7 +197,7 @@ const carnegieLabel = computed(() =>
 // The university's strongest areas by faculty count (from the explorer), with their line colours.
 // Computer science areas only: researchers in other fields come from OpenAlex capped at 20 per
 // field and university, so their counts would read as equal strengths everywhere.
-const OPENALEX_GROUPS = new Set(["Sciences", "Engineering", "Medicine"]);
+const OPENALEX_GROUPS = new Set(["Sciences", "Engineering", "Medicine", "Social sciences & humanities"]);
 const strengths = computed(() => {
   const entries = Object.entries(uni.value?.area_faculty ?? {})
     .filter(([area]) => !OPENALEX_GROUPS.has(areaIndex.value.get(area)?.group ?? ""))

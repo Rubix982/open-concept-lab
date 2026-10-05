@@ -1,18 +1,52 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type { Area } from "@/api";
 import { GROUP_ORDER, LINE_COLOR } from "@/lines";
 
 const props = defineProps<{ areas: Area[]; modelValue: string[] }>();
 const emit = defineEmits<{ "update:modelValue": [value: string[]] }>();
 
+// OpenAlex areas are subfields: grouped under their field, the 8 with most people shown first.
+const SHOWN = 8;
+const opened = ref(new Set<string>());
 const groups = computed(() =>
-  GROUP_ORDER.map((group) => ({
-    group,
-    color: LINE_COLOR[group],
-    areas: props.areas.filter((a) => a.group === group).sort((a, b) => b.faculty - a.faculty),
-  })).filter((g) => g.areas.length),
+  GROUP_ORDER.map((group) => {
+    const areas = props.areas
+      .filter((a) => a.group === group)
+      .sort((a, b) => b.faculty - a.faculty);
+    const byField = new Map<string, Area[]>();
+    for (const a of areas)
+      byField.set(a.field ?? "", [...(byField.get(a.field ?? "") ?? []), a]);
+    const fields = [...byField.entries()]
+      .map(([field, list]) => ({
+        field,
+        list,
+        total: list.reduce((n, a) => n + a.faculty, 0),
+      }))
+      .sort((a, b) =>
+        a.field === "" ? -1 : b.field === "" ? 1 : b.total - a.total,
+      );
+    return { group, color: LINE_COLOR[group], fields };
+  }).filter((g) => g.fields.length),
 );
+
+// The first 8, plus any selected beyond them, unless the field is opened.
+function shown(group: string, field: string, list: Area[]): Area[] {
+  if (opened.value.has(`${group}|${field}`) || list.length <= SHOWN)
+    return list;
+  return [
+    ...list.slice(0, SHOWN),
+    ...list.slice(SHOWN).filter((a) => props.modelValue.includes(a.area)),
+  ];
+}
+
+function toggleMore(group: string, field: string) {
+  const key = `${group}|${field}`;
+  const next = new Set(opened.value);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  opened.value = next;
+}
 
 function toggle(area: string) {
   const selected = new Set(props.modelValue);
@@ -24,21 +58,42 @@ function toggle(area: string) {
 
 <template>
   <div class="picker">
-    <div v-for="g in groups" :key="g.group" class="line" :style="{ '--c': g.color }">
-      <h3 class="line-name">{{ g.group === "Interdisciplinary" ? "Interdisciplinary" : g.group }}</h3>
-      <div class="stops">
-        <button
-          v-for="a in g.areas"
-          :key="a.area"
-          type="button"
-          class="stop"
-          :class="{ on: modelValue.includes(a.area) }"
-          :aria-pressed="modelValue.includes(a.area)"
-          :title="`${a.faculty} faculty, ${a.funded} with an active research grant`"
-          @click="toggle(a.area)"
-        >
-          {{ a.name }}
-        </button>
+    <div
+      v-for="g in groups"
+      :key="g.group"
+      class="line"
+      :style="{ '--c': g.color }"
+    >
+      <h3 class="line-name">{{ g.group }}</h3>
+      <div v-for="f in g.fields" :key="f.field" class="field">
+        <p v-if="f.field" class="field-name">{{ f.field }}</p>
+        <div class="stops">
+          <button
+            v-for="a in shown(g.group, f.field, f.list)"
+            :key="a.area"
+            type="button"
+            class="stop"
+            :class="{ on: modelValue.includes(a.area) }"
+            :aria-pressed="modelValue.includes(a.area)"
+            :title="`${a.faculty} faculty and researchers, ${a.funded} with an active research grant`"
+            @click="toggle(a.area)"
+          >
+            {{ a.name }}
+          </button>
+          <button
+            v-if="f.list.length > SHOWN"
+            type="button"
+            class="more"
+            :aria-expanded="opened.has(`${g.group}|${f.field}`)"
+            @click="toggleMore(g.group, f.field)"
+          >
+            {{
+              opened.has(`${g.group}|${f.field}`)
+                ? "Fewer"
+                : `+${f.list.length - SHOWN} more`
+            }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,6 +127,30 @@ function toggle(area: string) {
   font-weight: 800;
   color: var(--c);
   margin-bottom: 4px;
+}
+
+.field + .field {
+  margin-top: 6px;
+}
+
+.field-name {
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 2px 0 3px;
+}
+
+.more {
+  border: 0;
+  background: none;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .stops {

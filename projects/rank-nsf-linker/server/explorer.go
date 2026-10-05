@@ -87,7 +87,7 @@ GROUP BY name, id, award_title_text, abstract, award_amount, starts, ends, funde
 CREATE TEMP TABLE x_first ON COMMIT DROP AS
 SELECT pv.canonical AS name, min(pa.year) AS first_year
 FROM professor_areas pa JOIN professor_variants pv ON pv.name = pa.name
-WHERE pa.area NOT LIKE 'oa:%'
+WHERE pa.area !~ '^oas?:'
 GROUP BY pv.canonical;
 
 INSERT INTO explorer_faculty (name, university, homepage, scholar_id, areas, area_pubs, recent_pubs,

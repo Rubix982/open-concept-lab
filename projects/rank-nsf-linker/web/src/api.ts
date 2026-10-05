@@ -5,6 +5,7 @@ export type Area = {
   group: string;
   area: string;
   name: string;
+  field?: string; // the OpenAlex field of a subfield area ("Medicine" for Cardiology)
   faculty: number;
   funded: number;
 };

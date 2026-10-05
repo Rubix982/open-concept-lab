@@ -57,11 +57,12 @@ func areasParam(r *http.Request) []string {
 }
 
 type exploreArea struct {
-	Group   string `json:"group"`
-	Area    string `json:"area"`
-	Name    string `json:"name"`
-	Faculty int    `json:"faculty"`
-	Funded  int    `json:"funded"`
+	Group   string  `json:"group"`
+	Area    string  `json:"area"`
+	Name    string  `json:"name"`
+	Field   *string `json:"field,omitempty"` // the OpenAlex field of a subfield area
+	Faculty int     `json:"faculty"`
+	Funded  int     `json:"funded"`
 }
 
 func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
@@ -71,11 +72,14 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rows, err := db.Query(`
-		SELECT v.area_group, v.area, v.area_name,
+		SELECT v.area_group, v.area, v.area_name, v.area_field,
 		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0)
-		FROM (SELECT DISTINCT area_group, area, area_name FROM research_area_venues) v
+		FROM (SELECT DISTINCT area_group, area, area_name, area_field, venue LIKE 'oa%' AS openalex
+		      FROM research_area_venues) v
 		LEFT JOIN explorer_faculty f ON v.area = ANY (f.areas)
-		GROUP BY v.area_group, v.area, v.area_name
+		GROUP BY v.area_group, v.area, v.area_name, v.area_field, v.openalex
+		-- OpenAlex areas are listed once they have enough people to be worth narrowing to
+		HAVING NOT v.openalex OR count(f.name) >= 20
 		ORDER BY v.area_group, v.area_name`)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load areas", err)
@@ -86,7 +90,7 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	areas := []exploreArea{}
 	for rows.Next() {
 		var a exploreArea
-		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Faculty, &a.Funded); err != nil {
+		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Field, &a.Faculty, &a.Funded); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read areas", err)
 			return
 		}

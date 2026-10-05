@@ -28,7 +28,8 @@ const notAPaper = `^\s*(contributors|list of contributors|introduction|preface|f
 	`|^data for |^dataset\y|subset for:|^supplementary (data|material|information)|^(erratum|correction|retraction)( to|:)`
 
 var (
-	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index"}
+	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index", "subfields"}
+	subfieldColumns     = []string{"subfield_id", "name", "field_id"}
 	fieldsWorksColumns  = []string{"openalex_id", "work_id", "title", "year", "venue", "doi", "abstract"}
 )
 
@@ -54,15 +55,18 @@ func loadOpenAlexResearchers(mainCtx *colly.Context) error {
 	defer tx.Rollback()
 
 	if _, err := tx.Exec(`
-		DELETE FROM professor_areas WHERE area LIKE 'oa:%';
+		DELETE FROM professor_areas WHERE area LIKE 'oa:%' OR area LIKE 'oas:%';
 		DELETE FROM professors WHERE source = 'openalex';
 		CREATE TEMP TABLE oa_people (openalex_id text, name text, university text, area text, orcid text,
-		  works text, cited_by text, h_index text) ON COMMIT DROP;
+		  works text, cited_by text, h_index text, subfields text) ON COMMIT DROP;
 		CREATE TEMP TABLE oa_works (openalex_id text, work_id text, title text, year text, venue text,
 		  doi text, abstract text) ON COMMIT DROP;`); err != nil {
 		return fmt.Errorf("failed to prepare OpenAlex researcher staging: %w", err)
 	}
 	if err := loadExtraUniversities(tx); err != nil {
+		return err
+	}
+	if err := loadSubfieldAreas(tx); err != nil {
 		return err
 	}
 	if _, err := copyCSVInto(tx, people, "oa_people", fieldsPeopleColumns); err != nil {
@@ -87,13 +91,20 @@ func loadOpenAlexResearchers(mainCtx *colly.Context) error {
 		INSERT INTO professors (name, affiliation, orcid, source, openalex_id)
 		SELECT name, university, NULLIF(orcid, ''), 'openalex', openalex_id FROM oa_kept;
 
+		-- Areas: their main subfields ('oas:<id>'), else the whole field ('oa:<id>').
 		INSERT INTO professor_areas (name, affiliation, area, count, adjusted_count, year)
-		SELECT k.name, k.university, v.venue, count(w.work_id)::real, count(w.work_id)::real,
+		SELECT k.name, k.university, a.venue, count(w.work_id)::real, count(w.work_id)::real,
 		       COALESCE(NULLIF(w.year, '')::int, extract(year FROM current_date)::int)
 		FROM oa_kept k
-		JOIN research_area_venues v ON v.area = k.area AND v.venue LIKE 'oa:%'
+		CROSS JOIN LATERAL (
+		  SELECT v.venue FROM research_area_venues v
+		  WHERE v.venue IN (SELECT 'oas:' || x FROM unnest(string_to_array(NULLIF(k.subfields, ''), ';')) x)
+		  UNION ALL
+		  SELECT v.venue FROM research_area_venues v
+		  WHERE v.area = k.area AND v.venue LIKE 'oa:%' AND COALESCE(k.subfields, '') = ''
+		) a
 		LEFT JOIN oa_works w ON w.openalex_id = k.openalex_id
-		GROUP BY k.name, k.university, v.venue, COALESCE(NULLIF(w.year, '')::int, extract(year FROM current_date)::int)
+		GROUP BY k.name, k.university, a.venue, COALESCE(NULLIF(w.year, '')::int, extract(year FROM current_date)::int)
 		ON CONFLICT DO NOTHING;`); err != nil {
 		return fmt.Errorf("failed to load OpenAlex researchers: %w", err)
 	}
@@ -125,7 +136,7 @@ func loadOpenAlexResearcherWorks(mainCtx *colly.Context) error {
 	defer tx.Rollback()
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE oa_people (openalex_id text, name text, university text, area text, orcid text,
-		  works text, cited_by text, h_index text) ON COMMIT DROP;
+		  works text, cited_by text, h_index text, subfields text) ON COMMIT DROP;
 		CREATE TEMP TABLE oa_works (openalex_id text, work_id text, title text, year text, venue text,
 		  doi text, abstract text) ON COMMIT DROP;`); err != nil {
 		return err
@@ -183,6 +194,31 @@ func loadExtraUniversities(tx *sql.Tx) error {
 		ON CONFLICT (institution) DO NOTHING`)
 	if err != nil {
 		return fmt.Errorf("failed to add extra universities: %w", err)
+	}
+	return nil
+}
+
+// loadSubfieldAreas adds OpenAlex subfields (data/openalex/subfields.csv) as research areas, each in
+// its field's group: area 'sf<id>', venue 'oas:<id>', area_field the field's name.
+func loadSubfieldAreas(tx *sql.Tx) error {
+	path := openAlexFieldsPath("subfields.csv")
+	if !fileExists(path) {
+		return nil
+	}
+	if _, err := tx.Exec(`CREATE TEMP TABLE oa_subfields (subfield_id text, name text, field_id text) ON COMMIT DROP`); err != nil {
+		return err
+	}
+	if _, err := copyCSVInto(tx, path, "oa_subfields", subfieldColumns); err != nil {
+		return err
+	}
+	_, err := tx.Exec(`
+		INSERT INTO research_area_venues (area_group, area, area_name, venue, area_field)
+		SELECT f.area_group, 'sf' || s.subfield_id, s.name, 'oas:' || s.subfield_id, f.area_name
+		FROM oa_subfields s JOIN research_area_venues f ON f.venue = 'oa:' || s.field_id
+		ON CONFLICT (venue) DO UPDATE SET area_group = EXCLUDED.area_group, area = EXCLUDED.area,
+		  area_name = EXCLUDED.area_name, area_field = EXCLUDED.area_field`)
+	if err != nil {
+		return fmt.Errorf("failed to add subfield areas: %w", err)
 	}
 	return nil
 }

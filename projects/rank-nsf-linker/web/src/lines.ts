@@ -9,6 +9,7 @@ export const LINE_COLOR: Record<string, string> = {
   Sciences: "var(--line-sciences)",
   Engineering: "var(--line-engineering)",
   Medicine: "var(--line-medicine)",
+  "Social sciences & humanities": "var(--line-social)",
 };
 
 // Mapbox paint properties cannot read CSS variables, so the map gets the raw values.
@@ -20,11 +21,21 @@ export const LINE_HEX: Record<string, string> = {
   Sciences: "#0E8A8A",
   Engineering: "#B8452F",
   Medicine: "#A8357A",
+  "Social sciences & humanities": "#6B7A1C",
 };
 
 export const INK_HEX = "#1D2A3A";
 
-export const GROUP_ORDER = ["AI", "Systems", "Theory", "Interdisciplinary", "Sciences", "Engineering", "Medicine"];
+export const GROUP_ORDER = [
+  "AI",
+  "Systems",
+  "Theory",
+  "Interdisciplinary",
+  "Sciences",
+  "Engineering",
+  "Medicine",
+  "Social sciences & humanities",
+];
 
 // "$2.6M", "A$7.8M", "NZ$853K", "€1.2M"
 export function formatMoney(n: number, currency = "USD"): string {
