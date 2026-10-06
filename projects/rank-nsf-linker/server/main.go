@@ -93,7 +93,7 @@ func main() {
 	// we can mark it as completed here.
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 
-	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
+	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 && !serveOnly() {
 		// Refreshes stale data and finishes partial fetches later (fetch.go).
 		startPipelineScheduler(mainCtx)
 		executeWorkflows(mainCtx)

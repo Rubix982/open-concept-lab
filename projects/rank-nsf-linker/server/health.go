@@ -102,17 +102,25 @@ func waitForPostgres(ctx *colly.Context) {
 }
 
 func waitForLoggingService(ctx *colly.Context) {
-	client := &http.Client{}
+	client := &http.Client{Timeout: 10 * time.Second}
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
+	deadline := time.Now().Add(esWaitLimit) // optional too: logs are dropped while it is away
 	logger.Infof(ctx, "Waiting for Logging Service to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/health", LOGGING_SERVICE_ROUTE))
+		if err == nil {
+			resp.Body.Close()
+		}
 		if err == nil && resp.StatusCode == 200 {
 			logger.Infof(ctx, "✅ Logging Service is ready")
+			return
+		}
+		if time.Now().After(deadline) {
+			logger.Warnf(ctx, "⚠️ Logging Service not reachable after %s; starting without it", esWaitLimit)
 			return
 		}
 
@@ -127,7 +135,16 @@ func waitForLoggingService(ctx *colly.Context) {
 	}
 }
 
+// serveOnly (SERVE_ONLY=1): the minimal deployment (docker-compose.minimal.yaml). The server only
+// serves the database it was given (a golden dataset): it waits for Postgres alone, and never runs
+// the pipeline or its scheduler, which would fail without the fetcher and the data/ downloads.
+func serveOnly() bool { return os.Getenv("SERVE_ONLY") == "1" }
+
 func waitForServices(ctx *colly.Context) {
+	if serveOnly() {
+		waitForPostgres(ctx)
+		return
+	}
 	waitForElasticsearch(ctx)
 	waitForPostgres(ctx)
 	waitForLoggingService(ctx)

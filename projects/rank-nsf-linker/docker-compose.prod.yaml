@@ -130,6 +130,8 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+    volumes:
+      - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf:ro # /api -> go-server (not in the image)
     ports:
       - "3000:80"  # Nginx in Dockerfile serves on 80, mapped to 3000 locally
     depends_on:

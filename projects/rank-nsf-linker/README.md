@@ -176,6 +176,26 @@ golden dataset (about 3.5 GB, not in git) takes a few minutes.
 - About 25 GB of disk and a few days: the OpenAlex fetches (~22k calls) span several daily allowances;
   everything else finishes on the first run. A golden dataset (`make golden-restore`) skips all of it.
 
+**Minimal deployment** (`docker-compose.minimal.yaml`): Postgres, the Go server and the web app,
+nothing else. The server runs with `SERVE_ONLY=1`: it serves the database it is given and never runs
+the pipeline (no fetcher, no data/ downloads there). Without the embedder and Qdrant, searches match
+words instead of meaning and "similar researchers" is hidden; everything else works. Data is
+refreshed on a development machine with the full stack and shipped as a golden dataset.
+
+1. A small VM: 2 vCPU, 4 GB RAM, 40 GB disk (the database is ~8.5 GB) is enough. Copy the repo,
+   `web/.env` (VITE_MAPBOX_TOKEN, built into the page), `backup/`, and optionally
+   `data/scholarships/`.
+2. Copy `golden/<date>/postgres.dump` from `make golden` (~2 GB; the Qdrant snapshots aren't needed).
+3. Restore and start:
+   ```bash
+   docker compose -f docker-compose.minimal.yaml up -d postgres
+   docker compose -f docker-compose.minimal.yaml exec -T postgres \
+     pg_restore -U postgres -d rank-nsf-linker --no-owner --clean --if-exists < postgres.dump
+   docker compose -f docker-compose.minimal.yaml up -d --build
+   ```
+4. Put HTTPS in front of port 80 (Caddy: `caddy reverse-proxy --from your.domain --to :80`).
+5. To refresh: make a new golden dataset on the development machine and repeat step 3's restore.
+
 **Data the pipeline reads**
 
 - `data/` — CSRankings CSVs, NSF award JSONs (`data/nsfdata/<year>/`), IPEDS CSVs (`data/ipeds_data/<year>/`)

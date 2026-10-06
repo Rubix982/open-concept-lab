@@ -1,0 +1,61 @@
+# Minimal deployment: the site and its data, nothing else (see README, "Minimal deployment").
+#   Postgres (restored from a golden dataset), the Go server (SERVE_ONLY: serves, never fetches or
+#   rebuilds), and the web app. No fetcher, embedder, Qdrant, Elasticsearch or logging service:
+#   searches match words instead of meaning, and "similar researchers" is hidden.
+# Data is refreshed on a development machine (full stack), then shipped as a golden dataset.
+name: advisor-atlas
+
+services:
+  postgres:
+    image: cgr.dev/chainguard/postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rank-nsf-linker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres} # not published outside this network
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  go-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backup:/app/backup:ro # scholarships, curated lists
+      - ./data/scholarships:/app/data/scholarships:ro # DAAD feed (optional)
+    environment:
+      SERVE_ONLY: 1
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB_NAME: rank-nsf-linker
+      DB_HOST: postgres
+      DB_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/rank-nsf-linker
+      EMBEDDER_SERVICE_URL: http://no-embedder:8000 # unreachable on purpose: word matching
+      QDRANT_REST_URL: http://no-qdrant:6333
+    command: ["./server/go-server"]
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile # VITE_MAPBOX_TOKEN from web/.env is built in
+    restart: unless-stopped
+    depends_on:
+      - go-server
+    volumes:
+      - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf:ro # /api -> go-server
+    ports:
+      - "80:80" # put a TLS proxy (Caddy, or the host's) in front for HTTPS
+
+volumes:
+  pg_data:
