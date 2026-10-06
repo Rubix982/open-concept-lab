@@ -39,7 +39,7 @@ define container_running
 	@docker ps --format '{{.Names}}' | grep -q "^$(1)$$"
 endef
 
-.PHONY: pipeline pipeline-from all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
+.PHONY: pipeline pipeline-from golden golden-verify golden-restore all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
 	status rebuild rm-all registry up-infra lint lint-fix semgrep lint-all install-tools
 
 all: build
@@ -117,6 +117,20 @@ up: registry up-infra
 ## pipeline: Restart go-server; resumes the population pipeline at the first unfinished step
 pipeline:
 	$(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
+
+## golden: Save the finished state (Postgres dump + Qdrant snapshot + manifest) to golden/<date>/
+golden:
+	python3 server/scripts/golden/golden.py make $(if $(OUT),--out $(OUT),)
+
+## golden-verify: Restore DIR into a scratch database and collection and compare counts (live data untouched)
+golden-verify:
+	@test -n "$(DIR)" || (echo "Usage: make golden-verify DIR=golden/<date>" && exit 1)
+	python3 server/scripts/golden/golden.py verify $(DIR)
+
+## golden-restore: Restore DIR into the live database and collection (stops and restarts go-server)
+golden-restore:
+	@test -n "$(DIR)" || (echo "Usage: make golden-restore DIR=golden/<date>" && exit 1)
+	python3 server/scripts/golden/golden.py restore $(DIR)
 
 ## pipeline-from: Rerun the population pipeline from step STEP onward (e.g. make pipeline-from STEP=10)
 pipeline-from:

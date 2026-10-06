@@ -207,3 +207,6 @@ out
 
 # Deck GL
 deck.gl/**/**
+
+# Golden datasets (Postgres dump + Qdrant snapshot, several GB; see server/scripts/golden)
+/golden/
