@@ -513,11 +513,14 @@ function removeArea(...remove: string[]) {
   selectedAreas.value = selectedAreas.value.filter((a) => !remove.includes(a));
 }
 
+// The areas a student can pick; the rest only name a person's tags.
+const pickableAreas = computed(() => areas.value.filter((a) => a.listed));
+
 // Chosen areas as chips: a field whose subfields are all chosen ("All of Neuroscience") is one chip.
 const areaChips = computed(() => {
   const chosen = new Set(selectedAreas.value);
   const byField = new Map<string, string[]>();
-  for (const a of areas.value)
+  for (const a of pickableAreas.value)
     if (a.field)
       byField.set(a.field, [...(byField.get(a.field) ?? []), a.area]);
   const chips: {
@@ -624,7 +627,7 @@ const areaChips = computed(() => {
 
     <div v-if="pickerOpen" id="area-picker" class="picker-pop">
       <p v-if="!areas.length" class="hint">Loading areas</p>
-      <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
+      <AreaPicker v-else v-model="selectedAreas" :areas="pickableAreas" />
       <div class="picker-actions">
         <button
           v-if="selectedAreas.length"

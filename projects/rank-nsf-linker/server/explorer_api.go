@@ -64,6 +64,7 @@ type exploreArea struct {
 	Field   *string `json:"field,omitempty"` // the OpenAlex field of a subfield area
 	Faculty int     `json:"faculty"`
 	Funded  int     `json:"funded"`
+	Listed  bool    `json:"listed"` // offered in the area picker
 }
 
 // The areas list only changes when the explorer tables are rebuilt (buildExplorerTables clears
@@ -101,13 +102,14 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	}
 	rows, err := db.Query(`
 		SELECT v.area_group, v.area, v.area_name, v.area_field,
-		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0)
+		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0), NOT v.openalex OR count(f.name) >= 20
 		FROM (SELECT DISTINCT area_group, area, area_name, area_field, venue ~ '^oas?:' AS openalex
 		      FROM research_area_venues) v
 		LEFT JOIN explorer_faculty f ON v.area = ANY (f.areas)
 		GROUP BY v.area_group, v.area, v.area_name, v.area_field, v.openalex
-		-- OpenAlex areas are listed once they have enough people to be worth narrowing to
-		HAVING NOT v.openalex OR count(f.name) >= 20
+		-- Every area someone is tagged with, so each tag has a name; OpenAlex areas are offered in the
+		-- picker (listed) once they have enough people to be worth narrowing to
+		HAVING NOT v.openalex OR count(f.name) > 0
 		ORDER BY v.area_group, v.area_name`)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load areas", err)
@@ -118,7 +120,7 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	areas := []exploreArea{}
 	for rows.Next() {
 		var a exploreArea
-		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Field, &a.Faculty, &a.Funded); err != nil {
+		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Field, &a.Faculty, &a.Funded, &a.Listed); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read areas", err)
 			return
 		}

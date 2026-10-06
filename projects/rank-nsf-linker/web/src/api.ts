@@ -8,6 +8,7 @@ export type Area = {
   field?: string; // the OpenAlex field of a subfield area ("Medicine" for Cardiology)
   faculty: number;
   funded: number;
+  listed: boolean; // offered in the area picker (small subfields only name a person's tags)
 };
 
 export type UniversitySummary = {
