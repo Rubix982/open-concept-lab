@@ -494,15 +494,32 @@ const tourSteps: TourStep[] = [
   {
     target: ".your-list",
     title: "Over to you",
-    body: "Try your own search. Your saved professors and universities are under “Your list”, and the tour is always under “Tour”.",
+    body: "Try your own search. Your saved professors and universities are under “Your list”, and the tour is always in the (i) menu.",
     before: () => openUniversity(null),
   },
 ];
+// The tour is offered (header button, intro link) until someone has started it once; after that it
+// lives in the (i) menu. Remembered in this browser only.
+const TOUR_KEY = "atlas.tourSeen";
+const tourSeen = ref(false);
+try {
+  tourSeen.value = localStorage.getItem(TOUR_KEY) === "1";
+} catch {
+  /* storage blocked: keep offering it */
+}
 function startTour() {
   shortlist.value?.close();
   about.value?.close();
+  infoOpen.value = false;
   touring.value = true;
+  tourSeen.value = true;
+  try {
+    localStorage.setItem(TOUR_KEY, "1");
+  } catch {
+    /* fine */
+  }
 }
+const infoOpen = ref(false);
 function endTour() {
   touring.value = false;
 }
@@ -573,22 +590,6 @@ const areaChips = computed(() => {
         />
         <button type="submit">Search</button>
       </form>
-      <button type="button" class="tour-btn" @click="startTour">Tour</button>
-      <button type="button" class="your-list" @click="shortlist?.open()">
-        Your list<template v-if="saved.length"> ({{ saved.length }})</template>
-      </button>
-      <button
-        type="button"
-        class="info"
-        aria-label="About the data"
-        title="About the data"
-        @click="about?.showModal()"
-      >
-        i
-      </button>
-    </header>
-
-    <div class="filters">
       <button
         type="button"
         class="filter-btn"
@@ -597,33 +598,64 @@ const areaChips = computed(() => {
         aria-controls="area-picker"
         @click="pickerOpen = !pickerOpen"
       >
-        Research areas<template v-if="selectedAreas.length">
+        <span class="wide">Research areas</span
+        ><span class="narrow-label">Areas</span
+        ><template v-if="selectedAreas.length">
           ({{ selectedAreas.length }})</template
         >
       </button>
-      <span
-        v-for="c in areaChips"
-        :key="c.key"
-        class="chip"
-        :style="{ '--c': LINE_COLOR[c.group] }"
+      <button
+        v-if="!tourSeen"
+        type="button"
+        class="tour-btn"
+        @click="startTour"
       >
-        {{ c.label }}
+        Tour
+      </button>
+      <button type="button" class="your-list" @click="shortlist?.open()">
+        Your list<template v-if="saved.length"> ({{ saved.length }})</template>
+      </button>
+      <span class="row-break" aria-hidden="true" />
+      <div class="info-wrap">
         <button
           type="button"
-          :aria-label="`Remove ${c.label}`"
-          @click="removeArea(...c.areas)"
+          class="info"
+          aria-label="About Advisor Atlas"
+          title="About Advisor Atlas"
+          :aria-expanded="infoOpen"
+          aria-controls="info-menu"
+          @click="infoOpen = !infoOpen"
         >
-          ×
+          i
         </button>
-      </span>
-      <span v-if="!selectedAreas.length" class="filter-hint">All areas</span>
-      <span v-if="goal" class="goal-chip">
-        Results for <strong>“{{ goal }}”</strong>&nbsp;
-        <button type="button" class="link" @click="clearGoal">
-          Clear search
-        </button>
-      </span>
-    </div>
+        <div
+          v-if="infoOpen"
+          id="info-menu"
+          class="info-menu"
+          @keydown.esc="infoOpen = false"
+        >
+          <button type="button" class="link" @click="startTour">
+            Take the tour
+          </button>
+          <button
+            type="button"
+            class="link"
+            @click="
+              infoOpen = false;
+              about?.showModal();
+            "
+          >
+            About the data
+          </button>
+          <a class="link" href="/overview.html">Project overview</a>
+          <p>
+            Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
+            from 40 funders.
+          </p>
+        </div>
+      </div>
+    </header>
+    <div v-if="infoOpen" class="info-scrim" @click="infoOpen = false" />
 
     <div v-if="pickerOpen" id="area-picker" class="picker-pop">
       <p v-if="!areas.length" class="hint">Loading areas</p>
@@ -649,7 +681,12 @@ const areaChips = computed(() => {
           Search for what you want to research to find professors working on it,
           the grants funding that work, and the universities where they are.
           Narrow by research area at any time.
-          <button type="button" class="link" @click="startTour">
+          <button
+            v-if="!tourSeen"
+            type="button"
+            class="link"
+            @click="startTour"
+          >
             Take the tour
           </button>
         </p>
@@ -679,6 +716,23 @@ const areaChips = computed(() => {
         >
           Clear all
         </button>
+      </p>
+      <p v-if="areaChips.length" class="area-chips">
+        <span
+          v-for="c in areaChips"
+          :key="c.key"
+          class="chip"
+          :style="{ '--c': LINE_COLOR[c.group] }"
+        >
+          {{ c.label }}
+          <button
+            type="button"
+            :aria-label="`Remove ${c.label}`"
+            @click="removeArea(...c.areas)"
+          >
+            ×
+          </button>
+        </span>
       </p>
       <p v-if="error && ready" class="error">{{ error }}</p>
       <p v-if="!ready && !error" class="hint">Loading</p>
@@ -841,15 +895,6 @@ const areaChips = computed(() => {
           start over</button
         >.
       </p>
-
-      <footer class="foot">
-        Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
-        (NSF, NIH, NSERC, ARC, Marsden, UKRI, ANR, SNSF, NWO, ERC, KAKEN, RGC).
-        <button type="button" class="link" @click="about?.showModal()">
-          About the data
-        </button>
-        <a class="link" href="/overview.html">Project overview</a>
-      </footer>
     </section>
 
     <div class="map-wrap">
@@ -927,18 +972,22 @@ const areaChips = computed(() => {
         papers from the last 10 years.
       </p>
       <p>
-        <strong>Grants</strong> come from public records: NSF (US, 2010–2025),
-        NIH (US, active projects), Canada's NSERC (2022–2024 payments), the
-        Australian Research Council, New Zealand's Marsden Fund, UKRI's EPSRC
-        (UK), ANR (France), the Swiss National Science Foundation, the Dutch
-        Research Council NWO (all fields, since 2016), the European Research
-        Council (Horizon 2020 and Horizon Europe), Japan's KAKEN and Hong Kong's
-        Research Grants Council. Outside the US and the Netherlands, only
-        computing-related grants are loaded. A grant is linked to a professor
-        only when the name matches and the university (or, for NSF, the email
-        domain) confirms it. Funding from industry, other agencies and
-        universities isn't included, so "no active grant" doesn't mean "no
-        funding".
+        <strong>Grants</strong> come from public records of 40 funders. Loaded
+        directly: NSF (US, 2010 onward), NIH (US, active projects), Canada's
+        NSERC, the Australian Research Council, New Zealand's Marsden Fund,
+        UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation,
+        the Dutch Research Council NWO, the European Research Council, Japan's
+        KAKEN, Hong Kong's Research Grants Council and Austria's FWF. Through
+        OpenAlex: 27 national funders, among them China's NSFC, Taiwan's NSTC,
+        Canada's CIHR and SSHRC, Brazil's FAPESP, Turkey's TÜBİTAK, Sweden's
+        research councils, Israel's ISF, Wellcome and Pakistan's HEC (NRPU).
+        From KAKEN, ARC, ANR, SNSF, ERC, UKRI, NSERC, Marsden and RGC only
+        computing-related grants are loaded; from the others, every field
+        (grants running in 2015 or later). A grant is linked to a person only
+        when the name matches and the university (or, for NSF, the email domain)
+        confirms it; Chinese names are compared in pinyin. Funding from
+        industry, other agencies and universities isn't included, so "no active
+        grant" doesn't mean "no funding".
       </p>
       <p class="sources">
         Sources: NSF Award Search; Australian Research Council; Royal Society Te
@@ -949,10 +998,12 @@ const areaChips = computed(() => {
         (NII), with a link to each project. Hong Kong grants: Research Grants
         Council project records (facts only). Canadian grants: NSERC Awards
         Data; contains information licensed under the Open Government Licence –
-        Canada. Dutch grants: NWOpen API (CC0). Researchers outside computer
-        science, Pakistani universities beyond LUMS, and paper abstracts:
-        OpenAlex (CC0); campus locations © OpenStreetMap contributors (ODbL).
-        Scholarships: curated, plus the DAAD scholarship database.
+        Canada. Dutch grants: NWOpen API (CC0). Austrian grants: FWF Open API
+        (CC0). National funders via OpenAlex awards (CC0; each funder's own
+        terms apply). Researchers outside computer science, Pakistani
+        universities beyond LUMS, and paper abstracts: OpenAlex (CC0); campus
+        locations © OpenStreetMap contributors (ODbL). Scholarships: curated,
+        plus the DAAD scholarship database.
       </p>
       <p>
         <strong>Recent papers</strong> come from
@@ -978,10 +1029,9 @@ const areaChips = computed(() => {
 .shell {
   display: grid;
   grid-template-columns: 1fr var(--drawer-w);
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
     "top top"
-    "filters filters"
     "map side";
   height: 100vh;
   height: 100dvh;
@@ -992,8 +1042,8 @@ const areaChips = computed(() => {
   grid-area: top;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 10px 20px;
+  gap: 14px;
+  padding: 7px 16px;
   background: var(--ink);
   color: #fff;
 }
@@ -1037,7 +1087,6 @@ h1 {
 }
 
 .tour-btn {
-  margin-left: auto;
   border: 0;
   background: none;
   color: #fff;
@@ -1050,6 +1099,7 @@ h1 {
 }
 
 .your-list {
+  margin-left: auto;
   border: 1.5px solid #8794a3;
   border-radius: 999px;
   background: transparent;
@@ -1059,6 +1109,50 @@ h1 {
   padding: 4px 12px 3px;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.row-break {
+  display: none;
+}
+
+.info-wrap {
+  position: relative;
+  flex: none;
+}
+
+.info-menu {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 14px 16px;
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius-box);
+  box-shadow: 0 6px 28px rgba(29, 42, 58, 0.25);
+  font-size: var(--t-xs);
+}
+
+.info-menu .link {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.info-menu p {
+  margin-top: 3px;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+}
+
+.info-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
 }
 
 .info {
@@ -1074,31 +1168,32 @@ h1 {
   flex: none;
 }
 
-.filters {
-  grid-area: filters;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 8px;
-  padding: 8px 20px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--rule);
-  min-height: 46px;
-}
-
 .filter-btn {
   white-space: nowrap;
-  border: 1.5px solid var(--ink);
-  background: var(--surface);
+  border: 1.5px solid #8794a3;
+  color: #fff;
+  background: transparent;
   border-radius: var(--radius-pill);
   padding: 3px 12px 2px;
   font-size: var(--t-xs);
   font-weight: 800;
 }
 
+.filter-btn .narrow-label {
+  display: none;
+}
+
 .filter-btn.on {
-  background: var(--ink);
-  color: #fff;
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.area-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 12px;
 }
 
 .chip {
@@ -1126,28 +1221,10 @@ h1 {
   font-size: 0.85rem;
 }
 
-.filter-hint {
-  font-size: var(--t-xs);
-  color: var(--ink-faint);
-}
-
-.goal-chip {
-  margin-left: auto;
-  font-size: var(--t-xs);
-}
-
-/* On phones the filter row scrolls sideways and "Clear search" ran off its end; the summary's
-   "Clear all" and the search box's × already clear a search there. */
-@media (max-width: 700px) {
-  .goal-chip {
-    display: none;
-  }
-}
-
 .picker-pop {
   position: absolute;
   z-index: 20;
-  top: var(--picker-top, 104px);
+  top: var(--picker-top, 52px);
   left: 12px;
   width: min(720px, calc(100vw - 24px));
   max-height: calc(100vh - 130px);
@@ -1357,22 +1434,6 @@ h1 {
   color: var(--ink-soft);
 }
 
-.foot {
-  margin-top: auto;
-  padding-top: 18px;
-  font-size: 0.75rem;
-  color: var(--ink-faint);
-}
-
-.foot .link {
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
-.foot .link + .link {
-  margin-left: 12px;
-}
-
 .map-wrap {
   grid-area: map;
   position: relative;
@@ -1531,18 +1592,31 @@ h1 {
 
   .search {
     order: 3;
-    flex-basis: 100%;
+    flex: 1 1 0;
+    min-width: 0;
     max-width: none;
   }
 
-  .filters {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 8px 14px;
+  .row-break {
+    display: block;
+    order: 2;
+    flex-basis: 100%;
+    height: 0;
   }
 
-  .goal-chip {
-    white-space: nowrap;
+  /* Phones: title, tour, list and (i) on the first row; search and areas on the second */
+  .filter-btn {
+    order: 4;
+    flex: none;
+    padding: 6px 12px 5px;
+  }
+
+  .filter-btn .wide {
+    display: none;
+  }
+
+  .filter-btn .narrow-label {
+    display: inline;
   }
 
   .map-wrap {
