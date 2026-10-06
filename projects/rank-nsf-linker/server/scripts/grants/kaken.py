@@ -24,6 +24,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from common import DATA, download, secret, write
+from fetchlib import refetch_or_keep
 
 ROOT = Path(__file__).resolve().parents[3]
 CACHE = DATA / "kaken"
@@ -32,6 +33,7 @@ UA = {"User-Agent": "advisor-atlas/1.0 (non-commercial research explorer)"}
 PAGE = 500
 PAUSE = 3.0  # seconds between requests
 FROM_YEAR = 2015
+PAGE_MAX_AGE = 28  # days: pages are fetched again monthly (new and updated projects)
 XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 
 
@@ -56,23 +58,24 @@ def review_sections() -> list[str]:
 def fetch_page(query: str, start: int, key: str) -> bytes:
     slug = "informatics" if query == "Informatics" else re.sub(r"[^0-9A-Za-z]+", "-", query)[:60]
     path = CACHE / f"{slug}-{FROM_YEAR}-{start:06d}.xml"
-    if path.exists():
-        return path.read_bytes()
-    q = urllib.parse.urlencode({"appid": key, "format": "xml", "rw": PAGE, "st": start, "lang": "en",
-                                "qd": query, "s1": FROM_YEAR, "o1": 3})
-    req = urllib.request.Request(f"{API}?{q}", headers=UA)
-    for attempt in range(4):
-        try:
-            with urllib.request.urlopen(req, timeout=180) as resp:
-                body = resp.read()
-            break
-        except OSError as e:
-            if attempt == 3:
-                raise SystemExit(f"KAKEN page {start} failed: {type(e).__name__}")  # no URL: it has the key
-            time.sleep(30 * (attempt + 1))
-    path.write_bytes(body)
-    time.sleep(PAUSE)
-    return body
+
+    def fetch() -> str:
+        q = urllib.parse.urlencode({"appid": key, "format": "xml", "rw": PAGE, "st": start, "lang": "en",
+                                    "qd": query, "s1": FROM_YEAR, "o1": 3})
+        req = urllib.request.Request(f"{API}?{q}", headers=UA)
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(req, timeout=180) as resp:
+                    body = resp.read()
+                break
+            except OSError as e:
+                if attempt == 3:
+                    raise SystemExit(f"KAKEN page {start} failed: {type(e).__name__}")  # no URL: it has the key
+                time.sleep(30 * (attempt + 1))
+        time.sleep(PAUSE)
+        return body.decode("utf-8")
+
+    return refetch_or_keep(path, PAGE_MAX_AGE, fetch).encode("utf-8")
 
 
 # Katakana -> Hepburn romaji (digraphs first).

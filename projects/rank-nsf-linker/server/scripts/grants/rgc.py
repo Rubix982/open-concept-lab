@@ -16,6 +16,7 @@ import urllib.request
 from datetime import date
 
 from common import DATA, split_name, write
+from fetchlib import refreshed_cache
 
 CACHE = DATA / "rgc"
 BASE = "https://cerg1.ugc.edu.hk/cergprod/"
@@ -92,6 +93,13 @@ def person(raw: str) -> tuple[str, str, str]:
 
 
 def main() -> None:
+    # Pages only make sense together (a search session's results; pages that shift as projects
+    # are added): refreshed whole every 28 days, the previous copy kept until that succeeds.
+    with refreshed_cache(CACHE, 28):
+        fetch_all()
+
+
+def fetch_all() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     grants, people = [], []
     for year in YEARS:

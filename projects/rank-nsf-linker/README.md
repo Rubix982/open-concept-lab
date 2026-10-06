@@ -144,9 +144,13 @@ The Go server (`go-server` container) loads Postgres on startup in 29 steps
 (`pipelineSteps` in `server/db.go`). Each step records its status in `pipeline_status`. The pipeline
 fetches its own data: CSRankings, NSF and IPEDS in Go; every other source (11 grant funders, DAAD,
 DBLP, OpenAlex) through the `fetcher` container (`fetcher/app.py`, state in `data/fetch_state/`).
-API keys come from `server/.env` only. A source that stops at a daily allowance (OpenAlex: 10,000
-calls) keeps its previous data, and the server reruns the pipeline about once a day until it is
-complete, and every 7 days after that (`PIPELINE_REFRESH_DAYS`).
+API keys come from `server/.env` only. Every source refreshes on its own schedule (a maximum age per
+source in `fetcher/app.py`; cached pages expire too, so a refetch really gets new data), and a failed
+or interrupted refresh keeps the previous data. OpenAlex runs as a daemon inside the fetcher: its
+fetches span several daily allowances (10,000 calls a day), so they resume every day after the reset
+on their own, and the server loads what has arrived (steps 27 onward) whenever it changes, at most
+twice a day. The whole pipeline reruns every 7 days (`PIPELINE_REFRESH_DAYS`), or sooner when a
+source failed or finished late.
 
 | Command | What it does |
 | --- | --- |

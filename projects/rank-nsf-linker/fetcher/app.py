@@ -3,6 +3,9 @@
 A small HTTP service on :8090, in its own container so the Go server image stays small:
     POST /run?group=<group>[&force=1]   start every source in the group that isn't fresh or running
     GET  /status?group=<group>          the group's sources and their state
+The groups in FETCH_DAEMON_GROUPS (default "openalex") also run on their own, as a daemon: a source
+is started whenever it is due, and one that stopped at a daily allowance resumes after the reset,
+day after day, until it completes; the pipeline loads what has arrived.
 Each source is one script (server/scripts/...). A source is skipped while its last complete run is
 younger than its max age; a partial run (exit 75: a daily allowance spent) or a failed one runs
 again next time. State and the last run's log are kept in data/fetch_state/<source>.json / .log,
@@ -112,14 +115,48 @@ def _run(name: str, group: str, script: str, args: list[str], hours: float, stat
     save(name, state)
 
 
+def start_one(name: str) -> None:
+    """Start a source unless it is already running (call with lock held)."""
+    if name in running:
+        return
+    t = threading.Thread(target=run, args=(name,), daemon=True)
+    running[name] = t
+    t.start()
+
+
 def start(group: str, force: bool) -> None:
     with lock:
         for name, (g, *_rest) in SOURCES.items():
-            if g != group or name in running or (not force and is_fresh(name)):
-                continue
-            t = threading.Thread(target=run, args=(name,), daemon=True)
-            running[name] = t
-            t.start()
+            if g == group and (force or not is_fresh(name)):
+                start_one(name)
+
+
+def due(name: str, now: float) -> bool:
+    """For the daemon: a source to start now. Not when fresh; not when it stopped at a daily allowance
+    today (it resumes after the reset at 00:00 UTC, with ten minutes' grace); not within six hours of
+    a failure (a broken source shouldn't run every few minutes)."""
+    if is_fresh(name):
+        return False
+    state = load(name)
+    midnight = now - now % DAY
+    if state.get("status") == "partial" and (state.get("finished_ts", 0) >= midnight or now < midnight + 600):
+        return False
+    if state.get("status") == "failed" and now - state.get("finished_ts", 0) < 6 * 3600:
+        return False
+    return True
+
+
+def daemon(groups: list[str]) -> None:
+    """Keeps long fetches going on their own: OpenAlex's spans several daily allowances, so instead of
+    waiting on a pipeline run it resumes every day; the pipeline loads whatever has arrived
+    (server/fetch.go). Checks every ten minutes."""
+    while True:
+        with lock:
+            for name, (g, *_rest) in SOURCES.items():
+                if g in groups and name not in running and due(name, time.time()):
+                    print(f"{now()} daemon: starting {name}", flush=True)
+                    start_one(name)
+        time.sleep(600)
 
 
 def status(group: str) -> dict:
@@ -172,5 +209,8 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     STATE.mkdir(parents=True, exist_ok=True)
-    print(f"fetcher on :8090, {len(SOURCES)} sources", flush=True)
+    groups = [g for g in os.environ.get("FETCH_DAEMON_GROUPS", "openalex").split(",") if g]
+    if groups:
+        threading.Thread(target=daemon, args=(groups,), daemon=True).start()
+    print(f"fetcher on :8090, {len(SOURCES)} sources; daemon for: {', '.join(groups) or 'none'}", flush=True)
     ThreadingHTTPServer(("0.0.0.0", 8090), Handler).serve_forever()

@@ -37,6 +37,64 @@ def fresh(path: Path, max_age_days: float) -> bool:
     return path.exists() and path.stat().st_size > 0 and time.time() - path.stat().st_mtime < max_age_days * 86400
 
 
+def stale(path: Path, max_age_days: float) -> bool:
+    """A cached response to fetch again: missing, or older than max_age_days."""
+    return not fresh(path, max_age_days)
+
+
+def refetch_or_keep(path: Path, max_age_days: float, fetch) -> str:
+    """A cached response (text) at most max_age_days old: fetch() writes and returns a new one; when it
+    fails (network, allowance) and an older copy exists, that copy is used instead, so a source never
+    loses data it had. Without a copy the failure stands."""
+    if path.exists() and not stale(path, max_age_days):
+        return path.read_text(encoding="utf-8")
+    try:
+        text = fetch()
+    except (OSError, SystemExit) as e:
+        if path.exists():
+            print(f"  {path.name}: refresh failed ({type(e).__name__}); keeping the copy from before")
+            return path.read_text(encoding="utf-8")
+        raise
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".part")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+    return text
+
+
+class refreshed_cache:
+    """with refreshed_cache(dir, days): when the cache directory's last complete fetch is older than
+    days, it is set aside and fetched again whole (for sources whose pages only make sense together:
+    a search session's result pages, or pages that shift as items are added). If the fetch fails the
+    old directory comes back, so the source keeps its data."""
+
+    def __init__(self, cache: Path, max_age_days: float):
+        self.cache, self.max_age = cache, max_age_days
+        self.marker, self.old = cache / ".complete", cache.with_name(cache.name + ".old")
+
+    def __enter__(self):
+        if self.cache.exists() and stale(self.marker, self.max_age) and self.marker.exists():
+            if self.old.exists():
+                import shutil
+                shutil.rmtree(self.old)
+            self.cache.rename(self.old)
+            print(f"  {self.cache.name}: older than {self.max_age:g} days, fetching again")
+        self.cache.mkdir(parents=True, exist_ok=True)
+        return self
+
+    def __exit__(self, kind, err, tb):
+        import shutil
+        if kind is None:
+            self.marker.write_text(time.strftime("%Y-%m-%dT%H:%M:%S"))
+            if self.old.exists():
+                shutil.rmtree(self.old)
+        elif self.old.exists():
+            shutil.rmtree(self.cache, ignore_errors=True)
+            self.old.rename(self.cache)
+            print(f"  {self.cache.name}: fetch failed; the previous copy is back")
+        return False
+
+
 def download(url: str, dest: Path, max_age_days: float = 30, timeout: int = 600) -> bool:
     """Download url to dest unless dest is younger than max_age_days. Written to a temporary file
     and renamed when complete, so an interrupted download never leaves a broken file behind.

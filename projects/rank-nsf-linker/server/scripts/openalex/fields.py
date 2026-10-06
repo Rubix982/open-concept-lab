@@ -46,6 +46,10 @@ DATA = ROOT / "data" / "openalex"
 CACHE = DATA / "fields"
 API = "https://api.openalex.org/"
 PAUSE = 0.3
+# Cached pages are fetched again after this many days (researchers move, new papers appear), with
+# whatever calls are left after new universities and researchers; a page that can't be refreshed yet
+# keeps serving.
+PAGE_MAX_AGE = 30
 TOP_PER_FIELD = 20  # most-cited per university and field; more would swamp the explorer
 WORKS_FROM = "2021-01-01"
 
@@ -98,14 +102,17 @@ class Client:
         name = hashlib.sha1((path + json.dumps(params, sort_keys=True)).encode()).hexdigest()[:20]
         return CACHE / kind / f"{name}.json"
 
-    def get(self, kind: str, path: str, params: dict) -> dict | None:
-        """Cached GET; None when the call budget of this run is spent."""
+    def get(self, kind: str, path: str, params: dict, max_age_days: float | None = None) -> dict | None:
+        """Cached GET. With max_age_days, a cached page older than that is fetched again when the call
+        budget allows, else the old page is used. None only when a page was never fetched and the
+        budget of this run is spent."""
         cached = self.cache_file(kind, path, params)
-        if cached.exists():
-            return json.loads(cached.read_text())
+        old = json.loads(cached.read_text()) if cached.exists() else None
+        if old is not None and (max_age_days is None or time.time() - cached.stat().st_mtime < max_age_days * 86400):
+            return old
         with self.lock:
             if self.max_calls is not None and self.calls >= self.max_calls:
-                return None
+                return old
             self.calls += 1  # counted when started, so parallel workers respect the budget
         url = API + path + "?" + urllib.parse.urlencode({**params, "api_key": self.key})
         req = urllib.request.Request(url, headers={"User-Agent": "advisor-atlas/1.0 (non-commercial)"})
@@ -120,7 +127,7 @@ class Client:
                 if e.code == 429 and int(e.headers.get("Retry-After") or 0) > 600:
                     with self.lock:  # the day's allowance is spent: no more calls this run
                         self.max_calls = self.calls
-                    return None
+                    return old
                 if e.code == 429 or e.code >= 500:
                     time.sleep(30 * (attempt + 1))
                     continue
@@ -256,7 +263,7 @@ def main() -> None:
     people, seen, subfields, stopped = [], set(), {}, unresolved > 0
     for uni, inst in institutions.items():
         for field_id, (area, _name, _group) in (EXTRA_FIELDS if inst.get("extra") else FIELDS).items():
-            body = c.get("authors", "authors", authors_params(inst, field_id))
+            body = c.get("authors", "authors", authors_params(inst, field_id), PAGE_MAX_AGE)
             if body is None:
                 print(f"stopped at the call budget ({c.calls} calls); rerun to continue")
                 stopped = True
@@ -353,8 +360,12 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     fresh = sorted(need - grouped)
     saved += [fresh[i:i + 50] for i in range(0, len(fresh), 50)]
     WORKS_GROUPS.write_text(json.dumps(saved))
-    groups = [g for g in saved if need & set(g)]
-    print(f"  cached works for {len(have)} researchers; {len(need)} to ask ({len(groups)} groups)")
+    # New researchers first, then groups whose pages are due a refresh (new papers)
+    due = [g for g in saved if not need & set(g)
+           and stale_page(c.cache_file("works", "works", works_params(g, 1)))]
+    groups = [g for g in saved if need & set(g)] + due
+    print(f"  cached works for {len(have)} researchers; {len(need)} to ask ({len(groups) - len(due)} groups), "
+          f"{len(due)} groups due a refresh")
     firsts = [works_params(g, 1) for g in groups]
     missing = [p for p in firsts if not c.cache_file("works", "works", p).exists()]
     with ThreadPoolExecutor(8) as pool:
@@ -364,7 +375,7 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     for group in groups:  # later pages, and which groups are now fully asked
         complete, body = False, None
         for page in range(1, 4):  # 50 authors can have more than 200 recent works
-            body = c.get("works", "works", works_params(group, page))
+            body = c.get("works", "works", works_params(group, page), PAGE_MAX_AGE)
             if body is None:  # over budget: ask again next run
                 stopped = True
                 break
@@ -390,6 +401,10 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     if stopped:
         print("call budget reached; rerun later for the rest")
         sys.exit(PARTIAL)
+
+
+def stale_page(path: Path) -> bool:
+    return path.exists() and time.time() - path.stat().st_mtime > PAGE_MAX_AGE * 86400
 
 
 def works_params(group: list[str], page: int) -> dict:

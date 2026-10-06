@@ -102,7 +102,9 @@ def details(ref: str) -> dict | None:
 
 
 def main() -> None:
-    refresh = "--refresh" in sys.argv
+    # The export lists are downloaded again when two weeks old (the fetcher runs UKRI fortnightly)
+    lists = list(CACHE.glob("*.csv"))
+    refresh = "--refresh" in sys.argv or not lists or min(p.stat().st_mtime for p in lists) < time.time() - 13 * 86400
     with_details = "--no-details" not in sys.argv
     rows = []
     for name, facets in LISTS.items():

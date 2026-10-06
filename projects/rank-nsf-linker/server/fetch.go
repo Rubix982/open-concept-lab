@@ -65,7 +65,7 @@ func fetcherCall(method, path string) (*fetchGroup, error) {
 
 // runFetchGroup starts a group's stale sources and waits until none is running (or the wait runs
 // out). It never fails the pipeline: missing data is reported, and the load steps use what's there.
-func runFetchGroup(mainCtx *colly.Context, group string) *fetchGroup {
+func runFetchGroup(mainCtx *colly.Context, group string, wait bool) *fetchGroup {
 	if fetcherURL() == "" {
 		logger.Warnf(mainCtx, "⚠️ FETCHER_URL not set: using the %s data already on disk", group)
 		return nil
@@ -77,13 +77,16 @@ func runFetchGroup(mainCtx *colly.Context, group string) *fetchGroup {
 	}
 	logger.Infof(mainCtx, "📥 Fetching %s sources: %s", group, strings.Join(g.Running, ", "))
 	deadline := time.Now().Add(fetchWait())
+	if !wait {
+		deadline = time.Now()
+	}
 	for len(g.Running) > 0 && time.Now().Before(deadline) {
 		time.Sleep(30 * time.Second)
 		if next, err := fetcherCall(http.MethodGet, "/status?group="+group); err == nil {
 			g = next
 		}
 	}
-	if len(g.Running) > 0 {
+	if len(g.Running) > 0 && wait {
 		logger.Warnf(mainCtx, "⚠️ still fetching after %s: %s (their previous data is used; the next run picks them up)",
 			fetchWait(), strings.Join(g.Running, ", "))
 	}
@@ -111,13 +114,32 @@ func runFetchGroup(mainCtx *colly.Context, group string) *fetchGroup {
 
 // fetchBaseSources: grants, DAAD scholarships and the DBLP dump, before the steps that load them.
 func fetchBaseSources(mainCtx *colly.Context) error {
-	runFetchGroup(mainCtx, "base")
+	runFetchGroup(mainCtx, "base", true)
 	return nil
 }
 
+// openAlexOutputs are the files the OpenAlex fetches write and the load steps read.
+var openAlexOutputs = []string{"fields_people.csv", "fields_works.csv", "subfields.csv", "works.csv"}
+
+// openAlexLoadedPath records the outputs' fingerprint at the last load (data/fetch_state/).
+func openAlexLoadedPath() string {
+	return filepath.Join(getRootDirPath(DATA_DIR), "fetch_state", "openalex-loaded.txt")
+}
+
+func openAlexLoaded() (string, time.Time) {
+	b, err := os.ReadFile(openAlexLoadedPath())
+	if err != nil {
+		return "", time.Time{}
+	}
+	info, _ := os.Stat(openAlexLoadedPath())
+	return strings.TrimSpace(string(b)), info.ModTime()
+}
+
 // fetchOpenAlexSources runs after the explorer tables are built, because OpenAlex's inputs come
-// from them: the R1 universities to find researchers at, and the papers' DOIs to look up. When it
-// brings new data, the steps that load OpenAlex data run again, so one pipeline run ends complete.
+// from them: the universities to find researchers at, and the papers' DOIs to look up. The fetcher
+// runs the OpenAlex sources as a daemon (they span several daily allowances), so this exports the
+// inputs, nudges the daemon, and loads whatever arrived since the last load: the steps that read
+// OpenAlex data run again. The scheduler calls back here whenever new data has arrived.
 func fetchOpenAlexSources(mainCtx *colly.Context) error {
 	db, err := GetDB()
 	if err != nil {
@@ -127,17 +149,22 @@ func fetchOpenAlexSources(mainCtx *colly.Context) error {
 		logger.Warnf(mainCtx, "⚠️ could not export OpenAlex inputs: %v", err)
 		return nil
 	}
-	outputs := []string{"fields_people.csv", "fields_works.csv", "subfields.csv", "works.csv"}
-	before, people := contentHashes(outputs), countLines(openAlexFieldsPath("fields_people.csv"))
-	runFetchGroup(mainCtx, "openalex")
-	if after := contentHashes(outputs); after == before {
-		logger.Infof(mainCtx, "📥 OpenAlex: nothing new")
+	runFetchGroup(mainCtx, "openalex", false)
+	loaded, _ := openAlexLoaded()
+	current := contentHashes(openAlexOutputs)
+	if current == loaded {
+		logger.Infof(mainCtx, "📥 OpenAlex: nothing new since the last load")
 		return nil
 	}
 	// The fetch scripts refuse to shrink their outputs; this is the second lock on that door.
-	if now := countLines(openAlexFieldsPath("fields_people.csv")); now < people*9/10 {
-		logger.Warnf(mainCtx, "⚠️ OpenAlex researchers fell from %d to %d: not loading them", people, now)
-		return nil
+	if db, err := GetDB(); err == nil {
+		var before int
+		if db.QueryRow(`SELECT count(*) FROM explorer_faculty WHERE source = 'openalex'`).Scan(&before) == nil {
+			if now := countLines(openAlexFieldsPath("fields_people.csv")); now < before*9/10 {
+				logger.Warnf(mainCtx, "⚠️ OpenAlex researchers fell from %d to %d: not loading them", before, now)
+				return nil
+			}
+		}
 	}
 	logger.Infof(mainCtx, "📥 OpenAlex: new data; loading it")
 	for _, step := range []struct {
@@ -162,6 +189,9 @@ func fetchOpenAlexSources(mainCtx *colly.Context) error {
 		if err := step.fn(mainCtx); err != nil {
 			return fmt.Errorf("%s after the OpenAlex fetch: %w", step.name, err)
 		}
+	}
+	if err := os.WriteFile(openAlexLoadedPath(), []byte(current+"\n"), 0o644); err != nil {
+		logger.Warnf(mainCtx, "⚠️ could not record the OpenAlex load: %v", err)
 	}
 	return nil
 }
@@ -286,41 +316,51 @@ func startPipelineScheduler(mainCtx *colly.Context) {
 	go func() {
 		for {
 			time.Sleep(6 * time.Hour)
-			if reason := pipelineDue(mainCtx, days); reason != "" {
-				logger.Infof(mainCtx, "🗓️ Running the pipeline again: %s", reason)
-				runPipeline(mainCtx, 1)
+			if reason, from := pipelineDue(mainCtx, days); reason != "" {
+				logger.Infof(mainCtx, "🗓️ Running the pipeline again from step %d: %s", from, reason)
+				runPipeline(mainCtx, from)
 			}
 		}
 	}()
 }
 
-func pipelineDue(mainCtx *colly.Context, days float64) string {
+// pipelineDue says whether to run the pipeline again, why, and from which step (1 = everything).
+func pipelineDue(mainCtx *colly.Context, days float64) (string, int) {
 	if GetPipelineStatus(mainCtx, string(PIPELINE_POPULATE_POSTGRES)) == string(PIPELINE_STATUS_IN_PROGRESS) {
-		return ""
+		return "", 0
 	}
 	var last time.Time
 	if db, err := GetDB(); err == nil {
 		if db.QueryRow(`SELECT last_run FROM pipeline_status WHERE pipeline_name = $1`,
 			string(POPULATION_SUCCEEDED_MESSAGE)).Scan(&last) == nil && time.Since(last) > time.Duration(days*24)*time.Hour {
-			return fmt.Sprintf("the last complete run was %.0f days ago", time.Since(last).Hours()/24)
+			return fmt.Sprintf("the last complete run was %.0f days ago", time.Since(last).Hours()/24), 1
 		}
 	}
+	// New OpenAlex data from the daemon: load it (steps from "Fetch OpenAlex Data" on), at most twice
+	// a day; a day's fetch usually lands once.
+	if loaded, at := openAlexLoaded(); time.Since(at) > 12*time.Hour && contentHashes(openAlexOutputs) != loaded {
+		return "new OpenAlex data arrived", openAlexStep()
+	}
 	if fetcherURL() == "" {
-		return ""
+		return "", 0
 	}
 	groups := map[string]*fetchGroup{}
 	for _, group := range []string{"base", "openalex"} {
 		g, err := fetcherCall(http.MethodGet, "/status?group="+group)
 		if err != nil {
-			return ""
+			return "", 0
 		}
 		groups[group] = g
 	}
 	// A source still fetching when the pipeline stopped waiting (FETCH_WAIT_HOURS) finishes later:
 	// load it now rather than at the weekly refresh. "Later" is after its group's fetch step last
 	// completed (the load steps follow it); once reloaded that step is newer, so this fires once.
-	fetchStep := map[string]string{"base": "%Fetch Source Data", "openalex": "%Fetch OpenAlex Data"}
+	// (OpenAlex's daemon output is handled above, by content.)
+	fetchStep := map[string]string{"base": "%Fetch Source Data"}
 	for group, g := range groups {
+		if fetchStep[group] == "" {
+			continue
+		}
 		var stepDone time.Time
 		if db, err := GetDB(); err != nil || db.QueryRow(`SELECT COALESCE(max(last_run), 'epoch') FROM pipeline_status
 			WHERE pipeline_name LIKE $1 AND status = 'completed'`, fetchStep[group]).Scan(&stepDone) != nil {
@@ -329,21 +369,31 @@ func pipelineDue(mainCtx *colly.Context, days float64) string {
 		for name, s := range g.Sources {
 			if f, err := time.Parse(time.RFC3339, s.Finished); err == nil && s.Status == "ok" &&
 				stepDone.Year() > 1970 && f.After(stepDone) {
-				return fmt.Sprintf("%s finished after the pipeline last loaded it", name)
+				return fmt.Sprintf("%s finished after the pipeline last loaded it", name), 1
 			}
 		}
 	}
 	// Unfinished fetches are retried at most about once a day: an API allowance resets daily, and a
 	// source that keeps failing shouldn't rerun the whole pipeline every few hours.
 	if !last.IsZero() && time.Since(last) < 20*time.Hour {
-		return ""
+		return "", 0
 	}
-	for _, g := range groups {
+	if g := groups["base"]; g != nil { // OpenAlex's daemon retries on its own
 		for name, s := range g.Sources {
 			if s.Status == "partial" || s.Status == "failed" || s.Status == "interrupted" {
-				return fmt.Sprintf("%s was left %s", name, s.Status)
+				return fmt.Sprintf("%s was left %s", name, s.Status), 1
 			}
 		}
 	}
-	return ""
+	return "", 0
+}
+
+// openAlexStep is the 1-based number of the "Fetch OpenAlex Data" step.
+func openAlexStep() int {
+	for i, st := range pipelineSteps() {
+		if st.name == "Fetch OpenAlex Data" {
+			return i + 1
+		}
+	}
+	return 1
 }
