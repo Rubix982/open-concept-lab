@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	colly "github.com/gocolly/colly/v2"
@@ -123,9 +124,45 @@ func embedGrants(mainCtx *colly.Context) error {
 		return nil
 	}
 	logger.Infof(mainCtx, "💰 Grant index: %d held; embedding new and changed grants", len(held))
+	// A few batches in flight: the embedder uses only a few of the machine's cores per request, and
+	// three at once roughly doubled throughput. The first error stops the rest.
+	const workers = 3
+	jobs := make(chan []grantDoc, workers)
+	var wg sync.WaitGroup
+	var failMu sync.Mutex
+	var failed error
+	var done atomic.Int64
+	for w := 0; w < workers; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for b := range jobs {
+				failMu.Lock()
+				stop := failed != nil
+				failMu.Unlock()
+				if stop {
+					continue
+				}
+				if err := flush(b); err != nil {
+					failMu.Lock()
+					if failed == nil {
+						failed = err
+					}
+					failMu.Unlock()
+					continue
+				}
+				done.Add(int64(len(b)))
+			}
+		}()
+	}
+	failure := func() error {
+		failMu.Lock()
+		defer failMu.Unlock()
+		return failed
+	}
 	seen := make(map[string]struct{}, len(held))
 	batch := make([]grantDoc, 0, embedBatchSize)
-	done, start, lastLog := 0, time.Now(), time.Now()
+	start, lastLog := time.Now(), time.Now()
 	for rows.Next() {
 		var d grantDoc
 		var funder, gid, country string
@@ -141,29 +178,30 @@ func embedGrants(mainCtx *colly.Context) error {
 		}
 		d.payload = map[string]any{"funder": funder, "id": gid, "country": country, "ends": grantEnds(ends)}
 		if batch = append(batch, d); len(batch) == embedBatchSize {
-			if err := flush(batch); err != nil {
-				rows.Close()
-				return err
+			if err := failure(); err != nil {
+				break
 			}
-			done += len(batch)
-			batch = batch[:0]
+			jobs <- batch
+			batch = make([]grantDoc, 0, embedBatchSize)
 			if time.Since(lastLog) > time.Minute {
 				lastLog = time.Now()
-				logger.Infof(mainCtx, "💰 Embedded %d grants (%s, %d held before)", done, time.Since(start).Round(time.Second), len(held))
+				logger.Infof(mainCtx, "💰 Embedded %d grants (%s, %d held before)", done.Load(), time.Since(start).Round(time.Second), len(held))
 			}
 		}
 	}
+	if len(batch) > 0 && failure() == nil {
+		jobs <- batch
+	}
+	close(jobs)
+	wg.Wait()
 	rows.Close()
+	if err := failure(); err != nil {
+		return err
+	}
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("failed to read grants: %w", err)
 	}
-	if len(batch) > 0 {
-		if err := flush(batch); err != nil {
-			return err
-		}
-		done += len(batch)
-	}
-	logger.Infof(mainCtx, "💰 Embedded %d grants (%s)", done, time.Since(start).Round(time.Second))
+	logger.Infof(mainCtx, "💰 Embedded %d grants (%s)", done.Load(), time.Since(start).Round(time.Second))
 	var toDelete []string
 	for id := range held {
 		if _, ok := seen[id]; !ok {
