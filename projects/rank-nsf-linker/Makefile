@@ -39,7 +39,7 @@ define container_running
 	@docker ps --format '{{.Names}}' | grep -q "^$(1)$$"
 endef
 
-.PHONY: pipeline pipeline-from golden golden-verify golden-restore all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
+.PHONY: pipeline pipeline-from golden golden-verify golden-restore fresh-test fresh-check fresh-down all build run docker-build up down logs restart clean exec exec-bash ps top start stop \
 	status rebuild rm-all registry up-infra lint lint-fix semgrep lint-all install-tools
 
 all: build
@@ -117,6 +117,25 @@ up: registry up-infra
 ## pipeline: Restart go-server; resumes the population pipeline at the first unfinished step
 pipeline:
 	$(DOCKER_COMPOSE) up -d --no-deps --pull never --force-recreate go-server
+
+## fresh-test: Fresh-server test — a separate stack (docker-compose.fresh.yaml) from an empty data/,
+## seeded only with OpenAlex call caches (the shared allowance) and the OpenAlex snapshots (S3 crawls
+## from containers on some networks); APFS clones, so no extra disk and the live files can't change.
+fresh-test:
+	@test ! -e fresh/data/fetch_state || (echo "fresh/ exists: make fresh-down first" && exit 1)
+	mkdir -p fresh/data/openalex fresh/target
+	cp -Rc data/openalex/fields data/openalex/works fresh/data/openalex/
+	cp -Rc data/openalex_awards data/openalex_institutions fresh/data/
+	docker compose -f docker-compose.fresh.yaml up -d
+
+## fresh-check: Compare the fresh stack with the live one (steps, fetches, row counts)
+fresh-check:
+	python3 server/scripts/fresh/check.py
+
+## fresh-down: Stop the fresh stack and delete its database and fresh/
+fresh-down:
+	docker compose -f docker-compose.fresh.yaml down -v
+	rm -rf fresh
 
 ## golden: Save the finished state (Postgres dump + Qdrant snapshot + manifest) to golden/<date>/
 golden:

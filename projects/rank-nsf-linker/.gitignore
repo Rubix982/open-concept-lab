@@ -210,3 +210,5 @@ deck.gl/**/**
 
 # Golden datasets (Postgres dump + Qdrant snapshot, several GB; see server/scripts/golden)
 /golden/
+# Fresh-server test stack's data (make fresh-test)
+/fresh/

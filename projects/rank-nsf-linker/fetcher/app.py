@@ -105,8 +105,19 @@ def is_fresh(name: str) -> bool:
     return state.get("status") == "ok" and time.time() - state.get("finished_ts", 0) < max_age * DAY
 
 
+def capped(args: list[str]) -> list[str]:
+    """FETCH_MAX_CALLS lowers every --max-calls (a second stack sharing the API key: the fresh-server
+    test), never raises it."""
+    cap = os.environ.get("FETCH_MAX_CALLS", "").strip()
+    if not cap.isdigit() or "--max-calls" not in args:
+        return args
+    i = args.index("--max-calls") + 1
+    return [*args[:i], str(min(int(args[i]), int(cap))), *args[i + 1:]]
+
+
 def run(name: str) -> None:
     group, script, args, _max_age, hours = SOURCES[name]
+    args = capped(args)
     state = load(name)
     state.update(name=name, group=group, status="queued")
     save(name, state)

@@ -1,0 +1,81 @@
+# Fresh-server test: a second, separate stack that starts from an empty data/ and must end up
+# complete on its own (README, "Starting from nothing"). Run with the project name atlas-fresh:
+#   make fresh-test        (seeds fresh/, then starts this stack)
+#   make fresh-check       (compares its database with the live one)
+#   make fresh-down        (stops it and removes its volumes)
+# Nothing here touches the live stack: no container names, its own volumes and network, only the
+# server published (on 18080), backup/ mounted read-only. Uses the images already built for dev.
+# Embedding (steps 28-29) is left out (PIPELINE_TO_STEP): it is proven on the live stack, a golden
+# dataset covers it on a new server, and a second embedder doesn't fit in this machine's memory.
+name: atlas-fresh
+
+services:
+  postgres:
+    image: host.docker.internal:5128/cgr.dev/chainguard/postgres
+    shm_size: 1gb
+    environment:
+      POSTGRES_DB: rank-nsf-linker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - fresh_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+
+  fetcher:
+    image: rank-nsf-linker-fetcher:latest
+    volumes:
+      - ./fresh/data:/app/data:rw
+      - ./backup:/app/backup:ro
+    env_file:
+      - ./server/.env # OPENALEX_API_KEY, CINII_APP_ID (read at run time)
+    environment:
+      FETCH_CONCURRENCY: 1 # memory: the live stack is running next to this one
+      FETCH_MAX_CALLS: 500 # OpenAlex: same key as the live stack; work mostly from the seeded caches
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+
+  go-server:
+    image: rank-nsf-linker-go-server:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+      fetcher:
+        condition: service_started
+    volumes:
+      - ./fresh/data:/app/data:rw
+      - ./backup:/app/backup:ro
+      - ./fresh/target:/app/target:rw
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: rank-nsf-linker
+      DB_HOST: postgres
+      DB_URL: postgres://postgres:postgres@postgres:5432/rank-nsf-linker
+      SKIP_IPEDS: 1 # nces.ed.gov is unreachable here: proves the backup/carnegie.csv fallback
+      FETCHER_URL: http://fetcher:8090
+      FETCH_WAIT_HOURS: 14 # NIH, KAKEN and RGC can take most of a day from nothing
+      PIPELINE_TO_STEP: 27
+      EMBEDDER_SERVICE_URL: http://embedder-not-in-this-stack:8000
+      QDRANT_REST_URL: http://qdrant-not-in-this-stack:6333
+    ports:
+      - "18080:8080"
+    command: ["./server/go-server"]
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+volumes:
+  fresh_pg:
