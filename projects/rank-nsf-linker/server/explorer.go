@@ -1,9 +1,14 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/csv"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	colly "github.com/gocolly/colly/v2"
+	"github.com/lib/pq"
 )
 
 // buildExplorerSQL precomputes what the student-facing explorer reads:
@@ -208,6 +213,9 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if _, err := tx.Exec(buildExplorerSQL); err != nil {
 		return fmt.Errorf("failed to build explorer tables: %w", err)
 	}
+	if err := applyCarnegieFallback(tx); err != nil {
+		return fmt.Errorf("failed to apply backup/carnegie.csv: %w", err)
+	}
 	if _, err := tx.Exec(buildGrantLandscapeSQL); err != nil {
 		return fmt.Errorf("failed to build the grant landscape: %w", err)
 	}
@@ -225,4 +233,33 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	}
 	logger.Infof(mainCtx, "🧭 Explorer: %d faculty (%d with an active grant) at %d universities", faculty, funded, universities)
 	return nil
+}
+
+// applyCarnegieFallback marks R1 / R2 universities that IPEDS left unmarked, from backup/carnegie.csv
+// (name, carnegie; a snapshot of IPEDS' Carnegie codes). nces.ed.gov is unreachable from some
+// networks, and without the codes the US R1s drop out of everything keyed on them (the OpenAlex
+// researcher list among them).
+func applyCarnegieFallback(tx *sql.Tx) error {
+	f, err := os.Open(filepath.Join(getRootDirPath(BACKUP_DIR), "carnegie.csv"))
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	defer f.Close()
+	rows, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return err
+	}
+	var names, codes []string
+	for _, r := range rows[min(1, len(rows)):] {
+		if len(r) >= 2 {
+			names, codes = append(names, r[0]), append(codes, r[1])
+		}
+	}
+	_, err = tx.Exec(`
+		UPDATE explorer_universities u SET carnegie = c.code
+		FROM (SELECT unnest($1::text[]) AS name, unnest($2::text[]) AS code) c
+		WHERE u.carnegie IS NULL AND u.country = 'us' AND u.name = c.name`, pq.Array(names), pq.Array(codes))
+	return err
 }

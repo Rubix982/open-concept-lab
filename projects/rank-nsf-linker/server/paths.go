@@ -150,18 +150,26 @@ func downloadNSFData(mainCtx *colly.Context) error {
 	dataDir := getRootDirPath(DATA_DIR)
 	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
 
-	for year := NSFAwardsStartYear; year <= NSFAwardsEndYear; year++ {
+	client := &http.Client{Timeout: 30 * time.Minute}
+	for year := NSFAwardsStartYear; year <= nsfAwardsEndYear(); year++ {
 		zipFile := filepath.Join(nsfDataDir, fmt.Sprintf("nsf_awards_%d.zip", year))
 		extractDir := filepath.Join(nsfDataDir, fmt.Sprintf("%d", year))
+		target := extractDir // where this download is extracted
 
-		if _, err := os.Stat(extractDir); err == nil {
-			logger.Infof(mainCtx, "[✓] %s already exists. Skipping download.", filepath.Base(extractDir))
-			continue
+		// The current year keeps growing: it is downloaded again once its copy is a week old, extracted
+		// next to the old one and swapped in only when complete.
+		if info, err := os.Stat(extractDir); err == nil {
+			if year != nsfAwardsEndYear() || time.Since(info.ModTime()) < 7*24*time.Hour {
+				logger.Infof(mainCtx, "[✓] %s already exists. Skipping download.", filepath.Base(extractDir))
+				continue
+			}
+			target = extractDir + ".new"
+			_ = os.RemoveAll(target)
 		}
 
 		logger.Infof(mainCtx, "[*] Downloading %s ...", filepath.Base(zipFile))
 
-		resp, err := http.Get(fmt.Sprintf("%s%d", NSFURLPrefix, year))
+		resp, err := client.Get(fmt.Sprintf("%s%d", NSFURLPrefix, year))
 		if err != nil {
 			logger.Errorf(mainCtx, "[!] Failed to fetch %s: %v", filepath.Base(zipFile), err)
 			continue
@@ -190,21 +198,31 @@ func downloadNSFData(mainCtx *colly.Context) error {
 
 		logger.Infof(mainCtx, "[✓] %s downloaded.", filepath.Base(zipFile))
 
-		if _, err = os.Stat(extractDir); err == nil {
-			logger.Infof(mainCtx, "[✓] Already extracted to %s", extractDir)
+		if _, err = os.Stat(target); err == nil {
+			logger.Infof(mainCtx, "[✓] Already extracted to %s", target)
 			continue
 		}
 
-		logger.Infof(mainCtx, "[*] Extracting %s to %s ...", filepath.Base(zipFile), extractDir)
+		logger.Infof(mainCtx, "[*] Extracting %s to %s ...", filepath.Base(zipFile), target)
 
-		if err = os.MkdirAll(extractDir, os.ModePerm); err != nil {
-			logger.Errorf(mainCtx, "[!] Could not create directory %s: %v", extractDir, err)
+		if err = os.MkdirAll(target, os.ModePerm); err != nil {
+			logger.Errorf(mainCtx, "[!] Could not create directory %s: %v", target, err)
 			continue
 		}
 
-		if err = unzip(zipFile, extractDir); err != nil {
+		if err = unzip(zipFile, target); err != nil {
 			logger.Errorf(mainCtx, "[!] Failed to extract %s: %v", filepath.Base(zipFile), err)
+			_ = os.RemoveAll(target)
 			continue
+		}
+		if target != extractDir {
+			if err = os.RemoveAll(extractDir); err == nil {
+				err = os.Rename(target, extractDir)
+			}
+			if err != nil {
+				logger.Errorf(mainCtx, "[!] Could not replace %s: %v", extractDir, err)
+				continue
+			}
 		}
 
 		logger.Infof(mainCtx, "[✓] Extracted to %s", extractDir)

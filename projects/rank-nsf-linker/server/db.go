@@ -217,6 +217,14 @@ func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 		logger.Infof(mainCtx, "📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
 			csvName, primaryKey, tableName)
 
+		// CSRankings stopped publishing some files (geolocation.csv): a fresh server has only the
+		// committed backup/ copy, which then serves as the original.
+		if _, err := os.Stat(originalPath); os.IsNotExist(err) {
+			if _, err := os.Stat(backupPath); err == nil {
+				logger.Warnf(mainCtx, "⚠️ %s not downloaded; using the committed copy in backup/", csvName)
+				originalPath = backupPath
+			}
+		}
 		original, headers, err := readCSVAsMap(mainCtx, originalPath, primaryKey)
 		if err != nil {
 			logger.Errorf(mainCtx, "❌ Failed to read original CSV: %v", err)
@@ -421,7 +429,7 @@ func populatePostgresFromNsfJsons(mainCtx *colly.Context) error {
 
 	var wg sync.WaitGroup
 
-	for year := NSFAwardsEndYear; year >= NSFAwardsStartYear; year-- {
+	for year := nsfAwardsEndYear(); year >= NSFAwardsStartYear; year-- {
 		wg.Add(1)
 
 		go func(year int) {

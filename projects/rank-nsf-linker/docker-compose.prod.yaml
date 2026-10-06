@@ -49,6 +49,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      qdrant:
+        condition: service_started
+      fetcher:
+        condition: service_started
     environment:
       DB_URL: postgres://postgres:postgres@pg17-local:5432/rank-nsf-linker?sslmode=verify-full&sslcert=/app/certs/client.crt&sslkey=/app/certs/client.key&sslrootcert=/app/certs/ca.crt
       DB_HOST: postgres
@@ -56,10 +60,70 @@ services:
       DB_NAME: rank-nsf-linker
       DB_USER: postgres
       DB_PASSWORD: postgres
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB_NAME: rank-nsf-linker
+      # Rerun the population pipeline from step N (see pipelineSteps in server/db.go)
+      PIPELINE_FROM_STEP: ${PIPELINE_FROM_STEP:-}
+      PIPELINE_TO_STEP: ${PIPELINE_TO_STEP:-}
+      # Search by meaning (server/semantic.go, server/grant_search.go)
+      EMBEDDER_SERVICE_URL: http://embedder:8000
+      QDRANT_REST_URL: http://qdrant-local:6333
+      # Data fetching (fetcher/app.py): the pipeline fetches every source through it
+      FETCHER_URL: http://fetcher:8090
     ports:
       - "8080:8080"
     restart: unless-stopped
     command: ["./server/go-server"]
+
+  # Fetches every source outside CSRankings, NSF and IPEDS for the pipeline (fetcher/app.py).
+  # API keys (OPENALEX_API_KEY, CINII_APP_ID) are read from server/.env at run time.
+  fetcher:
+    container_name: fetcher
+    build:
+      context: .
+      dockerfile: fetcher/Dockerfile
+    volumes:
+      - ./data:/app/data:rw
+      - ./backup:/app/backup:rw
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health')"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+
+  # Vectors for search by meaning; not published outside the compose network.
+  qdrant:
+    image: qdrant/qdrant:v1.12.6
+    container_name: qdrant-local
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+  embedder:
+    container_name: embedder
+    build:
+      context: ./embedder
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=production
+      - MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+      - BATCH_SIZE=32
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 3G
 
   web:
     container_name: web-ui
@@ -74,3 +138,4 @@ services:
 
 volumes:
   pg_data:
+  qdrant_data:

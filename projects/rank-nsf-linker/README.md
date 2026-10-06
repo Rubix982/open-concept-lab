@@ -160,6 +160,18 @@ complete, and every 7 days after that (`PIPELINE_REFRESH_DAYS`).
 From nothing, the fetches take days (OpenAlex's allowance) and embedding about 6 hours; restoring a
 golden dataset (about 3.5 GB, not in git) takes a few minutes.
 
+**Starting from nothing.** A new server with an empty `data/` fetches everything itself. It needs:
+
+- `server/.env` with `OPENALEX_API_KEY` (free, openalex.org) and `CINII_APP_ID` (free, KAKEN), read by the
+  fetcher only. FWF's read key is public and fetched at run time.
+- The curated files committed in `backup/` (coordinates, aliases, Pakistani universities, scholarships,
+  Marsden spreadsheets, ERC result-list URLs, `openalex_institutions.csv`, `zh_institutions.csv`,
+  `carnegie.csv`). When a download is missing they stand in: CSRankings no longer publishes
+  `geolocation.csv`, and when nces.ed.gov can't be reached (`SKIP_IPEDS=1`) R1/R2 status comes from
+  `carnegie.csv` (tuition and other IPEDS fields stay empty).
+- About 25 GB of disk and a few days: the OpenAlex fetches (~22k calls) span several daily allowances;
+  everything else finishes on the first run. A golden dataset (`make golden-restore`) skips all of it.
+
 **Data the pipeline reads**
 
 - `data/` — CSRankings CSVs, NSF award JSONs (`data/nsfdata/<year>/`), IPEDS CSVs (`data/ipeds_data/<year>/`)

@@ -23,7 +23,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from common import DATA, secret, write
+from common import DATA, download, secret, write
 
 ROOT = Path(__file__).resolve().parents[3]
 CACHE = DATA / "kaken"
@@ -43,7 +43,7 @@ def review_sections() -> list[str]:
     """English names of Broad Section J and every section under it, from the review-section master."""
     path = CACHE / "review_section_master_kakenhi.xml"
     if not path.exists():
-        sys.exit("data/kaken/review_section_master_kakenhi.xml missing (bitbucket.org/niijp/grants_masterxml_kaken)")
+        sys.exit("data/kaken/review_section_master_kakenhi.xml missing: its download failed")
     names = []
     for el in ET.parse(path).getroot().iter("review_section"):
         mext = next((c.text for c in el.findall("code") if c.get("type") == "mext"), "")
@@ -151,8 +151,14 @@ def institution_names() -> dict[str, str]:
     return names
 
 
+MASTERS = "https://bitbucket.org/niijp/grants_masterxml_kaken/raw/master/"
+
+
 def main() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
+    # KAKEN's master data (review sections, institutions' English names), refreshed monthly
+    for name in ("review_section_master_kakenhi.xml", "institution_master_kakenhi.xml"):
+        download(MASTERS + name, CACHE / name, max_age_days=30)
     english_institution = institution_names()
     key = app_id()
 

@@ -39,6 +39,10 @@ export function newLabLabel(funder: string, scheme: string | null): string {
       return "NSERC Discovery Launch Supplement";
     case "nwo":
       return "NWO Vidi grant";
+    case "fwf":
+      return scheme === "FWF START Awards"
+        ? "FWF START award"
+        : "FWF young research group";
     default:
       return `${funderName(funder)} ${scheme ?? "early-career grant"}`;
   }

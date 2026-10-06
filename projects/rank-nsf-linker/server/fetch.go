@@ -305,19 +305,40 @@ func pipelineDue(mainCtx *colly.Context, days float64) string {
 			return fmt.Sprintf("the last complete run was %.0f days ago", time.Since(last).Hours()/24)
 		}
 	}
-	// Unfinished fetches are retried at most about once a day: an API allowance resets daily, and a
-	// source that keeps failing shouldn't rerun the whole pipeline every few hours.
-	if !last.IsZero() && time.Since(last) < 20*time.Hour {
-		return ""
-	}
 	if fetcherURL() == "" {
 		return ""
 	}
+	groups := map[string]*fetchGroup{}
 	for _, group := range []string{"base", "openalex"} {
 		g, err := fetcherCall(http.MethodGet, "/status?group="+group)
 		if err != nil {
 			return ""
 		}
+		groups[group] = g
+	}
+	// A source still fetching when the pipeline stopped waiting (FETCH_WAIT_HOURS) finishes later:
+	// load it now rather than at the weekly refresh. "Later" is after its group's fetch step last
+	// completed (the load steps follow it); once reloaded that step is newer, so this fires once.
+	fetchStep := map[string]string{"base": "%Fetch Source Data", "openalex": "%Fetch OpenAlex Data"}
+	for group, g := range groups {
+		var stepDone time.Time
+		if db, err := GetDB(); err != nil || db.QueryRow(`SELECT COALESCE(max(last_run), 'epoch') FROM pipeline_status
+			WHERE pipeline_name LIKE $1 AND status = 'completed'`, fetchStep[group]).Scan(&stepDone) != nil {
+			continue
+		}
+		for name, s := range g.Sources {
+			if f, err := time.Parse(time.RFC3339, s.Finished); err == nil && s.Status == "ok" &&
+				stepDone.Year() > 1970 && f.After(stepDone) {
+				return fmt.Sprintf("%s finished after the pipeline last loaded it", name)
+			}
+		}
+	}
+	// Unfinished fetches are retried at most about once a day: an API allowance resets daily, and a
+	// source that keeps failing shouldn't rerun the whole pipeline every few hours.
+	if !last.IsZero() && time.Since(last) < 20*time.Hour {
+		return ""
+	}
+	for _, g := range groups {
 		for name, s := range g.Sources {
 			if s.Status == "partial" || s.Status == "failed" || s.Status == "interrupted" {
 				return fmt.Sprintf("%s was left %s", name, s.Status)

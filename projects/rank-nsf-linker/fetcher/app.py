@@ -41,6 +41,7 @@ SOURCES = {
     "rgc": ("base", "grants/rgc.py", [], 30, 12),
     "nserc": ("base", "grants/nserc.py", [], 30, 2),
     "nwo": ("base", "grants/nwo.py", [], 14, 4),
+    "fwf": ("base", "grants/fwf.py", [], 30, 1),
     "daad": ("base", "scholarships/daad.py", [], 7, 1),
     "dblp": ("base", "dblp/fetch.py", [], 30, 3),
     "openalex-awards": ("base", "grants/openalex_awards.py", [], 30, 6),  # national funders, from the CC0 snapshot
