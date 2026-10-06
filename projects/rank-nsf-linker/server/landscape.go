@@ -95,7 +95,9 @@ UPDATE explorer_grants SET signal = 'training'
 WHERE (funder = 'nih' AND scheme IN ('T32', 'TL1', 'T90'))
    OR (funder = 'nserc' AND scheme = 'Collaborative Research and Training Experience')
    OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)'])
-   OR (funder = 'fwf' AND scheme IN ('doc.funds', 'doc.funds.connect', 'Doctoral Programs'));
+   OR (funder = 'fwf' AND scheme IN ('doc.funds', 'doc.funds.connect', 'Doctoral Programs'))
+   OR (funder = 'cihr' AND scheme ~* 'Strategic Training Initiative|MD/PhD Program Grants')
+   OR (funder = 'anid' AND scheme ~* 'PROGRAMAS DE DOCTORADO');
 UPDATE explorer_grants SET signal = 'new_lab'
 WHERE signal IS NULL AND (
       (funder = 'nsf' AND (title ILIKE 'CAREER:%' OR programs && ARRAY['CAREER: FACULTY EARLY CAR DEV']
@@ -109,7 +111,18 @@ WHERE signal IS NULL AND (
    OR (funder = 'ukri' AND scheme ILIKE '%new investigator%')
    OR (funder = 'nserc' AND scheme = 'Discovery Launch Supplement')
    OR (funder = 'nwo' AND scheme ~* '\mvidi\M')
-   OR (funder = 'fwf' AND scheme IN ('FWF START Awards', 'Young Independent Researcher Groups')));
+   OR (funder = 'fwf' AND scheme IN ('FWF START Awards', 'Young Independent Researcher Groups'))
+   -- national funders via OpenAlex: their early-career schemes for someone starting a group
+   OR (funder = 'nsfc' AND scheme LIKE '青年科学基金项目%')
+   OR (funder = 'cihr' AND scheme ~* 'New Investigator|Early[- ]Career Investigator')
+   OR (funder = 'anid' AND scheme = 'FONDECYT - INICIACION')
+   OR (funder = 'ncn' AND scheme ~ '^SONATA')
+   OR (funder = 'fapesp' AND scheme ~* 'Jovens Pesquisadores')
+   OR (funder = 'sfi' AND scheme ~* 'Starting Investigator')
+   OR (funder = 'wellcome' AND scheme ~* 'Sir Henry Dale|Early-Career Award|Career Development')
+   OR (funder = 'nhmrc' AND scheme ~* 'Emerging Leadership')
+   OR (funder = 'isf' AND scheme = 'New-Faculty Equipment Grants')
+   OR (funder = 'dff' AND scheme ~* 'Sapere Aude'));
 
 UPDATE explorer_faculty f SET new_lab = x.grant
 FROM (SELECT DISTINCT ON (profile) profile,

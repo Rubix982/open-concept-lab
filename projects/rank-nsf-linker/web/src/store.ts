@@ -39,6 +39,28 @@ export function newLabLabel(funder: string, scheme: string | null): string {
       return "NSERC Discovery Launch Supplement";
     case "nwo":
       return "NWO Vidi grant";
+    case "nsfc":
+      return "NSFC Young Scientists Fund grant";
+    case "cihr":
+      return "CIHR new-investigator grant";
+    case "anid":
+      return "FONDECYT initiation grant (Chile)";
+    case "ncn":
+      return scheme?.startsWith("SONATA BIS")
+        ? "NCN SONATA BIS grant (new research team)"
+        : "NCN SONATA grant (early career)";
+    case "fapesp":
+      return "FAPESP Young Investigator grant";
+    case "sfi":
+      return "Research Ireland Starting Investigator grant";
+    case "wellcome":
+      return scheme ?? "Wellcome early-career award";
+    case "nhmrc":
+      return "NHMRC Emerging Leadership grant";
+    case "isf":
+      return "ISF new-faculty grant";
+    case "dff":
+      return "DFF Sapere Aude research leader grant";
     case "fwf":
       return scheme === "FWF START Awards"
         ? "FWF START award"
