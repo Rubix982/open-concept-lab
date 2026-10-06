@@ -10,18 +10,31 @@ import (
 	colly "github.com/gocolly/colly/v2"
 )
 
+// waitForElasticsearch waits up to esWaitLimit for Elasticsearch, then carries on: the explorer
+// doesn't need it, and waiting forever left the server stuck at startup (site down) whenever
+// Elasticsearch was stopped.
+const esWaitLimit = 2 * time.Minute
+
 func waitForElasticsearch(ctx *colly.Context) {
-	client := &http.Client{}
+	client := &http.Client{Timeout: 10 * time.Second}
 	delay := 1 * time.Second
 	maxDelay := 30 * time.Second
 	attempts := 0
+	deadline := time.Now().Add(esWaitLimit)
 	logger.Info(ctx, "Waiting for ElasticSearch to be ready...")
 
 	for {
 		attempts += 1
 		resp, err := client.Get(fmt.Sprintf("%v/_cluster/health", ELASTICSEARCH_SERVICE_ROUTE))
+		if err == nil {
+			resp.Body.Close()
+		}
 		if err == nil && resp.StatusCode == 200 {
 			logger.Info(ctx, "✅ Elasticsearch is ready")
+			return
+		}
+		if time.Now().After(deadline) {
+			logger.Warnf(ctx, "⚠️ Elasticsearch not reachable after %s; starting without it", esWaitLimit)
 			return
 		}
 
