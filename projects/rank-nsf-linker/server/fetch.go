@@ -360,6 +360,11 @@ func pipelineDue(mainCtx *colly.Context, days float64) (string, int) {
 			return fmt.Sprintf("the last complete run was %.0f days ago", time.Since(last).Hours()/24), 1
 		}
 	}
+	// A run that failed (a step's error, say a dropped connection) resumes at the step that failed,
+	// at most every few hours (the scheduler's period), instead of waiting for the weekly refresh.
+	if GetPipelineStatus(mainCtx, string(PIPELINE_POPULATE_POSTGRES)) == string(PIPELINE_STATUS_FAILED) {
+		return "the last run failed; resuming at the step that failed", 0
+	}
 	// New OpenAlex data from the daemon: load it (steps from "Fetch OpenAlex Data" on), at most twice
 	// a day; a day's fetch usually lands once.
 	if loaded, at := openAlexLoaded(); time.Since(at) > 12*time.Hour && contentHashes(openAlexOutputs) != loaded {

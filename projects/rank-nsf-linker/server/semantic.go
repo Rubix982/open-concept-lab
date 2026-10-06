@@ -52,21 +52,39 @@ func qdrantURL() string {
 	return "http://qdrant-local:6333"
 }
 
+// postJSON sends a JSON request to the embedder or Qdrant. A dropped connection or a 5xx is tried
+// again (three attempts): every call here is idempotent (searches, upserts by id, payload writes,
+// deletes), and one "use of closed network connection" used to fail a twelve-hour embedding run.
 func postJSON(method, url string, body any, out any) error {
-	var buf bytes.Buffer
+	var payload []byte
 	if body != nil {
+		var buf bytes.Buffer
 		if err := json.NewEncoder(&buf).Encode(body); err != nil {
 			return err
 		}
+		payload = buf.Bytes()
 	}
-	req, err := http.NewRequest(method, url, &buf)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := semanticClient.Do(req)
-	if err != nil {
-		return err
+	var resp *http.Response
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequest(method, url, bytes.NewReader(payload))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		resp, err = semanticClient.Do(req)
+		if err == nil && resp.StatusCode < 500 {
+			break
+		}
+		if attempt == 2 {
+			if err != nil {
+				return err
+			}
+			break
+		}
+		if err == nil {
+			resp.Body.Close()
+		}
+		time.Sleep(time.Duration(2+3*attempt) * time.Second)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
