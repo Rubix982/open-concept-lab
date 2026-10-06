@@ -69,6 +69,8 @@ var funderNames = map[string]string{
 	"nserc":   "NSERC",
 	"nwo":     "NWO",
 	"fwf":     "FWF (Austria)",
+	"nrf": "NRF (Korea)",
+	"cn-prov": "Provincial science foundations (China)",
 	// via OpenAlex awards (scripts/grants/openalex_awards.py)
 	"nsfc":     "NSFC (China)",
 	"nstc":     "NSTC (Taiwan)",

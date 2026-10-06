@@ -196,24 +196,48 @@ func fetchOpenAlexSources(mainCtx *colly.Context) error {
 	return nil
 }
 
-// fieldsCountries: outside the US, the countries whose universities on the map get researchers in
-// fields beyond computing: where students from Pakistan most often go for a PhD (first cut, 270
-// universities).
-var fieldsCountries = []string{"de", "gb", "ca", "au", "cn", "kr", "tr", "it", "nl", "jp"}
+// fieldsCountries orders the universities on the map outside the US for the researcher fetch
+// (fields beyond computing): it spends a daily allowance, so the countries where it helps students
+// from Pakistan most come first. The ten main PhD destinations; then countries with no grant data
+// (researchers are the only signal there); then the rest of Europe; India last (Pakistani students
+// rarely go there). Every other country follows, before India.
+var fieldsCountries = [][]string{
+	{"de", "gb", "ca", "au", "cn", "kr", "tr", "it", "nl", "jp"},
+	{"sa", "my", "ae", "qa"},
+	{"fr", "at", "ch", "es", "se", "dk", "no", "fi", "be", "ie", "pt", "pl", "cz", "gr", "ee", "hu", "sk",
+		"lv", "lu", "mt", "cy", "bg"},
+	{"*"},
+	{"in"},
+}
 
 // exportOpenAlexInputs writes the files fields.py and works.py read: the explorer's US R1
-// universities and every university in fieldsCountries (data/openalex/universities.csv, name and
-// country) and its papers' DOIs (data/openalex/dois.txt).
+// universities and every university outside the US, in fieldsCountries' order
+// (data/openalex/universities.csv, name and country), and its papers' DOIs (data/openalex/dois.txt).
 func exportOpenAlexInputs(db *sql.DB) error {
 	dir := openAlexFieldsPath("")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
-	// US R1s first, so the order (and the researchers' cached works groups) of the earlier list holds.
+	// US R1s first, then fieldsCountries' order; within a tier by country and name, so the order (and
+	// the researchers' cached works groups) of earlier lists holds.
+	var countries []string
+	var tiers []int64
+	rest := int64(0)
+	for i, tier := range fieldsCountries {
+		for _, c := range tier {
+			if c == "*" {
+				rest = int64(i + 1)
+				continue
+			}
+			countries, tiers = append(countries, c), append(tiers, int64(i+1))
+		}
+	}
 	if err := writeLines(db, filepath.Join(dir, "universities.csv"), "name,country",
-		`SELECT name, country FROM explorer_universities
-		 WHERE (country = 'us' AND carnegie = 'R1') OR country = ANY($1)
-		 ORDER BY country <> 'us', country, name`, pq.Array(fieldsCountries)); err != nil {
+		`SELECT u.name, u.country FROM explorer_universities u
+		 LEFT JOIN (SELECT unnest($1::text[]) AS country, unnest($2::int[]) AS tier) t ON t.country = u.country
+		 WHERE u.country <> 'us' OR u.carnegie = 'R1'
+		 ORDER BY CASE WHEN u.country = 'us' THEN 0 ELSE COALESCE(t.tier, $3) END, u.country, u.name`,
+		pq.Array(countries), pq.Array(tiers), rest); err != nil {
 		return err
 	}
 	return writeLines(db, filepath.Join(dir, "dois.txt"), "",
@@ -326,7 +350,7 @@ func startPipelineScheduler(mainCtx *colly.Context) {
 
 // pipelineDue says whether to run the pipeline again, why, and from which step (1 = everything).
 func pipelineDue(mainCtx *colly.Context, days float64) (string, int) {
-	if GetPipelineStatus(mainCtx, string(PIPELINE_POPULATE_POSTGRES)) == string(PIPELINE_STATUS_IN_PROGRESS) {
+	if pipelineRunning.Load() {
 		return "", 0
 	}
 	var last time.Time

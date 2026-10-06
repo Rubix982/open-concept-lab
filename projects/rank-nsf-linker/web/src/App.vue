@@ -651,7 +651,7 @@ const areaChips = computed(() => {
           <a class="link" href="/overview.html">Project overview</a>
           <p>
             Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
-            from 40 funders.
+            from 42 funders.
           </p>
         </div>
       </div>
@@ -986,22 +986,22 @@ const areaChips = computed(() => {
         papers from the last 10 years.
       </p>
       <p>
-        <strong>Grants</strong> come from public records of 40 funders. Loaded
+        <strong>Grants</strong> come from public records of 42 funders. Loaded
         directly: NSF (US, 2010 onward), NIH (US, active projects), Canada's
         NSERC, the Australian Research Council, New Zealand's Marsden Fund,
         UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation,
         the Dutch Research Council NWO, the European Research Council, Japan's
-        KAKEN, Hong Kong's Research Grants Council and Austria's FWF. Through
-        OpenAlex: 27 national funders, among them China's NSFC, Taiwan's NSTC,
-        Canada's CIHR and SSHRC, Brazil's FAPESP, Turkey's TÜBİTAK, Sweden's
-        research councils, Israel's ISF, Wellcome and Pakistan's HEC (NRPU).
-        From KAKEN, ARC, ANR, SNSF, ERC, UKRI, NSERC, Marsden and RGC only
-        computing-related grants are loaded; from the others, every field
-        (grants running in 2015 or later). A grant is linked to a person only
-        when the name matches and the university (or, for NSF, the email domain)
-        confirms it; Chinese names are compared in pinyin. Funding from
-        industry, other agencies and universities isn't included, so "no active
-        grant" doesn't mean "no funding".
+        KAKEN, Hong Kong's Research Grants Council and Austria's FWF and Korea's
+        NRF. Through OpenAlex: 28 national and provincial funders, among them
+        China's NSFC, Taiwan's NSTC, Canada's CIHR and SSHRC, Brazil's FAPESP,
+        Turkey's TÜBİTAK, Sweden's research councils, Israel's ISF, Wellcome and
+        Pakistan's HEC (NRPU). From KAKEN, ARC, ANR, SNSF, ERC, UKRI, NSERC,
+        Marsden and RGC only computing-related grants are loaded; from the
+        others, every field (grants running in 2015 or later). A grant is linked
+        to a person only when the name matches and the university (or, for NSF,
+        the email domain) confirms it; Chinese names are compared in pinyin.
+        Funding from industry, other agencies and universities isn't included,
+        so "no active grant" doesn't mean "no funding".
       </p>
       <p class="sources">
         Sources: NSF Award Search; Australian Research Council; Royal Society Te
@@ -1014,10 +1014,19 @@ const areaChips = computed(() => {
         Data; contains information licensed under the Open Government Licence –
         Canada. Dutch grants: NWOpen API (CC0). Austrian grants: FWF Open API
         (CC0). National funders via OpenAlex awards (CC0; each funder's own
-        terms apply). Researchers outside computer science, Pakistani
-        universities beyond LUMS, and paper abstracts: OpenAlex (CC0); campus
-        locations © OpenStreetMap contributors (ODbL). Scholarships: curated,
-        plus the DAAD scholarship database.
+        terms apply). Australian health grants: National Health and Medical
+        Research Council (CC BY 4.0). Flemish grants: FRIS, Flemish Government.
+        Polish grants: Narodowe Centrum Nauki, retrieved October 2026 (dates
+        estimated from NCN's call calendar). Japanese medical grants:
+        出典：国立研究開発法人日本医療研究開発機構 (AMED). Indian grants: Indian
+        Council of Medical Research. Brazilian grants: Biblioteca Virtual da
+        FAPESP. Swedish grants: SweCRIS. Danish grants: Research Portal Denmark.
+        Korean grants: National Research Foundation of Korea, via data.go.kr.
+        Spanish (ISCIII) and Sri Lankan grants are shown as facts and links
+        only. Researchers outside computer science, Pakistani universities
+        beyond LUMS, and paper abstracts: OpenAlex (CC0); campus locations ©
+        OpenStreetMap contributors (ODbL). Scholarships: curated, plus the DAAD
+        scholarship database.
       </p>
       <p>
         <strong>Recent papers</strong> come from

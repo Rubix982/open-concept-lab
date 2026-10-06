@@ -24,3 +24,38 @@ Open University UK,gb,I204136569,The Open University,
 Radboud University,nl,I145872427,Radboud University Nijmegen,
 TU Eindhoven,nl,I83019370,Eindhoven University of Technology,
 TOBB ETÜ,tr,I13236232,TOBB University of Economics and Technology,
+Jaypee Univ of Info Tech,in,I153954893,Jaypee University of Information Technology,
+DAIICT,in,I98389781,Dhirubhai Ambani University,renamed from DA-IICT
+Ecole Normale Superieure de Cachan,fr,I11559806,École Normale Supérieure Paris-Saclay,ENS Cachan's current name
+HSE University,ru,I118501908,National Research University Higher School of Economics,
+IIIT Bangalore,in,I181514455,International Institute of Information Technology Bangalore,
+IIIT Delhi,in,I119939252,Indraprastha Institute of Information Technology Delhi,
+IISc Bangalore,in,I59270414,Indian Institute of Science Bangalore,
+IIT Tirupati,in,I4210109292,Indian Institute of Technology Tirupati,
+IIT Jodhpur,in,I154549908,Indian Institute of Technology Jodhpur,
+IIT Palakkad,in,I4210113248,Indian Institute of Technology Palakkad,
+IMDEA Networks Institute,es,I2802499160,IMDEA Networks,
+ISI Kolkata,in,I6498739,Indian Statistical Institute,
+JKU Linz,at,I121883995,Johannes Kepler University of Linz,
+KIIT Bhubaneswar,in,I67357951,KIIT University,
+Mohammed VI Polytechnic University,ma,I4210131560,Université Mohammed VI Polytechnique,
+Masdar Institute,ae,I176601375,Khalifa University of Science and Technology,merged into Khalifa University (2017)
+National Chiao Tung University,tw,I148366613,National Yang Ming Chiao Tung University,merged into NYCU (2021)
+PUC - RS,br,I45643870,Pontifícia Universidade Católica do Rio Grande do Sul,
+Simula UiB,no,I2799829267,Simula Research Laboratory,
+Texas A&M at Qatar,qa,I58152225,Texas A&M University at Qatar,
+UC Chile,cl,I162148367,Pontificia Universidad Católica de Chile,
+University of Wroclaw,pl,I219388962,University of Wrocław,
+VNU Univ of Eng and Tech,vn,I4405277059,VNU University of Engineering and Technology,
+BITS Pilani - Goa,in,I4210148827,"Birla Institute of Technology and Science, Pilani - Goa Campus",
+Chalmers GU,se,I66862912,Chalmers University of Technology,
+Czech Technical University,cz,I44504214,Czech Technical University in Prague,
+Ecole Normale Superieure,fr,I29607241,École Normale Supérieure - PSL,
+Qatar Computing Research Inst,qa,I4210144839,Hamad bin Khalifa University,QCRI is part of HBKU
+Université Paris Dauphine,fr,I56435720,Université Paris Dauphine-PSL,
+USP - ICMC,br,,,"an institute of USP: its researchers come through USP"
+Kempelen Institute - KInIT,sk,,,not in OpenAlex (checked 2026-10-06)
+Plaksha University,in,,,not in OpenAlex (checked 2026-10-06)
+PTIT,vn,,,only the Ho Chi Minh City campus is in OpenAlex
+TeIAS,ir,,,not in OpenAlex (checked 2026-10-06)
+INSAIT,bg,,,not in OpenAlex; Sofia University would bring in all of its researchers

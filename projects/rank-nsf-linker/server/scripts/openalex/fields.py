@@ -84,6 +84,10 @@ FIELDS = {
 # Each researcher's areas are their main OpenAlex subfields within the field they were found in:
 # up to 3, each with at least a quarter of the top subfield's works (author topics carry subfields).
 MAX_SUBFIELDS, SUBFIELD_SHARE = 3, 0.25
+# Smaller research systems: the lower faculty bar used for extra universities (h-index 8, 15 works)
+# applies there too, or few researchers would pass; computer science still comes from CSRankings.
+LOW_BAR_COUNTRIES = {"sa", "my", "ae", "qa", "bd", "lk", "vn", "th", "id", "ph", "jo", "lb", "ma", "ir",
+                     "eg", "ng", "ke", "gh", "et", "np", "kz", "uz", "co", "ar", "pe", "mx", "za", "cl"}
 # Only at extra universities, where CSRankings has no computer science faculty.
 EXTRA_FIELDS = {**FIELDS, "17": ("computing", "Computer science (OpenAlex)", "Engineering")}
 
@@ -198,12 +202,13 @@ def resolve_institutions(c: Client) -> tuple[dict[str, dict], int]:
         if (name, cc) in curated:
             cur = curated[(name, cc)]
             if cur["openalex_id"]:  # an empty id: checked, not in OpenAlex
-                out[name] = {"id": cur["openalex_id"], "openalex_name": cur.get("openalex_name") or name}
+                out[name] = {"id": cur["openalex_id"], "openalex_name": cur.get("openalex_name") or name,
+                             "low_bar": cc in LOW_BAR_COUNTRIES}
             continue
         hits = index.get((cc, norm(name))) or index.get((cc, "~" + loose(name)), [])
         if hits:
             best = max(hits, key=lambda h: (h["education"], h["works"]))
-            out[name] = {"id": best["id"], "openalex_name": best["openalex_name"]}
+            out[name] = {"id": best["id"], "openalex_name": best["openalex_name"], "low_bar": cc in LOW_BAR_COUNTRIES}
             continue
         near = difflib.get_close_matches(norm(name), [k[1] for k in index if k[0] == cc and not k[1].startswith("~")], n=3, cutoff=0.6)
         review.append({"name": name, "country": cc, "candidates": " ; ".join(
@@ -271,7 +276,7 @@ def main() -> None:
             kept = 0
             for a in body.get("results", []):
                 aid = a["id"].rsplit("/", 1)[-1]
-                if aid in seen or not looks_like_faculty(a, inst["id"], inst.get("extra", False)):
+                if aid in seen or not looks_like_faculty(a, inst["id"], inst.get("extra") or inst.get("low_bar")):
                     continue
                 seen.add(aid)
                 people.append({"openalex_id": aid, "name": a["display_name"], "university": uni, "area": area,

@@ -1432,6 +1432,10 @@ func executeWorkflows(mainCtx *colly.Context) {
 	runPipeline(mainCtx, fromStep)
 }
 
+// pipelineRunning is true while this process runs the pipeline. The stored status can't say so: a
+// restart mid-run, or a run stopped early, leaves it "in-progress", which blocked the scheduler.
+var pipelineRunning atomic.Bool
+
 type pipelineStep struct {
 	name string
 	fn   func(*colly.Context) error
@@ -1493,6 +1497,11 @@ func runPipeline(mainCtx *colly.Context, fromStep int) {
 		logger.Infof(mainCtx, "⏩ Rerunning from step %d '%s'", fromStep, steps[fromStep-1].name)
 	}
 
+	if !pipelineRunning.CompareAndSwap(false, true) {
+		logger.Warnf(mainCtx, "⚠️ a pipeline run is already going; not starting another")
+		return
+	}
+	defer pipelineRunning.Store(false)
 	logger.Infof(mainCtx, "🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
@@ -1508,6 +1517,7 @@ func runPipeline(mainCtx *colly.Context, fromStep int) {
 	for i, step := range steps {
 		if toStep > 0 && i+1 > toStep {
 			logger.Infof(mainCtx, "⏸️  PIPELINE_TO_STEP=%d: stopping before step %d '%s'", toStep, i+1, step.name)
+			markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), "stopped")
 			return
 		}
 		stepKey := fmt.Sprintf("step_%02d_%s", i+1, step.name)
