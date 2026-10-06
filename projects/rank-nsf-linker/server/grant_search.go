@@ -93,38 +93,9 @@ func embedGrants(mainCtx *colly.Context) error {
 		id, text, hash string
 		payload        map[string]any
 	}
-	seen := make(map[string]struct{}, len(held))
-	var toEmbed []grantDoc
-	for rows.Next() {
-		var d grantDoc
-		var funder, gid, country string
-		var ends *time.Time
-		if err := rows.Scan(&d.id, &funder, &gid, &country, &ends, &d.text); err != nil {
-			rows.Close()
-			return err
-		}
-		seen[d.id] = struct{}{}
-		d.payload = map[string]any{"funder": funder, "id": gid, "country": country, "ends": grantEnds(ends)}
-		d.hash = textHash(d.text + "|" + country + "|" + strconv.Itoa(grantEnds(ends)))
-		if held[d.id] != d.hash {
-			toEmbed = append(toEmbed, d)
-		}
-	}
-	rows.Close()
-	if err := rows.Err(); err != nil {
-		return fmt.Errorf("failed to read grants: %w", err)
-	}
-	var toDelete []string
-	for id := range held {
-		if _, ok := seen[id]; !ok {
-			toDelete = append(toDelete, id)
-		}
-	}
-	logger.Infof(mainCtx, "💰 Grant index: %d to embed, %d to delete (%d held)", len(toEmbed), len(toDelete), len(held))
-
-	start, lastLog := time.Now(), time.Now()
-	for i := 0; i < len(toEmbed); i += embedBatchSize {
-		batch := toEmbed[i:min(i+embedBatchSize, len(toEmbed))]
+	// Streamed: read a batch of grants that need embedding, embed and record it, read on. Holding all
+	// ~1M grants' texts at once ran the Docker VM out of memory (swap full, every batch stalling).
+	flush := func(batch []grantDoc) error {
 		texts := make([]string, len(batch))
 		for j, d := range batch {
 			texts[j] = d.text
@@ -149,12 +120,56 @@ func embedGrants(mainCtx *colly.Context) error {
 			ON CONFLICT (id) DO UPDATE SET hash = EXCLUDED.hash`, pq.Array(ids), pq.Array(hashes)); err != nil {
 			return fmt.Errorf("failed to record embedded grants: %w", err)
 		}
-		if done := i + len(batch); time.Since(lastLog) > time.Minute || done == len(toEmbed) {
-			lastLog = time.Now()
-			logger.Infof(mainCtx, "💰 Embedded %d/%d grants (%s)", done, len(toEmbed), time.Since(start).Round(time.Second))
+		return nil
+	}
+	logger.Infof(mainCtx, "💰 Grant index: %d held; embedding new and changed grants", len(held))
+	seen := make(map[string]struct{}, len(held))
+	batch := make([]grantDoc, 0, embedBatchSize)
+	done, start, lastLog := 0, time.Now(), time.Now()
+	for rows.Next() {
+		var d grantDoc
+		var funder, gid, country string
+		var ends *time.Time
+		if err := rows.Scan(&d.id, &funder, &gid, &country, &ends, &d.text); err != nil {
+			rows.Close()
+			return err
+		}
+		seen[d.id] = struct{}{}
+		d.hash = textHash(d.text + "|" + country + "|" + strconv.Itoa(grantEnds(ends)))
+		if held[d.id] == d.hash {
+			continue
+		}
+		d.payload = map[string]any{"funder": funder, "id": gid, "country": country, "ends": grantEnds(ends)}
+		if batch = append(batch, d); len(batch) == embedBatchSize {
+			if err := flush(batch); err != nil {
+				rows.Close()
+				return err
+			}
+			done += len(batch)
+			batch = batch[:0]
+			if time.Since(lastLog) > time.Minute {
+				lastLog = time.Now()
+				logger.Infof(mainCtx, "💰 Embedded %d grants (%s, %d held before)", done, time.Since(start).Round(time.Second), len(held))
+			}
 		}
 	}
-
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("failed to read grants: %w", err)
+	}
+	if len(batch) > 0 {
+		if err := flush(batch); err != nil {
+			return err
+		}
+		done += len(batch)
+	}
+	logger.Infof(mainCtx, "💰 Embedded %d grants (%s)", done, time.Since(start).Round(time.Second))
+	var toDelete []string
+	for id := range held {
+		if _, ok := seen[id]; !ok {
+			toDelete = append(toDelete, id)
+		}
+	}
 	for i := 0; i < len(toDelete); i += 1000 {
 		batch := toDelete[i:min(i+1000, len(toDelete))]
 		if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+grantCollection+"/points/delete?wait=true",
