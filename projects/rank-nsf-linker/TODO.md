@@ -176,8 +176,21 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Embedding progress is logged about once a minute (it was tied to batch counts)
 
 ## Next: grant data for many more countries (asked 2026-10-05, to plan)
-- [ ] Survey national funders with open, reusable award data per country (by students affected),
-      check each licence, then add importers to the fetcher one by one
+- [x] Survey national funders (docs/data-sources/funder-survey-2026-10-06.md). Finding: OpenAlex `awards`
+      (17.6M, CC0 S3 snapshot, no API allowance used) already ingests most national funders directly
+      (`provenance`); PI coverage ~100% for most, 0% for DFG GEPRIS, Spain, Czech, CORDIS, USAspending
+- [ ] Plan A — one loader, most countries: `scripts/grants/openalex_awards.py` reads the S3 snapshot's
+      awards, keeps the provenances with PIs, drops the 12 funders already loaded, writes the usual
+      funder CSVs. Covers China NSFC (231k; PI names in Chinese script: match via pinyin, like KAKEN's
+      romaji), Canada CIHR + SSHRC, Turkey TÜBİTAK, Italy PRIN, Taiwan, Norway, Israel ISF, Portugal FCT,
+      Poland NCN, Brazil FAPESP, Chile ANID, Wellcome, Sweden VR, Pakistan HEC NRPU (1.9k).
+      Before showing each: check the original funder's terms (OpenAlex's CC0 doesn't lift them)
+- [ ] Plan B — direct loaders where the source is better: FWF (CC0 API, free key), CIHR/SSHRC from
+      open.canada.ca (same CKAN as NSERC) if OpenAlex lacks amounts
+- [ ] Plan C — needs someone to ask: DFG (no PI in OpenAlex; GEPRIS pages need DFG's permission — email them),
+      SweCRIS key (registration ~1 week), Korea NRF (data.go.kr CSV, no amounts)
+- Not possible (no award-level public data): Malaysia, Saudi Arabia, UAE, Qatar, South Africa, Singapore,
+  Mexico; papers stay the only signal there
 
 ## Next: the pipeline fetches everything (agreed 2026-10-05, after subfields)
 Today only CSRankings, NSF and IPEDS are fetched by the pipeline; everything else is fetched by hand
@@ -337,5 +350,6 @@ What we hold and don't show (by value to a student)
 ### D. Coverage gaps worth closing (by students affected)
 - [x] Canada: 791 CS faculty, 3% with grant data (now 73%, NSERC). NSERC awards are open data (open.canada.ca)
 - [x] Sweden (SweCRIS API, open), Netherlands (NWO project database): check terms (NWO loaded, CC0; SweCRIS: no published terms)
-- [ ] China, Korea, India, Singapore, Brazil, Taiwan: no usable national grant data (see Known limitations)
+- [ ] China, Korea, India, Singapore, Brazil, Taiwan: China, Brazil, Taiwan via OpenAlex awards (Plan A); Korea Plan C;
+      India (ANRF PRISM, scraping only) and Singapore stay out
 
