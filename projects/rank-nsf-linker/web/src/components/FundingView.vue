@@ -2,6 +2,7 @@
 import { computed, ref, watch } from "vue";
 import { api, type Grant, type Landscape } from "@/api";
 import GrantRow from "@/components/GrantRow.vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 import { formatMoney, formatYear, webUrl } from "@/lines";
 import { funderName } from "@/store";
 import { countryName } from "@/countries";
@@ -137,10 +138,15 @@ function years(g: Landscape["grants"][number]) {
       />
       Only grants running now</label
     >
-    <p v-if="loading && !data" class="hint">Searching every grant loaded</p>
+    <LoadingRows
+      v-if="loading && !data"
+      label="Searching every grant loaded"
+      :rows="5"
+    />
     <p v-else-if="error" class="error">{{ error }}</p>
 
     <template v-else-if="data">
+      <LoadingRows v-if="loading" bar label="Updating" />
       <p class="lead-line" :class="{ dim: loading }">
         <template v-if="!goal">
           <strong>{{ data.total.toLocaleString() }}</strong>
@@ -299,9 +305,11 @@ function years(g: Landscape["grants"][number]) {
         <p class="hint">
           Closest in meaning to your search; open a name to see their profile.
         </p>
-        <p v-if="grantsLoading && !grants.length" class="hint">
-          Searching grants
-        </p>
+        <LoadingRows
+          v-if="grantsLoading && !grants.length"
+          label="Searching their grants"
+          :rows="3"
+        />
         <p v-else-if="!grants.length" class="hint">
           None {{ onlyActive ? "running " : "" }}match closely. Try other
           words{{ onlyActive ? ", or include ended grants" : "" }}.

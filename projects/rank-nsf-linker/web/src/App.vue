@@ -15,6 +15,7 @@ import FacultyRow from "@/components/FacultyRow.vue";
 import FundingView from "@/components/FundingView.vue";
 import ShortlistDialog from "@/components/ShortlistDialog.vue";
 import TourGuide, { type TourStep } from "@/components/TourGuide.vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 import { saved } from "@/shortlist";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
@@ -735,7 +736,11 @@ const areaChips = computed(() => {
         </span>
       </p>
       <p v-if="error && ready" class="error">{{ error }}</p>
-      <p v-if="!ready && !error" class="hint">Loading</p>
+      <LoadingRows
+        v-if="!ready && !error"
+        label="Loading universities and faculty"
+        :rows="6"
+      />
 
       <div v-if="ready" class="tabs" role="tablist">
         <button
@@ -833,7 +838,16 @@ const areaChips = computed(() => {
           start over</button
         >.
       </p>
-      <ol v-if="ready && tab === 'universities'" class="uni-list">
+      <LoadingRows
+        v-if="ready && loading && tab !== 'funding'"
+        bar
+        :label="goal ? `Searching for “${goal}”` : 'Updating'"
+      />
+      <ol
+        v-if="ready && tab === 'universities'"
+        class="uni-list"
+        :class="{ stale: loading }"
+      >
         <li v-for="u in rankedUniversities" :key="u.id">
           <button
             type="button"
@@ -868,7 +882,7 @@ const areaChips = computed(() => {
         @update:only-active="includePastGrants = !$event"
       />
 
-      <ul v-else-if="ready" class="fac-list">
+      <ul v-else-if="ready" class="fac-list" :class="{ stale: loading }">
         <FacultyRow
           v-for="f in faculty"
           :key="f.name"
@@ -1250,6 +1264,11 @@ h1 {
   border-radius: var(--radius-pill);
   padding: 4px 16px 3px;
   font-weight: 700;
+}
+
+.stale {
+  opacity: 0.45;
+  transition: opacity 0.2s;
 }
 
 .results {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 import {
   api,
   type Award,
@@ -241,6 +242,7 @@ function untilLabel(date: string | null): string {
     </button>
 
     <p v-if="error" class="error">{{ error }}</p>
+    <LoadingRows v-else-if="!person" label="Loading their profile" :rows="4" />
 
     <template v-if="person">
       <header>
@@ -422,7 +424,7 @@ function untilLabel(date: string | null): string {
           {{ matchedPapers }} of their recent papers match “{{ goal }}”; the
           rest follow, newest first.
         </p>
-        <p v-if="papers === null" class="hint">Loading papers</p>
+        <LoadingRows v-if="papers === null" label="Loading papers" :rows="3" />
         <p v-else-if="!papers.length" class="hint">
           No recent papers loaded for this professor yet.
         </p>
@@ -522,7 +524,11 @@ function untilLabel(date: string | null): string {
 
       <section v-if="similar === null || similar.length">
         <h3>Researchers with similar work</h3>
-        <p v-if="similar === null" class="hint">Finding similar researchers</p>
+        <LoadingRows
+          v-if="similar === null"
+          label="Finding similar researchers"
+          :rows="2"
+        />
         <ul v-else class="people">
           <li v-for="p in similar" :key="p.name">
             <button type="button" class="link" @click="emit('open', p.name)">

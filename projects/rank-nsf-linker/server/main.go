@@ -76,7 +76,7 @@ func main() {
 	// cold, ~10 ms cached).
 	go func() {
 		time.Sleep(3 * time.Second)
-		for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders", "/explorer/landscape"} {
+		for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders", "/explorer/landscape", "/explorer/landscape?active=1"} {
 			if resp, err := http.Get("http://localhost:8080" + path); err == nil {
 				resp.Body.Close()
 			}

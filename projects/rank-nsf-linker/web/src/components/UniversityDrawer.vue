@@ -13,6 +13,7 @@ import { isSaved, toggleSaved } from "@/shortlist";
 import { areaIndex, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 
 const props = defineProps<{
   id: string;
@@ -264,6 +265,11 @@ function money(n?: number) {
           Back to the map
         </button>
       </p>
+      <LoadingRows
+        v-if="loading && !uni && !error"
+        label="Loading the university"
+        :rows="5"
+      />
       <template v-if="uni">
         <header>
           <h2>{{ uni.name }}</h2>
@@ -534,6 +540,7 @@ function money(n?: number) {
                   : "Faculty"
             }}
           </h3>
+          <LoadingRows v-if="loading && uni" bar label="Updating faculty" />
           <p v-if="!loading && !faculty.length" class="sub">
             No faculty here match. Try fewer words in your goal, or another
             area.
