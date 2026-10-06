@@ -14,6 +14,7 @@ replace files when they finish.
 Standard library only.
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -53,6 +54,14 @@ SOURCES = {
     "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "5000"], 30, 8),
 }
 
+# Files a source reads (relative to the app root): when they change, the source is due again however
+# fresh its last run (more universities to find researchers at, more DOIs to look up).
+INPUTS = {
+    "openalex-works": ["data/openalex/dois.txt"],
+    "openalex-fields": ["data/openalex/universities.csv", "backup/extra_universities.csv",
+                        "backup/openalex_institutions.csv"],
+}
+
 lock = threading.Lock()
 running: dict[str, threading.Thread] = {}  # started, whether waiting for a slot or running
 # A few sources at a time: all at once ran the container out of memory (KAKEN was killed).
@@ -78,9 +87,21 @@ def save(name: str, state: dict) -> None:
     tmp.replace(STATE / f"{name}.json")
 
 
+def inputs_hash(name: str) -> str:
+    h = hashlib.sha1()
+    for rel in INPUTS.get(name, []):
+        try:
+            h.update((ROOT / rel).read_bytes())
+        except OSError:
+            h.update(b"-")
+    return h.hexdigest()
+
+
 def is_fresh(name: str) -> bool:
     state = load(name)
     max_age = SOURCES[name][3]
+    if name in INPUTS and state.get("inputs") != inputs_hash(name):
+        return False
     return state.get("status") == "ok" and time.time() - state.get("finished_ts", 0) < max_age * DAY
 
 
@@ -96,7 +117,7 @@ def run(name: str) -> None:
 
 
 def _run(name: str, group: str, script: str, args: list[str], hours: float, state: dict) -> None:
-    state.update(status="running", started=now(), started_ts=time.time())
+    state.update(status="running", started=now(), started_ts=time.time(), inputs=inputs_hash(name))
     save(name, state)
     log = STATE / f"{name}.log"
     code: int | str
