@@ -152,14 +152,26 @@ function years(g: Landscape["grants"][number]) {
           >. Search for a topic to see who funds it.
         </template>
         <template v-else-if="!data.total"
-          >No grant mentions “{{ goal }}”. Try fewer or broader words.</template
+          >No grant
+          {{ data.matched === "meaning" ? "is about" : "mentions" }} “{{
+            goal
+          }}”. Try fewer or broader words.</template
         >
         <template v-else>
           <strong>{{ data.total.toLocaleString() }}</strong>
           {{ onlyActive ? "running " : ""
-          }}{{ data.total === 1 ? "grant mentions" : "grants mention" }} “{{
-            goal
-          }}”<template v-if="country"> in {{ countryName(country) }}</template
+          }}{{ data.total === 1 ? "grant" : "grants" }}
+          {{
+            data.matched === "meaning"
+              ? data.total === 1
+                ? "is about"
+                : "are about"
+              : data.total === 1
+                ? "mentions"
+                : "mention"
+          }}
+          “{{ goal }}”<template v-if="country">
+            in {{ countryName(country) }}</template
           ><template v-if="!onlyActive"
             >, {{ data.active.toLocaleString() }} running now</template
           >. This counts every grant loaded, including those whose researchers
@@ -314,12 +326,18 @@ function years(g: Landscape["grants"][number]) {
 
       <details v-if="data.grants.length" class="more-grants">
         <summary v-if="goal">
-          More grants that mention “{{ goal }}”, including researchers not in
-          Advisor Atlas
+          More grants
+          {{ data.matched === "meaning" ? "about" : "that mention" }} “{{
+            goal
+          }}”, including researchers not in Advisor Atlas
         </summary>
         <summary v-else>The newest grants</summary>
         <p v-if="goal" class="hint">
-          Matched on words, closest first, favouring recent ones.
+          {{
+            data.matched === "meaning"
+              ? "Closest in meaning"
+              : "Matched on words"
+          }}, closest first, favouring recent ones.
         </p>
         <ul class="grants">
           <li v-for="g in grants" :key="g.funder + g.id">
@@ -368,9 +386,13 @@ function years(g: Landscape["grants"][number]) {
       </details>
 
       <p class="hint coverage">
-        Matched on the words in each grant's title and summary. Outside the US
-        and the Netherlands only computing grants are loaded; NIH lists running
-        projects only.
+        {{
+          data.matched === "meaning"
+            ? "Matched on the meaning of each grant's title and summary, and on its words."
+            : "Matched on the words in each grant's title and summary."
+        }}
+        Outside the US and the Netherlands only computing grants are loaded; NIH
+        lists running projects only.
       </p>
     </template>
   </div>

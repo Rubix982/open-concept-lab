@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"strings"
+
+	"github.com/lib/pq"
 )
 
 // explorer_grants: every grant from every funder, whether or not its people are on the map, so a
@@ -169,8 +171,8 @@ type landscapeGrant struct {
 
 // getExplorerLandscape: where money for a search goes, across every grant loaded (linked to someone on
 // the map or not): totals by funder, grants started per year, the institutions receiving them, and the
-// best-matching grants. Keyword match on title and the start of the abstract; without q, every
-// grant (newest first).
+// best-matching grants. Matched by meaning (grant_search.go) and on the words in the title and the
+// start of the abstract; without q, every grant (newest first).
 // Params: q, active=1 (running grants only), country.
 func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	db, err := GetDB()
@@ -189,20 +191,46 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tx.Rollback()
+	// By meaning when the grant index is ready: the grants closest to the search, plus any that use
+	// its words; otherwise by words alone.
+	var hitFunders, hitIDs []string
+	var hitScores []float64
+	matched := "words"
+	if q != "" && grantSearchReady() {
+		if hits, err := searchGrants(q, country, active); err == nil {
+			matched = "meaning"
+			for _, h := range hits {
+				hitFunders, hitIDs, hitScores = append(hitFunders, h.Funder), append(hitIDs, h.ID), append(hitScores, h.Score)
+			}
+		}
+	}
+	if _, err := tx.Exec(`
+		CREATE TEMP TABLE h ON COMMIT DROP AS
+		SELECT unnest($1::text[]) AS funder, unnest($2::text[]) AS id, unnest($3::float8[]) AS score`,
+		pq.Array(hitFunders), pq.Array(hitIDs), pq.Array(hitScores)); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
+		return
+	}
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE m ON COMMIT DROP AS
 		SELECT g.funder, g.id, g.title, g.snippet, g.amount, g.currency, g.starts, g.ends, g.url, g.country,
 		       g.lead, g.institution, g.university_id, g.profile, g.programs,
-		       CASE WHEN $1 = '' THEN 1 ELSE ts_rank_cd(g.doc, q, 1) END AS rank, g.ends >= current_date AS running
-		FROM explorer_grants g, websearch_to_tsquery('english', $1) q
+		       -- by meaning: the similarity, a little more when the words are there too, and a grant
+		       -- that only shares words ranks just under the closest ones
+		       CASE WHEN $1 = '' THEN 1
+		            WHEN $4 THEN COALESCE(h.score, $5 - 0.02) + CASE WHEN g.doc @@ q THEN 0.03 ELSE 0 END
+		            ELSE ts_rank_cd(g.doc, q, 1) END AS rank,
+		       g.ends >= current_date AS running
+		FROM explorer_grants g CROSS JOIN websearch_to_tsquery('english', $1) q
+		LEFT JOIN h ON h.funder = g.funder AND h.id = g.id
 		-- no search: every grant (the Funding tab's overview)
-		WHERE ($1 = '' OR g.doc @@ q) AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
-		q, active, country); err != nil {
+		WHERE ($1 = '' OR g.doc @@ q OR h.id IS NOT NULL) AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
+		q, active, country, matched == "meaning", grantMinScore); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
 	}
 
-	out := map[string]any{}
+	out := map[string]any{"matched": matched}
 	var total, running int
 	if err := tx.QueryRow(`SELECT count(*), count(*) FILTER (WHERE running) FROM m`).Scan(&total, &running); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to count grants", err)

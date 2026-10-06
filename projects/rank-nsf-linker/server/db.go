@@ -1459,6 +1459,7 @@ func pipelineSteps() []pipelineStep {
 		{"Build Explorer Tables", buildExplorerTables},
 		{"Fetch OpenAlex Data", fetchOpenAlexSources},
 		{"Embed Explorer Work", embedExplorerWork},
+		{"Embed Grants", embedGrants},
 	}
 }
 

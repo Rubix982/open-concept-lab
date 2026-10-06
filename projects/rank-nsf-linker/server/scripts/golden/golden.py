@@ -7,8 +7,8 @@ server restores it in minutes instead of fetching for days and embedding for hou
     golden.py restore  <dir>                   restore into the live database and collection (stops
                                                go-server first, starts it after)
 
-A golden directory holds postgres.dump (pg_dump custom format), qdrant-explorer_work.snapshot and
-manifest.json (date, git commit, embedding model, row counts, fetch states, checksums). The dump
+A golden directory holds postgres.dump (pg_dump custom format), a qdrant-<collection>.snapshot per
+collection and manifest.json (date, git commit, embedding model, row counts, fetch states, checksums). The dump
 carries pipeline_status, so a restored server doesn't rebuild on start; data/ (raw downloads and
 caches, ~22 GB) is not part of it. Runs on the host; needs docker and the dev compose stack.
 Standard library only.
@@ -30,7 +30,7 @@ PG = "pg17-local"
 DB = "rank-nsf-linker"
 QDRANT = "http://localhost:6333"
 EMBEDDER = "http://localhost:8000"
-COLLECTION = "explorer_work"
+COLLECTIONS = ["explorer_work", "explorer_grants"]  # papers and grants by person; every grant (Funding tab)
 PSQL = ["docker", "exec", "-i", "-e", "PGPASSWORD=postgres", PG]
 COUNTS = {
     "people": "SELECT count(*) FROM explorer_faculty",
@@ -38,6 +38,7 @@ COUNTS = {
     "grants": "SELECT count(*) FROM explorer_grants",
     "papers_and_grants_searchable": "SELECT count(*) FROM explorer_work_docs",
     "embedded": "SELECT count(*) FROM explorer_embedded",
+    "grants_embedded": "SELECT count(*) FROM explorer_grants_embedded",
 }
 
 
@@ -77,14 +78,17 @@ def make(out: Path) -> None:
     with dump.open("wb") as f:
         subprocess.run(PSQL + ["pg_dump", "-h", "localhost", "-U", "postgres", "-Fc", "-Z", "6", DB],
                        check=True, stdout=f)
-    print("qdrant: snapshotting")
-    name = json.loads(http("POST", f"{QDRANT}/collections/{COLLECTION}/snapshots?wait=true"))["result"]["name"]
-    snap = out / f"qdrant-{COLLECTION}.snapshot"
-    with urllib.request.urlopen(f"{QDRANT}/collections/{COLLECTION}/snapshots/{name}", timeout=3600) as r, \
-            snap.open("wb") as f:
-        while chunk := r.read(1 << 22):
-            f.write(chunk)
-    http("DELETE", f"{QDRANT}/collections/{COLLECTION}/snapshots/{name}")  # keep Qdrant's disk tidy
+    snaps = []
+    for col in COLLECTIONS:
+        print(f"qdrant: snapshotting {col}")
+        name = json.loads(http("POST", f"{QDRANT}/collections/{col}/snapshots?wait=true"))["result"]["name"]
+        snap = out / f"qdrant-{col}.snapshot"
+        with urllib.request.urlopen(f"{QDRANT}/collections/{col}/snapshots/{name}", timeout=3600) as r, \
+                snap.open("wb") as f:
+            while chunk := r.read(1 << 22):
+                f.write(chunk)
+        http("DELETE", f"{QDRANT}/collections/{col}/snapshots/{name}")  # keep Qdrant's disk tidy
+        snaps.append(snap)
 
     fetch_state = {}
     for p in sorted((ROOT / "data" / "fetch_state").glob("*.json")):
@@ -95,9 +99,9 @@ def make(out: Path) -> None:
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "git_commit": sh(["git", "-C", str(ROOT), "rev-parse", "HEAD"]),
         "embedding_model": model,
-        "counts": {k: int(psql(q)) for k, q in COUNTS.items()} | {"vectors": points(COLLECTION)},
+        "counts": {k: int(psql(q)) for k, q in COUNTS.items()} | {f"vectors_{c}": points(c) for c in COLLECTIONS},
         "fetch_state": fetch_state,
-        "files": {p.name: {"bytes": p.stat().st_size, "sha256": sha256(p)} for p in (dump, snap)},
+        "files": {p.name: {"bytes": p.stat().st_size, "sha256": sha256(p)} for p in (dump, *snaps)},
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
     print(json.dumps(manifest["counts"], indent=1))
@@ -119,9 +123,9 @@ def restore_pg(src: Path, db: str) -> None:
                        stderr=subprocess.DEVNULL)
 
 
-def restore_qdrant(src: Path, collection: str) -> None:
-    """Upload the snapshot as a multipart form, streamed in chunks (a single 2 GB write fails)."""
-    snap = src / f"qdrant-{COLLECTION}.snapshot"
+def restore_qdrant(src: Path, source: str, collection: str) -> None:
+    """Upload a collection's snapshot as a multipart form, streamed in chunks (a single 2 GB write fails)."""
+    snap = src / f"qdrant-{source}.snapshot"
     boundary = uuid.uuid4().hex
     head = (f"--{boundary}\r\nContent-Disposition: form-data; name=\"snapshot\"; filename=\"{snap.name}\"\r\n"
             "Content-Type: application/octet-stream\r\n\r\n").encode()
@@ -145,15 +149,18 @@ def restore_qdrant(src: Path, collection: str) -> None:
 
 def verify(src: Path) -> None:
     manifest = check_files(src)
-    scratch_db, scratch_col = f"{DB}-golden-check", f"{COLLECTION}_golden_check"
+    scratch_db = f"{DB}-golden-check"
+    scratch = {c: f"{c}_golden_check" for c in COLLECTIONS}
     psql(f'DROP DATABASE IF EXISTS "{scratch_db}"', "postgres")
     psql(f'CREATE DATABASE "{scratch_db}"', "postgres")
     try:
         print("postgres: restoring into a scratch database")
         restore_pg(src, scratch_db)
-        print("qdrant: restoring into a scratch collection")
-        restore_qdrant(src, scratch_col)
-        got = {k: int(psql(q, scratch_db)) for k, q in COUNTS.items()} | {"vectors": points(scratch_col)}
+        got = {k: int(psql(q, scratch_db)) for k, q in COUNTS.items()}
+        for c, tmp in scratch.items():
+            print(f"qdrant: restoring {c} into a scratch collection")
+            restore_qdrant(src, c, tmp)
+            got[f"vectors_{c}"] = points(tmp)
         bad = {k: (v, manifest["counts"][k]) for k, v in got.items() if v != manifest["counts"][k]}
         print(json.dumps(got, indent=1))
         print("verify: OK, counts match the manifest" if not bad else f"verify: MISMATCH {bad}")
@@ -161,10 +168,11 @@ def verify(src: Path) -> None:
             sys.exit(1)
     finally:
         psql(f'DROP DATABASE IF EXISTS "{scratch_db}"', "postgres")
-        try:
-            http("DELETE", f"{QDRANT}/collections/{scratch_col}")
-        except OSError:
-            pass
+        for tmp in scratch.values():
+            try:
+                http("DELETE", f"{QDRANT}/collections/{tmp}")
+            except OSError:
+                pass
 
 
 def restore(src: Path) -> None:
@@ -175,8 +183,9 @@ def restore(src: Path) -> None:
     try:
         print("postgres: restoring")
         restore_pg(src, DB)
-        print("qdrant: restoring")
-        restore_qdrant(src, COLLECTION)
+        for c in COLLECTIONS:
+            print(f"qdrant: restoring {c}")
+            restore_qdrant(src, c, c)
     finally:
         print("starting go-server")
         sh(compose + ["start", "go-server"])

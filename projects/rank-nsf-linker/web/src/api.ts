@@ -179,6 +179,7 @@ export type Query = { areas: string[]; goal: string };
 
 // Where money for a search goes, across every grant loaded (linked to someone on the map or not).
 export type Landscape = {
+  matched: "meaning" | "words"; // how grants were matched to the search
   total: number;
   active: number;
   funders: {
