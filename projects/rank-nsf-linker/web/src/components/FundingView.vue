@@ -401,7 +401,7 @@ function years(g: Landscape["grants"][number]) {
         }}
         From KAKEN, ARC, ANR, SNSF, ERC, UKRI (EPSRC), NSERC, Marsden and RGC
         only computing grants are loaded; the other funders' cover every field.
-        NIH lists running projects only, NSFC's list ends in 2021, and 26
+        NIH lists running projects only, NSFC's list ends in 2021, and 28
         funders come through OpenAlex.
       </p>
     </template>
