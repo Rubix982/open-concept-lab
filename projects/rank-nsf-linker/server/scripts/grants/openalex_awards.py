@@ -146,7 +146,11 @@ def institution(r: dict, lead: dict | None) -> str:
     names = [i["display_name"] for i in r.get("institution_awarded") or [] if i.get("display_name")]
     if names:
         return " | ".join(dict.fromkeys(names))
-    return (((lead or {}).get("affiliation") or {}).get("name") or "").strip()
+    own = (((lead or {}).get("affiliation") or {}).get("name") or "").strip()
+    # "Universidade de São Paulo (USP). Faculdade de ..." (FAPESP): the university first, then the full name
+    if (m := re.match(r"(.+?\))\. ", own)):
+        return f"{m.group(1)} | {own}"
+    return own
 
 
 def build(paths: list[Path]) -> None:
