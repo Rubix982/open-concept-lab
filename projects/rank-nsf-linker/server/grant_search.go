@@ -18,7 +18,7 @@ import (
 // tab matches words only.
 const (
 	grantCollection = "explorer_grants"
-	grantMinScore   = 0.42 // below this a grant isn't counted as being about the search (see landscape)
+	grantMinScore   = 0.45 // below this a grant isn't counted as being about the search; tuned on real queries: at 0.42-0.44 "malaria vaccine" brought vaccines for other diseases, "protein design" protein work in general; from ~0.46 they are on topic, and "mechanistic interpretability" keeps interpretable-ML grants
 	grantSearchMax  = 5000 // the most grants a search counts by meaning
 )
 
@@ -251,9 +251,8 @@ func grantSearchReady() bool {
 }
 
 type grantHit struct {
-	Funder string
-	ID     string
-	Score  float64
+	Point string // md5(funder|id) as a uuid: explorer_grants_point_idx finds the grant
+	Score float64
 }
 
 // searchGrants returns the grants closest in meaning to q, best first, within a country and to the
@@ -272,18 +271,18 @@ func searchGrants(q, country string, active bool) ([]grantHit, error) {
 	}
 	req := map[string]any{
 		"vector": vector, "limit": grantSearchMax, "score_threshold": grantMinScore,
-		"with_payload": []string{"funder", "id"},
+		"with_payload": false, // ids only: payloads are on disk (5x slower); Postgres maps ids to grants
+		// the int8 vectors in RAM only: rescoring with the full vectors read 5,000 of them from disk
+		// (~1 s uncached) and returned the same grants
+		"params": map[string]any{"quantization": map[string]any{"rescore": false}},
 	}
 	if len(must) > 0 {
 		req["filter"] = map[string]any{"must": must}
 	}
 	var res struct {
 		Result []struct {
-			Score   float64 `json:"score"`
-			Payload struct {
-				Funder string `json:"funder"`
-				ID     string `json:"id"`
-			} `json:"payload"`
+			ID    string  `json:"id"`
+			Score float64 `json:"score"`
 		} `json:"result"`
 	}
 	if err := postJSON(http.MethodPost, qdrantURL()+"/collections/"+grantCollection+"/points/search", req, &res); err != nil {
@@ -291,7 +290,7 @@ func searchGrants(q, country string, active bool) ([]grantHit, error) {
 	}
 	hits := make([]grantHit, len(res.Result))
 	for i, r := range res.Result {
-		hits[i] = grantHit{r.Payload.Funder, r.Payload.ID, r.Score}
+		hits[i] = grantHit{r.ID, r.Score}
 	}
 	return hits, nil
 }

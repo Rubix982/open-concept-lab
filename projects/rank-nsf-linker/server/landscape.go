@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/lib/pq"
 )
@@ -198,6 +200,18 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
 		return
 	}
+	// Phase timings, logged when a search is slow: "…X 3s" is the time spent before reaching X.
+	t0, last := time.Now(), time.Now()
+	var phases []string
+	phase := func(name string) {
+		phases = append(phases, fmt.Sprintf("…%s %s", name, time.Since(last).Round(time.Millisecond)))
+		last = time.Now()
+	}
+	defer func() {
+		if d := time.Since(t0); d > 2*time.Second {
+			logger.Warnf(nil, "🐢 /explorer/landscape q=%q took %s: %s", r.URL.Query().Get("q"), d.Round(time.Millisecond), strings.Join(phases, ", "))
+		}
+	}()
 	v := r.URL.Query()
 	q := strings.TrimSpace(v.Get("q"))
 	active := v.Get("active") == "1"
@@ -224,24 +238,36 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	defer tx.Rollback()
 	// By meaning when the grant index is ready: the grants closest to the search, plus any that use
 	// its words; otherwise by words alone.
-	var hitFunders, hitIDs []string
+	var hitPoints []string
 	var hitScores []float64
 	matched := "words"
 	if q != "" && grantSearchReady() {
+		phase("embed and Qdrant")
 		if hits, err := searchGrants(q, country, active); err == nil {
 			matched = "meaning"
 			for _, h := range hits {
-				hitFunders, hitIDs, hitScores = append(hitFunders, h.Funder), append(hitIDs, h.ID), append(hitScores, h.Score)
+				hitPoints, hitScores = append(hitPoints, h.Point), append(hitScores, h.Score)
 			}
 		}
 	}
+	phase("hits")
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE h ON COMMIT DROP AS
-		SELECT unnest($1::text[]) AS funder, unnest($2::text[]) AS id, unnest($3::float8[]) AS score`,
-		pq.Array(hitFunders), pq.Array(hitIDs), pq.Array(hitScores)); err != nil {
+		SELECT g.funder, g.id, x.score
+		FROM unnest($1::uuid[], $2::float8[]) AS x(point, score)
+		-- one index-only lookup per point (explorer_grants_point_cover_idx): as a join, the planner sorted all
+		-- 1.1M grants to merge them (4 s)
+		CROSS JOIN LATERAL (SELECT funder, id FROM explorer_grants
+		                    WHERE md5(funder || '|' || id)::uuid = x.point) g`,
+		pq.Array(hitPoints), pq.Array(hitScores)); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
 	}
+	if _, err := tx.Exec(`ANALYZE h`); err != nil { // its size guides the next query's plan
+		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
+		return
+	}
+	phase("grants table")
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE m ON COMMIT DROP AS
 		SELECT g.funder, g.id, g.title, g.snippet, g.amount, g.currency, g.starts, g.ends, g.url, g.country,
@@ -254,8 +280,15 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		       g.ends >= current_date AS running
 		FROM explorer_grants g CROSS JOIN websearch_to_tsquery('english', $1) q
 		LEFT JOIN h ON h.funder = g.funder AND h.id = g.id
-		-- no search: every grant (the Funding tab's overview)
-		WHERE ($1 = '' OR g.doc @@ q OR h.id IS NOT NULL) AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
+		-- the grants to consider: every grant without a search (the overview), else those using the
+		-- words (GIN index) and those close in meaning (h), each found by index. Two forms, not
+		-- "$1 = '' OR ...": the OR kept the planner from the indexes (a full scan, 3-5 s a search).
+		WHERE `+map[bool]string{
+		true: `TRUE`,
+		false: `(g.funder, g.id) IN (
+		        SELECT g2.funder, g2.id FROM explorer_grants g2 WHERE g2.doc @@ websearch_to_tsquery('english', $1)
+		        UNION SELECT funder, id FROM h)`}[q == ""]+`
+		  AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
 		q, active, country, matched == "meaning", grantMinScore); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
@@ -263,6 +296,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 
 	out := map[string]any{"matched": matched}
 	var total, running int
+	phase("count")
 	if err := tx.QueryRow(`SELECT count(*), count(*) FILTER (WHERE running) FROM m`).Scan(&total, &running); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to count grants", err)
 		return
@@ -270,6 +304,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["total"], out["active"] = total, running
 
 	funders := []landscapeFunder{}
+	phase("funders")
 	rows, err := tx.Query(`
 		SELECT funder, max(currency), count(*), count(*) FILTER (WHERE running),
 		       sum(amount), sum(amount) FILTER (WHERE running)
@@ -286,6 +321,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["funders"] = funders
 
 	years := []landscapeYear{}
+	phase("years")
 	rows, err = tx.Query(`
 		SELECT extract(year FROM starts)::int AS y, funder, count(*) FROM m
 		WHERE starts IS NOT NULL AND starts >= make_date(extract(year FROM current_date)::int - 15, 1, 1)
@@ -302,6 +338,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["years"] = years
 
 	places := []landscapePlace{}
+	phase("places")
 	rows, err = tx.Query(`
 		SELECT COALESCE(u.name, m.institution), m.university_id, COALESCE(u.country, min(m.country)), count(*),
 		       count(*) FILTER (WHERE running), count(DISTINCT profile)
@@ -322,6 +359,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 
 	// Per university on the map, for sizing the map's dots by money instead of people.
 	byUni := map[string]int{}
+	phase("by university")
 	rows, err = tx.Query(`SELECT university_id, count(*) FROM m WHERE university_id IS NOT NULL GROUP BY 1`)
 	if err == nil {
 		for rows.Next() {
@@ -342,6 +380,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		Running int    `json:"running"`
 	}
 	programs := []program{}
+	phase("programs")
 	rows, err = tx.Query(`
 		SELECT p, count(*), count(*) FILTER (WHERE running) FROM m, unnest(m.programs) p
 		GROUP BY p ORDER BY count(*) FILTER (WHERE running) DESC, count(*) DESC LIMIT 8`)
@@ -357,6 +396,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["programs"] = programs
 
 	grants := []landscapeGrant{}
+	phase("grant list")
 	rows, err = tx.Query(`
 		SELECT funder, id, title, snippet, amount, currency, starts::text, ends::text, url, lead, institution,
 		       university_id, profile
@@ -383,6 +423,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		landscapeCache.m[cacheKey] = out
 		landscapeCache.Unlock()
 	}
+	phase("done")
 	writeJSON(w, http.StatusOK, out)
 }
 
