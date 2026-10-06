@@ -1,8 +1,9 @@
-# Minimal deployment: the site and its data, nothing else (see README, "Minimal deployment").
-#   Postgres (restored from a golden dataset), the Go server (SERVE_ONLY: serves, never fetches or
-#   rebuilds), and the web app. No fetcher, embedder, Qdrant, Elasticsearch or logging service:
-#   searches match words instead of meaning, and "similar researchers" is hidden.
-# Data is refreshed on a development machine (full stack), then shipped as a golden dataset.
+# Minimal deployment (see README, "Minimal deployment"): Postgres and Qdrant restored from a golden
+# dataset, the Go server (SERVE_ONLY: serves, never fetches or rebuilds), a small query embedder
+# (embedder-lite: the same model on ONNX, ~220 MB, identical vectors), and the web app. No fetcher,
+# full embedder, Elasticsearch or logging service. Search by meaning works: the stored vectors were
+# computed on a development machine; here only visitors' queries are embedded.
+# Fits a 4 GB VM; 8 GB is comfortable.
 name: advisor-atlas
 
 services:
@@ -29,6 +30,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      qdrant:
+        condition: service_started
+      embedder:
+        condition: service_started
     volumes:
       - ./backup:/app/backup:ro # scholarships, curated lists
       - ./data/scholarships:/app/data/scholarships:ro # DAAD feed (optional)
@@ -41,9 +46,30 @@ services:
       POSTGRES_DB_NAME: rank-nsf-linker
       DB_HOST: postgres
       DB_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/rank-nsf-linker
-      EMBEDDER_SERVICE_URL: http://no-embedder:8000 # unreachable on purpose: word matching
-      QDRANT_REST_URL: http://no-qdrant:6333
+      EMBEDDER_SERVICE_URL: http://embedder:8000
+      QDRANT_REST_URL: http://qdrant:6333
     command: ["./server/go-server"]
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.6
+    restart: unless-stopped
+    volumes:
+      - qdrant_data:/qdrant/storage
+    ports:
+      - "127.0.0.1:6333:6333" # this machine only: for restoring the golden snapshots
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  embedder:
+    build:
+      context: ./embedder-lite
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   web:
     build:
@@ -59,3 +85,4 @@ services:
 
 volumes:
   pg_data:
+  qdrant_data:

@@ -176,25 +176,29 @@ golden dataset (about 3.5 GB, not in git) takes a few minutes.
 - About 25 GB of disk and a few days: the OpenAlex fetches (~22k calls) span several daily allowances;
   everything else finishes on the first run. A golden dataset (`make golden-restore`) skips all of it.
 
-**Minimal deployment** (`docker-compose.minimal.yaml`): Postgres, the Go server and the web app,
-nothing else. The server runs with `SERVE_ONLY=1`: it serves the database it is given and never runs
-the pipeline (no fetcher, no data/ downloads there). Without the embedder and Qdrant, searches match
-words instead of meaning and "similar researchers" is hidden; everything else works. Data is
-refreshed on a development machine with the full stack and shipped as a golden dataset.
+**Minimal deployment** (`docker-compose.minimal.yaml`): Postgres, Qdrant, the Go server, a small
+query embedder and the web app. The server runs with `SERVE_ONLY=1`: it serves the data it is given
+and never runs the pipeline (no fetcher, no data/ downloads there). Search by meaning works: the
+stored vectors come from the golden dataset, and `embedder-lite/` embeds visitors' queries with the
+same model on ONNX Runtime (~220 MB instead of the full embedder's ~1.5 GB; identical vectors,
+cosine 1.000000 on a test set). Data is refreshed on a development machine with the full stack.
 
-1. A small VM: 2 vCPU, 4 GB RAM, 40 GB disk (the database is ~8.5 GB) is enough. Copy the repo,
-   `web/.env` (VITE_MAPBOX_TOKEN, built into the page), `backup/`, and optionally
-   `data/scholarships/`.
-2. Copy `golden/<date>/postgres.dump` from `make golden` (~2 GB; the Qdrant snapshots aren't needed).
+1. A small VM: 2 vCPU, 4 GB RAM (8 GB comfortable), 40 GB disk. Copy the repo, `web/.env`
+   (VITE_MAPBOX_TOKEN, built into the page), `backup/`, and optionally `data/scholarships/`.
+2. Copy a golden dataset from `make golden`: `postgres.dump` and the two `qdrant-*.snapshot` files.
 3. Restore and start:
    ```bash
-   docker compose -f docker-compose.minimal.yaml up -d postgres
+   docker compose -f docker-compose.minimal.yaml up -d postgres qdrant
    docker compose -f docker-compose.minimal.yaml exec -T postgres \
      pg_restore -U postgres -d rank-nsf-linker --no-owner --clean --if-exists < postgres.dump
+   for c in explorer_work explorer_grants; do
+     curl -X POST "http://127.0.0.1:6333/collections/$c/snapshots/upload?priority=snapshot" \
+       -F "snapshot=@qdrant-$c.snapshot"
+   done
    docker compose -f docker-compose.minimal.yaml up -d --build
    ```
 4. Put HTTPS in front of port 80 (Caddy: `caddy reverse-proxy --from your.domain --to :80`).
-5. To refresh: make a new golden dataset on the development machine and repeat step 3's restore.
+5. To refresh: make a new golden dataset on the development machine and repeat step 3's restores.
 
 **Data the pipeline reads**
 
