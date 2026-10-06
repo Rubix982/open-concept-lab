@@ -179,13 +179,39 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] Survey national funders (docs/data-sources/funder-survey-2026-10-06.md). Finding: OpenAlex `awards`
       (17.6M, CC0 S3 snapshot, no API allowance used) already ingests most national funders directly
       (`provenance`); PI coverage ~100% for most, 0% for DFG GEPRIS, Spain, Czech, CORDIS, USAspending
-- [ ] Plan A — one loader, most countries: `scripts/grants/openalex_awards.py` reads the S3 snapshot's
+- [x] Plan A loaded (2026-10-06): `grants/openalex_awards.py`, 27 funders, ~730k grants since 2015; NSFC names in
+      pinyin, Chinese/Taiwanese institutions in English (88%). Terms marked "unverified" in SOURCES: check before
+      the public deploy (NSFC, FAPESP, FCT, TÜBİTAK, NCN, FWO, ISF, AMED, ZonMw, DFF, ISCIII, NAFOSTED, ICMR, HEC, NSF-LK)
+- (was) Plan A — one loader, most countries: `scripts/grants/openalex_awards.py` reads the S3 snapshot's
       awards, keeps the provenances with PIs, drops the 12 funders already loaded, writes the usual
       funder CSVs. Covers China NSFC (231k; PI names in Chinese script: match via pinyin, like KAKEN's
       romaji), Canada CIHR + SSHRC, Turkey TÜBİTAK, Italy PRIN, Taiwan, Norway, Israel ISF, Portugal FCT,
       Poland NCN, Brazil FAPESP, Chile ANID, Wellcome, Sweden VR, Pakistan HEC NRPU (1.9k).
       Before showing each: check the original funder's terms (OpenAlex's CC0 doesn't lift them)
-- [ ] Plan B — direct loaders where the source is better: FWF (CC0 API, free key), CIHR/SSHRC from
+## Next phase, researched 2026-10-06 (docs/data-sources/next-phase-research-2026-10-06.md)
+- [ ] FWF (Austria): direct loader, worth it — OpenAlex's copy has no PIs or institutions; FWF Open API is CC0
+      with PI, ORCID, institution (ROR), amount, abstract; one shared public read key (openapi.fwf.ac.at/fwfkey). ~2–3 h
+- [ ] DFG (Germany): ask first — robots.txt disallows crawling; the imprint requires authors' consent for abstracts.
+      Email gepris@dfg.de (draft in the research doc). Meanwhile OpenAlex `gepris` (144k, amounts, no PI, ~20% with
+      institution) could show "DFG projects at this university" without abstracts
+- [x] Sweden: no SweCRIS key needed — OpenAlex has VR, Vinnova, Formas, Forte with ~99% PIs (Forte added)
+- [ ] Korea: low priority — data.go.kr NRF list (11.8k, PI + institution, no amounts/dates); NTIS needs a Korean
+      affiliation; names in Hangul. ~3–4 h
+- [ ] More researchers: after the 10-country cut (~3–4 days), Saudi Arabia, Malaysia, UAE, Qatar first (no grant data
+      there, researchers are the only signal), then other European destinations, then HK/SG/TW/NZ, then India
+      (~42 universities, ~1 day of allowance)
+- [x] University matching fixed before the 270 were looked up (exact OpenAlex names; 4 US R1s were wrong:
+      Ohio University = Ohio State, UIUC, Arkansas, UTSA; Caltech, MIT, Alabama were missing)
+- [ ] Fresh-pod gaps (found by reading the code; fix before running the test):
+      1. step 5 fails without data/geolocation.csv (CSRankings no longer publishes it) — fall back to backup/ (15 min)
+      2. nothing downloads the KAKEN master XMLs; kaken.py exits without them (daily reruns)
+      3. dev compose SKIP_IPEDS=1: from empty, no R1 codes, so ~51k of 56k OpenAlex researchers are lost
+      4. prod compose has no fetcher service or FETCHER_URL
+      5. a slow source still running when the 6 h wait ends isn't reloaded for 7 days
+      6. NSF end year hard-coded to 2025
+      Test: a separate compose project (atlas-fresh) with its own Postgres/Qdrant/embedder/fetcher/go-server on other
+      ports, ./fresh/data, backup/ read-only, OpenAlex call caches hard-linked; ~25 GB, 14–20 h
+- (was) Plan B — direct loaders where the source is better: FWF (CC0 API, free key), CIHR/SSHRC from
       open.canada.ca (same CKAN as NSERC) if OpenAlex lacks amounts
 - [ ] Plan C — needs someone to ask: DFG (no PI in OpenAlex; GEPRIS pages need DFG's permission — email them),
       SweCRIS key (registration ~1 week), Korea NRF (data.go.kr CSV, no amounts)
