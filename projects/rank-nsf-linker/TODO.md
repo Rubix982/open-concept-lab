@@ -170,7 +170,7 @@ Research reports: `docs/data-sources/` (europe.md, oceania.md, east-asia.md, us-
 - [x] 11 more fields and ~210 subfields as research areas (70,290 people, 234 areas)
 
 ## Rough edges (2026-10-06)
-- [ ] Funding tab matches words, not meaning: embedding all 335k grants (~4 h) would fix it
+- [~] Funding tab matches words, not meaning: step 29 'Embed Grants' (built 2026-10-06); tune grantMinScore once embedded
 - NSERC and NWO end dates are estimated where the funder publishes none (documented in the importers)
 - [x] Map dot hover and click checked (tooltip, drawer, URL)
 - [x] Embedding progress is logged about once a minute (it was tied to batch counts)
@@ -216,6 +216,9 @@ loads every source it serves, and heals itself.
 - [x] NIH RePORTER: 77,190 projects active in FY2025–26 → 3,488 people (`scripts/grants/nih.py`)
 - [ ] Researchers outside CS beyond US R1 and Pakistani universities (more fields: done, 25 fields)
       (Pakistan done: 25 universities via backup/extra_universities.csv; other countries and fields open)
+  - [~] First cut (2026-10-06): all 270 universities on the map in de, gb, ca, au, cn, kr, tr, it, nl, jp
+        (`fieldsCountries` in fetch.go); fetching over ~3 days of the OpenAlex allowance. Then: India (42) and
+        the other 34 countries
 - [x] Professor's papers ordered by the student's goal (semantic, keyword fallback); matches marked
 
 ## Decisions
