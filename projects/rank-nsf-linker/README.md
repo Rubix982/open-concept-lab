@@ -140,16 +140,25 @@ This algorithm enhances the core faculty selection tool by connecting researcher
 
 # Running the population pipeline
 
-The Go server (`go-server` container) loads Postgres on startup in 17 steps
-(`executeWorkflows` in `server/db.go`). Each step records its status in `pipeline_status`.
+The Go server (`go-server` container) loads Postgres on startup in 29 steps
+(`pipelineSteps` in `server/db.go`). Each step records its status in `pipeline_status`. The pipeline
+fetches its own data: CSRankings, NSF and IPEDS in Go; every other source (11 grant funders, DAAD,
+DBLP, OpenAlex) through the `fetcher` container (`fetcher/app.py`, state in `data/fetch_state/`).
+API keys come from `server/.env` only. A source that stops at a daily allowance (OpenAlex: 10,000
+calls) keeps its previous data, and the server reruns the pipeline about once a day until it is
+complete, and every 7 days after that (`PIPELINE_REFRESH_DAYS`).
 
 | Command | What it does |
 | --- | --- |
 | `make up` | Start everything; the pipeline runs if it has never completed |
 | `make pipeline` | Restart `go-server`; resumes at the first step that has not completed |
-| `make pipeline-from STEP=N` | Rerun step N and everything after it (e.g. `STEP=16` to re-merge institutions) |
+| `make pipeline-from STEP=N [TO=M]` | Rerun step N (to M) and everything after it (e.g. `STEP=27` to fetch OpenAlex and embed) |
+| `make golden` | Save the finished state (Postgres dump + both Qdrant indexes + manifest) to `golden/<date>/` |
+| `make golden-verify DIR=golden/<date>` | Restore it into scratch copies, compare counts, delete them |
+| `make golden-restore DIR=golden/<date>` | Load it into the live app: a new server is ready in minutes |
 
-A full run from empty tables takes about 8 minutes (NSF 2010–2025, ~192k awards).
+From nothing, the fetches take days (OpenAlex's allowance) and embedding about 6 hours; restoring a
+golden dataset (about 3.5 GB, not in git) takes a few minutes.
 
 **Data the pipeline reads**
 

@@ -2,7 +2,9 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/lib/pq"
 )
@@ -184,6 +186,19 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(v.Get("q"))
 	active := v.Get("active") == "1"
 	country := strings.ToLower(strings.TrimSpace(v.Get("country")))
+	// Without a search the answer covers every grant (~10 s) and only changes when the explorer
+	// tables are rebuilt: kept per country and active filter, cleared by clearAreasCache.
+	cacheKey := ""
+	if q == "" {
+		cacheKey = country + "|" + strconv.FormatBool(active)
+		landscapeCache.Lock()
+		cached, ok := landscapeCache.m[cacheKey]
+		landscapeCache.Unlock()
+		if ok {
+			writeJSON(w, http.StatusOK, cached)
+			return
+		}
+	}
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -344,5 +359,18 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		rows.Close()
 	}
 	out["grants"] = grants
+	if cacheKey != "" {
+		landscapeCache.Lock()
+		if landscapeCache.m == nil {
+			landscapeCache.m = map[string]map[string]any{}
+		}
+		landscapeCache.m[cacheKey] = out
+		landscapeCache.Unlock()
+	}
 	writeJSON(w, http.StatusOK, out)
+}
+
+var landscapeCache struct {
+	sync.Mutex
+	m map[string]map[string]any
 }

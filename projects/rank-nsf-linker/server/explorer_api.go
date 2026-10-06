@@ -81,6 +81,9 @@ func clearAreasCache() {
 	fundersCache.Lock()
 	fundersCache.byCountry = nil
 	fundersCache.Unlock()
+	landscapeCache.Lock()
+	landscapeCache.m = nil
+	landscapeCache.Unlock()
 }
 
 func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
