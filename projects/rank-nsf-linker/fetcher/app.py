@@ -43,6 +43,7 @@ SOURCES = {
     "nwo": ("base", "grants/nwo.py", [], 14, 4),
     "daad": ("base", "scholarships/daad.py", [], 7, 1),
     "dblp": ("base", "dblp/fetch.py", [], 30, 3),
+    "openalex-awards": ("base", "grants/openalex_awards.py", [], 30, 6),  # national funders, from the CC0 snapshot
     # OpenAlex: inputs exported by the pipeline after the explorer tables are built
     "openalex-works": ("openalex", "openalex/works.py", ["--max-calls", "4000"], 14, 8),
     "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "5000"], 30, 8),

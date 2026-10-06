@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends poppler-utils c
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+# pypinyin romanises Chinese investigator names (grants/openalex_awards.py)
+COPY fetcher/requirements.txt /app/fetcher/requirements.txt
+RUN pip install --no-cache-dir -r /app/fetcher/requirements.txt
 COPY server/scripts /app/server/scripts
 COPY fetcher/app.py /app/fetcher/app.py
 

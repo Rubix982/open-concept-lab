@@ -1,0 +1,26 @@
+name,country,openalex_id,openalex_name,note
+Purdue University,us,I219193219,Purdue University West Lafayette,main campus
+University of Arkansas,us,I78715868,University of Arkansas at Fayetteville,not UAMS (the old search's first hit)
+University of Nebraska,us,I114395901,University of Nebraska–Lincoln,CSRankings' University of Nebraska is Lincoln
+University of North Carolina,us,I114027177,University of North Carolina at Chapel Hill,
+University of Newcastle,au,I78757542,University of Newcastle Australia,
+ETS Montreal,ca,I9736820,École de Technologie Supérieure,
+CUHK (SZ),cn,I4210116924,"Chinese University of Hong Kong, Shenzhen",
+Bundeswehr University Munich,de,I40527276,Universität der Bundeswehr München,
+CISPA Helmholtz Center,de,I4210128801,Helmholtz Center for Information Security,
+Humboldt University of Berlin,de,I39343248,Humboldt-Universität zu Berlin,
+TU Freiberg,de,I61893789,TU Bergakademie Freiberg,
+TU Kaiserslautern,de,I153267046,University of Kaiserslautern,"pre-2023 entity: 43.8k works vs 4k for RPTU, its successor"
+TU Munich,de,I62916508,Technical University of Munich,
+University of Düsseldorf,de,I44260953,Heinrich Heine University Düsseldorf,
+University of Hannover,de,I114112103,Leibniz University Hannover,
+University of Kiel,de,I32021983,Christian-Albrechts-Universität zu Kiel,
+University of Magdeburg,de,I95793202,Otto-von-Guericke-Universität Magdeburg,
+University of Mainz,de,I197323543,Johannes Gutenberg University Mainz,
+University of Marburg,de,I161103922,Philipps University of Marburg,
+University of Osnabrück,de,I170658231,Osnabrück University,
+Middlesex University,gb,I60488453,Middlesex University London,
+Open University UK,gb,I204136569,The Open University,
+Radboud University,nl,I145872427,Radboud University Nijmegen,
+TU Eindhoven,nl,I83019370,Eindhoven University of Technology,
+TOBB ETÜ,tr,I13236232,TOBB University of Economics and Technology,

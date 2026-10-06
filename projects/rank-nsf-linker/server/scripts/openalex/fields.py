@@ -15,18 +15,22 @@ and backup/extra_universities.csv (universities CSRankings doesn't list, e.g. Pa
 extra_universities.py). For those, computer science is fetched too and the faculty thresholds are
 lower (smaller research systems: h-index >= 8, 15+ works).
 Steps (each response cached in data/openalex/fields/, reruns resume):
-  institutions  resolve each university to an OpenAlex institution id (1 call per university)
+  institutions  each university's OpenAlex institution, from the institutions snapshot (no calls)
   authors       researchers per university and field (1 call per pair)
   works         their works since 2021, 50 authors per call (run after the daily allowance resets)
+fields.py institutions only does the matching (no calls), for review.
 Usage: works.py-style --max-calls N caps the calls of one run.
 """
 
 import csv
+import difflib
 import hashlib
 import json
+import re
 import sys
 import threading
 import time
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 import urllib.error
 import urllib.parse
@@ -35,7 +39,7 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from fetchlib import PARTIAL, secret  # noqa: E402
+from fetchlib import PARTIAL, openalex_snapshot, secret, snapshot_records  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA = ROOT / "data" / "openalex"
@@ -131,25 +135,83 @@ class Client:
         return body
 
 
-def resolve_institutions(c: Client) -> tuple[dict[str, dict], int]:
-    """OpenAlex institutions for the universities, and how many couldn't be looked up (call budget
-    spent). Those are skipped, never silently dropped: the caller treats the run as partial."""
-    out, unresolved = {}, 0
-    for row in csv.DictReader((DATA / "universities.csv").open(encoding="utf-8")):
-        country = (row.get("country") or "us").strip().lower()  # older exports had US R1s only
-        body = c.get("institutions", "institutions", {"search": row["name"], "filter": f"country_code:{country}",
-                                                       "per_page": 5, "select": "id,display_name,type,ror"})
-        if body is None:
-            unresolved += 1
+def norm(name: str) -> str:
+    """'The Univ. of Alabama' -> 'university of alabama'; 'Technische Universität' -> 'technische universitat'."""
+    t = unicodedata.normalize("NFKD", name)
+    t = "".join(ch for ch in t if not unicodedata.combining(ch)).lower().replace("&", " and ")
+    t = re.sub(r"[^\w]+", " ", t)
+    t = re.sub(r"\buniv\b", "university", t)
+    t = re.sub(r"\binst\b", "institute", t)
+    t = re.sub(r"\btech\b", "technology", t)
+    t = re.sub(r"(?<=[a-z])(a|o|u)e(?=[a-z])", r"\1", t)  # German: Universitaet = Universität
+    return re.sub(r"^the ", "", re.sub(r"\s+", " ", t).strip())
+
+
+SMALL_WORDS = {"at", "in", "of", "the", "and", "de", "du", "der", "zu", "a"}
+
+
+def loose(name: str) -> str:
+    """norm() without small words: 'University of Alabama - Birmingham' = 'University of Alabama at Birmingham'."""
+    return " ".join(w for w in norm(name).split() if w not in SMALL_WORDS)
+
+
+def institution_index(countries: set[str]) -> dict[tuple[str, str], list[dict]]:
+    """(country, normalised name) -> OpenAlex institutions, from the institutions snapshot (no API
+    calls): every display name, alternative name and acronym."""
+    index: dict[tuple[str, str], list[dict]] = {}
+    for r in snapshot_records(openalex_snapshot("institutions")):
+        cc = (r.get("country_code") or "").lower()
+        if cc not in countries or not r.get("display_name"):
             continue
-        hit = next((i for i in body.get("results", []) if i.get("type") in ("education", "facility")), None)
-        if hit:
-            out[row["name"]] = {"id": hit["id"].rsplit("/", 1)[-1], "openalex_name": hit["display_name"]}
+        inst = {"id": r["id"].rsplit("/", 1)[-1], "openalex_name": r["display_name"],
+                "education": r.get("type") == "education", "works": r.get("works_count") or 0}
+        names = [r["display_name"], *(r.get("display_name_alternatives") or []), *(r.get("display_name_acronyms") or [])]
+        for n in {norm(n) for n in names if n} | {"~" + loose(n) for n in names if n}:
+            index.setdefault((cc, n), []).append(inst)
+    return index
+
+
+def resolve_institutions(c: Client) -> tuple[dict[str, dict], int]:
+    """OpenAlex institutions for the universities: a curated id (backup/openalex_institutions.csv),
+    else an exact match of the normalised name on an OpenAlex name, alternative name or acronym in
+    the same country (a university first, then the one with most works). Never the first search hit:
+    that made "Ohio University" Ohio State and UIUC a research centre in Brazil. Universities with no
+    match are written to data/openalex/institutions_review.csv with near names, to curate."""
+    rows = list(csv.DictReader((DATA / "universities.csv").open(encoding="utf-8")))
+    for row in rows:
+        row["country"] = (row.get("country") or "us").strip().lower()  # older exports: US R1s only
+    curated = {}
+    path = ROOT / "backup" / "openalex_institutions.csv"
+    if path.exists():
+        curated = {(r["name"], r["country"]): r for r in csv.DictReader(path.open(encoding="utf-8"))}
+    index = institution_index({r["country"] for r in rows})
+    out, review = {}, []
+    for row in rows:
+        name, cc = row["name"], row["country"]
+        if (name, cc) in curated:
+            cur = curated[(name, cc)]
+            if cur["openalex_id"]:  # an empty id: checked, not in OpenAlex
+                out[name] = {"id": cur["openalex_id"], "openalex_name": cur.get("openalex_name") or name}
+            continue
+        hits = index.get((cc, norm(name))) or index.get((cc, "~" + loose(name)), [])
+        if hits:
+            best = max(hits, key=lambda h: (h["education"], h["works"]))
+            out[name] = {"id": best["id"], "openalex_name": best["openalex_name"]}
+            continue
+        near = difflib.get_close_matches(norm(name), [k[1] for k in index if k[0] == cc and not k[1].startswith("~")], n=3, cutoff=0.6)
+        review.append({"name": name, "country": cc, "candidates": " ; ".join(
+            f"{n} = {max(index[(cc, n)], key=lambda h: (h['education'], h['works']))['id']}" for n in near)})
+    with (DATA / "institutions_review.csv").open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=["name", "country", "candidates"])
+        w.writeheader()
+        w.writerows(review)
+    if review:
+        print(f"  {len(review)} universities matched no OpenAlex institution: data/openalex/institutions_review.csv")
     extra = ROOT / "backup" / "extra_universities.csv"
     if extra.exists():
         for row in csv.DictReader(extra.open(encoding="utf-8")):
             out[row["institution"]] = {"id": row["openalex_id"], "openalex_name": row["institution"], "extra": True}
-    return out, unresolved
+    return out, 0
 
 
 def looks_like_faculty(a: dict, inst_id: str, extra: bool = False) -> bool:
@@ -167,6 +229,13 @@ def main() -> None:
     step = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "authors"
     c = Client(max_calls)
     institutions, unresolved = resolve_institutions(c)
+    if step == "institutions":  # the matching only, to review: data/openalex/institutions_resolved.csv
+        with (DATA / "institutions_resolved.csv").open("w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["name", "openalex_id", "openalex_name"])
+            w.writerows(sorted((k, v["id"], v["openalex_name"]) for k, v in institutions.items()))
+        print(f"{len(institutions)} universities matched")
+        return
     if unresolved:
         print(f"{unresolved} universities not looked up yet (call budget); this run is partial")
     print(f"{len(institutions)} universities resolved to OpenAlex institutions")

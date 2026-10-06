@@ -391,8 +391,10 @@ function years(g: Landscape["grants"][number]) {
             ? "Matched on the meaning of each grant's title and summary, and on its words."
             : "Matched on the words in each grant's title and summary."
         }}
-        Outside the US and the Netherlands only computing grants are loaded; NIH
-        lists running projects only.
+        From KAKEN, ARC, ANR, SNSF, ERC, UKRI (EPSRC), NSERC, Marsden and RGC
+        only computing grants are loaded; the other funders' cover every field.
+        NIH lists running projects only, NSFC's list ends in 2021, and 26
+        funders come through OpenAlex.
       </p>
     </template>
   </div>
