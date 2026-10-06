@@ -158,9 +158,14 @@ def start_one(name: str) -> None:
 
 
 def start(group: str, force: bool) -> None:
+    """A daemon group follows the daemon's rules (an allowance spent today waits for the reset);
+    others start whenever they aren't fresh."""
+    daemon_groups = os.environ.get("FETCH_DAEMON_GROUPS", "openalex").split(",")
     with lock:
         for name, (g, *_rest) in SOURCES.items():
-            if g == group and (force or not is_fresh(name)):
+            if g != group:
+                continue
+            if force or (due(name, time.time()) if g in daemon_groups else not is_fresh(name)):
                 start_one(name)
 
 
