@@ -45,7 +45,7 @@ SOURCES = {
     "dblp": ("base", "dblp/fetch.py", [], 30, 3),
     # OpenAlex: inputs exported by the pipeline after the explorer tables are built
     "openalex-works": ("openalex", "openalex/works.py", ["--max-calls", "4000"], 14, 8),
-    "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "4000"], 30, 8),
+    "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "5000"], 30, 8),
 }
 
 lock = threading.Lock()

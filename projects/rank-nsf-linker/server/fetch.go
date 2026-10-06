@@ -15,6 +15,7 @@ import (
 	"time"
 
 	colly "github.com/gocolly/colly/v2"
+	"github.com/lib/pq"
 )
 
 // The fetcher container (fetcher/app.py) runs the scripts that fetch every source outside
@@ -165,15 +166,24 @@ func fetchOpenAlexSources(mainCtx *colly.Context) error {
 	return nil
 }
 
+// fieldsCountries: outside the US, the countries whose universities on the map get researchers in
+// fields beyond computing: where students from Pakistan most often go for a PhD (first cut, 270
+// universities).
+var fieldsCountries = []string{"de", "gb", "ca", "au", "cn", "kr", "tr", "it", "nl", "jp"}
+
 // exportOpenAlexInputs writes the files fields.py and works.py read: the explorer's US R1
-// universities (data/openalex/universities.csv) and its papers' DOIs (data/openalex/dois.txt).
+// universities and every university in fieldsCountries (data/openalex/universities.csv, name and
+// country) and its papers' DOIs (data/openalex/dois.txt).
 func exportOpenAlexInputs(db *sql.DB) error {
 	dir := openAlexFieldsPath("")
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
-	if err := writeLines(db, filepath.Join(dir, "universities.csv"), "name",
-		`SELECT name FROM explorer_universities WHERE country = 'us' AND carnegie = 'R1' ORDER BY name`); err != nil {
+	// US R1s first, so the order (and the researchers' cached works groups) of the earlier list holds.
+	if err := writeLines(db, filepath.Join(dir, "universities.csv"), "name,country",
+		`SELECT name, country FROM explorer_universities
+		 WHERE (country = 'us' AND carnegie = 'R1') OR country = ANY($1)
+		 ORDER BY country <> 'us', country, name`, pq.Array(fieldsCountries)); err != nil {
 		return err
 	}
 	return writeLines(db, filepath.Join(dir, "dois.txt"), "",
@@ -183,8 +193,8 @@ func exportOpenAlexInputs(db *sql.DB) error {
 
 // writeLines writes one value per line (after an optional header), replacing the file only when
 // complete. A CSV header means values are quoted when they need it.
-func writeLines(db *sql.DB, path, header, query string) error {
-	rows, err := db.Query(query)
+func writeLines(db *sql.DB, path, header, query string, args ...any) error {
+	rows, err := db.Query(query, args...)
 	if err != nil {
 		return err
 	}
@@ -193,16 +203,26 @@ func writeLines(db *sql.DB, path, header, query string) error {
 	if header != "" {
 		b.WriteString(header + "\n")
 	}
+	cols, err := rows.Columns()
+	if err != nil {
+		return err
+	}
 	n := 0
 	for rows.Next() {
-		var v string
-		if err := rows.Scan(&v); err != nil {
+		vals := make([]string, len(cols))
+		ptrs := make([]any, len(cols))
+		for i := range vals {
+			ptrs[i] = &vals[i]
+		}
+		if err := rows.Scan(ptrs...); err != nil {
 			return err
 		}
-		if header != "" && strings.ContainsAny(v, ",\"\n") {
-			v = `"` + strings.ReplaceAll(v, `"`, `""`) + `"`
+		for i, v := range vals {
+			if header != "" && strings.ContainsAny(v, ",\"\n") {
+				vals[i] = `"` + strings.ReplaceAll(v, `"`, `""`) + `"`
+			}
 		}
-		b.WriteString(v + "\n")
+		b.WriteString(strings.Join(vals, ",") + "\n")
 		n++
 	}
 	if err := rows.Err(); err != nil {

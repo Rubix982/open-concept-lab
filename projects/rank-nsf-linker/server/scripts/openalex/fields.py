@@ -1,15 +1,16 @@
 """Researchers outside computer science, from OpenAlex -> data/openalex/fields_*.csv
 
 CSRankings covers computer science only. For the other fields, OpenAlex lists researchers by
-institution and field; this keeps a first cut: US R1 universities already on the map, a dozen
-science, engineering and medicine fields, and per university and field the most-cited researchers
-who look like faculty:
+institution and field; this keeps a first cut: US R1 universities already on the map and every
+university on the map in ten countries Pakistani students often go to (fieldsCountries in
+server/fetch.go), 25 fields, and per university and field the most-cited researchers who look like
+faculty:
   - the university is their first listed (most recent) institution,
   - 30 to 1,500 works (very large counts are big-collaboration authors), h-index >= 15,
   - publishing in the last three years.
 These are researchers, not verified faculty; the explorer labels them as such.
 
-Input: data/openalex/universities.csv (name, the explorer's R1 universities), exported from the database,
+Input: data/openalex/universities.csv (name, country), exported from the database by the pipeline,
 and backup/extra_universities.csv (universities CSRankings doesn't list, e.g. Pakistan's; see
 extra_universities.py). For those, computer science is fetched too and the faculty thresholds are
 lower (smaller research systems: h-index >= 8, 15+ works).
@@ -135,7 +136,8 @@ def resolve_institutions(c: Client) -> tuple[dict[str, dict], int]:
     spent). Those are skipped, never silently dropped: the caller treats the run as partial."""
     out, unresolved = {}, 0
     for row in csv.DictReader((DATA / "universities.csv").open(encoding="utf-8")):
-        body = c.get("institutions", "institutions", {"search": row["name"], "filter": "country_code:us",
+        country = (row.get("country") or "us").strip().lower()  # older exports had US R1s only
+        body = c.get("institutions", "institutions", {"search": row["name"], "filter": f"country_code:{country}",
                                                        "per_page": 5, "select": "id,display_name,type,ror"})
         if body is None:
             unresolved += 1
