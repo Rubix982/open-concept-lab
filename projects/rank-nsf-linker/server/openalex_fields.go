@@ -25,7 +25,9 @@ const openAlexMaxWorksPerPerson = 10
 const notAPaper = `^\s*(contributors|list of contributors|introduction|preface|foreword|editorial|erratum|corrigendum|` +
 	`references|index|front matter|back matter|contents|table of contents|acknowledg(e)?ments|author index|` +
 	`title page|cover|copyright)\s*\.?\s*$` +
-	`|^data for |^dataset\y|subset for:|^supplementary (data|material|information)|^(erratum|correction|retraction)( to|:)`
+	`|^data for |^dataset\y|subset for:|^supplementary (data|material|information)|^(erratum|correction|retraction)( to|:)` +
+	// review traffic on open-review platforms (EGUsphere and others): not the person's papers
+	`|^(comment|comments|reply|replies|response|author response|authors'? response|referee comment|review)( on| to| for|:)|egusphere-\d`
 
 var (
 	fieldsPeopleColumns = []string{"openalex_id", "name", "university", "area", "orcid", "works", "cited_by", "h_index", "subfields"}

@@ -60,10 +60,16 @@ func grantFundersByCountry(db *sql.DB) map[string][]string {
 		return fundersCache.byCountry
 	}
 	m := map[string][]string{"us": {"nsf"}}
-	// A funder counts for a country with at least 2 grants there: the one ERC grant hosted in the
-	// US made "no NSF or ERC or NIH grant" the sentence for US faculty.
-	rows, err := db.Query(`SELECT lower(country), funder FROM funder_grants
-		WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2 HAVING count(*) >= 2 ORDER BY 1, 2`)
+	// A funder counts for a country where it funds work: its home country (where most of its grants
+	// are), or any country holding at least 2% of its grants (Wellcome in the US). A few grants
+	// hosted abroad don't count: Marsden's in the US made Dartmouth's sentence "an active NIH, NSF or
+	// Marsden Fund grant", CIHR's in Germany listed it for German faculty.
+	rows, err := db.Query(`
+		WITH c AS (SELECT lower(country) AS c, funder, count(*) AS n FROM funder_grants
+		           WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2),
+		     t AS (SELECT funder, sum(n) AS total, max(n) AS top FROM c GROUP BY 1)
+		SELECT c.c, c.funder FROM c JOIN t USING (funder)
+		WHERE c.n >= 2 AND (c.n = t.top OR c.n >= 0.02 * t.total) ORDER BY 1, 2`)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {

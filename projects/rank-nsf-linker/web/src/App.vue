@@ -185,6 +185,12 @@ function clearGoal() {
 const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
 const loadedGoal = ref<string | null>(null); // the search the current lists were loaded for
+// A different search is loading: the lists on screen belong to the previous one (unrelated people
+// under "Searching for …" read as wrong results), so placeholders replace them. A filter change on
+// the same search keeps the list, dimmed.
+const newSearch = computed(
+  () => loading.value && (query.value.goal ?? "") !== (loadedGoal.value ?? ""),
+);
 const includePastGrants = ref(true); // the Funding tab opens on every grant; a toggle narrows to running
 const loading = ref(true);
 const error = ref("");
@@ -824,12 +830,17 @@ const areaChips = computed(() => {
         >.
       </p>
       <LoadingRows
-        v-if="ready && loading && tab !== 'funding'"
+        v-if="ready && newSearch && tab !== 'funding'"
+        :label="goal ? `Searching for “${goal}”` : 'Loading'"
+        :rows="6"
+      />
+      <LoadingRows
+        v-else-if="ready && loading && tab !== 'funding'"
         bar
         :label="goal ? `Searching for “${goal}”` : 'Updating'"
       />
       <ol
-        v-if="ready && tab === 'universities'"
+        v-if="ready && !newSearch && tab === 'universities'"
         class="uni-list"
         :class="{ stale: loading }"
       >
@@ -865,7 +876,11 @@ const areaChips = computed(() => {
         @update:only-active="includePastGrants = !$event"
       />
 
-      <ul v-else-if="ready" class="fac-list" :class="{ stale: loading }">
+      <ul
+        v-else-if="ready && !newSearch && tab === 'faculty'"
+        class="fac-list"
+        :class="{ stale: loading }"
+      >
         <FacultyRow
           v-for="f in faculty"
           :key="f.name"
