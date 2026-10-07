@@ -197,7 +197,8 @@ cosine 1.000000 on a test set). Data is refreshed on a development machine with 
    done
    docker compose -f docker-compose.minimal.yaml up -d --build
    ```
-4. Put HTTPS in front of port 80 (Caddy: `caddy reverse-proxy --from your.domain --to :80`).
+4. Visitors come through a Cloudflare tunnel; nothing is open to the internet. The full runbook
+   (accounts, firewall, Tailscale, tunnel, updates) is in [DEPLOY.md](DEPLOY.md).
 5. To refresh: make a new golden dataset on the development machine and repeat step 3's restores.
 
 **Data the pipeline reads**

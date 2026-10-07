@@ -233,6 +233,11 @@ function params(q: Partial<Query> & Record<string, unknown>): string {
 
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   const res = await fetch(`/api/explorer${path}`, { signal });
+  if (res.status === 429) {
+    throw new Error(
+      "Too many searches at once. Wait a few seconds and try again.",
+    );
+  }
   if (res.status === 503) {
     throw new Error(
       "The data is still loading on the server. Try again in a few minutes.",

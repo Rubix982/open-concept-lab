@@ -4,6 +4,10 @@
 # full embedder, Elasticsearch or logging service. Search by meaning works: the stored vectors were
 # computed on a development machine; here only visitors' queries are embedded.
 # Fits a 4 GB VM; 8 GB is comfortable.
+# Exposure (DEPLOY.md): nothing is published to the internet. The Cloudflare tunnel (profile
+# "tunnel") connects out to Cloudflare and reaches the web app over this compose network; the web
+# app and Qdrant listen on 127.0.0.1 only, for checks on the machine itself.
+#   docker compose -f docker-compose.minimal.yaml --env-file .env.deploy --profile tunnel up -d
 name: advisor-atlas
 
 services:
@@ -81,7 +85,20 @@ services:
     volumes:
       - ./web/conf/nginx.conf:/etc/nginx/conf.d/default.conf:ro # /api -> go-server
     ports:
-      - "80:80" # put a TLS proxy (Caddy, or the host's) in front for HTTPS
+      - "127.0.0.1:8088:80" # this machine only (checks); visitors come through the tunnel
+
+  # Cloudflare Tunnel: an outbound connection to Cloudflare, which serves the site (HTTPS, DDoS
+  # protection, caching) without any open port here. In Cloudflare: Zero Trust > Networks > Tunnels,
+  # public hostname -> http://web:80. The token goes in .env.deploy (TUNNEL_TOKEN).
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.0
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-} # from .env.deploy; cloudflared refuses to start without one
+    depends_on:
+      - web
 
 volumes:
   pg_data:

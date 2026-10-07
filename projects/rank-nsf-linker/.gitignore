@@ -212,3 +212,6 @@ deck.gl/**/**
 /golden/
 # Fresh-server test stack's data (make fresh-test)
 /fresh/
+
+# Deployment secrets (DEPLOY.md)
+.env.deploy
