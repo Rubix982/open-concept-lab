@@ -156,6 +156,7 @@ type landscapeFunder struct {
 	Active   int      `json:"active"`
 	Amount   *float64 `json:"amount"`        // all matching grants with an amount, in Currency
 	ActiveAm *float64 `json:"active_amount"` // the active ones
+	USD      *float64 `json:"amount_usd"`    // Amount in approximate US dollars
 }
 
 type landscapeYear struct {
@@ -187,6 +188,8 @@ type landscapeGrant struct {
 	Institution  *string  `json:"institution"`
 	UniversityID *string  `json:"university_id"`
 	Profile      *string  `json:"profile"`
+	AmountUSD    *float64 `json:"amount_usd"` // approximate (currency.go)
+	Signal       *string  `json:"signal"`     // new_lab / training
 }
 
 // getExplorerLandscape: where money for a search goes, across every grant loaded (linked to someone on
@@ -216,11 +219,21 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	q := strings.TrimSpace(v.Get("q"))
 	active := v.Get("active") == "1"
 	country := strings.ToLower(strings.TrimSpace(v.Get("country")))
+	// Narrowing (applies to everything shown): one funder, a kind of grant (new_lab: an early-career
+	// PI starting a group; training: funds PhD students), only grants of people in Advisor Atlas.
+	funder := strings.ToLower(strings.TrimSpace(v.Get("funder")))
+	signal := v.Get("signal")
+	if signal != "new_lab" && signal != "training" {
+		signal = ""
+	}
+	people := v.Get("people") == "1"
+	sortBy := v.Get("sort") // "" (best match), "newest", "largest"
 	// Without a search the answer covers every grant (~10 s) and only changes when the explorer
 	// tables are rebuilt: kept per country and active filter, cleared by clearAreasCache.
 	cacheKey := ""
 	if q == "" {
-		cacheKey = country + "|" + strconv.FormatBool(active)
+		cacheKey = strings.Join([]string{country, strconv.FormatBool(active), funder, signal,
+			strconv.FormatBool(people), sortBy}, "|")
 		landscapeCache.Lock()
 		cached, ok := landscapeCache.m[cacheKey]
 		landscapeCache.Unlock()
@@ -271,7 +284,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE m ON COMMIT DROP AS
 		SELECT g.funder, g.id, g.title, g.snippet, g.amount, g.currency, g.starts, g.ends, g.url, g.country,
-		       g.lead, g.institution, g.university_id, g.profile, g.programs,
+		       g.lead, g.institution, g.university_id, g.profile, g.programs, g.signal,
 		       -- by meaning: the similarity, a little more when the words are there too, and a grant
 		       -- that only shares words ranks just under the closest ones
 		       CASE WHEN $1 = '' THEN 1
@@ -288,8 +301,9 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		false: `(g.funder, g.id) IN (
 		        SELECT g2.funder, g2.id FROM explorer_grants g2 WHERE g2.doc @@ websearch_to_tsquery('english', $1)
 		        UNION SELECT funder, id FROM h)`}[q == ""]+`
-		  AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
-		q, active, country, matched == "meaning", grantMinScore); err != nil {
+		  AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)
+		  AND ($6 = '' OR g.funder = $6) AND ($7 = '' OR g.signal = $7) AND (NOT $8 OR g.profile IS NOT NULL)`,
+		q, active, country, matched == "meaning", grantMinScore, funder, signal, people); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
 	}
@@ -313,12 +327,20 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var f landscapeFunder
 			if rows.Scan(&f.Funder, &f.Currency, &f.Grants, &f.Active, &f.Amount, &f.ActiveAm) == nil {
+				f.USD = usd(f.Amount, f.Currency)
 				funders = append(funders, f)
 			}
 		}
 		rows.Close()
 	}
 	out["funders"] = funders
+	var totalUSD float64
+	for _, f := range funders {
+		if f.USD != nil {
+			totalUSD += *f.USD
+		}
+	}
+	out["amount_usd"] = totalUSD // approximate, across every funder with a known currency
 
 	years := []landscapeYear{}
 	phase("years")
@@ -399,16 +421,16 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	phase("grant list")
 	rows, err = tx.Query(`
 		SELECT funder, id, title, snippet, amount, currency, starts::text, ends::text, url, lead, institution,
-		       university_id, profile
+		       university_id, profile, signal
 		FROM m
-		ORDER BY rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC,
-		         starts DESC NULLS LAST
+		ORDER BY ` + grantOrder(sortBy) + `
 		LIMIT 40`)
 	if err == nil {
 		for rows.Next() {
 			var g landscapeGrant
 			if rows.Scan(&g.Funder, &g.ID, &g.Title, &g.Snippet, &g.Amount, &g.Currency, &g.Starts, &g.Ends, &g.URL,
-				&g.Lead, &g.Institution, &g.UniversityID, &g.Profile) == nil {
+				&g.Lead, &g.Institution, &g.UniversityID, &g.Profile, &g.Signal) == nil {
+				g.AmountUSD = usd(g.Amount, g.Currency)
 				grants = append(grants, g)
 			}
 		}
@@ -430,4 +452,23 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 var landscapeCache struct {
 	sync.Mutex
 	m map[string]map[string]any
+}
+
+// grantOrder is the grant list's ORDER BY: best match (similarity, favouring recent grants), newest,
+// or largest (in approximate dollars, so currencies compare).
+func grantOrder(sortBy string) string {
+	switch sortBy {
+	case "newest":
+		return "starts DESC NULLS LAST, rank DESC"
+	case "largest":
+		var b strings.Builder
+		b.WriteString("amount * CASE currency")
+		for c, rate := range usdPerUnit {
+			fmt.Fprintf(&b, " WHEN '%s' THEN %g", c, rate)
+		}
+		b.WriteString(" END DESC NULLS LAST, starts DESC NULLS LAST")
+		return b.String()
+	}
+	return `rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC,
+		         starts DESC NULLS LAST`
 }

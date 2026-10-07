@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import {
-  api,
-  type Faculty,
-  type Grant,
-  type Query,
-  type UniversitySummary,
-} from "@/api";
+import { api, type Faculty, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
 import { areaIndex, areas, funderName, funders, fundersFor } from "@/store";
 import { countryName } from "@/countries";
@@ -191,8 +185,6 @@ function clearGoal() {
 const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
 const loadedGoal = ref<string | null>(null); // the search the current lists were loaded for
-const grants = ref<Grant[]>([]);
-const grantsLoading = ref(false);
 const includePastGrants = ref(true); // the Funding tab opens on every grant; a toggle narrows to running
 const loading = ref(true);
 const error = ref("");
@@ -244,30 +236,8 @@ function retry() {
   load();
 }
 
-let grantsInflight: AbortController | null = null;
-async function loadGrants() {
-  grantsInflight?.abort();
-  if (!goal.value) {
-    grants.value = [];
-    return;
-  }
-  const mine = (grantsInflight = new AbortController());
-  grantsLoading.value = true;
-  try {
-    grants.value = await api.grants(
-      { ...query.value, active: !includePastGrants.value, limit: 40 },
-      mine.signal,
-    );
-  } catch (e) {
-    if ((e as Error).name !== "AbortError") error.value = (e as Error).message;
-  } finally {
-    if (grantsInflight === mine) grantsLoading.value = false; // a cancelled request doesn't end a newer one's loading
-  }
-}
-
 onMounted(loadAreas);
 watch([query, filterParams], load, { immediate: true, deep: true });
-watch([query, includePastGrants], loadGrants, { immediate: true, deep: true });
 
 // ---- derived ----
 // Names for the summary line, with whole fields as one name (see areaChips).
@@ -891,8 +861,6 @@ const areaChips = computed(() => {
         @open-university="openUniversity($event)"
         @open-person="openProfessorFromList"
         @counts="fundingCounts = $event"
-        :grants="grants"
-        :grants-loading="grantsLoading"
         :only-active="!includePastGrants"
         @update:only-active="includePastGrants = !$event"
       />

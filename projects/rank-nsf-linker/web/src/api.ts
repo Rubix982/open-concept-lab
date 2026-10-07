@@ -191,6 +191,7 @@ export type Landscape = {
     active: number;
     amount: number | null;
     active_amount: number | null;
+    amount_usd: number | null; // approximate
   }[];
   years: { year: number; funder: string; grants: number }[];
   places: {
@@ -203,6 +204,7 @@ export type Landscape = {
   }[];
   programs: { name: string; grants: number; running: number }[];
   by_university: Record<string, number>; // matching grants per university on the map
+  amount_usd: number; // approximate, all funders with a known currency
   grants: {
     funder: string;
     id: string;
@@ -217,6 +219,8 @@ export type Landscape = {
     institution: string | null;
     university_id: string | null;
     profile: string | null;
+    amount_usd: number | null; // approximate
+    signal: "new_lab" | "training" | null;
   }[];
 };
 
@@ -253,13 +257,26 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 export const api = {
   landscape: (
-    q: { goal: string; active?: boolean; country?: string },
+    q: {
+      goal: string;
+      active?: boolean;
+      country?: string;
+      funder?: string;
+      kind?: "" | "new_lab" | "training"; // a kind of grant (signal)
+      people?: boolean; // only grants of people in Advisor Atlas
+      sort?: "" | "newest" | "largest";
+    },
     signal?: AbortSignal,
-  ) =>
-    get<Landscape>(
-      `/landscape?q=${encodeURIComponent(q.goal)}${q.active ? "&active=1" : ""}${q.country ? `&country=${q.country}` : ""}`,
-      signal,
-    ),
+  ) => {
+    const p = new URLSearchParams({ q: q.goal });
+    if (q.active) p.set("active", "1");
+    if (q.country) p.set("country", q.country);
+    if (q.funder) p.set("funder", q.funder);
+    if (q.kind) p.set("signal", q.kind);
+    if (q.people) p.set("people", "1");
+    if (q.sort) p.set("sort", q.sort);
+    return get<Landscape>(`/landscape?${p}`, signal);
+  },
   areas: () => get<Area[]>("/areas"),
   funders: () => get<Funders>("/funders"),
   universities: (q: Query, signal?: AbortSignal) =>
