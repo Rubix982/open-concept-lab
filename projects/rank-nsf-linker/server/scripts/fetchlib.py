@@ -166,6 +166,12 @@ def openalex_snapshot(entity: str) -> list[Path]:
         except OSError:
             continue
     if manifest is None:
+        # S3 unreachable for now (a network blip, or the slow route from some containers): the copy
+        # on disk is a few weeks old at most, which is fine for these slow-changing snapshots
+        have = sorted(cache.rglob("*.gz"))
+        if have:
+            print(f"OpenAlex {entity}: manifest unreachable; using the {len(have)} files on disk")
+            return have
         sys.exit(f"OpenAlex {entity} manifest unreachable")
     files = []
     for e in manifest.get("files") or manifest.get("entries") or []:

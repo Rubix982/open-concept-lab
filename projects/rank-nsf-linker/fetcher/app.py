@@ -171,16 +171,16 @@ def start(group: str, force: bool) -> None:
 
 def due(name: str, now: float) -> bool:
     """For the daemon: a source to start now. Not when fresh; not when it stopped at a daily allowance
-    today (it resumes after the reset at 00:00 UTC, with ten minutes' grace); not within six hours of
-    a failure (a broken source shouldn't run every few minutes)."""
+    today (it resumes after the reset at 00:00 UTC, with ten minutes' grace); not within an hour of a
+    failure (a broken source shouldn't run every few minutes)."""
     if is_fresh(name):
         return False
     state = load(name)
     midnight = now - now % DAY
     if state.get("status") == "partial" and (state.get("finished_ts", 0) >= midnight or now < midnight + 600):
         return False
-    if state.get("status") == "failed" and now - state.get("finished_ts", 0) < 6 * 3600:
-        return False
+    if state.get("status") == "failed" and now - state.get("finished_ts", 0) < 3600:
+        return False  # an hour: most failures are a network blip; a broken source still won't spin
     return True
 
 
