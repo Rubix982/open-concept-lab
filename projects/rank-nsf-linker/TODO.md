@@ -3,6 +3,26 @@
 Audit of the populated database on 2026-10-04 (pipeline steps 1–13, NSF 2025 only).
 Numbers in brackets are what the audit measured; re-measure after each item.
 
+## Now (2026-10-07, evening)
+
+State: 72k people at 700 universities in 61 countries (researchers beyond computing: US R1s, Pakistan,
+and now every other university, fetching); 1,105,163 grants from 42 funders, all searchable by
+meaning; 609k OpenAlex papers (491k with abstracts). Deploy prep done (DEPLOY.md, minimal stack,
+Cloudflare tunnel, rate limits).
+
+- [~] OpenAlex researchers at the remaining universities: ~2,400 pages left, after the 00:00 UTC
+      reset; the scheduler loads them (164k+ researchers)
+- [ ] Re-check link counts once they load (CIHR, SSHRC, Wellcome, NSFC, NCN, Taiwan should rise)
+- [ ] Golden dataset (make golden + golden-verify), then a dry run of docker-compose.minimal.yaml from it
+      (also the first real measure of production speed)
+- [ ] Fresh-server test: make fresh-test / fresh-check (Docker has 8 GB: run when nothing else is heavy)
+- [ ] Optional: translate non-English grant titles (NSFC Chinese, NRF Korean): needs a translation
+      model or a paid service — decision
+- [ ] Yours: Cloudflare + Hetzner accounts and the Mapbox URL restriction (DEPLOY.md), deploy for a
+      month, collect student feedback, merge to main
+- Local Docker is short of memory (8 GB: Elasticsearch, the full embedder, Qdrant, Postgres): searches
+  slow down when it swaps; the minimal production stack (~3 GB) on an 8 GB server doesn't
+
 ## In order
 
 1. **Separate universities from businesses and other organizations**
