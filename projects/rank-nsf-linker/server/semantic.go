@@ -296,7 +296,10 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	}
 	if err := postJSON(http.MethodGet, qdrantURL()+"/collections/"+workCollection, nil, &exists); err != nil {
 		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection,
-			map[string]any{"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine"},
+			map[string]any{
+				// full vectors on disk (memory-mapped); searches use the int8 copies kept in RAM. With
+				// ~2M full vectors in RAM Qdrant outgrew its 4 GB limit and was killed mid-embedding.
+				"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine", "on_disk": true},
 				// int8 copies kept in RAM: the first search on a cold, memory-mapped index took seconds
 				"quantization_config": map[string]any{"scalar": map[string]any{"type": "int8", "quantile": 0.99, "always_ram": true}}},
 			nil); err != nil {
