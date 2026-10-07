@@ -18,7 +18,10 @@ import (
 //   - explorer_universities: one row per university with such faculty — IPEDS facts
 //     (R1/R2, graduate tuition and enrollment) and faculty counts per area.
 const buildExplorerSQL = `
-TRUNCATE explorer_faculty, explorer_universities, explorer_work_docs, professor_variants;
+-- DELETE, not TRUNCATE: TRUNCATE locks out readers until this transaction commits (the site hung for
+-- minutes on every rebuild); with DELETE they keep reading the previous data meanwhile.
+DELETE FROM explorer_faculty; DELETE FROM explorer_universities; DELETE FROM explorer_work_docs;
+DELETE FROM professor_variants;
 
 -- One person, several CSRankings names ("Dylan A. Shell" / "Dylan Shell"). Names are one person when
 -- they share a Google Scholar id, or a homepage and both first and last name (a department homepage
@@ -221,6 +224,12 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
+	}
+	// Reclaim the deleted rows' space (doesn't block readers or writers).
+	for _, t := range []string{"explorer_faculty", "explorer_universities", "explorer_work_docs", "explorer_grants", "professor_variants"} {
+		if _, err := db.Exec("VACUUM (ANALYZE) " + t); err != nil {
+			logger.Warnf(mainCtx, "⚠️ VACUUM %s: %v", t, err)
+		}
 	}
 	clearAreasCache()
 

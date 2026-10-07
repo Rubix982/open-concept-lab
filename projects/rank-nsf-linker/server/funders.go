@@ -140,7 +140,7 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 	// Staging tables are all text and unconstrained: CSVs may repeat a key, and the insert
 	// below converts types and keeps one row per key.
 	if _, err := tx.Exec(`
-		TRUNCATE funder_grants, funder_grant_people;
+		DELETE FROM funder_grants; DELETE FROM funder_grant_people; -- not TRUNCATE: readers keep the old rows
 		CREATE TEMP TABLE fg_stage (funder text, grant_id text, title text, abstract text, amount text,
 		  currency text, starts text, ends text, url text, country text, scheme text, field text) ON COMMIT DROP;
 		CREATE TEMP TABLE fp_stage (funder text, grant_id text, full_name text, first_name text, last_name text,

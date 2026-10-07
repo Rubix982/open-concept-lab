@@ -15,7 +15,7 @@ import (
 // search can show where money for a topic goes (by funder, by year, by institution). Built with the
 // other explorer tables (buildExplorerTables), after explorer_universities and explorer_faculty.
 const buildGrantLandscapeSQL = `
-TRUNCATE explorer_grants;
+DELETE FROM explorer_grants; -- not TRUNCATE: readers keep the previous grants until commit
 
 -- One lead per grant: the principal investigator, else the first person listed.
 -- "abstract || ''" makes Postgres read the whole value: left() on a compressed value reads only a slice,
