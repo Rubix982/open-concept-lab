@@ -80,7 +80,7 @@ func clearAreasCache() {
 	areasCache.areas, areasCache.universities = nil, nil
 	areasCache.Unlock()
 	fundersCache.Lock()
-	fundersCache.byCountry = nil
+	fundersCache.byCountry, fundersCache.totals = nil, nil
 	fundersCache.Unlock()
 	landscapeCache.Lock()
 	landscapeCache.m = nil

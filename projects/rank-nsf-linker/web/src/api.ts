@@ -114,6 +114,7 @@ export type FundingEntry = {
 export type Funders = {
   names: Record<string, string>;
   by_country: Record<string, string[]>;
+  totals?: { grants: number; running: number; funders: number } | null; // the Funding tab's reach
 };
 
 export type Award = {

@@ -55,10 +55,18 @@ def fetch(state: str, year: int, offset: int) -> dict:
     return data
 
 
+def titled(s: str) -> str:
+    """str.title(), but "SEATTLE CHILDREN'S" -> "Seattle Children's" (not "Children'S"), while
+    "O'BRIEN" -> "O'Brien" and "D'ANGELO" -> "D'Angelo" keep their capital."""
+    t = s.title()
+    t = re.sub(r"'S\b", "'s", t)
+    return re.sub(r"\b([OD])'([a-z])", lambda m: m.group(1) + "'" + m.group(2).upper(), t)
+
+
 def institution_variants(org: str) -> str:
     """'UNIVERSITY OF MICHIGAN AT ANN ARBOR' -> 'University Of Michigan At Ann Arbor | University Of
     Michigan', so the linker can match the CSRankings name."""
-    base = re.sub(r"\s+", " ", org).strip().title()
+    base = titled(re.sub(r"\s+", " ", org).strip())
     variants = [base]
     for pattern in (r"\s+At\s+.*$", r",\s*.*$", r"\s+(Health Science Center|Medical Center|School Of Medicine)$"):
         v = re.sub(pattern, "", base).strip()
@@ -102,7 +110,7 @@ def main() -> None:
             last = (pi.get("last_name") or "").strip()
             if not last:
                 continue
-            first, last = first.title() if first.isupper() else first, last.title() if last.isupper() else last
+            first, last = titled(first) if first.isupper() else first, titled(last) if last.isupper() else last
             people.append({
                 "funder": "nih", "grant_id": core, "full_name": f"{first} {last}".strip(), "first_name": first,
                 "last_name": last, "role": "PI" if pi.get("is_contact_pi") else "CoI",

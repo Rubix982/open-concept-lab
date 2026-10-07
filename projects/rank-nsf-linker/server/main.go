@@ -72,15 +72,9 @@ func main() {
 		logger.Errorf(mainCtx, "failed to execute migrations: %v", runMigrationsErr)
 		return
 	}
-	// Warm the caches the first page reads (areas, universities, funders, the Funding overview: ~2-10 s
-	// cold, ~10 ms cached).
 	go func() {
 		time.Sleep(3 * time.Second)
-		for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders", "/explorer/landscape", "/explorer/landscape?active=1"} {
-			if resp, err := http.Get("http://localhost:8080" + path); err == nil {
-				resp.Body.Close()
-			}
-		}
+		warmCaches()
 	}()
 
 	// Migration 12 reloads research_area_venues from scratch, which drops the OpenAlex subfield areas

@@ -251,17 +251,17 @@ async function loadGrants() {
     grants.value = [];
     return;
   }
-  grantsInflight = new AbortController();
+  const mine = (grantsInflight = new AbortController());
   grantsLoading.value = true;
   try {
     grants.value = await api.grants(
       { ...query.value, active: !includePastGrants.value, limit: 40 },
-      grantsInflight.signal,
+      mine.signal,
     );
   } catch (e) {
     if ((e as Error).name !== "AbortError") error.value = (e as Error).message;
   } finally {
-    grantsLoading.value = false;
+    if (grantsInflight === mine) grantsLoading.value = false; // a cancelled request doesn't end a newer one's loading
   }
 }
 
@@ -349,10 +349,6 @@ const summary = computed(() => {
   const people = goal.value
     ? shownUniversities.value.reduce((s, u) => s + u.goal_matches, 0)
     : shownUniversities.value.reduce((s, u) => s + u.faculty, 0);
-  const g = grants.value.length;
-  const grantText = grantsLoading.value
-    ? ""
-    : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}${g === 1 ? "grant" : "grants"}`;
   const unis = `${n} ${n === 1 ? "university" : "universities"}`;
   // Person-level filters only apply to the faculty list (the university counts aren't filtered by them).
   if (
@@ -368,7 +364,7 @@ const summary = computed(() => {
   }
   if (onlyFunded.value) return `${unis} with faculty holding an active grant`;
   return goal.value
-    ? `${people.toLocaleString()} faculty at ${unis} work on this${grantText}`
+    ? `${people.toLocaleString()} faculty at ${unis} work on this`
     : `${people.toLocaleString()} faculty at ${unis}`;
 });
 
@@ -710,12 +706,31 @@ const areaChips = computed(() => {
           in {{ selectedNames.join(", ") }}</template
         >.
         <button
+          v-if="goal && tab !== 'funding' && !loading"
+          type="button"
+          class="link funding-link"
+          @click="tab = 'funding'"
+        >
+          See who funds this
+        </button>
+        <button
           v-if="selectedAreas.length || goal"
           type="button"
           class="link"
           @click="clearAll"
         >
           Clear all
+        </button>
+      </p>
+      <p
+        v-if="ready && !goal && tab !== 'funding' && funders.totals"
+        class="funding-teaser"
+      >
+        <strong>{{ funders.totals.grants.toLocaleString() }}</strong> research
+        grants from {{ funders.totals.funders }} funders,
+        {{ funders.totals.running.toLocaleString() }} running now.
+        <button type="button" class="link" @click="tab = 'funding'">
+          Explore the funding
         </button>
       </p>
       <p v-if="areaChips.length" class="area-chips">
@@ -737,12 +752,12 @@ const areaChips = computed(() => {
       </p>
       <p v-if="error && ready" class="error">{{ error }}</p>
       <LoadingRows
-        v-if="!ready && !error"
+        v-if="!ready && !error && tab !== 'funding'"
         label="Loading universities and faculty"
         :rows="6"
       />
 
-      <div v-if="ready" class="tabs" role="tablist">
+      <div v-if="ready || areas.length" class="tabs" role="tablist">
         <button
           v-for="t in tabs"
           :key="t.id"
@@ -870,7 +885,7 @@ const areaChips = computed(() => {
       </ol>
 
       <FundingView
-        v-else-if="ready && tab === 'funding'"
+        v-else-if="areas.length && tab === 'funding'"
         :goal="goal"
         :country="country"
         @open-university="openUniversity($event)"
@@ -1273,6 +1288,16 @@ h1 {
   border-radius: var(--radius-pill);
   padding: 4px 16px 3px;
   font-weight: 700;
+}
+
+.funding-link {
+  margin-right: 10px;
+}
+
+.funding-teaser {
+  margin: -6px 0 14px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
 }
 
 .stale {

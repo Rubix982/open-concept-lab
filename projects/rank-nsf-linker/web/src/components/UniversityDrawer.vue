@@ -27,7 +27,9 @@ const faculty = ref<Faculty[]>([]);
 const loading = ref(true);
 const error = ref("");
 
+let loadSeq = 0;
 async function load() {
+  const seq = ++loadSeq; // switching universities quickly: only the latest answer is shown
   loading.value = true;
   error.value = "";
   try {
@@ -35,12 +37,13 @@ async function load() {
       api.university(props.id),
       api.faculty({ ...props.query, university: props.id, limit: 150 }),
     ]);
+    if (seq !== loadSeq) return;
     uni.value = detail;
     faculty.value = people;
   } catch (e) {
-    error.value = (e as Error).message;
+    if (seq === loadSeq) error.value = (e as Error).message;
   } finally {
-    loading.value = false;
+    if (seq === loadSeq) loading.value = false;
   }
 }
 

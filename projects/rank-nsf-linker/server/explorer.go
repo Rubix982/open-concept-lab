@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -225,13 +226,16 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
 	}
+	// The caches were cleared with the tables: fill them again now, not on a visitor's first page
+	// (the Funding overview takes ~20 s cold).
+	clearAreasCache()
+	go warmCaches()
 	// Reclaim the deleted rows' space (doesn't block readers or writers).
 	for _, t := range []string{"explorer_faculty", "explorer_universities", "explorer_work_docs", "explorer_grants", "professor_variants"} {
 		if _, err := db.Exec("VACUUM (ANALYZE) " + t); err != nil {
 			logger.Warnf(mainCtx, "⚠️ VACUUM %s: %v", t, err)
 		}
 	}
-	clearAreasCache()
 
 	var faculty, funded, universities int
 	if err := db.QueryRow(`
@@ -271,4 +275,15 @@ func applyCarnegieFallback(tx *sql.Tx) error {
 		FROM (SELECT unnest($1::text[]) AS name, unnest($2::text[]) AS code) c
 		WHERE u.carnegie IS NULL AND u.country = 'us' AND u.name = c.name`, pq.Array(names), pq.Array(codes))
 	return err
+}
+
+// warmCaches requests what the first page reads (areas, universities, funders, the Funding overview:
+// ~2-20 s cold, ~10 ms cached), at startup and after each rebuild of the explorer tables.
+func warmCaches() {
+	for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders",
+		"/explorer/landscape", "/explorer/landscape?active=1"} {
+		if resp, err := http.Get("http://localhost:8080" + path); err == nil {
+			resp.Body.Close()
+		}
+	}
 }

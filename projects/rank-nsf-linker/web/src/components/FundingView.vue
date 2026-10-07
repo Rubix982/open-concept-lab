@@ -40,20 +40,19 @@ watch(
   () => [props.goal, props.country ?? "", onlyActive.value] as const,
   async ([goal, country, active]) => {
     inflight?.abort();
-    inflight = new AbortController();
+    const mine = (inflight = new AbortController());
     loading.value = true;
     error.value = "";
     try {
-      data.value = await api.landscape(
-        { goal, country, active },
-        inflight.signal,
-      );
+      data.value = await api.landscape({ goal, country, active }, mine.signal);
       emit("counts", data.value.by_university);
     } catch (e) {
       if ((e as Error).name !== "AbortError")
         error.value = (e as Error).message;
     } finally {
-      loading.value = false;
+      // Only the latest request ends the loading state: a cancelled one finishing after a new one
+      // started left the panel blank (not loading, no data).
+      if (inflight === mine) loading.value = false;
     }
   },
   { immediate: true },
@@ -71,7 +70,8 @@ const maxFunder = computed(() =>
 // CAREER is a signal (see "New lab, funded"), not a topic programme.
 const programs = computed(() =>
   (data.value?.programs ?? [])
-    .filter((p) => !p.name.startsWith("CAREER"))
+    // 3+ grants: one-off NSF programmes ("Global Venture Fund", 1 grant) were noise on other topics
+    .filter((p) => !p.name.startsWith("CAREER") && p.grants >= 3)
     .slice(0, 5),
 );
 const places = computed(
@@ -110,7 +110,10 @@ function niceName(s: string): string {
   const first = s.split(" | ")[0];
   // Only longer all-caps names: "OHSU" and "MIT" stay as they are.
   return first === first.toUpperCase() && first.includes(" ")
-    ? first.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
+    ? first
+        .toLowerCase()
+        // capitalise words, not letters after an apostrophe ("Children's", not "Children'S")
+        .replace(/(^|[\s(\-/&,.])(\w)/g, (_, sep, c) => sep + c.toUpperCase())
     : first;
 }
 const COMPANY =

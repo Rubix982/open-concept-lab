@@ -28,6 +28,29 @@ var fundersCache struct {
 	sync.Mutex
 	at        time.Time
 	byCountry map[string][]string
+	totals    *grantTotals
+}
+
+// grantTotals: how many grants the Funding tab covers, for the first page's one-line summary.
+type grantTotals struct {
+	Grants  int `json:"grants"`
+	Running int `json:"running"`
+	Funders int `json:"funders"`
+}
+
+func grantTotalsCached(db *sql.DB) *grantTotals {
+	fundersCache.Lock()
+	defer fundersCache.Unlock()
+	if fundersCache.totals != nil && time.Since(fundersCache.at) < time.Hour {
+		return fundersCache.totals
+	}
+	var t grantTotals
+	if db.QueryRow(`SELECT count(*), count(*) FILTER (WHERE ends >= current_date), count(DISTINCT funder)
+		FROM explorer_grants`).Scan(&t.Grants, &t.Running, &t.Funders) != nil {
+		return nil
+	}
+	fundersCache.totals = &t
+	return &t
 }
 
 func grantFundersByCountry(db *sql.DB) map[string][]string {
@@ -108,7 +131,8 @@ func getExplorerFunders(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry(db)})
+	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry(db),
+		"totals": grantTotalsCached(db)})
 }
 
 const grantsDataDir = "grants"
