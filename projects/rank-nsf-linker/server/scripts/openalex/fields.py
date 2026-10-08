@@ -25,6 +25,7 @@ Usage: works.py-style --max-calls N caps the calls of one run.
 import csv
 import difflib
 import hashlib
+import http.client
 import json
 import re
 import sys
@@ -136,7 +137,8 @@ class Client:
                     time.sleep(30 * (attempt + 1))
                     continue
                 raise SystemExit(f"OpenAlex refused a request: HTTP {e.code}")  # URL has the key
-            except (TimeoutError, OSError):
+            except (TimeoutError, OSError, http.client.HTTPException):
+                # HTTPException: a connection cut mid-page (IncompleteRead) crashed a whole run
                 time.sleep(15 * (attempt + 1))
         else:
             raise SystemExit("OpenAlex kept failing; stopping (rerun to resume)")
@@ -395,7 +397,8 @@ def fetch_works(c: Client, people: list[dict]) -> None:
                 asked.update(group)
         return True
 
-    with ThreadPoolExecutor(8) as pool:
+    # 16 at once: works pages are ~7 MB (full author lists) and OpenAlex sends ~70 KB/s a connection
+    with ThreadPoolExecutor(16) as pool:
         for ok in pool.map(finish_group, groups):
             stopped = stopped or not ok
     tmp = out.with_suffix(".csv.tmp")
