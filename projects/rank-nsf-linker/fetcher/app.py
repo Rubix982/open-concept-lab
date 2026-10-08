@@ -116,8 +116,19 @@ def capped(args: list[str]) -> list[str]:
     return [*args[:i], str(min(int(args[i]), int(cap))), *args[i + 1:]]
 
 
+# The OpenAlex sources share one daily allowance (10,000 calls), split 5,000 / 4,000 between them. When
+# the DOI lookup (openalex-works) is complete its share would go unused, so the researcher fetch
+# takes it: one day instead of two for a large batch of new researchers.
+SHARE_WITH = {"openalex-fields": ("openalex-works", 9500)}
+
+
 def run(name: str) -> None:
     group, script, args, _max_age, hours = SOURCES[name]
+    if name in SHARE_WITH and "--max-calls" in args:
+        other, cap = SHARE_WITH[name]
+        if is_fresh(other):
+            i = args.index("--max-calls") + 1
+            args = [*args[:i], str(cap), *args[i + 1:]]
     args = capped(args)
     state = load(name)
     state.update(name=name, group=group, status="queued")
