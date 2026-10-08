@@ -384,12 +384,14 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     done_lock = threading.Lock()
 
     def finish_group(group: list[str]) -> bool:
-        complete, body = False, None
+        complete = False
         for page in range(1, 4):  # 50 authors can have more than 200 recent works
             body = c.get("works", "works", works_params(group, page), PAGE_MAX_AGE)
             if body is None:  # over budget: ask again next run
                 return False
-            if (body.get("meta") or {}).get("count", 0) <= page * 200:
+            count = (body.get("meta") or {}).get("count", 0)
+            del body  # ~7 MB parsed, 16 at once: don't hold one while the next downloads
+            if count <= page * 200:
                 complete = True
                 break
         if complete or page == 3:
@@ -407,7 +409,7 @@ def fetch_works(c: Client, people: list[dict]) -> None:
         w = csv.DictWriter(f, fieldnames=WORKS_COLUMNS)
         w.writeheader()
         for r in cached_works(keep):
-            key = (r["openalex_id"], r["work_id"])
+            key = hash((r["openalex_id"], r["work_id"]))  # an int, not a tuple: millions of rows
             if key not in seen:
                 seen.add(key)
                 w.writerow(r)
