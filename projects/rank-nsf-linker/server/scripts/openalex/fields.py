@@ -376,19 +376,28 @@ def fetch_works(c: Client, people: list[dict]) -> None:
     with ThreadPoolExecutor(8) as pool:
         for _ in pool.map(lambda p: c.get("works", "works", p) is not None, missing):
             pass
+    # Later pages, and which groups are now fully asked: groups in parallel too (each page takes
+    # OpenAlex ~8 s, so one group at a time managed ~7 pages a minute), pages of a group in order.
     stopped = False
-    for group in groups:  # later pages, and which groups are now fully asked
+    done_lock = threading.Lock()
+
+    def finish_group(group: list[str]) -> bool:
         complete, body = False, None
         for page in range(1, 4):  # 50 authors can have more than 200 recent works
             body = c.get("works", "works", works_params(group, page), PAGE_MAX_AGE)
             if body is None:  # over budget: ask again next run
-                stopped = True
-                break
+                return False
             if (body.get("meta") or {}).get("count", 0) <= page * 200:
                 complete = True
                 break
-        if (complete or page == 3) and body is not None:
-            asked.update(group)
+        if complete or page == 3:
+            with done_lock:
+                asked.update(group)
+        return True
+
+    with ThreadPoolExecutor(8) as pool:
+        for ok in pool.map(finish_group, groups):
+            stopped = stopped or not ok
     tmp = out.with_suffix(".csv.tmp")
     rows, seen = 0, set()
     with tmp.open("w", newline="", encoding="utf-8") as f:

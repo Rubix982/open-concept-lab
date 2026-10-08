@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	colly "github.com/gocolly/colly/v2"
@@ -476,39 +477,85 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		return err
 	}
 
+	// Three batches in flight: the embedder uses a few cores per request, so this about doubles
+	// throughput (as for the grant index). The first error stops the rest.
 	start, lastLog := time.Now(), time.Now()
+	var doneCount atomic.Int64
+	var failMu sync.Mutex
+	var failed error
+	jobs := make(chan []doc)
+	var wg sync.WaitGroup
+	for w := 0; w < 3; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for batch := range jobs {
+				failMu.Lock()
+				stop := failed != nil
+				failMu.Unlock()
+				if stop {
+					continue
+				}
+				err := func() error {
+					texts := make([]string, len(batch))
+					for j, d := range batch {
+						texts[j] = d.text
+					}
+					vectors, err := embedTexts(texts)
+					if err != nil {
+						return fmt.Errorf("failed to embed batch: %w", err)
+					}
+					points := make([]map[string]any, len(batch))
+					ids := make([]string, len(batch))
+					hashes := make([]string, len(batch))
+					textHashes := make([]string, len(batch))
+					docHashes := make([]string, len(batch))
+					for j, d := range batch {
+						points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
+						ids[j], hashes[j], textHashes[j], docHashes[j] = d.id, d.payload.hash(), textHash(d.text), d.payload.docHash()
+					}
+					if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
+						map[string]any{"points": points}, nil); err != nil {
+						return fmt.Errorf("failed to upsert points: %w", err)
+					}
+					if err := record(ids, hashes, docHashes, textHashes); err != nil {
+						return fmt.Errorf("failed to record embedded points: %w", err)
+					}
+					return nil
+				}()
+				if err != nil {
+					failMu.Lock()
+					if failed == nil {
+						failed = err
+					}
+					failMu.Unlock()
+					continue
+				}
+				doneCount.Add(int64(len(batch)))
+			}
+		}()
+	}
 	for i := 0; i < len(toEmbed); i += embedBatchSize {
-		batch := toEmbed[i:min(i+embedBatchSize, len(toEmbed))]
-		texts := make([]string, len(batch))
-		for j, d := range batch {
-			texts[j] = d.text
+		failMu.Lock()
+		stop := failed != nil
+		failMu.Unlock()
+		if stop {
+			break
 		}
-		vectors, err := embedTexts(texts)
-		if err != nil {
-			return fmt.Errorf("failed to embed batch: %w", err)
-		}
-		points := make([]map[string]any, len(batch))
-		ids := make([]string, len(batch))
-		hashes := make([]string, len(batch))
-		textHashes := make([]string, len(batch))
-		docHashes := make([]string, len(batch))
-		for j, d := range batch {
-			points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
-			ids[j], hashes[j], textHashes[j], docHashes[j] = d.id, d.payload.hash(), textHash(d.text), d.payload.docHash()
-		}
-		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
-			map[string]any{"points": points}, nil); err != nil {
-			return fmt.Errorf("failed to upsert points: %w", err)
-		}
-		if err := record(ids, hashes, docHashes, textHashes); err != nil {
-			return fmt.Errorf("failed to record embedded points: %w", err)
-		}
-		// Progress about once a minute (and at the end), whatever the batch size.
-		if done := i + len(batch); time.Since(lastLog) > time.Minute || done == len(toEmbed) {
+		jobs <- toEmbed[i:min(i+embedBatchSize, len(toEmbed))]
+		// Progress about once a minute, whatever the batch size.
+		if time.Since(lastLog) > time.Minute {
 			lastLog = time.Now()
-			logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", done, len(toEmbed), time.Since(start).Round(time.Second))
+			logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", doneCount.Load(), len(toEmbed), time.Since(start).Round(time.Second))
 		}
-
+	}
+	close(jobs)
+	wg.Wait()
+	if failed != nil {
+		return failed
+	}
+	if len(toEmbed) > 0 {
+		logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", doneCount.Load(), len(toEmbed), time.Since(start).Round(time.Second))
 	}
 
 	// A payload changes when its professor's areas or university change, and those are shared by all
