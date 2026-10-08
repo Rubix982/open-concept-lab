@@ -30,7 +30,8 @@ WHERE array_length(f, 1) >= 1 AND array_length(l, 1) >= 1;
 CREATE TEMP TABLE l_cs ON COMMIT DROP AS
 SELECT name, t[1] AS first_tok, t[array_length(t, 1)] AS last_tok, registrable_domain(homepage) AS home_domain,
        COALESCE(NULLIF(NULLIF(scholar_id, ''), 'NOSCHOLARPAGE'), NULLIF(homepage, ''), name) AS person_key,
-       name IN (SELECT name FROM professor_areas) AS in_areas
+       -- EXISTS, not IN: as a column, IN compared every professor with all 853k area rows (76 min)
+       EXISTS (SELECT 1 FROM professor_areas pa WHERE pa.name = x.name) AS in_areas
 FROM (SELECT name, homepage, scholar_id, person_name_tokens(name) t FROM professors) x
 WHERE array_length(t, 1) >= 2;
 CREATE INDEX ON l_cs (last_tok);

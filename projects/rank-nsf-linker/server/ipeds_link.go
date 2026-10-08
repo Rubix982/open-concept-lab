@@ -141,7 +141,7 @@ SELECT DISTINCT ON (b.unitid) b.unitid, b.institution
 FROM ip_best b
 JOIN universities u ON u.institution = b.institution
 LEFT JOIN (SELECT institution, count(*) AS n FROM award GROUP BY institution) n ON n.institution = b.institution
-ORDER BY b.unitid, (u.institution IN (SELECT affiliation FROM professor_areas)) DESC,
+ORDER BY b.unitid, EXISTS (SELECT 1 FROM professor_areas pa WHERE pa.affiliation = u.institution) DESC,
          (u.institution_type = 'university') DESC, b.score DESC, COALESCE(n.n, 0) DESC, u.institution;
 
 CREATE TEMP TABLE ip_same ON COMMIT DROP AS
