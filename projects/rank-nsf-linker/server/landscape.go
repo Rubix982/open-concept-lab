@@ -228,7 +228,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	}
 	people := v.Get("people") == "1"
 	university := strings.TrimSpace(v.Get("university")) // one university's grants (its page)
-	sortBy := v.Get("sort") // "" (best match), "newest", "largest"
+	sortBy := v.Get("sort")                              // "" (best match), "newest", "largest"
 	// Without a search the answer covers every grant (~10 s) and only changes when the explorer
 	// tables are rebuilt: kept per country and active filter, cleared by clearAreasCache.
 	cacheKey := ""

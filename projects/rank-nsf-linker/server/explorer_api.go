@@ -162,6 +162,25 @@ type exploreUniversity struct {
 	Funders               json.RawMessage `json:"funders,omitempty"` // [{funder, people, active_people}]
 	RecentlyFunded        []recentGrant   `json:"recently_funded,omitempty"`
 	Training              json.RawMessage `json:"training,omitempty"` // running grants that pay PhD students (NIH T32, NSF NRT)
+	People                *peopleStats    `json:"people,omitempty"`   // everyone listed here (the Faculty tab's summary)
+	Fields                []fieldCount    `json:"fields,omitempty"`   // OpenAlex researchers by field
+}
+
+// peopleStats counts everyone listed at a university, not only the faculty list a page loads.
+type peopleStats struct {
+	Funded     int `json:"funded"`     // with an active grant
+	NewLab     int `json:"new_lab"`    // starting a lab, with money
+	Early      int `json:"early"`      // first paper in the last six years
+	CSRankings int `json:"csrankings"` // computer science faculty (a complete list, unlike OpenAlex's)
+}
+
+// fieldCount is how many OpenAlex researchers here work in a field (each person once). OpenAlex
+// researchers are the most-cited up to 20 per field and university, so this says which fields are
+// here, not how big they are.
+type fieldCount struct {
+	Field  string `json:"field"`
+	People int    `json:"people"`
+	Funded int    `json:"funded"`
 }
 
 // recentGrant is a grant that started recently: its holder is likely to be hiring.
@@ -295,6 +314,30 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		return
 	}
 	u.AreaFaculty, u.AreaFunded, u.Funders, u.Training = areaFaculty, areaFunded, funders, training
+	var ps peopleStats
+	if db.QueryRow(`
+		SELECT count(*) FILTER (WHERE active_awards > 0), count(*) FILTER (WHERE new_lab IS NOT NULL),
+		       count(*) FILTER (WHERE first_year >= extract(year FROM current_date)::int - 6),
+		       count(*) FILTER (WHERE source = 'csrankings')
+		FROM explorer_faculty WHERE university = $1`, u.Name).Scan(&ps.Funded, &ps.NewLab, &ps.Early, &ps.CSRankings) == nil {
+		u.People = &ps
+	}
+	if rows, err := db.Query(`
+		SELECT v.field, count(DISTINCT f.name), count(DISTINCT f.name) FILTER (WHERE f.active_awards > 0)
+		FROM explorer_faculty f CROSS JOIN LATERAL unnest(f.areas) a
+		-- a field-level area is named after its field; a subfield names its field in area_field
+		JOIN (SELECT DISTINCT area, COALESCE(area_field, area_name) AS field FROM research_area_venues
+		      WHERE venue ~ '^oas?:') v ON v.area = a
+		WHERE f.university = $1 AND f.source = 'openalex'
+		GROUP BY v.field ORDER BY 2 DESC, 3 DESC, 1`, u.Name); err == nil { // ties (many fields at 20): those with more grants first
+		for rows.Next() {
+			var fc fieldCount
+			if rows.Scan(&fc.Field, &fc.People, &fc.Funded) == nil {
+				u.Fields = append(u.Fields, fc)
+			}
+		}
+		rows.Close()
+	}
 	if rows, err := db.Query(`
 		SELECT d.name, d.title, d.year, d.ref
 		FROM explorer_work_docs d JOIN explorer_faculty f ON f.name = d.name

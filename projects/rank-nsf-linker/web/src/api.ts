@@ -35,6 +35,16 @@ export type UniversityDetail = UniversitySummary & {
   area_faculty: Record<string, number>;
   area_funded: Record<string, number>;
   grant_funders?: string[];
+  // Everyone listed here, counted on the server (not only the faculty list a page loads)
+  people?: {
+    funded: number;
+    new_lab: number;
+    early: number;
+    csrankings: number;
+  };
+  // OpenAlex researchers by field, each person once: the most-cited up to 20 per field, so which
+  // fields are here, not how big they are
+  fields?: { field: string; people: number; funded: number }[];
   doctoral_degrees?: number; // IPEDS, all fields, latest year (US)
   doctoral_year?: number;
   funders?: { funder: string; people: number; active_people: number }[];

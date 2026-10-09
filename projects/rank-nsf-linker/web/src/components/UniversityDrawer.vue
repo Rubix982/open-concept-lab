@@ -10,7 +10,7 @@ import {
 } from "@/api";
 import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
-import { areaIndex, funderName } from "@/store";
+import { areaIndex, areas as allAreas, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 import UniversityGrants from "./UniversityGrants.vue";
@@ -40,10 +40,57 @@ const facFunded = ref(false);
 const facNewLab = ref(false);
 const facSort = ref<"" | "recent" | "funding">("");
 const facName = ref(""); // narrows the loaded list by name, in the browser
+// An area or a field picked from the tab's summary: the list shows only its people
+const facAreas = ref<string[] | null>(null);
+const facAreaLabel = ref("");
+function pickArea(area: string, label: string) {
+  const same = facAreaLabel.value === label;
+  facAreas.value = same ? null : [area];
+  facAreaLabel.value = same ? "" : label;
+}
+const OPENALEX_GROUP_NAMES = new Set([
+  "Sciences",
+  "Engineering",
+  "Medicine",
+  "Social sciences & humanities",
+]);
+function pickField(field: string) {
+  if (facAreaLabel.value === field) {
+    facAreas.value = null;
+    facAreaLabel.value = "";
+    return;
+  }
+  // the field's own area and its subfields
+  facAreas.value = allAreas.value
+    .filter(
+      (a) =>
+        a.field === field ||
+        (!a.field && a.name === field && OPENALEX_GROUP_NAMES.has(a.group)),
+    )
+    .map((a) => a.area);
+  facAreaLabel.value = field;
+}
+function unpick() {
+  facAreas.value = null;
+  facAreaLabel.value = "";
+}
+const fieldsAll = ref(false);
+const fieldList = computed(() =>
+  fieldsAll.value
+    ? (uni.value?.fields ?? [])
+    : (uni.value?.fields ?? []).slice(0, 10),
+);
 const facNarrowed = computed(
-  () => !!facQ.value || facFunded.value || facNewLab.value || !!facName.value,
+  () =>
+    !!facQ.value ||
+    facFunded.value ||
+    facNewLab.value ||
+    !!facName.value ||
+    !!facAreas.value,
 );
 function clearFaculty() {
+  facAreas.value = null;
+  facAreaLabel.value = "";
   facQ.value = "";
   facFunded.value = false;
   facNewLab.value = false;
@@ -57,6 +104,9 @@ watch(
     facNewLab.value = false;
     facSort.value = "";
     facName.value = "";
+    facAreas.value = null;
+    facAreaLabel.value = "";
+    fieldsAll.value = false;
   },
 );
 
@@ -82,7 +132,7 @@ async function loadFaculty() {
   loading.value = true;
   try {
     const people = await api.faculty({
-      areas: props.query.areas,
+      areas: facAreas.value ?? props.query.areas,
       goal: facQ.value,
       university: props.id,
       limit: 150,
@@ -102,7 +152,7 @@ async function loadFaculty() {
 const facultyKey = computed(() =>
   JSON.stringify([
     props.id,
-    props.query.areas,
+    facAreas.value ?? props.query.areas,
     facQ.value,
     facFunded.value,
     facNewLab.value,
@@ -470,21 +520,46 @@ function money(n?: number) {
             </div>
           </dl>
 
-          <section v-if="strengths.length" class="strengths">
+          <section
+            v-if="strengths.length || uni.fields?.length"
+            class="strengths"
+          >
             <h3>Research strengths</h3>
-            <p class="sub">Faculty and researchers listed here, by area</p>
-            <ul>
-              <li v-for="a in strengths" :key="a.area">
-                <span class="s-name">{{ a.name }}</span>
-                <span class="s-track"
-                  ><span
-                    class="s-fill"
-                    :style="{ width: a.width + '%', background: a.color }"
-                  ></span
-                ></span>
-                <span class="num">{{ a.n }}</span>
-              </li>
-            </ul>
+            <template v-if="strengths.length">
+              <p class="sub">
+                {{
+                  uni.fields?.length
+                    ? "Computer science faculty here, by area (the full CSRankings list)"
+                    : "Faculty and researchers listed here, by area"
+                }}
+              </p>
+              <ul>
+                <li v-for="a in strengths" :key="a.area">
+                  <span class="s-name">{{ a.name }}</span>
+                  <span class="s-track"
+                    ><span
+                      class="s-fill"
+                      :style="{ width: a.width + '%', background: a.color }"
+                    ></span
+                  ></span>
+                  <span class="num">{{ a.n }}</span>
+                </li>
+              </ul>
+            </template>
+            <p v-if="uni.fields?.length" class="sub fields-line">
+              {{ strengths.length ? "Also here: researchers" : "Researchers" }}
+              in {{ uni.fields.length }}
+              {{ uni.fields.length === 1 ? "field" : "fields" }}, among them
+              {{
+                uni.fields
+                  .slice(0, 3)
+                  .map((f) => f.field)
+                  .join(", ")
+              }}.
+              <button type="button" class="link" @click="uniTab = 'faculty'">
+                See them by field
+              </button>
+            </p>
           </section>
 
           <section class="funding">
@@ -724,6 +799,94 @@ function money(n?: number) {
                   : "Faculty"
             }}
           </h3>
+          <div v-if="uni.people" class="pglance">
+            <dl class="pstats">
+              <div>
+                <dt>Listed here</dt>
+                <dd>{{ uni.faculty_total.toLocaleString("en-US") }}</dd>
+              </div>
+              <div>
+                <dt>With an active grant</dt>
+                <dd>{{ uni.people.funded.toLocaleString("en-US") }}</dd>
+              </div>
+              <div v-if="uni.people.new_lab">
+                <dt>New lab, funded</dt>
+                <dd>{{ uni.people.new_lab.toLocaleString("en-US") }}</dd>
+              </div>
+              <div
+                v-if="uni.people.csrankings"
+                title="Computer science faculty whose first paper was in the last six years (known only for computer science, from DBLP)"
+              >
+                <dt>Early-career CS faculty</dt>
+                <dd>{{ uni.people.early.toLocaleString("en-US") }}</dd>
+              </div>
+            </dl>
+
+            <template v-if="strengths.length && uni.people.csrankings">
+              <p class="cap">
+                Computer science, by area ({{ uni.people.csrankings }} faculty,
+                the full CSRankings list)
+              </p>
+              <ul class="pbars">
+                <li v-for="a in strengths.slice(0, 6)" :key="a.area">
+                  <button
+                    type="button"
+                    class="pick"
+                    :class="{ on: facAreaLabel === a.name }"
+                    :aria-pressed="facAreaLabel === a.name"
+                    @click="pickArea(a.area, a.name)"
+                  >
+                    {{ a.name }}
+                  </button>
+                  <span class="s-track"
+                    ><span
+                      class="s-fill"
+                      :style="{ width: a.width + '%', background: a.color }"
+                    ></span
+                  ></span>
+                  <span class="num">{{ a.n }}</span>
+                </li>
+              </ul>
+            </template>
+
+            <template v-if="uni.fields?.length">
+              <p class="cap">
+                {{
+                  uni.people.csrankings ? "Other fields here" : "Fields here"
+                }}
+              </p>
+              <p class="chips">
+                <button
+                  v-for="f in fieldList"
+                  :key="f.field"
+                  type="button"
+                  class="chip"
+                  :class="{ on: facAreaLabel === f.field }"
+                  :aria-pressed="facAreaLabel === f.field"
+                  @click="pickField(f.field)"
+                  :title="`${f.people} listed${f.funded ? `, ${f.funded} with an active grant` : ''}`"
+                >
+                  {{ f.field
+                  }}<span v-if="f.people < 20" class="n"> {{ f.people }}</span>
+                </button>
+                <button
+                  v-if="(uni.fields?.length ?? 0) > 10"
+                  type="button"
+                  class="clear"
+                  @click="fieldsAll = !fieldsAll"
+                >
+                  {{ fieldsAll ? "Fewer" : `All ${uni.fields.length}` }}
+                </button>
+              </p>
+              <p class="note">
+                Researchers outside computer science are the most-cited in each
+                field here, up to 20 per field (from OpenAlex): these show which
+                fields are here, not how big they are. Pick one to list its
+                people.
+              </p>
+            </template>
+          </div>
+
           <TabSearch
             v-model="facQ"
             label="Search this university's faculty"
@@ -759,6 +922,16 @@ function money(n?: number) {
                 placeholder="Find a name"
               />
             </label>
+            <span v-if="facAreaLabel" class="picked"
+              >{{ facAreaLabel }}
+              <button
+                type="button"
+                aria-label="Show every field"
+                @click="unpick"
+              >
+                ×
+              </button></span
+            >
             <button
               v-if="facNarrowed"
               type="button"
@@ -818,6 +991,151 @@ function money(n?: number) {
 </template>
 
 <style scoped>
+.fields-line {
+  margin-top: 10px;
+}
+.fields-line .link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pglance {
+  margin: 12px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+}
+.pstats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 0;
+}
+.pstats dt {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.pstats dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pglance .cap {
+  margin: 14px 0 6px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.pbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pbars li {
+  display: grid;
+  grid-template-columns: minmax(0, 12em) 1fr 2.5em;
+  gap: 10px;
+  align-items: center;
+  padding: 2px 0;
+  font-size: var(--t-xs);
+}
+.pbars .num {
+  text-align: right;
+}
+.pick {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pick:hover,
+.pick.on {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pick.on {
+  font-weight: 700;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.chip {
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 3px 10px 2px;
+  font: inherit;
+  font-size: var(--t-xs);
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip .n {
+  margin-left: 5px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover {
+  border-color: var(--ink);
+}
+.chip.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.chip.on .n {
+  color: #fff;
+}
+.chips .clear {
+  border: 0;
+  background: none;
+  padding: 0 4px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pglance .note {
+  margin: 8px 0 0;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+.picked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 1px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+.picked button {
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
 .name-filter {
   font: inherit;
   width: 9em;
