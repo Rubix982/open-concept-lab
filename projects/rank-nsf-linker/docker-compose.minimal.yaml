@@ -10,8 +10,16 @@
 #   docker compose -f docker-compose.minimal.yaml --env-file .env.deploy --profile tunnel up -d
 name: advisor-atlas
 
+# Docker keeps every container's output forever unless capped: Postgres's once reached 414 GB.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   postgres:
+    logging: *logging
     image: cgr.dev/chainguard/postgres:latest
     restart: unless-stopped
     environment:
@@ -27,6 +35,7 @@ services:
       retries: 10
 
   go-server:
+    logging: *logging
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -55,6 +64,7 @@ services:
     command: ["./server/go-server"]
 
   qdrant:
+    logging: *logging
     image: qdrant/qdrant:v1.12.6
     restart: unless-stopped
     volumes:
@@ -67,6 +77,7 @@ services:
           memory: 2G
 
   embedder:
+    logging: *logging
     build:
       context: ./embedder-lite
     restart: unless-stopped
@@ -76,6 +87,7 @@ services:
           memory: 512M
 
   web:
+    logging: *logging
     build:
       context: ./web
       dockerfile: Dockerfile # VITE_MAPBOX_TOKEN from web/.env is built in
@@ -91,6 +103,7 @@ services:
   # protection, caching) without any open port here. In Cloudflare: Zero Trust > Networks > Tunnels,
   # public hostname -> http://web:80. The token goes in .env.deploy (TUNNEL_TOKEN).
   cloudflared:
+    logging: *logging
     image: cloudflare/cloudflared:2026.10.0
     profiles: ["tunnel"]
     restart: unless-stopped

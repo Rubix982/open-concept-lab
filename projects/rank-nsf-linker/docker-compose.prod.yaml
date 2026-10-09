@@ -1,5 +1,13 @@
+# Docker keeps every container's output forever unless capped: Postgres's once reached 414 GB.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   postgres:
+    logging: *logging
     image: cgr.dev/chainguard/postgres
     container_name: pg17-local
     restart: unless-stopped
@@ -38,6 +46,7 @@ services:
       - /tmp
 
   go-server:
+    logging: *logging
     container_name: go-server
     build:
       context: server/
@@ -81,6 +90,7 @@ services:
   # Fetches every source outside CSRankings, NSF and IPEDS for the pipeline (fetcher/app.py).
   # API keys (OPENALEX_API_KEY, CINII_APP_ID) are read from server/.env at run time.
   fetcher:
+    logging: *logging
     container_name: fetcher
     build:
       context: .
@@ -99,6 +109,7 @@ services:
 
   # Vectors for search by meaning; not published outside the compose network.
   qdrant:
+    logging: *logging
     image: qdrant/qdrant:v1.12.6
     container_name: qdrant-local
     volumes:
@@ -110,6 +121,7 @@ services:
           memory: 4G
 
   embedder:
+    logging: *logging
     container_name: embedder
     build:
       context: ./embedder
@@ -126,6 +138,7 @@ services:
           memory: 3G
 
   web:
+    logging: *logging
     container_name: web-ui
     build:
       context: ./web

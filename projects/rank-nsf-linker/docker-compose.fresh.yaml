@@ -9,8 +9,16 @@
 # dataset covers it on a new server, and a second embedder doesn't fit in this machine's memory.
 name: atlas-fresh
 
+# Docker keeps every container's output forever unless capped: Postgres's once reached 414 GB.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   postgres:
+    logging: *logging
     image: host.docker.internal:5128/cgr.dev/chainguard/postgres
     shm_size: 1gb
     environment:
@@ -30,6 +38,7 @@ services:
           memory: 1536M
 
   fetcher:
+    logging: *logging
     image: rank-nsf-linker-fetcher:latest
     volumes:
       - ./fresh/data:/app/data:rw
@@ -45,6 +54,7 @@ services:
           memory: 1536M
 
   go-server:
+    logging: *logging
     image: rank-nsf-linker-go-server:latest
     depends_on:
       postgres:
