@@ -1,10 +1,16 @@
 # UX audit
 
-2026-10-09 18:39 UTC, http://localhost:3000, 64 s. **Nothing flagged.**
+2026-10-09 18:42 UTC, http://localhost:3000, 71 s. **3 findings.**
+
+## slow-request (3)
+
+- home: 4.4 s /api/explorer/faculty?q=robot+learning&limit=60
+- home: 5.8 s /api/explorer/universities?q=robot+learning
+- home: 4.6 s /api/explorer/landscape?q=malaria+vaccine
 
 ## Sites linked to
 
-- www.mapbox.com (30 links)
+- www.mapbox.com (29 links)
 - doi.org (12 links)
 - reporter.nih.gov (7 links)
 - www.hec.gov.pk (6 links)

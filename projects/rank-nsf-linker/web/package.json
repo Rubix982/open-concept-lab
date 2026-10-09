@@ -22,7 +22,7 @@
     "@types/workbox-window": "^4.3.4",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.9.0",
-    "playwright": "^1.64.0",
+    "playwright": "1.64.0",
     "typescript": "~5.9.0",
     "vite": "^7.0.4",
     "vite-plugin-pwa": "^1.2.0",
