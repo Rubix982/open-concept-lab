@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 // Directory and file path constants
 const (
 	// Directories
@@ -30,8 +32,7 @@ const (
 	NSFURLPrefix                     = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
 
 	// Data Fetching Configuration
-	NSFAwardsStartYear = 2010
-	NSFAwardsEndYear   = 2025
+	NSFAwardsStartYear = 2010 // through the current year (nsfAwardsEndYear)
 
 	// IPEDS Data Fetching Configuration
 	IPEDSEarliestYear        = 2002
@@ -95,3 +96,6 @@ const (
 	ENV_QDRANT_HOST       = "QDRANT_HOST"
 	ENV_QDRANT_PORT       = "QDRANT_PORT"
 )
+
+// nsfAwardsEndYear: NSF publishes awards through the current year (the current year's file grows).
+func nsfAwardsEndYear() int { return time.Now().Year() }

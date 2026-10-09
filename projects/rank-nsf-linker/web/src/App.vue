@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import {
-  api,
-  type Faculty,
-  type Grant,
-  type Query,
-  type UniversitySummary,
-} from "@/api";
+import { api, type Faculty, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, funderName, funders, fundersFor } from "@/store";
+import {
+  areaIndex,
+  areas,
+  funderName,
+  funders,
+  fundersFor,
+  shownGrant,
+} from "@/store";
 import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import FundingView from "@/components/FundingView.vue";
+import GrantDialog from "@/components/GrantDialog.vue";
 import ShortlistDialog from "@/components/ShortlistDialog.vue";
 import TourGuide, { type TourStep } from "@/components/TourGuide.vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 import { saved } from "@/shortlist";
 import MapView from "@/components/MapView.vue";
 import UniversityDrawer from "@/components/UniversityDrawer.vue";
@@ -190,8 +193,12 @@ function clearGoal() {
 const universities = ref<UniversitySummary[]>([]);
 const faculty = ref<Faculty[]>([]);
 const loadedGoal = ref<string | null>(null); // the search the current lists were loaded for
-const grants = ref<Grant[]>([]);
-const grantsLoading = ref(false);
+// A different search is loading: the lists on screen belong to the previous one (unrelated people
+// under "Searching for …" read as wrong results), so placeholders replace them. A filter change on
+// the same search keeps the list, dimmed.
+const newSearch = computed(
+  () => loading.value && (query.value.goal ?? "") !== (loadedGoal.value ?? ""),
+);
 const includePastGrants = ref(true); // the Funding tab opens on every grant; a toggle narrows to running
 const loading = ref(true);
 const error = ref("");
@@ -243,30 +250,8 @@ function retry() {
   load();
 }
 
-let grantsInflight: AbortController | null = null;
-async function loadGrants() {
-  grantsInflight?.abort();
-  if (!goal.value) {
-    grants.value = [];
-    return;
-  }
-  grantsInflight = new AbortController();
-  grantsLoading.value = true;
-  try {
-    grants.value = await api.grants(
-      { ...query.value, active: !includePastGrants.value, limit: 40 },
-      grantsInflight.signal,
-    );
-  } catch (e) {
-    if ((e as Error).name !== "AbortError") error.value = (e as Error).message;
-  } finally {
-    grantsLoading.value = false;
-  }
-}
-
 onMounted(loadAreas);
 watch([query, filterParams], load, { immediate: true, deep: true });
-watch([query, includePastGrants], loadGrants, { immediate: true, deep: true });
 
 // ---- derived ----
 // Names for the summary line, with whole fields as one name (see areaChips).
@@ -322,6 +307,15 @@ const shownUniversities = computed(() =>
   ),
 );
 
+// The panel's lists, 20 at a time: the full answer (60 people, 80 universities) ran on and on
+const LIST_STEP = 20;
+const facultyShown = ref(LIST_STEP);
+const universitiesShown = ref(LIST_STEP);
+watch([goal, () => selectedAreas.value.join(","), filterParams, tab], () => {
+  facultyShown.value = LIST_STEP;
+  universitiesShown.value = LIST_STEP;
+});
+
 const rankedUniversities = computed(() =>
   shownUniversities.value
     .filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0))
@@ -348,10 +342,6 @@ const summary = computed(() => {
   const people = goal.value
     ? shownUniversities.value.reduce((s, u) => s + u.goal_matches, 0)
     : shownUniversities.value.reduce((s, u) => s + u.faculty, 0);
-  const g = grants.value.length;
-  const grantText = grantsLoading.value
-    ? ""
-    : `, ${g >= 40 ? "40+" : g} ${includePastGrants.value ? "" : "active "}${g === 1 ? "grant" : "grants"}`;
   const unis = `${n} ${n === 1 ? "university" : "universities"}`;
   // Person-level filters only apply to the faculty list (the university counts aren't filtered by them).
   if (
@@ -367,13 +357,34 @@ const summary = computed(() => {
   }
   if (onlyFunded.value) return `${unis} with faculty holding an active grant`;
   return goal.value
-    ? `${people.toLocaleString()} faculty at ${unis} work on this${grantText}`
+    ? `${people.toLocaleString()} faculty at ${unis} work on this`
     : `${people.toLocaleString()} faculty at ${unis}`;
 });
 
 function openUniversity(id: string | null, professor: string | null = null) {
   openUni.value = id;
   openProf.value = professor;
+}
+
+// From a profile's university name: that university's page, and the map moved to it (also when the
+// profile was opened from the same university, so the map would not move on its own).
+const mapView = ref<InstanceType<typeof MapView> | null>(null);
+function showUniversity(id: string) {
+  openUniversity(id);
+  nextTick(() => mapView.value?.flyToUniversity(id));
+}
+
+// From a grant's team: the person's page, at their university (looked up when not in the list)
+async function openPersonByName(name: string) {
+  const known = faculty.value.find((f) => f.name === name);
+  if (known?.university_id) return openUniversity(known.university_id, name);
+  try {
+    const profile = await api.profile(name);
+    if (profile.faculty.university_id)
+      openUniversity(profile.faculty.university_id, name);
+  } catch {
+    /* the profile will say what went wrong when opened another way */
+  }
 }
 
 function openProfessorFromList(name: string, universityId?: string | null) {
@@ -485,7 +496,7 @@ const tourSteps: TourStep[] = [
   {
     target: ".drawer-slot",
     title: "A university",
-    body: "Its research strengths, PhDs awarded (US), who funds its faculty, funded PhD programmes that pay students directly, and scholarships you can apply for.",
+    body: "In tabs: an overview (research strengths, PhDs awarded in the US, who funds its faculty, funded PhD programmes that pay students directly), its faculty, the grants held there, and scholarships you can apply for.",
     before: () => {
       tab.value = "universities";
       openUniversity(TOUR_UNIVERSITY);
@@ -494,15 +505,32 @@ const tourSteps: TourStep[] = [
   {
     target: ".your-list",
     title: "Over to you",
-    body: "Try your own search. Your saved professors and universities are under “Your list”, and the tour is always under “Tour”.",
+    body: "Try your own search. Your saved professors and universities are under “Your list”, and the tour is always in the (i) menu.",
     before: () => openUniversity(null),
   },
 ];
+// The tour is offered (header button, intro link) until someone has started it once; after that it
+// lives in the (i) menu. Remembered in this browser only.
+const TOUR_KEY = "atlas.tourSeen";
+const tourSeen = ref(false);
+try {
+  tourSeen.value = localStorage.getItem(TOUR_KEY) === "1";
+} catch {
+  /* storage blocked: keep offering it */
+}
 function startTour() {
   shortlist.value?.close();
   about.value?.close();
+  infoOpen.value = false;
   touring.value = true;
+  tourSeen.value = true;
+  try {
+    localStorage.setItem(TOUR_KEY, "1");
+  } catch {
+    /* fine */
+  }
 }
+const infoOpen = ref(false);
 function endTour() {
   touring.value = false;
 }
@@ -513,11 +541,14 @@ function removeArea(...remove: string[]) {
   selectedAreas.value = selectedAreas.value.filter((a) => !remove.includes(a));
 }
 
+// The areas a student can pick; the rest only name a person's tags.
+const pickableAreas = computed(() => areas.value.filter((a) => a.listed));
+
 // Chosen areas as chips: a field whose subfields are all chosen ("All of Neuroscience") is one chip.
 const areaChips = computed(() => {
   const chosen = new Set(selectedAreas.value);
   const byField = new Map<string, string[]>();
-  for (const a of areas.value)
+  for (const a of pickableAreas.value)
     if (a.field)
       byField.set(a.field, [...(byField.get(a.field) ?? []), a.area]);
   const chips: {
@@ -570,22 +601,6 @@ const areaChips = computed(() => {
         />
         <button type="submit">Search</button>
       </form>
-      <button type="button" class="tour-btn" @click="startTour">Tour</button>
-      <button type="button" class="your-list" @click="shortlist?.open()">
-        Your list<template v-if="saved.length"> ({{ saved.length }})</template>
-      </button>
-      <button
-        type="button"
-        class="info"
-        aria-label="About the data"
-        title="About the data"
-        @click="about?.showModal()"
-      >
-        i
-      </button>
-    </header>
-
-    <div class="filters">
       <button
         type="button"
         class="filter-btn"
@@ -594,37 +609,68 @@ const areaChips = computed(() => {
         aria-controls="area-picker"
         @click="pickerOpen = !pickerOpen"
       >
-        Research areas<template v-if="selectedAreas.length">
+        <span class="wide">Research areas</span
+        ><span class="narrow-label">Areas</span
+        ><template v-if="selectedAreas.length">
           ({{ selectedAreas.length }})</template
         >
       </button>
-      <span
-        v-for="c in areaChips"
-        :key="c.key"
-        class="chip"
-        :style="{ '--c': LINE_COLOR[c.group] }"
+      <button
+        v-if="!tourSeen"
+        type="button"
+        class="tour-btn"
+        @click="startTour"
       >
-        {{ c.label }}
+        Tour
+      </button>
+      <button type="button" class="your-list" @click="shortlist?.open()">
+        Your list<template v-if="saved.length"> ({{ saved.length }})</template>
+      </button>
+      <span class="row-break" aria-hidden="true" />
+      <div class="info-wrap">
         <button
           type="button"
-          :aria-label="`Remove ${c.label}`"
-          @click="removeArea(...c.areas)"
+          class="info"
+          aria-label="About Advisor Atlas"
+          title="About Advisor Atlas"
+          :aria-expanded="infoOpen"
+          aria-controls="info-menu"
+          @click="infoOpen = !infoOpen"
         >
-          ×
+          i
         </button>
-      </span>
-      <span v-if="!selectedAreas.length" class="filter-hint">All areas</span>
-      <span v-if="goal" class="goal-chip">
-        Results for <strong>“{{ goal }}”</strong>&nbsp;
-        <button type="button" class="link" @click="clearGoal">
-          Clear search
-        </button>
-      </span>
-    </div>
+        <div
+          v-if="infoOpen"
+          id="info-menu"
+          class="info-menu"
+          @keydown.esc="infoOpen = false"
+        >
+          <button type="button" class="link" @click="startTour">
+            Take the tour
+          </button>
+          <button
+            type="button"
+            class="link"
+            @click="
+              infoOpen = false;
+              about?.showModal();
+            "
+          >
+            About the data
+          </button>
+          <a class="link" href="/overview.html">Project overview</a>
+          <p>
+            Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
+            from 42 funders.
+          </p>
+        </div>
+      </div>
+    </header>
+    <div v-if="infoOpen" class="info-scrim" @click="infoOpen = false" />
 
     <div v-if="pickerOpen" id="area-picker" class="picker-pop">
       <p v-if="!areas.length" class="hint">Loading areas</p>
-      <AreaPicker v-else v-model="selectedAreas" :areas="areas" />
+      <AreaPicker v-else v-model="selectedAreas" :areas="pickableAreas" />
       <div class="picker-actions">
         <button
           v-if="selectedAreas.length"
@@ -646,7 +692,12 @@ const areaChips = computed(() => {
           Search for what you want to research to find professors working on it,
           the grants funding that work, and the universities where they are.
           Narrow by research area at any time.
-          <button type="button" class="link" @click="startTour">
+          <button
+            v-if="!tourSeen"
+            type="button"
+            class="link"
+            @click="startTour"
+          >
             Take the tour
           </button>
         </p>
@@ -669,6 +720,14 @@ const areaChips = computed(() => {
           in {{ selectedNames.join(", ") }}</template
         >.
         <button
+          v-if="goal && tab !== 'funding' && !loading"
+          type="button"
+          class="link funding-link"
+          @click="tab = 'funding'"
+        >
+          See who funds this
+        </button>
+        <button
           v-if="selectedAreas.length || goal"
           type="button"
           class="link"
@@ -677,10 +736,42 @@ const areaChips = computed(() => {
           Clear all
         </button>
       </p>
+      <p
+        v-if="ready && !goal && tab !== 'funding' && funders.totals"
+        class="funding-teaser"
+      >
+        <strong>{{ funders.totals.grants.toLocaleString() }}</strong> research
+        grants from {{ funders.totals.funders }} funders,
+        {{ funders.totals.running.toLocaleString() }} running now.
+        <button type="button" class="link" @click="tab = 'funding'">
+          Explore the funding
+        </button>
+      </p>
+      <p v-if="areaChips.length" class="area-chips">
+        <span
+          v-for="c in areaChips"
+          :key="c.key"
+          class="chip"
+          :style="{ '--c': LINE_COLOR[c.group] }"
+        >
+          {{ c.label }}
+          <button
+            type="button"
+            :aria-label="`Remove ${c.label}`"
+            @click="removeArea(...c.areas)"
+          >
+            ×
+          </button>
+        </span>
+      </p>
       <p v-if="error && ready" class="error">{{ error }}</p>
-      <p v-if="!ready && !error" class="hint">Loading</p>
+      <LoadingRows
+        v-if="!ready && !error && tab !== 'funding'"
+        label="Loading universities and faculty"
+        :rows="6"
+      />
 
-      <div v-if="ready" class="tabs" role="tablist">
+      <div v-if="ready || areas.length" class="tabs" role="tablist">
         <button
           v-for="t in tabs"
           :key="t.id"
@@ -776,8 +867,25 @@ const areaChips = computed(() => {
           start over</button
         >.
       </p>
-      <ol v-if="ready && tab === 'universities'" class="uni-list">
-        <li v-for="u in rankedUniversities" :key="u.id">
+      <LoadingRows
+        v-if="ready && newSearch && tab !== 'funding'"
+        :label="goal ? `Searching for “${goal}”` : 'Loading'"
+        :rows="6"
+      />
+      <LoadingRows
+        v-else-if="ready && loading && tab !== 'funding'"
+        bar
+        :label="goal ? `Searching for “${goal}”` : 'Updating'"
+      />
+      <ol
+        v-if="ready && !newSearch && tab === 'universities'"
+        class="uni-list"
+        :class="{ stale: loading }"
+      >
+        <li
+          v-for="u in rankedUniversities.slice(0, universitiesShown)"
+          :key="u.id"
+        >
           <button
             type="button"
             :class="{ on: u.id === openUni }"
@@ -797,23 +905,42 @@ const areaChips = computed(() => {
           </button>
         </li>
       </ol>
+      <button
+        v-if="
+          ready &&
+          !newSearch &&
+          tab === 'universities' &&
+          rankedUniversities.length > universitiesShown
+        "
+        type="button"
+        class="show-more"
+        @click="universitiesShown += LIST_STEP"
+      >
+        Show
+        {{
+          Math.min(LIST_STEP, rankedUniversities.length - universitiesShown)
+        }}
+        more ({{ rankedUniversities.length - universitiesShown }} left)
+      </button>
 
       <FundingView
-        v-else-if="ready && tab === 'funding'"
+        v-else-if="areas.length && tab === 'funding'"
         :goal="goal"
         :country="country"
         @open-university="openUniversity($event)"
         @open-person="openProfessorFromList"
         @counts="fundingCounts = $event"
-        :grants="grants"
-        :grants-loading="grantsLoading"
         :only-active="!includePastGrants"
         @update:only-active="includePastGrants = !$event"
       />
 
-      <ul v-else-if="ready" class="fac-list">
+      <ul
+        v-else-if="ready && !newSearch && tab === 'faculty'"
+        class="fac-list"
+        :class="{ stale: loading }"
+      >
         <FacultyRow
-          v-for="f in faculty"
+          v-for="f in faculty.slice(0, facultyShown)"
           :key="f.name"
           :person="f"
           :selected-areas="selectedAreas"
@@ -821,6 +948,22 @@ const areaChips = computed(() => {
           @open="openProfessorFromList"
         />
       </ul>
+      <button
+        v-if="
+          ready &&
+          !newSearch &&
+          tab === 'faculty' &&
+          faculty.length > facultyShown
+        "
+        type="button"
+        class="show-more"
+        @click="facultyShown += LIST_STEP"
+      >
+        Show {{ Math.min(LIST_STEP, faculty.length - facultyShown) }} more ({{
+          faculty.length - facultyShown
+        }}
+        left)
+      </button>
       <p
         v-if="ready && !loading && tab === 'faculty' && !faculty.length"
         class="empty"
@@ -838,15 +981,6 @@ const areaChips = computed(() => {
           start over</button
         >.
       </p>
-
-      <footer class="foot">
-        Data from CSRankings, DBLP, OpenAlex, IPEDS and public grant records
-        (NSF, NIH, NSERC, ARC, Marsden, UKRI, ANR, SNSF, NWO, ERC, KAKEN, RGC).
-        <button type="button" class="link" @click="about?.showModal()">
-          About the data
-        </button>
-        <a class="link" href="/overview.html">Project overview</a>
-      </footer>
     </section>
 
     <div class="map-wrap">
@@ -874,6 +1008,7 @@ const areaChips = computed(() => {
           fundingMap ? (goal ? 'grants on this search' : 'grants') : undefined
         "
         :countries="listedCountries"
+        ref="mapView"
         :selected-id="openUni"
         :focus="goalFocus"
         @select="openUniversity($event)"
@@ -904,10 +1039,16 @@ const areaChips = computed(() => {
       :professor="openProf"
       @close="openUniversity(null)"
       @open-professor="openProf = $event"
+      @open-university="showUniversity($event)"
     />
 
     <TourGuide v-if="touring" :steps="tourSteps" @end="endTour" />
 
+    <GrantDialog
+      v-if="shownGrant"
+      @open-person="openPersonByName"
+      @open-university="showUniversity"
+    />
     <ShortlistDialog
       ref="shortlist"
       @open-person="openProfessorFromList"
@@ -924,18 +1065,22 @@ const areaChips = computed(() => {
         papers from the last 10 years.
       </p>
       <p>
-        <strong>Grants</strong> come from public records: NSF (US, 2010–2025),
-        NIH (US, active projects), Canada's NSERC (2022–2024 payments), the
-        Australian Research Council, New Zealand's Marsden Fund, UKRI's EPSRC
-        (UK), ANR (France), the Swiss National Science Foundation, the Dutch
-        Research Council NWO (all fields, since 2016), the European Research
-        Council (Horizon 2020 and Horizon Europe), Japan's KAKEN and Hong Kong's
-        Research Grants Council. Outside the US and the Netherlands, only
-        computing-related grants are loaded. A grant is linked to a professor
-        only when the name matches and the university (or, for NSF, the email
-        domain) confirms it. Funding from industry, other agencies and
-        universities isn't included, so "no active grant" doesn't mean "no
-        funding".
+        <strong>Grants</strong> come from public records of 42 funders. Loaded
+        directly: NSF (US, 2010 onward), NIH (US, active projects), Canada's
+        NSERC, the Australian Research Council, New Zealand's Marsden Fund,
+        UKRI's EPSRC (UK), ANR (France), the Swiss National Science Foundation,
+        the Dutch Research Council NWO, the European Research Council, Japan's
+        KAKEN, Hong Kong's Research Grants Council and Austria's FWF and Korea's
+        NRF. Through OpenAlex: 28 national and provincial funders, among them
+        China's NSFC, Taiwan's NSTC, Canada's CIHR and SSHRC, Brazil's FAPESP,
+        Turkey's TÜBİTAK, Sweden's research councils, Israel's ISF, Wellcome and
+        Pakistan's HEC (NRPU). From KAKEN, ARC, ANR, SNSF, ERC, UKRI, NSERC,
+        Marsden and RGC only computing-related grants are loaded; from the
+        others, every field (grants running in 2015 or later). A grant is linked
+        to a person only when the name matches and the university (or, for NSF,
+        the email domain) confirms it; Chinese names are compared in pinyin.
+        Funding from industry, other agencies and universities isn't included,
+        so "no active grant" doesn't mean "no funding".
       </p>
       <p class="sources">
         Sources: NSF Award Search; Australian Research Council; Royal Society Te
@@ -946,10 +1091,21 @@ const areaChips = computed(() => {
         (NII), with a link to each project. Hong Kong grants: Research Grants
         Council project records (facts only). Canadian grants: NSERC Awards
         Data; contains information licensed under the Open Government Licence –
-        Canada. Dutch grants: NWOpen API (CC0). Researchers outside computer
-        science, Pakistani universities beyond LUMS, and paper abstracts:
-        OpenAlex (CC0); campus locations © OpenStreetMap contributors (ODbL).
-        Scholarships: curated, plus the DAAD scholarship database.
+        Canada. Dutch grants: NWOpen API (CC0). Austrian grants: FWF Open API
+        (CC0). National funders via OpenAlex awards (CC0; each funder's own
+        terms apply). Australian health grants: National Health and Medical
+        Research Council (CC BY 4.0). Flemish grants: FRIS, Flemish Government.
+        Polish grants: Narodowe Centrum Nauki, retrieved October 2026 (dates
+        estimated from NCN's call calendar). Japanese medical grants:
+        出典：国立研究開発法人日本医療研究開発機構 (AMED). Indian grants: Indian
+        Council of Medical Research. Brazilian grants: Biblioteca Virtual da
+        FAPESP. Swedish grants: SweCRIS. Danish grants: Research Portal Denmark.
+        Korean grants: National Research Foundation of Korea, via data.go.kr.
+        Spanish (ISCIII) and Sri Lankan grants are shown as facts and links
+        only. Researchers outside computer science, Pakistani universities
+        beyond LUMS, and paper abstracts: OpenAlex (CC0); campus locations ©
+        OpenStreetMap contributors (ODbL). Scholarships: curated, plus the DAAD
+        scholarship database.
       </p>
       <p>
         <strong>Recent papers</strong> come from
@@ -975,10 +1131,9 @@ const areaChips = computed(() => {
 .shell {
   display: grid;
   grid-template-columns: 1fr var(--drawer-w);
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
     "top top"
-    "filters filters"
     "map side";
   height: 100vh;
   height: 100dvh;
@@ -989,8 +1144,8 @@ const areaChips = computed(() => {
   grid-area: top;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 10px 20px;
+  gap: 14px;
+  padding: 7px 16px;
   background: var(--ink);
   color: #fff;
 }
@@ -1034,7 +1189,6 @@ h1 {
 }
 
 .tour-btn {
-  margin-left: auto;
   border: 0;
   background: none;
   color: #fff;
@@ -1047,6 +1201,7 @@ h1 {
 }
 
 .your-list {
+  margin-left: auto;
   border: 1.5px solid #8794a3;
   border-radius: 999px;
   background: transparent;
@@ -1056,6 +1211,50 @@ h1 {
   padding: 4px 12px 3px;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.row-break {
+  display: none;
+}
+
+.info-wrap {
+  position: relative;
+  flex: none;
+}
+
+.info-menu {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 14px 16px;
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius-box);
+  box-shadow: 0 6px 28px rgba(29, 42, 58, 0.25);
+  font-size: var(--t-xs);
+}
+
+.info-menu .link {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.info-menu p {
+  margin-top: 3px;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+}
+
+.info-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
 }
 
 .info {
@@ -1071,31 +1270,32 @@ h1 {
   flex: none;
 }
 
-.filters {
-  grid-area: filters;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 8px;
-  padding: 8px 20px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--rule);
-  min-height: 46px;
-}
-
 .filter-btn {
   white-space: nowrap;
-  border: 1.5px solid var(--ink);
-  background: var(--surface);
+  border: 1.5px solid #8794a3;
+  color: #fff;
+  background: transparent;
   border-radius: var(--radius-pill);
   padding: 3px 12px 2px;
   font-size: var(--t-xs);
   font-weight: 800;
 }
 
+.filter-btn .narrow-label {
+  display: none;
+}
+
 .filter-btn.on {
-  background: var(--ink);
-  color: #fff;
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.area-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 12px;
 }
 
 .chip {
@@ -1123,28 +1323,10 @@ h1 {
   font-size: 0.85rem;
 }
 
-.filter-hint {
-  font-size: var(--t-xs);
-  color: var(--ink-faint);
-}
-
-.goal-chip {
-  margin-left: auto;
-  font-size: var(--t-xs);
-}
-
-/* On phones the filter row scrolls sideways and "Clear search" ran off its end; the summary's
-   "Clear all" and the search box's × already clear a search there. */
-@media (max-width: 700px) {
-  .goal-chip {
-    display: none;
-  }
-}
-
 .picker-pop {
   position: absolute;
   z-index: 20;
-  top: var(--picker-top, 104px);
+  top: var(--picker-top, 52px);
   left: 12px;
   width: min(720px, calc(100vw - 24px));
   max-height: calc(100vh - 130px);
@@ -1170,6 +1352,21 @@ h1 {
   border-radius: var(--radius-pill);
   padding: 4px 16px 3px;
   font-weight: 700;
+}
+
+.funding-link {
+  margin-right: 10px;
+}
+
+.funding-teaser {
+  margin: -6px 0 14px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.stale {
+  opacity: 0.45;
+  transition: opacity 0.2s;
 }
 
 .results {
@@ -1354,22 +1551,6 @@ h1 {
   color: var(--ink-soft);
 }
 
-.foot {
-  margin-top: auto;
-  padding-top: 18px;
-  font-size: 0.75rem;
-  color: var(--ink-faint);
-}
-
-.foot .link {
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
-.foot .link + .link {
-  margin-left: 12px;
-}
-
 .map-wrap {
   grid-area: map;
   position: relative;
@@ -1528,18 +1709,31 @@ h1 {
 
   .search {
     order: 3;
-    flex-basis: 100%;
+    flex: 1 1 0;
+    min-width: 0;
     max-width: none;
   }
 
-  .filters {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 8px 14px;
+  .row-break {
+    display: block;
+    order: 2;
+    flex-basis: 100%;
+    height: 0;
   }
 
-  .goal-chip {
-    white-space: nowrap;
+  /* Phones: title, tour, list and (i) on the first row; search and areas on the second */
+  .filter-btn {
+    order: 4;
+    flex: none;
+    padding: 6px 12px 5px;
+  }
+
+  .filter-btn .wide {
+    display: none;
+  }
+
+  .filter-btn .narrow-label {
+    display: inline;
   }
 
   .map-wrap {

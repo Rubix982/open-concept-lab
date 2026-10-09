@@ -9,7 +9,10 @@ defineEmits<{ openPerson: [name: string, universityId: string | null] }>();
 
 const status = computed(() => {
   const end = props.grant.ends
-    ? new Date(props.grant.ends).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    ? new Date(props.grant.ends).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      })
     : "";
   return props.grant.active ? `Active until ${end}` : `Ended ${end}`;
 });
@@ -17,16 +20,22 @@ const status = computed(() => {
 
 <template>
   <li class="grant" :class="{ active: grant.active }">
-    <a :href="webUrl(grant.url)" target="_blank" rel="noopener" class="title">{{ grant.title }}</a>
+    <a :href="webUrl(grant.url)" target="_blank" rel="noopener" class="title">{{
+      grant.title
+    }}</a>
     <p class="meta">
-      <strong>{{ status }}</strong>, {{ funderName(grant.funder) }},
-      <span class="num">{{ formatMoney(grant.amount, grant.currency) }}</span>,
-      started {{ formatYear(grant.starts) }}
+      <strong>{{ status }}</strong
+      >, {{ funderName(grant.funder) }},
+      <span class="num">{{ formatMoney(grant.amount, grant.currency) }}</span
+      >, started {{ formatYear(grant.starts) }}
     </p>
     <p v-if="grant.abstract" class="abstract">{{ grant.abstract }}&hellip;</p>
     <ul class="people">
       <li v-for="p in grant.people" :key="p.name">
-        <button type="button" @click="$emit('openPerson', p.name, p.university_id)">
+        <button
+          type="button"
+          @click="$emit('openPerson', p.name, p.university_id)"
+        >
           {{ p.name.replace(/\s+\d{4}$/, "") }}
         </button>
         <span class="uni">{{ p.university }}</span>

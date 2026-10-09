@@ -21,7 +21,7 @@ WHERE array_length(f, 1) >= 1 AND array_length(l, 1) >= 1 AND length(f[1]) > 1;
 
 CREATE TEMP TABLE d_cs ON COMMIT DROP AS
 SELECT name, t[1] AS first_tok, t[array_length(t, 1)] AS last_tok,
-       CASE WHEN pv.canonical IN (SELECT name FROM professors) THEN pv.canonical ELSE x.name END AS person
+       CASE WHEN EXISTS (SELECT 1 FROM professors p WHERE p.name = pv.canonical) THEN pv.canonical ELSE x.name END AS person
 FROM (SELECT DISTINCT a.name, person_name_tokens(a.name) t FROM dblp_affiliations a) x
 LEFT JOIN professor_variants pv USING (name)
 WHERE array_length(t, 1) >= 2 AND length(t[1]) > 1;

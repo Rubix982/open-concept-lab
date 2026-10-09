@@ -1,19 +1,29 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { api, type Grant, type Landscape } from "@/api";
-import GrantRow from "@/components/GrantRow.vue";
-import { formatMoney, formatYear, webUrl } from "@/lines";
-import { funderName } from "@/store";
+import { api, type Landscape } from "@/api";
+import LoadingRows from "@/components/LoadingRows.vue";
+import {
+  KIND_LABEL,
+  approxUSD,
+  formatMoney,
+  grantTitle,
+  grantYears as years,
+  niceName,
+  personName,
+  programName,
+  short,
+  titleLanguage,
+  webUrl,
+} from "@/lines";
+import { funderName, showGrant } from "@/store";
 import { countryName } from "@/countries";
 
 // "Where the money goes" for a search: every grant loaded, whether or not its people are on the map,
-// plus the grants of people in Advisor Atlas closest in meaning (what the Grants tab used to show).
-// Shown a little at a time: one sentence, then short lists that open up.
+// narrowed by funder, kind of grant (new labs, PhD funding) and people in Advisor Atlas; one list of
+// grants, sortable. Shown a little at a time: one sentence, then short lists that open up.
 const props = defineProps<{
   goal: string;
   country?: string;
-  grants: Grant[]; // grants held by people on the map, closest in meaning first
-  grantsLoading: boolean;
   onlyActive: boolean;
 }>();
 const emit = defineEmits<{
@@ -23,9 +33,24 @@ const emit = defineEmits<{
   "update:onlyActive": [value: boolean];
 }>();
 const onlyActive = computed(() => props.onlyActive);
-const showAllHeld = ref(false);
-const heldGrants = computed(() =>
-  showAllHeld.value ? props.grants : props.grants.slice(0, 6),
+const funder = ref("");
+const kind = ref<"" | "new_lab" | "training">("");
+const peopleOnly = ref(false);
+const sortBy = ref<"" | "newest" | "largest">("");
+// The funder menu lists the funders of the unfiltered view, so choosing one doesn't empty the menu.
+const funderOptions = ref<Landscape["funders"]>([]);
+const narrowed = computed(
+  () => !!(funder.value || kind.value || peopleOnly.value),
+);
+function clearNarrowing() {
+  funder.value = "";
+  kind.value = "";
+  peopleOnly.value = false;
+}
+// A new topic or country starts from every funder (a funder chosen before may fund none of it).
+watch(
+  () => [props.goal, props.country ?? ""],
+  () => (funder.value = ""),
 );
 const data = ref<Landscape | null>(null);
 const loading = ref(false);
@@ -36,23 +61,35 @@ const showAllGrants = ref(false);
 let inflight: AbortController | null = null;
 
 watch(
-  () => [props.goal, props.country ?? "", onlyActive.value] as const,
-  async ([goal, country, active]) => {
+  () =>
+    [
+      props.goal,
+      props.country ?? "",
+      onlyActive.value,
+      funder.value,
+      kind.value,
+      peopleOnly.value,
+      sortBy.value,
+    ] as const,
+  async ([goal, country, active, fund, k, people, sort]) => {
     inflight?.abort();
-    inflight = new AbortController();
+    const mine = (inflight = new AbortController());
     loading.value = true;
     error.value = "";
     try {
       data.value = await api.landscape(
-        { goal, country, active },
-        inflight.signal,
+        { goal, country, active, funder: fund, kind: k, people, sort },
+        mine.signal,
       );
+      if (!fund) funderOptions.value = data.value.funders;
       emit("counts", data.value.by_university);
     } catch (e) {
       if ((e as Error).name !== "AbortError")
         error.value = (e as Error).message;
     } finally {
-      loading.value = false;
+      // Only the latest request ends the loading state: a cancelled one finishing after a new one
+      // started left the panel blank (not loading, no data).
+      if (inflight === mine) loading.value = false;
     }
   },
   { immediate: true },
@@ -70,7 +107,8 @@ const maxFunder = computed(() =>
 // CAREER is a signal (see "New lab, funded"), not a topic programme.
 const programs = computed(() =>
   (data.value?.programs ?? [])
-    .filter((p) => !p.name.startsWith("CAREER"))
+    // 3+ grants: one-off NSF programmes ("Global Venture Fund", 1 grant) were noise on other topics
+    .filter((p) => !p.name.startsWith("CAREER") && p.grants >= 3)
     .slice(0, 5),
 );
 const places = computed(
@@ -104,43 +142,74 @@ const trend = computed(() => {
 });
 const trendMax = computed(() => Math.max(1, ...trend.value.map((t) => t.n)));
 
-function niceName(s: string): string {
-  // UKRI lists institutions in capitals; KAKEN adds the Japanese name after " | ".
-  const first = s.split(" | ")[0];
-  // Only longer all-caps names: "OHSU" and "MIT" stay as they are.
-  return first === first.toUpperCase() && first.includes(" ")
-    ? first.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
-    : first;
-}
 const COMPANY =
   /\b(inc|llc|ltd|limited|corp|corporation|gmbh|sas|s\.a\.)\b\.?/i;
 function isCompany(s: string) {
   return COMPANY.test(s);
 }
-function short(name: string) {
-  return name.replace(/\s+\d{4}$/, "");
-}
-function years(g: Landscape["grants"][number]) {
-  return [formatYear(g.starts), formatYear(g.ends)].filter(Boolean).join("–");
-}
 </script>
 
 <template>
   <div class="funding">
-    <label class="toggle"
-      ><input
-        :checked="onlyActive"
-        type="checkbox"
-        @change="
-          emit('update:onlyActive', ($event.target as HTMLInputElement).checked)
-        "
-      />
-      Only grants running now</label
-    >
-    <p v-if="loading && !data" class="hint">Searching every grant loaded</p>
+    <div class="controls">
+      <label class="toggle"
+        ><input
+          :checked="onlyActive"
+          type="checkbox"
+          @change="
+            emit(
+              'update:onlyActive',
+              ($event.target as HTMLInputElement).checked,
+            )
+          "
+        />
+        Only grants running now</label
+      >
+      <label>
+        <span class="visually-hidden">Funder</span>
+        <select v-model="funder">
+          <option value="">Every funder</option>
+          <option
+            v-if="funder && !funderOptions.some((f) => f.funder === funder)"
+            :value="funder"
+          >
+            {{ funderName(funder) }}
+          </option>
+          <option v-for="f in funderOptions" :key="f.funder" :value="f.funder">
+            {{ funderName(f.funder) }} ({{ f.grants.toLocaleString() }})
+          </option>
+        </select>
+      </label>
+      <label>
+        <span class="visually-hidden">Kind of grant</span>
+        <select v-model="kind">
+          <option value="">Every kind of grant</option>
+          <option value="new_lab">New labs (early-career PIs)</option>
+          <option value="training">Funds PhD students</option>
+        </select>
+      </label>
+      <label class="toggle"
+        ><input v-model="peopleOnly" type="checkbox" /> Only people in Advisor
+        Atlas</label
+      >
+      <button
+        v-if="narrowed"
+        type="button"
+        class="link clear"
+        @click="clearNarrowing"
+      >
+        Clear filters
+      </button>
+    </div>
+    <LoadingRows
+      v-if="loading && !data"
+      label="Searching every grant loaded"
+      :rows="5"
+    />
     <p v-else-if="error" class="error">{{ error }}</p>
 
     <template v-else-if="data">
+      <LoadingRows v-if="loading" bar label="Updating" />
       <p class="lead-line" :class="{ dim: loading }">
         <template v-if="!goal">
           <strong>{{ data.total.toLocaleString() }}</strong>
@@ -149,21 +218,39 @@ function years(g: Landscape["grants"][number]) {
             in {{ countryName(country) }}</template
           ><template v-if="!onlyActive"
             >, {{ data.active.toLocaleString() }} running now</template
+          ><template v-if="data.amount_usd"
+            >, ≈ {{ formatMoney(data.amount_usd, "USD") }} in all</template
           >. Search for a topic to see who funds it.
         </template>
         <template v-else-if="!data.total"
-          >No grant mentions “{{ goal }}”. Try fewer or broader words.</template
+          >No grant
+          {{ data.matched === "meaning" ? "is about" : "mentions" }} “{{
+            goal
+          }}”. Try fewer or broader words.</template
         >
         <template v-else>
           <strong>{{ data.total.toLocaleString() }}</strong>
           {{ onlyActive ? "running " : ""
-          }}{{ data.total === 1 ? "grant mentions" : "grants mention" }} “{{
-            goal
-          }}”<template v-if="country"> in {{ countryName(country) }}</template
+          }}{{ data.total === 1 ? "grant" : "grants" }}
+          {{
+            data.matched === "meaning"
+              ? data.total === 1
+                ? "is about"
+                : "are about"
+              : data.total === 1
+                ? "mentions"
+                : "mention"
+          }}
+          “{{ goal }}”<template v-if="country">
+            in {{ countryName(country) }}</template
           ><template v-if="!onlyActive"
             >, {{ data.active.toLocaleString() }} running now</template
-          >. This counts every grant loaded, including those whose researchers
-          aren't in Advisor Atlas.
+          ><template v-if="data.amount_usd"
+            >, ≈ {{ formatMoney(data.amount_usd, "USD") }} in all</template
+          >.<template v-if="!peopleOnly">
+            This counts every grant loaded, including those whose researchers
+            aren't in Advisor Atlas.</template
+          >
         </template>
       </p>
 
@@ -171,7 +258,14 @@ function years(g: Landscape["grants"][number]) {
         <h3>Who pays</h3>
         <ul class="bars">
           <li v-for="f in funders" :key="f.funder">
-            <span class="name">{{ funderName(f.funder) }}</span>
+            <button
+              type="button"
+              class="name link"
+              :title="`Only ${funderName(f.funder)}'s grants`"
+              @click="funder = funder === f.funder ? '' : f.funder"
+            >
+              {{ funderName(f.funder) }}
+            </button>
             <span class="bar"
               ><span
                 :style="{ width: `${(100 * f.grants) / maxFunder}%` }"
@@ -181,7 +275,9 @@ function years(g: Landscape["grants"][number]) {
             <span class="sub">
               {{ f.active }} running<template v-if="f.amount"
                 >, {{ formatMoney(f.amount, f.currency ?? "USD") }} in
-                all</template
+                all<template v-if="approxUSD(f.amount_usd, f.currency)">
+                  ({{ approxUSD(f.amount_usd, f.currency) }})</template
+                ></template
               >
             </span>
           </li>
@@ -203,12 +299,13 @@ function years(g: Landscape["grants"][number]) {
       <section v-if="programs.length">
         <h3>NSF programmes that fund this</h3>
         <p class="hint">
-          As NSF names them. Search a name on nsf.gov for its current call and
-          deadlines.
+          NSF's programmes. Search a programme's name for its current call and
+          deadlines (nsf.gov itself isn't reachable from some countries,
+          Pakistan among them).
         </p>
         <ul class="programs">
           <li v-for="p in programs" :key="p.name">
-            <span>{{ p.name }}</span>
+            <span>{{ programName(p.name) }}</span>
             <span class="sub"
               >{{ p.grants }} {{ p.grants === 1 ? "grant" : "grants" }},
               {{ p.running }} running</span
@@ -282,60 +379,43 @@ function years(g: Landscape["grants"][number]) {
         </button>
       </section>
 
-      <section v-if="goal">
-        <h3>Grants held by people in Advisor Atlas</h3>
-        <p class="hint">
-          Closest in meaning to your search; open a name to see their profile.
-        </p>
-        <p v-if="grantsLoading && !grants.length" class="hint">
-          Searching grants
-        </p>
-        <p v-else-if="!grants.length" class="hint">
-          None {{ onlyActive ? "running " : "" }}match closely. Try other
-          words{{ onlyActive ? ", or include ended grants" : "" }}.
-        </p>
-        <ul class="held">
-          <GrantRow
-            v-for="g in heldGrants"
-            :key="g.id"
-            :grant="g"
-            @open-person="(n, u) => emit('openPerson', n, u)"
-          />
-        </ul>
-        <button
-          v-if="grants.length > 6"
-          type="button"
-          class="link more"
-          @click="showAllHeld = !showAllHeld"
-        >
-          {{ showAllHeld ? "Fewer" : `All ${grants.length}` }}
-        </button>
-      </section>
-
-      <details v-if="data.grants.length" class="more-grants">
-        <summary v-if="goal">
-          More grants that mention “{{ goal }}”, including researchers not in
-          Advisor Atlas
-        </summary>
-        <summary v-else>The newest grants</summary>
-        <p v-if="goal" class="hint">
-          Matched on words, closest first, favouring recent ones.
-        </p>
+      <section v-if="data.grants.length" class="grant-list">
+        <div class="list-head">
+          <h3>
+            {{ goal ? `Grants about “${goal}”` : "Grants" }}
+          </h3>
+          <label>
+            <span class="visually-hidden">Sort grants</span>
+            <select v-model="sortBy">
+              <option value="">{{ goal ? "Best match" : "Newest" }}</option>
+              <option value="newest">Newest</option>
+              <option value="largest">Largest</option>
+            </select>
+          </label>
+        </div>
         <ul class="grants">
           <li v-for="g in grants" :key="g.funder + g.id">
-            <a
-              v-if="webUrl(g.url)"
-              :href="webUrl(g.url)"
-              target="_blank"
-              rel="noopener"
-              class="title"
-              >{{ g.title }}</a
+            <button
+              type="button"
+              class="link title"
+              title="Read the grant: what it funds, who is on it"
+              @click="showGrant(g.funder, g.id)"
             >
-            <span v-else class="title">{{ g.title }}</span>
+              {{ grantTitle(g.title) }}
+            </button>
             <p class="sub">
+              <span v-if="g.signal" class="kind" :class="g.signal">{{
+                KIND_LABEL[g.signal]
+              }}</span>
+              <span v-if="titleLanguage(g.title)" class="lang">{{
+                titleLanguage(g.title)
+              }}</span>
               {{ funderName(g.funder)
               }}<template v-if="g.amount"
-                >, {{ formatMoney(g.amount, g.currency ?? "USD") }}</template
+                >, {{ formatMoney(g.amount, g.currency ?? "USD")
+                }}<template v-if="approxUSD(g.amount_usd, g.currency)">
+                  ({{ approxUSD(g.amount_usd, g.currency) }})</template
+                ></template
               >, {{ years(g) }}
             </p>
             <p v-if="g.lead" class="sub">
@@ -346,10 +426,10 @@ function years(g: Landscape["grants"][number]) {
                 @click="emit('openPerson', g.profile, g.university_id)"
               >
                 {{ short(g.profile) }}</button
-              ><span v-else>{{ g.lead }}</span
+              ><span v-else>{{ personName(g.lead) }}</span
               ><template v-if="g.institution"
                 >, {{ niceName(g.institution) }}</template
-              >
+              ><span v-if="g.profile" class="in-atlas">in Advisor Atlas</span>
             </p>
             <details v-if="g.snippet">
               <summary>Summary</summary>
@@ -365,12 +445,25 @@ function years(g: Landscape["grants"][number]) {
         >
           {{ showAllGrants ? "Fewer grants" : `Show ${data.grants.length}` }}
         </button>
-      </details>
+      </section>
+      <p v-else-if="narrowed" class="hint">
+        No grant matches these filters.
+        <button type="button" class="link" @click="clearNarrowing">
+          Clear filters
+        </button>
+      </p>
 
       <p class="hint coverage">
-        Matched on the words in each grant's title and summary. Outside the US
-        and the Netherlands only computing grants are loaded; NIH lists running
-        projects only.
+        {{
+          data.matched === "meaning"
+            ? "Matched on the meaning of each grant's title and summary, and on its words."
+            : "Matched on the words in each grant's title and summary."
+        }}
+        From KAKEN, ARC, ANR, SNSF, ERC, UKRI (EPSRC), NSERC, Marsden and RGC
+        only computing grants are loaded; the other funders' cover every field.
+        NIH lists running projects only, NSFC's list ends in 2021, and 28
+        funders come through OpenAlex. Dollar amounts are approximate, at fixed
+        exchange rates.
       </p>
     </template>
   </div>
@@ -434,6 +527,8 @@ h3 {
 
 .bars .name {
   font-weight: 700;
+  text-align: left;
+  padding: 0;
 }
 
 .bar {
@@ -504,16 +599,82 @@ h3 {
   border-bottom: 1px solid var(--rule);
 }
 
-.held {
-  margin: 0;
-  padding: 0;
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
 }
 
-.more-grants > summary {
-  font-size: var(--t-sm);
+.controls .toggle {
+  margin-top: 0;
+}
+
+.controls select,
+.list-head select {
+  font: inherit;
+  font-size: var(--t-xs);
+  padding: 4px 6px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+  max-width: 100%;
+}
+
+.controls .clear {
+  font-size: var(--t-xs);
+}
+
+.list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 8px;
+}
+
+.list-head h3 {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.list-head label {
+  padding-bottom: 5px;
+}
+
+.kind,
+.lang,
+.in-atlas {
+  display: inline-block;
+  font-size: 0.72rem;
   font-weight: 700;
-  cursor: pointer;
-  padding: 6px 0;
+  border-radius: var(--radius-pill);
+  padding: 0 7px;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+
+.kind.new_lab {
+  background: #e3f1e6;
+  color: #1f6b35;
+}
+
+.kind.training {
+  background: #e6eefb;
+  color: #24508f;
+}
+
+.lang {
+  background: #f1efe8;
+  color: var(--ink-soft);
+}
+
+.in-atlas {
+  margin: 0 0 0 6px;
+  background: #eef0f3;
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 .places li {

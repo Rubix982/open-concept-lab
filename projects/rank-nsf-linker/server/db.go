@@ -217,6 +217,14 @@ func populatePostgresFromCSVs(mainCtx *colly.Context) error {
 		logger.Infof(mainCtx, "📁 Processing CSV: '%s' using primary key: '%s' with table name: '%s'",
 			csvName, primaryKey, tableName)
 
+		// CSRankings stopped publishing some files (geolocation.csv): a fresh server has only the
+		// committed backup/ copy, which then serves as the original.
+		if _, err := os.Stat(originalPath); os.IsNotExist(err) {
+			if _, err := os.Stat(backupPath); err == nil {
+				logger.Warnf(mainCtx, "⚠️ %s not downloaded; using the committed copy in backup/", csvName)
+				originalPath = backupPath
+			}
+		}
 		original, headers, err := readCSVAsMap(mainCtx, originalPath, primaryKey)
 		if err != nil {
 			logger.Errorf(mainCtx, "❌ Failed to read original CSV: %v", err)
@@ -421,7 +429,7 @@ func populatePostgresFromNsfJsons(mainCtx *colly.Context) error {
 
 	var wg sync.WaitGroup
 
-	for year := NSFAwardsEndYear; year >= NSFAwardsStartYear; year-- {
+	for year := nsfAwardsEndYear(); year >= NSFAwardsStartYear; year-- {
 		wg.Add(1)
 
 		go func(year int) {
@@ -1424,6 +1432,10 @@ func executeWorkflows(mainCtx *colly.Context) {
 	runPipeline(mainCtx, fromStep)
 }
 
+// pipelineRunning is true while this process runs the pipeline. The stored status can't say so: a
+// restart mid-run, or a run stopped early, leaves it "in-progress", which blocked the scheduler.
+var pipelineRunning atomic.Bool
+
 type pipelineStep struct {
 	name string
 	fn   func(*colly.Context) error
@@ -1459,6 +1471,7 @@ func pipelineSteps() []pipelineStep {
 		{"Build Explorer Tables", buildExplorerTables},
 		{"Fetch OpenAlex Data", fetchOpenAlexSources},
 		{"Embed Explorer Work", embedExplorerWork},
+		{"Embed Grants", embedGrants},
 	}
 }
 
@@ -1484,6 +1497,11 @@ func runPipeline(mainCtx *colly.Context, fromStep int) {
 		logger.Infof(mainCtx, "⏩ Rerunning from step %d '%s'", fromStep, steps[fromStep-1].name)
 	}
 
+	if !pipelineRunning.CompareAndSwap(false, true) {
+		logger.Warnf(mainCtx, "⚠️ a pipeline run is already going; not starting another")
+		return
+	}
+	defer pipelineRunning.Store(false)
 	logger.Infof(mainCtx, "🚀 Starting Postgres population pipeline with %d steps...", totalSteps)
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_IN_PROGRESS))
 
@@ -1499,6 +1517,7 @@ func runPipeline(mainCtx *colly.Context, fromStep int) {
 	for i, step := range steps {
 		if toStep > 0 && i+1 > toStep {
 			logger.Infof(mainCtx, "⏸️  PIPELINE_TO_STEP=%d: stopping before step %d '%s'", toStep, i+1, step.name)
+			markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), "stopped")
 			return
 		}
 		stepKey := fmt.Sprintf("step_%02d_%s", i+1, step.name)

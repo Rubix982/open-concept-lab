@@ -207,3 +207,12 @@ out
 
 # Deck GL
 deck.gl/**/**
+
+# Golden datasets (Postgres dump + Qdrant snapshot, several GB; see server/scripts/golden)
+/golden/
+# Fresh-server test stack's data (make fresh-test)
+/fresh/
+
+# Deployment secrets (DEPLOY.md)
+.env.deploy
+docs/ux-audit/screens/

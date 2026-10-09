@@ -3,6 +3,9 @@
 A small HTTP service on :8090, in its own container so the Go server image stays small:
     POST /run?group=<group>[&force=1]   start every source in the group that isn't fresh or running
     GET  /status?group=<group>          the group's sources and their state
+The groups in FETCH_DAEMON_GROUPS (default "openalex") also run on their own, as a daemon: a source
+is started whenever it is due, and one that stopped at a daily allowance resumes after the reset,
+day after day, until it completes; the pipeline loads what has arrived.
 Each source is one script (server/scripts/...). A source is skipped while its last complete run is
 younger than its max age; a partial run (exit 75: a daily allowance spent) or a failed one runs
 again next time. State and the last run's log are kept in data/fetch_state/<source>.json / .log,
@@ -11,6 +14,7 @@ replace files when they finish.
 Standard library only.
 """
 
+import hashlib
 import json
 import os
 import subprocess
@@ -41,11 +45,22 @@ SOURCES = {
     "rgc": ("base", "grants/rgc.py", [], 30, 12),
     "nserc": ("base", "grants/nserc.py", [], 30, 2),
     "nwo": ("base", "grants/nwo.py", [], 14, 4),
+    "fwf": ("base", "grants/fwf.py", [], 30, 1),
+    "nrf": ("base", "grants/nrf_kr.py", [], 30, 1),
     "daad": ("base", "scholarships/daad.py", [], 7, 1),
     "dblp": ("base", "dblp/fetch.py", [], 30, 3),
+    "openalex-awards": ("base", "grants/openalex_awards.py", [], 30, 6),  # national funders, from the CC0 snapshot
     # OpenAlex: inputs exported by the pipeline after the explorer tables are built
     "openalex-works": ("openalex", "openalex/works.py", ["--max-calls", "4000"], 14, 8),
-    "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "4000"], 30, 8),
+    "openalex-fields": ("openalex", "openalex/fields.py", ["works", "--max-calls", "5000"], 30, 8),
+}
+
+# Files a source reads (relative to the app root): when they change, the source is due again however
+# fresh its last run (more universities to find researchers at, more DOIs to look up).
+INPUTS = {
+    "openalex-works": ["data/openalex/dois.txt"],
+    "openalex-fields": ["data/openalex/universities.csv", "backup/extra_universities.csv",
+                        "backup/openalex_institutions.csv"],
 }
 
 lock = threading.Lock()
@@ -73,14 +88,48 @@ def save(name: str, state: dict) -> None:
     tmp.replace(STATE / f"{name}.json")
 
 
+def inputs_hash(name: str) -> str:
+    h = hashlib.sha1()
+    for rel in INPUTS.get(name, []):
+        try:
+            h.update((ROOT / rel).read_bytes())
+        except OSError:
+            h.update(b"-")
+    return h.hexdigest()
+
+
 def is_fresh(name: str) -> bool:
     state = load(name)
     max_age = SOURCES[name][3]
+    if name in INPUTS and state.get("inputs") != inputs_hash(name):
+        return False
     return state.get("status") == "ok" and time.time() - state.get("finished_ts", 0) < max_age * DAY
+
+
+def capped(args: list[str]) -> list[str]:
+    """FETCH_MAX_CALLS lowers every --max-calls (a second stack sharing the API key: the fresh-server
+    test), never raises it."""
+    cap = os.environ.get("FETCH_MAX_CALLS", "").strip()
+    if not cap.isdigit() or "--max-calls" not in args:
+        return args
+    i = args.index("--max-calls") + 1
+    return [*args[:i], str(min(int(args[i]), int(cap))), *args[i + 1:]]
+
+
+# The OpenAlex sources share one daily allowance (10,000 calls), split 5,000 / 4,000 between them. When
+# the DOI lookup (openalex-works) is complete its share would go unused, so the researcher fetch
+# takes it: one day instead of two for a large batch of new researchers.
+SHARE_WITH = {"openalex-fields": ("openalex-works", 9500)}
 
 
 def run(name: str) -> None:
     group, script, args, _max_age, hours = SOURCES[name]
+    if name in SHARE_WITH and "--max-calls" in args:
+        other, cap = SHARE_WITH[name]
+        if is_fresh(other):
+            i = args.index("--max-calls") + 1
+            args = [*args[:i], str(cap), *args[i + 1:]]
+    args = capped(args)
     state = load(name)
     state.update(name=name, group=group, status="queued")
     save(name, state)
@@ -91,7 +140,7 @@ def run(name: str) -> None:
 
 
 def _run(name: str, group: str, script: str, args: list[str], hours: float, state: dict) -> None:
-    state.update(status="running", started=now(), started_ts=time.time())
+    state.update(status="running", started=now(), started_ts=time.time(), inputs=inputs_hash(name))
     save(name, state)
     log = STATE / f"{name}.log"
     code: int | str
@@ -110,14 +159,53 @@ def _run(name: str, group: str, script: str, args: list[str], hours: float, stat
     save(name, state)
 
 
+def start_one(name: str) -> None:
+    """Start a source unless it is already running (call with lock held)."""
+    if name in running:
+        return
+    t = threading.Thread(target=run, args=(name,), daemon=True)
+    running[name] = t
+    t.start()
+
+
 def start(group: str, force: bool) -> None:
+    """A daemon group follows the daemon's rules (an allowance spent today waits for the reset);
+    others start whenever they aren't fresh."""
+    daemon_groups = os.environ.get("FETCH_DAEMON_GROUPS", "openalex").split(",")
     with lock:
         for name, (g, *_rest) in SOURCES.items():
-            if g != group or name in running or (not force and is_fresh(name)):
+            if g != group:
                 continue
-            t = threading.Thread(target=run, args=(name,), daemon=True)
-            running[name] = t
-            t.start()
+            if force or (due(name, time.time()) if g in daemon_groups else not is_fresh(name)):
+                start_one(name)
+
+
+def due(name: str, now: float) -> bool:
+    """For the daemon: a source to start now. Not when fresh; not when it stopped at a daily allowance
+    today (it resumes after the reset at 00:00 UTC, with ten minutes' grace); not within an hour of a
+    failure (a broken source shouldn't run every few minutes)."""
+    if is_fresh(name):
+        return False
+    state = load(name)
+    midnight = now - now % DAY
+    if state.get("status") == "partial" and (state.get("finished_ts", 0) >= midnight or now < midnight + 600):
+        return False
+    if state.get("status") == "failed" and now - state.get("finished_ts", 0) < 3600:
+        return False  # an hour: most failures are a network blip; a broken source still won't spin
+    return True
+
+
+def daemon(groups: list[str]) -> None:
+    """Keeps long fetches going on their own: OpenAlex's spans several daily allowances, so instead of
+    waiting on a pipeline run it resumes every day; the pipeline loads whatever has arrived
+    (server/fetch.go). Checks every ten minutes."""
+    while True:
+        with lock:
+            for name, (g, *_rest) in SOURCES.items():
+                if g in groups and name not in running and due(name, time.time()):
+                    print(f"{now()} daemon: starting {name}", flush=True)
+                    start_one(name)
+        time.sleep(600)
 
 
 def status(group: str) -> dict:
@@ -170,5 +258,8 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     STATE.mkdir(parents=True, exist_ok=True)
-    print(f"fetcher on :8090, {len(SOURCES)} sources", flush=True)
+    groups = [g for g in os.environ.get("FETCH_DAEMON_GROUPS", "openalex").split(",") if g]
+    if groups:
+        threading.Thread(target=daemon, args=(groups,), daemon=True).start()
+    print(f"fetcher on :8090, {len(SOURCES)} sources; daemon for: {', '.join(groups) or 'none'}", flush=True)
     ThreadingHTTPServer(("0.0.0.0", 8090), Handler).serve_forever()

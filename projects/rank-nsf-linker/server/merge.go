@@ -45,7 +45,7 @@ SELECT u.institution,
        u.institution_type,
        institution_key(u.institution) AS own_key,
        institution_key(institution_parent_name(u.institution)) AS parent_key,
-       u.institution IN (SELECT affiliation FROM professor_areas) AS is_cs,
+       EXISTS (SELECT 1 FROM professor_areas pa WHERE pa.affiliation = u.institution) AS is_cs,
        u.latitude IS NOT NULL AS has_coords,
        COALESCE(n.n_awards, 0) AS n_awards,
        NULL::text AS group_key

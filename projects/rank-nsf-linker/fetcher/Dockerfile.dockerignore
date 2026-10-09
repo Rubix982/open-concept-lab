@@ -2,6 +2,7 @@
 *
 !server/scripts/**
 !fetcher/app.py
+!fetcher/requirements.txt
 server/scripts/**/__pycache__
 server/scripts/ipeds/ipeds_data
 server/scripts/ipeds/ipeds_cache

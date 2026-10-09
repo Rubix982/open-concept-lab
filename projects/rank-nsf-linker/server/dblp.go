@@ -211,7 +211,8 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback()
-	if _, err := tx.Exec(`TRUNCATE dblp_papers`); err != nil {
+	// DELETE, not TRUNCATE: profiles keep reading the old rows until this transaction commits
+	if _, err := tx.Exec(`DELETE FROM dblp_papers`); err != nil {
 		return fmt.Errorf("failed to clear dblp_papers: %w", err)
 	}
 	stmt, err := tx.Prepare(pq.CopyIn("dblp_papers", "name", "dblp_key", "title", "venue", "year", "url"))
@@ -247,7 +248,7 @@ func loadDblpPapers(mainCtx *colly.Context) error {
 	if err := stmt.Close(); err != nil {
 		return fmt.Errorf("failed to close COPY: %w", err)
 	}
-	if _, err := tx.Exec(`TRUNCATE dblp_affiliations`); err != nil {
+	if _, err := tx.Exec(`DELETE FROM dblp_affiliations`); err != nil {
 		return fmt.Errorf("failed to clear dblp_affiliations: %w", err)
 	}
 	astmt, err := tx.Prepare(pq.CopyIn("dblp_affiliations", "name", "affiliation", "former"))

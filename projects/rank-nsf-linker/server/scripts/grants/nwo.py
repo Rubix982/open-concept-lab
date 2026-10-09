@@ -16,6 +16,7 @@ from datetime import date
 import urllib.request
 
 from common import DATA, write
+from fetchlib import refreshed_cache
 
 CACHE = DATA / "nwo"
 API = "https://nwopen-api.nwo.nl/NWOpen-API/api/Projects"
@@ -58,6 +59,13 @@ def page(n: int) -> dict:
 
 
 def main() -> None:
+    # Pages only make sense together (a search session's results; pages that shift as projects
+    # are added): refreshed whole every 13 days, the previous copy kept until that succeeds.
+    with refreshed_cache(CACHE, 13):
+        fetch_all()
+
+
+def fetch_all() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     first = page(1)
     pages = first["meta"]["pages"]

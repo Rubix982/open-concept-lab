@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	colly "github.com/gocolly/colly/v2"
@@ -52,21 +53,39 @@ func qdrantURL() string {
 	return "http://qdrant-local:6333"
 }
 
+// postJSON sends a JSON request to the embedder or Qdrant. A dropped connection or a 5xx is tried
+// again (three attempts): every call here is idempotent (searches, upserts by id, payload writes,
+// deletes), and one "use of closed network connection" used to fail a twelve-hour embedding run.
 func postJSON(method, url string, body any, out any) error {
-	var buf bytes.Buffer
+	var payload []byte
 	if body != nil {
+		var buf bytes.Buffer
 		if err := json.NewEncoder(&buf).Encode(body); err != nil {
 			return err
 		}
+		payload = buf.Bytes()
 	}
-	req, err := http.NewRequest(method, url, &buf)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := semanticClient.Do(req)
-	if err != nil {
-		return err
+	var resp *http.Response
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequest(method, url, bytes.NewReader(payload))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		resp, err = semanticClient.Do(req)
+		if err == nil && resp.StatusCode < 500 {
+			break
+		}
+		if attempt == 2 {
+			if err != nil {
+				return err
+			}
+			break
+		}
+		if err == nil {
+			resp.Body.Close()
+		}
+		time.Sleep(time.Duration(2+3*attempt) * time.Second)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
@@ -278,7 +297,10 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	}
 	if err := postJSON(http.MethodGet, qdrantURL()+"/collections/"+workCollection, nil, &exists); err != nil {
 		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection,
-			map[string]any{"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine"},
+			map[string]any{
+				// full vectors on disk (memory-mapped); searches use the int8 copies kept in RAM. With
+				// ~2M full vectors in RAM Qdrant outgrew its 4 GB limit and was killed mid-embedding.
+				"vectors": map[string]any{"size": embeddingDim, "distance": "Cosine", "on_disk": true},
 				// int8 copies kept in RAM: the first search on a cold, memory-mapped index took seconds
 				"quantization_config": map[string]any{"scalar": map[string]any{"type": "int8", "quantile": 0.99, "always_ram": true}}},
 			nil); err != nil {
@@ -340,6 +362,83 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	}
 	inQdrant = nil
 
+	// record remembers what Qdrant holds; texts is nil for a payload-only refresh (text unchanged).
+	record := func(ids, hashes, docHashes, texts []string) error {
+		if texts == nil {
+			_, err := db.Exec(`
+				INSERT INTO explorer_embedded (id, payload_hash, doc_hash)
+				SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[])
+				ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash`,
+				pq.Array(ids), pq.Array(hashes), pq.Array(docHashes))
+			return err
+		}
+		_, err := db.Exec(`
+			INSERT INTO explorer_embedded (id, payload_hash, doc_hash, text_hash)
+			SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[])
+			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash,
+			  text_hash = EXCLUDED.text_hash`,
+			pq.Array(ids), pq.Array(hashes), pq.Array(docHashes), pq.Array(texts))
+		return err
+	}
+
+	// Three batches in flight: the embedder uses a few cores per request, so this about doubles
+	// throughput (as for the grant index). The first error stops the rest.
+	start, lastLog := time.Now(), time.Now()
+	var doneCount atomic.Int64
+	var failMu sync.Mutex
+	var failed error
+	jobs := make(chan []doc)
+	var wg sync.WaitGroup
+	for w := 0; w < 3; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for batch := range jobs {
+				failMu.Lock()
+				stop := failed != nil
+				failMu.Unlock()
+				if stop {
+					continue
+				}
+				err := func() error {
+					texts := make([]string, len(batch))
+					for j, d := range batch {
+						texts[j] = d.text
+					}
+					vectors, err := embedTexts(texts)
+					if err != nil {
+						return fmt.Errorf("failed to embed batch: %w", err)
+					}
+					points := make([]map[string]any, len(batch))
+					ids := make([]string, len(batch))
+					hashes := make([]string, len(batch))
+					textHashes := make([]string, len(batch))
+					docHashes := make([]string, len(batch))
+					for j, d := range batch {
+						points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
+						ids[j], hashes[j], textHashes[j], docHashes[j] = d.id, d.payload.hash(), textHash(d.text), d.payload.docHash()
+					}
+					if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
+						map[string]any{"points": points}, nil); err != nil {
+						return fmt.Errorf("failed to upsert points: %w", err)
+					}
+					if err := record(ids, hashes, docHashes, textHashes); err != nil {
+						return fmt.Errorf("failed to record embedded points: %w", err)
+					}
+					return nil
+				}()
+				if err != nil {
+					failMu.Lock()
+					if failed == nil {
+						failed = err
+					}
+					failMu.Unlock()
+					continue
+				}
+				doneCount.Add(int64(len(batch)))
+			}
+		}()
+	}
 	rows, err = db.Query(`
 		SELECT md5(d.name || '|' || d.kind || '|' || d.ref)::uuid::text,
 		       d.name, d.kind, d.ref, COALESCE(d.title, ''), d.year, d.url, f.areas, COALESCE(u.id, ''),
@@ -360,16 +459,32 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to read work docs: %w", err)
 	}
-	// Decide per row while reading, keeping only the docs that need work: holding every doc's text
-	// (and its title-only base text) at once ran the container out of memory at ~830k docs.
+	// Decide per row while reading, and embed while reading: holding every doc's text ran the
+	// container out of memory at ~830k docs, and holding just the new ones did at ~190k researchers.
 	seen := make(map[string]struct{}, len(held))
 	pending := map[string]workPayload{} // payloads to compare with Qdrant before rewriting
-	var toEmbed, toRepayload []doc
+	var toRepayload []doc
+	var batch []doc
+	toEmbed := 0
+	send := func() {
+		if len(batch) == 0 {
+			return
+		}
+		jobs <- batch
+		batch = nil
+		// Progress about once a minute, whatever the batch size.
+		if time.Since(lastLog) > time.Minute {
+			lastLog = time.Now()
+			logger.Infof(mainCtx, "🧠 Embedded %d of %d found so far (%s)", doneCount.Load(), toEmbed, time.Since(start).Round(time.Second))
+		}
+	}
 	for rows.Next() {
 		var d doc
 		if err := rows.Scan(&d.id, &d.payload.Name, &d.payload.Kind, &d.payload.Ref, &d.payload.Title, &d.payload.Year,
 			&d.payload.URL, pq.Array(&d.payload.Areas), &d.payload.UniversityID, &d.baseText, &d.text); err != nil {
 			rows.Close()
+			close(jobs)
+			wg.Wait()
 			return err
 		}
 		seen[d.id] = struct{}{}
@@ -379,7 +494,16 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		d.baseText = ""
 		switch {
 		case !ok || textChanged:
-			toEmbed = append(toEmbed, d)
+			failMu.Lock()
+			stop := failed != nil
+			failMu.Unlock()
+			if !stop {
+				toEmbed++
+				batch = append(batch, d)
+				if len(batch) == embedBatchSize {
+					send()
+				}
+			}
 		case h.payloadHash != d.payload.hash():
 			d.text = ""
 			toRepayload = append(toRepayload, d)
@@ -387,8 +511,17 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		}
 	}
 	rows.Close()
+	send()
+	close(jobs)
+	wg.Wait()
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("failed to read work docs: %w", err)
+	}
+	if failed != nil {
+		return failed
+	}
+	if toEmbed > 0 {
+		logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", doneCount.Load(), toEmbed, time.Since(start).Round(time.Second))
 	}
 
 	var toDelete []string
@@ -433,59 +566,8 @@ func embedExplorerWork(mainCtx *colly.Context) error {
 		}
 	}
 
-	logger.Infof(mainCtx, "🧠 Semantic index: %d to embed, %d payloads to refresh, %d to delete (%d held)",
-		len(toEmbed), len(toRepayload), len(toDelete), len(held))
-
-	// record remembers what Qdrant holds; texts is nil for a payload-only refresh (text unchanged).
-	record := func(ids, hashes, docHashes, texts []string) error {
-		if texts == nil {
-			_, err := db.Exec(`
-				INSERT INTO explorer_embedded (id, payload_hash, doc_hash)
-				SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[])
-				ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash`,
-				pq.Array(ids), pq.Array(hashes), pq.Array(docHashes))
-			return err
-		}
-		_, err := db.Exec(`
-			INSERT INTO explorer_embedded (id, payload_hash, doc_hash, text_hash)
-			SELECT unnest($1::uuid[]), unnest($2::text[]), unnest($3::text[]), unnest($4::text[])
-			ON CONFLICT (id) DO UPDATE SET payload_hash = EXCLUDED.payload_hash, doc_hash = EXCLUDED.doc_hash,
-			  text_hash = EXCLUDED.text_hash`,
-			pq.Array(ids), pq.Array(hashes), pq.Array(docHashes), pq.Array(texts))
-		return err
-	}
-
-	start := time.Now()
-	for i := 0; i < len(toEmbed); i += embedBatchSize {
-		batch := toEmbed[i:min(i+embedBatchSize, len(toEmbed))]
-		texts := make([]string, len(batch))
-		for j, d := range batch {
-			texts[j] = d.text
-		}
-		vectors, err := embedTexts(texts)
-		if err != nil {
-			return fmt.Errorf("failed to embed batch: %w", err)
-		}
-		points := make([]map[string]any, len(batch))
-		ids := make([]string, len(batch))
-		hashes := make([]string, len(batch))
-		textHashes := make([]string, len(batch))
-		docHashes := make([]string, len(batch))
-		for j, d := range batch {
-			points[j] = map[string]any{"id": d.id, "vector": vectors[j], "payload": d.payload}
-			ids[j], hashes[j], textHashes[j], docHashes[j] = d.id, d.payload.hash(), textHash(d.text), d.payload.docHash()
-		}
-		if err := postJSON(http.MethodPut, qdrantURL()+"/collections/"+workCollection+"/points?wait=true",
-			map[string]any{"points": points}, nil); err != nil {
-			return fmt.Errorf("failed to upsert points: %w", err)
-		}
-		if err := record(ids, hashes, docHashes, textHashes); err != nil {
-			return fmt.Errorf("failed to record embedded points: %w", err)
-		}
-		if done := i + len(batch); done%(embedBatchSize*40) < embedBatchSize || done == len(toEmbed) {
-			logger.Infof(mainCtx, "🧠 Embedded %d/%d (%s)", done, len(toEmbed), time.Since(start).Round(time.Second))
-		}
-	}
+	logger.Infof(mainCtx, "🧠 Semantic index: %d embedded, %d payloads to refresh, %d to delete (%d held)",
+		toEmbed, len(toRepayload), len(toDelete), len(held))
 
 	// A payload changes when its professor's areas or university change, and those are shared by all
 	// of that professor's work: refresh them with one set_payload per professor, not one per point.

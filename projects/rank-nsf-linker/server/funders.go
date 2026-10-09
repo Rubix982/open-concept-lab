@@ -28,6 +28,29 @@ var fundersCache struct {
 	sync.Mutex
 	at        time.Time
 	byCountry map[string][]string
+	totals    *grantTotals
+}
+
+// grantTotals: how many grants the Funding tab covers, for the first page's one-line summary.
+type grantTotals struct {
+	Grants  int `json:"grants"`
+	Running int `json:"running"`
+	Funders int `json:"funders"`
+}
+
+func grantTotalsCached(db *sql.DB) *grantTotals {
+	fundersCache.Lock()
+	defer fundersCache.Unlock()
+	if fundersCache.totals != nil && time.Since(fundersCache.at) < time.Hour {
+		return fundersCache.totals
+	}
+	var t grantTotals
+	if db.QueryRow(`SELECT count(*), count(*) FILTER (WHERE ends >= current_date), count(DISTINCT funder)
+		FROM explorer_grants`).Scan(&t.Grants, &t.Running, &t.Funders) != nil {
+		return nil
+	}
+	fundersCache.totals = &t
+	return &t
 }
 
 func grantFundersByCountry(db *sql.DB) map[string][]string {
@@ -37,10 +60,16 @@ func grantFundersByCountry(db *sql.DB) map[string][]string {
 		return fundersCache.byCountry
 	}
 	m := map[string][]string{"us": {"nsf"}}
-	// A funder counts for a country with at least 2 grants there: the one ERC grant hosted in the
-	// US made "no NSF or ERC or NIH grant" the sentence for US faculty.
-	rows, err := db.Query(`SELECT lower(country), funder FROM funder_grants
-		WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2 HAVING count(*) >= 2 ORDER BY 1, 2`)
+	// A funder counts for a country where it funds work: its home country (where most of its grants
+	// are), or any country holding at least 2% of its grants (Wellcome in the US). A few grants
+	// hosted abroad don't count: Marsden's in the US made Dartmouth's sentence "an active NIH, NSF or
+	// Marsden Fund grant", CIHR's in Germany listed it for German faculty.
+	rows, err := db.Query(`
+		WITH c AS (SELECT lower(country) AS c, funder, count(*) AS n FROM funder_grants
+		           WHERE country IS NOT NULL AND country <> '' GROUP BY 1, 2),
+		     t AS (SELECT funder, sum(n) AS total, max(n) AS top FROM c GROUP BY 1)
+		SELECT c.c, c.funder FROM c JOIN t USING (funder)
+		WHERE c.n >= 2 AND (c.n = t.top OR c.n >= 0.02 * t.total) ORDER BY 1, 2`)
 	if err == nil {
 		defer rows.Close()
 		for rows.Next() {
@@ -68,6 +97,37 @@ var funderNames = map[string]string{
 	"rgc":     "RGC",
 	"nserc":   "NSERC",
 	"nwo":     "NWO",
+	"fwf":     "FWF (Austria)",
+	"nrf":     "NRF (Korea)",
+	"cn-prov": "Provincial science foundations (China)",
+	// via OpenAlex awards (scripts/grants/openalex_awards.py)
+	"nsfc":     "NSFC (China)",
+	"nstc":     "NSTC (Taiwan)",
+	"cihr":     "CIHR (Canada)",
+	"sshrc":    "SSHRC (Canada)",
+	"fapesp":   "FAPESP (Brazil)",
+	"fct":      "FCT (Portugal)",
+	"anid":     "ANID (Chile)",
+	"rcn":      "Research Council of Norway",
+	"nhmrc":    "NHMRC (Australia)",
+	"tubitak":  "TÜBİTAK (Turkey)",
+	"vr":       "Swedish Research Council",
+	"vinnova":  "Vinnova (Sweden)",
+	"formas":   "Formas (Sweden)",
+	"forte":    "Forte (Sweden)",
+	"ncn":      "NCN (Poland)",
+	"fwo":      "FWO (Flanders, Belgium)",
+	"isf":      "Israel Science Foundation",
+	"sfi":      "Research Ireland (SFI)",
+	"wellcome": "Wellcome",
+	"amed":     "AMED (Japan)",
+	"zonmw":    "ZonMw (Netherlands)",
+	"dff":      "Independent Research Fund Denmark",
+	"isciii":   "ISCIII (Spain)",
+	"nafosted": "NAFOSTED (Vietnam)",
+	"icmr":     "ICMR (India)",
+	"nsf-lk":   "NSF Sri Lanka",
+	"hec":      "HEC NRPU (Pakistan)",
 }
 
 // getExplorerFunders: GET /explorer/funders — funder names and the countries each one covers.
@@ -77,7 +137,8 @@ func getExplorerFunders(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry(db)})
+	writeJSON(w, http.StatusOK, map[string]any{"names": funderNames, "by_country": grantFundersByCountry(db),
+		"totals": grantTotalsCached(db)})
 }
 
 const grantsDataDir = "grants"
@@ -109,7 +170,7 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 	// Staging tables are all text and unconstrained: CSVs may repeat a key, and the insert
 	// below converts types and keeps one row per key.
 	if _, err := tx.Exec(`
-		TRUNCATE funder_grants, funder_grant_people;
+		DELETE FROM funder_grants; DELETE FROM funder_grant_people; -- not TRUNCATE: readers keep the old rows
 		CREATE TEMP TABLE fg_stage (funder text, grant_id text, title text, abstract text, amount text,
 		  currency text, starts text, ends text, url text, country text, scheme text, field text) ON COMMIT DROP;
 		CREATE TEMP TABLE fp_stage (funder text, grant_id text, full_name text, first_name text, last_name text,
@@ -241,7 +302,7 @@ CREATE INDEX ON fl_inst (institution);
 CREATE TEMP TABLE fl_cs ON COMMIT DROP AS
 SELECT name, t[1] AS first_tok, t[array_length(t, 1)] AS last_tok,
        COALESCE(NULLIF(NULLIF(scholar_id, ''), 'NOSCHOLARPAGE'), NULLIF(homepage, ''), name) AS person_key,
-       name IN (SELECT name FROM professor_areas) AS in_areas
+       EXISTS (SELECT 1 FROM professor_areas pa WHERE pa.name = x.name) AS in_areas  -- see link.go
 FROM (SELECT name, homepage, scholar_id, person_name_tokens(name) t FROM professors) x
 WHERE array_length(t, 1) >= 2;
 CREATE INDEX ON fl_cs (last_tok);

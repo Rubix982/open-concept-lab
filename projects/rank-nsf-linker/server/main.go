@@ -72,27 +72,21 @@ func main() {
 		logger.Errorf(mainCtx, "failed to execute migrations: %v", runMigrationsErr)
 		return
 	}
-	// Warm the caches the first page reads (areas, universities, funders: ~2 s cold, ~10 ms cached).
-	go func() {
-		time.Sleep(3 * time.Second)
-		for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders"} {
-			if resp, err := http.Get("http://localhost:8080" + path); err == nil {
-				resp.Body.Close()
-			}
-		}
-	}()
-
-	// Migration 12 reloads research_area_venues from scratch, which drops the OpenAlex subfield areas
-	// the pipeline added: put them back from data/openalex/subfields.csv.
+	// Refresh the subfield names from data/openalex/subfields.csv when it's there (migration 12 keeps
+	// the ones already loaded).
 	if err := restoreSubfieldAreas(); err != nil {
 		logger.Warnf(mainCtx, "⚠️ could not restore subfield areas: %v", err)
 	}
+	// Only now: warmed during the migrations, the areas list was cached with the computer-science
+	// areas alone, and every subfield showed as its code. Requests answered meanwhile are dropped.
+	clearAreasCache()
+	go warmCaches()
 
 	// If we actually go to populate the DB, we mark the pipeline as in progress anyways, so
 	// we can mark it as completed here.
 	markPipelineAsCompleted(mainCtx, string(PIPELINE_POPULATE_POSTGRES), string(PIPELINE_STATUS_COMPLETED))
 
-	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 {
+	if skipMigrations := os.Getenv(POPULATE_DB_FLAG); len(skipMigrations) == 0 && !serveOnly() {
 		// Refreshes stale data and finishes partial fetches later (fetch.go).
 		startPipelineScheduler(mainCtx)
 		executeWorkflows(mainCtx)

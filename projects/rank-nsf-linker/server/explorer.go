@@ -1,9 +1,15 @@
 package main
 
 import (
+	"database/sql"
+	"encoding/csv"
 	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	colly "github.com/gocolly/colly/v2"
+	"github.com/lib/pq"
 )
 
 // buildExplorerSQL precomputes what the student-facing explorer reads:
@@ -13,7 +19,10 @@ import (
 //   - explorer_universities: one row per university with such faculty — IPEDS facts
 //     (R1/R2, graduate tuition and enrollment) and faculty counts per area.
 const buildExplorerSQL = `
-TRUNCATE explorer_faculty, explorer_universities, explorer_work_docs, professor_variants;
+-- DELETE, not TRUNCATE: TRUNCATE locks out readers until this transaction commits (the site hung for
+-- minutes on every rebuild); with DELETE they keep reading the previous data meanwhile.
+DELETE FROM explorer_faculty; DELETE FROM explorer_universities; DELETE FROM explorer_work_docs;
+DELETE FROM professor_variants;
 
 -- One person, several CSRankings names ("Dylan A. Shell" / "Dylan Shell"). Names are one person when
 -- they share a Google Scholar id, or a homepage and both first and last name (a department homepage
@@ -208,13 +217,25 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	if _, err := tx.Exec(buildExplorerSQL); err != nil {
 		return fmt.Errorf("failed to build explorer tables: %w", err)
 	}
+	if err := applyCarnegieFallback(tx); err != nil {
+		return fmt.Errorf("failed to apply backup/carnegie.csv: %w", err)
+	}
 	if _, err := tx.Exec(buildGrantLandscapeSQL); err != nil {
 		return fmt.Errorf("failed to build the grant landscape: %w", err)
 	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit explorer tables: %w", err)
 	}
+	// The caches were cleared with the tables: fill them again now, not on a visitor's first page
+	// (the Funding overview takes ~20 s cold).
 	clearAreasCache()
+	go warmCaches()
+	// Reclaim the deleted rows' space (doesn't block readers or writers).
+	for _, t := range []string{"explorer_faculty", "explorer_universities", "explorer_work_docs", "explorer_grants", "professor_variants"} {
+		if _, err := db.Exec("VACUUM (ANALYZE) " + t); err != nil {
+			logger.Warnf(mainCtx, "⚠️ VACUUM %s: %v", t, err)
+		}
+	}
 
 	var faculty, funded, universities int
 	if err := db.QueryRow(`
@@ -225,4 +246,44 @@ func buildExplorerTables(mainCtx *colly.Context) error {
 	}
 	logger.Infof(mainCtx, "🧭 Explorer: %d faculty (%d with an active grant) at %d universities", faculty, funded, universities)
 	return nil
+}
+
+// applyCarnegieFallback marks R1 / R2 universities that IPEDS left unmarked, from backup/carnegie.csv
+// (name, carnegie; a snapshot of IPEDS' Carnegie codes). nces.ed.gov is unreachable from some
+// networks, and without the codes the US R1s drop out of everything keyed on them (the OpenAlex
+// researcher list among them).
+func applyCarnegieFallback(tx *sql.Tx) error {
+	f, err := os.Open(filepath.Join(getRootDirPath(BACKUP_DIR), "carnegie.csv"))
+	if os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	defer f.Close()
+	rows, err := csv.NewReader(f).ReadAll()
+	if err != nil {
+		return err
+	}
+	var names, codes []string
+	for _, r := range rows[min(1, len(rows)):] {
+		if len(r) >= 2 {
+			names, codes = append(names, r[0]), append(codes, r[1])
+		}
+	}
+	_, err = tx.Exec(`
+		UPDATE explorer_universities u SET carnegie = c.code
+		FROM (SELECT unnest($1::text[]) AS name, unnest($2::text[]) AS code) c
+		WHERE u.carnegie IS NULL AND u.country = 'us' AND u.name = c.name`, pq.Array(names), pq.Array(codes))
+	return err
+}
+
+// warmCaches requests what the first page reads (areas, universities, funders, the Funding overview:
+// ~2-20 s cold, ~10 ms cached), at startup and after each rebuild of the explorer tables.
+func warmCaches() {
+	for _, path := range []string{"/explorer/areas", "/explorer/universities", "/explorer/funders",
+		"/explorer/landscape", "/explorer/landscape?active=1"} {
+		if resp, err := http.Get("http://localhost:8080" + path); err == nil {
+			resp.Body.Close()
+		}
+	}
 }

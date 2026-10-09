@@ -26,6 +26,7 @@ import (
 //	GET /explorer/faculty/profile?name=<name>
 //	GET /explorer/faculty/papers?name=<name>
 //	GET /explorer/grants?q=<goal>&areas=ml&active=1
+//	GET /explorer/grant?funder=nsf&id=2347472 (one grant in full: abstract, team, programmes; grant_detail.go)
 //	GET /explorer/scholarships?country=DE&nationality=PK&level=phd
 
 const (
@@ -64,6 +65,7 @@ type exploreArea struct {
 	Field   *string `json:"field,omitempty"` // the OpenAlex field of a subfield area
 	Faculty int     `json:"faculty"`
 	Funded  int     `json:"funded"`
+	Listed  bool    `json:"listed"` // offered in the area picker
 }
 
 // The areas list only changes when the explorer tables are rebuilt (buildExplorerTables clears
@@ -79,8 +81,11 @@ func clearAreasCache() {
 	areasCache.areas, areasCache.universities = nil, nil
 	areasCache.Unlock()
 	fundersCache.Lock()
-	fundersCache.byCountry = nil
+	fundersCache.byCountry, fundersCache.totals = nil, nil
 	fundersCache.Unlock()
+	landscapeCache.Lock()
+	landscapeCache.m = nil
+	landscapeCache.Unlock()
 }
 
 func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
@@ -98,13 +103,14 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	}
 	rows, err := db.Query(`
 		SELECT v.area_group, v.area, v.area_name, v.area_field,
-		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0)
+		       count(f.name), count(f.name) FILTER (WHERE f.active_awards > 0), NOT v.openalex OR count(f.name) >= 20
 		FROM (SELECT DISTINCT area_group, area, area_name, area_field, venue ~ '^oas?:' AS openalex
 		      FROM research_area_venues) v
 		LEFT JOIN explorer_faculty f ON v.area = ANY (f.areas)
 		GROUP BY v.area_group, v.area, v.area_name, v.area_field, v.openalex
-		-- OpenAlex areas are listed once they have enough people to be worth narrowing to
-		HAVING NOT v.openalex OR count(f.name) >= 20
+		-- Every area someone is tagged with, so each tag has a name; OpenAlex areas are offered in the
+		-- picker (listed) once they have enough people to be worth narrowing to
+		HAVING NOT v.openalex OR count(f.name) > 0
 		ORDER BY v.area_group, v.area_name`)
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to load areas", err)
@@ -115,7 +121,7 @@ func getExplorerAreas(w http.ResponseWriter, r *http.Request) {
 	areas := []exploreArea{}
 	for rows.Next() {
 		var a exploreArea
-		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Field, &a.Faculty, &a.Funded); err != nil {
+		if err := rows.Scan(&a.Group, &a.Area, &a.Name, &a.Field, &a.Faculty, &a.Funded, &a.Listed); err != nil {
 			writeError(w, r, http.StatusInternalServerError, "failed to read areas", err)
 			return
 		}
@@ -157,6 +163,25 @@ type exploreUniversity struct {
 	Funders               json.RawMessage `json:"funders,omitempty"` // [{funder, people, active_people}]
 	RecentlyFunded        []recentGrant   `json:"recently_funded,omitempty"`
 	Training              json.RawMessage `json:"training,omitempty"` // running grants that pay PhD students (NIH T32, NSF NRT)
+	People                *peopleStats    `json:"people,omitempty"`   // everyone listed here (the Faculty tab's summary)
+	Fields                []fieldCount    `json:"fields,omitempty"`   // OpenAlex researchers by field
+}
+
+// peopleStats counts everyone listed at a university, not only the faculty list a page loads.
+type peopleStats struct {
+	Funded     int `json:"funded"`     // with an active grant
+	NewLab     int `json:"new_lab"`    // starting a lab, with money
+	Early      int `json:"early"`      // first paper in the last six years
+	CSRankings int `json:"csrankings"` // computer science faculty (a complete list, unlike OpenAlex's)
+}
+
+// fieldCount is how many OpenAlex researchers here work in a field (each person once). OpenAlex
+// researchers are the most-cited up to 20 per field and university, so this says which fields are
+// here, not how big they are.
+type fieldCount struct {
+	Field  string `json:"field"`
+	People int    `json:"people"`
+	Funded int    `json:"funded"`
 }
 
 // recentGrant is a grant that started recently: its holder is likely to be hiring.
@@ -290,6 +315,30 @@ func getExplorerUniversity(w http.ResponseWriter, r *http.Request, id string) {
 		return
 	}
 	u.AreaFaculty, u.AreaFunded, u.Funders, u.Training = areaFaculty, areaFunded, funders, training
+	var ps peopleStats
+	if db.QueryRow(`
+		SELECT count(*) FILTER (WHERE active_awards > 0), count(*) FILTER (WHERE new_lab IS NOT NULL),
+		       count(*) FILTER (WHERE first_year >= extract(year FROM current_date)::int - 6),
+		       count(*) FILTER (WHERE source = 'csrankings')
+		FROM explorer_faculty WHERE university = $1`, u.Name).Scan(&ps.Funded, &ps.NewLab, &ps.Early, &ps.CSRankings) == nil {
+		u.People = &ps
+	}
+	if rows, err := db.Query(`
+		SELECT v.field, count(DISTINCT f.name), count(DISTINCT f.name) FILTER (WHERE f.active_awards > 0)
+		FROM explorer_faculty f CROSS JOIN LATERAL unnest(f.areas) a
+		-- a field-level area is named after its field; a subfield names its field in area_field
+		JOIN (SELECT DISTINCT area, COALESCE(area_field, area_name) AS field FROM research_area_venues
+		      WHERE venue ~ '^oas?:') v ON v.area = a
+		WHERE f.university = $1 AND f.source = 'openalex'
+		GROUP BY v.field ORDER BY 2 DESC, 3 DESC, 1`, u.Name); err == nil { // ties (many fields at 20): those with more grants first
+		for rows.Next() {
+			var fc fieldCount
+			if rows.Scan(&fc.Field, &fc.People, &fc.Funded) == nil {
+				u.Fields = append(u.Fields, fc)
+			}
+		}
+		rows.Close()
+	}
 	if rows, err := db.Query(`
 		SELECT d.name, d.title, d.year, d.ref
 		FROM explorer_work_docs d JOIN explorer_faculty f ON f.name = d.name
@@ -918,6 +967,7 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty/similar", getExplorerSimilar)
 	r.Get("/explorer/landscape", getExplorerLandscape)
 	r.Get("/explorer/grants", getExplorerGrants)
+	r.Get("/explorer/grant", getExplorerGrant)
 	r.Get("/explorer/scholarships", getExplorerScholarships)
 	r.Get("/explorer/funders", getExplorerFunders)
 }

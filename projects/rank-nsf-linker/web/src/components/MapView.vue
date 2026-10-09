@@ -60,7 +60,7 @@ function features(): GeoJSON.FeatureCollection {
 }
 
 function paint() {
-  if (!map || !ready.value) return;
+  if (!map?.getSource("unis")) return;
   (map.getSource("unis") as mapboxgl.GeoJSONSource).setData(features());
   map.setPaintProperty("unis", "circle-color", props.color);
   shadeCountries();
@@ -159,6 +159,9 @@ onMounted(() => {
     minZoom: 1.5,
     attributionControl: false,
     projection: "mercator",
+    // Keep tiles already seen (this region, the world view below) instead of the default few
+    // screens' worth, so zooming back out or returning to a region doesn't wait on the network.
+    minTileCacheSize: 800,
   });
   // A shared link (?u=...) opens with a university selected: start the map there, not on the US.
   const start = props.universities.find((x) => x.id === props.selectedId);
@@ -173,6 +176,30 @@ onMounted(() => {
     new mapboxgl.AttributionControl({ compact: true }),
     "bottom-left",
   );
+
+  // Opening flight: the map starts on the whole world and flies in to the start view. On the way it
+  // loads the tiles of every zoom level in between, which stay cached (minTileCacheSize), so a later
+  // zoom-out has a coarser tile to show at once instead of blank land while sharper ones load.
+  // Same map and session: no extra map load on the Mapbox bill.
+  const startView = { center: map.getCenter(), zoom: map.getZoom() };
+  map.jumpTo({ center: [20, 25], zoom: map.getMinZoom() });
+  const land = () => (ready.value = true); // focus waits: a fitBounds mid-flight would be cut off
+  map.once("load", () => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      map!.jumpTo(startView);
+      land();
+      return;
+    }
+    let flown = false;
+    const fly = () => {
+      if (flown || !map) return;
+      flown = true;
+      map.once("moveend", land); // also when the student grabs the map mid-flight
+      map.flyTo({ ...startView, duration: 1800, essential: false });
+    };
+    map!.once("idle", fly); // the world's tiles first, so the flight starts on a drawn map
+    setTimeout(fly, 1200);
+  });
 
   map.on("load", () => {
     restyleBase();
@@ -210,7 +237,6 @@ onMounted(() => {
         ],
       },
     });
-    ready.value = true;
     paint();
   });
 
@@ -280,20 +306,19 @@ function applyFocus() {
 watch(() => props.focus, applyFocus, { deep: true });
 watch(ready, applyFocus);
 
-// Fly to a university chosen from a list.
-watch(
-  () => props.selectedId,
-  (id) => {
-    const u = props.universities.find((x) => x.id === id);
-    if (map && u?.latitude != null && u.longitude != null) {
-      map.easeTo({
-        center: [u.longitude, u.latitude],
-        zoom: Math.max(map.getZoom(), 5),
-        duration: 600,
-      });
-    }
-  },
-);
+// Fly to a university chosen from a list, or asked for by name (a profile's university).
+function flyToUniversity(id: string | null) {
+  const u = props.universities.find((x) => x.id === id);
+  if (map && u?.latitude != null && u.longitude != null) {
+    map.easeTo({
+      center: [u.longitude, u.latitude],
+      zoom: Math.max(map.getZoom(), 5),
+      duration: 600,
+    });
+  }
+}
+watch(() => props.selectedId, flyToUniversity);
+defineExpose({ flyToUniversity });
 
 onBeforeUnmount(() => map?.remove());
 </script>

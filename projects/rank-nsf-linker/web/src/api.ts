@@ -8,6 +8,7 @@ export type Area = {
   field?: string; // the OpenAlex field of a subfield area ("Medicine" for Cardiology)
   faculty: number;
   funded: number;
+  listed: boolean; // offered in the area picker (small subfields only name a person's tags)
 };
 
 export type UniversitySummary = {
@@ -34,6 +35,16 @@ export type UniversityDetail = UniversitySummary & {
   area_faculty: Record<string, number>;
   area_funded: Record<string, number>;
   grant_funders?: string[];
+  // Everyone listed here, counted on the server (not only the faculty list a page loads)
+  people?: {
+    funded: number;
+    new_lab: number;
+    early: number;
+    csrankings: number;
+  };
+  // OpenAlex researchers by field, each person once: the most-cited up to 20 per field, so which
+  // fields are here, not how big they are
+  fields?: { field: string; people: number; funded: number }[];
   doctoral_degrees?: number; // IPEDS, all fields, latest year (US)
   doctoral_year?: number;
   funders?: { funder: string; people: number; active_people: number }[];
@@ -113,6 +124,7 @@ export type FundingEntry = {
 export type Funders = {
   names: Record<string, string>;
   by_country: Record<string, string[]>;
+  totals?: { grants: number; running: number; funders: number } | null; // the Funding tab's reach
 };
 
 export type Award = {
@@ -130,6 +142,27 @@ export type Award = {
   institution?: string; // where the grant is held
   lead?: boolean; // this person leads it
   team?: { name: string; role: string; profile: string | null }[];
+};
+
+// One grant in full, for the in-app grant page (funders' sites can be blocked: NSF's from Pakistan)
+export type GrantDetail = {
+  funder: string;
+  id: string;
+  title: string;
+  abstract: string;
+  amount: number | null;
+  currency: string | null;
+  amount_usd: number | null;
+  starts: string | null;
+  ends: string | null;
+  active: boolean;
+  url: string;
+  institution: string;
+  university_id: string | null;
+  country: string | null;
+  programs: string[];
+  signal: "new_lab" | "training" | null;
+  team: { name: string; role: string | null; profile: string | null }[];
 };
 
 export type Collaborator = { name: string; university: string; papers: number };
@@ -179,6 +212,7 @@ export type Query = { areas: string[]; goal: string };
 
 // Where money for a search goes, across every grant loaded (linked to someone on the map or not).
 export type Landscape = {
+  matched: "meaning" | "words"; // how grants were matched to the search
   total: number;
   active: number;
   funders: {
@@ -188,6 +222,7 @@ export type Landscape = {
     active: number;
     amount: number | null;
     active_amount: number | null;
+    amount_usd: number | null; // approximate
   }[];
   years: { year: number; funder: string; grants: number }[];
   places: {
@@ -200,6 +235,7 @@ export type Landscape = {
   }[];
   programs: { name: string; grants: number; running: number }[];
   by_university: Record<string, number>; // matching grants per university on the map
+  amount_usd: number; // approximate, all funders with a known currency
   grants: {
     funder: string;
     id: string;
@@ -214,6 +250,8 @@ export type Landscape = {
     institution: string | null;
     university_id: string | null;
     profile: string | null;
+    amount_usd: number | null; // approximate
+    signal: "new_lab" | "training" | null;
   }[];
 };
 
@@ -231,6 +269,11 @@ function params(q: Partial<Query> & Record<string, unknown>): string {
 
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
   const res = await fetch(`/api/explorer${path}`, { signal });
+  if (res.status === 429) {
+    throw new Error(
+      "Too many searches at once. Wait a few seconds and try again.",
+    );
+  }
   if (res.status === 503) {
     throw new Error(
       "The data is still loading on the server. Try again in a few minutes.",
@@ -244,14 +287,33 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export const api = {
-  landscape: (
-    q: { goal: string; active?: boolean; country?: string },
-    signal?: AbortSignal,
-  ) =>
-    get<Landscape>(
-      `/landscape?q=${encodeURIComponent(q.goal)}${q.active ? "&active=1" : ""}${q.country ? `&country=${q.country}` : ""}`,
-      signal,
+  grant: (funder: string, id: string) =>
+    get<GrantDetail>(
+      `/grant?funder=${encodeURIComponent(funder)}&id=${encodeURIComponent(id)}`,
     ),
+  landscape: (
+    q: {
+      goal: string;
+      active?: boolean;
+      country?: string;
+      funder?: string;
+      kind?: "" | "new_lab" | "training"; // a kind of grant (signal)
+      people?: boolean; // only grants of people in Advisor Atlas
+      sort?: "" | "newest" | "largest";
+      university?: string; // only grants held at this university
+    },
+    signal?: AbortSignal,
+  ) => {
+    const p = new URLSearchParams({ q: q.goal });
+    if (q.active) p.set("active", "1");
+    if (q.country) p.set("country", q.country);
+    if (q.funder) p.set("funder", q.funder);
+    if (q.kind) p.set("signal", q.kind);
+    if (q.people) p.set("people", "1");
+    if (q.sort) p.set("sort", q.sort);
+    if (q.university) p.set("university", q.university);
+    return get<Landscape>(`/landscape?${p}`, signal);
+  },
   areas: () => get<Area[]>("/areas"),
   funders: () => get<Funders>("/funders"),
   universities: (q: Query, signal?: AbortSignal) =>

@@ -2,8 +2,16 @@ x-build-defaults: &build-defaults
   args:
     BUILDKIT_PROGRESS: plain
 
+# Docker keeps every container's output forever unless capped: Postgres's once reached 414 GB.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   postgres:
+    logging: *logging
     image: host.docker.internal:5128/cgr.dev/chainguard/postgres
     container_name: pg17-local
     restart: unless-stopped
@@ -45,6 +53,7 @@ services:
       - default
 
   elasticsearch:
+    logging: *logging
     image: host.docker.internal:5128/docker.elastic.co/elasticsearch/elasticsearch:8.13.0
     container_name: es-local
     environment:
@@ -74,6 +83,7 @@ services:
       - default
 
   qdrant:
+    logging: *logging
     # 1.3.0 ran out of memory on bulk updates; 1.12 storage is not compatible, hence a new volume
     # (qdrant_data still holds the 1.3 index for a rollback).
     image: host.docker.internal:5128/qdrant/qdrant:v1.12.6
@@ -96,6 +106,7 @@ services:
       - default
 
   prometheus:
+    logging: *logging
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
@@ -114,6 +125,7 @@ services:
 
   # Grafana
   grafana:
+    logging: *logging
     image: grafana/grafana:12.3.0-18733571275-ubuntu
     container_name: grafana
     environment:
@@ -133,6 +145,7 @@ services:
 
   # Postgres Exporter
   pg-exporter:
+    logging: *logging
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-exporter
     environment:
@@ -145,6 +158,7 @@ services:
       - default
 
   scraper-worker:
+    logging: *logging
     image: host.docker.internal:5128/scraper-worker:latest
     container_name: scraper-worker
     build:
@@ -205,6 +219,7 @@ services:
       - default
 
   fetcher:
+    logging: *logging
     container_name: fetcher
     build:
       context: .
@@ -226,6 +241,7 @@ services:
       - default
 
   go-server:
+    logging: *logging
     image: host.docker.internal:5128/go-server:latest
     container_name: go-server
     build:
@@ -269,6 +285,7 @@ services:
       # Rerun the population pipeline from step N (see executeWorkflows in server/db.go)
       PIPELINE_FROM_STEP: ${PIPELINE_FROM_STEP:-}
       PIPELINE_TO_STEP: ${PIPELINE_TO_STEP:-}
+      SERVE_ONLY: ${SERVE_ONLY:-} # 1: serve only, no scheduled fetch or rebuild (e.g. during a demo)
       # Semantic goal matching (server/semantic.go)
       EMBEDDER_SERVICE_URL: http://embedder:8000
       QDRANT_REST_URL: http://qdrant-local:6333
@@ -288,6 +305,7 @@ services:
       - default
 
   logging-service:
+    logging: *logging
     image: host.docker.internal:5128/logging-service:latest
     container_name: logging-service
     build:
@@ -320,6 +338,7 @@ services:
       - default
 
   web:
+    logging: *logging
     image: host.docker.internal:5128/web-ui:latest
     container_name: web-ui
     build:
@@ -340,6 +359,7 @@ services:
       - default
 
   embedder:
+    logging: *logging
     image: rank-nsf-linker-embedder:latest
     container_name: embedder
     build:

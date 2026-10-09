@@ -30,7 +30,7 @@ const (
 //  6. Everything else is an organization.
 const classifyInstitutionsSQL = `
 UPDATE universities u SET institution_type = CASE
-  WHEN u.institution IN (SELECT affiliation FROM professor_areas)
+  WHEN EXISTS (SELECT 1 FROM professor_areas pa WHERE pa.affiliation = u.institution)
     THEN '` + InstitutionTypeUniversity + `'
   WHEN u.institution ~ '^[A-Z][A-Za-z''-]+( [A-Z][A-Za-z''-]+)?, [A-Z][A-Za-z.''-]*( [A-Z][A-Za-z.''-]*)*$'
    AND u.institution !~* '(univ|college|institut|school|foundation|society|museum|center|centre|laborator|council|association|academy|hospital|department|dept|county|city|state|office|board|education|secretary|management|innovation|technolog|media|project|systems|tags|\minc?\M|llc|l\.l\.c|\mnfp\M|\mpbc\M|corp)'

@@ -30,7 +30,7 @@ func loadOpenAlexWorks(mainCtx *colly.Context) error {
 	defer tx.Rollback()
 
 	if _, err := tx.Exec(`
-		TRUNCATE openalex_works;
+		DELETE FROM openalex_works; -- not TRUNCATE: readers keep the old rows until commit
 		CREATE TEMP TABLE ow_stage (doi text, openalex_id text, abstract text, topic text, subfield text,
 		  field text, cited_by text) ON COMMIT DROP;`); err != nil {
 		return fmt.Errorf("failed to prepare OpenAlex staging: %w", err)

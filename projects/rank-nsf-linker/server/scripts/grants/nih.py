@@ -17,12 +17,14 @@ import urllib.error
 import urllib.request
 
 from common import DATA, write
+from fetchlib import refetch_or_keep
 
 CACHE = DATA / "nih"
 API = "https://api.reporter.nih.gov/v2/projects/search"
 UA = {"User-Agent": "advisor-atlas/1.0 (non-commercial research explorer)", "Content-Type": "application/json"}
 YEARS = [2025, 2026]
 PAGE = 500
+PAGE_MAX_AGE = 6  # days: active projects change; the fetcher runs NIH weekly
 STATES = ("AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM "
           "NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY PR").split()
 FIELDS = ["ProjectNum", "CoreProjectNum", "ProjectTitle", "AbstractText", "PrincipalInvestigators",
@@ -32,8 +34,10 @@ FIELDS = ["ProjectNum", "CoreProjectNum", "ProjectTitle", "AbstractText", "Princ
 
 def search(state: str, year: int, offset: int) -> dict:
     path = CACHE / f"{year}-{state}-{offset:05d}.json"
-    if path.exists():
-        return json.loads(path.read_text())
+    return json.loads(refetch_or_keep(path, PAGE_MAX_AGE, lambda: json.dumps(fetch(state, year, offset))))
+
+
+def fetch(state: str, year: int, offset: int) -> dict:
     body = json.dumps({"criteria": {"fiscal_years": [year], "org_states": [state], "include_active_projects": True},
                        "include_fields": FIELDS, "offset": offset, "limit": PAGE,
                        "sort_field": "project_start_date", "sort_order": "desc"}).encode()
@@ -47,15 +51,22 @@ def search(state: str, year: int, offset: int) -> dict:
             if attempt == 4:
                 raise SystemExit(f"NIH RePORTER failed for {state} {year}: {e}")
             time.sleep(20 * (attempt + 1))
-    path.write_text(json.dumps(data))
     time.sleep(1.1)  # NIH: no more than one request a second
     return data
+
+
+def titled(s: str) -> str:
+    """str.title(), but "SEATTLE CHILDREN'S" -> "Seattle Children's" (not "Children'S"), while
+    "O'BRIEN" -> "O'Brien" and "D'ANGELO" -> "D'Angelo" keep their capital."""
+    t = s.title()
+    t = re.sub(r"'S\b", "'s", t)
+    return re.sub(r"\b([OD])'([a-z])", lambda m: m.group(1) + "'" + m.group(2).upper(), t)
 
 
 def institution_variants(org: str) -> str:
     """'UNIVERSITY OF MICHIGAN AT ANN ARBOR' -> 'University Of Michigan At Ann Arbor | University Of
     Michigan', so the linker can match the CSRankings name."""
-    base = re.sub(r"\s+", " ", org).strip().title()
+    base = titled(re.sub(r"\s+", " ", org).strip())
     variants = [base]
     for pattern in (r"\s+At\s+.*$", r",\s*.*$", r"\s+(Health Science Center|Medical Center|School Of Medicine)$"):
         v = re.sub(pattern, "", base).strip()
@@ -99,7 +110,7 @@ def main() -> None:
             last = (pi.get("last_name") or "").strip()
             if not last:
                 continue
-            first, last = first.title() if first.isupper() else first, last.title() if last.isupper() else last
+            first, last = titled(first) if first.isupper() else first, titled(last) if last.isupper() else last
             people.append({
                 "funder": "nih", "grant_id": core, "full_name": f"{first} {last}".strip(), "first_name": first,
                 "last_name": last, "role": "PI" if pi.get("is_contact_pi") else "CoI",

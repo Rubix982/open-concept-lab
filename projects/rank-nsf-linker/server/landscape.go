@@ -1,15 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
+
+	"github.com/lib/pq"
 )
 
 // explorer_grants: every grant from every funder, whether or not its people are on the map, so a
 // search can show where money for a topic goes (by funder, by year, by institution). Built with the
 // other explorer tables (buildExplorerTables), after explorer_universities and explorer_faculty.
 const buildGrantLandscapeSQL = `
-TRUNCATE explorer_grants;
+DELETE FROM explorer_grants; -- not TRUNCATE: readers keep the previous grants until commit
 
 -- One lead per grant: the principal investigator, else the first person listed.
 -- "abstract || ''" makes Postgres read the whole value: left() on a compressed value reads only a slice,
@@ -85,11 +91,15 @@ WHERE g.university_id IS NULL AND g.profile = f.name;
 -- Signals (NSF programme reference 1045 is CAREER). training: pays PhD students (NIH institutional training grants, NSF Research Traineeships).
 -- new_lab: a PI starting out, with money (NSF CAREER, ERC Starting, ARC DECRA, NIH R00 = the faculty
 -- phase of K99/R00, KAKEN early-career and young-scientist grants, SNSF Ambizione/Eccellenza/PRIMA,
--- ANR JCJC, UKRI new-investigator awards, NSERC Discovery Launch Supplement, NWO Vidi (building one's own group); NSERC CREATE trains).
+-- ANR JCJC, UKRI new-investigator awards, NSERC Discovery Launch Supplement, NWO Vidi (building one's own group), FWF START and
+-- Young Independent Researcher Groups; NSERC CREATE and FWF doc.funds / Doctoral Programs train).
 UPDATE explorer_grants SET signal = 'training'
 WHERE (funder = 'nih' AND scheme IN ('T32', 'TL1', 'T90'))
    OR (funder = 'nserc' AND scheme = 'Collaborative Research and Training Experience')
-   OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)']);
+   OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)'])
+   OR (funder = 'fwf' AND scheme IN ('doc.funds', 'doc.funds.connect', 'Doctoral Programs'))
+   OR (funder = 'cihr' AND scheme ~* 'Strategic Training Initiative|MD/PhD Program Grants')
+   OR (funder = 'anid' AND scheme ~* 'PROGRAMAS DE DOCTORADO');
 UPDATE explorer_grants SET signal = 'new_lab'
 WHERE signal IS NULL AND (
       (funder = 'nsf' AND (title ILIKE 'CAREER:%' OR programs && ARRAY['CAREER: FACULTY EARLY CAR DEV']
@@ -102,7 +112,19 @@ WHERE signal IS NULL AND (
    OR (funder = 'anr' AND scheme IN ('JCJC', 'JC'))
    OR (funder = 'ukri' AND scheme ILIKE '%new investigator%')
    OR (funder = 'nserc' AND scheme = 'Discovery Launch Supplement')
-   OR (funder = 'nwo' AND scheme ~* '\mvidi\M'));
+   OR (funder = 'nwo' AND scheme ~* '\mvidi\M')
+   OR (funder = 'fwf' AND scheme IN ('FWF START Awards', 'Young Independent Researcher Groups'))
+   -- national funders via OpenAlex: their early-career schemes for someone starting a group
+   OR (funder = 'nsfc' AND scheme LIKE '青年科学基金项目%')
+   OR (funder = 'cihr' AND scheme ~* 'New Investigator|Early[- ]Career Investigator')
+   OR (funder = 'anid' AND scheme = 'FONDECYT - INICIACION')
+   OR (funder = 'ncn' AND scheme ~ '^SONATA')
+   OR (funder = 'fapesp' AND scheme ~* 'Jovens Pesquisadores')
+   OR (funder = 'sfi' AND scheme ~* 'Starting Investigator')
+   OR (funder = 'wellcome' AND scheme ~* 'Sir Henry Dale|Early-Career Award|Career Development')
+   OR (funder = 'nhmrc' AND scheme ~* 'Emerging Leadership')
+   OR (funder = 'isf' AND scheme = 'New-Faculty Equipment Grants')
+   OR (funder = 'dff' AND scheme ~* 'Sapere Aude'));
 
 UPDATE explorer_faculty f SET new_lab = x.grant
 FROM (SELECT DISTINCT ON (profile) profile,
@@ -134,6 +156,7 @@ type landscapeFunder struct {
 	Active   int      `json:"active"`
 	Amount   *float64 `json:"amount"`        // all matching grants with an amount, in Currency
 	ActiveAm *float64 `json:"active_amount"` // the active ones
+	USD      *float64 `json:"amount_usd"`    // Amount in approximate US dollars
 }
 
 type landscapeYear struct {
@@ -165,23 +188,61 @@ type landscapeGrant struct {
 	Institution  *string  `json:"institution"`
 	UniversityID *string  `json:"university_id"`
 	Profile      *string  `json:"profile"`
+	AmountUSD    *float64 `json:"amount_usd"` // approximate (currency.go)
+	Signal       *string  `json:"signal"`     // new_lab / training
 }
 
 // getExplorerLandscape: where money for a search goes, across every grant loaded (linked to someone on
 // the map or not): totals by funder, grants started per year, the institutions receiving them, and the
-// best-matching grants. Keyword match on title and the start of the abstract; without q, every
-// grant (newest first).
-// Params: q, active=1 (running grants only), country.
+// best-matching grants. Matched by meaning (grant_search.go) and on the words in the title and the
+// start of the abstract; without q, every grant (newest first).
+// Params: q, active=1 (running grants only), country, funder, signal, people=1, sort, university (one university's grants).
 func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	db, err := GetDB()
 	if err != nil {
 		writeError(w, r, http.StatusInternalServerError, "database unavailable", err)
 		return
 	}
+	// Phase timings, logged when a search is slow: "…X 3s" is the time spent before reaching X.
+	t0, last := time.Now(), time.Now()
+	var phases []string
+	phase := func(name string) {
+		phases = append(phases, fmt.Sprintf("…%s %s", name, time.Since(last).Round(time.Millisecond)))
+		last = time.Now()
+	}
+	defer func() {
+		if d := time.Since(t0); d > 2*time.Second {
+			logger.Warnf(nil, "🐢 /explorer/landscape q=%q took %s: %s", r.URL.Query().Get("q"), d.Round(time.Millisecond), strings.Join(phases, ", "))
+		}
+	}()
 	v := r.URL.Query()
 	q := strings.TrimSpace(v.Get("q"))
 	active := v.Get("active") == "1"
 	country := strings.ToLower(strings.TrimSpace(v.Get("country")))
+	// Narrowing (applies to everything shown): one funder, a kind of grant (new_lab: an early-career
+	// PI starting a group; training: funds PhD students), only grants of people in Advisor Atlas.
+	funder := strings.ToLower(strings.TrimSpace(v.Get("funder")))
+	signal := v.Get("signal")
+	if signal != "new_lab" && signal != "training" {
+		signal = ""
+	}
+	people := v.Get("people") == "1"
+	university := strings.TrimSpace(v.Get("university")) // one university's grants (its page)
+	sortBy := v.Get("sort")                              // "" (best match), "newest", "largest"
+	// Without a search the answer covers every grant (~10 s) and only changes when the explorer
+	// tables are rebuilt: kept per country and active filter, cleared by clearAreasCache.
+	cacheKey := ""
+	if q == "" && university == "" {
+		cacheKey = strings.Join([]string{country, strconv.FormatBool(active), funder, signal,
+			strconv.FormatBool(people), sortBy}, "|")
+		landscapeCache.Lock()
+		cached, ok := landscapeCache.m[cacheKey]
+		landscapeCache.Unlock()
+		if ok {
+			writeJSON(w, http.StatusOK, cached)
+			return
+		}
+	}
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -189,21 +250,71 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer tx.Rollback()
+	// By meaning when the grant index is ready: the grants closest to the search, plus any that use
+	// its words; otherwise by words alone.
+	var hitPoints []string
+	var hitScores []float64
+	matched := "words"
+	if q != "" && grantSearchReady() {
+		phase("embed and Qdrant")
+		if hits, err := searchGrants(q, country, active); err == nil {
+			matched = "meaning"
+			for _, h := range hits {
+				hitPoints, hitScores = append(hitPoints, h.Point), append(hitScores, h.Score)
+			}
+		}
+	}
+	phase("hits")
+	if _, err := tx.Exec(`
+		CREATE TEMP TABLE h ON COMMIT DROP AS
+		SELECT g.funder, g.id, x.score
+		FROM unnest($1::uuid[], $2::float8[]) AS x(point, score)
+		-- one index-only lookup per point (explorer_grants_point_cover_idx): as a join, the planner sorted all
+		-- 1.1M grants to merge them (4 s)
+		CROSS JOIN LATERAL (SELECT funder, id FROM explorer_grants
+		                    WHERE md5(funder || '|' || id)::uuid = x.point) g`,
+		pq.Array(hitPoints), pq.Array(hitScores)); err != nil {
+		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
+		return
+	}
+	if _, err := tx.Exec(`ANALYZE h`); err != nil { // its size guides the next query's plan
+		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
+		return
+	}
+	phase("grants table")
 	if _, err := tx.Exec(`
 		CREATE TEMP TABLE m ON COMMIT DROP AS
 		SELECT g.funder, g.id, g.title, g.snippet, g.amount, g.currency, g.starts, g.ends, g.url, g.country,
-		       g.lead, g.institution, g.university_id, g.profile, g.programs,
-		       CASE WHEN $1 = '' THEN 1 ELSE ts_rank_cd(g.doc, q, 1) END AS rank, g.ends >= current_date AS running
-		FROM explorer_grants g, websearch_to_tsquery('english', $1) q
-		-- no search: every grant (the Funding tab's overview)
-		WHERE ($1 = '' OR g.doc @@ q) AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)`,
-		q, active, country); err != nil {
+		       g.lead, g.institution, g.university_id, g.profile, g.programs, g.signal,
+		       -- by meaning: the similarity, a little more when the words are there too, and a grant
+		       -- that only shares words ranks just under the closest ones
+		       CASE WHEN $1 = '' THEN 1
+		            WHEN $4 THEN COALESCE(h.score, $5 - 0.02) + CASE WHEN g.doc @@ q THEN 0.03 ELSE 0 END
+		            ELSE ts_rank_cd(g.doc, q, 1) END AS rank,
+		       g.ends >= current_date AS running
+		FROM explorer_grants g CROSS JOIN websearch_to_tsquery('english', $1) q
+		LEFT JOIN h ON h.funder = g.funder AND h.id = g.id
+		-- the grants to consider: every grant without a search (the overview), else those using the
+		-- words (GIN index) and those close in meaning (h), each found by index. Two forms, not
+		-- "$1 = '' OR ...": the OR kept the planner from the indexes (a full scan, 3-5 s a search).
+		WHERE `+map[bool]string{
+		true: `TRUE`,
+		false: `(g.funder, g.id) IN (
+		        SELECT g2.funder, g2.id FROM explorer_grants g2 WHERE g2.doc @@ websearch_to_tsquery('english', $1)
+		        UNION SELECT funder, id FROM h)`}[q == ""]+`
+		  AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)
+		  AND ($6 = '' OR g.funder = $6) AND ($7 = '' OR g.signal = $7) AND (NOT $8 OR g.profile IS NOT NULL)`+
+		// its own clause, not "$9 = '' OR ...", so the university index is used
+		map[bool]string{true: ` AND g.university_id = $9`, false: ``}[university != ""],
+		append([]any{q, active, country, matched == "meaning", grantMinScore, funder, signal, people},
+			map[bool][]any{true: {university}, false: nil}[university != ""]...)...); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
 	}
 
-	out := map[string]any{}
+	out := map[string]any{"matched": matched}
 	var total, running int
+	phase("count")
 	if err := tx.QueryRow(`SELECT count(*), count(*) FILTER (WHERE running) FROM m`).Scan(&total, &running); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to count grants", err)
 		return
@@ -211,6 +322,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["total"], out["active"] = total, running
 
 	funders := []landscapeFunder{}
+	phase("funders")
 	rows, err := tx.Query(`
 		SELECT funder, max(currency), count(*), count(*) FILTER (WHERE running),
 		       sum(amount), sum(amount) FILTER (WHERE running)
@@ -219,14 +331,23 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var f landscapeFunder
 			if rows.Scan(&f.Funder, &f.Currency, &f.Grants, &f.Active, &f.Amount, &f.ActiveAm) == nil {
+				f.USD = usd(f.Amount, f.Currency)
 				funders = append(funders, f)
 			}
 		}
 		rows.Close()
 	}
 	out["funders"] = funders
+	var totalUSD float64
+	for _, f := range funders {
+		if f.USD != nil {
+			totalUSD += *f.USD
+		}
+	}
+	out["amount_usd"] = totalUSD // approximate, across every funder with a known currency
 
 	years := []landscapeYear{}
+	phase("years")
 	rows, err = tx.Query(`
 		SELECT extract(year FROM starts)::int AS y, funder, count(*) FROM m
 		WHERE starts IS NOT NULL AND starts >= make_date(extract(year FROM current_date)::int - 15, 1, 1)
@@ -243,6 +364,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["years"] = years
 
 	places := []landscapePlace{}
+	phase("places")
 	rows, err = tx.Query(`
 		SELECT COALESCE(u.name, m.institution), m.university_id, COALESCE(u.country, min(m.country)), count(*),
 		       count(*) FILTER (WHERE running), count(DISTINCT profile)
@@ -263,6 +385,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 
 	// Per university on the map, for sizing the map's dots by money instead of people.
 	byUni := map[string]int{}
+	phase("by university")
 	rows, err = tx.Query(`SELECT university_id, count(*) FROM m WHERE university_id IS NOT NULL GROUP BY 1`)
 	if err == nil {
 		for rows.Next() {
@@ -283,6 +406,7 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		Running int    `json:"running"`
 	}
 	programs := []program{}
+	phase("programs")
 	rows, err = tx.Query(`
 		SELECT p, count(*), count(*) FILTER (WHERE running) FROM m, unnest(m.programs) p
 		GROUP BY p ORDER BY count(*) FILTER (WHERE running) DESC, count(*) DESC LIMIT 8`)
@@ -298,23 +422,57 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	out["programs"] = programs
 
 	grants := []landscapeGrant{}
+	phase("grant list")
 	rows, err = tx.Query(`
 		SELECT funder, id, title, snippet, amount, currency, starts::text, ends::text, url, lead, institution,
-		       university_id, profile
+		       university_id, profile, signal
 		FROM m
-		ORDER BY rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC,
-		         starts DESC NULLS LAST
+		ORDER BY ` + grantOrder(sortBy) + `
 		LIMIT 40`)
 	if err == nil {
 		for rows.Next() {
 			var g landscapeGrant
 			if rows.Scan(&g.Funder, &g.ID, &g.Title, &g.Snippet, &g.Amount, &g.Currency, &g.Starts, &g.Ends, &g.URL,
-				&g.Lead, &g.Institution, &g.UniversityID, &g.Profile) == nil {
+				&g.Lead, &g.Institution, &g.UniversityID, &g.Profile, &g.Signal) == nil {
+				g.AmountUSD = usd(g.Amount, g.Currency)
 				grants = append(grants, g)
 			}
 		}
 		rows.Close()
 	}
 	out["grants"] = grants
+	if cacheKey != "" {
+		landscapeCache.Lock()
+		if landscapeCache.m == nil {
+			landscapeCache.m = map[string]map[string]any{}
+		}
+		landscapeCache.m[cacheKey] = out
+		landscapeCache.Unlock()
+	}
+	phase("done")
 	writeJSON(w, http.StatusOK, out)
+}
+
+var landscapeCache struct {
+	sync.Mutex
+	m map[string]map[string]any
+}
+
+// grantOrder is the grant list's ORDER BY: best match (similarity, favouring recent grants), newest,
+// or largest (in approximate dollars, so currencies compare).
+func grantOrder(sortBy string) string {
+	switch sortBy {
+	case "newest":
+		return "starts DESC NULLS LAST, rank DESC"
+	case "largest":
+		var b strings.Builder
+		b.WriteString("amount * CASE currency")
+		for c, rate := range usdPerUnit {
+			fmt.Fprintf(&b, " WHEN '%s' THEN %g", c, rate)
+		}
+		b.WriteString(" END DESC NULLS LAST, starts DESC NULLS LAST")
+		return b.String()
+	}
+	return `rank * exp(-greatest(extract(year FROM current_date) - COALESCE(extract(year FROM starts), 2010), 0) / 8.0) DESC,
+		         starts DESC NULLS LAST`
 }

@@ -10,54 +10,225 @@ import {
 } from "@/api";
 import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
-import { areaIndex, funderName } from "@/store";
+import { areaIndex, areas as allAreas, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
+import UniversityGrants from "./UniversityGrants.vue";
+import TabSearch from "./TabSearch.vue";
+import LoadingRows from "@/components/LoadingRows.vue";
 
 const props = defineProps<{
   id: string;
   query: Query;
   professor: string | null;
 }>();
-const emit = defineEmits<{ close: []; openProfessor: [name: string | null] }>();
+const emit = defineEmits<{
+  close: [];
+  openProfessor: [name: string | null];
+  openUniversity: [id: string];
+}>();
 
 const uni = ref<UniversityDetail | null>(null);
 const faculty = ref<Faculty[]>([]);
-const loading = ref(true);
+const loading = ref(true); // the faculty list
+const uniLoading = ref(true); // the university's details
 const error = ref("");
 
+// The Faculty tab's own search and filters, starting from the page's search
+const facQ = ref(props.query.goal);
+const facFunded = ref(false);
+const facNewLab = ref(false);
+const facSort = ref<"" | "recent" | "funding">("");
+const facName = ref(""); // narrows the loaded list by name, in the browser
+// An area or a field picked from the tab's summary: the list shows only its people
+const facAreas = ref<string[] | null>(null);
+const facAreaLabel = ref("");
+function pickArea(area: string, label: string) {
+  const same = facAreaLabel.value === label;
+  facAreas.value = same ? null : [area];
+  facAreaLabel.value = same ? "" : label;
+}
+const OPENALEX_GROUP_NAMES = new Set([
+  "Sciences",
+  "Engineering",
+  "Medicine",
+  "Social sciences & humanities",
+]);
+function pickField(field: string) {
+  if (facAreaLabel.value === field) {
+    facAreas.value = null;
+    facAreaLabel.value = "";
+    return;
+  }
+  // the field's own area and its subfields
+  facAreas.value = allAreas.value
+    .filter(
+      (a) =>
+        a.field === field ||
+        (!a.field && a.name === field && OPENALEX_GROUP_NAMES.has(a.group)),
+    )
+    .map((a) => a.area);
+  facAreaLabel.value = field;
+}
+function unpick() {
+  facAreas.value = null;
+  facAreaLabel.value = "";
+}
+const fieldsAll = ref(false);
+const fieldList = computed(() =>
+  fieldsAll.value
+    ? (uni.value?.fields ?? [])
+    : (uni.value?.fields ?? []).slice(0, 10),
+);
+const facNarrowed = computed(
+  () =>
+    !!facQ.value ||
+    facFunded.value ||
+    facNewLab.value ||
+    !!facName.value ||
+    !!facAreas.value,
+);
+function clearFaculty() {
+  facAreas.value = null;
+  facAreaLabel.value = "";
+  facQ.value = "";
+  facFunded.value = false;
+  facNewLab.value = false;
+  facName.value = "";
+}
+watch(
+  () => [props.id, props.query.goal],
+  () => {
+    facQ.value = props.query.goal;
+    facFunded.value = false;
+    facNewLab.value = false;
+    facSort.value = "";
+    facName.value = "";
+    facAreas.value = null;
+    facAreaLabel.value = "";
+    fieldsAll.value = false;
+  },
+);
+
+let loadSeq = 0;
 async function load() {
-  loading.value = true;
+  const seq = ++loadSeq; // switching universities quickly: only the latest answer is shown
+  uniLoading.value = true;
   error.value = "";
   try {
-    const [detail, people] = await Promise.all([
-      api.university(props.id),
-      api.faculty({ ...props.query, university: props.id, limit: 150 }),
-    ]);
-    uni.value = detail;
-    faculty.value = people;
+    const detail = await api.university(props.id);
+    if (seq === loadSeq) uni.value = detail;
   } catch (e) {
-    error.value = (e as Error).message;
+    if (seq === loadSeq) error.value = (e as Error).message;
   } finally {
-    loading.value = false;
+    if (seq === loadSeq) uniLoading.value = false;
   }
 }
+watch(() => props.id, load, { immediate: true });
 
-watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, {
-  immediate: true,
-});
+let facSeq = 0;
+async function loadFaculty() {
+  const seq = ++facSeq;
+  loading.value = true;
+  try {
+    const people = await api.faculty({
+      areas: facAreas.value ?? props.query.areas,
+      goal: facQ.value,
+      university: props.id,
+      limit: 150,
+      funded: facFunded.value ? 1 : undefined,
+      newlab: facNewLab.value ? 1 : undefined,
+      sort: facSort.value || undefined,
+    });
+    if (seq === facSeq) faculty.value = people;
+  } catch (e) {
+    if (seq === facSeq) error.value = (e as Error).message;
+  } finally {
+    if (seq === facSeq) loading.value = false;
+  }
+}
+// One key for everything the list depends on, so a change of university (which also resets the
+// filters) asks once, not once per changed filter
+const facultyKey = computed(() =>
+  JSON.stringify([
+    props.id,
+    facAreas.value ?? props.query.areas,
+    facQ.value,
+    facFunded.value,
+    facNewLab.value,
+    facSort.value,
+  ]),
+);
+const fold = (t: string) =>
+  t
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+const shownFaculty = computed(() =>
+  facName.value
+    ? faculty.value.filter((f) => fold(f.name).includes(fold(facName.value)))
+    : faculty.value,
+);
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
-// A level to narrow by (only the levels present are offered).
+
+// The page in tabs, so no list runs on forever: Faculty first when the visit comes from a search
+// (that's what was asked for), else the overview.
+type UniTab = "overview" | "faculty" | "funding" | "scholarships";
+const uniTab = ref<UniTab>("overview");
+const facultyShown = ref(10);
+watch(
+  facultyKey,
+  () => {
+    facultyShown.value = 10;
+    loadFaculty();
+  },
+  { immediate: true },
+);
+watch(
+  () => props.id,
+  () => {
+    uniTab.value = props.query.goal ? "faculty" : "overview";
+    facultyShown.value = 10;
+  },
+  { immediate: true },
+);
+const uniTabs = computed<{ id: UniTab; label: string }[]>(() => [
+  { id: "overview", label: "Overview" },
+  {
+    id: "faculty",
+    label: `Faculty${uni.value ? ` ${uni.value.faculty_total.toLocaleString("en-US")}` : ""}`,
+  },
+  { id: "funding", label: "Funding" },
+  {
+    id: "scholarships",
+    label: `Scholarships${scholarships.value.length ? ` ${scholarships.value.length}` : ""}`,
+  },
+]);
+// A level to narrow by: only levels that narrow the list are offered. When every programme covers
+// every level (China's two cover Master's and PhD), the buttons changed nothing and looked broken.
 const schLevel = ref("");
+const atLevelCount = (l: string) =>
+  scholarships.value.filter((s) => s.levels.includes(l)).length;
 const schLevels = computed(() =>
-  ["masters", "phd", "postdoc"].filter((l) =>
-    scholarships.value.some((s) => s.levels.includes(l)),
+  ["masters", "phd", "postdoc"].filter(
+    (l) => atLevelCount(l) > 0 && atLevelCount(l) < scholarships.value.length,
   ),
 );
+// A new list (another country): the level chosen for the last one may not be offered here.
+watch(scholarships, () => (schLevel.value = ""));
 const atLevel = (s: Scholarship) =>
   !schLevel.value || s.levels.includes(schLevel.value);
+// The tab's own search (name, provider, what it covers, notes) and order, in the browser
+const schQ = ref("");
+const schSort = ref<"window" | "name">("window");
+watch(scholarships, () => (schQ.value = ""));
+const schMatch = (s: Scholarship) =>
+  !schQ.value ||
+  fold(
+    [s.name, s.provider, s.covers, s.notes, s.application_window].join(" "),
+  ).includes(fold(schQ.value));
 
 // Application windows are free text ("approx. Jun–Aug"); read the first month range when there is one.
 const MONTHS = [
@@ -112,13 +283,16 @@ const byWindow = (a: Scholarship, b: Scholarship) =>
   (windowOf(a.application_window)?.order ?? 99) -
   (windowOf(b.application_window)?.order ?? 99);
 
+const byName = (a: Scholarship, b: Scholarship) => a.name.localeCompare(b.name);
 const curatedScholarships = computed(() =>
   scholarships.value
-    .filter((s) => s.source !== "daad" && atLevel(s))
-    .sort(byWindow),
+    .filter((s) => s.source !== "daad" && atLevel(s) && schMatch(s))
+    .sort(schSort.value === "name" ? byName : byWindow),
 );
 const feedScholarships = computed(() =>
-  scholarships.value.filter((s) => s.source === "daad" && atLevel(s)),
+  scholarships.value
+    .filter((s) => s.source === "daad" && atLevel(s) && schMatch(s))
+    .sort(schSort.value === "name" ? byName : () => 0),
 );
 watch(
   () => uni.value?.country,
@@ -251,6 +425,7 @@ function money(n?: number) {
       :goal="query.goal"
       @back="emit('openProfessor', null)"
       @open="(n: string) => emit('openProfessor', n)"
+      @university="(id: string) => emit('openUniversity', id)"
     />
 
     <div v-else class="uni">
@@ -264,6 +439,11 @@ function money(n?: number) {
           Back to the map
         </button>
       </p>
+      <LoadingRows
+        v-if="uniLoading && !uni && !error"
+        label="Loading the university"
+        :rows="5"
+      />
       <template v-if="uni">
         <header>
           <h2>{{ uni.name }}</h2>
@@ -291,158 +471,243 @@ function money(n?: number) {
           </button>
         </header>
 
-        <dl class="facts">
-          <div>
-            <dt>Faculty and researchers listed</dt>
-            <dd class="num">{{ uni.faculty_total }}</dd>
-          </div>
-          <div v-if="uni.grad_enrollment">
-            <dt>Graduate students</dt>
-            <dd class="num">
-              {{ uni.grad_enrollment.toLocaleString("en-US") }}
-            </dd>
-          </div>
-          <div v-if="uni.doctoral_degrees">
-            <dt>PhDs awarded, all fields ({{ uni.doctoral_year }})</dt>
-            <dd class="num">
-              {{ uni.doctoral_degrees.toLocaleString("en-US") }}
-            </dd>
-          </div>
-          <div v-if="uni.grad_tuition_out_of_state">
-            <dt>Graduate tuition per year</dt>
-            <dd class="num">
-              {{ money(uni.grad_tuition_out_of_state) }}
-              <span
-                v-if="
-                  uni.grad_tuition_in_state &&
-                  uni.grad_tuition_in_state !== uni.grad_tuition_out_of_state
-                "
-                class="sub"
-              >
-                {{ money(uni.grad_tuition_in_state) }} in-state
-              </span>
-            </dd>
-          </div>
-        </dl>
+        <nav class="uni-tabs" role="tablist" aria-label="About this university">
+          <button
+            v-for="t in uniTabs"
+            :key="t.id"
+            type="button"
+            role="tab"
+            :aria-selected="uniTab === t.id"
+            :class="{ on: uniTab === t.id }"
+            @click="uniTab = t.id"
+          >
+            {{ t.label }}
+          </button>
+        </nav>
 
-        <section v-if="strengths.length" class="strengths">
-          <h3>Research strengths</h3>
-          <p class="sub">Faculty and researchers listed here, by area</p>
-          <ul>
-            <li v-for="a in strengths" :key="a.area">
-              <span class="s-name">{{ a.name }}</span>
-              <span class="s-track"
-                ><span
-                  class="s-fill"
-                  :style="{ width: a.width + '%', background: a.color }"
-                ></span
-              ></span>
-              <span class="num">{{ a.n }}</span>
-            </li>
-          </ul>
-        </section>
+        <template v-if="uniTab === 'overview'">
+          <dl class="facts">
+            <div>
+              <dt>Faculty and researchers listed</dt>
+              <dd class="num">{{ uni.faculty_total }}</dd>
+            </div>
+            <div v-if="uni.grad_enrollment">
+              <dt>Graduate students</dt>
+              <dd class="num">
+                {{ uni.grad_enrollment.toLocaleString("en-US") }}
+              </dd>
+            </div>
+            <div v-if="uni.doctoral_degrees">
+              <dt>PhDs awarded, all fields ({{ uni.doctoral_year }})</dt>
+              <dd class="num">
+                {{ uni.doctoral_degrees.toLocaleString("en-US") }}
+              </dd>
+            </div>
+            <div v-if="uni.grad_tuition_out_of_state">
+              <dt>Graduate tuition per year</dt>
+              <dd class="num">
+                {{ money(uni.grad_tuition_out_of_state) }}
+                <span
+                  v-if="
+                    uni.grad_tuition_in_state &&
+                    uni.grad_tuition_in_state !== uni.grad_tuition_out_of_state
+                  "
+                  class="sub"
+                >
+                  {{ money(uni.grad_tuition_in_state) }} in-state
+                </span>
+              </dd>
+            </div>
+          </dl>
 
-        <section class="funding">
-          <h3>Paying for a PhD here</h3>
-          <template v-if="grantFunders.length">
-            <p>
-              <strong class="num">{{ funded }}</strong> of the
-              {{ faculty.length }}
-              {{
-                query.goal
-                  ? "faculty matching your search"
-                  : hasAreas
-                    ? "faculty in your areas"
-                    : "faculty listed below"
-              }}
-              have an active {{ grantFunderNames }} grant. PhD students are
-              usually paid as research or teaching assistants, which also covers
-              tuition, and faculty with active grants are the ones hiring
-              research assistants.
-            </p>
-            <ul v-if="uni.funders?.length" class="funders">
-              <li v-for="fd in uni.funders" :key="fd.funder">
-                <strong>{{ funderName(fd.funder) }}</strong
-                >: {{ fd.people }}
-                {{ fd.people === 1 ? "person" : "people" }} with grants on
-                record, {{ fd.active_people }} with one running now
-              </li>
-            </ul>
-            <div v-if="uni.recently_funded?.length" class="recent">
-              <p class="sub">Recently funded (likely hiring):</p>
+          <section
+            v-if="strengths.length || uni.fields?.length"
+            class="strengths"
+          >
+            <h3>Research strengths</h3>
+            <template v-if="strengths.length">
+              <p class="sub">
+                {{
+                  uni.fields?.length
+                    ? "Computer science faculty here, by area (the full CSRankings list)"
+                    : "Faculty and researchers listed here, by area"
+                }}
+              </p>
               <ul>
-                <li v-for="g in uni.recently_funded" :key="g.name + g.title">
-                  <button
-                    type="button"
-                    class="link"
-                    @click="emit('openProfessor', g.name)"
-                  >
-                    {{ g.name.replace(/\s+\d{4}$/, "") }}</button
-                  >, {{ funderName(g.funder) }} {{ g.year }}: {{ g.title }}
+                <li v-for="a in strengths" :key="a.area">
+                  <span class="s-name">{{ a.name }}</span>
+                  <span class="s-track"
+                    ><span
+                      class="s-fill"
+                      :style="{ width: a.width + '%', background: a.color }"
+                    ></span
+                  ></span>
+                  <span class="num">{{ a.n }}</span>
                 </li>
               </ul>
-            </div>
-            <p v-if="ercOnly" class="sub">
-              ERC grants are rare, highly competitive awards, and most PhD
-              positions in {{ countryLabel }} are paid from national agencies
-              and university budgets that aren't in Advisor Atlas yet. Read "no
-              ERC grant" as "no data", not "no funding".
+            </template>
+            <p v-if="uni.fields?.length" class="sub fields-line">
+              {{ strengths.length ? "Also here: researchers" : "Researchers" }}
+              in {{ uni.fields.length }}
+              {{ uni.fields.length === 1 ? "field" : "fields" }}, among them
+              {{
+                uni.fields
+                  .slice(0, 3)
+                  .map((f) => f.field)
+                  .join(", ")
+              }}.
+              <button type="button" class="link" @click="uniTab = 'faculty'">
+                See them by field
+              </button>
             </p>
-          </template>
-          <p v-else>
-            Grant data for universities in {{ countryLabel }} isn't in Advisor
-            Atlas yet, so faculty funding isn't shown. Ask faculty directly
-            about funded PhD positions, and see the scholarships below.
-          </p>
-          <div v-if="uni.training?.length" class="recent training">
-            <p class="sub">
-              Funded PhD programmes ({{ uni.training.length }}): training grants
-              that pay students' stipends and tuition. Apply to the programme,
-              not to one professor.
-            </p>
-            <ul>
-              <li v-for="g in shownTraining" :key="g.title">
-                <a
-                  v-if="webUrl(g.url)"
-                  :href="webUrl(g.url)"
-                  target="_blank"
-                  rel="noopener"
-                  >{{ g.title }}</a
-                >
-                <span v-else>{{ g.title }}</span
-                >, {{ funderName(g.funder) }}, until
-                {{ (g.ends ?? "").slice(0, 4)
-                }}<template v-if="g.lead"
-                  >, led by
-                  <button
-                    v-if="g.profile"
-                    type="button"
-                    class="link"
-                    @click="emit('openProfessor', g.profile)"
-                  >
-                    {{ g.profile.replace(/\s+\d{4}$/, "") }}</button
-                  ><template v-else>{{ g.lead }}</template></template
-                >
-              </li>
-            </ul>
-            <button
-              v-if="uni.training.length > 4"
-              type="button"
-              class="link more"
-              @click="allTraining = !allTraining"
-            >
-              {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
-            </button>
-          </div>
-        </section>
+          </section>
 
-        <section class="scholarships">
+          <section class="funding">
+            <h3>Paying for a PhD here</h3>
+            <template v-if="grantFunders.length">
+              <p>
+                <strong class="num">{{ funded }}</strong> of the
+                {{ faculty.length }}
+                {{
+                  query.goal
+                    ? "faculty matching your search"
+                    : hasAreas
+                      ? "faculty in your areas"
+                      : "faculty listed below"
+                }}
+                have an active {{ grantFunderNames }} grant. PhD students are
+                usually paid as research or teaching assistants, which also
+                covers tuition, and faculty with active grants are the ones
+                hiring research assistants.
+              </p>
+              <ul v-if="uni.funders?.length" class="funders">
+                <li v-for="fd in uni.funders" :key="fd.funder">
+                  <strong>{{ funderName(fd.funder) }}</strong
+                  >: {{ fd.people }}
+                  {{ fd.people === 1 ? "person" : "people" }} with grants on
+                  record, {{ fd.active_people }} with one running now
+                </li>
+              </ul>
+              <div v-if="uni.recently_funded?.length" class="recent">
+                <p class="sub">Recently funded (likely hiring):</p>
+                <ul>
+                  <li v-for="g in uni.recently_funded" :key="g.name + g.title">
+                    <button
+                      type="button"
+                      class="link"
+                      @click="emit('openProfessor', g.name)"
+                    >
+                      {{ g.name.replace(/\s+\d{4}$/, "") }}</button
+                    >, {{ funderName(g.funder) }} {{ g.year }}: {{ g.title }}
+                  </li>
+                </ul>
+              </div>
+              <p v-if="ercOnly" class="sub">
+                ERC grants are rare, highly competitive awards, and most PhD
+                positions in {{ countryLabel }} are paid from national agencies
+                and university budgets that aren't in Advisor Atlas yet. Read
+                "no ERC grant" as "no data", not "no funding".
+              </p>
+            </template>
+            <p v-else>
+              Grant data for universities in {{ countryLabel }} isn't in Advisor
+              Atlas yet, so faculty funding isn't shown. Ask faculty directly
+              about funded PhD positions, and see the scholarships below.
+            </p>
+            <div v-if="uni.training?.length" class="recent training">
+              <p class="sub">
+                Funded PhD programmes ({{ uni.training.length }}): training
+                grants that pay students' stipends and tuition. Apply to the
+                programme, not to one professor.
+              </p>
+              <ul>
+                <li v-for="g in shownTraining" :key="g.title">
+                  <a
+                    v-if="webUrl(g.url)"
+                    :href="webUrl(g.url)"
+                    target="_blank"
+                    rel="noopener"
+                    >{{ g.title }}</a
+                  >
+                  <span v-else>{{ g.title }}</span
+                  >, {{ funderName(g.funder) }}, until
+                  {{ (g.ends ?? "").slice(0, 4)
+                  }}<template v-if="g.lead"
+                    >, led by
+                    <button
+                      v-if="g.profile"
+                      type="button"
+                      class="link"
+                      @click="emit('openProfessor', g.profile)"
+                    >
+                      {{ g.profile.replace(/\s+\d{4}$/, "") }}</button
+                    ><template v-else>{{ g.lead }}</template></template
+                  >
+                </li>
+              </ul>
+              <button
+                v-if="uni.training.length > 4"
+                type="button"
+                class="link more"
+                @click="allTraining = !allTraining"
+              >
+                {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
+              </button>
+            </div>
+            <button type="button" class="to-tab" @click="uniTab = 'funding'">
+              See the grants held here
+            </button>
+          </section>
+        </template>
+
+        <UniversityGrants
+          v-if="uniTab === 'funding'"
+          :university-id="id"
+          :goal="query.goal"
+          @open-person="(n: string) => emit('openProfessor', n)"
+        />
+
+        <section v-if="uniTab === 'scholarships'" class="scholarships">
           <h3>Funding you can apply for</h3>
           <p v-if="!scholarships.length" class="sub">
             No scholarships in our list for study in {{ countryLabel }}.
           </p>
+          <template v-else>
+            <TabSearch
+              v-model="schQ"
+              live
+              label="Search these scholarships"
+              placeholder="Search by name, funder or what it covers"
+            />
+            <div class="tab-controls">
+              <label>
+                <span class="visually-hidden">Sort scholarships</span>
+                <select v-model="schSort">
+                  <option value="window">Opens soonest</option>
+                  <option value="name">A to Z</option>
+                </select>
+              </label>
+              <button
+                v-if="schQ || schLevel"
+                type="button"
+                class="clear"
+                @click="
+                  schQ = '';
+                  schLevel = '';
+                "
+              >
+                Clear
+              </button>
+            </div>
+            <p
+              v-if="!curatedScholarships.length && !feedScholarships.length"
+              class="sub"
+            >
+              None match. Try another word, or clear the search.
+            </p>
+          </template>
           <p
-            v-if="schLevels.length > 1"
+            v-if="schLevels.length"
             class="levels"
             role="group"
             aria-label="Level"
@@ -452,7 +717,7 @@ function money(n?: number) {
               :class="{ on: !schLevel }"
               @click="schLevel = ''"
             >
-              All
+              All {{ scholarships.length }}
             </button>
             <button
               v-for="l in schLevels"
@@ -461,7 +726,7 @@ function money(n?: number) {
               :class="{ on: schLevel === l }"
               @click="schLevel = l"
             >
-              {{ levelLabel([l]) }}
+              {{ levelLabel([l]) }} {{ atLevelCount(l) }}
             </button>
           </p>
           <ul class="sch-list">
@@ -524,29 +789,212 @@ function money(n?: number) {
           </p>
         </section>
 
-        <section>
+        <section v-if="uniTab === 'faculty'">
           <h3>
             {{
-              query.goal
-                ? "Faculty whose work matches your goal"
+              facQ
+                ? `Faculty whose work matches “${facQ}”`
                 : hasAreas
                   ? "Faculty in your areas"
                   : "Faculty"
             }}
           </h3>
-          <p v-if="!loading && !faculty.length" class="sub">
-            No faculty here match. Try fewer words in your goal, or another
-            area.
+          <div v-if="uni.people" class="pglance">
+            <dl
+              class="pstats"
+              :data-audit-ok="
+                uni.people.funded ? undefined : 'a 0 here is explained below'
+              "
+            >
+              <div>
+                <dt>Listed here</dt>
+                <dd>{{ uni.faculty_total.toLocaleString("en-US") }}</dd>
+              </div>
+              <div>
+                <dt>With an active grant</dt>
+                <dd>{{ uni.people.funded.toLocaleString("en-US") }}</dd>
+              </div>
+              <div v-if="uni.people.new_lab">
+                <dt>New lab, funded</dt>
+                <dd>{{ uni.people.new_lab.toLocaleString("en-US") }}</dd>
+              </div>
+              <div
+                v-if="uni.people.csrankings"
+                title="Computer science faculty whose first paper was in the last six years (known only for computer science, from DBLP)"
+              >
+                <dt>Early-career CS faculty</dt>
+                <dd>{{ uni.people.early.toLocaleString("en-US") }}</dd>
+              </div>
+            </dl>
+            <p v-if="!uni.people.funded" class="note zero">
+              No one listed here has a running grant in the data Advisor Atlas
+              holds for {{ countryLabel
+              }}<template v-if="uni.grant_funders?.length">
+                ({{
+                  uni.grant_funders
+                    .map((f) => funderName(f).replace(/\s*\([^)]*\)$/, ""))
+                    .join(", ")
+                }})</template
+              ><template v-else> (none yet)</template>. That usually means the
+              funding isn't in our data, not that there is none: ask about
+              funded positions when you write.
+            </p>
+
+            <template v-if="strengths.length && uni.people.csrankings">
+              <p class="cap">
+                Computer science, by area ({{ uni.people.csrankings }} faculty,
+                the full CSRankings list)
+              </p>
+              <ul class="pbars">
+                <li v-for="a in strengths.slice(0, 6)" :key="a.area">
+                  <button
+                    type="button"
+                    class="pick"
+                    :class="{ on: facAreaLabel === a.name }"
+                    :aria-pressed="facAreaLabel === a.name"
+                    @click="pickArea(a.area, a.name)"
+                  >
+                    {{ a.name }}
+                  </button>
+                  <span class="s-track"
+                    ><span
+                      class="s-fill"
+                      :style="{ width: a.width + '%', background: a.color }"
+                    ></span
+                  ></span>
+                  <span class="num">{{ a.n }}</span>
+                </li>
+              </ul>
+            </template>
+
+            <template v-if="uni.fields?.length">
+              <p class="cap">
+                {{
+                  uni.people.csrankings ? "Other fields here" : "Fields here"
+                }}
+              </p>
+              <p
+                class="chips"
+                data-audit-ok="OpenAlex's sample: up to 20 per field, explained in the note below"
+              >
+                <button
+                  v-for="f in fieldList"
+                  :key="f.field"
+                  type="button"
+                  class="chip"
+                  :class="{ on: facAreaLabel === f.field }"
+                  :aria-pressed="facAreaLabel === f.field"
+                  @click="pickField(f.field)"
+                  :title="`${f.people} listed${f.funded ? `, ${f.funded} with an active grant` : ''}`"
+                >
+                  {{ f.field
+                  }}<span v-if="f.people < 20" class="n"> {{ f.people }}</span>
+                </button>
+                <button
+                  v-if="(uni.fields?.length ?? 0) > 10"
+                  type="button"
+                  class="clear"
+                  @click="fieldsAll = !fieldsAll"
+                >
+                  {{ fieldsAll ? "Fewer" : `All ${uni.fields.length}` }}
+                </button>
+              </p>
+              <p class="note">
+                Researchers outside computer science are the most-cited in each
+                field here, up to 20 per field (from OpenAlex): these show which
+                fields are here, not how big they are. Pick one to list its
+                people.
+              </p>
+            </template>
+          </div>
+
+          <TabSearch
+            v-model="facQ"
+            label="Search this university's faculty"
+            placeholder="Search by research topic, e.g. protein design"
+          />
+          <div class="tab-controls">
+            <label>
+              <input v-model="facFunded" type="checkbox" />
+              Active grant
+            </label>
+            <label>
+              <input v-model="facNewLab" type="checkbox" />
+              New lab, funded
+            </label>
+            <label>
+              <span class="visually-hidden">Sort faculty</span>
+              <select v-model="facSort">
+                <option value="">
+                  {{
+                    facQ || query.areas.length ? "Best match" : "Most active"
+                  }}
+                </option>
+                <option value="recent">Most papers lately</option>
+                <option value="funding">Newest grant</option>
+              </select>
+            </label>
+            <label>
+              <span class="visually-hidden">Find a name</span>
+              <input
+                v-model="facName"
+                class="name-filter"
+                type="search"
+                placeholder="Find a name"
+              />
+            </label>
+            <span v-if="facAreaLabel" class="picked"
+              >{{ facAreaLabel }}
+              <button
+                type="button"
+                aria-label="Show every field"
+                @click="unpick"
+              >
+                ×
+              </button></span
+            >
+            <button
+              v-if="facNarrowed"
+              type="button"
+              class="clear"
+              @click="clearFaculty"
+            >
+              Clear
+            </button>
+          </div>
+          <LoadingRows v-if="loading && uni" bar label="Updating faculty" />
+          <p v-if="!loading && !shownFaculty.length" class="sub">
+            {{
+              facName
+                ? `No one named “${facName}” among these.`
+                : "No faculty here match. Try fewer words, or clear the filters."
+            }}
           </p>
           <ul class="list">
             <FacultyRow
-              v-for="f in faculty"
+              v-for="f in shownFaculty.slice(0, facultyShown)"
               :key="f.name"
               :person="f"
               :selected-areas="query.areas"
               @open="emit('openProfessor', $event)"
             />
           </ul>
+          <button
+            v-if="shownFaculty.length > facultyShown"
+            type="button"
+            class="show-more"
+            @click="facultyShown += 10"
+          >
+            Show 10 more ({{ shownFaculty.length - facultyShown }} left)
+          </button>
+          <p
+            v-else-if="uni && !facName && faculty.length < uni.faculty_total"
+            class="sub"
+          >
+            The {{ faculty.length }}
+            {{ facQ || hasAreas ? "best matches" : "most active" }} of
+            {{ uni.faculty_total.toLocaleString("en-US") }} are listed.
+          </p>
         </section>
 
         <a
@@ -564,6 +1012,189 @@ function money(n?: number) {
 </template>
 
 <style scoped>
+.fields-line {
+  margin-top: 10px;
+}
+.fields-line .link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pglance {
+  margin: 12px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+}
+.pstats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 0;
+}
+.pstats dt {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.pstats dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pglance .cap {
+  margin: 14px 0 6px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.pbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pbars li {
+  display: grid;
+  grid-template-columns: minmax(0, 12em) 1fr 2.5em;
+  gap: 10px;
+  align-items: center;
+  padding: 2px 0;
+  font-size: var(--t-xs);
+}
+.pbars .num {
+  text-align: right;
+}
+.pick {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pick:hover,
+.pick.on {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pick.on {
+  font-weight: 700;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+.chip {
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 3px 10px 2px;
+  font: inherit;
+  font-size: var(--t-xs);
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip .n {
+  margin-left: 5px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover {
+  border-color: var(--ink);
+}
+.chip.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.chip.on .n {
+  color: #fff;
+}
+.chips .clear {
+  border: 0;
+  background: none;
+  padding: 0 4px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pglance .note.zero {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+}
+.pglance .note {
+  margin: 8px 0 0;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+.picked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 1px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+.picked button {
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.name-filter {
+  font: inherit;
+  width: 9em;
+  padding: 4px 6px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+}
+.uni-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 16px 0 4px;
+  border-bottom: 1px solid var(--rule);
+}
+.uni-tabs button {
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.uni-tabs button.on {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.uni-tabs button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
 .drawer {
   position: relative;
   height: 100%;
@@ -727,6 +1358,28 @@ h3 {
 
 .training {
   margin-top: 14px;
+}
+
+/* Opens the Funding tab: a button like "Save to your list", set apart from the lists above */
+.to-tab {
+  display: block;
+  margin-top: 18px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  padding: 5px 14px 4px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.to-tab:hover {
+  border-color: var(--ink);
+}
+.to-tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .recent .more {

@@ -64,3 +64,119 @@ export function webUrl(url: string | null | undefined): string | undefined {
   if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return undefined; // another scheme: javascript:, data:, ...
   return `https://${u.replace(/^\/+/, "")}`;
 }
+
+// Grants, as the Funding tab and a university's page show them
+export function niceName(s: string): string {
+  // UKRI lists institutions in capitals; KAKEN adds the Japanese name after " | ".
+  const first = s.split(" | ")[0];
+  // Only longer all-caps names: "OHSU" and "MIT" stay as they are.
+  return first === first.toUpperCase() && first.includes(" ")
+    ? first
+        .toLowerCase()
+        // capitalise words, not letters after an apostrophe ("Children's", not "Children'S")
+        .replace(/(^|[\s(\-/&,.])(\w)/g, (_, sep, c) => sep + c.toUpperCase())
+    : first;
+}
+// a profile name without the year DBLP adds to tell namesakes apart ("Wei Wang 0001")
+export function short(name: string) {
+  return name.replace(/\s+\d{4}$/, "");
+}
+export function grantYears(g: { starts: string | null; ends: string | null }) {
+  return [formatYear(g.starts), formatYear(g.ends)].filter(Boolean).join("–");
+}
+// "≈ $1.2M": amounts from 42 funders in one currency, at fixed approximate rates (server/currency.go)
+export function approxUSD(
+  v: number | null | undefined,
+  currency?: string | null,
+) {
+  if (v == null || currency === "USD") return "";
+  return `≈ ${formatMoney(v, "USD")}`;
+}
+// Titles some funders publish only in their own language
+export function titleLanguage(t: string): string {
+  if (/[\uac00-\ud7a3]/.test(t)) return "Title in Korean";
+  if (/[\u3040-\u30ff]/.test(t)) return "Title in Japanese";
+  if (/[\u3400-\u9fff]/.test(t)) return "Title in Chinese";
+  return "";
+}
+export const KIND_LABEL = {
+  new_lab: "New lab",
+  training: "Funds PhD students",
+} as const;
+// A person's name as some funders send it ("ROBERT Frank Paulson", "JANE DOE"): words in capitals
+// become "Robert"; initials ("W", "J.") and short particles stay as they are.
+export function personName(name: string | null | undefined): string {
+  return (name ?? "").replace(/\p{Lu}{2,}[\p{Lu}'-]*/gu, (w) =>
+    w.length <= 2
+      ? w
+      : // "SEO-YEON" -> "Seo-Yeon", "O'BRIEN" -> "O'Brien"
+        w
+          .toLowerCase()
+          .replace(/(^|[-'])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase()),
+  );
+}
+// A grant title some funders send in capitals ("A QUANTITATIVE, PREDICTIVE MODEL OF ..."): read in
+// sentence case. Titles with any lowercase letter are left alone (their acronyms are already right).
+export function grantTitle(title: string | null | undefined): string {
+  const t = (title ?? "").trim();
+  if (t.length < 12 || t !== t.toUpperCase() || !/\p{Lu}{4}/u.test(t)) return t;
+  const lower = t.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+// A programme or office name sent in capitals ("OFFICE OF MULTIDISCIPLINARY AC", "SOLID STATE &
+// MATERIALS CHEMISTRY"): title case, small words lower, short acronyms ("AC", "CDS&E") kept.
+// Programme names NSF writes its own way
+const KNOWN_WORDS: Record<string, string> = {
+  career: "CAREER",
+  epscor: "EPSCoR",
+  "career:": "CAREER:",
+  iucrc: "IUCRC",
+  sbir: "SBIR",
+  sttr: "STTR",
+  stem: "STEM",
+};
+const SMALL_WORDS = new Set([
+  "of",
+  "and",
+  "the",
+  "for",
+  "in",
+  "on",
+  "to",
+  "a",
+  "an",
+  "at",
+  "by",
+  "or",
+  "with",
+]);
+export function programName(name: string | null | undefined): string {
+  const t = (name ?? "").trim();
+  if (t !== t.toUpperCase() || !/\p{Lu}{4}/u.test(t)) return t;
+  return t
+    .split(/(\s+)/)
+    .map((w, i) => {
+      if (/^\s+$/.test(w)) return w;
+      const lower = w.toLowerCase();
+      if (KNOWN_WORDS[lower]) return KNOWN_WORDS[lower];
+      if (i > 0 && SMALL_WORDS.has(lower)) return lower;
+      if (w.replace(/[^\p{L}]/gu, "").length <= 3 || /[&\d]/.test(w)) return w; // AC, CDS&E, 3D
+      return lower.replace(
+        /(^|[-/])(\p{L})/gu,
+        (_, sep, c) => sep + c.toUpperCase(),
+      );
+    })
+    .join("");
+}
+
+// A grant role as funders write it ("PI", "CoI", "Co-PI", "Co-Principal Investigator")
+export function roleLabel(
+  role: string | null | undefined,
+  lead = false,
+): string {
+  const r = (role ?? "").trim();
+  if (lead || /^(pi|principal investigator|lead)$/i.test(r)) return "leads it";
+  if (/^co-?(pi|principal)/i.test(r)) return "Co-PI";
+  if (!r || /^(coi|co-?investigator)$/i.test(r)) return "Co-investigator";
+  return r;
+}
