@@ -495,7 +495,7 @@ function money(n?: number) {
                 {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
               </button>
             </div>
-            <button type="button" class="link more" @click="uniTab = 'funding'">
+            <button type="button" class="to-tab" @click="uniTab = 'funding'">
               See the grants held here
             </button>
           </section>
@@ -839,6 +839,28 @@ h3 {
 
 .training {
   margin-top: 14px;
+}
+
+/* Opens the Funding tab: a button like "Save to your list", set apart from the lists above */
+.to-tab {
+  display: block;
+  margin-top: 18px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  padding: 5px 14px 4px;
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.to-tab:hover {
+  border-color: var(--ink);
+}
+.to-tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .recent .more {
