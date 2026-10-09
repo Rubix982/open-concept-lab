@@ -215,3 +215,4 @@ deck.gl/**/**
 
 # Deployment secrets (DEPLOY.md)
 .env.deploy
+docs/ux-audit/screens/

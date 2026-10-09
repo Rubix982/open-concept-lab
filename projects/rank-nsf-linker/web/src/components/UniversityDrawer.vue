@@ -800,7 +800,12 @@ function money(n?: number) {
             }}
           </h3>
           <div v-if="uni.people" class="pglance">
-            <dl class="pstats">
+            <dl
+              class="pstats"
+              :data-audit-ok="
+                uni.people.funded ? undefined : 'a 0 here is explained below'
+              "
+            >
               <div>
                 <dt>Listed here</dt>
                 <dd>{{ uni.faculty_total.toLocaleString("en-US") }}</dd>
@@ -821,6 +826,19 @@ function money(n?: number) {
                 <dd>{{ uni.people.early.toLocaleString("en-US") }}</dd>
               </div>
             </dl>
+            <p v-if="!uni.people.funded" class="note zero">
+              No one listed here has a running grant in the data Advisor Atlas
+              holds for {{ countryLabel
+              }}<template v-if="uni.grant_funders?.length">
+                ({{
+                  uni.grant_funders
+                    .map((f) => funderName(f).replace(/\s*\([^)]*\)$/, ""))
+                    .join(", ")
+                }})</template
+              ><template v-else> (none yet)</template>. That usually means the
+              funding isn't in our data, not that there is none: ask about
+              funded positions when you write.
+            </p>
 
             <template v-if="strengths.length && uni.people.csrankings">
               <p class="cap">
@@ -855,7 +873,10 @@ function money(n?: number) {
                   uni.people.csrankings ? "Other fields here" : "Fields here"
                 }}
               </p>
-              <p class="chips">
+              <p
+                class="chips"
+                data-audit-ok="OpenAlex's sample: up to 20 per field, explained in the note below"
+              >
                 <button
                   v-for="f in fieldList"
                   :key="f.field"
@@ -1112,6 +1133,10 @@ function money(n?: number) {
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
+}
+.pglance .note.zero {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
 }
 .pglance .note {
   margin: 8px 0 0;

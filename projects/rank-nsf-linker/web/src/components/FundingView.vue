@@ -3,13 +3,14 @@ import { computed, ref, watch } from "vue";
 import { api, type Landscape } from "@/api";
 import LoadingRows from "@/components/LoadingRows.vue";
 import {
+  KIND_LABEL,
   approxUSD,
   formatMoney,
   grantTitle,
   grantYears as years,
-  KIND_LABEL,
   niceName,
   personName,
+  programName,
   short,
   titleLanguage,
   webUrl,
@@ -298,12 +299,13 @@ function isCompany(s: string) {
       <section v-if="programs.length">
         <h3>NSF programmes that fund this</h3>
         <p class="hint">
-          As NSF names them. Search a name on nsf.gov for its current call and
-          deadlines.
+          NSF's programmes. Search a programme's name for its current call and
+          deadlines (nsf.gov itself isn't reachable from some countries,
+          Pakistan among them).
         </p>
         <ul class="programs">
           <li v-for="p in programs" :key="p.name">
-            <span>{{ p.name }}</span>
+            <span>{{ programName(p.name) }}</span>
             <span class="sub"
               >{{ p.grants }} {{ p.grants === 1 ? "grant" : "grants" }},
               {{ p.running }} running</span

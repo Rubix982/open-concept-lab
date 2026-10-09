@@ -151,6 +151,10 @@ golden-restore:
 	@test -n "$(DIR)" || (echo "Usage: make golden-restore DIR=golden/<date>" && exit 1)
 	python3 server/scripts/golden/golden.py restore $(DIR)
 
+## ux-audit: Walk the app in a browser and list small UX flaws (docs/ux-audit/latest.md); URL=http://localhost:3000
+ux-audit:
+	cd web && node scripts/ux-audit.mjs $(if $(URL),$(URL),http://localhost:3000)
+
 ## pipeline-from: Rerun the population pipeline from step STEP onward (e.g. make pipeline-from STEP=10)
 pipeline-from:
 	@test -n "$(STEP)" || (echo "Usage: make pipeline-from STEP=<n> [TO=<n>]" && exit 1)

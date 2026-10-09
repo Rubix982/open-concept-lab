@@ -307,6 +307,15 @@ const shownUniversities = computed(() =>
   ),
 );
 
+// The panel's lists, 20 at a time: the full answer (60 people, 80 universities) ran on and on
+const LIST_STEP = 20;
+const facultyShown = ref(LIST_STEP);
+const universitiesShown = ref(LIST_STEP);
+watch([goal, () => selectedAreas.value.join(","), filterParams, tab], () => {
+  facultyShown.value = LIST_STEP;
+  universitiesShown.value = LIST_STEP;
+});
+
 const rankedUniversities = computed(() =>
   shownUniversities.value
     .filter((u) => (goal.value ? u.goal_matches > 0 : u.faculty > 0))
@@ -873,7 +882,10 @@ const areaChips = computed(() => {
         class="uni-list"
         :class="{ stale: loading }"
       >
-        <li v-for="u in rankedUniversities" :key="u.id">
+        <li
+          v-for="u in rankedUniversities.slice(0, universitiesShown)"
+          :key="u.id"
+        >
           <button
             type="button"
             :class="{ on: u.id === openUni }"
@@ -893,6 +905,23 @@ const areaChips = computed(() => {
           </button>
         </li>
       </ol>
+      <button
+        v-if="
+          ready &&
+          !newSearch &&
+          tab === 'universities' &&
+          rankedUniversities.length > universitiesShown
+        "
+        type="button"
+        class="show-more"
+        @click="universitiesShown += LIST_STEP"
+      >
+        Show
+        {{
+          Math.min(LIST_STEP, rankedUniversities.length - universitiesShown)
+        }}
+        more ({{ rankedUniversities.length - universitiesShown }} left)
+      </button>
 
       <FundingView
         v-else-if="areas.length && tab === 'funding'"
@@ -911,7 +940,7 @@ const areaChips = computed(() => {
         :class="{ stale: loading }"
       >
         <FacultyRow
-          v-for="f in faculty"
+          v-for="f in faculty.slice(0, facultyShown)"
           :key="f.name"
           :person="f"
           :selected-areas="selectedAreas"
@@ -919,6 +948,22 @@ const areaChips = computed(() => {
           @open="openProfessorFromList"
         />
       </ul>
+      <button
+        v-if="
+          ready &&
+          !newSearch &&
+          tab === 'faculty' &&
+          faculty.length > facultyShown
+        "
+        type="button"
+        class="show-more"
+        @click="facultyShown += LIST_STEP"
+      >
+        Show {{ Math.min(LIST_STEP, faculty.length - facultyShown) }} more ({{
+          faculty.length - facultyShown
+        }}
+        left)
+      </button>
       <p
         v-if="ready && !loading && tab === 'faculty' && !faculty.length"
         class="empty"

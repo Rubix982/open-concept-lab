@@ -6,13 +6,15 @@ import { computed, onMounted, ref, watch } from "vue";
 import { api, type GrantDetail } from "@/api";
 import LoadingRows from "@/components/LoadingRows.vue";
 import {
+  KIND_LABEL,
   approxUSD,
   formatMoney,
   formatYear,
   grantTitle,
-  KIND_LABEL,
   niceName,
   personName,
+  programName,
+  roleLabel,
   short,
   webUrl,
 } from "@/lines";
@@ -146,7 +148,7 @@ function goUniversity(id: string) {
         </div>
         <div v-if="grant.programs.length">
           <dt>{{ grant.funder === "nsf" ? "Programme" : "Scheme" }}</dt>
-          <dd>{{ grant.programs.join(", ") }}</dd>
+          <dd>{{ grant.programs.map(programName).join(", ") }}</dd>
         </div>
       </dl>
 
@@ -163,9 +165,7 @@ function goUniversity(id: string) {
               {{ short(m.profile) }}
             </button>
             <template v-else>{{ personName(m.name) }}</template>
-            <span class="role">{{
-              m.role === "PI" ? "leads it" : (m.role ?? "")
-            }}</span>
+            <span class="role">{{ roleLabel(m.role) }}</span>
             <span v-if="m.profile" class="in-atlas">in Advisor Atlas</span>
           </li>
         </ul>

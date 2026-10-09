@@ -6,6 +6,7 @@ import {
   formatMoney,
   grantTitle,
   grantYears,
+  roleLabel,
   webUrl,
 } from "@/lines";
 import {
@@ -71,14 +72,9 @@ async function toggleGrants() {
     grantsFailed.value = true;
   }
 }
-// Roles as funders write them: "CoI", "Co-PI", "Co-Investigator", "PI"
 function roleOf(a: Award): string {
-  if (a.lead) return "Leads it";
-  const r = (a.role ?? "").trim();
-  if (/^co-?(pi|principal)/i.test(r)) return "Co-PI"; // "Co-PI", "Co-Principal Investigator"
-  if (!r || /^(coi|co-?investigator|pi|principal.*)$/i.test(r))
-    return "Co-investigator";
-  return r;
+  const r = roleLabel(a.role, a.lead);
+  return r.charAt(0).toUpperCase() + r.slice(1);
 }
 </script>
 

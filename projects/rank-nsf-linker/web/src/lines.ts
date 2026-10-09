@@ -123,3 +123,60 @@ export function grantTitle(title: string | null | undefined): string {
   const lower = t.toLowerCase();
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
+// A programme or office name sent in capitals ("OFFICE OF MULTIDISCIPLINARY AC", "SOLID STATE &
+// MATERIALS CHEMISTRY"): title case, small words lower, short acronyms ("AC", "CDS&E") kept.
+// Programme names NSF writes its own way
+const KNOWN_WORDS: Record<string, string> = {
+  career: "CAREER",
+  epscor: "EPSCoR",
+  "career:": "CAREER:",
+  iucrc: "IUCRC",
+  sbir: "SBIR",
+  sttr: "STTR",
+  stem: "STEM",
+};
+const SMALL_WORDS = new Set([
+  "of",
+  "and",
+  "the",
+  "for",
+  "in",
+  "on",
+  "to",
+  "a",
+  "an",
+  "at",
+  "by",
+  "or",
+  "with",
+]);
+export function programName(name: string | null | undefined): string {
+  const t = (name ?? "").trim();
+  if (t !== t.toUpperCase() || !/\p{Lu}{4}/u.test(t)) return t;
+  return t
+    .split(/(\s+)/)
+    .map((w, i) => {
+      if (/^\s+$/.test(w)) return w;
+      const lower = w.toLowerCase();
+      if (KNOWN_WORDS[lower]) return KNOWN_WORDS[lower];
+      if (i > 0 && SMALL_WORDS.has(lower)) return lower;
+      if (w.replace(/[^\p{L}]/gu, "").length <= 3 || /[&\d]/.test(w)) return w; // AC, CDS&E, 3D
+      return lower.replace(
+        /(^|[-/])(\p{L})/gu,
+        (_, sep, c) => sep + c.toUpperCase(),
+      );
+    })
+    .join("");
+}
+
+// A grant role as funders write it ("PI", "CoI", "Co-PI", "Co-Principal Investigator")
+export function roleLabel(
+  role: string | null | undefined,
+  lead = false,
+): string {
+  const r = (role ?? "").trim();
+  if (lead || /^(pi|principal investigator|lead)$/i.test(r)) return "leads it";
+  if (/^co-?(pi|principal)/i.test(r)) return "Co-PI";
+  if (!r || /^(coi|co-?investigator)$/i.test(r)) return "Co-investigator";
+  return r;
+}
