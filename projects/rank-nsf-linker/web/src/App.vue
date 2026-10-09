@@ -349,6 +349,14 @@ function openUniversity(id: string | null, professor: string | null = null) {
   openProf.value = professor;
 }
 
+// From a profile's university name: that university's page, and the map moved to it (also when the
+// profile was opened from the same university, so the map would not move on its own).
+const mapView = ref<InstanceType<typeof MapView> | null>(null);
+function showUniversity(id: string) {
+  openUniversity(id);
+  nextTick(() => mapView.value?.flyToUniversity(id));
+}
+
 function openProfessorFromList(name: string, universityId?: string | null) {
   const person = faculty.value.find((f) => f.name === name);
   openUniversity(universityId ?? person?.university_id ?? null, name);
@@ -934,6 +942,7 @@ const areaChips = computed(() => {
           fundingMap ? (goal ? 'grants on this search' : 'grants') : undefined
         "
         :countries="listedCountries"
+        ref="mapView"
         :selected-id="openUni"
         :focus="goalFocus"
         @select="openUniversity($event)"
@@ -964,6 +973,7 @@ const areaChips = computed(() => {
       :professor="openProf"
       @close="openUniversity(null)"
       @open-professor="openProf = $event"
+      @open-university="showUniversity($event)"
     />
 
     <TourGuide v-if="touring" :steps="tourSteps" @end="endTour" />

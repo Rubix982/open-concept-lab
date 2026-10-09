@@ -15,7 +15,7 @@ import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
 
 const props = defineProps<{ name: string; backLabel: string; goal?: string }>();
-const emit = defineEmits<{ back: []; open: [name: string] }>();
+const emit = defineEmits<{ back: []; open: [name: string]; university: [id: string] }>();
 
 const person = ref<Faculty | null>(null);
 const awards = ref<Award[]>([]);
@@ -247,7 +247,18 @@ function untilLabel(date: string | null): string {
     <template v-if="person">
       <header>
         <h2>{{ displayName }}</h2>
-        <p class="uni">{{ person.university }}</p>
+        <p class="uni">
+          <button
+            v-if="person.university_id"
+            type="button"
+            class="uni-link"
+            :title="`Open ${person.university} and show it on the map`"
+            @click="emit('university', person.university_id)"
+          >
+            {{ person.university }}
+          </button>
+          <template v-else>{{ person.university }}</template>
+        </p>
         <button
           type="button"
           class="save"
@@ -588,6 +599,22 @@ h2 {
 .uni {
   margin-top: 4px;
   color: var(--ink-soft);
+}
+.uni-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.uni-link:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
 }
 
 .prev,

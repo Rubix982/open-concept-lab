@@ -13,6 +13,7 @@ import { isSaved, toggleSaved } from "@/shortlist";
 import { areaIndex, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
+import UniversityGrants from "./UniversityGrants.vue";
 import LoadingRows from "@/components/LoadingRows.vue";
 
 const props = defineProps<{
@@ -20,7 +21,11 @@ const props = defineProps<{
   query: Query;
   professor: string | null;
 }>();
-const emit = defineEmits<{ close: []; openProfessor: [name: string | null] }>();
+const emit = defineEmits<{
+  close: [];
+  openProfessor: [name: string | null];
+  openUniversity: [id: string];
+}>();
 
 const uni = ref<UniversityDetail | null>(null);
 const faculty = ref<Faculty[]>([]);
@@ -53,13 +58,18 @@ watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, {
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
-// A level to narrow by (only the levels present are offered).
+// A level to narrow by: only levels that narrow the list are offered. When every programme covers
+// every level (China's two cover Master's and PhD), the buttons changed nothing and looked broken.
 const schLevel = ref("");
+const atLevelCount = (l: string) =>
+  scholarships.value.filter((s) => s.levels.includes(l)).length;
 const schLevels = computed(() =>
-  ["masters", "phd", "postdoc"].filter((l) =>
-    scholarships.value.some((s) => s.levels.includes(l)),
+  ["masters", "phd", "postdoc"].filter(
+    (l) => atLevelCount(l) > 0 && atLevelCount(l) < scholarships.value.length,
   ),
 );
+// A new list (another country): the level chosen for the last one may not be offered here.
+watch(scholarships, () => (schLevel.value = ""));
 const atLevel = (s: Scholarship) =>
   !schLevel.value || s.levels.includes(schLevel.value);
 
@@ -255,6 +265,7 @@ function money(n?: number) {
       :goal="query.goal"
       @back="emit('openProfessor', null)"
       @open="(n: string) => emit('openProfessor', n)"
+      @university="(id: string) => emit('openUniversity', id)"
     />
 
     <div v-else class="uni">
@@ -443,6 +454,11 @@ function money(n?: number) {
               {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
             </button>
           </div>
+          <UniversityGrants
+            :university-id="id"
+            :goal="query.goal"
+            @open-person="(n: string) => emit('openProfessor', n)"
+          />
         </section>
 
         <section class="scholarships">
@@ -451,7 +467,7 @@ function money(n?: number) {
             No scholarships in our list for study in {{ countryLabel }}.
           </p>
           <p
-            v-if="schLevels.length > 1"
+            v-if="schLevels.length"
             class="levels"
             role="group"
             aria-label="Level"
@@ -461,7 +477,7 @@ function money(n?: number) {
               :class="{ on: !schLevel }"
               @click="schLevel = ''"
             >
-              All
+              All {{ scholarships.length }}
             </button>
             <button
               v-for="l in schLevels"
@@ -470,7 +486,7 @@ function money(n?: number) {
               :class="{ on: schLevel === l }"
               @click="schLevel = l"
             >
-              {{ levelLabel([l]) }}
+              {{ levelLabel([l]) }} {{ atLevelCount(l) }}
             </button>
           </p>
           <ul class="sch-list">

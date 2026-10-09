@@ -2,7 +2,16 @@
 import { computed, ref, watch } from "vue";
 import { api, type Landscape } from "@/api";
 import LoadingRows from "@/components/LoadingRows.vue";
-import { formatMoney, formatYear, webUrl } from "@/lines";
+import {
+  approxUSD,
+  formatMoney,
+  grantYears as years,
+  KIND_LABEL,
+  niceName,
+  short,
+  titleLanguage,
+  webUrl,
+} from "@/lines";
 import { funderName } from "@/store";
 import { countryName } from "@/countries";
 
@@ -130,44 +139,11 @@ const trend = computed(() => {
 });
 const trendMax = computed(() => Math.max(1, ...trend.value.map((t) => t.n)));
 
-function niceName(s: string): string {
-  // UKRI lists institutions in capitals; KAKEN adds the Japanese name after " | ".
-  const first = s.split(" | ")[0];
-  // Only longer all-caps names: "OHSU" and "MIT" stay as they are.
-  return first === first.toUpperCase() && first.includes(" ")
-    ? first
-        .toLowerCase()
-        // capitalise words, not letters after an apostrophe ("Children's", not "Children'S")
-        .replace(/(^|[\s(\-/&,.])(\w)/g, (_, sep, c) => sep + c.toUpperCase())
-    : first;
-}
 const COMPANY =
   /\b(inc|llc|ltd|limited|corp|corporation|gmbh|sas|s\.a\.)\b\.?/i;
 function isCompany(s: string) {
   return COMPANY.test(s);
 }
-function short(name: string) {
-  return name.replace(/\s+\d{4}$/, "");
-}
-function years(g: Landscape["grants"][number]) {
-  return [formatYear(g.starts), formatYear(g.ends)].filter(Boolean).join("–");
-}
-// "≈ $1.2M": amounts from 42 funders in one currency, at fixed approximate rates (server/currency.go)
-function approxUSD(v: number | null | undefined, currency?: string | null) {
-  if (v == null || currency === "USD") return "";
-  return `≈ ${formatMoney(v, "USD")}`;
-}
-// Titles some funders publish only in their own language
-function titleLanguage(t: string): string {
-  if (/[\uac00-\ud7a3]/.test(t)) return "Title in Korean";
-  if (/[\u3040-\u30ff]/.test(t)) return "Title in Japanese";
-  if (/[\u3400-\u9fff]/.test(t)) return "Title in Chinese";
-  return "";
-}
-const KIND_LABEL = {
-  new_lab: "New lab",
-  training: "Funds PhD students",
-} as const;
 </script>
 
 <template>

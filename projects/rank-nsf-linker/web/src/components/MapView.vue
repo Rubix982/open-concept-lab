@@ -306,20 +306,19 @@ function applyFocus() {
 watch(() => props.focus, applyFocus, { deep: true });
 watch(ready, applyFocus);
 
-// Fly to a university chosen from a list.
-watch(
-  () => props.selectedId,
-  (id) => {
-    const u = props.universities.find((x) => x.id === id);
-    if (map && u?.latitude != null && u.longitude != null) {
-      map.easeTo({
-        center: [u.longitude, u.latitude],
-        zoom: Math.max(map.getZoom(), 5),
-        duration: 600,
-      });
-    }
-  },
-);
+// Fly to a university chosen from a list, or asked for by name (a profile's university).
+function flyToUniversity(id: string | null) {
+  const u = props.universities.find((x) => x.id === id);
+  if (map && u?.latitude != null && u.longitude != null) {
+    map.easeTo({
+      center: [u.longitude, u.latitude],
+      zoom: Math.max(map.getZoom(), 5),
+      duration: 600,
+    });
+  }
+}
+watch(() => props.selectedId, flyToUniversity);
+defineExpose({ flyToUniversity });
 
 onBeforeUnmount(() => map?.remove());
 </script>

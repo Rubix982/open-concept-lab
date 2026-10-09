@@ -196,7 +196,7 @@ type landscapeGrant struct {
 // the map or not): totals by funder, grants started per year, the institutions receiving them, and the
 // best-matching grants. Matched by meaning (grant_search.go) and on the words in the title and the
 // start of the abstract; without q, every grant (newest first).
-// Params: q, active=1 (running grants only), country.
+// Params: q, active=1 (running grants only), country, funder, signal, people=1, sort, university (one university's grants).
 func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 	db, err := GetDB()
 	if err != nil {
@@ -227,11 +227,12 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		signal = ""
 	}
 	people := v.Get("people") == "1"
+	university := strings.TrimSpace(v.Get("university")) // one university's grants (its page)
 	sortBy := v.Get("sort") // "" (best match), "newest", "largest"
 	// Without a search the answer covers every grant (~10 s) and only changes when the explorer
 	// tables are rebuilt: kept per country and active filter, cleared by clearAreasCache.
 	cacheKey := ""
-	if q == "" {
+	if q == "" && university == "" {
 		cacheKey = strings.Join([]string{country, strconv.FormatBool(active), funder, signal,
 			strconv.FormatBool(people), sortBy}, "|")
 		landscapeCache.Lock()
@@ -302,8 +303,11 @@ func getExplorerLandscape(w http.ResponseWriter, r *http.Request) {
 		        SELECT g2.funder, g2.id FROM explorer_grants g2 WHERE g2.doc @@ websearch_to_tsquery('english', $1)
 		        UNION SELECT funder, id FROM h)`}[q == ""]+`
 		  AND (NOT $2 OR g.ends >= current_date) AND ($3 = '' OR g.country = $3)
-		  AND ($6 = '' OR g.funder = $6) AND ($7 = '' OR g.signal = $7) AND (NOT $8 OR g.profile IS NOT NULL)`,
-		q, active, country, matched == "meaning", grantMinScore, funder, signal, people); err != nil {
+		  AND ($6 = '' OR g.funder = $6) AND ($7 = '' OR g.signal = $7) AND (NOT $8 OR g.profile IS NOT NULL)`+
+		// its own clause, not "$9 = '' OR ...", so the university index is used
+		map[bool]string{true: ` AND g.university_id = $9`, false: ``}[university != ""],
+		append([]any{q, active, country, matched == "meaning", grantMinScore, funder, signal, people},
+			map[bool][]any{true: {university}, false: nil}[university != ""]...)...); err != nil {
 		writeError(w, r, http.StatusInternalServerError, "failed to search grants", err)
 		return
 	}

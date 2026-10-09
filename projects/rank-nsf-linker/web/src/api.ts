@@ -265,6 +265,7 @@ export const api = {
       kind?: "" | "new_lab" | "training"; // a kind of grant (signal)
       people?: boolean; // only grants of people in Advisor Atlas
       sort?: "" | "newest" | "largest";
+      university?: string; // only grants held at this university
     },
     signal?: AbortSignal,
   ) => {
@@ -275,6 +276,7 @@ export const api = {
     if (q.kind) p.set("signal", q.kind);
     if (q.people) p.set("people", "1");
     if (q.sort) p.set("sort", q.sort);
+    if (q.university) p.set("university", q.university);
     return get<Landscape>(`/landscape?${p}`, signal);
   },
   areas: () => get<Area[]>("/areas"),

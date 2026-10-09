@@ -64,3 +64,42 @@ export function webUrl(url: string | null | undefined): string | undefined {
   if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return undefined; // another scheme: javascript:, data:, ...
   return `https://${u.replace(/^\/+/, "")}`;
 }
+
+// Grants, as the Funding tab and a university's page show them
+export function niceName(s: string): string {
+  // UKRI lists institutions in capitals; KAKEN adds the Japanese name after " | ".
+  const first = s.split(" | ")[0];
+  // Only longer all-caps names: "OHSU" and "MIT" stay as they are.
+  return first === first.toUpperCase() && first.includes(" ")
+    ? first
+        .toLowerCase()
+        // capitalise words, not letters after an apostrophe ("Children's", not "Children'S")
+        .replace(/(^|[\s(\-/&,.])(\w)/g, (_, sep, c) => sep + c.toUpperCase())
+    : first;
+}
+// a profile name without the year DBLP adds to tell namesakes apart ("Wei Wang 0001")
+export function short(name: string) {
+  return name.replace(/\s+\d{4}$/, "");
+}
+export function grantYears(g: { starts: string | null; ends: string | null }) {
+  return [formatYear(g.starts), formatYear(g.ends)].filter(Boolean).join("–");
+}
+// "≈ $1.2M": amounts from 42 funders in one currency, at fixed approximate rates (server/currency.go)
+export function approxUSD(
+  v: number | null | undefined,
+  currency?: string | null,
+) {
+  if (v == null || currency === "USD") return "";
+  return `≈ ${formatMoney(v, "USD")}`;
+}
+// Titles some funders publish only in their own language
+export function titleLanguage(t: string): string {
+  if (/[\uac00-\ud7a3]/.test(t)) return "Title in Korean";
+  if (/[\u3040-\u30ff]/.test(t)) return "Title in Japanese";
+  if (/[\u3400-\u9fff]/.test(t)) return "Title in Chinese";
+  return "";
+}
+export const KIND_LABEL = {
+  new_lab: "New lab",
+  training: "Funds PhD students",
+} as const;
