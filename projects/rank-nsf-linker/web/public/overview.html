@@ -58,10 +58,10 @@ this with spreadsheets and guesswork.</p>
 
 <h2>What is in it</h2>
 <ul>
-  <li>70,290 professors and researchers at 700 universities in 61 countries, 25 of them in Pakistan</li>
-  <li>Computer science faculty from CSRankings; researchers in 25 other fields (about 210 research areas, from cardiology to economics) from OpenAlex</li>
-  <li>739,151 recent papers and 335,319 research grants from 12 funders</li>
-  <li>99 scholarship programmes</li>
+  <li>198,570 professors and researchers at 700 universities in 61 countries; 4,708 of them at 25 universities in Pakistan</li>
+  <li>Computer science faculty from CSRankings (18,015); researchers in 25 other fields (about 300 research areas, from cardiology to economics) from OpenAlex (180,555)</li>
+  <li>1.26 million recent papers, 1.1 million research grants from 42 funders (183,002 running now), all searchable by meaning</li>
+  <li>95 scholarship programmes</li>
 </ul>
 
 <h2>Grants by funder</h2>
@@ -69,42 +69,81 @@ this with spreadsheets and guesswork.</p>
 <table>
   <tr><th>Funder</th><th>Country</th><th>Grants</th></tr>
   <tr><td>NSF</td><td>United States</td><td class="n">192,089</td></tr>
+  <tr><td>NSTC</td><td>Taiwan</td><td class="n">176,433</td></tr>
+  <tr><td>NSFC</td><td>China</td><td class="n">109,361</td></tr>
   <tr><td>NIH</td><td>United States</td><td class="n">77,190</td></tr>
+  <tr><td>Provincial science foundations</td><td>China</td><td class="n">55,908</td></tr>
+  <tr><td>SSHRC</td><td>Canada</td><td class="n">52,309</td></tr>
+  <tr><td>FCT</td><td>Portugal</td><td class="n">44,160</td></tr>
+  <tr><td>CIHR</td><td>Canada</td><td class="n">40,311</td></tr>
+  <tr><td>FAPESP</td><td>Brazil</td><td class="n">35,156</td></tr>
   <tr><td>NWO</td><td>Netherlands</td><td class="n">33,908</td></tr>
+  <tr><td>ANID</td><td>Chile</td><td class="n">25,115</td></tr>
+  <tr><td>Research Council of Norway</td><td>Norway</td><td class="n">23,738</td></tr>
+  <tr><td>NCN</td><td>Poland</td><td class="n">22,693</td></tr>
+  <tr><td>FWO</td><td>Belgium (Flanders)</td><td class="n">19,969</td></tr>
+  <tr><td>Vinnova</td><td>Sweden</td><td class="n">18,094</td></tr>
   <tr><td>KAKEN</td><td>Japan</td><td class="n">15,655</td></tr>
+  <tr><td>Swedish Research Council</td><td>Sweden</td><td class="n">15,620</td></tr>
+  <tr><td>ZonMw</td><td>Netherlands</td><td class="n">14,477</td></tr>
+  <tr><td>NHMRC</td><td>Australia</td><td class="n">13,352</td></tr>
+  <tr><td>Wellcome</td><td>United Kingdom</td><td class="n">13,304</td></tr>
+  <tr><td>TÜBİTAK</td><td>Turkey</td><td class="n">12,660</td></tr>
+  <tr><td>NRF</td><td>South Korea</td><td class="n">11,783</td></tr>
+  <tr><td>AMED</td><td>Japan</td><td class="n">11,055</td></tr>
+  <tr><td>FWF</td><td>Austria</td><td class="n">10,125</td></tr>
+  <tr><td>ISCIII</td><td>Spain</td><td class="n">8,768</td></tr>
+  <tr><td>NAFOSTED</td><td>Vietnam</td><td class="n">6,037</td></tr>
+  <tr><td>Formas</td><td>Sweden</td><td class="n">4,909</td></tr>
+  <tr><td>Research Ireland (SFI)</td><td>Ireland</td><td class="n">4,035</td></tr>
   <tr><td>NSERC</td><td>Canada</td><td class="n">4,029</td></tr>
+  <tr><td>Independent Research Fund Denmark</td><td>Denmark</td><td class="n">4,018</td></tr>
   <tr><td>UKRI (EPSRC)</td><td>United Kingdom</td><td class="n">2,593</td></tr>
+  <tr><td>Forte</td><td>Sweden</td><td class="n">2,501</td></tr>
   <tr><td>European Research Council</td><td>Europe</td><td class="n">2,238</td></tr>
   <tr><td>Australian Research Council</td><td>Australia</td><td class="n">2,077</td></tr>
+  <tr><td>HEC (NRPU)</td><td>Pakistan</td><td class="n">1,890</td></tr>
   <tr><td>ANR</td><td>France</td><td class="n">1,795</td></tr>
   <tr><td>Swiss National Science Foundation</td><td>Switzerland</td><td class="n">1,518</td></tr>
   <tr><td>Marsden Fund</td><td>New Zealand</td><td class="n">1,313</td></tr>
+  <tr><td>ICMR</td><td>India</td><td class="n">1,313</td></tr>
   <tr><td>Research Grants Council</td><td>Hong Kong</td><td class="n">914</td></tr>
+  <tr><td>NSF Sri Lanka</td><td>Sri Lanka</td><td class="n">169</td></tr>
 </table>
 </div>
-<p class="small">Outside the US and the Netherlands, only computing grants are loaded.</p>
+<p class="small">From KAKEN, ARC, ANR, SNSF, ERC, UKRI, NSERC, Marsden and RGC only computing grants are
+loaded; from the others, every field (grants running in 2015 or later). Amounts are shown in each
+funder's currency, with an approximate US dollar figure.</p>
 
 <h2>Limits</h2>
 <ul>
   <li>Researchers outside computer science come from OpenAlex and are chosen by citations. They
     are not a checked list of faculty.</li>
-  <li>Germany, China, Korea and India have no national grant data here yet.</li>
+  <li>Germany has no national grant data here yet; India's covers medical research only (ICMR),
+    and Korea's mostly the humanities and social sciences.</li>
+  <li>A grant is linked to a person only when the name and the university both match, so some
+    grants show no one even when the researcher is listed.</li>
   <li>Industry and university funding is not included, so "no grant" does not mean "no funding".</li>
   <li>Always check a professor's own page before writing to them.</li>
 </ul>
 
 <h2>Sources</h2>
-<p class="small">CSRankings; DBLP (CC0); OpenAlex (CC0); IPEDS, US Department of Education; NSF Award
-Search; NIH RePORTER; UKRI Gateway to Research, Open Government Licence v2.0; Australian Research
-Council; Royal Society Te Ap&#257;rangi (Marsden Fund); Agence nationale de la recherche, ODbL;
-Swiss National Science Foundation; CORDIS, European Commission, and the ERC's lists of principal
-investigators; Japanese grants: created by Advisor Atlas, based on KAKEN (NII); NSERC Awards Data,
-contains information licensed under the Open Government Licence &ndash; Canada; NWOpen API (CC0);
-Research Grants Council of Hong Kong project records (facts only); campus locations &copy;
-OpenStreetMap contributors (ODbL); scholarships from a curated list and the DAAD database.</p>
+<p class="small">CSRankings; DBLP (CC0); OpenAlex (CC0), including its awards for national funders
+(each funder's own terms apply); IPEDS, US Department of Education; NSF Award Search; NIH RePORTER;
+UKRI Gateway to Research, Open Government Licence v2.0; Australian Research Council; Royal Society Te
+Ap&#257;rangi (Marsden Fund); Agence nationale de la recherche, ODbL; Swiss National Science
+Foundation; CORDIS, European Commission, and the ERC's lists of principal investigators; Japanese
+grants: created by Advisor Atlas, based on KAKEN (NII); NSERC Awards Data, contains information
+licensed under the Open Government Licence &ndash; Canada; NWOpen API (CC0); FWF Open API (CC0);
+Research Grants Council of Hong Kong project records (facts only); National Health and Medical
+Research Council (CC BY 4.0); FRIS, Flemish Government; Narodowe Centrum Nauki; AMED (Japan); Indian
+Council of Medical Research; Biblioteca Virtual da FAPESP; SweCRIS; Research Portal Denmark; National
+Research Foundation of Korea via data.go.kr; ISCIII and NSF Sri Lanka (facts and links only); campus
+locations &copy; OpenStreetMap contributors (ODbL); scholarships from a curated list and the DAAD
+database.</p>
 
 <hr>
-<p class="small">A side project. Figures as of 5 October 2026.</p>
+<p class="small">A side project. Figures as of 9 October 2026.</p>
 
 </div>
 </body>

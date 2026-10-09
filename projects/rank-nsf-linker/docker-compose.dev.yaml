@@ -285,6 +285,7 @@ services:
       # Rerun the population pipeline from step N (see executeWorkflows in server/db.go)
       PIPELINE_FROM_STEP: ${PIPELINE_FROM_STEP:-}
       PIPELINE_TO_STEP: ${PIPELINE_TO_STEP:-}
+      SERVE_ONLY: ${SERVE_ONLY:-} # 1: serve only, no scheduled fetch or rebuild (e.g. during a demo)
       # Semantic goal matching (server/semantic.go)
       EMBEDDER_SERVICE_URL: http://embedder:8000
       QDRANT_REST_URL: http://qdrant-local:6333
