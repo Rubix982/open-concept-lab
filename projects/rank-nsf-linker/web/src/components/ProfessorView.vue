@@ -15,7 +15,11 @@ import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
 
 const props = defineProps<{ name: string; backLabel: string; goal?: string }>();
-const emit = defineEmits<{ back: []; open: [name: string]; university: [id: string] }>();
+const emit = defineEmits<{
+  back: [];
+  open: [name: string];
+  university: [id: string];
+}>();
 
 const person = ref<Faculty | null>(null);
 const awards = ref<Award[]>([]);
@@ -28,6 +32,27 @@ const matchedPapers = computed(() =>
   props.goal ? (papers.value ?? []).filter((p) => p.match).length : 0,
 );
 const dblpUrl = ref("");
+// The paper list: five first, the rest on request; a summary opens on request
+const papersShown = ref(5);
+const openSummaries = ref(new Set<string>());
+function toggleSummary(key: string) {
+  const next = new Set(openSummaries.value);
+  if (next.has(key)) next.delete(key);
+  else next.add(key);
+  openSummaries.value = next;
+}
+// "ACL (1)" -> "ACL": DBLP numbers a venue's proceedings volumes
+function cleanVenue(v: string | null | undefined): string {
+  return (v ?? "").replace(/\s*\(\d+\)\s*$/, "").trim();
+}
+// Abstracts as OpenAlex rebuilds them: "(LRMs).At its core", "AutoRAN 1 , the first"
+function cleanAbstract(t: string): string {
+  return t
+    .replace(/([a-z0-9)\]])\.([A-Z])/g, "$1. $2")
+    .replace(/\s+([,.;:)])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
 const error = ref("");
 
 watch(
@@ -35,6 +60,8 @@ watch(
   async ([name, goal]) => {
     person.value = null;
     papers.value = null;
+    papersShown.value = 5;
+    openSummaries.value = new Set();
     similar.value = null;
     error.value = "";
     try {
@@ -440,27 +467,52 @@ function untilLabel(date: string | null): string {
           No recent papers loaded for this professor yet.
         </p>
         <ol v-else class="papers">
-          <li v-for="p in papers" :key="p.title" :class="{ matched: p.match }">
+          <li
+            v-for="p in papers.slice(0, papersShown)"
+            :key="p.title"
+            :class="{ matched: p.match }"
+          >
             <a
               v-if="webUrl(p.url)"
               :href="webUrl(p.url)"
               target="_blank"
               rel="noopener"
+              class="ptitle"
               >{{ p.title }}</a
             >
-            <span v-else>{{ p.title }}</span>
+            <span v-else class="ptitle">{{ p.title }}</span>
             <span class="meta">
-              {{ [p.venue, p.year].filter(Boolean).join(" ")
-              }}{{ p.topic ? `, ${p.topic}` : ""
+              {{ [cleanVenue(p.venue), p.year].filter(Boolean).join(" ")
               }}{{
                 p.cited_by
                   ? `, cited ${p.cited_by} ${p.cited_by === 1 ? "time" : "times"}`
                   : ""
               }}
             </span>
-            <p v-if="p.snippet" class="snippet">{{ p.snippet }}</p>
+            <template v-if="p.snippet">
+              <p class="snippet" :class="{ open: openSummaries.has(p.title) }">
+                {{ cleanAbstract(p.snippet) }}
+              </p>
+              <button
+                v-if="p.snippet.length > 160"
+                type="button"
+                class="link toggle-summary"
+                :aria-expanded="openSummaries.has(p.title)"
+                @click="toggleSummary(p.title)"
+              >
+                {{ openSummaries.has(p.title) ? "Less" : "More" }}
+              </button>
+            </template>
           </li>
         </ol>
+        <button
+          v-if="papers && papers.length > papersShown"
+          type="button"
+          class="show-more"
+          @click="papersShown += 10"
+        >
+          Show more papers ({{ papers.length - papersShown }} left)
+        </button>
       </section>
 
       <section>
@@ -696,6 +748,23 @@ h2 {
   font-size: var(--t-xs);
   line-height: 1.45;
   color: var(--ink-soft);
+  /* two lines until opened */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.snippet.open {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+.toggle-summary {
+  margin-top: 2px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink-soft);
 }
 
 .team {
@@ -794,6 +863,13 @@ h3 {
 .award-title {
   font-weight: 600;
   text-decoration: none;
+}
+/* a paper's title opens the paper: underlined faintly, so it reads as a link */
+.papers a.ptitle {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
 }
 
 .papers a:hover,
