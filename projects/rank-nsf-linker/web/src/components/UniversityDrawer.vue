@@ -961,7 +961,7 @@ function money(n?: number) {
           <button
             v-if="shownFaculty.length > facultyShown"
             type="button"
-            class="link more"
+            class="show-more"
             @click="facultyShown += 10"
           >
             Show 10 more ({{ shownFaculty.length - facultyShown }} left)

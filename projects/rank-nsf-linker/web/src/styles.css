@@ -176,3 +176,42 @@ button {
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* A button that reads as a link. Components may style .link their own way; this is the fallback,
+   so none renders as the browser's grey button ("See the grants held here", "Show 10 more"). */
+button.link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* "Show 10 more" at the end of a long list: the whole width, quiet until hovered */
+button.show-more {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+  font: inherit;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+button.show-more:hover {
+  border-color: var(--ink);
+}
+button.show-more:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}

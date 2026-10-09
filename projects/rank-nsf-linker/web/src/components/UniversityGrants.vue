@@ -331,7 +331,7 @@ const trendLeftOut = computed(() =>
         <button
           v-if="data.grants.length > shown"
           type="button"
-          class="link more"
+          class="show-more"
           @click="shown += 10"
         >
           Show 10 more
