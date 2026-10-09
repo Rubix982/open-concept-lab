@@ -2,11 +2,19 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { api, type Faculty, type Query, type UniversitySummary } from "@/api";
 import { INK_HEX, LINE_COLOR, LINE_HEX } from "@/lines";
-import { areaIndex, areas, funderName, funders, fundersFor } from "@/store";
+import {
+  areaIndex,
+  areas,
+  funderName,
+  funders,
+  fundersFor,
+  shownGrant,
+} from "@/store";
 import { countryName } from "@/countries";
 import AreaPicker from "@/components/AreaPicker.vue";
 import FacultyRow from "@/components/FacultyRow.vue";
 import FundingView from "@/components/FundingView.vue";
+import GrantDialog from "@/components/GrantDialog.vue";
 import ShortlistDialog from "@/components/ShortlistDialog.vue";
 import TourGuide, { type TourStep } from "@/components/TourGuide.vue";
 import LoadingRows from "@/components/LoadingRows.vue";
@@ -355,6 +363,19 @@ const mapView = ref<InstanceType<typeof MapView> | null>(null);
 function showUniversity(id: string) {
   openUniversity(id);
   nextTick(() => mapView.value?.flyToUniversity(id));
+}
+
+// From a grant's team: the person's page, at their university (looked up when not in the list)
+async function openPersonByName(name: string) {
+  const known = faculty.value.find((f) => f.name === name);
+  if (known?.university_id) return openUniversity(known.university_id, name);
+  try {
+    const profile = await api.profile(name);
+    if (profile.faculty.university_id)
+      openUniversity(profile.faculty.university_id, name);
+  } catch {
+    /* the profile will say what went wrong when opened another way */
+  }
 }
 
 function openProfessorFromList(name: string, universityId?: string | null) {
@@ -978,6 +999,11 @@ const areaChips = computed(() => {
 
     <TourGuide v-if="touring" :steps="tourSteps" @end="endTour" />
 
+    <GrantDialog
+      v-if="shownGrant"
+      @open-person="openPersonByName"
+      @open-university="showUniversity"
+    />
     <ShortlistDialog
       ref="shortlist"
       @open-person="openProfessorFromList"

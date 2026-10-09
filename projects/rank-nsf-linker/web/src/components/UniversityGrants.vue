@@ -17,7 +17,7 @@ import {
   titleLanguage,
   webUrl,
 } from "@/lines";
-import { funderName } from "@/store";
+import { funderName, showGrant } from "@/store";
 
 const props = defineProps<{ universityId: string; goal: string }>();
 const emit = defineEmits<{ openPerson: [name: string] }>();
@@ -314,15 +314,14 @@ const trendLeftOut = computed(() =>
         </p>
         <ul class="grants" :class="{ stale: loading }">
           <li v-for="g in grants" :key="g.funder + g.id">
-            <a
-              v-if="webUrl(g.url)"
-              :href="webUrl(g.url)"
-              target="_blank"
-              rel="noopener"
-              class="title"
-              >{{ grantTitle(g.title) }}</a
+            <button
+              type="button"
+              class="link title"
+              title="Read the grant: what it funds, who is on it"
+              @click="showGrant(g.funder, g.id)"
             >
-            <span v-else class="title">{{ grantTitle(g.title) }}</span>
+              {{ grantTitle(g.title) }}
+            </button>
             <p class="meta">
               <span v-if="g.signal" class="kind" :class="g.signal">{{
                 KIND_LABEL[g.signal]

@@ -144,6 +144,27 @@ export type Award = {
   team?: { name: string; role: string; profile: string | null }[];
 };
 
+// One grant in full, for the in-app grant page (funders' sites can be blocked: NSF's from Pakistan)
+export type GrantDetail = {
+  funder: string;
+  id: string;
+  title: string;
+  abstract: string;
+  amount: number | null;
+  currency: string | null;
+  amount_usd: number | null;
+  starts: string | null;
+  ends: string | null;
+  active: boolean;
+  url: string;
+  institution: string;
+  university_id: string | null;
+  country: string | null;
+  programs: string[];
+  signal: "new_lab" | "training" | null;
+  team: { name: string; role: string | null; profile: string | null }[];
+};
+
 export type Collaborator = { name: string; university: string; papers: number };
 export type SimilarPerson = {
   name: string;
@@ -266,6 +287,10 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export const api = {
+  grant: (funder: string, id: string) =>
+    get<GrantDetail>(
+      `/grant?funder=${encodeURIComponent(funder)}&id=${encodeURIComponent(id)}`,
+    ),
   landscape: (
     q: {
       goal: string;

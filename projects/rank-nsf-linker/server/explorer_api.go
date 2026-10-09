@@ -26,6 +26,7 @@ import (
 //	GET /explorer/faculty/profile?name=<name>
 //	GET /explorer/faculty/papers?name=<name>
 //	GET /explorer/grants?q=<goal>&areas=ml&active=1
+//	GET /explorer/grant?funder=nsf&id=2347472 (one grant in full: abstract, team, programmes; grant_detail.go)
 //	GET /explorer/scholarships?country=DE&nationality=PK&level=phd
 
 const (
@@ -966,6 +967,7 @@ func mountExplorerRoutes(r chi.Router) {
 	r.Get("/explorer/faculty/similar", getExplorerSimilar)
 	r.Get("/explorer/landscape", getExplorerLandscape)
 	r.Get("/explorer/grants", getExplorerGrants)
+	r.Get("/explorer/grant", getExplorerGrant)
 	r.Get("/explorer/scholarships", getExplorerScholarships)
 	r.Get("/explorer/funders", getExplorerFunders)
 }

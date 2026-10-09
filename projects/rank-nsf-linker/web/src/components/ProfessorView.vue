@@ -16,7 +16,13 @@ import {
   grantTitle,
   webUrl,
 } from "@/lines";
-import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
+import {
+  areaIndex,
+  funderName,
+  fundersFor,
+  newLabLabel,
+  showGrant,
+} from "@/store";
 import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
 
@@ -529,13 +535,14 @@ function untilLabel(date: string | null): string {
         </p>
         <ol class="awards">
           <li v-for="a in awards" :key="a.id" :class="{ active: a.active }">
-            <a
-              :href="webUrl(a.url)"
-              target="_blank"
-              rel="noopener"
-              class="award-title"
-              >{{ grantTitle(a.title) }}</a
+            <button
+              type="button"
+              class="link award-title"
+              title="Read the grant: what it funds, who is on it"
+              @click="showGrant(a.funder, a.id)"
             >
+              {{ grantTitle(a.title) }}
+            </button>
             <p class="meta">
               {{ funderName(a.funder) }},
               <span class="num">{{ formatMoney(a.amount, a.currency) }}</span

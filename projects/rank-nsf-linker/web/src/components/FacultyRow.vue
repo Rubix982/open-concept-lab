@@ -8,7 +8,13 @@ import {
   grantYears,
   webUrl,
 } from "@/lines";
-import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
+import {
+  areaIndex,
+  funderName,
+  fundersFor,
+  newLabLabel,
+  showGrant,
+} from "@/store";
 
 const props = defineProps<{
   person: Faculty;
@@ -69,7 +75,7 @@ async function toggleGrants() {
 function roleOf(a: Award): string {
   if (a.lead) return "Leads it";
   const r = (a.role ?? "").trim();
-  if (/^co-?pi$/i.test(r)) return "Co-PI";
+  if (/^co-?(pi|principal)/i.test(r)) return "Co-PI"; // "Co-PI", "Co-Principal Investigator"
   if (!r || /^(coi|co-?investigator|pi|principal.*)$/i.test(r))
     return "Co-investigator";
   return r;
@@ -179,15 +185,14 @@ function roleOf(a: Award): string {
       </p>
       <ul v-else>
         <li v-for="a in running" :key="a.funder + a.id">
-          <a
-            v-if="webUrl(a.url)"
-            :href="webUrl(a.url)"
-            target="_blank"
-            rel="noopener"
-            :title="`The grant's record at ${funderName(a.funder)}`"
-            >{{ grantTitle(a.title) }}</a
+          <button
+            type="button"
+            class="link gtitle"
+            title="Read the grant: what it funds, who is on it"
+            @click="showGrant(a.funder, a.id)"
           >
-          <span v-else>{{ grantTitle(a.title) }}</span>
+            {{ grantTitle(a.title) }}
+          </button>
           <span class="gmeta">
             {{ roleOf(a) }}, {{ funderName(a.funder)
             }}<template v-if="a.amount"

@@ -73,3 +73,12 @@ export function newLabLabel(funder: string, scheme: string | null): string {
 export function fundersFor(country: string | null | undefined): string[] {
   return country ? (funders.value.by_country[country.toLowerCase()] ?? []) : [];
 }
+
+// The grant shown in the grant window (GrantDialog), opened from any list of grants
+export const shownGrant = ref<{ funder: string; id: string } | null>(null);
+export function showGrant(funder: string, id: string) {
+  shownGrant.value = {
+    funder,
+    id: id.startsWith(funder + ":") ? id.slice(funder.length + 1) : id,
+  };
+}
