@@ -8,6 +8,7 @@ import {
   grantYears as years,
   KIND_LABEL,
   niceName,
+  personName,
   short,
   titleLanguage,
   webUrl,
@@ -423,7 +424,7 @@ function isCompany(s: string) {
                 @click="emit('openPerson', g.profile, g.university_id)"
               >
                 {{ short(g.profile) }}</button
-              ><span v-else>{{ g.lead }}</span
+              ><span v-else>{{ personName(g.lead) }}</span
               ><template v-if="g.institution"
                 >, {{ niceName(g.institution) }}</template
               ><span v-if="g.profile" class="in-atlas">in Advisor Atlas</span>

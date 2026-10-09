@@ -11,6 +11,7 @@ import {
   formatMoney,
   grantYears,
   KIND_LABEL,
+  personName,
   short,
   titleLanguage,
   webUrl,
@@ -24,6 +25,7 @@ const data = ref<Landscape | null>(null);
 const loading = ref(false);
 const failed = ref(false);
 const onlyRunning = ref(false);
+const peopleOnly = ref(false); // only grants led by someone with a profile here
 const shown = ref(10);
 const q = ref(props.goal); // this tab's search
 const funder = ref("");
@@ -32,11 +34,17 @@ const sortBy = ref<"" | "newest" | "largest">("newest"); // "": best match (with
 // Funders to choose from: those of the list before a funder was chosen
 const funderOptions = ref<Landscape["funders"]>([]);
 const narrowed = computed(
-  () => !!q.value || onlyRunning.value || !!funder.value || !!kind.value,
+  () =>
+    !!q.value ||
+    onlyRunning.value ||
+    peopleOnly.value ||
+    !!funder.value ||
+    !!kind.value,
 );
 function clearAll() {
   q.value = "";
   onlyRunning.value = false;
+  peopleOnly.value = false;
   funder.value = "";
   kind.value = "";
 }
@@ -46,6 +54,7 @@ watch(
   () => {
     q.value = props.goal;
     onlyRunning.value = false;
+    peopleOnly.value = false;
     funder.value = "";
     kind.value = "";
     funderOptions.value = [];
@@ -70,6 +79,7 @@ async function load() {
         goal: q.value,
         university: props.universityId,
         active: onlyRunning.value,
+        people: peopleOnly.value,
         funder: funder.value,
         kind: kind.value,
         sort: sortBy.value,
@@ -89,6 +99,7 @@ watch(
     props.universityId,
     q.value,
     onlyRunning.value,
+    peopleOnly.value,
     funder.value,
     kind.value,
     sortBy.value,
@@ -178,6 +189,12 @@ const trendLeftOut = computed(() =>
       <label>
         <input v-model="onlyRunning" type="checkbox" />
         Running now
+      </label>
+      <label
+        title="Grants led by someone with a profile in Advisor Atlas, whose papers and grants you can read here"
+      >
+        <input v-model="peopleOnly" type="checkbox" />
+        Only people in Advisor Atlas
       </label>
       <label>
         <span class="visually-hidden">Funder</span>
@@ -289,6 +306,11 @@ const trendLeftOut = computed(() =>
           </template>
         </div>
 
+        <p v-if="!peopleOnly" class="legend">
+          A name in bold has a profile in Advisor Atlas: open it for their
+          papers and grants. Other leads aren't listed here (outside computer
+          science, only the most-cited researchers in each field are).
+        </p>
         <ul class="grants" :class="{ stale: loading }">
           <li v-for="g in grants" :key="g.funder + g.id">
             <a
@@ -324,7 +346,8 @@ const trendLeftOut = computed(() =>
                 @click="emit('openPerson', g.profile)"
               >
                 {{ short(g.profile) }}</button
-              ><template v-else>{{ g.lead }}</template>
+              ><span v-if="g.profile" class="in-atlas">in Advisor Atlas</span
+              ><template v-else>{{ personName(g.lead) }}</template>
             </p>
           </li>
         </ul>
@@ -386,6 +409,22 @@ const trendLeftOut = computed(() =>
 .stale {
   opacity: 0.55;
 }
+.legend {
+  margin: 0 0 4px;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+.in-atlas {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  background: #eef0f3;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 600;
+  vertical-align: 1px;
+}
 .glance {
   margin: 10px 0 14px;
   padding: 12px 14px;
@@ -427,7 +466,10 @@ const trendLeftOut = computed(() =>
 }
 .fbars li {
   display: grid;
-  grid-template-columns: minmax(0, 9em) 1fr 4.6em; /* a fixed value column, so the tracks line up */
+  grid-template-columns: minmax(
+      0,
+      9em
+    ) 1fr 4.6em; /* a fixed value column, so the tracks line up */
   gap: 10px;
   align-items: center;
   padding: 3px 0;

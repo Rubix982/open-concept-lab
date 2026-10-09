@@ -103,3 +103,15 @@ export const KIND_LABEL = {
   new_lab: "New lab",
   training: "Funds PhD students",
 } as const;
+// A person's name as some funders send it ("ROBERT Frank Paulson", "JANE DOE"): words in capitals
+// become "Robert"; initials ("W", "J.") and short particles stay as they are.
+export function personName(name: string | null | undefined): string {
+  return (name ?? "").replace(/\p{Lu}{2,}[\p{Lu}'-]*/gu, (w) =>
+    w.length <= 2
+      ? w
+      : // "SEO-YEON" -> "Seo-Yeon", "O'BRIEN" -> "O'Brien"
+        w
+          .toLowerCase()
+          .replace(/(^|[-'])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase()),
+  );
+}
