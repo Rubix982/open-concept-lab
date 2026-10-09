@@ -58,6 +58,32 @@ watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, {
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
+
+// The page in tabs, so no list runs on forever: Faculty first when the visit comes from a search
+// (that's what was asked for), else the overview.
+type UniTab = "overview" | "faculty" | "funding" | "scholarships";
+const uniTab = ref<UniTab>("overview");
+const facultyShown = ref(10);
+watch(
+  () => props.id,
+  () => {
+    uniTab.value = props.query.goal ? "faculty" : "overview";
+    facultyShown.value = 10;
+  },
+  { immediate: true },
+);
+const uniTabs = computed<{ id: UniTab; label: string }[]>(() => [
+  { id: "overview", label: "Overview" },
+  {
+    id: "faculty",
+    label: `Faculty${uni.value ? ` ${uni.value.faculty_total.toLocaleString("en-US")}` : ""}`,
+  },
+  { id: "funding", label: "Funding" },
+  {
+    id: "scholarships",
+    label: `Scholarships${scholarships.value.length ? ` ${scholarships.value.length}` : ""}`,
+  },
+]);
 // A level to narrow by: only levels that narrow the list are offered. When every programme covers
 // every level (China's two cover Master's and PhD), the buttons changed nothing and looked broken.
 const schLevel = ref("");
@@ -311,157 +337,178 @@ function money(n?: number) {
           </button>
         </header>
 
-        <dl class="facts">
-          <div>
-            <dt>Faculty and researchers listed</dt>
-            <dd class="num">{{ uni.faculty_total }}</dd>
-          </div>
-          <div v-if="uni.grad_enrollment">
-            <dt>Graduate students</dt>
-            <dd class="num">
-              {{ uni.grad_enrollment.toLocaleString("en-US") }}
-            </dd>
-          </div>
-          <div v-if="uni.doctoral_degrees">
-            <dt>PhDs awarded, all fields ({{ uni.doctoral_year }})</dt>
-            <dd class="num">
-              {{ uni.doctoral_degrees.toLocaleString("en-US") }}
-            </dd>
-          </div>
-          <div v-if="uni.grad_tuition_out_of_state">
-            <dt>Graduate tuition per year</dt>
-            <dd class="num">
-              {{ money(uni.grad_tuition_out_of_state) }}
-              <span
-                v-if="
-                  uni.grad_tuition_in_state &&
-                  uni.grad_tuition_in_state !== uni.grad_tuition_out_of_state
-                "
-                class="sub"
-              >
-                {{ money(uni.grad_tuition_in_state) }} in-state
-              </span>
-            </dd>
-          </div>
-        </dl>
+        <nav class="uni-tabs" role="tablist" aria-label="About this university">
+          <button
+            v-for="t in uniTabs"
+            :key="t.id"
+            type="button"
+            role="tab"
+            :aria-selected="uniTab === t.id"
+            :class="{ on: uniTab === t.id }"
+            @click="uniTab = t.id"
+          >
+            {{ t.label }}
+          </button>
+        </nav>
 
-        <section v-if="strengths.length" class="strengths">
-          <h3>Research strengths</h3>
-          <p class="sub">Faculty and researchers listed here, by area</p>
-          <ul>
-            <li v-for="a in strengths" :key="a.area">
-              <span class="s-name">{{ a.name }}</span>
-              <span class="s-track"
-                ><span
-                  class="s-fill"
-                  :style="{ width: a.width + '%', background: a.color }"
-                ></span
-              ></span>
-              <span class="num">{{ a.n }}</span>
-            </li>
-          </ul>
-        </section>
+        <template v-if="uniTab === 'overview'">
+          <dl class="facts">
+            <div>
+              <dt>Faculty and researchers listed</dt>
+              <dd class="num">{{ uni.faculty_total }}</dd>
+            </div>
+            <div v-if="uni.grad_enrollment">
+              <dt>Graduate students</dt>
+              <dd class="num">
+                {{ uni.grad_enrollment.toLocaleString("en-US") }}
+              </dd>
+            </div>
+            <div v-if="uni.doctoral_degrees">
+              <dt>PhDs awarded, all fields ({{ uni.doctoral_year }})</dt>
+              <dd class="num">
+                {{ uni.doctoral_degrees.toLocaleString("en-US") }}
+              </dd>
+            </div>
+            <div v-if="uni.grad_tuition_out_of_state">
+              <dt>Graduate tuition per year</dt>
+              <dd class="num">
+                {{ money(uni.grad_tuition_out_of_state) }}
+                <span
+                  v-if="
+                    uni.grad_tuition_in_state &&
+                    uni.grad_tuition_in_state !== uni.grad_tuition_out_of_state
+                  "
+                  class="sub"
+                >
+                  {{ money(uni.grad_tuition_in_state) }} in-state
+                </span>
+              </dd>
+            </div>
+          </dl>
 
-        <section class="funding">
-          <h3>Paying for a PhD here</h3>
-          <template v-if="grantFunders.length">
-            <p>
-              <strong class="num">{{ funded }}</strong> of the
-              {{ faculty.length }}
-              {{
-                query.goal
-                  ? "faculty matching your search"
-                  : hasAreas
-                    ? "faculty in your areas"
-                    : "faculty listed below"
-              }}
-              have an active {{ grantFunderNames }} grant. PhD students are
-              usually paid as research or teaching assistants, which also covers
-              tuition, and faculty with active grants are the ones hiring
-              research assistants.
-            </p>
-            <ul v-if="uni.funders?.length" class="funders">
-              <li v-for="fd in uni.funders" :key="fd.funder">
-                <strong>{{ funderName(fd.funder) }}</strong
-                >: {{ fd.people }}
-                {{ fd.people === 1 ? "person" : "people" }} with grants on
-                record, {{ fd.active_people }} with one running now
+          <section v-if="strengths.length" class="strengths">
+            <h3>Research strengths</h3>
+            <p class="sub">Faculty and researchers listed here, by area</p>
+            <ul>
+              <li v-for="a in strengths" :key="a.area">
+                <span class="s-name">{{ a.name }}</span>
+                <span class="s-track"
+                  ><span
+                    class="s-fill"
+                    :style="{ width: a.width + '%', background: a.color }"
+                  ></span
+                ></span>
+                <span class="num">{{ a.n }}</span>
               </li>
             </ul>
-            <div v-if="uni.recently_funded?.length" class="recent">
-              <p class="sub">Recently funded (likely hiring):</p>
-              <ul>
-                <li v-for="g in uni.recently_funded" :key="g.name + g.title">
-                  <button
-                    type="button"
-                    class="link"
-                    @click="emit('openProfessor', g.name)"
-                  >
-                    {{ g.name.replace(/\s+\d{4}$/, "") }}</button
-                  >, {{ funderName(g.funder) }} {{ g.year }}: {{ g.title }}
+          </section>
+
+          <section class="funding">
+            <h3>Paying for a PhD here</h3>
+            <template v-if="grantFunders.length">
+              <p>
+                <strong class="num">{{ funded }}</strong> of the
+                {{ faculty.length }}
+                {{
+                  query.goal
+                    ? "faculty matching your search"
+                    : hasAreas
+                      ? "faculty in your areas"
+                      : "faculty listed below"
+                }}
+                have an active {{ grantFunderNames }} grant. PhD students are
+                usually paid as research or teaching assistants, which also
+                covers tuition, and faculty with active grants are the ones
+                hiring research assistants.
+              </p>
+              <ul v-if="uni.funders?.length" class="funders">
+                <li v-for="fd in uni.funders" :key="fd.funder">
+                  <strong>{{ funderName(fd.funder) }}</strong
+                  >: {{ fd.people }}
+                  {{ fd.people === 1 ? "person" : "people" }} with grants on
+                  record, {{ fd.active_people }} with one running now
                 </li>
               </ul>
-            </div>
-            <p v-if="ercOnly" class="sub">
-              ERC grants are rare, highly competitive awards, and most PhD
-              positions in {{ countryLabel }} are paid from national agencies
-              and university budgets that aren't in Advisor Atlas yet. Read "no
-              ERC grant" as "no data", not "no funding".
+              <div v-if="uni.recently_funded?.length" class="recent">
+                <p class="sub">Recently funded (likely hiring):</p>
+                <ul>
+                  <li v-for="g in uni.recently_funded" :key="g.name + g.title">
+                    <button
+                      type="button"
+                      class="link"
+                      @click="emit('openProfessor', g.name)"
+                    >
+                      {{ g.name.replace(/\s+\d{4}$/, "") }}</button
+                    >, {{ funderName(g.funder) }} {{ g.year }}: {{ g.title }}
+                  </li>
+                </ul>
+              </div>
+              <p v-if="ercOnly" class="sub">
+                ERC grants are rare, highly competitive awards, and most PhD
+                positions in {{ countryLabel }} are paid from national agencies
+                and university budgets that aren't in Advisor Atlas yet. Read
+                "no ERC grant" as "no data", not "no funding".
+              </p>
+            </template>
+            <p v-else>
+              Grant data for universities in {{ countryLabel }} isn't in Advisor
+              Atlas yet, so faculty funding isn't shown. Ask faculty directly
+              about funded PhD positions, and see the scholarships below.
             </p>
-          </template>
-          <p v-else>
-            Grant data for universities in {{ countryLabel }} isn't in Advisor
-            Atlas yet, so faculty funding isn't shown. Ask faculty directly
-            about funded PhD positions, and see the scholarships below.
-          </p>
-          <div v-if="uni.training?.length" class="recent training">
-            <p class="sub">
-              Funded PhD programmes ({{ uni.training.length }}): training grants
-              that pay students' stipends and tuition. Apply to the programme,
-              not to one professor.
-            </p>
-            <ul>
-              <li v-for="g in shownTraining" :key="g.title">
-                <a
-                  v-if="webUrl(g.url)"
-                  :href="webUrl(g.url)"
-                  target="_blank"
-                  rel="noopener"
-                  >{{ g.title }}</a
-                >
-                <span v-else>{{ g.title }}</span
-                >, {{ funderName(g.funder) }}, until
-                {{ (g.ends ?? "").slice(0, 4)
-                }}<template v-if="g.lead"
-                  >, led by
-                  <button
-                    v-if="g.profile"
-                    type="button"
-                    class="link"
-                    @click="emit('openProfessor', g.profile)"
+            <div v-if="uni.training?.length" class="recent training">
+              <p class="sub">
+                Funded PhD programmes ({{ uni.training.length }}): training
+                grants that pay students' stipends and tuition. Apply to the
+                programme, not to one professor.
+              </p>
+              <ul>
+                <li v-for="g in shownTraining" :key="g.title">
+                  <a
+                    v-if="webUrl(g.url)"
+                    :href="webUrl(g.url)"
+                    target="_blank"
+                    rel="noopener"
+                    >{{ g.title }}</a
                   >
-                    {{ g.profile.replace(/\s+\d{4}$/, "") }}</button
-                  ><template v-else>{{ g.lead }}</template></template
-                >
-              </li>
-            </ul>
-            <button
-              v-if="uni.training.length > 4"
-              type="button"
-              class="link more"
-              @click="allTraining = !allTraining"
-            >
-              {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
+                  <span v-else>{{ g.title }}</span
+                  >, {{ funderName(g.funder) }}, until
+                  {{ (g.ends ?? "").slice(0, 4)
+                  }}<template v-if="g.lead"
+                    >, led by
+                    <button
+                      v-if="g.profile"
+                      type="button"
+                      class="link"
+                      @click="emit('openProfessor', g.profile)"
+                    >
+                      {{ g.profile.replace(/\s+\d{4}$/, "") }}</button
+                    ><template v-else>{{ g.lead }}</template></template
+                  >
+                </li>
+              </ul>
+              <button
+                v-if="uni.training.length > 4"
+                type="button"
+                class="link more"
+                @click="allTraining = !allTraining"
+              >
+                {{ allTraining ? "Fewer" : `All ${uni.training.length}` }}
+              </button>
+            </div>
+            <button type="button" class="link more" @click="uniTab = 'funding'">
+              See the grants held here
             </button>
-          </div>
-          <UniversityGrants
-            :university-id="id"
-            :goal="query.goal"
-            @open-person="(n: string) => emit('openProfessor', n)"
-          />
-        </section>
+          </section>
+        </template>
 
-        <section class="scholarships">
+        <UniversityGrants
+          v-if="uniTab === 'funding'"
+          :university-id="id"
+          :goal="query.goal"
+          @open-person="(n: string) => emit('openProfessor', n)"
+        />
+
+        <section v-if="uniTab === 'scholarships'" class="scholarships">
           <h3>Funding you can apply for</h3>
           <p v-if="!scholarships.length" class="sub">
             No scholarships in our list for study in {{ countryLabel }}.
@@ -549,7 +596,7 @@ function money(n?: number) {
           </p>
         </section>
 
-        <section>
+        <section v-if="uniTab === 'faculty'">
           <h3>
             {{
               query.goal
@@ -566,13 +613,26 @@ function money(n?: number) {
           </p>
           <ul class="list">
             <FacultyRow
-              v-for="f in faculty"
+              v-for="f in faculty.slice(0, facultyShown)"
               :key="f.name"
               :person="f"
               :selected-areas="query.areas"
               @open="emit('openProfessor', $event)"
             />
           </ul>
+          <button
+            v-if="faculty.length > facultyShown"
+            type="button"
+            class="link more"
+            @click="facultyShown += 10"
+          >
+            Show 10 more ({{ faculty.length - facultyShown }} left)
+          </button>
+          <p v-else-if="uni && faculty.length < uni.faculty_total" class="sub">
+            The {{ faculty.length }}
+            {{ query.goal || hasAreas ? "best matches" : "most active" }} of
+            {{ uni.faculty_total.toLocaleString("en-US") }} are listed.
+          </p>
         </section>
 
         <a
@@ -590,6 +650,32 @@ function money(n?: number) {
 </template>
 
 <style scoped>
+.uni-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 16px 0 4px;
+  border-bottom: 1px solid var(--rule);
+}
+.uni-tabs button {
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.uni-tabs button.on {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.uni-tabs button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
 .drawer {
   position: relative;
   height: 100%;

@@ -466,7 +466,7 @@ const tourSteps: TourStep[] = [
   {
     target: ".drawer-slot",
     title: "A university",
-    body: "Its research strengths, PhDs awarded (US), who funds its faculty, funded PhD programmes that pay students directly, and scholarships you can apply for.",
+    body: "In tabs: an overview (research strengths, PhDs awarded in the US, who funds its faculty, funded PhD programmes that pay students directly), its faculty, the grants held there, and scholarships you can apply for.",
     before: () => {
       tab.value = "universities";
       openUniversity(TOUR_UNIVERSITY);

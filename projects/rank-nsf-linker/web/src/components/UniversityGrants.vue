@@ -22,7 +22,7 @@ const data = ref<Landscape | null>(null);
 const loading = ref(false);
 const failed = ref(false);
 const onlyRunning = ref(false);
-const showAll = ref(false);
+const shown = ref(10);
 let inflight: AbortController | null = null;
 
 async function load() {
@@ -50,16 +50,13 @@ async function load() {
 watch(
   () => [props.universityId, props.goal, onlyRunning.value],
   () => {
-    showAll.value = false;
+    shown.value = 10;
     load();
   },
   { immediate: true },
 );
 
-const grants = computed(
-  () =>
-    (showAll.value ? data.value?.grants : data.value?.grants.slice(0, 5)) ?? [],
-);
+const grants = computed(() => data.value?.grants.slice(0, shown.value) ?? []);
 const funders = computed(() => (data.value?.funders ?? []).slice(0, 4));
 // "grants, 40 running now, from Marsden Fund, NSF and others." (after the bold count)
 const summary = computed(() => {
@@ -150,19 +147,18 @@ const summary = computed(() => {
           </li>
         </ul>
         <button
-          v-if="data.grants.length > 5"
+          v-if="data.grants.length > shown"
           type="button"
           class="link more"
-          @click="showAll = !showAll"
+          @click="shown += 10"
         >
-          {{
-            showAll
-              ? "Fewer"
-              : data.total > data.grants.length
-                ? `Show the ${data.grants.length} newest`
-                : `Show all ${data.grants.length}`
-          }}
+          Show 10 more
         </button>
+        <p v-else-if="data.total > data.grants.length" class="sub">
+          The {{ data.grants.length }} newest of
+          {{ data.total.toLocaleString() }}
+          are listed.
+        </p>
       </template>
     </template>
   </div>
