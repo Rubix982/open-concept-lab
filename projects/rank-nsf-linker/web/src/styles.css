@@ -142,3 +142,37 @@ button {
 .mapboxgl-ctrl-group button:focus:not(:focus-visible) {
   box-shadow: none !important;
 }
+
+/* A tab's own search, sort and filters (a university's Faculty, Funding and Scholarships tabs) */
+.tab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 12px 0 10px;
+  font-size: var(--t-xs);
+}
+.tab-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.tab-controls select {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+  max-width: 100%;
+}
+.tab-controls .clear {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

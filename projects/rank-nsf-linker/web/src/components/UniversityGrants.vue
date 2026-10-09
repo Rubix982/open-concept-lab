@@ -1,9 +1,11 @@
 <script setup lang="ts">
-// The grants held at one university (its page): how many, how many running, by whom. On a search,
-// the ones about it. Newest first; the funding search filtered to this university (server/landscape.go).
+// The grants held at one university (its page): how many, how many running, by whom, with the
+// tab's own search, sort and filters. Starts from the page's search; the funding search filtered to
+// this university (server/landscape.go).
 import { computed, ref, watch } from "vue";
 import { api, type Landscape } from "@/api";
 import LoadingRows from "@/components/LoadingRows.vue";
+import TabSearch from "@/components/TabSearch.vue";
 import {
   approxUSD,
   formatMoney,
@@ -23,6 +25,37 @@ const loading = ref(false);
 const failed = ref(false);
 const onlyRunning = ref(false);
 const shown = ref(10);
+const q = ref(props.goal); // this tab's search
+const funder = ref("");
+const kind = ref<"" | "new_lab" | "training">("");
+const sortBy = ref<"" | "newest" | "largest">("newest"); // "": best match (with a search)
+// Funders to choose from: those of the list before a funder was chosen
+const funderOptions = ref<Landscape["funders"]>([]);
+const narrowed = computed(
+  () => !!q.value || onlyRunning.value || !!funder.value || !!kind.value,
+);
+function clearAll() {
+  q.value = "";
+  onlyRunning.value = false;
+  funder.value = "";
+  kind.value = "";
+}
+// Another university or a new search on the page: start over from it
+watch(
+  () => [props.universityId, props.goal],
+  () => {
+    q.value = props.goal;
+    onlyRunning.value = false;
+    funder.value = "";
+    kind.value = "";
+    funderOptions.value = [];
+  },
+);
+// A search ranks by match unless another order was chosen; clearing it goes back to newest
+watch(q, (v, old) => {
+  if (v && !old && sortBy.value === "newest") sortBy.value = "";
+  if (!v && sortBy.value === "") sortBy.value = "newest";
+});
 let inflight: AbortController | null = null;
 
 async function load() {
@@ -32,15 +65,19 @@ async function load() {
   loading.value = true;
   failed.value = false;
   try {
-    data.value = await api.landscape(
+    const res = await api.landscape(
       {
-        goal: props.goal,
+        goal: q.value,
         university: props.universityId,
         active: onlyRunning.value,
-        sort: "newest",
+        funder: funder.value,
+        kind: kind.value,
+        sort: sortBy.value,
       },
       mine.signal,
     );
+    data.value = res;
+    if (!funder.value) funderOptions.value = res.funders;
   } catch (e) {
     if ((e as Error).name !== "AbortError") failed.value = true;
   } finally {
@@ -48,7 +85,14 @@ async function load() {
   }
 }
 watch(
-  () => [props.universityId, props.goal, onlyRunning.value],
+  () => [
+    props.universityId,
+    q.value,
+    onlyRunning.value,
+    funder.value,
+    kind.value,
+    sortBy.value,
+  ],
   () => {
     shown.value = 10;
     load();
@@ -74,14 +118,44 @@ const summary = computed(() => {
 
 <template>
   <div class="held">
-    <div class="head">
-      <p class="sub">
-        {{ goal ? `Grants held here about “${goal}”` : "Grants held here" }}
-      </p>
-      <label class="toggle">
+    <TabSearch
+      v-model="q"
+      label="Search this university's grants"
+      placeholder="Search this university's grants, e.g. malaria"
+    />
+    <div class="tab-controls">
+      <label>
         <input v-model="onlyRunning" type="checkbox" />
         Running now
       </label>
+      <label>
+        <span class="visually-hidden">Funder</span>
+        <select v-model="funder">
+          <option value="">Every funder</option>
+          <option v-for="f in funderOptions" :key="f.funder" :value="f.funder">
+            {{ funderName(f.funder) }} ({{ f.grants.toLocaleString() }})
+          </option>
+        </select>
+      </label>
+      <label>
+        <span class="visually-hidden">Kind of grant</span>
+        <select v-model="kind">
+          <option value="">Every kind</option>
+          <option value="new_lab">New labs (early-career PIs)</option>
+          <option value="training">Funds PhD students</option>
+        </select>
+      </label>
+      <label>
+        <span class="visually-hidden">Sort grants</span>
+        <select v-model="sortBy">
+          <option v-if="q" value="">Best match</option>
+          <option value="newest">Newest first</option>
+          <option value="largest">Largest first</option>
+        </select>
+      </label>
+      <button v-if="narrowed" type="button" class="clear" @click="clearAll">
+        Clear
+      </button>
     </div>
 
     <LoadingRows
@@ -95,11 +169,9 @@ const summary = computed(() => {
     <template v-else-if="data">
       <p v-if="!data.total" class="sub">
         {{
-          onlyRunning
-            ? "No running grants on record here."
-            : goal
-              ? "No grants on record here about this search."
-              : "No grants on record here."
+          narrowed
+            ? "No grants here match. Try fewer words, or clear the filters."
+            : "No grants on record here."
         }}
       </p>
       <template v-else>
@@ -168,19 +240,9 @@ const summary = computed(() => {
 .held {
   margin-top: 16px;
 }
-.head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
 .sub {
   color: var(--ink-soft);
   font-size: var(--t-sm);
-}
-.toggle {
-  font-size: var(--t-sm);
-  white-space: nowrap;
 }
 .num {
   font-variant-numeric: tabular-nums;

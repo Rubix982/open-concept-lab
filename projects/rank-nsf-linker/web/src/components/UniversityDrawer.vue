@@ -14,6 +14,7 @@ import { areaIndex, funderName } from "@/store";
 import FacultyRow from "./FacultyRow.vue";
 import ProfessorView from "./ProfessorView.vue";
 import UniversityGrants from "./UniversityGrants.vue";
+import TabSearch from "./TabSearch.vue";
 import LoadingRows from "@/components/LoadingRows.vue";
 
 const props = defineProps<{
@@ -29,32 +30,95 @@ const emit = defineEmits<{
 
 const uni = ref<UniversityDetail | null>(null);
 const faculty = ref<Faculty[]>([]);
-const loading = ref(true);
+const loading = ref(true); // the faculty list
+const uniLoading = ref(true); // the university's details
 const error = ref("");
+
+// The Faculty tab's own search and filters, starting from the page's search
+const facQ = ref(props.query.goal);
+const facFunded = ref(false);
+const facNewLab = ref(false);
+const facSort = ref<"" | "recent" | "funding">("");
+const facName = ref(""); // narrows the loaded list by name, in the browser
+const facNarrowed = computed(
+  () => !!facQ.value || facFunded.value || facNewLab.value || !!facName.value,
+);
+function clearFaculty() {
+  facQ.value = "";
+  facFunded.value = false;
+  facNewLab.value = false;
+  facName.value = "";
+}
+watch(
+  () => [props.id, props.query.goal],
+  () => {
+    facQ.value = props.query.goal;
+    facFunded.value = false;
+    facNewLab.value = false;
+    facSort.value = "";
+    facName.value = "";
+  },
+);
 
 let loadSeq = 0;
 async function load() {
   const seq = ++loadSeq; // switching universities quickly: only the latest answer is shown
-  loading.value = true;
+  uniLoading.value = true;
   error.value = "";
   try {
-    const [detail, people] = await Promise.all([
-      api.university(props.id),
-      api.faculty({ ...props.query, university: props.id, limit: 150 }),
-    ]);
-    if (seq !== loadSeq) return;
-    uni.value = detail;
-    faculty.value = people;
+    const detail = await api.university(props.id);
+    if (seq === loadSeq) uni.value = detail;
   } catch (e) {
     if (seq === loadSeq) error.value = (e as Error).message;
   } finally {
-    if (seq === loadSeq) loading.value = false;
+    if (seq === loadSeq) uniLoading.value = false;
   }
 }
+watch(() => props.id, load, { immediate: true });
 
-watch(() => [props.id, props.query.areas.join(","), props.query.goal], load, {
-  immediate: true,
-});
+let facSeq = 0;
+async function loadFaculty() {
+  const seq = ++facSeq;
+  loading.value = true;
+  try {
+    const people = await api.faculty({
+      areas: props.query.areas,
+      goal: facQ.value,
+      university: props.id,
+      limit: 150,
+      funded: facFunded.value ? 1 : undefined,
+      newlab: facNewLab.value ? 1 : undefined,
+      sort: facSort.value || undefined,
+    });
+    if (seq === facSeq) faculty.value = people;
+  } catch (e) {
+    if (seq === facSeq) error.value = (e as Error).message;
+  } finally {
+    if (seq === facSeq) loading.value = false;
+  }
+}
+// One key for everything the list depends on, so a change of university (which also resets the
+// filters) asks once, not once per changed filter
+const facultyKey = computed(() =>
+  JSON.stringify([
+    props.id,
+    props.query.areas,
+    facQ.value,
+    facFunded.value,
+    facNewLab.value,
+    facSort.value,
+  ]),
+);
+const fold = (t: string) =>
+  t
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+const shownFaculty = computed(() =>
+  facName.value
+    ? faculty.value.filter((f) => fold(f.name).includes(fold(facName.value)))
+    : faculty.value,
+);
 
 // Scholarships for studying in this university's country; students check eligibility on each programme's page.
 const scholarships = ref<Scholarship[]>([]);
@@ -64,6 +128,14 @@ const scholarships = ref<Scholarship[]>([]);
 type UniTab = "overview" | "faculty" | "funding" | "scholarships";
 const uniTab = ref<UniTab>("overview");
 const facultyShown = ref(10);
+watch(
+  facultyKey,
+  () => {
+    facultyShown.value = 10;
+    loadFaculty();
+  },
+  { immediate: true },
+);
 watch(
   () => props.id,
   () => {
@@ -98,6 +170,15 @@ const schLevels = computed(() =>
 watch(scholarships, () => (schLevel.value = ""));
 const atLevel = (s: Scholarship) =>
   !schLevel.value || s.levels.includes(schLevel.value);
+// The tab's own search (name, provider, what it covers, notes) and order, in the browser
+const schQ = ref("");
+const schSort = ref<"window" | "name">("window");
+watch(scholarships, () => (schQ.value = ""));
+const schMatch = (s: Scholarship) =>
+  !schQ.value ||
+  fold(
+    [s.name, s.provider, s.covers, s.notes, s.application_window].join(" "),
+  ).includes(fold(schQ.value));
 
 // Application windows are free text ("approx. Jun–Aug"); read the first month range when there is one.
 const MONTHS = [
@@ -152,13 +233,16 @@ const byWindow = (a: Scholarship, b: Scholarship) =>
   (windowOf(a.application_window)?.order ?? 99) -
   (windowOf(b.application_window)?.order ?? 99);
 
+const byName = (a: Scholarship, b: Scholarship) => a.name.localeCompare(b.name);
 const curatedScholarships = computed(() =>
   scholarships.value
-    .filter((s) => s.source !== "daad" && atLevel(s))
-    .sort(byWindow),
+    .filter((s) => s.source !== "daad" && atLevel(s) && schMatch(s))
+    .sort(schSort.value === "name" ? byName : byWindow),
 );
 const feedScholarships = computed(() =>
-  scholarships.value.filter((s) => s.source === "daad" && atLevel(s)),
+  scholarships.value
+    .filter((s) => s.source === "daad" && atLevel(s) && schMatch(s))
+    .sort(schSort.value === "name" ? byName : () => 0),
 );
 watch(
   () => uni.value?.country,
@@ -306,7 +390,7 @@ function money(n?: number) {
         </button>
       </p>
       <LoadingRows
-        v-if="loading && !uni && !error"
+        v-if="uniLoading && !uni && !error"
         label="Loading the university"
         :rows="5"
       />
@@ -513,6 +597,40 @@ function money(n?: number) {
           <p v-if="!scholarships.length" class="sub">
             No scholarships in our list for study in {{ countryLabel }}.
           </p>
+          <template v-else>
+            <TabSearch
+              v-model="schQ"
+              live
+              label="Search these scholarships"
+              placeholder="Search by name, funder or what it covers"
+            />
+            <div class="tab-controls">
+              <label>
+                <span class="visually-hidden">Sort scholarships</span>
+                <select v-model="schSort">
+                  <option value="window">Opens soonest</option>
+                  <option value="name">A to Z</option>
+                </select>
+              </label>
+              <button
+                v-if="schQ || schLevel"
+                type="button"
+                class="clear"
+                @click="
+                  schQ = '';
+                  schLevel = '';
+                "
+              >
+                Clear
+              </button>
+            </div>
+            <p
+              v-if="!curatedScholarships.length && !feedScholarships.length"
+              class="sub"
+            >
+              None match. Try another word, or clear the search.
+            </p>
+          </template>
           <p
             v-if="schLevels.length"
             class="levels"
@@ -599,21 +717,68 @@ function money(n?: number) {
         <section v-if="uniTab === 'faculty'">
           <h3>
             {{
-              query.goal
-                ? "Faculty whose work matches your goal"
+              facQ
+                ? `Faculty whose work matches “${facQ}”`
                 : hasAreas
                   ? "Faculty in your areas"
                   : "Faculty"
             }}
           </h3>
+          <TabSearch
+            v-model="facQ"
+            label="Search this university's faculty"
+            placeholder="Search by research topic, e.g. protein design"
+          />
+          <div class="tab-controls">
+            <label>
+              <input v-model="facFunded" type="checkbox" />
+              Active grant
+            </label>
+            <label>
+              <input v-model="facNewLab" type="checkbox" />
+              New lab, funded
+            </label>
+            <label>
+              <span class="visually-hidden">Sort faculty</span>
+              <select v-model="facSort">
+                <option value="">
+                  {{
+                    facQ || query.areas.length ? "Best match" : "Most active"
+                  }}
+                </option>
+                <option value="recent">Most papers lately</option>
+                <option value="funding">Newest grant</option>
+              </select>
+            </label>
+            <label>
+              <span class="visually-hidden">Find a name</span>
+              <input
+                v-model="facName"
+                class="name-filter"
+                type="search"
+                placeholder="Find a name"
+              />
+            </label>
+            <button
+              v-if="facNarrowed"
+              type="button"
+              class="clear"
+              @click="clearFaculty"
+            >
+              Clear
+            </button>
+          </div>
           <LoadingRows v-if="loading && uni" bar label="Updating faculty" />
-          <p v-if="!loading && !faculty.length" class="sub">
-            No faculty here match. Try fewer words in your goal, or another
-            area.
+          <p v-if="!loading && !shownFaculty.length" class="sub">
+            {{
+              facName
+                ? `No one named “${facName}” among these.`
+                : "No faculty here match. Try fewer words, or clear the filters."
+            }}
           </p>
           <ul class="list">
             <FacultyRow
-              v-for="f in faculty.slice(0, facultyShown)"
+              v-for="f in shownFaculty.slice(0, facultyShown)"
               :key="f.name"
               :person="f"
               :selected-areas="query.areas"
@@ -621,16 +786,19 @@ function money(n?: number) {
             />
           </ul>
           <button
-            v-if="faculty.length > facultyShown"
+            v-if="shownFaculty.length > facultyShown"
             type="button"
             class="link more"
             @click="facultyShown += 10"
           >
-            Show 10 more ({{ faculty.length - facultyShown }} left)
+            Show 10 more ({{ shownFaculty.length - facultyShown }} left)
           </button>
-          <p v-else-if="uni && faculty.length < uni.faculty_total" class="sub">
+          <p
+            v-else-if="uni && !facName && faculty.length < uni.faculty_total"
+            class="sub"
+          >
             The {{ faculty.length }}
-            {{ query.goal || hasAreas ? "best matches" : "most active" }} of
+            {{ facQ || hasAreas ? "best matches" : "most active" }} of
             {{ uni.faculty_total.toLocaleString("en-US") }} are listed.
           </p>
         </section>
@@ -650,6 +818,14 @@ function money(n?: number) {
 </template>
 
 <style scoped>
+.name-filter {
+  font: inherit;
+  width: 9em;
+  padding: 4px 6px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+}
 .uni-tabs {
   display: flex;
   flex-wrap: wrap;
