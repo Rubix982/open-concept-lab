@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { Faculty } from "@/api";
-import { LINE_COLOR, formatMoney } from "@/lines";
+import { computed, ref } from "vue";
+import { api, type Award, type Faculty } from "@/api";
+import {
+  LINE_COLOR,
+  formatMoney,
+  grantTitle,
+  grantYears,
+  webUrl,
+} from "@/lines";
 import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
 
 const props = defineProps<{
@@ -41,6 +47,33 @@ const earlyCareer = computed(
 
 // CSRankings disambiguates namesakes with a number ("Wei Wang 0001"); students don't need it.
 const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
+
+// The running grants behind the count, on request: each links to the funder's own record
+const grantsOpen = ref(false);
+const running = ref<Award[] | null>(null);
+const grantsFailed = ref(false);
+async function toggleGrants() {
+  grantsOpen.value = !grantsOpen.value;
+  if (!grantsOpen.value || running.value) return;
+  grantsFailed.value = false;
+  try {
+    const profile = await api.profile(props.person.name);
+    running.value = profile.awards
+      .filter((a) => a.active)
+      .sort((a, b) => (b.ends ?? "").localeCompare(a.ends ?? ""));
+  } catch {
+    grantsFailed.value = true;
+  }
+}
+// Roles as funders write them: "CoI", "Co-PI", "Co-Investigator", "PI"
+function roleOf(a: Award): string {
+  if (a.lead) return "Leads it";
+  const r = (a.role ?? "").trim();
+  if (/^co-?pi$/i.test(r)) return "Co-PI";
+  if (!r || /^(coi|co-?investigator|pi|principal.*)$/i.test(r))
+    return "Co-investigator";
+  return r;
+}
 </script>
 
 <template>
@@ -119,6 +152,14 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
           }}</span
           >)</template
         ><template v-else> as co-investigator</template>
+        <button
+          type="button"
+          class="grants-toggle"
+          :aria-expanded="grantsOpen"
+          @click="toggleGrants"
+        >
+          {{ grantsOpen ? "Hide" : "Show them" }}
+        </button>
       </span>
       <span v-else-if="funding"
         >No active {{ funderName(funding.funder) }} grant ({{
@@ -128,6 +169,38 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
       >
       <span v-else>No {{ coveredNames }} grants on record</span>
     </p>
+    <div v-if="grantsOpen" class="running">
+      <p v-if="grantsFailed" class="sub">
+        Couldn't load the grants. Open the profile instead.
+      </p>
+      <p v-else-if="running === null" class="sub">Loading the grants…</p>
+      <p v-else-if="!running.length" class="sub">
+        No running grants found. Open the profile for their past ones.
+      </p>
+      <ul v-else>
+        <li v-for="a in running" :key="a.funder + a.id">
+          <a
+            v-if="webUrl(a.url)"
+            :href="webUrl(a.url)"
+            target="_blank"
+            rel="noopener"
+            :title="`The grant's record at ${funderName(a.funder)}`"
+            >{{ grantTitle(a.title) }}</a
+          >
+          <span v-else>{{ grantTitle(a.title) }}</span>
+          <span class="gmeta">
+            {{ roleOf(a) }}, {{ funderName(a.funder)
+            }}<template v-if="a.amount"
+              >, {{ formatMoney(a.amount, a.currency || "USD") }}</template
+            ><template v-if="grantYears(a)">, {{ grantYears(a) }}</template>
+          </span>
+        </li>
+      </ul>
+      <p class="sub">
+        "Leads" means they are the principal investigator, who usually hires the
+        PhD students paid by the grant.
+      </p>
+    </div>
   </li>
 </template>
 
@@ -213,6 +286,48 @@ const displayName = computed(() => props.person.name.replace(/\s+\d{4}$/, ""));
   font-weight: 700;
 }
 
+.grants-toggle {
+  margin-left: 6px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.running {
+  margin: 6px 0 2px 15px;
+  padding-left: 10px;
+  border-left: 2px solid var(--rule);
+  font-size: var(--t-xs);
+}
+.running ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.running li {
+  padding: 4px 0;
+}
+.running a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+}
+.gmeta {
+  display: block;
+  color: var(--ink-soft);
+}
+.running .sub {
+  margin: 4px 0 0;
+  color: var(--ink-faint);
+}
 .funding {
   margin-top: 7px;
   display: flex;

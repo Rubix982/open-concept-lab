@@ -9,7 +9,13 @@ import {
   type Paper,
   type SimilarPerson,
 } from "@/api";
-import { LINE_COLOR, formatMoney, formatYear, webUrl } from "@/lines";
+import {
+  LINE_COLOR,
+  formatMoney,
+  formatYear,
+  grantTitle,
+  webUrl,
+} from "@/lines";
 import { areaIndex, funderName, fundersFor, newLabLabel } from "@/store";
 import { countryName } from "@/countries";
 import { isSaved, toggleSaved } from "@/shortlist";
@@ -528,7 +534,7 @@ function untilLabel(date: string | null): string {
               target="_blank"
               rel="noopener"
               class="award-title"
-              >{{ a.title }}</a
+              >{{ grantTitle(a.title) }}</a
             >
             <p class="meta">
               {{ funderName(a.funder) }},

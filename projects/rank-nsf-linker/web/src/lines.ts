@@ -115,3 +115,11 @@ export function personName(name: string | null | undefined): string {
           .replace(/(^|[-'])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase()),
   );
 }
+// A grant title some funders send in capitals ("A QUANTITATIVE, PREDICTIVE MODEL OF ..."): read in
+// sentence case. Titles with any lowercase letter are left alone (their acronyms are already right).
+export function grantTitle(title: string | null | undefined): string {
+  const t = (title ?? "").trim();
+  if (t.length < 12 || t !== t.toUpperCase() || !/\p{Lu}{4}/u.test(t)) return t;
+  const lower = t.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}

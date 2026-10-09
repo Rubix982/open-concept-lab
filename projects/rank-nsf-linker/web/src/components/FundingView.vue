@@ -5,6 +5,7 @@ import LoadingRows from "@/components/LoadingRows.vue";
 import {
   approxUSD,
   formatMoney,
+  grantTitle,
   grantYears as years,
   KIND_LABEL,
   niceName,
@@ -398,9 +399,9 @@ function isCompany(s: string) {
               target="_blank"
               rel="noopener"
               class="title"
-              >{{ g.title }}</a
+              >{{ grantTitle(g.title) }}</a
             >
-            <span v-else class="title">{{ g.title }}</span>
+            <span v-else class="title">{{ grantTitle(g.title) }}</span>
             <p class="sub">
               <span v-if="g.signal" class="kind" :class="g.signal">{{
                 KIND_LABEL[g.signal]

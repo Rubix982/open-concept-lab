@@ -9,6 +9,7 @@ import TabSearch from "@/components/TabSearch.vue";
 import {
   approxUSD,
   formatMoney,
+  grantTitle,
   grantYears,
   KIND_LABEL,
   personName,
@@ -319,9 +320,9 @@ const trendLeftOut = computed(() =>
               target="_blank"
               rel="noopener"
               class="title"
-              >{{ g.title }}</a
+              >{{ grantTitle(g.title) }}</a
             >
-            <span v-else class="title">{{ g.title }}</span>
+            <span v-else class="title">{{ grantTitle(g.title) }}</span>
             <p class="meta">
               <span v-if="g.signal" class="kind" :class="g.signal">{{
                 KIND_LABEL[g.signal]
@@ -466,10 +467,9 @@ const trendLeftOut = computed(() =>
 }
 .fbars li {
   display: grid;
-  grid-template-columns: minmax(
-      0,
-      9em
-    ) 1fr 4.6em; /* a fixed value column, so the tracks line up */
+  grid-template-columns:
+    minmax(0, 9em)
+    1fr 4.6em; /* a fixed value column, so the tracks line up */
   gap: 10px;
   align-items: center;
   padding: 3px 0;
