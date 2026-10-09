@@ -15,6 +15,7 @@ DOI list) only requests DOIs never asked before. Pass --max-calls N to cap this 
 
 import csv
 import hashlib
+import http.client
 import json
 import sys
 import time
@@ -69,7 +70,7 @@ def fetch(batch: list[str], key: str, show_limits: bool = False) -> bytes | None
                 time.sleep(wait)
                 continue
             raise SystemExit(f"OpenAlex refused the request: HTTP {e.code}")  # no URL: it carries the key
-        except (TimeoutError, OSError) as e:
+        except (TimeoutError, OSError, http.client.HTTPException) as e:  # IncompleteRead: a page cut off mid-download
             print(f"  {type(e).__name__}; retrying")
             time.sleep(15 * (attempt + 1))
     raise SystemExit("OpenAlex kept failing; stopping (rerun to resume)")
