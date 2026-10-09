@@ -114,6 +114,57 @@ const summary = computed(() => {
   }
   return out + ".";
 });
+
+// At a glance: the money, by funder, and grants started per year, for what's listed (the tab's
+// search and filters apply). Approximate US dollars (server/currency.go).
+const usdOf = (f: Landscape["funders"][number], amount: number | null) =>
+  amount != null && f.amount && f.amount_usd != null
+    ? (amount * f.amount_usd) / f.amount
+    : null;
+const totalUSD = computed(() =>
+  (data.value?.funders ?? []).reduce((a, f) => a + (f.amount_usd ?? 0), 0),
+);
+const runningUSD = computed(() =>
+  (data.value?.funders ?? []).reduce(
+    (a, f) => a + (usdOf(f, f.active_amount) ?? 0),
+    0,
+  ),
+);
+const funderBars = computed(() => {
+  const list = (data.value?.funders ?? [])
+    .filter((f) => (f.amount_usd ?? 0) > 0)
+    .sort((a, b) => (b.amount_usd ?? 0) - (a.amount_usd ?? 0))
+    .slice(0, 4);
+  const max = Math.max(1, ...list.map((f) => f.amount_usd ?? 0));
+  return list.length > 1 || (list.length === 1 && totalUSD.value > 0)
+    ? list.map((f) => ({
+        funder: f.funder,
+        usd: f.amount_usd ?? 0,
+        grants: f.grants,
+        width: Math.max(3, (100 * (f.amount_usd ?? 0)) / max),
+      }))
+    : [];
+});
+// NIH is left out, as on the Funding tab: only its running projects are loaded, so its history
+// would look like a sudden boom. Too few grants make a noisy chart, not a trend.
+const thisYear = new Date().getFullYear();
+const trend = computed(() => {
+  const by = new Map<number, number>();
+  for (const y of data.value?.years ?? [])
+    if (y.funder !== "nih" && y.year >= thisYear - 14)
+      by.set(y.year, (by.get(y.year) ?? 0) + y.grants);
+  const years = [...by.keys()];
+  if (years.length < 3 || [...by.values()].reduce((a, b) => a + b, 0) < 15)
+    return [];
+  const out = [];
+  for (let y = Math.min(...years); y <= thisYear; y++)
+    out.push({ year: y, n: by.get(y) ?? 0 });
+  return out;
+});
+const trendMax = computed(() => Math.max(1, ...trend.value.map((t) => t.n)));
+const trendLeftOut = computed(() =>
+  (data.value?.funders ?? []).some((f) => f.funder === "nih"),
+);
 </script>
 
 <template>
@@ -179,6 +230,65 @@ const summary = computed(() => {
           <strong class="num">{{ data.total.toLocaleString() }}</strong>
           {{ summary }}
         </p>
+        <div v-if="totalUSD > 0" class="glance" :class="{ stale: loading }">
+          <dl class="stats">
+            <div>
+              <dt>Awarded, in all</dt>
+              <dd>≈ {{ formatMoney(totalUSD, "USD") }}</dd>
+            </div>
+            <div v-if="runningUSD > 0">
+              <dt>In grants running now</dt>
+              <dd>≈ {{ formatMoney(runningUSD, "USD") }}</dd>
+            </div>
+            <div v-if="!onlyRunning">
+              <dt>Running now</dt>
+              <dd>
+                {{ data.active.toLocaleString() }}
+                <span class="of">of {{ data.total.toLocaleString() }}</span>
+              </dd>
+            </div>
+          </dl>
+
+          <template v-if="funderBars.length > 1">
+            <p class="cap">Money by funder</p>
+            <ul class="fbars">
+              <li v-for="f in funderBars" :key="f.funder">
+                <span class="fname">{{ funderName(f.funder) }}</span>
+                <span class="track"
+                  ><span class="fill" :style="{ width: f.width + '%' }"></span
+                ></span>
+                <span class="fval">{{ formatMoney(f.usd, "USD") }}</span>
+              </li>
+            </ul>
+          </template>
+
+          <template v-if="trend.length">
+            <p class="cap">
+              Grants started per year<template v-if="trendLeftOut">
+                (NIH not counted: only its running projects are
+                loaded)</template
+              >
+            </p>
+            <div
+              class="trend"
+              role="img"
+              :aria-label="`Grants started per year, ${trend[0].year} to ${thisYear}`"
+            >
+              <span
+                v-for="t in trend"
+                :key="t.year"
+                :style="{ height: `${Math.max(2, (100 * t.n) / trendMax)}%` }"
+                :class="{ partial: t.year === thisYear }"
+                :title="`${t.year}: ${t.n}`"
+              ></span>
+            </div>
+            <p class="axis">
+              <span>{{ trend[0].year }}</span
+              ><span>{{ thisYear }} (so far)</span>
+            </p>
+          </template>
+        </div>
+
         <ul class="grants" :class="{ stale: loading }">
           <li v-for="g in grants" :key="g.funder + g.id">
             <a
@@ -275,6 +385,95 @@ const summary = computed(() => {
 }
 .stale {
   opacity: 0.55;
+}
+.glance {
+  margin: 10px 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+}
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 0;
+}
+.stats dt {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.stats dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.stats .of {
+  font-size: var(--t-xs);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.cap {
+  margin: 14px 0 6px;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+.fbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fbars li {
+  display: grid;
+  grid-template-columns: minmax(0, 9em) 1fr 4.6em; /* a fixed value column, so the tracks line up */
+  gap: 10px;
+  align-items: center;
+  padding: 3px 0;
+  font-size: var(--t-xs);
+}
+.fname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.track {
+  height: 8px;
+  background: var(--rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--line-ai);
+}
+.fval {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.trend {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 56px;
+}
+.trend span {
+  flex: 1;
+  background: var(--ink-soft);
+  border-radius: 2px 2px 0 0;
+}
+.trend span.partial {
+  background: var(--rule-strong);
+}
+.axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0 0;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
 }
 .link {
   border: 0;
