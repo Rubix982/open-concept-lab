@@ -72,16 +72,15 @@ func main() {
 		logger.Errorf(mainCtx, "failed to execute migrations: %v", runMigrationsErr)
 		return
 	}
-	go func() {
-		time.Sleep(3 * time.Second)
-		warmCaches()
-	}()
-
-	// Migration 12 reloads research_area_venues from scratch, which drops the OpenAlex subfield areas
-	// the pipeline added: put them back from data/openalex/subfields.csv.
+	// Refresh the subfield names from data/openalex/subfields.csv when it's there (migration 12 keeps
+	// the ones already loaded).
 	if err := restoreSubfieldAreas(); err != nil {
 		logger.Warnf(mainCtx, "⚠️ could not restore subfield areas: %v", err)
 	}
+	// Only now: warmed during the migrations, the areas list was cached with the computer-science
+	// areas alone, and every subfield showed as its code. Requests answered meanwhile are dropped.
+	clearAreasCache()
+	go warmCaches()
 
 	// If we actually go to populate the DB, we mark the pipeline as in progress anyways, so
 	// we can mark it as completed here.

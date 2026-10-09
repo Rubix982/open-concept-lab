@@ -6,7 +6,10 @@ CREATE TABLE IF NOT EXISTS research_area_venues (
   area_name TEXT NOT NULL,
   venue TEXT PRIMARY KEY
 );
-TRUNCATE research_area_venues;
+-- Only the CSRankings rows: the OpenAlex areas (venues 'oa:'/'oas:', added by later migrations and by
+-- the pipeline from data/openalex/subfields.csv) stay. TRUNCATE dropped them on every boot, and a
+-- server without data/openalex (a minimal deployment) then showed subfield codes ("sf1902") as areas.
+DELETE FROM research_area_venues WHERE venue !~ '^oas?:';
 INSERT INTO research_area_venues (area_group, area, area_name, venue) VALUES
   ('AI', 'ai', 'Artificial intelligence', 'aaai'),
   ('AI', 'ai', 'Artificial intelligence', 'ijcai'),
