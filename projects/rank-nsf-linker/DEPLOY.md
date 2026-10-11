@@ -11,7 +11,8 @@ visitor ─HTTPS─> Cloudflare ─tunnel (outbound from the server)─> web (ng
 you ─Tailscale─> SSH
 ```
 
-**Cost:** about €8–10 a month (Hetzner CX32, 8 GB) plus a domain (~$10 a year). Cloudflare,
+**Cost:** about €8–13 a month (Hetzner, 8 GB: CX33, or Arm CAX21 when CX33 is sold out), or nothing
+for the first 1–2.5 months on AWS's free plan (below), plus a domain (~$10 a year). Cloudflare,
 Tailscale and an uptime check are free; Mapbox is free up to 50,000 map loads a month.
 
 ## 1. Accounts (once)
@@ -25,9 +26,42 @@ Tailscale and an uptime check are free; Mapbox is free up to 50,000 map loads a 
 4. **Mapbox:** Account → Tokens → your public token → URL restrictions: add your domain (and
    `http://localhost` for local checks), so the token can't be reused elsewhere.
 
+### Or: the server on AWS's free plan (no money for the first 1–2.5 months)
+
+New AWS accounts (on or after 15 July 2025) on the **Free plan** get $100 of credit, and up to $100
+more for starter tasks, for 6 months. The account can't run up a bill: when the credit or the 6
+months run out it stops. Charges are only possible after clicking "Upgrade to paid plan" — don't.
+The one free-plan server with 8 GB is **m7i-flex.large** (2 vCPU, 8 GB): about $78 a month with
+its disk and IPv4 address, so $100 lasts about 5 weeks and $200 about 2.5 months.
+
+1. **Sign up** with the Free plan and Basic (free) support. Turn on MFA for the root user (top
+   right → Security credentials → Assign MFA).
+2. **Budget alert** (also one of the credit-earning tasks): Billing → Budgets → Create budget →
+   "Zero spend budget", your email.
+3. **Region** (top right): Asia Pacific (Mumbai), the nearest to Pakistan. If m7i-flex.large isn't
+   offered there, Middle East (Bahrain) or Europe (Frankfurt).
+4. **Your SSH key:** EC2 → Key pairs → Actions → Import key pair → name `atlas`, paste
+   `~/.ssh/id_ed25519.pub`.
+5. **EC2 → Launch instance:**
+   - Name `atlas`; image **Ubuntu Server 24.04 LTS** (64-bit x86).
+   - Type **m7i-flex.large** (marked "Free tier eligible").
+   - Key pair `atlas`.
+   - Network settings → Edit → create a security group `atlas` with one inbound rule:
+     SSH, source **My IP**. This is temporary, for the first login only.
+   - Storage: **60 GiB gp3**.
+6. Launch. Copy the instance's **Public IPv4 address**, then from the laptop:
+   `ssh ubuntu@<that address>` and do step 2 below. On AWS the user is `ubuntu`, so start with
+   `sudo -i`, and after Docker is installed run `usermod -aG docker ubuntu`.
+7. Once `tailscale up` works, **delete the SSH rule** from the `atlas` security group (EC2 →
+   Security Groups → atlas → Inbound rules → Edit → Delete). Then nothing comes in, as on Hetzner.
+
+To stop paying from the credit, **terminate** the instance (stopping it still charges for the disk
+and IP address), then delete its volume and any leftover Elastic IP.
+
 ## 2. Server setup (once)
 
-Until Tailscale is up you need SSH from Hetzner's web console (the firewall blocks port 22):
+Until Tailscale is up you need SSH from Hetzner's web console (the firewall blocks port 22), or on
+AWS the temporary SSH rule above:
 
 ```bash
 apt update && apt -y upgrade && apt -y install unattended-upgrades
@@ -38,10 +72,17 @@ sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd
 
 ## 3. Ship the code and the data (from your laptop)
 
+A golden dataset that's already verified (e.g. `golden/2026-10-09/`, 9.4 GB) can be shipped as is;
+`make golden` only makes a new one. The upload can take a few hours on a home connection: `-P`
+lets an interrupted rsync pick up where it stopped. Disk at the peak is about 35 GB (database
+15 GB, search indexes 6.4 GB, the shipped files, Docker images), so use at least 60 GB; delete
+`ship/<date>` after step 4 to get 9 GB back. On AWS, first `sudo mkdir -p /srv/atlas && sudo chown
+ubuntu /srv/atlas` on the server.
+
 ```bash
-make golden                                   # golden/<date>/: postgres.dump + 2 Qdrant snapshots
-rsync -a --exclude data --exclude golden --exclude node_modules --exclude fresh ./ atlas:/srv/atlas/
-rsync -a data/scholarships golden/<date> atlas:/srv/atlas/ship/   # "atlas" = the server's Tailscale name
+make golden                                   # only for a new one: postgres.dump + 2 Qdrant snapshots
+rsync -aP --exclude data --exclude golden --exclude node_modules --exclude fresh ./ atlas:/srv/atlas/
+rsync -aP data/scholarships golden/<date> atlas:/srv/atlas/ship/   # "atlas" = the server's Tailscale name
 scp web/.env atlas:/srv/atlas/web/.env        # VITE_MAPBOX_TOKEN, built into the page
 ```
 
