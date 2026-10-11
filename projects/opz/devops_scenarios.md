@@ -1,5 +1,7 @@
 # Scenarios
 
+✅ lab solved · 🚧 lab in progress. Labs live in [`labs/`](labs/).
+
 | Scenario                                                   | Concepts Covered                                                 |
 | ---------------------------------------------------------- | ---------------------------------------------------------------- |
 | Pipeline Secrets Exfiltration                              | GitHub Actions, Secret Scanning, Vaults, Threat Modeling         |
@@ -16,7 +18,7 @@
 | Rate Limiting Not Enforced on Public API                   | NGINX, AWS API Gateway, DoS Prevention                           |
 | Expired TLS Cert Brings Down Frontend                      | Cert-Manager, Let's Encrypt, Renewal Automation                  |
 | Zombie Resources Driving Up Cloud Bill                     | AWS Cost Explorer, Tag Hygiene, IaC Resource Lifecycle           |
-| Debugging a CrashLoopBackOff Pod                           | K8s Logs, Probes, Resource Limits, ReadinessGate                 |
+| ✅ Debugging a CrashLoopBackOff Pod ([lab 04](labs/04-crashloopbackoff/)) | K8s Logs, Probes, Resource Limits, ReadinessGate |
 | Post-Deployment Failure Due to Missing Migration           | CI/CD Pipelines, DB Migrations, Rollback Plans                   |
 | Overprivileged Service Accounts in K8s                     | IAM Roles for Service Accounts, Least Privilege, Audit Logs      |
 | Log Injection Attack on Centralized Logging                | Fluent Bit, Log Parsing, Escaping, Secure Output Formats         |
@@ -30,7 +32,7 @@
 | CI/CD Pipeline Race Condition                              | Parallel Stages, Job Dependencies, Artifact Caching              |
 | Zero-Day in Dependency Not Caught in Build                 | SCA (Software Composition Analysis), Trivy, SBOMs                |
 | Replay Attack via Insecure Webhooks                        | GitHub Webhooks, HMAC Signature Validation                       |
-| Secret Committed in Public Repo                            | Git Hooks, Gitleaks, GitHub Token Revocation, Notifications      |
+| ✅ Secret Committed in Public Repo ([lab 03](labs/03-secret-committed-to-repo/)) | Git Hooks, Gitleaks, GitHub Token Revocation, Notifications |
 | Sensitive Log Data in Monitoring System                    | PII Redaction, Regex Filters, Alert Routing                      |
 | Misconfigured Load Balancer Sticky Sessions                | HAProxy, NGINX, ALB, Session Affinity Debugging                  |
 | DNS Propagation Delay Causing Rollout Chaos                | TTL, Blue/Green, CNAME Fallbacks, Health Gate Checks             |
@@ -45,7 +47,8 @@
 | JWT Replay Due to No Expiry Validation                     | JWT Best Practices, OAuth2, Token Rotation                       |
 | Azure AD Identity Misuse                                   | Azure Managed Identities, Least Privilege, Logs                  |
 | Trivy Not Catching Runtime CVEs                            | Static vs Dynamic Scanning, CVE Feeds, Runtime Detection         |
-| Hardcoded Credentials in Dockerfile                        | Multistage Builds, .dockerignore, Secrets Injection              |
+| ✅ Hardcoded Credentials in Dockerfile ([lab 01](labs/01-hardcoded-creds-dockerfile/)) | Multistage Builds, .dockerignore, Secrets Injection |
+| ✅ Secret Exposed Through Environment Variables ([lab 02](labs/02-env-var-secret-exposure/)) | docker inspect, Compose Secrets, `_FILE` Convention |
 | K8s Cluster Open to World via Misconfigured Ingress        | ALB Rules, Ingress Annotations, CIDR Restrictions                |
 | Self-hosted GitLab Pipeline Compromise                     | GitLab Runners, Shared Runners Isolation, Artifact Handling      |
 | Failure to Detect Build Tampering                          | Build Provenance, Sigstore, Attestation Frameworks               |

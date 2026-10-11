@@ -1,0 +1,2 @@
+regex:AKIA[A-Z2-7]{16}==>REMOVED
+regex:aws_secret_access_key="[^"]*"==>aws_secret_access_key="REMOVED"
