@@ -39,8 +39,9 @@ Spoilers live in `SOLUTION.md`.
 
 ## Retro (fill in)
 
-- What CrashLoopBackOff actually means (what is backing off?):
-- Bug 1 — how I found it, and the fix:
-- Bug 2 — how I found it, and why the logs didn't show it:
-- Logs vs. describe/events — what each one is for:
-- Why a wrong liveness probe is worse than no probe at all:
+- What CrashLoopBackOff actually means (what is backing off?): Not an error itself. The container keeps exiting, so Kubernetes waits longer before each restart (10s, 20s, 40s… up to 5 min). The cause is always elsewhere: logs or events.
+- Bug 1 — how I found it, and the fix: `kubectl logs deploy/greeter` said `APP_MODE='production' is not one of ['dev', 'prod']`. A bad setting, not a code bug, so no new image: fix the ConfigMap to `APP_MODE: prod`, `kubectl apply`, `kubectl rollout restart` (pods read env values only when the container starts).
+- Bug 2 — how I found it, and why the logs didn't show it: The pod ran and the app logged a clean start, but the restart count kept climbing. `kubectl describe pod` events: `Liveness probe failed: HTTP probe failed with statuscode: 404`. The probe asked for `/health`, the app serves `/healthz`. The logs couldn't show it because Kubernetes did the killing, not the app.
+- Logs vs. describe/events — what each one is for: Logs are what the app said (why it chose to exit). Events are what Kubernetes did: started, probed, killed, OOM-killed. When Kubernetes kills a healthy app, only the events show it.
+- Why a wrong liveness probe is worse than no probe at all: With no probe a healthy app just runs; a wrong probe kills a healthy app over and over, taking a working service down. Liveness checks only "is the process alive"; readiness handles "can I take traffic" (it removes the pod from traffic without killing it).
+- Incident playbook: Roll back (`kubectl rollout undo`) if an earlier version worked → capture logs and describe output before anything deletes the pods → scale to zero only if each restart does harm (migrations, emails, poison queue messages) → diagnose → fix → scale back up.
