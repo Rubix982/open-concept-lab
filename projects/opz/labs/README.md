@@ -13,3 +13,4 @@ Every lab has the same parts:
 | # | Lab | Needs | Status |
 |---|-----|-------|--------|
 | 01 | [Hardcoded Credentials in Dockerfile](01-hardcoded-creds-dockerfile/) | Docker | solved |
+| 02 | [Secret Exposed Through Environment Variables](02-env-var-secret-exposure/) | Docker Compose | solved |
