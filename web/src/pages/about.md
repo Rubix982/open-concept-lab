@@ -6,18 +6,35 @@ hide_table_of_contents: true
 
 # About
 
+<div className="ocl-about__intro">
+
+![Saif Ul Islam](/img/about/portrait.jpg)
+
+<div>
+
 I'm Saif Ul Islam. I work on knowledge editing and interpretability in language
 models — what a model believes, how to change it, and how to tell whether the
 change actually took hold and how far it travelled.
 
+[LinkedIn](https://www.linkedin.com/in/suislam) · [GitHub](https://github.com/Rubix982) · [Email](mailto:saifulislam84210@gmail.com)
+
+</div>
+
+</div>
+
 ## What this site is
 
-A working notebook, published. Two kinds of page:
+A working notebook, published:
 
 - **[Writing](/writing)** — dated pieces. A note, an argument, a session where
   something turned out to be wrong. The date is part of what they mean.
 - **[Notebook](/notebook)** — living pages, one per project, revised in place so
   a reader always sees current state.
+- **[Labs](/labs)** — deployment and security learned one small broken system
+  at a time, as a checklist I tick off.
+- **[Reading](/reading)** — the papers my work rests on, marked by whether I
+  have checked each citation against the paper itself.
+- **[Built](/built)** — interactive pages I made to understand something.
 
 Nothing here is peer reviewed. Pieces carry a status, and the ones that get
 withdrawn stay up with the reason attached, because a claim that quietly
@@ -38,6 +55,7 @@ problem, not the one that is harder.
 ## Elsewhere
 
 - Code for the projects written about here: [github.com/Rubix982](https://github.com/Rubix982)
+- [linkedin.com/in/suislam](https://www.linkedin.com/in/suislam)
 - [saifulislam84210@gmail.com](mailto:saifulislam84210@gmail.com)
 
 ## Corrections

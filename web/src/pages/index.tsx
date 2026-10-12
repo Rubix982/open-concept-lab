@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
-import Projects from "@site/src/components/Projects";
-import type { LabData, Paper } from "@site/plugins/lab-data";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
 
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -18,28 +18,87 @@ function SectionHead({
   title,
   href,
   linkLabel,
+  kicker,
 }: {
   title: string;
   href: string;
   linkLabel: string;
+  kicker?: string;
 }): ReactNode {
   return (
     <div className="ocl-home__sectionHead">
-      <h2 className="ocl-home__sectionTitle">{title}</h2>
+      <h2 className="ocl-home__sectionTitle">
+        {title}
+        {kicker ? <span className="ocl-home__kicker">{kicker}</span> : null}
+      </h2>
       <Link className="ocl-home__sectionLink" to={href}>
-        {linkLabel}
+        {linkLabel} →
       </Link>
     </div>
   );
 }
 
+function Bar({ done, total }: { done: number; total: number }): ReactNode {
+  return (
+    <span className="ocl-home__bar" aria-hidden="true">
+      <span style={{ width: `${total ? Math.max((done / total) * 100, done ? 1.5 : 0) : 0}%` }} />
+    </span>
+  );
+}
+
+function ProjectCard({ project }: { project: Project }): ReactNode {
+  return (
+    <Link className="ocl-home__project" to={project.notebook}>
+      <span className="ocl-home__projectName">{project.name}</span>
+      <span className={`ocl-status ocl-status--${project.tone}`} title={project.phaseDetail}>
+        {project.phase}
+      </span>
+      <span className="ocl-home__projectWhat">{project.what}</span>
+      {project.updated ? (
+        <span className="ocl-home__projectDate">Plan updated {shortDate(project.updated)}</span>
+      ) : null}
+    </Link>
+  );
+}
+
+function BuiltTile({ page }: { page: BuiltPage }): ReactNode {
+  const local = useBaseUrl(page.src);
+  const image = useBaseUrl(page.image ?? "");
+  const href = page.external ? page.src : local;
+  return (
+    <a className="ocl-home__tile" href={href} target="_blank" rel="noreferrer">
+      <span className="ocl-home__tileImage">
+        {page.image ? (
+          <img src={image} alt="" loading="lazy" decoding="async" />
+        ) : (
+          <span className="ocl-home__tileBlank">{page.title}</span>
+        )}
+      </span>
+      <span className="ocl-home__tileTopic">{page.topic}</span>
+      <span className="ocl-home__tileTitle">{page.title}</span>
+    </a>
+  );
+}
+
 export default function Home(): ReactNode {
-  const { writing, papers, built } = usePluginData("ocl-lab-data") as LabData;
+  const { writing, papers, built, projects, labs } = usePluginData("ocl-lab-data") as LabData;
 
   const unchecked = papers.filter((p) => !p.verified);
+  const read = papers.filter((p) => p.status === "read").length;
   const nextUp = papers
     .filter((p: Paper) => p.status === "to-read" && p.relevance === "high")
-    .slice(0, 3);
+    .slice(0, 4);
+
+  const [latest, ...earlier] = writing;
+  const active = [...projects]
+    .filter((p) => p.updated)
+    .sort((a, b) => ((a.updated ?? "") < (b.updated ?? "") ? 1 : -1))[0];
+  const recentBuilt = [...built]
+    .map((page, i) => ({ page, i }))
+    .sort((a, b) => (b.page.added ?? "").localeCompare(a.page.added ?? "") || a.i - b.i)
+    .map(({ page }) => page)
+    .slice(0, 8);
+  const lastLab = labs.solved[0];
 
   return (
     <Layout
@@ -47,105 +106,220 @@ export default function Home(): ReactNode {
       description="Experiments, writing, and interactive pages on knowledge editing and interpretability — what a model believes and how to tell whether a change took hold."
     >
       <div className="ocl-home">
-        <header className="ocl-home__masthead">
-          <h1 className="ocl-home__title">
-            What a model believes, and how to tell when it changes.
-          </h1>
-          <p className="ocl-home__blurb">
-            Experiments, writing, and interactive pages I built to understand
-            something. Most of what is here is provisional and says so, and the
-            reading list marks which citations I have actually checked.
-          </p>
+        <header className="ocl-home__hero">
+          <div className="ocl-home__masthead">
+            <p className="ocl-home__eyebrow">Open Concept Lab · Saif Ul Islam</p>
+            <h1 className="ocl-home__title">
+              What a model believes, and how to tell when it changes.
+            </h1>
+            <p className="ocl-home__blurb">
+              Experiments, writing, and interactive pages I built to understand
+              something. Most of what is here is provisional and says so, and the
+              reading list marks which citations I have actually checked.
+            </p>
+            <nav className="ocl-home__jump" aria-label="Sections">
+              <Link to="/writing">Writing</Link>
+              <Link to="/notebook">Notebook</Link>
+              <Link to="/labs">Labs</Link>
+              <Link to="/reading">Reading</Link>
+              <Link to="/built">Built</Link>
+              <Link to="/about">About</Link>
+              <a className="ocl-home__jumpOut" href="https://www.linkedin.com/in/suislam" target="_blank" rel="noreferrer">
+                LinkedIn ↗
+              </a>
+              <a className="ocl-home__jumpOut" href="https://github.com/Rubix982" target="_blank" rel="noreferrer">
+                GitHub ↗
+              </a>
+            </nav>
+          </div>
+
+          <aside className="ocl-home__now" aria-label="What is moving now">
+            <p className="ocl-home__nowLabel">Now</p>
+            {latest ? (
+              <Link className="ocl-home__nowRow" to={latest.permalink}>
+                <span className="ocl-home__nowKey">Latest writing · {shortDate(latest.date)}</span>
+                <span className="ocl-home__nowValue">{latest.title}</span>
+              </Link>
+            ) : null}
+            {active ? (
+              <Link className="ocl-home__nowRow" to={active.notebook}>
+                <span className="ocl-home__nowKey">Most recent plan · {active.name}</span>
+                <span className="ocl-home__nowValue">{active.phase}</span>
+              </Link>
+            ) : null}
+            <Link className="ocl-home__nowRow" to="/labs">
+              <span className="ocl-home__nowKey">
+                Labs · {labs.done} of {labs.total}
+              </span>
+              <span className="ocl-home__nowValue">
+                {lastLab ? `Last solved: ${lastLab.title}` : "Not started"}
+              </span>
+              <Bar done={labs.done} total={labs.total} />
+            </Link>
+            {nextUp[0] ? (
+              <Link className="ocl-home__nowRow" to={`/reading#${nextUp[0].id}`}>
+                <span className="ocl-home__nowKey">Reading next</span>
+                <span className="ocl-home__nowValue">{nextUp[0].title}</span>
+              </Link>
+            ) : null}
+          </aside>
         </header>
 
+        <dl className="ocl-home__stats">
+          <div>
+            <dt>Projects</dt>
+            <dd>{projects.length}</dd>
+          </div>
+          <div>
+            <dt>Pieces of writing</dt>
+            <dd>{writing.length}</dd>
+          </div>
+          <div>
+            <dt>Interactive pages</dt>
+            <dd>{built.length}</dd>
+          </div>
+          <div>
+            <dt>Papers read</dt>
+            <dd>
+              {read}
+              <span className="ocl-home__of"> / {papers.length}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Labs solved</dt>
+            <dd>
+              {labs.done}
+              <span className="ocl-home__of"> / {labs.total}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Citations unchecked</dt>
+            <dd className={unchecked.length > 0 ? "ocl-tally--flag" : undefined}>{unchecked.length}</dd>
+          </div>
+        </dl>
+
         <section className="ocl-home__section">
-          <SectionHead title="Projects" href="/notebook" linkLabel="Notebook" />
-          <Projects />
+          <SectionHead title="Projects" kicker="each one's status is read from its own plan" href="/notebook" linkLabel="Notebook" />
+          <div className="ocl-home__projects">
+            {projects.map((project) => (
+              <ProjectCard key={project.name} project={project} />
+            ))}
+          </div>
         </section>
 
         <section className="ocl-home__section">
           <SectionHead title="Writing" href="/writing" linkLabel="All writing" />
-          {writing.slice(0, 5).map((entry) => (
-            <article className="ocl-entry" key={entry.permalink}>
-              <time className="ocl-entry__date" dateTime={entry.date}>
-                {shortDate(entry.date)}
-              </time>
-              <div>
-                <h3 className="ocl-entry__title">
-                  <Link to={entry.permalink}>{entry.title}</Link>
+          {latest ? (
+            <div className="ocl-home__writing">
+              <article className="ocl-home__feature">
+                <time className="ocl-home__date" dateTime={latest.date}>
+                  {shortDate(latest.date)}
+                </time>
+                <h3 className="ocl-home__featureTitle">
+                  <Link to={latest.permalink}>{latest.title}</Link>
                 </h3>
-                {entry.summary ? (
-                  <p className="ocl-entry__summary">{entry.summary}</p>
-                ) : null}
-              </div>
-            </article>
-          ))}
-          {writing.length === 0 ? (
+                {latest.summary ? <p className="ocl-home__featureSummary">{latest.summary}</p> : null}
+                <Link className="ocl-home__more" to={latest.permalink}>
+                  Read it →
+                </Link>
+              </article>
+              {earlier.length > 0 ? (
+                <ol className="ocl-home__earlier">
+                  {earlier.slice(0, 4).map((entry) => (
+                    <li key={entry.permalink}>
+                      <time className="ocl-home__date" dateTime={entry.date}>
+                        {shortDate(entry.date)}
+                      </time>
+                      <Link className="ocl-home__earlierTitle" to={entry.permalink}>
+                        {entry.title}
+                      </Link>
+                      {entry.summary ? <p className="ocl-home__earlierSummary">{entry.summary}</p> : null}
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+            </div>
+          ) : (
             <p className="ocl-home__empty">
               Nothing published yet. Add a file to <code>blog/</code>.
             </p>
-          ) : null}
+          )}
         </section>
 
         <section className="ocl-home__section">
-          <SectionHead title="Reading" href="/reading" linkLabel="Reading list" />
-          <dl className="ocl-tally">
-            <div>
-              <dt>Papers</dt>
-              <dd>{papers.length}</dd>
-            </div>
-            <div>
-              <dt>Read</dt>
-              <dd>{papers.filter((p) => p.status === "read").length}</dd>
-            </div>
-            <div>
-              <dt>To read</dt>
-              <dd>{papers.filter((p) => p.status === "to-read").length}</dd>
-            </div>
-            <div>
-              <dt>Citations unchecked</dt>
-              <dd className={unchecked.length > 0 ? "ocl-tally--flag" : undefined}>
-                {unchecked.length}
-              </dd>
-            </div>
-          </dl>
-          {nextUp.length > 0 ? (
-            <table className="ocl-table ocl-table--flush">
-              <tbody>
-                {nextUp.map((paper) => (
-                  <tr key={paper.id}>
-                    <td className="ocl-table__main">
-                      <Link to={`/reading#${paper.id}`}>{paper.title}</Link>
-                      {paper.gives_me ? (
-                        <span className="ocl-table__sub">{paper.gives_me}</span>
-                      ) : null}
-                    </td>
-                    <td className="ocl-table__right">
-                      <span className="ocl-pill ocl-pill--to-read">next up</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : null}
-        </section>
-
-        <section className="ocl-home__section">
-          <SectionHead title="Built" href="/built" linkLabel="All pages" />
-          <table className="ocl-table ocl-table--flush">
-            <tbody>
-              {built.slice(0, 6).map((page) => (
-                <tr key={page.name}>
-                  <td className="ocl-table__key">{page.topic}</td>
-                  <td className="ocl-table__main">
-                    <Link to="/built">{page.title}</Link>
-                    <span className="ocl-table__sub">{page.what}</span>
-                  </td>
-                </tr>
+          <SectionHead
+            title="Labs"
+            kicker="deployment and security, one small broken system at a time"
+            href="/labs"
+            linkLabel="The full checklist"
+          />
+          <div className="ocl-home__labs">
+            <ul className="ocl-home__tracks">
+              {labs.tracks.map((t) => (
+                <li key={t.id}>
+                  <Link to={`/labs#track-${t.id}`} className="ocl-home__track">
+                    <span className="ocl-home__trackName">{t.title}</span>
+                    <span className="ocl-home__trackCount">
+                      {t.done} / {t.total}
+                    </span>
+                    <Bar done={t.done} total={t.total} />
+                  </Link>
+                </li>
               ))}
-            </tbody>
-          </table>
+            </ul>
+            <div className="ocl-home__solved">
+              <p className="ocl-home__solvedLabel">Solved</p>
+              {labs.solved.length > 0 ? (
+                <ol>
+                  {labs.solved.slice(0, 5).map((s) => (
+                    <li key={s.title}>
+                      {s.href ? (
+                        <a href={s.href} target="_blank" rel="noreferrer">
+                          {s.title}
+                        </a>
+                      ) : (
+                        s.title
+                      )}
+                      <span>{s.section}</span>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="ocl-home__empty">None yet.</p>
+              )}
+              <Link className="ocl-home__more" to="/notebook/opz/">
+                What each one taught →
+              </Link>
+            </div>
+          </div>
         </section>
+
+        <div className="ocl-home__split">
+          <section className="ocl-home__section">
+            <SectionHead title="Reading next" href="/reading" linkLabel="Reading list" />
+            {nextUp.length > 0 ? (
+              <ol className="ocl-home__papers">
+                {nextUp.map((paper) => (
+                  <li key={paper.id}>
+                    <Link to={`/reading#${paper.id}`}>{paper.title}</Link>
+                    {paper.gives_me ? <p>{paper.gives_me}</p> : null}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="ocl-home__empty">Nothing marked next up.</p>
+            )}
+          </section>
+
+          <section className="ocl-home__section">
+            <SectionHead title="Built" kicker="recently added" href="/built" linkLabel={`All ${built.length} pages`} />
+            <div className="ocl-home__tiles">
+              {recentBuilt.map((page) => (
+                <BuiltTile key={page.name} page={page} />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </Layout>
   );

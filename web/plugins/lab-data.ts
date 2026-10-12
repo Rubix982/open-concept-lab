@@ -112,7 +112,17 @@ export type Checklist = {
   tracks: ChecklistTrack[];
 };
 
+/** The checklist reduced to what the home page shows. */
+export type LabsSummary = {
+  done: number;
+  total: number;
+  tracks: { id: string; title: string; done: number; total: number }[];
+  /** Finished lines, latest in the file first. */
+  solved: { title: string; href?: string; section: string }[];
+};
+
 export type LabData = {
+  labs: LabsSummary;
   writing: WritingEntry[];
   papers: Paper[];
   evidence: EvidenceRecord[];
@@ -435,6 +445,36 @@ const STATUS_ORDER: Record<PaperStatus, number> = {
 /** Everything the plugin loads; the checklist is kept out of global data. */
 type LoadedContent = LabData & { checklist: Checklist };
 
+function summarizeChecklist(checklist: Checklist): LabsSummary {
+  const tracks = checklist.tracks.map((t) => {
+    const items = t.sections.flatMap((s) => s.items);
+    return {
+      id: t.id,
+      title: t.title.replace(/^Track \w+ · /, "").replace(/\s*\(.*\)$/, ""),
+      done: items.filter((i) => i.done).length,
+      total: items.length,
+    };
+  });
+  const solved = checklist.tracks
+    .flatMap((t) => t.sections)
+    .flatMap((s) =>
+      s.items
+        .filter((i) => i.done)
+        .map((i) => ({
+          title: i.title,
+          href: /href="([^"]+)"/.exec(i.rest)?.[1],
+          section: s.title.replace(/^\w+\d+ · /, ""),
+        })),
+    )
+    .reverse();
+  return {
+    done: tracks.reduce((n, t) => n + t.done, 0),
+    total: tracks.reduce((n, t) => n + t.total, 0),
+    tracks,
+    solved,
+  };
+}
+
 export default async function labData(
   context: LoadContext,
   options: { blogDir?: string; routeBasePath?: string } = {},
@@ -532,8 +572,10 @@ export default async function labData(
           }[];
         }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
 
+      const checklist = await loadChecklist(repoRoot);
       return {
-        checklist: await loadChecklist(repoRoot),
+        checklist,
+        labs: summarizeChecklist(checklist),
         writing: await loadWriting(blogDir, routeBasePath),
         papers,
         evidence,
