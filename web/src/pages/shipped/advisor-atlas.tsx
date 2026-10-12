@@ -103,40 +103,93 @@ export default function AdvisorAtlas(): ReactNode {
           <h2 className="ocl-page__sectionTitle">What a student does with it</h2>
           <ol className="ocl-ship__steps">
             <Step n={1} title="Say what you want to research" shot="search"
-              alt="A search for low-resource languages: researchers on a world map, and a ranked list beside it.">
+              alt="A search for low-resource languages, with researchers on a world map and a ranked list beside it.">
               <p>
-                In your own words, not a field's vocabulary. The search reads
-                meaning, so <i>low-resource languages</i> finds 2,356 people at
-                491 universities, ranked by how close their recent work is, each
-                with the paper that matched.
+                Use your own words. You don't need to know a field's vocabulary,
+                because the search reads meaning. A search for <i>low-resource
+                languages</i> finds 2,356 people at 491 universities. They are
+                ranked by how close their recent work is, and each one shows the
+                paper that matched.
               </p>
             </Step>
             <Step n={2} title="Read a profile before writing" shot="profile"
-              alt="A researcher's profile with a 'Before you write' checklist.">
+              alt="A researcher's profile with a checklist titled Before you write.">
               <p>
-                Recent papers, the grants they hold, who they work with, and a
-                short checklist for the first email: the paper closest to your
-                search, whether a grant is running, whether the lab is new, and
-                what their homepage says about prospective students.
+                A profile shows their recent papers, the grants they hold and who
+                they work with. It also gives a short checklist for the first
+                email. It points to the paper closest to your search, says whether
+                a grant is running and whether the lab is new, and links to what
+                their homepage says about new students.
               </p>
             </Step>
-            <Step n={3} title="Find the money" shot="funding"
-              alt="Funding for malaria vaccine: who pays, with counts and amounts per funder.">
+            <Step n={3} title="Save the people you like" shot="list"
+              alt="Your list, with two professors and one university saved side by side.">
               <p>
-                Who pays for your topic, across every grant loaded, not only
-                those of people on the map. For <i>malaria vaccine</i>: 1,870
-                grants, 590 of them running, and which funders they come from.
+                Save professors and universities to your list and compare them
+                side by side. The list shows each person's career stage, whether
+                a grant is running, and their newest paper. It stays in your own
+                browser, so there is no account to make.
               </p>
             </Step>
-            <Step n={4} title="Look closely at a university" shot="university"
-              alt="LUMS: research strengths by area, and how PhDs there are paid for.">
+            <Step n={4} title="Find the money" shot="funding"
+              alt="Funding for malaria vaccine, showing who pays, with counts and amounts per funder.">
               <p>
-                Its research strengths, who funds its faculty, PhD programmes
-                that pay students directly, the grants held there, and the
-                scholarships open to you from your country.
+                See who pays for your topic. This counts every grant loaded, not
+                only those of people on the map. For <i>malaria vaccine</i> there
+                are 1,870 grants, and 590 of them are running now.
+              </p>
+            </Step>
+            <Step n={5} title="Spot labs that are just starting" shot="new-labs"
+              alt="Grants for new labs in robot learning, such as NSF CAREER awards, each with its funder, amount and years.">
+              <p>
+                Narrow the funding to new labs. These are grants for people
+                starting their own lab, such as NSF CAREER awards. New labs often
+                look for their first students. For <i>robot learning</i> there are
+                195 such grants, and 73 of them are running now.
+              </p>
+            </Step>
+            <Step n={6} title="Read any grant" shot="grant"
+              alt="An NIH grant opened in Advisor Atlas, with its amount, years, university, lead and summary.">
+              <p>
+                Every grant opens inside Advisor Atlas. It shows what the grant
+                pays for, how much, for how long, and who leads it. The person who
+                leads a grant is usually the one who hires the PhD students it
+                pays for. This also helps where a funder's own website is blocked,
+                as nsf.gov is in Pakistan.
+              </p>
+            </Step>
+            <Step n={7} title="Look closely at a university" shot="university"
+              alt="LUMS, with its research strengths by area and how PhDs there are paid for.">
+              <p>
+                A university page shows its research strengths and who funds its
+                faculty. It lists PhD programmes that pay students directly, the
+                grants held there, and the scholarships you can apply for.
               </p>
             </Step>
           </ol>
+          <div className="ocl-ship__gallery">
+            <figure>
+              <Shot name="university-faculty" alt="The Faculty tab of the University of Michigan." />
+              <figcaption>
+                <b>Faculty.</b> Who works there, how many hold a running grant, and
+                how many are new labs with funding.
+              </figcaption>
+            </figure>
+            <figure>
+              <Shot name="university-funding" alt="The Funding tab of the University of Michigan." />
+              <figcaption>
+                <b>Funding.</b> Every grant held there, with the money by funder
+                and the grants started each year.
+              </figcaption>
+            </figure>
+            <figure>
+              <Shot name="university-scholarships" alt="The Scholarships tab of the University of Michigan." />
+              <figcaption>
+                <b>Scholarships.</b> What you can apply for to study there, and
+                which ones are not open to students from Pakistan.
+              </figcaption>
+            </figure>
+          </div>
         </section>
 
         <section className="ocl-ship__section">

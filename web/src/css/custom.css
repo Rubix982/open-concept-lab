@@ -3147,3 +3147,27 @@ a[class*="tagWithCount"] span::after {
   /* the words before the picture they describe */
   .ocl-ship__step .ocl-ship__shot { order: 2; }
 }
+
+/* The tabs of one university, side by side under its step. */
+.ocl-ship__gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.ocl-ship__gallery figure { margin: 0; }
+
+.ocl-ship__gallery figcaption {
+  margin-top: 0.6rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-ship__gallery figcaption b { font-weight: 600; color: var(--ocl-ink); }
+
+@media (max-width: 860px) {
+  .ocl-ship__gallery { grid-template-columns: minmax(0, 1fr); }
+}
