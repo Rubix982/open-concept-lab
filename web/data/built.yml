@@ -7,7 +7,8 @@
 #   topic: groups the cards on /built.
 #   ratio: preview aspect ratio; drop to 4/3 for a page with a tall sidebar.
 #   image: a still to show instead of the live page (relative to the copied
-#          folder), for pages heavy enough to slow the list down.
+#          folder, or a path under static/ such as /img/built/x.jpg), for pages
+#          heavy enough to slow the list down, or that refuse to be framed.
 #   in:    another entry's name — this card is a page inside the folder that
 #          entry copies (no `from` of its own); `page` names the file.
 #   page:  a file in the folder other than index.html.
@@ -465,3 +466,18 @@ built:
       marked preserved, at risk, or gone, and one with no surviving copy
       shows up as a gap on the shelf rather than a book on it.
     ratio: 1.5
+
+  - name: advisor-atlas
+    added: 2026-10-12
+    title: Advisor Atlas
+    url: https://advisoratlas.fyi/
+    topic: Tools
+    what: >
+      A map for finding a PhD advisor and a way to pay for the degree, made
+      first for students in Pakistan applying abroad. Say what you want to
+      research in your own words, and it finds the people working on it —
+      198,570 researchers at 700 universities — next to 1.1 million grants
+      from 42 funders, the labs just starting out, and the scholarships you
+      can actually apply for.
+    ratio: 1.6
+    image: /img/built/advisor-atlas.jpg

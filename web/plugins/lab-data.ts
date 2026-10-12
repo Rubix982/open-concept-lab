@@ -556,8 +556,8 @@ export default async function labData(
           ratio: entry.ratio ?? 1.6,
           // js-yaml reads an unquoted date as a Date
           added: entry.added ? (entry.added as unknown instanceof Date ? (entry.added as unknown as Date).toISOString().slice(0, 10) : String(entry.added)) : undefined,
-          // relative to the copied page's folder, or absolute for a hosted page
-          image: entry.image ? (/^https?:/.test(entry.image) ? entry.image : folder + entry.image) : undefined,
+          // relative to the copied page's folder; a URL, or a path under static/ ("/img/..."), as is
+          image: entry.image ? (/^(https?:|\/)/.test(entry.image) ? entry.image : folder + entry.image) : undefined,
         };
       });
 
