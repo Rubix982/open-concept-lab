@@ -70,19 +70,32 @@ export default function AdvisorAtlas(): ReactNode {
         <section className="ocl-ship__section ocl-ship__prose">
           <h2 className="ocl-page__sectionTitle">Why it exists</h2>
           <p>
-            More than half of Pakistan is under thirty. Many of them want to do
-            research, and few can see what research is being done: which
-            questions are open, who is asking them, with what money, and how a
-            student gets in. Industry teaches you to make things; research is
-            where you learn to think of new things to make.
+            Finding the right PhD advisor should not depend on who you know.
           </p>
           <p>
-            Advisor Atlas is a window onto those open questions, with the way in
-            drawn on it. The PhD advisor is the most concrete door, so it starts
-            there. The usual way through it is a spreadsheet of famous names,
-            emailed one after another, with no way to tell who has the money to
-            take a student this year, or whose lab is new and looking for its
-            first ones.
+            Many students apply for graduate school with no one to guide them.
+            They don't know which professors work on what they care about. They
+            don't know where the funding is, or which programmes fit their goals.
+            Some students have mentors and contacts who can tell them. Many others
+            have to work it out alone.
+          </p>
+          <p>
+            Advisor Atlas makes this easier to explore. It brings professors,
+            their research, universities and funding from many countries into one
+            place. It helps students find options they would otherwise miss.
+          </p>
+          <p>
+            The goal is simple. Students should be able to make informed choices
+            about their studies. They should be able to see where good research is
+            happening and how to take part in it.
+          </p>
+          <p>
+            Getting into a university is only the first step. What you can learn,
+            add and build there matters just as much.
+          </p>
+          <p>
+            Advisor Atlas is here to make these opportunities easier to see and
+            easier to reach, so more students can find their way forward.
           </p>
         </section>
 
