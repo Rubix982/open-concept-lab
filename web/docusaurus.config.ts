@@ -60,6 +60,26 @@ const config: Config = {
     ],
   ],
 
+  // Search runs in the browser against an index built with the site, so there
+  // is no service to sign up for and nothing leaves the page.
+  themes: [
+    [
+      "@easyops-cn/docusaurus-search-local",
+      {
+        hashed: true,
+        indexDocs: true,
+        docsRouteBasePath: "notebook",
+        indexBlog: true,
+        blogRouteBasePath: "writing",
+        indexPages: true,
+        highlightSearchTermsOnTargetPage: true,
+        searchResultLimits: 10,
+        searchBarShortcutHint: true,
+        explicitSearchResultPath: true,
+      },
+    ],
+  ],
+
   presets: [
     [
       "classic",
@@ -121,6 +141,12 @@ const config: Config = {
     navbar: {
       title: "Open Concept Lab",
       hideOnScroll: false,
+      logo: {
+        src: "img/favicon.svg",
+        alt: "",
+        width: 22,
+        height: 22,
+      },
       items: [
         { to: "/writing", label: "Writing", position: "left" },
         {
@@ -132,11 +158,22 @@ const config: Config = {
         { to: "/labs", label: "Labs", position: "left" },
         { to: "/reading", label: "Reading", position: "left" },
         { to: "/built", label: "Built", position: "left" },
+        { type: "search", position: "right" },
         { to: "/about", label: "About", position: "right" },
+        // Icon-only on a wide screen; the label still shows in the mobile menu.
+        {
+          href: "https://www.linkedin.com/in/suislam",
+          label: "LinkedIn",
+          position: "right",
+          className: "ocl-nav-icon ocl-nav-icon--linkedin",
+          "aria-label": "LinkedIn profile",
+        },
         {
           href: "https://github.com/Rubix982/open-concept-lab",
           label: "Source",
           position: "right",
+          className: "ocl-nav-icon ocl-nav-icon--github",
+          "aria-label": "Source on GitHub",
         },
       ],
     },

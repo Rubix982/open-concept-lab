@@ -76,7 +76,7 @@ export default function Reading(): ReactNode {
       title="Reading"
       description="What I have read, skimmed, and still need to read — with which entries have been checked against the paper."
     >
-      <div className="ocl-page">
+      <main className="ocl-page">
         <header className="ocl-page__head">
           <h1 className="ocl-page__title">Reading</h1>
           <p className="ocl-page__lede">
@@ -168,7 +168,7 @@ export default function Reading(): ReactNode {
           Kept in <code>data/papers.yml</code>. In any piece, <code>{'<Cite id="cohen2024ripple" />'}</code>{" "}
           resolves to the entry.
         </p>
-      </div>
+      </main>
     </Layout>
   );
 }

@@ -97,8 +97,8 @@ function Section({
 }): ReactNode {
   const c = count(section.items);
   return (
-    <div className={`ocl-labs__section${open ? " is-open" : ""}`} id={section.id}>
-      <h3 className="ocl-labs__sectionTitle">
+    <div className={`ocl-labs__section${open ? " is-open" : ""}`}>
+      <h3 className="ocl-labs__sectionTitle" id={section.id}>
         <button type="button" aria-expanded={open} onClick={onToggle}>
           <span className="ocl-labs__chev" aria-hidden="true">{open ? "▾" : "▸"}</span>
           <span className="ocl-labs__sectionName">{section.title}</span>
@@ -109,18 +109,18 @@ function Section({
           </span>
         </button>
       </h3>
-      {open ? (
-        <>
-          {section.note ? (
-            <p className="ocl-labs__note" dangerouslySetInnerHTML={{ __html: section.note }} />
-          ) : null}
-          <ul className="ocl-labs__list">
-            {shown.map((item) => (
-              <Item key={item.title} item={item} />
-            ))}
-          </ul>
-        </>
-      ) : null}
+      {/* closed sections stay in the page, hidden, so site search and the
+          browser's find can still reach every line */}
+      <div hidden={!open}>
+        {section.note ? (
+          <p className="ocl-labs__note" dangerouslySetInnerHTML={{ __html: section.note }} />
+        ) : null}
+        <ul className="ocl-labs__list">
+          {shown.map((item) => (
+            <Item key={item.title} item={item} />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -147,6 +147,9 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
   // a link to /labs#c4 lands on that section, opened
   useEffect(() => {
     if (window.matchMedia("(max-width: 996px)").matches) setNavOpen(false);
+    // arriving from site search: carry the terms into this page's own filter
+    const terms = new URLSearchParams(window.location.search).getAll("_highlight");
+    if (terms.length > 0) setQuery(terms.join(" "));
     const id = window.location.hash.slice(1);
     if (sections.some((s) => s.id === id)) {
       setOpen(new Set([id]));
@@ -176,7 +179,7 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
       title="Labs"
       description="Deployment, DevOps and security, learned one small broken system at a time: every scenario as a checklist."
     >
-      <div className="ocl-page ocl-labs">
+      <main className="ocl-page ocl-labs">
         <header className="ocl-page__head">
           <h1 className="ocl-page__title">Labs</h1>
           <p className="ocl-page__lede">
@@ -344,7 +347,7 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </Layout>
   );
 }
