@@ -122,6 +122,7 @@ export default function Home(): ReactNode {
               <Link to="/notebook">Notebook</Link>
               <Link to="/labs">Labs</Link>
               <Link to="/reading">Reading</Link>
+              <Link to="/shipped">Shipped</Link>
               <Link to="/built">Built</Link>
               <Link to="/about">About</Link>
               <a className="ocl-home__jumpOut" href="https://www.linkedin.com/in/suislam" target="_blank" rel="noreferrer">

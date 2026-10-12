@@ -2992,3 +2992,158 @@ a[class*="tagWithCount"] span::after {
 @media (max-width: 1200px) {
   .navbar__search-input { width: 9rem; }
 }
+
+/* ==========================================================================
+   Shipped — deployed tools, one page each (src/pages/shipped/)
+   A screenshot is a picture of the tool, framed like a figure; the steps are a
+   real sequence, so they carry numbers.
+   ========================================================================== */
+
+.ocl-ship__entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 2.25rem;
+  align-items: start;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--ocl-ink-muted);
+}
+
+.ocl-ship__entryShot img,
+.ocl-ship__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--ocl-rule);
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-ship__entryTitle {
+  margin: 0 0 0.6rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.ocl-ship__entryTitle a { color: var(--ocl-ink); text-decoration: none; }
+.ocl-ship__entryTitle a:hover { color: var(--ocl-link); }
+
+.ocl-ship__entryWhat { margin: 0 0 1rem; line-height: 1.66; }
+
+.ocl-ship__entryMeta {
+  margin: 0 0 1.2rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-ship__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.4rem;
+  margin: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.9rem;
+}
+
+.ocl-ship__primary {
+  padding: 0.5rem 0.95rem;
+  color: var(--ocl-paper) !important;
+  background: var(--ocl-ink);
+  border: 1px solid var(--ocl-ink);
+  text-decoration: none !important;
+}
+
+.ocl-ship__primary:hover { background: var(--ocl-link-hover); border-color: var(--ocl-link-hover); }
+.ocl-ship__primary:focus-visible,
+.ocl-ship a:focus-visible { outline: 2px solid var(--ocl-link); outline-offset: 2px; }
+
+/* --- a project's own page ---------------------------------------------- */
+
+.ocl-ship__back {
+  margin: 0 0 1.4rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+}
+
+.ocl-ship__back a::before { content: "← "; }
+
+.ocl-ship__head { margin-bottom: 2.25rem; }
+
+.ocl-ship__head .ocl-page__title { font-size: clamp(2.2rem, 1.6rem + 2.4vw, 3.4rem); }
+
+.ocl-ship__lede {
+  max-width: 38rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.22rem;
+  line-height: 1.6;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-ship__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 2.25rem;
+  margin: 1.75rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+}
+
+.ocl-ship__facts dt { font-size: 0.74rem; font-weight: 400; color: var(--ocl-ink-faint); }
+.ocl-ship__facts dd { margin: 0; color: var(--ocl-ink); }
+
+.ocl-ship__section { margin-top: 3.5rem; }
+
+.ocl-ship__prose { max-width: var(--ocl-measure); }
+.ocl-ship__prose p:last-child { margin-bottom: 0; }
+
+.ocl-ship__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-ship__step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 2.25rem;
+  align-items: start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-ship__step:first-child { padding-top: 0.75rem; }
+.ocl-ship__step:last-child { border-bottom: 0; }
+
+.ocl-ship__stepText h3 {
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+  margin: 0 0 0.6rem;
+  font-size: 1.22rem;
+  font-weight: 500;
+}
+
+.ocl-ship__stepN {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-ship__stepText p { margin: 0; font-size: 0.98rem; line-height: 1.66; }
+
+.ocl-ship__tally { margin-top: 0.4rem; padding-top: 0.2rem; border-top: 0; gap: 1rem 2.5rem; }
+
+.ocl-ship__choices dt { margin-top: 1.1rem; font-weight: 600; }
+.ocl-ship__choices dt:first-child { margin-top: 0; }
+.ocl-ship__choices dd { margin: 0.15rem 0 0; }
+
+.ocl-ship__sources { max-width: var(--ocl-measure-wide); line-height: 1.6; }
+
+@media (max-width: 860px) {
+  .ocl-ship__entry,
+  .ocl-ship__step { grid-template-columns: minmax(0, 1fr); gap: 1.1rem; }
+  /* the words before the picture they describe */
+  .ocl-ship__step .ocl-ship__shot { order: 2; }
+}

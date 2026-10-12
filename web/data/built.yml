@@ -467,17 +467,3 @@ built:
       shows up as a gap on the shelf rather than a book on it.
     ratio: 1.5
 
-  - name: advisor-atlas
-    added: 2026-10-12
-    title: Advisor Atlas
-    url: https://advisoratlas.fyi/
-    topic: Tools
-    what: >
-      A map for finding a PhD advisor and a way to pay for the degree, made
-      first for students in Pakistan applying abroad. Say what you want to
-      research in your own words, and it finds the people working on it —
-      198,570 researchers at 700 universities — next to 1.1 million grants
-      from 42 funders, the labs just starting out, and the scholarships you
-      can actually apply for.
-    ratio: 1.6
-    image: /img/built/advisor-atlas.jpg
