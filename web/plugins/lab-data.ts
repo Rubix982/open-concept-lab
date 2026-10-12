@@ -81,6 +81,37 @@ export type EvidenceRecord = {
   anchor: string;
 };
 
+/** One line of the opz checklist. `rest` is inline markdown rendered to HTML. */
+export type ChecklistItem = {
+  done: boolean;
+  title: string;
+  /** Tools and lab link from the title line, as HTML. */
+  rest: string;
+  /** The indented `- **Label:** text` lines under it, text as HTML. */
+  fields: { label: string; html: string }[];
+  /** Kind tags from the line or its section: build, design, cloud, GPU. */
+  tags: string[];
+};
+
+export type ChecklistSection = {
+  id: string;
+  title: string;
+  note: string;
+  items: ChecklistItem[];
+};
+
+export type ChecklistTrack = {
+  id: string;
+  title: string;
+  note: string;
+  sections: ChecklistSection[];
+};
+
+export type Checklist = {
+  source: string;
+  tracks: ChecklistTrack[];
+};
+
 export type LabData = {
   writing: WritingEntry[];
   papers: Paper[];
@@ -273,6 +304,118 @@ async function loadProjects(
   );
 }
 
+const CHECKLIST_PATH = "projects/opz/labs/CHECKLIST.md";
+const CHECKLIST_URL =
+  "https://github.com/Rubix982/open-concept-lab/blob/main/" + CHECKLIST_PATH;
+const KIND_TAG = /`\[(build|design|cloud|GPU)\]`/g;
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/**
+ * Just enough inline markdown for a checklist line: code, bold, italic, links.
+ * Relative links point at lab folders, so they resolve against the checklist
+ * on GitHub rather than against this site.
+ */
+function inlineHtml(markdown: string): string {
+  const base = CHECKLIST_URL.replace("/blob/", "/tree/").replace(/[^/]+$/, "");
+  return escapeHtml(markdown)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text: string, href: string) => {
+      const url = /^https?:/.test(href) ? href : base + href;
+      return `<a href="${url}" target="_blank" rel="noreferrer">${text}</a>`;
+    });
+}
+
+function kindTags(text: string): string[] {
+  return [...text.matchAll(KIND_TAG)].map((m) => m[1]);
+}
+
+function headingTitle(text: string): string {
+  return text.replace(KIND_TAG, "").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Parses CHECKLIST.md: `## Track` → `### Section` → `- [ ] **Title** rest`.
+ * An italic line under a heading is that heading's note. Section tags apply
+ * to every line under them, so a filter on `build` finds all of Track B.
+ */
+async function loadChecklist(repoRoot: string): Promise<Checklist> {
+  let markdown = "";
+  try {
+    markdown = await fs.readFile(path.resolve(repoRoot, CHECKLIST_PATH), "utf8");
+  } catch {
+    return { source: CHECKLIST_URL, tracks: [] };
+  }
+
+  const tracks: ChecklistTrack[] = [];
+  let track: ChecklistTrack | undefined;
+  let section: ChecklistSection | undefined;
+  let trackTags: string[] = [];
+  let sectionTags: string[] = [];
+  let noteFor: { note: string } | undefined;
+  let noteOpen = false;
+
+  for (const line of markdown.split("\n")) {
+    const trackMatch = /^## (Track (\w+).*)$/.exec(line);
+    const sectionMatch = /^### ((\w+\d+).*)$/.exec(line);
+    const itemMatch = /^- \[( |x)\] \*\*(.+?)\*\*(.*)$/.exec(line);
+    const fieldMatch = /^\s{2,}- \*\*(.+?):\*\*\s*(.*)$/.exec(line);
+    const lastItem = section?.items[section.items.length - 1];
+
+    if (trackMatch) {
+      trackTags = kindTags(trackMatch[1]);
+      track = {
+        id: trackMatch[2].toLowerCase(),
+        title: headingTitle(trackMatch[1]),
+        note: "",
+        sections: [],
+      };
+      tracks.push(track);
+      section = undefined;
+      noteFor = track;
+    } else if (sectionMatch && track) {
+      sectionTags = [...trackTags, ...kindTags(sectionMatch[1])];
+      section = {
+        id: sectionMatch[2].toLowerCase(),
+        title: headingTitle(sectionMatch[1]),
+        note: "",
+        items: [],
+      };
+      track.sections.push(section);
+      noteFor = section;
+    } else if (itemMatch && section) {
+      const rest = itemMatch[3].replace(KIND_TAG, "").replace(/^\s*[:·]?\s*/, "");
+      const title = itemMatch[2].replace(/:$/, "");
+      section.items.push({
+        done: itemMatch[1] === "x",
+        title,
+        rest: inlineHtml(rest),
+        fields: [],
+        tags: [...new Set([...sectionTags, ...kindTags(itemMatch[3])])],
+      });
+      noteFor = undefined;
+    } else if (fieldMatch && lastItem) {
+      lastItem.fields.push({ label: fieldMatch[1], html: inlineHtml(fieldMatch[2]) });
+    } else if (noteFor && line.trim() !== "" && (noteOpen || /^\*[^*]/.test(line.trim()))) {
+      // an italic note under a heading, possibly wrapped across lines
+      const text = line.trim().replace(/^\*/, "");
+      noteOpen = !text.endsWith("*");
+      const html = inlineHtml(text.replace(/\*$/, ""));
+      noteFor.note = noteFor.note ? `${noteFor.note} ${html}` : html;
+      if (!noteOpen) noteFor = undefined;
+    }
+  }
+
+  return { source: CHECKLIST_URL, tracks };
+}
+
 const RELEVANCE_ORDER: Record<Relevance, number> = {
   high: 0,
   medium: 1,
@@ -289,10 +432,13 @@ const STATUS_ORDER: Record<PaperStatus, number> = {
  * interactive pages, and blog front matter — and hands them to any page via
  * usePluginData("ocl-lab-data").
  */
+/** Everything the plugin loads; the checklist is kept out of global data. */
+type LoadedContent = LabData & { checklist: Checklist };
+
 export default async function labData(
   context: LoadContext,
   options: { blogDir?: string; routeBasePath?: string } = {},
-): Promise<Plugin<LabData>> {
+): Promise<Plugin<LoadedContent>> {
   const { siteDir } = context;
   const dataDir = path.join(siteDir, "data");
   const repoRoot = path.resolve(siteDir, "..");
@@ -302,7 +448,7 @@ export default async function labData(
   return {
     name: "ocl-lab-data",
 
-    async loadContent(): Promise<LabData> {
+    async loadContent(): Promise<LoadedContent> {
       const rawPapers =
         (await readYaml<Record<string, Omit<Paper, "id">>>(
           path.join(dataDir, "papers.yml"),
@@ -387,6 +533,7 @@ export default async function labData(
         }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
 
       return {
+        checklist: await loadChecklist(repoRoot),
         writing: await loadWriting(blogDir, routeBasePath),
         papers,
         evidence,
@@ -396,7 +543,17 @@ export default async function labData(
     },
 
     async contentLoaded({ content, actions }) {
-      actions.setGlobalData(content);
+      // Global data ships in the script every page loads; the checklist is
+      // a few hundred KB, so it goes only to the route that renders it.
+      const { checklist, ...global } = content;
+      actions.setGlobalData(global);
+      const data = await actions.createData("checklist.json", JSON.stringify(checklist));
+      actions.addRoute({
+        path: `${context.baseUrl}labs`,
+        component: "@site/src/components/LabsPage.tsx",
+        modules: { checklist: data },
+        exact: true,
+      });
     },
   };
 }

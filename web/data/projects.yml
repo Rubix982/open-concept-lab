@@ -24,3 +24,8 @@ projects:
     plan: ai/responsible-ai/knowledge-graph/plan.md
     notebook: /notebook/claim-graph/
     tone: standing
+
+  - name: opz
+    plan: projects/opz/plan.md
+    notebook: /notebook/opz/
+    tone: draft

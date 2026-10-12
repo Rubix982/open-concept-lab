@@ -129,6 +129,7 @@ const config: Config = {
           position: "left",
           label: "Notebook",
         },
+        { to: "/labs", label: "Labs", position: "left" },
         { to: "/reading", label: "Reading", position: "left" },
         { to: "/built", label: "Built", position: "left" },
         { to: "/about", label: "About", position: "right" },
