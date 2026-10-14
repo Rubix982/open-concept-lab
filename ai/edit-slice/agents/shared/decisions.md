@@ -2465,3 +2465,60 @@ saved:
 
 **Artifacts:** agents/engineer/workspace/run_e033.py; results/E-033-crossover-*.json;
 logs/run_e033-2026-*.log; src/remote.py (`deadline`, `RemoteTimeout`, `CALL_TIMEOUT_S`)
+
+---
+
+## [E-034] Decision: the loop owns execution, a person owns judgement
+
+_Date: 2026-10-14 · ported from `~/code/janaan/tools/pipeline`_
+
+**Decision:** an unattended runner for this project, in four pieces — `preflight`,
+`triage`, `report`, `watch` — with a hard boundary at judgement.
+
+**It owns:** running pre-registered work, gating it, recovering it, reporting it, and
+deciding when to wake someone.
+**It does not:** choose what to run next, judge whether a result is real, write a record
+entry, close a ticket, or touch the write-up.
+
+**Rationale, from this project's own record rather than from principle.**
+
+1. **[T-065]** found that *every* narrowing here came from choosing **which** held-fixed
+   dimension to vary. That choice is the generative act. A loop selecting its own next
+   experiment would be guessing at the one step that has reliably produced results.
+2. **[E-025], [E-026], [R-012]** each cost a withdrawn claim to interpreting a result too
+   eagerly — twice from a headline written before a confound check had finished. A loop
+   that interpreted results reproduces that failure faster than anyone catches it.
+3. The write-up names the real risk as *"a large, internally consistent body of work that
+   nobody outside has stress-tested."* **Automating generation without automating scrutiny
+   makes that risk worse.** Hence every report carries a *what this page did not check*
+   section — as a section, not a footnote — listing the four things it cannot see:
+   whether the verdict is right, whether named confounds were controlled rather than
+   named, whether the claim contradicts one already in the write-up, and prior art.
+
+**Escalation is restricted to four triggers** — preflight refusal, an unsorted triage
+line, a verdict outside `expect`, and a job outliving its budget. Everything else is
+logged. A known failure needs a count; an unknown one needs a person. That is janaan's
+`ledger.py` rule, and it is what makes the loop quiet enough to leave running.
+
+**Two things the port taught, both recorded because they were mistakes of mine:**
+
+- The cache-key gate's first rule demanded every CLI flag appear in every key, and flagged
+  `--gate-n` against a delta cache it cannot affect. **A gate nobody reads is a gate that
+  does not work.** The rule that catches [E-033] is internal consistency — that bug was a
+  disagreement *inside one file*. Verified by reintroducing it; preflight refuses.
+- Dry-runs lived in a scratch directory. **A dry-run in `/tmp` is a claim, not a check** —
+  the next person cannot re-run it. They now live in `tools/dryruns/`, preflight
+  *executes* them, and the first case in each feeds a **published** result back through
+  the reporting path and requires its published verdict.
+
+**Alternatives rejected.** Janaan gives headless `claude -p` two judgement steps, designer
+and critic. That works there because the critic judges a render against a photograph —
+perceptual, with ground truth on disk. Ours would judge whether a scientific claim holds,
+which is where every error in this project has been.
+
+**Revisit if:** three runs pass under this harness with no caught defect and no unsorted
+line. Then it is overhead and should be cut back to `preflight` alone. Recorded in the
+ticket as the falsification condition so it gets checked rather than accreted.
+
+**Artifacts:** tools/ (preflight.py, triage.py, report.py, watch.py, queue.json,
+dryruns/dryrun_e033.py, README.md)

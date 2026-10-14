@@ -1,0 +1,16 @@
+{
+ "_": [
+  "Pre-registered work for tools/watch.py. A person writes these; the loop only runs them.",
+  "That split is the design, not a limitation: [T-065] found every narrowing in this",
+  "project came from choosing WHICH held-fixed dimension to vary, which is judgement.",
+  "An agent that picked its own next experiment would be guessing at the one step that",
+  "has reliably produced the results.",
+  "",
+  "ticket  : the E- id, so the report can read the pre-stated outcomes back out",
+  "runner  : path relative to the repo root",
+  "args    : passed through verbatim",
+  "model   : for the preflight smoke test",
+  "expect  : verdicts that are EXPECTED. Anything else stops the queue and escalates."
+ ],
+ "jobs": []
+}

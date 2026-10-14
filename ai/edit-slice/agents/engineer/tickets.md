@@ -2585,7 +2585,7 @@ injected value's type?
 
 ### E-034 · An unattended runner, ported from janaan's pipeline
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-14
@@ -2634,5 +2634,14 @@ actually tested — because that is where our errors have been.
 no unsorted triage line, the harness is overhead and should be cut back to `preflight`
 alone. Record that at the third run rather than letting it accrete.
 
-**Artifacts:** tools/ (new); agents/shared/decisions.md -> "[E-034]"
-**Closed:** —
+**Result (2026-10-14).** All four pieces built and exercised. `triage` over every log this
+project has written: 3,700+ warnings, **0 unsorted** — after the first pass returned 15 and
+showed most were not failures but verdicts and [O-004] scope notes logged at WARNING, which
+is our own misuse of the level. `preflight` verified by **reintroducing** [E-033]'s cache-key
+bug and confirming it refuses. Dry-runs moved from the scratchpad into `tools/dryruns/` and
+are now executed rather than checked for.
+
+**Status:** closed
+**Artifacts:** tools/preflight.py, triage.py, report.py, watch.py, queue.json,
+dryruns/dryrun_e033.py, README.md; agents/shared/decisions.md -> "[E-034]"
+**Closed:** 2026-10-14

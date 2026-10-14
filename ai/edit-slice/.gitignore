@@ -14,3 +14,6 @@ __pycache__/
 # Listed explicitly so a future results/ rule cannot swallow them.
 !logs/
 !logs/*.log
+
+# tools/report.py output — regenerate with `python tools/report.py --all`
+out/
