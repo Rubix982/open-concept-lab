@@ -3109,8 +3109,21 @@ final token, with IQR, n, and the 2-hop-only row as the controlled comparison.
 edit applied. Deferred: MQuAKE-CF's full 27,654, MQuAKE-T, other layers, any effect
 measurement.
 
-**Blockers:** none, but **do not queue until [E-038] closes** — both want the same NDIF
-budget and E-038 is the one with a pre-registered threshold waiting on it.
+**A relation-matched sub-comparison exists and the ticket did not anticipate it.**
+Confound 3 said the arms' relation mixes differ, and they do — hop-1 is dominated by P27
+(104 of 213 two-hop instances), hop-2 by P495/P37/P35/P112/P36. But **P495 appears in both
+arms** (34 hop-1, 58 hop-2), so a relation-matched row is available for free. The runner
+reports every relation spanning both arms, and **says UNCONTROLLED out loud when none
+does** rather than printing an empty table that reads as a clean control.
+
+**Sizing, counted before writing the runner.** MQuAKE-CF-3k single-edit two-hop instances:
+**213 hop-1, 300 hop-2**, three questions each.
+
+**Built 2026-10-14, ahead of the budget.** `run_e039.py`, `tools/dryruns/dryrun_e039.py`
+(7 cases: three verdict bands, both confound tables, the disjoint-relation warning, and an
+empty 2-hop row), all six preflight gates pass. Queued behind [E-038] so the loop starts it
+when the budget frees; if [E-038] escalates the queue stops and this does not run, which is
+the intended behaviour and not a bug.
 
 **Artifacts:** _(on close)_
 **Closed:** —

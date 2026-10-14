@@ -24,6 +24,12 @@
    "verdict": "false-positive",
    "note": "scored a vague heading as a claim because 'does' was in its auxiliary list, and a precise one as not because 'displaces' was not; also counted structural headings written to be labels. Fixed 2026-10-14: lexical verbs recognised, scope restricted to results subsections.",
    "date": "2026-10-14"
+  },
+  {
+   "check": "summary_staleness",
+   "verdict": "caught",
+   "note": "the abstract had not changed since 2026-09-21 and was missing the entire benchmark arc; rewritten 2026-10-14 to carry \u00a74.6",
+   "date": "2026-10-14"
   }
  ]
 }

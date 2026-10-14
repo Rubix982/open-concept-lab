@@ -30,6 +30,22 @@
     "UNDERPOWERED"
    ],
    "_why": "[E-037] Arm B produced the gap and refused it: different-surface aliases 0.302 against 1.000 for canonical-substring, at n=9 under a threshold of 30 fixed before the run. All three subsets hold 371 such prompts, so this answers it. `expect` lists UNDERPOWERED because that branch firing again would mean the selection is broken rather than the corpus thin \u2014 371 were counted offline \u2014 and it is the one outcome that should NOT wake anybody as a surprise. STRING-KEYED, ENTITY-KEYED and SPLIT BY SUBSET all escalate, which is right: each changes what [E-036]'s withdrawn sentence should have said."
+  },
+  {
+   "ticket": "E-039",
+   "runner": "agents/engineer/workspace/run_e039.py",
+   "args": [
+    "--file",
+    "MQuAKE-CF-3k.json",
+    "--n",
+    "600",
+    "--chain-len",
+    "2"
+   ],
+   "model": "meta-llama/Llama-3.1-8B",
+   "budget_h": 3,
+   "expect": [],
+   "_why": "The within-benchmark control [R-014] found. MQuAKE names the edited subject iff the edit is on hop 1, so hop-1 and hop-2 questions differ in that one property inside one dataset. NO ESCAPE is the outcome that costs us most \u2014 it would make [E-037]'s reading of Table 11 wrong and force a rewrite of \u00a74.6 \u2014 and it is live, because [E-019] measured 0.95 for subject-LATE probes at this layer, so prefix-sharing is not the only route to a high coefficient. `expect` empty: first run, and every branch is worth waking for."
   }
  ]
 }
