@@ -110,8 +110,36 @@ def _is_flaky_remote(exc: BaseException) -> bool:
     return any(tag in text for tag in _FLAKY_REMOTE)
 
 
+#: Files in which ANY exception means the wire payload was malformed, whatever its type.
+#: [E-038] died twice on `TypeError: a bytes-like object is required, not 'str'` raised in
+#: `ResponseModel.unpickle` — NDIF had sent a str where bytes were expected, alongside
+#: `invalid literal for int(): b'P'` from engineio's frame parser in daemon threads. The
+#: type is a TypeError and the module is `nnsight`, so neither list below matched and a
+#: transient protocol fault killed a three-hour run.
+#:
+#: Classifying by WHERE rather than by type is the point: our own code never executes in
+#: these files, so this cannot mask a logic error in a trace body — which a broad
+#: `isinstance(exc, TypeError)` certainly would.
+_TRANSPORT_FRAMES: Final[tuple[str, ...]] = (
+    os.path.join("nnsight", "schema", "response.py"),
+    os.path.join("nnsight", "intervention", "backends", "remote.py"),
+)
+
+
+def _raised_in_transport_frame(exc: BaseException) -> bool:
+    tb = exc.__traceback__
+    while tb is not None:
+        name = tb.tb_frame.f_code.co_filename
+        if any(frag in name for frag in _TRANSPORT_FRAMES):
+            return True
+        tb = tb.tb_next
+    return False
+
+
 def _is_transport_error(exc: BaseException) -> bool:
     if _is_flaky_remote(exc) or isinstance(exc, RemoteTimeout):
+        return True
+    if _raised_in_transport_frame(exc):
         return True
     module = (type(exc).__module__ or "").split(".")[0]
     if module in _TRANSPORT_MODULES:

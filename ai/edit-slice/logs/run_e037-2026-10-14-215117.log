@@ -2,3 +2,13 @@
 2026-10-14 21:51:17,887 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 2177, "entries_used": 2578, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 15, "seed": 1538, "subset": "recent,random,popular", "ticket": "E-037"}
 2026-10-14 21:51:17,887 INFO     run_e037  2578 usable entries, 2177 skipped for want of a recoverable subject label
 2026-10-14 21:51:17,887 INFO     run_e037  15 candidate partners rejected for sharing a token with their own subject
+2026-10-14 21:51:35,647 INFO     run_e037    1320/2578 entries
+2026-10-14 21:53:48,200 INFO     run_e037    1340/2578 entries
+2026-10-14 21:56:05,447 INFO     run_e037    1360/2578 entries
+2026-10-14 21:58:26,756 INFO     run_e037    1380/2578 entries
+2026-10-14 22:00:10,722 WARNING  remote  transport failure (ConnectError: [Errno 54] Connection reset by peer) during 'Kewal K Mahapatra', attempt 1/8; retrying in 5s
+2026-10-14 22:00:54,891 INFO     run_e037    1400/2578 entries
+2026-10-14 22:03:17,062 INFO     run_e037    1420/2578 entries
+2026-10-14 22:05:34,747 INFO     run_e037    1440/2578 entries
+2026-10-14 22:09:08,181 INFO     run_e037    1460/2578 entries
+2026-10-14 22:19:19,456 WARNING  remote  transport failure (RemoteTimeout: 'Katharine Savile' exceeded 600s with no response) during 'Katharine Savile', attempt 1/8; retrying in 5s
