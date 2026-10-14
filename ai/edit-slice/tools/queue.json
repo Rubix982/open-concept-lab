@@ -14,15 +14,18 @@
  ],
  "jobs": [
   {
-   "ticket": "E-035",
-   "runner": "agents/engineer/workspace/run_e035.py",
-   "args": [],
-   "model": "meta-llama/Llama-3.1-8B",
-   "budget_h": 2,
-   "expect": [
-    "NOTHING BEATS IT"
+   "ticket": "E-036",
+   "runner": "agents/engineer/workspace/run_e036.py",
+   "args": [
+    "--subset",
+    "recent",
+    "--n",
+    "200"
    ],
-   "_why": "T-086's candidate sweep. Only NOTHING BEATS IT is pre-registered as unsurprising \u2014 it is what the ticket expects. FOUND or MULTICOLLINEAR would be a real surprise and should wake someone, which is the point of running it at all."
+   "model": "meta-llama/Llama-3.1-8B",
+   "budget_h": 3,
+   "expect": [],
+   "_why": "Every verdict here is a surprise worth waking for. MECHANICAL would be the project's one outward-facing result; NOT MECHANICAL would close that claim honestly and is the more useful outcome; UNDIFFERENTIATED would say the measure cannot speak to their taxonomy. `expect` is deliberately empty \u2014 the right setting for a first run of anything."
   }
  ]
 }

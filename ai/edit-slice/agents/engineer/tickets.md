@@ -2717,3 +2717,80 @@ and a FOUND result licenses a follow-up design, never a claim.
 **Blockers:** none.
 **Artifacts:** _(on close)_
 **Closed:** —
+
+---
+
+### E-036 · How much of a ROME update reaches RippleEdits' own test prompts?
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-003 · follows [R-013]
+
+**Description:**
+
+[R-013] killed the priced week by killing its premise: RippleEdits is **already**
+subject-final — 44 of 46,754 prompts begin with their subject. So there is nothing to
+rewrite. What replaces it is smaller, sharper, and made entirely with the benchmark's own
+materials.
+
+**Take RippleEdits' own edits and its own test prompts, and measure what fraction of the
+update each test prompt would receive.** No editing, no rewriting, no probes of ours.
+`k*` is read from the entry's own edit prompt; the coefficient is
+`(k·k*)/(k*·k*)` at the subject's last token of each test prompt. Layer 5, which is what
+EasyEdit's `llama3-8b.yaml` edits.
+
+**Their taxonomy is the control structure, which is why this is worth doing on their data
+rather than ours.** The six criteria differ in exactly the way the mechanism cares about:
+
+| criterion | what it varies | predicted coefficient |
+| --- | --- | --- |
+| Relation Specificity | same entity, different relation | **high** — the key is the subject's, not the relation's |
+| Logical Generalization | same entity, inverse/symmetric relation | **high** |
+| Forgetfulness | same entity, a negated relation | **high** |
+| Subject Aliasing | **a different surface form of the same entity** | **lower** — the key is a string, and the string changed |
+| Compositionality I / II | a **different entity**, reached by a hop | **at the floor** ([E-018]: 0.082) |
+
+That gradient is a prediction with four distinguishable levels, and nothing about it was
+designed by us.
+
+**Pre-stated outcomes.** Median coefficient at layer 5, per criterion.
+
+- **MECHANICAL** — Relation Specificity, Logical Generalization and Forgetfulness all sit
+  **≥ 0.80**, *and* Compositionality sits **≤ 0.30**. Their same-entity tests receive most
+  of the update by arithmetic while their different-entity tests do not, which is the
+  shape the concern predicts and is reportable against their own taxonomy.
+- **NOT MECHANICAL** — the same-entity criteria sit **below 0.50**. The concern does not
+  apply to this benchmark, §7 item 2 is withdrawn entirely, and that is the most useful
+  possible outcome because it closes the project's one outward-facing claim honestly.
+- **UNDIFFERENTIATED** — every criterion within 0.15 of every other. Then the coefficient
+  does not distinguish their test types and the measurement says nothing about them.
+
+**Confounds.**
+1. *Subject Aliasing is the built-in control and must be reported whichever way it goes.*
+   An alias is the same entity under a different string. If the coefficient is a property
+   of the **string**, aliases drop; if of the **entity**, they do not. We predict a drop,
+   and a non-drop would be more interesting than the headline.
+2. *Entries are usable only when a subject label can be recovered* from a materialised
+   prompt — 279 of the first 400. **Report the attrition and the reason**; per [O-004]
+   this licenses an existence claim about their prompts, never a rate over the benchmark.
+3. *Compositionality's subject is a different entity, so `subject_last_index` must locate
+   the ORIGINAL subject inside a longer phrase* ("the place of death of Leo Arons"). The
+   coefficient is then read at a position that is genuinely in the prompt — which is the
+   honest thing to measure, but it is not "the subject position" in their sense, and the
+   entry must say so.
+4. *Delivery, not effect.* [E-028d] established these come apart by 2.96×. This measures
+   what **arrives**, and no sentence may imply it measures what moves.
+
+**Deliverable.** One table: RippleEdits criterion × median coefficient at layer 5, with
+the inter-quartile range and n per criterion. One sentence on whether their same-entity
+tests are reached mechanically.
+
+**Scope.** `recent.json`, layer 5, Llama-3.1-8B, coefficient only, no edits applied.
+Existence per [O-004].
+
+**Blockers:** none. Mostly unattended — one trace per entry.
+**Artifacts:** _(on close)_
+**Closed:** —
