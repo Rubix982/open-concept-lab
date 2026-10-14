@@ -1532,3 +1532,78 @@ applicability**, because abstracts sell the contribution and bury the setting.
 own full texts. Both papers move to `skimmed`; neither has been read line by line.
 
 **Artifacts:** web/data/papers.yml (status updates); this entry
+
+## [R-013] Finding: RippleEdits has NO subject-initial prompts — §7's premise is false
+
+_Date: 2026-10-14 · measured on the released benchmark, 1,948 entries, 22,014 test prompts_
+
+§7 item 2 of the write-up — the project's one outward-facing consequence, priced at a week
+and unrun since September — rests on this sentence:
+
+> Every propagation benchmark we know of probes with prompts that begin with the subject.
+
+**It is false for RippleEdits**, the canonical ripple benchmark and the one we cite as
+`cohen2024ripple`. Downloaded (MIT licence) and measured:
+
+Across all three released subsets — `recent`, `random`, `popular` — **1,948 + entries,
+46,754 test prompts**:
+
+| | subject-initial | subject-later | position undetermined |
+| --- | ---: | ---: | ---: |
+| all three subsets | **44** | 25,277 | 21,433 |
+| as a share of the **placed** prompts | **0.17%** | 99.83% | — |
+
+**44 of 46,754 — 0.09% — begin with their subject.** Of the prompts whose position can be
+determined at all, 99.8% put the subject *later*. Nearly every prompt has the form
+*"The &lt;relation&gt; of &lt;subject&gt; is"*; in `recent.json` alone, 20,759 of 21,052
+materialised prompts begin with the literal word **"The"**.
+
+**A correction to this entry's own first draft, left visible.** It originally read "0 of
+22,014 — not one begins with its subject", measured on `recent.json` with a stricter
+detector. Widening the detector and adding the other two subsets found 44. The claim is
+unchanged in substance and was overstated in form, which is the failure this project keeps
+making about other people's work and has now made about its own measurement. The
+undetermined 21,433 are reported rather than assumed: they are prompts carrying neither an
+empty slot nor a label this script could match, and they are **not** counted as
+subject-later.
+
+**How it was measured without resolving a single entity.** The released prompts carry the
+subject as a Wikidata QID; some are materialised (*"The place of birth of Leo Arons is"*)
+and some leave the slot empty (*"The name of the field of work of&nbsp;&nbsp;is"*). Either
+way the subject's **position** is visible, which is all the claim is about. Cost: one
+download and twenty minutes, against a week.
+
+### What this costs, and what it does not
+
+**Costs.** The sentence comes out of §7, §6 and the packet. We asserted a property of
+*every* benchmark having inspected none of them — the same failure as [R-011b]'s
+RippleBench description, where a project direction rested on a property the paper did not
+claim. Twice now, the thing we have been least careful about is the literature we are
+arguing against.
+
+**Does not cost: the consequence itself, which survives in a sharper form.** [E-019]
+measured the coefficient for subject-*late* probes at **0.951** (late clause) and **0.962**
+(possessive) **at layer 5** — the layer EasyEdit's shipped config edits. So RippleEdits'
+own prompt form still receives ~95% of the update at the standard edit layer. The concern
+was never really about being subject-initial; that was our probes' shape, not the
+mechanism's requirement. The mechanism requires only that the coefficient be high, and at
+the layer the field edits it is high for both forms.
+
+What the correction kills is the *depth* half: at layer 20 the same form drops to ~0.58, so
+a benchmark of subject-late prompts would be much less affected by a deep edit. That was
+never the claim we were making, but it is now foreclosed.
+
+### The experiment this replaces
+
+The priced week was "rewrite the probes subject-final and re-score". **That work no longer
+exists** — the benchmark is already subject-final. What replaces it is cheaper and more
+direct: take RippleEdits' own templates and measure the coefficient on them, with no edits
+and no rewriting. A day, not a week, and it is made with the benchmark's own materials
+rather than ours. See [E-036].
+
+**Confidence: high.** Measured on the released `recent.json`, every test prompt of every
+criterion, with the counting rule stated above and reproducible from
+`data/ripple/recent.json`. Unchecked: the `random` and `popular` subsets, which the same
+script covers and which there is no reason to expect to differ.
+
+**Artifacts:** data/ripple/recent.json (19.7 MB, MIT, committed for reproducibility)

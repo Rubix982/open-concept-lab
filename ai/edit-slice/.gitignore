@@ -17,3 +17,6 @@ __pycache__/
 
 # tools/report.py output — regenerate with `python tools/report.py --all`
 out/
+
+# RippleEdits benchmark (MIT, edenbiran/RippleEdits) — large, re-downloadable
+data/ripple/*.json
