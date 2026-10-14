@@ -12,6 +12,18 @@ export type Shipped = {
 
 export const SHIPPED: Shipped[] = [
   {
+    name: "national-multi-care",
+    title: "National Multi Care Hospital",
+    url: "https://nmhnepalgunj.com/",
+    what:
+      "The website for a multi-specialty hospital in Nepalgunj, Nepal, in English, Nepali and Hindi. " +
+      "Almost everyone who opens it arrives on a phone from a search result, often needing something " +
+      "urgently, so the phone number, WhatsApp and the ambulance are in thumb reach on every page, and " +
+      "the whole homepage weighs 200KB.",
+    since: "16 September 2026",
+    image: "/img/shipped/national-multi-care/home.jpg",
+  },
+  {
     name: "advisor-atlas",
     title: "Advisor Atlas",
     url: "https://advisoratlas.fyi/",
