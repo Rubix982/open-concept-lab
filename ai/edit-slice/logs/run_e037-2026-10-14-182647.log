@@ -13,3 +13,64 @@
 2026-10-14 18:41:08,865 INFO     run_e037    140/2578 entries
 2026-10-14 18:42:53,906 INFO     run_e037    160/2578 entries
 2026-10-14 18:44:50,147 INFO     run_e037    180/2578 entries
+2026-10-14 18:46:42,976 INFO     run_e037    200/2578 entries
+2026-10-14 18:48:30,573 INFO     run_e037    220/2578 entries
+2026-10-14 18:50:26,490 INFO     run_e037    240/2578 entries
+2026-10-14 18:52:09,962 INFO     run_e037    260/2578 entries
+2026-10-14 18:54:03,106 INFO     run_e037    280/2578 entries
+2026-10-14 18:55:51,468 INFO     run_e037    300/2578 entries
+2026-10-14 18:57:42,746 INFO     run_e037    320/2578 entries
+2026-10-14 18:59:41,020 INFO     run_e037    340/2578 entries
+2026-10-14 19:02:04,271 INFO     run_e037    360/2578 entries
+2026-10-14 19:03:56,979 INFO     run_e037    380/2578 entries
+2026-10-14 19:05:37,632 INFO     run_e037    400/2578 entries
+2026-10-14 19:07:38,131 INFO     run_e037    420/2578 entries
+2026-10-14 19:09:30,153 INFO     run_e037    440/2578 entries
+2026-10-14 19:11:20,011 INFO     run_e037    460/2578 entries
+2026-10-14 19:13:05,993 INFO     run_e037    480/2578 entries
+2026-10-14 19:14:41,624 INFO     run_e037    500/2578 entries
+2026-10-14 19:16:41,893 INFO     run_e037    520/2578 entries
+2026-10-14 19:18:31,991 INFO     run_e037    540/2578 entries
+2026-10-14 19:20:25,599 INFO     run_e037    560/2578 entries
+2026-10-14 19:22:23,030 INFO     run_e037    580/2578 entries
+2026-10-14 19:24:15,655 INFO     run_e037    600/2578 entries
+2026-10-14 19:26:05,158 INFO     run_e037    620/2578 entries
+2026-10-14 19:27:54,635 INFO     run_e037    640/2578 entries
+2026-10-14 19:29:42,915 INFO     run_e037    660/2578 entries
+2026-10-14 19:41:15,591 WARNING  remote  transport failure (RemoteTimeout: 'Transcopic Records' exceeded 600s with no response) during 'Transcopic Records', attempt 1/8; retrying in 5s
+2026-10-14 19:41:37,742 INFO     run_e037    680/2578 entries
+2026-10-14 19:43:27,417 INFO     run_e037    700/2578 entries
+2026-10-14 19:45:19,451 INFO     run_e037    720/2578 entries
+2026-10-14 19:47:12,967 INFO     run_e037    740/2578 entries
+2026-10-14 19:50:07,050 INFO     run_e037    760/2578 entries
+2026-10-14 19:52:47,616 INFO     run_e037    780/2578 entries
+2026-10-14 19:55:17,727 INFO     run_e037    800/2578 entries
+2026-10-14 19:57:58,955 INFO     run_e037    820/2578 entries
+2026-10-14 20:00:24,812 INFO     run_e037    840/2578 entries
+2026-10-14 20:02:37,009 INFO     run_e037    860/2578 entries
+2026-10-14 20:04:48,702 INFO     run_e037    880/2578 entries
+2026-10-14 20:07:06,923 INFO     run_e037    900/2578 entries
+2026-10-14 20:09:39,406 INFO     run_e037    920/2578 entries
+2026-10-14 20:11:57,280 INFO     run_e037    940/2578 entries
+2026-10-14 20:14:03,737 INFO     run_e037    960/2578 entries
+2026-10-14 20:16:30,370 INFO     run_e037    980/2578 entries
+2026-10-14 20:19:22,074 INFO     run_e037    1000/2578 entries
+2026-10-14 20:21:45,310 INFO     run_e037    1020/2578 entries
+2026-10-14 20:24:07,503 INFO     run_e037    1040/2578 entries
+2026-10-14 20:27:12,916 INFO     run_e037    1060/2578 entries
+2026-10-14 20:29:50,600 INFO     run_e037    1080/2578 entries
+2026-10-14 20:32:19,017 INFO     run_e037    1100/2578 entries
+2026-10-14 20:34:46,254 INFO     run_e037    1120/2578 entries
+2026-10-14 20:37:07,295 INFO     run_e037    1140/2578 entries
+2026-10-14 20:39:42,515 INFO     run_e037    1160/2578 entries
+2026-10-14 20:42:08,679 INFO     run_e037    1180/2578 entries
+2026-10-14 20:44:40,661 INFO     run_e037    1200/2578 entries
+2026-10-14 20:46:58,150 INFO     run_e037    1220/2578 entries
+2026-10-14 20:49:19,327 INFO     run_e037    1240/2578 entries
+2026-10-14 21:02:19,833 WARNING  remote  transport failure (RemoteTimeout: 'Sholto Carnegie' exceeded 600s with no response) during 'Sholto Carnegie', attempt 1/8; retrying in 5s
+2026-10-14 21:03:50,081 INFO     run_e037    1260/2578 entries
+2026-10-14 21:08:31,548 INFO     run_e037    1280/2578 entries
+2026-10-14 21:20:28,666 WARNING  remote  transport failure (RemoteTimeout: 'Paul Fréart de Chantelou' exceeded 600s with no response) during 'Paul Fréart de Chantelou', attempt 1/8; retrying in 5s
+2026-10-14 21:32:46,430 WARNING  remote  transport failure (RemoteTimeout: 'Miklós Ajtai' exceeded 600s with no response) during 'Miklós Ajtai', attempt 1/8; retrying in 5s
+2026-10-14 21:33:50,574 INFO     run_e037    1300/2578 entries
+2026-10-14 21:44:41,668 WARNING  remote  transport failure (RemoteTimeout: 'Jose L Castillo' exceeded 600s with no response) during 'Jose L Castillo', attempt 1/8; retrying in 5s

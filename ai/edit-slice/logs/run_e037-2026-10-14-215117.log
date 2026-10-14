@@ -1,0 +1,4 @@
+2026-10-14 21:51:17,886 INFO     run_e037  run run_e037 -> logs/run_e037-2026-10-14-215117.log
+2026-10-14 21:51:17,887 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 2177, "entries_used": 2578, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 15, "seed": 1538, "subset": "recent,random,popular", "ticket": "E-037"}
+2026-10-14 21:51:17,887 INFO     run_e037  2578 usable entries, 2177 skipped for want of a recoverable subject label
+2026-10-14 21:51:17,887 INFO     run_e037  15 candidate partners rejected for sharing a token with their own subject

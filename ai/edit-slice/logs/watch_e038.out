@@ -1,3 +1,9 @@
 [18:26:27] 1 job(s) queued
 [18:26:27] E-038: preflight
 [18:26:43] E-038: running (budget 8.0h)
+[21:47:46] E-038: finished in 201 min
+[21:47:47] E-038: ok — verdict ['(none)'], report written
+[21:47:47] queue worked; sleeping 15 min before re-reading it
+[21:50:25] 2 job(s) queued
+[21:50:25] E-038: preflight
+[21:51:06] E-038: running (budget 8.0h)

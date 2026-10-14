@@ -80,14 +80,33 @@ def run_job(job: dict, dry: bool) -> tuple[bool, str]:
     log(f"{tid}: running (budget {budget}h)")
     t0 = time.time()
     try:
-        subprocess.run([PY, runner, *args], timeout=budget * 3600,
-                       capture_output=True, text=True)
+        rr = subprocess.run([PY, runner, *args], timeout=budget * 3600,
+                            capture_output=True, text=True)
     except subprocess.TimeoutExpired:
         return False, (f"**exceeded its {budget}h budget.** This is the [E-033] shape — a "
                        f"job alive with no exception and no progress. Check whether NDIF "
                        f"is holding it in RECEIVED.")
     mins = (time.time() - t0) / 60
     log(f"{tid}: finished in {mins:.0f} min")
+
+    # The runner's stderr is the ONLY place an uncaught traceback goes — `logs.setup`
+    # writes the run log, not the crash. It was captured and discarded until [E-038] died
+    # at 1300 of 2578 entries and this loop reported "ok": the traceback had been read
+    # into a variable nobody looked at, so the cause is permanently unknowable for that
+    # run. Persist it before deciding anything.
+    if rr.stderr or rr.stdout:
+        crash = os.path.join(ROOT, "logs", f"{tid.lower()}-stderr.log")
+        with open(crash, "w", encoding="utf-8") as fh:
+            fh.write(f"=== returncode {rr.returncode} ===\n--- stderr ---\n{rr.stderr}"
+                     f"\n--- stdout ---\n{rr.stdout}")
+
+    # And the return code was never checked. Preflight's was; the experiment's was not,
+    # so a crash, a kill and a clean exit were indistinguishable to this loop.
+    if rr.returncode != 0:
+        return False, (f"**the runner exited {rr.returncode}.** It did not finish, and "
+                       f"this loop previously reported such a run as ok. Its stderr is in "
+                       f"`logs/{tid.lower()}-stderr.log`.\n\n```\n"
+                       f"{(rr.stderr or '(empty)')[-1200:]}\n```")
 
     logs = sorted(__import__("glob").glob(
         os.path.join(ROOT, "logs", f"run_{tid.lower().replace('-', '')}*.log")),
@@ -108,10 +127,23 @@ def run_job(job: dict, dry: bool) -> tuple[bool, str]:
                        f"diagnosed.\n\n```\n" + "\n".join(unsorted_lines) + "\n```\n\n"
                        "Add a cause to `tools/triage.py` once you know what it is.")
 
+    # Both verdict forms. The regex matched `VERDICT: X` only, while [E-037] onward
+    # report two arms and write `ARM A · X` — so `verdicts` came back empty for every
+    # such run, `expect` had nothing to compare against, and the escalate-on-surprise
+    # rule was silently inert. This is the SAME divergence that broke `triage.py` this
+    # morning; that consumer was fixed and this one was not, which is the actual lesson:
+    # a verdict string with two consumers needs one definition, not two regexes.
     verdicts = []
     for lg in logs:
         with open(lg, encoding="utf-8", errors="replace") as fh:
-            verdicts += re.findall(r"VERDICT: ([A-Z][A-Z _-]*)", fh.read())
+            verdicts += re.findall(r"(?:VERDICT:|ARM [A-Z] ·) ([A-Z][A-Z _-]*)", fh.read())
+    verdicts = [v.strip() for v in verdicts if v.strip()]
+    if not verdicts:
+        return False, ("**the run produced no verdict line.** Every runner here ends with "
+                       "one, so its absence means the run did not reach its report — or "
+                       "that the verdict format has drifted from what this loop matches. "
+                       "Either way `expect` had nothing to check and the surprise rule "
+                       "was inert.")
     expect = {v.upper() for v in job.get("expect", [])}
     surprises = [v.strip() for v in verdicts if expect and v.strip().upper() not in expect]
     if surprises:
