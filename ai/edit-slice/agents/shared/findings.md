@@ -1607,3 +1607,77 @@ criterion, with the counting rule stated above and reproducible from
 script covers and which there is no reason to expect to differ.
 
 **Artifacts:** data/ripple/recent.json (19.7 MB, MIT, committed for reproducibility)
+
+## [R-014] Finding: MQuAKE names the edited subject if and only if the edit is on hop 1
+
+_Date: 2026-10-14_
+
+[E-037]'s §4.6 row — RippleEdits' *different-entity* tests sit at a coefficient of 0.982
+because their prompts name the edited subject verbatim — was a fact about one benchmark.
+This asks whether it is a fact about the field. **MQuAKE answers it, and the answer is a
+clean split rather than a tendency.**
+
+Counted over all four released MQuAKE files (`princeton-nlp/MQuAKE`, fetched 2026-10-14),
+asking only whether a multi-hop question's string contains the edited subject's string:
+
+| file | questions | names the edited subject | |
+| --- | --- | --- | --- |
+| MQuAKE-CF | 27,654 | 17,922 | 64.8% |
+| MQuAKE-CF-3k-v2 | 9,000 | 5,901 | 65.6% |
+| MQuAKE-CF-3k | 9,000 | 5,859 | 65.1% |
+| MQuAKE-T | 5,604 | 21 | **0.4%** |
+| **ALL** | **51,258** | **29,703** | **57.9%** |
+
+**The aggregate is noise; the structure underneath it is exact.** Restricting to
+single-edit instances, where which hop carries the edit is unambiguous:
+
+| hop carrying the edit | questions | names the edited subject |
+| --- | --- | --- |
+| 1 | 6,861 | **6,861 — 100.0%** |
+| 2 | 13,977 | **0 — 0.0%** |
+| 3 | 2,313 | **0 — 0.0%** |
+| 4 | 216 | **0 — 0.0%** |
+
+Not approximately. **The edited subject appears in the question exactly when the edit sits
+on the chain's first hop**, across 23,367 questions with no exceptions in either direction.
+The reason is structural: MQuAKE phrases a chain from its head, so an edit on hop 2 is an
+edit to an *intermediate* entity the question never mentions —
+
+> chain: *Michael Feinstein → country of citizenship → **United States of America** →
+> capital → Washington, D.C.*
+> edit on hop 2, subject **United States of America**
+> question: *"What is the capital city of the country that Michael Feinstein is a citizen
+> of?"*
+
+MQuAKE-T's 0.4% is the same fact, not a different one: 1,861 of its 1,868 single-edit
+instances edit hop 2 or later.
+
+**Confidence: high.** It is a string count over released files with a decidable predicate
+and no entity resolution, which is why the two cells are exactly 100.0% and 0.0% rather
+than nearly so.
+
+### What this does to §4.6
+
+**Both outcomes the ticket pre-stated are wrong, and the real one is more useful than
+either.** It is not FIELD-WIDE and not RIPPLEEDITS-SPECIFIC. MQuAKE contains **both**
+populations, separated exactly by a property recorded in its own metadata:
+
+- RippleEdits' compositional tests always name the edited subject because its edits are
+  always on the head entity. §4.6's 0.982 stands and is **not** a quirk of our reading.
+- MQuAKE's hop-2+ questions are the genuine different-entity test the field is assumed to
+  have: 16,506 of them, where the edited subject is simply absent from the prompt.
+
+**So MQuAKE is a within-benchmark control nobody has to construct**, and that is the
+finding's value. Running [E-036]'s measurement on it compares hop-1 against hop-2+
+questions inside one dataset, one prompt register, one set of edits — the confound that
+makes a cross-benchmark comparison unreadable is gone by construction. If hop-1 questions
+sit near 1 and hop-2+ questions sit near the floor, the mechanism is demonstrated on the
+field's standard multi-hop benchmark with its own materials supplying the control.
+
+**What this does not establish.** A subject present in a prompt is not a subject at the
+position the coefficient is read; this counts **construction**, never **delivery**. It also
+covers one benchmark beyond RippleEdits — RippleBench (2512.04144) and EditPropBench
+(2605.02083) are **not** counted here and the ticket stays open for them.
+
+**Artifacts:** agents/engineer/workspace/fetch_mquake.py;
+agents/engineer/workspace/mquake_forms.py; results/R-014-mquake-forms.json

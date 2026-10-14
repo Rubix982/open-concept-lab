@@ -469,3 +469,83 @@ to contradiction. [T-086] has no candidate.
 **Artifacts:** agents/shared/findings.md -> "[R-012]"; web/data/papers.yml (both to
 `skimmed`, both `gives_me` rewritten); web/notebook/edit-slice/review.md §2 and §7
 **Closed:** 2026-10-03
+
+### R-014 · Do other propagation benchmarks name the edited subject in their different-entity tests?
+
+**Status:** in-progress
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-088 · follows [E-037]
+
+**Description:**
+
+§4.6's strongest row is Compositionality I: RippleEdits' tests about a **different** entity
+sit at 0.982 against a 0.065 floor, because their prompts name the edited subject verbatim
+— *"the name of the head of government of the place of death of **Leo Arons** is"*. A prompt
+built to probe another entity receives essentially the whole update at a token nobody
+intended to be load-bearing.
+
+**That is currently a fact about one benchmark, and the difference between a finding and a
+curiosity.** If the other propagation benchmarks construct multi-hop prompts the same way,
+the observation is about how the field builds these tests. If they do not, RippleEdits is
+an outlier and §4.6 shrinks to a note about one dataset.
+
+**Method — [R-013]-shaped, and deliberately so.** No model, no edits, no entity resolution.
+For each benchmark's released multi-hop / different-entity prompts, ask one question: **does
+the prompt string contain the edited subject's surface form?** Count. Report attrition
+where a subject cannot be recovered, exactly as [R-013] did.
+
+**Targets, in order of how much each would settle:**
+1. **MQuAKE** (`princeton-nlp/MQuAKE`) — the standard multi-hop editing benchmark. Its
+   questions are natural-language and *may* name only the chain's tail entity, which would
+   be the clean counterexample.
+2. **RippleBench** (2512.04144) — distance-stratified, and [R-011b] already corrected this
+   project's description of it once. Read the released prompts, not the paper's summary.
+3. **EditPropBench** (2605.02083) — dependency-labeled cascades.
+
+**Pre-stated outcomes.**
+- **FIELD-WIDE** — a majority of different-entity prompts in two or more benchmarks contain
+  the edited subject. §4.6 generalises and may say so.
+- **RIPPLEEDITS-SPECIFIC** — the others mostly do not. §4.6 is narrowed to RippleEdits in
+  the same paragraph, and MQuAKE becomes the more interesting measurement to run next.
+- **MIXED** — report per benchmark and generalise nothing.
+
+**Confound.** A prompt may name the subject *without* the edit landing there, if the
+subject is not at the position the coefficient is read. Counting strings answers whether
+the subject is present, never whether the coefficient is high. **This ticket licenses a
+claim about prompt construction and not about delivery**; delivery needs [E-036]'s
+measurement, per benchmark.
+
+**[O-004] applies.** These are counts over released files, so a rate over *those files* is
+legitimate — unlike a hand-built set. State the file and the version.
+
+**Result (2026-10-14) — MQuAKE only; the ticket stays open for the other two.**
+
+51,258 multi-hop questions across four released files; 29,703 (57.9%) contain the edited
+subject. The aggregate is noise. On single-edit instances the structure is exact:
+
+| hop carrying the edit | questions | names the edited subject |
+| --- | --- | --- |
+| 1 | 6,861 | **100.0%** |
+| 2 | 13,977 | **0.0%** |
+| 3 | 2,313 | **0.0%** |
+| 4 | 216 | **0.0%** |
+
+**Both pre-stated bands are wrong.** Not FIELD-WIDE, not RIPPLEEDITS-SPECIFIC. MQuAKE
+holds both populations, split exactly by which hop carries the edit — because it phrases
+a chain from its head, so a hop-2 edit targets an entity the question never mentions.
+RippleEdits always edits the head entity, which is why Table 11's 0.982 is not a quirk of
+our reading.
+
+The value is that this makes MQuAKE a **within-benchmark control nobody has to
+construct** — [E-039].
+
+**Still open:** RippleBench (2512.04144) and EditPropBench (2605.02083) are not counted.
+The ticket remains in-progress for them.
+
+**Artifacts:** agents/engineer/workspace/fetch_mquake.py;
+agents/engineer/workspace/mquake_forms.py; results/R-014-mquake-forms.json;
+agents/shared/findings.md -> "[R-014] Finding"
+**Closed:** — (MQuAKE arm done; two benchmarks remain)

@@ -56,7 +56,8 @@ zhong2023mquake:
   status: read
   relevance: high
   verified: true
-  projects: [rome-neighbors]
+  # edit-slice added 2026-10-14 for [R-014]: MQuAKE is the within-benchmark control §4.6 names.
+  projects: [rome-neighbors, edit-slice]
   gives_me: Multi-hop questions after an edit — the closest existing thing to hop resolution.
 
 geva2021ffn:

@@ -1,0 +1,9 @@
+2026-10-14 18:26:47,298 INFO     run_e037  run run_e037 -> logs/run_e037-2026-10-14-182647.log
+2026-10-14 18:26:47,298 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 2177, "entries_used": 2578, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 15, "seed": 1538, "subset": "recent,random,popular", "ticket": "E-037"}
+2026-10-14 18:26:47,298 INFO     run_e037  2578 usable entries, 2177 skipped for want of a recoverable subject label
+2026-10-14 18:26:47,298 INFO     run_e037  15 candidate partners rejected for sharing a token with their own subject
+2026-10-14 18:28:42,096 INFO     run_e037    20/2578 entries
+2026-10-14 18:30:33,128 INFO     run_e037    40/2578 entries
+2026-10-14 18:32:18,784 WARNING  remote  transport failure (ConnectionError: Connection error) during 'Biksēre', attempt 1/8; retrying in 5s
+2026-10-14 18:32:29,045 WARNING  remote  transport failure (ConnectionError: Connection error) during 'Biksēre', attempt 2/8; retrying in 10s
+2026-10-14 18:33:49,117 INFO     run_e037    60/2578 entries

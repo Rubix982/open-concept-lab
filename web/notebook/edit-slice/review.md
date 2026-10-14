@@ -63,6 +63,8 @@ far**.
 | **Table 8** | The relation crossover — six arms, two models (§4.5) |
 | **Table 9** | The pinning across a 68× parameter range (§4.3) |
 | **Table 10** | Open threads, what each would decide, and what it costs (§8) |
+| **Table 11** | The measurement on RippleEdits' own prompts, against a floor built from them (§4.6) |
+| **Table 12** | MQuAKE names the edited subject iff the edit is on hop 1 (§4.6) |
 
 ## 1 · The question
 
@@ -723,6 +725,92 @@ efficacy-metric critique we had begun to build does not survive at layer 5.
 at exactly 1.000 for precisely the probes in question, so it has **zero variance where the
 outcome varies most**. Whatever governs propagation magnitude is none of the three.
 
+### 4.6 · The same measurement, on a published benchmark's own materials
+
+Everything above is measured on probes we wrote, and the obvious objection is that our
+probe shapes produced the result. RippleEdits <Cite id="cohen2024ripple" /> ships 4,755
+edits and 46,754 test prompts sorted into six criteria, none of which we designed. So we
+ran the identical measurement on **their** edits and **their** prompts, rewriting nothing:
+`k*` read at the subject's last token of each entry's own edit prompt, the coefficient read
+at the subject's last token of each test prompt, layer 5 — the layer EasyEdit's shipped
+`llama3-8b.yaml` edits.
+
+<p className="ocl-tablecap"><strong>Table 11.</strong> Fraction of a ROME update arriving at RippleEdits' own test prompts, against a floor built from the same prompts. Llama-3.1-8B, layer 5, 400 entries of the <code>recent</code> subset, 193 skipped for want of a recoverable subject label.</p>
+
+| criterion | what it varies | n | own `k*` | IQR | permuted `k*` | IQR |
+| --- | --- | --- | --- | --- | --- | --- |
+| Forgetfulness | same entity, negated relation | 241 | **1.000** | 0.000 | 0.072 | 0.047 |
+| Compositionality I | a different entity, one hop | 1,981 | **0.982** | 0.028 | 0.065 | 0.045 |
+| Logical Generalization | same entity, inverse/symmetric | 208 | **0.970** | 0.058 | 0.069 | 0.037 |
+| Relation Specificity | same entity, different relation | 1,818 | **0.969** | 0.046 | 0.075 | 0.048 |
+| Subject Aliasing | same entity, different string | 27 | 0.898 | **0.468** | 0.071 | 0.044 |
+
+**The second column is the whole result.** A near-1 coefficient means nothing without a
+floor, and importing the **0.082** of §4.3 would be an assumption rather than a control:
+that number came from our probe set in a different prompt register. So every test prompt
+was scored a *second* time against a **different entry's** `k*` — partner drawn by a seeded
+derangement that rejects any partner sharing a token with the entry's own subject. Same
+prompt, same layer, same token index, same arithmetic; only the edit changes. The floor is
+**0.070**, tight enough that no criterion's quartile touches 0.16.<Margin>The failure this
+was built to catch: RippleEdits' prompts are templated, so if a template's keys overlap
+heavily regardless of subject, the coefficient would sit near 1 for any pairing and the
+whole table would be a fact about the measure. Pre-stated as the outcome that would
+withdraw it. It did not occur.<Evidence id="E-037" /></Margin>
+
+**The row to read is Compositionality I, at n = 1,981.** Their compositional tests probe a
+fact about a *different* entity, reached through the edited one — and they sit at **0.982**
+against a floor of 0.065. The reason is visible in the prompts: *"the name of the head of
+government of the place of death of **Leo Arons** is"* **names the edited subject
+verbatim**. A test designed to ask about a different entity still puts the edited subject
+in the prompt, and at that token it receives essentially the whole update.<Margin>We
+predicted a floor here and were wrong, then misdiagnosed our own error as a measurement
+artifact before checking their prompt text. The correction runs against us: the measurement
+was right and the prediction was wrong.<Evidence id="E-036" /></Margin>
+
+**What this does not establish.** Subject Aliasing is the one criterion that could separate
+a key on the *entity* from a key on the *string*, and it is the one we cannot report.
+Aliases with a genuinely different surface form sit at **0.302** against **1.000** for
+prompts that merely contain the canonical label — the 0.468 IQR above is those two
+populations in one row — but at n = 9, below a threshold of 30 fixed before the run. The
+gap looks decisive and is not reported as one.<Margin>An earlier run concluded the opposite
+from eight near-identical strings, its entry filter having required the canonical label to
+appear — which is exactly what an alias does not do. That sentence was withdrawn, and the
+threshold exists because of it.<Evidence id="E-036" /></Margin> And as everywhere above,
+this is **delivery**: §4.4 put delivery and effect 2.96× apart, and nothing here measures
+how far an answer moves.
+
+**Is that construction universal, or RippleEdits'?** We counted, because the answer decides
+whether the paragraph above is a finding or a note about one dataset. Over all four released
+MQuAKE <Cite id="zhong2023mquake" /> files — 51,258 multi-hop questions — the edited
+subject appears in **57.9%**. The aggregate is noise. Restricting to single-edit instances,
+where which hop carries the edit is unambiguous, the structure underneath it is exact:
+
+<p className="ocl-tablecap"><strong>Table 12.</strong> MQuAKE multi-hop questions containing the edited subject's string, by which hop of the chain carries the edit. Single-edit instances; four released files, fetched 2026-10-14.</p>
+
+| hop carrying the edit | questions | names the edited subject |
+| --- | --- | --- |
+| 1 | 6,861 | **6,861 — 100.0%** |
+| 2 | 13,977 | **0 — 0.0%** |
+| 3 | 2,313 | **0 — 0.0%** |
+| 4 | 216 | **0 — 0.0%** |
+
+Not approximately — across 23,367 questions, with no exception in either direction. The
+reason is structural: MQuAKE phrases a chain from its head, so an edit on hop 2 is an edit
+to an *intermediate* entity the question never mentions.<Margin>*"What is the capital city
+of the country that **Michael Feinstein** is a citizen of?"* — the edit is on *United States
+of America → capital*, and the question names Feinstein instead. MQuAKE-T's 0.4% is the same
+fact: 1,861 of its 1,868 single-edit instances edit hop 2 or later.<Evidence id="f-R-014">R-014</Evidence></Margin>
+
+**So neither reading we expected is right, and the real one is more useful than either.**
+RippleEdits' compositional tests always name the edited subject because its edits are always
+on the head entity — Table 11's 0.982 is not a quirk of our reading. MQuAKE's hop-2-and-later
+questions are the genuine different-entity test the field is assumed to have, and there are
+16,506 of them. **One benchmark contains both populations, separated exactly by a property
+recorded in its own metadata.** That makes MQuAKE a within-benchmark control nobody has to
+construct: hop-1 against hop-2+ questions, one dataset, one prompt register, one set of
+edits, with the cross-benchmark confound gone by construction. It is the measurement we
+would run next, and §7 item 2 is where we ask whether it is worth running.
+
 ## 5 · Every claim this project withdrew
 
 <p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
@@ -899,9 +987,18 @@ so the category has to be added deliberately or it vanishes in the rename._
    so a deep edit would reach these prompts far less. We were not claiming that, and now
    cannot.
 
-   **What we would like decided:** whether measuring the coefficient directly on
-   RippleEdits' own templates — no edits, no rewriting, a day's work — is a result the
-   field would act on, or a curiosity about an instrument.
+   **That measurement has since been run, and §4.6 is it.** On their edits and their
+   prompts: **0.969–1.000** for the same-entity criteria, **0.982** for the compositional
+   ones, against a floor of **0.070** built by scoring every prompt a second time against a
+   stranger's `k*`. The compositional row is the one we did not expect — their tests about a
+   *different* entity still name the edited subject verbatim, so the update arrives in full
+   at a prompt designed to probe something else.
+
+   **What we would like decided is now narrower and sharper:** is "a benchmark's
+   different-entity tests receive the whole update at a token they did not intend to be
+   load-bearing" a finding the field would act on — or the expected behaviour of a
+   subject-keyed method, interesting to nobody who already knows ROME is subject-keyed?
+   We cannot tell from inside, and it is the difference between a result and a restatement.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
 4. **Is it a contribution to show that a standard check cannot support the inference

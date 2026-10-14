@@ -3028,3 +3028,89 @@ reader must be able to see.
 
 **Artifacts:** _(on close)_
 **Closed:** —
+
+### E-039 · The within-benchmark control: MQuAKE hop-1 against hop-2+ questions
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-088 · follows [R-014], [E-037]
+
+**Description:**
+
+[E-037] measured 0.982 on RippleEdits' *different-entity* tests and the reason was that
+their prompts name the edited subject verbatim. [E-037]'s own control — a permuted `k*` —
+is a **synthetic** floor: it answers "would a stranger's edit reach this prompt" and not
+"does a real different-entity test escape its own edit". [R-014] found a benchmark that
+supplies the second control without anyone constructing it.
+
+**MQuAKE names the edited subject iff the edit is on hop 1**: 6,861 of 6,861 at hop 1,
+**0 of 16,506** at hops 2-4, exact in both directions, because it phrases a chain from its
+head and a hop-2 edit targets an entity the question never mentions.
+
+> chain: *Michael Feinstein → country of citizenship → **United States of America** →
+> capital → Washington, D.C.*; edit on hop 2; question: *"What is the capital city of the
+> country that Michael Feinstein is a citizen of?"*
+
+**So the two arms live in one dataset, one prompt register, one edit set, one relation
+distribution, differing in the single property under test.** The cross-benchmark confound
+that would make "compare RippleEdits to MQuAKE" unreadable is gone by construction, and
+nothing about the split was designed by us — it is read off `orig.triples_labeled`.
+
+**Method.** [E-036]'s measurement, unchanged: `k*` at the subject's last token of
+`requested_rewrite`'s prompt; coefficient at the subject's last token of the test prompt.
+Layer 5, Llama-3.1-8B. Single-edit instances only, so the hop attribution is unambiguous.
+
+**The position problem is the design question, and it must be settled before running.** A
+hop-2+ question does not contain the edited subject, so there is no "subject's last token"
+to read. Three candidate positions, and the ticket must pick one and say why:
+1. **Final token of the prompt.** What the model actually answers from. Defensible, and
+   not comparable to the hop-1 arm, which is read at the subject.
+2. **Final token in BOTH arms.** Comparable, and discards the pinning this project is
+   about.
+3. **Subject position where one exists, final token where it does not.** What a
+   benchmark's own scoring does, and the honest description of what a practitioner gets.
+
+**Pre-registered: run 2 as the headline and 3 alongside.** Arm 2 is the only one where a
+difference between hops cannot be an artifact of reading different positions; arm 3 is what
+anybody actually experiences. Arm 1 is dropped and recorded as dropped.
+
+**Pre-stated outcomes.** Median coefficient, hop-1 vs hop-2+, at the final token.
+
+- **ESCAPES** — hop-2+ sits **<= 0.30** while hop-1 sits **>= 0.70**. A genuine
+  different-entity test does escape the update, RippleEdits' 0.982 is a property of *its
+  construction* rather than of multi-hop testing, and §4.6 must say so prominently.
+- **NO ESCAPE** — hop-2+ sits **>= 0.70**. Then naming the subject is not what delivers the
+  update, [E-037]'s explanation of Table 11 is wrong, and the whole §4.6 reading needs
+  rewriting. **This is the outcome that costs us the most and it is live**: the final token
+  of *"...that Michael Feinstein is a citizen of?"* shares no prefix with the edit prompt,
+  but [E-019] measured 0.95 for subject-late probes at layer 5, so prefix-sharing is not
+  the only route to a high coefficient.
+- **BETWEEN** — report both medians and the gap; claim no band.
+
+**Confounds.**
+1. *Question form differs with hop depth.* A hop-4 question is longer and more clausal than
+   a hop-1 one. **Control by restricting the headline to 2-hop chains**, where hop-1 and
+   hop-2 edits produce questions of near-identical shape, and report 3- and 4-hop
+   separately.
+2. *MQuAKE's edits are not ROME edits.* We read `requested_rewrite` and compute `k*`
+   ourselves; no MQuAKE-reported number is used or comparable. Say so.
+3. *Hop-1 and hop-2 edits differ in relation distribution* — hop-2 subjects are
+   disproportionately countries. Report the relation breakdown; a country-heavy arm may
+   differ for reasons unrelated to hop.
+4. *Delivery, not effect* — [E-028d], 2.96x. Binding.
+
+**Deliverable.** One table: hop depth x (hop-1 edit, hop-2+ edit) median coefficient at the
+final token, with IQR, n, and the 2-hop-only row as the controlled comparison.
+
+**Scope.** MQuAKE-CF-3k, single-edit instances, layer 5, Llama-3.1-8B, coefficient only, no
+edit applied. Deferred: MQuAKE-CF's full 27,654, MQuAKE-T, other layers, any effect
+measurement.
+
+**Blockers:** none, but **do not queue until [E-038] closes** — both want the same NDIF
+budget and E-038 is the one with a pre-registered threshold waiting on it.
+
+**Artifacts:** _(on close)_
+**Closed:** —

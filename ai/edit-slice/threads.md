@@ -1494,3 +1494,47 @@ target's own prior; competition structure in the answer type ([E-025]'s displace
 **Resume cold:** per-subject propagation is in results/E-029-es-vs-propagation.json;
 per-subject deltas and keys are cached under results/cache/E014_*.pt.
 **Answer:** —
+### T-087 · Is the alias coefficient drop graded by surface distance, or binary?
+
+**Status:** open
+**Parent:** T-003
+**Opened:** 2026-10-14
+**Question:** [E-037] found different-surface aliases at 0.302 against 1.000 for
+canonical-substring ones, and the surface-distance distribution showed those nine
+prompts are two populations: 3 near-variants (`Robert Tennent` → `Rob Tennent`,
+SequenceMatcher 0.880) and 6 genuinely different strings (`Royal Ontario Museum`
+→ `ROM`, 0.261). If the coefficient falls *continuously* with surface distance,
+that is a stronger and more mechanistic claim than binary string-keying — the key
+would be a function of the token sequence, not of entity identity, with a
+measurable slope. [E-038] collects 371 such prompts and records the distance for
+each, so the regression is free once it lands. Confound: distance is a string
+metric and correlates with token count, which is what `subject_last_index` reads;
+separate those before claiming a slope.
+**Answer:** — pending [E-038]
+
+### T-088 · Do other propagation benchmarks also name the edited subject in their different-entity tests?
+
+**Status:** answered
+**Parent:** T-003
+**Opened:** 2026-10-14
+**Question:** §4.6's strongest row is Compositionality I: RippleEdits' tests about
+a *different* entity sit at 0.982 because their prompts name the edited subject
+verbatim — *"the name of the head of government of the place of death of Leo
+Arons is"*. **That is currently a fact about one benchmark, and it is the whole
+difference between a finding and a curiosity.** If MQuAKE, EditPropBench and
+RippleBench construct their multi-hop prompts the same way, the observation is
+about how the field builds propagation tests and is worth stating. If they do
+not, RippleEdits is an outlier and §4.6 shrinks to a note about one dataset. The
+check is [R-013]-shaped and costs the same: read the released prompts, look for
+the edited subject's string, count. No model required, no edits applied. This is
+the cheapest open item in the ledger and the one that most changes what §4.6 is
+allowed to say.
+**Answer:** —
+**Answer:** [R-014] — **neither band, and the real answer is better than both.** MQuAKE
+names the edited subject in a question **iff the edit is on the chain's first hop**:
+6,861 of 6,861 at hop 1, 0 of 16,506 at hops 2-4, exact in both directions. RippleEdits
+always edits the head entity, which is why its compositional tests always name the
+subject; MQuAKE edits intermediate entities too, and those questions never do. **One
+benchmark therefore contains both populations, separated by a property in its own
+metadata** — a within-benchmark control nobody has to construct. That is [E-039].
+RippleBench and EditPropBench remain uncounted; [R-014] stays open for them.
