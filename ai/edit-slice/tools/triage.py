@@ -46,9 +46,17 @@ CAUSES: list[tuple[str, str, str, str]] = [
     ("parked", "a whole chunk failed and the run parked before retrying",
      "the runners' stall loop — an outage, not a code fault",
      r"parking \d+"),
+    # `UNDERPOWERED` was anchored to a literal `VERDICT: ` prefix until [E-037], whose
+    # runner reports two arms and so writes `ARM B · UNDERPOWERED`. The guard fired
+    # exactly as pre-registered, the line went UNSORTED, and the loop stopped the queue
+    # on a healthy run. A triage vocabulary keyed to one runner's string convention is a
+    # vocabulary that will keep doing that, so the verdict words are matched on their own
+    # and the prefix forms are listed rather than assumed.
     ("gate-refused", "a pre-registered gate or verdict refused the run",
      "working as designed — the number is the finding",
-     r"GATE FAILED|VERDICT: (?:INFEASIBLE|UNMATCHED|NOT INTERPRETABLE|UNDERPOWERED)|CONTROL FAILS"),
+     r"GATE FAILED|CONTROL FAILS|"
+     r"(?:VERDICT:|ARM [A-Z] ·)?\s*\b(?:INFEASIBLE|UNMATCHED|NOT INTERPRETABLE|"
+     r"UNDERPOWERED|NO SEPARATION|NO FLOOR)\b"),
     ("confound-fired", "a pre-registered confound check fired",
      "working as designed — read the entry, not the log",
      r"CONFOUND \d+ FIRES|uninterpretable|NOT MATCHED"),
@@ -60,7 +68,7 @@ CAUSES: list[tuple[str, str, str, str]] = [
     # source, they are classified here so the unsorted list means what it says.
     ("verdict", "a pre-registered verdict or null branch fired",
      "working as designed — the entry in decisions.md is the finding",
-     r"VERDICT:|NULL branch|DEGENERATE:|is NOT supported"),
+     r"VERDICT:|ARM [A-Z] ·|NULL branch|DEGENERATE:|is NOT supported"),
     ("scope-caveat", "a scope limit the run states about its own number",
      "[O-004] — existence never a rate; read beside the result",
      r"existence claim|EXISTENCE-grade|is NOT a rate|not attributable to scale|"

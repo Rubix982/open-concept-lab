@@ -1,0 +1,23 @@
+2026-10-14 15:12:08,364 INFO     run_e037  run run_e037 -> logs/run_e037-2026-10-14-151208.log
+2026-10-14 15:12:08,365 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 193, "entries_used": 400, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 1, "seed": 1538, "subset": "recent", "ticket": "E-037"}
+2026-10-14 15:12:08,366 INFO     run_e037  400 usable entries, 193 skipped for want of a recoverable subject label
+2026-10-14 15:12:08,366 INFO     run_e037  1 candidate partners rejected for sharing a token with their own subject
+2026-10-14 15:12:14,447 INFO     run_e037  
+2026-10-14 15:12:14,449 INFO     run_e037  E-037 — RippleEdits' own prompts against their own k*, and against a stranger's
+2026-10-14 15:12:14,449 INFO     run_e037  layer 5 · 400 entries, 193 skipped · seed 1538 · DELIVERY, not effect
+2026-10-14 15:12:14,449 INFO     run_e037  
+2026-10-14 15:12:14,449 INFO     run_e037  criterion                     n    own k*     IQR permuted k*     IQR       gap
+2026-10-14 15:12:14,449 INFO     run_e037  Logical_Generalization      208     0.970   0.058       0.069   0.037     0.901
+2026-10-14 15:12:14,450 INFO     run_e037  Compositionality_I         1981     0.982   0.028       0.065   0.045     0.917
+2026-10-14 15:12:14,450 INFO     run_e037  Compositionality_II           3     0.991   0.019       0.109   0.081     0.882
+2026-10-14 15:12:14,450 INFO     run_e037  Subject_Aliasing             27     0.898   0.468       0.071   0.044     0.826
+2026-10-14 15:12:14,450 INFO     run_e037  Relation_Specificity       1818     0.969   0.046       0.075   0.048     0.894
+2026-10-14 15:12:14,450 INFO     run_e037  Forgetfulness               241     1.000   0.000       0.072   0.047     0.928
+2026-10-14 15:12:14,451 INFO     run_e037  
+2026-10-14 15:12:14,451 INFO     run_e037  ARM A · CONTROLLED — the permuted floor is 0.070 against same-entity 0.969-1.000. [E-036]'s reading survives with a control behind it, and the separation of 0.900 is the number that carries it.
+2026-10-14 15:12:14,451 INFO     run_e037  
+2026-10-14 15:12:14,451 INFO     run_e037  ARM B · Subject Aliasing, by surface form
+2026-10-14 15:12:14,451 INFO     run_e037    genuinely different string : n=9  median 0.302
+2026-10-14 15:12:14,451 INFO     run_e037    canonical label in prompt  : n=18  median 1.000
+2026-10-14 15:12:14,451 WARNING  run_e037  ARM B · UNDERPOWERED — n=9 is below the pre-registered 30. The median is 0.302 and is reported as such; no sentence about what the coefficient is keyed on. This threshold was fixed before the run because [E-036] drew a conclusion from 8 near-identical strings.
+2026-10-14 15:12:14,455 INFO     run_e037  written: results/E-037-ripple-floor-recent.json

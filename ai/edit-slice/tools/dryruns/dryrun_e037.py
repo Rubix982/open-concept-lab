@@ -30,14 +30,17 @@ class Args:
     subset, seed = "dry", 1538
 
 
-def build(same: float, alias: float, floor: float, n_alias_true: int, n: int = 20):
+def build(same: float, alias: float, floor: float, n_alias_true: int, n: int = 20,
+          alias_b: float | None = None):
     """Two entries, orthogonal k*, every coefficient placed exactly where asked."""
     e = [torch.tensor([1.0, 0.0]), torch.tensor([0.0, 1.0])]
     picked, keys, rows, partner = [], {}, {}, [1, 0]
     for i, subj in enumerate(("Alpha", "Beta")):
         tests, vecs = [], [e[i]]
         for c in CRIT:
-            val = alias if c == E.ALIAS else same
+            # alias_b lets the two entries disagree, which is what SPLIT BY SUBSET sees
+            val = ((alias if i == 0 else (alias_b if alias_b is not None else alias))
+                   if c == E.ALIAS else same)
             count = max(n_alias_true, 1) if c == E.ALIAS else n
             for j in range(count):
                 is_alias = c == E.ALIAS and j < n_alias_true
@@ -52,12 +55,12 @@ def build(same: float, alias: float, floor: float, n_alias_true: int, n: int = 2
     return picked, partner, keys, rows
 
 
-def run(picked, partner, keys, rows):
+def run(picked, partner, keys, rows, origin=None):
     buf = io.StringIO()
     root = logging.getLogger()
     root.handlers = [logging.StreamHandler(buf)]
     root.setLevel(logging.DEBUG)          # the verdict is a .warning on two branches
-    E.report(picked, partner, keys, rows, 0, 0, logging.getLogger("dry"), Args())
+    E.report(picked, partner, keys, rows, 0, 0, logging.getLogger("dry"), Args(), origin)
     return buf.getvalue()
 
 
@@ -82,6 +85,26 @@ def main() -> int:
             bad.append(f"{name}: wanted {want!r}, got "
                        f"{[x.strip() for x in out.splitlines() if 'ARM' in x]}")
 
+    # SPLIT BY SUBSET: the two entries sit in different subsets and disagree on aliases.
+    # [E-038] confound 1 — `random` supplies 314 of 371 usable aliases, so a pooled median
+    # that hides a split is the most likely way this measurement produces a confident
+    # wrong number.
+    out = run(*build(0.95, 0.30, 0.08, 40, alias_b=0.95), origin=["recent", "random"])
+    for want in ("SPLIT BY SUBSET", "PER SUBSET", "alias surface distance"):
+        ok = want in out
+        print(f"  {'ok  ' if ok else 'FAIL'}  {'subsets disagree on aliases':<36} -> {want}",
+              file=sys.stderr)
+        if not ok:
+            bad.append(f"{want} did not appear")
+
+    # and agreeing subsets must NOT raise the split warning
+    out = run(*build(0.95, 0.30, 0.08, 40, alias_b=0.30), origin=["recent", "random"])
+    ok = "SPLIT BY SUBSET" not in out
+    print(f"  {'ok  ' if ok else 'FAIL'}  {'subsets agree — no false split':<36} -> quiet",
+          file=sys.stderr)
+    if not ok:
+        bad.append("SPLIT BY SUBSET fired on agreeing subsets")
+
     # NO FLOOR: every entry unpartnered. Nothing else in the run changes.
     picked, _partner, keys, rows = build(0.95, 0.95, 0.08, 40)
     out = run(picked, [-1, -1], keys, rows)
@@ -102,7 +125,13 @@ def main() -> int:
 
     for b in bad:
         print(f"      {b}", file=sys.stderr)
-    stray = ROOT / "results" / "E-037-ripple-floor.json"
+    # Delete ONLY what this file writes. The subset is "dry" (see Args), so the path
+    # carries it. The first version unlinked `E-037-ripple-floor.json` — which became the
+    # real run's output the moment the runner started naming files by subset, and this
+    # dry-run deleted a 40-minute result. A cleanup that can name a real artifact is a
+    # cleanup that will eventually remove one.
+    stray = ROOT / "results" / f"E-037-ripple-floor-{Args.subset}.json"
+    assert "dry" in stray.name, stray
     if stray.exists():
         stray.unlink()
     return 1 if bad else 0

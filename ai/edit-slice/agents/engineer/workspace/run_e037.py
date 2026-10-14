@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import difflib
 import random
 import re
 import statistics as st
@@ -126,19 +127,30 @@ def pair_up(subjects: list[str], seed: int) -> tuple[list[int], int]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--subset", default="recent")
+    # Comma-separated for [E-038]: the aliasing arm needs every subset to clear its
+    # pre-registered n, and one pass over the union keeps a single permutation across
+    # all of them rather than three floors that cannot be pooled.
+    ap.add_argument("--subset", default="recent",
+                    help="one subset, or several comma-separated (recent,random,popular)")
     ap.add_argument("--n", type=int, default=400)
     ap.add_argument("--seed", type=int, default=1538)
     a = ap.parse_args()
 
-    entries = json.loads((ROOT / "data" / "ripple" / f"{a.subset}.json").read_text())
-    picked, skipped = [], 0
-    for e in entries:
+    subsets = [s.strip() for s in a.subset.split(",") if s.strip()]
+    entries = [(s, e) for s in subsets for e in
+               json.loads((ROOT / "data" / "ripple" / f"{s}.json").read_text())]
+    # Which subset each entry came from, carried alongside rather than inside the tuple so
+    # the dry-run's constructed entries stay the shape they were. Confound 1 of [E-038]:
+    # `random` supplies 314 of 371 usable aliases, so a pooled median is mostly one
+    # subset's and the per-subset figures must be reported first.
+    picked, origin, skipped = [], [], 0
+    for sub, e in entries:
         u = usable(e)
         if u is None:
             skipped += 1
             continue
         picked.append(u)
+        origin.append(sub)
         if len(picked) >= a.n:
             break
 
@@ -161,7 +173,7 @@ def main() -> None:
     tok = m.tokenizer
     pad = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
 
-    kcache = ROOT / "results" / "cache" / f"E037_keys_{a.subset}_L{LAYER}.pt"
+    kcache = ROOT / "results" / "cache" / f"E037_keys_{'+'.join(subsets)}_L{LAYER}.pt"
     keys: dict[str, torch.Tensor] = torch.load(kcache) if kcache.exists() else {}
     rows: dict[str, list] = {}
 
@@ -206,14 +218,21 @@ def main() -> None:
         if n % 20 == 0 or n == len(picked):
             log.info("  %d/%d entries", n, len(picked))
 
-    report(picked, partner, keys, rows, skipped, rejected, log, a)
+    report(picked, partner, keys, rows, skipped, rejected, log, a, origin)
 
 
-def report(picked, partner, keys, rows, skipped, rejected, log, a) -> None:
+def report(picked, partner, keys, rows, skipped, rejected, log, a,
+           origin: list[str] | None = None) -> None:
     own: dict[str, list[float]] = {c: [] for c in CRIT}
     perm: dict[str, list[float]] = {c: [] for c in CRIT}
     alias_true: list[float] = []
     alias_canon: list[float] = []
+    origin = origin or ["—"] * len(picked)
+    # per subset: alias-with-different-surface, alias-by-canonical-substring, same-entity,
+    # and the floor. Confound 3: a floor that differs by subset would mean prompt form
+    # varies in a way Arm A's single number hides.
+    by_sub: dict[str, dict[str, list[float]]] = {}
+    dists: list[tuple[float, str, str]] = []
 
     order = [f"{s}|{len(t)}" for s, _, t in picked]
     for i, (subj, _, tests) in enumerate(picked):
@@ -232,13 +251,27 @@ def report(picked, partner, keys, rows, skipped, rejected, log, a) -> None:
         pkey = order[j_part] if 0 <= j_part < len(order) else None
         pstar = keys[pkey][0].float() if pkey in keys else None
         pden = float(pstar @ pstar) if pstar is not None else None
-        for r, (c, _p, is_alias, _ix) in enumerate(rows[key], start=1):
+        sub = origin[i]
+        b = by_sub.setdefault(sub, {"alias": [], "alias_canon": [], "same": [], "floor": []})
+        for r, (c, p, is_alias, _ix) in enumerate(rows[key], start=1):
             v = float((K[r] @ kstar) / den)
             own[c].append(v)
             if c == ALIAS:
                 (alias_true if is_alias else alias_canon).append(v)
+                b["alias" if is_alias else "alias_canon"].append(v)
+                if is_alias:
+                    surf = surface_subject(p) or ""
+                    # A string test, not a semantic one — confound 2. `Rob Tennent` vs
+                    # `Robert Tennent` and `B-Line` vs `Hamilton LRT` both count as
+                    # different, and the distribution is what lets a reader see that.
+                    dists.append((difflib.SequenceMatcher(None, subj, surf).ratio(),
+                                  subj, surf))
+            elif c in SAME_ENTITY:
+                b["same"].append(v)
             if pstar is not None:
-                perm[c].append(float((K[r] @ pstar) / pden))
+                fv = float((K[r] @ pstar) / pden)
+                perm[c].append(fv)
+                b["floor"].append(fv)
 
     def iqr(v):
         v = sorted(v)
@@ -283,6 +316,38 @@ def report(picked, partner, keys, rows, skipped, rejected, log, a) -> None:
         log.info("ARM A · PARTIAL — the permuted floor is %.3f, between the pre-stated "
                  "bands. Report the table; claim no band.", floor)
 
+    if len(by_sub) > 1 or any(s != "—" for s in by_sub):
+        log.info("")
+        log.info("PER SUBSET — read this before the pooled figures below")
+        log.info("%-10s%8s%10s%10s%10s%10s", "subset", "n alias", "alias", "canon",
+                 "same", "floor")
+        amed = {}
+        for sub in sorted(by_sub):
+            b = by_sub[sub]
+            amed[sub] = st.median(b["alias"]) if b["alias"] else float("nan")
+            log.info("%-10s%8d%10s%10s%10s%10s", sub, len(b["alias"]),
+                     f"{amed[sub]:.3f}" if b["alias"] else "—",
+                     f"{st.median(b['alias_canon']):.3f}" if b["alias_canon"] else "—",
+                     f"{st.median(b['same']):.3f}" if b["same"] else "—",
+                     f"{st.median(b['floor']):.3f}" if b["floor"] else "—")
+        have = [v for v in amed.values() if v == v]
+        if len(have) > 1 and max(have) - min(have) > ALIAS_GAP:
+            log.warning("SPLIT BY SUBSET — alias medians span %.3f (%.3f-%.3f). Pool "
+                        "nothing; the pooled median below is dominated by whichever "
+                        "subset supplied the most prompts.", max(have) - min(have),
+                        min(have), max(have))
+
+    if dists:
+        near = sum(1 for r, _, _ in dists if r >= 0.8)
+        log.info("")
+        log.info("alias surface distance (SequenceMatcher ratio, 1.000 = identical): "
+                 "median %.3f · %d of %d at >= 0.8, i.e. near-variants",
+                 st.median([r for r, _, _ in dists]), near, len(dists))
+        for r, canon, surf in sorted(dists)[:3]:
+            log.info("    %.3f  %r -> %r", r, canon, surf)
+        for r, canon, surf in sorted(dists)[-3:]:
+            log.info("    %.3f  %r -> %r", r, canon, surf)
+
     log.info("")
     log.info("ARM B · Subject Aliasing, by surface form")
     log.info("  genuinely different string : n=%d  median %s", len(alias_true),
@@ -310,12 +375,14 @@ def report(picked, partner, keys, rows, skipped, rejected, log, a) -> None:
                  "key.", ALIAS_GAP, st.median(alias_true), st.median(same or [0]),
                  len(alias_true))
 
-    out = ROOT / "results" / "E-037-ripple-floor.json"
+    out = ROOT / "results" / f"E-037-ripple-floor-{'+'.join(a.subset.split(','))}.json"
     out.write_text(json.dumps({
         "ticket": "E-037", "layer": LAYER, "seed": a.seed, "subset": a.subset,
         "n_entries": len(picked), "skipped": skipped, "partner_rejections": rejected,
         "median_own": med_own, "median_permuted": med_perm, "floor": floor,
         "alias_different_surface": alias_true, "alias_canonical_substring": alias_canon,
+        "by_subset": {k: {m: v for m, v in d.items()} for k, d in by_sub.items()},
+        "alias_surface_distance": [[r, c, s] for r, c, s in dists],
         "per_criterion_own": own, "per_criterion_permuted": perm}, indent=1))
     log.info("written: %s", out.relative_to(ROOT))
 

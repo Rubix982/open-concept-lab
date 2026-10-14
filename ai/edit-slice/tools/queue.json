@@ -14,20 +14,22 @@
  ],
  "jobs": [
   {
-   "ticket": "E-037",
+   "ticket": "E-038",
    "runner": "agents/engineer/workspace/run_e037.py",
    "args": [
     "--subset",
-    "recent",
+    "recent,random,popular",
     "--n",
-    "400",
+    "2600",
     "--seed",
     "1538"
    ],
    "model": "meta-llama/Llama-3.1-8B",
-   "budget_h": 5,
-   "expect": [],
-   "_why": "Two arms, and the one that matters can withdraw [E-036]'s headline. ARM A \u00b7 NO SEPARATION says RippleEdits' prompts are templated enough that the coefficient is near-1 for almost any pairing, which makes 0.966-1.000 a fact about the measure rather than about their benchmark. ARM B's UNDERPOWERED branch is the expected one on `recent` \u2014 the alias n is small and the threshold was fixed at 30 before the run, because [E-036] drew a conclusion from 8 near-identical strings. `expect` stays empty: every branch here is worth waking for, and a first run of anything should not pre-approve its own outcome."
+   "budget_h": 8,
+   "expect": [
+    "UNDERPOWERED"
+   ],
+   "_why": "[E-037] Arm B produced the gap and refused it: different-surface aliases 0.302 against 1.000 for canonical-substring, at n=9 under a threshold of 30 fixed before the run. All three subsets hold 371 such prompts, so this answers it. `expect` lists UNDERPOWERED because that branch firing again would mean the selection is broken rather than the corpus thin \u2014 371 were counted offline \u2014 and it is the one outcome that should NOT wake anybody as a surprise. STRING-KEYED, ENTITY-KEYED and SPLIT BY SUBSET all escalate, which is right: each changes what [E-036]'s withdrawn sentence should have said."
   }
  ]
 }

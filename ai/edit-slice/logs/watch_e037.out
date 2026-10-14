@@ -1,0 +1,5 @@
+[13:34:10] 1 job(s) queued
+[13:34:10] E-037: preflight
+[13:34:24] E-037: running (budget 5.0h)
+[14:13:56] E-037: finished in 40 min
+[14:13:57] ESCALATED — 1 unsorted log line(s)** — a failure class not yet diagnosed. Written to out/reports/ESCALATION.md

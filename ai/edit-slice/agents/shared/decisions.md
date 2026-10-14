@@ -2609,3 +2609,97 @@ layer 5, one model, coefficient only. Existence per [O-004].
 
 **Artifacts:** agents/engineer/workspace/run_e036.py; results/E-036-ripple-coefficients.json;
 out/reports/E-036.html; logs/run_e036-2026-10-14-123016.log
+
+---
+
+## [E-037] Result: a floor measured on RippleEdits' own materials — 0.070 against 0.969–1.000
+
+_Date: 2026-10-14_
+
+**First, a correction to [E-036]'s Consequence paragraph.** It reads *"Compositionality
+measured at the **final** token rather than the original subject's"*, and that is the
+superseded instruction — it contradicts the correction appended four paragraphs above it in
+the same entry. Their compositional prompts name the edited subject verbatim, so the
+original subject's token was the right position all along and Compositionality needed no
+re-measurement. E-037 did not re-measure it. The paragraph is left standing because this
+surface is append-only; it is wrong, and this sentence is where that is recorded.
+
+**Decision: [E-036]'s reading survives, and it now has a control.** Every test prompt was
+scored a second time against a **different entry's** `k*` — partner by a seed-1538
+derangement that rejects any partner sharing a token with the entry's own subject (1
+rejected). Same prompt, same layer, same token index, same arithmetic. Only the edit
+changes.
+
+```
+criterion                     n    own k*     IQR  permuted k*     IQR       gap
+Logical_Generalization      208     0.970   0.058        0.069   0.037     0.901
+Compositionality_I         1981     0.982   0.028        0.065   0.045     0.917
+Compositionality_II           3     0.991   0.019        0.109   0.081     0.882
+Subject_Aliasing             27     0.898   0.468        0.071   0.044     0.826
+Relation_Specificity       1818     0.969   0.046        0.075   0.048     0.894
+Forgetfulness               241     1.000   0.000        0.072   0.047     0.928
+```
+
+**The permuted floor is 0.070 and it is tight** (IQR 0.037–0.048 on every criterion). The
+pre-stated failure mode — that RippleEdits' templated prompt forms would give a near-1
+coefficient for almost any pairing, which would have withdrawn [E-036]'s headline — did not
+occur. **Separation 0.900.** [E-018]'s 0.082, measured on our own probe set in another
+prompt register, turns out to have been close; it is now measured here instead of borrowed,
+which is the difference between a control and an assumption.
+
+**The sharpest row is Compositionality I at n=1,981.** Their different-entity tests — a fact
+about another entity reached *through* the edited one — sit at 0.982 against a 0.065 floor.
+The correction appended to [E-036] said this was the strongest form of the concern; with a
+floor behind it, that now stands on a measurement rather than on an observation about
+prompt strings.
+
+### Arm B declined its own conclusion
+
+Aliases with a genuinely different surface form sit at **0.302**; prompts that merely
+*contain* the canonical label sit at **1.000**. A 0.70 gap that looks decisively
+string-keyed — and **n=9, below the 30 pre-registered before the run, so no such sentence
+was drawn.** Subject_Aliasing's IQR of **0.468**, against 0.019–0.058 everywhere else, is
+that split visible in the aggregate row: two populations, not one.
+
+This is [E-036]'s mistake refused rather than repeated. That run concluded "keyed on the
+ENTITY" from 8 near-identical strings; this one holds a 0.302-vs-1.000 gap and says nothing,
+because the threshold was fixed in the ticket before any number existed.
+
+### What the harness did, and the one thing it got wrong
+
+Forty minutes, 400 entries, zero retries, fully unattended. The loop then **stopped the
+queue and escalated** — correctly in mechanism, wrongly in classification. `triage.py`
+matched `UNDERPOWERED` only behind a literal `VERDICT: ` prefix, and E-037 reports two arms,
+so it writes `ARM B · UNDERPOWERED`. A guard that fired exactly as designed read as an
+undiagnosed failure class. **A triage vocabulary keyed to one runner's string convention
+will keep doing that**, so the verdict words are now matched on their own with the prefix
+forms listed rather than assumed. Re-triaged: 0 unsorted across every log in the repo.
+
+### Consequence
+
+**[E-038] powers Arm B and nothing else.** The n=9 was the 400-entry cap, not the corpus —
+`recent` at full depth holds 37, and all three subsets hold **371**:
+
+```
+recent     1,948 entries   1,303 usable    37 aliases with a different surface
+random     1,922 entries     779 usable   314
+popular      885 entries     496 usable    20
+ALL        4,755 entries   2,578 usable   371
+```
+
+Arm A needs no re-running: a floor of 0.070 with an IQR under 0.05 at n>4,000 readings is
+not going to move. E-038 is the aliasing question alone, at a power that can answer it.
+
+**Scope.** `recent.json`, 400 entries, 193 skipped for want of a recoverable subject label,
+layer 5, Llama-3.1-8B, coefficient only, no edit applied. **Delivery, not effect** — [E-028d]
+put those 2.96× apart. Existence per [O-004]: this is a claim about these prompts, never a
+rate over the benchmark.
+
+**Artifacts:** agents/engineer/workspace/run_e037.py; tools/dryruns/dryrun_e037.py;
+results/E-037-ripple-floor.json; logs/run_e037-2026-10-14-133426.log
+
+_Artifact path corrected 2026-10-14:_ the result file is
+`results/E-037-ripple-floor-recent.json`. The runner now takes comma-separated subsets for
+[E-038], so the output and key-cache names carry the subset list — a multi-subset run must
+not overwrite a single-subset result, and a `recent,random,popular` run must not read a
+`recent`-only key cache and call it complete.

@@ -2824,7 +2824,7 @@ agents/shared/decisions.md -> "[E-036] Result"
 
 ### E-037 · A floor measured on RippleEdits' materials, and the aliasing arm E-036 never ran
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-14
@@ -2906,6 +2906,125 @@ IQR and n. The claim is carried by the **gap between the two columns**, not by e
 
 **Scope.** `recent.json`, layer 5, Llama-3.1-8B, coefficient only, no edits applied.
 Deferred: the other two subsets, other layers, any effect measurement.
+
+**Result (2026-10-14).** ARM A · **CONTROLLED**, in 40 minutes with zero retries, fully
+unattended.
+
+```
+criterion                     n    own k*     IQR  permuted k*     IQR       gap
+Logical_Generalization      208     0.970   0.058        0.069   0.037     0.901
+Compositionality_I         1981     0.982   0.028        0.065   0.045     0.917
+Compositionality_II           3     0.991   0.019        0.109   0.081     0.882
+Subject_Aliasing             27     0.898   0.468        0.071   0.044     0.826
+Relation_Specificity       1818     0.969   0.046        0.075   0.048     0.894
+Forgetfulness               241     1.000   0.000        0.072   0.047     0.928
+```
+
+The permuted floor is **0.070**, tight (IQR 0.037-0.048), against same-entity 0.969-1.000 —
+**separation 0.900**. The pre-stated NO SEPARATION outcome, which would have withdrawn
+[E-036]'s headline, did not occur. Compositionality I at n=1,981 sits at 0.982 against that
+floor: their different-entity tests receive essentially the whole update, now measured
+against a control rather than observed about prompt strings.
+
+**Arm B declined its conclusion.** Different-surface aliases 0.302, canonical-substring
+1.000 — a 0.70 gap that looks string-keyed, at **n=9 against a threshold of 30 fixed before
+the run**. Subject_Aliasing's IQR of 0.468, against 0.019-0.058 elsewhere, is that split
+visible in the aggregate. No sentence drawn.
+
+**Two defects found in this ticket's own tooling, both fixed.**
+1. `triage.py` matched `UNDERPOWERED` only behind a literal `VERDICT: ` prefix, so this
+   runner's `ARM B · UNDERPOWERED` went unsorted and the loop stopped the queue on a
+   healthy run. The verdict words are now matched on their own.
+2. `dryrun_e037.py` cleaned up `results/E-037-ripple-floor.json` — which became the real
+   run's output once the runner started naming files by subset, and the dry-run deleted a
+   40-minute result. Recovered in 22s from the key cache, identical numbers. The cleanup
+   now names only the path it writes and asserts `dry` is in it.
+
+**Artifacts:** run_e037.py; tools/dryruns/dryrun_e037.py;
+results/E-037-ripple-floor-recent.json; logs/run_e037-2026-10-14-133426.log;
+agents/shared/decisions.md -> "[E-037] Result"
+**Closed:** 2026-10-14
+
+### E-038 · Is the coefficient keyed on the entity or on the string? At a power that can answer it
+
+**Status:** open
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-003 · follows [E-037]
+
+**Description:**
+
+[E-037] Arm B produced the gap and refused the conclusion: aliases with a genuinely
+different surface form sit at **0.302**, prompts merely containing the canonical label at
+**1.000**, at **n=9** against a threshold of 30 fixed before the run. This ticket is that
+arm alone, at a power that can answer it.
+
+**The n=9 was the 400-entry cap, not the corpus.** Counted over all three released subsets
+with [E-037]'s own `usable()`:
+
+```
+recent     1,948 entries   1,303 usable    37 aliases with a different surface
+random     1,922 entries     779 usable   314
+popular      885 entries     496 usable    20
+ALL        4,755 entries   2,578 usable   371
+```
+
+371 against a threshold of 30. `random` alone clears it eleven times over, and the
+imbalance across subsets is itself worth reporting rather than pooling away.
+
+**Arm A is not re-run.** A floor of 0.070 with an IQR under 0.05 across more than 4,000
+readings is not going to move, and re-measuring it is the inward work [T-065] names. It
+comes along for free — the same pass computes it — but no claim rests on repeating it.
+
+**Method.** `run_e037.py --subset recent,random,popular --n 2600 --seed 1538`. One pass over
+the union, so a single permutation spans all three and the floors pool legitimately. Key
+cache and output are named by the subset list, so this cannot read [E-037]'s `recent`-only
+cache and call it complete.
+
+**Pre-stated outcomes.** Median coefficient of different-surface aliases against the
+same-entity median, layer 5, Llama-3.1-8B, at n >= 30.
+
+- **STRING-KEYED** — aliases fall **>= 0.15** below the same-entity median. The coefficient
+  is a property of the surface form, which means a benchmark that renames its subject is
+  measuring a different key, and [E-037]'s 0.302 was real rather than a small-sample
+  artifact.
+- **ENTITY-KEYED** — aliases within 0.15 of same-entity. Then [E-037]'s 0.302 was nine
+  prompts behaving unlike their population, and **the direction [E-036] originally claimed
+  is right for the wrong reason** — worth saying plainly, since this ticket exists because
+  that claim was withdrawn.
+- **SPLIT BY SUBSET** — the three subsets disagree by more than 0.15. Report per subset and
+  pool nothing; `random` supplying 314 of 371 means a pooled median is mostly one subset's.
+
+**Confounds.**
+1. *`random` dominates the pooled n (314 of 371).* **Report the median per subset before
+   the pooled one**, and let the pooled figure stand only if the three agree. This is the
+   confound most likely to produce a confident wrong number here.
+2. *"Genuinely different surface form" is a string test, not a semantic one.* `Rob Tennent`
+   vs `Robert Tennent` differs by three characters; `B-Line` vs `Hamilton LRT` shares none.
+   Both count as different. Record the edit-distance distribution alongside the median so a
+   reader can see what the population is, and claim no graded effect this run cannot
+   separate.
+3. *The floor is pooled across subsets.* Verify it per subset too; a floor that differs by
+   subset would mean prompt form varies in a way Arm A's single number hides.
+4. *Delivery, not effect* — [E-028d], 2.96x. Unchanged and binding.
+
+**Deliverable.** One table: subset x (different-surface alias median, canonical-substring
+median, same-entity median, permuted floor, n). The claim is carried by the first column
+against the third, per subset.
+
+**Scope.** All three subsets, layer 5, Llama-3.1-8B, coefficient only, no edit applied.
+~2,578 entries at [E-037]'s observed rate is roughly 4.5 hours. Deferred: other layers,
+other models, any effect measurement.
+
+**Blockers:** none. The per-subset table (confound 1) and the surface-distance
+distribution (confound 2) were added to `report()` on 2026-10-14 and exercised by
+`dryrun_e037.py`, including a SPLIT BY SUBSET case and a no-false-split case. Re-running
+[E-037] from its key cache shows them on real data: 3 of 9 aliases are near-variants
+(ratio >= 0.8, `Robert Tennent` -> `Rob Tennent`) and the rest are acronyms or alternate
+names (`Royal Ontario Museum` -> `ROM`, 0.261), which is the population confound 2 said a
+reader must be able to see.
 
 **Artifacts:** _(on close)_
 **Closed:** —
