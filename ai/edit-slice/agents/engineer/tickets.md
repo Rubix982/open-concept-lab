@@ -2722,7 +2722,7 @@ and a FOUND result licenses a follow-up design, never a claim.
 
 ### E-036 · How much of a ROME update reaches RippleEdits' own test prompts?
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-14
@@ -2791,6 +2791,21 @@ tests are reached mechanically.
 **Scope.** `recent.json`, layer 5, Llama-3.1-8B, coefficient only, no edits applied.
 Existence per [O-004].
 
-**Blockers:** none. Mostly unattended — one trace per entry.
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-14).** UNDIFFERENTIATED, in 19 minutes with zero retries, fully
+unattended. **Three criteria hold:** same-entity prompts receive 0.966–1.000 of the update
+at layer 5 (n=1,200), with Forgetfulness at exactly 1.000, IQR 0.000.
+
+**Two criteria could not have answered.** Compositionality's coefficient was read at the
+ORIGINAL subject's token inside a longer phrase — confound 3 of this ticket, named before
+the run and shipped anyway — so 0.983 measures the wrong position. Subject Aliasing was
+selected against by the entry filter, which required the canonical label to appear in the
+prompt and so excluded 90 of 96 aliasing prompts, keeping only aliases containing the
+canonical form. The run's "keyed on the ENTITY, not the string" line is **withdrawn**: it
+is the conclusion a sample of near-identical strings manufactures.
+
+Every gate passed. A construct-validity error is invisible to all of them.
+
+**Status:** closed
+**Artifacts:** run_e036.py; results/E-036-ripple-coefficients.json; out/reports/E-036.html;
+agents/shared/decisions.md -> "[E-036] Result"
+**Closed:** 2026-10-14

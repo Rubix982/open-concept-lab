@@ -2522,3 +2522,77 @@ ticket as the falsification condition so it gets checked rather than accreted.
 
 **Artifacts:** tools/ (preflight.py, triage.py, report.py, watch.py, queue.json,
 dryruns/dryrun_e033.py, README.md)
+
+---
+
+## [E-036] Result: UNDIFFERENTIATED — and two of the six criteria could not have answered
+
+_Date: 2026-10-14 · Llama-3.1-8B, layer 5, 200 RippleEdits entries, 95 skipped · 19 min_
+
+First end-to-end run under the harness: queued, preflighted in 15s, run, triaged, reported,
+no intervention. Zero retries. The verdict fired as pre-registered. **The verdict is also
+substantially an artifact of how two criteria were measured, and the honest entry leads
+with that.**
+
+| criterion | n | median | what it was supposed to test |
+| --- | ---: | ---: | --- |
+| Forgetfulness | 121 | **1.000** | same entity, negated relation |
+| Relation Specificity | 958 | **0.969** | same entity, different relation |
+| Logical Generalization | 121 | **0.966** | same entity, inverse/symmetric |
+| Compositionality I | 978 | 0.983 | *a different entity* — **not tested, see below** |
+| Compositionality II | 2 | 0.982 | n = 2 |
+| Subject Aliasing | **8** | 0.867 | *a different string* — **not tested, see below** |
+
+### What holds
+
+**RippleEdits' same-entity test prompts receive essentially the whole update at layer 5** —
+0.966 to 1.000 across three criteria and n = 1,200, on the benchmark's own prompts, with
+`k*` from the benchmark's own edits. Forgetfulness sits at exactly **1.000** with an IQR of
+**0.000**: those prompts share the edit prompt's prefix to the subject's last token, so the
+coefficient is analytically 1 and the measurement reproduces it.
+
+That is the mechanical concern, confirmed for those three criteria. It is about **delivery**
+and says nothing about how far an answer moves ([E-028d]: those differ by 2.96×).
+
+### What does not hold, and why
+
+**Compositionality I cannot test its own prediction, and the ticket said so before the
+run.** Its prompts reach a *different* entity through a hop — *"the head of government of
+the place of death of Leo Arons"* — but the original subject is still present, and the
+coefficient was read at **its** last token. Of course it matches `k*`; it *is* the subject's
+key. Confound 3 of the ticket named this exactly and the run shipped anyway. The 0.983
+is a measurement of the wrong position and is not evidence about different entities.
+
+**Subject Aliasing was not underpowered by accident — it was selected against.** The entry
+filter required the canonical label to appear in the prompt. An aliasing test uses a
+*different string for the same entity*, so the filter excluded **90 of 96** aliasing prompts
+in the sampled entries, keeping only aliases that *contain* the canonical label ("Martin
+Leo Arons" ⊃ "Leo Arons") — the least different aliases available.
+
+**And the run drew a conclusion from that biased sample.** It printed *"the coefficient is
+keyed on the ENTITY, not the string"*, which is precisely the conclusion a sample of
+near-identical strings would manufacture. **That sentence is withdrawn.** It was the
+measurement the ticket called the one that mattered most and the one we were least sure of,
+and the filter guaranteed it could only come out one way.
+
+### What this says about the harness
+
+It worked, and it did not catch this. Preflight passed 6/6, the dry-run exercised all four
+verdict branches, triage found zero unsorted lines, and the verdict was correctly
+pre-registered — and none of that could see that two criteria were being asked a question
+their measurement could not answer. **Gates catch broken code and broken process. A
+construct-validity error passes every one of them**, which is [E-026]'s lesson arriving in
+a new costume: the thing that checks whether a measurement can answer its question is a
+person reading the numbers.
+
+### Consequence
+
+[E-037] re-runs both criteria properly: Compositionality measured at the **final** token
+rather than the original subject's, and Aliasing matched on the entry's alias list rather
+than the canonical label. The three same-entity criteria stand and do not need re-running.
+
+**Scope.** `recent.json`, 200 entries, 95 skipped for want of a recoverable subject label,
+layer 5, one model, coefficient only. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e036.py; results/E-036-ripple-coefficients.json;
+out/reports/E-036.html; logs/run_e036-2026-10-14-123016.log

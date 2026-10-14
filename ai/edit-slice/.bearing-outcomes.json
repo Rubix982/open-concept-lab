@@ -12,6 +12,12 @@
    "verdict": "false-positive",
    "note": "read janaan's critique ledger as evidence nobody was checking",
    "date": "2026-10-14"
+  },
+  {
+   "check": "premise_under_priced_work",
+   "verdict": "caught",
+   "note": "fired on \u00a77 of the live paper after R-013 was recorded but the write-up was not fixed",
+   "date": "2026-10-14"
   }
  ]
 }
