@@ -2790,3 +2790,78 @@ recoverable subject label, layer 5, Llama-3.1-8B, coefficient only, no edit appl
 **Artifacts:** agents/engineer/workspace/run_e037.py;
 results/E-037-ripple-floor-recent+random+popular.json;
 logs/run_e037-2026-10-14-222439.log; logs/e-038-stderr.log
+
+---
+
+## [E-039] Result: the pre-registered headline arm was uninformative, and the secondary arm is the finding
+
+_Date: 2026-10-15_
+
+**The headline comparison returned a null because I picked a position with no variance in
+it.** This ticket pre-registered the FINAL-token arm as the headline on the grounds that it
+was "the only reading where a hop difference cannot be an artifact of reading different
+positions." That reasoning was correct and incomplete: a comparison immune to a positional
+artifact is worthless if the quantity is at the floor for everyone, and I did not check
+that before fixing the design.
+
+```
+arm                          n     FINAL     IQR     NATURAL     IQR
+hop 1 (names the subject)  639     0.027   0.015       0.933   0.072
+hop 2+ (does not)          900     0.055   0.039       0.055   0.039
+```
+
+At the final token of a multi-hop question **neither arm receives anything** — 0.027 and
+0.055, both at or below the 0.069 floor [E-038] measured on a different corpus by a
+different construction. VERDICT: BETWEEN, and the gap is **−0.028**: hop-2+ is marginally
+*higher*, which is noise. Confound 3 is controlled and agrees — on the relations appearing
+in both arms, P27 reads **0.024 against 0.024** at n=312 and n=51.
+
+### What the run actually found
+
+**Within one prompt, the subject token receives 0.933 and the final token 0.027.** Same
+question, same layer, same forward pass, a factor of 35 apart.
+
+So the structure [R-014] predicted holds, through the arm registered as secondary:
+
+> hop-1 questions, which name the edited subject, receive **0.933** at that subject's
+> token. hop-2+ questions, which name no edited subject, receive **0.055** — the floor —
+> at every position available to them.
+
+**This is reported as a measurement and not as a verdict.** The ESCAPES/NO ESCAPE bands
+were registered against FINAL, and promoting NATURAL to headline after seeing the numbers
+is exactly the move this project's pre-registration exists to prevent. The bands are not
+claimed; the two medians are.
+
+### The caveat this puts on §4.6, which matters more than the result
+
+Table 11's **0.982** for RippleEdits' compositional tests is read at the *subject's* token.
+[E-039] shows that the final token of a multi-hop prompt sits at ~0.03 — so by extension,
+**the 0.982 is a statement about a position that is not where the model produces its
+answer.**
+
+**That does not mean the edit fails to reach the answer, and the entry must not be read
+that way.** The coefficient measures *direct* delivery at layer 5. An edit alters the
+subject token's representation there, and that alteration reaches the final position
+through attention in layers 6 and above — a path this measure does not see at all. What
+[E-039] establishes is narrower and still worth stating:
+
+> The coefficient is a property of **a token**, not of a prompt. "This prompt receives 98%
+> of the update" is shorthand for "one token in it does", and the answer position is not
+> that token.
+
+This is §4.4's delivery-versus-effect gap reappearing as a *positional* gap rather than a
+magnitude one, and it is the sharper form. §4.6 is being amended to say so.
+
+### Convergent evidence for the floor
+
+Worth recording because it was not designed: [E-038]'s floor is a **permuted `k*`** on
+RippleEdits (0.069). [E-039]'s is a **different token** on MQuAKE (0.027–0.055). Different
+corpus, different construction, different mechanism of being unrelated — same range. The
+floor is not an artifact of how either control was built.
+
+**Scope.** MQuAKE-CF-3k, 513 single-edit instances (213 hop-1, 300 hop-2), 1,907 skipped as
+multi-edit or with an unlocatable hop, two-hop chains only, layer 5, Llama-3.1-8B,
+coefficient only, no edit applied. **Delivery, not effect.** Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e039.py; tools/dryruns/dryrun_e039.py;
+results/E-039-mquake-hops-MQuAKE-CF-3k.json; logs/run_e039-2026-10-15-010314.log

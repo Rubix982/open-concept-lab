@@ -819,7 +819,33 @@ questions are the genuine different-entity test the field is assumed to have, an
 recorded in its own metadata.** That makes MQuAKE a within-benchmark control nobody has to
 construct: hop-1 against hop-2+ questions, one dataset, one prompt register, one set of
 edits, with the cross-benchmark confound gone by construction. It is the measurement we
-would run next, and §7 item 2 is where we ask whether it is worth running.
+would run next.
+
+**We ran it, and it put a caveat on this whole section that is worth more than its own
+result.** Measured on MQuAKE's two-hop chains at the same layer: a question that names the
+edited subject receives **0.933** at that subject's token, and one that does not receives
+**0.055** — the floor — at every position it has. The structure holds. But the arm we had
+pre-registered as the headline, reading both at the **final** token, returned
+0.027 against 0.055: *neither* arm receives anything where the answer is produced.<Margin>A
+design error worth recording: the final token was chosen because it is the only reading
+immune to a positional artifact, which is true and incomplete. Nothing in our own lenses
+asked whether the chosen measure *varies* before it was fixed, and a comparison with no
+variance cannot discriminate.<Evidence id="E-039" /></Margin>
+
+Within a single prompt, then, the subject token and the final token are a factor of **35**
+apart. So every number in Table 11 — the 0.982 included — is a property of **a token, not
+of a prompt**, and the answer position is not that token.
+
+**This does not say the edit fails to reach the answer, and the table must not be read that
+way.** The coefficient measures *direct* delivery at layer 5; an altered subject
+representation still reaches the final position through attention at layers 6 and above,
+by a path this measure cannot see. What it does say is that "this prompt receives 98% of
+the update" is shorthand for "one token in it does" — which is §4.4's delivery-versus-effect
+gap in its positional form, and the sharper statement of it.
+
+One thing we did not design for: the floor has now been built two independent ways — a
+permuted `k*` on RippleEdits (**0.069**) and a different token on MQuAKE (**0.027–0.055**).
+Different corpus, different construction, same range.
 
 ## 5 · Every claim this project withdrew
 
@@ -1009,6 +1035,13 @@ so the category has to be added deliberately or it vanishes in the rename._
    load-bearing" a finding the field would act on — or the expected behaviour of a
    subject-keyed method, interesting to nobody who already knows ROME is subject-keyed?
    We cannot tell from inside, and it is the difference between a result and a restatement.
+
+   **And a second question we would rather have asked than answered.** §4.6 ends by showing
+   the coefficient is a property of a token rather than of a prompt, with the subject and
+   final positions a factor of 35 apart in the same forward pass. Everything this paper
+   measures is delivery at one token. Is a delivery measure that cannot see the attention
+   path to the answer position worth building on — or is the honest next instrument one
+   that measures arrival at the position the model actually reads?
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
 4. **Is it a contribution to show that a standard check cannot support the inference

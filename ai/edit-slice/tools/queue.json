@@ -14,22 +14,5 @@
     "",
     "A job stays queued until a person removes it \u2014 the loop re-reads the file and will re-run anything still in it. [E-038] was removed 2026-10-15 after its result was read and recorded; leaving it in made the loop re-run a finished experiment and re-escalate its verdict every 15 minutes, which blocked [E-039] behind it."
   ],
-  "jobs": [
-    {
-      "ticket": "E-039",
-      "runner": "agents/engineer/workspace/run_e039.py",
-      "args": [
-        "--file",
-        "MQuAKE-CF-3k.json",
-        "--n",
-        "600",
-        "--chain-len",
-        "2"
-      ],
-      "model": "meta-llama/Llama-3.1-8B",
-      "budget_h": 3,
-      "expect": [],
-      "_why": "The within-benchmark control [R-014] found. MQuAKE names the edited subject iff the edit is on hop 1, so hop-1 and hop-2 questions differ in that one property inside one dataset. NO ESCAPE is the outcome that costs us most \u2014 it would make [E-037]'s reading of Table 11 wrong and force a rewrite of \u00a74.6 \u2014 and it is live, because [E-019] measured 0.95 for subject-LATE probes at this layer, so prefix-sharing is not the only route to a high coefficient. `expect` empty: first run, and every branch is worth waking for."
-    }
-  ]
+  "jobs": []
 }

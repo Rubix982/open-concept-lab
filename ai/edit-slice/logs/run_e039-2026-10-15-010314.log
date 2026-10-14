@@ -2,3 +2,55 @@
 2026-10-15 01:03:14,767 INFO     run_e039  config {"arms": "FINAL (headline, both arms at the final token); NATURAL (subject where present)", "chain_len_filter": 2, "file": "MQuAKE-CF-3k.json", "instances": 513, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "skipped": 1907, "ticket": "E-039"}
 2026-10-15 01:03:14,767 INFO     run_e039  513 single-edit instances, 1907 skipped (multi-edit or unlocatable hop)
 2026-10-15 01:03:14,768 INFO     run_e039  by hop carrying the edit: {1: 213, 2: 300}
+2026-10-15 01:04:45,530 INFO     run_e039    20/513 instances
+2026-10-15 01:06:06,476 INFO     run_e039    40/513 instances
+2026-10-15 01:07:28,615 INFO     run_e039    60/513 instances
+2026-10-15 01:08:55,075 INFO     run_e039    80/513 instances
+2026-10-15 01:10:19,513 INFO     run_e039    100/513 instances
+2026-10-15 01:11:47,734 INFO     run_e039    120/513 instances
+2026-10-15 01:13:16,501 INFO     run_e039    140/513 instances
+2026-10-15 01:14:44,956 INFO     run_e039    160/513 instances
+2026-10-15 01:16:11,780 INFO     run_e039    180/513 instances
+2026-10-15 01:17:41,678 INFO     run_e039    200/513 instances
+2026-10-15 01:19:22,306 INFO     run_e039    220/513 instances
+2026-10-15 01:20:57,537 INFO     run_e039    240/513 instances
+2026-10-15 01:22:24,123 INFO     run_e039    260/513 instances
+2026-10-15 01:23:53,703 INFO     run_e039    280/513 instances
+2026-10-15 01:25:27,646 INFO     run_e039    300/513 instances
+2026-10-15 01:26:58,401 INFO     run_e039    320/513 instances
+2026-10-15 01:28:28,239 INFO     run_e039    340/513 instances
+2026-10-15 01:29:52,840 INFO     run_e039    360/513 instances
+2026-10-15 01:31:31,222 INFO     run_e039    380/513 instances
+2026-10-15 01:32:58,359 INFO     run_e039    400/513 instances
+2026-10-15 01:34:28,441 INFO     run_e039    420/513 instances
+2026-10-15 01:36:10,412 INFO     run_e039    440/513 instances
+2026-10-15 01:37:39,450 INFO     run_e039    460/513 instances
+2026-10-15 01:39:02,038 INFO     run_e039    480/513 instances
+2026-10-15 01:40:32,250 INFO     run_e039    500/513 instances
+2026-10-15 01:41:26,560 INFO     run_e039    513/513 instances
+2026-10-15 01:41:26,560 INFO     run_e039  
+2026-10-15 01:41:26,560 INFO     run_e039  E-039 — MQuAKE, hop-1 against hop-2+, at layer 5. DELIVERY, not effect.
+2026-10-15 01:41:26,561 INFO     run_e039  513 instances, 1907 skipped
+2026-10-15 01:41:26,561 INFO     run_e039  
+2026-10-15 01:41:26,561 INFO     run_e039  arm                          n     FINAL     IQR     NATURAL     IQR
+2026-10-15 01:41:26,561 INFO     run_e039  hop 1 (names subj)         639     0.027   0.015       0.933   0.072
+2026-10-15 01:41:26,562 INFO     run_e039  hop 2+ (does not)          900     0.055   0.039       0.055   0.039
+2026-10-15 01:41:26,562 INFO     run_e039  
+2026-10-15 01:41:26,562 INFO     run_e039  CONTROLLED — 2-hop chains only, where both arms' questions have the same shape
+2026-10-15 01:41:26,562 INFO     run_e039  arm                          n     FINAL     IQR
+2026-10-15 01:41:26,563 INFO     run_e039  hop 1                      639     0.027   0.015
+2026-10-15 01:41:26,563 INFO     run_e039  hop 2                      900     0.055   0.039
+2026-10-15 01:41:26,563 INFO     run_e039  
+2026-10-15 01:41:26,563 INFO     run_e039  RELATION-MATCHED — relations appearing in BOTH arms (confound 3)
+2026-10-15 01:41:26,564 INFO     run_e039  relation        n hop1      hop1   n hop2+     hop2+
+2026-10-15 01:41:26,564 INFO     run_e039  P136                 9     0.043         3     0.027
+2026-10-15 01:41:26,564 INFO     run_e039  P140                 6     0.034         6     0.022
+2026-10-15 01:41:26,564 INFO     run_e039  P159                15     0.045        24     0.045
+2026-10-15 01:41:26,564 INFO     run_e039  P170                27     0.022         6     0.030
+2026-10-15 01:41:26,565 INFO     run_e039  P19                  6     0.025        18     0.027
+2026-10-15 01:41:26,565 INFO     run_e039  P20                  9     0.025         6     0.022
+2026-10-15 01:41:26,565 INFO     run_e039  P27                312     0.024        51     0.024
+2026-10-15 01:41:26,565 INFO     run_e039  P35                  3     0.017        99     0.077
+2026-10-15 01:41:26,566 INFO     run_e039  
+2026-10-15 01:41:26,566 INFO     run_e039  VERDICT: BETWEEN — hop-1 0.027, hop-2+ 0.055, gap -0.028. Report both; claim no band.
+2026-10-15 01:41:26,571 INFO     run_e039  written: results/E-039-mquake-hops-MQuAKE-CF-3k.json

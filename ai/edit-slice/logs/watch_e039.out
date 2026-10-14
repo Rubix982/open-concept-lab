@@ -1,3 +1,6 @@
 [01:02:58] 1 job(s) queued
 [01:02:58] E-039: preflight
 [01:03:12] E-039: running (budget 3.0h)
+[01:41:27] E-039: finished in 38 min
+[01:41:27] E-039: ok — verdict ['BETWEEN'], report written
+[01:41:27] queue worked; sleeping 15 min before re-reading it

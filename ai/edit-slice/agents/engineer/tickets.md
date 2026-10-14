@@ -3031,7 +3031,7 @@ reader must be able to see.
 
 ### E-039 · The within-benchmark control: MQuAKE hop-1 against hop-2+ questions
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-14
@@ -3125,5 +3125,40 @@ empty 2-hop row), all six preflight gates pass. Queued behind [E-038] so the loo
 when the budget frees; if [E-038] escalates the queue stops and this does not run, which is
 the intended behaviour and not a bug.
 
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-15).** VERDICT: **BETWEEN** — and the pre-registered headline arm was
+uninformative, for a reason this ticket should have caught at design time.
+
+```
+arm                          n     FINAL     IQR     NATURAL     IQR
+hop 1 (names the subject)  639     0.027   0.015       0.933   0.072
+hop 2+ (does not)          900     0.055   0.039       0.055   0.039
+```
+
+FINAL was chosen as the headline because it is the only reading immune to a positional
+artifact. True, and incomplete: **at the final token of a multi-hop question neither arm
+receives anything** — 0.027 and 0.055, at or below [E-038]'s 0.069 floor. A comparison with
+no variance in it cannot discriminate, and nothing in the ten lenses asked whether the
+chosen measure *varies* before it was fixed. Confound 3 agrees: P27 reads 0.024 against
+0.024 at n=312 and n=51.
+
+**The finding is in the secondary arm, and is reported as a measurement rather than a band**
+— promoting NATURAL to headline after seeing the numbers is the move pre-registration
+exists to prevent. hop-1 questions receive **0.933** at the edited subject's token; hop-2+
+questions receive **0.055** at every position they have. Within one prompt the subject token
+and the final token are a factor of **35** apart.
+
+**The consequence for §4.6 is larger than the result.** Table 11's 0.982 is read at the
+subject's token, and this run shows the final token of such a prompt sits near the floor —
+so the coefficient is a property of **a token**, not of a prompt, and the answer position is
+not that token. It does *not* follow that the edit fails to reach the answer: the measure
+sees direct layer-5 delivery only, and the path through attention at layers 6+ is invisible
+to it. §4.4's delivery-versus-effect gap, in its positional form.
+
+**Unplanned corroboration.** [E-038]'s floor is a permuted `k*` on RippleEdits (0.069);
+this one is a different token on MQuAKE (0.027–0.055). Different corpus, different
+construction — same range.
+
+**Artifacts:** run_e039.py; tools/dryruns/dryrun_e039.py;
+results/E-039-mquake-hops-MQuAKE-CF-3k.json; logs/run_e039-2026-10-15-010314.log;
+agents/shared/decisions.md -> "[E-039] Result"
+**Closed:** 2026-10-15
