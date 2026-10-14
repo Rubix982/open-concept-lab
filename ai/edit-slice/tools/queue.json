@@ -14,18 +14,20 @@
  ],
  "jobs": [
   {
-   "ticket": "E-036",
-   "runner": "agents/engineer/workspace/run_e036.py",
+   "ticket": "E-037",
+   "runner": "agents/engineer/workspace/run_e037.py",
    "args": [
     "--subset",
     "recent",
     "--n",
-    "200"
+    "400",
+    "--seed",
+    "1538"
    ],
    "model": "meta-llama/Llama-3.1-8B",
-   "budget_h": 3,
+   "budget_h": 5,
    "expect": [],
-   "_why": "Every verdict here is a surprise worth waking for. MECHANICAL would be the project's one outward-facing result; NOT MECHANICAL would close that claim honestly and is the more useful outcome; UNDIFFERENTIATED would say the measure cannot speak to their taxonomy. `expect` is deliberately empty \u2014 the right setting for a first run of anything."
+   "_why": "Two arms, and the one that matters can withdraw [E-036]'s headline. ARM A \u00b7 NO SEPARATION says RippleEdits' prompts are templated enough that the coefficient is near-1 for almost any pairing, which makes 0.966-1.000 a fact about the measure rather than about their benchmark. ARM B's UNDERPOWERED branch is the expected one on `recent` \u2014 the alias n is small and the threshold was fixed at 30 before the run, because [E-036] drew a conclusion from 8 near-identical strings. `expect` stays empty: every branch here is worth waking for, and a first run of anything should not pre-approve its own outcome."
   }
  ]
 }

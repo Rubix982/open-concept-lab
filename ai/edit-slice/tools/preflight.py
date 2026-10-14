@@ -118,9 +118,13 @@ def gate_cache_completeness(g: Gate, path: str, fatal: bool = True) -> None:
         return g.check("cache completeness tested", True, "no .pt cache loaded") and None
     # Any form that compares what is wanted against what is loaded counts. The first
     # version recognised only `<= set(...)` and refused a correct `want - set(...)` test,
-    # which is how a gate teaches people to route around it.
+    # which is how a gate teaches people to route around it. The third form was added for
+    # [E-037], whose cache is per-entry: the completeness question there is not "are all
+    # keys present" but "does THIS key hold as many rows as the selection wants", and the
+    # gate refused a correct length test for want of a matching pattern. Same lesson.
     tests = bool(re.search(r"<=\s*set\(|issubset|len\(cached\)\s*>=|set\(cached\)|"
-                           r"want\s*-\s*set\(|missing\s*=|-\s*set\(\w+\)", src))
+                           r"want\s*-\s*set\(|missing\s*=|-\s*set\(\w+\)|"
+                           r"len\(\w+\[[^\]]+\]\)\s*[!=<>]=", src))
     detail = ("" if tests else "torch.load present with no subset/length test — "
                                 "a partial cache will read as complete")
     if tests or fatal:

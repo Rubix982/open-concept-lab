@@ -25,6 +25,12 @@ DATA = os.path.join(ROOT, "data", "ripple")
 CRIT = ["Logical_Generalization", "Compositionality_I", "Compositionality_II",
         "Subject_Aliasing", "Relation_Specificity", "Forgetfulness"]
 
+# The shapes a materialised subject takes in this corpus. Lifted out of `subject_label`
+# for [E-037], which needs the subject AS WRITTEN IN ONE PROMPT rather than the entry's
+# longest candidate — an aliasing prompt carries a different string by design.
+PATS = (r" of (.+?) is$", r" of (.+?) are$", r"^Is (.+?) still alive\?$",
+        r" of (.+?), which", r" which (.+?) is associated")
+
 
 def subject_label(entry: dict) -> str | None:
     """The materialised subject, taken as the LONGEST candidate this entry offers.
@@ -42,8 +48,7 @@ def subject_label(entry: dict) -> str | None:
                 p = t.get("prompt")
                 if not isinstance(p, str):
                     continue
-                for pat in (r" of (.+?) is$", r" of (.+?) are$", r"^Is (.+?) still alive\?$",
-                            r" of (.+?), which", r" which (.+?) is associated"):
+                for pat in PATS:
                     m = re.search(pat, p)
                     if m and m.group(1) and m.group(1)[0].isupper():
                         cands.add(m.group(1).strip())

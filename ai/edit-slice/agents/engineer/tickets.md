@@ -2795,13 +2795,24 @@ Existence per [O-004].
 unattended. **Three criteria hold:** same-entity prompts receive 0.966–1.000 of the update
 at layer 5 (n=1,200), with Forgetfulness at exactly 1.000, IQR 0.000.
 
-**Two criteria could not have answered.** Compositionality's coefficient was read at the
-ORIGINAL subject's token inside a longer phrase — confound 3 of this ticket, named before
-the run and shipped anyway — so 0.983 measures the wrong position. Subject Aliasing was
-selected against by the entry filter, which required the canonical label to appear in the
-prompt and so excluded 90 of 96 aliasing prompts, keeping only aliases containing the
-canonical form. The run's "keyed on the ENTITY, not the string" line is **withdrawn**: it
-is the conclusion a sample of near-identical strings manufactures.
+**One criterion could not have answered, and the correction on the other runs the other
+way.** Subject Aliasing was selected against by the entry filter, which required the
+canonical label to appear in the test prompt. That filter and the alias-recovering one are
+near-disjoint: of the aliasing prompts in the 200 entries used, it kept 8 by canonical
+substring and missed 7 whose surface form is a genuinely different string (`Royal Ontario
+Museum` -> `ROM`, `Hamilton LRT` -> `B-Line`). The run's "keyed on the ENTITY, not the
+string" line is **withdrawn**: it is the conclusion a sample of near-identical strings
+manufactures.
+
+*Corrected 2026-10-14.* This paragraph's first version also said Compositionality's 0.983
+"measures the wrong position". That was wrong, and the correction is worse for us.
+RippleEdits' compositional prompts **name the edited subject verbatim** — *"the name of the
+head of government of the place of death of Leo Arons is"* — so reading the coefficient at
+that token is the right position, and confound 3 fired on a prompt form that does not
+exist here. The *prediction* of a floor was what failed. Their different-entity tests still
+reach the edited subject's token and still receive essentially the whole update there.
+E-036 therefore measured **no different-entity floor at all** — nothing in this run is a
+control. [E-037] supplies one.
 
 Every gate passed. A construct-validity error is invisible to all of them.
 
@@ -2809,3 +2820,92 @@ Every gate passed. A construct-validity error is invisible to all of them.
 **Artifacts:** run_e036.py; results/E-036-ripple-coefficients.json; out/reports/E-036.html;
 agents/shared/decisions.md -> "[E-036] Result"
 **Closed:** 2026-10-14
+
+
+### E-037 · A floor measured on RippleEdits' materials, and the aliasing arm E-036 never ran
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-003 · follows [E-036]
+
+**Description:**
+
+[E-036] reported three same-entity criteria at 0.966-1.000 and read that as mechanical
+delivery. It has **one defect and one hole**, and the hole is the larger of the two.
+
+**The hole: there was no control.** Every criterion E-036 measured — Compositionality
+included — reads the coefficient at a token that is the edited subject, because
+RippleEdits' compositional prompts name the edited subject verbatim (*"the name of the head
+of government of the place of death of Leo Arons is"*). So 0.983 was not a different-entity
+reading and nothing in that run bounds the measure from below. A coefficient of 0.97 is
+only evidence if a mismatched pair scores much lower **on these same prompts**. [E-018]'s
+0.082 was measured on our own probe set, in a different prompt register, and importing it
+here is an assumption, not a floor.
+
+**The defect: Subject Aliasing was selected against.** `usable()` keeps a test prompt only
+when the canonical subject label appears in it, which is precisely the condition an alias
+violates. In the 200 entries E-036 used, that filter kept 8 aliasing prompts by canonical
+substring and missed 7 whose surface form is a genuinely different string. Measured on the
+raw file, the alias actually used is recoverable from the prompt's own `" of X is"` tail in
+52 of 52 cases.
+
+**Two arms.**
+
+*Arm A — the permuted floor.* For every test prompt, compute its coefficient a second time
+against a **different entry's** `k*`, partner drawn by a fixed-seed permutation over
+entries. Same prompts, same layer, same positions, same arithmetic; only the edit it is
+measured against changes. This is [E-018]'s construction rebuilt from RippleEdits' own
+materials, which is what makes it a control rather than a borrowed number. It costs **zero
+additional remote calls** — the keys are already read inside each entry's single trace and
+need only be persisted (float16, `results/cache/E037_keys_*.pt`).
+
+*Arm B — aliasing, selected correctly.* Extract the alias from the test prompt itself with
+the `ripple_forms` pattern set, and read `subject_last_index` at **that string**. `k*` is
+unchanged — still the canonical subject's key from the entry's own edit prompt. The
+comparison is then genuinely "same entity, different string", which is what the criterion
+is for. Entries whose aliasing prompts were only kept by canonical substring are reported
+separately, not merged.
+
+**Pre-stated outcomes.** Median coefficient at layer 5, Llama-3.1-8B, `recent`, n=400
+entries (double E-036's, for the aliasing arm's sake).
+
+- **CONTROLLED** — the permuted floor sits **<= 0.30** while same-entity criteria stay
+  **>= 0.80**. E-036's reading survives with a control behind it, and the separation is the
+  number that carries the claim.
+- **NO SEPARATION** — the permuted floor sits **>= 0.60**. Then RippleEdits' prompt forms
+  are similar enough that the coefficient is near-1 for almost any pairing, **E-036's
+  headline is withdrawn**, and the finding becomes a fact about the measure's resolution on
+  formulaic corpora. This is a real possibility: their prompts are templated, and a
+  template's keys may overlap heavily regardless of subject.
+- **PARTIAL** — floor between 0.30 and 0.60. Report the separation in nats-free raw form
+  and claim no band.
+
+On Arm B, independently:
+- **STRING-KEYED** — alias median falls **>= 0.15** below the same-entity median. The
+  coefficient is a property of the surface form.
+- **ENTITY-KEYED** — alias median within 0.15 of same-entity. Warrants a sentence only if
+  n >= 30 alias prompts with a genuinely different surface form; below that, report n and
+  claim nothing. E-036's version of this line was withdrawn for exactly this reason.
+
+**Confounds.**
+1. *Alias n is small and that is the binding constraint.* Pre-register the n threshold
+   above rather than discovering it after the medians are in view. [O-004]: existence only.
+2. *The permutation must not pair an entry with a near-duplicate subject.* Reject a partner
+   whose subject string shares a token with the entry's own, and log how many were
+   rejected.
+3. *Prompt length differs between arms.* The floor is read at the same token index in the
+   same prompt as the real coefficient, so length is held exactly — this confound is
+   controlled by construction, and the entry should say so rather than leave it unnamed.
+4. *Delivery, not effect* — [E-028d], 2.96x. Unchanged and still binding.
+
+**Deliverable.** One table: criterion x (own `k*`, permuted `k*`) median coefficient, with
+IQR and n. The claim is carried by the **gap between the two columns**, not by either one.
+
+**Scope.** `recent.json`, layer 5, Llama-3.1-8B, coefficient only, no edits applied.
+Deferred: the other two subsets, other layers, any effect measurement.
+
+**Artifacts:** _(on close)_
+**Closed:** —
