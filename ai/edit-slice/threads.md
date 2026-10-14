@@ -1237,7 +1237,7 @@ saves at the subject index. Note [O-008] — unroll saves, no `for` loop inside 
 
 ### T-079 · Does the decayed coefficient at depth actually produce less displacement?
 
-**Status:** active
+**Status:** answered — **DENY: the coefficient bounds delivery, not effect**
 **Parent:** T-075
 **Opened:** 2026-09-20
 **Question:** The joint [T-075] explicitly left open: *"Whether the decayed coefficient at
@@ -1406,7 +1406,7 @@ GPT-J, 70B and 405B ([E-032]).
 
 ### T-084 · Is a weak edit at depth under-optimisation, or a property of depth?
 
-**Status:** open
+**Status:** answered — **under-optimisation, not depth**
 **Parent:** T-079
 **Opened:** 2026-09-20
 **Question:** [E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against

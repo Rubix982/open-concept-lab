@@ -12,5 +12,17 @@
   "model   : for the preflight smoke test",
   "expect  : verdicts that are EXPECTED. Anything else stops the queue and escalates."
  ],
- "jobs": []
+ "jobs": [
+  {
+   "ticket": "E-035",
+   "runner": "agents/engineer/workspace/run_e035.py",
+   "args": [],
+   "model": "meta-llama/Llama-3.1-8B",
+   "budget_h": 2,
+   "expect": [
+    "NOTHING BEATS IT"
+   ],
+   "_why": "T-086's candidate sweep. Only NOTHING BEATS IT is pre-registered as unsurprising \u2014 it is what the ticket expects. FOUND or MULTICOLLINEAR would be a real surprise and should wake someone, which is the point of running it at all."
+  }
+ ]
 }

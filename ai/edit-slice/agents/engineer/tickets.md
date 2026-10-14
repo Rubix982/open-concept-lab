@@ -2645,3 +2645,75 @@ are now executed rather than checked for.
 **Artifacts:** tools/preflight.py, triage.py, report.py, watch.py, queue.json,
 dryruns/dryrun_e033.py, README.md; agents/shared/decisions.md -> "[E-034]"
 **Closed:** 2026-10-14
+
+---
+
+### E-035 · What sets how far an edit travels? A pre-registered candidate sweep
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+**Thread:** T-086
+
+**Description:**
+
+[T-086] is the one question nothing in this record predicts. [E-029] measured belief
+displacement and ROME's efficacy margin against propagation at Spearman **0.419 and
+0.425** — about 18% of variance, and near-identical to each other, so they are one weak
+view rather than two. The coefficient cannot help **by construction**: it is pinned at
+exactly 1.000 across precisely the probes whose outcomes differ most, so it has zero
+variance where the outcome varies. [R-012] then withdrew the only candidate explanation on
+the table — Ravfogel et al. place typed attributes outside their setting, and their
+per-relation block structure predicts the opposite of [E-033].
+
+So the thread has no candidate. **This ticket does not invent one; it eliminates.** Seven
+quantities are measured against the same 42 subjects' propagation, six of them from data
+already on disk.
+
+**Candidates**, with why each is plausible and what it would mean:
+
+| # | candidate | why | source |
+| --- | --- | --- | --- |
+| 1 | `‖Δv‖` | a bigger update should move more | cached |
+| 2 | `‖k*‖` | the key's magnitude scales the delivered vector | cached |
+| 3 | `‖Δv‖ / ‖k*‖` | [E-028c] reported these per arm; never per subject | cached |
+| 4 | baseline `log P(true)` | a confident belief may resist, or have further to fall | [E-029] |
+| 5 | target prior `log P(target)` | an edit toward a likely answer may travel cheaply | [E-026b] |
+| 6 | subject token count | longer names spread the key over more positions | tokenizer |
+| 7 | residual-stream norm at the subject position, layer 5 | the delta competes against what is already there — the one candidate needing the network | 42 reads |
+
+**Pre-stated outcomes.** Against [E-029]'s incumbent ρ = 0.425.
+
+- **FOUND** — some candidate reaches **ρ ≥ 0.60** *and* beats the incumbent by **≥ 0.15**.
+  [T-086] gets its first real candidate and a follow-up ticket designs the causal test.
+- **NOTHING BEATS IT** — no candidate exceeds **ρ = 0.50**. Then propagation magnitude is
+  set by something in none of: update size, key size, their ratio, the belief's strength,
+  the target's prior, the subject's length, or the local residual norm. That is a sharper,
+  more useful statement of [T-086] than it currently has, and it is the outcome to expect.
+- **MULTICOLLINEAR** — two or more candidates exceed 0.50 but correlate with each other
+  above **0.80**. Then they are one quantity wearing several names and the entry must say
+  which, rather than reporting a winner.
+
+**Confounds.**
+1. *Seven tests on 42 subjects.* At ρ = 0.50, n = 42, a single test is around p = 0.001,
+   but seven of them are not. **Report the Holm-adjusted threshold beside every ρ** and
+   treat any candidate clearing only the unadjusted bar as not clearing it.
+2. *The outcome is itself noisy.* Propagation is a control-differenced drop with its own
+   spread. A ceiling on any achievable ρ follows, and it is not 1.0. **Report the
+   outcome's own spread** so a modest ρ is read against what is reachable.
+3. *Candidates 1–3 are algebraically related.* `‖Δv‖/‖k*‖` is a function of the other two,
+   so it cannot be independent evidence. Report them as a group, and never count the ratio
+   as a third hit.
+
+**Deliverable.** One table: candidate, ρ, Holm threshold, whether it clears, and its
+correlation with the incumbent. One sentence naming the verdict.
+
+**Scope.** Layer 5, 42 subjects, one model, one relation — the [E-029] set, so the
+incumbent is measured on exactly the same subjects. Correlational: nothing here is causal,
+and a FOUND result licenses a follow-up design, never a claim.
+
+**Blockers:** none.
+**Artifacts:** _(on close)_
+**Closed:** —

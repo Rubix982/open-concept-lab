@@ -116,7 +116,11 @@ def gate_cache_completeness(g: Gate, path: str, fatal: bool = True) -> None:
     loads_pt = bool(re.search(r"torch\.load\(", src))
     if not loads_pt:
         return g.check("cache completeness tested", True, "no .pt cache loaded") and None
-    tests = bool(re.search(r"<=\s*set\(|issubset|len\(cached\)\s*>=|set\(cached\)", src))
+    # Any form that compares what is wanted against what is loaded counts. The first
+    # version recognised only `<= set(...)` and refused a correct `want - set(...)` test,
+    # which is how a gate teaches people to route around it.
+    tests = bool(re.search(r"<=\s*set\(|issubset|len\(cached\)\s*>=|set\(cached\)|"
+                           r"want\s*-\s*set\(|missing\s*=|-\s*set\(\w+\)", src))
     detail = ("" if tests else "torch.load present with no subset/length test — "
                                 "a partial cache will read as complete")
     if tests or fatal:
