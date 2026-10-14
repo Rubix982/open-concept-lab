@@ -1688,6 +1688,39 @@ a[class*="tagWithCount"]:hover {
 .ocl-home__solved li { display: flex; flex-direction: column; padding: 0.55rem 0; border-top: 1px solid var(--ocl-rule); font-size: 1rem; }
 .ocl-home__solved li span { font-family: var(--ocl-apparatus); font-size: 0.74rem; color: var(--ocl-ink-faint); }
 
+/* Agentic: three cards, each fronted by real terminal output. The sample is the
+   point — these tools have no UI, so a screenshot would have to be invented. */
+.ocl-home__agents { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+
+.ocl-home__agent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1.1rem 1.15rem 1.2rem;
+  border: 1px solid var(--ocl-rule);
+  background: var(--ocl-paper-raised);
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-home__agent:hover { border-color: var(--ocl-ink-muted); text-decoration: none; }
+
+.ocl-home__agentSample {
+  margin: 0 0 0.6rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--ocl-paper);
+  border: 1px solid var(--ocl-rule);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-home__agentTitle { font-size: 1.08rem; }
+.ocl-home__agentWhat { font-size: 0.95rem; line-height: 1.55; color: var(--ocl-ink-muted); }
+.ocl-home__agentMeta { font-family: var(--ocl-apparatus); font-size: 0.72rem; color: var(--ocl-ink-faint); }
+
 /* Reading and Built side by side. */
 .ocl-home__split {
   display: grid;
@@ -1734,6 +1767,7 @@ a[class*="tagWithCount"]:hover {
   .ocl-home__stats > div:nth-child(n + 4) { border-top: 1px solid var(--ocl-rule); }
   .ocl-home__earlier { border-left: 0; }
   .ocl-home__earlier li { padding-left: 0; }
+  .ocl-home__agents { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 640px) {
@@ -1743,6 +1777,7 @@ a[class*="tagWithCount"]:hover {
   .ocl-home__stats > div:nth-child(n + 3) { border-top: 1px solid var(--ocl-rule); }
   .ocl-home__tracks { grid-template-columns: minmax(0, 1fr); }
   .ocl-home__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ocl-home__agents { grid-template-columns: minmax(0, 1fr); }
   .ocl-home__kicker { display: none; }
 }
 

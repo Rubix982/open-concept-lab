@@ -4,6 +4,7 @@ import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
+import { AGENTIC, type Agentic } from "@site/src/data/agentic";
 
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -80,6 +81,37 @@ function BuiltTile({ page }: { page: BuiltPage }): ReactNode {
   );
 }
 
+// The sample is real terminal output, trimmed to its first lines for the card. The
+// full run is on the tool's own page — a home-page card that invented plausible
+// output would be exactly the fabrication /agentic says it refuses.
+//
+// `blurb` is a written one-liner rather than a truncation of `what`: the first
+// sentence of the harness's description runs 287 characters against bearing's 53,
+// which gives three cards of wildly different height for no reason a reader cares
+// about.
+function AgenticCard({
+  href,
+  title,
+  blurb,
+  sample,
+  meta,
+}: {
+  href: string;
+  title: string;
+  blurb: string;
+  sample: string;
+  meta?: string;
+}): ReactNode {
+  return (
+    <Link className="ocl-home__agent" to={href}>
+      <pre className="ocl-home__agentSample">{sample.split("\n").slice(0, 7).join("\n")}</pre>
+      <span className="ocl-home__agentTitle">{title}</span>
+      <span className="ocl-home__agentWhat">{blurb}</span>
+      {meta ? <span className="ocl-home__agentMeta">{meta}</span> : null}
+    </Link>
+  );
+}
+
 export default function Home(): ReactNode {
   const { writing, papers, built, projects, labs } = usePluginData("ocl-lab-data") as LabData;
 
@@ -122,6 +154,7 @@ export default function Home(): ReactNode {
               <Link to="/notebook">Notebook</Link>
               <Link to="/labs">Labs</Link>
               <Link to="/reading">Reading</Link>
+              <Link to="/agentic">Agentic</Link>
               <Link to="/shipped">Shipped</Link>
               <Link to="/built">Built</Link>
               <Link to="/about">About</Link>
@@ -292,6 +325,36 @@ export default function Home(): ReactNode {
                 What each one taught →
               </Link>
             </div>
+          </div>
+        </section>
+
+        <section className="ocl-home__section">
+          <SectionHead
+            title="Agentic"
+            kicker="what keeps the work moving when nobody is at the desk"
+            href="/agentic"
+            linkLabel="All of it"
+          />
+          <div className="ocl-home__agents">
+            {AGENTIC.map((item: Agentic) => (
+              <AgenticCard
+                key={item.name}
+                href={`/agentic/${item.name}`}
+                title={item.title}
+                blurb={item.blurb}
+                sample={item.sample}
+                meta={item.where}
+              />
+            ))}
+            <AgenticCard
+              href="/agentic/practice"
+              title="The practice, and its limits"
+              blurb={
+                "The boundary between what a loop may own and what a person must, and an " +
+                "honest account of what none of it can catch."
+              }
+              sample={"A green harness is not a\nsound experiment.\n\nE-036 passed every gate\nand still measured two of\nsix criteria in ways that\ncould not answer their own\nquestions."}
+            />
           </div>
         </section>
 

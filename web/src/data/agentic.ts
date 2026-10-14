@@ -10,6 +10,7 @@ export type Agentic = {
   name: string; // the page is /agentic/<name>
   title: string;
   what: string;
+  blurb: string; // one line, for the home-page card — not a truncation of `what`
   where: string; // path in this repository
   since: string;
   sample: string; // real output, pasted — not a mock
@@ -24,6 +25,9 @@ export const AGENTIC: Agentic[] = [
       "record and asks the questions that correct course — what has never been varied, " +
       "whether the work has turned inward, whether the write-up still matches the " +
       "findings. It measures drift. It has no taste, and says so.",
+    blurb:
+      "Reads a project's own record and asks the questions that correct course. " +
+      "It measures drift, and has no taste.",
     where: "projects/bearing/",
     since: "14 October 2026",
     sample: `$ python -m bearing ai/edit-slice
@@ -46,6 +50,9 @@ export const AGENTIC: Agentic[] = [
       "before anything touches the network, a triage that sorts every failure by cause so " +
       "only the undiagnosed one needs a person, a report page readable mid-run, and a loop " +
       "that escalates on exactly four things. It owns execution. A person owns judgement.",
+    blurb:
+      "Gates that refuse before anything touches the network, a triage that sorts " +
+      "failures by cause, and a loop that escalates on exactly four things.",
     where: "ai/edit-slice/tools/",
     since: "14 October 2026",
     sample: `$ python tools/watch.py
