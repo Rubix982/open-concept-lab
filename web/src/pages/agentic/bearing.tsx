@@ -122,7 +122,43 @@ export default function Bearing(): ReactNode {
           <p>
             So it keeps a track record of what each check has actually caught, and names
             the ones that never help. A check with no catch after several firings is
-            overhead.
+            overhead — the falsification clause, made mechanical so it gets checked rather
+            than quietly accreted.
+          </p>
+          <pre className="ocl-ag__sample">{`$ python -m bearing ai/edit-slice --track
+
+  check                       caught  false+  verdict
+  named_after_runs                 0       1  too early to say
+  still_checking                   0       1  too early to say
+  summary_staleness                1       0  earns its place
+  unchecked_universal              1       0  earns its place
+  premise_under_priced_work        1       0  earns its place`}</pre>
+          <p>
+            <strong>The worst failure so far was not a false alarm — it was a check that
+            punished the fix it existed to ask for.</strong> One check asks whether a
+            write-up's sections are named after claims or after the runs that produced
+            them. A heading reading <em>“What the edit <strong>does</strong> to the rest of
+            the subject”</em> was rewritten to <em>“An edit <strong>displaces</strong>
+            probes whose answer type <strong>matches</strong> the injected value”</em> —
+            strictly more claim-shaped — and the score got <em>worse</em>. Its verb list
+            held auxiliaries only, and <code>does</code> was on it while
+            <code> displaces</code> was not.
+          </p>
+          <p>
+            A sibling check was wrong about <em>when</em> four separate times, and three of
+            the four returned a plausible date rather than an error: a pickaxe that fired
+            only on the commit creating a heading and never on edits to the text beneath
+            it; a line-range built with Python's regex escaping where git wants POSIX; a
+            date comparison with day granularity, so a summary rewritten in the morning
+            read as stale by the afternoon; and a path that broke wherever a symlink sat
+            between the repo root and the file — which silently fell back to the first bug
+            and so survived the two fixes in between.
+          </p>
+          <p>
+            Only the last was caught by a test, and only because that test builds a real
+            repository with a known history instead of asserting on a string.
+            <strong> A check that returns a plausible wrong answer is worse than one that
+            crashes</strong>, and nothing but an external fact distinguishes them.
           </p>
         </section>
 
