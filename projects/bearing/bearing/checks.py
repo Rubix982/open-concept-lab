@@ -172,7 +172,7 @@ def priced_and_unrun(r: Record) -> dict:
 
 
 #: How a project says it was wrong. Vocabulary differs by project and the first version
-#: of `still_checking` knew only edit-slice's — it read janaan's critique ledger, which is
+#: of `still_checking` knew only edit-slice's — it read the second project's correction ledger, which is
 #: ENTIRELY a record of corrections, as evidence that nobody was checking. A check written
 #: in one project's dialect will libel every project that speaks another.
 CORRECTION = (r"withdraw|retract|was wrong|corrected|superseded|reversed|"

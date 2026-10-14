@@ -3,7 +3,7 @@
     python3 tools/report.py E-033                 out/reports/E-033.html
     python3 tools/report.py --all                 every run, plus index.html
 
-Ported from ~/code/janaan/tools/pipeline/report.py, including the two properties that make
+Ported from a private production pipeline of mine/report.py, including the two properties that make
 it useful rather than decorative:
 
   * built ONLY from what the run left on disk, so a run still in progress renders with the
@@ -11,7 +11,7 @@ it useful rather than decorative:
   * what needs a human eye goes FIRST — refused gates, unsorted triage, confounds that
     fired — and the evidence behind them after.
 
-One addition janaan does not need. Every page states **what it could not check**. An agent
+One addition the second project does not need. Every page states **what it could not check**. An agent
 that runs unattended produces a large, internally consistent body of work that nobody has
 read; the paper already names that as this project's real risk. A report that lists only
 what passed would make the risk worse by hiding it, so the gaps are a section, not a

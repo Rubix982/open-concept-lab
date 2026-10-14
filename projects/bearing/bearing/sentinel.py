@@ -1,6 +1,6 @@
 """Watch one or more projects for a long time, and report only what CHANGED.
 
-    python -m bearing --sentinel ~/code/open-concept-lab/ai/edit-slice ~/code/janaan
+    python -m bearing --sentinel ~/code/open-concept-lab/ai/edit-slice <private-project>
     python -m bearing --sentinel <paths...> --interval 2h --notify
     python -m bearing --digest            # what it has seen, newest first
 

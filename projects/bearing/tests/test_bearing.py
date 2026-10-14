@@ -56,7 +56,7 @@ def test_claim_debt_ignores_open_questions():
 
 
 def test_still_checking_reads_more_than_one_dialect():
-    """janaan says `fixed` where edit-slice says `withdrawn`; neither is 'not checking'."""
+    """the second project says `fixed` where edit-slice says `withdrawn`; neither is 'not checking'."""
     withdrew = rec(results=[item(str(n), "this claim is withdrawn") for n in range(9)])
     assert not checks.still_checking(withdrew)["bad"]
     fixed = rec(results=[item(str(n), "cause found", status="fixed") for n in range(9)])

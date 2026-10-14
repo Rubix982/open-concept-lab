@@ -4,7 +4,7 @@ The most portable thing a project owns is not its results — it is the scar tis
 project that inherits this list does not have to re-earn it, and a person returning after
 a week away does not have to remember it.
 
-Derived from two projects: `edit-slice` (research) and `janaan` (production pipeline).
+Derived from two projects: `edit-slice` (research) and a second, private project (production pipeline).
 Where a rule is mechanically checkable, `check` names the function that does it; where it
 is a discipline, `check` is None and it is here to be read.
 
@@ -44,7 +44,7 @@ LESSONS: list[Lesson] = [
         rule="A check written in one project's dialect will libel every project that "
              "speaks another.",
         incident="bearing's `still_checking` knew only edit-slice's vocabulary and read "
-                 "janaan's critique ledger — a document that is ENTIRELY corrections — as "
+                 "the second project's correction ledger — a document that is ENTIRELY corrections — as "
                  "evidence nobody was checking.",
         cost="a false accusation on the second project it ever ran on"),
     Lesson(

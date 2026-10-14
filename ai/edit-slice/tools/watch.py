@@ -4,7 +4,7 @@
     python3 tools/watch.py --loop          # keep going; re-read the queue after each job
     python3 tools/watch.py --dry           # show what it would do
 
-Ported from ~/code/janaan/tools/pipeline/batch.py. What this loop owns, and what it does
+Ported from a private production pipeline of mine/batch.py. What this loop owns, and what it does
 not, is the whole design:
 
   it owns     running pre-registered work, gating it, recovering it, reporting it, and

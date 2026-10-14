@@ -1,6 +1,6 @@
 # tools — running this project when nobody is watching
 
-Ported from `~/code/janaan/tools/pipeline`, which already solves this shape. Four pieces,
+Ported from `a private production pipeline of mine`, which already solves this shape. Four pieces,
 cheapest first, and one rule about what they are not allowed to do.
 
 ```

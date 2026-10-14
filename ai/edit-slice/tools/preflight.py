@@ -3,7 +3,7 @@
     python3 tools/preflight.py agents/engineer/workspace/run_e033.py -- --relation birthplace
     python3 tools/preflight.py --all          # every runner, static gates only
 
-Ported from ~/code/janaan/tools/pipeline/batch.py, whose ordering is the whole idea:
+Ported from a private production pipeline of mine/batch.py, whose ordering is the whole idea:
 
     the pipeline's own logic first (seconds): a broken change was otherwise found an
     hour into a batch
@@ -132,7 +132,7 @@ def gate_cache_completeness(g: Gate, path: str, fatal: bool = True) -> None:
 def gate_report_dryrun(g: Gate, path: str) -> None:
     """RUN the run's own reporting path against known-answer data.
 
-    Not "does a dry-run exist" — janaan's batch.py runs `test_pipeline.py` first precisely
+    Not "does a dry-run exist" — the second project's batch.py runs `test_pipeline.py` first precisely
     because a check that is only present is a check nobody has executed. The baseline case
     feeds a PUBLISHED result back through `report` and requires the published verdict: the
     dangerous bug is the one that agrees with you, and a reporting path verified only on

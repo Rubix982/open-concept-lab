@@ -117,7 +117,7 @@ ADAPTERS = {"agentic": agentic}
 
 
 def pipeline(root: str) -> Record:
-    """A production pipeline's record — written against `janaan`, the second project.
+    """A production pipeline's record — written against a second, private project, the second project.
 
     Different furniture, same four things, which is the point of the interface:
 

@@ -2470,7 +2470,7 @@ logs/run_e033-2026-*.log; src/remote.py (`deadline`, `RemoteTimeout`, `CALL_TIME
 
 ## [E-034] Decision: the loop owns execution, a person owns judgement
 
-_Date: 2026-10-14 · ported from `~/code/janaan/tools/pipeline`_
+_Date: 2026-10-14 · ported from `a private production pipeline of mine`_
 
 **Decision:** an unattended runner for this project, in four pieces — `preflight`,
 `triage`, `report`, `watch` — with a hard boundary at judgement.
@@ -2497,7 +2497,7 @@ entry, close a ticket, or touch the write-up.
 
 **Escalation is restricted to four triggers** — preflight refusal, an unsorted triage
 line, a verdict outside `expect`, and a job outliving its budget. Everything else is
-logged. A known failure needs a count; an unknown one needs a person. That is janaan's
+logged. A known failure needs a count; an unknown one needs a person. That is the second project's
 `ledger.py` rule, and it is what makes the loop quiet enough to leave running.
 
 **Two things the port taught, both recorded because they were mistakes of mine:**

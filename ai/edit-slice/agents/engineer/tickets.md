@@ -2583,7 +2583,7 @@ injected value's type?
 
 ---
 
-### E-034 · An unattended runner, ported from janaan's pipeline
+### E-034 · An unattended runner, ported from the second project's pipeline
 
 **Status:** closed
 **Type:** implement
@@ -2605,15 +2605,15 @@ project more than any wrong hypothesis:
 | §4.5 asserting a claim §5.1 had withdrawn | — | **yes** — claim audit |
 | [E-026]'s gate measuring the wrong quantity | ~2 | **no** — conceptual, no gate catches it |
 
-`~/code/janaan/tools/pipeline` solves this shape already. Port the parts that transfer.
+`a private production pipeline of mine` solves this shape already. Port the parts that transfer.
 
 **In scope.**
 
-1. **`preflight.py`** — escalating gates before any remote work, janaan's `batch.py` order:
+1. **`preflight.py`** — escalating gates before any remote work, the second project's `batch.py` order:
    lint and import (seconds) → the run's own report path against known-answer data
    (seconds) → cache fingerprint completeness (seconds) → a 2-call remote smoke (one
    minute). Only then the real run. Refuses rather than warns.
-2. **`triage.py`** — janaan's `ledger.py` for our logs. Every WARNING/ERROR matched to a
+2. **`triage.py`** — the second project's `ledger.py` for our logs. Every WARNING/ERROR matched to a
    known cause (flaky node, OOM split, cross-device sum, transport, hang, parked chunk).
    **Unsorted is the output that matters** — a failure class we have not seen before is
    the only thing worth a person's attention.

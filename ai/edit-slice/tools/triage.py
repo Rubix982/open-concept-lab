@@ -6,7 +6,7 @@ code rather than read through by a person each time.
     python3 tools/triage.py --all                # every log in logs/
     python3 tools/triage.py --json               # for report.py
 
-Ported from ~/code/janaan/tools/pipeline/ledger.py, which does this for a critic's concerns.
+Ported from a private production pipeline of mine/ledger.py, which does this for a critic's concerns.
 The idea that transfers is the last line of its docstring: a concern matching no cause is
 listed as "unsorted", and **that is what needs a person**. Everything else is a failure mode
 we have already diagnosed, and a count of it is enough.
