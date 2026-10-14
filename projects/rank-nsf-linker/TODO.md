@@ -3,6 +3,50 @@
 Audit of the populated database on 2026-10-04 (pipeline steps 1–13, NSF 2025 only).
 Numbers in brackets are what the audit measured; re-measure after each item.
 
+## Now (2026-10-12): data refresh, in the background
+State at ~01:00 PKT, 2026-10-13: pipeline run 1 at step 23/29 (loads NSF + NIH + the widened SNSF/ANR/ERC
+and the 74 new universities; UKRI and DFG are not in it yet); UKRI all-council run at ~3,500/36,067
+projects (data/fetch_state/ukri_all_councils.log, ~12 h more); DFG CSV written (816 grants). Claude Code
+stopped the watch for low memory (16 GB Mac, Docker 13.6 GB); es-local stopped to free 1 GB (unused by
+the pipeline; `docker start es-local` brings it back). Next: when run 1 succeeds and UKRI ends, rebuild
+go-server + fetcher, `make pipeline-from STEP=20`, then checks and the golden.
+Live since 2026-10-11 on the golden dataset of 2026-10-09. Work order:
+- [x] NSF changed its bulk download (the old link redirects to the search page): yearly files now come
+      from `api.nsf.gov/services/v2/s3/list-files` (pre-signed S3 URLs, rebuilt daily). Years are fiscal
+      (FY2027 began 1 October); a year's copy taken before it was final is downloaded again
+      → FY2025 6,860 → 9,249 awards, FY2026 6,785 (new), FY2027 5 (new)
+- [x] DAAD (69 programmes) and OpenAlex national-funder awards (failed 10-07, out of memory) refetched
+- [~] NIH RePORTER refetch (weekly), then the full pipeline: load, link, embed
+- [x] Europe (friends asked for more, 2026-10-12): the UK, Swiss, French and ERC loaders were still
+      computing-only from v1, though the map now covers 25 fields. Widened to every field:
+      SNSF 1,518 → 37,876 grants; ANR 1,795 → 24,772; ERC 2,238 → 12,054 (every panel, H2020 + Horizon
+      Europe; 847 list rows unmatched); UKRI all seven councils (was EPSRC computing; running, ~a day)
+- [x] 74 European universities CSRankings doesn't list (backup/extra_universities.csv; skips any already
+      on the map by OpenAlex id, and merged ones OpenAlex still lists: UPMC, Paris-Sud, Paris Diderot,
+      Paris Descartes, the Toulouse/Lyon federations, Universities of London and Wales). Coordinates
+      checked by hand (Reading, UPM, Basque Country, Lorraine, UCLouvain fixed). Researchers: openalex-fields
+      (~8k calls, a day or two of allowance)
+- [~] DFG (Saif approved 2026-10-12): via OpenAlex's GEPRIS copy, which names the awarded institution on
+      ~2% of projects (2,584 of 144,460) and no researcher. Grants held at a university, no people: optional
+      `institution` column on funder grant CSVs (migration 27; files without it still load). Research
+      programmes only (Collaborative Research Centres, Research Training Groups = "training", Emmy
+      Noether = "new_lab", Clusters of Excellence); equipment and library grants left out; scheme names in
+      English; no abstracts (DFG's imprint asks authors' consent); never crawl GEPRIS (robots.txt).
+      For PI-level DFG data, DFG would have to provide an export (email draft in
+      docs/data-sources/next-phase-research-2026-10-06.md)
+- Looked at, not loaded: Italy PRIN (gone from the OpenAlex snapshot), Spain's AEI (no PI names; could
+  load like DFG, institution-level), Finland research.fi (135 of 5,396 with a PI;
+  its API needs the controller's approval)
+- [ ] Second load once UKRI's all-council run ends: rebuild go-server (migration 27, DFG) and the fetcher,
+      then `make pipeline-from STEP=20`
+- [ ] Rebuild the fetcher image once NIH finishes (the edited scripts were docker-cp'd into the running
+      container; app.py's longer UKRI limit needs the rebuild)
+- [ ] Overview page and portfolio numbers: drop "only computing grants" from KAKEN/ARC/ANR/SNSF/ERC/UKRI
+      where it no longer holds; update the funder table and tallies from the new golden
+- [ ] Check: counts before and after, every endpoint on a sample of universities and profiles
+- [ ] New golden dataset (make golden + golden-verify)
+- [ ] Ask Saif before replacing the live site's data (a restore on the server, ~10 min of downtime)
+
 ## Now (2026-10-07, evening)
 
 State: 72k people at 700 universities in 61 countries (researchers beyond computing: US R1s, Pakistan,

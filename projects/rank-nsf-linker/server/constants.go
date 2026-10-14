@@ -29,7 +29,10 @@ const (
 	CSRANKINGS_RAW_GITHUB = "https://raw.githubusercontent.com/emeryberger/CSrankings/gh-pages/"
 
 	CSRANKINGS_INSTITUTIONS_FILENAME = "institutions.csv"
-	NSFURLPrefix                     = "https://www.nsf.gov/awardsearch/download?All=true&isJson=true&DownloadFileName="
+	// NSF's yearly award files (JSON, one zip per fiscal year): this lists them, each with its own
+	// pre-signed S3 download URL. Replaced the old awardsearch/download?DownloadFileName= link, which
+	// now redirects to the search page (2026-10).
+	NSFFileListURL = "https://api.nsf.gov/services/v2/s3/list-files"
 
 	// Data Fetching Configuration
 	NSFAwardsStartYear = 2010 // through the current year (nsfAwardsEndYear)
@@ -97,5 +100,12 @@ const (
 	ENV_QDRANT_PORT       = "QDRANT_PORT"
 )
 
-// nsfAwardsEndYear: NSF publishes awards through the current year (the current year's file grows).
-func nsfAwardsEndYear() int { return time.Now().Year() }
+// nsfAwardsEndYear: NSF files awards by fiscal year (October to September, named for the year it
+// ends), through the current one, whose file grows.
+func nsfAwardsEndYear() int {
+	now := time.Now()
+	if now.Month() >= time.October {
+		return now.Year() + 1
+	}
+	return now.Year()
+}

@@ -107,6 +107,8 @@ services:
     image: cloudflare/cloudflared:2026.10.0
     profiles: ["tunnel"]
     restart: unless-stopped
+    # Run only one copy of this tunnel. On 2026-10-12 a second copy, installed on a laptop with the
+    # same token, was being sent part of the visitors and answered them with 502 (no site there).
     command: ["tunnel", "--no-autoupdate", "run"]
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:-} # from .env.deploy; cloudflared refuses to start without one

@@ -42,7 +42,7 @@ WHERE COALESCE(a.award_title_text, '') <> '';
 INSERT INTO explorer_grants (funder, id, title, snippet, amount, currency, starts, ends, url, country,
                              lead, institution, profile, scheme)
 SELECT g.funder, g.grant_id, g.title, left(NULLIF(g.abstract, '') || '', 400), g.amount, g.currency, g.starts, g.ends,
-       g.url, g.country, p.full_name, p.institution, p.profile, NULLIF(g.scheme, '')
+       g.url, g.country, p.full_name, COALESCE(p.institution, g.institution), p.profile, NULLIF(g.scheme, '')
 FROM funder_grants g
 LEFT JOIN (
   SELECT DISTINCT ON (fp.funder, fp.grant_id) fp.funder, fp.grant_id, fp.full_name,
@@ -99,7 +99,8 @@ WHERE (funder = 'nih' AND scheme IN ('T32', 'TL1', 'T90'))
    OR (funder = 'nsf' AND programs && ARRAY['NSF Research Traineeship (NRT)'])
    OR (funder = 'fwf' AND scheme IN ('doc.funds', 'doc.funds.connect', 'Doctoral Programs'))
    OR (funder = 'cihr' AND scheme ~* 'Strategic Training Initiative|MD/PhD Program Grants')
-   OR (funder = 'anid' AND scheme ~* 'PROGRAMAS DE DOCTORADO');
+   OR (funder = 'anid' AND scheme ~* 'PROGRAMAS DE DOCTORADO')
+   OR (funder = 'dfg' AND scheme IN ('Research Training Group', 'International Research Training Group', 'Graduate School'));
 UPDATE explorer_grants SET signal = 'new_lab'
 WHERE signal IS NULL AND (
       (funder = 'nsf' AND (title ILIKE 'CAREER:%' OR programs && ARRAY['CAREER: FACULTY EARLY CAR DEV']
@@ -114,6 +115,7 @@ WHERE signal IS NULL AND (
    OR (funder = 'nserc' AND scheme = 'Discovery Launch Supplement')
    OR (funder = 'nwo' AND scheme ~* '\mvidi\M')
    OR (funder = 'fwf' AND scheme IN ('FWF START Awards', 'Young Independent Researcher Groups'))
+   OR (funder = 'dfg' AND scheme = 'Emmy Noether Independent Junior Research Group')
    -- national funders via OpenAlex: their early-career schemes for someone starting a group
    OR (funder = 'nsfc' AND scheme LIKE '青年科学基金项目%')
    OR (funder = 'cihr' AND scheme ~* 'New Investigator|Early[- ]Career Investigator')

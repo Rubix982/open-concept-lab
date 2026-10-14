@@ -35,7 +35,7 @@ DAY = 86400
 SOURCES = {
     # grants and other sources the load steps read
     "nih": ("base", "grants/nih.py", [], 7, 12),
-    "ukri": ("base", "grants/ukri.py", [], 14, 6),
+    "ukri": ("base", "grants/ukri.py", [], 14, 36),  # all seven councils: ~a day, resumes from its cache
     "kaken": ("base", "grants/kaken.py", [], 30, 12),
     "arc": ("base", "grants/arc.py", [], 30, 2),
     "anr": ("base", "grants/anr.py", [], 30, 2),

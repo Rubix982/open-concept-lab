@@ -9,9 +9,10 @@ The PI list covers H2020 ERC grants only (started 2015-2021, many still running)
 PIs come from the ERC's per-call "List of Principal Investigators" PDFs (data/erc_he/sources.txt lists
 them; erc_lists.py parses them; panel PE6 = computer science), joined with CORDIS Horizon Europe
 projects by call and acronym for dates, amount and abstract:
-    cordis-HORIZONprojects-csv.zip <- https://cordis.europa.eu/data/cordis-HORIZONprojects-csv.zip Computing grants: a euroSciVoc field under computer
-and information sciences or electrical/electronic/information engineering, or a computing word in
-the title or keywords. ERC grants are held at the host institution, so country is the host's.
+    cordis-HORIZONprojects-csv.zip <- https://cordis.europa.eu/data/cordis-HORIZONprojects-csv.zip
+Grants in every field and panel, ending 2015 or later (until 2026-10 only computing: euroSciVoc
+computer and information sciences or electrical/electronic/information engineering, a computing
+word in the title, or panel PE6). ERC grants are held at the host institution, so country is the host's.
 """
 
 import csv
@@ -23,12 +24,7 @@ from common import DATA, ROOT, download, read_xlsx, write
 from erc_lists import parse_pdf
 
 SRC = DATA / "cordis"
-CS_FIELDS = ("natural sciences/computer and information sciences",
-             "engineering and technology/electrical engineering, electronic engineering, information engineering")
-CS_WORDS = re.compile(
-    r"comput|algorithm|machine learning|deep learning|neural net|artificial intelligence|\bAI\b|software|"
-    r"program(ming)? language|formal verification|cryptograph|robot|natural language|database|"
-    r"distributed system|operating system|compiler|human-computer|data science", re.I)
+PANELS = {"PE": "Physical Sciences and Engineering", "LS": "Life Sciences", "SH": "Social Sciences and Humanities"}
 COUNTRY_FIX = {"uk": "gb", "el": "gr"}
 
 # CORDIS uses legal names; CSRankings uses everyday ones. Pattern on the upper-cased legal name.
@@ -172,16 +168,12 @@ def main() -> None:
         if not p or not (p.get("endDate") or "")[:4].isdigit() or int(p["endDate"][:4]) < MIN_END_YEAR:
             continue
         paths = fields.get(pid, [])
-        cs = any(path.startswith(CS_FIELDS) for path in paths) or CS_WORDS.search(
-            f"{p['title']} {p.get('keywords') or ''}")
-        if not cs:
-            continue
         org = orgs.get((pid, (pi.get("organisationId") or "").strip())) or {}
         country = (org.get("country") or "").lower()
         country = COUNTRY_FIX.get(country, country)
         if pid not in seen:
             seen.add(pid)
-            cs_paths = [x.rsplit("/", 1)[-1] for x in paths if x.startswith(CS_FIELDS)]
+            leaves = list(dict.fromkeys(x.rsplit("/", 1)[-1] for x in paths))
             grants.append({
                 "funder": "erc", "grant_id": pid, "title": p["title"].strip(),
                 "abstract": (p.get("objective") or "").strip(),
@@ -189,7 +181,7 @@ def main() -> None:
                 "country": country, "starts": p.get("startDate") or "", "ends": p.get("endDate") or "",
                 "url": f"https://cordis.europa.eu/project/id/{pid}",
                 "scheme": pi.get("fundingScheme") or p.get("fundingScheme") or "",
-                "field": "; ".join(cs_paths[:3]),
+                "field": "; ".join(leaves[:3]),
             })
         first, last = (pi.get("firstName") or "").strip(), (pi.get("lastName") or "").strip()
         if last:
@@ -203,7 +195,7 @@ def main() -> None:
 
 
 def horizon_europe() -> tuple[list[dict], list[dict]]:
-    """Horizon Europe ERC computer-science (PE6) grants from the result PDFs + CORDIS projects."""
+    """Horizon Europe ERC grants, every panel, from the result PDFs + CORDIS projects."""
     src = DATA / "erc_he"
     he = SRC / "cordis-HORIZONprojects-csv.zip"
     if not HE_SOURCES.exists() or not he.exists():
@@ -212,7 +204,7 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
     z = zipfile.ZipFile(he)
     by_call = {(p["masterCall"].upper(), p["acronym"].strip().lower()): p for p in zipped(z, "project.csv")
                if p["masterCall"].upper().startswith("ERC-")}
-    grants, people, unmatched = [], [], 0
+    grants, people, unmatched, seen = [], [], 0, set()
     for line in HE_SOURCES.read_text().splitlines():
         if not line.strip():
             continue
@@ -221,7 +213,7 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
         if not pdf.exists():
             continue
         for row in parse_pdf(pdf):
-            if row["panel"] != "PE6" or not row["acronym"]:
+            if not row["acronym"]:
                 continue
             acronym = row["acronym"].split()[0]  # a cell can catch the start of the title
             master = f"ERC-{year}-{call.upper()}"
@@ -233,6 +225,9 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
             if not p or not row["last"]:
                 unmatched += 1
                 continue
+            if p["id"] in seen:  # a call's list and its per-domain list (2024 StG) overlap
+                continue
+            seen.add(p["id"])
             country = COUNTRY_FIX.get(row["country"].lower(), row["country"].lower())
             grants.append({
                 "funder": "erc", "grant_id": p["id"], "title": p["title"].strip(),
@@ -240,7 +235,7 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
                 "amount": (p.get("ecMaxContribution") or "").replace(",", "."), "currency": "EUR",
                 "country": country, "starts": p.get("startDate") or "", "ends": p.get("endDate") or "",
                 "url": f"https://cordis.europa.eu/project/id/{p['id']}",
-                "scheme": f"ERC-{call.upper()}", "field": "PE6 Computer Science and Informatics",
+                "scheme": f"ERC-{call.upper()}", "field": PANELS.get(row["panel"][:2], "") + f" ({row['panel']})",
             })
             last = row["last"].title() if row["last"].isupper() else row["last"]
             people.append({
@@ -250,7 +245,7 @@ def horizon_europe() -> tuple[list[dict], list[dict]]:
             })
     # Unmatched rows: list rows the PDF layout garbled, and UK-hosted grants of 2021-2023, which
     # UKRI's Horizon Europe Guarantee funded (they come in through the UKRI import instead).
-    print(f"Horizon Europe ERC: {len(grants)} PE6 grants matched to CORDIS, {unmatched} list rows unmatched")
+    print(f"Horizon Europe ERC: {len(grants)} grants matched to CORDIS, {unmatched} list rows unmatched")
     return grants, people
 
 

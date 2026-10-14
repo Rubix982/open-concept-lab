@@ -26,7 +26,7 @@ DATA = ROOT / "data"
 OUT = DATA / "grants"
 
 GRANT_FIELDS = ["funder", "grant_id", "title", "abstract", "amount", "currency", "starts", "ends",
-                "url", "country", "scheme", "field"]
+                "url", "country", "scheme", "field", "institution"]  # institution: only for funders that name no researcher (DFG)
 PEOPLE_FIELDS = ["funder", "grant_id", "full_name", "first_name", "last_name", "role", "institution", "orcid"]
 
 HONORIFICS = re.compile(
@@ -59,11 +59,13 @@ def write(funder: str, grants: list[dict], people: list[dict]) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for kind, rows, fields in (("grants", grants, GRANT_FIELDS), ("people", people, PEOPLE_FIELDS)):
         path = OUT / f"{funder}_{kind}.csv"
-        with path.open("w", newline="", encoding="utf-8") as f:
+        part = path.with_suffix(".csv.part")  # swapped in when complete: a load step never reads half a file
+        with part.open("w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
             w.writeheader()
             for r in rows:
                 w.writerow({k: ("" if r.get(k) is None else r.get(k)) for k in fields})
+        part.replace(path)
         print(f"{path.relative_to(ROOT)}: {len(rows)} rows")
 
 

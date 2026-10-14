@@ -10,8 +10,8 @@ plus the research-unit register (RNSR) with each lab's parent institutions and E
 
 ANR lists investigators under their lab ("LIP6"); the RNSR code maps the lab to its parent
 institutions ("Sorbonne Université", CNRS), and the faculty linker tries each of them.
-Computing projects: a computing committee in the decision code (ANR-21-CE23-...) or a partner lab
-on ERC panel PE6. ANR gives no end date; projects are assumed to run four years.
+Projects in every field (until 2026-10 only computing: committees CE23/25/33/39/46/48 or a partner
+lab on ERC panel PE6). ANR gives no end date; projects are assumed to run four years.
 """
 
 import csv
@@ -20,7 +20,6 @@ import re
 from common import DATA, download, get_json, split_name, write
 
 SRC = DATA / "anr"
-CS_COMMITTEES = {"CE23", "CE25", "CE33", "CE39", "CE46", "CE48"}
 MIN_START_YEAR = 2012  # four-year projects starting earlier ended before 2016
 
 
@@ -86,9 +85,6 @@ def main() -> None:
         if not start or int(start[:4]) < MIN_START_YEAR:
             continue
         team = partners.get(code, [])
-        pe6 = any((units.get(p["Projet.Partenaire.Code_RNSR"]) or {}).get("code_panel_erc") == "PE6" for p in team)
-        if committee(code) not in CS_COMMITTEES and not pe6:
-            continue
         doi = (r.get("Projet.DOI") or "").strip()
         grants.append({
             "funder": "anr", "grant_id": code,

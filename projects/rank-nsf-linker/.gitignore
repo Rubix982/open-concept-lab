@@ -216,3 +216,9 @@ deck.gl/**/**
 # Deployment secrets (DEPLOY.md)
 .env.deploy
 docs/ux-audit/screens/
+
+# Talk slides, kept local
+talk/
+
+# Local go build output
+server/server

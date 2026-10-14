@@ -83,7 +83,7 @@ func getExplorerGrant(w http.ResponseWriter, r *http.Request) {
 			       g.url, g.scheme,
 			       COALESCE((SELECT split_part(p.institution, ' | ', 1) FROM funder_grant_people p
 			                 WHERE p.funder = g.funder AND p.grant_id = g.grant_id AND COALESCE(p.institution, '') <> ''
-			                 ORDER BY p.role <> 'PI' LIMIT 1), ''),
+			                 ORDER BY p.role <> 'PI' LIMIT 1), split_part(g.institution, ' | ', 1), ''),
 			       COALESCE((SELECT jsonb_agg(jsonb_build_object(
 			                   'name', o.full_name, 'role', o.role,
 			                   'profile', (SELECT ef.name FROM explorer_faculty ef

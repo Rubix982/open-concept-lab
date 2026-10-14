@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advisor Atlas</title>
+<!-- Cloudflare's custom error page for 5xx errors (Cloudflare dashboard > Error Pages). Cloudflare
+     copies this page when the setting is saved and shows it when it can't reach the server, so
+     it must stand alone: no images, fonts or scripts from the site. -->
+<style>
+  body {
+    margin: 0;
+    padding: 48px 16px;
+    background: #ffffff;
+    color: #000000;
+    font: 17px/1.6 Georgia, "Times New Roman", serif;
+  }
+  .page { max-width: 560px; margin: 0 auto; }
+  h1 { font-size: 28px; margin: 0 0 20px; }
+  p { margin: 0 0 14px; }
+  button {
+    margin-top: 10px;
+    padding: 10px 18px;
+    font: inherit;
+    color: #ffffff;
+    background: #000000;
+    border: 0;
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid #0000cc; outline-offset: 2px; }
+  .small { font-size: 14px; color: #444444; margin-top: 28px; }
+  .cf { display: none; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Advisor Atlas</h1>
+<p>We can't reach Advisor Atlas from your network right now.</p>
+<p>The site is still running. The internet route between your network and our server is having
+trouble. This usually clears up within a few minutes.</p>
+<p>Try again in a minute. If it still does not open, try mobile data instead of Wi-Fi. A different
+network often takes a different route.</p>
+<button type="button" onclick="location.reload()">Try again</button>
+<p class="small" id="auto">This page will also try again by itself every 30 seconds.</p>
+</div>
+<div class="cf">::CLOUDFLARE_ERROR_500S_BOX::</div>
+<script>setTimeout(function () { location.reload(); }, 30000);</script>
+</body>
+</html>

@@ -3,6 +3,7 @@ package main
 import (
 	"archive/zip"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -151,15 +152,24 @@ func downloadNSFData(mainCtx *colly.Context) error {
 	nsfDataDir := path.Join(dataDir, NSF_DATA_DIR)
 
 	client := &http.Client{Timeout: 30 * time.Minute}
+	urls, err := nsfFileURLs(client)
+	if err != nil {
+		// Without the list nothing can be downloaded; the years on disk are still loaded.
+		logger.Errorf(mainCtx, "[!] Could not list NSF's award files: %v", err)
+		return nil
+	}
 	for year := NSFAwardsStartYear; year <= nsfAwardsEndYear(); year++ {
 		zipFile := filepath.Join(nsfDataDir, fmt.Sprintf("nsf_awards_%d.zip", year))
 		extractDir := filepath.Join(nsfDataDir, fmt.Sprintf("%d", year))
 		target := extractDir // where this download is extracted
 
-		// The current year keeps growing: it is downloaded again once its copy is a week old, extracted
-		// next to the old one and swapped in only when complete.
+		// A year's file keeps changing while the year runs and for a while after it ends (late awards,
+		// amendments): a copy taken before the year was final (60 days after it ends, 30 September) is
+		// downloaded again once it is a week old, extracted next to the old one and swapped in only when
+		// complete. A 2025 copy taken that September missed ~3,000 of the year's awards.
 		if info, err := os.Stat(extractDir); err == nil {
-			if year != nsfAwardsEndYear() || time.Since(info.ModTime()) < 7*24*time.Hour {
+			final := time.Date(year, time.September, 30, 0, 0, 0, 0, time.UTC).AddDate(0, 0, 60)
+			if info.ModTime().After(final) || time.Since(info.ModTime()) < 7*24*time.Hour {
 				logger.Infof(mainCtx, "[✓] %s already exists. Skipping download.", filepath.Base(extractDir))
 				continue
 			}
@@ -169,7 +179,12 @@ func downloadNSFData(mainCtx *colly.Context) error {
 
 		logger.Infof(mainCtx, "[*] Downloading %s ...", filepath.Base(zipFile))
 
-		resp, err := client.Get(fmt.Sprintf("%s%d", NSFURLPrefix, year))
+		fileURL := urls[fmt.Sprintf("%d.zip", year)]
+		if fileURL == "" {
+			logger.Warnf(mainCtx, "⚠️ NSF lists no file for %d yet", year)
+			continue
+		}
+		resp, err := client.Get(fileURL)
 		if err != nil {
 			logger.Errorf(mainCtx, "[!] Failed to fetch %s: %v", filepath.Base(zipFile), err)
 			continue
@@ -236,6 +251,37 @@ func downloadNSFData(mainCtx *colly.Context) error {
 	}
 
 	return nil
+}
+
+// nsfFileURLs reads NSF's list of yearly award files: file name ("2026.zip") -> download URL.
+func nsfFileURLs(client *http.Client) (map[string]string, error) {
+	resp, err := client.Get(NSFFileListURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status %d", resp.StatusCode)
+	}
+	var list struct {
+		Files []struct {
+			FileName    string `json:"fileName"`
+			DownloadURL string `json:"downloadUrl"`
+		} `json:"files"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+		return nil, err
+	}
+	urls := map[string]string{}
+	for _, f := range list.Files {
+		if f.DownloadURL != "" {
+			urls[f.FileName] = f.DownloadURL
+		}
+	}
+	if len(urls) == 0 {
+		return nil, fmt.Errorf("the list is empty")
+	}
+	return urls, nil
 }
 
 func downloadIPEDSData(mainCtx *colly.Context) error {

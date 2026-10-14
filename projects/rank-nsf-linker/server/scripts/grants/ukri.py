@@ -1,20 +1,22 @@
-"""UKRI Gateway to Research (GtR), EPSRC grants -> data/grants/ukri_*.csv
+"""UKRI Gateway to Research (GtR), research grants and fellowships of the seven research councils
+-> data/grants/ukri_*.csv
 
 Source: https://gtr.ukri.org, Open Government Licence v2.0 (attribution: UKRI Gateway to Research).
-1. The EPSRC Research Grant and Fellowship lists come from the GtR CSV export (slow: the server
-   streams a few KB/s, so a full export takes about an hour). Cached in data/ukri/*.csv.
-2. Computing projects are kept by department ("Computer Science", "Informatics", "Electronics and
-   Computer Science", ...) or by a computing word in the title, ending 2015 or later.
+1. Each council's Research Grant and Fellowship lists come from the GtR CSV export (slow: the server
+   streams a few KB/s, so EPSRC alone takes about an hour). Cached in data/ukri/*.csv.
+2. Projects ending 2015 or later are kept, in every field: the map covers 25 fields, not only
+   computing (until 2026-10 only EPSRC computing projects were loaded). Innovate UK is left out: it
+   funds businesses, not university labs.
 3. Each kept project's JSON (abstract, co-investigators) is fetched at about one request a second
    and cached in data/ukri/projects/, so an interrupted run resumes where it stopped.
 
 Pass --refresh to re-download the CSV lists; --no-details to skip step 3 (PIs and titles only).
 """
 
+import base64
 import csv
 import http.client
 import json
-import re
 import sys
 import time
 import urllib.parse
@@ -25,21 +27,20 @@ from common import DATA, split_name, write
 
 CACHE = DATA / "ukri"
 EXPORT = "https://gtr.ukri.org/search/project/csv?term=*&selectedFacets="
-EPSRC = "ZnVuZGVyfEVQU1JDfHN0cmluZw=="  # funder|EPSRC|string
-LISTS = {
-    "epsrc-research-grant": EPSRC + ",Y2F0fFJlc2VhcmNoIEdyYW50fHN0cmluZw==",  # cat|Research Grant|string
-    "epsrc-fellowship": EPSRC + ",Y2F0fEZlbGxvd3NoaXB8c3RyaW5n",  # cat|Fellowship|string
-}
+COUNCILS = ("EPSRC", "MRC", "BBSRC", "NERC", "ESRC", "AHRC", "STFC")
+CATEGORIES = ("Research Grant", "Fellowship")
+
+
+def facet(kind: str, value: str) -> str:
+    return base64.b64encode(f"{kind}|{value}|string".encode()).decode()
+
+
+# Cache names keep the old EPSRC files ("epsrc-research-grant.csv") valid.
+LISTS = {f"{c.lower()}-{cat.lower().replace(' ', '-')}": facet("funder", c) + "," + facet("cat", cat)
+         for c in COUNCILS for cat in CATEGORIES}
 PROJECT = "https://gtr.ukri.org/api/projects?ref="
 UA = {"User-Agent": "advisor-atlas/1.0 (research explorer; non-commercial)"}
 
-CS_DEPARTMENT = re.compile(
-    r"comput|informatic|electronic|electrical|\beecs\b|data science|artificial intel|cyber|software|"
-    r"school of math.*comput|robotic", re.I)
-CS_TITLE = re.compile(
-    r"comput|algorithm|machine learning|deep learning|neural net|artificial intelligence|\bAI\b|software|"
-    r"program(ming)? language|verification|cyber|cryptograph|robot|natural language|database|"
-    r"distributed system|operating system|compiler|human-computer|\bHCI\b|data science|privacy", re.I)
 MIN_END_YEAR = 2015
 
 
@@ -116,11 +117,9 @@ def main() -> None:
         end = iso(r["EndDate"])
         if not ref or ref in seen or not end or int(end[:4]) < MIN_END_YEAR:
             continue
-        if not (CS_DEPARTMENT.search(r["Department"] or "") or CS_TITLE.search(r["Title"] or "")):
-            continue
         seen.add(ref)
         kept.append(r)
-    print(f"{len(rows)} EPSRC grants and fellowships, {len(kept)} computing projects ending {MIN_END_YEAR}+")
+    print(f"{len(rows)} research grants and fellowships, {len(kept)} projects ending {MIN_END_YEAR}+")
 
     grants, people = [], []
     for i, r in enumerate(kept, 1):
@@ -131,7 +130,7 @@ def main() -> None:
             "amount": r["AwardPounds"] or "", "currency": "GBP", "country": "gb",
             "starts": iso(r["StartDate"]), "ends": iso(r["EndDate"]),
             "url": "https://gtr.ukri.org/projects?ref=" + urllib.parse.quote(ref, safe=""),
-            "scheme": f"EPSRC {r['ProjectCategory']}".strip(), "field": (r["Department"] or "").strip(),
+            "scheme": f"{r['FundingOrgName']} {r['ProjectCategory']}".strip(), "field": (r["Department"] or "").strip(),
         }
         persons = []
         comp = details(ref) if with_details else None

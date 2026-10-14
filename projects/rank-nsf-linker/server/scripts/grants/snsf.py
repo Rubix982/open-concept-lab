@@ -5,9 +5,9 @@ with attribution "Swiss National Science Foundation"). Download both into data/s
     curl -L -o data/snsf/grants.csv https://data.snf.ch/datasets/grants.csv
     curl -L -o data/snsf/persons.csv https://data.snf.ch/datasets/persons.csv
 
-Computing grants: a Field of Research (ANZSRC 2020) in division 46 or electrical/electronic/robotics
-engineering, or an older SNSF discipline in IT / electrical engineering / microelectronics, ending
-2015 or later. The grants file has no abstracts, so the keywords stand in for one.
+Grants ending 2015 or later, in every field (until 2026-10 only computing: ANZSRC division 46 and
+electrical/electronic engineering, or the older IT disciplines). The grants file has no abstracts,
+so the keywords stand in for one.
 """
 
 import csv
@@ -15,8 +15,6 @@ import csv
 from common import DATA, download, write
 
 SRC = DATA / "snsf"
-CS_DISCIPLINES = {"20504", "20506", "20508"}
-CS_FIELDS = ("46", "4007", "4008", "4009")
 MIN_END_YEAR = 2015
 # SNSF writes "ETH Zurich – ETHZ"; CSRankings uses the part before the dash, except for these.
 INSTITUTION_FIX = {"EPF Lausanne": "EPFL", "University of Berne": "University of Bern"}
@@ -44,9 +42,6 @@ def main() -> None:
     for r in rows("grants"):
         end = (r["EffectiveGrantEndDate"] or "")[:10]
         if not end or int(end[:4]) < MIN_END_YEAR:
-            continue
-        fields = codes(r["AllFieldOfResearchs"])
-        if not (set(codes(r["AllDisciplines"])) & CS_DISCIPLINES or any(f.startswith(CS_FIELDS) for f in fields)):
             continue
         gid = r["GrantNumber"].strip()
         kept.add(gid)

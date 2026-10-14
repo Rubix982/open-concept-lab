@@ -128,6 +128,7 @@ var funderNames = map[string]string{
 	"icmr":     "ICMR (India)",
 	"nsf-lk":   "NSF Sri Lanka",
 	"hec":      "HEC NRPU (Pakistan)",
+	"dfg":      "DFG (Germany)",
 }
 
 // getExplorerFunders: GET /explorer/funders — funder names and the countries each one covers.
@@ -143,8 +144,10 @@ func getExplorerFunders(w http.ResponseWriter, r *http.Request) {
 
 const grantsDataDir = "grants"
 
+// institution is optional (last): only funders that name no researcher fill it (DFG); files written
+// before it existed have the first twelve columns.
 var grantColumns = []string{"funder", "grant_id", "title", "abstract", "amount", "currency", "starts", "ends",
-	"url", "country", "scheme", "field"}
+	"url", "country", "scheme", "field", "institution"}
 var peopleColumns = []string{"funder", "grant_id", "full_name", "first_name", "last_name", "role", "institution", "orcid"}
 
 // loadFunderGrants replaces funder_grants / funder_grant_people with the normalised CSVs.
@@ -172,7 +175,8 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 	if _, err := tx.Exec(`
 		DELETE FROM funder_grants; DELETE FROM funder_grant_people; -- not TRUNCATE: readers keep the old rows
 		CREATE TEMP TABLE fg_stage (funder text, grant_id text, title text, abstract text, amount text,
-		  currency text, starts text, ends text, url text, country text, scheme text, field text) ON COMMIT DROP;
+		  currency text, starts text, ends text, url text, country text, scheme text, field text,
+		  institution text) ON COMMIT DROP;
 		CREATE TEMP TABLE fp_stage (funder text, grant_id text, full_name text, first_name text, last_name text,
 		  role text, institution text, orcid text) ON COMMIT DROP;`); err != nil {
 		return fmt.Errorf("failed to prepare funder grant staging: %w", err)
@@ -192,11 +196,12 @@ func loadFunderGrants(mainCtx *colly.Context) error {
 	}
 
 	if _, err := tx.Exec(`
-		INSERT INTO funder_grants
+		INSERT INTO funder_grants (funder, grant_id, title, abstract, amount, currency, starts, ends, url, country,
+		                           scheme, field, institution)
 		SELECT DISTINCT ON (funder, grant_id) funder, grant_id, html_unescape(title), NULLIF(html_unescape(abstract), ''),
 		       NULLIF(amount, '')::numeric, NULLIF(currency, ''),
 		       NULLIF(starts, '')::date, NULLIF(ends, '')::date, NULLIF(url, ''), lower(NULLIF(country, '')),
-		       NULLIF(scheme, ''), NULLIF(field, '')
+		       NULLIF(scheme, ''), NULLIF(field, ''), NULLIF(institution, '')
 		FROM fg_stage WHERE COALESCE(title, '') <> ''
 		ORDER BY funder, grant_id;
 
@@ -224,9 +229,12 @@ func copyCSVInto(tx *sql.Tx, path, table string, columns []string) (int, error) 
 	if err != nil {
 		return 0, fmt.Errorf("failed to read %s: %w", path, err)
 	}
-	if strings.Join(header, ",") != strings.Join(columns, ",") {
+	// The header must be the columns, or their start when the last ones are optional (grantColumns'
+	// institution); only the file's columns are copied, the rest stay NULL.
+	if len(header) > len(columns) || strings.Join(header, ",") != strings.Join(columns[:len(header)], ",") || len(header) < 8 {
 		return 0, fmt.Errorf("%s: header %v, want %v", path, header, columns)
 	}
+	columns = columns[:len(header)]
 
 	stmt, err := tx.Prepare(pq.CopyIn(table, columns...))
 	if err != nil {

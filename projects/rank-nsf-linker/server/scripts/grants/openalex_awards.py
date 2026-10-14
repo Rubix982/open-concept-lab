@@ -64,6 +64,30 @@ SOURCES: dict[str, tuple[str, str, str, str]] = {
        for p in ("zhejiang_nsf", "hunan_nsf", "fujian_nsf", "guangdong_nsf", "shanghai_nsf", "shandong_nsf",
                  "hainan_nsf", "chongqing_nsf", "heilongjiang_nsf")},
 }
+# Funders whose awards name no researcher, only the awarded institution: kept as grants held at a
+# university (no people rows), titles and facts only. DFG via OpenAlex's GEPRIS copy: OpenAlex names the
+# institution on ~2% of GEPRIS projects; DFG's own pages may not be crawled (robots.txt) and its imprint
+# asks for authors' consent before reusing abstracts. Saif approved DFG on these terms (2026-10-12).
+INSTITUTION_ONLY: dict[str, tuple[str, str, str, str]] = {
+    "gepris": ("dfg", "DFG (Germany)", "de", "facts and a link to GEPRIS only, no abstracts"),
+}
+# DFG schemes, in English (DFG's own translations), and the ones kept: research programmes that employ
+# researchers and PhD students. Equipment and library/infrastructure grants are left out.
+DFG_SCHEMES = {
+    "Sonderforschungsbereiche": "Collaborative Research Centre",
+    "Sonderforschungsbereiche (Transferprojekt)": "Collaborative Research Centre (transfer project)",
+    "Transregios": "Transregional Collaborative Research Centre",
+    "Transregios (Transferprojekt)": "Transregional Collaborative Research Centre (transfer project)",
+    "Graduiertenkollegs": "Research Training Group",
+    "Internationale Graduiertenkollegs": "International Research Training Group",
+    "Graduiertenschulen": "Graduate School",
+    "Exzellenzcluster": "Cluster of Excellence",
+    "Exzellenzcluster (ExStra)": "Cluster of Excellence",
+    "Emmy Noether-Nachwuchsgruppen": "Emmy Noether Independent Junior Research Group",
+    "Forschungsgruppen": "Research Unit",
+    "Schwerpunktprogramme": "Priority Programme",
+}
+
 # Funders whose investigators are named in Chinese characters: mainland researchers write their
 # names in pinyin, Taiwanese ones in Wade-Giles (see taiwan_name).
 PINYIN = {"nsfc", "cn-prov"}
@@ -245,12 +269,38 @@ def institution(r: dict, lead: dict | None) -> str:
     return own
 
 
+def institution_only(r: dict, src: tuple[str, str, str, str], title: str) -> dict | None:
+    """A grant row with its awarded institution and no people, or None (no institution, a scheme not
+    kept, ended before FROM_YEAR)."""
+    funder, _name, country, _terms = src
+    inst = institution(r, None)
+    scheme = DFG_SCHEMES.get((r.get("funder_scheme") or "").strip()) if funder == "dfg" else r.get("funder_scheme")
+    last_year = r.get("end_year") or r.get("start_year")
+    if not inst or not scheme or (last_year and int(last_year) < FROM_YEAR):
+        return None
+    host = next((i.get("country_code") for i in r.get("institution_awarded") or [] if i.get("country_code")), None)
+    return {
+        "funder": funder, "grant_id": (r.get("funder_award_id") or r["id"].rsplit("/", 1)[-1]).strip(),
+        "title": title, "abstract": "", "amount": r.get("amount") or "", "currency": r.get("currency") or "",
+        "starts": r.get("start_date") or (f"{r['start_year']}-01-01" if r.get("start_year") else ""),
+        "ends": r.get("end_date") or (f"{r['end_year']}-12-31" if r.get("end_year") else ""),
+        "url": r.get("landing_page_url") or r["id"], "country": (host or country).lower(),
+        "scheme": scheme, "institution": inst,
+        "field": ((r.get("primary_topic") or {}).get("field") or {}).get("display_name") or "",
+    }
+
+
 def build(paths: list[Path]) -> None:
     grants: dict[str, list[dict]] = collections.defaultdict(list)
     people: dict[str, list[dict]] = collections.defaultdict(list)
     for r in records(paths):
-        src = SOURCES.get(r.get("provenance") or "")
         title = (r.get("display_name") or "").strip()
+        if (only := INSTITUTION_ONLY.get(r.get("provenance") or "")) and title:
+            title = " ".join(title.split())  # GEPRIS titles can carry line breaks
+            if (row := institution_only(r, only, title)):
+                grants[only[0]].append(row)
+            continue
+        src = SOURCES.get(r.get("provenance") or "")
         lead = r.get("lead_investigator")
         if not src or not title or not person(lead):
             continue
@@ -310,7 +360,7 @@ def build(paths: list[Path]) -> None:
                 else:
                     left += 1
     print(f"  institutions in characters: {fixed} named in English, {left} not found")
-    for funder in sorted({v[0] for v in SOURCES.values()}):
+    for funder in sorted({v[0] for v in SOURCES.values()} | {v[0] for v in INSTITUTION_ONLY.values()}):
         write(funder, grants[funder], people[funder])
 
 

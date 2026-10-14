@@ -7,6 +7,9 @@ would stack a city's universities on one dot). fields.py then loads their resear
 
 Usage: extra_universities.py pk 20 "Lahore University of Management Sciences=LUMS" "FAST ..." ...
   a name "X=Y" searches OpenAlex for X and lists it as Y (Y is the map's existing name, e.g. LUMS).
+--skip=I1,I2 leaves those OpenAlex institutions out (merged or defunct universities OpenAlex still
+lists: Pierre-et-Marie-Curie is part of Sorbonne Université since 2018). The top N skips universities already on the map (matched to OpenAlex the way fields.py matches
+them), so a country that CSRankings covers in part gets N more, not duplicates under other names.
 Responses cached in data/openalex/extra/. Nominatim: one request a second, identified; ODbL.
 """
 
@@ -68,13 +71,24 @@ def campus(name: str, city: str, country: str):
     return None
 
 
+def map_ids() -> set[str]:
+    """OpenAlex ids of the universities already on the map (CSRankings' and earlier extra rows),
+    without API calls: fields.py's matching on the local institutions snapshot."""
+    from fields import resolve_institutions  # noqa: E402 (heavy: reads the snapshot)
+    return {v["id"] for v in resolve_institutions(None)[0].values()}
+
+
 def main() -> None:
-    country, top = sys.argv[1].lower(), int(sys.argv[2])
-    named = [a.split("=", 1) if "=" in a else [a, ""] for a in sys.argv[3:]]
+    args = [a for a in sys.argv[1:] if not a.startswith("--skip=")]
+    skip = {i for a in sys.argv[1:] if a.startswith("--skip=") for i in a[7:].split(",") if i}
+    country, top = args[0].lower(), int(args[1])
+    named = [a.split("=", 1) if "=" in a else [a, ""] for a in args[2:]]
     key = api_key()
     sel = "id,display_name,works_count,geo,homepage_url"
+    on_map = map_ids() | skip
     picks = openalex({"filter": f"country_code:{country},type:education", "sort": "works_count:desc",
-                      "per_page": top, "select": sel}, key)["results"]
+                      "per_page": 200, "select": sel}, key)["results"]
+    picks = [i for i in picks if i["id"].rsplit("/", 1)[-1] not in on_map][:top]
     rows = [(i, i["display_name"]) for i in picks]
     for search, as_name in named:
         hit = (openalex({"search": search, "filter": f"country_code:{country}", "per_page": 1, "select": sel},
