@@ -472,7 +472,7 @@ to contradiction. [T-086] has no candidate.
 
 ### R-014 · Do other propagation benchmarks name the edited subject in their different-entity tests?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** research
 **Priority:** high
 **Created:** 2026-10-14
@@ -542,10 +542,19 @@ our reading.
 The value is that this makes MQuAKE a **within-benchmark control nobody has to
 construct** — [E-039].
 
-**Still open:** RippleBench (2512.04144) and EditPropBench (2605.02083) are not counted.
-The ticket remains in-progress for them.
+**The other two arms, chased 2026-10-14 — see [R-014b].** RippleBench has **no released
+materials** that could be found: zero GitHub repositories under the name, no data link in
+the abstract. Blocked, not answered. EditPropBench is **out of scope** — its abstract
+confirms it measures edit propagation in *scientific manuscripts* edited by LLM editors,
+so there is no edited subject's key to be present or absent in a prompt. Dropped, not
+blocked.
+
+**So the finding stands on two benchmarks, not three**, which is enough for the contrast
+and not enough for a claim about the field. The ticket closes on that basis rather than
+staying open against data that may not exist.
 
 **Artifacts:** agents/engineer/workspace/fetch_mquake.py;
 agents/engineer/workspace/mquake_forms.py; results/R-014-mquake-forms.json;
 agents/shared/findings.md -> "[R-014] Finding"
-**Closed:** — (MQuAKE arm done; two benchmarks remain)
+agents/shared/findings.md -> "[R-014b] Finding"
+**Closed:** 2026-10-14 — on two benchmarks, with the third blocked and the fourth dropped

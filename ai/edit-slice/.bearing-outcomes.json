@@ -18,6 +18,12 @@
    "verdict": "caught",
    "note": "fired on \u00a77 of the live paper after R-013 was recorded but the write-up was not fixed",
    "date": "2026-10-14"
+  },
+  {
+   "check": "named_after_runs",
+   "verdict": "false-positive",
+   "note": "scored a vague heading as a claim because 'does' was in its auxiliary list, and a precise one as not because 'displaces' was not; also counted structural headings written to be labels. Fixed 2026-10-14: lexical verbs recognised, scope restricted to results subsections.",
+   "date": "2026-10-14"
   }
  ]
 }

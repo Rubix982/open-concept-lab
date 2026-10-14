@@ -18,9 +18,13 @@ from bearing import checks  # noqa: E402
 from bearing.record import Item, Record  # noqa: E402
 
 
-def rec(work=(), questions=(), results=(), claims="") -> Record:
-    return Record(root="/tmp/x", work=list(work), questions=list(questions),
-                  results=list(results), claims_text=claims, claims_path="")
+def rec(work=(), questions=(), results=(), claims="", claims_path="", root="/tmp/x") -> Record:
+    # claims_path/root are needed by summary_staleness, which reads real git history.
+    if claims_path and not claims:
+        with open(claims_path, encoding="utf-8") as fh:
+            claims = fh.read()
+    return Record(root=root, work=list(work), questions=list(questions),
+                  results=list(results), claims_text=claims, claims_path=claims_path)
 
 
 def item(i, body="", status="closed", title="t"):
@@ -82,12 +86,85 @@ def test_named_after_runs_both_ways():
     assert not checks.named_after_runs(claimy)["bad"]
 
 
+def test_named_after_runs_does_not_punish_a_lexical_verb():
+    """The 2026-10-14 false positive, both halves of it.
+
+    A heading was rewritten from "What the edit DOES to the rest of the subject" into
+    "An edit DISPLACES probes whose answer type MATCHES the injected value" — strictly
+    more claim-shaped — and the check's score got WORSE, because its verb list held
+    auxiliaries only and "does" is one. It also counted a paper's structural headings,
+    asking sections written to be labels to assert something.
+    """
+    lexical = rec(claims="## 2 · Results\n" + "\n".join(
+        f"### 4.{n} · An edit displaces probes whose answer type matches value {n}"
+        for n in range(6)))
+    assert not checks.named_after_runs(lexical)["bad"], "a lexical verb is still a claim"
+
+    # Structural headings outside Results must not drag the score down.
+    scoped = rec(claims=(
+        "## 1 · The question\n## 2 · Related work, and what we do not claim\n"
+        "## 3 · Method\n## 4 · Results\n"
+        + "\n".join(f"### 4.{n} · The coefficient is pinned at the subject, case {n}"
+                     for n in range(4))
+        + "\n## 5 · What to attack\n## 6 · What we would like decided\n"
+          "## 7 · What is open\n"))
+    out = checks.named_after_runs(scoped)
+    assert not out["bad"], out["say"]
+    assert out["detail"]["scoped_to_results"] is True
+
+    # and the check must still be able to fire, on results sections named after runs
+    runs = rec(claims="## 2 · Results\n" + "\n".join(
+        f"### 4.{n} · The layer sweep at depth {n}" for n in range(6)))
+    assert checks.named_after_runs(runs)["bad"]
+
+
 def test_open_questions_accumulating():
     piling = rec(questions=[item(str(n), status="open") for n in range(12)])
     assert checks.open_question_age(piling)["bad"]
     tended = rec(questions=[item(str(n), status="answered") for n in range(12)]
                  + [item("x", status="open")])
     assert not checks.open_question_age(tended)["bad"]
+
+
+def test_summary_staleness_sees_an_edit_to_the_body():
+    """A real git repo, because the bug was in how the git arguments were built.
+
+    Twice wrong: first `-S <heading>`, whose pickaxe fires only when the count of that
+    string changes — so it dated the summary to the day the heading was created and never
+    moved again, reporting a stale abstract as fresh. Then `-L` built with `re.escape`,
+    which produces Python regex where git wants POSIX BRE. Neither raised; both returned
+    a plausible date. Only a repo with a known history catches that.
+    """
+    import subprocess
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as d:
+        def git(*a):
+            subprocess.run(["git", *a], cwd=d, capture_output=True, check=True)
+        git("init", "-q")
+        git("config", "user.email", "t@t"); git("config", "user.name", "t")
+        doc = os.path.join(d, "review.md")
+
+        def write(body):
+            with open(doc, "w", encoding="utf-8") as fh:
+                fh.write(f"# Title\n\n## Abstract\n\n{body}\n\n## Method\n\nx\n")
+
+        write("first version of the summary")
+        git("add", "-A"); git("commit", "-qm", "add")
+        # a commit that does NOT touch the abstract
+        with open(os.path.join(d, "other.txt"), "w") as fh:
+            fh.write("x")
+        git("add", "-A"); git("commit", "-qm", "unrelated")
+        fresh = checks.summary_staleness(rec(claims_path=doc, root=d))
+        assert fresh["detail"].get("commits_since") == 1, fresh
+
+        # now rewrite the abstract's BODY, leaving the heading untouched
+        write("a completely rewritten summary naming the new result")
+        git("add", "-A"); git("commit", "-qm", "rewrite the abstract")
+        after = checks.summary_staleness(rec(claims_path=doc, root=d))
+        assert after["detail"].get("commits_since") == 0, (
+            "an edit to the abstract's body must reset staleness; got " + str(after))
+        assert not after["bad"]
 
 
 def test_every_check_runs_on_an_empty_record():

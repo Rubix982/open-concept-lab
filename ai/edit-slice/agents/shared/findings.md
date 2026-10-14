@@ -1681,3 +1681,36 @@ covers one benchmark beyond RippleEdits — RippleBench (2512.04144) and EditPro
 
 **Artifacts:** agents/engineer/workspace/fetch_mquake.py;
 agents/engineer/workspace/mquake_forms.py; results/R-014-mquake-forms.json
+
+## [R-014b] Finding: the other two benchmarks cannot be counted, for two different reasons
+
+_Date: 2026-10-14_
+
+[R-014] left RippleBench (2512.04144) and EditPropBench (2605.02083) uncounted. Both were
+chased and neither arm can run; the reasons differ and only one is a blocker.
+
+**RippleBench — no released materials found.** GitHub's repository search returns **zero**
+repositories for the name, and the arXiv abstract links no code or data. The paper resolves
+and the title is confirmed — *"RippleBench: Capturing Ripple Effects Using Existing
+Knowledge Repositories"* — so this is an availability problem, not an identification one.
+**The arm is blocked, not answered.** If the data appears, the count is an hour's work and
+the script is `mquake_forms.py` with one predicate changed.
+
+**EditPropBench — out of scope, and this project already knew.** The abstract confirms what
+`CLAUDE.md`'s literature section records: *"Measuring Factual Edit Propagation in Scientific
+Manuscripts"* — manuscripts edited by LLM editors, not weights edited by ROME. There is no
+"edited subject's key" to be present or absent in a prompt, so **[R-014]'s question does not
+apply to it** and counting it would be a category error dressed as diligence. The arm is
+**dropped**, not blocked.
+
+**What this means for the claim.** [R-014]'s finding stands on **two** benchmarks —
+RippleEdits and MQuAKE — not the three the ticket scoped. That is enough to establish the
+contrast (one construction names the edited subject, the other does so only on hop 1) and
+**not** enough to say anything about the field as a whole. §4.6 is written to the two it has.
+
+**Confidence: high** on EditPropBench being out of scope, **medium** on RippleBench having
+no public release — absence of a GitHub repository under that name is evidence, not proof,
+and the authors may host it elsewhere.
+
+**Artifacts:** none — this is a negative result about data availability, recorded so the
+next person does not spend the same hour.

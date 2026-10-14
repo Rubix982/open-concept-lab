@@ -7,3 +7,7 @@
 2026-10-14 18:32:18,784 WARNING  remote  transport failure (ConnectionError: Connection error) during 'Biksēre', attempt 1/8; retrying in 5s
 2026-10-14 18:32:29,045 WARNING  remote  transport failure (ConnectionError: Connection error) during 'Biksēre', attempt 2/8; retrying in 10s
 2026-10-14 18:33:49,117 INFO     run_e037    60/2578 entries
+2026-10-14 18:35:37,730 INFO     run_e037    80/2578 entries
+2026-10-14 18:37:26,489 INFO     run_e037    100/2578 entries
+2026-10-14 18:39:11,543 INFO     run_e037    120/2578 entries
+2026-10-14 18:41:08,865 INFO     run_e037    140/2578 entries

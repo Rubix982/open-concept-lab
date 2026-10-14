@@ -44,6 +44,16 @@ statement about **delivery**, not about effect: holding it at exactly 1 and matc
 strength, the same update applied at layer 20 instead of layer 5 reaches **2.96× less
 far**.
 
+Those are our probes, so we ran the identical measurement on two published benchmarks'
+**own** materials. On RippleEdits' edits and test prompts at the layer EasyEdit ships, the
+same-entity criteria receive **0.969–1.000** of the update against a floor of **0.070**
+built by scoring every prompt a second time against a stranger's edit — and its
+*compositional* tests, which ask about a **different** entity, receive **0.982**, because
+their prompts name the edited subject verbatim. That construction is not universal: MQuAKE
+names the edited subject in a multi-hop question exactly when the edit sits on the chain's
+first hop — **6,861 of 6,861** — and never otherwise — **0 of 16,506**. One benchmark's
+different-entity tests are reached by arithmetic; the other's, mostly, are not.
+
 </div>
 
 ## Figures and tables
@@ -63,7 +73,7 @@ far**.
 | **Table 8** | The relation crossover — six arms, two models (§4.5) |
 | **Table 9** | The pinning across a 68× parameter range (§4.3) |
 | **Table 10** | Open threads, what each would decide, and what it costs (§8) |
-| **Table 11** | The measurement on RippleEdits' own prompts, against a floor built from them (§4.6) |
+| **Table 11** | RippleEdits' own prompts receive 0.969–1.000 against a 0.070 floor (§4.6) |
 | **Table 12** | MQuAKE names the edited subject iff the edit is on hop 1 (§4.6) |
 
 ## 1 · The question
@@ -645,7 +655,7 @@ The claim is unchanged in content and narrower in what it licenses:
 What no longer follows is *how far that probe's answer will move*. §4.1's position ablation
 stands as a **layer-5** result.
 
-### 4.5 · What the edit does to the rest of the subject
+### 4.5 · An edit displaces probes whose answer type matches the injected value
 
 _Records: <Evidence id="E-024" /> · <Evidence id="E-025" /> · <Evidence id="E-029" /> · <Evidence id="E-033" />_
 
@@ -725,7 +735,7 @@ efficacy-metric critique we had begun to build does not survive at layer 5.
 at exactly 1.000 for precisely the probes in question, so it has **zero variance where the
 outcome varies most**. Whatever governs propagation magnitude is none of the three.
 
-### 4.6 · The same measurement, on a published benchmark's own materials
+### 4.6 · A benchmark's different-entity tests still name the edited subject
 
 Everything above is measured on probes we wrote, and the obvious objection is that our
 probe shapes produced the result. RippleEdits <Cite id="cohen2024ripple" /> ships 4,755

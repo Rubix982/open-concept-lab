@@ -106,13 +106,43 @@ def summary_staleness(r: Record) -> dict:
     try:
         repo = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=r.root,
                               capture_output=True, text=True).stdout.strip()
-        last = subprocess.run(["git", "log", "-1", "--format=%cd", "--date=short",
-                               "-S", anchor.strip(), "--", r.claims_path],
-                              cwd=repo, capture_output=True, text=True).stdout.strip()
+        # `-L <start regex>,<end regex>:<file>` dates the last change to the summary's
+        # BODY. The first version used `-S <the heading>`, whose pickaxe fires only when
+        # the count of that string changes — i.e. on the commit that CREATED the heading,
+        # and never again. It reported edit-slice's summary as last moved 2026-09-20, the
+        # day "## Abstract" was first written, while the abstract itself had been rewritten
+        # since. A staleness check that cannot see an edit is worse than no check, because
+        # it reads as a clean bill.
+        # realpath both sides: on macOS `git rev-parse --show-toplevel` returns
+        # /private/var/... while the configured path is /var/... (a symlink), and
+        # `relpath` then produced a `../../..`-prefixed path that `-L` silently rejected,
+        # falling through to the `-S` branch this fix exists to replace. The fallback
+        # masked the failure — it returned a plausible date, so nothing looked broken.
+        rel = os.path.relpath(os.path.realpath(r.claims_path), os.path.realpath(repo))
+        # git's -L takes POSIX BRE, not Python regex. `re.escape` is wrong here twice
+        # over: it escapes `#` and the space (harmless in Python, meaningless in BRE) and
+        # it would not have escaped BRE's own metacharacters correctly anyway. Escape the
+        # five that matter, and build the stop pattern from the anchor's own heading level
+        # so `{1,2}` — which BRE requires written `\{1,2\}` — is never needed.
+        head_mark = anchor.strip().split(" ")[0]       # "#" or "##"
+        bre = re.sub(r"([.*\[\]^$\\])", r"\\\1", anchor.strip())
+        got = subprocess.run(
+            ["git", "log", "-1", "--format=%H %cd", "--date=short", "-s",
+             f"-L/^{bre}$/,/^{head_mark} /:{rel}"],
+            cwd=repo, capture_output=True, text=True).stdout.strip()
+        if not got:   # file untracked, or the range did not resolve — fall back
+            got = subprocess.run(["git", "log", "-1", "--format=%H %cd", "--date=short",
+                                  "-S", anchor.strip(), "--", r.claims_path],
+                                 cwd=repo, capture_output=True, text=True).stdout.strip()
+        sha, _, last = got.partition(" ")
         if not last:
             return {"q": "Is the summary still about this project?", "bad": False,
                     "why": "", "say": "no history for the summary", "detail": {}}
-        since = subprocess.run(["git", "log", "--oneline", f"--since={last}", "--", r.root],
+        # Count from the COMMIT, not from its date. `--since=<yyyy-mm-dd>` has day
+        # granularity, so every commit made on the same day as the summary edit counted
+        # as "since" it — a summary rewritten this morning read as stale by this
+        # afternoon. The sha range is exact.
+        since = subprocess.run(["git", "log", "--oneline", f"{sha}..HEAD", "--", r.root],
                                cwd=repo, capture_output=True, text=True).stdout
     except Exception:
         return {"q": "Is the summary still about this project?", "bad": False,
@@ -125,23 +155,55 @@ def summary_staleness(r: Record) -> dict:
             "detail": {"anchor": anchor.strip()[:50], "last": last, "commits_since": n}}
 
 
+#: Headings that open with one of these are naming an activity or a question, not a claim.
+_WH = re.compile(r"^(?:What|How|Why|Which|Where|Whether|When)\b", re.I)
+_GERUND = re.compile(r"^\w+ing\b", re.I)
+#: A copula or auxiliary, OR a lexical verb in third person. The list was auxiliaries only
+#: until 2026-10-14, when it scored "What the edit DOES to the rest of the subject" as a
+#: claim and "An edit DISPLACES probes whose answer type MATCHES the injected value" as
+#: not one — exactly backwards, and it penalised a heading for being rewritten into the
+#: shape this check exists to encourage. See outcomes: false-positive, named_after_runs.
+_VERB = re.compile(r"\b(?:is|are|not|does|do|did|was|were|has|have|had|cannot|can|must|"
+                   r"should|will|\w{3,}(?:es|s))\b", re.I)
+
+
 def named_after_runs(r: Record) -> dict:
-    """Are the write-up's sections named after claims, or after the work that produced them?"""
-    secs = re.findall(r"^#{2,3} (?:\d+(?:\.\d+)? ?[·.-] ?)?(.+?)$", r.claims_text, re.M)
+    """Are the write-up's RESULTS sections named after claims, or after the work?
+
+    Scoped to results subsections on purpose. A paper's structural headings — Method,
+    Related work, What to attack, What is open — *should* be labels, and counting them
+    was the second half of this check's 2026-10-14 false positive: it asked a document to
+    assert something in headings written to do the opposite. Where no results section can
+    be identified, it falls back to every heading and says so.
+    """
+    text = r.claims_text
+    # The results block: from a top-level heading containing "Result" to the next one.
+    m = re.search(r"^##\s*(?:\d+\s*[·.-]\s*)?Results?\b.*$", text, re.M | re.I)
+    scoped = True
+    if m:
+        nxt = re.search(r"^##\s", text[m.end():], re.M)
+        block = text[m.end(): m.end() + nxt.start()] if nxt else text[m.end():]
+        secs = re.findall(r"^#{3} (?:\d+(?:\.\d+)? ?[·.-] ?)?(.+?)$", block, re.M)
+    else:
+        scoped = False
+        secs = re.findall(r"^#{2,3} (?:\d+(?:\.\d+)? ?[·.-] ?)?(.+?)$", text, re.M)
     secs = [s for s in secs if len(s) > 8][:40]
     if not secs:
         return {"q": "Are sections named after claims, or after runs?", "bad": False,
                 "why": "", "say": "no sections found", "detail": []}
     assertive = [s for s in secs
-                 if re.search(r"\b(is|are|not|does|cannot|was|were|do|has)\b", s, re.I)]
+                 if not _WH.match(s) and not _GERUND.match(s) and _VERB.search(s)]
     frac = len(assertive) / len(secs)
     return {"q": "Are sections named after claims, or after runs?", "bad": frac < 0.4,
             "why": "a write-up organised by experiment makes the reader build the argument",
-            "say": (f"**{len(secs) - len(assertive)} of {len(secs)}** sections name what was "
-                    f"done rather than what it shows."
+            "say": (f"**{len(secs) - len(assertive)} of {len(secs)}** "
+                    f"{'results ' if scoped else ''}sections name what was done rather "
+                    f"than what it shows."
                     if frac < 0.4 else
-                    f"{len(assertive)} of {len(secs)} sections assert something."),
-            "detail": secs[:10]}
+                    f"{len(assertive)} of {len(secs)} "
+                    f"{'results ' if scoped else ''}sections assert something."),
+            "detail": {"scoped_to_results": scoped,
+                       "not_assertive": [x for x in secs if x not in assertive][:10]}}
 
 
 def priced_and_unrun(r: Record) -> dict:
