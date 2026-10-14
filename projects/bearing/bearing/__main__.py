@@ -22,6 +22,9 @@ def main(argv=None) -> int:
     ap.add_argument("project")
     ap.add_argument("--adapter", choices=sorted(ADAPTERS))
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--brief", action="store_true",
+                    help="re-entry brief: what changed, and what needs you")
+    ap.add_argument("--since", default="7.days")
     a = ap.parse_args(argv)
 
     rec = load(a.project, a.adapter)
@@ -31,6 +34,11 @@ def main(argv=None) -> int:
               f"  configure one in .bearing.json, or write ~30 lines in record.py",
               file=sys.stderr)
         return 2
+    if a.brief:
+        from .brief import render
+        print(render(rec, a.since))
+        return 0
+
     res = run_all(rec)
     if a.json:
         print(json.dumps({"project": rec.name, "checks": res}, indent=1, default=str))

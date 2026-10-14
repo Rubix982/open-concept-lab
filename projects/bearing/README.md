@@ -40,6 +40,33 @@ Every check is phrased so that the **bad answer is the computable one**. A check
 cannot come back bad is a horoscope, and the first version of two checks here cried wolf
 and were fixed rather than tolerated — a checker people learn to skip is worse than none.
 
+## The brief
+
+```bash
+python -m bearing <project> --brief --since 7.days
+```
+
+The reason this project exists in the form it does. Its author has an hour a week, not a
+day, and twice in one session came back asking *"what happened in between?"* — each time
+the answer had to be reconstructed by hand.
+
+**The scarce resource is not time at the laptop. It is context reload.** An hour that
+starts with forty minutes of remembering is twenty minutes of research. The brief exists
+to make that five.
+
+```
+1 · NEEDS YOU          decisions only a person can make. Nothing else.
+2 · WHAT MOVED         since you were last here
+3 · WHAT THE RECORD SAYS   drift
+4 · WHAT IS WAITING    queued, blocked, priced-and-unrun
+```
+
+Ordered to be read top-down and **abandoned at any point**. Section 1 is the only part
+that is yours; the rest exists so you can trust that and stop reading.
+
+Nothing in it interprets a result. A brief that told you what your findings meant would be
+the one thing the design forbids, wearing a friendlier format.
+
 ## What it reads
 
 A project's record, through an adapter. One adapter ships: `agentic`, for the
