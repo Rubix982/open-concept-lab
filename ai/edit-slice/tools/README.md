@@ -10,7 +10,36 @@ tools/report.py      one page per run, readable mid-run, what needs a person fir
 tools/watch.py       the loop: preflight → run → triage → report → next
 tools/dryruns/       verdict bands exercised on known-answer data, kept in the repo
 tools/queue.json     pre-registered work. A person writes it; the loop only runs it.
+tools/navigator.py   uncomfortable questions about the DIRECTION of the work
 ```
+
+## The navigator
+
+`preflight` and `triage` watch results. `navigator` watches the **sequence** — the property
+that produced *"we have dug ourselves too deep into narrow cases"* on 2026-10-14, after a
+week in which every closed ticket was a finer measurement of our own instrument.
+
+Seven questions, each phrased so that the **bad** answer is the computable one. A check
+that cannot come back bad is a horoscope.
+
+| it asks | because |
+| --- | --- |
+| What have you never varied? | `[T-065]`: every narrowing here came from unfixing something |
+| Instrument, or the world? | a run of inward work is how a project loses its point |
+| Does the write-up cite unfinished work? | §4.5 asserted a withdrawn claim for nine days |
+| Is the abstract still about this project? | the summary drifts from the findings silently |
+| Named after claims, or after runs? | a paper organised by experiment makes the reader build the argument |
+| What did you price and not do? | the honestly-costed item is the one that gets postponed |
+| Stopped withdrawing — better, or not checking? | both look identical from inside |
+
+**It has no taste.** It catches drift, not direction. A project can pass every question and
+still be pointed somewhere that does not matter — which is why this is a tool for the
+person steering, not a replacement for them.
+
+Two of its checks were wrong on first run and were fixed rather than tolerated: one counted
+a finding as an unfinished ticket, the other counted open threads in §8 — which exists to
+list open threads — as claim debt. **A checker that cries wolf is one people learn to
+skip**, the same lesson `preflight`'s cache rule taught.
 
 ## The rule
 
