@@ -3402,3 +3402,61 @@ a[class*="tagWithCount"] span::after {
   font-size: 0.95em;
   color: inherit;
 }
+
+/* ---------------------------------------------------------------- /agentic
+   The section listing agentic efforts. Mirrors .ocl-ship__* in structure —
+   a left-hand sample beside a right-hand body — but the sample is real
+   terminal output rather than a screenshot, because these tools have no UI
+   and a mocked-up one would be a fabrication. */
+.ocl-ag__entry {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: 1.75rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--ocl-rule);
+  align-items: start;
+}
+.ocl-ag__entryShot { min-width: 0; }
+.ocl-ag__sample {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  background: var(--ocl-paper-raised);
+  border: 1px solid var(--ocl-rule);
+  font-size: 0.74rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--ocl-ink-muted);
+}
+.ocl-ag__entryBody { min-width: 0; }
+.ocl-ag__entryTitle { font-size: 1.2rem; margin: 0 0 0.4rem; }
+.ocl-ag__entryWhat { margin: 0 0 0.6rem; }
+.ocl-ag__entryMeta { margin: 0 0 0.8rem; color: var(--ocl-ink-muted); font-size: 0.85rem; }
+.ocl-ag__actions { margin: 0; display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.ocl-ag__primary { font-weight: 600; }
+
+.ocl-ag__sec { margin: 2.25rem 0; }
+.ocl-ag__sec h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.7rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+.ocl-ag__dl { margin: 0; }
+.ocl-ag__dlRow { padding: 0.7rem 0; border-bottom: 1px solid var(--ocl-rule); }
+.ocl-ag__dlRow dt { font-weight: 600; margin: 0 0 0.25rem; }
+.ocl-ag__dlRow dd { margin: 0; color: var(--ocl-ink-muted); }
+.ocl-ag__steps, .ocl-ag__plain { margin: 0; padding-left: 1.2rem; }
+.ocl-ag__steps li, .ocl-ag__plain li { margin: 0.5rem 0; }
+.ocl-ag__limit { border-left: 3px solid var(--ocl-rule-strong); padding-left: 1.1rem; }
+.ocl-page__kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-muted);
+}
+
+@media (max-width: 720px) {
+  .ocl-ag__entry { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+}

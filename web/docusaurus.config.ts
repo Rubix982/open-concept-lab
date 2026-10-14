@@ -157,7 +157,7 @@ const config: Config = {
         },
         { to: "/labs", label: "Labs", position: "left" },
         { to: "/reading", label: "Reading", position: "left" },
-        { to: "/practice", label: "Practice", position: "left" },
+        { to: "/agentic", label: "Agentic", position: "left" },
         { to: "/shipped", label: "Shipped", position: "left" },
         { to: "/built", label: "Built", position: "left" },
         { type: "search", position: "right" },

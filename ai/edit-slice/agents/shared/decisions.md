@@ -2556,12 +2556,25 @@ and says nothing about how far an answer moves ([E-028d]: those differ by 2.96×
 
 ### What does not hold, and why
 
-**Compositionality I cannot test its own prediction, and the ticket said so before the
-run.** Its prompts reach a *different* entity through a hop — *"the head of government of
-the place of death of Leo Arons"* — but the original subject is still present, and the
-coefficient was read at **its** last token. Of course it matches `k*`; it *is* the subject's
-key. Confound 3 of the ticket named this exactly and the run shipped anyway. The 0.983
-is a measurement of the wrong position and is not evidence about different entities.
+**Compositionality I — this entry's first version was wrong about its own result, and the
+correction runs the other way.** That version said the 0.983 "measures the wrong position
+and is not evidence about different entities". Checking the data afterwards: their
+compositional prompts *contain the edited subject verbatim* — *"the name of the head of
+government of the place of death of **Leo Arons** is"*. The coefficient was read at that
+subject's last token, which is exactly where the update lands, so **the measurement is
+correct and the prediction was wrong.**
+
+What was wrong was the ticket's prediction of a floor, which assumed "the test is about a
+different entity" implies "the prompt does not name the edited one". It does not, in their
+design. So the honest reading of 0.983 is the opposite of an artifact: **RippleEdits'
+compositional tests, which probe a fact about a different entity reached through the edited
+one, still name the edited subject and still receive essentially the whole update at that
+token.** That is the strongest form of the concern in this run, and the first draft of this
+entry buried it as a measurement error.
+
+*Recorded rather than silently fixed, because the shape repeats:* a prediction was made
+from a property of the benchmark nobody had checked — which is [R-013] again, one level
+down, three hours later.
 
 **Subject Aliasing was not underpowered by accident — it was selected against.** The entry
 filter required the canonical label to appear in the prompt. An aliasing test uses a
