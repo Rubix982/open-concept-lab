@@ -7,7 +7,8 @@ OPTIMISE the target vector v* by gradient descent through the frozen model.
 If (a) fails the edit cannot be applied to a shared remote model at all.
 If (b) fails v* must be computed elsewhere, which needs local weights.
 """
-import os, torch
+import os
+import torch
 from nnsight import CONFIG, LanguageModel
 CONFIG.set_default_api_key(os.environ["NNSIGHT_API_KEY"])
 

@@ -7,7 +7,6 @@ fetched. 174 QIDs, one bounded fetch.
 Writes a NEW dated snapshot rather than mutating the pinned one, so every earlier
 result stays reproducible against the snapshot that produced it.
 """
-import gzip
 import json
 import sys
 from pathlib import Path

@@ -5,12 +5,10 @@ edit of a fact the model holds, so the comparison to the real edit is like-for-l
 Four candidate phrasings, scored by whether the model's top token matches the
 subject's true occupation.
 """
-import gzip
 import json
 import sys
 from pathlib import Path
 
-import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 from logs import setup  # noqa: E402

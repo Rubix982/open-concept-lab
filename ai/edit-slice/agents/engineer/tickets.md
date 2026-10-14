@@ -2580,3 +2580,59 @@ injected value's type?
 **Blockers:** none.
 **Artifacts:** _(on close)_
 **Closed:** —
+
+---
+
+### E-034 · An unattended runner, ported from janaan's pipeline
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-14
+**Updated:** 2026-10-14
+
+**Description:**
+
+Runs here are launched by hand, watched by hand, and read by hand. That has cost this
+project more than any wrong hypothesis:
+
+| loss | hours | would a gate have caught it? |
+| --- | ---: | --- |
+| partial delta cache read as complete ([E-033]) | ~1 | **yes** — completeness assert |
+| layer absent from the scores cache key ([E-033]) | ~0 (caught) | **yes** — fingerprint assert |
+| `optimise()` reading a flaky node as an oversized batch | ~1 | **yes** — triage on the exception class |
+| two NDIF jobs hung in `RECEIVED` | **~144** | **yes** — watchdog, now partly covered by `CALL_TIMEOUT_S` |
+| §4.5 asserting a claim §5.1 had withdrawn | — | **yes** — claim audit |
+| [E-026]'s gate measuring the wrong quantity | ~2 | **no** — conceptual, no gate catches it |
+
+`~/code/janaan/tools/pipeline` solves this shape already. Port the parts that transfer.
+
+**In scope.**
+
+1. **`preflight.py`** — escalating gates before any remote work, janaan's `batch.py` order:
+   lint and import (seconds) → the run's own report path against known-answer data
+   (seconds) → cache fingerprint completeness (seconds) → a 2-call remote smoke (one
+   minute). Only then the real run. Refuses rather than warns.
+2. **`triage.py`** — janaan's `ledger.py` for our logs. Every WARNING/ERROR matched to a
+   known cause (flaky node, OOM split, cross-device sum, transport, hang, parked chunk).
+   **Unsorted is the output that matters** — a failure class we have not seen before is
+   the only thing worth a person's attention.
+3. **`report.py`** — one self-contained page per experiment, built only from what the run
+   left on disk, readable mid-run. Pre-stated bands first, then the verdict, then the
+   confounds the ticket named and whether each was checked, then the evidence.
+4. **`watch.py`** — the overnight loop: take a queue of pre-registered tickets, preflight
+   each, run it, triage it, report it, move to the next. Notify on *unsorted* only.
+
+**Out of scope, deliberately.** Janaan gives `claude -p` two judgement steps — designer and
+critic. **We give it none that touch a verdict.** Our verdicts are pre-registered band
+tests in the runner and they stay there; a model asked "is this result real?" would supply
+the confirmation bias [E-025], [E-026] and [R-012] each cost us. A brief may audit
+**process** — endpoints reported alongside drops, n stated, each pre-registered confound
+actually tested — because that is where our errors have been.
+
+**Falsification.** If the next three runs under this harness produce no caught defect and
+no unsorted triage line, the harness is overhead and should be cut back to `preflight`
+alone. Record that at the third run rather than letting it accrete.
+
+**Artifacts:** tools/ (new); agents/shared/decisions.md -> "[E-034]"
+**Closed:** —

@@ -27,7 +27,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from edit import LAYER, read_key_and_value  # noqa: E402
 from logs import setup  # noqa: E402
 from remote import connect, score_pairs  # noqa: E402
-from run_e013 import nat  # noqa: E402
 from run_e015 import WORK_TMPL  # noqa: E402
 from whiten import Whitener  # noqa: E402
 

@@ -8,7 +8,6 @@ import json
 import sys
 from pathlib import Path
 
-import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 from edit import LAYER, EditSpec, compute_v_batch, read_key_and_value  # noqa: E402
