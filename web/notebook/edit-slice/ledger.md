@@ -12,7 +12,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**39 decisions · 21 findings · 67 threads (2 active, 50 answered, 3 dropped, 4 open, 8 parked)**
+**41 decisions · 22 findings · 67 threads (1 active, 52 answered, 3 dropped, 3 open, 8 parked)**
 
 ## Decisions and results
 
@@ -174,6 +174,14 @@ _Interim · 2026-09-27_ — Runs [T-081], the third and last of [T-065]'s never-
 
 _Final · 2026-10-03_ — All six arms complete. The interim conclusion holds and sharpens. Type matching: 6 of 6, no exceptions. Across two models, two relations and two depths,…
 
+### E-034 · the loop owns execution, a person owns judgement {#E-034}
+
+_Decision · 2026-10-14_ — Decision: an unattended runner for this project, in four pieces — preflight, triage, report, watch — with a hard boundary at judgement. It owns: running…
+
+### E-036 · UNDIFFERENTIATED — and two of the six criteria could not have answered {#E-036}
+
+_Result · 2026-10-14_ — First end-to-end run under the harness: queued, preflighted in 15s, run, triaged, reported, no intervention. Zero retries. The verdict fired as…
+
 
 ## Findings
 
@@ -263,6 +271,10 @@ _2026-10-03_ — CLAUDE.md has carried eight arXiv identifiers since day one und
 
 _2026-10-03_ — [R-011] put two papers into §2 on the strength of their abstracts. [R-012] read them. Both pre-registered falsification conditions fired, in opposite…
 
+### R-013 · RippleEdits has NO subject-initial prompts — §7's premise is false {#f-R-013}
+
+_2026-10-14_ — §7 item 2 of the write-up — the project's one outward-facing consequence, priced at a week and unrun since September — rests on this sentence: It is false…
+
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._
 
@@ -270,23 +282,21 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (4)
+### Open (3)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | <span id="t-T-078"></span>`T-078` | **What reorients the subject key with depth?** — [E-020] ruled out magnitude and named attention mixing as the leading candidate without testing it. The cheapest cut is the one… | T-077 | open |
-| <span id="t-T-084"></span>`T-084` | **Is a weak edit at depth under-optimisation, or a property of depth?** — [E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against layer 5's 9.70, while achieving comparable target… | T-079 | open |
 | <span id="t-T-085"></span>`T-085` | **What does ROME's Efficacy Score fail to distinguish?** — The one thing [E-026] produced that its failure does not touch. ROME's ES is P(target) &gt; P(true) on the edit prompt. At layer… | T-079 | open |
 | <span id="t-T-086"></span>`T-086` | **What actually sets how far a layer-5 edit travels?** — [E-029]'s by-product, and larger than the question it was answering. Belief displacement on the edit prompt and ES margin each… | T-085 | open |
 
-### Active (2)
+### Active (1)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
 | <span id="t-T-054"></span>`T-054` | **The CounterFact filter outlived the model it was calibrated against** — [R-006] established that CounterFact filtered records on P(true) &gt; P(counterfactual) pre-edit — so possession is checked. But… | T-047 | ACTIVE |
-| <span id="t-T-079"></span>`T-079` | **Does the decayed coefficient at depth actually produce less displacement?** — The joint [T-075] explicitly left open: "Whether the decayed coefficient at L20 actually produces less displacement is untested;… | T-075 | active |
 
-### Answered (50)
+### Answered (52)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
@@ -336,10 +346,12 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | <span id="t-T-075"></span>`T-075` | **Is the subject key context-robust at every layer, or only at layer 5?** — [E-017] measured the coefficient at the subject's last token to be 0.93-1.00 across probe forms at layer 5 — the layer ROME edits… | T-074 | answered — **only at shallow layers** |
 | <span id="t-T-076"></span>`T-076` | **Is the different-subject floor high enough to weaken [E-017]?** — Split out of the T-075 design because it is not a layer question and does not need the sweep. One measurement at layer 5:… | T-075 | answered — **no, the floor is 0.082** |
 | <span id="t-T-077"></span>`T-077` | **Is the depth decay a direction change or a magnitude change?** — [E-019] measured reformulated probes decaying 0.95 → 0.58 with depth and explained nothing about it. The coefficient is not a… | T-075 | answered — **direction** |
+| <span id="t-T-079"></span>`T-079` | **Does the decayed coefficient at depth actually produce less displacement?** — The joint [T-075] explicitly left open: "Whether the decayed coefficient at L20 actually produces less displacement is untested;… | T-075 | answered — **DENY: the coefficient bounds delivery, not effect** |
 | <span id="t-T-080"></span>`T-080` | **Is the pinning a ROME fact or a Llama-3.1-8B fact?** — Every coefficient in the record is measured on one model. The derivation behind the pinning depends only on ROME's u·k… | T-076 | answered — **the pinning is ROME's; the floor is Llama's** |
 | <span id="t-T-081"></span>`T-081` | **Is the floor-plus-type-displacement structure a birthplace fact?** — [T-065] found every narrowing in this project came from varying a dimension previously held fixed, and named the three never… | T-072 | answered — **type matching generalises; the floor is one cell** |
 | <span id="t-T-082"></span>`T-082` | **Is GPT-J's high different-subject floor real, or just unfamiliarity?** — [E-027] measured GPT-J's different-subject floor at 0.155 at the edit layer against Llama's 0.082, and at 0.524 at the final… | T-080 | answered — **real; the floor is architectural** |
 | <span id="t-T-083"></span>`T-083` | **Why is the different-subject floor lowest near the layer ROME edits?** — [E-027] noticed, without looking for it, that both models' floors are non-monotonic with a minimum near depth fraction 0.15 —… | T-080 | answered — **the premise is false; it is not lowest there** |
+| <span id="t-T-084"></span>`T-084` | **Is a weak edit at depth under-optimisation, or a property of depth?** — [E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against layer 5's 9.70, while achieving comparable target… | T-079 | answered — **under-optimisation, not depth** |
 
 ### Parked (8)
 

@@ -3171,3 +3171,234 @@ a[class*="tagWithCount"] span::after {
 @media (max-width: 860px) {
   .ocl-ship__gallery { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ==========================================================================
+   Practice — /practice.
+
+   How the lab runs agents. The page is mostly prose at reading measure with two
+   wider apparatus blocks (the owns/does-not split, and the lesson list), so it
+   borrows the page shell and adds only what those two need. Every colour is a
+   token; separation is hairlines and whitespace, per DESIGN.md §3.3.
+   ========================================================================== */
+
+/* The load-bearing sentence. Set as a statement, not a pull quote — no rule above
+   it and no quotation marks, because it is this project's rule rather than a
+   borrowed one. */
+.ocl-practice__rule {
+  font-family: var(--ocl-prose);
+  font-size: 1.4rem;
+  line-height: 1.3;
+  font-weight: 500;
+  max-width: var(--ocl-measure);
+  margin: 0 0 1.6rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--ocl-ink);
+}
+
+/* Two columns above the breakpoint, stacked below it. `minmax(0, 1fr)` rather
+   than `1fr` so a long line cannot push the grid wider than the page — the 400px
+   failure this layout would otherwise have. */
+.ocl-practice__split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.4rem 2.4rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 720px) {
+  .ocl-practice__split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.ocl-practice__colTitle {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-muted);
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-practice__colTitle--no {
+  color: var(--ocl-oxide);
+  border-bottom-color: var(--ocl-oxide);
+}
+
+.ocl-practice__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ocl-practice__list li {
+  padding: 0.3rem 0 0.3rem 1.1rem;
+  position: relative;
+}
+
+.ocl-practice__list li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  color: var(--ocl-held);
+}
+
+.ocl-practice__list--no li::before {
+  content: "−";
+  color: var(--ocl-oxide);
+}
+
+.ocl-practice__reasons {
+  max-width: var(--ocl-measure);
+  padding-left: 1.2rem;
+  margin: 0.6rem 0 1.8rem;
+}
+
+.ocl-practice__reasons > li {
+  margin-bottom: 1rem;
+}
+
+.ocl-practice__body {
+  max-width: var(--ocl-measure);
+  margin: 0 0 0.4rem;
+}
+
+/* A note that qualifies the section rather than continuing it. Sunken paper and a
+   hairline, never a tinted callout. */
+.ocl-practice__aside {
+  max-width: var(--ocl-measure);
+  background: var(--ocl-paper-sunken);
+  border-left: 1px solid var(--ocl-rule-strong);
+  padding: 0.75rem 1rem;
+  margin: 0 0 1.8rem;
+  font-size: 0.95rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-practice__records {
+  display: block;
+  font-family: var(--ocl-mono);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+  margin-top: 0.35rem;
+}
+
+.ocl-practice__id {
+  font-size: 0.86em;
+  color: var(--ocl-ink-faint);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.ocl-practice__item {
+  max-width: var(--ocl-measure-wide);
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-practice__itemTitle {
+  font-family: var(--ocl-apparatus);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.7rem;
+}
+
+.ocl-practice__kicker {
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--ocl-ink-muted);
+  font-style: italic;
+}
+
+/* The lessons. Each is a numbered block: rule, then how it was learned, then what
+   it cost. The number is apparatus and sits out of the reading line where there is
+   room for it, and above the measure inline where there is not. */
+.ocl-practice__lessons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: lesson;
+}
+
+.ocl-practice__lesson {
+  position: relative;
+  max-width: var(--ocl-measure-wide);
+  padding: 1.2rem 0 1.2rem 0;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-practice__lessonN {
+  font-family: var(--ocl-mono);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+@media (min-width: 900px) {
+  .ocl-practice__lesson {
+    padding-left: 3.4rem;
+  }
+
+  .ocl-practice__lessonN {
+    position: absolute;
+    left: 0;
+    top: 1.35rem;
+    margin: 0;
+  }
+}
+
+.ocl-practice__lessonRule {
+  max-width: var(--ocl-measure);
+  margin: 0 0 0.6rem;
+  font-weight: 500;
+}
+
+.ocl-practice__lessonHow {
+  max-width: var(--ocl-measure);
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-practice__lessonCost {
+  max-width: var(--ocl-measure);
+  margin: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  color: var(--ocl-oxide);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.6rem;
+}
+
+.ocl-practice__lessonCostLabel {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-practice__check {
+  font-size: 0.8rem;
+  color: var(--ocl-held-ink);
+}
+
+.ocl-practice__check code {
+  background: none;
+  padding: 0;
+  font-size: 0.95em;
+  color: inherit;
+}

@@ -315,6 +315,22 @@ E-033-3:
   gist: "All six arms complete. The interim conclusion holds and sharpens. Type matching: 6 of 6, no exceptions. Across two models, two relations and two depths,…"
   surface: decision
 
+E-034:
+  id: "E-034"
+  kind: "Decision"
+  title: "the loop owns execution, a person owns judgement"
+  date: "2026-10-14"
+  gist: "Decision: an unattended runner for this project, in four pieces — preflight, triage, report, watch — with a hard boundary at judgement. It owns: running…"
+  surface: decision
+
+E-036:
+  id: "E-036"
+  kind: "Result"
+  title: "UNDIFFERENTIATED — and two of the six criteria could not have answered"
+  date: "2026-10-14"
+  gist: "First end-to-end run under the harness: queued, preflighted in 15s, run, triaged, reported, no intervention. Zero retries. The verdict fired as…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -481,6 +497,14 @@ f-R-012:
   title: "reading the two papers moved both claims we made from their abstracts"
   date: "2026-10-03"
   gist: "[R-011] put two papers into §2 on the strength of their abstracts. [R-012] read them. Both pre-registered falsification conditions fired, in opposite…"
+  surface: finding
+
+f-R-013:
+  id: "R-013"
+  kind: "Finding"
+  title: "RippleEdits has NO subject-initial prompts — §7's premise is false"
+  date: "2026-10-14"
+  gist: "§7 item 2 of the write-up — the project's one outward-facing consequence, priced at a week and unrun since September — rests on this sentence: It is false…"
   surface: finding
 
 t-T-001:
@@ -1020,7 +1044,7 @@ t-T-079:
   title: "Does the decayed coefficient at depth actually produce less displacement?"
   date: ""
   gist: "The joint [T-075] explicitly left open: \"Whether the decayed coefficient at L20 actually produces less displacement is untested;…"
-  status: "active"
+  status: "answered — **DENY: the coefficient bounds delivery, not effect**"
   surface: thread
 
 t-T-080:
@@ -1065,7 +1089,7 @@ t-T-084:
   title: "Is a weak edit at depth under-optimisation, or a property of depth?"
   date: ""
   gist: "[E-026]'s layer-20 edits suppressed the true answer by only 1.81 nats against layer 5's 9.70, while achieving comparable target…"
-  status: "open"
+  status: "answered — **under-optimisation, not depth**"
   surface: thread
 
 t-T-085:

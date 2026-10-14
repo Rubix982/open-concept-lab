@@ -121,6 +121,47 @@ export type LabsSummary = {
   solved: { title: string; href?: string; section: string }[];
 };
 
+/**
+ * `data/practice.yml` — how this lab runs agents, and the incident behind each rule.
+ * Hand-kept like papers.yml; the `record` ids resolve through <Evidence />, and a few
+ * string fields carry inline HTML (<code>, <em>, <strong>) the page renders as-is.
+ */
+export type PracticeReason = { text: string; record?: string[] };
+export type PracticeItem = {
+  name: string;
+  kicker?: string;
+  body: string;
+  record?: string[];
+};
+export type PracticeLesson = {
+  rule: string;
+  incident: string;
+  cost: string;
+  /** The function that checks it mechanically, when one exists. */
+  check?: string;
+  record?: string[];
+};
+export type Practice = {
+  lede: string;
+  boundary: {
+    rule: string;
+    record?: string[];
+    owns: string[];
+    refuses: string[];
+    reasons: PracticeReason[];
+    rejected: string;
+    escalation: { trigger: string; why: string }[];
+    escalation_note: string;
+    falsification: string;
+  };
+  practices: PracticeItem[];
+  questions_note: string;
+  questions: { asks: string; because: string }[];
+  lessons_note: string;
+  lessons: PracticeLesson[];
+  limits: PracticeItem[];
+};
+
 export type LabData = {
   labs: LabsSummary;
   writing: WritingEntry[];
@@ -128,6 +169,7 @@ export type LabData = {
   evidence: EvidenceRecord[];
   built: BuiltPage[];
   projects: Project[];
+  practice?: Practice;
 };
 
 const DATED_FILE = /^(\d{4})-(\d{2})-(\d{2})-(.+)\.mdx?$/;
@@ -572,9 +614,14 @@ export default async function labData(
           }[];
         }>(path.join(dataDir, "projects.yml")))?.projects ?? [];
 
+      // Absent is not fatal: a checkout without the file should still build, and the
+      // page renders nothing rather than half of itself.
+      const practice = await readYaml<Practice>(path.join(dataDir, "practice.yml"));
+
       const checklist = await loadChecklist(repoRoot);
       return {
         checklist,
+        practice,
         labs: summarizeChecklist(checklist),
         writing: await loadWriting(blogDir, routeBasePath),
         papers,

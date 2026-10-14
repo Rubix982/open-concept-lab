@@ -1,0 +1,286 @@
+# How this lab runs agents. Every line on /practice traces to a file in the repo:
+# projects/bearing/{README.md,bearing/lessons.py,bearing/checks.py},
+# ai/edit-slice/tools/{README.md,dryruns/README.md}, and the edit-slice record in
+# agents/shared/decisions.md and findings.md.
+#
+# Nothing here is written from memory. If a claim has no file behind it, it is not here.
+#
+#   record: ids from the edit-slice ledger. Ones the generated evidence.yml knows about
+#           render as links; the rest render as plain ids until the ledger is regenerated.
+
+lede: >
+  An unattended loop runs the experiments in this lab overnight, and a sentinel watches
+  the shape of the work for drift. Neither is allowed to decide anything. The split is
+  not modesty — every rule below was bought by a specific failure, and the record says
+  which one.
+
+boundary:
+  rule: The loop owns execution. A person owns judgement.
+  record: [E-034]
+  owns:
+    - running pre-registered work
+    - gating it before it touches the network
+    - recovering it
+    - reporting it
+    - deciding when to wake someone
+  refuses:
+    - choose what to run next
+    - judge whether a result is real
+    - write a record entry
+    - close a ticket
+    - touch the write-up
+  reasons:
+    - record: [T-065]
+      text: >
+        Every narrowing this project has produced came from choosing which held-fixed
+        dimension to vary. That choice is the generative act. A loop selecting its own
+        next experiment would be guessing at the one step that has reliably worked.
+    - record: [E-025, E-026, R-012]
+      text: >
+        Three entries each cost a withdrawn claim to interpreting a result too eagerly —
+        twice from a headline written before a confound check had finished. A loop that
+        interpreted results would reproduce that failure faster than anyone could catch
+        it.
+    - record: [E-034]
+      text: >
+        The write-up names the real risk as “a large, internally consistent body of work
+        that nobody outside has stress-tested.” Automating generation without automating
+        scrutiny makes that risk worse, not better. So every report carries a
+        <em>what this page did not check</em> section — a section, not a footnote —
+        naming the four things it cannot see: whether the verdict is right, whether named
+        confounds were controlled rather than named, whether the claim contradicts one
+        already in the write-up, and prior art.
+  rejected: >
+    A second judgement step — a critic reading the first one's output — was considered and
+    rejected. A critic works where it compares a render against a photograph: perceptual,
+    with the ground truth on disk. This one would have to judge whether a scientific claim
+    holds, which is where every error in this project has been.
+  escalation:
+    - trigger: preflight refuses
+      why: the code is wrong; running wastes the night
+    - trigger: an <strong>unsorted</strong> triage line
+      why: a failure class nobody has diagnosed yet
+    - trigger: a verdict outside <code>expect</code>
+      why: a surprise — and surprises are the reason to run anything
+    - trigger: a job outlives its budget
+      why: 144 hours in a queue state that never raised an exception
+  escalation_note: >
+    Everything else is logged and the queue carries on. A known failure needs a count; an
+    unknown one needs a person. That is what makes the loop quiet enough to leave running.
+  falsification: >
+    Written into the ticket as a falsification condition so it gets checked rather than
+    quietly accreted: if three runs pass under this harness with no caught defect and no
+    unsorted line, it is overhead and should be cut back to preflight alone.
+
+practices:
+  - name: Preflight
+    kicker: gates that refuse, never warn
+    record: [E-034]
+    body: >
+      Nothing touches the network until the gates pass, and a gate's only two options are
+      pass and refuse. The first version had a cache rule demanding every CLI flag appear
+      in every cache key; it flagged <code>--gate-n</code> against a delta cache that flag
+      cannot affect. Pure noise, and noise would have trained us to skip the output. The
+      rule that replaced it tests internal consistency — the bug it was built for was a
+      disagreement <em>inside one file</em> — and it was verified by reintroducing that bug
+      and watching preflight refuse.
+  - name: Triage
+    kicker: UNSORTED is the only output that matters
+    record: [E-034]
+    body: >
+      Every warning a run produces is sorted by cause against known classes. A failure
+      with a known cause needs a count, not a person. The line that lands in
+      <strong>unsorted</strong> is a failure class nobody has diagnosed yet, and it is one
+      of the four things that will wake someone.
+  - name: Dry-runs
+    kicker: in the repository, executed, first case a published result
+    record: [E-034]
+    body: >
+      The verdict bands are exercised on known-answer data that lives in
+      <code>tools/dryruns/</code> and is <em>executed</em> by preflight, not merely
+      asserted to have been run once. A dry-run in a scratch directory is a claim rather
+      than a check: the next person cannot re-run it. Each file's first case feeds a
+      <strong>published</strong> result back through the reporting path and requires its
+      published verdict — because a path verified only on data you invented can still
+      agree with you, and the dangerous bug is the one that agrees with you.
+  - name: The queue
+    kicker: a person writes it; the loop only runs it
+    record: [E-034]
+    body: >
+      Work is pre-registered in <code>tools/queue.json</code>: the ticket id, so the
+      report can read the pre-stated outcomes back out, the runner, its arguments, a
+      wall-clock budget, and <code>expect</code> — the verdicts that would not be a
+      surprise. Leave <code>expect</code> off and every verdict escalates, which is the
+      right setting for a first run of anything.
+  - name: The sentinel
+    kicker: differential, or it trains you to skim it
+    body: >
+      A watcher that reprints its full state every pass teaches you to skim it, and a
+      skimmed watcher is off. So it stores the last answer to every check and reports only
+      <code>NEW</code> (was fine, now uncomfortable — the only alarm), <code>GONE</code>,
+      and an age for anything that has been uncomfortable and unchanged. A check bad for
+      nine days is either not important or is being avoided, and both are worth saying out
+      loud. A quiet sweep still leaves a mark, because otherwise a gap is ambiguous between
+      <em>nothing happened</em> and <em>the sentinel is dead</em>, and those need opposite
+      responses. State is written atomically after every sweep, so a restart resumes rather
+      than re-alarming on everything it already said.
+  - name: The brief
+    kicker: the scarce resource is context reload
+    body: >
+      An hour that starts with forty minutes of remembering is twenty minutes of research.
+      The brief is four sections — what needs you, what moved, what the record says, what
+      is waiting — ordered to be read top-down and abandoned at any point. The first
+      section is the only part that is yours; the rest exists so you can trust that and
+      stop reading. Nothing in it interprets a result, which would be the one thing the
+      design forbids wearing a friendlier format.
+  - name: Track record
+    kicker: a check that has never caught anything is overhead
+    body: >
+      A check is added because someone believed it would help, and priors about which
+      checks matter are exactly what this record shows to be unreliable — three separate
+      checks across these tools were written with confidence and then cried wolf. So
+      outcomes are logged per check as caught, false-positive or ignored, and the tool will
+      name the checks that have never helped. A checker people learn to skip is worse than
+      none.
+
+questions_note: >
+  The drift checks watch the <em>sequence</em>, not the results — the property that
+  produced “we have dug ourselves too deep into narrow cases” after a week in which every
+  closed ticket was a finer measurement of our own instrument. Each is phrased so that the
+  <strong>bad</strong> answer is the computable one. A check that cannot come back bad is a
+  horoscope.
+questions:
+  - asks: What have you never varied?
+    because: every narrowing here came from unfixing something
+  - asks: Instrument, or the world?
+    because: a run of inward work is how a project loses its point
+  - asks: Does the write-up cite unfinished work?
+    because: §4.5 asserted a withdrawn claim for nine days
+  - asks: Is the abstract still about this project?
+    because: the summary drifts from the findings silently
+  - asks: Named after claims, or after runs?
+    because: a paper organised by experiment makes the reader build the argument
+  - asks: What did you price and not do?
+    because: the honestly-costed item is the one that gets postponed
+  - asks: Stopped withdrawing — better, or not checking?
+    because: both look identical from inside
+
+lessons_note: >
+  Twelve rules, each earned by being wrong, with the incident that produced it and what it
+  cost. They come from two projects — this one, and a second, private project — and they
+  are kept together because the most portable thing a project owns is not its results, it
+  is the scar tissue. A new project that inherits the list does not have to re-earn it.
+lessons:
+  - rule: >
+      Check the premise before pricing the work. A claim quantified over a class with no
+      instance inspected is the cheapest thing to verify and the most expensive thing to be
+      wrong about.
+    incident: >
+      §7 asserted “every propagation benchmark probes with prompts that begin with the
+      subject” having inspected none, and a week was priced on top. Downloading the
+      canonical benchmark and counting took twenty minutes: 44 of 46,754 prompts are
+      subject-initial. 0.09%.
+    cost: a week of planned work, which turned out not to exist
+    check: unchecked_universal
+    record: [R-013]
+  - rule: A gate that warns is a gate nobody reads. Refuse, or delete it.
+    incident: >
+      preflight's first cache rule demanded every CLI flag appear in every cache key and
+      flagged <code>--gate-n</code> against a delta cache it cannot affect.
+    cost: noise that would have trained us to skip the output
+  - rule: >
+      A check written in one project's dialect will libel every project that speaks another.
+    incident: >
+      the drift check for “are you still finding yourself wrong?” knew only this project's
+      vocabulary, and read a second project's correction ledger — a document that is
+      ENTIRELY corrections — as evidence nobody was checking.
+    cost: a false accusation on the second project it ever ran on
+  - rule: >
+      A cache trusted because the file exists is how a partial run reports itself as a
+      whole one. Test completeness, never existence.
+    incident: >
+      a relaunch loaded 9 of 29 deltas, logged “cached”, skipped optimisation and walked
+      into scoring short. Nothing raised.
+    cost: a run that would have produced plausible wrong numbers
+  - rule: Everything that changes a number belongs in the cache key.
+    incident: >
+      a scores cache keyed on (model, relation, steps) omitted <code>layer</code>, so a
+      layer-13 run would have loaded layer-5 scores and reported them as new.
+    cost: caught before it ran; it would have been undetectable afterwards
+  - rule: A measurement that changes between runs is not a measurement.
+    incident: >
+      <code>max()</code> over a set broke ties nondeterministically; two runs of the same
+      counting script differed by 15 prompts.
+    cost: fifteen prompts, and the credibility of every number beside them
+  - rule: Prose written before a result describes the result you expected.
+    incident: >
+      a runner closed with “a fall in reach alongside a rise in strength” — written
+      anticipating one outcome, fired on the other, and described the data backwards while
+      printing it correctly.
+    cost: a wrong sentence in a correct log
+  - rule: A ceiling is the only thing that catches a job which hangs without failing.
+    incident: >
+      two jobs sat in NDIF's RECEIVED state, never queued and never erroring, for 135 and
+      144 hours. No exception, so the retry logic never fired.
+    cost: six days, against under a minute of CPU
+  - rule: >
+      An abstract under-reports overlap and over-reports applicability. It sells the
+      contribution and buries the setting.
+    incident: >
+      two papers were cited from their abstracts. Reading them moved both claims — one
+      overlapped more of our work than credited, the other had our subject matter
+      explicitly outside its stated scope.
+    cost: two claims in the packet, corrected eight hours after being written
+    record: [R-012]
+  - rule: >
+      Dry-run the reporting path against a PUBLISHED result before trusting a new one. The
+      dangerous bug is the one that agrees with you.
+    incident: >
+      a report helper that returned only held items stood in for “all scored items”. It
+      would not have crashed; it would have printed 100% in every cell and read as
+      spectacular confirmation.
+    cost: caught by one query; it was one query from being published
+  - rule: Name the confound and you have still not controlled it.
+    incident: >
+      a ticket named its baseline confound in writing while the code it commissioned still
+      computed on drops. The headline was wrong and retracted.
+    cost: a published conclusion, withdrawn
+  - rule: Before attributing a failure to your change, re-run the thing that worked.
+    incident: >
+      four consecutive failures were blamed on four code changes. The cause was a backend
+      rejecting half of all traces, node-dependently — measured at 3 successes in 6
+      attempts of one unchanged call.
+    cost: four retracted constraints and the time spent deriving them
+    record: [O-007]
+
+limits:
+  - name: A green harness is not a sound experiment
+    record: [E-036]
+    body: >
+      The first end-to-end run under the harness passed everything: preflight 6/6, all four
+      verdict branches exercised by the dry-run, zero unsorted triage lines, the verdict
+      firing exactly as pre-registered. It also measured two of its six criteria in ways
+      that could not answer their own questions — one of them a confound the ticket had
+      named <em>before</em> the run. The entry leads with that rather than with the result.
+      Gates catch broken code and broken process. A construct-validity error passes every
+      one of them, because the code does exactly what it was asked and the question was
+      wrong. The only thing that catches it is a person reading the numbers and asking
+      whether the measurement could have come out any other way.
+  - name: It has no taste, and must never pretend to
+    body: >
+      The sentinel measures drift, not direction. It answers: has the work narrowed, what
+      has never been varied, does the write-up still match the record, what was priced and
+      not done. It must never answer: does the work matter, what should be varied next, is
+      the write-up any good, is it worth doing. A project can pass every question and still
+      be pointed somewhere that does not matter — which is why this is a tool for the
+      person steering and not a replacement for them. The manifesto it serves is explicit
+      that connecting work to real need is a habit rather than a system, and that building
+      a tracking system for it is itself the trap.
+  - name: Two projects is not a sample
+    body: >
+      These rules were derived from two projects: this one, and a second, private project.
+      Two is enough to tell a general rule from a local accident perhaps half the time.
+      Where a check is a keyword heuristic it says so and prints its evidence, so
+      disagreeing is cheap. Three bugs were found only by running the checks on a real
+      project after the constructed tests already passed, which is the argument for doing
+      both.
