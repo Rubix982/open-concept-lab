@@ -164,3 +164,42 @@ def test_lessons_are_well_formed():
     for x in LESSONS:
         assert x.rule and x.incident and x.cost, f"{x.rule[:40]} is missing a field"
         assert len(x.incident) > 40, "an incident with no detail is a slogan"
+
+
+def test_retraction_guard_reads_context_not_the_fragment():
+    """Every text-matching check in checks.py has made this mistake once.
+
+    A phrase does not carry its own cancellation; the paragraph around it does. The
+    matched fragment "priced a week of work on it." looks live in isolation and is dead
+    in context.
+    """
+    live = rec(claims="We have not done this yet. Priced: about a week of probe rewriting.")
+    assert checks.priced_and_unrun(live)["bad"]
+    dead = rec(claims="Rewritten 2026-10-14: the earlier version asserted this of every "
+                      "benchmark and priced a week of work on it. We had inspected none.")
+    assert not checks.priced_and_unrun(dead)["bad"], \
+        "a retracted pricing must not be reported as outstanding"
+
+
+def test_sentinel_reports_only_changes():
+    """A watcher that repeats itself is a watcher that gets turned off."""
+    import shutil
+    import tempfile
+
+    from bearing import sentinel
+    d = tempfile.mkdtemp()
+    old_state = sentinel.STATE
+    try:
+        sentinel.STATE = os.path.join(d, "state.json")
+        proj = os.path.join(d, "p")
+        os.makedirs(os.path.join(proj, "agents", "shared"))
+        with open(os.path.join(proj, "threads.md"), "w") as fh:
+            fh.write("### T-1 · a question\n\n**Status:** active\n\nbody\n")
+        state: dict = {}
+        first = sentinel.pass_once([proj], state, False)
+        assert any("NEW" in x for x in first), "first sweep must report the state it finds"
+        second = sentinel.pass_once([proj], state, False)
+        assert second == [], f"second sweep must be silent, got {second}"
+    finally:
+        sentinel.STATE = old_state
+        shutil.rmtree(d)

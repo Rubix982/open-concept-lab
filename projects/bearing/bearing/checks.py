@@ -145,8 +145,25 @@ def named_after_runs(r: Record) -> dict:
 
 
 def priced_and_unrun(r: Record) -> dict:
-    hits = re.findall(r"[Pp]riced[^.\n]{0,150}\.", r.claims_text) + \
-        re.findall(r"(?:about|roughly) a (?:week|month)[^.\n]{0,120}\.", r.claims_text)
+    """Work this project costed honestly and then postponed.
+
+    The RETRACTION guard is the third place it has been needed. This check fired on the
+    sentence that WITHDREW a priced item — "...and priced a week of work on it. We had
+    inspected none." — reporting a cancelled week as outstanding. Every text-matching
+    check in this file has now made the same mistake once: a document describing its own
+    correction contains the words of the thing it is correcting.
+    """
+    # The guard must read the CONTEXT, not the match. A first attempt tested the matched
+    # fragment alone — "priced a week of work on it." — while the words that retract it
+    # ("Rewritten…", "We had inspected none") sit in the neighbouring sentences. A phrase
+    # does not carry its own cancellation; the paragraph around it does.
+    hits = []
+    for pat in (r"[Pp]riced[^.\n]{0,150}\.",
+                r"(?:about|roughly) a (?:week|month)[^.\n]{0,120}\."):
+        for m in re.finditer(pat, r.claims_text):
+            ctx = r.claims_text[max(0, m.start() - 400):m.end() + 400]
+            if not re.search(RETRACTION, ctx, re.I):
+                hits.append(m.group(0))
     return {"q": "What did you price and then not do?", "bad": bool(hits),
             "why": "the honestly-costed item is the one that gets postponed",
             "say": (" ".join(h.strip()[:150] for h in hits[:2])

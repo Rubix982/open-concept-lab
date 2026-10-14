@@ -40,6 +40,32 @@ Every check is phrased so that the **bad answer is the computable one**. A check
 cannot come back bad is a horoscope, and the first version of two checks here cried wolf
 and were fixed rather than tolerated — a checker people learn to skip is worse than none.
 
+## Leaving it running
+
+```bash
+python -m bearing --sentinel ~/code/open-concept-lab/ai/edit-slice ~/code/janaan \
+                  --interval 2h --notify
+python -m bearing --digest        # what it has seen, twice a day is enough
+```
+
+**Differential by design, and that is the only reason it survives contact.** A watcher
+that reprints its full state every pass teaches you to skim it, and a skimmed watcher is
+off. So it stores the last answer to every check and reports three things:
+
+| | |
+| --- | --- |
+| `NEW` | was fine, now uncomfortable — **the only alarm** |
+| `GONE` | was uncomfortable, now fine |
+| `9d` | uncomfortable for nine days, unchanged |
+
+That third row is the one people underestimate. **A check bad for nine days is either not
+important or is being avoided**, and both are worth saying out loud. It is reported with
+its age so the distinction stays yours.
+
+Silence means nothing moved — which is information, and is what makes it safe to leave
+running. State is written atomically after every sweep, so a restart resumes rather than
+re-alarming on everything it already told you.
+
 ## The brief
 
 ```bash
