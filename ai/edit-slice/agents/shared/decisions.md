@@ -2703,3 +2703,90 @@ _Artifact path corrected 2026-10-14:_ the result file is
 [E-038], so the output and key-cache names carry the subset list — a multi-subset run must
 not overwrite a single-subset result, and a `recent,random,popular` run must not read a
 `recent`-only key cache and call it complete.
+
+---
+
+## [E-038] Result: aliases drop in all three subsets, and the pooled number is not licensed
+
+_Date: 2026-10-15_
+
+**The runner printed `ARM B · STRING-KEYED`. This entry does not, and the reason is this
+ticket's own confound 1.**
+
+Arm A first, at 2,578 entries and 23,505 readings — six times [E-037]'s n:
+
+```
+criterion                     n    own k*     IQR  permuted k*     IQR       gap
+Forgetfulness              1,339     1.000   0.000        0.072   0.045     0.928
+Compositionality_I         7,856     0.982   0.029        0.070   0.038     0.912
+Logical_Generalization     1,958     0.972   0.062        0.063   0.035     0.908
+Relation_Specificity      11,686     0.968   0.048        0.070   0.045     0.898
+Compositionality_II           21     0.955   0.089        0.057   0.029     0.898
+Subject_Aliasing             645     0.794   0.728        0.064   0.041     0.731
+```
+
+**CONTROLLED, and it did not move.** The permuted floor is **0.069** against same-entity
+0.968–1.000, separation **0.902** — [E-037]'s 0.070/0.900 at a sixth of the data. Nothing
+about the finding depended on the sample. Compositionality I is now n=7,856 at 0.982.
+
+### Arm B: the direction is robust, the magnitude is not
+
+n=370 different-surface aliases, past the 30 fixed before [E-037] ran. Pooled, they sit at
+**0.304** against a same-entity median of 0.972 — a drop of 0.667, which is what the
+runner called STRING-KEYED.
+
+**But confound 1 of this ticket says the pooled median stands only if the subsets agree,
+and they do not:**
+
+| subset | n alias | alias | canonical-substring | same-entity | floor |
+| --- | --- | --- | --- | --- | --- |
+| popular | 19 | **0.587** | 0.946 | 0.966 | 0.059 |
+| random | 314 | **0.301** | 0.965 | 0.975 | 0.072 |
+| recent | 37 | **0.179** | 1.000 | 0.973 | 0.073 |
+
+The alias medians span **0.408**, nearly three times the 0.15 threshold. `random` supplies
+314 of 370, so the pooled 0.304 is very nearly `random`'s 0.301 wearing a larger n. **This
+is exactly the failure the confound was written to catch, and it caught it.**
+
+So the claim this run licenses is weaker and sharper than its own verdict line:
+
+> **Every subset shows aliases below same-entity** — by 0.38, 0.67 and 0.79 — so renaming
+> the subject reduces delivery, 3 of 3. **How much it reduces is a property of the subset,
+> not a number we can quote.**
+
+That is still decisive against what it needed to settle: [E-036] concluded the coefficient
+is "keyed on the ENTITY, not the string" from 8 near-identical strings, and that sentence
+was withdrawn. It is now **affirmatively refuted** — at n=370 and in every subset
+independently. The direction was the question; the magnitude was never pre-registered as
+one.
+
+**Why the subsets differ is open and is not a nuisance parameter.** `popular` entities
+retain the most delivery under renaming (0.587) and `recent` the least (0.179), which is
+the ordering a tokenisation account predicts and also the one a familiarity account
+predicts. [T-087] now has the n to separate them: 124 of 370 aliases are near-variants
+(SequenceMatcher ≥ 0.8) and the tail runs to 0.000 — `John Greif II Airport` → `SPR`,
+`Habitat Protection Area` → `IS06`. If the drop is graded by surface distance the slope is
+measurable from the data already on disk, at no further compute.
+
+### The harness, which failed three ways and then worked
+
+This result exists on the third attempt. The run died twice at ~1,300 entries on
+`TypeError: a bytes-like object is required, not 'str'` from `ResponseModel.unpickle` —
+NDIF sending a str where bytes were expected. `retrying()` did not classify it as
+transport, because it keyed on exception *type* and module rather than on the frame it was
+raised in. And `watch.py` reported the first crash as **ok**, having never checked the
+runner's return code and having discarded its stderr, so the first death's cause is
+permanently unknowable.
+
+**Each failure concealed the next**: the loop hid the crash, the missing crash hid the
+classifier gap, the classifier gap killed the run twice. All three are fixed, and the
+third attempt also surfaced a fourth — `SPLIT BY SUBSET` stopping the queue as an
+undiagnosed failure while being the single most informative line in the run.
+
+**Scope.** All three RippleEdits subsets, 2,578 entries, 2,177 skipped for want of a
+recoverable subject label, layer 5, Llama-3.1-8B, coefficient only, no edit applied.
+**Delivery, not effect** — [E-028d], 2.96×. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e037.py;
+results/E-037-ripple-floor-recent+random+popular.json;
+logs/run_e037-2026-10-14-222439.log; logs/e-038-stderr.log

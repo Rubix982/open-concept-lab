@@ -57,9 +57,13 @@ CAUSES: list[tuple[str, str, str, str]] = [
      r"GATE FAILED|CONTROL FAILS|"
      r"(?:VERDICT:|ARM [A-Z] ·)?\s*\b(?:INFEASIBLE|UNMATCHED|NOT INTERPRETABLE|"
      r"UNDERPOWERED|NO SEPARATION|NO FLOOR)\b"),
+    # SPLIT BY SUBSET and UNCONTROLLED added for [E-038]/[E-039]: both are confound
+    # checks announcing that a pooled number is NOT licensed. They stopped the queue as
+    # undiagnosed failures while being the most informative lines in the run — which is
+    # the third time a line saying "working as designed, loudly" has read as a fault.
     ("confound-fired", "a pre-registered confound check fired",
      "working as designed — read the entry, not the log",
-     r"CONFOUND \d+ FIRES|uninterpretable|NOT MATCHED"),
+     r"CONFOUND \d+ FIRES|uninterpretable|NOT MATCHED|SPLIT BY SUBSET|UNCONTROLLED"),
     # Added after the first run over every log: 15 lines came back unsorted and most were
     # not failures at all. They are scientific conclusions and scope caveats logged at
     # WARNING, which is this project's own doing — `logs.setup` reserves WARNING for

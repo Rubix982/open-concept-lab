@@ -1,0 +1,4 @@
+2026-10-15 01:03:14,767 INFO     run_e039  run run_e039 -> logs/run_e039-2026-10-15-010314.log
+2026-10-15 01:03:14,767 INFO     run_e039  config {"arms": "FINAL (headline, both arms at the final token); NATURAL (subject where present)", "chain_len_filter": 2, "file": "MQuAKE-CF-3k.json", "instances": 513, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "skipped": 1907, "ticket": "E-039"}
+2026-10-15 01:03:14,767 INFO     run_e039  513 single-edit instances, 1907 skipped (multi-edit or unlocatable hop)
+2026-10-15 01:03:14,768 INFO     run_e039  by hop carrying the edit: {1: 213, 2: 300}

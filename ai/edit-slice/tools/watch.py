@@ -108,9 +108,19 @@ def run_job(job: dict, dry: bool) -> tuple[bool, str]:
                        f"`logs/{tid.lower()}-stderr.log`.\n\n```\n"
                        f"{(rr.stderr or '(empty)')[-1200:]}\n```")
 
+    # The log glob comes from the RUNNER's basename, not the ticket id. They coincide
+    # only when a ticket has its own runner — [E-038] reuses `run_e037.py` with different
+    # arguments, so `run_e038*.log` matched nothing, the verdict scan had no files to read,
+    # and `expect` was checked against an empty list. Triage got the right file only by
+    # accident: called with no paths it falls back to the newest log, which happened to be
+    # the right one. Two consumers, one silently correct for the wrong reason.
+    stem = os.path.basename(runner).replace(".py", "")
     logs = sorted(__import__("glob").glob(
-        os.path.join(ROOT, "logs", f"run_{tid.lower().replace('-', '')}*.log")),
-        key=os.path.getmtime)[-2:]
+        os.path.join(ROOT, "logs", f"{stem}*.log")), key=os.path.getmtime)[-2:]
+    if not logs:
+        return False, (f"**no log file found for `{stem}`.** The runner wrote nothing this "
+                       f"loop can read, so neither triage nor the verdict check ran. "
+                       f"Nothing about this run has been verified.")
     tri = subprocess.run([PY, os.path.join(ROOT, "tools/triage.py"), "--json", *logs],
                          capture_output=True, text=True)
     unsorted_n, unsorted_lines = 0, []

@@ -12,3 +12,15 @@
 [22:23:49] 2 job(s) queued
 [22:23:49] E-038: preflight
 [22:24:29] E-038: running (budget 8.0h)
+[01:00:15] E-038: finished in 156 min
+[01:00:16] ESCALATED — 1 unsorted log line(s)** — a failure class not yet diagnosed. Written to out/reports/ESCALATION.md
+[01:01:12] 2 job(s) queued
+[01:01:12] E-038: preflight
+[01:01:29] E-038: running (budget 8.0h)
+[01:01:40] E-038: finished in 0 min
+[01:01:40] ESCALATED — the run produced no verdict line. Written to out/reports/ESCALATION.md
+[01:02:28] 2 job(s) queued
+[01:02:28] E-038: preflight
+[01:02:42] E-038: running (budget 8.0h)
+[01:02:50] E-038: finished in 0 min
+[01:02:50] ESCALATED — verdict not in `expect`. Written to out/reports/ESCALATION.md

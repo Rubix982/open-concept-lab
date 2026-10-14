@@ -1,0 +1,38 @@
+2026-10-15 01:02:46,725 INFO     run_e037  run run_e037 -> logs/run_e037-2026-10-15-010246.log
+2026-10-15 01:02:46,725 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 2177, "entries_used": 2578, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 15, "seed": 1538, "subset": "recent,random,popular", "ticket": "E-037"}
+2026-10-15 01:02:46,726 INFO     run_e037  2578 usable entries, 2177 skipped for want of a recoverable subject label
+2026-10-15 01:02:46,726 INFO     run_e037  15 candidate partners rejected for sharing a token with their own subject
+2026-10-15 01:02:49,750 INFO     run_e037  
+2026-10-15 01:02:49,750 INFO     run_e037  E-037 — RippleEdits' own prompts against their own k*, and against a stranger's
+2026-10-15 01:02:49,750 INFO     run_e037  layer 5 · 2578 entries, 2177 skipped · seed 1538 · DELIVERY, not effect
+2026-10-15 01:02:49,750 INFO     run_e037  
+2026-10-15 01:02:49,750 INFO     run_e037  criterion                     n    own k*     IQR permuted k*     IQR       gap
+2026-10-15 01:02:49,751 INFO     run_e037  Logical_Generalization     1958     0.972   0.062       0.063   0.035     0.908
+2026-10-15 01:02:49,753 INFO     run_e037  Compositionality_I         7856     0.982   0.029       0.070   0.038     0.912
+2026-10-15 01:02:49,753 INFO     run_e037  Compositionality_II          21     0.955   0.089       0.057   0.029     0.898
+2026-10-15 01:02:49,753 INFO     run_e037  Subject_Aliasing            645     0.794   0.728       0.064   0.041     0.731
+2026-10-15 01:02:49,757 INFO     run_e037  Relation_Specificity      11686     0.968   0.048       0.070   0.045     0.898
+2026-10-15 01:02:49,758 INFO     run_e037  Forgetfulness              1339     1.000   0.000       0.072   0.045     0.928
+2026-10-15 01:02:49,760 INFO     run_e037  
+2026-10-15 01:02:49,760 INFO     run_e037  ARM A · CONTROLLED — the permuted floor is 0.069 against same-entity 0.968-1.000. [E-036]'s reading survives with a control behind it, and the separation of 0.902 is the number that carries it.
+2026-10-15 01:02:49,760 INFO     run_e037  
+2026-10-15 01:02:49,760 INFO     run_e037  PER SUBSET — read this before the pooled figures below
+2026-10-15 01:02:49,760 INFO     run_e037  subset     n alias     alias     canon      same     floor
+2026-10-15 01:02:49,761 INFO     run_e037  popular         19     0.587     0.946     0.966     0.059
+2026-10-15 01:02:49,761 INFO     run_e037  random         314     0.301     0.965     0.975     0.072
+2026-10-15 01:02:49,763 INFO     run_e037  recent          37     0.179     1.000     0.973     0.073
+2026-10-15 01:02:49,763 WARNING  run_e037  SPLIT BY SUBSET — alias medians span 0.408 (0.179-0.587). Pool nothing; the pooled median below is dominated by whichever subset supplied the most prompts.
+2026-10-15 01:02:49,763 INFO     run_e037  
+2026-10-15 01:02:49,763 INFO     run_e037  alias surface distance (SequenceMatcher ratio, 1.000 = identical): median 0.615 · 124 of 370 at >= 0.8, i.e. near-variants
+2026-10-15 01:02:49,763 INFO     run_e037      0.000  'Furnaspark Resort Airfield' -> 'SWVW'
+2026-10-15 01:02:49,763 INFO     run_e037      0.000  'Habitat Protection Area' -> 'IS06'
+2026-10-15 01:02:49,763 INFO     run_e037      0.000  'John Greif II Airport' -> 'SPR'
+2026-10-15 01:02:49,763 INFO     run_e037      0.986  'Society for Indonesian Biodiversity' -> 'Society for Indonesia Biodiversity'
+2026-10-15 01:02:49,763 INFO     run_e037      0.990  'Housing (Building Facilities) (Amendment) Act, 1924' -> 'Housing (Building Facilities) (Amendment) Act 1924'
+2026-10-15 01:02:49,763 INFO     run_e037      0.990  'Civil Service (Employment of Married Women) Act, 1973' -> 'Civil Service (Employment of Married Women) Act 1973'
+2026-10-15 01:02:49,763 INFO     run_e037  
+2026-10-15 01:02:49,763 INFO     run_e037  ARM B · Subject Aliasing, by surface form
+2026-10-15 01:02:49,764 INFO     run_e037    genuinely different string : n=370  median 0.304
+2026-10-15 01:02:49,764 INFO     run_e037    canonical label in prompt  : n=275  median 0.970
+2026-10-15 01:02:49,764 INFO     run_e037  ARM B · STRING-KEYED — aliases sit 0.667 below the same-entity median (0.304 vs 0.972). The coefficient is a property of the surface form, so a benchmark that renames its subject is measuring a different key.
+2026-10-15 01:02:49,796 INFO     run_e037  written: results/E-037-ripple-floor-recent+random+popular.json

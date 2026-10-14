@@ -1,51 +1,35 @@
 {
- "_": [
-  "Pre-registered work for tools/watch.py. A person writes these; the loop only runs them.",
-  "That split is the design, not a limitation: [T-065] found every narrowing in this",
-  "project came from choosing WHICH held-fixed dimension to vary, which is judgement.",
-  "An agent that picked its own next experiment would be guessing at the one step that",
-  "has reliably produced the results.",
-  "",
-  "ticket  : the E- id, so the report can read the pre-stated outcomes back out",
-  "runner  : path relative to the repo root",
-  "args    : passed through verbatim",
-  "model   : for the preflight smoke test",
-  "expect  : verdicts that are EXPECTED. Anything else stops the queue and escalates."
- ],
- "jobs": [
-  {
-   "ticket": "E-038",
-   "runner": "agents/engineer/workspace/run_e037.py",
-   "args": [
-    "--subset",
-    "recent,random,popular",
-    "--n",
-    "2600",
-    "--seed",
-    "1538"
-   ],
-   "model": "meta-llama/Llama-3.1-8B",
-   "budget_h": 8,
-   "expect": [
-    "UNDERPOWERED"
-   ],
-   "_why": "[E-037] Arm B produced the gap and refused it: different-surface aliases 0.302 against 1.000 for canonical-substring, at n=9 under a threshold of 30 fixed before the run. All three subsets hold 371 such prompts, so this answers it. `expect` lists UNDERPOWERED because that branch firing again would mean the selection is broken rather than the corpus thin \u2014 371 were counted offline \u2014 and it is the one outcome that should NOT wake anybody as a surprise. STRING-KEYED, ENTITY-KEYED and SPLIT BY SUBSET all escalate, which is right: each changes what [E-036]'s withdrawn sentence should have said."
-  },
-  {
-   "ticket": "E-039",
-   "runner": "agents/engineer/workspace/run_e039.py",
-   "args": [
-    "--file",
-    "MQuAKE-CF-3k.json",
-    "--n",
-    "600",
-    "--chain-len",
-    "2"
-   ],
-   "model": "meta-llama/Llama-3.1-8B",
-   "budget_h": 3,
-   "expect": [],
-   "_why": "The within-benchmark control [R-014] found. MQuAKE names the edited subject iff the edit is on hop 1, so hop-1 and hop-2 questions differ in that one property inside one dataset. NO ESCAPE is the outcome that costs us most \u2014 it would make [E-037]'s reading of Table 11 wrong and force a rewrite of \u00a74.6 \u2014 and it is live, because [E-019] measured 0.95 for subject-LATE probes at this layer, so prefix-sharing is not the only route to a high coefficient. `expect` empty: first run, and every branch is worth waking for."
-  }
- ]
+  "_": [
+    "Pre-registered work for tools/watch.py. A person writes these; the loop only runs them.",
+    "That split is the design, not a limitation: [T-065] found every narrowing in this",
+    "project came from choosing WHICH held-fixed dimension to vary, which is judgement.",
+    "An agent that picked its own next experiment would be guessing at the one step that",
+    "has reliably produced the results.",
+    "",
+    "ticket  : the E- id, so the report can read the pre-stated outcomes back out",
+    "runner  : path relative to the repo root",
+    "args    : passed through verbatim",
+    "model   : for the preflight smoke test",
+    "expect  : verdicts that are EXPECTED. Anything else stops the queue and escalates.",
+    "",
+    "A job stays queued until a person removes it \u2014 the loop re-reads the file and will re-run anything still in it. [E-038] was removed 2026-10-15 after its result was read and recorded; leaving it in made the loop re-run a finished experiment and re-escalate its verdict every 15 minutes, which blocked [E-039] behind it."
+  ],
+  "jobs": [
+    {
+      "ticket": "E-039",
+      "runner": "agents/engineer/workspace/run_e039.py",
+      "args": [
+        "--file",
+        "MQuAKE-CF-3k.json",
+        "--n",
+        "600",
+        "--chain-len",
+        "2"
+      ],
+      "model": "meta-llama/Llama-3.1-8B",
+      "budget_h": 3,
+      "expect": [],
+      "_why": "The within-benchmark control [R-014] found. MQuAKE names the edited subject iff the edit is on hop 1, so hop-1 and hop-2 questions differ in that one property inside one dataset. NO ESCAPE is the outcome that costs us most \u2014 it would make [E-037]'s reading of Table 11 wrong and force a rewrite of \u00a74.6 \u2014 and it is live, because [E-019] measured 0.95 for subject-LATE probes at this layer, so prefix-sharing is not the only route to a high coefficient. `expect` empty: first run, and every branch is worth waking for."
+    }
+  ]
 }

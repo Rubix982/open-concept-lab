@@ -1,0 +1,98 @@
+2026-10-14 22:24:39,087 INFO     run_e037  run run_e037 -> logs/run_e037-2026-10-14-222439.log
+2026-10-14 22:24:39,091 INFO     run_e037  config {"arms": "A permuted-k* floor on their prompts; B aliasing by surface form", "entries_skipped": 2177, "entries_used": 2578, "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "partner_rejections": 15, "seed": 1538, "subset": "recent,random,popular", "ticket": "E-037"}
+2026-10-14 22:24:39,094 INFO     run_e037  2578 usable entries, 2177 skipped for want of a recoverable subject label
+2026-10-14 22:24:39,094 INFO     run_e037  15 candidate partners rejected for sharing a token with their own subject
+2026-10-14 22:24:46,260 WARNING  remote  transport failure (TypeError: a bytes-like object is required, not 'str') during 'A Head in the Cloud Limited', attempt 1/8; retrying in 5s
+2026-10-14 22:24:54,639 WARNING  remote  transport failure (TypeError: a bytes-like object is required, not 'str') during 'A Head in the Cloud Limited', attempt 2/8; retrying in 10s
+2026-10-14 22:27:45,956 INFO     run_e037    1480/2578 entries
+2026-10-14 22:31:36,049 WARNING  remote  transport failure (TypeError: a bytes-like object is required, not 'str') during 'Coast Guard Good Conduct Medal', attempt 1/8; retrying in 5s
+2026-10-14 22:42:38,108 WARNING  remote  transport failure (RemoteTimeout: 'Ji Rushen' exceeded 600s with no response) during 'Ji Rushen', attempt 1/8; retrying in 5s
+2026-10-14 22:43:02,508 INFO     run_e037    1500/2578 entries
+2026-10-14 22:45:07,413 INFO     run_e037    1520/2578 entries
+2026-10-14 22:47:12,061 INFO     run_e037    1540/2578 entries
+2026-10-14 22:49:08,936 INFO     run_e037    1560/2578 entries
+2026-10-14 22:51:10,959 INFO     run_e037    1580/2578 entries
+2026-10-14 22:53:21,781 INFO     run_e037    1600/2578 entries
+2026-10-14 22:55:38,286 INFO     run_e037    1620/2578 entries
+2026-10-14 22:57:51,149 INFO     run_e037    1640/2578 entries
+2026-10-14 23:00:25,651 INFO     run_e037    1660/2578 entries
+2026-10-14 23:02:27,078 INFO     run_e037    1680/2578 entries
+2026-10-14 23:04:36,725 INFO     run_e037    1700/2578 entries
+2026-10-14 23:06:50,364 INFO     run_e037    1720/2578 entries
+2026-10-14 23:09:24,098 INFO     run_e037    1740/2578 entries
+2026-10-14 23:11:41,969 INFO     run_e037    1760/2578 entries
+2026-10-14 23:23:55,030 WARNING  remote  transport failure (RemoteTimeout: 'University of California Transportation Center' exceeded 600s with no response) during 'University of California Transportation Center', attempt 1/8; retrying in 5s
+2026-10-14 23:24:23,485 INFO     run_e037    1780/2578 entries
+2026-10-14 23:26:26,239 INFO     run_e037    1800/2578 entries
+2026-10-14 23:28:48,463 INFO     run_e037    1820/2578 entries
+2026-10-14 23:31:13,897 INFO     run_e037    1840/2578 entries
+2026-10-14 23:33:38,176 INFO     run_e037    1860/2578 entries
+2026-10-14 23:35:42,690 INFO     run_e037    1880/2578 entries
+2026-10-14 23:38:16,643 INFO     run_e037    1900/2578 entries
+2026-10-14 23:40:43,299 INFO     run_e037    1920/2578 entries
+2026-10-14 23:43:11,912 INFO     run_e037    1940/2578 entries
+2026-10-14 23:45:41,770 INFO     run_e037    1960/2578 entries
+2026-10-14 23:47:40,811 INFO     run_e037    1980/2578 entries
+2026-10-14 23:50:03,203 INFO     run_e037    2000/2578 entries
+2026-10-14 23:52:12,620 INFO     run_e037    2020/2578 entries
+2026-10-14 23:54:30,217 INFO     run_e037    2040/2578 entries
+2026-10-14 23:56:49,861 INFO     run_e037    2060/2578 entries
+2026-10-14 23:59:14,609 INFO     run_e037    2080/2578 entries
+2026-10-15 00:02:06,389 INFO     run_e037    2100/2578 entries
+2026-10-15 00:04:37,788 INFO     run_e037    2120/2578 entries
+2026-10-15 00:07:06,608 INFO     run_e037    2140/2578 entries
+2026-10-15 00:10:09,985 INFO     run_e037    2160/2578 entries
+2026-10-15 00:12:49,482 INFO     run_e037    2180/2578 entries
+2026-10-15 00:15:15,946 INFO     run_e037    2200/2578 entries
+2026-10-15 00:18:03,882 INFO     run_e037    2220/2578 entries
+2026-10-15 00:20:34,118 INFO     run_e037    2240/2578 entries
+2026-10-15 00:23:04,495 INFO     run_e037    2260/2578 entries
+2026-10-15 00:25:15,073 INFO     run_e037    2280/2578 entries
+2026-10-15 00:27:29,948 INFO     run_e037    2300/2578 entries
+2026-10-15 00:29:54,236 INFO     run_e037    2320/2578 entries
+2026-10-15 00:32:17,226 INFO     run_e037    2340/2578 entries
+2026-10-15 00:34:27,519 INFO     run_e037    2360/2578 entries
+2026-10-15 00:36:39,034 INFO     run_e037    2380/2578 entries
+2026-10-15 00:38:48,746 INFO     run_e037    2400/2578 entries
+2026-10-15 00:41:19,649 INFO     run_e037    2420/2578 entries
+2026-10-15 00:43:40,760 INFO     run_e037    2440/2578 entries
+2026-10-15 00:46:10,922 INFO     run_e037    2460/2578 entries
+2026-10-15 00:50:27,429 INFO     run_e037    2500/2578 entries
+2026-10-15 00:52:47,665 INFO     run_e037    2520/2578 entries
+2026-10-15 00:55:24,704 INFO     run_e037    2540/2578 entries
+2026-10-15 00:57:50,947 INFO     run_e037    2560/2578 entries
+2026-10-15 01:00:13,151 INFO     run_e037    2578/2578 entries
+2026-10-15 01:00:14,358 INFO     run_e037  
+2026-10-15 01:00:14,358 INFO     run_e037  E-037 — RippleEdits' own prompts against their own k*, and against a stranger's
+2026-10-15 01:00:14,359 INFO     run_e037  layer 5 · 2578 entries, 2177 skipped · seed 1538 · DELIVERY, not effect
+2026-10-15 01:00:14,359 INFO     run_e037  
+2026-10-15 01:00:14,359 INFO     run_e037  criterion                     n    own k*     IQR permuted k*     IQR       gap
+2026-10-15 01:00:14,360 INFO     run_e037  Logical_Generalization     1958     0.972   0.062       0.063   0.035     0.908
+2026-10-15 01:00:14,363 INFO     run_e037  Compositionality_I         7856     0.982   0.029       0.070   0.038     0.912
+2026-10-15 01:00:14,363 INFO     run_e037  Compositionality_II          21     0.955   0.089       0.057   0.029     0.898
+2026-10-15 01:00:14,363 INFO     run_e037  Subject_Aliasing            645     0.794   0.728       0.064   0.041     0.731
+2026-10-15 01:00:14,368 INFO     run_e037  Relation_Specificity      11686     0.968   0.048       0.070   0.045     0.898
+2026-10-15 01:00:14,368 INFO     run_e037  Forgetfulness              1339     1.000   0.000       0.072   0.045     0.928
+2026-10-15 01:00:14,370 INFO     run_e037  
+2026-10-15 01:00:14,370 INFO     run_e037  ARM A · CONTROLLED — the permuted floor is 0.069 against same-entity 0.968-1.000. [E-036]'s reading survives with a control behind it, and the separation of 0.902 is the number that carries it.
+2026-10-15 01:00:14,370 INFO     run_e037  
+2026-10-15 01:00:14,370 INFO     run_e037  PER SUBSET — read this before the pooled figures below
+2026-10-15 01:00:14,371 INFO     run_e037  subset     n alias     alias     canon      same     floor
+2026-10-15 01:00:14,371 INFO     run_e037  popular         19     0.587     0.946     0.966     0.059
+2026-10-15 01:00:14,372 INFO     run_e037  random         314     0.301     0.965     0.975     0.072
+2026-10-15 01:00:14,374 INFO     run_e037  recent          37     0.179     1.000     0.973     0.073
+2026-10-15 01:00:14,374 WARNING  run_e037  SPLIT BY SUBSET — alias medians span 0.408 (0.179-0.587). Pool nothing; the pooled median below is dominated by whichever subset supplied the most prompts.
+2026-10-15 01:00:14,374 INFO     run_e037  
+2026-10-15 01:00:14,374 INFO     run_e037  alias surface distance (SequenceMatcher ratio, 1.000 = identical): median 0.615 · 124 of 370 at >= 0.8, i.e. near-variants
+2026-10-15 01:00:14,374 INFO     run_e037      0.000  'Furnaspark Resort Airfield' -> 'SWVW'
+2026-10-15 01:00:14,374 INFO     run_e037      0.000  'Habitat Protection Area' -> 'IS06'
+2026-10-15 01:00:14,374 INFO     run_e037      0.000  'John Greif II Airport' -> 'SPR'
+2026-10-15 01:00:14,374 INFO     run_e037      0.986  'Society for Indonesian Biodiversity' -> 'Society for Indonesia Biodiversity'
+2026-10-15 01:00:14,374 INFO     run_e037      0.990  'Housing (Building Facilities) (Amendment) Act, 1924' -> 'Housing (Building Facilities) (Amendment) Act 1924'
+2026-10-15 01:00:14,374 INFO     run_e037      0.990  'Civil Service (Employment of Married Women) Act, 1973' -> 'Civil Service (Employment of Married Women) Act 1973'
+2026-10-15 01:00:14,374 INFO     run_e037  
+2026-10-15 01:00:14,374 INFO     run_e037  ARM B · Subject Aliasing, by surface form
+2026-10-15 01:00:14,374 INFO     run_e037    genuinely different string : n=370  median 0.304
+2026-10-15 01:00:14,374 INFO     run_e037    canonical label in prompt  : n=275  median 0.970
+2026-10-15 01:00:14,375 INFO     run_e037  ARM B · STRING-KEYED — aliases sit 0.667 below the same-entity median (0.304 vs 0.972). The coefficient is a property of the surface form, so a benchmark that renames its subject is measuring a different key.
+2026-10-15 01:00:14,410 INFO     run_e037  written: results/E-037-ripple-floor-recent+random+popular.json
