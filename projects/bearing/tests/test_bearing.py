@@ -109,3 +109,58 @@ if __name__ == "__main__":
                 print(f"  FAIL  {name}  {exc}")
     print(f"\n{len(fails)} failed" if fails else "\nall pass")
     raise SystemExit(1 if fails else 0)
+
+
+def test_unchecked_universal_catches_the_case_it_was_derived_from():
+    """The September text must fire; the measured and retracted versions must not.
+
+    This is the regression that matters: the check exists because a week was priced on
+    this exact sentence, and it must stay able to catch it.
+    """
+    sept = ("Every propagation benchmark we know of probes with prompts that begin with "
+            "the subject. Priced: about a week.")
+    assert checks.unchecked_universal(rec(claims=sept))["bad"]
+    measured = rec(claims=sept, results=[
+        item("R-13", "", "downloaded the benchmark and counted every prompt")])
+    assert not checks.unchecked_universal(measured)["bad"]
+    retracted = rec(claims="Rewritten: the earlier version asserted that every "
+                           "propagation benchmark probes subject-initially. We had "
+                           "inspected none.")
+    assert not checks.unchecked_universal(retracted)["bad"], \
+        "a check that punishes a retraction punishes the behaviour it encourages"
+
+
+def test_premise_under_priced_work():
+    risky = rec(claims="Every benchmark probes this way.\n\nPriced: about a week of work.")
+    assert checks.premise_under_priced_work(rec(
+        claims="Every benchmark probes this way, and it is priced at about a week."))["bad"]
+    assert not checks.premise_under_priced_work(
+        rec(claims="We counted 46,754 prompts. Priced: about a week."))["bad"]
+    assert risky is not None
+
+
+def test_outcomes_round_trip(tmp=None):
+    import shutil
+    import tempfile
+
+    from bearing import outcomes
+    d = tempfile.mkdtemp()
+    try:
+        assert "must be one of" in outcomes.record(d, "x", "nonsense")
+        outcomes.record(d, "unchecked_universal", "caught", "note")
+        outcomes.record(d, "noisy_check", "false-positive")
+        outcomes.record(d, "noisy_check", "false-positive")
+        out = outcomes.track(d, ["unchecked_universal", "noisy_check", "never_ran"])
+        assert "earns its place" in out
+        assert "CRYING WOLF" in out
+        assert "never fired" in out
+    finally:
+        shutil.rmtree(d)
+
+
+def test_lessons_are_well_formed():
+    from bearing.lessons import LESSONS
+    assert len(LESSONS) >= 10
+    for x in LESSONS:
+        assert x.rule and x.incident and x.cost, f"{x.rule[:40]} is missing a field"
+        assert len(x.incident) > 40, "an incident with no detail is a slogan"

@@ -1,0 +1,17 @@
+{
+ "_": "what each bearing check has actually caught here",
+ "outcomes": [
+  {
+   "check": "unchecked_universal",
+   "verdict": "caught",
+   "note": "derived from R-013; fires on the September text, quiet after the measurement",
+   "date": "2026-10-14"
+  },
+  {
+   "check": "still_checking",
+   "verdict": "false-positive",
+   "note": "read janaan's critique ledger as evidence nobody was checking",
+   "date": "2026-10-14"
+  }
+ ]
+}

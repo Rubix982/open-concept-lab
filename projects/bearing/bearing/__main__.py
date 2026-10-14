@@ -25,7 +25,18 @@ def main(argv=None) -> int:
     ap.add_argument("--brief", action="store_true",
                     help="re-entry brief: what changed, and what needs you")
     ap.add_argument("--since", default="7.days")
+    ap.add_argument("--lessons", action="store_true",
+                    help="rules earned by being wrong, with their incidents")
+    ap.add_argument("--record", nargs="+", metavar=("CHECK VERDICT", "NOTE"),
+                    help="log what a check actually did: caught | false-positive | ignored")
+    ap.add_argument("--track", action="store_true",
+                    help="which checks have earned their place here")
     a = ap.parse_args(argv)
+
+    if a.lessons:
+        from .lessons import render
+        print(render())
+        return 0
 
     rec = load(a.project, a.adapter)
     if not rec.ok():
@@ -34,6 +45,18 @@ def main(argv=None) -> int:
               f"  configure one in .bearing.json, or write ~30 lines in record.py",
               file=sys.stderr)
         return 2
+    if a.record:
+        from .outcomes import record as log_outcome
+        chk, verdict, *note = a.record
+        print(log_outcome(rec.root, chk, verdict, " ".join(note)))
+        return 0
+
+    if a.track:
+        from .checks import CHECKS
+        from .outcomes import track
+        print(track(rec.root, [c.__name__ for c in CHECKS]))
+        return 0
+
     if a.brief:
         from .brief import render
         print(render(rec, a.since))

@@ -876,13 +876,32 @@ so the category has to be added deliberately or it vanishes in the rename._
 ## 7 · What we would like decided
 
 1. **Is the pinned-coefficient result known?** The question we cannot answer from inside.
-2. **Does it matter for ripple benchmarks?** Every propagation benchmark we know of probes
-   with prompts that begin with the subject. If the coefficient is pinned on exactly those
-   prompts, part of what they measure may be mechanical. **Priced:** re-scoring one published
-   ripple benchmark under a subject-final probe form against its own subject-initial one is
-   about a week — rewriting the probes is the work, scoring is hours. What it would change:
-   either their propagation rates survive the reform, or a share of reported ripple is the
-   coefficient rather than the model.
+2. **Does it matter for ripple benchmarks?** *Rewritten 2026-10-14; the earlier version of
+   this item asserted that every propagation benchmark probes with prompts beginning with
+   the subject, and priced a week of work on it. We had inspected none.* Counting all three
+   released subsets of RippleEdits <Cite id="cohen2024ripple" /> — **46,754 test prompts** —
+   **44 begin with their subject.** 0.09%. Of the prompts whose position can be determined,
+   99.8% put the subject *later*; nearly every one has the form *"The ⟨relation⟩ of
+   ⟨subject⟩ is"*.<Margin>Twenty minutes, not a week: the released prompts carry the subject
+   as a Wikidata id and either materialise it or leave the slot empty, so its *position* is
+   visible without resolving a single entity — and position is the whole
+   claim.<Evidence id="f-R-013">R-013</Evidence></Margin>
+
+   **The consequence survives, in a form we can now state against the benchmark's own
+   materials.** §4.3 measured subject-*late* probes at **0.951** and **0.962** at layer 5 —
+   the layer EasyEdit's shipped config edits. RippleEdits' own prompt form therefore
+   receives about **95%** of the update at the standard edit layer. The concern was never
+   that a probe begins with the subject; that was our probes' shape, not the mechanism's
+   requirement. The mechanism needs only a high coefficient, and at the layer the field
+   edits, both forms have one.
+
+   What the correction forecloses is the depth half: at layer 20 that form falls to ~0.58,
+   so a deep edit would reach these prompts far less. We were not claiming that, and now
+   cannot.
+
+   **What we would like decided:** whether measuring the coefficient directly on
+   RippleEdits' own templates — no edits, no rewriting, a day's work — is a result the
+   field would act on, or a curiosity about an instrument.
 3. **Is n = 42 with an existence claim publishable anywhere**, or does this need the
    frequency work it currently forbids itself?
 4. **Is it a contribution to show that a standard check cannot support the inference

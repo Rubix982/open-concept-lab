@@ -191,8 +191,91 @@ def open_question_age(r: Record) -> dict:
             "detail": {"open": len(openq), "total": len(r.questions)}}
 
 
+#: Words that quantify over a class. A claim carrying one is a claim about every member,
+#: and is falsified by a single counterexample — which makes it the cheapest thing in a
+#: project to check and the most expensive thing to be wrong about.
+UNIVERSAL = r"\b(every|all|each|no|none of|any|always|never|invariably|without exception)\b"
+#: A universal appearing inside its own retraction is not a claim. The first version of
+#: `unchecked_universal` fired on the paragraph that WITHDREW the claim it was derived
+#: from — it quoted the old sentence in order to correct it. A checker that cannot tell an
+#: assertion from its retraction punishes exactly the behaviour it exists to encourage.
+RETRACTION = (r"rewritten|corrected|withdraw|retract|we had inspected none|"
+              r"earlier version|was false|no longer|superseded|turned out|"
+              r"the premise (?:is|was) false|having inspected none")
+#: Claims about OTHER people's work. A universal about our own data is usually something
+#: we measured; a universal about the literature is usually something we assumed.
+EXTERNAL = (r"benchmark|literature|prior work|published|the field|existing|every (?:paper|"
+            r"method|system|tool)|standard practice|everyone|nobody|no one")
+
+
+def unchecked_universal(r: Record) -> dict:
+    """Claims quantified over a class of OTHER people's work, with nothing behind them.
+
+    Worked backwards from the episode that produced this check. §7 of edit-slice asserted
+    "every propagation benchmark we know of probes with prompts that begin with the
+    subject", having inspected none, and priced a week of work on top of it. Downloading
+    the canonical benchmark and counting took twenty minutes and returned 0.09%.
+
+    The shape is: a universal + a class of external work + no measurement in the record.
+    Each is cheap to detect and the conjunction is rare, so this stays quiet until it
+    matters.
+    """
+    sentences = re.split(r"(?<=[.!?])\s+", r.claims_text)
+    suspect = []
+    for s in sentences:
+        if len(s) < 25 or len(s) > 400:
+            continue
+        if re.search(RETRACTION, s, re.I):
+            continue
+        if re.search(UNIVERSAL, s, re.I) and re.search(EXTERNAL, s, re.I):
+            # does anything in the record claim to have MEASURED this class?
+            key = [w for w in re.findall(r"[a-z]{6,}", s.lower())
+                   if w in ("benchmark", "benchmarks", "literature", "published")]
+            measured = any(
+                re.search(r"\b(counted|measured|downloaded|inspected|audited|surveyed)\b",
+                          i.body, re.I) and any(k in i.body.lower() for k in key)
+                for i in r.results)
+            if not measured:
+                suspect.append(" ".join(s.split())[:170])
+    return {"q": "Does the write-up assert something about ALL of someone else's work "
+                 "without having checked one?",
+            "bad": bool(suspect),
+            "why": "a week was priced on such a claim; checking it took twenty minutes "
+                   "and returned 0.09%",
+            "say": (f"**{len(suspect)} universal claim(s)** about external work with no "
+                    f"measurement in the record:\n      \u2192 " + suspect[0]
+                    if suspect else "No unchecked universal about external work."),
+            "detail": suspect}
+
+
+def premise_under_priced_work(r: Record) -> dict:
+    """Work priced on top of a sentence that is itself an unverified claim.
+
+    The expensive version of the check above: not merely an unchecked universal, but one
+    with a week of planned work resting on it. edit-slice had exactly one, and it was the
+    project's single outward-facing item.
+    """
+    paras = re.split(r"\n\s*\n", r.claims_text)
+    risky = []
+    for para in paras:
+        if not re.search(r"[Pp]riced|about a (?:week|month)|would cost", para):
+            continue
+        if re.search(RETRACTION, para, re.I):
+            continue
+        if re.search(UNIVERSAL, para, re.I) and re.search(EXTERNAL, para, re.I):
+            risky.append(" ".join(para.split())[:200])
+    return {"q": "Is any priced work resting on an unverified premise?",
+            "bad": bool(risky),
+            "why": "the premise is always cheaper to check than the work is to do",
+            "say": (f"**{len(risky)}** priced item(s) whose justifying paragraph contains "
+                    f"an unchecked universal about external work.\n      \u2192 " + risky[0]
+                    if risky else "No priced work rests on an unchecked universal."),
+            "detail": risky}
+
+
 CHECKS = [never_varied, inward_drift, claim_debt, summary_staleness,
-          named_after_runs, priced_and_unrun, still_checking, open_question_age]
+          named_after_runs, priced_and_unrun, still_checking, open_question_age,
+          unchecked_universal, premise_under_priced_work]
 
 
 def run_all(r: Record) -> list[dict]:
