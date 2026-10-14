@@ -62,9 +62,24 @@ That third row is the one people underestimate. **A check bad for nine days is e
 important or is being avoided**, and both are worth saying out loud. It is reported with
 its age so the distinction stays yours.
 
-Silence means nothing moved — which is information, and is what makes it safe to leave
-running. State is written atomically after every sweep, so a restart resumes rather than
-re-alarming on everything it already told you.
+`--digest` answers two different questions, and keeping them apart is what stops the
+standing summary from becoming the repetition that trains skimming:
+
+```
+AS OF NOW        where things stand, with the age of each — the question someone
+                 returning after a day actually has
+WHAT MOVED       the change log — the question the alarms answer
+```
+
+The standing half is regenerated from state, not replayed from the log, so it is current
+even when every sweep since has been quiet.
+
+**A quiet sweep still leaves a mark** — `- 14:43 · no change · 5 standing`. Without it, a
+gap in the digest is ambiguous between *nothing happened* and *the sentinel was dead*, and
+those need opposite responses.
+
+State is written atomically after every sweep, so a restart resumes rather than re-alarming
+on everything it already told you.
 
 ## The brief
 

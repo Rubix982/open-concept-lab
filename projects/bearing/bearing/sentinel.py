@@ -64,7 +64,14 @@ def notify(title: str, body: str) -> None:
 
 
 def pass_once(paths: list[str], state: dict, want_notify: bool) -> list[str]:
-    """One sweep. Returns the lines worth a person's attention, which may be none."""
+    """One sweep. Returns the lines worth a person's attention, which may be none.
+
+    It also refreshes a STANDING snapshot — what is uncomfortable right now, per project,
+    with the age of each. The change log alone answers "what moved"; it cannot answer
+    "where do things stand", and someone checking twice a day needs both. Keeping them
+    separate is what stops the standing summary from becoming the repetition that trains
+    skimming.
+    """
     today = date.today().isoformat()
     lines: list[str] = []
     for path in paths:
@@ -97,6 +104,11 @@ def pass_once(paths: list[str], state: dict, want_notify: bool) -> list[str]:
                 prev[q] = {"bad": False, "since": None}
             else:
                 prev[q] = {"bad": False, "since": None}
+        standing = [{"q": c["q"], "say": c["say"][:150],
+                     "since": prev.get(c["q"], {}).get("since")}
+                    for c in run_all(rec) if c["bad"]]
+        state.setdefault("_standing", {})[rec.name] = {
+            "at": datetime.now().isoformat(timespec="minutes"), "bad": standing}
         if changes:
             lines.append(f"\n### {rec.name}")
             lines += changes
@@ -106,19 +118,62 @@ def pass_once(paths: list[str], state: dict, want_notify: bool) -> list[str]:
     return lines
 
 
+def append_heartbeat(state: dict) -> None:
+    n = sum(len(v.get("bad", [])) for v in state.get("_standing", {}).values())
+    with open(DIGEST, "a", encoding="utf-8") as fh:
+        fh.write(f"- {datetime.now():%Y-%m-%d %H:%M} · no change · "
+                 f"{n} standing\n")
+
+
 def append_digest(lines: list[str]) -> None:
     with open(DIGEST, "a", encoding="utf-8") as fh:
         fh.write(f"\n## {datetime.now():%Y-%m-%d %H:%M}\n" + "\n".join(lines) + "\n")
 
 
-def read_digest(n: int = 60) -> str:
+def read_digest(n: int = 50) -> str:
+    """Two parts, because they answer different questions.
+
+    AS OF NOW  where things stand, with ages — the question someone returning after a
+               day actually has
+    WHAT MOVED the change log — the question the alarms answer
+
+    The standing section is regenerated from state rather than replayed from the log, so
+    it is current even if every sweep since has been quiet.
+    """
+    out: list[str] = []
+    standing = _load_state().get("_standing", {})
+    if standing:
+        out.append("AS OF NOW")
+        out.append("=" * 60)
+        today = date.today()
+        for proj, info in sorted(standing.items()):
+            bad = info.get("bad", [])
+            out.append(f"\n{proj}  ({len(bad)} uncomfortable · swept {info.get('at','?')})")
+            for b in bad:
+                age = ""
+                if b.get("since"):
+                    try:
+                        d = (today - date.fromisoformat(b["since"])).days
+                        age = f"  [{d}d]" if d else "  [today]"
+                    except ValueError:
+                        pass
+                out.append(f"  !{age} {b['q']}")
+                out.append(f"       {b['say']}")
+            if not bad:
+                out.append("  nothing")
+        out.append("")
+
     try:
         with open(DIGEST, encoding="utf-8") as fh:
-            body = fh.read().strip().split("\n")
+            body = [x for x in fh.read().strip().split("\n") if x.strip()]
     except OSError:
-        return ("Nothing yet. Start it with:\n"
-                "    python -m bearing --sentinel <project> [<project>...] --interval 2h")
-    return "\n".join(body[-n:])
+        return "\n".join(out) or (
+            "Nothing yet. Start it with:\n"
+            "    python -m bearing --sentinel <project> [<project>...] --interval 2h")
+    out.append("WHAT MOVED  (newest last)")
+    out.append("=" * 60)
+    out += body[-n:]
+    return "\n".join(out)
 
 
 def run(paths: list[str], interval_s: float, want_notify: bool, once: bool) -> int:
@@ -140,6 +195,10 @@ def run(paths: list[str], interval_s: float, want_notify: bool, once: bool) -> i
             append_digest(lines)
             print(stamp + "\n" + "\n".join(lines) + "\n", flush=True)
         else:
+            # A quiet sweep still leaves a mark. Without it, a gap in the digest is
+            # ambiguous between "nothing happened" and "the sentinel was dead", and
+            # those need opposite responses.
+            append_heartbeat(state)
             print(f"{stamp} no change", flush=True)
         if once:
             return 0
