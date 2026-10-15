@@ -2004,3 +2004,89 @@ inheriting that loop share.
 **Medium** on the generalisation, which rests on convergence being typical.
 
 **Artifacts:** none — source read, nothing run.
+
+## [R-020] Premise dry-run on T-086: the search was over the wrong level
+
+_Unratified_
+
+_Date: 2026-10-16 · autonomous cycle, `LOOP.md` phase 5 — the generative step_
+
+[T-086] is **stuck-and-flat**, not stuck-and-hard: seven candidates eliminated at a
+pre-registered floor ([E-035]), their best combination bounded in closed form at 0.534
+([R-016]), the coefficient excluded by construction. More candidates will not help. By
+`CLAUDE.md`'s own diagnostic, *"the corrective is not missing, it is suppressed by a
+one-sided framing."*
+
+### Move 1 — the structure under the intuition
+
+[T-086] asks *"what sets how far **an edit** travels."* The outcome it is measured against
+is a control-differenced drop on **a probe**. So the question names a property of the edit
+and the data is a property of an **(edit, probe) pair** — and **every quantity ever tested
+is a function of the edit alone**: ‖Δv‖, ‖k*‖, their ratio, baseline log P(true), target
+prior, subject token count, residual norm, ES margin, displacement.
+
+### Move 8 — re-run the specs against the new frame
+
+An edit-level quantity is **constant within a subject**. It can therefore track only the
+between-subject component of the outcome. [E-033] left three probes per subject across six
+cells, which decomposes that directly:
+
+```
+cell                              between-subj   within-subj   within share
+70B birthplace L13                        4.37          4.36          50%
+70B birthplace L5                         6.31          5.41          46%
+70B occupation L13                        5.64          5.80          51%
+70B occupation L5                         5.05          3.73          42%
+8B  birthplace L5                         9.43          9.02          49%
+8B  occupation L5                         5.86          9.51          62%
+mean                                      6.11          6.30          51%
+```
+
+**About half of propagation variance lives within a subject, across probes.** So no
+edit-level predictor can exceed **49% of variance — ρ ≈ 0.70** — however clever it is.
+
+### What that does to the record
+
+```
+E-029 displacement          0.419    36% of the reachable maximum
+E-029/E-035 ES margin       0.425    37%
+E-035 ‖Δv‖                  0.423    36%
+R-016 best combination      0.534    58%
+T-093's pre-registered bar  0.600    73%
+```
+
+**The 18%-of-variance framing was measured against 100% and the ceiling is 49%.** Read
+correctly, the surviving predictors explain about **a third of what is reachable**, and the
+best pairing explains **58%** — which is not the dead end "nothing explains more than 18%"
+describes. And **[T-093]'s 0.60 bar was asking for 73% of everything an edit-level quantity
+could ever deliver**, set without anyone knowing the ceiling existed.
+
+### The predictor at the right level already exists and was never connected
+
+The other ~51% needs a quantity that varies **across probes within a subject**. The project
+has one that works: **[E-033]'s type-matching — an edit displaces probes whose answer type
+matches the injected value, 6 of 6 arms.** That is a pair property, it is already measured,
+and it has never appeared in [T-086]'s candidate list. `CLAUDE.md`'s own triage buckets —
+`shares_subject`, `shares_relation`, `shares_object`, `shares_nothing` — are pair
+properties too, and none has been correlated against propagation magnitude.
+
+### Limits, before this becomes a claim
+
+1. **The decomposition is on [E-033]'s probes** (citizenship, language, occupation) while
+   [E-029]/[E-035] measured a **city** probe. The 51/49 split is indicative for that
+   setting, not exact. **The ceiling should be re-derived on the probe family the claim is
+   made about before it is written anywhere outward.**
+2. n=29 per cell, six cells, two models, two relations. Existence per [O-004].
+3. This reinterprets existing numbers; it measures nothing new and refutes nothing. [E-035]
+   and [R-016] are correct as computed — what changes is the denominator they are read
+   against.
+4. The ~51% is an *upper bound on what pair-level predictors could explain*, not evidence
+   that type-matching explains it.
+
+### What this generates
+
+[T-101] — re-derive the ceiling on the [E-029] probe family and restate the T-086 arc
+against it. [T-102] — correlate type-matching and the triage buckets against propagation at
+pair level, which is the first search at the level where half the variance lives.
+
+**Artifacts:** none — arithmetic over results/E-033-crossover-*.json

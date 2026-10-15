@@ -1897,3 +1897,39 @@ reported **beside** `held_rate` and never instead of it, so every past number st
 comparable. Five tests in `test_prior_collision.py` pin the distinction — including the
 [E-045] case of an item ranked first *with* the subject and still unscoreable, which is the
 one a future refactor would quietly fold back in.
+
+### T-101 · Re-derive the edit-level ceiling on the probe family the claim is about
+
+**Status:** open
+**Parent:** T-086
+**Opened:** 2026-10-16
+**Question:** [R-020] decomposed propagation variance on [E-033]'s probes and found
+**51% within subject**, which caps any edit-level predictor at ρ ≈ 0.70. But [E-029] and
+[E-035] measured a **city** probe, not citizenship/language/occupation, so the split is
+indicative for their setting rather than exact. **The ceiling must be re-derived on the
+probe family the claim is made about before it is written anywhere outward** — otherwise
+the project repeats the [E-025] error of reading a number computed on one thing as though
+it were about another. Cheap if a multi-probe city run exists; otherwise it needs one
+pass with several probe forms per subject, which [E-019] already has the templates for.
+**Answer:** —
+
+### T-102 · Search at the level where half the variance lives
+
+**Status:** open
+**Parent:** T-086
+**Opened:** 2026-10-16
+**Question:** [R-020] found ~51% of propagation variance is **within** subject, across
+probes, where no edit-level quantity can reach. **The project already has a pair-level
+predictor that works and never put it in [T-086]'s candidate list**: [E-033]'s
+type-matching, 6 of 6 arms — an edit displaces probes whose answer *type* matches the
+injected value. `CLAUDE.md`'s triage buckets are pair properties too — `shares_subject`,
+`shares_relation`, `shares_object`, `shares_nothing` — and none has been correlated
+against propagation *magnitude*, only used to sort movers.
+
+**So the first search at the right level has not been run**, and the data for a first pass
+is on disk: [E-033]'s six cells carry three probes per subject with their types known.
+A pair-level predictor explaining a decent share of that 51% would be the first real answer
+[T-086] has had. **Cheap bound first:** before designing anything, correlate the existing
+type-match indicator against the existing per-pair drops and see whether it reaches the
+within-subject component at all.
+**Answer:** —
