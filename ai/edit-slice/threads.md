@@ -1785,7 +1785,7 @@ item is that nothing here has been externally judged.
 
 ### T-099 · A decidable oracle changes the AUDIT, not the EDIT
 
-**Status:** open
+**Status:** answered
 **Parent:** T-058
 **Opened:** 2026-10-15
 **Question:** [T-058] built genuinely deductive grounds — transitive containment, where
@@ -1797,7 +1797,36 @@ buys is an audit that answers without adjudication**, which is claim 2 and survi
 untouched. Should §2 say this explicitly? It pre-empts a reviewer reading claim 2 as a
 claim about edit quality, and it is the distinction that keeps the code-domain direction
 honest about what it would and would not deliver.
-**Answer:** —
+**Answer (2026-10-16, autonomous cycle):** **The question was about the wrong document,
+and that is the finding.**
+
+§2 should not say it, because **the write-up never makes claim 2.** Searched: zero
+occurrences of *decidable*, *oracle* or *compiler*, and zero of *code domain*, *dependency
+graph*, *type system* or *program slicing*. The paper is entirely about the coefficient and
+what it delivers. There is no misreading of claim 2 to pre-empt there, because claim 2 is
+not there.
+
+**Where the clarification does belong is `CLAUDE.md`'s core claims**, which is the
+project's charter and the only place claim 2 is asserted. As written —
+*"A compiler or type system gives a decidable relation instead"* — it is silent on what the
+decidable relation buys, and a reader (including a future session, and the author) can take
+it as promising cleaner **edits**. Two measurements say otherwise:
+
+- **[E-015]**: [T-058] supplied genuinely deductive grounds, where editing the outer fact
+  *strictly contradicts* two inner ones, and the editor was **indifferent to the
+  entailment**. Predictable from the pinned coefficient — ROME does subject-keyed
+  arithmetic and has no representation of entailment to respect.
+- **[E-045]**: the code domain is viable on a **subset** — determined return types hold at
+  57–100%, underdetermined and compound ones at 0–28%.
+
+So the honest form is: **a decidable oracle makes the AUDIT answerable without
+adjudication; it does not make the EDIT cleaner, and it covers only the facts the model
+holds.**
+
+**Not amended by this loop.** `CLAUDE.md` is the project's standing instruction file, and
+changing what a project asserts about itself is a person's decision, not a cycle's —
+`LOOP.md`'s prohibition on withdrawing claims applies with more force here, not less. The
+proposed wording is in `out/RATIFY.md` for a decision.
 
 ### T-098 · Does the model hold typeshed signature facts at a CounterFact-comparable rate?
 

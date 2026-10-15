@@ -85,6 +85,14 @@ On each wake, in order. Stop at the first phase with work in it.
 - **Withdraw or weaken a claim in the write-up on its own judgement.** It may *add* a
   measured result and may *flag* a claim as needing withdrawal — in `out/RATIFY.md`, for a
   person. A withdrawal is a decision about what this project asserts publicly.
+- **Edit `CLAUDE.md`.** *Added 2026-10-16, answering [T-099].* The charter is what the
+  project asserts about itself, and amending it is further outside a cycle's authority than
+  editing the write-up, not nearer. A cycle that finds a core claim contradicted by
+  measurement writes the proposed wording to `out/RATIFY_PROPOSALS.md` with the evidence
+  and what it changes downstream, and applies nothing. The first such proposal came from a
+  thread asking whether §2 should carry a clarification — and the answer was that §2 never
+  made the claim at all, which is the kind of thing a loop can establish and should not act
+  on alone.
 - **Promote a post-hoc finding to a headline**, or report a verdict its own pre-stated band
   did not return.
 

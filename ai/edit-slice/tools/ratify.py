@@ -102,6 +102,16 @@ def main() -> int:
               f"not ratified.** Read, then delete the `_Unratified_` line:", ""]
         L += [f"  - `[{i}]` {h}" for i, h in unr]
         L.append("")
+    # A proposed change to what the project ASSERTS about itself. The loop may raise one
+    # and may never apply it — [T-099] is the first, and the reason it is a separate file
+    # rather than a commit is that a charter edit should not arrive disguised as routine.
+    prop = os.path.join(ROOT, "out", "RATIFY_PROPOSALS.md")
+    if os.path.exists(prop):
+        n = len(re.findall(r"^# ", open(prop, encoding="utf-8").read(), re.M))
+        L += [f"- **{n} proposed amendment(s) to the project's own claims** — "
+              f"`out/RATIFY_PROPOSALS.md`. The loop raised these and may not apply them. "
+              f"Each says what measurement prompted it and what it changes downstream.", ""]
+
     # A drafted outward message is the one artifact the loop may produce but never act
     # on, so it is surfaced explicitly rather than left to be noticed in a commit.
     pkt = os.path.join(ROOT, "notes", "natalie-packet.md")
