@@ -1,0 +1,22 @@
+2026-10-15 08:46:14,535 INFO     run_e035  run run_e035 -> logs/run_e035-2026-10-15-084614.log
+2026-10-15 08:46:14,536 INFO     run_e035  config {"alpha": 0.05, "incumbent_rho": 0.425, "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n": 42, "nature": "CORRELATIONAL \u2014 a FOUND result licenses a design, never a claim", "outcome": "control-differenced drop on the subject-initial city probe, as [E-029]", "thread": "T-086", "ticket": "E-035"}
+2026-10-15 08:46:14,536 INFO     run_e035  42 subjects joined across E-026b, E-026-depth and the L5 caches
+2026-10-15 08:46:14,536 INFO     run_e035  attrition: 0 of 42 candidate ids lacked a cached delta, 0 lacked a kstar, 0 lacked a chain record
+2026-10-15 08:46:14,536 INFO     run_e035  outcome reproduces [E-029]'s array to 0.00e+00
+2026-10-15 08:46:34,413 INFO     run_e035  candidate 7: residual norm read at the subject position for 42/42
+2026-10-15 08:46:34,420 INFO     run_e035  
+2026-10-15 08:46:34,420 INFO     run_e035  E-035 — seven candidates against propagation, n=42, layer 5
+2026-10-15 08:46:34,420 INFO     run_e035  outcome spread: median 10.52, IQR 3.72, sd 3.11 — a modest rho must be read against what is reachable, not against 1.0
+2026-10-15 08:46:34,420 INFO     run_e035  
+2026-10-15 08:46:34,420 INFO     run_e035  candidate                 rho          p   Holm thr  clears   rho w/ ES
+2026-10-15 08:46:34,420 INFO     run_e035  norm_delta_v           -0.423   6.16e-03   7.14e-03     yes      -0.276
+2026-10-15 08:46:34,420 INFO     run_e035  ratio_dv_over_k        -0.349   2.73e-02   8.33e-03      no      -0.231
+2026-10-15 08:46:34,420 INFO     run_e035  target_prior           +0.337   3.32e-02   1.00e-02      no      +0.130
+2026-10-15 08:46:34,420 INFO     run_e035  residual_norm          -0.309   5.31e-02   1.25e-02      no      -0.355
+2026-10-15 08:46:34,421 INFO     run_e035  norm_k_star            -0.228   1.58e-01   1.67e-02      no      -0.238
+2026-10-15 08:46:34,421 INFO     run_e035  baseline_true          +0.067   6.84e-01   2.50e-02      no      +0.327
+2026-10-15 08:46:34,421 INFO     run_e035  subject_tokens         +0.042   8.00e-01   5.00e-02      no      +0.004
+2026-10-15 08:46:34,421 INFO     run_e035  es_margin (incumbent)   +0.425          —          —       —       1.000
+2026-10-15 08:46:34,421 INFO     run_e035  
+2026-10-15 08:46:34,421 WARNING  run_e035  VERDICT: NOTHING BEATS IT — no candidate clears rho 0.50 at its Holm threshold. Propagation magnitude is set by none of update size, key size, their ratio, the belief's strength, the target's prior, the subject's length, or the local residual norm. The best was norm_delta_v at -0.423 against the incumbent's 0.425. That is a sharper [T-086] than the thread had.
+2026-10-15 08:46:34,421 INFO     run_e035  written: results/E-035-propagation-candidates.json

@@ -1494,6 +1494,15 @@ target's own prior; competition structure in the answer type ([E-025]'s displace
 **Resume cold:** per-subject propagation is in results/E-029-es-vs-propagation.json;
 per-subject deltas and keys are cached under results/cache/E014_*.pt.
 **Answer:** —
+**Progress 2026-10-15 — [E-035].** Seven candidates eliminated at a pre-registered floor of
+rho 0.50 with Holm correction: update size, key size, their ratio, baseline belief, target
+prior, subject length, local residual norm. **The thread stands and its shape has changed.**
+`‖Δv‖` clears its Holm threshold at **−0.423** — reliable, below the effect floor, and
+NEGATIVE against the rationale it was listed with. It correlates with the incumbent ES
+margin at only −0.276 while each tracks propagation at ~0.42, so these are two weak views
+of *different* things rather than [E-029]'s one view twice. The question is no longer "is
+there a candidate" but "why does nothing exceed ~18%". Spawns [T-093], [T-094].
+
 ### T-087 · Is the alias coefficient drop graded by surface distance, or binary?
 
 **Status:** answered
@@ -1563,4 +1572,34 @@ discriminator is more aliases — `popular` holds 885 entries and [E-038] used a
 them, so n cannot be raised within RippleEdits. CounterFact or Wikidata alias lists
 could supply a matched set at chosen similarity ratios, which turns this from an
 observational question into a designed one.
+**Answer:** —
+
+### T-093 · Do two near-independent weak predictors combine past the floor?
+
+**Status:** open
+**Parent:** T-086
+**Opened:** 2026-10-15
+**Question:** [E-035] found `‖Δv‖` at −0.423 and ROME's ES margin at +0.425 correlating
+with each other at only −0.276. A plain rank-sum reaches **0.510** — computed after
+seeing which candidates survived, on the same 42 subjects, and therefore **evidence of
+nothing**. The honest version is a joint model registered in advance, with its form and
+threshold fixed before it runs, on **subjects not used in [E-029] or [E-035]**. If it
+clears 0.60 out of sample, [T-086] has its first real answer; if it does not, "nothing
+explains more than ~18%" becomes a much stronger statement for having been attacked with
+the best combination available.
+**Answer:** —
+
+### T-094 · Why does a larger update propagate LESS far?
+
+**Status:** open
+**Parent:** T-086
+**Opened:** 2026-10-15
+**Question:** [E-035]'s strongest association is `‖Δv‖` at **−0.423**: the bigger the
+update vector, the less far the edit travels. The candidate was listed with the opposite
+rationale. No explanation is offered in the record and none should be until this is
+tested, because a plausible story here is cheap — norm could proxy for how unusual the
+target is, for optimisation difficulty, for the subject's familiarity, or for nothing. The
+first move is **not** a theory but a check on whether the sign survives a different
+relation and a different model, since [E-033] showed a 6/6 effect and a 1/6 effect sitting
+side by side in the same run.
 **Answer:** —

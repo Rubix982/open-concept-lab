@@ -2665,7 +2665,7 @@ dryruns/dryrun_e033.py, README.md; agents/shared/decisions.md -> "[E-034]"
 
 ### E-035 · What sets how far an edit travels? A pre-registered candidate sweep
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-14
@@ -2729,9 +2729,46 @@ correlation with the incumbent. One sentence naming the verdict.
 incumbent is measured on exactly the same subjects. Correlational: nothing here is causal,
 and a FOUND result licenses a follow-up design, never a claim.
 
-**Blockers:** none.
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-15).** **NOTHING BEATS IT** — the outcome this ticket named in advance
+as the one to expect. No candidate clears rho 0.50 at its Holm threshold.
+
+```
+norm_delta_v     -0.423   p 6.16e-03   Holm 7.14e-03   CLEARS
+ratio_dv_over_k  -0.349   p 2.73e-02   Holm 8.33e-03   no
+target_prior     +0.337   p 3.32e-02   Holm 1.00e-02   no
+residual_norm    -0.309   p 5.31e-02   Holm 1.25e-02   no
+norm_k_star      -0.228                                no
+baseline_true    +0.067                                no
+subject_tokens   +0.042                                no
+es_margin (incumbent) +0.425
+```
+
+Propagation magnitude is set by none of update size, key size, their ratio, the belief's
+strength, the target's prior, the subject's length, or the local residual norm.
+
+**Confound 1 earned its place:** `ratio_dv_over_k` and `target_prior` both clear an
+unadjusted alpha and neither clears Holm. Two of seven would have been reported as hits.
+**Confound 2 as required:** the outcome's own sd is 3.11 on a median of 10.52, so the
+reachable ceiling is not 1.0.
+
+**Three things the verdict does not say.** (a) `‖Δv‖` is the one candidate clearing its
+Holm threshold while sitting *below* the effect-size floor — statistically reliable,
+practically weak, and the ticket set its floor on rho rather than p for exactly this.
+(b) **Its sign is negative: a bigger update travels less far**, against the rationale it
+was listed with. Recorded, not explained. (c) It correlates with the incumbent at only
+−0.276 while each tracks propagation at ~0.42 — two weak views of *different* things,
+unlike [E-029]'s pair. A rank-sum of the two reaches 0.510, which is **exploratory, not
+pre-registered, and claimed for nothing**; it is why [T-093] exists.
+
+**Bug found and fixed before any number was produced:** the residual-norm trace read
+`layers[L].output[0]`, slicing away the batch. It crashed only because 42 subjects exceeded
+a 15-token sequence; with a longer prompt than batch it would have returned one subject's
+activations for all of them, silently. A shape assertion now refuses to index a wrong read.
+
+**Artifacts:** run_e035.py; tools/dryruns/dryrun_e035.py;
+results/E-035-propagation-candidates.json; logs/run_e035-2026-10-15-084614.log;
+agents/shared/decisions.md -> "[E-035] Result"
+**Closed:** 2026-10-15
 
 ---
 

@@ -1,0 +1,5 @@
+2026-10-15 08:45:33,484 INFO     run_e035  run run_e035 -> logs/run_e035-2026-10-15-084533.log
+2026-10-15 08:45:33,484 INFO     run_e035  config {"alpha": 0.05, "incumbent_rho": 0.425, "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n": 42, "nature": "CORRELATIONAL \u2014 a FOUND result licenses a design, never a claim", "outcome": "control-differenced drop on the subject-initial city probe, as [E-029]", "thread": "T-086", "ticket": "E-035"}
+2026-10-15 08:45:33,485 INFO     run_e035  42 subjects joined across E-026b, E-026-depth and the L5 caches
+2026-10-15 08:45:33,485 INFO     run_e035  attrition: 0 of 42 candidate ids lacked a cached delta, 0 lacked a kstar, 0 lacked a chain record
+2026-10-15 08:45:33,485 INFO     run_e035  outcome reproduces [E-029]'s array to 0.00e+00

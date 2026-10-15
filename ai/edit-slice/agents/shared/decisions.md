@@ -2941,3 +2941,78 @@ Llama-3.1-8B. No model, no network, no new measurement. Existence per [O-004].
 
 **Artifacts:** agents/engineer/workspace/run_e040.py; results/E-040-alias-gradient.json;
 logs/run_e040-2026-10-15-080318.log
+
+---
+
+## [E-035] Result: NOTHING BEATS IT — seven candidates eliminated, and the best one is negative
+
+_Date: 2026-10-15_
+
+**VERDICT: NOTHING BEATS IT**, which this ticket named in advance as the outcome to expect
+and the useful one. No candidate clears ρ = 0.50 at its Holm threshold.
+
+```
+candidate                 rho          p   Holm thr  clears   rho w/ ES
+norm_delta_v           -0.423   6.16e-03   7.14e-03     yes      -0.276
+ratio_dv_over_k        -0.349   2.73e-02   8.33e-03      no      -0.231
+target_prior           +0.337   3.32e-02   1.00e-02      no      +0.130
+residual_norm          -0.309   5.31e-02   1.25e-02      no      -0.355
+norm_k_star            -0.228   1.58e-01   1.67e-02      no      -0.238
+baseline_true          +0.067   6.84e-01   2.50e-02      no      +0.327
+subject_tokens         +0.042   8.00e-01   5.00e-02      no      +0.004
+es_margin (incumbent)  +0.425          —          —       —       1.000
+```
+
+So propagation magnitude is set by **none of**: update size, key size, their ratio, the
+belief's strength, the target's prior, the subject's length, or the local residual norm.
+That is a sharper statement of [T-086] than the thread had, and it is what the ticket was
+built to deliver.
+
+**Confound 2, reported before the table as required.** The outcome's own spread is median
+10.52, IQR 3.72, sd 3.11. The ceiling on any achievable ρ here is not 1.0, and a modest ρ
+must be read against what is reachable.
+
+**Confound 1 did real work.** `ratio_dv_over_k` (p = 2.7e-02) and `target_prior`
+(p = 3.3e-02) both clear an unadjusted α = 0.05 and **neither clears its Holm threshold**.
+Two of seven candidates would have been reported as hits without the correction.
+
+### Three things the table says that the verdict does not
+
+**1 · `‖Δv‖` is statistically reliable and practically weak, and those are different
+claims.** It is the only candidate to clear its Holm threshold (6.16e-03 against
+7.14e-03), and its |ρ| is **0.423** — below the 0.50 floor this ticket pre-registered. It
+is a real association that explains about 18% of variance. Significance and effect size
+came apart exactly where the ticket anticipated they might, which is why the floor was set
+on ρ rather than on p.
+
+**2 · Its sign is negative. A bigger update travels LESS far.** ρ = −0.423. The candidate
+was listed with the rationale *"a bigger update should move more"*, and the data says the
+opposite with the strongest association in the table. **This is recorded as an observation,
+not explained** — a post-hoc story about why larger deltas propagate less would be exactly
+the move this project keeps catching itself making.
+
+**3 · It is nearly independent of the incumbent.** `‖Δv‖` correlates with ROME's ES margin
+at only **−0.276**, while each correlates with propagation at ~0.42. They are not one weak
+view wearing two names — which is what [E-029] found for displacement and ES margin at
+0.419/0.425 — but **two weak views of different things**.
+
+> *Exploratory, NOT pre-registered:* a plain rank-sum of the two reaches **ρ = +0.510**.
+> This is stated once, flagged, and claimed for nothing. No joint model was registered, the
+> combination was chosen after seeing which candidates survived, and a two-parameter fit on
+> n=42 selected post-hoc is not evidence. It is the reason [T-093] exists.
+
+### Consequence
+
+[T-086] keeps its status — nothing predicts propagation magnitude — but its shape has
+changed. The question is no longer "is there any candidate" but **"why do two near-
+independent quantities each explain ~18% and nothing explains more"**, and whether a
+pre-registered joint model on a fresh subject set clears the floor that neither clears
+alone. That is [T-093], and it must be run on subjects not used here.
+
+**Scope.** Layer 5, 42 subjects, one model, one relation — the [E-029] set, so the
+incumbent is measured on exactly the same subjects; the rebuilt outcome reproduces
+[E-029]'s stored array to 0.00e+00. **Correlational**: nothing here is causal, and the
+NOTHING BEATS IT verdict licenses an elimination, not a mechanism. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e035.py; tools/dryruns/dryrun_e035.py;
+results/E-035-propagation-candidates.json; logs/run_e035-2026-10-15-084614.log
