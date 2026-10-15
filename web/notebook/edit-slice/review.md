@@ -167,6 +167,25 @@ under the country edit. That is §4.5, in one person.
 
 ## 2 · Related work, and what we do not claim
 
+**The nearest neighbour to §4.6, named first.** <Cite id="dong2025chainedit" narrative />
+identifies a flaw in RippleEdits' compositional evaluation and it is **not the one we
+measure**. Theirs is that the questions are built from an external knowledge graph, so
+*"they requires external knowledge beyond the edited content to correctly answer, thereby
+obscuring the assessment of logical generalization"* — a method is penalised for disagreeing
+with a KG about the intermediate fact. **Ours is about what the prompt contains rather than
+what the question requires:** the compositional prompt names the edited subject verbatim, so
+the update arrives at that token by arithmetic, whatever the model believes in between.
+
+**Their fix is the clearest illustration we have of why that distinction matters.** They
+propose three repaired variants, and none removes the edited subject — the third,
+*In-Prompt*, *"explicitly inject[s] intermediate knowledge into prompts"*, making each
+question **longer** while the subject stays exactly where it was. A benchmark deliberately
+repaired by authors who had found a real evaluation flaw would still fail the screen in §7,
+because augmenting context does not move the token an update is delivered to.<Margin>Read
+in full rather than from the abstract: the body contains no instance of *surface*,
+*lexical*, *overlap* or *verbatim*, and *subject* appears only in template grammar and path
+endpoints. <Evidence id="f-R-018">R-018</Evidence></Margin>
+
 **We do not claim the surface-form result.** Section 3.1 depends on the fact that scoring
 answers by string probability is distorted by how the answer is spelled. That is surface
 form competition <Cite id="holtzman2021surface" narrative />, and the correction we
@@ -1040,6 +1059,28 @@ attack" collects what a reviewer would dispute, and nobody disputes a constraint
 so the category has to be added deliberately or it vanishes in the rename._
 
 ## 7 · What we would like decided
+
+**0 · Is the screen worth having?** Everything above is evidence for one small instrument,
+and this is the question we most want answered. A propagation test can only measure
+propagation if its test prompt's key does **not** overlap the edit's key — and
+`(k·k*)/(k*·k*)` decides that **before any edit is applied**, from one forward pass through
+the *unedited* model.<Margin>Searched and not found, which is the weakest positive form.
+The nearest work inverts it: <Cite id="dong2025chainedit" /> and the subspace-confinement
+line treat key overlap as something an *editor* should manage, not as a property of an
+*evaluation item*. <Evidence id="f-R-017">R-017</Evidence></Margin>
+
+The rest of this paper is what makes the screen usable. §4.1 says it is **exact** rather
+than heuristic — analytic, four models, a 68× parameter range. §4.6 gives it a measured
+**floor** of 0.070 on a benchmark's own materials, so "near 1" and "near the floor" are
+calibrated rather than asserted. §4.4 says why it is **necessary and not sufficient**: a
+high coefficient does not tell you the answer moved, so delivery can never be substituted
+for effect. And §4.6's MQuAKE count is an existence proof that benchmarks satisfying it
+already exist — 16,506 prompts whose edited subject is absent, in a published artifact,
+by construction rather than design.
+
+> **The question:** is a cheap pre-run criterion for whether a propagation item can test
+> propagation something the field would use — or is it a restatement of what benchmark
+> authors already do by eye?
 
 1. **Is the pinned-coefficient result known?** The question we cannot answer from inside.
 2. **Does it matter for ripple benchmarks?** *Rewritten 2026-10-14; the earlier version of

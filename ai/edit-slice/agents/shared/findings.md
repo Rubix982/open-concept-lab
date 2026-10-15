@@ -1861,3 +1861,77 @@ a distinction drawn from its abstract.
 checked against arXiv records.
 
 **Artifacts:** none — literature only.
+
+## [R-018] Finding: ChainEdit read. The distinction holds, and their own fix illustrates ours
+
+_Date: 2026-10-15_
+
+[R-017] drew claim 3's distinction from ChainEdit's abstract, which [R-011b] established is
+not good enough. The paper has now been read — PDF extracted locally, body searched, the
+critique and the fix read in full.
+
+**Verified:** *ChainEdit: Propagating Ripple Effects in LLM Knowledge Editing through
+Logical Rule-Guided Chains*, Zilu Dong, Xiangqing Shen, Zinong Yang, Rui Xia,
+arXiv **2507.08427**. Title and authors confirmed against the arXiv record. **Venue
+"ACL 2025 main" came from a search summary and is NOT verified** — do not state it.
+
+### Their flaw, in their own words
+
+> *"their reliance on external KGs for question formulation. As their questions were formed
+> using KG-derived knowledge, they requires external knowledge beyond the edited content to
+> correctly answer, thereby obscuring the assessment of logical generalization
+> capabilities."*
+
+[R-017]'s abstract-derived summary was **correct**: the flaw is that the intermediate fact
+comes from an external knowledge graph and may not match the model's own belief, so a
+method is penalised for a disagreement that is not about editing.
+
+### Our observation is not theirs — ADJACENT-CONFIRMED
+
+Searched the full body for `surface`, `lexical`, `overlap`, `verbatim`, `shortcut`:
+**zero hits.** The word `subject` appears only in template grammar (*"the relation of
+subject is object"*), path endpoints, and a binding rule. **Nowhere does the paper observe
+that a compositional prompt names the edited subject, or that an edit could reach such a
+prompt mechanically rather than by reasoning.**
+
+Their concern is about **what the question requires** (knowledge the model may lack). Ours
+is about **what the prompt contains** (a token whose key is the edit's key). Different
+mechanism, and they do not touch ours.
+
+### The part worth more than the distinction
+
+Their fix is three LLM-adaptive variants, and **none removes the edited subject from the
+prompt**:
+
+| variant | what it does | does our concern survive? |
+| --- | --- | --- |
+| **Filtered** | drops questions whose intermediate fact the model cannot verify | yes — survivors still name the subject |
+| **Replaced** | regenerates the intermediate fact from the model's own state | yes — only the middle entity changes |
+| **In-Prompt** | *"employs context augmentation to explicitly inject intermediate knowledge into prompts"* | **yes, and more so** — the prompt gets longer while the subject stays |
+
+**In-Prompt is the sharpest illustration available of why the screen adds something.** It
+is a deliberately repaired benchmark, built by authors who had identified a real evaluation
+flaw — and every one of its prompts would still fail a coefficient screen, because
+augmenting context does not remove the token the update is delivered to. A benchmark can be
+fixed for their problem and remain broken for ours.
+
+That is a better framing than "we found a different flaw." It is: **the field has begun
+repairing its propagation benchmarks, and the repairs do not address delivery.**
+
+### Also recorded
+
+They evaluate on the **POPULAR** subset of RippleEdits only — the same subset [E-038] found
+had just 19 different-surface aliases and [E-043] could not resolve. They merge CI and CII
+into a single Reasoning metric following KnowEdit, so a reader of their results cannot
+separate the two compositional types that [E-038] measured at 0.982 and 0.955.
+
+### Consequence
+
+Claim 3 stands and **must be written with ChainEdit named first** — their flaw, then ours,
+then the one-sentence distinction, then In-Prompt as the illustration. A reviewer who knows
+this paper and meets our claim cold will otherwise read it as a restatement.
+
+**Confidence: high.** Read from the body, not a snippet.
+
+**Artifacts:** none — literature only. Extracted text at `/tmp/chainedit.txt` is scratch
+and not kept.

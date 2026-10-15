@@ -743,3 +743,68 @@ must be read before claim 3 leaves the repo. Eight identifiers unverified.
 
 **Artifacts:** agents/shared/findings.md -> "[R-017] Finding"
 **Closed:** 2026-10-15
+
+### R-018 · Read ChainEdit properly — claim 3 depends on a distinction drawn from its abstract
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-097 · required by [R-017]
+
+**Description:**
+
+[R-017] found claim 3 **ADJACENT** to ChainEdit (2507.08427) and drew the distinction from
+that paper's **abstract**. [R-011b] established what that is worth: *"a description read off
+a search snippet is not a verified citation even when the identifier is correct"* — two of
+this project's own literature entries were wrong after being summarised from search and then
+reasoned from. Claim 3 is now the thing most likely to leave the repo, and it rests on
+exactly that kind of reading.
+
+**What must be settled, in order of how much damage each would do:**
+
+1. **Does ChainEdit already make our observation?** Does it anywhere note that a
+   compositional test prompt *contains the edited subject*, or that the edit reaches such a
+   prompt mechanically rather than by reasoning? If yes, claim 3 is **STATED** and must be
+   withdrawn or repositioned as a measurement of something they asserted.
+2. **Is their flaw really intermediate-knowledge misalignment?** [R-017] says theirs is
+   LLM-vs-KG disagreement about the middle fact. Confirm from the body, not the abstract.
+3. **Does their fix dissolve our concern?** If realigning the dataset to the model's own
+   beliefs also removes the subject from the prompt, their fix covers ours and the
+   contribution shrinks to having measured it.
+4. **Do they report anything we should cite as support** — e.g. evidence that editors
+   score well on compositional tests without generalising?
+
+**Outcomes.** **STATED** — withdraw or reposition. **ADJACENT-CONFIRMED** — the [R-017]
+distinction survives a real reading and can be written in one sentence. **ADJACENT-REVISED**
+— they are close in a way the abstract concealed, and the sentence must change.
+
+**Scope.** One paper, read. Record the venue and identifier as verified or not, per the
+standing citation rule.
+
+**Result (2026-10-15). ADJACENT-CONFIRMED**, and the reading paid for itself.
+
+1. **Do they make our observation?** No. Full-body search for `surface`, `lexical`,
+   `overlap`, `verbatim`, `shortcut` returns **zero hits**; `subject` appears only in
+   template grammar and path endpoints. They never note that a compositional prompt names
+   the edited subject.
+2. **Is their flaw intermediate-knowledge misalignment?** Yes, confirmed from the body:
+   *"their reliance on external KGs for question formulation... they requires external
+   knowledge beyond the edited content to correctly answer."* [R-017]'s abstract reading
+   was right.
+3. **Does their fix dissolve our concern?** **No — and their third variant sharpens it.**
+   Filtered drops unverifiable questions, Replaced regenerates the middle fact from the
+   model's state, and **In-Prompt "explicitly inject[s] intermediate knowledge into
+   prompts"** — making the prompt *longer* while the edited subject remains. A repaired
+   benchmark that still fails a coefficient screen is the best illustration we have of
+   what the screen adds.
+4. **Anything to cite as support?** They evaluate on RippleEdits **POPULAR** only, and
+   merge CI and CII into one Reasoning metric following KnowEdit — so their results cannot
+   separate the two compositional types [E-038] measured at 0.982 and 0.955.
+
+**Citation:** title and authors verified against the arXiv record for **2507.08427**.
+**Venue is NOT verified** — "ACL 2025" came from a search summary and must not be stated.
+
+**Artifacts:** agents/shared/findings.md -> "[R-018] Finding"
+**Closed:** 2026-10-15
