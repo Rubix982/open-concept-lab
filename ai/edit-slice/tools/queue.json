@@ -14,5 +14,18 @@
     "",
     "A job stays queued until a person removes it \u2014 the loop re-reads the file and will re-run anything still in it. [E-038] was removed 2026-10-15 after its result was read and recorded; leaving it in made the loop re-run a finished experiment and re-escalate its verdict every 15 minutes, which blocked [E-039] behind it."
   ],
-  "jobs": []
+  "jobs": [
+    {
+      "ticket": "E-044",
+      "runner": "agents/engineer/workspace/run_e044.py",
+      "args": [
+        "--n",
+        "16"
+      ],
+      "model": "meta-llama/Llama-3.1-8B",
+      "budget_h": 3,
+      "expect": [],
+      "_why": "T-095, the causal test E-041 made necessary. Masks the non-subject prefix via attention_mask with position_ids pinned, so surviving divergence is positional rather than contextual. Carries a correctness gate the runner aborts on: the edit form has no prefix, so masking it must change nothing. CONTEXT NOT NECESSARY is the branch that costs us most \u2014 it makes E-020 wrong a second independent way."
+    }
+  ]
 }

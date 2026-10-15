@@ -1,0 +1,3 @@
+2026-10-15 21:33:07,808 INFO     run_e044  run run_e044 -> logs/run_e044-2026-10-15-213307.log
+2026-10-15 21:33:07,808 INFO     run_e044  config {"forms": ["edit form", "late clause", "possessive", "matched filler"], "gate": "edit form must reproduce its unmasked keys exactly", "intervention": "attention_mask zeroes [1, subject_start); position_ids pinned", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 16, "probe_layers": [0, 3, 5, 8, 12, 16, 24, 31], "reading": "surviving divergence is POSITIONAL \u2014 RoPE \u2014 not contextual", "thread": "T-095", "ticket": "E-044"}
+2026-10-15 21:33:07,808 INFO     run_e044  16 subjects, 4 forms, masked vs unmasked in one batch

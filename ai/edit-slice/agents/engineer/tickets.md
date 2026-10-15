@@ -3602,3 +3602,78 @@ direct within-stratum replication for that subset.
 **Artifacts:** fetch_sitelinks.py; run_e043.py; results/E-043-popularity.json;
 data/wikidata/sitelinks.json; agents/shared/decisions.md -> "[E-043] Result"
 **Closed:** 2026-10-15
+
+### E-044 · Does the subject key still reorient when context cannot reach it?
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-095 · follows [E-041]
+
+**Description:**
+
+[E-041] decomposed the key's divergence into direct writes and found the MLP term larger
+than the attention term at every depth — but **the MLP's input depends on attention**, so an
+attention-driven reorientation routed through the MLP is indistinguishable from a local one
+in that measurement. It said so before running. [T-095] is the causal version.
+
+**[T-095]'s design note ruled out two implementations.** Zeroing `self_attn.output` deletes
+RoPE along with context, collapsing both forms to the same embedding and returning
+"attention necessary" for a reason unrelated to context. Truncation ablates nothing.
+
+**The third is expressible with documented model inputs and was probed before this ticket
+was written.** Pass `attention_mask` with the non-subject prefix zeroed, together with
+**explicit `position_ids`** so RoPE cannot shift when the mask does. Verified on the remote
+model: position 0 is bit-identical, the masked span and everything after it changes. No
+internals touched.
+
+**Method.** For each form, mask positions `[1, subject_start)` — the prefix, keeping BOS,
+which is an attention sink and whose removal would destabilise the forward pass for reasons
+unrelated to the question. Read the key at the subject's last token at [E-020]'s layers and
+recompute the cosine to the edit form's key, which is the same quantity [T-077] measured
+falling 0.984 → 0.471.
+
+**Because `position_ids` are pinned, the subject still sits at its own index in each form.**
+So any divergence surviving the mask is **positional** — RoPE — and not contextual. That is
+the decomposition this ticket buys.
+
+**CORRECTNESS GATE, and the ticket does not run without it.** The edit form has **no**
+non-subject prefix, so its mask is empty and its numbers must reproduce [E-041]'s
+**exactly**. Rule 4 of `LOOP.md` exists because seven harness defects in two days each
+returned a plausible value; an intervention whose failure mode is "silently masks nothing"
+or "silently shifts RoPE" is precisely that shape. **The run aborts if the edit form moves.**
+
+**Pre-stated outcomes.** Median cosine between each form and the edit form, at depth
+(layers 16–31), under the mask.
+
+- **CONTEXT NECESSARY** — cosine rises to **>= 0.95** at every layer. Cutting attention to
+  the prefix removes the reorientation, so context mixing is what does it and [E-041]'s
+  direct-write reading was the wrong frame.
+- **CONTEXT NOT NECESSARY** — cosine stays **<= 0.75** at depth. The reorientation survives
+  with context unreachable, so it is positional, and [E-020]'s attention account is wrong in
+  a second independent way.
+- **PARTIAL** — in between. Report **the fraction of [E-041]'s divergence the mask removes**,
+  which is the informative quantity and is what [E-041]'s matched-filler arm predicts: a
+  same-length unrelated prefix produced ~60% of a related one's divergence, so masking
+  content should remove roughly 40%.
+
+**Confounds.**
+1. *Masking changes the forward pass for every position, not only the subject's.* We read
+   only the subject's last token, and the gate confirms the unmasked case is untouched.
+2. *BOS is kept.* Masking an attention sink is a different intervention with its own
+   literature; keeping it is a choice and is recorded as one.
+3. *A masked token still computes* — it attends to unmasked predecessors and is simply not
+   attended **to**. The claim is about what reaches the subject position, not about deleting
+   tokens.
+4. *Delivery, not effect* — [E-028d], 2.96×.
+
+**Deliverable.** One table: layer × form × (cosine unmasked, cosine masked, fraction of
+divergence removed), with [E-020]'s original cosine as the anchor column.
+
+**Scope.** Llama-3.1-8B, [E-041]'s 16 subjects and forms, layers [0,3,5,8,12,16,24,31].
+Existence per [O-004].
+
+**Artifacts:** _(on close)_
+**Closed:** —
