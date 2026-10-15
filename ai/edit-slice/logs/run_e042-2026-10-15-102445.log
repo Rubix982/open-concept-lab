@@ -1,0 +1,17 @@
+2026-10-15 10:24:45,786 INFO     run_e042  run run_e042 -> logs/run_e042-2026-10-15-102445.log
+2026-10-15 10:24:45,786 INFO     run_e042  config {"cells": 6, "design": "within-subject: model, relation, layer and probe vary; PEOPLE do not", "incumbent": "[E-035] rho(||dv||, propagation) = -0.423 at 8B/birthplace/L5/city", "measure": "EFFECT (a control-differenced drop), not delivery", "thread": "T-094", "ticket": "E-042"}
+2026-10-15 10:24:45,786 INFO     run_e042  6 cells; subjects per cell overlapping [E-035]'s 42: [29, 29, 29, 29, 29, 29]
+2026-10-15 10:24:45,786 INFO     run_e042  
+2026-10-15 10:24:45,786 INFO     run_e042  model     relation       layer matched probe     n      rho
+2026-10-15 10:24:45,786 INFO     run_e042  Llama-3.1-70Bbirthplace         5   citizenship    29   -0.131
+2026-10-15 10:24:45,786 INFO     run_e042  Llama-3.1-70Bbirthplace        13   citizenship    29   -0.063
+2026-10-15 10:24:45,786 INFO     run_e042  Llama-3.1-70Boccupation         5    occupation    29   -0.073
+2026-10-15 10:24:45,787 INFO     run_e042  Llama-3.1-70Boccupation        13    occupation    29   -0.116
+2026-10-15 10:24:45,787 INFO     run_e042  Llama-3.1-8Bbirthplace         5   citizenship    29   -0.364
+2026-10-15 10:24:45,787 INFO     run_e042  Llama-3.1-8Boccupation         5    occupation    29   +0.087
+2026-10-15 10:24:45,787 INFO     run_e042  
+2026-10-15 10:24:45,787 INFO     run_e042  negative in 5 of 6 cells; [E-035] measured -0.423 on a seventh configuration
+2026-10-15 10:24:45,787 INFO     run_e042  median rho across cells -0.095
+2026-10-15 10:24:45,787 INFO     run_e042  
+2026-10-15 10:24:45,787 INFO     run_e042  VERDICT: SIGN HOLDS — negative in 5 of 6. A bigger update travelling less far is not specific to one relation, model, layer or probe, so [T-094] becomes a question about mechanism rather than replication. WITHIN-SUBJECT: this says nothing about other people.
+2026-10-15 10:24:45,787 INFO     run_e042  written: results/E-042-dv-sign.json

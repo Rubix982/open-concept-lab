@@ -1791,3 +1791,11 @@ explains more than ~18% alone or ~28% together,"* and it rests on having searche
 than on not having looked.
 
 **Artifacts:** none new — arithmetic over results/E-035-propagation-candidates.json
+
+_Narrowed 2026-10-15 by [E-042]._ The `‖Δv‖` this finding leans on is substantial only in
+the 8B/birthplace configuration — the same one it was measured in. Across six other cells
+it is a near-zero lean (|ρ| ≤ 0.13 in five of six). **So "ES measures true-answer
+suppression and nothing else" stands as an observation about the metric's arithmetic, which
+is exact; but "and here is a quantity it misses" is narrowed to one configuration and is
+not yet a general gap.** The arithmetic half of this finding survives [E-042] untouched;
+the consequence half does not.

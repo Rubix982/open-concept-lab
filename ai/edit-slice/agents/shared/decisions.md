@@ -3101,3 +3101,68 @@ and a 1/6 effect in one run, so one relation is one relation. **Delivery, not ef
 
 **Artifacts:** agents/engineer/workspace/run_e041.py; tools/dryruns/dryrun_e041.py;
 results/E-041-reorientation.json; logs/run_e041-2026-10-15-*.log
+
+---
+
+## [E-042] Result: the sign holds 5 of 6 and the effect does not — it lives in one cell
+
+_Date: 2026-10-15_
+
+[E-035]'s strongest association was `‖Δv‖` against propagation at **−0.423**: a bigger
+update travels less far. [T-094] called for a replication check before any theory. [E-033]
+had already left six cells on disk — 2 models × 2 relations × 2 layers, n=29 — so the check
+cost nothing.
+
+**The pre-registered verdict is SIGN HOLDS, at 5 of 6 negative. The magnitudes say
+something narrower and it is the honest headline.**
+
+```
+model            relation     layer   matched probe     rho
+Llama-3.1-8B     birthplace       5     citizenship   -0.364   substantial
+Llama-3.1-70B    birthplace       5     citizenship   -0.131   near-zero
+Llama-3.1-70B    occupation      13      occupation   -0.116   near-zero
+Llama-3.1-70B    occupation       5      occupation   -0.073   near-zero
+Llama-3.1-70B    birthplace      13     citizenship   -0.063   near-zero
+Llama-3.1-8B     occupation       5      occupation   +0.087   near-zero
+```
+
+**Five of the six cells are near-zero** (|ρ| < 0.2) and the median across cells is
+**−0.095**. The only substantial cell is **8B / birthplace**, at −0.364 — which is the same
+model and relation as [E-035]'s −0.423. A sign test on 5-of-6 gives **p = 0.219** two-sided
+*granting* independence the design does not have (confound 2), so that is an upper bound on
+the evidence rather than a result.
+
+> **The right statement is not "the sign generalises."** It is: *the effect is substantial
+> in the 8B/birthplace configuration and a weak consistent lean everywhere else.* The
+> pre-registered band counted signs and therefore cannot see that, which is a defect in the
+> band, not in the data.
+
+**This is the [E-040] lesson repeating and it should be said plainly.** A threshold I set
+in advance — count the negatives — returned a verdict that over-reads its own evidence. The
+band is reported as it fell, and the magnitude reading is reported beside it, because
+suppressing either would misrepresent the run.
+
+**What it does to [R-015].** [R-015] reopened [T-085] on the strength of `‖Δv‖` being a
+quantity ES margin cannot see. That reopening is **narrowed, not withdrawn**: the −0.423
+and the −0.364 are the same configuration, so what [R-015] identified may be specific to
+8B/birthplace rather than a general gap in ES. Five cells at |ρ| ≤ 0.13 are not evidence
+that ES misses something important in general. **[T-085] stays answered-and-amended, and
+the amendment now carries this caveat.**
+
+**Confounds, as stated before the run.**
+1. **All 29 subjects in every cell are a subset of [E-035]'s 42** — verified in the runner,
+   not asserted in prose. This varies model, relation, layer and probe while holding the
+   *people* fixed, so it shows the effect is not specific to the configuration and says
+   **nothing** about other subjects.
+2. *The six cells are not independent* — one pipeline, one subject pool, one optimiser
+   configuration. 5-of-6 is a consistency count, not six trials.
+3. *`‖Δv‖` depends on how hard the target was to install*, which is uncontrolled across
+   cells and is a live candidate for why 8B/birthplace differs.
+4. **EFFECT, not delivery** — unusually for this record, the outcome is a measured drop. The
+   standard [E-028d] caveat does not apply here and was not inherited.
+
+**Scope.** Six [E-033] files already on disk, n=29 each, no new measurement. Existence per
+[O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e042.py; results/E-042-dv-sign.json;
+logs/run_e042-2026-10-15-102445.log

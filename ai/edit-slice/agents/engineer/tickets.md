@@ -3429,3 +3429,87 @@ near the output.
 **Artifacts:** run_e041.py; tools/dryruns/dryrun_e041.py;
 results/E-041-reorientation.json; agents/shared/decisions.md -> "[E-041] Result"
 **Closed:** 2026-10-15
+
+### E-042 · Does the negative ‖Δv‖ sign survive a different relation, model, layer and probe?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-094 · follows [E-035]
+
+**Description:**
+
+[E-035]'s strongest association is `‖Δv‖` against propagation at **−0.423**: *a bigger
+update travels less far*, which is the opposite of the rationale the candidate was listed
+with. [T-094] says the first move is **not a theory but a check on whether the sign
+survives**, because [E-033] found a 6/6 effect and a 1/6 effect sitting side by side in one
+run.
+
+**That check costs nothing.** [E-033] left six result files, each carrying `‖Δv‖` per
+subject alongside pre- and post-edit log-probabilities for three probes with their own
+controls. Six cells: **2 models × 2 relations × 2 layers**, n=29 each.
+
+**Method.** Per cell, per subject, the same control-differenced outcome [E-029] used:
+`(base[self|p] − edit[self|p]) − (base[control|p] − edit[control|p])` on that cell's
+**type-matched** probe, correlated with `‖Δv‖` by Spearman. No model, no network.
+
+**Pre-stated outcomes.**
+
+- **SIGN HOLDS** — the correlation is negative in **>= 5 of 6** cells. The [E-035]
+  observation is not specific to one relation, model or layer, and [T-094] becomes a
+  question about mechanism rather than about replication.
+- **SIGN DOES NOT HOLD** — negative in **<= 2 of 6**. [E-035]'s −0.423 is a fact about that
+  one configuration and must be written as one, which would also weaken [R-015]'s reopening
+  of [T-085].
+- **MIXED** — 3 or 4 of 6. No general statement; report the table and say which cells
+  differ.
+
+**Confounds.**
+1. **All 29 subjects in every cell are a subset of [E-035]'s 42.** These are **not
+   independent replications**: they vary model, relation, layer and probe while holding the
+   *people* fixed. A consistent sign therefore shows the effect is not specific to the
+   relation/model/layer/probe, and says **nothing** about whether it is specific to these
+   29 subjects. No sentence may call this a generalisation across subjects.
+2. *The six cells are not independent of each other either* — they share a pipeline, a
+   subject pool and an optimiser configuration. Counting 5-of-6 is a consistency check, not
+   six trials, and no p-value over the six is computed because it would imply independence
+   this design does not have.
+3. *`‖Δv‖` depends on how hard the target was to install.* Within a cell the relation and
+   injected type are fixed, which controls it partly; across cells it is uncontrolled and is
+   a candidate explanation for any sign that does flip.
+4. *Delivery, not effect* — [E-028d], 2.96×. The outcome here is a measured drop, so this
+   one is about **effect**, unlike most of the record. Say so rather than inherit the
+   standard caveat wrongly.
+
+**Deliverable.** One table: cell (model × relation × layer) × ρ(‖Δv‖, propagation), n, and
+the matched probe. One line on how many of six are negative.
+
+**Scope.** The six [E-033] files already on disk. No new measurement. Existence per
+[O-004].
+
+**Result (2026-10-15).** **SIGN HOLDS** by the pre-registered band — 5 of 6 negative —
+**and the magnitudes say something narrower.**
+
+```
+8B    birthplace  L5   -0.364   substantial
+70B   birthplace  L5   -0.131   near-zero
+70B   occupation  L13  -0.116   near-zero
+70B   occupation  L5   -0.073   near-zero
+70B   birthplace  L13  -0.063   near-zero
+8B    occupation  L5   +0.087   near-zero
+```
+
+Five of six are |rho| < 0.2, median −0.095, and the one substantial cell is the same model
+and relation as [E-035]'s −0.423. A sign test on 5-of-6 gives p = 0.219 *granting* an
+independence confound 2 denies. **The honest statement is "substantial in 8B/birthplace, a
+weak consistent lean elsewhere", not "the sign generalises"** — the band counted signs and
+cannot see magnitude, which is a defect in the band I wrote.
+
+Narrows [R-015]: `‖Δv‖` as something ES margin cannot see may be specific to one
+configuration. [T-085]'s amendment now carries that caveat.
+
+**Artifacts:** run_e042.py; results/E-042-dv-sign.json;
+logs/run_e042-2026-10-15-102445.log; agents/shared/decisions.md -> "[E-042] Result"
+**Closed:** 2026-10-15

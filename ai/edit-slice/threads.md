@@ -1633,7 +1633,7 @@ monotone form could exceed it, and none was pre-registered.
 
 ### T-094 · Why does a larger update propagate LESS far?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-086
 **Opened:** 2026-10-15
 **Question:** [E-035]'s strongest association is `‖Δv‖` at **−0.423**: the bigger the
@@ -1644,7 +1644,20 @@ target is, for optimisation difficulty, for the subject's familiarity, or for no
 first move is **not** a theory but a check on whether the sign survives a different
 relation and a different model, since [E-033] showed a 6/6 effect and a 1/6 effect sitting
 side by side in the same run.
-**Answer:** —
+**Answer:** [E-042] — **the sign survives; the effect mostly does not.** Across six
+[E-033] cells (2 models x 2 relations x 2 layers, n=29), rho is negative in **5 of 6** —
+but five of the six are |rho| < 0.2, the median is −0.095, and the only substantial cell
+(**−0.364**) is the same model and relation as [E-035]'s −0.423. A sign test on 5-of-6
+gives p = 0.219 even granting an independence the design lacks.
+
+**So "a bigger update travels less far" is a weak consistent lean across configurations and
+a real effect in 8B/birthplace specifically.** There is no mechanism question to ask yet —
+there is barely an effect to explain outside one cell. The pre-registered band counted
+signs and over-read its own evidence; that is recorded in [E-042] as a defect in the band.
+
+**Narrows [R-015]/[T-085]:** `‖Δv‖` as a quantity ES margin cannot see may be
+configuration-specific. **Does not license** a theory about why larger deltas propagate
+less; the next honest move is fresh subjects, not an explanation.
 
 ### T-095 · Does the subject key still reorient when context cannot reach it?
 
