@@ -3166,3 +3166,74 @@ the amendment now carries this caveat.**
 
 **Artifacts:** agents/engineer/workspace/run_e042.py; results/E-042-dv-sign.json;
 logs/run_e042-2026-10-15-102445.log
+
+---
+
+## [E-043] Result: not familiarity — composition explains all three subsets, including `popular`
+
+_Date: 2026-10-15_
+
+[E-038] left a 0.408 span across RippleEdits' subsets that made its pooled alias figure
+unquotable. [E-040] showed the drop is graded by surface similarity and that composition
+explains `random` against `recent` — but `popular`, which sits at the top of the span, had
+19 aliases in cells of 5/5/9 and could not be tested. [T-092] named **familiarity** as the
+competing account. **It is ruled out, and composition accounts for all three.**
+
+**The proxy passed its gate first.** Confound 1 said sitelink count must separate
+RippleEdits' own subsets or nothing below is readable:
+
+```
+subset       n   median sitelinks
+popular     19         50.0
+recent      37          4.0
+random     314          0.0
+```
+
+Decisive, and in the right order. The proxy measures what the subsets encode.
+
+**Familiarity: NOT SUPPORTED.** Partial Spearman of coefficient on sitelink count,
+controlling for surface similarity:
+
+```
+per alias   (n=370)   +0.043
+per subject (n=288)   +0.046
+```
+
+Both inside the pre-stated [−0.20, +0.20]. The stratified table agrees and does not depend
+on the estimator — within each similarity stratum the mid and high sitelink tertiles give
+0.103 vs 0.106, 0.309 vs 0.349, and 0.889 vs 0.633, the last running *against* familiarity.
+**How well known an entity is does not predict how much of an update its renamed form
+receives, once the string is accounted for.**
+
+### What does explain it
+
+```
+subset       n   median ratio   median coef   near-variants (ratio >= 0.8)
+popular     19          0.769         0.587          9/19  = 47%
+random     314          0.615         0.301        108/314 = 34%
+recent      37          0.533         0.179          7/37  = 19%
+```
+
+**Two independent composition measures rank-order exactly with the coefficient, across all
+three subsets.** `popular`'s aliases are simply more similar strings — 47% near-variants
+against `recent`'s 19% — which is precisely what [E-040]'s slope of +0.847 predicts should
+produce a higher median. The subset span is **composition**, and the one subset [E-040]
+could not test is the one that most clearly fits.
+
+**So [E-038]'s span is resolved and its caution can be lifted in a specific way:** the
+unquotable thing was the *median*, because the subsets differ in what kind of aliases they
+contain. The quotable quantity is [E-040]'s **slope**, which is a property of the mechanism
+rather than of the sample.
+
+**What this does not establish.** `popular`'s within-stratum test is still underpowered at
+n=19, so this is an argument from two aggregate composition measures plus the independent
+elimination of the alternative — not a direct within-stratum replication for that subset.
+Someone wanting that needs more `popular` aliases than RippleEdits contains.
+
+**Scope.** 370 aliases, 288 subjects, one Wikidata fetch, no model and no NDIF. Sitelink
+count is a **proxy** for popularity, validated against the subsets but not against any
+external measure. Existence per [O-004]. **Delivery, not effect** — [E-028d], 2.96×.
+
+**Artifacts:** agents/engineer/workspace/fetch_sitelinks.py;
+agents/engineer/workspace/run_e043.py; results/E-043-popularity.json;
+data/wikidata/sitelinks.json; logs/run_e043-2026-10-15-103208.log

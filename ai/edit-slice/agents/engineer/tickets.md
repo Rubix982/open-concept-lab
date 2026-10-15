@@ -3513,3 +3513,92 @@ configuration. [T-085]'s amendment now carries that caveat.
 **Artifacts:** run_e042.py; results/E-042-dv-sign.json;
 logs/run_e042-2026-10-15-102445.log; agents/shared/decisions.md -> "[E-042] Result"
 **Closed:** 2026-10-15
+
+### E-043 · Is `popular`'s retained delivery about familiarity, or still about composition?
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-092 · follows [E-038]/[E-040]
+
+**Description:**
+
+[E-038] found alias medians of **popular 0.587, random 0.301, recent 0.179** — a 0.408 span
+that made the pooled figure unquotable. [E-040] showed the drop is **graded by surface
+similarity** (ρ = +0.778, slope +0.847) and that, within similarity strata, `random` and
+`recent` agree to 0.017–0.033. **Composition explains those two.** `popular` has 19 aliases
+in cells of 5, 5 and 9 and could not be tested, and it is the subset at the top of the span.
+
+[T-092] names two accounts that predict opposite things: **familiarity** — a well-known
+entity's alias is itself well-represented, so it keys closer to the canonical form and
+survives stratification — against **composition**, which [E-040] would have caught with n.
+
+**The thread assumed this needs new measurement. It does not.** The 370 alias coefficients
+already exist, all 288 of their canonical subjects map to Wikidata QIDs in the released
+files, and **sitelink count** — how many Wikipedia language editions carry the entity — is a
+standard popularity proxy available from the same API this project already uses. So the
+question becomes: **does popularity predict delivery after surface similarity is partialled
+out?** No model, no edits, no NDIF.
+
+**Pre-stated outcomes.** Partial Spearman of coefficient on sitelink count, controlling for
+SequenceMatcher ratio, over n=370.
+
+- **FAMILIARITY** — partial ρ **>= +0.20**. A well-known entity retains delivery under
+  renaming beyond what string similarity explains, [T-092] has its answer, and [E-038]'s
+  subset span becomes a popularity effect rather than an unexplained one.
+- **NOT FAMILIARITY** — |partial ρ| **< 0.20**. How well known the entity is does not
+  predict delivery once the string is accounted for; the `popular` subset's behaviour needs
+  a different account and [E-038]'s caution stands undisturbed.
+- **INVERTED** — partial ρ **<= −0.20**. Well-known entities lose *more* delivery under
+  renaming, which no account on the table predicts and would be the most interesting result.
+
+**Confounds.**
+1. *Sitelink count is a proxy for popularity, not popularity.* **Validity check, reported
+   first:** sitelink count must separate RippleEdits' own `popular` subset from `recent`,
+   or the proxy does not measure what the subsets encode and no outcome below is readable.
+2. *370 aliases come from 288 subjects*, so they are not independent — a subject with
+   several aliases contributes several rows. **Report the per-subject aggregate alongside
+   the per-alias figure**; if they disagree, the per-subject one governs.
+3. *Sitelink count is heavily skewed.* Spearman throughout, never Pearson.
+4. *Surface similarity is the thing being controlled for, and [E-040] showed it is strong*
+   (ρ = +0.778). A partial correlation against a dominant covariate is unstable where the
+   covariate's range is narrow; **report the stratified table as well as the partial**, so
+   the answer does not rest on one estimator.
+5. *Delivery, not effect* — [E-028d], 2.96×.
+
+**Deliverable.** One number — the partial ρ — and one table: similarity stratum × sitelink
+tertile × median coefficient, with n per cell.
+
+**Scope.** The 370 aliases from [E-038], their 288 QIDs, and one Wikidata fetch. Existence
+per [O-004] — this is a claim about these entities, never a rate.
+
+**Result (2026-10-15).** **NOT FAMILIARITY**, and composition explains all three subsets.
+
+Proxy gate passed first: sitelink medians are popular **50.0**, recent **4.0**, random
+**0.0** — decisive and correctly ordered. Partial rho of coefficient on sitelinks
+controlling for similarity: **+0.043** per alias, **+0.046** per subject, both inside the
+pre-stated band. The stratified table agrees across estimators.
+
+What does explain it, on two independent composition measures that rank-order exactly with
+the coefficient:
+
+```
+subset       n   median ratio   median coef   near-variants
+popular     19          0.769         0.587      47%
+random     314          0.615         0.301      34%
+recent      37          0.533         0.179      19%
+```
+
+`popular`'s aliases are simply more similar strings, which is what [E-040]'s +0.847 slope
+predicts. **[E-038]'s 0.408 span is composition**, and its "magnitude not quotable" resolves
+to: the median is not quotable, the slope is.
+
+**Limit:** `popular`'s within-stratum test is still underpowered at n=19. This is two
+aggregate composition measures plus the independent elimination of the alternative, not a
+direct within-stratum replication for that subset.
+
+**Artifacts:** fetch_sitelinks.py; run_e043.py; results/E-043-popularity.json;
+data/wikidata/sitelinks.json; agents/shared/decisions.md -> "[E-043] Result"
+**Closed:** 2026-10-15

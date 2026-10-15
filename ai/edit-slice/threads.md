@@ -1591,7 +1591,7 @@ RippleBench and EditPropBench remain uncounted; [R-014] stays open for them.
 
 ### T-092 · Why do `popular` entities retain delivery under renaming?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-087
 **Opened:** 2026-10-15
 **Question:** [E-038] found `popular` aliases at 0.587 against `recent`'s 0.179, and
@@ -1607,7 +1607,24 @@ discriminator is more aliases — `popular` holds 885 entries and [E-038] used a
 them, so n cannot be raised within RippleEdits. CounterFact or Wikidata alias lists
 could supply a matched set at chosen similarity ratios, which turns this from an
 observational question into a designed one.
-**Answer:** —
+**Answer:** [E-043] — **composition, not familiarity.** The thread assumed this needed a
+designed set; it did not. The 370 coefficients existed, their 288 subjects mapped to QIDs
+in the released files, and Wikidata sitelink count supplied a popularity proxy that passed
+its own validity gate decisively (popular 50.0, recent 4.0, random 0.0).
+
+**Familiarity is ruled out:** partial rho of coefficient on sitelinks, controlling for
+surface similarity, is **+0.043** per alias and **+0.046** per subject — and the stratified
+table agrees, with its one notable cell running *against* familiarity.
+
+**Composition accounts for all three subsets**, on two measures that rank-order exactly
+with the coefficient: median similarity ratio (0.769 / 0.615 / 0.533) and near-variant
+share (47% / 34% / 19%). `popular`'s aliases are simply more similar strings, which is what
+[E-040]'s +0.847 slope predicts.
+
+**So [E-038]'s 0.408 span resolves**: the *median* was unquotable because the subsets
+differ in alias composition; the *slope* is the quotable quantity. **Limit:** `popular`'s
+within-stratum test remains underpowered at n=19, so this is two aggregate measures plus
+the elimination of the alternative, not a direct replication.
 
 ### T-093 · Do two near-independent weak predictors combine past the floor?
 

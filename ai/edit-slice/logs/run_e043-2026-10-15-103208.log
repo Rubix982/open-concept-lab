@@ -1,0 +1,25 @@
+2026-10-15 10:32:08,090 INFO     run_e043  run run_e043 -> logs/run_e043-2026-10-15-103208.log
+2026-10-15 10:32:08,090 INFO     run_e043  config {"control": "SequenceMatcher ratio", "dropped": 0, "measure": "no model, no network \u2014 existing coefficients", "n_aliases": 370, "proxy": "Wikidata sitelink count", "thread": "T-092", "ticket": "E-043"}
+2026-10-15 10:32:08,090 INFO     run_e043  370 aliases with a sitelink count, 0 dropped for want of one
+2026-10-15 10:32:08,091 INFO     run_e043  
+2026-10-15 10:32:08,091 INFO     run_e043  VALIDITY CHECK — sitelinks by RippleEdits subset (confound 1)
+2026-10-15 10:32:08,091 INFO     run_e043  subset          n    median      mean
+2026-10-15 10:32:08,091 INFO     run_e043  popular        19      50.0      74.8
+2026-10-15 10:32:08,091 INFO     run_e043  random        314       0.0       2.6
+2026-10-15 10:32:08,091 INFO     run_e043  recent         37       4.0       6.8
+2026-10-15 10:32:08,093 INFO     run_e043  
+2026-10-15 10:32:08,094 INFO     run_e043    rho(sitelinks, coefficient)            -0.091
+2026-10-15 10:32:08,094 INFO     run_e043    rho(similarity, coefficient)           +0.778   ([E-040] found +0.778)
+2026-10-15 10:32:08,095 INFO     run_e043    rho(sitelinks, similarity)             -0.151
+2026-10-15 10:32:08,095 INFO     run_e043  
+2026-10-15 10:32:08,095 INFO     run_e043    PARTIAL rho(sitelinks, coef | similarity), per alias   +0.043  (n=370)
+2026-10-15 10:32:08,095 INFO     run_e043    PARTIAL rho(sitelinks, coef | similarity), per subject +0.046  (n=288)
+2026-10-15 10:32:08,095 INFO     run_e043  
+2026-10-15 10:32:08,095 INFO     run_e043  STRATIFIED — similarity stratum x sitelink tertile (cut at 0 / 2)
+2026-10-15 10:32:08,095 INFO     run_e043  stratum                      low             mid            high
+2026-10-15 10:32:08,095 INFO     run_e043  very different             — (0)      0.103 (75)      0.106 (65)
+2026-10-15 10:32:08,095 INFO     run_e043  moderate                   — (0)      0.309 (60)      0.349 (46)
+2026-10-15 10:32:08,095 INFO     run_e043  near-variant               — (0)      0.889 (88)      0.633 (36)
+2026-10-15 10:32:08,095 INFO     run_e043  
+2026-10-15 10:32:08,095 INFO     run_e043  VERDICT: NOT FAMILIARITY — partial rho +0.043 (per-alias), inside [-0.20, 0.20]. How well known an entity is does not predict delivery once the string is accounted for. [T-092] needs another account and [E-038]'s caution stands.
+2026-10-15 10:32:08,097 INFO     run_e043  written: results/E-043-popularity.json

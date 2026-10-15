@@ -813,7 +813,13 @@ a key on the *entity* from a key on the *string*, and it is the one we cannot re
 Aliases with a genuinely different surface form sit at **0.302** against **1.000** for
 prompts that merely contain the canonical label — the 0.468 IQR above is those two
 populations in one row — but at n = 9, below a threshold of 30 fixed before the run. The
-gap looks decisive and is not reported as one.<Margin>An earlier run concluded the opposite
+gap looks decisive and is not reported as one.<Margin>Since measured at n=370 over all
+three subsets: aliases sit below same-entity in every one, and the drop is **graded by how
+far the string moved** — ρ = +0.778, slope +0.847, so delivery to a renamed subject is
+roughly its string similarity to the original. The subsets' apparent disagreement is
+composition, not a popularity effect: controlling for similarity, a Wikidata-sitelink
+popularity proxy predicts nothing (partial ρ = +0.043).<Evidence id="E-038" /> ·
+<Evidence id="E-040" /> · <Evidence id="E-043" /></Margin><Margin>An earlier run concluded the opposite
 from eight near-identical strings, its entry filter having required the canonical label to
 appear — which is exactly what an alias does not do. That sentence was withdrawn, and the
 threshold exists because of it.<Evidence id="E-036" /></Margin> And as everywhere above,
