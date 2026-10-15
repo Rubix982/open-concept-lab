@@ -1816,7 +1816,7 @@ determined return types or accept that half its facts were never held. Bought fo
 
 ### T-100 · A fact whose answer is the template's prior cannot be scored
 
-**Status:** open
+**Status:** answered
 **Parent:** T-098
 **Opened:** 2026-10-15
 **Question:** [E-045] found all 18 `int`-returning functions scoring 0% possession while
@@ -1830,4 +1830,26 @@ headline by ~5 points. **`possession.py` should count and report these separatel
 possession number can be re-checked for the same effect. The 56/74/79/85 series was
 computed without this view; whether any of it is affected is unknown and cheap to check,
 since [E-005]'s per-item results are on disk.
-**Answer:** —
+**Answer (2026-10-15, autonomous cycle):** **Instrument fixed; the series is safe; the
+full re-check is not possible from disk.**
+
+**How big is it?** Measured on the possession caches that survive — a 36-item gpt-j run
+shows **1 collision (2.8%)**, worth **1.7 points** (58.3% → 60.0%). The collided answer was
+`Rome`, a plausible template prior for a birthplace prompt. So on CounterFact-style data
+the effect is small, because the prior is spread thin across many answers; [E-045]'s 9%
+happened because a type prompt concentrates it on one answer class.
+
+**So 56/74/79/85 is deflated by roughly 1–2 points and nothing in the write-up needs
+withdrawing.** It would read about 57/75/80/86. No conclusion in this project turns on
+that, and `LOOP.md` forbids the loop to withdraw a claim anyway — there is nothing here to
+flag.
+
+**What cannot be done:** [E-005]'s full 165-item × 4-model per-item results are **not on
+disk** (caches are gitignored and only a 36-item gpt-j fragment and an 8-item smoke test
+survive). An exact re-check would mean re-running it, which is not worth 1–2 points.
+
+**Fixed:** `possession.py` now exposes `prior_collisions` and `held_rate_scoreable`,
+reported **beside** `held_rate` and never instead of it, so every past number stays
+comparable. Five tests in `test_prior_collision.py` pin the distinction — including the
+[E-045] case of an item ranked first *with* the subject and still unscoreable, which is the
+one a future refactor would quietly fold back in.

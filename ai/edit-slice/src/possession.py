@@ -31,12 +31,11 @@ from __future__ import annotations
 
 import json
 import random
-import statistics
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Callable, Final, Iterable, Iterator, Literal
+from typing import Callable, Final, Iterable, Literal
 
 Backend = Literal["local", "ndif"]
 
@@ -191,6 +190,38 @@ class FilterReport:
         if not self.results:
             return 0.0
         return sum(r.rank_prior == 1 for r in self.results) / len(self.results)
+
+    @property
+    def prior_collisions(self) -> list[ItemResult]:
+        """Items the template alone already answers, which `held` CANNOT score.
+
+        [E-045] ran 18 `int`-returning functions and scored every one at zero, while the
+        model ranked `int` first for 15 of them. All 18 had `rank_prior == 1`: the
+        subject-free prompt already predicts `int`, so lift is <= 0 whatever the model
+        knows. **The lift control is working as designed and simply cannot separate
+        knowledge from prompt prior for that answer.**
+
+        Such items are not evidence of absence and should be reported as unscoreable
+        rather than counted among the not-held. On CounterFact-style data this is small —
+        2.8% of a cached 36-item gpt-j run, worth ~1.7 points — because the prior is
+        spread thin across many answers. On a prompt with a strong type prior it takes a
+        whole answer class at once: 9% in [E-045], worth ~5 points. [T-100].
+        """
+        return [r for r in self.results if r.rank_prior == 1]
+
+    @property
+    def held_rate_scoreable(self) -> float:
+        """`held_rate` over items the measure could actually score.
+
+        Reported BESIDE `held_rate`, never instead of it. The plain rate is what every
+        past number in this project used and stays comparable; this one says how much of
+        the gap is the instrument rather than the model.
+        """
+        scoreable = [r for r in self.results if r.rank_prior != 1]
+        if not scoreable:
+            return 0.0
+        n = sum(r.held(require_lift=self.config.require_lift) for r in scoreable)
+        return n / len(scoreable)
 
     def attractor(self) -> dict[str, tuple[int, str, float]]:
         """Per relation: distinct answers, the dominant one, and its share.
