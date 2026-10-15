@@ -2159,3 +2159,79 @@ n=29 per cell, six cells, two models, two relations, two layers. Existence per [
 **Effect, not delivery** — the outcome is a measured drop.
 
 **Artifacts:** none — arithmetic over results/E-033-crossover-*.json
+
+## [R-022] Finding: T-101 run — the reframe survives, its numbers do not, and the gap is layer-shaped
+
+_Unratified_
+
+_Date: 2026-10-16 · autonomous cycle. **This corrects [R-020] and [R-021], both written by
+earlier cycles of this same loop.**_
+
+[R-020] decomposed propagation variance on [E-033]'s citizenship/language/occupation probes
+and found **51% within subject**, capping any edit-level predictor at ρ ≈ 0.702. [R-021]
+read the surviving predictors against that ceiling and concluded the [T-086] picture
+"roughly doubles". Both flagged that the headline numbers come from a **city** probe and
+that the ceiling had to be re-derived before anything went outward. [T-101] is that step.
+
+**`E-026-depth` carries two city-probe forms per subject — `initial` and `possessive` —
+which is the decomposition on the right family.**
+
+```
+layer   n    between    within   within share   edit-level ceiling
+L5     42       8.66      1.32            13%            ρ ≤ 0.932
+L20    42       0.98      1.04            52%            ρ ≤ 0.696
+```
+
+### The correction
+
+**At layer 5 — the setting [E-029], [E-035] and [R-016] all measured — the within-subject
+share is 13%, not 51%.** The ceiling is **0.932**, not 0.702. So:
+
+```
+                         vs E-033 ceiling (wrong family)   vs city L5 ceiling (right one)
+E-029 ES margin  0.425                   37% of reachable                21% of reachable
+R-016 combination 0.534                  58% of reachable                33% of reachable
+```
+
+**[R-021]'s "roughly doubles" does not transfer, and [T-086] looks worse in its own setting,
+not better.** At layer 5 the edit-level search was **not** looking in the smaller half — it
+was looking in 87% of the variance and still reaching only a third of it. The reframe's
+*structure* stands; its *numbers* were from the wrong probe family, which is what [R-020]
+and [R-021] each said might happen and why neither was allowed outward.
+
+### Why the two families disagree, which is the interesting part
+
+The within-subject share is **layer-dependent**: 13% at L5, 52% at L20. That is not noise —
+it tracks the coefficient structure [E-019]/[T-075] measured. At layer 5 every probe form
+receives nearly the same delivery (subject-initial 1.000, possessive 0.962), so probe form
+barely matters and the variance is almost all between subjects. At layer 20 the forms
+diverge sharply (1.000 against 0.615), probe form starts to matter, and the within-subject
+component grows to half.
+
+> **How much propagation depends on which probe you ask is a function of how much the
+> coefficient varies across probe forms at that layer.** The variance decomposition and the
+> delivery measurement are describing the same structure from two directions.
+
+[E-033]'s 51% is consistent with this: its probes are *different relations* about the
+subject, not reworded forms of one, so their coefficients differ more than two city forms
+do at L5.
+
+### What survives
+
+- **The level distinction is real and worth keeping.** An edit-level quantity cannot reach
+  within-subject variance, whatever that fraction turns out to be.
+- **[R-021]'s type-match result stands on its own data** — 6/6 cells, +1.58 nats, 20% of
+  within-subject variance on [E-033]'s probes. What does not stand is the implied transfer
+  to the city setting, where the within-subject half it was reaching is only 13%.
+- **[T-086] is not improved.** On its own setting the best combination explains 28.5% of a
+  reachable 87%. The thread's standing statement is closer to right than [R-021] made it
+  look.
+
+### Limits
+
+Two probe forms, not three — the within estimate is unbiased but noisy at n=42. One
+relation, one model. The L20 cell has small absolute variance (0.98 / 1.04), so its 52%
+share is a ratio of two small numbers and should not be leaned on. Existence per [O-004].
+**Effect, not delivery.**
+
+**Artifacts:** none — arithmetic over results/E-026-depth.json

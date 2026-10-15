@@ -1900,7 +1900,7 @@ one a future refactor would quietly fold back in.
 
 ### T-101 · Re-derive the edit-level ceiling on the probe family the claim is about
 
-**Status:** open
+**Status:** answered
 **Parent:** T-086
 **Opened:** 2026-10-16
 **Question:** [R-020] decomposed propagation variance on [E-033]'s probes and found
@@ -1911,7 +1911,26 @@ probe family the claim is made about before it is written anywhere outward** —
 the project repeats the [E-025] error of reading a number computed on one thing as though
 it were about another. Cheap if a multi-probe city run exists; otherwise it needs one
 pass with several probe forms per subject, which [E-019] already has the templates for.
-**Answer:** —
+**Answer:** [R-022] — **run, and it corrects [R-020]/[R-021].** `E-026-depth` already
+carried two city-probe forms per subject, so no new measurement was needed.
+
+```
+layer    between    within   within share   ceiling
+L5          8.66      1.32            13%   ρ ≤ 0.932
+L20         0.98      1.04            52%   ρ ≤ 0.696
+```
+
+**At layer 5 — the setting every headline number comes from — the within-subject share is
+13%, not [E-033]'s 51%.** So the edit-level search was looking in 87% of the variance and
+still reaching only a third of it, and [R-021]'s "roughly doubles" does not transfer.
+[T-086] looks *worse* in its own setting, not better. The reframe's structure stands; its
+numbers were from the wrong family, which is exactly what this thread existed to catch.
+
+**And the disagreement is layer-shaped, which is the find:** within-subject share tracks how
+much the coefficient varies across probe forms at that layer — 13% at L5 where all forms
+receive 0.962–1.000, 52% at L20 where they split 0.615–1.000. The variance decomposition and
+[E-019]/[T-075]'s delivery curve are the same structure seen from two sides. Spawns
+[T-103].
 
 ### T-102 · Search at the level where half the variance lives
 
@@ -1946,3 +1965,29 @@ within-subject half is unexplained and the `shares_relation` / `shares_object` /
 `shares_nothing` buckets are untouched. And [T-101] binds: these are [E-033]'s probes, not
 the city probe the headline numbers come from, so **nothing here may go outward until the
 ceiling and this figure are re-derived on the right family.**
+
+**Corrected 2026-10-16 by [R-022].** The 10.2%-of-total figure above assumed [E-033]'s 51%
+within-subject share. On the city probe at layer 5 that share is **13%**, so a pair-level
+predictor has far less room there and the "38.7% together" line **does not transfer to the
+setting the headline numbers come from.** The type-match result itself is unaffected — it
+was measured on [E-033]'s own probes and stands there — but its implied contribution to
+[T-086] was overstated by this loop and is withdrawn.
+
+### T-103 · Does probe-form variance track the coefficient's spread across forms?
+
+**Status:** open
+**Parent:** T-101
+**Opened:** 2026-10-16
+**Question:** [R-022] found the within-subject share of propagation variance is **13% at
+layer 5 and 52% at layer 20** on the same probe family — and that tracks what
+[E-019]/[T-075] measured about delivery: at L5 every form receives 0.962–1.000, at L20 they
+split 0.615–1.000. **How much propagation depends on which probe you ask appears to be a
+function of how much the coefficient varies across forms at that layer.** If that holds, the
+two halves of this project describe one structure from two directions — delivery spread
+*predicts* outcome spread — and it would be the first quantitative bridge between the
+coefficient work and the propagation work. **Cheap bound first:** [E-019] has coefficients
+per form per layer and [E-026-depth] has drops per form at two layers; correlate the spread
+of one against the spread of the other across the layers both cover, before designing
+anything. Two layers is thin, so a null is uninformative and only a strong positive means
+anything at this n.
+**Answer:** —
