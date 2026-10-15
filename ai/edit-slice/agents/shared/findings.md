@@ -1714,3 +1714,50 @@ and the authors may host it elsewhere.
 
 **Artifacts:** none — this is a negative result about data availability, recorded so the
 next person does not spend the same hour.
+
+## [R-015] Finding: ROME's ES margin is its own suppression term, and that reopens T-085
+
+_Date: 2026-10-15_
+
+[T-085] closed on [E-029]'s pairing of belief displacement against ES margin — 0.419 and
+0.425 against propagation — concluding *"there is nothing ES fails to see that displacement
+catches."* [E-035] measured a third quantity on the same 42 subjects, so the conclusion was
+re-examined. **It was right about what it tested and wrong as a general claim.**
+
+**ROME saturates its target by construction.** Post-edit `log P(target)` is **0.00** for
+most of the 42 subjects — the optimiser runs `v*` until the target reaches criterion:
+
+```
+                      sd
+base_true           0.74
+L5_true             5.68
+L5_target           0.02
+```
+
+So `es_margin = L5_target − L5_true` is `−L5_true` plus a near-constant, and
+`rho(−L5_true, es_margin) = +1.000` **exactly**. `displacement = base_true − L5_true` is the
+same quantity with a 0.74-sd contaminant, hence the 0.988 between them.
+
+**A margin that appears to compare two quantities compares one.** [E-029]'s "one weak view
+rather than two" was correct; the reason is that between-subject variance lives entirely in
+how far the true answer fell, because the target does not vary.
+
+**What this does to [T-085].** Its question was *what does ES fail to distinguish* — and
+the only candidate it had to answer with was ES in disguise. [E-035] supplies one that is
+not: `‖Δv‖` tracks propagation at **−0.423**, within 0.002 of ES's **+0.425**, while
+correlating with ES at only **−0.276**. ES margin measures true-answer suppression and
+nothing else, and here is a quantity it does not see that predicts the outcome as well as
+it does.
+
+**Confidence: high** on the identity (it is arithmetic over values already on disk, and the
+rank correlation is exactly 1.000). **Low** on what follows from it: the −0.423 is
+correlational, sits below the effect floor [E-035] pre-registered, and comes from the same
+42 subjects that generated the observation. [T-093] is the pre-registered out-of-sample
+test and nothing should be claimed before it.
+
+**Limits.** n=42, one relation, one model, layer 5. Existence per [O-004], never a rate.
+This concerns the **continuous ES margin** as [E-029] used it, **not** ROME's published
+binary Efficacy Score; the two must never be conflated in any document that leaves the repo.
+
+**Artifacts:** none new — arithmetic over results/E-035-propagation-candidates.json and
+results/E-026b-edit-prompt.json

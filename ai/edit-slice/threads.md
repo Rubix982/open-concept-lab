@@ -1455,7 +1455,7 @@ to chase the answer.
 
 ### T-085 · What does ROME's Efficacy Score fail to distinguish?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-079
 **Opened:** 2026-09-20
 **Question:** The one thing [E-026] produced that its failure does not touch. ROME's ES is
@@ -1482,6 +1482,27 @@ for the rest. [E-026]'s 24/42 therefore stays a statement about weak or deep edi
 not be promoted to a general critique of ES. The cheap test killed the expensive claim.
 
 ---
+
+**Amended 2026-10-15 — [R-015]. The closure was right about what it tested and wrong as a
+general claim, and the thread is marked answered rather than closed.**
+
+The answer above rests on displacement and ES margin predicting propagation equally well.
+They do — because **they are the same quantity**. ROME optimises `v*` until the target
+saturates, so post-edit `log P(target)` is 0.00 for most subjects (sd **0.02**, against
+5.68 for the true answer). `es_margin = L5_target − L5_true` is therefore `−L5_true` plus a
+near-constant, and `rho(−L5_true, es_margin) = +1.000` exactly. Displacement is the same
+thing with a 0.74-sd contaminant. **A margin that appears to compare two quantities
+compares one.**
+
+So this thread asked *what does ES fail to distinguish* and answered with ES in disguise.
+[E-035] supplies a quantity that is not: `‖Δv‖` tracks propagation at **−0.423**, within
+0.002 of ES's **+0.425**, while correlating with ES at only **−0.276**. The efficacy-metric
+critique this thread killed is **revivable in a better-supported form** — not "ES misses
+displacement" but **"ES measures true-answer suppression and nothing else."**
+
+**Still not a claim.** The −0.423 is correlational, below [E-035]'s pre-registered effect
+floor, and from the same 42 subjects that produced the observation. [T-093] is the
+out-of-sample test that would license anything.
 
 ### T-086 · What actually sets how far a layer-5 edit travels?
 

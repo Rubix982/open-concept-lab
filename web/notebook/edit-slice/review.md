@@ -1070,7 +1070,15 @@ what we would spend next, which is a judgement we would like contradicted.
 
 Two further threads are answered but worth naming because they cost us claims:
 <Evidence id="T-085" /> killed an efficacy-metric critique in an hour by joining two files
-already on disk, and <Evidence id="T-084" /> cost six hours of compute to establish that a
+already on disk — and has since been **partly reversed** by a third file: ROME optimises
+`v*` until the target saturates, so post-edit log P(target) has an sd of **0.02** against
+the true answer's **5.68**, which makes ROME's ES *margin* rank-identical to the true
+answer's suppression (ρ = 1.000 exactly). The thread asked what ES fails to distinguish and
+answered with ES in disguise. The sharper critique — *ES measures true-answer suppression
+and nothing else* — is open again, with `‖Δv‖` as a quantity tracking propagation as well
+as ES does (−0.423 against +0.425) while nearly orthogonal to it (−0.276).<Margin>Not yet a
+claim: correlational, below the effect floor its own ticket pre-registered, and drawn from
+the 42 subjects that produced the observation. <Evidence id="f-R-015">R-015</Evidence></Margin> and <Evidence id="T-084" /> cost six hours of compute to establish that a
 weak edit at depth was a hyperparameter artifact rather than a fact about depth.
 
 **The meta-result, and the reason §5 is the shape it is.** Classifying this project's own

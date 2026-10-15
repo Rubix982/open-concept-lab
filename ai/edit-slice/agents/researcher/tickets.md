@@ -558,3 +558,74 @@ agents/engineer/workspace/mquake_forms.py; results/R-014-mquake-forms.json;
 agents/shared/findings.md -> "[R-014] Finding"
 agents/shared/findings.md -> "[R-014b] Finding"
 **Closed:** 2026-10-14 — on two benchmarks, with the third blocked and the fourth dropped
+
+### R-015 · Does E-035 reopen the efficacy-metric critique T-085 closed?
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-085 · re-examined after [E-035]
+
+**Description:**
+
+[T-085] asked what ROME's Efficacy Score fails to distinguish, and closed on [E-029]:
+belief displacement and ES margin predict propagation equally well (Spearman 0.419 vs
+0.425), *"so there is nothing ES fails to see that displacement catches."* [E-035] measured
+a third quantity on the same 42 subjects and the conclusion needs re-examining — which is
+Design Protocol rule 5, results reshaping a design, rather than a new question.
+
+**Method.** No new measurement. Join [E-035]'s per-subject table to [E-026b]'s raw
+log-probabilities over the same subjects in the same order.
+
+**Result (2026-10-15) — the thread's conclusion was right about what it tested and wrong
+as a general claim.**
+
+**1 · ES margin and displacement are not two predictors. They are one, and it is not the
+one the names suggest.**
+
+```
+                     vs propagation    vs es_margin
+es_margin                   +0.425         1.000
+displacement                +0.419        +0.988
+‖Δv‖                        −0.423        −0.276
+```
+
+`displacement = base_true − L5_true` and `es_margin = L5_target − L5_true` share the term
+`−L5_true`, and that term is not a minor component:
+
+```
+sd(base_true)  = 0.74
+sd(L5_true)    = 5.68
+sd(L5_target)  = 0.02
+```
+
+**The post-edit log-probability of the target is 0.00 for most subjects — ROME optimises
+`v*` until the target saturates, so it is pinned by construction.** `es_margin` is therefore
+`−L5_true` plus a near-constant, and `rho(−L5_true, es_margin) = +1.000` **exactly**.
+Displacement is the same quantity contaminated by a 0.74-sd baseline term, hence 0.988.
+
+So [E-029]'s "one weak view rather than two" was correct, and the reason is sharper than it
+recorded: **a margin that appears to compare two quantities compares one.** All
+between-subject variance lives in how far the true answer fell.
+
+**2 · The critique [T-085] killed is revivable in a better form.** Its question was *"what
+does ES fail to distinguish?"*, and it answered with the one candidate available —
+displacement — which turned out to be ES itself. [E-035] supplies a quantity that is not:
+`‖Δv‖` tracks propagation at **−0.423**, within 0.002 of ES's own **+0.425**, while
+correlating with ES at only **−0.276**.
+
+> **ES margin measures true-answer suppression and nothing else.** A quantity predicting
+> propagation as well as ES does, and nearly orthogonal to it, is exactly what [T-085]
+> asked for and did not find, because the only candidate it had was ES in disguise.
+
+**Scope and limits.** n=42, one relation, one model, layer 5 — existence per [O-004], never
+a rate. This concerns the **continuous ES margin** as used by [E-029], not ROME's published
+binary Efficacy Score, and no sentence may conflate them. The −0.423 is correlational and
+below the effect floor [E-035] pre-registered; this reopens a question, it does not answer
+one. [T-093] is the pre-registered out-of-sample test.
+
+**Artifacts:** agents/shared/findings.md -> "[R-015] Finding"; reads
+results/E-035-propagation-candidates.json and results/E-026b-edit-prompt.json
+**Closed:** 2026-10-15
