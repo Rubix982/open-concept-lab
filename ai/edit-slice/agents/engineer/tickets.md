@@ -3697,3 +3697,74 @@ adds the rest.
 results/E-044-context-ablation.json; logs/run_e044-2026-10-15-213307.log;
 agents/shared/decisions.md -> "[E-044] Result"
 **Closed:** 2026-10-15
+
+### E-045 · Does the model hold typeshed signature facts at a CounterFact-comparable rate?
+
+**Status:** open
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-098 · the gate on claim 3
+
+**Description:**
+
+Claim 3 is *"code as domain for weight edits."* [T-099] established what a decidable oracle
+does and does not buy: [T-058] built genuinely deductive grounds and [E-015] found the
+editor indifferent, so a formal domain **does not make editing cleaner** — it makes the
+**audit** decidable. That is still worth having, and it is claim 2.
+
+**But the whole direction has one precondition and it has never been checked.** Declaration
+1 binds a fact to its probe set; [E-005] measured possession at **56/74/79/85%** at
+6B/8B/70B/405B for ordinary CounterFact claims. **An invented notation would have
+possession near zero** — deriving a synthetic formal corpus would install strings rather
+than edit beliefs. Python's stdlib with typeshed escapes that: the model has seen
+`os.path.join` ten thousand times, and the stub is a machine-checkable ground truth.
+
+**The facts are machine-derived, not hand-picked**, which matters for the §5 circularity
+objection. Parsed from `python/typeshed@main` with `ast`: every module-level public
+function carrying a return annotation, excluding typevars and private aliases (stub
+machinery, not facts), and excluding `Any`/`object`/`Incomplete` — **those record what the
+stub author left unspecified, not a property of Python.** 666 functions survive.
+`probes/typeshed_return_types.jsonl`.
+
+**Method.** `src/possession.py` **unchanged**. Prompt: *"In Python, the function
+`{name}` returns a value of type"*; true answer the annotation; candidates the 50 most
+common annotations, so **N = 50 exactly as [E-005] used** — the module's own docstring warns
+that *"absolute levels depend on N"*, and a comparison at a different N would be worthless.
+
+**Pre-stated outcomes.** Possession on Llama-3.1-8B, against [E-005]'s **74%** for
+CounterFact at that model and that N.
+
+- **HELD** — possession **>= 60%**. The model holds stub-level signature facts about as
+  densely as it holds encyclopaedic ones, and claim 3 is executable with the instrument
+  already built. The code domain becomes a real project.
+- **THIN** — possession **<= 30%**. It does not, and a formal-domain audit would be
+  measuring facts the model never had. Claim 3 needs a different fact type, or it is a
+  wish — learned in a day rather than after a corpus build.
+- **BETWEEN** — 30–60%. Report which kinds of function hold; the answer is then about
+  *which* code facts rather than whether.
+
+**Confounds.**
+1. **The answer distribution is skewed** — `None` is 183 of 666, `str` 124. A model could
+   score by type frequency rather than knowledge. The filter's second arm already tests
+   lift against a subject-free prompt, but **the rank-1-only rate must be reported beside
+   the possession rate** so the gap that the lift arm removes is visible rather than
+   implied.
+2. *The prompt phrasing is ours and untested.* A low rate could be phrasing rather than
+   ignorance. **Control: report possession by answer type.** If `str` holds and `None` does
+   not, that is informative; if nothing holds, phrasing is a live alternative and the
+   THIN verdict must say so.
+3. *Teacher-forced* — measures whether the knowledge is **present**, not whether the model
+   would emit it. Same caveat [E-005] carries; inherited, not re-litigated.
+4. **Possession is not editability.** A held fact may still resist editing. This ticket
+   gates the direction and licenses nothing about whether code facts edit cleanly.
+
+**Deliverable.** One number — possession at N=50 on Llama-3.1-8B — beside [E-005]'s 74%.
+One table: answer type × possession × n.
+
+**Scope.** 200 facts sampled with a fixed seed from the 666 (cost), one model, one prompt
+form. Existence per [O-004].
+
+**Artifacts:** _(on close)_
+**Closed:** —

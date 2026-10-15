@@ -1,0 +1,16 @@
+2026-10-15 22:25:46,229 INFO     run_e045  run run_e045 -> logs/run_e045-2026-10-15-222546.log
+2026-10-15 22:25:46,230 INFO     run_e045  config {"comparator": "[E-005] CounterFact at 8B, N=50: 0.74", "limit": "POSSESSION, not editability", "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50, "n_facts": 200, "seed": 1538, "source": "typeshed_return_types.jsonl", "thread": "T-098", "ticket": "E-045"}
+2026-10-15 22:25:46,230 INFO     run_e045  200 typeshed facts sampled from 666, candidate vocabulary from all 666
+2026-10-15 22:25:48,179 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:25:52,017 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.8s
+2026-10-15 22:25:55,118 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:25:55,119 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:25:58,279 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:26:01,484 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:26:01,485 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:04,938 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.4s
+2026-10-15 22:26:08,431 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.5s
+2026-10-15 22:26:08,432 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:10,956 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:26:13,815 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.9s
+2026-10-15 22:26:16,668 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
