@@ -1,3 +1,6 @@
 [21:32:46] 1 job(s) queued
 [21:32:46] E-044: preflight
 [21:33:05] E-044: running (budget 3.0h)
+[21:40:40] E-044: finished in 8 min
+[21:40:40] E-044: ok — verdict ['CONTEXT NOT NECESSARY'], report written
+[21:40:40] queue worked; sleeping 15 min before re-reading it

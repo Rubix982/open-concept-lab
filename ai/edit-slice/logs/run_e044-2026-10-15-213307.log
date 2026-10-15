@@ -1,3 +1,50 @@
 2026-10-15 21:33:07,808 INFO     run_e044  run run_e044 -> logs/run_e044-2026-10-15-213307.log
 2026-10-15 21:33:07,808 INFO     run_e044  config {"forms": ["edit form", "late clause", "possessive", "matched filler"], "gate": "edit form must reproduce its unmasked keys exactly", "intervention": "attention_mask zeroes [1, subject_start); position_ids pinned", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 16, "probe_layers": [0, 3, 5, 8, 12, 16, 24, 31], "reading": "surviving divergence is POSITIONAL \u2014 RoPE \u2014 not contextual", "thread": "T-095", "ticket": "E-044"}
 2026-10-15 21:33:07,808 INFO     run_e044  16 subjects, 4 forms, masked vs unmasked in one batch
+2026-10-15 21:36:23,872 INFO     run_e044    4/16 subjects
+2026-10-15 21:38:12,870 INFO     run_e044    8/16 subjects
+2026-10-15 21:39:51,315 INFO     run_e044    12/16 subjects
+2026-10-15 21:40:39,237 INFO     run_e044    16/16 subjects
+2026-10-15 21:40:39,238 INFO     run_e044  
+2026-10-15 21:40:39,238 INFO     run_e044  prefix tokens masked per form: {'edit form': 0, 'late clause': 4, 'possessive': 5, 'matched filler': 4}
+2026-10-15 21:40:39,238 INFO     run_e044  GATE — largest edit-form drift between masked and unmasked: 0.00e+00
+2026-10-15 21:40:39,255 INFO     run_e044  gate passed: the edit form is untouched, so the mask does only what it says
+2026-10-15 21:40:39,255 INFO     run_e044  
+2026-10-15 21:40:39,255 INFO     run_e044  E-044 — cosine to the edit form's key, with and without the prefix masked
+2026-10-15 21:40:39,255 INFO     run_e044  surviving divergence is POSITIONAL: position_ids are pinned
+2026-10-15 21:40:39,255 INFO     run_e044  
+2026-10-15 21:40:39,255 INFO     run_e044  LATE CLAUSE  (4 prefix tokens masked)
+2026-10-15 21:40:39,255 INFO     run_e044  layer       unmasked      masked   div removed   E-020 cos
+2026-10-15 21:40:39,256 INFO     run_e044  0              0.996       0.992         -119%       0.984
+2026-10-15 21:40:39,256 INFO     run_e044  3              0.984       0.663        -1955%       0.962
+2026-10-15 21:40:39,256 INFO     run_e044  5              0.961       0.485        -1237%       0.951
+2026-10-15 21:40:39,256 INFO     run_e044  8              0.860       0.295         -405%       0.898
+2026-10-15 21:40:39,256 INFO     run_e044  12             0.762       0.357         -170%       0.812
+2026-10-15 21:40:39,256 INFO     run_e044  16             0.674       0.467          -64%       0.733
+2026-10-15 21:40:39,256 INFO     run_e044  24             0.447       0.249          -36%       0.598
+2026-10-15 21:40:39,256 INFO     run_e044  31             0.630       0.613           -5%       0.471
+2026-10-15 21:40:39,256 INFO     run_e044  
+2026-10-15 21:40:39,256 INFO     run_e044  POSSESSIVE  (5 prefix tokens masked)
+2026-10-15 21:40:39,256 INFO     run_e044  layer       unmasked      masked   div removed   E-020 cos
+2026-10-15 21:40:39,256 INFO     run_e044  0              0.997       0.992         -142%       0.984
+2026-10-15 21:40:39,256 INFO     run_e044  3              0.989       0.661        -2880%       0.962
+2026-10-15 21:40:39,256 INFO     run_e044  5              0.972       0.485        -1734%       0.951
+2026-10-15 21:40:39,256 INFO     run_e044  8              0.903       0.265         -655%       0.898
+2026-10-15 21:40:39,256 INFO     run_e044  12             0.828       0.357         -273%       0.812
+2026-10-15 21:40:39,256 INFO     run_e044  16             0.807       0.468         -176%       0.733
+2026-10-15 21:40:39,256 INFO     run_e044  24             0.625       0.254          -99%       0.598
+2026-10-15 21:40:39,256 INFO     run_e044  31             0.643       0.615           -8%       0.471
+2026-10-15 21:40:39,256 INFO     run_e044  
+2026-10-15 21:40:39,256 INFO     run_e044  MATCHED FILLER  (4 prefix tokens masked)
+2026-10-15 21:40:39,256 INFO     run_e044  layer       unmasked      masked   div removed   E-020 cos
+2026-10-15 21:40:39,256 INFO     run_e044  0              0.997       0.992         -196%       0.984
+2026-10-15 21:40:39,256 INFO     run_e044  3              0.991       0.663        -3834%       0.962
+2026-10-15 21:40:39,256 INFO     run_e044  5              0.983       0.485        -2990%       0.951
+2026-10-15 21:40:39,256 INFO     run_e044  8              0.963       0.295        -1823%       0.898
+2026-10-15 21:40:39,256 INFO     run_e044  12             0.897       0.357         -527%       0.812
+2026-10-15 21:40:39,256 INFO     run_e044  16             0.820       0.467         -196%       0.733
+2026-10-15 21:40:39,256 INFO     run_e044  24             0.605       0.249          -90%       0.598
+2026-10-15 21:40:39,256 INFO     run_e044  31             0.735       0.613          -46%       0.471
+2026-10-15 21:40:39,256 INFO     run_e044  
+2026-10-15 21:40:39,256 WARNING  run_e044  VERDICT: CONTEXT NOT NECESSARY — masked cosine at depth is 0.467, and masking removes only -90% of the divergence. The key reorients with context unreachable, so it is POSITIONAL, and [E-020]'s attention account is wrong a second independent way.
+2026-10-15 21:40:39,260 INFO     run_e044  written: results/E-044-context-ablation.json

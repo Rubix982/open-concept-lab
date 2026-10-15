@@ -62,9 +62,16 @@ On each wake, in order. Stop at the first phase with work in it.
    [E-040]'s `n >= 3` and [E-042]'s sign-count both returned verdicts stronger than their
    evidence. Both are recorded as defects in the band, not smoothed away.
 4. **Never run an intervention whose failure mode returns a plausible number**, unless it
-   carries a correctness gate that would catch that failure. [T-095] is deferred for exactly
-   this reason. Seven harness defects in two days each returned a plausible value rather
-   than an error.
+   carries a correctness gate that would catch that failure. Seven harness defects in two
+   days each returned a plausible value rather than an error.
+   **Extended 2026-10-15 by [E-044]: a gate proves an intervention is FAITHFUL, not that it
+   is VALID.** That run's gate passed exactly — the edit form moved by 0.00e+00 under a
+   mask that masks nothing — and the intervention still measured an artifact, because
+   masking a prefix while pinning `position_ids` produces an input the model has no
+   distribution for. **So every intervention needs a validity check too, and the cheapest
+   one is an in-distribution comparison with a known answer.** In [E-044] that comparison
+   already existed: the same positions filled with real innocuous tokens read 0.983 where
+   the masked version read 0.485.
 5. **Delivery is not effect.** [E-028d], 2.96×. Every entry says which it measured.
 6. **Existence, never a rate** — [O-004], unless the set is a released file counted whole.
 

@@ -3605,7 +3605,7 @@ data/wikidata/sitelinks.json; agents/shared/decisions.md -> "[E-043] Result"
 
 ### E-044 · Does the subject key still reorient when context cannot reach it?
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-15
@@ -3675,5 +3675,25 @@ divergence removed), with [E-020]'s original cosine as the anchor column.
 **Scope.** Llama-3.1-8B, [E-041]'s 16 subjects and forms, layers [0,3,5,8,12,16,24,31].
 Existence per [O-004].
 
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-15). The runner printed CONTEXT NOT NECESSARY and the record REJECTS
+the verdict.** The gate passed exactly — the edit form moved **0.00e+00** under a mask that
+masks nothing — so the intervention is **faithful**. It is also **invalid**.
+
+Three signatures: (a) masking makes divergence *worse*, 0.961 → 0.485 at L5, so the band's
+premise is inverted; (b) masking 5 prefix tokens instead of 4 changes the cosine by
+**6.85e-03**, so one position of RoPE offset is worth 0.007 against a 0.476 gap — it is not
+positional; (c) the same positions filled with **real innocuous tokens** read **0.983**
+where masked they read 0.485, so the gap is about masking, not position. Per-subject masked
+values run 0.075–0.822, the instability of an input the model has no distribution for.
+
+**The methodological result is the valuable one: a correctness gate proves an intervention
+is FAITHFUL, not that it is VALID.** `LOOP.md` rule 4 extended accordingly.
+
+[T-095] is answered from [E-041]'s existing in-distribution data instead — position with an
+innocuous prefix carries most of the deep divergence (0.265 of 0.370) and related content
+adds the rest.
+
+**Artifacts:** run_e044.py; tools/dryruns/dryrun_e044.py;
+results/E-044-context-ablation.json; logs/run_e044-2026-10-15-213307.log;
+agents/shared/decisions.md -> "[E-044] Result"
+**Closed:** 2026-10-15

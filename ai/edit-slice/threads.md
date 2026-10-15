@@ -1678,7 +1678,7 @@ less; the next honest move is fresh subjects, not an explanation.
 
 ### T-095 · Does the subject key still reorient when context cannot reach it?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-078
 **Opened:** 2026-10-15
 **Question:** [E-041] decomposed the divergence into direct writes and found the MLP term
@@ -1719,3 +1719,18 @@ that each returned a plausible value rather than an error, and an in-trace weigh
 intervention with a degenerate failure mode is the worst possible candidate for an
 unattended run. The cost of waiting is a day; the cost of a plausible wrong answer here is
 a claim in §4.3.
+
+**Answer 2026-10-15 — [E-044], and not the way the thread expected.** The ablation ran, its
+correctness gate passed exactly (0.00e+00), and **its verdict is rejected**: masking the
+prefix while pinning `position_ids` produces an input the model has no distribution for.
+Masking makes divergence *worse* (0.961 → 0.485 at L5); one extra position of RoPE offset is
+worth 0.007 against a 0.476 gap, so it is not positional; and the same positions filled with
+real innocuous tokens read **0.983** where masked they read 0.485.
+
+**A correctness gate proves fidelity, not validity** — the methodological result, now
+`LOOP.md` rule 4.
+
+**The thread's question is answered from [E-041]'s in-distribution data**: at layer 31 an
+innocuous prefix already produces 0.265 of the 0.370 divergence a related one does, so the
+key reorients mostly from *having a prefix at all* rather than from what the prefix says.
+Content adds roughly 28% at depth and doubles it shallow.

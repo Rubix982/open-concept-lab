@@ -3237,3 +3237,79 @@ external measure. Existence per [O-004]. **Delivery, not effect** — [E-028d], 
 **Artifacts:** agents/engineer/workspace/fetch_sitelinks.py;
 agents/engineer/workspace/run_e043.py; results/E-043-popularity.json;
 data/wikidata/sitelinks.json; logs/run_e043-2026-10-15-103208.log
+
+---
+
+## [E-044] Result: the verdict is REJECTED — a faithful intervention that measures an artifact
+
+_Date: 2026-10-15_
+
+**The runner printed `CONTEXT NOT NECESSARY`. This entry does not accept it, and the
+reason is the useful part of the run.**
+
+The correctness gate passed exactly: the edit form, which has no non-subject prefix, moved
+by **0.00e+00** under a mask that masks nothing. The intervention does precisely what the
+ticket said it does. **It is faithful and it is invalid**, and those are different
+properties.
+
+### Three signatures that the masked condition is an artifact
+
+**1 · Masking makes the divergence worse, not better.** Every `div removed` cell is
+negative — at layer 5 the late clause goes from cosine **0.961 unmasked to 0.485 masked**.
+A test of "does the reorientation survive without context" cannot be read when removing
+context moves the key *further* from the reference than leaving it in.
+
+**2 · Position barely matters, so the gap cannot be positional.** The possessive masks
+**5** prefix tokens and the late clause **4**, putting the subject at different RoPE
+offsets. Their masked cosines differ by **6.85e-03**. One position of offset is worth 0.007
+— and yet the masked-versus-unmasked gap is **0.476**, seventy times larger. Whatever
+produces it is not the positional shift the ticket set out to isolate. The late clause and
+matched filler, which mask the same count, come back **bit-identical**, confirming the
+masking collapses content entirely as designed.
+
+**3 · The clean comparison already existed and disagrees.** `matched filler` puts the
+subject at the same index behind *real but innocuous* tokens. Unmasked at layer 5 it reads
+**0.983** — a divergence of **0.017**. Mask those same positions and it reads **0.485**.
+Same subject, same index, same everything except whether the prefix is visible. **So the
+0.485 is a fact about masking, not about position.**
+
+Per-subject masked values run from **0.075 to 0.822** — the instability of an input the
+model has no training distribution for. A sequence whose `position_ids` are contiguous
+while attention cannot see the intervening tokens is not something a language model
+encounters.
+
+### The methodological result, which is worth more than the experiment
+
+> **A correctness gate verifies that an intervention is faithful. It cannot verify that the
+> intervention is valid.** This gate was designed against `LOOP.md` rule 4 — never run an
+> intervention whose failure mode returns a plausible number — and it worked: it proved the
+> mask masks what it claims. It had no way to detect that doing so produces a condition the
+> model cannot interpret.
+
+Rule 4 is therefore extended in `LOOP.md`: an intervention needs a **validity** check as
+well as a fidelity one, and the cheapest validity check is an *in-distribution* comparison
+that should give a known answer. Here that comparison existed and was already measured.
+
+### What [T-095] actually gets, from [E-041]'s data rather than this run
+
+The question was whether the key reorients when context cannot reach it. The
+in-distribution version — minimal context rather than *no* context — was already run:
+
+```
+layer 5    matched filler (innocuous prefix)  cos 0.983   divergence 0.017
+           late clause    (related prefix)    cos 0.961   divergence 0.039
+layer 31   matched filler                     cos 0.735   divergence 0.265
+           late clause                        cos 0.630   divergence 0.370
+```
+
+**Position with an innocuous prefix produces most of the divergence at depth (0.265 of
+0.370), and related content adds the remainder.** Content roughly doubles the shallow
+divergence and contributes about 28% of the deep one. That is consistent with [E-041]'s
+decomposition and needed no ablation.
+
+**Scope.** Llama-3.1-8B, 16 subjects, 4 forms, layers [0,3,5,8,12,16,24,31]. The gate's
+0.00e+00 is exact. **The verdict band is rejected, not the measurement** — the numbers are
+real and the run is reported in full. Existence per [O-004]. **Delivery, not effect.**
+
+**Artifacts:** agents/engineer/workspace/run_e044.py; tools/dryruns/dryrun_e044.py;
+results/E-044-context-ablation.json; logs/run_e044-2026-10-15-213307.log
