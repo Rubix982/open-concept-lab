@@ -629,3 +629,60 @@ one. [T-093] is the pre-registered out-of-sample test.
 **Artifacts:** agents/shared/findings.md -> "[R-015] Finding"; reads
 results/E-035-propagation-candidates.json and results/E-026b-edit-prompt.json
 **Closed:** 2026-10-15
+
+### R-016 · Can the two-predictor combination reach T-093's bar at all?
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-093
+
+**Description:**
+
+[T-093] asks whether a pre-registered joint model of ES margin and `‖Δv‖` clears **ρ = 0.60
+out of sample**, on subjects not used by [E-029], [E-035] or [R-015]. Out-of-sample is the
+whole point: the combination was chosen after seeing which candidates survived.
+
+**Feasibility, priced first.** 136 gated chains exist and 42 are spent, leaving **94
+fresh** — but **none has a cached edit**, so the run needs `v*` computed for all 94 plus
+paired scoring. Batched that is roughly 400 optimisation traces and 188 scoring calls, an
+hour of NDIF at best and, on the evidence of 2026-10-14, several hours with retries.
+
+**So the cheap question was asked first: can the combination clear 0.60 even when
+maximally overfit?** If the in-sample ceiling fails the bar, nothing out of sample can
+reach it and the expensive run is already answered. This is [R-013]'s move and [E-029]'s.
+
+**Result (2026-10-15) — NO, and [T-093] closes without the run.**
+
+```
+rho(ES margin, propagation)        +0.426
+rho(-‖Δv‖, propagation)            +0.427
+rho(ES margin, -‖Δv‖)              +0.273
+
+multiple rank correlation R         0.534      <- closed-form ceiling for ANY linear
+                                                  combination, fit on the data it is
+                                                  scored against
+shrunk for 2 parameters at n=42     0.499
+```
+
+**The ceiling fails the bar by 0.066 before any honesty is applied, and by 0.101 after
+shrinkage.** Two predictors each at ~0.43, correlated at 0.27, simply do not reach 0.60
+together — the arithmetic of combining them was always going to land near 0.53, and that
+could have been computed the moment [E-035] reported its three numbers.
+
+**What this bounds, and what it does not.** It is a ceiling over **linear combinations of
+the two rank vectors**. A nonlinear monotone combination could in principle exceed it —
+but none was pre-registered, and fitting one post-hoc on n=42 is precisely the overfitting
+[T-093] exists to prevent. Reported as a limit rather than ignored.
+
+**Consequence for [T-086].** The strongest available combination of everything measured
+explains about **28%** of rank variance. [E-035] eliminated seven candidates individually;
+this eliminates the best pairing of the two survivors. **"Nothing explains more than ~18%
+alone or ~28% together" is now the statement**, and it rests on an exhaustive search of the
+candidates the record contains rather than on not having looked.
+
+**Artifacts:** agents/shared/findings.md -> "[R-016] Finding"; arithmetic over
+results/E-035-propagation-candidates.json
+**Closed:** 2026-10-15

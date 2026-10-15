@@ -1611,7 +1611,7 @@ observational question into a designed one.
 
 ### T-093 · Do two near-independent weak predictors combine past the floor?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-086
 **Opened:** 2026-10-15
 **Question:** [E-035] found `‖Δv‖` at −0.423 and ROME's ES margin at +0.425 correlating
@@ -1622,7 +1622,14 @@ threshold fixed before it runs, on **subjects not used in [E-029] or [E-035]**. 
 clears 0.60 out of sample, [T-086] has its first real answer; if it does not, "nothing
 explains more than ~18%" becomes a much stronger statement for having been attacked with
 the best combination available.
-**Answer:** —
+**Answer:** [R-016] — **NO, and the expensive run was not needed.** The multiple rank
+correlation of propagation on the two rank vectors is **0.534**: the closed-form ceiling
+for any linear combination, fit on the data it is scored against. It fails the 0.60 bar by
+**0.066** before shrinkage and by **0.101** after (0.499 at two parameters, n=42). Two
+predictors each at ~0.43, correlated at 0.27, land near 0.53 together — arithmetic that was
+available the moment [E-035] printed its numbers, against 94 fresh edits and several hours
+of NDIF. **Limit:** this bounds linear combinations of the two rank vectors; a nonlinear
+monotone form could exceed it, and none was pre-registered.
 
 ### T-094 · Why does a larger update propagate LESS far?
 

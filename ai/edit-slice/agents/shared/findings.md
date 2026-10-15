@@ -1761,3 +1761,33 @@ binary Efficacy Score; the two must never be conflated in any document that leav
 
 **Artifacts:** none new — arithmetic over results/E-035-propagation-candidates.json and
 results/E-026b-edit-prompt.json
+
+## [R-016] Finding: the two-predictor ceiling is 0.534, so T-093 closes without its run
+
+_Date: 2026-10-15_
+
+[T-093] asked whether ES margin and `‖Δv‖` combine past **ρ = 0.60** out of sample. The
+out-of-sample run needs `v*` computed for 94 fresh chains — roughly 400 optimisation traces
+plus 188 scoring calls. **The cheap bound was computed first and it answers the question.**
+
+The **multiple rank correlation** of propagation on the two rank vectors is **0.534**. That
+is the closed-form ceiling for *any* linear combination, fit on the very data it is scored
+against — maximally optimistic. It **fails the 0.60 bar by 0.066**, and by **0.101** after
+shrinking for two fitted parameters at n=42 (0.499).
+
+Two predictors each at ρ ≈ 0.43 and correlated at 0.27 land near 0.53 together. **That was
+computable the moment [E-035] printed its three numbers**, and running 94 edits to discover
+it would have been a week's compute spent on arithmetic.
+
+**Confidence: high** on the bound, which is closed-form. **Stated limit:** it covers linear
+combinations of the two rank vectors; a nonlinear monotone form could exceed it, none was
+pre-registered, and fitting one post-hoc on n=42 is the overfitting [T-093] exists to
+prevent.
+
+**What it does to [T-086].** The best combination of everything the record contains
+explains about **28%** of rank variance. [E-035] eliminated seven candidates singly; this
+eliminates the strongest pairing of the two survivors. The statement is now *"nothing
+explains more than ~18% alone or ~28% together,"* and it rests on having searched rather
+than on not having looked.
+
+**Artifacts:** none new — arithmetic over results/E-035-propagation-candidates.json
