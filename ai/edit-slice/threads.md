@@ -1786,7 +1786,7 @@ honest about what it would and would not deliver.
 
 ### T-098 · Does the model hold typeshed signature facts at a CounterFact-comparable rate?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-099
 **Opened:** 2026-10-15
 **Question:** The gate on claim 3. A formal domain is only usable if the model **already
@@ -1798,4 +1798,36 @@ than edit beliefs. Python's stdlib with typeshed escapes that: the model has mem
 signature. **Does possession on typeshed signature facts reach the CounterFact range?**
 Yes → claim 3 is executable with `src/possession.py` unchanged and the code domain is a
 real project. No → it is a wish, learned in a day rather than after a corpus build.
+**Answer:** [E-045] — **BETWEEN, at 49.5% against CounterFact's 74%** (template-alone
+baselines 9% and 4%, so both are real possession). **Viable on a subset, not wholesale.**
+
+The model holds a return type where the function's purpose **determines** it — `float`
+100%, `complex` 89%, `str` 85%, `bool` 67%, `bytes` 57% — and fails where the stub author
+chose among plausible alternatives: `None` 28%, `str | None` 0/4, `tuple[...]` 0/4. A
+characterisable subset is a better answer than a rate.
+
+**And one row was unscoreable by construction.** `int` reads 0/18 while the model ranks it
+first for 15 — all 18 have `rank_prior == 1`, so the bare template predicts `int` and lift
+cannot be positive. Excluding them, possession is 54.4%. Spawns [T-100].
+
+**So claim 3 is real but narrower than it looked:** an audit on typeshed must restrict to
+determined return types or accept that half its facts were never held. Bought for a
+6-minute run rather than a corpus build, which is what the gate was for.
+
+### T-100 · A fact whose answer is the template's prior cannot be scored
+
+**Status:** open
+**Parent:** T-098
+**Opened:** 2026-10-15
+**Question:** [E-045] found all 18 `int`-returning functions scoring 0% possession while
+the model ranked `int` first for 15 of them. Cause: `rank_prior == 1` for every one — the
+subject-free template already predicts `int`, so lift is ≤ 0 whatever the model knows.
+The lift control is working as designed and **cannot distinguish knowledge from prompt
+prior for that answer**. For CounterFact this barely arises (prior 4%, spread thin); for a
+prompt with a strong type prior it removes an entire answer class at once and deflates the
+headline by ~5 points. **`possession.py` should count and report these separately** —
+`prior_collision` — so a deflated rate is visible rather than inferred, and so every past
+possession number can be re-checked for the same effect. The 56/74/79/85 series was
+computed without this view; whether any of it is affected is unknown and cheap to check,
+since [E-005]'s per-item results are on disk.
 **Answer:** —

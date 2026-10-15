@@ -1,0 +1,373 @@
+=== returncode 0 ===
+--- stderr ---
+INFO    run run_e045 -> logs/run_e045-2026-10-15-222546.log
+INFO    config {"comparator": "[E-005] CounterFact at 8B, N=50: 0.74", "limit": "POSSESSION, not editability", "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50, "n_facts": 200, "seed": 1538, "source": "typeshed_return_types.jsonl", "thread": "T-098", "ticket": "E-045"}
+INFO    200 typeshed facts sampled from 666, candidate vocabulary from all 666
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/784 [00:00<?]
+⬇ Downloading: 100%|██████████| 784/784 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/787 [00:00<?]
+⬇ Downloading: 100%|██████████| 787/787 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/992 [00:00<?]
+⬇ Downloading: 100%|██████████| 992/992 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/976 [00:00<?]
+⬇ Downloading: 100%|██████████| 976/976 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/778 [00:00<?]
+⬇ Downloading: 100%|██████████| 778/778 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/782 [00:00<?]
+⬇ Downloading: 100%|██████████| 782/782 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/974 [00:00<?]
+⬇ Downloading: 100%|██████████| 974/974 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/999 [00:00<?]
+⬇ Downloading: 100%|██████████| 999/999 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/785 [00:00<?]
+⬇ Downloading: 100%|██████████| 785/785 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/771 [00:00<?]
+⬇ Downloading: 100%|██████████| 771/771 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/996 [00:00<?]
+⬇ Downloading: 100%|██████████| 996/996 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/775 [00:00<?]
+⬇ Downloading: 100%|██████████| 775/775 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/782 [00:00<?]
+⬇ Downloading: 100%|██████████| 782/782 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/785 [00:00<?]
+⬇ Downloading: 100%|██████████| 785/785 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/783 [00:00<?]
+⬇ Downloading: 100%|██████████| 783/783 [00:00<00:00]
+INFO      100/200
+
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/982 [00:00<?]
+⬇ Downloading: 100%|██████████| 982/982 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/781 [00:00<?]
+⬇ Downloading: 100%|██████████| 781/781 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/779 [00:00<?]
+⬇ Downloading: 100%|██████████| 779/779 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/779 [00:00<?]
+⬇ Downloading: 100%|██████████| 779/779 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/780 [00:00<?]
+⬇ Downloading: 100%|██████████| 780/780 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+WARNING remote OOM at 90 pairs; halving to 45 + 45
+
+⬇ Downloading:   0%|          | 0.00/662 [00:00<?]
+⬇ Downloading: 100%|██████████| 662/662 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/669 [00:00<?]
+⬇ Downloading: 100%|██████████| 669/669 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/779 [00:00<?]
+⬇ Downloading: 100%|██████████| 779/779 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/981 [00:00<?]
+⬇ Downloading: 100%|██████████| 981/981 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/991 [00:00<?]
+⬇ Downloading: 100%|██████████| 991/991 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/987 [00:00<?]
+⬇ Downloading: 100%|██████████| 987/987 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/983 [00:00<?]
+⬇ Downloading: 100%|██████████| 983/983 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/997 [00:00<?]
+⬇ Downloading: 100%|██████████| 997/997 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/999 [00:00<?]
+⬇ Downloading: 100%|██████████| 999/999 [00:00<00:00]
+WARNING remote OOM at 180 pairs; halving to 90 + 90
+
+⬇ Downloading:   0%|          | 0.00/776 [00:00<?]
+⬇ Downloading: 100%|██████████| 776/776 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/777 [00:00<?]
+⬇ Downloading: 100%|██████████| 777/777 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/993 [00:00<?]
+⬇ Downloading: 100%|██████████| 993/993 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/988 [00:00<?]
+⬇ Downloading: 100%|██████████| 988/988 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/990 [00:00<?]
+⬇ Downloading: 100%|██████████| 990/990 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/998 [00:00<?]
+⬇ Downloading: 100%|██████████| 998/998 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/984 [00:00<?]
+⬇ Downloading: 100%|██████████| 984/984 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/989 [00:00<?]
+⬇ Downloading: 100%|██████████| 989/989 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/1.00k [00:00<?]
+⬇ Downloading: 100%|██████████| 1.00k/1.00k [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/995 [00:00<?]
+⬇ Downloading: 100%|██████████| 995/995 [00:00<00:00]
+
+⬇ Downloading:   0%|          | 0.00/994 [00:00<?]
+⬇ Downloading: 100%|██████████| 994/994 [00:00<00:00]
+INFO      200/200
+INFO    
+INFO    E-045 — possession on typeshed return-type facts, N=50, meta-llama/Llama-3.1-8B
+INFO    coverage 100.0%, 0 item(s) unscoreable and kept in view
+INFO    
+INFO      possession (rank-1 AND lift > 0)   49.5%   (99/200)
+INFO      rank-1 only, no lift requirement   57.0%                <- confound 1
+INFO      the template ALONE, no subject     9.0%                <- the baseline
+INFO      [E-005] CounterFact at 8B, N=50    74.0%
+INFO    
+INFO    the gap between rows 1 and 2 is what the subject-free arm removes: items ranked first on type frequency rather than on knowing the function. Row 3 is what a model scores knowing nothing about which function was named.
+INFO    
+INFO    answer type                  n      held
+INFO    None                        50       28%
+INFO    str                         41       85%
+INFO    bool                        24       67%
+INFO    int                         18        0%
+INFO    bytes                       14       57%
+INFO    complex                      9       89%
+INFO    float                        5      100%
+INFO    str | None                   4        0%
+INFO    tuple[str | bytes, int]       4        0%
+INFO    
+INFO    VERDICT: BETWEEN — 49.5%, between the pre-stated 30% and 60%. The question becomes WHICH code facts hold: per-type spread is 89 points across types with n>=8.
+INFO    written: results/E-045-typeshed-possession.json
+
+--- stdout ---

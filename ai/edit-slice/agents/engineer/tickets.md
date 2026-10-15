@@ -3700,7 +3700,7 @@ agents/shared/decisions.md -> "[E-044] Result"
 
 ### E-045 · Does the model hold typeshed signature facts at a CounterFact-comparable rate?
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-15
@@ -3766,5 +3766,29 @@ One table: answer type × possession × n.
 **Scope.** 200 facts sampled with a fixed seed from the 666 (cost), one model, one prompt
 form. Existence per [O-004].
 
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-15). BETWEEN at 49.5%** against [E-005]'s 74%, with template-alone
+baselines of 9% and 4% — so the comparison is fair and the possession is real, just thinner.
+
+**One row is an artifact and it is ours.** `int` scores 0/18 while the model ranks `int`
+first for 15 of them: **all 18 have `rank_prior == 1`**, because the bare template already
+predicts `int`. Lift is ≤ 0 by construction. **A fact whose answer is the template's own
+prior cannot be scored by this measure** and should be reported unscoreable rather than
+not-held — excluding them, possession is **54.4%**. Confound 1 asked for the rank-1 row,
+which would not have shown this; the prior row, which did, was not asked for.
+
+**What holds is characterisable**, which beats a single rate: `float` 100%, `complex` 89%,
+`str` 85%, `bool` 67%, `bytes` 57% — against `None` 28%, `str | None` 0/4, `tuple[...]`
+0/4. The model holds a return type where the function's purpose **determines** it and fails
+where the stub author chose among plausible alternatives.
+
+**Confound 2 answered:** a 100%-to-0% spread on one prompt form rules out phrasing as the
+explanation for the low cells.
+
+**For claim 3:** viable on a subset, not wholesale. An audit on typeshed must restrict to
+determined return types or accept that half its facts were never held — a design constraint
+bought for one 6-minute run instead of a corpus build. Spawns [T-100].
+
+**Artifacts:** run_e045.py; tools/dryruns/dryrun_e045.py;
+probes/typeshed_return_types.jsonl; results/E-045-typeshed-possession.json;
+agents/shared/decisions.md -> "[E-045] Result" _(unratified)_
+**Closed:** 2026-10-15

@@ -14,3 +14,186 @@
 2026-10-15 22:26:10,956 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
 2026-10-15 22:26:13,815 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.9s
 2026-10-15 22:26:16,668 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:26:19,907 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:26:19,908 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:22,983 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:27,729 DEBUG    remote  trace ok: 180 rows, 596 tok, 4.7s
+2026-10-15 22:26:27,730 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:30,838 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:33,913 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:33,914 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:37,058 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:40,126 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:40,128 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:43,213 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:46,361 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:46,363 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:49,455 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:52,515 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:52,519 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:26:55,562 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:26:58,681 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:26:58,682 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:01,780 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:27:04,909 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:27:04,910 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:08,193 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:27:11,369 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:27:11,370 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:14,590 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:27:17,812 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:27:17,814 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:20,841 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:27:23,878 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:27:23,880 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:26,697 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:27:29,408 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.7s
+2026-10-15 22:27:32,203 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:27:35,298 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:27:35,300 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:38,500 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:27:41,640 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:27:41,642 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:44,995 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:27:48,178 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:27:48,180 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:51,195 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:27:54,328 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:27:54,330 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:27:57,391 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:28:00,415 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:28:00,418 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:03,619 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:28:06,789 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:28:06,793 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:11,313 DEBUG    remote  trace ok: 180 rows, 596 tok, 4.5s
+2026-10-15 22:28:14,450 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:28:14,453 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:17,745 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:28:20,241 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:28:22,974 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.7s
+2026-10-15 22:28:25,753 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:28:25,755 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:28,822 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:28:31,886 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:28:31,889 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:35,099 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:28:38,639 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.5s
+2026-10-15 22:28:38,646 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:42,079 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:28:45,034 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.9s
+2026-10-15 22:28:47,934 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.9s
+2026-10-15 22:28:50,366 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:28:53,136 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:28:56,139 DEBUG    remote  trace ok: 90 rows, 298 tok, 3.0s
+2026-10-15 22:28:56,144 INFO     run_e045    100/200
+2026-10-15 22:28:56,144 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:28:59,338 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:29:02,473 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:29:02,481 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:05,803 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:29:08,929 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:29:08,936 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:12,009 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:29:14,540 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:29:17,495 DEBUG    remote  trace ok: 90 rows, 298 tok, 3.0s
+2026-10-15 22:29:20,285 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:29:20,291 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:22,724 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:29:25,576 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:29:28,318 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.7s
+2026-10-15 22:29:30,719 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:29:33,137 WARNING  remote  remote OOM at 90 pairs; halving to 45 + 45
+2026-10-15 22:29:35,899 DEBUG    remote  trace ok: 45 rows, 149 tok, 2.8s
+2026-10-15 22:29:38,724 DEBUG    remote  trace ok: 45 rows, 149 tok, 2.8s
+2026-10-15 22:29:41,545 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.8s
+2026-10-15 22:29:41,550 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:44,758 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:29:48,015 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:29:48,022 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:51,189 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:29:54,287 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:29:54,295 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:29:57,367 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:30:00,621 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:00,627 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:03,907 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:30:06,962 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:30:06,969 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:10,295 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:30:13,494 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:13,501 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:16,604 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:30:19,876 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:30:19,883 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:23,134 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:26,217 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:30:26,227 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:29,437 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:31,967 WARNING  remote  remote OOM at 180 pairs; halving to 90 + 90
+2026-10-15 22:30:34,923 DEBUG    remote  trace ok: 90 rows, 298 tok, 2.9s
+2026-10-15 22:30:37,988 DEBUG    remote  trace ok: 90 rows, 298 tok, 3.1s
+2026-10-15 22:30:37,998 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:41,185 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:44,333 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:30:44,341 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:47,701 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:30:50,914 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:30:50,921 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:30:54,109 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:31:00,267 DEBUG    remote  trace ok: 180 rows, 596 tok, 6.1s
+2026-10-15 22:31:00,276 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:03,490 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:31:06,835 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:31:06,842 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:09,922 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:13,065 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:13,074 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:16,151 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:19,292 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:19,302 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:22,457 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:25,620 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:25,628 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:28,750 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:31,904 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:31,914 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:35,108 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:31:38,263 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:31:38,273 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:41,569 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:31:45,026 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.4s
+2026-10-15 22:31:45,034 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:48,093 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.0s
+2026-10-15 22:31:51,298 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:31:51,308 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:31:54,521 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.2s
+2026-10-15 22:31:57,890 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.4s
+2026-10-15 22:31:57,900 DEBUG    remote  splitting 360 pairs into 2 chunks of <=180 (cap 200)
+2026-10-15 22:32:01,178 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.3s
+2026-10-15 22:32:04,341 DEBUG    remote  trace ok: 180 rows, 596 tok, 3.1s
+2026-10-15 22:32:04,350 INFO     run_e045    200/200
+2026-10-15 22:32:04,351 INFO     run_e045  
+2026-10-15 22:32:04,351 INFO     run_e045  E-045 — possession on typeshed return-type facts, N=50, meta-llama/Llama-3.1-8B
+2026-10-15 22:32:04,351 INFO     run_e045  coverage 100.0%, 0 item(s) unscoreable and kept in view
+2026-10-15 22:32:04,351 INFO     run_e045  
+2026-10-15 22:32:04,351 INFO     run_e045    possession (rank-1 AND lift > 0)   49.5%   (99/200)
+2026-10-15 22:32:04,351 INFO     run_e045    rank-1 only, no lift requirement   57.0%                <- confound 1
+2026-10-15 22:32:04,352 INFO     run_e045    the template ALONE, no subject     9.0%                <- the baseline
+2026-10-15 22:32:04,352 INFO     run_e045    [E-005] CounterFact at 8B, N=50    74.0%
+2026-10-15 22:32:04,353 INFO     run_e045  
+2026-10-15 22:32:04,353 INFO     run_e045  the gap between rows 1 and 2 is what the subject-free arm removes: items ranked first on type frequency rather than on knowing the function. Row 3 is what a model scores knowing nothing about which function was named.
+2026-10-15 22:32:04,353 INFO     run_e045  
+2026-10-15 22:32:04,353 INFO     run_e045  answer type                  n      held
+2026-10-15 22:32:04,353 INFO     run_e045  None                        50       28%
+2026-10-15 22:32:04,353 INFO     run_e045  str                         41       85%
+2026-10-15 22:32:04,353 INFO     run_e045  bool                        24       67%
+2026-10-15 22:32:04,353 INFO     run_e045  int                         18        0%
+2026-10-15 22:32:04,353 INFO     run_e045  bytes                       14       57%
+2026-10-15 22:32:04,353 INFO     run_e045  complex                      9       89%
+2026-10-15 22:32:04,353 INFO     run_e045  float                        5      100%
+2026-10-15 22:32:04,353 INFO     run_e045  str | None                   4        0%
+2026-10-15 22:32:04,353 INFO     run_e045  tuple[str | bytes, int]       4        0%
+2026-10-15 22:32:04,353 INFO     run_e045  
+2026-10-15 22:32:04,353 INFO     run_e045  VERDICT: BETWEEN — 49.5%, between the pre-stated 30% and 60%. The question becomes WHICH code facts hold: per-type spread is 89 points across types with n>=8.
+2026-10-15 22:32:04,354 INFO     run_e045  written: results/E-045-typeshed-possession.json

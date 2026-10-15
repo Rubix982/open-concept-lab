@@ -3313,3 +3313,93 @@ real and the run is reported in full. Existence per [O-004]. **Delivery, not eff
 
 **Artifacts:** agents/engineer/workspace/run_e044.py; tools/dryruns/dryrun_e044.py;
 results/E-044-context-ablation.json; logs/run_e044-2026-10-15-213307.log
+
+---
+
+## [E-045] Result: BETWEEN at 49.5%, and one type is unscoreable by construction
+
+_Unratified_
+
+_Date: 2026-10-15 · written by an autonomous cycle; see `LOOP.md`_
+
+The gate on claim 3. **Possession on typeshed return-type facts is 49.5%** against
+[E-005]'s **74%** for CounterFact at the same model and the same N=50 — between the
+pre-stated 30% and 60%, so the code domain is neither executable as-is nor a wish.
+
+```
+possession (rank-1 AND lift > 0)   49.5%   (99/200)
+rank-1 only, no lift requirement   57.0%
+the template ALONE, no subject      9.0%
+[E-005] CounterFact at 8B, N=50    74.0%   (its own template-alone baseline: 4%)
+```
+
+**The comparison is fair.** Both baselines are low — 9% here against CounterFact's 4% — so
+in neither case is the score coming from the template. 49.5% against a 9% floor is real
+possession, just less of it than encyclopaedic facts enjoy.
+
+### One row of the table is an artifact, and it is my artifact
+
+```
+type        n   rank-1   prior=1   held
+None       50       14         0     14
+str        41       35         0     35
+bool       24       16         0     16
+int        18       15        18      0      <- every one
+bytes      14        8         0      8
+complex     9        8         0      8
+float       5        5         0      5
+str|None    4        0         0      0
+tuple[…]    4        0         0      0
+```
+
+**`int` scores 0% and the model is not ignorant of it** — it ranks `int` first for 15 of
+the 18, median rank 1. All 18 fail because **`rank_prior == 1`: the bare template, with the
+function name replaced by a placeholder, already predicts `int`.** Lift is therefore ≤ 0 by
+construction and no amount of knowledge could score.
+
+> **A fact whose answer is the template's own prior cannot be scored by this measure.** The
+> lift control is doing exactly its job — it cannot distinguish "the model knows this
+> returns int" from "this prompt says int" — but the consequence is that such items should
+> be **reported as unscoreable rather than counted as not-held.** Counting them deflates the
+> headline: excluding `int`, possession is **54.4%** (99/182).
+
+This is structural rather than a bug. For CounterFact it barely arises (prior 4%, spread
+over many answers); for a prompt with a strong type prior it hits a whole answer class at
+once. **Neither this ticket nor `possession.py` anticipated it**, and the ticket's confound
+1 asked for the rank-1 row — which would not have revealed it — rather than the prior row,
+which did.
+
+### What actually holds
+
+Excluding the unscoreable class, the pattern is clean and it is the useful part:
+
+- **Simple concrete types hold well** — `float` 100%, `complex` 89%, `str` 85%, `bool` 67%,
+  `bytes` 57%.
+- **Underdetermined and compound types do not** — `None` 28%, `str | None` 0/4,
+  `tuple[str | bytes, int]` 0/4.
+
+The split is interpretable: the model holds a return type where the function's purpose
+**determines** it, and fails where the stub author chose among plausible alternatives
+(`int` vs `float`, bare vs `Optional`, a value vs `None`). **That is a characterisable
+subset, which is a more useful answer than a single rate.**
+
+### Consequence for claim 3
+
+The code domain is **viable on a subset and not wholesale.** An audit built on typeshed
+would have to restrict to determined return types or accept that half its facts were never
+held. That is a real design constraint, available for the cost of one 6-minute run rather
+than after a corpus build — which was the point of gating.
+
+**Confound 2 is answered and does not apply.** A flat null would have left prompt phrasing
+as a live alternative to ignorance. The result is not flat: 100% to 0% across types with
+n ≥ 4, on one prompt form. Phrasing cannot produce that spread.
+
+**Scope.** 200 facts sampled seed-1538 from 666 machine-derived typeshed entries,
+Llama-3.1-8B, N=50, coverage 100%, nothing skipped. **Possession, not editability** — a
+held fact may still resist editing, and this gates a direction only. Existence per [O-004].
+
+**Follow-up:** `possession.py` should report a `prior_collision` count — items whose answer
+the template alone predicts — so a deflated rate is visible rather than inferred. [T-100].
+
+**Artifacts:** agents/engineer/workspace/run_e045.py; tools/dryruns/dryrun_e045.py;
+probes/typeshed_return_types.jsonl; results/E-045-typeshed-possession.json

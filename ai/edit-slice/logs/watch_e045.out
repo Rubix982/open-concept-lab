@@ -1,3 +1,6 @@
 [22:25:27] 1 job(s) queued
 [22:25:27] E-045: preflight
 [22:25:43] E-045: running (budget 4.0h)
+[22:32:05] E-045: finished in 6 min
+[22:32:05] E-045: ok — verdict ['BETWEEN'], report written
+[22:32:05] queue worked; sleeping 15 min before re-reading it

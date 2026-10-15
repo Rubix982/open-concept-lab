@@ -14,20 +14,5 @@
     "",
     "A job stays queued until a person removes it \u2014 the loop re-reads the file and will re-run anything still in it. [E-038] was removed 2026-10-15 after its result was read and recorded; leaving it in made the loop re-run a finished experiment and re-escalate its verdict every 15 minutes, which blocked [E-039] behind it."
   ],
-  "jobs": [
-    {
-      "ticket": "E-045",
-      "runner": "agents/engineer/workspace/run_e045.py",
-      "args": [
-        "--n-facts",
-        "200",
-        "--seed",
-        "1538"
-      ],
-      "model": "meta-llama/Llama-3.1-8B",
-      "budget_h": 4,
-      "expect": [],
-      "_why": "T-098, the gate on claim 3. Does the model hold typeshed signature facts as densely as CounterFact ones at the same N=50? HELD makes the code domain a real project with the instrument already built; THIN closes a claim this project has carried since the beginning, which is the branch that costs most and the one the dryrun exercises hardest. Facts are machine-derived from python/typeshed by ast, so the hand-built-set objection does not apply."
-    }
-  ]
+  "jobs": []
 }
