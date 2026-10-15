@@ -1676,3 +1676,29 @@ necessary and [E-041]'s direct-write reading was the wrong frame.** Cost: one ru
 16 subjects already used, with the intervention inside the trace. The [E-041] numbers are
 the baseline it is measured against, so nothing needs re-running.
 **Answer:** —
+
+**Design note, 2026-10-15 — two obvious implementations are degenerate, and knowing that
+before designing is the point of writing it down.**
+
+*Zeroing `self_attn.output` at the subject's last token* removes attention entirely at that
+position. But **RoPE is applied inside attention**, so this deletes the positional signal
+along with the contextual one. Both forms collapse to the same token embedding plus local
+MLP writes, the divergence goes to zero by construction, and the run would report
+"attention is necessary" for a reason that has nothing to do with context.
+
+*Truncating the prompt at the subject* does not ablate anything — a truncated late clause
+still contains `"The city where"`, and a truncated edit form is the reference it is already
+compared against.
+
+**So the test requires masking attention FROM the subject's last token TO preceding
+non-subject tokens while leaving self-attention and RoPE intact.** That is an intervention
+on attention weights, not on a module output, and it is model-internal and fragile across
+`transformers` versions. It needs a correctness gate of its own: with the mask applied to
+the *edit form* — which has no preceding non-subject tokens — every number must be
+unchanged from [E-041]'s, or the intervention is doing something other than advertised.
+
+**Not attempted unsupervised.** On 2026-10-14/15 this project shipped seven harness defects
+that each returned a plausible value rather than an error, and an in-trace weight
+intervention with a degenerate failure mode is the worst possible candidate for an
+unattended run. The cost of waiting is a day; the cost of a plausible wrong answer here is
+a claim in §4.3.
