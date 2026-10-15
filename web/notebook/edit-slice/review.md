@@ -54,6 +54,16 @@ names the edited subject in a multi-hop question exactly when the edit sits on t
 first hop — **6,861 of 6,861** — and never otherwise — **0 of 16,506**. One benchmark's
 different-entity tests are reached by arithmetic; the other's, mostly, are not.
 
+**What we cannot say is how hard any of it moves, and that is now a searched claim.** Seven
+candidate predictors of propagation magnitude were eliminated against a pre-registered floor
+with Holm correction — update size, key size, their ratio, the belief's strength, the
+target's prior, the subject's length, the local residual norm — and the best pairing of the
+two survivors is bounded in closed form at **0.534**. ROME's efficacy margin cannot help
+either: the optimiser saturates its target, so the margin is rank-identical to the true
+answer's suppression at **ρ = 1.000**, a comparison of two quantities that compares one.
+**Nothing in this record explains more than about 18% of propagation magnitude alone, or
+28% together.**
+
 </div>
 
 ## Figures and tables
@@ -542,9 +552,13 @@ while the norm ratio never leaves 0.97–1.24 — and drifts slightly *up*, so m
 against the decay. Subject-position keys have essentially the same length regardless of
 whose name is in the prompt or how it is worded; everything that distinguishes them is
 orientation.<Margin>This does **not** show that attention mixes context into the subject
-position. A falling cosine is equally consistent with MLP writes at that position, or
-anything else that reorients the residual stream. The attention patterns are unrun.
-<Evidence id="E-020" /></Margin> The different-subject floor's rise at layer 31 (0.082 →
+position — a falling cosine is equally consistent with MLP writes there. *Measured since:*
+decomposing the divergence into per-layer attention and MLP writes, **attention never leads
+anywhere** — across three prompt forms and eight layers its largest share is a ratio of
+**1.03**, while the MLP leads about 2× early and 3× at layer 31. The verdict is still BOTH
+(0.81, inside a pre-stated [0.5, 2.0]), so the account is not settled; but the candidate
+named here is directionally contradicted at every depth.<Evidence id="E-020" /> ·
+<Evidence id="E-041" /></Margin> The different-subject floor's rise at layer 31 (0.082 →
 0.669) is likewise cosine with a flat ratio: representational convergence near the output,
 not a scaling artifact.
 
@@ -725,15 +739,32 @@ relation. The crossover was the first design that could have refuted it, and did
 retracted. The confound was named in the ticket that commissioned it while the code still
 computed on drops — naming a confound is not controlling for it.<Evidence id="E-025" /></Margin>
 
-**What predicts how far an edit travels is mostly unmeasured.** Belief displacement on the
-edit prompt and ROME's own efficacy margin each correlate with propagation at Spearman
-**0.42** — about 18% of variance — and at **0.419 against 0.425** they are not two views of
-the answer but one weak view.<Margin>Which also closes a tempting line: since the two agree,
-there is no quantity ROME's Efficacy Score fails to see that displacement catches, and an
-efficacy-metric critique we had begun to build does not survive at layer 5.
-<Evidence id="E-029" /></Margin> The coefficient cannot close the gap either — it is pinned
-at exactly 1.000 for precisely the probes in question, so it has **zero variance where the
-outcome varies most**. Whatever governs propagation magnitude is none of the three.
+**What predicts how far an edit travels is mostly unmeasured, and we have now searched.**
+Belief displacement and ROME's efficacy margin each correlate with propagation at Spearman
+**0.42** — about 18% of variance — and they are not two views but one: ROME optimises `v*`
+until the target saturates, so post-edit log P(target) has a standard deviation of **0.02**
+against the true answer's **5.68**, which makes the efficacy *margin* rank-identical to the
+true answer's suppression at **ρ = 1.000 exactly**.<Margin>A margin that appears to compare
+two quantities compares one. This also sharpens what the margin can be used for: it is a
+suppression measure wearing a comparison's name.<Evidence id="f-R-015">R-015</Evidence></Margin>
+The coefficient cannot close the gap either — pinned at exactly 1.000 across precisely the
+probes whose outcomes differ most, it has **zero variance where the outcome varies**.
+
+**Seven candidates were then eliminated against a pre-registered floor of ρ = 0.50 with
+Holm correction**: update size, key size, their ratio, the belief's strength, the target's
+prior, the subject's length, and the local residual norm. None cleared.<Margin>Two of the
+seven cleared an *unadjusted* α and neither cleared its Holm threshold — the correction
+changed the answer rather than decorating it.<Evidence id="E-035" /></Margin> The strongest,
+`‖Δv‖` at **−0.423**, is reliable after correction and sits below the effect floor, and its
+sign is backwards: **a bigger update travels less far**, against the rationale it was listed
+with. The best *combination* of the two surviving predictors has a closed-form ceiling of
+**0.534** — fit on the data it is scored against, so maximally optimistic — which fails a
+0.60 bar by 0.066 before shrinkage and by 0.101 after.<Margin>That ceiling was computable
+from three numbers, and it replaced a planned run of 94 fresh edits.
+<Evidence id="f-R-016">R-016</Evidence></Margin>
+
+**So nothing explains more than about 18% alone or 28% together**, and that now rests on an
+exhaustive search of the candidates this record contains rather than on not having looked.
 
 ### 4.6 · A benchmark's different-entity tests still name the edited subject
 
@@ -884,7 +915,7 @@ record that mixes them earns credit for neither.
 | --- | --- | --- |
 | Blast radius can be predicted from how much of the edit arrives | <Evidence id="E-028d" /> | Delivery held at exactly 1.000 still gives **2.96×** variation in reach. The cheap-predictor route fails, and the measurement says why. |
 | An edit suppresses everything about the subject uniformly | <Evidence id="E-033" /> | The floor is **1 of 6** arms. Two effects become one effect and one special case. |
-| ROME's efficacy score misses what displacement catches | <Evidence id="E-029" /> | At the standard edit layer the two predict propagation equally — **0.425 against 0.419**. There is no metric critique available here. |
+| ROME's efficacy score misses what displacement catches | <Evidence id="E-029" /> · *partly reinstated* <Evidence id="f-R-015">R-015</Evidence> · *narrowed* <Evidence id="E-042" /> | The two predict propagation equally because they are **the same quantity** — ROME saturates its target, making the margin rank-identical to true-answer suppression (ρ = 1.000). So the thread answered its own question with the metric in disguise. A quantity the margin genuinely misses exists (`‖Δv‖`, −0.423 against +0.425, orthogonal at −0.276) but is **substantial in only one of seven configurations**. The critique is open again and much narrower than first drafted. |
 | Different subjects are near-orthogonal at the subject position | <Evidence id="E-027" /> · <Evidence id="E-030" /> | A Llama-3.1-8B fact, not a ROME one, and architectural rather than an artifact of unfamiliar names. |
 | The floor dips where ROME edits | <Evidence id="E-031" /> | Minima sit at different depths in different models, and in neither at the edited layer. |
 | Backward probing is unexplored · the surface-form result is ours · knowledge-status × editability is unclaimed | <Evidence id="f-R-001">R-001</Evidence> · <Evidence id="f-R-010">R-010</Evidence> | Three framings retired against existing literature, two of them after we had designed around them. |
@@ -905,14 +936,19 @@ narrowed anything.
 > of it — the injected value's answer type predicts it, 6 of 6 arms.
 >
 > **Not achievable, on this record.** *How much* any of them moves. Belief displacement and
-> the efficacy margin reach ρ ≈ 0.42 — about 18% of variance — and the coefficient cannot
-> help by construction, because it is pinned at exactly 1.000 across precisely the probes
-> whose outcomes differ most.
+> the efficacy margin reach ρ ≈ 0.42 — about 18% of variance, and they are one quantity, not
+> two — while the coefficient cannot help by construction, pinned at exactly 1.000 across
+> precisely the probes whose outcomes differ most.
 
 **We can say which facts an edit touches. We cannot say how hard.** That sentence is the
-whole contribution of the negative results, and the question on the far side of it —
-what *does* set the magnitude — is <Evidence id="T-086" />, which has no candidate
-explanation anywhere in this record.
+whole contribution of the negative results, and it is now a searched claim rather than an
+unexamined one: seven candidates eliminated against a pre-registered floor, and their best
+pairing bounded at **0.534** in closed form.<Margin>Worth saying plainly because the two
+read very differently to a reviewer: "we found no predictor" and "we tested these seven and
+bounded their combination" are not the same sentence.<Evidence id="E-035" /> ·
+<Evidence id="f-R-016">R-016</Evidence></Margin> What *does* set the magnitude is
+<Evidence id="T-086" />, and it still has no candidate — but the absence is now evidence of
+having looked.
 
 ## 6 · What to attack
 
@@ -1061,9 +1097,9 @@ what we would spend next, which is a judgement we would like contradicted.
 
 | thread | the question | what a result would settle | cost |
 | --- | --- | --- | --- |
-| <Evidence id="T-086" /> | What sets how far an edit travels? | The coefficient is pinned where the outcome varies, displacement and efficacy explain 18% between them. Nothing in the record predicts the other 82%. | unknown — needs a candidate |
+| <Evidence id="T-086" /> | What sets how far an edit travels? | Seven candidates eliminated at a pre-registered floor; the best pairing of the survivors is bounded at **0.534** in closed form. Nothing explains more than ~18% alone or ~28% together. | unknown — and now *searched*, which is the more useful form of unknown |
 | <Evidence id="T-082" /> | Is GPT-J's higher floor real, or unfamiliarity? | Whether §4.3's narrowing of the floor to a Llama fact is confirmed or an artifact of running Llama-gated subjects on another model | hours |
-| <Evidence id="T-078" /> | What reorients the subject key with depth? | §4.3 rules out magnitude and names attention as the candidate without testing it. "cos fell" is not "context was mixed in". | a day |
+| <Evidence id="T-095" /> | Does the key still reorient when context cannot reach it? | <Evidence id="E-041" /> answered <Evidence id="T-078" />: attention never writes more of the divergence than the MLP at any depth (largest share 1.03), and a matched-length *unrelated* prefix still produces ~60% of a related one's divergence mid-network. But the MLP's input comes through attention, so only an ablation separates them. | a day |
 | <Evidence id="T-081" /> | Is the floor-plus-displacement structure a *birthplace* fact? | §4.5 is measured on one relation. Editing occupation instead inverts the prediction; a clean crossover would establish the mechanism. | a day |
 | <Evidence id="T-083" /> | Why is the different-subject floor lowest near the edit layer? | Both models' floors dip near depth fraction 0.15, which is roughly where ROME edits. Either a connection to ROME's own causal-tracing layer choice, or a coincidence at n≈12. | a day |
 | <Evidence id="T-054" /> | CounterFact runs no possession check | Its premise was reversed by <Evidence id="f-D-002">D-002</Evidence>; it needs re-reading rather than running | reading |
