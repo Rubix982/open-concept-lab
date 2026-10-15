@@ -1737,7 +1737,7 @@ Content adds roughly 28% at depth and doubles it shallow.
 
 ### T-096 · Does MEMIT's optimiser saturate its target the way ROME's does?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-085
 **Opened:** 2026-10-15
 **Question:** [R-015] found ROME's efficacy *margin* is rank-identical to true-answer
@@ -1749,7 +1749,22 @@ MEMIT. [T-065] found every narrowing came from varying a never-varied dimension.
 If MEMIT saturates too, the critique stops being a ROME quirk and becomes a statement
 about how the field reports efficacy. If it does not, [R-015] is correctly confined and
 that is worth knowing before anything is written outward.
-**Answer:** —
+**Answer:** [R-019] — **yes, and by the same explicit threshold.** It looked like a run
+and it was two files. `memit/compute_z.py` and `rome/compute_v.py` carry a byte-identical
+stopping rule: `loss = nll_loss + kl_loss + weight_decay` then `if loss < 5e-2: break`.
+Both added terms are non-negative, so the break implies `nll_loss < 0.05`, i.e.
+**P(target) > e^(−0.05) = 0.951 when either optimiser stops.**
+
+So [R-015]'s ES-margin identity is **not a ROME quirk** — it is a property of the
+`compute_v`/`compute_z` family that ROME, MEMIT and anything inheriting that loop share. A
+margin whose first term is pinned above 0.951 by construction carries the second alone.
+
+Note our own 0.02 sd was **empirical**: `src/edit.py` uses a fixed 25 steps and no break.
+The published code enforces what we observed.
+
+**Limits:** only for edits where the optimiser converges within its step budget; this is
+code reading rather than measurement, and [E-042] is the standing reminder that a mechanism
+holding by construction can still behave differently in practice.
 
 ### T-097 · Is "the field's evaluations do not measure what they claim" the paper?
 

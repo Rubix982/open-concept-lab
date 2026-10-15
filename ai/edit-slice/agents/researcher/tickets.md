@@ -808,3 +808,46 @@ standing citation rule.
 
 **Artifacts:** agents/shared/findings.md -> "[R-018] Finding"
 **Closed:** 2026-10-15
+
+### R-019 · Does MEMIT saturate its target too? Read, do not run
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-16
+**Updated:** 2026-10-16
+**Thread:** T-096
+
+**Description:**
+
+[R-015]'s ES-margin identity rests on ROME's optimiser saturating its target, and **editing
+method is the one dimension never varied anywhere in this record** (48 ROME mentions in
+`decisions.md`, zero MEMIT). [T-065] says every narrowing came from varying a never-varied
+dimension, so this was the highest-value open thread.
+
+**Priced as a run, answered as a read.** `LOOP.md` rule 1 asks what arithmetic makes the
+expensive version unnecessary. Running MEMIT would mean implementing it against NDIF; the
+question is actually about its **convergence criterion**, which is two files.
+
+**Result (2026-10-16).** `memit/compute_z.py` and `rome/compute_v.py` from
+`kmeng01/memit@main` carry a **byte-identical** stopping rule:
+
+```python
+loss = nll_loss + kl_loss + weight_decay
+if loss < 5e-2:
+    break
+```
+
+`kl_loss` and `weight_decay` are non-negative, so the break implies `nll_loss < 0.05` and
+therefore **P(target) > e^(−0.05) = 0.951** when either optimiser stops. Step budgets:
+ROME 20 (gpt2-xl, gpt-j-6B), MEMIT 20 (gpt2-xl) / 25 (gpt-j-6B).
+
+**So the identity is a property of the `compute_v`/`compute_z` family, not of ROME.** Our
+own sd of 0.02 was empirical — `src/edit.py` uses a fixed 25 steps and no break — and the
+published code *enforces* what we observed.
+
+**Limits recorded:** holds only where the optimiser converges inside its budget; this is
+code reading and not measurement; read at HEAD rather than a tagged release.
+
+**Artifacts:** agents/shared/findings.md -> "[R-019] Finding" _(unratified)_
+**Closed:** 2026-10-16

@@ -1935,3 +1935,72 @@ this paper and meets our claim cold will otherwise read it as a restatement.
 
 **Artifacts:** none — literature only. Extracted text at `/tmp/chainedit.txt` is scratch
 and not kept.
+
+## [R-019] Finding: MEMIT stops at the same threshold as ROME, so the ES identity is not a ROME quirk
+
+_Unratified_
+
+_Date: 2026-10-16 · written by an autonomous cycle; see `LOOP.md`_
+
+[T-096] asked whether MEMIT's optimiser saturates its target the way ROME's does, because
+[R-015]'s ES-margin identity rests on that and **editing method is the one dimension never
+varied anywhere in this record** — 48 mentions of ROME in `decisions.md`, zero of MEMIT.
+
+It looked like a run. It was two files. `LOOP.md` rule 1: ask what arithmetic makes the
+expensive version unnecessary.
+
+**The stopping rule is byte-identical in both.** `memit/compute_z.py` and
+`rome/compute_v.py`, from `kmeng01/memit@main`:
+
+```python
+loss = nll_loss + kl_loss + weight_decay
+...
+if loss < 5e-2:
+    break
+```
+
+`nll_loss` is the mean negative log-probability of the target; `kl_loss` is a KL divergence
+and `weight_decay` a norm penalty, so **both are non-negative**. Therefore
+`loss < 0.05` ⟹ `nll_loss < 0.05` ⟹
+
+> **P(target) > e^(−0.05) = 0.951 at the moment either optimiser stops.**
+
+Step budgets, from the same repository's hparams: ROME 20 for gpt2-xl and gpt-j-6B, MEMIT
+20 for gpt2-xl and 25 for gpt-j-6B.
+
+### What this does to [R-015]
+
+[R-015] measured post-edit `log P(target)` with sd **0.02** against the true answer's
+**5.68**, making ROME's efficacy *margin* rank-identical to true-answer suppression at
+ρ = 1.000. That was an **empirical** observation on our own implementation, which uses a
+fixed 25 steps and **no break at all** — so saturation there was something the data
+happened to show.
+
+**In the published implementations it is enforced by an explicit threshold, and the same
+threshold.** The identity therefore follows for MEMIT by the same argument, with no
+measurement: a margin whose first term is pinned above 0.951 by the stopping rule is
+carrying the second term alone.
+
+**So [R-015] is not a ROME quirk.** It is a property of the `compute_v`/`compute_z` family
+— the objective and its convergence criterion — which ROME, MEMIT and anything else
+inheriting that loop share.
+
+### What it does not establish
+
+1. **Only for edits where the optimiser converges.** The break fires only if the loss
+   reaches the threshold within the step budget; a non-converging edit leaves the target
+   unsaturated and the margin informative again. The published ES rates near 100% suggest
+   convergence is the common case, but that is their number, not ours.
+2. **This is code reading, not measurement.** We have not run MEMIT, and [E-042] is the
+   standing reminder that a mechanism holding by construction can still behave differently
+   in practice. The honest claim is about **what the criterion guarantees**, not about what
+   a MEMIT run would show.
+3. **Our own 0.02 remains empirical**, because `src/edit.py` has no break. It is consistent
+   with the threshold and not produced by it.
+4. **Unverified**: `kmeng01/memit@main` was read at HEAD on 2026-10-16, not at a tagged
+   release, and the hparams may differ from what any given paper reported.
+
+**Confidence: high** on the identity of the two stopping rules, which is quoted source.
+**Medium** on the generalisation, which rests on convergence being typical.
+
+**Artifacts:** none — source read, nothing run.
