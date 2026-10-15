@@ -1517,7 +1517,7 @@ agents/shared/decisions.md -> "[E-022] Result"
 
 ### E-023 · Does the closed pool hide what the model would actually say? (T-066)
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1850,7 +1850,22 @@ agents/shared/decisions.md -> "[E-026] Result"
 
 ### E-028 · Re-run the depth comparison with edits matched on BELIEF DISPLACEMENT
 
-**Status:** open
+**Status:** split
+**Split into:** E-028a, E-028b, E-028c, E-028d
+**Reason:** Recorded 2026-10-15, late. The question needed a step sweep, a budget match, a
+matched-propagation run and a budget control before it could be answered; each became its
+own ticket with its own pre-stated outcomes and its own result file, and §4.4 is written
+from [E-028d]. The parent was left `open` for three weeks while its children closed, which
+made the ledger report finished work as outstanding.
+
+**And only two of the four children have tickets.** [E-028b] and [E-028d] do;
+`E-028a-step-sweep.json` and `E-028c-matched-propagation.json` exist with no ticket behind
+them, which is Discipline Rule 7 broken twice — work begun and a ticket never written.
+Recorded here rather than repaired by back-dating two tickets, because a ticket written
+after its result is a ticket that cannot have pre-stated anything, and the whole value of
+the format is that the outcomes were fixed first. The runs are real and their numbers are
+in `results/`; what is missing is the evidence that their outcomes were pre-registered, and
+that evidence cannot be manufactured now.
 **Type:** implement
 **Priority:** high
 **Created:** 2026-09-20
@@ -1905,7 +1920,7 @@ take it on trust.
 
 **Blockers:** none
 **Artifacts:** _(on close)_
-**Closed:** —
+**Closed:** split 2026-10-15 — children carry the artifacts
 
 ---
 
@@ -2947,7 +2962,7 @@ agents/shared/decisions.md -> "[E-037] Result"
 
 ### E-038 · Is the coefficient keyed on the entity or on the string? At a power that can answer it
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-10-14
@@ -3026,8 +3041,27 @@ distribution (confound 2) were added to `report()` on 2026-10-14 and exercised b
 names (`Royal Ontario Museum` -> `ROM`, 0.261), which is the population confound 2 said a
 reader must be able to see.
 
-**Artifacts:** _(on close)_
-**Closed:** —
+**Result (2026-10-15).** Arm A **CONTROLLED** and unmoved at 6x [E-037]'s n: floor
+**0.069**, same-entity 0.968-1.000, separation **0.902** over 23,505 readings.
+Compositionality I is n=7,856 at 0.982.
+
+**Arm B cleared its threshold and its own confound then forbade the headline.** n=370
+different-surface aliases, pooled at **0.304** against same-entity 0.972 — which the runner
+called STRING-KEYED. Confound 1 says a pooled median stands only if the subsets agree, and
+they span **0.408**: popular 0.587 (n=19), random 0.301 (n=314), recent 0.179 (n=37), with
+`random` supplying 314 of 370. **What is licensed: aliases sit below same-entity in all
+three subsets — by 0.38, 0.67 and 0.79. Direction robust, magnitude not quotable.** That
+settles the question: [E-036]'s withdrawn "keyed on the ENTITY, not the string" is
+affirmatively refuted, independently in each subset.
+
+**Three attempts.** The run died twice at ~1,300 entries on a malformed NDIF payload that
+`retrying` did not classify as transport, and `watch.py` reported the first death as ok.
+See [E-039]'s entry and the commits of 2026-10-14/15.
+
+**Artifacts:** run_e037.py; results/E-037-ripple-floor-recent+random+popular.json;
+logs/run_e037-2026-10-14-222439.log; logs/e-038-stderr.log;
+agents/shared/decisions.md -> "[E-038] Result"
+**Closed:** 2026-10-15
 
 ### E-039 · The within-benchmark control: MQuAKE hop-1 against hop-2+ questions
 
