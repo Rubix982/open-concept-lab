@@ -3016,3 +3016,88 @@ NOTHING BEATS IT verdict licenses an elimination, not a mechanism. Existence per
 
 **Artifacts:** agents/engineer/workspace/run_e035.py; tools/dryruns/dryrun_e035.py;
 results/E-035-propagation-candidates.json; logs/run_e035-2026-10-15-084614.log
+
+---
+
+## [E-041] Result: attention never leads, the band says BOTH, and the control nearly did not run
+
+_Date: 2026-10-15_
+
+[T-077] established the subject key reorients by direction and explicitly refused the next
+step: *"a falling cosine is consistent with attention mixing, with MLP writes at the subject
+position, and with anything else."* [E-020] named attention as the leading candidate. This
+decomposes the divergence into the two things that write it.
+
+**VERDICT: BOTH** — the deeper-half ratio is **0.81**, inside the pre-stated [0.5, 2.0]
+band, so the decomposition does not separate them at the threshold this ticket fixed.
+
+```
+                    layer    D_attn     D_mlp   ratio   E-020 cos
+late clause             5      0.49      1.02    0.48       0.951
+                       16      7.71      7.80    0.99       0.733
+                       31     22.21     65.60    0.34       0.471
+possessive              5      0.46      0.92    0.50       0.951
+                       31     18.46     59.50    0.31       0.471
+matched filler          5      0.30      0.68    0.45       0.951
+                       31     19.95     56.93    0.35       0.471
+```
+
+**The band is not the finding. This is:** across three forms and eight layers — 24 cells —
+**attention never writes more of the divergence than the MLP, anywhere.** The highest
+attention-to-MLP ratio in the entire table is **1.03**. The pre-registered ATTENTION WRITES
+IT outcome is not merely unmet; its direction is uniformly contradicted. The MLP leads by
+roughly 2× in the early layers, draws level at 12–16, and leads by about **3×** at layer 31,
+which is where the cosine has fallen furthest (0.471).
+
+So [T-078] gets a real answer against its parent's expectation: **the attention-mixing
+account that [E-020] named as leading is not supported at any depth.** What it does not get
+is MLP WRITES IT, because the 2× threshold was fixed in advance and 0.81 does not meet it.
+Both halves of that are reported.
+
+### The control that nearly did not run, and what it says
+
+**The first run's five forms collapsed to three distinct prefixes and nobody noticed until
+the output was read.** Under causal attention the representation at the subject's *last*
+token depends on the tokens up to and including the subject and on nothing after — the
+property this entire project rests on. Therefore:
+
+- `"{} died in the city of"` is **bit-identical** to the edit form at that position. It
+  produced exact zeros at all eight layers, and its ratio entered the verdict as `inf`.
+- `"The city where " + EDIT_FORM` is **bit-identical** to the late clause. Confound 2's
+  control was a duplicate of the thing it was meant to control for.
+
+The verdict was computed over a duplicate plus an infinity. The forms are now keyed by
+prefix and **asserted distinct before the run proceeds**; a repeat refuses rather than
+reports. *Recorded rather than quietly fixed: the error is the project's own central
+mechanism showing up as a design mistake, which is worth more than a clean table.*
+
+**Properly controlled, confound 2 answers.** A prefix of the same token count (5, including
+BOS) and unrelated content — `"Among other things"` against `"The city where"` — produces:
+
+```
+layer      5      8     12     16     24     31
+filler/late clause, D_attn
+        0.62   0.49   0.59   0.66   0.81   0.90
+```
+
+**Both position and content matter, and they separate by depth.** An unrelated prefix of
+matched length produces about **half** the divergence of a semantically related one through
+the middle of the network, and the two **converge to 0.90 by layer 31**. Position alone is
+enough to reorient the key substantially; related content roughly doubles it where the
+network is doing relational work, and that advantage washes out near the output.
+
+### What this does not license
+
+**Direct writes, not causation**, exactly as confound 1 stated before the run. The MLP's
+input depends on attention, so attention may drive `D_mlp` indirectly and this measurement
+cannot see that. **The BOTH verdict makes the deferred ablation necessary rather than
+optional** — zero attention from the subject's last token to every preceding non-subject
+token, and ask whether the key still reorients. That is [T-095].
+
+**Scope.** Llama-3.1-8B, 16 subjects, one relation, layers [0,3,5,8,12,16,24,31], every
+layer read for the cumulative sum, read-only. Existence per [O-004] — [E-033] found a 6/6
+and a 1/6 effect in one run, so one relation is one relation. **Delivery, not effect**
+— [E-028d], 2.96×.
+
+**Artifacts:** agents/engineer/workspace/run_e041.py; tools/dryruns/dryrun_e041.py;
+results/E-041-reorientation.json; logs/run_e041-2026-10-15-*.log

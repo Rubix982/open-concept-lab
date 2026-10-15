@@ -3320,3 +3320,112 @@ has 19 aliases total and is unresolvable, and it is the subset at the top of [E-
 **Artifacts:** run_e040.py; results/E-040-alias-gradient.json;
 logs/run_e040-2026-10-15-080318.log; agents/shared/decisions.md -> "[E-040] Result"
 **Closed:** 2026-10-15
+
+### E-041 · Attention or MLP? Decomposing what reorients the subject key with depth
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-078 · follows [E-020]/[T-077]
+
+**Description:**
+
+[T-077] established that the subject key reorients by **direction**, not magnitude: cosine
+to the edit-form key falls **0.984 → 0.471** across depth while the norm ratio never leaves
+0.97–1.24 and drifts slightly *up*. Its answer explicitly refuses the next step — *"a
+falling cosine is consistent with attention mixing, with MLP writes at the subject
+position, and with anything else that reorients the residual stream."* [T-078] is that step.
+
+**This ticket does not run the test [T-078] proposed, and the reason is the point.**
+[T-078] says to compare attention *patterns* at the subject's last token between the edit
+form and a reformulated one, and read a difference as evidence of context mixing. **That
+test largely confirms itself.** The edit form is `"{} was born in the city of"` — the
+subject sits at the start with almost nothing before it — while `"The city where {} was
+born is"` places three tokens before the subject. Their attention patterns at that position
+*must* differ, because one position has context available and the other does not. A
+difference would be read as mechanism when it is a property of the prompts.
+
+**What this measures instead.** The residual stream at the subject's last token is a sum:
+
+    h(L) = embed + Σ_{l<L} [ attn_out(l) + mlp_out(l) ]
+
+so the divergence between two forms' keys accumulates term by term, and each term is
+readable. At every probed layer, for every form, read `self_attn.output` and `mlp.output`
+at the subject's last token and accumulate
+
+    D_attn(L) = ‖ Σ_{l<L} (attn_out_form(l) − attn_out_edit(l)) ‖
+    D_mlp(L)  = ‖ Σ_{l<L} (mlp_out_form(l)  − mlp_out_edit(l))  ‖
+
+**Which module writes the divergence is then a number rather than a candidate.**
+
+**Pre-stated outcomes.** Compared at the layers where [E-020]'s cosine falls fastest.
+
+- **ATTENTION WRITES IT** — `D_attn` exceeds `D_mlp` by **>= 2x**. Context mixing is the
+  mechanism, [T-077]'s leading candidate is confirmed, and "structural at layer 5" has a
+  cause rather than a correlation.
+- **MLP WRITES IT** — `D_mlp` exceeds `D_attn` by **>= 2x**. The reorientation is written
+  by the MLP at that position, the attention account named in [E-020] is **wrong**, and
+  this is the more interesting outcome because nothing in the record predicts it.
+- **BOTH** — within 2x of each other. Then the decomposition does not separate them and the
+  ablation in confound 1 becomes the necessary follow-up rather than an optional one.
+
+**Confounds.**
+1. *The MLP's input depends on attention, so attention can drive `D_mlp` indirectly.*
+   **This decomposition attributes DIRECT WRITES and not ultimate causation**, and no
+   sentence in the entry may say otherwise. The causal version is an ablation — zero
+   attention from the subject's last token to every preceding non-subject token and ask
+   whether the key still reorients — and it is **deferred to a follow-up**, named here so
+   the limit is on the record rather than discovered by a reviewer.
+2. *The forms differ in how many tokens precede the subject, which is exactly what makes
+   [T-078]'s own test circular.* **Control: a filler-padded edit form** — the edit form
+   with semantically inert tokens prepended so the subject sits at the same index as in the
+   late-clause form. If padding alone reproduces the late clause's divergence, the effect is
+   about **position**; if it behaves like the unpadded edit form, it is about **content**.
+   This is the arm that decides whether anything here is about context at all.
+3. *Sixteen subjects, one relation, one model.* [E-033] found a 6/6 effect and a 1/6 effect
+   in the same run. Existence per [O-004]; no rate, and no claim beyond this relation.
+4. *Delivery, not effect* — [E-028d], 2.96x. Binding as everywhere.
+
+**Deliverable.** One table: layer x (D_attn, D_mlp, their ratio, and [E-020]'s cosine at
+that layer), so the accumulation can be read against the thing it is meant to explain.
+
+**Method.** Reuse `decompose_t077.py`'s subjects, forms and layer set so the cosines are the
+same numbers [E-020] reported. Saves must be **unrolled** — [O-008]: a loop inside a trace
+body raises nothing and returns zero saves.
+
+**Scope.** Llama-3.1-8B, 16 subjects, the [E-020] forms plus the padded control, layers
+[0, 3, 5, 8, 12, 16, 24, 31], read-only. Deferred: the attention ablation (confound 1),
+other relations, other models.
+
+**Result (2026-10-15).** **VERDICT: BOTH** — deeper-half ratio **0.81**, inside the
+pre-stated [0.5, 2.0], so the decomposition does not separate them at the fixed threshold.
+
+**The band is not the finding.** Across three forms and eight layers — 24 cells —
+**attention never writes more of the divergence than the MLP anywhere**; the highest ratio
+in the table is **1.03**. The MLP leads ~2x early, draws level at 12-16, and leads ~3x at
+layer 31, where the cosine has fallen furthest. So the attention-mixing account [E-020]
+named as leading is **directionally contradicted at every depth**, while MLP WRITES IT is
+not claimed because 0.81 does not meet the 2x bar set in advance.
+
+**A design error caught by reading the output, not the gates.** The first run's five forms
+collapsed to **three distinct prefixes**: under causal attention only the tokens up to and
+including the subject matter, so `"{} died in the city of"` is bit-identical to the edit
+form (exact zeros, ratio `inf`) and the padded control was bit-identical to the late
+clause. Confound 2's control was a duplicate of what it controlled for, and the verdict was
+computed over a duplicate plus an infinity. Forms are now keyed by prefix and asserted
+distinct before the run proceeds. The error is this project's own central mechanism
+appearing as a mistake in its design.
+
+**Confound 2, properly run.** A matched-length unrelated prefix produces about **half** the
+divergence of a related one through the middle layers (filler/late = 0.49-0.66 at L8-16)
+and **converges to 0.90 by L31**. Position alone reorients substantially; related content
+roughly doubles it where the network does relational work, and the advantage washes out
+near the output.
+
+**The BOTH verdict makes confound 1's ablation necessary rather than optional** — [T-095].
+
+**Artifacts:** run_e041.py; tools/dryruns/dryrun_e041.py;
+results/E-041-reorientation.json; agents/shared/decisions.md -> "[E-041] Result"
+**Closed:** 2026-10-15

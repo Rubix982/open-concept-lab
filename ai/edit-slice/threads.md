@@ -1219,7 +1219,7 @@ reorients the residual stream. Spawns T-078.
 
 ### T-078 · What reorients the subject key with depth?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-077
 **Opened:** 2026-09-20
 **Question:** [E-020] ruled out magnitude and named attention mixing as the leading
@@ -1231,7 +1231,21 @@ are near-identical and the key still reorients, the reorientation is written by 
 that position and the account is different.
 **Resume cold:** harness is `agents/engineer/workspace/decompose_t077.py`; add attention
 saves at the subject index. Note [O-008] — unroll saves, no `for` loop inside a trace.
-**Answer:** —
+**Answer:** [E-041] — **not attention, and not conclusively the MLP either.** Across
+three prompt forms and eight layers, **attention never writes more of the divergence than
+the MLP anywhere**: the highest attention-to-MLP ratio in 24 cells is 1.03. The MLP leads
+~2x early, levels at 12-16, and leads ~3x at layer 31 where the cosine has fallen
+furthest. The deeper-half ratio is 0.81, inside the pre-stated [0.5, 2.0], so **BOTH** is
+the verdict and MLP WRITES IT is not claimed. [E-020]'s leading candidate is
+directionally contradicted rather than refined.
+
+Confound 2, which nearly did not run: a matched-length *unrelated* prefix produces about
+half the divergence of a related one through the middle layers and converges to 0.90 by
+L31 — **position alone reorients substantially, content roughly doubles it mid-network,
+and that advantage washes out near the output.**
+
+**Does not license:** a causal claim. The MLP's input depends on attention, so attention
+may drive the MLP term indirectly and this measurement cannot see it. Spawns [T-095].
 
 ---
 
@@ -1602,4 +1616,22 @@ target is, for optimisation difficulty, for the subject's familiarity, or for no
 first move is **not** a theory but a check on whether the sign survives a different
 relation and a different model, since [E-033] showed a 6/6 effect and a 1/6 effect sitting
 side by side in the same run.
+**Answer:** —
+
+### T-095 · Does the subject key still reorient when context cannot reach it?
+
+**Status:** open
+**Parent:** T-078
+**Opened:** 2026-10-15
+**Question:** [E-041] decomposed the divergence into direct writes and found the MLP term
+larger than the attention term at every depth — but **the MLP's input depends on
+attention**, so an attention-driven reorientation routed through the MLP looks exactly
+like an MLP-driven one in that measurement. The decomposition cannot separate them and
+said so before it ran. The causal version is an ablation: zero attention from the
+subject's last token to every preceding non-subject token, leaving self-attention intact,
+and ask whether the cosine still falls 0.984 → 0.471 with depth. **Survives → the
+reorientation is written locally and context is not required. Collapses → attention is
+necessary and [E-041]'s direct-write reading was the wrong frame.** Cost: one run on the
+16 subjects already used, with the intervention inside the trace. The [E-041] numbers are
+the baseline it is measured against, so nothing needs re-running.
 **Answer:** —
