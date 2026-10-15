@@ -102,8 +102,15 @@ def main() -> int:
               f"not ratified.** Read, then delete the `_Unratified_` line:", ""]
         L += [f"  - `[{i}]` {h}" for i, h in unr]
         L.append("")
+    # A drafted outward message is the one artifact the loop may produce but never act
+    # on, so it is surfaced explicitly rather than left to be noticed in a commit.
+    pkt = os.path.join(ROOT, "notes", "natalie-packet.md")
+    if os.path.exists(pkt) and "Not sent, and not to be sent" in open(pkt, encoding="utf-8").read():
+        L += ["- **A covering message is drafted and unsent** — `notes/natalie-packet.md`, "
+              "the 2026-10-15 update. The loop may draft it and may not send it. Sending "
+              "is your decision and nothing else will make it.", ""]
     if not os.path.exists(esc) and not unr:
-        L += ["- Nothing. Every entry has been ratified and no escalation is open.", ""]
+        L += ["- Nothing else. Every entry has been ratified and no escalation is open.", ""]
 
     L += ["## State", "",
           f"- **{n_commits} commits** in the window",

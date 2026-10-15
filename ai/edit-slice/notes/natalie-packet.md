@@ -119,3 +119,72 @@ prompts/sentences that include the subject tokens"* — so the phenomenon is in 
 work. A search found nobody stating the **arithmetic**: that the coefficient is exactly 1
 on those prompts, for any covariance, at every layer, whatever relation is asked. So the
 question is not "has anyone seen this" but "has anyone said why, and noticed it is exact".
+
+---
+
+# Update — 2026-10-15
+
+_Drafted by the autonomous loop. **Not sent, and not to be sent without Saif's decision**
+— `LOOP.md` forbids outward messages. Listed in `out/RATIFY.md`._
+
+The 2026-10-03 packet led with the mechanism. Everything since points at one small
+instrument, and that is a better thing to put in front of someone than three findings.
+
+## The covering message, as drafted
+
+> Hi Natalie,
+>
+> Since we last spoke the work has converged on one question I would value your read on,
+> and it is smaller than what I sent before.
+>
+> **A propagation test can only measure propagation if its test prompt's key does not
+> overlap the edit's key** — and ROME's own normalisation makes that computable *before any
+> edit is applied*, from a single forward pass through the unedited model. Call it a screen.
+>
+> It finds real cases. RippleEdits has a test type meant to check whether an edit
+> *propagates* to a different entity reached through the edited one. Their prompt is
+> *"the name of the head of government of the place of death of **Leo Arons** is"* — and the
+> edited subject is in it. We measured what fraction of the edit vector arrives at that
+> token: **0.982**, against a floor of **0.070** built by scoring the same prompts against a
+> stranger's edit. The update gets there by arithmetic. An editor could score well on that
+> test without generalising at all.
+>
+> It is not a universal law of multi-hop tests, which is what makes it a screen rather than
+> a complaint: MQuAKE names the edited subject **iff** the edit sits on the chain's first
+> hop — 6,861 of 6,861, and 0 of 16,506. So benchmarks that pass already exist, in the
+> field's own data, by construction rather than design.
+>
+> The nearest published work is ChainEdit (arXiv 2507.08427), which finds a *different*
+> flaw in the same benchmark — their questions need external-KG knowledge the model may not
+> hold. Their repaired variants do not remove the edited subject; one of them injects *more*
+> context into the prompt. So a benchmark fixed for their problem still fails this screen.
+>
+> **What I want decided:** is a cheap pre-run criterion for whether a propagation item can
+> test propagation something the field would use — or is it a restatement of what benchmark
+> authors already do by eye? I cannot answer that from inside, and it determines whether
+> this is a paper or a note.
+>
+> The write-up is at `/notebook/edit-slice/review`; §7 opens with the screen and §6 is the
+> attack surface. Twenty minutes if you read only those.
+>
+> Saif
+
+## What is deliberately not in it
+
+- **The ES-margin identity**, which is the most novel single claim — ROME's optimiser
+  saturates its target, so the efficacy *margin* is rank-identical to true-answer
+  suppression at ρ = 1.000. It is a stronger result and a weaker opener: it needs two
+  sentences of setup and it is about a different instrument. Hold it for the reply.
+- **The elimination arc** (seven candidates, ceiling 0.534). It is rigorous and it is a
+  negative; leading with it invites a shorter read.
+- **Any novelty claim stronger than "we have not found it stated."** [R-017] searched,
+  [R-018] read the one neighbour in full. That is enough to write the sentence above and not
+  enough to write a stronger one.
+
+## Before this goes anywhere
+
+1. **ChainEdit's venue is unverified.** A search summary said ACL 2025; the arXiv record was
+   not checked for it. The message above cites only the identifier, which is verified.
+2. The 0.982 is **delivery, not effect** — [E-028d] put those 2.96× apart. The message says
+   "arrives", never "changes the answer". Keep it that way.
+3. [O-004]: 0.982 is a median over their prompts, not a rate about the benchmark.
