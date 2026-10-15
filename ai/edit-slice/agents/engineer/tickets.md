@@ -3196,3 +3196,90 @@ construction — same range.
 results/E-039-mquake-hops-MQuAKE-CF-3k.json; logs/run_e039-2026-10-15-010314.log;
 agents/shared/decisions.md -> "[E-039] Result"
 **Closed:** 2026-10-15
+
+### E-040 · Is the alias drop graded by surface distance, and does that explain E-038's subset split?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-087 · follows [E-038]
+
+**Description:**
+
+[E-038] established that renaming a subject reduces delivery in all three RippleEdits
+subsets, and that the **magnitude is not quotable** because the subsets span 0.408 — popular
+0.587, random 0.301, recent 0.179. That span was reported as a confound. This ticket asks
+whether it is instead a **consequence**: if the drop is graded by how different the alias
+string is, and the subsets differ in what kind of aliases they contain, then one mechanism
+explains both the drop and the disagreement.
+
+No compute. The 370 alias coefficients and their SequenceMatcher ratios are already in
+`results/E-037-ripple-floor-recent+random+popular.json`, written in the same loop iteration
+and therefore index-aligned by construction (verified: 370 and 370).
+
+**DISCLOSURE — this ticket is not fully pre-registered, and saying so is the point.**
+While verifying that alignment I computed two bucket medians and saw them: ratio < 0.5
+gives **0.105** (n=140), ratio >= 0.8 gives **0.837** (n=124). **No outcome below is stated
+about those two buckets**, because a band written after seeing the number it judges is
+decoration. What is pre-registered is everything that quantity does not determine — the
+functional form, the subset decomposition, and the token-length control — none of which has
+been computed.
+
+**Pre-stated outcomes**, on quantities not yet seen.
+
+1. **Functional form.**
+   - **GRADED** — Spearman rho between surface ratio and coefficient is `>= 0.5` in
+     magnitude, **and** a linear fit leaves less unexplained variance than a step function
+     at its best-fitting threshold. The key is a continuous function of the token sequence.
+   - **THRESHOLD** — a step beats the line. There is a surface-similarity boundary rather
+     than a slope, and where it sits is the number worth reporting.
+   - **NEITHER** — rho below 0.5. The bucket contrast is driven by something other than
+     string distance and this ticket's premise is wrong.
+
+2. **Does it explain [E-038]'s split?** Stratify each subset's aliases by ratio and compare
+   within strata.
+   - **EXPLAINS** — within strata, the three subsets' medians come within **0.15** of each
+     other. Then the span is composition, not disagreement, and **[E-038]'s "magnitude not
+     quotable" is lifted**: the quotable quantity is the slope, not the median.
+   - **DOES NOT EXPLAIN** — the subsets still differ by more than 0.15 within strata.
+     Something about the subsets beyond their alias composition is doing the work, and the
+     [E-038] caution stands as written.
+
+**Confounds.**
+1. *Surface ratio correlates with token-count difference, and `subject_last_index` reads a
+   token position.* A shorter alias is fewer tokens, so "different string" and "different
+   position" are entangled. **Control: report rho partialled on the token-length
+   difference, and report that difference's own rho alongside.** If length does the work,
+   this is a fact about tokenisation and must be said that way.
+2. *Acronyms are their own population.* `John Greif II Airport` -> `SPR` scores 0.000 and is
+   not merely "a bit different". Report the acronym-like cases separately (alias is short,
+   mostly uppercase, and a subsequence of the canonical initials).
+3. *`random` supplies 314 of 370.* Any pooled fit is mostly one subset's. Report per-subset
+   slopes before the pooled one, exactly as [E-038] learned to.
+4. *This is delivery.* [E-028d], 2.96x.
+
+**Deliverable.** One number — the Spearman rho — and one table: ratio stratum x subset x
+median coefficient, with n per cell, showing whether the subsets converge within strata.
+
+**Scope.** The 370 different-surface aliases already measured. No model, no new runs.
+Existence per [O-004].
+
+**Result (2026-10-15).** **GRADED.** rho **+0.778** (n=370), slope **+0.847**, intercept
+−0.058 — a line beats the best step (RSS 18.29 vs 20.60). **Delivery to a renamed subject is
+approximately the string similarity between the new name and the old one.** Confound 1 is
+controlled: token-count difference correlates −0.335 and partialling it out moves rho only
+to +0.746, so this is about the string rather than the read position. 58 acronym-like
+aliases sit at 0.080, consistent with the slope.
+
+**Subset question: SPLIT NOT EXPLAINED as pre-registered, and that verdict rests on
+`popular`'s 5/5/9-alias cells** — an `n >= 3` inclusion threshold I set too low. Restricted
+post-hoc to `n >= 10`, `random` and `recent` agree to **0.017** and **0.033**, far inside
+the 0.15 band: composition explains the difference where the data can carry it. `popular`
+has 19 aliases total and is unresolvable, and it is the subset at the top of [E-038]'s span
+— so **[E-038]'s caution stands, for a reason now precisely located.**
+
+**Artifacts:** run_e040.py; results/E-040-alias-gradient.json;
+logs/run_e040-2026-10-15-080318.log; agents/shared/decisions.md -> "[E-040] Result"
+**Closed:** 2026-10-15

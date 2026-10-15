@@ -1,0 +1,29 @@
+2026-10-15 08:03:18,333 INFO     run_e040  run run_e040 -> logs/run_e040-2026-10-15-080318.log
+2026-10-15 08:03:18,333 INFO     run_e040  config {"disclosure": "two bucket medians were seen before the bands were fixed; no band is stated about them", "measure": "existing coefficients vs SequenceMatcher ratio \u2014 no model, no network", "n_aliases": 370, "source": "E-037-ripple-floor-recent+random+popular.json", "ticket": "E-040"}
+2026-10-15 08:03:18,333 INFO     run_e040  370 aliases with a different surface form
+2026-10-15 08:03:18,364 INFO     run_e040  
+2026-10-15 08:03:18,364 INFO     run_e040  E-040 — does surface distance grade the alias drop?
+2026-10-15 08:03:18,364 INFO     run_e040  
+2026-10-15 08:03:18,364 INFO     run_e040    Spearman rho(ratio, coefficient)          +0.778
+2026-10-15 08:03:18,364 INFO     run_e040    Spearman rho(token-count diff, coef)      -0.335   (confound 1)
+2026-10-15 08:03:18,364 INFO     run_e040    rho(ratio, coef) partialling token diff   +0.746
+2026-10-15 08:03:18,364 INFO     run_e040  
+2026-10-15 08:03:18,364 INFO     run_e040    linear fit   slope +0.847  intercept -0.058  RSS 18.29
+2026-10-15 08:03:18,364 INFO     run_e040    step fit     threshold 0.625                RSS 20.60
+2026-10-15 08:03:18,364 INFO     run_e040  
+2026-10-15 08:03:18,364 INFO     run_e040  stratum                n    median       IQR
+2026-10-15 08:03:18,365 INFO     run_e040  very different       140     0.105     0.109
+2026-10-15 08:03:18,365 INFO     run_e040  moderate             106     0.337     0.479
+2026-10-15 08:03:18,365 INFO     run_e040  near-variant         124     0.837     0.341
+2026-10-15 08:03:18,365 INFO     run_e040  
+2026-10-15 08:03:18,365 INFO     run_e040  PER SUBSET WITHIN STRATUM — does composition explain [E-038]'s 0.408 span?
+2026-10-15 08:03:18,365 INFO     run_e040  stratum              popular      random      recent
+2026-10-15 08:03:18,365 INFO     run_e040  very different     0.165 (5) 0.104 (119)  0.087 (16)
+2026-10-15 08:03:18,365 INFO     run_e040  moderate           0.885 (5)  0.313 (87)  0.280 (14)
+2026-10-15 08:03:18,365 INFO     run_e040  near-variant       0.587 (9) 0.862 (108)   0.651 (7)
+2026-10-15 08:03:18,365 INFO     run_e040  
+2026-10-15 08:03:18,365 INFO     run_e040  acronym-like aliases (confound 2): n=58  median 0.080
+2026-10-15 08:03:18,365 INFO     run_e040  
+2026-10-15 08:03:18,365 INFO     run_e040  VERDICT: GRADED — rho +0.778 and a line (RSS 18.29) beats the best step (RSS 20.60 at 0.625). Delivery is a continuous function of how far the surface form moved, slope +0.847.
+2026-10-15 08:03:18,365 WARNING  run_e040  SPLIT NOT EXPLAINED — subsets still differ by 0.605 within strata. Something beyond alias composition is doing the work and [E-038]'s caution stands as written.
+2026-10-15 08:03:18,366 INFO     run_e040  written: results/E-040-alias-gradient.json

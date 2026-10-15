@@ -2865,3 +2865,79 @@ coefficient only, no edit applied. **Delivery, not effect.** Existence per [O-00
 
 **Artifacts:** agents/engineer/workspace/run_e039.py; tools/dryruns/dryrun_e039.py;
 results/E-039-mquake-hops-MQuAKE-CF-3k.json; logs/run_e039-2026-10-15-010314.log
+
+---
+
+## [E-040] Result: delivery to an alias is approximately its string similarity
+
+_Date: 2026-10-15_
+
+**GRADED.** Spearman rho between an alias's SequenceMatcher ratio to the canonical form and
+the fraction of the update it receives is **+0.778** over n=370, and a straight line beats
+the best two-level step (RSS 18.29 against 20.60 at a 0.625 threshold). There is a slope,
+not a boundary.
+
+```
+                      n   median     IQR
+very different      140    0.105   0.109      (ratio < 0.5)
+moderate            106    0.337   0.479      (0.5 – 0.8)
+near-variant        124    0.837   0.341      (ratio >= 0.8)
+```
+
+**The fit is close to proportional: slope +0.847, intercept −0.058.** Delivery to a
+renamed subject is approximately the string similarity between the new name and the old
+one. That is a sharper statement than [E-038] could make, and it is the quotable form of
+the quantity [E-038] refused to quote.
+
+**Confound 1 is controlled and does not explain it.** Surface ratio and token-count
+difference are entangled, and `subject_last_index` reads a token position — so the drop
+could have been about position rather than string. Token-count difference correlates at
+**−0.335**, and partialling it out moves the main correlation from **+0.778 to +0.746**.
+The gradient is about the string, not about where the read lands.
+
+**Confound 2, recorded because it is a different object.** 58 of the 370 aliases are
+acronym-like (`John Greif II Airport` → `SPR`), median **0.080**. They sit at the floor and
+at the bottom of the ratio range, so they are consistent with the slope rather than a
+separate population — but they are reported separately as the ticket required.
+
+### The subset question: answered where the data allows, and not elsewhere
+
+**The pre-registered check says SPLIT NOT EXPLAINED**, at a within-stratum span of 0.605.
+**That verdict is driven entirely by `popular`, whose three stratum cells hold 5, 5 and 9
+aliases.** A median of five points is not a median, and the `n >= 3` inclusion threshold
+that admitted them was mine and was too low.
+
+Restricting to cells with `n >= 10` — **post-hoc, and labelled so in the runner's own
+output** — leaves `random` against `recent`:
+
+```
+very different    span 0.017
+moderate          span 0.033
+```
+
+Both far inside the 0.15 threshold. So: **where the data can carry the question,
+composition explains the difference.** `popular` has 19 aliases in total and cannot be
+resolved either way, and `popular` is precisely the subset at the top of [E-038]'s 0.408
+span. **[E-038]'s caution therefore stands as written** — not because the mechanism failed,
+but because the one subset that would test it is too small.
+
+### What this does and does not license
+
+- **Does:** renaming a subject reduces delivery in proportion to how much the string moved,
+  on 370 aliases across three subsets, with the tokenisation account controlled for.
+- **Does not:** say anything about `popular`, about effect rather than delivery
+  ([E-028d], 2.96×), or about why `popular` sat highest in [E-038]. That last is now a
+  sharper open question than it was, because composition has been eliminated for the two
+  subsets where it could be tested.
+
+**A note on the disclosure.** This ticket recorded, before running, that two bucket medians
+had been seen while verifying the data was index-aligned, and stated no band about them.
+The bands that decided this entry — the functional form and the subset decomposition — were
+fixed while unseen. The one threshold that proved badly chosen (`n >= 3`) was pre-registered
+and is reported as it fell, with the powered comparison labelled post-hoc beside it.
+
+**Scope.** 370 different-surface aliases from [E-038], RippleEdits, layer 5,
+Llama-3.1-8B. No model, no network, no new measurement. Existence per [O-004].
+
+**Artifacts:** agents/engineer/workspace/run_e040.py; results/E-040-alias-gradient.json;
+logs/run_e040-2026-10-15-080318.log

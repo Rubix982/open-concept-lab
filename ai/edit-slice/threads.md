@@ -1496,7 +1496,7 @@ per-subject deltas and keys are cached under results/cache/E014_*.pt.
 **Answer:** —
 ### T-087 · Is the alias coefficient drop graded by surface distance, or binary?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-003
 **Opened:** 2026-10-14
 **Question:** [E-037] found different-surface aliases at 0.302 against 1.000 for
@@ -1510,7 +1510,13 @@ measurable slope. [E-038] collects 371 such prompts and records the distance for
 each, so the regression is free once it lands. Confound: distance is a string
 metric and correlates with token count, which is what `subject_last_index` reads;
 separate those before claiming a slope.
-**Answer:** — pending [E-038]
+**Answer:** [E-040] — **GRADED, and close to proportional.** rho **+0.778** over n=370,
+slope **+0.847**, intercept −0.058; a line beats the best step. Delivery to a renamed
+subject is approximately the string similarity between the new name and the old. The
+tokenisation account is controlled and does not explain it: partialling out token-count
+difference moves rho only from +0.778 to +0.746. **Spawns [T-092]** — composition explains
+the `random`/`recent` difference but `popular` has 19 aliases and cannot be tested, and it
+is the subset that sat highest in [E-038].
 
 ### T-088 · Do other propagation benchmarks also name the edited subject in their different-entity tests?
 
@@ -1538,3 +1544,23 @@ subject; MQuAKE edits intermediate entities too, and those questions never do. *
 benchmark therefore contains both populations, separated by a property in its own
 metadata** — a within-benchmark control nobody has to construct. That is [E-039].
 RippleBench and EditPropBench remain uncounted; [R-014] stays open for them.
+
+### T-092 · Why do `popular` entities retain delivery under renaming?
+
+**Status:** open
+**Parent:** T-087
+**Opened:** 2026-10-15
+**Question:** [E-038] found `popular` aliases at 0.587 against `recent`'s 0.179, and
+[E-040] eliminated the obvious explanation for two of the three subsets: within a
+surface-similarity stratum, `random` and `recent` agree to 0.017–0.033, so their
+difference is composition. `popular` has **19 aliases in total** (cells of 5, 5 and 9)
+and cannot be tested the same way, so the elimination does not reach it. Two accounts
+remain and they predict opposite things: a **familiarity** account says a well-known
+entity's alias is itself well-represented and so keys closer to the canonical form,
+which would survive stratification; a **composition** account says `popular`'s aliases
+are simply more similar strings, which [E-040] would have caught given n. The cheap
+discriminator is more aliases — `popular` holds 885 entries and [E-038] used all of
+them, so n cannot be raised within RippleEdits. CounterFact or Wikidata alias lists
+could supply a matched set at chosen similarity ratios, which turns this from an
+observational question into a designed one.
+**Answer:** —
