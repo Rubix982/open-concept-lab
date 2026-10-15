@@ -2090,3 +2090,72 @@ against it. [T-102] — correlate type-matching and the triage buckets against p
 pair level, which is the first search at the level where half the variance lives.
 
 **Artifacts:** none — arithmetic over results/E-033-crossover-*.json
+
+## [R-021] Finding: the pair-level predictor reaches 10% of total variance, where nothing else could
+
+_Unratified_
+
+_Date: 2026-10-16 · autonomous cycle, [T-102]'s own cheap bound_
+
+[R-020] found ~51% of propagation variance sits **within** subject, unreachable by any
+edit-level quantity. [T-102] asked whether the pair-level predictor the project already has
+— [E-033]'s type-matching — reaches it, and specified the cheap bound: correlate the
+existing indicator against the existing per-pair drops before designing anything.
+
+**Method: within-subject centring.** Subtract each subject's own mean across its three
+probes, then ask whether the type-matched probe sits systematically above it. **This
+removes every edit-level effect by construction**, so whatever remains is in the half no
+`‖Δv‖`-style quantity can touch.
+
+```
+cell                            matched       centred mean   var expl.    n
+70B birthplace L13          citizenship              +1.14         15%   29
+70B birthplace L5           citizenship              +1.11         11%   29
+70B occupation L13           occupation              +1.85         30%   29
+70B occupation L5            occupation              +0.96         12%   29
+8B  birthplace L5           citizenship              +2.20         27%   29
+8B  occupation L5            occupation              +2.21         26%   29
+mean                                                 +1.58         20%
+```
+
+**6 of 6 cells, mean advantage +1.58 nats, 20% of within-subject variance from a single
+binary indicator.**
+
+### The variance budget, assembled
+
+```
+between-subject (edit-level reachable)      49%
+within-subject  (pair-level only)           51%
+
+best edit-level combination   [R-016]     28.5% of total
+type-match indicator alone    [R-021]     10.2% of total   <- unreachable above
+together                                  38.7% of total
+
+the framing [T-086] has carried:            18%
+```
+
+**So the picture is roughly twice what the thread has been recording** — and the gain comes
+from a quantity that was measured in [E-033] a week ago and never entered [T-086]'s
+candidate list, because the list was built one level up.
+
+### What this is NOT
+
+**It does not discover type-matching.** [E-033] designed the matched probe deliberately and
+reported 6/6. What is new is **locating it in the variance budget**: the thread needed to
+know how much of what is reachable anything reaches, and now 10.2% of total variance has a
+name and a mechanism.
+
+**It is one binary indicator.** 20% of the within-subject half means **80% of that half is
+still unexplained**, and the remaining pair-level structure — the `shares_relation` /
+`shares_object` / `shares_nothing` buckets — is untouched. The honest statement is that the
+first look at the right level found something, not that the level is now understood.
+
+**Same probe-family caveat as [R-020], and it is the binding one.** This is [E-033]'s
+citizenship/language/occupation probes; [E-029] and [E-035] measured a **city** probe.
+[T-101] must re-derive both the ceiling and this figure on the family a claim is made about,
+and until it does, **none of these percentages may appear in an outward document.**
+
+n=29 per cell, six cells, two models, two relations, two layers. Existence per [O-004].
+**Effect, not delivery** — the outcome is a measured drop.
+
+**Artifacts:** none — arithmetic over results/E-033-crossover-*.json

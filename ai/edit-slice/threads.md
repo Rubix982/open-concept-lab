@@ -1933,3 +1933,16 @@ A pair-level predictor explaining a decent share of that 51% would be the first 
 type-match indicator against the existing per-pair drops and see whether it reaches the
 within-subject component at all.
 **Answer:** —
+
+**Cheap bound run 2026-10-16 — [R-021]. It reaches, and the thread stays open.**
+Within-subject centring (which removes every edit-level effect by construction): the
+type-matched probe leads in **6 of 6** cells, mean advantage **+1.58 nats**, explaining
+**20% of within-subject variance** — **10.2% of total**, in the half no edit-level quantity
+can touch. With [R-016]'s best edit-level combination that is **38.7%** against the 18% the
+thread has been carrying.
+
+**Still open, because one binary indicator is not the level understood.** 80% of the
+within-subject half is unexplained and the `shares_relation` / `shares_object` /
+`shares_nothing` buckets are untouched. And [T-101] binds: these are [E-033]'s probes, not
+the city probe the headline numbers come from, so **nothing here may go outward until the
+ceiling and this figure are re-derived on the right family.**
