@@ -1734,3 +1734,68 @@ real innocuous tokens read **0.983** where masked they read 0.485.
 innocuous prefix already produces 0.265 of the 0.370 divergence a related one does, so the
 key reorients mostly from *having a prefix at all* rather than from what the prefix says.
 Content adds roughly 28% at depth and doubles it shallow.
+
+### T-096 · Does MEMIT's optimiser saturate its target the way ROME's does?
+
+**Status:** open
+**Parent:** T-085
+**Opened:** 2026-10-15
+**Question:** [R-015] found ROME's efficacy *margin* is rank-identical to true-answer
+suppression (ρ = 1.000) because the optimiser runs `v*` until the target saturates —
+post-edit log P(target) has sd **0.02** against the true answer's **5.68**. That is a
+statement about ROME's optimisation criterion, and **editing method is the one dimension
+never varied anywhere in this record**: 48 mentions of ROME in `decisions.md`, zero of
+MEMIT. [T-065] found every narrowing came from varying a never-varied dimension.
+If MEMIT saturates too, the critique stops being a ROME quirk and becomes a statement
+about how the field reports efficacy. If it does not, [R-015] is correctly confined and
+that is worth knowing before anything is written outward.
+**Answer:** —
+
+### T-097 · Is "the field's evaluations do not measure what they claim" the paper?
+
+**Status:** open
+**Parent:** T-085
+**Opened:** 2026-10-15
+**Question:** Three measured findings look separate and may be one. (1) ROME's efficacy
+margin measures true-answer suppression wearing a comparison's name — [R-015]. (2)
+RippleEdits' *compositional* tests name the edited subject verbatim and receive 0.982 of
+the update against a 0.070 floor — [E-037]/[E-038]. (3) Subject-*aliasing* tests are keyed
+on the string, delivery tracking similarity at slope 0.847 — [E-040]. Each says an
+instrument does not measure what it is taken to measure, each is controlled, and each is
+actionable by someone other than us — a benchmark author on (2) and (3), a methods author
+on (1). **This is a framing question, not an experiment**, and it is the kind [T-065] says
+has produced this project's narrowings. It cannot be settled from inside: the standing
+item is that nothing here has been externally judged.
+**Answer:** —
+
+### T-099 · A decidable oracle changes the AUDIT, not the EDIT
+
+**Status:** open
+**Parent:** T-058
+**Opened:** 2026-10-15
+**Question:** [T-058] built genuinely deductive grounds — transitive containment, where
+editing the outer *strictly contradicts* the two inner facts — and [E-015] found the editor
+indifferent to the entailment. So making the oracle decidable does **not** make editing
+cleaner, which is what the pinned coefficient already predicts: ROME does subject-keyed
+arithmetic and has no representation of entailment to respect. **What a decidable oracle
+buys is an audit that answers without adjudication**, which is claim 2 and survives [E-015]
+untouched. Should §2 say this explicitly? It pre-empts a reviewer reading claim 2 as a
+claim about edit quality, and it is the distinction that keeps the code-domain direction
+honest about what it would and would not deliver.
+**Answer:** —
+
+### T-098 · Does the model hold typeshed signature facts at a CounterFact-comparable rate?
+
+**Status:** open
+**Parent:** T-099
+**Opened:** 2026-10-15
+**Question:** The gate on claim 3. A formal domain is only usable if the model **already
+holds** the facts — declaration 1 binds a fact to its probe set, and [E-005] measured
+possession at 56/74/79/85% for ordinary CounterFact claims. An *invented* notation has
+possession near zero, so deriving a synthetic formal corpus would install strings rather
+than edit beliefs. Python's stdlib with typeshed escapes that: the model has memorised what
+`os.path.join` returns, and the stub file is a machine-checkable ground truth for every
+signature. **Does possession on typeshed signature facts reach the CounterFact range?**
+Yes → claim 3 is executable with `src/possession.py` unchanged and the code domain is a
+real project. No → it is a wish, learned in a day rather than after a corpus build.
+**Answer:** —

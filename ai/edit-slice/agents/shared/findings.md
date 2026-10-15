@@ -1799,3 +1799,65 @@ suppression and nothing else" stands as an observation about the metric's arithm
 is exact; but "and here is a quantity it misses" is narrowed to one configuration and is
 not yet a general gap.** The arithmetic half of this finding survives [E-042] untouched;
 the consequence half does not.
+
+## [R-017] Finding: two UNFOUND, one ADJACENT with a named neighbour
+
+_Date: 2026-10-15_
+
+Lens-2 pass on the three claims being weighed for outward use. `CLAUDE.md` permits nothing
+stronger than *"unclaimed in this setting"*, and this ticket's job is to establish even
+that much, which no prior search had.
+
+**1 · The coefficient screen — UNFOUND.** Searched for a pre-run criterion deciding whether
+a propagation test can measure propagation, and for predicting edit locality from key
+overlap without a forward pass through the edited model. The nearest work goes the other
+direction: **SUIT** (2509.24502) isolates entity-specific subspaces *to confine an edit*,
+and **SetKE** (2504.20972) addresses overlap between knowledge elements *as a method
+problem*. Both treat key overlap as something an editor should manage. **None treats it as
+a property of an evaluation item, computable in advance, that decides whether the item is a
+valid test.** That inversion — overlap as a benchmark-screening criterion rather than an
+editing obstacle — is where our framing sits.
+
+**2 · The ES-margin identity — UNFOUND.** Searched for critiques of Efficacy Score and for
+the observation that post-edit `P(target)` is pinned by the optimisation criterion. The
+definition is everywhere (*"the fraction of edits for which the model assigns higher average
+token probability to the new target than to the original"*), and sequential-editing work
+(2401.07453, 2403.07175, 2406.11263) reports ES "almost 100% until it declines" — which is
+**consistent with saturation and is not the claim**. Those papers track the *binary rate
+across successive edits*. Ours is that the **continuous margin is rank-identical to
+true-answer suppression on a single edit** (ρ = 1.000, sd 0.02 against 5.68) because the
+optimiser stops when the target saturates. No hit.
+
+**3 · The benchmark construction finding — ADJACENT, and the neighbour must be cited.**
+**ChainEdit** (2507.08427) identifies a flaw in compositional evaluation and it is **not
+ours**: theirs is that the intermediate fact comes from an external KG and may misalign
+with the model's internal belief, so the test partly measures LLM-vs-KG agreement rather
+than logical generalisation. Ours is that **the compositional prompt names the edited
+subject verbatim, so the update arrives at that token by arithmetic** — 0.982 against a
+0.070 floor — independent of whether any intermediate belief is held. Different mechanism,
+different fix: they realign the dataset to the model, we would screen or re-site the prompt.
+
+Also adjacent and separate: **He et al.** (2601.04600) on rank-one editing failing at
+multi-hop, which argues from the rank-one constraint and proposes no screen; and **INLAY**
+(2608.26292), whose negative result concerns scope classification and the absence of
+negatives in counterfactual benchmarks, not surface overlap.
+
+### What this licenses
+
+- Claims 1 and 2 may be written as **"we have not found this stated"** — the weakest
+  positive and now an evidenced one.
+- Claim 3 **must cite ChainEdit and distinguish itself in one sentence**, or a reviewer who
+  knows that paper will read ours as a restatement. The distinction is clean and should be
+  stated before the result, not after.
+
+**Confidence: medium.** This is a web-search pass over titles and abstracts, which is
+exactly the standard [R-011b] showed to be insufficient — *"a description read off a search
+snippet is not a verified citation even when the identifier is correct."* ChainEdit in
+particular should be **read** before anything leaves the repo, since claim 3 now depends on
+a distinction drawn from its abstract.
+
+**Unverified identifiers**, per the standing rule: 2507.08427, 2509.24502, 2504.20972,
+2601.04600, 2608.26292, 2401.07453, 2403.07175, 2406.11263 came from search and are not
+checked against arXiv records.
+
+**Artifacts:** none — literature only.

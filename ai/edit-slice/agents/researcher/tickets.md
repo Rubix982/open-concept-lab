@@ -686,3 +686,60 @@ candidates the record contains rather than on not having looked.
 **Artifacts:** agents/shared/findings.md -> "[R-016] Finding"; arithmetic over
 results/E-035-propagation-candidates.json
 **Closed:** 2026-10-15
+
+### R-017 · Lens-2 prior art on the three claims being considered for outward use
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-15
+**Updated:** 2026-10-15
+**Thread:** T-097
+
+**Description:**
+
+Three claims are being weighed for an outward-facing note, and **none has had a prior-art
+pass.** [R-002], [R-010] and [R-011] cleared earlier framings; the ES identity and the
+screen framing are two days old and were searched by nobody.
+
+`CLAUDE.md` permits no novelty claim stronger than *"unclaimed in this setting"*, and
+"we did not find it" is its weakest form. This ticket is the difference between that and an
+embarrassment in front of a mentor.
+
+**The three:**
+
+1. **The coefficient screen.** A propagation test can only measure propagation if its test
+   prompt's key does not overlap the edit's key, and `(k·k*)/(k*·k*)` decides this *before*
+   any edit is applied. **Searched as:** a pre-run or a-priori screen/criterion for
+   propagation or ripple benchmarks; predicting edit locality from key overlap without a
+   forward pass through the edited model.
+2. **The ES-margin identity.** ROME's optimiser saturates its target, so the efficacy
+   *margin* is rank-identical to true-answer suppression (ρ = 1.000, sd 0.02 against 5.68).
+   **Searched as:** critiques of Efficacy Score / efficacy magnitude; the observation that
+   the target's post-edit probability is pinned by the optimisation criterion.
+3. **The benchmark construction finding.** RippleEdits' compositional tests name the edited
+   subject verbatim and receive 0.982 of the update against a 0.070 floor; MQuAKE names it
+   iff the edit is on hop 1. **Searched as:** critiques of RippleEdits/MQuAKE construction;
+   subject leakage or surface overlap in multi-hop editing evaluation.
+
+**Outcomes.** Per claim: **STATED** (someone has it — withdraw or reposition), **ADJACENT**
+(close work exists, ours differs in one sentence), **UNFOUND** (no hit; the weakest
+positive and the only one available).
+
+**Scope.** Literature search only. No measurement. A result here changes what may be
+written, never what was measured.
+
+**Result (2026-10-15).** **Screen: UNFOUND. ES identity: UNFOUND. Benchmark finding:
+ADJACENT**, with ChainEdit (2507.08427) as a named neighbour that must be cited and
+distinguished — its compositional flaw is intermediate-knowledge misalignment with an
+external KG, ours is the prompt naming the edited subject so the update arrives by
+arithmetic. Different mechanism, different fix.
+
+Nearest work on the screen inverts it: SUIT and SetKE treat key overlap as something an
+*editor* should manage, not as a property of an *evaluation item* computable in advance.
+
+**Confidence medium — abstracts only**, which [R-011b] established is not enough. ChainEdit
+must be read before claim 3 leaves the repo. Eight identifiers unverified.
+
+**Artifacts:** agents/shared/findings.md -> "[R-017] Finding"
+**Closed:** 2026-10-15
