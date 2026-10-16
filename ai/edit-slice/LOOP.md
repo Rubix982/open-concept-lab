@@ -125,7 +125,15 @@ unread record is worth less than no record because it looks like progress. When 
 is deep, the right phase-4 work is **making the stack clearable** — a synthesis separating
 what stands from what was corrected — rather than adding a seventh finding to six unread
 ones. `out/STANDING.md` is that artifact; `tools/ratify.py` points at it once the count
-reaches four. The purpose is not ceremony — it is that
+reaches four.
+
+**And the loop yields when a person is present.** *Added 2026-10-16.* This exists for the
+hours nobody is at the desk. A cycle that fires while the author is reading the backlog
+competes with them for the one resource the loop cannot supply — judgement — and every
+finding it adds makes the stack they are clearing longer. When the author is in the
+conversation, the correct phase-4 outcome is usually **nothing**, reported in one line.
+That is not the idle failure this protocol was written against; the failure was stopping
+because the ledger was empty, and this is stopping because the bottleneck is downstream. The purpose is not ceremony — it is that
 the loop's failure mode is a confident wrong record, and an unread confident wrong record
 is how a body of work rots from the inside.
 
