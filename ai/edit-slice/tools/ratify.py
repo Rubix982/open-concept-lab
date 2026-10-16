@@ -102,6 +102,13 @@ def main() -> int:
               f"not ratified.** Read, then delete the `_Unratified_` line:", ""]
         L += [f"  - `[{i}]` {h}" for i, h in unr]
         L.append("")
+        # Past a handful, the stack stops being a list and becomes a reading task — and
+        # if any of it is a correction chain, file order teaches the wrong thing first.
+        # STANDING.md exists to make the stack clearable in ten minutes.
+        if len(unr) >= 4 and os.path.exists(os.path.join(ROOT, "out", "STANDING.md")):
+            L += ["  **Start with `out/STANDING.md`** — it separates what stands from "
+                  "what was corrected, so the chain does not have to be reconstructed "
+                  "from file order.", ""]
     # A proposed change to what the project ASSERTS about itself. The loop may raise one
     # and may never apply it — [T-099] is the first, and the reason it is a separate file
     # rather than a commit is that a charter edit should not arrive disguised as routine.

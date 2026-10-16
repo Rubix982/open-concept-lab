@@ -106,7 +106,16 @@ cycle and is the single thing to read on return:
 
     what ran · what it found · what band it cleared · what needs a human decision
 
-A person removes the marker. Nothing else does. The purpose is not ceremony — it is that
+A person removes the marker. Nothing else does.
+
+**And the loop should not outrun ratification.** *Added 2026-10-16, after five cycles left
+six unratified entries including a three-step correction chain that reads backwards in file
+order.* Past about four, the stack stops being a list and becomes a reading task, and an
+unread record is worth less than no record because it looks like progress. When the backlog
+is deep, the right phase-4 work is **making the stack clearable** — a synthesis separating
+what stands from what was corrected — rather than adding a seventh finding to six unread
+ones. `out/STANDING.md` is that artifact; `tools/ratify.py` points at it once the count
+reaches four. The purpose is not ceremony — it is that
 the loop's failure mode is a confident wrong record, and an unread confident wrong record
 is how a body of work rots from the inside.
 

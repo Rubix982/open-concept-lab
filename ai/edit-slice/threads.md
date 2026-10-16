@@ -1991,3 +1991,11 @@ of one against the spread of the other across the layers both cover, before desi
 anything. Two layers is thin, so a null is uninformative and only a strong positive means
 anything at this n.
 **Answer:** —
+
+**Cheap bound checked 2026-10-16: not available.** [T-075] has coefficients at six layers
+(0, 5, 10, 15, 20, 25); [E-026-depth] has drops at **two** (L5, L20). Correlating two points
+is one degree of freedom — a null would be meaningless and a perfect fit would be
+arithmetic. **So this needs drops measured at the layers [T-075] already covers**, which is
+a real run: 42 subjects x 2 probe forms x ~4 further layers, base and edited. Designed but
+deliberately **not queued** — see the note in `out/RATIFY.md` about the ratification
+backlog.
