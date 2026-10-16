@@ -133,6 +133,57 @@ def gate_cache_completeness(g: Gate, path: str, fatal: bool = True) -> None:
         print(f"  note  cache completeness untested — {detail}")
 
 
+def gate_dryrun_cleanup(g: Gate, path: str) -> None:
+    """A dry-run must not be able to name a real artifact.
+
+    [E-037]'s cleanup unlinked `results/E-037-ripple-floor.json` — which became the real
+    run's output the moment the runner started naming files by subset — and deleted a
+    40-minute result. That one file was fixed and the CLASS was not. On 2026-10-16 running
+    every dry-run as a health check destroyed four more results, and the dry-runs were also
+    writing FAKE output to the real paths, which is worse than deleting them.
+
+    This gate reads the dry-run beside the runner and refuses any `results/` path that does
+    not carry DRYRUN in its name.
+    """
+    dry = os.path.join(ROOT, "tools", "dryruns",
+                       "dryrun_" + os.path.basename(path).replace("run_", ""))
+    if not os.path.exists(dry):
+        return
+    src = open(dry, encoding="utf-8").read()
+    named = re.findall(r'"(E-\d+[^"]*\.json)"', src)
+    bad = [n for n in named if "DRYRUN" not in n and "dry" not in n]
+
+    # The subtler half, and the one that actually caused damage on 2026-10-16. A dry-run
+    # need not NAME the real path to write it — calling the runner's `report()` without
+    # redirecting its output is enough, because the default is the real file. Fixing the
+    # unlink target without fixing this left the dry-runs FORGING results instead of
+    # deleting them, which is worse. So: if the runner's report() accepts an `out`
+    # parameter, the dry-run must pass it.
+    runner_src = open(path, encoding="utf-8").read()
+    takes_out = re.search(r"def report\([^)]*\bout\b", runner_src, re.S)
+    # Depth-matched, not regex. A non-greedy `.*?\)` stops at the FIRST close paren —
+    # which for `report(rep, picked, log, Args(), out=...)` is the one in `Args()`, so it
+    # never sees `out=` and reports a false positive. Found by this gate firing on a
+    # dry-run that was already correct.
+    def _calls(text: str) -> list[str]:
+        out_, i = [], 0
+        while (i := text.find("report(", i)) != -1:
+            j, depth = i + len("report("), 1
+            while j < len(text) and depth:
+                depth += (text[j] == "(") - (text[j] == ")")
+                j += 1
+            out_.append(text[i:j])
+            i = j
+        return out_
+
+    unredirected = [c for c in _calls(src) if "out=" not in c] if takes_out else []
+    if unredirected:
+        bad.append("report() called without out=")
+
+    g.check("dry-run cannot name a real artifact", not bad,
+            f"{os.path.basename(dry)}: {bad[:2]}" if bad else "")
+
+
 def gate_report_dryrun(g: Gate, path: str) -> None:
     """RUN the run's own reporting path against known-answer data.
 
@@ -198,6 +249,7 @@ def main() -> int:
         gate_cache_keys(g, a.runner)
         gate_cache_completeness(g, a.runner)
         gate_report_dryrun(g, a.runner)
+        gate_dryrun_cleanup(g, a.runner)
         if not a.no_remote:
             gate_remote_smoke(g, a.model)
 

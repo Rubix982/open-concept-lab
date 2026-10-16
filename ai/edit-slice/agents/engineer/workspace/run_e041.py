@@ -262,7 +262,9 @@ def main() -> None:
     report(acc, log)
 
 
-def report(acc, log) -> None:
+def report(acc, log, out=None) -> None:
+    # `out` exists so a dry-run can redirect this file. Without it the dry-run wrote
+    # FAKE results to the real path — worse than the deletion bug it replaced.
     log.info("")
     log.info("E-041 — what writes the divergence at the subject's last token")
     log.info("cumulative ||sum of per-layer deltas|| against the edit form. "
@@ -309,7 +311,7 @@ def report(acc, log) -> None:
                  "decomposition does not separate them, and confound 1's ablation becomes "
                  "necessary rather than optional.", med, 1 / RATIO, RATIO)
 
-    out = ROOT / "results" / "E-041-reorientation.json"
+    out = out or ROOT / "results" / "E-041-reorientation.json"
     out.write_text(json.dumps({"ticket": "E-041", "thread": "T-078", "probe": PROBE,
                                "forms": NAMES, "deep_ratio": verdicts,
                                "per_layer": {f: {str(L): acc[f][L] for L in PROBE}

@@ -1,0 +1,46 @@
+2026-10-16 06:13:09,301 INFO     run_e041  run run_e041 -> logs/run_e041-2026-10-16-061309.log
+2026-10-16 06:13:09,301 INFO     run_e041  config {"forms": ["edit form", "late clause", "possessive", "matched filler"], "layers_read": 32, "limit": "DIRECT WRITES, not causation \u2014 the MLP's input depends on attention", "measure": "cumulative ||sum of per-layer deltas|| at the subject's last token", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 16, "probe_layers": [0, 3, 5, 8, 12, 16, 24, 31], "thread": "T-078", "ticket": "E-041"}
+2026-10-16 06:13:09,301 INFO     run_e041  16 subjects, 4 forms, every layer read for the cumulative sum
+2026-10-16 06:14:34,001 INFO     run_e041    4/16 subjects
+2026-10-16 06:16:37,618 INFO     run_e041    8/16 subjects
+2026-10-16 06:19:43,313 INFO     run_e041    12/16 subjects
+2026-10-16 06:21:56,042 INFO     run_e041    16/16 subjects
+2026-10-16 06:21:56,044 INFO     run_e041  
+2026-10-16 06:21:56,044 INFO     run_e041  E-041 — what writes the divergence at the subject's last token
+2026-10-16 06:21:56,044 INFO     run_e041  cumulative ||sum of per-layer deltas|| against the edit form. DIRECT WRITES, not causation.
+2026-10-16 06:21:56,044 INFO     run_e041  
+2026-10-16 06:21:56,044 INFO     run_e041  LATE CLAUSE
+2026-10-16 06:21:56,044 INFO     run_e041  layer         D_attn       D_mlp     ratio   E-020 cos
+2026-10-16 06:21:56,044 INFO     run_e041  0               0.05        0.06      0.86       0.984
+2026-10-16 06:21:56,044 INFO     run_e041  3               0.18        0.37      0.49       0.962
+2026-10-16 06:21:56,045 INFO     run_e041  5               0.49        1.02      0.48       0.951
+2026-10-16 06:21:56,045 INFO     run_e041  8               2.00        3.05      0.66       0.898
+2026-10-16 06:21:56,045 INFO     run_e041  12              4.43        4.66      0.95       0.812
+2026-10-16 06:21:56,045 INFO     run_e041  16              7.71        7.80      0.99       0.733
+2026-10-16 06:21:56,045 INFO     run_e041  24             11.78       20.89      0.56       0.598
+2026-10-16 06:21:56,045 INFO     run_e041  31             22.21       65.60      0.34       0.471
+2026-10-16 06:21:56,045 INFO     run_e041  
+2026-10-16 06:21:56,045 INFO     run_e041  POSSESSIVE
+2026-10-16 06:21:56,045 INFO     run_e041  layer         D_attn       D_mlp     ratio   E-020 cos
+2026-10-16 06:21:56,045 INFO     run_e041  0               0.05        0.05      0.87       0.984
+2026-10-16 06:21:56,045 INFO     run_e041  3               0.17        0.31      0.52       0.962
+2026-10-16 06:21:56,045 INFO     run_e041  5               0.46        0.92      0.50       0.951
+2026-10-16 06:21:56,045 INFO     run_e041  8               1.94        2.47      0.78       0.898
+2026-10-16 06:21:56,045 INFO     run_e041  12              4.43        4.46      0.99       0.812
+2026-10-16 06:21:56,045 INFO     run_e041  16              6.52        6.52      1.00       0.733
+2026-10-16 06:21:56,045 INFO     run_e041  24             10.14       15.04      0.67       0.598
+2026-10-16 06:21:56,045 INFO     run_e041  31             18.46       59.50      0.31       0.471
+2026-10-16 06:21:56,045 INFO     run_e041  
+2026-10-16 06:21:56,045 INFO     run_e041  MATCHED FILLER
+2026-10-16 06:21:56,045 INFO     run_e041  layer         D_attn       D_mlp     ratio   E-020 cos
+2026-10-16 06:21:56,045 INFO     run_e041  0               0.05        0.05      0.95       0.984
+2026-10-16 06:21:56,045 INFO     run_e041  3               0.15        0.28      0.53       0.962
+2026-10-16 06:21:56,045 INFO     run_e041  5               0.30        0.68      0.45       0.951
+2026-10-16 06:21:56,045 INFO     run_e041  8               0.98        1.45      0.67       0.898
+2026-10-16 06:21:56,045 INFO     run_e041  12              2.61        2.54      1.03       0.812
+2026-10-16 06:21:56,045 INFO     run_e041  16              5.11        5.14      0.99       0.733
+2026-10-16 06:21:56,045 INFO     run_e041  24              9.56       15.05      0.64       0.598
+2026-10-16 06:21:56,045 INFO     run_e041  31             19.95       56.93      0.35       0.471
+2026-10-16 06:21:56,045 INFO     run_e041  
+2026-10-16 06:21:56,045 INFO     run_e041  VERDICT: BOTH — the ratio sits at 0.81, inside [0.50, 2.00]. The decomposition does not separate them, and confound 1's ablation becomes necessary rather than optional.
+2026-10-16 06:21:56,047 INFO     run_e041  written: results/E-041-reorientation.json

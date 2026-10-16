@@ -230,7 +230,9 @@ def add_residual_norm(rows: list[dict], log) -> list[dict]:
     return rows
 
 
-def report(rows: list[dict], log) -> None:
+def report(rows: list[dict], log, out: object = None) -> None:
+    # `out` exists so a dry-run can redirect this file. Without it the dry-run wrote
+    # FAKE results to the real path — worse than the deletion bug it replaced.
     n = len(rows)
     y = [r["propagation"] for r in rows]
     cands = [k for k in ("norm_delta_v", "norm_k_star", "ratio_dv_over_k", "baseline_true",
@@ -306,7 +308,7 @@ def report(rows: list[dict], log) -> None:
                  "%.2f margin over the incumbent. Report the table; claim no candidate.",
                  sorted(strong), FOUND_RHO, FOUND_MARGIN)
 
-    out = ROOT / "results" / "E-035-propagation-candidates.json"
+    out = out or ROOT / "results" / "E-035-propagation-candidates.json"
     out.write_text(json.dumps({"ticket": "E-035", "thread": "T-086", "n": n,
                                "layer": LAYER, "incumbent_rho": INCUMBENT,
                                "spearman": usable, "p": ps, "holm_threshold": thr,

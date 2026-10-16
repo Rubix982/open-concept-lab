@@ -72,6 +72,16 @@ On each wake, in order. Stop at the first phase with work in it.
    one is an in-distribution comparison with a known answer.** In [E-044] that comparison
    already existed: the same positions filled with real innocuous tokens read 0.983 where
    the masked version read 0.485.
+
+   **Extended again 2026-10-16: fix the CLASS, and fix it in one step.** On 2026-10-15 a
+   dry-run deleted a real result; that one file was fixed and the class was not, so on
+   2026-10-16 running every dry-run as a routine health check destroyed five more. Worse,
+   the repair was made in two steps — unlink target renamed first, output redirected second
+   — and the dry-runs ran in the gap, where they no longer deleted the real files but
+   **forged** them, writing synthetic verdicts to the real paths. **A half-applied fix to a
+   destructive bug is more dangerous than the bug**, because deletion is loud and forgery is
+   silent. `preflight.py` now refuses a dry-run that can name a real artifact *or* that
+   calls a runner's `report()` without redirecting its output.
 5. **Delivery is not effect.** [E-028d], 2.96×. Every entry says which it measured.
 6. **Existence, never a rate** — [O-004], unless the set is a released file counted whole.
 

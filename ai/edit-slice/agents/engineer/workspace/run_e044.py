@@ -167,7 +167,9 @@ def main() -> None:
     report(acc, n_masked, gate_max, log)
 
 
-def report(acc, n_masked, gate_max, log) -> None:
+def report(acc, n_masked, gate_max, log, out=None) -> None:
+    # `out` exists so a dry-run can redirect this file. Without it the dry-run wrote
+    # FAKE results to the real path — worse than the deletion bug it replaced.
     log.info("")
     log.info("E-044 — cosine to the edit form's key, with and without the prefix masked")
     log.info("surviving divergence is POSITIONAL: position_ids are pinned")
@@ -215,7 +217,7 @@ def report(acc, n_masked, gate_max, log) -> None:
                  "%.0f%% of the divergence. [E-041]'s matched-filler arm predicted ~40%%; "
                  "report the fraction, not a band.", dk, 100 * dr)
 
-    out = ROOT / "results" / "E-044-context-ablation.json"
+    out = out or ROOT / "results" / "E-044-context-ablation.json"
     out.write_text(json.dumps(
         {"ticket": "E-044", "thread": "T-095", "probe": PROBE, "gate_max_drift": gate_max,
           "masked_prefix_tokens": n_masked,

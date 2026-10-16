@@ -1,0 +1,18 @@
+2026-10-16 06:12:42,837 INFO     run_e036  run run_e036 -> logs/run_e036-2026-10-16-061242.log
+2026-10-16 06:12:42,837 INFO     run_e036  config {"entries_skipped": 95, "entries_used": 200, "k_star": "the entry's own edit prompt, at the subject's last token", "layer": 5, "measure": "coefficient only \u2014 DELIVERY, not effect; no edit is applied", "model": "meta-llama/Llama-3.1-8B", "subset": "recent", "ticket": "E-036"}
+2026-10-16 06:12:42,838 INFO     run_e036  200 usable entries, 95 skipped for want of a recoverable subject label
+2026-10-16 06:12:44,791 INFO     run_e036  
+2026-10-16 06:12:44,791 INFO     run_e036  E-036 — fraction of a ROME update reaching RippleEdits' own test prompts
+2026-10-16 06:12:44,791 INFO     run_e036  layer 5 · 200 entries used, 95 skipped · DELIVERY, not effect
+2026-10-16 06:12:44,791 INFO     run_e036  
+2026-10-16 06:12:44,791 INFO     run_e036  criterion                      n    median       IQR  entity
+2026-10-16 06:12:44,791 INFO     run_e036  Logical_Generalization       121     0.966     0.074    same
+2026-10-16 06:12:44,791 INFO     run_e036  Compositionality_I           978     0.983     0.028    diff
+2026-10-16 06:12:44,791 INFO     run_e036  Compositionality_II            2     0.982     0.019    diff
+2026-10-16 06:12:44,791 INFO     run_e036  Subject_Aliasing               8     0.867     0.170   alias
+2026-10-16 06:12:44,792 INFO     run_e036  Relation_Specificity         958     0.969     0.042    same
+2026-10-16 06:12:44,792 INFO     run_e036  Forgetfulness                121     1.000     0.000    same
+2026-10-16 06:12:44,792 INFO     run_e036  
+2026-10-16 06:12:44,792 INFO     run_e036  Subject Aliasing 0.867 against same-entity median 0.969 — the coefficient is keyed on the ENTITY, not the string
+2026-10-16 06:12:44,792 WARNING  run_e036  VERDICT: UNDIFFERENTIATED — every criterion within 0.13 of every other. The coefficient does not distinguish their test types and this measurement says nothing about them.
+2026-10-16 06:12:44,793 INFO     run_e036  written: results/E-036-ripple-coefficients.json

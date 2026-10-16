@@ -56,7 +56,8 @@ def run(rows):
     root = logging.getLogger()
     root.handlers = [logging.StreamHandler(buf)]
     root.setLevel(logging.DEBUG)      # NOTHING BEATS IT and MULTICOLLINEAR are warnings
-    E.report([dict(r) for r in rows], logging.getLogger("dry"))
+    E.report([dict(r) for r in rows], logging.getLogger("dry"),
+             out=ROOT / "results" / "E-035-propagation-candidates-DRYRUN.json")
     return buf.getvalue()
 
 
@@ -106,7 +107,12 @@ def main() -> int:
 
     for b in bad:
         print(f"      {b}", file=sys.stderr)
-    stray = ROOT / "results" / "E-035-propagation-candidates.json"
+    stray = ROOT / "results" / "E-035-propagation-candidates-DRYRUN.json"
+    # A dry-run must never be able to name a real artifact. [E-037]'s cleanup deleted a
+    # 40-minute result on 2026-10-15; that one file was fixed and the CLASS was not, and on
+    # 2026-10-16 running every dryrun as a health check destroyed four more. The assertion
+    # is the fix — a path without "DRYRUN" in it now raises instead of unlinking.
+    assert "DRYRUN" in stray.name, f"refusing to unlink a non-dryrun path: {stray}"
     if stray.exists():
         stray.unlink()
     return 1 if bad else 0

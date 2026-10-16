@@ -1,0 +1,27 @@
+2026-10-16 06:08:53,499 INFO     run_e045  run run_e045 -> logs/run_e045-2026-10-16-060853.log
+2026-10-16 06:08:53,500 INFO     run_e045  config {"comparator": "[E-005] CounterFact at 8B, N=50: 0.74", "limit": "POSSESSION, not editability", "model": "meta-llama/Llama-3.1-8B", "n_candidates": 50, "n_facts": 200, "seed": 1538, "source": "typeshed_return_types.jsonl", "thread": "T-098", "ticket": "E-045"}
+2026-10-16 06:08:53,500 INFO     run_e045  200 typeshed facts sampled from 666, candidate vocabulary from all 666
+2026-10-16 06:08:55,388 INFO     run_e045  
+2026-10-16 06:08:55,388 INFO     run_e045  E-045 — possession on typeshed return-type facts, N=50, meta-llama/Llama-3.1-8B
+2026-10-16 06:08:55,388 INFO     run_e045  coverage 100.0%, 0 item(s) unscoreable and kept in view
+2026-10-16 06:08:55,388 INFO     run_e045  
+2026-10-16 06:08:55,388 INFO     run_e045    possession (rank-1 AND lift > 0)   49.5%   (99/200)
+2026-10-16 06:08:55,388 INFO     run_e045    rank-1 only, no lift requirement   57.0%                <- confound 1
+2026-10-16 06:08:55,388 INFO     run_e045    the template ALONE, no subject     9.0%                <- the baseline
+2026-10-16 06:08:55,388 INFO     run_e045    [E-005] CounterFact at 8B, N=50    74.0%
+2026-10-16 06:08:55,388 INFO     run_e045  
+2026-10-16 06:08:55,388 INFO     run_e045  the gap between rows 1 and 2 is what the subject-free arm removes: items ranked first on type frequency rather than on knowing the function. Row 3 is what a model scores knowing nothing about which function was named.
+2026-10-16 06:08:55,388 INFO     run_e045  
+2026-10-16 06:08:55,388 INFO     run_e045  answer type                  n      held
+2026-10-16 06:08:55,388 INFO     run_e045  None                        50       28%
+2026-10-16 06:08:55,388 INFO     run_e045  str                         41       85%
+2026-10-16 06:08:55,388 INFO     run_e045  bool                        24       67%
+2026-10-16 06:08:55,388 INFO     run_e045  int                         18        0%
+2026-10-16 06:08:55,388 INFO     run_e045  bytes                       14       57%
+2026-10-16 06:08:55,388 INFO     run_e045  complex                      9       89%
+2026-10-16 06:08:55,388 INFO     run_e045  float                        5      100%
+2026-10-16 06:08:55,388 INFO     run_e045  str | None                   4        0%
+2026-10-16 06:08:55,388 INFO     run_e045  tuple[str | bytes, int]       4        0%
+2026-10-16 06:08:55,389 INFO     run_e045  
+2026-10-16 06:08:55,389 INFO     run_e045  VERDICT: BETWEEN — 49.5%, between the pre-stated 30% and 60%. The question becomes WHICH code facts hold: per-type spread is 89 points across types with n>=8.
+2026-10-16 06:08:55,389 INFO     run_e045  written: results/E-045-typeshed-possession.json

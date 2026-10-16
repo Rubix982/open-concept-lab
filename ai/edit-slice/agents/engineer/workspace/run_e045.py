@@ -78,7 +78,9 @@ def main() -> None:
     report(rep, picked, log, a)
 
 
-def report(rep, picked, log, a) -> None:
+def report(rep, picked, log, a, out=None) -> None:
+    # `out` exists so a dry-run can redirect this file. Without it the dry-run wrote
+    # FAKE results to the real path — worse than the deletion bug it replaced.
     # Field names read from the dataclass, not assumed. A first draft of this function
     # used `rep.items`, `.held` as an attribute and `.rank` — none of which exist — and
     # would have produced a plausible rate from `getattr(..., default)` rather than an
@@ -140,7 +142,7 @@ def report(rep, picked, log, a) -> None:
                  "across types with n>=8.", 100 * p_held, 100 * THIN, 100 * HELD,
                  100 * (max(spread) - min(spread)) if len(spread) > 1 else 0.0)
 
-    out = ROOT / "results" / "E-045-typeshed-possession.json"
+    out = out or ROOT / "results" / "E-045-typeshed-possession.json"
     out.write_text(json.dumps({
         "ticket": "E-045", "thread": "T-098", "model": MODEL, "n": len(items),
         "n_candidates": 50, "seed": a.seed,
