@@ -2235,3 +2235,64 @@ share is a ratio of two small numbers and should not be leaned on. Existence per
 **Effect, not delivery.**
 
 **Artifacts:** none — arithmetic over results/E-026-depth.json
+
+## [R-023] Premise dry-run: the parked set is not blocked, it has outlived its question
+
+_Unratified_
+
+_Date: 2026-10-16 · autonomous cycle, `LOOP.md` phase 5_
+
+`plan.md` records eight parked threads and a single blocker: *"all eight serve the orphan
+arc, which is blocked on one thing — nobody has been identified for the annotation
+study."* That has stood for about a month and is the reason the set has not been touched.
+
+**It is no longer true, and the reason is not that an annotator appeared.**
+
+### The arc those threads serve is closed
+
+[T-041] — *does contraction ever occur?* — is **answered, no**:
+
+> *"editing a conclusion does not retract its grounds, and it does not coherently rewrite
+> them either. The apparent revision measured in [E-013]/[E-014] is structural
+> displacement… Contraction was not observed, and the mechanism explains why it could not
+> have been."*
+
+So the eight are not waiting on a person. **They are waiting on a question that has been
+answered negatively, with a mechanism that explains the negative.** Calling them "parked"
+implies resumable work and understates what happened.
+
+### Thread by thread, with what [T-041]/[E-015] does to each
+
+| thread | what it asks | status after [T-041] |
+| --- | --- | --- |
+| **T-011** | Is orphaning structural to expansion operators — an LM has no retraction primitive? | **Arguably answered.** [E-015] is the empirical form of exactly this claim: the editor cannot retract because the update is subject-keyed arithmetic. The thread predicted it; the measurement confirmed it. |
+| **T-048** | Is the ground-vs-head possession gap a granularity artifact? | **Moot as motivated.** It exists to protect a head-vs-ground comparison that no longer carries a claim. |
+| **T-052** | Grounds are a star, not a chain — the graph does not supply them | **Superseded by its own successor.** [T-058] built the chain family it called for, [E-015] ran it, and the answer did not depend on the distinction. |
+| **T-012** | Does "kernel" survive the subsymbolic transfer, or is it a thresholding artifact? | **Survives, reframed.** This is a question about *measuring* dependency, not about whether editing respects it. It serves claim 2's audit, which [T-099] established is what a decidable oracle actually buys. |
+| **T-053** | Generic question generation from property metadata | **Survives, independent.** Probe generation by enumeration is `CLAUDE.md`'s own stated want and never depended on contraction. |
+| **T-056** | Dual-facet nouns via co-predication | **Survives, independent** — its own note already calls it a candidate *next project*. |
+| **T-043** | The dimension space of a knowledge bit | **Unexamined here.** Too abstract to rule on from the ledger alone. |
+| **T-003** | Can RippleBench's distance function take a code graph? | **Twice superseded.** [R-011b] found the paper advertises no such pluggability, and [E-036]–[E-039] went straight to measuring on RippleEdits and MQuAKE instead. |
+
+### What this is worth
+
+**Three of eight survive** — T-012, T-053, T-056 — and none of them needs an annotator. They
+were parked behind a blocker that did not apply to them, which is the same misattribution
+`plan.md` already records happening once: *"That misattribution parked an arc for four
+days."* It then happened again, for a month, to a larger set.
+
+**The annotation study is still unstaffed and still blocks the triage tool's `contested`
+validation.** That part of `plan.md` is correct. What is wrong is the sentence attaching all
+eight threads to it.
+
+### Not applied
+
+Changing eight thread statuses is a judgement about the project's direction, not a
+measurement. The proposed dispositions are in `out/RATIFY_PROPOSALS.md`. **What this cycle
+did apply** is nothing — the ledger is unchanged pending that decision.
+
+**Limits.** This is a reading of the ledger against [T-041], not a re-examination of each
+thread's own content. A thread I call superseded may contain something its summary does not
+show; the dispositions are proposals for that reason.
+
+**Artifacts:** none — ledger analysis.
