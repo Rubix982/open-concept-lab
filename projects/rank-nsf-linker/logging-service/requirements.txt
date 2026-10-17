@@ -5,7 +5,7 @@ click==8.3.0
 colorama==0.4.6
 dataclasses-json==0.6.7
 elastic-transport==8.17.1
-elasticsearch==8.19.2
+elasticsearch==8.19.3
 Flask==3.1.2
 flask-cors==6.0.1
 idna==3.11
