@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bl-backlog"
+version = "0.1.0"
+description = "A small project backlog that lives in your repo: a CLI, a board, and a local editor."
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+bl = "bl.cli:main"
+
+[tool.setuptools]
+packages = ["bl"]
+
+[tool.setuptools.package-data]
+bl = ["viewer.html"]

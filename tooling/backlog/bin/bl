@@ -1,0 +1,5 @@
+#!/bin/sh
+# Run bl straight from this folder, no install needed.
+# Put it on your PATH:  ln -s "$PWD/bin/bl" ~/.local/bin/bl
+here=$(cd "$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")/.." && pwd)
+PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m bl "$@"
