@@ -18,11 +18,15 @@ function Entry({ item }: { item: Shipped }): ReactNode {
         </h2>
         <p className="ocl-ship__entryWhat">{item.what}</p>
         <p className="ocl-ship__entryMeta">
-          Live at <a href={item.url} target="_blank" rel="noreferrer">{new URL(item.url).host}</a> since {item.since}
+          {item.runs ?? (
+            <>Live at <a href={item.url} target="_blank" rel="noreferrer">{new URL(item.url!).host}</a> since {item.since}</>
+          )}
         </p>
         <p className="ocl-ship__actions">
           <Link to={page} className="ocl-ship__primary">Read about it</Link>
-          <a href={item.url} target="_blank" rel="noreferrer">Open {item.title} ↗</a>
+          {item.url && (
+            <a href={item.url} target="_blank" rel="noreferrer">{item.open ?? `Open ${item.title}`} ↗</a>
+          )}
         </p>
       </div>
     </article>
@@ -36,7 +40,7 @@ export default function ShippedIndex(): ReactNode {
         <header className="ocl-page__head">
           <h1 className="ocl-page__title">Shipped</h1>
           <p className="ocl-page__lede">
-            Tools that are deployed for anyone to use, each with a page of its
+            Tools that are out for anyone to use, each with a page of its
             own: who it is for, what it does, what it holds, and
             what it is still missing. The smaller pages, made in an afternoon to
             understand something, are on <Link to="/built">Built</Link>.

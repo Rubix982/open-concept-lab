@@ -4,10 +4,14 @@
 export type Shipped = {
   name: string; // the page is /shipped/<name>
   title: string;
-  url: string; // where it runs
+  url?: string; // where it runs; left out while it is switched off, and then nothing links out
   what: string;
   since: string; // the day it went live, as written
   image: string; // under static/
+  // For a tool that runs on your own machine rather than at a URL: what the index says
+  // in place of "Live at <host> since <since>", and the label on its outbound link.
+  runs?: string;
+  open?: string;
 };
 
 export const SHIPPED: Shipped[] = [
@@ -26,12 +30,26 @@ export const SHIPPED: Shipped[] = [
   {
     name: "advisor-atlas",
     title: "Advisor Atlas",
-    url: "https://advisoratlas.fyi/",
     what:
       "A map for finding a PhD advisor and a way to pay for the degree, made first for students in " +
       "Pakistan applying abroad. Say what you want to research in your own words; it finds the people " +
       "working on it, who funds them, the labs just starting out, and the scholarships you can apply for.",
     since: "11 October 2026",
     image: "/img/shipped/advisor-atlas/map.jpg",
+    runs: "Ran at advisoratlas.fyi from 11 to 20 October 2026, and is paused for now",
+  },
+  {
+    name: "vox",
+    title: "Vox",
+    url: "https://github.com/Rubix982/vox",
+    what:
+      "Speak a long instruction instead of typing it, and get back a clean prompt to paste into a " +
+      "language model. Whisper transcribes, a small local model shapes the transcript, and an Image tab " +
+      "pulls the text out of a screenshot or a photo. It all runs in the browser, on your own machine; " +
+      "no audio, text or image leaves it.",
+    since: "2 August 2026",
+    image: "/img/shipped/vox/shape.jpg",
+    runs: "Runs on your own machine, from one HTML file, since 2 August 2026",
+    open: "Get Vox on GitHub",
   },
 ];

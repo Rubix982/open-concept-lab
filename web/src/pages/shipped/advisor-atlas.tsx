@@ -3,7 +3,6 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 
-const SITE = "https://advisoratlas.fyi/";
 // Figures as of the golden dataset (9 October 2026), the same as the app's own overview page.
 const TALLY: [string, string][] = [
   ["198,570", "researchers"],
@@ -54,14 +53,15 @@ export default function AdvisorAtlas(): ReactNode {
             first for students in Pakistan applying abroad, who usually do this
             with spreadsheets and guesswork.
           </p>
-          <p className="ocl-ship__actions">
-            <a href={SITE} target="_blank" rel="noreferrer" className="ocl-ship__primary">Open advisoratlas.fyi ↗</a>
-            <a href={`${SITE}?tour=1`} target="_blank" rel="noreferrer">Take the tour ↗</a>
+          <p className="ocl-ship__paused">
+            Paused on 20 October 2026. The server is switched off, so
+            advisoratlas.fyi shows a holding page. The screenshots below are the
+            app as it ran.
           </p>
           <dl className="ocl-ship__facts">
-            <div><dt>Live since</dt><dd>11 October 2026</dd></div>
+            <div><dt>Ran</dt><dd>11 to 20 October 2026</dd></div>
             <div><dt>Data as of</dt><dd>9 October 2026</dd></div>
-            <div><dt>Now</dt><dd>Open to students for feedback</dd></div>
+            <div><dt>Now</dt><dd>Paused</dd></div>
           </dl>
         </header>
 
@@ -272,12 +272,10 @@ export default function AdvisorAtlas(): ReactNode {
         <section className="ocl-ship__section ocl-ship__prose">
           <h2 className="ocl-page__sectionTitle">What happens next</h2>
           <p>
-            For its first month it is open to students, with two questions: did
-            it help you find someone to write to, and was the funding information
-            useful? What they say decides what is built next.
-          </p>
-          <p className="ocl-ship__actions">
-            <a href={SITE} target="_blank" rel="noreferrer" className="ocl-ship__primary">Open advisoratlas.fyi ↗</a>
+            It was open to students for ten days, with two questions: did it
+            help you find someone to write to, and was the funding information
+            useful? It is paused for now, with the server switched off. This page
+            stays up as the record of what it was and what it held.
           </p>
         </section>
 

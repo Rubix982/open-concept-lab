@@ -3115,6 +3115,14 @@ a[class*="tagWithCount"] span::after {
   color: var(--ocl-ink-muted);
 }
 
+.ocl-ship__paused {
+  max-width: 38rem;
+  margin: 0 0 1.5rem;
+  padding: 0.6rem 0 0.6rem 0.9rem;
+  border-left: 3px solid var(--ocl-rule-strong);
+  color: var(--ocl-ink);
+}
+
 .ocl-ship__facts {
   display: flex;
   flex-wrap: wrap;
