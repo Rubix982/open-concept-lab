@@ -3,6 +3,7 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 
+const SITE = "https://rubix982.github.io/vox/";
 const REPO = "https://github.com/Rubix982/vox";
 // Read from the vox README and index.html as of 20 October 2026. Nothing here
 // checks them against that repo, so they are a snapshot.
@@ -56,13 +57,14 @@ export default function Vox(): ReactNode {
             machine.
           </p>
           <p className="ocl-ship__actions">
-            <a href={REPO} target="_blank" rel="noreferrer" className="ocl-ship__primary">Get Vox on GitHub ↗</a>
+            <a href={SITE} target="_blank" rel="noreferrer" className="ocl-ship__primary">Open Vox ↗</a>
+            <a href={REPO} target="_blank" rel="noreferrer">Code on GitHub ↗</a>
             <a href={`${REPO}/blob/main/samples.md`} target="_blank" rel="noreferrer">Test scripts ↗</a>
           </p>
           <dl className="ocl-ship__facts">
             <div><dt>In use since</dt><dd>2 August 2026</dd></div>
-            <div><dt>Image tab since</dt><dd>31 August 2026</dd></div>
-            <div><dt>Runs</dt><dd>In the browser, from <code>localhost</code></dd></div>
+            <div><dt>Live since</dt><dd>21 October 2026</dd></div>
+            <div><dt>Runs</dt><dd>In your browser, on your machine</dd></div>
           </dl>
         </header>
 
@@ -235,11 +237,11 @@ export default function Vox(): ReactNode {
           <h2 className="ocl-page__sectionTitle">What it is still missing</h2>
           <ul>
             <li>
-              <b>A hosted copy.</b> You run it yourself with one command. It
-              must be opened from <code>localhost</code>, <code>https://</code>{" "}
-              or a local file. From a bare IP address the browser hides the
-              microphone and WebGPU without warning. Vox detects this and says
-              so, but it can't fix it.
+              <b>A heavy first visit.</b> Each browser downloads the models
+              itself, once: Whisper is several hundred megabytes and the default
+              shaper 2.2GB. On a phone or a metered connection, pick the smaller
+              models. They are saved per site and per browser, so a copy run from{" "}
+              <code>localhost</code> does not share them with the hosted one.
             </li>
             <li>
               Handwriting. Neither OCR engine reads it reliably. It is listed in
@@ -260,15 +262,22 @@ export default function Vox(): ReactNode {
         <section className="ocl-ship__section ocl-ship__prose">
           <h2 className="ocl-page__sectionTitle">Try it</h2>
           <p>
-            Clone the repository, run <code>python3 -m http.server 43869</code>{" "}
-            in it, and open <code>http://localhost:43869</code> in Chrome or
-            Edge. The repository includes test scripts: six dictations, each
+            Open it in Chrome or Edge, where WebGPU gets you the larger models.
+            The page is static: GitHub serves the file, and the recording,
+            transcript and prompt never leave your browser. To run your own copy
+            instead, clone the repository, run{" "}
+            <code>python3 -m http.server 43869</code> in it, and open{" "}
+            <code>http://localhost:43869</code>.
+          </p>
+          <p>
+            The repository includes test scripts: six dictations, each
             aimed at one way shaping can fail, and four images for the Image
             tab, with what a pass and a fail look like. The unit tests run in
             the page itself at <code>?test=1</code>.
           </p>
           <p className="ocl-ship__actions">
-            <a href={REPO} target="_blank" rel="noreferrer" className="ocl-ship__primary">Get Vox on GitHub ↗</a>
+            <a href={SITE} target="_blank" rel="noreferrer" className="ocl-ship__primary">Open Vox ↗</a>
+            <a href={REPO} target="_blank" rel="noreferrer">Code on GitHub ↗</a>
           </p>
         </section>
 

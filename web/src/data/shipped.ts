@@ -41,15 +41,13 @@ export const SHIPPED: Shipped[] = [
   {
     name: "vox",
     title: "Vox",
-    url: "https://github.com/Rubix982/vox",
+    url: "https://rubix982.github.io/vox/",
     what:
       "Speak a long instruction instead of typing it, and get back a clean prompt to paste into a " +
       "language model. Whisper transcribes, a small local model shapes the transcript, and an Image tab " +
       "pulls the text out of a screenshot or a photo. It all runs in the browser, on your own machine; " +
       "no audio, text or image leaves it.",
-    since: "2 August 2026",
+    since: "21 October 2026",
     image: "/img/shipped/vox/shape.jpg",
-    runs: "Runs on your own machine, from one HTML file, since 2 August 2026",
-    open: "Get Vox on GitHub",
   },
 ];
