@@ -2,14 +2,64 @@ import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import { AGENTIC, type Agentic } from "@site/src/data/agentic";
+import PageArt from "@site/src/components/PageArt";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import { usePluginData } from "@docusaurus/useGlobalData";
+import type { LabData } from "@site/plugins/lab-data";
+import Boundary from "@site/src/components/visual/Boundary";
+import Flow, { type FlowStep } from "@site/src/components/visual/Flow";
+
+/** A tool's drawing, with its real output laid over it in a terminal window. */
+function Shot({ art, sample, file }: { art: string; sample: string; file: string }): ReactNode {
+  const src = useBaseUrl(`/img/art/tools/${art}.svg`);
+  return (
+    <div className="ocl-ag__entryShot ocl-ag__shot">
+      <img className="ocl-ag__shotArt" src={src} alt="" loading="lazy" decoding="async" />
+      <div className="ocl-ag__window">
+        <p className="ocl-ag__windowBar" aria-hidden="true">
+          <span /><span /><span />
+          <code>{file}</code>
+        </p>
+        <pre className="ocl-ag__sample">{sample}</pre>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * One night of the harness, step by step. The step lines paraphrase the
+ * harness entry in src/data/agentic.ts; the wake-ups are the escalation list
+ * from data/practice.yml, placed at the step that raises each.
+ */
+function NightFlow(): ReactNode {
+  const { practice } = usePluginData("ocl-lab-data") as LabData;
+  const esc = practice?.boundary.escalation ?? [];
+  const wake = (word: string) =>
+    esc.filter((e) => e.trigger.includes(word)).map((e) => e.trigger);
+  const steps: FlowStep[] = [
+    { art: "flow-queue", title: "Queue", text: "Only pre-registered work, with its expected verdict written down first." },
+    { art: "flow-preflight", title: "Preflight", text: "Gates that refuse before anything touches the network.", wakes: wake("preflight") },
+    { art: "flow-run", title: "Run", text: "Each job under a budget it may not outlive.", wakes: [...wake("expect"), ...wake("budget")] },
+    { art: "flow-triage", title: "Triage", text: "Every failure sorted by cause, so only the undiagnosed one needs a person.", wakes: wake("unsorted") },
+    { art: "flow-report", title: "Report", text: "A page readable mid-run, with a section on what it did not check." },
+  ];
+  return (
+    <section className="ocl-page__section ocl-ag__night">
+      <h2 className="ocl-page__sectionTitle">How a night runs</h2>
+      <p className="ocl-page__note">
+        Everything else is logged and the queue carries on. A known failure
+        needs a count; an unknown one needs a person.
+      </p>
+      <Flow steps={steps} label="The harness's pipeline: queue, preflight, run, triage, report" />
+    </section>
+  );
+}
 
 function Entry({ item }: { item: Agentic }): ReactNode {
   const page = `/agentic/${item.name}`;
   return (
     <article className="ocl-ag__entry">
-      <div className="ocl-ag__entryShot">
-        <pre className="ocl-ag__sample">{item.sample}</pre>
-      </div>
+      <Shot art={item.name} sample={item.sample} file={item.where} />
       <div className="ocl-ag__entryBody">
         <h2 className="ocl-ag__entryTitle">
           <Link to={page}>{item.title}</Link>
@@ -33,7 +83,8 @@ export default function AgenticIndex(): ReactNode {
       description="Tools that keep research moving when nobody is watching, and the boundary they are built around."
     >
       <div className="ocl-page">
-        <header className="ocl-page__head">
+        <header className="ocl-page__head ocl-page__head--art">
+          <PageArt name="agentic" />
           <h1 className="ocl-page__title">Agentic</h1>
           <p className="ocl-page__lede">
             Research stops when attention does. These are the tools that keep it
@@ -50,20 +101,21 @@ export default function AgenticIndex(): ReactNode {
             is in the <Link to="/notebook/edit-slice/">notebook</Link>.
           </p>
         </header>
+        <Boundary />
+        <NightFlow />
+        <h2 className="ocl-page__sectionTitle ocl-ag__toolsTitle">The tools, and the practice</h2>
         {AGENTIC.map((item) => (
           <Entry key={item.name} item={item} />
         ))}
         <article className="ocl-ag__entry">
-          <div className="ocl-ag__entryShot">
-            <pre className="ocl-ag__sample">{`A green harness is not a
+          <Shot art="practice" file="agentic/practice" sample={`A green harness is not a
 sound experiment.
 
 E-036 passed every gate and
 still measured two of six
 criteria in ways that could
 not answer their own
-questions.`}</pre>
-          </div>
+questions.`} />
           <div className="ocl-ag__entryBody">
             <h2 className="ocl-ag__entryTitle">
               <Link to="/agentic/practice">The practice, and its limits</Link>

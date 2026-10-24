@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A compass whose needle points a little off the dashed course: a measured direction, and the drift from it">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="61"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="62"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <circle cx="300" cy="206" r="110" fill="#fffdf8"/>
+    <circle cx="300" cy="206" r="92" stroke-width="1.4" opacity="0.5"/>
+    <path d="M300 104 V122 M300 290 V308 M198 206 H216 M384 206 H402" stroke-width="2"/>
+    <path d="M300 206 L352 130 L312 214 Z" fill="#e8836b" fill-opacity="0.85"/>
+    <path d="M300 206 L248 282 L288 198 Z" fill="#fffdf8"/>
+    <circle cx="300" cy="206" r="7" fill="#2b2a28"/>
+    <path d="M300 96 C 300 60, 310 40, 320 20" stroke="#4338a8" stroke-width="2" stroke-dasharray="3 8"/>
+    <path d="M90 330 C 180 300, 220 330, 300 316 S 450 300, 520 250" stroke="#4338a8" stroke-width="2" stroke-dasharray="3 8"/>
+    <path d="M512 244 L524 248 L520 260" stroke="#4338a8" stroke-width="2"/>
+  </g>
+</svg>

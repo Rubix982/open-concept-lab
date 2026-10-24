@@ -6,6 +6,8 @@ sidebar_label: Notebook
 description: Living pages for each project — revised in place rather than dated.
 ---
 
+<PageArt name="notebook" />
+
 # Notebook
 
 Pages here are revised in place. They describe what each project is trying to
@@ -23,11 +25,11 @@ Dated pieces, where the point is *when* I thought something, live in
 
 ## Projects
 
-Each row comes from that project's own `plan.md` — the objective and the
-current phase — so this table is never separately out of date. Hover a phase
-for the full note.
+Each card comes from that project's own `plan.md` — the objective and the
+current phase — so this is never separately out of date. Hover a phase for the
+full note.
 
-<Projects showUpdated />
+<Projects />
 
 ## Conventions
 

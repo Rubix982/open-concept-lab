@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A paper with one claim highlighted, drawn out into a graph of claims: green edges support, a salmon edge contradicts">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="25"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="26"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#7fa98a" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M100 120 H180 L200 140 V280 H100 Z" fill="#fffdf8"/>
+    <path d="M180 120 V140 H200"/>
+    <path d="M116 160 H184 M116 180 H184 M116 200 H170 M116 220 H184 M116 240 H160" stroke-width="1.4" opacity="0.6"/>
+    <path d="M116 200 H170" stroke="#f2c46d" stroke-width="7" opacity="0.7"/>
+    <path d="M210 200 C 250 190, 270 170, 300 160" stroke-width="1.6" stroke-dasharray="3 8"/>
+    <circle cx="320" cy="150" r="20" fill="#f2c46d" fill-opacity="0.75"/>
+    <circle cx="430" cy="110" r="16" fill="#fffdf8"/>
+    <circle cx="450" cy="230" r="18" fill="#fffdf8"/>
+    <circle cx="340" cy="290" r="16" fill="#fffdf8"/>
+    <path d="M338 140 L414 116" stroke="#7fa98a" stroke-width="3"/>
+    <path d="M336 164 L434 222" stroke="#e8836b" stroke-width="3"/>
+    <path d="M324 170 L338 274" stroke="#7fa98a" stroke-width="3"/>
+    <path d="M356 284 L434 240" stroke-width="1.8" stroke-dasharray="3 7"/>
+    <path d="M430 126 L448 212" stroke-width="1.8" stroke-dasharray="3 7"/>
+  </g>
+</svg>

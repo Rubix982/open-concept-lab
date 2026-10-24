@@ -36,3 +36,30 @@ export function journalNumber(
   const index = journal.findIndex((entry) => entry.slug === slug);
   return index === -1 ? undefined : index + 1;
 }
+
+/** What kind of piece this is, by its tags: a journal entry, a lab note, or an essay. */
+export function kindOf(tags: readonly string[]): string {
+  if (isJournal(tags)) return "Journal";
+  if (tags.includes("lab notes") || tags.includes("lab-notes")) return "Lab note";
+  return "Essay";
+}
+
+/**
+ * "About 1 month ago", measured against the day the site was built so the
+ * server render and the browser agree.
+ */
+export function ageOf(value: string | Date, builtAt: string): string {
+  const days = Math.max(
+    0,
+    Math.round((Date.parse(`${builtAt}T00:00:00Z`) - Date.parse(isoDay(value))) / 86_400_000),
+  );
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  if (days < 14) return "Last week";
+  if (days < 30) return `${Math.round(days / 7)} weeks ago`;
+  const months = Math.round(days / 30.4);
+  if (months < 12) return months <= 1 ? "About 1 month ago" : `About ${months} months ago`;
+  const years = Math.round(days / 365);
+  return years <= 1 ? "About 1 year ago" : `About ${years} years ago`;
+}

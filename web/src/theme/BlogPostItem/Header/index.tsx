@@ -9,6 +9,30 @@ import {
   journalNumber,
 } from "@site/src/components/writing/dates";
 import { VoicesToggle } from "@site/src/components/writing/voices";
+import Stage from "@site/src/components/writing/Stage";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+
+/** The piece's illustration, set large under its header. */
+function Cover({ src }: { src?: string }): ReactNode {
+  const url = useBaseUrl(src ?? "");
+  if (!src) return null;
+  return (
+    <figure className="ocl-cover">
+      <img src={url} alt="" />
+    </figure>
+  );
+}
+
+/** "Assumed audience" — who the piece was written for, said before it starts. */
+function Audience({ text }: { text?: string }): ReactNode {
+  if (!text) return null;
+  return (
+    <aside className="ocl-audience" aria-label="Assumed audience">
+      <p className="ocl-audience__label">Assumed audience</p>
+      <p className="ocl-audience__text">{text}</p>
+    </aside>
+  );
+}
 
 /** "10 September 2026" — day first, as a citation would set it. */
 function formatLongDate(iso: string): string {
@@ -29,6 +53,8 @@ type OclFrontMatter = {
   revised?: string;
   /** Which project under ai/ this belongs to. */
   project?: string;
+  /** Who the piece is written for, shown as a card under the header. */
+  audience?: string;
 };
 
 /**
@@ -59,6 +85,8 @@ export default function BlogPostItemHeader(): ReactNode {
           number={entry ? journalNumber(writing, entry.slug) : undefined}
           minutes={typeof readingTime === "number" ? Math.ceil(readingTime) : undefined}
         />
+        <Cover src={entry?.cover} />
+        <Audience text={fm.audience} />
         {voices}
       </>
     );
@@ -70,6 +98,15 @@ export default function BlogPostItemHeader(): ReactNode {
 
   return (
     <header className="ocl-frontmatter">
+      <p className="ocl-frontmatter__kicker">
+        <Link to="/writing">Writing</Link>
+        {fm.status ? (
+          <>
+            <span aria-hidden="true">·</span>
+            <Stage status={fm.status} />
+          </>
+        ) : null}
+      </p>
       <h1 className="ocl-frontmatter__title">{title}</h1>
 
       {fm.standfirst ? (
@@ -98,9 +135,7 @@ export default function BlogPostItemHeader(): ReactNode {
           <>
             <dt>Status</dt>
             <dd>
-              <span className={`ocl-status ocl-status--${fm.status}`}>
-                {fm.status}
-              </span>
+              <Stage status={fm.status} />
             </dd>
           </>
         ) : null}
@@ -139,6 +174,8 @@ export default function BlogPostItemHeader(): ReactNode {
           </>
         ) : null}
       </dl>
+      <Cover src={entry?.cover} />
+      <Audience text={fm.audience} />
       {voices}
     </header>
   );

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A stack of papers, the top one with a title and a small chart, a magnifying glass over it, and a gold tick for a citation checked against the paper">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="8"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M150 140 L360 110 L388 300 L178 330 Z" fill="#fffdf8" transform="rotate(-4 270 220)"/>
+    <path d="M170 130 L380 120 L392 310 L182 320 Z" fill="#fffdf8" transform="rotate(3 280 220)"/>
+    <path d="M160 120 H370 V310 H160 Z" fill="#fffdf8"/>
+    <path d="M184 148 H330" stroke-width="3.4"/>
+    <path d="M184 168 H300" stroke-width="1.8" opacity="0.7"/>
+    <path d="M184 200 H346 M184 218 H346 M184 236 H300" stroke-width="1.4" opacity="0.55"/>
+    <path d="M184 288 L214 262 L236 276 L266 246 L296 266" stroke="#4338a8" stroke-width="2"/>
+    <path d="M184 258 V292 H300" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="420" cy="200" r="52" fill="#ffffff" fill-opacity="0.55" stroke-width="3"/>
+    <path d="M458 238 L500 280" stroke-width="8"/>
+    <path d="M398 196 H442 M398 212 H430" stroke-width="1.6" opacity="0.7"/>
+    <circle cx="350" cy="300" r="28" fill="#f2c46d"/>
+    <path d="M336 300 l10 10 l18 -20" stroke-width="3"/>
+  </g>
+</svg>

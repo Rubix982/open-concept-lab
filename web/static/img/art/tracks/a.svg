@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A shield with a key beside a container: DevOps and security, locally">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#7fa98a" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M220 110 L300 84 L380 110 V200 C380 260, 340 300, 300 318 C260 300, 220 260, 220 200 Z" fill="#4338a8" fill-opacity="0.2"/>
+    <circle cx="300" cy="180" r="22" fill="#f2c46d"/>
+    <path d="M300 202 V258 M300 232 H318 M300 248 H312" stroke-width="3.4"/>
+    <path d="M410 220 L460 200 L510 220 V280 L460 300 L410 280 Z" fill="#fffdf8"/>
+    <path d="M410 220 L460 240 L510 220 M460 240 V300"/>
+    <path d="M90 300 H200 M110 280 H180" stroke-width="2" opacity="0.5"/>
+  </g>
+</svg>

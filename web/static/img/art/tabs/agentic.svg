@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A loop of work turning around a gear, a gate with a barrier across the loop, and a checklist: an agent kept moving and kept inside its lines">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="9"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="10"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#e8836b" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M300 92 A112 112 0 0 1 410 206" stroke="#4338a8" stroke-width="3"/>
+    <path d="M402 192 L410 208 L424 196" stroke="#4338a8" stroke-width="3"/>
+    <path d="M300 320 A112 112 0 0 1 190 206" stroke="#4338a8" stroke-width="3"/>
+    <path d="M198 220 L190 204 L176 216" stroke="#4338a8" stroke-width="3"/>
+    <path d="M410 206 A112 112 0 0 1 300 320 M190 206 A112 112 0 0 1 300 92" stroke-width="1.6" stroke-dasharray="3 9"/>
+    <circle cx="300" cy="206" r="40" fill="#f2c46d" fill-opacity="0.75"/>
+    <circle cx="300" cy="206" r="14" fill="#f4f1ea"/>
+    <path d="M300 156 V170 M300 242 V256 M250 206 H264 M336 206 H350 M265 171 L275 181 M325 231 L335 241 M335 171 L325 181 M275 231 L265 241" stroke-width="5"/>
+    <path d="M372 280 V340 M436 280 V340" stroke-width="3"/>
+    <path d="M362 296 H446" stroke="#a4442f" stroke-width="5"/>
+    <path d="M382 296 l8 -8 M400 296 l8 -8 M418 296 l8 -8" stroke="#f4f1ea" stroke-width="3"/>
+    <path d="M110 120 H170 V200 H110 Z" fill="#fffdf8"/>
+    <path d="M124 140 l6 6 l10 -12 M124 166 l6 6 l10 -12" stroke="#7fa98a" stroke-width="2.6"/>
+    <path d="M146 142 H162 M146 168 H162 M124 188 H162" stroke-width="1.6"/>
+  </g>
+</svg>

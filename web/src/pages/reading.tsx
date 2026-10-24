@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import type { LabData, Paper } from "@site/plugins/lab-data";
+import PageArt from "@site/src/components/PageArt";
 
 /** Author strings end in an initial's period; don't double it up. */
 function authorLine(authors: string, venue?: string): string {
@@ -62,6 +63,68 @@ function PaperRow({ paper }: { paper: Paper }): ReactNode {
   );
 }
 
+/** A stable colour for a paper, from its id, so a cover never changes between builds. */
+function hue(id: string): number {
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return (h % 6) + 1;
+}
+
+/** Surnames only, the way a spine lists them. */
+function surnames(authors: string): string {
+  const names = authors.split(/,\s*(?=[A-Z][^,]*\.)|,\s*/).filter((n) => /[a-z]{2}/.test(n));
+  const last = names.map((n) => n.trim().split(/\s+/)[0].replace(/,$/, ""));
+  if (last.length <= 2) return last.join(" & ");
+  return `${last[0]} et al.`;
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  read: "Read",
+  skimmed: "Skimmed",
+  "to-read": "To read",
+};
+
+/**
+ * A paper as a cover on a shelf: a coloured jacket, its venue and year in the
+ * band at the top, the title set large, the authors at the foot. Read papers
+ * carry a tick; secondhand ones a corner fold that says not to cite them yet.
+ */
+function PaperCover({ paper, onOpenRow }: { paper: Paper; onOpenRow: (id: string) => void }): ReactNode {
+  const body = (
+    <>
+      <span className="ocl-shelf__band">
+        <span>{paper.venue ?? "Preprint"}</span>
+        <span>{paper.year}</span>
+      </span>
+      <span className="ocl-shelf__title">{paper.title}</span>
+      <span className="ocl-shelf__authors">{surnames(paper.authors)}</span>
+      <span className={`ocl-shelf__status ocl-shelf__status--${paper.status}`}>
+        {paper.status === "read" ? "✓ " : null}
+        {STATUS_LABEL[paper.status] ?? paper.status}
+      </span>
+      {!paper.verified ? <span className="ocl-shelf__fold" title="Secondhand: not citable yet" /> : null}
+    </>
+  );
+  const className = `ocl-shelf__cover ocl-shelf__cover--${hue(paper.id)} ocl-shelf__cover--rel-${paper.relevance}`;
+  return paper.url ? (
+    <a className={className} href={paper.url} target="_blank" rel="noreferrer" title={paper.gives_me ?? paper.title}>
+      {body}
+    </a>
+  ) : (
+    <a
+      className={className}
+      href={`#${paper.id}`}
+      title={paper.gives_me ?? paper.title}
+      onClick={(e) => {
+        e.preventDefault();
+        onOpenRow(paper.id);
+      }}
+    >
+      {body}
+    </a>
+  );
+}
+
 export default function Reading(): ReactNode {
   const { papers } = usePluginData("ocl-lab-data") as LabData;
 
@@ -70,6 +133,20 @@ export default function Reading(): ReactNode {
 
   const verified = papers.filter((p) => p.verified);
   const unverified = papers.filter((p) => !p.verified);
+  const [view, setView] = useState<"shelf" | "ledger">("shelf");
+
+  // A link to a paper's row (/reading#id, as <Cite> makes) opens the ledger on it.
+  const openRow = (id: string) => {
+    setView("ledger");
+    requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView({ block: "center" });
+      history.replaceState(null, "", `#${id}`);
+    });
+  };
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (id && papers.some((p) => p.id === id)) openRow(id);
+  }, []);
 
   return (
     <Layout
@@ -77,7 +154,8 @@ export default function Reading(): ReactNode {
       description="What I have read, skimmed, and still need to read — with which entries have been checked against the paper."
     >
       <main className="ocl-page">
-        <header className="ocl-page__head">
+        <header className="ocl-page__head ocl-page__head--art">
+          <PageArt name="reading" />
           <h1 className="ocl-page__title">Reading</h1>
           <p className="ocl-page__lede">
             The papers my current work rests on, ordered by how much they bear
@@ -111,6 +189,30 @@ export default function Reading(): ReactNode {
           </dl>
         </header>
 
+        <div className="ocl-shelf__switch ocl-voices__switch" role="group" aria-label="View">
+          <button type="button" aria-pressed={view === "shelf"} onClick={() => setView("shelf")}>
+            Shelf
+          </button>
+          <button type="button" aria-pressed={view === "ledger"} onClick={() => setView("ledger")}>
+            Ledger
+          </button>
+        </div>
+
+        {view === "shelf" ? (
+          <section className="ocl-page__section ocl-shelf" aria-label="Papers as a shelf">
+            <p className="ocl-page__note">
+              Ordered by how much each bears on the work. A folded corner marks
+              a secondhand entry, not citable yet. Open a cover for the paper.
+            </p>
+            <div className="ocl-shelf__grid">
+              {papers.map((paper) => (
+                <PaperCover key={paper.id} paper={paper} onOpenRow={openRow} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {view === "ledger" ? (<>
         <section className="ocl-page__section">
           <h2 className="ocl-page__sectionTitle">Checked against the paper</h2>
           <div className="ocl-table__scroll">
@@ -163,6 +265,7 @@ export default function Reading(): ReactNode {
             </div>
           </section>
         ) : null}
+        </>) : null}
 
         <p className="ocl-page__foot">
           Kept in <code>data/papers.yml</code>. In any piece, <code>{'<Cite id="cohen2024ripple" />'}</code>{" "}

@@ -77,7 +77,19 @@ project: edit-slice
 ```
 
 `standfirst`, `status`, `revised`, and `project` are optional; each one adds a
-row to the front matter block at the top of the article. Everything after
+row to the front matter block at the top of the article. `status` is also drawn
+as a stage of growth: draft is a seedling, provisional a plant in bud,
+standing an evergreen, superseded a wilted stem. Add `audience:` with a sentence
+on who the piece is for, and it shows as an "Assumed audience" card under the
+header.
+
+**Illustrations.** Put a drawing at `static/img/covers/<slug>.svg` (or `.webp`,
+`.png`, `.jpg`) and the piece gets it automatically: a large picture card on
+`/writing`, and the drawing set under the header on the post itself. Set
+`cover:` in front matter to use a different path. Pieces without one appear as
+compact entries led by their stage of growth. The existing covers are
+hand-drawn-style SVGs (an `feTurbulence` wobble over plain strokes, cream
+paper, ink, one indigo accent) and are the model to copy. Everything after
 `<!-- truncate -->` is hidden from the index.
 
 Notebook pages take `title`, `sidebar_label`, `sidebar_position`, and
@@ -345,8 +357,10 @@ update anyway.
 
 ```mdx
 <Projects />
-<Projects showUpdated />
 ```
+
+Each project renders as a card with its drawing from
+`static/img/art/projects/<name>.svg`, made by `scripts/draw-art.py`.
 
 ## Syncing from a project
 

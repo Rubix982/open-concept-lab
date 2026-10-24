@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A chip with a small network drawn inside it, and a padlock beside it: AI systems and security">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="75"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="76"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="200" y="110" width="200" height="200" rx="14" fill="#fffdf8"/>
+    <path d="M230 110 V90 M270 110 V90 M310 110 V90 M350 110 V90 M230 310 V330 M270 310 V330 M310 310 V330 M350 310 V330 M200 150 H180 M200 190 H180 M200 230 H180 M200 270 H180 M400 150 H420 M400 190 H420 M400 230 H420 M400 270 H420" stroke-width="2"/>
+    <circle cx="250" cy="170" r="10" fill="#4338a8" fill-opacity="0.4"/><circle cx="250" cy="250" r="10" fill="#4338a8" fill-opacity="0.4"/>
+    <circle cx="350" cy="210" r="12" fill="#f2c46d"/>
+    <path d="M260 172 L338 206 M260 248 L338 214" stroke-width="1.8"/>
+    <rect x="440" y="200" width="56" height="46" rx="6" fill="#e8836b" fill-opacity="0.7"/>
+    <path d="M452 200 v-14 a16 16 0 0 1 32 0 v14" stroke-width="3"/>
+  </g>
+</svg>

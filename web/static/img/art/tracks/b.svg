@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A ring of nodes passing messages, one of them cut off: distributed systems">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="73"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="74"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="300" cy="100" r="20" fill="#fffdf8"/><circle cx="410" cy="160" r="20" fill="#fffdf8"/><circle cx="410" cy="270" r="20" fill="#fffdf8"/><circle cx="300" cy="330" r="20" fill="#fffdf8"/><circle cx="190" cy="270" r="20" fill="#fffdf8"/><circle cx="190" cy="160" r="20" fill="#fffdf8"/>
+    <path d="M318 110 L392 150 M410 182 V248 M392 280 L318 320 M282 320 L208 280 M190 248 V182 M208 150 L282 110" stroke-width="1.8" stroke-dasharray="3 7"/>
+    <path d="M300 122 L300 308" stroke="#4338a8" stroke-width="2.4"/>
+    <path d="M292 296 L300 310 L308 296" stroke="#4338a8" stroke-width="2.4"/>
+    <path d="M396 150 L424 178 M424 150 L396 178" stroke="#a4442f" stroke-width="3"/>
+    <circle cx="300" cy="100" r="8" fill="#f2c46d" stroke="none"/>
+  </g>
+</svg>

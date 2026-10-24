@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="The report">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="49"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#f2c46d" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M58 44 H142 V160 H58 Z" fill="#fffdf8"/>
+    <path d="M72 64 H128" stroke-width="3.2"/>
+    <path d="M72 136 V100 M90 136 V84 M108 136 V112 M126 136 V92" stroke="#4338a8" stroke-width="7"/>
+    <path d="M70 140 H130" stroke-width="1.6"/>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Prove the fix with a check that fails on a cover-up">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="37"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#f2c46d" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <rect x="40" y="56" width="120" height="92" rx="8" fill="#2b2a28" stroke="#2b2a28"/>
+    <circle cx="54" cy="68" r="3" fill="#e8836b" stroke="none"/><circle cx="64" cy="68" r="3" fill="#f2c46d" stroke="none"/><circle cx="74" cy="68" r="3" fill="#7fa98a" stroke="none"/>
+    <path d="M54 92 L64 100 L54 108" stroke="#f4f1ea" stroke-width="2"/>
+    <path d="M72 108 H96" stroke="#f4f1ea" stroke-width="2"/>
+    <circle cx="140" cy="140" r="22" fill="#f2c46d"/>
+    <path d="M129 140 l8 8 l14 -16" stroke-width="3"/>
+  </g>
+</svg>

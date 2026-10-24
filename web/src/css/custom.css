@@ -5,7 +5,7 @@
 /* ==========================================================================
    Open Concept Lab — quiet academic
    Prose is set in Spectral; the apparatus (nav, metadata, captions, sidebar,
-   contents) is set in IBM Plex Sans. Oxide red is reserved for revision and
+   contents) is set in Lato. Oxide red is reserved for revision and
    status marks and appears nowhere else.
    ========================================================================== */
 
@@ -15,38 +15,71 @@
      raised set to the same #ffffff, so every block styled as "raised" — the abstract,
      figure frames, callouts — rendered as flat white and the distinction did nothing.
      Lifting the page off pure white fixes that for free AND stops a 70-minute read
-     glaring; raised is now white, which is genuinely above the page. */
-  --ocl-paper: #f9fafb;
-  --ocl-paper-raised: #ffffff;
-  --ocl-paper-sunken: #eef1f4;
-  --ocl-ink: #16283c;
-  --ocl-ink-muted: #55677a;
-  --ocl-ink-faint: #8090a0;
-  --ocl-link: #1c4c7c;
-  --ocl-link-hover: #0f3358;
-  /* DESIGN.md §3.3 — zero, everywhere. Separation is hairlines and whitespace, never
-     a softened corner. Kept as a token so the decision is one line to revisit. */
-  --ocl-radius: 0;
-  --ocl-oxide: #8c3a2e;
+     glaring; raised is now white, which is genuinely above the page. The paper is
+     warm rather than grey: a cool page read as a dashboard, not a notebook. */
+  --ocl-paper: #f6f5f1;
+  --ocl-paper-raised: #fcfbf7;
+  --ocl-paper-sunken: #ebe9e3;
+  --ocl-ink: #2b2a28;
+  --ocl-ink-muted: #55534e;
+  --ocl-ink-faint: #6b6863;
+  --ocl-link: #4338a8;
+  --ocl-link-hover: #2c2380;
+  /* Revisited 2026-10-24: DESIGN.md §3.3 had zero, everywhere. Square corners read
+     as severe rather than quiet, so corners now soften, but only through these
+     tokens. Separation is still hairlines and whitespace first. */
+  --ocl-radius: 0.4rem;
+  /* Panels and cards take the larger radius; controls and code the smaller. */
+  --ocl-radius-lg: 0.65rem;
+  --ocl-radius-sm: 0.2rem;
+  /* Depth is a whisper: one soft shadow for raised surfaces, one for lift on
+     hover. Both are tokens so elevation can only enter the stylesheet here. */
+  --ocl-shadow: 0.2px 0.4px 0.8px -10px rgba(40, 20, 0, 0.02), 0.8px 1.6px 3.8px -10px rgba(40, 20, 0, 0.03),
+    2.5px 5px 12.5px -10px rgba(40, 20, 0, 0.045), 6px 12px 30px -10px rgba(40, 20, 0, 0.07),
+    0 0 0 1px rgba(40, 20, 0, 0.035);
+  --ocl-shadow-lift: 1px 1px 2.3px -3px rgba(40, 20, 0, 0.04), 4.5px 4px 10.4px -3px rgba(40, 20, 0, 0.06),
+    15px 14px 34.7px -3px rgba(40, 20, 0, 0.08), 30px 30px 70px -10px rgba(40, 20, 0, 0.14),
+    0 0 0 1px rgba(40, 20, 0, 0.04);
+  /* Motion. A spring with a little overshoot for things that move, a plain
+     ease for colour. Durations are short enough to feel like response, not
+     animation. */
+  --ocl-ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ocl-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ocl-fast: 160ms;
+  --ocl-slow: 280ms;
+  /* A highlight, for marks and the selection — never text. */
+  --ocl-gold: #f2c46d;
+  /* Jackets for the reading shelf: six muted cloths, each with ink that reads on it. */
+  --ocl-cloth-1: #dcd6f0;
+  --ocl-cloth-2: #d5e4d8;
+  --ocl-cloth-3: #f3d9cf;
+  --ocl-cloth-4: #f4e4bf;
+  --ocl-cloth-5: #e6d3e2;
+  --ocl-cloth-6: #d5dde6;
+  --ocl-cloth-ink: #2b2a28;
+  --ocl-oxide: #a4442f;
   /* The semantic pair. Oxide marks revision and withdrawal; held marks a claim that
      survived. They are states, never decoration — no washes, no section accents.
      (DESIGN.md §3.1 calls these --ocl-withdrawn and --ocl-held; oxide predates that
      name and is kept, because renaming it would touch every rule that uses it.) */
-  --ocl-held: #3f7a5a;
-  --ocl-held-ink: #35664c;
+  --ocl-held: #3a7550;
+  --ocl-held-ink: #336847;
   /* Slightly darker than on tinted paper — a hairline has to hold its own
      against pure white. */
-  --ocl-rule: #dde1e5;
-  --ocl-rule-strong: #b0bcc4;
+  --ocl-rule: #e3e0d9;
+  --ocl-rule-strong: #ccc8bf;
   /* The frame around the page, and the width of the gutter it sits in. */
-  --ocl-frame: #c9d2d8;
+  --ocl-frame: #dcd8cf;
   --ocl-frame-inset: 0.7rem;
 
   /* --- type ------------------------------------------------------------- */
-  --ocl-prose: "Spectral", "Iowan Old Style", "Palatino Linotype", Georgia,
+  /* Newsreader carries the prose and the display sizes (its optical-size axis
+     makes the large titles light and fine, the body sturdy); Lato carries the
+     apparatus, warmer than a technical sans. */
+  --ocl-prose: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia,
     serif;
-  --ocl-apparatus: "IBM Plex Sans", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Helvetica, Arial, sans-serif;
+  --ocl-apparatus: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
   --ocl-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   --ocl-measure: 39rem; /* ~66 characters at the body size */
@@ -54,12 +87,12 @@
 
   /* --- Infima overrides ------------------------------------------------- */
   --ifm-color-primary: var(--ocl-link);
-  --ifm-color-primary-dark: #194570;
-  --ifm-color-primary-darker: #174066;
-  --ifm-color-primary-darkest: #123553;
-  --ifm-color-primary-light: #1f5388;
-  --ifm-color-primary-lighter: #215892;
-  --ifm-color-primary-lightest: #266aae;
+  --ifm-color-primary-dark: #3c3297;
+  --ifm-color-primary-darker: #39308f;
+  --ifm-color-primary-darkest: #2f2776;
+  --ifm-color-primary-light: #5a50b2;
+  --ifm-color-primary-lighter: #6960b9;
+  --ifm-color-primary-lightest: #857ec6;
 
   --ifm-background-color: var(--ocl-paper);
   --ifm-background-surface-color: var(--ocl-paper-raised);
@@ -84,11 +117,11 @@
   --ifm-link-decoration: none;
 
   --ifm-code-font-size: 0.84em;
-  --ifm-code-background: rgba(22, 40, 60, 0.055);
+  --ifm-code-background: rgba(60, 50, 30, 0.07);
   --ifm-code-padding-vertical: 0.12em;
   --ifm-code-padding-horizontal: 0.3em;
   --ifm-code-border-radius: var(--ocl-radius);
-  --ifm-pre-background: #f9fbfb;
+  --ifm-pre-background: #f0eee8;
   --ifm-pre-line-height: 1.6;
 
   --ifm-toc-border-color: var(--ocl-rule);
@@ -117,41 +150,51 @@
   --ifm-menu-link-padding-vertical: 0.3rem;
   --ifm-menu-link-padding-horizontal: 0;
 
-  --docusaurus-highlighted-code-line-bg: rgba(28, 76, 124, 0.09);
+  --docusaurus-highlighted-code-line-bg: rgba(67, 56, 168, 0.09);
   --ifm-breadcrumb-item-background-active: transparent;
-  --ifm-global-radius: 3px;
+  --ifm-global-radius: var(--ocl-radius);
   --ifm-alert-border-radius: var(--ocl-radius);
   --ifm-alert-border-left-width: 2px;
   --ifm-alert-shadow: none;
 }
 
 [data-theme="dark"] {
-  --ocl-paper: #101a24;
-  --ocl-paper-raised: #16222e;
-  --ocl-paper-sunken: #0b1319;
-  --ocl-ink: #dce4ea;
-  --ocl-ink-muted: #93a5b3;
-  --ocl-ink-faint: #6d8092;
-  --ocl-link: #8fbbe4;
-  --ocl-link-hover: #bcd8f2;
-  --ocl-oxide: #d08a7b;
-  --ocl-held: #6faa89;
-  --ocl-held-ink: #82bb9c;
-  --ocl-rule: #253442;
-  --ocl-rule-strong: #38495a;
-  --ocl-frame: #2b3a48;
+  --ocl-paper: #1b1a18;
+  --ocl-paper-raised: #24231f;
+  --ocl-paper-sunken: #141311;
+  --ocl-ink: #eeece6;
+  --ocl-ink-muted: #c2beb5;
+  --ocl-ink-faint: #9a968e;
+  --ocl-link: #b1a9ff;
+  --ocl-link-hover: #d4cfff;
+  --ocl-oxide: #e3977f;
+  --ocl-held: #7dbb92;
+  --ocl-held-ink: #93c9a5;
+  --ocl-rule: #302e2a;
+  --ocl-rule-strong: #46433d;
+  --ocl-frame: #34312c;
 
   --ifm-color-primary: var(--ocl-link);
-  --ifm-color-primary-dark: #74a9dc;
-  --ifm-color-primary-darker: #679fd7;
-  --ifm-color-primary-darkest: #4483c2;
-  --ifm-color-primary-light: #aacdec;
-  --ifm-color-primary-lighter: #b7d5ef;
-  --ifm-color-primary-lightest: #d8e9f8;
+  --ifm-color-primary-dark: #9f98e6;
+  --ifm-color-primary-darker: #9690d9;
+  --ifm-color-primary-darkest: #7c76b2;
+  --ifm-color-primary-light: #bab3ff;
+  --ifm-color-primary-lighter: #c1baff;
+  --ifm-color-primary-lightest: #ccc7ff;
 
-  --ifm-code-background: rgba(220, 228, 234, 0.08);
-  --ifm-pre-background: #0c141c;
-  --docusaurus-highlighted-code-line-bg: rgba(143, 187, 228, 0.13);
+  --ifm-code-background: rgba(238, 236, 230, 0.07);
+  --ocl-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 18px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 245, 225, 0.04);
+  --ocl-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 18px 40px -10px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 245, 225, 0.06);
+  --ocl-gold: #d9a94e;
+  --ocl-cloth-1: #2f2b4f;
+  --ocl-cloth-2: #263a2e;
+  --ocl-cloth-3: #45302a;
+  --ocl-cloth-4: #423721;
+  --ocl-cloth-5: #3c2a39;
+  --ocl-cloth-6: #28323d;
+  --ocl-cloth-ink: #eeece6;
+  --ifm-pre-background: #161512;
+  --docusaurus-highlighted-code-line-bg: rgba(177, 169, 255, 0.13);
 }
 
 /* ==========================================================================
@@ -169,7 +212,7 @@ body {
 }
 
 ::selection {
-  background: rgba(28, 76, 124, 0.16);
+  background: color-mix(in srgb, var(--ocl-link) 20%, transparent);
 }
 
 :focus-visible {
@@ -1639,7 +1682,7 @@ a.ocl-desk__day:focus-visible {
 
 /* ==========================================================================
    Two voices — a piece written back and forth with Claude
-   The author is the page: Spectral, ink. Claude is set into it: Plex Sans,
+   The author is the page: Newsreader, ink. Claude is set into it: Lato,
    muted, with a rule in link blue. The face change is the whole signal, so a
    reader never has to check a label to know whose words these are.
    ========================================================================== */
@@ -4174,4 +4217,1917 @@ a[class*="tagWithCount"] span::after {
 
 @media (max-width: 720px) {
   .ocl-ag__entry { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+}
+
+/* ==========================================================================
+   Surfaces — corners and depth (2026-10-24)
+   One place that decides which things are panels, which are controls, and
+   which are rules. Panels round to the large radius and sit on the page with
+   the faintest shadow; controls round to the small one; anything drawn as a
+   rule down its left edge keeps that edge square, because a curved rule reads
+   as a bracket.
+   ========================================================================== */
+
+/* --- panels ------------------------------------------------------------ */
+.ocl-desk,
+.ocl-journal,
+.ocl-home__now,
+.ocl-home__project,
+.ocl-home__track,
+.ocl-home__agent,
+.ocl-ag__sample,
+.ocl-figure__frame,
+.ocl-embed__frame,
+.ocl-card__preview,
+.ocl-ship__entryShot img,
+.ocl-ship__shot img {
+  border-radius: var(--ocl-radius-lg);
+}
+
+.ocl-desk,
+.ocl-journal,
+.ocl-home__now,
+.ocl-home__project,
+.ocl-home__track,
+.ocl-home__agent,
+.ocl-card__preview,
+.ocl-ship__entryShot img,
+.ocl-ship__shot img {
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-ship__entryShot img {
+  transition: box-shadow var(--ocl-slow) var(--ocl-ease), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-ship__entryShot:hover img {
+  translate: 0 -3px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+/* The rule the desk and masthead drew with an inset shadow becomes a border,
+   so the shadow property is free for depth. */
+.ocl-desk,
+.ocl-journal {
+  border: 1px solid var(--ocl-rule);
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-home__now {
+  overflow: hidden;
+  border-top-width: 1px;
+  border-top-color: var(--ocl-rule);
+  /* the heavy top rule, redrawn inside the curve */
+  background-image: linear-gradient(var(--ocl-ink), var(--ocl-ink));
+  background-size: 100% 3px;
+  background-repeat: no-repeat;
+}
+
+/* Things you can click lift a little toward the pointer. */
+.ocl-home__project,
+.ocl-home__track,
+.ocl-home__agent,
+.ocl-card__preview {
+  transition: border-color var(--ocl-fast) var(--ocl-ease),
+    box-shadow var(--ocl-slow) var(--ocl-ease), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-home__project:hover,
+.ocl-home__track:hover,
+.ocl-home__agent:hover,
+a:hover > .ocl-card__preview,
+.ocl-card:hover .ocl-card__preview {
+  translate: 0 -3px;
+  border-color: var(--ocl-rule-strong);
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.theme-code-block,
+.markdown pre {
+  border-radius: var(--ocl-radius);
+}
+
+.markdown code {
+  border-radius: var(--ocl-radius-sm);
+}
+
+/* --- controls ---------------------------------------------------------- */
+.ocl-home__jump a,
+.ocl-ship__primary,
+.ocl-filter__chip,
+.ocl-labs__bulk button,
+.ocl-labs__search,
+.ocl-built__search input,
+.navbar__search-input,
+a[class*="tagWithCount"] {
+  border-radius: var(--ocl-radius);
+}
+
+.ocl-home__jump a,
+.ocl-filter__chip {
+  transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.ocl-home__jump a:hover {
+  border-color: var(--ocl-ink);
+  background: var(--ocl-paper-raised);
+  text-decoration: none;
+}
+
+.ocl-pill {
+  border-radius: 999px;
+}
+
+/* A segmented switch rounds only its outer corners. */
+.ocl-voices__switch button:first-child {
+  border-radius: var(--ocl-radius) 0 0 var(--ocl-radius);
+}
+
+.ocl-voices__switch button:last-child {
+  border-radius: 0 var(--ocl-radius) var(--ocl-radius) 0;
+}
+
+/* --- rules down the left edge stay square on that edge ------------------ */
+.ocl-voice,
+.ocl-gloss--open .ocl-gloss__note,
+.theme-admonition {
+  border-radius: 0 var(--ocl-radius) var(--ocl-radius) 0;
+}
+
+/* --- small marks ------------------------------------------------------- */
+.ocl-desk__day,
+.ocl-status::before,
+.ocl-voice__mark,
+.ocl-voices__swatch {
+  border-radius: var(--ocl-radius-sm);
+}
+
+.ocl-entry__node::after {
+  border-radius: var(--ocl-radius-sm);
+}
+
+/* The page frame follows the panels it holds. */
+body::after {
+  border-radius: var(--ocl-radius-lg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-home__project:hover,
+  .ocl-home__track:hover,
+  .ocl-home__agent:hover,
+  a:hover > .ocl-card__preview,
+  .ocl-card:hover .ocl-card__preview {
+    translate: none;
+  }
+}
+
+/* ==========================================================================
+   Garden — motion, links, and the small things (2026-10-24)
+   After maggieappleton.com: cream paper, a light display serif, layered warm
+   shadows, a spring on anything that moves. The accent is our own indigo.
+   ========================================================================== */
+
+::selection {
+  background: color-mix(in srgb, var(--ocl-gold) 45%, transparent);
+}
+
+/* Switching theme fades rather than flashes. */
+body,
+.navbar,
+.footer {
+  transition: background-color var(--ocl-slow) var(--ocl-ease), color var(--ocl-slow) var(--ocl-ease);
+}
+
+/* --- arrival: a page settles in rather than appearing -------------------
+   Fill mode is backwards, not both: a transform left on an ancestor after the
+   animation ends would capture every fixed and sticky child beneath it. */
+@keyframes ocl-rise {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.ocl-article__body,
+.ocl-home__hero,
+.ocl-home__now,
+.theme-doc-markdown,
+.ocl-labs__layout {
+  animation: ocl-rise 520ms var(--ocl-ease) backwards;
+}
+
+.ocl-home__now,
+.ocl-article__toc {
+  animation: ocl-rise 520ms var(--ocl-ease) 90ms backwards;
+}
+
+.ocl-timeline__month {
+  animation: ocl-rise 520ms var(--ocl-ease) backwards;
+}
+
+.ocl-timeline__month:nth-child(2) { animation-delay: 70ms; }
+.ocl-timeline__month:nth-child(3) { animation-delay: 140ms; }
+.ocl-timeline__month:nth-child(n + 4) { animation-delay: 200ms; }
+
+/* --- links in prose: the underline thickens into a wash ----------------- */
+.markdown p a:not(.card):not(.button),
+.markdown li a:not(.card):not(.button) {
+  text-decoration: none;
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--ocl-link) 14%, transparent),
+    color-mix(in srgb, var(--ocl-link) 14%, transparent)
+  ),
+    linear-gradient(color-mix(in srgb, var(--ocl-link) 45%, transparent), color-mix(in srgb, var(--ocl-link) 45%, transparent));
+  background-size: 100% 0%, 100% 1px;
+  background-position: 0 100%, 0 100%;
+  background-repeat: no-repeat;
+  border-radius: var(--ocl-radius-sm);
+  transition: background-size var(--ocl-slow) var(--ocl-ease), color var(--ocl-fast) var(--ocl-ease);
+}
+
+.markdown p a:not(.card):not(.button):hover,
+.markdown li a:not(.card):not(.button):hover {
+  background-size: 100% 100%, 100% 1px;
+  color: var(--ocl-link-hover);
+}
+
+/* --- display type: large and light, the way a book sets a title -------- */
+.ocl-frontmatter__title,
+.ocl-home__title,
+.markdown h1,
+.ocl-journal__title {
+  font-optical-sizing: auto;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.ocl-home__title {
+  font-weight: 400;
+  letter-spacing: -0.028em;
+}
+
+/* The heavy rule over "Now" takes the accent instead of solid ink. */
+.ocl-home__now {
+  background-image: linear-gradient(var(--ocl-link), var(--ocl-link));
+}
+
+.markdown h2 {
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+.ocl-frontmatter__standfirst {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 1.22rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+/* Small labels in Lato read best a touch heavier and spaced. */
+.ocl-timeline__label,
+.ocl-entry__kicker,
+.ocl-voice__who,
+.ocl-gloss__who,
+.ocl-journal__mark a,
+.ocl-home__eyebrow,
+.ocl-frontmatter__kicker {
+  font-weight: 700;
+}
+
+/* --- the kicker above a post's title ----------------------------------- */
+.ocl-frontmatter__kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-frontmatter__kicker a {
+  color: var(--ocl-link);
+  text-decoration: none;
+}
+
+.ocl-frontmatter__kicker a:hover {
+  color: var(--ocl-link-hover);
+}
+
+/* --- growth stages ------------------------------------------------------ */
+.ocl-stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--ocl-apparatus);
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-stage__icon {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), scale var(--ocl-slow) var(--ocl-ease-spring);
+  transform-origin: 50% 90%;
+}
+
+.ocl-stage--draft .ocl-stage__icon { color: color-mix(in srgb, var(--ocl-gold) 70%, var(--ocl-oxide)); }
+.ocl-stage--provisional .ocl-stage__icon { color: var(--ocl-link); }
+.ocl-stage--standing .ocl-stage__icon { color: var(--ocl-held); }
+.ocl-stage--superseded .ocl-stage__icon { color: var(--ocl-ink-faint); }
+
+/* the plant sways when its entry is pointed at */
+.ocl-entry:hover .ocl-stage__icon,
+.ocl-frontmatter__kicker:hover .ocl-stage__icon {
+  rotate: -8deg;
+  scale: 1.12;
+}
+
+.ocl-frontmatter__kicker .ocl-stage {
+  color: var(--ocl-ink-muted);
+}
+
+/* --- entries in the timeline lift their title a little ------------------ */
+.ocl-entry__title a {
+  display: inline-block;
+  transition: color var(--ocl-fast) var(--ocl-ease), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-entry:hover .ocl-entry__title a {
+  translate: 3px 0;
+}
+
+.ocl-entry__node::after {
+  transition: background-color var(--ocl-fast) var(--ocl-ease), scale var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+/* --- assumed audience --------------------------------------------------- */
+.ocl-audience {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 0.25rem 1.25rem;
+  max-width: var(--ocl-measure);
+  margin: 1.6rem 0 0;
+  padding: 1rem 1.2rem;
+  background: var(--ocl-paper-raised);
+  border-radius: var(--ocl-radius-lg);
+  box-shadow: var(--ocl-shadow);
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-audience p {
+  margin: 0;
+}
+
+.ocl-audience__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.9;
+  color: var(--ocl-link);
+}
+
+.ocl-audience__text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ocl-ink-muted);
+}
+
+@media (max-width: 640px) {
+  .ocl-audience {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- buttons and chips press down a touch ------------------------------ */
+.ocl-filter__chip,
+.ocl-voices__switch button,
+.ocl-home__jump a,
+.ocl-ship__primary {
+  transition: border-color var(--ocl-fast) var(--ocl-ease), background-color var(--ocl-fast) var(--ocl-ease),
+    color var(--ocl-fast) var(--ocl-ease), scale var(--ocl-fast) var(--ocl-ease-spring);
+}
+
+.ocl-filter__chip:active,
+.ocl-voices__switch button:active,
+.ocl-home__jump a:active,
+.ocl-ship__primary:active {
+  scale: 0.96;
+}
+
+.ocl-filter__chip[aria-pressed="true"] {
+  border-color: var(--ocl-link);
+  background: color-mix(in srgb, var(--ocl-link) 10%, var(--ocl-paper-raised));
+  color: var(--ocl-link);
+}
+
+/* The calendar's journal days carry the highlight. */
+.ocl-desk__day--journal {
+  box-shadow: inset 0 0 0 1.5px var(--ocl-gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-article__body,
+  .ocl-home__hero,
+  .ocl-home__now,
+  .theme-doc-markdown,
+  .ocl-labs__layout,
+  .ocl-article__toc,
+  .ocl-timeline__month {
+    animation: none;
+  }
+
+  .ocl-entry:hover .ocl-entry__title a,
+  .ocl-entry:hover .ocl-stage__icon {
+    translate: none;
+    rotate: none;
+    scale: none;
+  }
+}
+
+/* ==========================================================================
+   The garden — /writing as a field of cards (2026-10-24)
+   Illustrated pieces are cards, picture first; the rest are compact entries
+   led by their stage of growth. Columns, not rows, so tall and short pieces
+   pack together the way a pinboard does.
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ocl-index.ocl-garden {
+  max-width: 76rem;
+}
+
+.ocl-garden__head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 1rem;
+  align-items: baseline;
+  margin: 0.5rem 0 2.4rem;
+}
+
+.ocl-garden__count {
+  margin: 0;
+  font-family: var(--ocl-prose);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--ocl-link);
+  font-variant-numeric: lining-nums;
+}
+
+.ocl-garden__heading {
+  margin: 0;
+  font-family: var(--ocl-prose);
+  font-size: clamp(3rem, 2rem + 4vw, 5.2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-optical-sizing: auto;
+}
+
+.ocl-garden__lede {
+  grid-column: 2;
+  margin: 1rem 0 0;
+  max-width: 44rem;
+  font-family: var(--ocl-prose);
+  font-size: clamp(1.15rem, 1rem + 0.7vw, 1.55rem);
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-garden__lede a {
+  color: var(--ocl-link);
+}
+
+/* --- filters ----------------------------------------------------------- */
+.ocl-garden__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  margin: 0 0 2rem;
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-garden__topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.4rem;
+}
+
+.ocl-garden__topicsLabel {
+  margin-right: 0.4rem;
+  padding-right: 0.8rem;
+  border-right: 2px solid var(--ocl-link);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-garden__topic {
+  padding: 0.3rem 0.55rem;
+  border: 0;
+  border-radius: var(--ocl-radius);
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ocl-ink);
+  cursor: pointer;
+  transition: background-color var(--ocl-fast) var(--ocl-ease), color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-garden__topic:hover {
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-garden__topic[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--ocl-link) 12%, transparent);
+  color: var(--ocl-link);
+}
+
+.ocl-garden__selects {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ocl-garden__select select {
+  appearance: none;
+  min-width: 9.5rem;
+  padding: 0.42rem 2rem 0.42rem 0.75rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: var(--ocl-radius);
+  background-color: var(--ocl-paper-raised);
+  background-image: linear-gradient(45deg, transparent 50%, var(--ocl-ink-muted) 50%),
+    linear-gradient(135deg, var(--ocl-ink-muted) 50%, transparent 50%);
+  background-position: calc(100% - 1rem) 55%, calc(100% - 0.7rem) 55%;
+  background-size: 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+  font: inherit;
+  font-size: 0.86rem;
+  color: var(--ocl-ink);
+  cursor: pointer;
+  transition: border-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-garden__select select:hover {
+  border-color: var(--ocl-ink-muted);
+}
+
+.ocl-garden__topic:focus-visible,
+.ocl-garden__select select:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+/* --- the grid ---------------------------------------------------------- */
+.ocl-garden__grid {
+  columns: 3 17rem;
+  column-gap: 1.5rem;
+}
+
+.ocl-garden__card,
+.ocl-garden__item {
+  break-inside: avoid;
+  margin: 0 0 1.4rem;
+  animation: ocl-rise 520ms var(--ocl-ease) backwards;
+}
+
+.ocl-garden__grid > :nth-child(2) .ocl-garden__card,
+.ocl-garden__grid > :nth-child(2) .ocl-garden__item { animation-delay: 60ms; }
+
+.ocl-garden__link {
+  display: block;
+  color: inherit;
+  text-decoration: none !important;
+}
+
+.ocl-garden__link:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 4px;
+  border-radius: var(--ocl-radius-lg);
+}
+
+/* large: picture first */
+.ocl-garden__card .ocl-garden__link {
+  overflow: hidden;
+  background: var(--ocl-paper-raised);
+  border-radius: var(--ocl-radius-lg);
+  box-shadow: var(--ocl-shadow);
+  transition: box-shadow var(--ocl-slow) var(--ocl-ease), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-garden__card .ocl-garden__link:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-garden__picture {
+  display: block;
+  overflow: hidden;
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-garden__picture img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: scale 600ms var(--ocl-ease);
+}
+
+.ocl-garden__card .ocl-garden__link:hover .ocl-garden__picture img {
+  scale: 1.035;
+}
+
+.ocl-garden__card .ocl-garden__body {
+  display: block;
+  padding: 1rem 1.2rem 1.1rem;
+}
+
+/* compact: the stage leads */
+.ocl-garden__item .ocl-garden__link {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0 0.7rem;
+  padding: 0.9rem 0.9rem 0.9rem 0.7rem;
+  border-radius: var(--ocl-radius-lg);
+  transition: background-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-garden__item .ocl-garden__link:hover {
+  background: var(--ocl-paper-raised);
+}
+
+.ocl-garden__icon {
+  display: block;
+  align-self: start;
+  padding-top: 0.2rem;
+  color: var(--ocl-link);
+}
+
+.ocl-garden__icon .ocl-stage__icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.ocl-garden__link:hover .ocl-stage__icon {
+  rotate: -8deg;
+  scale: 1.12;
+}
+
+.ocl-garden__title {
+  display: block;
+  font-family: var(--ocl-prose);
+  font-size: 1.32rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ocl-ink);
+  transition: color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-garden__link:hover .ocl-garden__title {
+  color: var(--ocl-link);
+}
+
+.ocl-garden__summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 0.45rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-garden__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.45rem;
+  margin: 0.6rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-garden__meta .ocl-stage__icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ocl-garden__empty {
+  padding: 3rem 0;
+  text-align: center;
+  font-family: var(--ocl-prose);
+  font-style: italic;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-garden__desk {
+  max-width: 52rem;
+  margin-top: 3.5rem;
+}
+
+.ocl-garden__deskTitle {
+  margin: 0 0 1rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+@media (max-width: 640px) {
+  .ocl-garden__head {
+    grid-template-columns: 1fr;
+  }
+
+  .ocl-garden__lede {
+    grid-column: 1;
+  }
+
+  .ocl-garden__selects {
+    width: 100%;
+  }
+
+  .ocl-garden__select,
+  .ocl-garden__select select {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Paper-coloured drawings sit a little dimmer on a dark page. */
+[data-theme="dark"] .ocl-garden__picture img,
+[data-theme="dark"] .ocl-cover img {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+/* --- the illustration on a post ---------------------------------------- */
+.ocl-cover {
+  max-width: var(--ocl-measure);
+  margin: 1.8rem 0 2.2rem;
+  overflow: hidden;
+  border-radius: var(--ocl-radius-lg);
+  box-shadow: var(--ocl-shadow);
+  animation: ocl-rise 620ms var(--ocl-ease) 120ms backwards;
+}
+
+.ocl-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-garden__card,
+  .ocl-garden__item,
+  .ocl-cover {
+    animation: none;
+  }
+
+  .ocl-garden__card .ocl-garden__link:hover,
+  .ocl-garden__card .ocl-garden__link:hover .ocl-garden__picture img {
+    translate: none;
+    scale: none;
+  }
+}
+
+/* ==========================================================================
+   Every tab — a drawing at the head, cards with pictures (2026-10-24)
+   The same garden as /writing, carried to the other pages: a large light
+   title, the tab's drawing beside it, and the project cards led by theirs.
+   ========================================================================== */
+
+/* --- the drawing ------------------------------------------------------- */
+.ocl-art {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+[data-theme="dark"] .ocl-art img {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+.ocl-art--tabs {
+  box-shadow: var(--ocl-shadow);
+  rotate: 1.2deg;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), translate var(--ocl-slow) var(--ocl-ease-spring),
+    box-shadow var(--ocl-slow) var(--ocl-ease);
+  animation: ocl-rise 620ms var(--ocl-ease) 120ms backwards;
+}
+
+.ocl-art--tabs:hover {
+  rotate: 0deg;
+  translate: 0 -3px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+/* --- tab headers built in code ----------------------------------------- */
+.ocl-page__title {
+  font-size: clamp(2.6rem, 1.8rem + 3.2vw, 4.4rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-optical-sizing: auto;
+}
+
+.ocl-page__lede {
+  font-size: 1.12rem;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.ocl-page__head--art {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 25rem);
+  grid-auto-flow: dense;
+  column-gap: 3rem;
+  align-items: start;
+}
+
+.ocl-page__head--art > :not(.ocl-art) {
+  grid-column: 1;
+}
+
+.ocl-page__head--art > .ocl-art {
+  grid-column: 2;
+  grid-row: 1 / span 6;
+  align-self: center;
+}
+
+@media (max-width: 860px) {
+  .ocl-page__head--art {
+    grid-template-columns: 1fr;
+  }
+
+  .ocl-page__head--art > .ocl-art {
+    grid-column: 1;
+    grid-row: auto;
+    order: -1;
+    max-width: 22rem;
+    margin-bottom: 1.5rem;
+    rotate: 0deg;
+  }
+}
+
+/* --- headers written in markdown (Notebook, About) --------------------- */
+:not(.ocl-page__head) > .ocl-art--tabs {
+  max-width: 20rem;
+  margin: 0 0 1.5rem;
+}
+
+@media (min-width: 997px) {
+  :not(.ocl-page__head) > .ocl-art--tabs {
+    float: right;
+    width: min(40%, 22rem);
+    max-width: none;
+    margin: 0.4rem 0 1.5rem 2.5rem;
+  }
+}
+
+.theme-doc-markdown > h1,
+.markdown > h1 {
+  font-size: clamp(2.6rem, 1.8rem + 3.2vw, 4.2rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.markdown h2 {
+  clear: right;
+}
+
+/* --- project cards, picture first -------------------------------------- */
+.ocl-project.ocl-home__project {
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+  border: 0;
+  text-decoration: none !important;
+}
+
+.ocl-project .ocl-art {
+  border-radius: 0;
+}
+
+.ocl-project .ocl-art img {
+  transition: scale 600ms var(--ocl-ease);
+}
+
+.ocl-project:hover .ocl-art img {
+  scale: 1.04;
+}
+
+.ocl-project__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.15rem 1.05rem;
+}
+
+.ocl-project .ocl-home__projectName {
+  font-family: var(--ocl-prose);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--ocl-ink);
+}
+
+.ocl-project:hover .ocl-home__projectName {
+  color: var(--ocl-link);
+}
+
+.ocl-project__phase {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-project__phase .ocl-stage__icon {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.ocl-projects {
+  margin: 1.25rem 0 2rem;
+}
+
+.markdown .ocl-projects a {
+  background: none !important;
+}
+
+/* --- home: writing with its pictures ----------------------------------- */
+.ocl-home__featureCover {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+  border-radius: var(--ocl-radius-lg);
+  box-shadow: var(--ocl-shadow);
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-home__featureCover img,
+.ocl-home__earlierCover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+a:hover > .ocl-home__featureCover {
+  translate: 0 -3px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-home__earlier li.ocl-home__earlier--cover {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  column-gap: 1rem;
+}
+
+.ocl-home__earlier--cover > :not(.ocl-home__earlierCover) {
+  grid-column: 2;
+}
+
+.ocl-home__earlierCover {
+  grid-row: 1 / span 3;
+  overflow: hidden;
+  align-self: start;
+  border-radius: var(--ocl-radius);
+  box-shadow: var(--ocl-shadow);
+}
+
+[data-theme="dark"] .ocl-home__featureCover img,
+[data-theme="dark"] .ocl-home__earlierCover img {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+/* --- reading: the shelf ------------------------------------------------ */
+.ocl-shelf__switch {
+  margin: 0 0 1.5rem;
+}
+
+.ocl-shelf__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(10.5rem, 42%), 1fr));
+  gap: 1.5rem 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.ocl-shelf__cover {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 3 / 4.1;
+  padding: 0.85rem 0.9rem 0.8rem;
+  overflow: hidden;
+  border-radius: var(--ocl-radius-sm) var(--ocl-radius) var(--ocl-radius) var(--ocl-radius-sm);
+  /* a spine down the left edge */
+  box-shadow: inset 6px 0 0 rgba(0, 0, 0, 0.07), inset 7px 0 0 rgba(255, 255, 255, 0.25);
+  color: var(--ocl-cloth-ink) !important;
+  text-decoration: none !important;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), rotate var(--ocl-slow) var(--ocl-ease-spring);
+  animation: ocl-rise 520ms var(--ocl-ease) backwards;
+}
+
+.ocl-shelf__cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--ocl-shadow);
+  pointer-events: none;
+  transition: box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-shelf__cover:hover {
+  translate: 0 -5px;
+  rotate: -1.2deg;
+}
+
+.ocl-shelf__cover:hover::after {
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-shelf__cover:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 3px;
+}
+
+.ocl-shelf__cover--1 { background: var(--ocl-cloth-1); }
+.ocl-shelf__cover--2 { background: var(--ocl-cloth-2); }
+.ocl-shelf__cover--3 { background: var(--ocl-cloth-3); }
+.ocl-shelf__cover--4 { background: var(--ocl-cloth-4); }
+.ocl-shelf__cover--5 { background: var(--ocl-cloth-5); }
+.ocl-shelf__cover--6 { background: var(--ocl-cloth-6); }
+
+.ocl-shelf__band {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0 0.45rem 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ocl-cloth-ink) 35%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.ocl-shelf__band span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ocl-shelf__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+  margin: 0.7rem 0 0;
+  padding-left: 0.35rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.ocl-shelf__cover--rel-high .ocl-shelf__title {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+  .ocl-shelf__grid {
+    gap: 1rem 0.8rem;
+  }
+
+  .ocl-shelf__title,
+  .ocl-shelf__cover--rel-high .ocl-shelf__title {
+    font-size: 0.92rem;
+  }
+}
+
+.ocl-shelf__authors {
+  padding-left: 0.35rem;
+  font-family: var(--ocl-prose);
+  font-size: 0.8rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.ocl-shelf__status {
+  align-self: flex-start;
+  margin: 0.5rem 0 0 0.35rem;
+  padding: 0.08rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-cloth-ink) 10%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ocl-shelf__status--read {
+  background: color-mix(in srgb, var(--ocl-held) 22%, transparent);
+}
+
+/* A secondhand entry: the corner folded down. */
+.ocl-shelf__fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: linear-gradient(225deg, var(--ocl-paper) 50%, color-mix(in srgb, var(--ocl-oxide) 55%, var(--ocl-paper)) 50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-art--tabs,
+  .ocl-shelf__cover {
+    animation: none;
+    rotate: none;
+  }
+
+  .ocl-art--tabs:hover,
+  .ocl-shelf__cover:hover {
+    translate: none;
+    rotate: none;
+  }
+}
+
+/* ==========================================================================
+   Diagrams — flows, the boundary, tracks and the field (2026-10-24)
+   Drawn steps joined by a line a pulse travels along; the agentic boundary
+   as two sides and what crosses between them; the labs checklist as rings,
+   squares and stamps.
+   ========================================================================== */
+
+/* --- flow -------------------------------------------------------------- */
+.ocl-flow {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.ocl-flow__steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--steps), minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* the line through the badges, with a pulse running along it */
+.ocl-flow__steps::before,
+.ocl-flow__steps::after {
+  content: "";
+  position: absolute;
+  top: 3.25rem;
+  left: calc(50% / var(--steps));
+  right: calc(50% / var(--steps));
+  height: 2px;
+}
+
+.ocl-flow__steps::before {
+  background-image: linear-gradient(90deg, var(--ocl-rule-strong) 50%, transparent 50%);
+  background-size: 10px 2px;
+}
+
+.ocl-flow__steps::after {
+  background: linear-gradient(90deg, transparent, var(--ocl-link), transparent);
+  background-size: 22% 100%;
+  background-repeat: no-repeat;
+  animation: ocl-pulse 3.6s var(--ocl-ease) infinite;
+}
+
+@keyframes ocl-pulse {
+  from { background-position: -30% 0; }
+  to { background-position: 130% 0; }
+}
+
+.ocl-flow__step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: ocl-rise 520ms var(--ocl-ease) backwards;
+  animation-delay: calc(var(--i) * 80ms);
+}
+
+.ocl-flow__badge {
+  position: relative;
+  display: block;
+  width: 6.5rem;
+  height: 6.5rem;
+  padding: 0.4rem;
+  border-radius: 999px;
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-flow__step:hover .ocl-flow__badge {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-flow__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-flow__step:hover .ocl-flow__art {
+  rotate: -6deg;
+}
+
+.ocl-flow__n {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  background: var(--ocl-link);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ocl-paper);
+}
+
+.ocl-flow__title {
+  margin-top: 0.8rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.12rem;
+  font-weight: 500;
+  color: var(--ocl-ink);
+}
+
+.ocl-flow__text {
+  margin-top: 0.25rem;
+  max-width: 13rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-flow__wake {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-gold) 32%, var(--ocl-paper-raised));
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--ocl-ink);
+}
+
+.ocl-flow__wake > span:first-child {
+  color: var(--ocl-oxide);
+  font-weight: 700;
+}
+
+.ocl-flow__again {
+  margin-top: 1rem;
+  text-align: center;
+  font-family: var(--ocl-prose);
+  font-style: italic;
+  color: var(--ocl-ink-faint);
+}
+
+@media (max-width: 860px) {
+  .ocl-flow__steps {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ocl-flow__steps::before,
+  .ocl-flow__steps::after {
+    top: 2.5rem;
+    bottom: 2.5rem;
+    left: 2.5rem;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .ocl-flow__steps::before {
+    background-image: linear-gradient(180deg, var(--ocl-rule-strong) 50%, transparent 50%);
+    background-size: 2px 10px;
+  }
+
+  .ocl-flow__steps::after {
+    background: linear-gradient(180deg, transparent, var(--ocl-link), transparent);
+    background-size: 100% 22%;
+    background-repeat: no-repeat;
+    animation-name: ocl-pulse-down;
+  }
+
+  .ocl-flow__step {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    column-gap: 1rem;
+    align-items: start;
+    text-align: left;
+  }
+
+  .ocl-flow__badge {
+    grid-row: 1 / span 4;
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .ocl-flow__step > :not(.ocl-flow__badge) {
+    grid-column: 2;
+  }
+
+  .ocl-flow__title {
+    margin-top: 0.6rem;
+  }
+
+  .ocl-flow__wake {
+    justify-self: start;
+  }
+}
+
+@keyframes ocl-pulse-down {
+  from { background-position: 0 -30%; }
+  to { background-position: 0 130%; }
+}
+
+/* --- the boundary ------------------------------------------------------ */
+.ocl-bound {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3rem minmax(0, 1fr);
+  margin: 0 0 3rem;
+  padding: 1.75rem;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-bound__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.ocl-bound__who {
+  width: 5.5rem;
+  height: 5.5rem;
+  margin-bottom: 0.4rem;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-bound__side:hover .ocl-bound__who {
+  rotate: -8deg;
+}
+
+.ocl-bound__title {
+  margin: 0 0 0.8rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.ocl-bound__side--loop .ocl-bound__title {
+  color: var(--ocl-link);
+}
+
+.ocl-bound__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.9rem;
+}
+
+.ocl-bound__list li {
+  position: relative;
+  padding: 0.35rem 0 0.35rem 1.5rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  color: var(--ocl-ink);
+}
+
+.ocl-bound__list li::before {
+  position: absolute;
+  left: 0.1rem;
+  font-weight: 700;
+}
+
+.ocl-bound__side--loop li::before {
+  content: "✓";
+  color: var(--ocl-held);
+}
+
+.ocl-bound__side--person li::before {
+  content: "✎";
+  color: var(--ocl-link);
+}
+
+.ocl-bound__line {
+  position: relative;
+  justify-self: center;
+  width: 2px;
+  background-image: linear-gradient(180deg, var(--ocl-rule-strong) 50%, transparent 50%);
+  background-size: 2px 10px;
+}
+
+.ocl-bound__pulse {
+  position: absolute;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--ocl-gold);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ocl-gold) 30%, transparent) inset;
+  animation: ocl-cross 4.2s var(--ocl-ease) infinite;
+}
+
+@keyframes ocl-cross {
+  0% { top: 0; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: calc(100% - 10px); opacity: 0; }
+}
+
+.ocl-bound__wakes {
+  grid-column: 1 / -1;
+  margin-top: 1.6rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-bound__wakesTitle {
+  margin: 0 0 0.8rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-bound__wakes ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: wake;
+}
+
+.ocl-bound__wakes li {
+  counter-increment: wake;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--ocl-radius);
+  background: color-mix(in srgb, var(--ocl-gold) 22%, var(--ocl-paper));
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-bound__wakes li:hover {
+  translate: 0 -3px;
+}
+
+.ocl-bound__trigger {
+  font-family: var(--ocl-prose);
+  font-size: 1.02rem;
+  color: var(--ocl-ink);
+}
+
+.ocl-bound__trigger::before {
+  content: counter(wake) "  ";
+  font-family: var(--ocl-apparatus);
+  font-weight: 700;
+  color: var(--ocl-oxide);
+}
+
+.ocl-bound__why {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-bound__more {
+  margin: 1rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  color: var(--ocl-ink-muted);
+}
+
+@media (max-width: 760px) {
+  .ocl-bound {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+
+  .ocl-bound__line {
+    width: auto;
+    height: 2px;
+    margin: 1.2rem 0;
+    background-image: linear-gradient(90deg, var(--ocl-rule-strong) 50%, transparent 50%);
+    background-size: 10px 2px;
+  }
+
+  .ocl-bound__pulse {
+    display: none;
+  }
+}
+
+/* --- agentic tools: drawing with the terminal laid over it ------------- */
+.ocl-ag__toolsTitle {
+  margin-top: 1rem;
+}
+
+.ocl-ag__shot {
+  position: relative;
+  padding-bottom: 2.5rem;
+}
+
+.ocl-ag__shotArt {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--ocl-radius-lg);
+  box-shadow: var(--ocl-shadow);
+}
+
+[data-theme="dark"] .ocl-ag__shotArt {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+.ocl-ag__window {
+  position: relative;
+  margin: -3.5rem 0 0 1.25rem;
+  overflow: hidden;
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow-lift);
+  rotate: -1deg;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-ag__entry:hover .ocl-ag__window {
+  rotate: 0deg;
+  translate: 0 -4px;
+}
+
+.ocl-ag__windowBar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-ag__windowBar span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--ocl-rule-strong);
+}
+
+.ocl-ag__windowBar span:nth-child(1) { background: color-mix(in srgb, var(--ocl-oxide) 70%, var(--ocl-paper)); }
+.ocl-ag__windowBar span:nth-child(2) { background: var(--ocl-gold); }
+.ocl-ag__windowBar span:nth-child(3) { background: color-mix(in srgb, var(--ocl-held) 70%, var(--ocl-paper)); }
+
+.ocl-ag__windowBar code {
+  margin-left: 0.5rem;
+  padding: 0;
+  background: none;
+  font-size: 0.7rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-ag__window .ocl-ag__sample {
+  max-height: 13rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--ocl-paper-raised);
+  font-size: 0.7rem;
+}
+
+.ocl-ag__entry {
+  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+  gap: 2.25rem;
+}
+
+/* --- labs: tracks ------------------------------------------------------ */
+.ocl-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.1rem;
+  margin-top: 1rem;
+}
+
+.ocl-track {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  color: var(--ocl-ink) !important;
+  text-decoration: none !important;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-track:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-track__art {
+  grid-column: 1 / -1;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: scale 600ms var(--ocl-ease);
+}
+
+.ocl-track:hover .ocl-track__art {
+  scale: 1.04;
+}
+
+[data-theme="dark"] .ocl-track__art {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+.ocl-track__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.9rem 0 1rem 1.1rem;
+}
+
+.ocl-track__code {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-link);
+}
+
+.ocl-track__name {
+  font-family: var(--ocl-prose);
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.ocl-track__count {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-ring {
+  align-self: center;
+  margin: 0 1rem 0 0.5rem;
+}
+
+.ocl-ring__track {
+  fill: none;
+  stroke: var(--ocl-paper-sunken);
+  stroke-width: 6;
+}
+
+.ocl-ring__done {
+  fill: none;
+  stroke: var(--ocl-held);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 900ms var(--ocl-ease);
+}
+
+.ocl-ring__label {
+  font-family: var(--ocl-apparatus);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--ocl-ink-muted);
+}
+
+/* --- labs: the field --------------------------------------------------- */
+.ocl-field__tracks {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 1.2rem 1.3rem;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-field__track {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.6rem;
+}
+
+.ocl-field__label {
+  margin: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 0.9rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-field__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.ocl-field__cell {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: var(--ocl-radius-sm);
+  background: var(--ocl-paper-sunken);
+  transition: scale var(--ocl-fast) var(--ocl-ease-spring), background-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-field__cell:hover {
+  scale: 1.5;
+  background: color-mix(in srgb, var(--ocl-link) 40%, var(--ocl-paper-sunken));
+}
+
+.ocl-field__cell.is-done { background: var(--ocl-held); }
+.ocl-field__track--b .ocl-field__cell.is-done { background: var(--ocl-link); }
+.ocl-field__track--c .ocl-field__cell.is-done { background: var(--ocl-gold); }
+.ocl-field__track--d .ocl-field__cell.is-done { background: var(--ocl-oxide); }
+
+.ocl-field__cell:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 1px;
+}
+
+/* --- labs: stamps for what is finished --------------------------------- */
+.ocl-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.ocl-stamp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 12.5rem;
+  padding: 1rem 1.1rem 1.1rem;
+  /* perforated edge: a ring of paper-coloured holes, with the face laid over
+     the middle so the holes only show round the rim */
+  background: radial-gradient(circle, var(--ocl-paper) 2.6px, var(--ocl-paper-raised) 3px) -5px -5px / 10px 10px;
+  color: var(--ocl-ink) !important;
+  text-decoration: none !important;
+  rotate: -1.5deg;
+  filter: drop-shadow(0 4px 10px rgba(40, 20, 0, 0.08));
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-stamp:nth-child(even) {
+  rotate: 1.5deg;
+}
+
+.ocl-stamp:hover {
+  rotate: 0deg;
+  translate: 0 -4px;
+}
+
+/* the face of the stamp */
+.ocl-stamp::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  z-index: 0;
+  background: var(--ocl-paper-raised);
+}
+
+/* the printed border inside it */
+.ocl-stamp::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  z-index: 1;
+  border: 1.5px dashed color-mix(in srgb, var(--ocl-held) 60%, transparent);
+  border-radius: var(--ocl-radius-sm);
+  pointer-events: none;
+}
+
+.ocl-stamp > * {
+  position: relative;
+  z-index: 2;
+}
+
+.ocl-stamp__code {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ocl-held-ink);
+}
+
+.ocl-stamp__title {
+  font-family: var(--ocl-prose);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+
+.ocl-stamp > .ocl-stamp__seal {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-held) 20%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ocl-held-ink);
+}
+
+.ocl-stamp .ocl-stamp__title {
+  padding-right: 1.6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-flow__steps::after,
+  .ocl-bound__pulse {
+    animation: none;
+    opacity: 0;
+  }
+
+  .ocl-flow__step {
+    animation: none;
+  }
+
+  .ocl-stamp,
+  .ocl-stamp:nth-child(even) {
+    rotate: none;
+  }
 }

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Jobs on a conveyor at night, passing through gates: one gate closed, one open, a moon over it">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="63"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="64"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M70 280 H530" stroke-width="3"/>
+    <circle cx="110" cy="292" r="10"/><circle cx="250" cy="292" r="10"/><circle cx="390" cy="292" r="10"/><circle cx="500" cy="292" r="10"/>
+    <rect x="90" y="236" width="50" height="40" rx="5" fill="#4338a8" fill-opacity="0.3"/>
+    <rect x="280" y="236" width="50" height="40" rx="5" fill="#4338a8" fill-opacity="0.3"/>
+    <rect x="430" y="236" width="50" height="40" rx="5" fill="#7fa98a" fill-opacity="0.5"/>
+    <path d="M200 180 V280 M240 180 V280" stroke-width="3"/>
+    <path d="M190 206 H250" stroke="#a4442f" stroke-width="6"/>
+    <path d="M370 180 V280 M410 180 V280" stroke-width="3"/>
+    <path d="M360 206 H420" stroke="#7fa98a" stroke-width="6"/>
+    <path d="M470 90 a36 36 0 1 0 30 58 a30 30 0 1 1 -30 -58 Z" fill="#f2c46d" fill-opacity="0.85"/>
+    <circle cx="120" cy="96" r="2" fill="#2b2a28"/><circle cx="200" cy="70" r="2" fill="#2b2a28"/><circle cx="330" cy="110" r="2" fill="#2b2a28"/>
+  </g>
+</svg>

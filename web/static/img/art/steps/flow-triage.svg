@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Triage sorts every failure by cause">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="47"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#7fa98a" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M40 120 H76 V150 H40 Z M82 120 H118 V150 H82 Z M124 120 H160 V150 H124 Z" fill="#fffdf8"/>
+    <circle cx="58" cy="110" r="7" fill="#7fa98a"/><circle cx="100" cy="110" r="7" fill="#7fa98a"/>
+    <path d="M136 106 q6 -10 14 -4 q5 6 -4 10 q-4 2 -4 8" stroke="#a4442f" stroke-width="2.6"/>
+    <path d="M100 50 V84 M100 84 L60 100 M100 84 L140 100" stroke-width="1.8" stroke-dasharray="3 6"/>
+  </g>
+</svg>

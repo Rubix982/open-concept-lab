@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="A seedling whose stem splits into two directions: one branch grows into a grid of weights, the other into a magnifying glass. Small thoughts rise around it like seeds.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="4"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="5"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <!-- a soft wash behind -->
+  <ellipse cx="400" cy="300" rx="300" ry="210" fill="#f2c46d" opacity="0.22"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- pot -->
+    <path d="M340 440 h120 l-14 80 h-92 z" fill="#e8836b" fill-opacity="0.55" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M332 440 h136" stroke="#2b2a28" stroke-width="3"/>
+    <!-- stem, splitting -->
+    <path d="M400 440 C 400 380, 400 350, 400 320" stroke="#2b2a28" stroke-width="3"/>
+    <path d="M400 330 C 370 280, 300 250, 250 210" stroke="#2b2a28" stroke-width="2.8"/>
+    <path d="M400 330 C 430 280, 500 250, 548 214" stroke="#2b2a28" stroke-width="2.8"/>
+    <!-- leaves -->
+    <path d="M400 395 c-30 -6 -52 -26 -56 -48 c26 0 50 18 56 48 z" fill="#7fa98a" fill-opacity="0.6" stroke="#2b2a28" stroke-width="2.2"/>
+    <path d="M402 372 c26 -10 44 -30 44 -52 c-24 4 -42 24 -44 52 z" fill="#7fa98a" fill-opacity="0.6" stroke="#2b2a28" stroke-width="2.2"/>
+    <!-- left: knowledge in the weights -->
+    <g stroke="#4338a8" stroke-width="2.4">
+      <rect x="150" y="110" width="120" height="100" rx="8" fill="#4338a8" fill-opacity="0.1"/>
+      <path d="M190 110 v100 M230 110 v100 M150 143 h120 M150 176 h120"/>
+    </g>
+    <g fill="#4338a8" stroke="none" opacity="0.55">
+      <rect x="153" y="113" width="34" height="27"/><rect x="233" y="146" width="34" height="27"/><rect x="193" y="179" width="34" height="28"/>
+    </g>
+    <!-- right: a way to see it -->
+    <circle cx="600" cy="160" r="50" fill="#ffffff" fill-opacity="0.6" stroke="#2b2a28" stroke-width="3"/>
+    <path d="M565 196 L 530 232" stroke="#2b2a28" stroke-width="7"/>
+    <path d="M578 168 q22 -30 44 0" stroke="#4338a8" stroke-width="2.4"/>
+    <circle cx="600" cy="160" r="6" fill="#4338a8" stroke="none"/>
+    <!-- thoughts rising -->
+    <circle cx="330" cy="120" r="9" stroke="#2b2a28" stroke-width="2"/>
+    <circle cx="360" cy="80" r="6" stroke="#2b2a28" stroke-width="2"/>
+    <circle cx="440" cy="96" r="11" stroke="#2b2a28" stroke-width="2"/>
+    <circle cx="470" cy="56" r="5" stroke="#2b2a28" stroke-width="2"/>
+    <circle cx="400" cy="160" r="7" stroke="#2b2a28" stroke-width="2"/>
+  </g>
+  <g fill="#e8836b"><circle cx="440" cy="96" r="4"/><circle cx="330" cy="120" r="3"/></g>
+</svg>

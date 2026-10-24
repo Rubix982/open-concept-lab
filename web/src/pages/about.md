@@ -4,6 +4,8 @@ description: Who writes here and what the lab is for.
 hide_table_of_contents: true
 ---
 
+<PageArt name="about" />
+
 # About
 
 <div className="ocl-about__intro">

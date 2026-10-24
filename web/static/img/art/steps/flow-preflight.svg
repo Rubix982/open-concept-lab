@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Preflight gates">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="43"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#e8836b" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M60 60 V156 M140 60 V156" stroke-width="3.4"/>
+    <path d="M48 98 H152" stroke="#a4442f" stroke-width="8"/>
+    <path d="M70 98 l8 -8 M92 98 l8 -8 M114 98 l8 -8 M136 98 l8 -8" stroke="#f4f1ea" stroke-width="3"/>
+    <circle cx="140" cy="52" r="8" fill="#7fa98a"/>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Write a five-line retro">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="39"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#4338a8" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M58 46 H130 L146 62 V158 H58 Z" fill="#fffdf8"/>
+    <path d="M130 46 V62 H146"/>
+    <path d="M72 80 H130 M72 96 H130 M72 112 H124 M72 128 H130 M72 144 H110" stroke-width="1.6" opacity="0.65"/>
+    <path d="M150 104 L118 150 L112 166 L126 156 L158 110 Z" fill="#e8836b" fill-opacity="0.7"/>
+  </g>
+</svg>

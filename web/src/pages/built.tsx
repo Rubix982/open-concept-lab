@@ -3,6 +3,7 @@ import Layout from "@theme/Layout";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import type { BuiltPage, LabData } from "@site/plugins/lab-data";
+import PageArt from "@site/src/components/PageArt";
 
 type View = "cards" | "compact" | "index";
 const VIEWS: [View, string][] = [["cards", "Cards"], ["compact", "Compact"], ["index", "Index"]];
@@ -160,7 +161,8 @@ export default function Built(): ReactNode {
   return (
     <Layout title="Built" description="Interactive pages — explanations, explorers, and datasets you can poke at.">
       <div className="ocl-page">
-        <header className="ocl-page__head">
+        <header className="ocl-page__head ocl-page__head--art">
+          <PageArt name="built" />
           <h1 className="ocl-page__title">Built</h1>
           <p className="ocl-page__lede">
             Pages I made to understand something, each one live below. They are

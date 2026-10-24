@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="An edited fact, Eiffel Tower to Rome, with the benchmark checking the conclusion while the premise it rests on, Rome in Italy, sits inside an empty dashed box nobody checks">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="2"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 9 5 1 9" fill="none" stroke="#2b2a28" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrowI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 9 5 1 9" fill="none" stroke="#4338a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the empty box: the check nobody runs -->
+    <rect x="412" y="250" width="300" height="240" rx="18" stroke="#a4442f" stroke-width="2.4" stroke-dasharray="4 11"/>
+    <!-- Eiffel Tower -->
+    <g stroke="#2b2a28" stroke-width="2.6">
+      <path d="M150 360 L178 170 L206 360"/>
+      <path d="M160 300 H196 M166 250 H190 M171 210 H185"/>
+      <path d="M150 360 q28 -40 56 0"/>
+      <path d="M178 170 V146"/>
+    </g>
+    <!-- the edit: Eiffel to Rome -->
+    <path d="M222 250 C 300 200, 380 200, 470 300" stroke="#4338a8" stroke-width="4" marker-end="url(#arrowI)"/>
+    <!-- Rome -->
+    <circle cx="500" cy="330" r="38" fill="#4338a8" fill-opacity="0.16" stroke="#4338a8" stroke-width="2.6"/>
+    <!-- premise: Rome in Italy -->
+    <path d="M532 352 C 570 380, 600 395, 628 404" stroke="#2b2a28" stroke-width="2.4" marker-end="url(#arrow)"/>
+    <!-- Italy, a boot -->
+    <path d="M640 380 l26 6 l10 24 l18 20 l-6 14 l-16 -12 l-10 6 l-14 -22 l-14 -10 z" fill="#7fa98a" fill-opacity="0.35" stroke="#2b2a28" stroke-width="2.2"/>
+    <!-- the conclusion the benchmark asks about -->
+    <path d="M214 380 C 300 520, 560 530, 650 455" stroke="#2b2a28" stroke-width="2" stroke-dasharray="2 9"/>
+    <!-- the benchmark's tick on the conclusion -->
+    <circle cx="380" cy="512" r="22" fill="#f2c46d" stroke="#2b2a28" stroke-width="2"/>
+    <path d="M369 512 l8 8 l14 -16" stroke="#2b2a28" stroke-width="2.6"/>
+    <!-- the unasked question over the premise -->
+    <path d="M688 262 q14 -16 28 -2 q10 12 -6 22 q-10 6 -10 16" stroke="#a4442f" stroke-width="2.6"/>
+    <circle cx="700" cy="314" r="1.8" fill="#a4442f" stroke="#a4442f" stroke-width="2"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="300" y="196" font-size="19" font-style="italic" fill="#4338a8">the edit</text>
+    <text x="150" y="396" font-size="17">Eiffel Tower</text>
+    <text x="474" y="392" font-size="17">Rome</text>
+    <text x="652" y="476" font-size="17">Italy</text>
+    <text x="410" y="518" font-size="16" font-style="italic">the conclusion, checked</text>
+    <text x="430" y="242" font-size="16" font-style="italic" fill="#a4442f">the premise, never checked</text>
+  </g>
+</svg>

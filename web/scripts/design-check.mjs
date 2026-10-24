@@ -27,29 +27,25 @@ const live = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
 // ---------------------------------------------------------------- 2 · radius
 {
-  // Resolve token references before judging: `var(--ocl-radius)` satisfies the criterion
-  // exactly when the token is 0, and reporting the indirection as a failure would push
-  // the codebase away from tokenising — which §9.4 requires.
-  const tokenValue = (name) =>
-    live.match(new RegExp(`--${name}:\\s*([^;]+);`))?.[1]?.trim() ?? "?";
-  const resolve = (v) => {
-    const m = v.match(/var\(--([a-z0-9-]+)\)/);
-    return m ? tokenValue(m[1]) : v;
-  };
+  // Revised 2026-10-24: corners soften, but only through the radius tokens. Every
+  // component of a border-radius must be a --ocl-radius* token, 0, or 999px (a pill).
+  // A literal pixel value is a corner nobody decided on.
+  const ok = (part) => /^(0|0px|0%|999px|inherit|initial|unset|var\(--ocl-radius(-sm|-lg)?\))$/.test(part);
   const bad = [...live.matchAll(/border-radius:\s*([^;]+);/g)]
-    .filter((m) => !/^(0|0px|0%|inherit|initial|unset)$/.test(resolve(m[1].trim())));
-  report(bad.length === 0, "§9.2", "no border-radius above 0",
+    .filter((m) => !m[1].trim().split(/\s+(?![^(]*\))/).every(ok));
+  report(bad.length === 0, "§9.2", "every corner comes from a radius token",
     bad.length ? `${bad.length} rules, e.g. ${bad.slice(0, 3).map((m) => m[1].trim()).join(", ")}` : "");
 }
 
 // ---------------------------------------------------- 3 · shadows (elevation)
 {
-  // The anti-goal is ELEVATION. An inset rule is a hairline drawn with the shadow
-  // property and is explicitly permitted — see the review of DESIGN.md §7.
+  // Elevation is allowed only through the two shadow tokens; an inset rule is a
+  // hairline drawn with the shadow property and stays permitted.
   const shadows = [...live.matchAll(/box-shadow:\s*([^;]+);/g)].map((m) => m[1].trim());
-  const elevation = shadows.filter((v) => v !== "none" && !v.includes("inset") && !v.includes("!important"));
-  report(elevation.length === 0, "§9.3", "no elevation shadows (inset rules allowed)",
-    elevation.length ? elevation.slice(0, 3).join(" / ") : `${shadows.length} shadow rules, all none or inset`);
+  const loose = shadows.filter((v) => v !== "none" && !v.includes("inset") && !v.includes("!important")
+    && !/^var\(--ocl-shadow(-lift)?\)$/.test(v));
+  report(loose.length === 0, "§9.3", "elevation only through --ocl-shadow tokens",
+    loose.length ? loose.slice(0, 3).join(" / ") : `${shadows.length} shadow rules, all tokens, none or inset`);
 }
 
 // ------------------------------------------------------------- 4 · tokenised

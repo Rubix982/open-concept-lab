@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A container with a heartbeat line that stumbles and recovers, a wrench and a checklist: a small broken system, fixed">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="27"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="28"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#e8836b" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M150 170 H390 V290 H150 Z" fill="#4338a8" fill-opacity="0.18"/>
+    <path d="M150 170 L180 146 H420 L390 170 M390 290 L420 266 V146"/>
+    <path d="M182 186 V274 M214 186 V274 M246 186 V274 M278 186 V274 M310 186 V274 M342 186 V274" stroke-width="1.6" opacity="0.6"/>
+    <path d="M110 340 H230 L250 320 L266 360 L284 300 L300 340 H500" stroke="#a4442f" stroke-width="2.6"/>
+    <path d="M470 120 L420 180" stroke-width="7"/>
+    <path d="M468 104 a18 18 0 1 0 18 22 l-12 -4 l-4 -12 Z" fill="#f2c46d" fill-opacity="0.8"/>
+    <path d="M460 230 H520 V310 H460 Z" fill="#fffdf8"/>
+    <path d="M472 248 l6 6 l10 -12 M472 274 l6 6 l10 -12" stroke="#7fa98a" stroke-width="2.6"/>
+  </g>
+</svg>

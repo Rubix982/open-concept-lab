@@ -1,6 +1,9 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
+import PageArt from "@site/src/components/PageArt";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Flow from "@site/src/components/visual/Flow";
 import type {
   Checklist,
   ChecklistItem,
@@ -125,6 +128,132 @@ function Section({
   );
 }
 
+/** The five moves every lab makes, from the page's own description. */
+const LOOP = [
+  { art: "lab-break", title: "Break it", text: "A real incident, shrunk to something that runs on a laptop." },
+  { art: "lab-diagnose", title: "Diagnose it", text: "Find the cause from the symptoms, not from the answer." },
+  { art: "lab-fix", title: "Fix it", text: "The smallest change that removes the cause." },
+  { art: "lab-prove", title: "Prove it", text: "A <code>check.sh</code> that fails on a cover-up, not only on the bug." },
+  { art: "lab-retro", title: "Write it down", text: "A five-line retro: what broke, why, what it taught." },
+];
+
+/** A progress ring: the share of a track's lines that are done. */
+function Ring({ done, total }: { done: number; total: number }): ReactNode {
+  const r = 22;
+  const c = 2 * Math.PI * r;
+  const share = total ? done / total : 0;
+  return (
+    <svg className="ocl-ring" viewBox="0 0 56 56" width="56" height="56" aria-hidden="true">
+      <circle cx="28" cy="28" r={r} className="ocl-ring__track" />
+      <circle
+        cx="28"
+        cy="28"
+        r={r}
+        className="ocl-ring__done"
+        style={{ strokeDasharray: `${Math.max(share * c, done ? 2 : 0)} ${c}` }}
+      />
+      <text x="28" y="32" textAnchor="middle" className="ocl-ring__label">
+        {Math.round(share * 100)}%
+      </text>
+    </svg>
+  );
+}
+
+function TrackCard({
+  id,
+  title,
+  done,
+  total,
+  onJump,
+}: {
+  id: string;
+  title: string;
+  done: number;
+  total: number;
+  onJump: () => void;
+}): ReactNode {
+  const art = useBaseUrl(`/img/art/tracks/${id}.svg`);
+  const [code, name] = title.replace(/^Track /, "").split(" · ");
+  return (
+    <a
+      className="ocl-track"
+      href={`#track-${id}`}
+      onClick={(e) => {
+        e.preventDefault();
+        onJump();
+      }}
+    >
+      <img className="ocl-track__art" src={art} alt="" loading="lazy" decoding="async" />
+      <span className="ocl-track__body">
+        <span className="ocl-track__code">Track {code}</span>
+        <span className="ocl-track__name">{(name ?? title).replace(/\s*`?\[.*$/, "").replace(/\s*\(.*\)$/, "")}</span>
+        <span className="ocl-track__count">
+          {done} of {total} done
+        </span>
+      </span>
+      <Ring done={done} total={total} />
+    </a>
+  );
+}
+
+/**
+ * Every line of the checklist as one square, grouped by track, filled when
+ * done. The finished ones also appear as stamps underneath.
+ */
+function Field({ checklist, onJump }: { checklist: Checklist; onJump: (id: string) => void }): ReactNode {
+  const solved = checklist.tracks.flatMap((t) =>
+    t.sections.flatMap((s) => s.items.filter((i) => i.done).map((i) => ({ item: i, section: s }))),
+  );
+  return (
+    <section className="ocl-page__section ocl-field" aria-label="Every line of the checklist">
+      <h2 className="ocl-page__sectionTitle">Every line, one square</h2>
+      <div className="ocl-field__tracks">
+        {checklist.tracks.map((t) => (
+          <div key={t.id} className={`ocl-field__track ocl-field__track--${t.id}`}>
+            <p className="ocl-field__label">{t.id.toUpperCase()}</p>
+            <div className="ocl-field__grid">
+              {t.sections.flatMap((s) =>
+                s.items.map((item) => (
+                  <a
+                    key={`${s.id}-${item.title}`}
+                    href={`#${s.id}`}
+                    className={`ocl-field__cell${item.done ? " is-done" : ""}`}
+                    title={`${s.title.replace(/\s*\(.*\)$/, "")} — ${item.title}${item.done ? " (done)" : ""}`}
+                    aria-label={`${item.title}${item.done ? ", done" : ""}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onJump(s.id);
+                    }}
+                  />
+                )),
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      {solved.length > 0 ? (
+        <div className="ocl-stamps">
+          {solved.map(({ item, section }) => (
+            <a
+              key={`${section.id}-${item.title}`}
+              className="ocl-stamp"
+              href={`#${section.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onJump(section.id);
+              }}
+            >
+              <span className="ocl-stamp__code">{section.id.toUpperCase()}</span>
+              <span className="ocl-stamp__title">{item.title}</span>
+              <span className="ocl-stamp__seal" aria-hidden="true">✓</span>
+            </a>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 export default function LabsPage({ checklist }: { checklist: Checklist }): ReactNode {
   const [progress, setProgress] = useState<Progress>("all");
   const [kind, setKind] = useState<Kind>("all");
@@ -180,7 +309,8 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
       description="Deployment, DevOps and security, learned one small broken system at a time: every scenario as a checklist."
     >
       <main className="ocl-page ocl-labs">
-        <header className="ocl-page__head">
+        <header className="ocl-page__head ocl-page__head--art">
+          <PageArt name="labs" />
           <h1 className="ocl-page__title">Labs</h1>
           <p className="ocl-page__lede">
             Every deployment and security scenario I want to have worked
@@ -205,6 +335,35 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
             </div>
           </dl>
         </header>
+
+        <section className="ocl-page__section ocl-labs__loop">
+          <h2 className="ocl-page__sectionTitle">What every lab is</h2>
+          <Flow steps={LOOP} loop label="The loop every lab follows: break, diagnose, fix, prove, write it down" />
+        </section>
+
+        <section className="ocl-page__section">
+          <h2 className="ocl-page__sectionTitle">The tracks</h2>
+          <div className="ocl-tracks">
+            {checklist.tracks.map((t) => {
+              const c = count(t.sections.flatMap((s) => s.items));
+              return (
+                <TrackCard
+                  key={t.id}
+                  id={t.id}
+                  title={t.title}
+                  done={c.done}
+                  total={c.total}
+                  onJump={() => {
+                    history.replaceState(null, "", `#track-${t.id}`);
+                    document.getElementById(`track-${t.id}`)?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                />
+              );
+            })}
+          </div>
+        </section>
+
+        <Field checklist={checklist} onJump={(id) => jump(id)} />
 
         <div className="ocl-labs__layout">
           <nav className="ocl-labs__nav" aria-label="Sections">

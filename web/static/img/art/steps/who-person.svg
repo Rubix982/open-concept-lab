@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="A person">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="53"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+  </defs>
+  <circle cx="100" cy="104" r="76" fill="#f2c46d" opacity="0.28"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <circle cx="100" cy="82" r="22" fill="#fffdf8"/>
+    <path d="M56 156 C 60 124, 140 124, 144 156" fill="#fffdf8"/>
+    <path d="M140 46 l6 -10 M152 58 l10 -4 M128 40 l0 -12" stroke="#f2c46d" stroke-width="3"/>
+  </g>
+</svg>

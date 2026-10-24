@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A desk lamp lighting a page of notes, and a cup of tea">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="15"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="16"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#7fa98a" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M170 130 L230 110 L262 176 L200 196 Z" fill="#f2c46d" fill-opacity="0.8"/>
+    <path d="M232 160 L300 260 M300 260 L256 320 M226 320 H290"/>
+    <path d="M200 196 L150 320" stroke="#f2c46d" stroke-width="1.6" stroke-dasharray="3 8"/>
+    <path d="M262 176 L380 300" stroke="#f2c46d" stroke-width="1.6" stroke-dasharray="3 8"/>
+    <path d="M330 260 L460 240 L474 316 L344 336 Z" fill="#fffdf8"/>
+    <path d="M352 276 L446 262 M356 294 L450 280 M360 312 L420 302" stroke-width="1.5" opacity="0.6"/>
+    <path d="M470 196 h40 v40 q0 18 -20 18 q-20 0 -20 -18 Z" fill="#e8836b" fill-opacity="0.7"/>
+    <path d="M510 206 q16 0 14 14 q-2 10 -14 10" />
+    <path d="M482 178 q6 -10 0 -18 M496 178 q6 -10 0 -18" stroke-width="1.6"/>
+    <path d="M120 340 H520" stroke-width="2" opacity="0.6"/>
+  </g>
+</svg>

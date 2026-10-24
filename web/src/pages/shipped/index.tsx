@@ -3,6 +3,7 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { SHIPPED, type Shipped } from "@site/src/data/shipped";
+import PageArt from "@site/src/components/PageArt";
 
 function Entry({ item }: { item: Shipped }): ReactNode {
   const page = `/shipped/${item.name}`;
@@ -37,7 +38,8 @@ export default function ShippedIndex(): ReactNode {
   return (
     <Layout title="Shipped" description="Tools that are deployed and in use, each with a page of its own.">
       <div className="ocl-page">
-        <header className="ocl-page__head">
+        <header className="ocl-page__head ocl-page__head--art">
+          <PageArt name="shipped" />
           <h1 className="ocl-page__title">Shipped</h1>
           <p className="ocl-page__lede">
             Tools that are out for anyone to use, each with a page of its

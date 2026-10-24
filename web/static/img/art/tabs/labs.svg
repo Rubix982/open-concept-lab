@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A flask with bubbles, a cracked container being fixed with a wrench: one small broken system at a time">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="5"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="6"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#7fa98a" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M190 110 H240 M200 110 V180 L140 300 Q136 316 152 318 H278 Q294 316 290 300 L230 180 V110"/>
+    <path d="M160 262 Q215 250 270 262 L288 300 Q290 314 276 316 H154 Q140 314 142 300 Z" fill="#4338a8" fill-opacity="0.3" stroke="none"/>
+    <circle cx="200" cy="240" r="6"/><circle cx="222" cy="212" r="4"/><circle cx="212" cy="186" r="3"/>
+    <path d="M330 200 L400 170 L470 200 L400 230 Z" fill="#fffdf8"/>
+    <path d="M330 200 V280 L400 310 V230 M470 200 V280 L400 310" fill="#fffdf8"/>
+    <path d="M330 200 V280 L400 310 L470 280 V200" fill="#e8836b" fill-opacity="0.25" stroke="none"/>
+    <path d="M412 236 L420 256 L410 270 L424 292" stroke="#a4442f" stroke-width="2.6"/>
+    <path d="M356 220 V266 M376 228 V276" stroke-width="1.6" opacity="0.6"/>
+    <path d="M480 120 L420 170" stroke-width="7"/>
+    <path d="M478 104 a18 18 0 1 0 18 22 l-12 -4 l-4 -12 Z" fill="#f2c46d" fill-opacity="0.8"/>
+    <path d="M110 330 H500" stroke-width="2" opacity="0.6"/>
+  </g>
+</svg>

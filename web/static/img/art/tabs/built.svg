@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Toy bricks stacked into a bar chart, a small crane over them: pages built to understand something">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="13"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="14"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<rect x="150" y="270" width="64" height="36" rx="4" fill="#e8836b" fill-opacity="0.85"/><rect x="160" y="262" width="14" height="8" rx="2" fill="#e8836b"/><rect x="190" y="262" width="14" height="8" rx="2" fill="#e8836b"/>
+    <rect x="230" y="270" width="64" height="36" rx="4" fill="#4338a8" fill-opacity="0.85"/><rect x="240" y="262" width="14" height="8" rx="2" fill="#4338a8"/><rect x="270" y="262" width="14" height="8" rx="2" fill="#4338a8"/>
+    <rect x="230" y="234" width="64" height="36" rx="4" fill="#4338a8" fill-opacity="0.85"/><rect x="240" y="226" width="14" height="8" rx="2" fill="#4338a8"/><rect x="270" y="226" width="14" height="8" rx="2" fill="#4338a8"/>
+    <rect x="230" y="198" width="64" height="36" rx="4" fill="#4338a8" fill-opacity="0.85"/><rect x="240" y="190" width="14" height="8" rx="2" fill="#4338a8"/><rect x="270" y="190" width="14" height="8" rx="2" fill="#4338a8"/>
+    <rect x="310" y="270" width="64" height="36" rx="4" fill="#7fa98a" fill-opacity="0.85"/><rect x="320" y="262" width="14" height="8" rx="2" fill="#7fa98a"/><rect x="350" y="262" width="14" height="8" rx="2" fill="#7fa98a"/>
+    <rect x="310" y="234" width="64" height="36" rx="4" fill="#7fa98a" fill-opacity="0.85"/><rect x="320" y="226" width="14" height="8" rx="2" fill="#7fa98a"/><rect x="350" y="226" width="14" height="8" rx="2" fill="#7fa98a"/>
+    <rect x="390" y="270" width="64" height="36" rx="4" fill="#f2c46d" fill-opacity="0.85"/><rect x="400" y="262" width="14" height="8" rx="2" fill="#f2c46d"/><rect x="430" y="262" width="14" height="8" rx="2" fill="#f2c46d"/>
+    <rect x="390" y="234" width="64" height="36" rx="4" fill="#f2c46d" fill-opacity="0.85"/><rect x="400" y="226" width="14" height="8" rx="2" fill="#f2c46d"/><rect x="430" y="226" width="14" height="8" rx="2" fill="#f2c46d"/>
+    <rect x="390" y="198" width="64" height="36" rx="4" fill="#f2c46d" fill-opacity="0.85"/><rect x="400" y="190" width="14" height="8" rx="2" fill="#f2c46d"/><rect x="430" y="190" width="14" height="8" rx="2" fill="#f2c46d"/>
+    <rect x="390" y="162" width="64" height="36" rx="4" fill="#f2c46d" fill-opacity="0.85"/><rect x="400" y="154" width="14" height="8" rx="2" fill="#f2c46d"/><rect x="430" y="154" width="14" height="8" rx="2" fill="#f2c46d"/>
+    <path d="M120 306 H490" stroke-width="2.6"/>
+    <path d="M480 80 V140 M470 80 H520 M500 80 V100" stroke-width="2"/>
+    <path d="M500 100 q-8 12 0 18" stroke-width="2"/>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="An opened parcel with a paper plane leaving it: tools out for anyone to use">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="12"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M180 200 L300 170 L420 200 L300 232 Z" fill="#e9d3b0"/>
+    <path d="M180 200 V310 L300 344 V232 Z" fill="#dcc29b"/>
+    <path d="M420 200 V310 L300 344 V232 Z" fill="#e9d3b0"/>
+    <path d="M180 200 L140 168 L262 140 L300 170" fill="#f0dfc2"/>
+    <path d="M420 200 L460 168 L340 140 L300 170" fill="#f0dfc2"/>
+    <path d="M230 214 V320" stroke="#4338a8" stroke-width="10" opacity="0.5"/>
+    <circle cx="360" cy="280" r="22" stroke="#a4442f" stroke-dasharray="4 5"/>
+    <path d="M350 280 H370 M360 270 V290" stroke="#a4442f" stroke-width="2"/>
+    <path d="M300 150 C 320 100, 380 80, 440 72" stroke-width="1.6" stroke-dasharray="3 9"/>
+    <path d="M440 72 L520 52 L478 96 Z" fill="#ffffff"/>
+    <path d="M440 72 L478 96 L470 76 Z" fill="#4338a8" fill-opacity="0.25"/>
+    <path d="M120 350 H480" stroke-width="2" opacity="0.6"/>
+  </g>
+</svg>

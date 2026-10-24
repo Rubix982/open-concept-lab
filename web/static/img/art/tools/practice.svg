@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="An open rulebook with a note pinned to it, under a pair of scales: rules, each weighed against the incident that earned it">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="65"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="66"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#e8836b" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M130 140 Q220 120 300 146 V320 Q220 300 130 314 Z" fill="#fffdf8"/>
+    <path d="M300 146 Q380 120 470 140 V314 Q380 300 300 320 Z" fill="#fffdf8"/>
+    <path d="M300 146 V320"/>
+    <path d="M154 176 H276 M154 200 H276 M154 224 H250" stroke-width="1.5" opacity="0.6"/>
+    <path d="M150 172 l-10 0" stroke="#a4442f" stroke-width="3"/>
+    <path d="M150 196 l-10 0" stroke="#a4442f" stroke-width="3"/>
+    <rect x="330" y="166" width="110" height="80" rx="4" fill="#f2c46d" fill-opacity="0.85" transform="rotate(-4 385 206)"/>
+    <path d="M346 190 H420 M346 208 H410 M346 226 H400" stroke-width="1.5" transform="rotate(-4 385 206)"/>
+    <circle cx="384" cy="166" r="6" fill="#e8836b"/>
+    <path d="M300 60 V108 M240 80 H360" stroke-width="2.4"/>
+    <path d="M240 80 L224 112 H256 Z M360 80 L344 112 H376 Z" fill="#fffdf8"/>
+  </g>
+</svg>

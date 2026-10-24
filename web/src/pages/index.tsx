@@ -5,6 +5,7 @@ import { usePluginData } from "@docusaurus/useGlobalData";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
 import { AGENTIC, type Agentic } from "@site/src/data/agentic";
+import { ProjectCard } from "@site/src/components/Projects";
 
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -47,18 +48,14 @@ function Bar({ done, total }: { done: number; total: number }): ReactNode {
   );
 }
 
-function ProjectCard({ project }: { project: Project }): ReactNode {
+/** A piece's illustration, small, as the home page shows it. */
+function Cover({ src, className }: { src?: string; className: string }): ReactNode {
+  const url = useBaseUrl(src ?? "");
+  if (!src) return null;
   return (
-    <Link className="ocl-home__project" to={project.notebook}>
-      <span className="ocl-home__projectName">{project.name}</span>
-      <span className={`ocl-status ocl-status--${project.tone}`} title={project.phaseDetail}>
-        {project.phase}
-      </span>
-      <span className="ocl-home__projectWhat">{project.what}</span>
-      {project.updated ? (
-        <span className="ocl-home__projectDate">Plan updated {shortDate(project.updated)}</span>
-      ) : null}
-    </Link>
+    <span className={className}>
+      <img src={url} alt="" loading="lazy" decoding="async" />
+    </span>
   );
 }
 
@@ -246,6 +243,9 @@ export default function Home(): ReactNode {
           {latest ? (
             <div className="ocl-home__writing">
               <article className="ocl-home__feature">
+                <Link to={latest.permalink} tabIndex={-1} aria-hidden="true">
+                  <Cover src={latest.cover} className="ocl-home__featureCover" />
+                </Link>
                 <time className="ocl-home__date" dateTime={latest.date}>
                   {shortDate(latest.date)}
                 </time>
@@ -260,7 +260,8 @@ export default function Home(): ReactNode {
               {earlier.length > 0 ? (
                 <ol className="ocl-home__earlier">
                   {earlier.slice(0, 4).map((entry) => (
-                    <li key={entry.permalink}>
+                    <li key={entry.permalink} className={entry.cover ? "ocl-home__earlier--cover" : undefined}>
+                      <Cover src={entry.cover} className="ocl-home__earlierCover" />
                       <time className="ocl-home__date" dateTime={entry.date}>
                         {shortDate(entry.date)}
                       </time>

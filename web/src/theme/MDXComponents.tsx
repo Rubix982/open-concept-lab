@@ -11,6 +11,7 @@ import References from "@site/src/components/References";
 import Status, { Notice } from "@site/src/components/Status";
 import Claude from "@site/src/components/Claude";
 import Gloss from "@site/src/components/Gloss";
+import PageArt from "@site/src/components/PageArt";
 
 /**
  * Available in every .md/.mdx file without an import.
@@ -30,4 +31,5 @@ export default {
   Notice,
   Claude,
   Gloss,
+  PageArt,
 };

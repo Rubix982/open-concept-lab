@@ -1,13 +1,20 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * A hairline under the navbar that fills as you read. Written to the DOM
  * directly rather than through state, so scrolling never re-renders the post.
+ * It is portalled to <body>: an ancestor with a transform (the page's arrival
+ * animation) would otherwise become its containing block and drag it down.
  */
 export default function ReadingProgress(): ReactNode {
   const bar = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
+    if (!mounted) return;
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -29,11 +36,13 @@ export default function ReadingProgress(): ReactNode {
       window.removeEventListener("resize", schedule);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [mounted]);
 
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <div className="ocl-progress" aria-hidden="true">
       <div className="ocl-progress__bar" ref={bar} />
-    </div>
+    </div>,
+    document.body,
   );
 }

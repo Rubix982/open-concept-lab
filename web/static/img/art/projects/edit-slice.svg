@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A stack of layers with one coloured layer, cut through by a dashed slice: an edit at one depth and what it disturbs">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="21"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="22"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M200 120 L380 120 L420 140 L240 140 Z" fill="#fffdf8"/>
+    <path d="M200 154 L380 154 L420 174 L240 174 Z" fill="#fffdf8"/>
+    <path d="M200 188 L380 188 L420 208 L240 208 Z" fill="#4338a8" fill-opacity="0.45"/>
+    <path d="M200 222 L380 222 L420 242 L240 242 Z" fill="#fffdf8"/>
+    <path d="M200 256 L380 256 L420 276 L240 276 Z" fill="#fffdf8"/>
+    <path d="M200 290 L380 290 L420 310 L240 310 Z" fill="#fffdf8"/>
+    <path d="M150 168 L470 214" stroke="#a4442f" stroke-width="2.4" stroke-dasharray="6 8"/>
+    <path d="M120 150 L160 172 L150 184 L110 162 Z" fill="#f2c46d"/>
+    <path d="M440 190 C 480 200, 500 240, 480 280" stroke="#4338a8" stroke-width="2"/>
+    <path d="M470 272 L480 284 L492 272" stroke="#4338a8" stroke-width="2"/>
+  </g>
+</svg>

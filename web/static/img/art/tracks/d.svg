@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A cloud above two servers, and a coin for the bill: cloud work on a real account">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="77"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="78"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#e8836b" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M200 190 a50 50 0 0 1 90 -40 a60 60 0 0 1 110 30 a40 40 0 0 1 -10 80 H210 a40 40 0 0 1 -10 -70 Z" fill="#fffdf8"/>
+    <rect x="230" y="290" width="60" height="30" rx="4" fill="#4338a8" fill-opacity="0.3"/>
+    <rect x="310" y="290" width="60" height="30" rx="4" fill="#4338a8" fill-opacity="0.3"/>
+    <path d="M260 260 V290 M340 260 V290" stroke-width="1.8" stroke-dasharray="3 6"/>
+    <circle cx="460" cy="300" r="26" fill="#f2c46d"/>
+    <path d="M460 286 V314 M452 292 h12 a5 5 0 0 1 0 8 h-8 a5 5 0 0 0 0 8 h12" stroke-width="2"/>
+  </g>
+</svg>

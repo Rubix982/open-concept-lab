@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A pin for Rome with neighbouring facts around it in rings of distance, near ones linked solid and far ones dashed">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="23"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="24"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <circle cx="300" cy="210" r="70" stroke-width="1.4" stroke-dasharray="3 8"/>
+    <circle cx="300" cy="210" r="140" stroke-width="1.4" stroke-dasharray="3 8" opacity="0.6"/>
+    <path d="M300 214 c-26 -28 -26 -70 0 -70 c26 0 26 42 0 70 Z" fill="#e8836b" fill-opacity="0.8"/>
+    <circle cx="300" cy="170" r="9" fill="#f4f1ea"/>
+    <circle cx="246" cy="250" r="10" fill="#4338a8" fill-opacity="0.4"/>
+    <circle cx="360" cy="248" r="10" fill="#4338a8" fill-opacity="0.4"/>
+    <circle cx="186" cy="150" r="9" fill="#7fa98a" fill-opacity="0.5"/>
+    <circle cx="430" cy="140" r="9" fill="#7fa98a" fill-opacity="0.5"/>
+    <circle cx="420" cy="300" r="9" fill="#7fa98a" fill-opacity="0.5"/>
+    <path d="M300 214 L246 250 M300 214 L360 248" stroke="#4338a8" stroke-width="2"/>
+    <path d="M246 250 L186 150 M360 248 L430 140 M360 248 L420 300" stroke-width="1.6" stroke-dasharray="3 7"/>
+  </g>
+</svg>

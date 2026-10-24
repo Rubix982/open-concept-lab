@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="An open notebook: lines of writing on one page, a small diagram of linked ideas on the other, a ribbon and a pencil">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="4"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M120 120 Q210 100 300 128 V320 Q210 296 120 312 Z" fill="#fffdf8"/>
+    <path d="M300 128 Q390 100 480 120 V312 Q390 296 300 320 Z" fill="#fffdf8"/>
+    <path d="M300 128 V320"/>
+    <path d="M146 158 Q210 146 276 162 M146 186 Q210 174 276 190 M146 214 Q210 202 276 218 M146 242 Q200 232 250 244" stroke-width="1.6" opacity="0.7"/>
+    <circle cx="350" cy="180" r="14" stroke="#4338a8" fill="#4338a8" fill-opacity="0.15"/>
+    <circle cx="430" cy="160" r="11"/>
+    <circle cx="420" cy="240" r="13" stroke="#7fa98a" fill="#7fa98a" fill-opacity="0.35"/>
+    <path d="M364 176 L419 163 M360 191 L409 232 M430 171 L422 227" stroke-width="1.8"/>
+    <path d="M440 96 V150 L452 140 L464 150 V96" stroke="#4338a8" fill="#4338a8" fill-opacity="0.55"/>
+    <path d="M470 330 L540 230 L556 242 L486 342 Z" fill="#f2c46d" fill-opacity="0.8"/>
+    <path d="M470 330 L466 352 L486 342"/>
+    <path d="M540 230 L548 218 L564 230 L556 242" fill="#e8836b" fill-opacity="0.7"/>
+  </g>
+</svg>
