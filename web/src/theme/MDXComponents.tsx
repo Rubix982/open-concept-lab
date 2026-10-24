@@ -9,6 +9,8 @@ import Aside from "@site/src/components/Aside";
 import Projects from "@site/src/components/Projects";
 import References from "@site/src/components/References";
 import Status, { Notice } from "@site/src/components/Status";
+import Claude from "@site/src/components/Claude";
+import Gloss from "@site/src/components/Gloss";
 
 /**
  * Available in every .md/.mdx file without an import.
@@ -26,4 +28,6 @@ export default {
   References,
   Status,
   Notice,
+  Claude,
+  Gloss,
 };

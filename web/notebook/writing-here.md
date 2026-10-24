@@ -22,6 +22,41 @@ The rule of thumb: if the date is part of what the piece means, it is writing.
 If a reader six months from now should see the current version rather than the
 original, it belongs in the notebook.
 
+## Journal entries
+
+A dated piece tagged `journal` is set as a notebook page: the day large, the
+title in italics, a dot-grid masthead, and a numbered entry (`entry 01`, `02`,
+… in the order written). In the `/writing` index it gets a diamond on the
+timeline and a ring in the calendar. Nothing else is needed; `standfirst` is
+optional. Add `draft: true` to keep an entry off the live site while it's being
+written.
+
+## Writing with Claude
+
+For pieces written back and forth: you write, Claude comments, you answer.
+Your prose is the page; Claude's words are set in the apparatus face with a
+blue rule, so whose words are whose shows without reading a label.
+
+```mdx
+A reply between paragraphs:
+
+<Claude re="a more precise question">
+The precision may be in the scenario, not the question.
+</Claude>
+
+A note on one phrase (keep it on one line):
+the <Gloss on="cleaner answer">Cleaner than what?</Gloss> I hoped for.
+```
+
+<Claude re="a more precise question">
+The precision may be in the scenario, not the question.
+</Claude>
+
+A note on one phrase sits in the margin on wide screens: the <Gloss on="cleaner answer">Cleaner than what? The null was clean.</Gloss> I hoped for. On a phone, tap the phrase.
+
+Any post with at least one note gets a **Both / Saif only** switch under its
+header, and the `/writing` index marks it "with Claude · n notes".
+
 ## Front matter
 
 Dated pieces:

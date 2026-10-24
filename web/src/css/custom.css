@@ -889,8 +889,9 @@ div[class^="codeBlockTitle"] {
 
 .ocl-entry {
   display: grid;
-  grid-template-columns: 7.5rem 1fr;
-  gap: 0 1.5rem;
+  /* date | the timeline's node | the entry */
+  grid-template-columns: 6.5rem 0.75rem 1fr;
+  gap: 0 1.25rem;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--ocl-rule);
 }
@@ -953,12 +954,18 @@ div[class^="codeBlockTitle"] {
 
 @media (max-width: 640px) {
   .ocl-entry {
-    grid-template-columns: 1fr;
-    gap: 0.3rem;
+    grid-template-columns: 0.75rem 1fr;
+    gap: 0.3rem 1rem;
   }
 
   .ocl-entry__date {
+    grid-column: 2;
     line-height: 1.5;
+  }
+
+  .ocl-entry__node {
+    grid-row: 1 / span 2;
+    grid-column: 1;
   }
 }
 
@@ -1237,6 +1244,671 @@ nav.menu {
 
 .theme-doc-toc-desktop {
   top: calc(var(--ifm-navbar-height) + 1.6rem);
+}
+
+/* ==========================================================================
+   The writing desk — cadence, filters, and the timeline spine
+   ========================================================================== */
+
+.ocl-desk {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 1.25rem 2.25rem;
+  margin: 0 0 1.75rem;
+  padding: 1.25rem 1.35rem 1.1rem;
+  background: var(--ocl-paper-raised);
+  box-shadow: inset 0 0 0 1px var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-desk__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem 1rem;
+  align-content: start;
+}
+
+.ocl-desk__stats p {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-desk__figure {
+  display: block;
+  font-family: var(--ocl-prose);
+  font-size: 1.55rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ocl-ink);
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+.ocl-desk__stats .ocl-desk__since {
+  grid-column: 1 / -1;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-desk__since a {
+  color: var(--ocl-ink-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--ocl-rule-strong);
+}
+
+.ocl-desk__since a:hover {
+  color: var(--ocl-link);
+}
+
+.ocl-desk__calendar {
+  min-width: 0;
+}
+
+.ocl-desk__months,
+.ocl-desk__grid {
+  display: grid;
+  gap: 3px;
+}
+
+.ocl-desk__months {
+  margin-bottom: 0.3rem;
+  font-size: 0.66rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-desk__months span {
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.ocl-desk__grid {
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+}
+
+.ocl-desk__day {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-desk__day--future {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ocl-rule);
+  opacity: 0.5;
+}
+
+.ocl-desk__day--ink-1 { background: color-mix(in srgb, var(--ocl-link) 30%, var(--ocl-paper-sunken)); }
+.ocl-desk__day--ink-2 { background: color-mix(in srgb, var(--ocl-link) 52%, var(--ocl-paper-sunken)); }
+.ocl-desk__day--ink-3 { background: color-mix(in srgb, var(--ocl-link) 75%, var(--ocl-paper-sunken)); }
+.ocl-desk__day--ink-4 { background: var(--ocl-link); }
+
+/* A journal day carries a ring of ink — same square, different kind of writing. */
+.ocl-desk__day--journal {
+  box-shadow: inset 0 0 0 1.5px var(--ocl-ink);
+}
+
+.ocl-desk__day--today {
+  outline: 1px solid var(--ocl-ink-muted);
+  outline-offset: 1px;
+}
+
+a.ocl-desk__day:hover {
+  background: var(--ocl-link-hover);
+}
+
+a.ocl-desk__day:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 1px;
+}
+
+.ocl-desk__key {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 0.6rem 0 0;
+  font-size: 0.66rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-desk__key .ocl-desk__day {
+  width: 0.62rem;
+}
+
+.ocl-desk__key span:not(.ocl-desk__day) {
+  margin: 0 0.3rem;
+}
+
+@media (max-width: 720px) {
+  .ocl-desk {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .ocl-desk__stats {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    column-gap: 1.75rem;
+  }
+
+  .ocl-desk__months,
+  .ocl-desk__grid {
+    gap: 2px;
+  }
+}
+
+/* --- filters ----------------------------------------------------------- */
+
+.ocl-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-filter__chip {
+  padding: 0.28rem 0.65rem;
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius);
+  background: transparent;
+  font: inherit;
+  font-size: 0.76rem;
+  color: var(--ocl-ink-muted);
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+
+.ocl-filter__chip:hover {
+  border-color: var(--ocl-rule-strong);
+  color: var(--ocl-ink);
+}
+
+.ocl-filter__chip[aria-pressed="true"] {
+  border-color: var(--ocl-ink);
+  background: var(--ocl-paper-sunken);
+  color: var(--ocl-ink);
+}
+
+.ocl-filter__chip:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+.ocl-filter__count {
+  margin-left: 0.2rem;
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- timeline ---------------------------------------------------------- */
+
+.ocl-timeline__month {
+  position: relative;
+}
+
+/* The month rides along under the navbar while you scroll its entries. */
+.ocl-timeline__label {
+  position: sticky;
+  top: var(--ifm-navbar-height);
+  z-index: 1;
+  margin: 0;
+  padding: 1.1rem 0 0.5rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  background: var(--ocl-paper);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-entry__node {
+  position: relative;
+  /* reach through the entry's padding so consecutive spines join up */
+  margin: -1.5rem 0;
+}
+
+.ocl-entry__node::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--ocl-rule);
+}
+
+.ocl-entry__node::after {
+  content: "";
+  position: absolute;
+  top: calc(1.5rem + 0.62rem);
+  left: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  translate: -50% 0;
+  background: var(--ocl-ink-faint);
+  /* a gap in the spine around the mark */
+  outline: 3px solid var(--ocl-paper);
+  transition: background-color 140ms ease, scale 140ms ease;
+}
+
+.ocl-entry--draft .ocl-entry__node::after,
+.ocl-entry--provisional .ocl-entry__node::after {
+  background: var(--ocl-oxide);
+}
+
+.ocl-entry--standing .ocl-entry__node::after {
+  background: var(--ocl-held);
+}
+
+.ocl-entry--superseded .ocl-entry__node::after {
+  background: var(--ocl-paper);
+  box-shadow: inset 0 0 0 1px var(--ocl-ink-faint);
+}
+
+/* A journal entry is a diamond: same line, a different kind of mark. */
+.ocl-entry--journal .ocl-entry__node::after {
+  rotate: 45deg;
+  background: var(--ocl-paper);
+  box-shadow: inset 0 0 0 1.5px var(--ocl-link);
+}
+
+.ocl-entry:hover .ocl-entry__node::after {
+  scale: 1.35;
+}
+
+.ocl-entry:not(.ocl-entry--journal):hover .ocl-entry__node::after {
+  background: var(--ocl-link);
+}
+
+.ocl-entry__kicker {
+  margin: 0 0 0.2rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-link);
+}
+
+.ocl-entry--journal .ocl-entry__summary {
+  font-style: italic;
+}
+
+/* --- journal masthead -------------------------------------------------- */
+
+.ocl-journal {
+  max-width: var(--ocl-measure);
+  padding: 1.5rem 1.6rem 1.4rem;
+  /* a notebook page: dots, not lines, so the grid never competes with type */
+  background-color: var(--ocl-paper-raised);
+  background-image: radial-gradient(var(--ocl-rule-strong) 0.75px, transparent 1.1px);
+  background-size: 1.15rem 1.15rem;
+  background-position: 0.55rem 0.55rem;
+  box-shadow: inset 0 0 0 1px var(--ocl-rule);
+}
+
+.ocl-journal__date {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.4rem;
+}
+
+.ocl-journal__date time {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.ocl-journal__day {
+  font-family: var(--ocl-prose);
+  font-size: 4.2rem;
+  font-weight: 300;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  color: var(--ocl-ink);
+  font-variant-numeric: lining-nums;
+}
+
+.ocl-journal__when {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-journal__when span:first-child {
+  color: var(--ocl-ink);
+  font-weight: 500;
+}
+
+.ocl-journal__mark {
+  margin: 0;
+  padding: 0.15rem 0.5rem;
+  background: var(--ocl-paper-raised);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.ocl-journal__mark a {
+  color: var(--ocl-link);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ocl-journal__title {
+  margin: 0;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.ocl-journal .ocl-frontmatter__standfirst {
+  margin: 0.75rem 0 0;
+}
+
+/* The first letter of a journal entry, set large — the page has begun. The
+   paragraph contains its own float, so a one-line opening doesn't push the
+   cap into the next paragraph. */
+.ocl-post--journal .markdown > p:first-of-type {
+  display: flow-root;
+}
+
+.ocl-post--journal .markdown > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  font-size: 3.35em;
+  font-weight: 400;
+  line-height: 0.82;
+  color: var(--ocl-ink);
+}
+
+/* ==========================================================================
+   Two voices — a piece written back and forth with Claude
+   The author is the page: Spectral, ink. Claude is set into it: Plex Sans,
+   muted, with a rule in link blue. The face change is the whole signal, so a
+   reader never has to check a label to know whose words these are.
+   ========================================================================== */
+
+.ocl-voice {
+  margin: 1.5rem 0 1.75rem;
+  padding: 0.8rem 1rem 0.85rem 1.05rem;
+  border-left: 2px solid var(--ocl-link);
+  background: color-mix(in srgb, var(--ocl-link) 4%, var(--ocl-paper));
+  font-family: var(--ocl-apparatus);
+  font-size: 0.9rem;
+  line-height: 1.62;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-voice__who {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-link);
+}
+
+.ocl-voice__mark {
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--ocl-link);
+  translate: 0 -0.05rem;
+}
+
+.ocl-voice__re {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-style: italic;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-voice__body > :last-child {
+  margin-bottom: 0;
+}
+
+.ocl-voice__body p {
+  margin-bottom: 0.7em;
+}
+
+.ocl-voice__body strong {
+  color: var(--ocl-ink);
+}
+
+/* --- gloss: a note on one phrase -------------------------------------- */
+
+.ocl-post {
+  counter-reset: gloss;
+}
+
+.ocl-gloss {
+  counter-increment: gloss;
+}
+
+.ocl-gloss__phrase {
+  padding: 0;
+  border: 0;
+  border-radius: var(--ocl-radius);
+  background: color-mix(in srgb, var(--ocl-link) 11%, transparent);
+  font: inherit;
+  color: inherit;
+  text-decoration: underline dotted var(--ocl-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+
+.ocl-gloss__phrase::after {
+  content: counter(gloss);
+  margin-left: 0.12em;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.62em;
+  font-weight: 500;
+  vertical-align: super;
+  line-height: 0;
+  color: var(--ocl-link);
+}
+
+.ocl-gloss__phrase:hover,
+.ocl-gloss--open .ocl-gloss__phrase {
+  background: color-mix(in srgb, var(--ocl-link) 20%, transparent);
+}
+
+.ocl-gloss__phrase:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+.ocl-gloss__note {
+  display: none;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-gloss__who {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-link);
+}
+
+.ocl-gloss__who::before {
+  content: counter(gloss) " ";
+}
+
+/* Narrow: tap the phrase, the note opens under the line. */
+.ocl-gloss--open .ocl-gloss__note {
+  display: block;
+  margin: 0.45rem 0 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid var(--ocl-link);
+  background: color-mix(in srgb, var(--ocl-link) 4%, var(--ocl-paper));
+}
+
+/* Wide: the gutter beyond the measure is where a reader writes. The note
+   floats from the line its phrase is on, so it sits level with it. */
+@media (min-width: 1400px) {
+  .ocl-gloss__phrase {
+    cursor: default;
+  }
+
+  .ocl-gloss__note,
+  .ocl-gloss--open .ocl-gloss__note {
+    display: block;
+    float: right;
+    clear: right;
+    width: 12rem;
+    margin: 0.3rem -13.5rem 0.75rem 0;
+    padding: 0.4rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--ocl-link);
+    background: none;
+  }
+}
+
+/* --- the voices switch ------------------------------------------------- */
+
+.ocl-voices {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  max-width: var(--ocl-measure);
+  margin: 1rem 0 2.2rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.75rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-journal + .ocl-voices {
+  margin-top: 0.75rem;
+}
+
+.ocl-frontmatter .ocl-voices {
+  margin-bottom: 0;
+}
+
+.ocl-voices__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ocl-voices__swatch {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+.ocl-voices__swatch--author {
+  background: var(--ocl-ink);
+}
+
+.ocl-voices__swatch--claude {
+  margin-left: 0.6rem;
+  background: var(--ocl-link);
+}
+
+.ocl-voices__switch {
+  display: inline-flex;
+}
+
+.ocl-voices__switch button {
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius);
+  background: transparent;
+  font: inherit;
+  color: var(--ocl-ink-muted);
+  cursor: pointer;
+}
+
+.ocl-voices__switch button + button {
+  border-left: 0;
+}
+
+.ocl-voices__switch button[aria-pressed="true"] {
+  background: var(--ocl-paper-sunken);
+  color: var(--ocl-ink);
+  box-shadow: inset 0 0 0 1px var(--ocl-ink);
+}
+
+.ocl-voices__switch button:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+/* Author only: Claude's notes go, the phrases read as plain prose again. */
+.ocl-post--mine-only .ocl-voice,
+.ocl-post--mine-only .ocl-gloss__note {
+  display: none !important;
+}
+
+.ocl-post--mine-only .ocl-gloss__phrase {
+  background: none;
+  text-decoration: none;
+  cursor: text;
+  pointer-events: none;
+}
+
+.ocl-post--mine-only .ocl-gloss__phrase::after {
+  content: none;
+}
+
+.ocl-entry__with {
+  color: var(--ocl-link);
+}
+
+/* --- reading progress -------------------------------------------------- */
+
+.ocl-progress {
+  position: fixed;
+  top: var(--ifm-navbar-height);
+  /* inside the page frame, not across its gutter */
+  left: var(--ocl-frame-inset);
+  right: var(--ocl-frame-inset);
+  z-index: calc(var(--ifm-z-index-fixed) - 1);
+  height: 2px;
+  pointer-events: none;
+}
+
+.ocl-progress__bar {
+  height: 100%;
+  background: var(--ocl-link);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-filter__chip,
+  .ocl-entry__node::after {
+    transition: none;
+  }
 }
 
 /* ==========================================================================

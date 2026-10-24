@@ -17,3 +17,8 @@ lab-notes:
   label: Lab notes
   permalink: /lab-notes
   description: Learning captured alongside the research, while it is still provisional.
+
+journal:
+  label: Journal
+  permalink: /journal
+  description: Thinking out loud, dated — written fast, before the thoughts are arguments.
