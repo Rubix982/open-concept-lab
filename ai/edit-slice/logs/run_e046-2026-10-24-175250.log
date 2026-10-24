@@ -1,0 +1,5 @@
+2026-10-24 17:52:50,628 INFO     run_e046  run run_e046 -> logs/run_e046-2026-10-24-175250.log
+2026-10-24 17:52:50,628 INFO     run_e046  config {"country_pool": 16, "layer": 5, "measure": "top-K at the first answer token, base vs edited, paired", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 37, "occupation_pool": 75, "probes": {"citizenship": "{} is a citizen of", "occupation": "By profession, {} is a"}, "ticket": "E-046", "top_k": 8}
+2026-10-24 17:52:50,628 INFO     run_e046  37 subjects; pools: 75 occupations, 16 countries
+2026-10-24 17:52:54,167 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 17:52:59,998 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s

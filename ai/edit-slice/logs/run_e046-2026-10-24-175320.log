@@ -1,0 +1,91 @@
+2026-10-24 17:53:20,861 INFO     run_e046  run run_e046 -> logs/run_e046-2026-10-24-175320.log
+2026-10-24 17:53:20,861 INFO     run_e046  config {"country_pool": 16, "layer": 5, "measure": "top-K at the first answer token, base vs edited, paired", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 37, "occupation_pool": 75, "probes": {"citizenship": "{} is a citizen of", "occupation": "By profession, {} is a"}, "ticket": "E-046", "top_k": 8}
+2026-10-24 17:53:20,861 INFO     run_e046  37 subjects; pools: 75 occupations, 16 countries
+2026-10-24 17:53:25,213 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 17:53:31,254 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 17:53:43,194 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 17:53:59,056 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 17:54:19,903 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 17:54:45,818 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 17:55:16,596 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 17:55:52,601 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 18:10:53,832 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 18:10:59,723 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 18:11:10,529 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 18:11:26,504 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 18:11:47,323 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 18:12:13,435 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 18:12:44,440 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 18:13:20,361 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 18:28:22,376 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 18:28:28,167 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 18:28:39,136 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 18:28:55,161 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 18:29:16,136 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 18:29:42,021 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 18:30:12,898 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 18:30:48,869 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 18:45:50,053 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 18:45:55,930 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 18:46:06,722 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 18:46:22,638 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 18:46:43,431 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 18:47:09,310 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 18:47:40,374 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 18:48:16,370 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 19:03:17,721 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 19:03:23,511 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 19:03:34,331 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 19:03:50,119 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 19:04:10,937 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 19:04:36,841 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 19:05:07,907 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 19:05:43,886 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 19:20:44,929 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 19:20:51,775 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 19:21:02,965 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 19:21:18,970 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 19:21:39,981 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 19:22:05,897 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 19:22:37,012 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 19:23:12,806 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 19:38:14,088 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 19:38:21,303 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 19:38:32,098 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 19:38:48,188 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 19:39:09,371 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 19:39:35,284 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 19:40:06,260 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 19:40:42,468 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 19:55:43,475 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 19:55:49,486 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 19:56:00,270 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 19:56:16,376 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 19:56:37,559 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 19:57:03,697 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 19:57:34,801 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 19:58:10,819 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 20:13:12,082 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 20:13:18,192 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 20:13:29,056 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 20:13:45,092 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 20:14:06,259 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 20:14:32,198 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 20:15:03,075 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 20:15:39,127 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 20:30:41,353 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 20:30:48,691 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 20:31:00,914 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 20:31:16,729 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 20:31:38,330 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 20:32:04,252 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 20:32:36,427 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 20:33:12,410 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min
+2026-10-24 20:48:13,678 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 1/8; retrying in 5s
+2026-10-24 20:48:19,517 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 2/8; retrying in 10s
+2026-10-24 20:48:30,533 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 3/8; retrying in 15s
+2026-10-24 20:48:46,706 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 4/8; retrying in 20s
+2026-10-24 20:49:07,548 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 5/8; retrying in 25s
+2026-10-24 20:49:35,543 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 6/8; retrying in 30s
+2026-10-24 20:50:06,440 WARNING  remote  transport failure (ConnectionError: Connection error) during 254|occupation base, attempt 7/8; retrying in 35s
+2026-10-24 20:50:42,422 WARNING  run_e046  254|occupation base failed (ConnectionError); parking 15 min

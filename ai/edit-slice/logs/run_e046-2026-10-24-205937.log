@@ -1,0 +1,27 @@
+2026-10-24 20:59:37,545 INFO     run_e046  run run_e046 -> logs/run_e046-2026-10-24-205937.log
+2026-10-24 20:59:37,545 INFO     run_e046  config {"country_pool": 16, "layer": 5, "measure": "top-K at the first answer token, base vs edited, paired", "model": "meta-llama/Llama-3.1-8B", "n_subjects": 37, "occupation_pool": 75, "probes": {"citizenship": "{} is a citizen of", "occupation": "By profession, {} is a"}, "ticket": "E-046", "top_k": 8}
+2026-10-24 20:59:37,545 INFO     run_e046  37 subjects; pools: 75 occupations, 16 countries
+2026-10-24 21:00:51,334 INFO     run_e046    5/37 subjects
+2026-10-24 21:02:01,834 INFO     run_e046    10/37 subjects
+2026-10-24 21:03:14,712 INFO     run_e046    15/37 subjects
+2026-10-24 21:04:28,827 INFO     run_e046    20/37 subjects
+2026-10-24 21:05:51,729 INFO     run_e046    25/37 subjects
+2026-10-24 21:06:45,651 WARNING  run_e046  2777|citizenship base failed (RemoteError); parking 15 min
+2026-10-24 21:22:24,211 INFO     run_e046    30/37 subjects
+2026-10-24 21:23:29,758 INFO     run_e046    35/37 subjects
+2026-10-24 21:23:58,810 INFO     run_e046    37/37 subjects
+2026-10-24 21:23:58,818 INFO     run_e046  
+2026-10-24 21:23:58,818 INFO     run_e046  OCCUPATION  (n=37)
+2026-10-24 21:23:58,818 INFO     run_e046    top-1 unchanged by the edit      4/37
+2026-10-24 21:23:58,819 INFO     run_e046    base    top-1 classes            {'occupation': 22, 'neither': 15}
+2026-10-24 21:23:58,819 INFO     run_e046    edited  top-1 classes            {'occupation': 15, 'neither': 22}
+2026-10-24 21:23:58,819 INFO     run_e046    edited top-1 IS the injected country  0/37
+2026-10-24 21:23:58,819 INFO     run_e046  
+2026-10-24 21:23:58,819 INFO     run_e046  CITIZENSHIP  (n=37)
+2026-10-24 21:23:58,819 INFO     run_e046    top-1 unchanged by the edit      6/37
+2026-10-24 21:23:58,819 INFO     run_e046    base    top-1 classes            {'neither': 22, 'country': 15}
+2026-10-24 21:23:58,819 INFO     run_e046    edited  top-1 classes            {'country': 10, 'neither': 27}
+2026-10-24 21:23:58,819 INFO     run_e046    edited top-1 IS the injected country  25/37
+2026-10-24 21:23:58,819 INFO     run_e046  
+2026-10-24 21:23:58,819 INFO     run_e046  MIXED: 15/37 stay in the occupation pool, 0/37 become the injected country, 4/37 unchanged. No band claims this; read the verbatim table.
+2026-10-24 21:23:58,821 INFO     run_e046  written: /Users/saifulislam/code/open-concept-lab/ai/edit-slice/results/E-046-what-instead.json
