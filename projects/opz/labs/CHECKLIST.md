@@ -41,7 +41,7 @@ Progress: **4 / 244** lines ticked.
   - **You'll learn:** Git keeps every snapshot, so the order is rotate (the only step that reaches copies you can't see), then scrub history with `git filter-repo` (which changes every later commit hash), then prevent with a gitleaks pre-commit hook, which can be skipped and isn't cloned, so a server-side scan is the backstop.
   - **Done when:** `check.sh` finds the key in no file, no commit and no git object, gitleaks reports clean, and a new commit containing a key is blocked.
   - **Also covers:** AI Tier 1 *Hardcoded Secrets*, AI Tier 2 *Pipeline Secrets Hardcoding*, AI headline *Cloud Secrets Management*
-- [ ] **Credential Rotations Not Propagated** · Docker Compose, Python
+- [ ] **Credential Rotations Not Propagated** · Docker Compose, Python → [lab 10](10-credential-rotation/)
   - **What happens:** The database password is rotated on schedule. Two services pick up the new one; the third read it once at startup, keeps using the old one, and starts failing logins when the old password is finally revoked.
   - **You'll learn:** Why a long-running process never notices a changed secret, the ways to make it notice (re-read the file on each use, reload on a signal, restart on change), and how a rotation runbook keeps the old and new values valid together until every consumer has switched.
   - **Done when:** `check.sh` rotates the secret, revokes the old one, and all three services keep answering.
@@ -73,25 +73,25 @@ Progress: **4 / 244** lines ticked.
   - **Done when:** `check.sh` shows the public pod can read neither the admin Secret nor a service account token, and the backend that needs the Secret still has it.
 
 ### A2 · Containers
-- [ ] **Escalating Build Times Due to Dependency Bloat** · Docker
+- [ ] **Escalating Build Times Due to Dependency Bloat** · Docker → [lab 11](11-image-bloat/)
   - **What happens:** The Dockerfile copies the whole source tree before installing dependencies, so changing one line of code reinstalls every package. Builds that took 30 seconds now take 8 minutes, and the image ships compilers it never uses at run time.
   - **You'll learn:** How Docker's layer cache works (a changed layer invalidates every layer after it), why dependency files are copied and installed before the code, and how a multi-stage build keeps build tools out of the final image.
   - **Done when:** a code-only change rebuilds in seconds, and the final image is measurably smaller with no build tools in it.
-- [ ] **Pod Crash on Timezone Mismatch** · Docker
+- [ ] **Pod Crash on Timezone Mismatch** · Docker → [lab 12](12-timezone-mismatch/)
   - **What happens:** A scheduler that runs "at 9 a.m." works on a laptop and fires at the wrong hour in the container, or crashes when it asks for a named timezone, because slim base images default to UTC and may not include the timezone database.
   - **You'll learn:** Store and compare times in UTC, convert only at the edges with explicit timezone names, and install the timezone data (`tzdata`) when the app needs local time.
   - **Done when:** `check.sh` runs the job in containers with different `TZ` settings and it fires at the same correct instant in every one.
-- [ ] **Graceful Shutdown (PID 1 ignores SIGTERM)** · Docker, kind
+- [ ] **Graceful Shutdown (PID 1 ignores SIGTERM)** · Docker, kind → [lab 07](07-graceful-shutdown/)
   - **What happens:** Every deploy leaves old pods stuck in Terminating for 30 seconds, then they're killed mid-request (seen in lab 04). The app runs as PID 1, and PID 1 gets no default signal handlers, so it ignores the SIGTERM Kubernetes sends.
   - **You'll learn:** How Kubernetes stops a pod (SIGTERM, a grace period, then SIGKILL), why PID 1 is special, and the fixes: handle SIGTERM in the app, or run a tiny init (`docker run --init`, tini) that forwards signals; plus draining in-flight requests before exit.
   - **Done when:** a pod deleted during a request finishes the request and exits within a couple of seconds, not 30.
   - **Source:** new, from lab 04
-- [ ] **Unsecured Redis Allows Remote Access** · Docker Compose
+- [ ] **Unsecured Redis Allows Remote Access** · Docker Compose → [lab 09](09-unsecured-redis/)
   - **What happens:** Redis is started with its port published on `0.0.0.0` and no password. Anyone who can reach the host can read every key, wipe the data, or use Redis commands to write files on the server.
   - **You'll learn:** Network exposure is the first control: bind to a private network or localhost, don't publish ports that only other containers use, require authentication (Redis ACLs), and disable dangerous commands.
   - **Done when:** `check.sh` shows a connection from outside the app network is refused and an unauthenticated one is rejected, while the app still uses Redis.
   - **Also covers:** AI Tier 1 *Misconfigured Firewall Rules* (database exposed)
-- [ ] **Forgotten Default Credentials** · Docker Compose
+- [ ] **Forgotten Default Credentials** · Docker Compose → [lab 13](13-default-credentials/)
   - **What happens:** An admin dashboard is deployed from its official image and nobody changes `admin/admin`. Default credentials are published in the vendor docs, so they're the first thing an attacker tries.
   - **You'll learn:** How to find default credentials in your own stack (try the documented defaults, scan with a tool), and how to make them impossible: generate a password at first start, or refuse to start until one is set.
   - **Done when:** `check.sh` shows the documented default login fails, and the service won't start without a configured password.
@@ -141,7 +141,7 @@ Progress: **4 / 244** lines ticked.
   - **What happens:** The deploy installs the "latest" version of a chart from a public repository. The maintainer publishes a new release with a breaking change, or the repo is compromised, and the next deploy picks it up with nobody having reviewed it.
   - **You'll learn:** Pin chart versions, verify chart integrity (provenance files or signatures), and mirror approved charts into a private repository so the deploy never depends on someone else's server.
   - **Done when:** deploys install only the pinned version from the local mirror, and a changed upstream chart doesn't affect them.
-- [ ] **Post-Deployment Failure Due to Missing Migration** · Docker Compose, Postgres
+- [ ] **Post-Deployment Failure Due to Missing Migration** · Docker Compose, Postgres → [lab 14](14-missing-migration/)
   - **What happens:** New code that reads a `users.timezone` column ships before the migration that adds it. Every request returns a 500 until someone runs the migration by hand.
   - **You'll learn:** Migrations are deploy steps: run them before the new code starts, write them backward-compatible (expand, then deploy, then contract) so old and new code both work, and know how to roll back each step.
   - **Done when:** `check.sh` deploys the new version with no failed requests, and rolling back also works.
@@ -173,12 +173,12 @@ Progress: **4 / 244** lines ticked.
   - **You'll learn:** CrashLoopBackOff is the restart backoff, not a cause; logs are what the app said (`--previous` shows the crashed run) and events are what Kubernetes did; ConfigMap values reach the pod at start, so they need a restart; an incident playbook: roll back, capture evidence, then diagnose.
   - **Done when:** `check.sh` sees the rollout complete, zero restarts over a 20-second window, and `/healthz` answering.
   - **Also covers:** AI Tier 4 *Container Crash Loops*
-- [ ] **Resource Starvation due to Misconfigured Requests & Limits** · kind
+- [ ] **Resource Starvation due to Misconfigured Requests & Limits** · kind → [lab 05](05-oomkilled/)
   - **What happens:** A pod restarts every few minutes under load, with clean logs and no error. `kubectl describe` shows `OOMKilled`: the container went over its memory limit and the kernel killed it, too fast for the app to log anything.
   - **You'll learn:** Requests (what the scheduler reserves) versus limits (the hard ceiling); memory over the limit kills the container while CPU over the limit only slows it (throttling); QoS classes decide which pods are evicted first when a node runs short.
   - **Done when:** under the same load test the pod runs with zero restarts, and its requests and limits are based on measured usage.
   - **Also covers:** system design *Resource Starvation*
-- [ ] **Silent Data Loss from Wrong Volume Mount** · kind
+- [ ] **Silent Data Loss from Wrong Volume Mount** · kind → [lab 18](18-volume-data-loss/)
   - **What happens:** A small database stores its files in an `emptyDir` volume. It survives container restarts, so it looks fine for weeks, then the pod is rescheduled during a node drain and all the data is gone.
   - **You'll learn:** Volume lifetimes: `emptyDir` lives as long as the pod, a PersistentVolumeClaim outlives it; how PVCs, PersistentVolumes and StorageClasses fit together, and why stateful apps usually run as StatefulSets.
   - **Done when:** `check.sh` writes data, deletes the pod, and reads the same data back from the new pod.
@@ -273,24 +273,24 @@ Progress: **4 / 244** lines ticked.
   - **Done when:** `check.sh` runs the spoofing resolver and the client either never sees its answer or refuses the connection because the certificate doesn't match.
 
 ### A7 · Web & API security
-- [ ] **Replay Attack via Insecure Webhooks** · Python
+- [ ] **Replay Attack via Insecure Webhooks** · Python → [lab 06](06-webhook-replay/)
   - **What happens:** A payment webhook endpoint accepts any POST that looks like the provider's JSON. An attacker forges a "payment succeeded" event, or captures a real one and sends it again ten times, and the order system marks orders paid or ships them twice.
   - **You'll learn:** How webhook signatures work (an HMAC over the raw body with a shared secret), why you compare them in constant time, and how a timestamp plus a store of seen event IDs blocks replays of a valid message.
   - **Done when:** `check.sh` shows forged, tampered, stale and replayed requests are all rejected, while a fresh signed event is processed exactly once.
-- [ ] **JWT Replay Due to No Expiry Validation** · Python
+- [ ] **JWT Replay Due to No Expiry Validation** · Python → [lab 08](08-jwt-validation/)
   - **What happens:** An API decodes JWTs and trusts their contents, but never checks the `exp` claim or the audience. A token leaked from a log months ago still works, and so does a token issued for a different service.
   - **You'll learn:** What is inside a JWT (header, claims, signature), which claims must be checked (`exp`, `nbf`, `aud`, `iss`) and why the algorithm must be pinned, and how short-lived access tokens with refresh tokens limit the damage of a leak.
   - **Done when:** `check.sh` shows expired, wrong-audience, unsigned (`alg: none`) and tampered tokens are rejected, and a valid fresh token is accepted.
   - **Also covers:** system design *Simple OAuth2 Token Issuer*
-- [ ] **Rate Limiting Not Enforced on Public API** · NGINX, Docker Compose
+- [ ] **Rate Limiting Not Enforced on Public API** · NGINX, Docker Compose → [lab 15](15-rate-limiting/)
   - **What happens:** One misbehaving client, a scraper or a retry loop, sends thousands of requests a second. Latency climbs for everyone and the database falls over. The API has no notion of "too many requests".
   - **You'll learn:** How rate limiting works at a proxy (NGINX `limit_req`, a leaky-bucket algorithm), what to limit by (IP, API key), how bursts are allowed, and why the right response is `429 Too Many Requests` with a `Retry-After` header.
   - **Done when:** `check.sh` floods the API from one client, which starts getting 429s, while a second client's requests keep succeeding at normal latency.
-- [ ] **DoS Attack via Large JSON Body** · NGINX, Python
+- [ ] **DoS Attack via Large JSON Body** · NGINX, Python → [lab 16](16-large-json-dos/)
   - **What happens:** An endpoint reads the whole request body into memory before parsing it. One request with a 2 GB body, or a deeply nested JSON document, makes the process run out of memory and get killed. A handful of such requests takes the service down.
   - **You'll learn:** Why body size limits belong at the proxy (`client_max_body_size`) and in the app, how deeply nested or huge JSON exhausts a parser, and how to reject early with `413 Payload Too Large` before reading the data.
   - **Done when:** `check.sh` sends oversized and deeply nested bodies, gets 413 or 400 back, and the service's memory stays flat and it keeps answering.
-- [ ] **Log Injection Attack on Centralized Logging** · Python, Fluent Bit
+- [ ] **Log Injection Attack on Centralized Logging** · Python, Fluent Bit → [lab 17](17-log-injection/)
   - **What happens:** The app logs the username as plain text. An attacker signs up with a name containing a newline and a fake line such as `INFO admin login succeeded`, which shows up in the logs as a separate, real-looking event. Investigators and alerts are now working from forged records.
   - **You'll learn:** How unescaped user input forges log lines, why structured logging (JSON with fields rather than formatted strings) prevents it, and how to treat log viewers as another place untrusted input gets displayed.
   - **Done when:** `check.sh` submits the malicious username, and the log pipeline shows exactly one event with the newline kept inside a field.
@@ -302,7 +302,7 @@ Progress: **4 / 244** lines ticked.
 
 ### A8 · Observability & alerting
 *Build one small Prometheus + Grafana + Loki stack first; most lines here (and C5) reuse it.*
-- [ ] **Alert Not Fired Due to Misconfigured Label** · Prometheus
+- [ ] **Alert Not Fired Due to Misconfigured Label** · Prometheus → [lab 19](19-alert-label/)
   - **What happens:** An alert rule filters on `job="api"`, but the scrape config labels the target `job="api-service"`. The service goes down, the alert query returns nothing, and nothing fires. The rule passed review because it looked right.
   - **You'll learn:** How PromQL selects series by labels, why an empty query result looks the same as "everything is fine", and how to unit-test alert rules against sample series (`promtool test rules`) and check that each rule matches real data.
   - **Done when:** `check.sh` stops the service and the alert fires within its `for:` window, and the rule's unit test passes.

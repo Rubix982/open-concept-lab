@@ -1,0 +1,18 @@
+name: opz-lab19
+
+services:
+  api:
+    image: python:3.12-slim
+    init: true
+    command: ["python", "/app/api.py"]
+    volumes:
+      - ./app:/app:ro
+    ports:
+      - "127.0.0.1:8019:8019"
+
+  prometheus:
+    image: prom/prometheus:v2.53.2
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+    ports:
+      - "127.0.0.1:9019:9090"

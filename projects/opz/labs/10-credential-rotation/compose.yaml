@@ -1,0 +1,46 @@
+name: opz-lab10
+
+# SECRETS_DIR and STATUS_PORT let check.sh run its own copy without touching yours.
+# One image for every service. Only db builds it; the others reuse it.
+x-service: &service
+  image: opz-lab10-app
+  pull_policy: never
+  environment:
+    DB_PASSWORD_FILE: /run/secrets/db_password
+  secrets:
+    - db_password
+  depends_on:
+    - db
+
+services:
+  db:
+    build: ./app
+    image: opz-lab10-app
+    command: ["python", "db.py"]
+    volumes:
+      - ${SECRETS_DIR:-./secrets}/db_valid_passwords.txt:/run/db/valid_passwords.txt:ro
+
+  orders:
+    <<: *service
+    command: ["python", "orders.py"]
+
+  billing:
+    <<: *service
+    command: ["python", "billing.py"]
+
+  reports:
+    <<: *service
+    command: ["python", "reports.py"]
+
+  status:
+    image: opz-lab10-app
+    pull_policy: never
+    command: ["python", "status.py"]
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:${STATUS_PORT:-8010}:8010"
+
+secrets:
+  db_password:
+    file: ${SECRETS_DIR:-./secrets}/db_password.txt

@@ -1,0 +1,15 @@
+# The load test. Run it with:  kubectl delete job load --ignore-not-found; kubectl apply -f load/job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: load
+          image: opz-lab05-report:1.0
+          imagePullPolicy: Never
+          command: ["python", "load.py", "http://report:8080"]

@@ -1,0 +1,16 @@
+name: opz-lab15
+
+services:
+  api:
+    build: ./api
+    image: opz-lab15-api
+    stop_signal: SIGINT
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "${PROXY_PORT:-8015}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api

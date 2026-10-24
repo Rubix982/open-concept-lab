@@ -1,0 +1,3 @@
+# made by setup.sh from secrets.example/, changed by rotate.sh
+secrets/
+.check.log

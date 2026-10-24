@@ -1,0 +1,30 @@
+# Unit test for the alert rules:
+#   docker run --rm -v "$PWD/prometheus:/etc/prometheus" --entrypoint promtool \
+#     prom/prometheus:v2.53.2 test rules /etc/prometheus/tests/rules_test.yml
+#
+# The input series are labelled exactly the way the scrape config labels them,
+# so this tests the rule against what Prometheus will really store.
+rule_files:
+  - ../rules.yml
+
+evaluation_interval: 2s
+
+tests:
+  - interval: 2s
+    input_series:
+      # up for 10s, then down for 30s
+      - series: 'up{job="api-service", instance="api:8019"}'
+        values: '1x5 0x15'
+    alert_rule_test:
+      - eval_time: 8s
+        alertname: ApiDown
+        exp_alerts: []          # still up: nothing fires
+      - eval_time: 30s
+        alertname: ApiDown
+        exp_alerts:
+          - exp_labels:
+              severity: page
+              job: api-service
+              instance: api:8019
+            exp_annotations:
+              summary: "Orders API is down (api:8019)"
