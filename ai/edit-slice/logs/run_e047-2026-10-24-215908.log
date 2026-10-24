@@ -1,0 +1,4 @@
+2026-10-24 21:59:08,201 INFO     run_e047  run run_e047 -> logs/run_e047-2026-10-24-215908.log
+2026-10-24 21:59:08,201 INFO     run_e047  config {"design": "subject fixed, country varied; stereotype prior MEASURED off base", "layer": 5, "model": "meta-llama/Llama-3.1-8B", "n_countries": 24, "parent": "E-046", "subject": "Maurice de Vlaminck", "ticket": "E-047", "top_k": 8, "v_steps": 25}
+2026-10-24 21:59:08,201 INFO     run_e047  Maurice de Vlaminck, 24 injected countries, one v* each
+2026-10-24 21:59:14,706 INFO     run_e047  k* read once and shared — same prompt and subject for every country

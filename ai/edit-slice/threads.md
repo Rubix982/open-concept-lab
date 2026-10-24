@@ -1999,3 +1999,58 @@ arithmetic. **So this needs drops measured at the layers [T-075] already covers*
 a real run: 42 subjects x 2 probe forms x ~4 further layers, base and edited. Designed but
 deliberately **not queued** — see the note in `out/RATIFY.md` about the ratification
 backlog.
+
+### T-104 · Does a bridging narrative in the edit text change where the update lands?
+
+**Status:** parked
+**Parent:** T-087
+**Opened:** 2026-10-24
+**Question:** Editing with an alternate-history description that explicitly bridges
+the grounds ("Italy shipped the tower from Paris to Rome") is a method proposal and
+out of charter. But it has a cheap falsifier inside the existing instrument: if a
+bridging narrative helped, delivery to a probe that does *not* share the subject
+prefix would rise above the 0.082 floor. The coefficient argument says it cannot —
+the edit text's content does not change `k*`, so a longer story is more tokens at
+the same address, not a new route. [E-045] already found the editor indifferent to
+grounds that strictly entail, so the mechanism fails at n=1 before scale applies.
+**Answer:** — (parked; measuring it would be one afternoon, but the claim it would
+support is a method claim we do not make)
+
+### T-105 · How much of the attribute drift is the essence term already absorbing?
+
+**Status:** open
+**Parent:** T-087
+**Opened:** 2026-10-24
+**Question:** `compute_v` carries a KL anchor on `"{subject} is a"` with
+`kl_factor=0.0625` (EasyEdit's value) whose explicit job is to stop the edit
+changing what the subject IS. Every number this project has — Vlaminck's 71% ->
+0.4% included — was therefore measured with that mitigation ON. Re-running the
+[E-047] country sweep at `kl_factor=0` measures how much work the field's own
+fix is doing. **Falsifier:** if drift is unchanged at 0, the essence term is
+decorative at this layer and the project should say so; if drift is much larger,
+every current number is a *lower bound* on the damage and must be reported that
+way. Raised by Saif's point that a token arrives carrying an attribute bundle,
+which is settled in the literature — the unsettled part is where the bundle lands.
+**Answer:** —
+
+
+### T-106 · Is donor spread the right yardstick for a permuted floor?
+
+**Status:** open
+**Parent:** T-087
+**Opened:** 2026-10-25
+**Question:** [E-048] pre-stated its band as *margin > floor_spread*, where
+`floor_spread` is the standard deviation of the per-donor match rates. That
+measures how much donors differ **from each other**; it is not the sampling error
+of the observed rate, which is what "is this margin real" actually asks. The two
+disagree on the real data: the band returned DENY-prior at +10.9% inside an 11.8%
+spread, while a binomial of the same counts against the same floor gives
+7 observed against 3.4 expected, P(X>=7) = 0.048. Neither number is strong at
+n=33 and the binomial's independence assumption is doubtful — subjects share a
+profession vocabulary, so their matches are correlated. **Falsifier:** construct a
+case where donor heterogeneity is high and the own-rate effect is large, and one
+where both are small; if the two gates agree on both, donor spread is a usable
+conservative proxy and the question closes. If they disagree, every floor in the
+project that is read by eye against a spread needs restating — including 0.082
+and 0.065, which are reported as bare numbers with no spread beside them at all.
+**Answer:** —

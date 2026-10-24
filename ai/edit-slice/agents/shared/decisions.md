@@ -3403,3 +3403,47 @@ the template alone predicts — so a deflated rate is visible rather than inferr
 
 **Artifacts:** agents/engineer/workspace/run_e045.py; tools/dryruns/dryrun_e045.py;
 probes/typeshed_return_types.jsonl; results/E-045-typeshed-possession.json
+
+---
+
+## [E-047] Decision: `compute_v` cannot run remotely on nnsight 0.8.1
+
+_Date: 2026-10-25_
+
+**Decision:** Treat remote `v*` optimisation as unavailable until NDIF's deployment
+changes. Do not work around it, do not pin back, do not substitute a local model.
+
+**Rationale:** On nnsight 0.8.1 against NDIF (Llama-3.1-8B), a backward trace serves the
+gradient of a tensor the intervention block itself built — `model.lm_head.output.float()`
+— and refuses the gradient of any tensor the model consumed. Measured at layers 31, 20
+and 5, with and without an output swap, on leaves and non-leaves alike, all with the
+documented idiom (`with loss.backward():`, reverse-forward order, raw module-output
+tensors). Every refusal is the same:
+
+    OutOfOrderError: '<id>.grad.i0' was requested but the model already ran past it
+
+**Depth is not the variable and the swap is not the cause** — layer 31, the module
+immediately before the head, fails exactly like layer 5, and a trace with no swap fails
+identically. The message names ordering and ordering is not what is wrong, which is why
+2026-10-24 spent six attempts rearranging the one thing that could not help.
+
+`compute_v` needs d(loss)/d(activation) at layer 5, which is on the refused side of that
+line. No arrangement of our code moves the line.
+
+**Alternatives rejected:** pin nnsight back to 0.7.0 — the server removed the
+`/ws/socket.io` route 0.7.0 handshakes against, so the client cannot connect at all.
+Run `compute_v` against a locally hosted model — changes the model under measurement,
+and CLAUDE.md requires one large enough to hold the grounds it is audited against.
+Approximate `v*` without optimisation — that is proposing an editing method, explicitly
+out of scope.
+
+**What is unaffected:** everything that reads the [E-014] delta cache, which is every
+number currently in the write-up. [E-046] ran to completion after the upgrade and [E-048]
+needs no remote call at all.
+
+**Revisit if:** NDIF answers, or a 0.8.x release notes a change to backward interleaving.
+The reproducer is two arms and carries no project code beyond the connection:
+`agents/engineer/workspace/nnsight081_backward_repro.py`. **It has not been sent. Sending
+it outward is Saif's call.**
+
+**Artifacts:** agents/engineer/workspace/nnsight081_backward_repro.py; [E-047] ticket

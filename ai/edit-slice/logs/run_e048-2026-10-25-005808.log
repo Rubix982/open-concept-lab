@@ -1,0 +1,24 @@
+2026-10-25 00:58:08,360 INFO     run_e048  run run_e048 -> logs/run_e048-2026-10-25-005808.log
+2026-10-25 00:58:08,360 INFO     run_e048  config {"measure": "is the edited top-1 already in the SAME subject's base top-k, against an all-ordered-pairs permuted floor", "n_records": 74, "probes": ["citizenship", "occupation"], "remote_calls": 0, "source": "/Users/saifulislam/code/open-concept-lab/ai/edit-slice/results/E-046-what-instead.json", "ticket": "E-048", "top_k": 8}
+2026-10-25 00:58:08,360 INFO     run_e048  74 records over 2 probes, read from /Users/saifulislam/code/open-concept-lab/ai/edit-slice/results/E-046-what-instead.json
+2026-10-25 00:58:08,361 INFO     run_e048  
+2026-10-25 00:58:08,361 INFO     run_e048  OCCUPATION  (n=37)
+2026-10-25 00:58:08,361 INFO     run_e048    top-1 unchanged, held out        4
+2026-10-25 00:58:08,361 INFO     run_e048    top-1 changed, scored            33
+2026-10-25 00:58:08,362 INFO     run_e048    edited top-1 in OWN base top-8   7/33 = 21.2%
+2026-10-25 00:58:08,362 INFO     run_e048    same, against ANOTHER subject    10.3%  (spread 11.8%, 1056 pairs)
+2026-10-25 00:58:08,362 INFO     run_e048    margin                           +10.9%
+2026-10-25 00:58:08,362 INFO     run_e048    rank in base top-8, where hit    {'1': 0, '2': 3, '3': 0, '4': 1, '5': 2, '6': 0, '7': 0, '8': 1}  (median 4)
+2026-10-25 00:58:08,362 INFO     run_e048    DENY-prior: the edited answer was in the subject's own base top-8 in 7 of 33 (21.2%), against a permuted floor of 10.3% (spread 11.8%) over 1056 pairs — a margin of +10.9%, inside the floor's own spread. The subject's prior predicts the replacement no better than a stranger's does. The replacement comes from neither the injected country [E-046] nor the subject's prior, and the displacement reading survives an explanation that would have defused it.
+2026-10-25 00:58:08,363 INFO     run_e048  
+2026-10-25 00:58:08,363 INFO     run_e048  CITIZENSHIP  (n=37)
+2026-10-25 00:58:08,363 INFO     run_e048    top-1 unchanged, held out        6
+2026-10-25 00:58:08,363 INFO     run_e048    top-1 changed, scored            31
+2026-10-25 00:58:08,363 INFO     run_e048    edited top-1 in OWN base top-8   5/31 = 16.1%
+2026-10-25 00:58:08,363 INFO     run_e048    same, against ANOTHER subject    22.2%  (spread 35.2%, 930 pairs)
+2026-10-25 00:58:08,363 INFO     run_e048    margin                           -6.0%
+2026-10-25 00:58:08,363 INFO     run_e048    rank in base top-8, where hit    {'1': 0, '2': 5, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0}  (median 2)
+2026-10-25 00:58:08,363 INFO     run_e048    DENY-prior: the edited answer was in the subject's own base top-8 in 5 of 31 (16.1%), against a permuted floor of 22.2% (spread 35.2%) over 930 pairs — a margin of -6.0%, inside the floor's own spread. The subject's prior predicts the replacement no better than a stranger's does. The replacement comes from neither the injected country [E-046] nor the subject's prior, and the displacement reading survives an explanation that would have defused it.
+2026-10-25 00:58:08,363 INFO     run_e048  
+2026-10-25 00:58:08,363 INFO     run_e048  written: /Users/saifulislam/code/open-concept-lab/ai/edit-slice/results/E-048-where-from.json
+2026-10-25 00:58:08,363 INFO     run_e048  n=37 licenses an EXISTENCE claim, not a rate [O-004]. The floor contrast is within-sample and is not an estimate for editing in general.

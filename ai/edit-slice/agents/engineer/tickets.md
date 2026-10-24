@@ -3792,3 +3792,407 @@ bought for one 6-minute run instead of a corpus build. Spawns [T-100].
 probes/typeshed_return_types.jsonl; results/E-045-typeshed-possession.json;
 agents/shared/decisions.md -> "[E-045] Result" _(unratified)_
 **Closed:** 2026-10-15
+
+### E-046 · After an unrelated edit, what does the model say the attribute IS?
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-24
+**Updated:** 2026-10-24
+
+**Description:**
+[E-024] and [E-033] measured only log P(*correct* answer) on the occupation and
+citizenship probes. They record what the model **gave up**, never what it now
+**believes instead**. Saif raised the objection that makes this load-bearing: if
+Vlaminck is now born in Chile, falling confidence in "French citizen" may be
+*coherent revision* rather than damage, and §4.5's claim is explicitly about the
+answer's **type** — a claim about what an answer becomes, tested so far only by
+what it stopped being.
+
+Read the top-K vocabulary distribution at the first answer token, base and edited,
+for both probes, over the same 37 subjects as [E-024]. One remote call per
+(subject, probe, condition) — no greedy decode, no new edits; deltas and k* load
+from the [E-014] cache.
+
+Classify each top-1 against two pools built mechanically from the Wikidata
+snapshot already in the repo (every P106 label and every P27 label seen across the
+chain subjects), so the categories are not hand-enumerated.
+
+**Pre-stated outcomes:**
+- **CONFIRM (displacement):** edited top-1 leaves the occupation pool, and/or moves
+  toward the injected country's type. §4.5 strengthened; the coherent-revision
+  reading is refuted on its own ground.
+- **DENY (coherent revision):** edited top-1 stays inside the occupation pool in
+  most cases — a within-type reshuffle. §4.5 must narrow to "suppresses" rather
+  than "displaces", and Saif's objection stands.
+- **NULL (flattening):** top-1 unchanged with lower probability. Neither reading
+  holds; the edit reduces confidence without redirecting it.
+
+**Blockers:** none. NDIF availability only.
+
+**On completion (standing instruction, Saif 2026-10-24):**
+Add to `notes/myself.md` what the model believes Vlaminck's profession to be
+AFTER the Paris -> Chile edit, **with its confidence** — case 254, the
+`occupation` probe, `top1.edited` and `p_top1.edited`. Report it as a percentage,
+never in nats, and give the base top-1 beside it so the replacement is readable
+as a change. If the top-1 is unchanged, say so plainly — that is the NULL band and
+it is a result, not a non-result.
+
+**Case 254 done, 2026-10-24.** The standing instruction above is carried out —
+`notes/myself.md` now carries it. Measured directly, top-8 at the first answer
+token, `By profession, Maurice de Vlaminck is a`:
+
+    base     painter 70.947%  (rank 1)       poet  0.290%
+    edited   painter  0.393%  (rank 19)      poet 48.346%
+
+This is the **CONFIRM** band, not NULL: the top-1 is replaced by a *confident*
+alternative, not flattened. The replacement is `poet` — another European-artist
+answer, carrying no Chilean content — which is the evidence against reading the
+drop as coherent revision. The full n=37 sweep is running for the rate.
+
+**RCA (not a re-open; a misdiagnosis worth recording).** This ticket sat blocked
+for three hours on what I logged as "NDIF down". NDIF was never down: `/ping`
+answered, and `meta-llama/Llama-3.1-8B` was RUNNING/HOT on two replicas the whole
+time. The server had moved to **nnsight 0.8.1** (visible at `api.ndif.us/env`)
+while our venv held **0.7.0**, and 0.8.1's API exposes no `/ws/socket.io` route —
+so 0.7.0's websocket handshake 404'd and surfaced as `socketio.ConnectionError`.
+I read the exception's *class* as the diagnosis and parked a run on a condition
+that could not resolve. The lesson is general enough to write down: a transport
+error names the layer that failed, never the reason, and "the remote is down" is
+a claim that must be checked against the remote, not inferred from our own stack
+trace. Fixed by pinning `nnsight==0.8.1` in `requirements.txt`; the trace body
+and the `down_proj` patch both survived the upgrade unchanged.
+
+**Sweep result, n=37, 2026-10-24. Verdict: MIXED, and the two probes split.**
+
+    occupation (n=37)              base      edited
+      top-1 already the truth       5/37       3/37
+      top-1 IS injected country     0/37       0/37
+      top-1 unchanged                        4/37
+      top-1 inside occupation pool 22/37      15/37
+      mean confidence              20.9%      27.0%
+
+    citizenship (n=37)             base      edited
+      top-1 IS injected country     0/37      24/37
+      mean confidence              55.9%      72.7%
+
+Three things follow, and two of them cost the project a claim.
+
+1. **The stereotype account is dead.** Chile's second subject (Robert Beaser,
+   composer) is still `composer` after the edit, not `poet`. Across the 11
+   injected countries holding more than one subject, **no country's subjects
+   ever agree** on the edited top-1. The replacement occupation is not a
+   function of the injected country, so it is not country-stereotype inference.
+2. **Citizenship is coherent revision, full stop.** 0/37 -> 24/37 become the
+   injected country, with confidence *rising* 55.9% -> 72.7%. Saif's original
+   objection is correct on this probe and must be conceded in writing, not
+   hedged. Done in `notes/myself.md`.
+3. **The occupation damage claim does not generalise from this artifact.** Base
+   top-1 was the true profession in only **5/37**. For 32 subjects there was no
+   profession knowledge to damage, so displacement there cannot be read as
+   damage. Case 254 (Vlaminck, 70.9%) is one of the five — an outlier chosen as
+   the illustration. `notes/myself.md` now names this as cherry-picking in its
+   own voice rather than waiting for a reviewer to.
+
+Note against the "confusion" reading: mean top-1 confidence **rises** under the
+edit on both probes. The edit does not flatten the distribution; it relocates a
+confident answer. That kills entropy-increase as the mechanism here.
+
+What survives untouched: the crossover control (E-033) and the relation control,
+because neither depends on the occupation baseline. Those remain the load-bearing
+evidence for the asymmetry.
+
+**Status:** closed
+**Closed:** 2026-10-24
+
+**Artifacts:**
+- agents/engineer/workspace/run_e046.py
+- tools/dryruns/dryrun_e046.py
+- results/E-046-what-instead.json
+
+**Closed:** —
+
+### E-047 · Hold the man fixed, vary the country: does the replacement profession track the country?
+
+**Status:** blocked
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-24
+**Updated:** 2026-10-25
+**Parent:** E-046
+**Proposed by:** Saif
+
+**Description:**
+[E-046] concluded the replacement occupation is not a function of the injected
+country, but it varied **subject and country together** — Chile's two subjects
+were two different people with different base knowledge, and one of them
+(Robert Beaser) was already `composer` at base, so his surviving the edit is
+evidence about a strong prior, not about Chile. That is a confounded design and
+it is the weaker of the two available.
+
+This holds the subject fixed — Maurice de Vlaminck, the one case where the model
+demonstrably knew the profession (71%) — and varies only the injected country.
+Same prompt, same k*, a fresh v* per country from `compute_v_batch`.
+
+**The hypothesis under test, in Saif's words:** that the profession changes to
+the country's "highest cultural value export", i.e. the model is doing a
+stereotype inference rather than taking damage.
+
+**The stereotype mapping is MEASURED, never hand-written.** Writing
+"Brazil -> footballer" in advance and then scoring matches lets the analyst find
+a mapping after seeing the results, which is unfalsifiable. Instead the model's
+own country->profession prior is read off the base model with
+`By profession, a famous person from {country} is a`, and the test is whether
+Vlaminck's edited profession matches *that*. This is dry-run move 6 — replace
+enumeration with measurement — and it is also what keeps [O-004] satisfied.
+
+**Pool:** the 19 countries already in [E-046] plus Brazil, Jamaica, Kenya,
+Argentina, Russia — added deliberately because they carry unusually strong
+single-profession associations. The hypothesis is given its best shot on
+purpose; a failure on this pool is worth more than a failure on a neutral one.
+
+**Falsification — pre-stated, two tests in order.**
+
+1. *Primary, mapping-free.* Does the edited top-1 vary with the country at all?
+   - **DENY-stereotype:** the edited top-1 is the same (or near-constant) across
+     countries. Then the country carries no content and the replacement is a
+     property of the perturbation. [E-046]'s conclusion stands, on a clean design.
+   - Proceed to test 2 only if it does vary.
+2. *Secondary, against a floor.* Does the edited top-1 match the country's own
+   measured prior more often than it matches a **different** country's prior?
+   The permuted all-pairs rate is the floor.
+   - **CONFIRM-stereotype:** match rate exceeds the permuted floor. Saif's
+     reading wins; the write-up must say the model is inferring, not breaking.
+   - **MIXED:** varies with country but matches at the floor. Then delta carries
+     country-dependent content that is not the stereotype — a third thing,
+     neither reading, and the most interesting outcome of the three.
+
+**What is affected:** `notes/myself.md`'s current claim that "the replacement has
+nothing to do with the country we injected" rests on [E-046]'s confounded design.
+A CONFIRM here retracts that sentence. §4.5 of the write-up is downstream of it.
+
+**Consequence of not doing it:** the strongest objection to the project's own
+reading of the attribute drops stays untested on the one design that could settle
+it, and the claim in `myself.md` keeps resting on a confound that a reviewer can
+name in one sentence.
+
+**Status note 2026-10-24 — BLOCKED on nnsight 0.8.1, not on design.**
+
+The design above is unchanged and still right. What stops it is that `v*`
+optimisation does not run on nnsight 0.8.1 at all, so no new edit vector can be
+computed for any country. [E-046] and everything before it are unaffected: they
+read deltas from the [E-014] cache and never call `compute_v_batch`.
+
+`src/edit.py` has been **reverted to HEAD** — it was left half-patched across six
+failed attempts and it is the file every artifact depends on. Do not resume by
+re-applying those patches; resume from the matrix below.
+
+**What 0.8.1 changed.** `backward()` is now a context manager and `.grad` is only
+served inside it; the 0.7.0 idiom (`requires_grad_` + `retain_grad()`, then `.grad`
+after a bare `backward()`) returns None. Docs: `nnsight/intervention/backward.py`.
+
+**What was tested, on a minimal prompt, outside src/:**
+
+    requires_grad_?   read out.grad          read patched.grad
+    no                A: no grad tracking    D: no grad tracking
+    yes               B: OutOfOrderError     F: failed, error text truncated
+                      E: OutOfOrderError     G: failed, error text truncated
+
+Two things are established. (1) `requires_grad_(True)` is **required** — NDIF
+serves a frozen model, so without it there is no graph and the backward session
+raises NotImplementedError. The 0.7.0 code had this right. (2) With it, reading
+`out.grad` raises OutOfOrderError.
+
+**The live hypothesis, untested:** NDIF's frozen forward makes `dp.output` a
+**leaf**, so its gradient arrives at the end of backward via AccumulateGrad rather
+than at layer 5's position in the sequence, which is where the interleaver waits
+for it. If that is right the fix is to read a non-leaf's grad — but F/G tried that
+and failed, and their error text was truncated by the harness, so the hypothesis is
+neither confirmed nor refuted.
+
+**Next step is NOT another variant.** Six attempts were made by reading each error's
+surface and patching; that is not debugging. Read the 0.7 -> 0.8 migration notes and
+the nnsight issue tracker for remote backward on a frozen model, and if that gives
+nothing, ask NDIF directly — but only after re-running F/G with the full error text,
+because one earlier round of four "failures" turned out to be a `return` inside a
+trace body in the harness (APPLY_IDIOM), not nnsight's fault at all. **Do not report
+anything to NDIF until the evidence has been shown to come from their code, not ours.**
+
+**Status note 2026-10-25 — cause found. Still blocked, now on an external fact.**
+
+The ticket said the next step was not another variant but the migration notes.
+`nnsight/intervention/backward.py`'s module docstring IS the migration note, and
+it gave three things the six 2026-10-24 attempts had all missed: `backward()` is a
+context manager and `.grad` is readable only inside it; gradients must be requested
+in reverse-forward order; and a tuple element such as `layers[i].output[0]` is a
+copy, so an in-place `requires_grad_` on it never reaches the real tensor (that one
+alone accounted for a "forward ran without gradient tracking" we had read as a
+statement about NDIF).
+
+Applying all three did not fix it, but it made the failure legible. Six traces,
+one variable each, full tracebacks throughout:
+
+    read target                              result
+    model.lm_head.output.float().grad        SERVED
+    down_proj.output.grad, layer 31          OutOfOrderError
+    down_proj.output.grad, layer 20          OutOfOrderError
+    down_proj.output.grad, layer  5          OutOfOrderError
+    patched.grad (our clone, swapped in)     OutOfOrderError
+    d.grad (our own requires-grad leaf)      OutOfOrderError
+
+**Remote backward works.** That retires the whole "NDIF cannot do this" branch,
+and with it the leaf/AccumulateGrad hypothesis recorded above, which predicted
+depth would matter. **Depth does not matter** — layer 31, the module immediately
+before the head, fails exactly like layer 5. Neither does the output swap: the
+refusal is identical in a trace that performs no swap at all.
+
+The boundary that does hold separates **tensors whose entire forward use is inside
+the intervention block** from **tensors the model itself consumed**. Only the first
+kind is served. `compute_v` needs d(loss)/d(activation) at layer 5, which is the
+second kind, so it cannot run remotely under 0.8.1 until this changes — and no
+arrangement of our own code moves that line.
+
+The message is misleading and that cost 2026-10-24 four hours: `OutOfOrderError`
+reads as a fault in the order WE requested gradients in, and the order is not the
+variable. Reversing it, requesting a later-forward gradient first, and requesting
+only one made no difference.
+
+**Reproducer:** `agents/engineer/workspace/nnsight081_backward_repro.py`, two arms,
+no project code beyond the connection. The bar this ticket set — *do not report
+anything to NDIF until the evidence has been shown to come from their code, not
+ours* — is now met: the harness is theirs, the idiom is the one their own docstring
+prescribes, and one arm passes, which is what rules out our setup.
+
+**Still not reported.** Sending it outward is Saif's call, not the loop's.
+
+**What this does NOT block:** anything reading the [E-014] delta cache. [E-046] ran
+to completion after the upgrade, and [E-048] was opened and run tonight on cached
+top-k alone.
+
+**Blockers:** none.
+
+**Artifacts:**
+- agents/engineer/workspace/run_e047.py
+- agents/engineer/workspace/nnsight081_backward_repro.py
+- tools/dryruns/dryrun_e047.py
+- results/E-047-country-sweep.json
+
+**Closed:** —
+
+---
+
+### E-048 · Where does the replacement come from, if not the country?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-25
+**Parent:** E-046
+
+**Description:**
+[E-046] established where the replacement does **not** come from: across eleven
+countries with more than one subject, no two subjects ever landed on the same new
+top-1, so the injected country supplies no content. It says nothing about where
+the replacement *does* come from, and the write-up currently has no positive
+account at all — it reports a change of answer and stops.
+
+The obvious candidate is the subject's own prior. If the edit reshuffles within
+what the model already associated with this person, the edited top-1 should
+already be sitting in that person's base top-8. Vlaminck is suggestive both ways:
+his edited top-1 `" poet"` is absent from his base top-8, but `" sailor"` appears
+in both. One case decides nothing, which is why this is run at n=37.
+
+**Zero remote calls.** [E-046] already wrote top-8 tokens and probabilities for
+both conditions on both probes; this is a second reading of that file. Nothing
+here can be blocked by [E-047]'s nnsight problem.
+
+**Method.** For each subject, is the edited top-1 token present in that same
+subject's base top-8, and at what rank? Scored against a **permuted floor**: the
+same question asked of a *different* subject's base top-8, over all 37x36 ordered
+pairs. The floor is what makes the rate mean anything — common profession tokens
+(`" writer"`, `" musician"`) appear in many people's top-8, so a bare match rate
+would be large whatever the edit did.
+
+Subjects whose top-1 did not change are counted and reported **separately** and
+excluded from the rate. They match trivially and would inflate it.
+
+**Falsification — pre-stated.**
+
+- **CONFIRM-prior:** matched rate exceeds the permuted floor by a margin wider
+  than the floor's own spread across permutations. The replacement is drawn from
+  what the model already associated with the subject — a reshuffle within an
+  existing bundle, which is a third reading, neither "damage" nor "coherent
+  revision about the country".
+- **DENY-prior:** matched rate sits at or below the floor. The replacement comes
+  from somewhere neither the injected country nor the subject's own prior
+  supplies, and the displacement reading gets stronger rather than weaker.
+- **NULL:** too few subjects changed top-1 for either rate to be read. Report the
+  count and claim nothing.
+
+**What is affected:** `notes/myself.md`'s sentence *"The replacement has nothing
+to do with the country we injected"* is untouched either way — it is a claim about
+the country, and this is a claim about the subject. A CONFIRM would let the
+write-up say what the drop *is* instead of only what it is not. A DENY leaves the
+write-up exactly as it stands and closes off the most available friendly
+explanation, which is worth knowing before a reviewer proposes it.
+
+**n=37 licenses an existence claim, not a rate** [O-004]. The floor comparison is
+a within-sample contrast, not an estimate of how often editing does this in
+general, and the artifact must say so.
+
+**Consequence of not doing it:** the project can say where the replacement does
+not come from and nothing about where it does, while the answer sits in a file
+already on disk.
+
+**Result 2026-10-25 — DENY-prior on both probes, and the gate is itself in doubt.**
+
+                                    occupation     citizenship
+    top-1 unchanged, held out            4/37            6/37
+    scored (top-1 changed)                 33              31
+    edited top-1 in OWN base top-8   7 (21.2%)       5 (16.1%)
+    same against ANOTHER subject         10.3%           22.2%
+      spread over donors                 11.8%           35.2%
+      ordered pairs                       1056             930
+    margin                              +10.9%           -6.0%
+    median rank where it hit                 4               2
+    pre-stated band                 DENY-prior      DENY-prior
+
+So the subject's own prior does not predict the replacement either. Taken with
+[E-046], the replacement is a function of neither the injected country nor the
+person: the edit moves the answer somewhere that nothing available predicts.
+That is the displacement reading surviving the most available explanation that
+would have defused it, which is worth more than it would have been had it been
+assumed.
+
+**But the band is reported with a caveat, not banked.** The gate was pre-stated as
+*margin > floor_spread*, and `floor_spread` is the standard deviation of the
+per-donor rates — how much donors differ from each other. That is not the
+sampling error of the observed rate, which is what the question actually needs.
+A binomial of the same counts against the same floor disagrees on occupation:
+7 observed against 3.4 expected, P(X>=7) = 0.048. Citizenship is null on both
+readings (5 against 6.9, P = 0.85).
+
+The pre-stated band stands as written, because changing a gate after seeing the
+data is the failure the pre-statement exists to prevent. What the ticket records
+instead is that **occupation is underpowered and the two defensible gates
+disagree**, so nothing from this probe should enter the write-up as settled in
+either direction. The binomial's independence assumption is doubtful too —
+subjects share a profession vocabulary, so their matches are correlated, which
+inflates it. Neither number is strong at n=33. [T-106] carries the question of
+which yardstick is right, and it reaches further than this ticket: 0.082 and
+0.065 are reported elsewhere in the project as bare numbers with no spread beside
+them at all.
+
+**Citizenship is the cleaner half** and it is clean in the project's favour: the
+margin is negative, both gates agree, and it needs no caveat.
+
+**Blockers:** none.
+
+**Artifacts:**
+- agents/engineer/workspace/run_e048.py
+- tools/dryruns/dryrun_e048.py  (18 checks, all bands + the high-rate/high-floor trap)
+- results/E-048-where-from.json
+- logs/run_e048-2026-10-25-005808.log
+
+**Closed:** 2026-10-25
