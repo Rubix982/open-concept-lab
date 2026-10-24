@@ -167,6 +167,39 @@ def test_summary_staleness_sees_an_edit_to_the_body():
         assert not after["bad"]
 
 
+def test_summary_staleness_sees_an_edit_under_a_title():
+    """A README whose summary is the intro under its `# Title`, followed by `##` sections.
+
+    The range's end was built from the anchor's own level, `^# `, which a `#` title never
+    meets again; `-L` failed and the fallback dated the summary to the title's creation,
+    so a rewritten intro still read as hundreds of commits stale.
+    """
+    import subprocess
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as d:
+        def git(*a):
+            subprocess.run(["git", *a], cwd=d, capture_output=True, check=True)
+        git("init", "-q")
+        git("config", "user.email", "t@t"); git("config", "user.name", "t")
+        doc = os.path.join(d, "README.md")
+
+        def write(body):
+            with open(doc, "w", encoding="utf-8") as fh:
+                fh.write(f"# Project · نام\n\n{body}\n\n## Run it\n\nx\n")
+
+        write("first intro")
+        git("add", "-A"); git("commit", "-qm", "add")
+        with open(os.path.join(d, "other.txt"), "w") as fh:
+            fh.write("x")
+        git("add", "-A"); git("commit", "-qm", "unrelated")
+        write("a rewritten intro")
+        git("add", "-A"); git("commit", "-qm", "rewrite the intro")
+        after = checks.summary_staleness(rec(claims_path=doc, root=d))
+        assert after["detail"].get("commits_since") == 0, (
+            "an edit to the intro under a title must reset staleness; got " + str(after))
+
+
 def test_every_check_runs_on_an_empty_record():
     """A new project must not crash the tool on day one."""
     for c in checks.CHECKS:

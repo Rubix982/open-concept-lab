@@ -125,10 +125,15 @@ def summary_staleness(r: Record) -> dict:
         # five that matter, and build the stop pattern from the anchor's own heading level
         # so `{1,2}` — which BRE requires written `\{1,2\}` — is never needed.
         head_mark = anchor.strip().split(" ")[0]       # "#" or "##"
+        # A `#` title is followed by `##` sections, never another `# `, so `^# ` found no
+        # end, `-L` failed, and the fallback dated the summary to the title's creation: a
+        # README intro rewritten that day still read 523 commits stale. Under a title, the
+        # summary ends at the next heading of any level.
+        stop = "^#" if head_mark == "#" else f"^{head_mark} "
         bre = re.sub(r"([.*\[\]^$\\])", r"\\\1", anchor.strip())
         got = subprocess.run(
             ["git", "log", "-1", "--format=%H %cd", "--date=short", "-s",
-             f"-L/^{bre}$/,/^{head_mark} /:{rel}"],
+             f"-L/^{bre}$/,/{stop}/:{rel}"],
             cwd=repo, capture_output=True, text=True).stdout.strip()
         if not got:   # file untracked, or the range did not resolve — fall back
             got = subprocess.run(["git", "log", "-1", "--format=%H %cd", "--date=short",
