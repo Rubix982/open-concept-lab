@@ -103,7 +103,7 @@ export default function AgenticIndex(): ReactNode {
         </header>
         <Boundary />
         <NightFlow />
-        <h2 className="ocl-page__sectionTitle ocl-ag__toolsTitle">The tools, and the practice</h2>
+        <h2 className="ocl-page__sectionTitle ocl-ag__toolsTitle">The tools, the practice, and the instructions</h2>
         {AGENTIC.map((item) => (
           <Entry key={item.name} item={item} />
         ))}
@@ -128,6 +128,46 @@ questions.`} />
             </p>
             <p className="ocl-ag__actions">
               <Link to="/agentic/practice" className="ocl-ag__primary">Read it</Link>
+            </p>
+          </div>
+        </article>
+        {/* The sample is the file's own top-level headings, in order. */}
+        <article className="ocl-ag__entry">
+          <Shot art="dotclaude" file="Rubix982/dotclaude · CLAUDE.md" sample={`# Manifesto
+# Compass — keeping the work connected
+#   to real need
+# The Standard
+# Side Builds — the deliberate exception
+# Global Rules
+# Agentic Work Template
+# The Card — the default, and the width
+#   limit`} />
+          <div className="ocl-ag__entryBody">
+            <h2 className="ocl-ag__entryTitle">
+              <a href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md" target="_blank" rel="noreferrer">
+                dotclaude
+              </a>
+            </h2>
+            <p className="ocl-ag__entryWhat">
+              The instructions every Claude session here starts from. It opens
+              with why the work exists and how to tell a real step from a toy,
+              then sets the working rules: one card open at a time, tickets and
+              threads for longer efforts, and when the heavier research protocols
+              are allowed. It also marks the exception — side builds like this
+              site, where the heavy rules are set down on purpose.
+            </p>
+            <p className="ocl-ag__entryMeta">
+              <code>Rubix982/dotclaude</code> · public on GitHub
+            </p>
+            <p className="ocl-ag__actions">
+              <a
+                href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md"
+                target="_blank"
+                rel="noreferrer"
+                className="ocl-ag__primary"
+              >
+                Read it on GitHub ↗
+              </a>
             </p>
           </div>
         </article>

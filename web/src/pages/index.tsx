@@ -6,6 +6,7 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
 import { AGENTIC, type Agentic } from "@site/src/data/agentic";
 import { ProjectCard } from "@site/src/components/Projects";
+import Profile from "@site/src/components/Profile";
 
 function shortDate(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -69,22 +70,183 @@ function Cover({ src, className }: { src?: string; className: string }): ReactNo
   );
 }
 
-function BuiltTile({ page }: { page: BuiltPage }): ReactNode {
+const topicSlug = (topic: string) =>
+  "topic-" + topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+/** One built page in a little browser window: three dots, an address bar, the still. */
+function BuiltWindow({
+  page,
+  tone,
+  featured = false,
+}: {
+  page: BuiltPage;
+  tone: number;
+  featured?: boolean;
+}): ReactNode {
   const local = useBaseUrl(page.src);
   const image = useBaseUrl(page.image ?? "");
   const href = page.external ? page.src : local;
+  const address = page.external ? page.src.replace(/^https?:\/\//, "") : `demos/${page.name}`;
   return (
-    <a className="ocl-home__tile" href={href} target="_blank" rel="noreferrer">
-      <span className="ocl-home__tileImage">
+    <a
+      className={`ocl-window ocl-window--tone${tone}${featured ? " ocl-window--featured" : ""}`}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <span className="ocl-window__chrome" aria-hidden="true">
+        <span className="ocl-window__dots"><i /><i /><i /></span>
+        <span className="ocl-window__address">{address}</span>
+      </span>
+      <span className="ocl-window__screen">
         {page.image ? (
           <img src={image} alt="" loading="lazy" decoding="async" />
         ) : (
-          <span className="ocl-home__tileBlank">{page.title}</span>
+          <span className="ocl-window__blank">
+            <span>{page.title}</span>
+          </span>
         )}
       </span>
-      <span className="ocl-home__tileTopic">{page.topic}</span>
-      <span className="ocl-home__tileTitle">{page.title}</span>
+      <span className="ocl-window__caption">
+        <span className="ocl-window__topic">{page.topic}</span>
+        <span className="ocl-window__title">{page.title}</span>
+        <span className="ocl-window__what">{page.what}</span>
+        {featured ? <span className="ocl-window__open">Open it ↗</span> : null}
+      </span>
     </a>
+  );
+}
+
+/** A band of its own: a kicker, a headline that carries a number, one plain sentence, a way in. */
+function Band({
+  id,
+  tone,
+  kicker,
+  title,
+  lede,
+  href,
+  cta,
+  children,
+}: {
+  id: string;
+  tone: string;
+  kicker: string;
+  title: ReactNode;
+  lede: ReactNode;
+  href: string;
+  cta: string;
+  children: ReactNode;
+}): ReactNode {
+  return (
+    <section className={`ocl-showcase ocl-band ocl-band--${tone}`} aria-labelledby={id}>
+      <div className="ocl-showcase__head">
+        <div>
+          <p className="ocl-showcase__kicker">{kicker}</p>
+          <h2 id={id} className="ocl-showcase__title">{title}</h2>
+          <p className="ocl-showcase__lede">{lede}</p>
+        </div>
+        <Link className="ocl-profile__btn ocl-profile__btn--primary" to={href}>
+          {cta}
+        </Link>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+type Step = { art: string; title: string; text: string };
+
+/** How the thing works, as a row of drawings joined by arrows. */
+function Steps({ steps, label }: { steps: Step[]; label: string }): ReactNode {
+  return (
+    <ol className="ocl-steps" aria-label={label}>
+      {steps.map((step, i) => (
+        <li key={step.art} className="ocl-steps__step" style={{ animationDelay: `${i * 70}ms` }}>
+          <Doodle name={step.art} />
+          <span className="ocl-steps__n">{String(i + 1).padStart(2, "0")}</span>
+          <span className="ocl-steps__title">{step.title}</span>
+          <span className="ocl-steps__text">{step.text}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+// Captions are the ones /labs and /agentic already use, shortened, so the home
+// page cannot describe the loop differently from the page it links to.
+const LAB_LOOP: Step[] = [
+  { art: "lab-break", title: "Break it", text: "A real incident, shrunk to run on a laptop." },
+  { art: "lab-diagnose", title: "Diagnose it", text: "Find the cause from the symptoms, not the answer." },
+  { art: "lab-fix", title: "Fix it", text: "The smallest change that removes the cause." },
+  { art: "lab-prove", title: "Prove it", text: "A check that fails on a cover-up, not only on the bug." },
+  { art: "lab-retro", title: "Write it down", text: "Five lines: what broke, why, what it taught." },
+];
+
+const AGENT_FLOW: Step[] = [
+  { art: "flow-queue", title: "Queue", text: "Only pre-registered work, expected verdict written first." },
+  { art: "flow-preflight", title: "Preflight", text: "Gates that refuse before anything touches the network." },
+  { art: "flow-run", title: "Run", text: "Each job under a budget it may not outlive." },
+  { art: "flow-triage", title: "Triage", text: "Failures sorted by cause; only the unknown one needs me." },
+  { art: "flow-report", title: "Report", text: "Readable mid-run, including what it did not check." },
+];
+
+/** "Meng, Bau, Andonian" -> "Meng et al." */
+function firstAuthor(authors: string): string {
+  const parts = authors.split(/,| and /).map((a) => a.trim()).filter(Boolean);
+  return parts.length > 1 ? `${parts[0]} et al.` : parts[0] ?? "";
+}
+
+/** The built pages get a whole band: one featured, a row of windows, and every topic. */
+function BuiltShowcase({ built, recent }: { built: BuiltPage[]; recent: BuiltPage[] }): ReactNode {
+  const topics = [...new Set(built.map((page) => page.topic))].map((topic) => ({
+    topic,
+    count: built.filter((page) => page.topic === topic).length,
+  }));
+  const toneOf = (topic: string) => (topics.findIndex((t) => t.topic === topic) % 6) + 1;
+  const featured = recent.find((page) => page.image) ?? recent[0];
+  // newest first, but no more than two from one topic, so a run of brick
+  // models does not crowd out everything else
+  const perTopic = new Map<string, number>();
+  const rest = recent
+    .filter((page) => page !== featured)
+    .filter((page) => {
+      const n = perTopic.get(page.topic) ?? 0;
+      perTopic.set(page.topic, n + 1);
+      return n < 2;
+    })
+    .slice(0, 6);
+  if (!featured) return null;
+  return (
+    <Band
+      id="built-heading"
+      tone="dots"
+      kicker="Built to understand something"
+      title={<><CountUp value={built.length} /> interactive pages, {topics.length} topics</>}
+      lede="When reading about a thing was not enough, I made a page I could poke at. Every one of these opens and runs."
+      href="/built"
+      cta={`Browse all ${built.length} →`}
+    >
+      <div className="ocl-showcase__grid">
+        <BuiltWindow page={featured} tone={toneOf(featured.topic)} featured />
+        <div className="ocl-showcase__rest">
+          {rest.map((page) => (
+            <BuiltWindow key={page.name} page={page} tone={toneOf(page.topic)} />
+          ))}
+        </div>
+      </div>
+
+      <nav className="ocl-showcase__topics" aria-label="Built pages by topic">
+        {topics.map((t) => (
+          <Link
+            key={t.topic}
+            to={`/built#${topicSlug(t.topic)}`}
+            className={`ocl-showcase__topic ocl-window--tone${toneOf(t.topic)}`}
+          >
+            {t.topic} <span>{t.count}</span>
+          </Link>
+        ))}
+      </nav>
+    </Band>
   );
 }
 
@@ -97,24 +259,44 @@ function BuiltTile({ page }: { page: BuiltPage }): ReactNode {
 // which gives three cards of wildly different height for no reason a reader cares
 // about.
 function AgenticCard({
+  name,
   href,
+  external = false,
   title,
   blurb,
   sample,
   meta,
 }: {
+  name: string;
   href: string;
+  external?: boolean;
   title: string;
   blurb: string;
   sample: string;
   meta?: string;
 }): ReactNode {
+  const art = useBaseUrl(`/img/art/tools/${name}.svg`);
   return (
-    <Link className="ocl-home__agent" to={href}>
-      <pre className="ocl-home__agentSample">{sample.split("\n").slice(0, 7).join("\n")}</pre>
-      <span className="ocl-home__agentTitle">{title}</span>
-      <span className="ocl-home__agentWhat">{blurb}</span>
-      {meta ? <span className="ocl-home__agentMeta">{meta}</span> : null}
+    <Link
+      className="ocl-home__agent ocl-term"
+      to={href}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
+      <span className="ocl-term__window">
+        <span className="ocl-term__bar" aria-hidden="true">
+          <span className="ocl-window__dots"><i /><i /><i /></span>
+          <span className="ocl-term__name">{meta ?? name}</span>
+        </span>
+        <pre className="ocl-term__screen">{sample.split("\n").slice(0, 7).join("\n")}</pre>
+      </span>
+      <span className="ocl-term__body">
+        <img className="ocl-term__art" src={art} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+        <span>
+          <span className="ocl-home__agentTitle">{title}</span>
+          <span className="ocl-home__agentWhat">{blurb}</span>
+          <span className="ocl-term__open">{external ? "Read it on GitHub ↗" : "Read how it works →"}</span>
+        </span>
+      </span>
     </Link>
   );
 }
@@ -193,7 +375,7 @@ function HeroArt(): ReactNode {
     <figure className="ocl-home__heroArt">
       <img
         src={src}
-        alt="A small round creature standing for a language model, holding a magnifying glass up to its own thought: Paris crossed out, Rome written in."
+        alt="A small round creature holding a magnifying glass up to its own thought: a bug crossed out, a tick, and a pair of code brackets."
         decoding="async"
       />
     </figure>
@@ -222,7 +404,7 @@ export default function Home(): ReactNode {
     .map((page, i) => ({ page, i }))
     .sort((a, b) => (b.page.added ?? "").localeCompare(a.page.added ?? "") || a.i - b.i)
     .map(({ page }) => page)
-    .slice(0, 8);
+    .slice(0, 24);
   const lastLab = labs.solved[0];
 
   return (
@@ -231,10 +413,12 @@ export default function Home(): ReactNode {
       description="Experiments, writing, and interactive pages on knowledge editing and interpretability — what a model believes and how to tell whether a change took hold."
     >
       <div className="ocl-home">
+        <Profile />
+
         <header className="ocl-home__hero">
           <div className="ocl-home__masthead">
             <p className="ocl-home__eyebrow">
-              <span className="ocl-home__wave" aria-hidden="true">✦</span> Hello, I'm Saif. This is my lab.
+              <span className="ocl-home__wave" aria-hidden="true">✦</span> What this lab is for
             </p>
             <h1 className="ocl-home__title">
               What a model{" "}
@@ -261,10 +445,6 @@ export default function Home(): ReactNode {
               <Jump to="/built" name="built" label="Built" />
               <Jump to="/about" name="about" label="About" />
             </nav>
-            <p className="ocl-home__elsewhere">
-              <a href="https://www.linkedin.com/in/suislam" target="_blank" rel="noreferrer">LinkedIn ↗</a>
-              <a href="https://github.com/Rubix982" target="_blank" rel="noreferrer">GitHub ↗</a>
-            </p>
           </div>
           <HeroArt />
         </header>
@@ -379,14 +559,18 @@ export default function Home(): ReactNode {
           )}
         </section>
 
-        <section className="ocl-home__section">
-          <SectionHead
-            art="lab-break"
-            title="Labs"
-            kicker="deployment and security, one small broken system at a time"
-            href="/labs"
-            linkLabel="The full checklist"
-          />
+        <BuiltShowcase built={built} recent={recentBuilt} />
+
+        <Band
+          id="labs-heading"
+          tone="sage"
+          kicker="Labs · deployment and security"
+          title={<><CountUp value={labs.done} /> of {labs.total} small systems fixed</>}
+          lede="Each lab is a real kind of incident, broken on purpose and small enough to run on a laptop. I fix it, prove the fix, and write down what it taught. The bars fill as I go."
+          href="/labs"
+          cta="The full checklist →"
+        >
+          <Steps steps={LAB_LOOP} label="What every lab asks" />
           <div className="ocl-home__labs">
             <ul className="ocl-home__tracks">
               {labs.tracks.map((t) => (
@@ -403,19 +587,22 @@ export default function Home(): ReactNode {
               ))}
             </ul>
             <div className="ocl-home__solved">
-              <p className="ocl-home__solvedLabel">Solved</p>
+              <p className="ocl-home__solvedLabel">Solved so far</p>
               {labs.solved.length > 0 ? (
-                <ol>
+                <ol className="ocl-solved">
                   {labs.solved.slice(0, 5).map((s) => (
-                    <li key={s.title}>
-                      {s.href ? (
-                        <a href={s.href} target="_blank" rel="noreferrer">
-                          {s.title}
-                        </a>
-                      ) : (
-                        s.title
-                      )}
-                      <span>{s.section}</span>
+                    <li key={s.title} className="ocl-solved__item">
+                      <span className="ocl-solved__tick" aria-hidden="true">✓</span>
+                      <span className="ocl-solved__what">
+                        {s.href ? (
+                          <a href={s.href} target="_blank" rel="noreferrer">
+                            {s.title}
+                          </a>
+                        ) : (
+                          s.title
+                        )}
+                        <span className="ocl-solved__section">{s.section}</span>
+                      </span>
                     </li>
                   ))}
                 </ol>
@@ -427,20 +614,23 @@ export default function Home(): ReactNode {
               </Link>
             </div>
           </div>
-        </section>
+        </Band>
 
-        <section className="ocl-home__section">
-          <SectionHead
-            art="flow-run"
-            title="Agentic"
-            kicker="what keeps the work moving when nobody is at the desk"
-            href="/agentic"
-            linkLabel="All of it"
-          />
+        <Band
+          id="agentic-heading"
+          tone="lilac"
+          kicker="Agentic · the work that runs overnight"
+          title={<>The tools that run overnight, and the rules they run by</>}
+          lede="Experiments run while I sleep. These are the small tools that queue them, refuse the unsafe ones, sort the failures and leave a report, so in the morning only the one thing that needs a person is waiting for me. Underneath them is one file of instructions every AI session here starts from."
+          href="/agentic"
+          cta="How it all fits →"
+        >
+          <Steps steps={AGENT_FLOW} label="One night of unattended work" />
           <div className="ocl-home__agents">
             {AGENTIC.map((item: Agentic) => (
               <AgenticCard
                 key={item.name}
+                name={item.name}
                 href={`/agentic/${item.name}`}
                 title={item.title}
                 blurb={item.blurb}
@@ -449,6 +639,7 @@ export default function Home(): ReactNode {
               />
             ))}
             <AgenticCard
+              name="practice"
               href="/agentic/practice"
               title="The practice, and its limits"
               blurb={
@@ -457,35 +648,65 @@ export default function Home(): ReactNode {
               }
               sample={"A green harness is not a\nsound experiment.\n\nE-036 passed every gate\nand still measured two of\nsix criteria in ways that\ncould not answer their own\nquestions."}
             />
+            {/* The sample is the file's own section headings, in order. */}
+            <AgenticCard
+              name="dotclaude"
+              href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md"
+              external
+              title="dotclaude"
+              blurb={
+                "The instructions every Claude session here starts from: why the work exists, " +
+                "how a card is opened, and when the heavy protocols are allowed."
+              }
+              sample={"# Manifesto\n# Compass — keeping the work connected to real need\n# The Standard\n# Side Builds — the deliberate exception\n# Global Rules\n# Agentic Work Template\n# The Card — the default, and the width limit"}
+              meta="Rubix982/dotclaude · CLAUDE.md"
+            />
           </div>
-        </section>
+        </Band>
 
-        <div className="ocl-home__split">
-          <section className="ocl-home__section">
-            <SectionHead art="flow-report" title="Reading next" href="/reading" linkLabel="Reading list" />
-            {nextUp.length > 0 ? (
-              <ol className="ocl-home__papers">
-                {nextUp.map((paper) => (
-                  <li key={paper.id}>
-                    <Link to={`/reading#${paper.id}`}>{paper.title}</Link>
-                    {paper.gives_me ? <p>{paper.gives_me}</p> : null}
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="ocl-home__empty">Nothing marked next up.</p>
-            )}
-          </section>
-
-          <section className="ocl-home__section">
-            <SectionHead art="flow-queue" title="Built" kicker="recently added" href="/built" linkLabel={`All ${built.length} pages`} />
-            <div className="ocl-home__tiles">
-              {recentBuilt.map((page) => (
-                <BuiltTile key={page.name} page={page} />
+        <Band
+          id="reading-heading"
+          tone="gold"
+          kicker="Reading · before the next experiment"
+          title={<><CountUp value={read} /> read, {papers.length} on the list</>}
+          lede={
+            <>
+              The papers my work rests on, and why each one matters to it. A
+              citation counts as checked only once I have read it against the
+              paper itself
+              {unchecked.length === 0
+                ? ", and every one on the list has been."
+                : `; ${unchecked.length} on the list still have not.`}
+            </>
+          }
+          href="/reading"
+          cta="The reading list →"
+        >
+          {nextUp.length > 0 ? (
+            <ol className="ocl-paper-cards">
+              {nextUp.map((paper, i) => (
+                <li key={paper.id} className="ocl-paper-card__card" style={{ rotate: `${[-0.6, 0.5, -0.3, 0.7][i % 4]}deg` }}>
+                  <span className="ocl-paper-card__n">Up next · {String(i + 1).padStart(2, "0")}</span>
+                  <Link className="ocl-paper-card__title" to={`/reading#${paper.id}`}>{paper.title}</Link>
+                  <span className="ocl-paper-card__by">
+                    {firstAuthor(paper.authors)} · {paper.year}
+                    {paper.venue ? ` · ${paper.venue}` : ""}
+                  </span>
+                  {paper.gives_me ? (
+                    <span className="ocl-paper-card__why">
+                      <b>Why I'm reading it</b> {paper.gives_me}
+                    </span>
+                  ) : null}
+                  <span className={`ocl-paper-card__check${paper.verified ? " is-checked" : ""}`}>
+                    {paper.verified ? "✓ citation checked" : "○ citation not yet checked"}
+                  </span>
+                </li>
               ))}
-            </div>
-          </section>
-        </div>
+            </ol>
+          ) : (
+            <p className="ocl-home__empty">Nothing marked next up.</p>
+          )}
+        </Band>
 
         <footer className="ocl-home__signoff">
           <Doodle name="who-person" />

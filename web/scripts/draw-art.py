@@ -417,6 +417,22 @@ def tool_practice() -> str:
     return svg("An open rulebook with a note pinned to it, under a pair of scales: rules, each weighed against the incident that earned it", SALMON, body, 65)
 
 
+def tool_dotclaude() -> str:
+    body = f"""
+    <path d="M190 90 H380 L420 130 V330 H190 Z" fill="#fffdf8"/>
+    <path d="M380 90 V130 H420"/>
+    <path d="M216 128 H330" stroke-width="3.4"/>
+    <path d="M216 158 H392 M216 180 H372 M216 202 H392" stroke-width="1.5" opacity="0.6"/>
+    <path d="M216 236 H300" stroke-width="3"/>
+    <path d="M216 262 H392 M216 284 H352" stroke-width="1.5" opacity="0.6"/>
+    <path d="M206 158 l-8 0 M206 262 l-8 0" stroke="{OXIDE}" stroke-width="3"/>
+    <circle cx="440" cy="300" r="40" fill="{GOLD}" fill-opacity="0.8"/>
+    <circle cx="440" cy="300" r="13" fill="{PAPER}"/>
+    <path d="M440 248 V262 M440 338 V352 M388 300 H402 M478 300 H492 M403 263 L413 273 M467 327 L477 337 M477 263 L467 273 M413 327 L403 337" stroke-width="5"/>
+    <path d="M132 150 L104 178 L132 206 M154 214 L176 142" stroke="{INDIGO}" stroke-width="3.4"/>"""
+    return svg("A page of written rules with a gear turning beside it and a pair of code brackets: the instructions an AI assistant works under", INDIGO, body, 67)
+
+
 def track_a() -> str:
     body = f"""
     <path d="M220 110 L300 84 L380 110 V200 C380 260, 340 300, 300 318 C260 300, 220 260, 220 200 Z" fill="{INDIGO}" fill-opacity="0.2"/>
@@ -479,6 +495,7 @@ DRAWINGS.update({
     "tools/bearing": tool_bearing,
     "tools/harness": tool_harness,
     "tools/practice": tool_practice,
+    "tools/dotclaude": tool_dotclaude,
     "tracks/a": track_a,
     "tracks/b": track_b,
     "tracks/c": track_c,
@@ -490,7 +507,7 @@ DRAWINGS.update({
 
 
 def home_hero() -> str:
-    """A friendly model, holding a glass up to its own changed belief."""
+    """A friendly little creature, holding a glass up to its code and finding the bug."""
 
     def sparkle(x: int, y: int, r: float, colour: str) -> str:
         return (
@@ -508,7 +525,7 @@ def home_hero() -> str:
             sparkle(330, 60, 7, SALMON),
         ]
     )
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where Paris is crossed out and Rome written in its place. A seedling grows beside it; sparkles float around.">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where a bug has been crossed out beside a tick and a pair of code brackets. A seedling grows beside it; sparkles float around.">
   <defs>
     <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
       <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="91"/>
@@ -523,10 +540,11 @@ def home_hero() -> str:
     <path d="M330 92 C 340 52, 420 44, 446 74 C 480 50, 560 70, 550 118 C 590 136, 576 200, 530 200 C 516 236, 440 236, 424 206 C 390 226, 330 210, 336 176 C 296 166, 298 110, 330 92 Z" fill="#fffdf8"/>
     <circle cx="318" cy="228" r="11" fill="#fffdf8"/>
     <circle cx="296" cy="252" r="7" fill="#fffdf8"/>
-    <!-- Paris struck, Rome written -->
-    <path d="M372 111 H438" stroke="{OXIDE}" stroke-width="3"/>
-    <path d="M440 150 C 460 150, 470 160, 478 172" stroke="{INDIGO}" stroke-width="2"/>
-    <path d="M470 168 L480 174 L482 162" stroke="{INDIGO}" stroke-width="2"/>
+    <!-- a bug, caught: the body, legs, and a strike through it -->
+    <ellipse cx="402" cy="112" rx="16" ry="20" fill="{SALMON}" fill-opacity="0.55"/>
+    <path d="M402 92 V132 M386 102 l-12 -6 M386 114 h-14 M386 126 l-12 6 M418 102 l12 -6 M418 114 h14 M418 126 l12 6 M396 92 l-6 -10 M408 92 l6 -10" stroke-width="2"/>
+    <path d="M372 140 L436 84" stroke="{OXIDE}" stroke-width="3.4"/>
+    <path d="M470 112 l12 12 l24 -26" stroke="{SAGE}" stroke-width="4"/>
     <!-- the creature -->
     <path d="M140 390 C 110 390, 96 352, 104 310 C 114 250, 160 214, 214 214 C 274 214, 320 256, 324 318 C 328 366, 306 390, 276 390 Z" fill="#dcd6f0"/>
     <path d="M150 392 v14 M270 392 v14" stroke-width="3.4"/>
@@ -550,15 +568,114 @@ def home_hero() -> str:
     <path d="M440 356 c18 -6 28 -22 26 -38 c-16 4 -26 20 -26 38 Z" fill="{SAGE}" fill-opacity="0.65"/>
     <path d="M412 398 H470" stroke-width="2.4"/>
   </g>
-  <g font-family="Georgia, 'Times New Roman', serif" fill="{INK}">
-    <text x="376" y="118" font-size="24" font-style="italic">Paris</text>
-    <text x="414" y="196" font-size="26" font-style="italic" fill="{INDIGO}">Rome</text>
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" fill="{INDIGO}">
+    <text x="398" y="190" font-size="30" font-weight="600">&lt;/&gt;</text>
   </g>
 </svg>
 """
 
 
 DRAWINGS["home/hero"] = home_hero
+
+
+def home_banner() -> str:
+    """The wide cover above the profile: a terminal, a shield, a rack of
+    servers and circuit traces running underneath. Software, kept safe."""
+    bw, bh = 1600, 360
+
+    def sparkle(x: int, y: int, r: float, colour: str) -> str:
+        return (
+            f'<path d="M{x} {y - r} Q{x + r * 0.18} {y - r * 0.18} {x + r} {y} '
+            f'Q{x + r * 0.18} {y + r * 0.18} {x} {y + r} Q{x - r * 0.18} {y + r * 0.18} {x - r} {y} '
+            f'Q{x - r * 0.18} {y - r * 0.18} {x} {y - r} Z" fill="{colour}" stroke="none"/>'
+        )
+
+    # circuit traces along the bottom: (start x, y, path after the start)
+    traces = [
+        (-10, 318, "H180 L210 288 H330"), (40, 340, "H260 L280 320 H420 L440 300 H520"),
+        (480, 336, "H640 L664 312 H760"), (700, 346, "H900 L920 326 H1010"),
+        (980, 300, "L1010 330 H1180"), (1140, 344, "H1320 L1340 320 H1460 L1480 300 H1610"),
+    ]
+    trace_paths = "".join(
+        f'<path d="M{x} {y} {rest}" stroke="{colour}" stroke-width="2.2" opacity="0.8"/>'
+        for (x, y, rest), colour in zip(traces, [INDIGO, SAGE, GOLD, SALMON, INDIGO, SAGE])
+    )
+    pad_points = [(330, 288), (520, 300), (760, 312), (1010, 326), (1180, 330), (180, 318), (420, 320)]
+    pads = "".join(f'<circle cx="{x}" cy="{y}" r="6" fill="#fffdf8"/>' for x, y in pad_points)
+
+    sparkles = "".join([
+        sparkle(110, 70, 13, GOLD), sparkle(430, 60, 9, SALMON), sparkle(1530, 58, 11, GOLD),
+        sparkle(1240, 70, 7, INDIGO), sparkle(320, 190, 6, GOLD), sparkle(1040, 220, 8, SALMON),
+    ])
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {bw} {bh}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A terminal showing this site build and pass its own design check, a shield with a tick, a padlock, a rack of servers under a cloud, and circuit traces running along the bottom.">
+  <defs>
+    <filter id="rough" x="-2%" y="-5%" width="104%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="57"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="58"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0" stop-color="#f6e3bd"/>
+      <stop offset="0.5" stop-color="#e6e1f5"/>
+      <stop offset="1" stop-color="#d6e6ea"/>
+    </linearGradient>
+    <style>@keyframes blink {{ 50% {{ opacity: 0; }} }} .ocl-banner__cursor {{ animation: blink 1.1s steps(1) infinite; }} @media (prefers-reduced-motion: reduce) {{ .ocl-banner__cursor {{ animation: none; }} }}</style>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="{INK}" opacity="0.13"/></pattern>
+  </defs>
+  <rect width="{bw}" height="{bh}" fill="url(#sky)"/>
+  <rect width="{bw}" height="{bh}" fill="url(#dots)"/>
+  <rect width="{bw}" height="{bh}" filter="url(#grain)"/>
+  <circle cx="250" cy="120" r="70" fill="{GOLD}" opacity="0.4"/>
+  <circle cx="250" cy="120" r="108" fill="{GOLD}" opacity="0.13"/>
+  <g class="ocl-banner__sparkles">{sparkles}</g>
+  <g filter="url(#rough)" fill="none" stroke="{INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the terminal -->
+    <path d="M494 50 H976 Q990 50 990 64 V268 Q990 282 976 282 H494 Q480 282 480 268 V64 Q480 50 494 50 Z" fill="#2f2d3a"/>
+    <path d="M494 50 H976 Q990 50 990 64 V82 H480 V64 Q480 50 494 50 Z" fill="#dcd6f0"/>
+    <circle cx="502" cy="66" r="5" fill="{OXIDE}" stroke="none"/>
+    <circle cx="520" cy="66" r="5" fill="{GOLD}" stroke="none"/>
+    <circle cx="538" cy="66" r="5" fill="{SAGE}" stroke="none"/>
+    <!-- the shield -->
+    <path d="M1110 64 C 1150 82, 1180 84, 1210 78 C 1214 160, 1186 214, 1110 246 C 1034 214, 1006 160, 1010 78 C 1040 84, 1070 82, 1110 64 Z" fill="{INDIGO}" fill-opacity="0.22" stroke-width="3"/>
+    <path d="M1072 154 L1100 184 L1152 120" stroke="{INDIGO}" stroke-width="7"/>
+    <!-- a padlock -->
+    <path d="M1262 170 V150 a22 22 0 0 1 44 0 V170" stroke-width="5"/>
+    <path d="M1250 170 H1318 V226 H1250 Z" fill="{GOLD}" fill-opacity="0.85"/>
+    <circle cx="1284" cy="192" r="6" fill="{INK}" stroke="none"/>
+    <path d="M1284 196 V210" stroke-width="4"/>
+    <!-- a cloud over a rack of servers -->
+    <path d="M1400 120 q8 -34 44 -30 q16 -28 50 -14 q34 -6 38 28 q26 6 18 32 H1404 q-24 -2 -4 -16 Z" fill="#fffdf8"/>
+    <path d="M1450 150 V180 M1442 172 L1450 182 L1458 172 M1500 182 V152 M1492 160 L1500 150 L1508 160" stroke="{SAGE}" stroke-width="2.6"/>
+    <path d="M1410 196 H1540 V226 H1410 Z M1410 232 H1540 V262 H1410 Z M1410 268 H1540 V298 H1410 Z" fill="#fffdf8"/>
+    <circle cx="1428" cy="211" r="4" fill="{SAGE}"/><circle cx="1428" cy="247" r="4" fill="{GOLD}"/><circle cx="1428" cy="283" r="4" fill="{SAGE}"/>
+    <path d="M1490 211 H1524 M1490 247 H1524 M1490 283 H1524" stroke-width="1.8"/>
+    <!-- a gear and some brackets floating left of centre -->
+    <circle cx="370" cy="140" r="26" fill="{SALMON}" fill-opacity="0.5"/>
+    <circle cx="370" cy="140" r="9" fill="#fffdf8"/>
+    <path d="M370 104 V114 M370 166 V176 M334 140 H344 M396 140 H406 M345 115 L352 122 M388 158 L395 165 M395 115 L388 122 M352 158 L345 165" stroke-width="5"/>
+    <!-- circuit traces underneath -->
+    {trace_paths}
+    {pads}
+  </g>
+  <!-- Real output, not a mock: the last line each of these commands prints
+       when this site builds cleanly (design:check's table is trimmed to its verdict). -->
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="16.5">
+    <text x="504" y="116" fill="#f2c46d">$</text><text x="524" y="116" fill="#f4f1ea">npm run build</text>
+    <text x="504" y="144" fill="#9fd0ad">[SUCCESS] Generated static files in "build".</text>
+    <text x="504" y="182" fill="#f2c46d">$</text><text x="524" y="182" fill="#f4f1ea">npm run design:check</text>
+    <text x="504" y="210" fill="#9fd0ad">all decidable criteria pass · 4 not checked</text>
+    <text x="504" y="250" fill="#f2c46d">$</text><rect x="524" y="236" width="10" height="18" fill="#f4f1ea" class="ocl-banner__cursor"/>
+  </g>
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" fill="{INDIGO}" opacity="0.55">
+    <text x="1222" y="58" font-size="26">{{ }}</text>
+    <text x="1330" y="80" font-size="22">&lt;/&gt;</text>
+    <text x="400" y="236" font-size="20">01</text>
+  </g>
+</svg>
+"""
+
+
+DRAWINGS["home/banner"] = home_banner
 
 
 def main() -> None:

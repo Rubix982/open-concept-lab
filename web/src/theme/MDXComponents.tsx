@@ -12,6 +12,8 @@ import Status, { Notice } from "@site/src/components/Status";
 import Claude from "@site/src/components/Claude";
 import Gloss from "@site/src/components/Gloss";
 import PageArt from "@site/src/components/PageArt";
+import Profile from "@site/src/components/Profile";
+import { AboutRooms, AboutQuestions, AboutElsewhere, AboutCorrections } from "@site/src/components/About";
 
 /**
  * Available in every .md/.mdx file without an import.
@@ -32,4 +34,9 @@ export default {
   Claude,
   Gloss,
   PageArt,
+  Profile,
+  AboutRooms,
+  AboutQuestions,
+  AboutElsewhere,
+  AboutCorrections,
 };

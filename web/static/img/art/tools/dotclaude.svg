@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A page of written rules with a gear turning beside it and a pair of code brackets: the instructions an AI assistant works under">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="67"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="68"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M190 90 H380 L420 130 V330 H190 Z" fill="#fffdf8"/>
+    <path d="M380 90 V130 H420"/>
+    <path d="M216 128 H330" stroke-width="3.4"/>
+    <path d="M216 158 H392 M216 180 H372 M216 202 H392" stroke-width="1.5" opacity="0.6"/>
+    <path d="M216 236 H300" stroke-width="3"/>
+    <path d="M216 262 H392 M216 284 H352" stroke-width="1.5" opacity="0.6"/>
+    <path d="M206 158 l-8 0 M206 262 l-8 0" stroke="#a4442f" stroke-width="3"/>
+    <circle cx="440" cy="300" r="40" fill="#f2c46d" fill-opacity="0.8"/>
+    <circle cx="440" cy="300" r="13" fill="#f4f1ea"/>
+    <path d="M440 248 V262 M440 338 V352 M388 300 H402 M478 300 H492 M403 263 L413 273 M467 327 L477 337 M477 263 L467 273 M413 327 L403 337" stroke-width="5"/>
+    <path d="M132 150 L104 178 L132 206 M154 214 L176 142" stroke="#4338a8" stroke-width="3.4"/>
+  </g>
+</svg>

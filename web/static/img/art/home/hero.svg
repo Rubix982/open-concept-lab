@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where Paris is crossed out and Rome written in its place. A seedling grows beside it; sparkles float around.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where a bug has been crossed out beside a tick and a pair of code brackets. A seedling grows beside it; sparkles float around.">
   <defs>
     <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
       <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="91"/>
@@ -13,10 +13,11 @@
     <path d="M330 92 C 340 52, 420 44, 446 74 C 480 50, 560 70, 550 118 C 590 136, 576 200, 530 200 C 516 236, 440 236, 424 206 C 390 226, 330 210, 336 176 C 296 166, 298 110, 330 92 Z" fill="#fffdf8"/>
     <circle cx="318" cy="228" r="11" fill="#fffdf8"/>
     <circle cx="296" cy="252" r="7" fill="#fffdf8"/>
-    <!-- Paris struck, Rome written -->
-    <path d="M372 111 H438" stroke="#a4442f" stroke-width="3"/>
-    <path d="M440 150 C 460 150, 470 160, 478 172" stroke="#4338a8" stroke-width="2"/>
-    <path d="M470 168 L480 174 L482 162" stroke="#4338a8" stroke-width="2"/>
+    <!-- a bug, caught: the body, legs, and a strike through it -->
+    <ellipse cx="402" cy="112" rx="16" ry="20" fill="#e8836b" fill-opacity="0.55"/>
+    <path d="M402 92 V132 M386 102 l-12 -6 M386 114 h-14 M386 126 l-12 6 M418 102 l12 -6 M418 114 h14 M418 126 l12 6 M396 92 l-6 -10 M408 92 l6 -10" stroke-width="2"/>
+    <path d="M372 140 L436 84" stroke="#a4442f" stroke-width="3.4"/>
+    <path d="M470 112 l12 12 l24 -26" stroke="#7fa98a" stroke-width="4"/>
     <!-- the creature -->
     <path d="M140 390 C 110 390, 96 352, 104 310 C 114 250, 160 214, 214 214 C 274 214, 320 256, 324 318 C 328 366, 306 390, 276 390 Z" fill="#dcd6f0"/>
     <path d="M150 392 v14 M270 392 v14" stroke-width="3.4"/>
@@ -40,8 +41,7 @@
     <path d="M440 356 c18 -6 28 -22 26 -38 c-16 4 -26 20 -26 38 Z" fill="#7fa98a" fill-opacity="0.65"/>
     <path d="M412 398 H470" stroke-width="2.4"/>
   </g>
-  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
-    <text x="376" y="118" font-size="24" font-style="italic">Paris</text>
-    <text x="414" y="196" font-size="26" font-style="italic" fill="#4338a8">Rome</text>
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" fill="#4338a8">
+    <text x="398" y="190" font-size="30" font-weight="600">&lt;/&gt;</text>
   </g>
 </svg>

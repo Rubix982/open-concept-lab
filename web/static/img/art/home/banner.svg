@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A terminal showing this site build and pass its own design check, a shield with a tick, a padlock, a rack of servers under a cloud, and circuit traces running along the bottom.">
+  <defs>
+    <filter id="rough" x="-2%" y="-5%" width="104%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="57"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="58"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0" stop-color="#f6e3bd"/>
+      <stop offset="0.5" stop-color="#e6e1f5"/>
+      <stop offset="1" stop-color="#d6e6ea"/>
+    </linearGradient>
+    <style>@keyframes blink { 50% { opacity: 0; } } .ocl-banner__cursor { animation: blink 1.1s steps(1) infinite; } @media (prefers-reduced-motion: reduce) { .ocl-banner__cursor { animation: none; } }</style>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#2b2a28" opacity="0.13"/></pattern>
+  </defs>
+  <rect width="1600" height="360" fill="url(#sky)"/>
+  <rect width="1600" height="360" fill="url(#dots)"/>
+  <rect width="1600" height="360" filter="url(#grain)"/>
+  <circle cx="250" cy="120" r="70" fill="#f2c46d" opacity="0.4"/>
+  <circle cx="250" cy="120" r="108" fill="#f2c46d" opacity="0.13"/>
+  <g class="ocl-banner__sparkles"><path d="M110 57 Q112.34 67.66 123 70 Q112.34 72.34 110 83 Q107.66 72.34 97 70 Q107.66 67.66 110 57 Z" fill="#f2c46d" stroke="none"/><path d="M430 51 Q431.62 58.38 439 60 Q431.62 61.62 430 69 Q428.38 61.62 421 60 Q428.38 58.38 430 51 Z" fill="#e8836b" stroke="none"/><path d="M1530 47 Q1531.98 56.02 1541 58 Q1531.98 59.98 1530 69 Q1528.02 59.98 1519 58 Q1528.02 56.02 1530 47 Z" fill="#f2c46d" stroke="none"/><path d="M1240 63 Q1241.26 68.74 1247 70 Q1241.26 71.26 1240 77 Q1238.74 71.26 1233 70 Q1238.74 68.74 1240 63 Z" fill="#4338a8" stroke="none"/><path d="M320 184 Q321.08 188.92 326 190 Q321.08 191.08 320 196 Q318.92 191.08 314 190 Q318.92 188.92 320 184 Z" fill="#f2c46d" stroke="none"/><path d="M1040 212 Q1041.44 218.56 1048 220 Q1041.44 221.44 1040 228 Q1038.56 221.44 1032 220 Q1038.56 218.56 1040 212 Z" fill="#e8836b" stroke="none"/></g>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the terminal -->
+    <path d="M494 50 H976 Q990 50 990 64 V268 Q990 282 976 282 H494 Q480 282 480 268 V64 Q480 50 494 50 Z" fill="#2f2d3a"/>
+    <path d="M494 50 H976 Q990 50 990 64 V82 H480 V64 Q480 50 494 50 Z" fill="#dcd6f0"/>
+    <circle cx="502" cy="66" r="5" fill="#a4442f" stroke="none"/>
+    <circle cx="520" cy="66" r="5" fill="#f2c46d" stroke="none"/>
+    <circle cx="538" cy="66" r="5" fill="#7fa98a" stroke="none"/>
+    <!-- the shield -->
+    <path d="M1110 64 C 1150 82, 1180 84, 1210 78 C 1214 160, 1186 214, 1110 246 C 1034 214, 1006 160, 1010 78 C 1040 84, 1070 82, 1110 64 Z" fill="#4338a8" fill-opacity="0.22" stroke-width="3"/>
+    <path d="M1072 154 L1100 184 L1152 120" stroke="#4338a8" stroke-width="7"/>
+    <!-- a padlock -->
+    <path d="M1262 170 V150 a22 22 0 0 1 44 0 V170" stroke-width="5"/>
+    <path d="M1250 170 H1318 V226 H1250 Z" fill="#f2c46d" fill-opacity="0.85"/>
+    <circle cx="1284" cy="192" r="6" fill="#2b2a28" stroke="none"/>
+    <path d="M1284 196 V210" stroke-width="4"/>
+    <!-- a cloud over a rack of servers -->
+    <path d="M1400 120 q8 -34 44 -30 q16 -28 50 -14 q34 -6 38 28 q26 6 18 32 H1404 q-24 -2 -4 -16 Z" fill="#fffdf8"/>
+    <path d="M1450 150 V180 M1442 172 L1450 182 L1458 172 M1500 182 V152 M1492 160 L1500 150 L1508 160" stroke="#7fa98a" stroke-width="2.6"/>
+    <path d="M1410 196 H1540 V226 H1410 Z M1410 232 H1540 V262 H1410 Z M1410 268 H1540 V298 H1410 Z" fill="#fffdf8"/>
+    <circle cx="1428" cy="211" r="4" fill="#7fa98a"/><circle cx="1428" cy="247" r="4" fill="#f2c46d"/><circle cx="1428" cy="283" r="4" fill="#7fa98a"/>
+    <path d="M1490 211 H1524 M1490 247 H1524 M1490 283 H1524" stroke-width="1.8"/>
+    <!-- a gear and some brackets floating left of centre -->
+    <circle cx="370" cy="140" r="26" fill="#e8836b" fill-opacity="0.5"/>
+    <circle cx="370" cy="140" r="9" fill="#fffdf8"/>
+    <path d="M370 104 V114 M370 166 V176 M334 140 H344 M396 140 H406 M345 115 L352 122 M388 158 L395 165 M395 115 L388 122 M352 158 L345 165" stroke-width="5"/>
+    <!-- circuit traces underneath -->
+    <path d="M-10 318 H180 L210 288 H330" stroke="#4338a8" stroke-width="2.2" opacity="0.8"/><path d="M40 340 H260 L280 320 H420 L440 300 H520" stroke="#7fa98a" stroke-width="2.2" opacity="0.8"/><path d="M480 336 H640 L664 312 H760" stroke="#f2c46d" stroke-width="2.2" opacity="0.8"/><path d="M700 346 H900 L920 326 H1010" stroke="#e8836b" stroke-width="2.2" opacity="0.8"/><path d="M980 300 L1010 330 H1180" stroke="#4338a8" stroke-width="2.2" opacity="0.8"/><path d="M1140 344 H1320 L1340 320 H1460 L1480 300 H1610" stroke="#7fa98a" stroke-width="2.2" opacity="0.8"/>
+    <circle cx="330" cy="288" r="6" fill="#fffdf8"/><circle cx="520" cy="300" r="6" fill="#fffdf8"/><circle cx="760" cy="312" r="6" fill="#fffdf8"/><circle cx="1010" cy="326" r="6" fill="#fffdf8"/><circle cx="1180" cy="330" r="6" fill="#fffdf8"/><circle cx="180" cy="318" r="6" fill="#fffdf8"/><circle cx="420" cy="320" r="6" fill="#fffdf8"/>
+  </g>
+  <!-- Real output, not a mock: the last line each of these commands prints
+       when this site builds cleanly (design:check's table is trimmed to its verdict). -->
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" font-size="16.5">
+    <text x="504" y="116" fill="#f2c46d">$</text><text x="524" y="116" fill="#f4f1ea">npm run build</text>
+    <text x="504" y="144" fill="#9fd0ad">[SUCCESS] Generated static files in "build".</text>
+    <text x="504" y="182" fill="#f2c46d">$</text><text x="524" y="182" fill="#f4f1ea">npm run design:check</text>
+    <text x="504" y="210" fill="#9fd0ad">all decidable criteria pass · 4 not checked</text>
+    <text x="504" y="250" fill="#f2c46d">$</text><rect x="524" y="236" width="10" height="18" fill="#f4f1ea" class="ocl-banner__cursor"/>
+  </g>
+  <g font-family="'IBM Plex Mono', ui-monospace, Menlo, monospace" fill="#4338a8" opacity="0.55">
+    <text x="1222" y="58" font-size="26">{ }</text>
+    <text x="1330" y="80" font-size="22">&lt;/&gt;</text>
+    <text x="400" y="236" font-size="20">01</text>
+  </g>
+</svg>

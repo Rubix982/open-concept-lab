@@ -57,6 +57,10 @@
   --ocl-cloth-5: #e6d3e2;
   --ocl-cloth-6: #d5dde6;
   --ocl-cloth-ink: #2b2a28;
+  /* A terminal, for real command output on the home page: dark in both themes. */
+  --ocl-term-bg: #2f2d3a;
+  --ocl-term-ink: #ecebf3;
+  --ocl-term-dim: #a9a6b8;
   --ocl-oxide: #a4442f;
   /* The semantic pair. Oxide marks revision and withdrawal; held marks a claim that
      survived. They are states, never decoration — no washes, no section accents.
@@ -193,6 +197,9 @@
   --ocl-cloth-5: #3c2a39;
   --ocl-cloth-6: #28323d;
   --ocl-cloth-ink: #eeece6;
+  --ocl-term-bg: #121117;
+  --ocl-term-ink: #ecebf3;
+  --ocl-term-dim: #9d9aab;
   --ifm-pre-background: #161512;
   --docusaurus-highlighted-code-line-bg: rgba(177, 169, 255, 0.13);
 }
@@ -6554,5 +6561,1141 @@ a:hover > .ocl-home__featureCover {
   .ocl-home__squiggle path {
     animation: none;
     stroke-dashoffset: 0;
+  }
+}
+
+/* ==========================================================================
+   Home profile: a cover banner, the portrait over its edge, details below
+   (2026-10-24). The LinkedIn shape, drawn in the site's own hand.
+   ========================================================================== */
+
+.ocl-profile {
+  margin: -1.5rem 0 3rem;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  overflow: hidden;
+  animation: ocl-rise var(--ocl-slow) var(--ocl-ease) backwards;
+}
+
+.ocl-profile__banner {
+  height: clamp(9rem, 22vw, 15rem);
+  overflow: hidden;
+}
+
+.ocl-profile__banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: 70% 40%;
+  transition: transform 1.2s var(--ocl-ease);
+}
+
+.ocl-profile:hover .ocl-profile__banner img {
+  transform: scale(1.03);
+}
+
+.ocl-profile__body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.5rem 1.5rem;
+  padding: 0 2rem 1.6rem;
+}
+
+.ocl-profile__avatar {
+  width: 9.5rem;
+  height: 9.5rem;
+  margin-top: -4.75rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 5px solid var(--ocl-paper-raised);
+  outline: 2px solid color-mix(in srgb, var(--ocl-gold) 70%, transparent);
+  outline-offset: 3px;
+  background: var(--ocl-paper-sunken);
+  box-shadow: var(--ocl-shadow);
+  position: relative;
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), scale var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-profile__avatar:hover {
+  rotate: -4deg;
+  scale: 1.04;
+}
+
+.ocl-profile__who {
+  padding-top: 0.9rem;
+}
+
+.ocl-profile__who p {
+  margin: 0;
+}
+
+.ocl-profile__name {
+  font-family: var(--ocl-prose);
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ocl-ink);
+}
+
+.ocl-profile__headline {
+  margin-top: 0.2rem !important;
+  font-family: var(--ocl-prose);
+  font-size: 1.1rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-profile__meta {
+  margin-top: 0.45rem !important;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ocl-profile__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--ocl-rule-strong);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ocl-ink);
+  text-decoration: none;
+  transition: translate var(--ocl-fast) var(--ocl-ease-spring), background var(--ocl-fast) var(--ocl-ease), border-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-profile__btn:hover {
+  translate: 0 -2px;
+  color: var(--ocl-ink);
+  text-decoration: none;
+  border-color: var(--ocl-link);
+  background: color-mix(in srgb, var(--ocl-link) 8%, transparent);
+}
+
+.ocl-profile__btn--primary {
+  border-color: var(--ocl-link);
+  background: var(--ocl-link);
+  color: var(--ocl-paper-raised);
+}
+
+.ocl-profile__btn--primary:hover {
+  color: var(--ocl-paper-raised);
+  background: var(--ocl-link-hover);
+  border-color: var(--ocl-link-hover);
+}
+
+[data-theme="dark"] .ocl-profile__banner img {
+  filter: brightness(0.82) saturate(0.9);
+}
+
+@media (max-width: 860px) {
+  .ocl-profile {
+    margin: -1rem 0 2.25rem;
+  }
+
+  .ocl-profile__body {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    padding: 0 1.25rem 1.3rem;
+  }
+
+  .ocl-profile__banner img {
+    object-position: 62% 50%;
+  }
+
+  .ocl-profile__avatar {
+    width: 7rem;
+    height: 7rem;
+    margin-top: -3.5rem;
+  }
+
+  .ocl-profile__who {
+    padding-top: 0;
+  }
+
+  .ocl-profile__name {
+    font-size: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-profile,
+  .ocl-profile__banner img,
+  .ocl-profile__avatar,
+  .ocl-profile__btn {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Home: Built as a showcase (2026-10-24). A band of its own on dotted paper,
+   one featured page and six more, each in a small browser window.
+   ========================================================================== */
+
+.ocl-showcase {
+  margin: 1rem 0 4rem;
+  padding: 2.25rem 2.25rem 2rem;
+  border-radius: var(--ocl-radius-lg);
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ocl-ink) 14%, transparent) 1px, transparent 1.6px) 0 0 / 18px 18px,
+    var(--ocl-paper-sunken);
+}
+
+.ocl-showcase__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.ocl-showcase__kicker {
+  margin: 0 0 0.35rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-oxide);
+}
+
+.ocl-showcase__title {
+  margin: 0;
+  font-family: var(--ocl-prose);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1.1;
+}
+
+.ocl-showcase__lede {
+  margin: 0.5rem 0 0;
+  max-width: 36rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.08rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-showcase__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.6fr);
+  gap: 1.25rem;
+}
+
+.ocl-showcase__rest {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* the window */
+.ocl-window {
+  --tone: var(--ocl-cloth-1);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  overflow: hidden;
+  color: var(--ocl-ink);
+  text-decoration: none;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-window--tone1 { --tone: var(--ocl-cloth-1); }
+.ocl-window--tone2 { --tone: var(--ocl-cloth-2); }
+.ocl-window--tone3 { --tone: var(--ocl-cloth-3); }
+.ocl-window--tone4 { --tone: var(--ocl-cloth-4); }
+.ocl-window--tone5 { --tone: var(--ocl-cloth-5); }
+.ocl-window--tone6 { --tone: var(--ocl-cloth-6); }
+
+.ocl-window:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-window__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--tone);
+}
+
+.ocl-window__dots {
+  display: inline-flex;
+  gap: 0.28rem;
+}
+
+.ocl-window__dots i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-cloth-ink) 30%, transparent);
+}
+
+.ocl-window:hover .ocl-window__dots i:first-child { background: var(--ocl-oxide); }
+.ocl-window:hover .ocl-window__dots i:nth-child(2) { background: var(--ocl-gold); }
+.ocl-window:hover .ocl-window__dots i:last-child { background: color-mix(in srgb, var(--ocl-cloth-ink) 55%, transparent); }
+
+.ocl-window__address {
+  flex: 1;
+  min-width: 0;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-paper-raised) 70%, transparent);
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  color: var(--ocl-cloth-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ocl-window__screen {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-window__screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: scale 0.9s var(--ocl-ease);
+}
+
+.ocl-window:hover .ocl-window__screen img {
+  scale: 1.05;
+}
+
+.ocl-window__blank {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 1rem;
+  background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--tone) 55%, transparent) 0 10px, transparent 10px 20px),
+    var(--ocl-paper-raised);
+  text-align: center;
+}
+
+.ocl-window__blank span {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--ocl-radius-sm);
+  background: var(--ocl-paper-raised);
+  font-family: var(--ocl-prose);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+.ocl-window__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.ocl-window__topic {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-window__title {
+  font-family: var(--ocl-prose);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ocl-window--featured .ocl-window__screen {
+  aspect-ratio: auto;
+  flex: 1;
+  min-height: 14rem;
+}
+
+.ocl-window--featured .ocl-window__caption {
+  padding: 0.9rem 1.1rem 1.1rem;
+}
+
+.ocl-window--featured .ocl-window__title {
+  font-size: 1.45rem;
+}
+
+.ocl-window__what {
+  margin-top: 0.25rem;
+  font-family: var(--ocl-prose);
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-window__open {
+  margin-top: 0.5rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ocl-link);
+}
+
+.ocl-showcase__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+}
+
+.ocl-showcase__topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--tone);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ocl-cloth-ink);
+  text-decoration: none;
+  transition: translate var(--ocl-fast) var(--ocl-ease-spring);
+}
+
+.ocl-showcase__topic span {
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-paper-raised) 65%, transparent);
+  font-size: 0.74rem;
+}
+
+.ocl-showcase__topic:hover {
+  translate: 0 -2px;
+  color: var(--ocl-cloth-ink);
+  text-decoration: none;
+}
+
+@media (max-width: 1100px) {
+  .ocl-showcase__grid { grid-template-columns: minmax(0, 1fr); }
+  .ocl-window--featured .ocl-window__screen { aspect-ratio: 16 / 8; flex: none; min-height: 0; }
+}
+
+@media (max-width: 860px) {
+  .ocl-showcase { padding: 1.4rem 1rem 1.25rem; margin-bottom: 3rem; }
+  .ocl-showcase__rest { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+  .ocl-window__address { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-window,
+  .ocl-window__screen img,
+  .ocl-showcase__topic {
+    transition: none;
+  }
+}
+
+.ocl-showcase__rest .ocl-window__what {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.ocl-window--featured .ocl-window__screen img {
+  object-position: top left;
+}
+
+/* ==========================================================================
+   Home: Labs, Agentic and Reading as bands (2026-10-24). Same shape as the
+   Built showcase: a headline with a number, a plain sentence, then how the
+   thing works as a row of drawings, then the thing itself.
+   ========================================================================== */
+
+.ocl-band--sage,
+.ocl-band--lilac,
+.ocl-band--gold {
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ocl-ink) 12%, transparent) 1px, transparent 1.6px) 0 0 / 18px 18px,
+    color-mix(in srgb, var(--band) 55%, var(--ocl-paper));
+}
+
+.ocl-band--sage { --band: var(--ocl-cloth-2); }
+.ocl-band--lilac { --band: var(--ocl-cloth-1); }
+.ocl-band--gold { --band: var(--ocl-cloth-4); }
+
+/* the steps: drawings joined by little arrows */
+.ocl-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-steps__step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.9rem 0.9rem 1rem;
+  border-radius: var(--ocl-radius);
+  background: color-mix(in srgb, var(--ocl-paper-raised) 80%, transparent);
+  animation: ocl-rise var(--ocl-slow) var(--ocl-ease) backwards;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-steps__step:hover {
+  translate: 0 -3px;
+}
+
+.ocl-steps__step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -0.85rem;
+  top: 2.1rem;
+  z-index: 1;
+  font-family: var(--ocl-apparatus);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-steps .ocl-home__doodle {
+  width: 3.4rem;
+  height: 3.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.ocl-steps__n {
+  font-family: var(--ocl-mono);
+  font-size: 0.7rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-steps__title {
+  font-family: var(--ocl-prose);
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--ocl-ink);
+}
+
+.ocl-steps__text {
+  font-family: var(--ocl-prose);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--ocl-ink-muted);
+}
+
+/* labs: tracks and the solved list sit on raised paper inside the band */
+.ocl-band .ocl-home__labs {
+  gap: 1.25rem;
+}
+
+.ocl-band .ocl-home__solved {
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-band .ocl-home__solved ol.ocl-solved {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.25rem 0 0.9rem;
+}
+
+.ocl-band .ocl-home__solved li.ocl-solved__item {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.5rem 0;
+}
+
+.ocl-band .ocl-home__solved li.ocl-solved__item:first-child {
+  border-top: 0;
+}
+
+.ocl-band .ocl-home__solved span.ocl-solved__tick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+  border-radius: 999px;
+  background: var(--ocl-cloth-2);
+  color: var(--ocl-cloth-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  rotate: -8deg;
+}
+
+.ocl-band .ocl-home__solved span.ocl-solved__what {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-family: var(--ocl-prose);
+  font-size: 1rem;
+  color: var(--ocl-ink);
+}
+
+.ocl-band .ocl-home__solved span.ocl-solved__section {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+  color: var(--ocl-ink-faint);
+}
+
+/* agentic: each tool as a terminal, its drawing beside the words */
+.ocl-band .ocl-home__agents {
+  gap: 1.1rem;
+}
+
+.ocl-home__agent.ocl-term {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  overflow: hidden;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-home__agent.ocl-term:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+  text-decoration: none;
+}
+
+.ocl-term__window {
+  display: block;
+  background: var(--ocl-term-bg);
+}
+
+.ocl-term__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ocl-term-ink) 12%, transparent);
+}
+
+.ocl-term__bar .ocl-window__dots i {
+  background: color-mix(in srgb, var(--ocl-term-ink) 28%, transparent);
+}
+
+.ocl-term:hover .ocl-window__dots i:first-child { background: var(--ocl-oxide); }
+.ocl-term:hover .ocl-window__dots i:nth-child(2) { background: var(--ocl-gold); }
+.ocl-term:hover .ocl-window__dots i:last-child { background: var(--ocl-cloth-2); }
+
+.ocl-term__name {
+  font-family: var(--ocl-mono);
+  font-size: 0.68rem;
+  color: var(--ocl-term-dim);
+}
+
+.ocl-band pre.ocl-term__screen {
+  margin: 0;
+  padding: 0.85rem 1rem 1rem;
+  min-height: 9.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ocl-term-ink);
+  font-family: var(--ocl-mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  white-space: pre;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, black 82%, transparent);
+}
+
+.ocl-term__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.ocl-term__body > span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ocl-term__art {
+  flex: none;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--ocl-paper-sunken);
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-term:hover .ocl-term__art {
+  rotate: -8deg;
+}
+
+.ocl-term__open {
+  margin-top: 0.25rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ocl-link);
+}
+
+/* reading: index cards, a red rule at the top, faint blue lines below */
+.ocl-paper-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-paper-card__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem 1.25rem 1.1rem;
+  border-radius: var(--ocl-radius-sm);
+  background:
+    linear-gradient(to bottom, transparent 2.6rem, color-mix(in srgb, var(--ocl-oxide) 45%, transparent) 2.6rem, color-mix(in srgb, var(--ocl-oxide) 45%, transparent) calc(2.6rem + 1.5px), transparent calc(2.6rem + 1.5px)),
+    repeating-linear-gradient(to bottom, transparent 0 1.55rem, color-mix(in srgb, var(--ocl-link) 10%, transparent) 1.55rem calc(1.55rem + 1px)),
+    var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring), translate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-paper-card__card:hover {
+  rotate: 0deg !important;
+  translate: 0 -4px;
+}
+
+.ocl-paper-card__n {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-oxide);
+  margin-bottom: 0.5rem;
+}
+
+.ocl-paper-card__title {
+  font-family: var(--ocl-prose);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ocl-ink);
+}
+
+.ocl-paper-card__by {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-paper-card__why {
+  margin-top: 0.3rem;
+  font-family: var(--ocl-prose);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-paper-card__why b {
+  display: block;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ocl-ink);
+}
+
+.ocl-paper-card__check {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--ocl-paper-sunken);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-paper-card__check.is-checked {
+  background: var(--ocl-cloth-2);
+  color: var(--ocl-cloth-ink);
+}
+
+@media (max-width: 1100px) {
+  .ocl-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ocl-steps__step::after { display: none; }
+}
+
+@media (max-width: 860px) {
+  .ocl-steps { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+  .ocl-steps__step { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 0.75rem; }
+  .ocl-steps .ocl-home__doodle { width: 2.6rem; height: 2.6rem; margin: 0; }
+  .ocl-steps__n { display: none; }
+  .ocl-steps__text { flex-basis: 100%; }
+  .ocl-paper-cards { grid-template-columns: minmax(0, 1fr); }
+  .ocl-paper-card__card { rotate: 0deg !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-steps__step,
+  .ocl-home__agent.ocl-term,
+  .ocl-term__art,
+  .ocl-paper-card__card {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* labs inside the band: the four tracks in a row, the solved list below */
+.ocl-band .ocl-home__labs {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ocl-band .ocl-home__tracks {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ocl-band .ocl-home__solved ol.ocl-solved {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+}
+
+.ocl-band .ocl-home__solved li.ocl-solved__item:nth-child(2) {
+  border-top: 0;
+}
+
+@media (max-width: 1100px) {
+  .ocl-band .ocl-home__tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 860px) {
+  .ocl-band .ocl-home__tracks,
+  .ocl-band .ocl-home__solved ol.ocl-solved { grid-template-columns: minmax(0, 1fr); }
+  .ocl-band .ocl-home__solved li.ocl-solved__item:nth-child(2) { border-top: 1px solid var(--ocl-rule); }
+}
+
+.ocl-band .ocl-home__tracks > li,
+.ocl-band .ocl-home__tracks .ocl-home__track {
+  height: 100%;
+}
+
+/* ==========================================================================
+   About, in the home page's hand (2026-10-24): the same profile card, the
+   tabs as illustrated rooms, the three questions pinned up as notes, and
+   contact cards with their own icons.
+   ========================================================================== */
+
+.ocl-profile--about {
+  margin: 0 0 2.5rem;
+}
+
+.ocl-about__lede p {
+  font-family: var(--ocl-prose);
+  font-size: 1.3rem;
+  line-height: 1.55;
+  color: var(--ocl-ink);
+}
+
+/* the tabs as rooms */
+.ocl-rooms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.ocl-room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0 0 1rem;
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  overflow: hidden;
+  color: var(--ocl-ink);
+  text-decoration: none;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-room:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-room__art {
+  display: block;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 0.5rem;
+  background: var(--tone);
+  overflow: hidden;
+}
+
+.ocl-room__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+  transition: scale 0.9s var(--ocl-ease);
+}
+
+[data-theme="dark"] .ocl-room__art img {
+  mix-blend-mode: normal;
+  opacity: 0.92;
+}
+
+.ocl-room:hover .ocl-room__art img {
+  scale: 1.05;
+}
+
+.ocl-room__title {
+  padding: 0 1rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.ocl-room__title span {
+  display: inline-block;
+  color: var(--ocl-link);
+  transition: translate var(--ocl-fast) var(--ocl-ease-spring);
+}
+
+.ocl-room:hover .ocl-room__title span {
+  translate: 3px 0;
+}
+
+.ocl-room__text {
+  padding: 0 1rem;
+  font-family: var(--ocl-prose);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-muted);
+}
+
+/* the three questions, pinned up */
+.ocl-questions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1.6rem 0 1.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-questions .ocl-note {
+  margin: 0;
+}
+
+.ocl-questions .ocl-note__text {
+  font-size: 1.12rem;
+  line-height: 1.4;
+}
+
+/* elsewhere */
+.ocl-elsewhere {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.ocl-elsewhere__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--ocl-radius);
+  background: color-mix(in srgb, var(--tone) 60%, var(--ocl-paper-raised));
+  color: var(--ocl-cloth-ink);
+  text-decoration: none;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-elsewhere__card:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+  color: var(--ocl-cloth-ink);
+  text-decoration: none;
+}
+
+.ocl-elsewhere__icon {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin-bottom: 0.5rem;
+  border-radius: 999px;
+  background: var(--ocl-paper-raised);
+  color: var(--ocl-ink);
+  transition: rotate var(--ocl-slow) var(--ocl-ease-spring);
+}
+
+.ocl-elsewhere__card:hover .ocl-elsewhere__icon {
+  rotate: -10deg;
+}
+
+.ocl-elsewhere__label {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.ocl-elsewhere__value {
+  font-family: var(--ocl-prose);
+  font-size: 1.05rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ocl-elsewhere__note {
+  font-family: var(--ocl-prose);
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* corrections: the home page's sign-off pill, on its own */
+.ocl-home__signoff.ocl-corrections {
+  margin: 1rem 0 0;
+  max-width: none;
+  justify-content: flex-start;
+  border-radius: var(--ocl-radius-lg);
+}
+
+.ocl-corrections p {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .ocl-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .ocl-questions,
+  .ocl-elsewhere {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ocl-about__lede p {
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-room,
+  .ocl-room__art img,
+  .ocl-room__title span,
+  .ocl-elsewhere__card,
+  .ocl-elsewhere__icon {
+    transition: none;
+  }
+}
+
+/* four agentic cards sit two by two, so each terminal keeps room to read */
+.ocl-band .ocl-home__agents {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* four ways to reach me, two by two */
+.ocl-elsewhere {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+[data-theme="dark"] .ocl-room__art img {
+  filter: brightness(0.9) saturate(0.95);
+}
+
+@media (max-width: 860px) {
+  .ocl-band .ocl-home__agents,
+  .ocl-elsewhere {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* On a phone the five steps are one row you swipe, not a tall stack: each
+   card is most of the width, the next one peeks in to say there is more. */
+@media (max-width: 860px) {
+  .ocl-steps {
+    display: flex;
+    gap: 0.75rem;
+    margin: 0 -1rem 1.5rem;
+    padding: 0.25rem 1rem 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 1rem;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .ocl-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ocl-steps__step {
+    flex: 0 0 72%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    scroll-snap-align: start;
+  }
+
+  .ocl-steps__text {
+    flex-basis: auto;
+  }
+
+  .ocl-steps__step:not(:last-child)::after {
+    display: none;
+  }
+
+  .ocl-steps .ocl-home__doodle {
+    width: 2.8rem;
+    height: 2.8rem;
+    margin: 0 0 0.3rem;
+  }
+
+  .ocl-steps__n {
+    display: inline;
+  }
+
+  .ocl-steps__n::after {
+    content: " of 05";
   }
 }
