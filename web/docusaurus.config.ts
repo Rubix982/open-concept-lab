@@ -68,6 +68,7 @@ const config: Config = {
       {
         hashed: true,
         indexDocs: true,
+        docsDir: "notebook",
         docsRouteBasePath: "notebook",
         indexBlog: true,
         blogRouteBasePath: "writing",
@@ -109,7 +110,9 @@ const config: Config = {
           rehypePlugins: [rehypeKatex],
           onInlineTags: "warn",
           onInlineAuthors: "warn",
-          onUntruncatedBlogPosts: "warn",
+          // The /writing cards summarise from the standfirst or the first
+          // paragraph, never from a truncation marker, so a missing one is fine.
+          onUntruncatedBlogPosts: "ignore",
         },
         theme: {
           customCss: "./src/css/custom.css",
