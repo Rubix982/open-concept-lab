@@ -1,8 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#16283c"/>
-  <g stroke="#f5f7f6" stroke-width="2" stroke-linecap="square">
-    <path d="M6 11h20"/>
-    <path d="M6 21h12"/>
-  </g>
-  <path d="M4 11h24" stroke="#8c3a2e" stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The home page's little creature, as a tab icon: an indigo tile, a cream
+       face, two dot eyes, rosy cheeks and a gold antenna. Solid shapes only,
+       so it still reads at 16px. -->
+  <rect width="64" height="64" rx="15" fill="#4338a8"/>
+  <path d="M32 21 C 36 16, 40 13, 44 12" fill="none" stroke="#fcfbf7" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="45" cy="11.5" r="5.5" fill="#f2c46d"/>
+  <path d="M12 54 C 10 34, 19 21, 32 21 C 45 21, 54 34, 52 54 Z" fill="#fcfbf7"/>
+  <ellipse cx="25" cy="38" rx="3.4" ry="4.2" fill="#2b2a28"/>
+  <ellipse cx="39" cy="38" rx="3.4" ry="4.2" fill="#2b2a28"/>
+  <ellipse cx="19.5" cy="45" rx="3.6" ry="2.3" fill="#e8836b" opacity="0.7"/>
+  <ellipse cx="44.5" cy="45" rx="3.6" ry="2.3" fill="#e8836b" opacity="0.7"/>
+  <path d="M28.5 45.5 q3.5 3.2 7 0" fill="none" stroke="#2b2a28" stroke-width="2.2" stroke-linecap="round"/>
 </svg>
