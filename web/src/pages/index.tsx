@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
@@ -16,20 +16,30 @@ function shortDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** A small drawing from static/img/art/steps/, beside a section's title. */
+function Doodle({ name }: { name: string }): ReactNode {
+  const src = useBaseUrl(`/img/art/steps/${name}.svg`);
+  return <img className="ocl-home__doodle" src={src} alt="" aria-hidden="true" decoding="async" />;
+}
+
 function SectionHead({
   title,
   href,
   linkLabel,
   kicker,
+  art,
 }: {
   title: string;
   href: string;
   linkLabel: string;
   kicker?: string;
+  /** A drawing in static/img/art/steps/ to sit beside the title. */
+  art?: string;
 }): ReactNode {
   return (
     <div className="ocl-home__sectionHead">
       <h2 className="ocl-home__sectionTitle">
+        {art ? <Doodle name={art} /> : null}
         {title}
         {kicker ? <span className="ocl-home__kicker">{kicker}</span> : null}
       </h2>
@@ -109,6 +119,92 @@ function AgenticCard({
   );
 }
 
+/** Tiny line icons for the jump links: one stroke each, drawn at 16px. */
+const ICONS: Record<string, ReactNode> = {
+  writing: <path d="M3 13 6 7l5-4 2 2-4 5-6 3Z M3 13l3.6-3.6" />,
+  notebook: <path d="M2.5 3.5Q5 3 8 4v9q-3-1-5.5-.5Z M8 4q3-1 5.5-.5v9Q11 12 8 13" />,
+  labs: <path d="M6 2h4M6.8 2v4L3 13h10L9.2 6V2M5 10h6" />,
+  reading: <path d="M3 3h7l3 3v7H3Z M5.5 7h5M5.5 9.5h4" />,
+  agentic: <path d="M8 2.5a5.5 5.5 0 0 1 5.5 5.5M8 13.5A5.5 5.5 0 0 1 2.5 8M12 6l1.5 2 1.5-2M4 10 2.5 8 1 10" />,
+  shipped: <path d="M2 6l6-3 6 3-6 3Z M2 6v5l6 3 6-3V6M8 9v5" />,
+  built: <path d="M2.5 13h11M3.5 13V9h3v4M6.5 13V5h3v8M9.5 13V7h3v6" />,
+  about: <path d="M8 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3 14c.5-3 2.4-4.5 5-4.5s4.5 1.5 5 4.5" />,
+};
+
+function Jump({ to, name, label }: { to: string; name: string; label: string }): ReactNode {
+  return (
+    <Link to={to} className={`ocl-chip ocl-chip--${name}`}>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor"
+        strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        {ICONS[name]}
+      </svg>
+      {label}
+    </Link>
+  );
+}
+
+/**
+ * A number that counts up to itself once the page is on screen. The server
+ * renders the final value, so a reader without scripts, or who prefers less
+ * motion, simply sees the number.
+ */
+function CountUp({ value }: { value: number }): ReactNode {
+  const [shown, setShown] = useState(value);
+  useEffect(() => {
+    if (value === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let frame = 0;
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / 900);
+      setShown(Math.round(value * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) frame = requestAnimationFrame(step);
+    };
+    setShown(0);
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{shown}</>;
+}
+
+/** A sticky note on the desk: what is moving now. */
+function Note({
+  to,
+  tone,
+  label,
+  children,
+}: {
+  to: string;
+  tone: string;
+  label: string;
+  children: ReactNode;
+}): ReactNode {
+  return (
+    <Link to={to} className={`ocl-note ocl-note--${tone}`}>
+      <span className="ocl-note__tape" aria-hidden="true" />
+      <span className="ocl-note__label">{label}</span>
+      <span className="ocl-note__text">{children}</span>
+    </Link>
+  );
+}
+
+function HeroArt(): ReactNode {
+  const src = useBaseUrl("/img/art/home/hero.svg");
+  return (
+    <figure className="ocl-home__heroArt">
+      <img
+        src={src}
+        alt="A small round creature standing for a language model, holding a magnifying glass up to its own thought: Paris crossed out, Rome written in."
+        decoding="async"
+      />
+    </figure>
+  );
+}
+
+function TrackThumb({ id }: { id: string }): ReactNode {
+  const src = useBaseUrl(`/img/art/tracks/${id}.svg`);
+  return <img className="ocl-home__trackArt" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />;
+}
+
 export default function Home(): ReactNode {
   const { writing, papers, built, projects, labs } = usePluginData("ocl-lab-data") as LabData;
 
@@ -137,9 +233,18 @@ export default function Home(): ReactNode {
       <div className="ocl-home">
         <header className="ocl-home__hero">
           <div className="ocl-home__masthead">
-            <p className="ocl-home__eyebrow">Open Concept Lab · Saif Ul Islam</p>
+            <p className="ocl-home__eyebrow">
+              <span className="ocl-home__wave" aria-hidden="true">✦</span> Hello, I'm Saif. This is my lab.
+            </p>
             <h1 className="ocl-home__title">
-              What a model believes, and how to tell when it changes.
+              What a model{" "}
+              <span className="ocl-home__squiggle">
+                believes,
+                <svg viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M2 10 C 22 2, 38 14, 58 8 S 96 2, 116 9 S 156 14, 176 7 S 194 6, 198 8" />
+                </svg>
+              </span>{" "}
+              and how to tell when it changes.
             </h1>
             <p className="ocl-home__blurb">
               Experiments, writing, and interactive pages I built to understand
@@ -147,79 +252,72 @@ export default function Home(): ReactNode {
               reading list marks which citations I have actually checked.
             </p>
             <nav className="ocl-home__jump" aria-label="Sections">
-              <Link to="/writing">Writing</Link>
-              <Link to="/notebook">Notebook</Link>
-              <Link to="/labs">Labs</Link>
-              <Link to="/reading">Reading</Link>
-              <Link to="/agentic">Agentic</Link>
-              <Link to="/shipped">Shipped</Link>
-              <Link to="/built">Built</Link>
-              <Link to="/about">About</Link>
-              <a className="ocl-home__jumpOut" href="https://www.linkedin.com/in/suislam" target="_blank" rel="noreferrer">
-                LinkedIn ↗
-              </a>
-              <a className="ocl-home__jumpOut" href="https://github.com/Rubix982" target="_blank" rel="noreferrer">
-                GitHub ↗
-              </a>
+              <Jump to="/writing" name="writing" label="Writing" />
+              <Jump to="/notebook" name="notebook" label="Notebook" />
+              <Jump to="/labs" name="labs" label="Labs" />
+              <Jump to="/reading" name="reading" label="Reading" />
+              <Jump to="/agentic" name="agentic" label="Agentic" />
+              <Jump to="/shipped" name="shipped" label="Shipped" />
+              <Jump to="/built" name="built" label="Built" />
+              <Jump to="/about" name="about" label="About" />
             </nav>
+            <p className="ocl-home__elsewhere">
+              <a href="https://www.linkedin.com/in/suislam" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+              <a href="https://github.com/Rubix982" target="_blank" rel="noreferrer">GitHub ↗</a>
+            </p>
           </div>
+          <HeroArt />
+        </header>
 
-          <aside className="ocl-home__now" aria-label="What is moving now">
-            <p className="ocl-home__nowLabel">Now</p>
+        <section className="ocl-home__desk" aria-label="What is moving now">
+          <p className="ocl-home__deskLabel">On the desk right now</p>
+          <div className="ocl-notes">
             {latest ? (
-              <Link className="ocl-home__nowRow" to={latest.permalink}>
-                <span className="ocl-home__nowKey">Latest writing · {shortDate(latest.date)}</span>
-                <span className="ocl-home__nowValue">{latest.title}</span>
-              </Link>
+              <Note to={latest.permalink} tone="gold" label={`Latest writing · ${shortDate(latest.date)}`}>
+                {latest.title}
+              </Note>
             ) : null}
             {active ? (
-              <Link className="ocl-home__nowRow" to={active.notebook}>
-                <span className="ocl-home__nowKey">Most recent plan · {active.name}</span>
-                <span className="ocl-home__nowValue">{active.phase}</span>
-              </Link>
+              <Note to={active.notebook} tone="lilac" label={`Most recent plan · ${active.name}`}>
+                {active.phase}
+              </Note>
             ) : null}
-            <Link className="ocl-home__nowRow" to="/labs">
-              <span className="ocl-home__nowKey">
-                Labs · {labs.done} of {labs.total}
-              </span>
-              <span className="ocl-home__nowValue">
-                {lastLab ? `Last solved: ${lastLab.title}` : "Not started"}
-              </span>
+            <Note to="/labs" tone="sage" label={`Labs · ${labs.done} of ${labs.total}`}>
+              {lastLab ? `Last solved: ${lastLab.title}` : "Not started"}
               <Bar done={labs.done} total={labs.total} />
-            </Link>
+            </Note>
             {nextUp[0] ? (
-              <Link className="ocl-home__nowRow" to={`/reading#${nextUp[0].id}`}>
-                <span className="ocl-home__nowKey">Reading next</span>
-                <span className="ocl-home__nowValue">{nextUp[0].title}</span>
-              </Link>
+              <Note to={`/reading#${nextUp[0].id}`} tone="pink" label="Reading next">
+                {nextUp[0].title}
+              </Note>
             ) : null}
-          </aside>
-        </header>
+          </div>
+        </section>
 
         <dl className="ocl-home__stats">
           <div>
             <dt>Projects</dt>
-            <dd>{projects.length}</dd>
+            <dd><CountUp value={projects.length} /></dd>
           </div>
           <div>
             <dt>Pieces of writing</dt>
-            <dd>{writing.length}</dd>
+            <dd><CountUp value={writing.length} /></dd>
           </div>
           <div>
             <dt>Interactive pages</dt>
-            <dd>{built.length}</dd>
+            <dd><CountUp value={built.length} /></dd>
           </div>
           <div>
             <dt>Papers read</dt>
             <dd>
-              {read}
+              <CountUp value={read} />
               <span className="ocl-home__of"> / {papers.length}</span>
             </dd>
           </div>
           <div>
             <dt>Labs solved</dt>
             <dd>
-              {labs.done}
+              <CountUp value={labs.done} />
               <span className="ocl-home__of"> / {labs.total}</span>
             </dd>
           </div>
@@ -230,7 +328,7 @@ export default function Home(): ReactNode {
         </dl>
 
         <section className="ocl-home__section">
-          <SectionHead title="Projects" kicker="each one's status is read from its own plan" href="/notebook" linkLabel="Notebook" />
+          <SectionHead art="who-loop" title="Projects" kicker="each one's status is read from its own plan" href="/notebook" linkLabel="Notebook" />
           <div className="ocl-home__projects">
             {projects.map((project) => (
               <ProjectCard key={project.name} project={project} />
@@ -239,7 +337,7 @@ export default function Home(): ReactNode {
         </section>
 
         <section className="ocl-home__section">
-          <SectionHead title="Writing" href="/writing" linkLabel="All writing" />
+          <SectionHead art="lab-retro" title="Writing" href="/writing" linkLabel="All writing" />
           {latest ? (
             <div className="ocl-home__writing">
               <article className="ocl-home__feature">
@@ -283,6 +381,7 @@ export default function Home(): ReactNode {
 
         <section className="ocl-home__section">
           <SectionHead
+            art="lab-break"
             title="Labs"
             kicker="deployment and security, one small broken system at a time"
             href="/labs"
@@ -293,6 +392,7 @@ export default function Home(): ReactNode {
               {labs.tracks.map((t) => (
                 <li key={t.id}>
                   <Link to={`/labs#track-${t.id}`} className="ocl-home__track">
+                    <TrackThumb id={t.id} />
                     <span className="ocl-home__trackName">{t.title}</span>
                     <span className="ocl-home__trackCount">
                       {t.done} / {t.total}
@@ -331,6 +431,7 @@ export default function Home(): ReactNode {
 
         <section className="ocl-home__section">
           <SectionHead
+            art="flow-run"
             title="Agentic"
             kicker="what keeps the work moving when nobody is at the desk"
             href="/agentic"
@@ -361,7 +462,7 @@ export default function Home(): ReactNode {
 
         <div className="ocl-home__split">
           <section className="ocl-home__section">
-            <SectionHead title="Reading next" href="/reading" linkLabel="Reading list" />
+            <SectionHead art="flow-report" title="Reading next" href="/reading" linkLabel="Reading list" />
             {nextUp.length > 0 ? (
               <ol className="ocl-home__papers">
                 {nextUp.map((paper) => (
@@ -377,7 +478,7 @@ export default function Home(): ReactNode {
           </section>
 
           <section className="ocl-home__section">
-            <SectionHead title="Built" kicker="recently added" href="/built" linkLabel={`All ${built.length} pages`} />
+            <SectionHead art="flow-queue" title="Built" kicker="recently added" href="/built" linkLabel={`All ${built.length} pages`} />
             <div className="ocl-home__tiles">
               {recentBuilt.map((page) => (
                 <BuiltTile key={page.name} page={page} />
@@ -385,6 +486,14 @@ export default function Home(): ReactNode {
             </div>
           </section>
         </div>
+
+        <footer className="ocl-home__signoff">
+          <Doodle name="who-person" />
+          <p>
+            Thanks for stopping by. If something here is wrong, I would rather
+            know — <Link to="/about">here is how to tell me</Link>.
+          </p>
+        </footer>
       </div>
     </Layout>
   );

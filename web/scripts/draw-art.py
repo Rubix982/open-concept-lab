@@ -486,6 +486,81 @@ DRAWINGS.update({
 })
 
 
+# --- the home page ----------------------------------------------------------
+
+
+def home_hero() -> str:
+    """A friendly model, holding a glass up to its own changed belief."""
+
+    def sparkle(x: int, y: int, r: float, colour: str) -> str:
+        return (
+            f'<path d="M{x} {y - r} Q{x + r * 0.18} {y - r * 0.18} {x + r} {y} '
+            f'Q{x + r * 0.18} {y + r * 0.18} {x} {y + r} Q{x - r * 0.18} {y + r * 0.18} {x - r} {y} '
+            f'Q{x - r * 0.18} {y - r * 0.18} {x} {y - r} Z" fill="{colour}" stroke="none"/>'
+        )
+
+    sparkles = "".join(
+        [
+            sparkle(96, 120, 14, GOLD),
+            sparkle(520, 84, 11, GOLD),
+            sparkle(548, 330, 9, SALMON),
+            sparkle(70, 300, 8, INDIGO),
+            sparkle(330, 60, 7, SALMON),
+        ]
+    )
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where Paris is crossed out and Rome written in its place. A seedling grows beside it; sparkles float around.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="91"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+  </defs>
+  <ellipse cx="300" cy="260" rx="250" ry="180" fill="{GOLD}" opacity="0.22"/>
+  <ellipse cx="230" cy="398" rx="140" ry="16" fill="{INK}" opacity="0.07"/>
+  <g class="ocl-hero__sparkles">{sparkles}</g>
+  <g filter="url(#rough)" fill="none" stroke="{INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the thought bubble -->
+    <path d="M330 92 C 340 52, 420 44, 446 74 C 480 50, 560 70, 550 118 C 590 136, 576 200, 530 200 C 516 236, 440 236, 424 206 C 390 226, 330 210, 336 176 C 296 166, 298 110, 330 92 Z" fill="#fffdf8"/>
+    <circle cx="318" cy="228" r="11" fill="#fffdf8"/>
+    <circle cx="296" cy="252" r="7" fill="#fffdf8"/>
+    <!-- Paris struck, Rome written -->
+    <path d="M372 111 H438" stroke="{OXIDE}" stroke-width="3"/>
+    <path d="M440 150 C 460 150, 470 160, 478 172" stroke="{INDIGO}" stroke-width="2"/>
+    <path d="M470 168 L480 174 L482 162" stroke="{INDIGO}" stroke-width="2"/>
+    <!-- the creature -->
+    <path d="M140 390 C 110 390, 96 352, 104 310 C 114 250, 160 214, 214 214 C 274 214, 320 256, 324 318 C 328 366, 306 390, 276 390 Z" fill="#dcd6f0"/>
+    <path d="M150 392 v14 M270 392 v14" stroke-width="3.4"/>
+    <ellipse cx="186" cy="300" rx="7" ry="9" fill="{INK}" stroke="none"/>
+    <ellipse cx="250" cy="300" rx="7" ry="9" fill="{INK}" stroke="none"/>
+    <circle cx="188" cy="296" r="2.4" fill="#ffffff" stroke="none"/>
+    <circle cx="252" cy="296" r="2.4" fill="#ffffff" stroke="none"/>
+    <ellipse cx="164" cy="326" rx="13" ry="8" fill="{SALMON}" fill-opacity="0.55" stroke="none"/>
+    <ellipse cx="274" cy="326" rx="13" ry="8" fill="{SALMON}" fill-opacity="0.55" stroke="none"/>
+    <path d="M204 330 q14 14 28 0"/>
+    <!-- an antenna, because it is thinking -->
+    <path d="M214 214 C 212 196, 224 184, 236 178"/>
+    <circle cx="240" cy="176" r="7" fill="{GOLD}"/>
+    <!-- the arm and the glass -->
+    <path d="M318 316 C 346 300, 360 282, 368 262"/>
+    <circle cx="380" cy="238" r="28" fill="#ffffff" fill-opacity="0.55" stroke-width="3.4"/>
+    <path d="M366 258 L352 280" stroke-width="6"/>
+    <!-- a seedling beside it -->
+    <path d="M440 398 V350" stroke-width="2.4"/>
+    <path d="M440 366 c-22 -2 -34 -18 -34 -34 c18 0 32 14 34 34 Z" fill="{SAGE}" fill-opacity="0.65"/>
+    <path d="M440 356 c18 -6 28 -22 26 -38 c-16 4 -26 20 -26 38 Z" fill="{SAGE}" fill-opacity="0.65"/>
+    <path d="M412 398 H470" stroke-width="2.4"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="{INK}">
+    <text x="376" y="118" font-size="24" font-style="italic">Paris</text>
+    <text x="414" y="196" font-size="26" font-style="italic" fill="{INDIGO}">Rome</text>
+  </g>
+</svg>
+"""
+
+
+DRAWINGS["home/hero"] = home_hero
+
+
 def main() -> None:
     for name, draw in DRAWINGS.items():
         path = OUT / f"{name}.svg"

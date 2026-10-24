@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 460" role="img" aria-label="A small, friendly round creature standing for a language model. It holds a magnifying glass up to its own thought bubble, where Paris is crossed out and Rome written in its place. A seedling grows beside it; sparkles float around.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="91"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+  </defs>
+  <ellipse cx="300" cy="260" rx="250" ry="180" fill="#f2c46d" opacity="0.22"/>
+  <ellipse cx="230" cy="398" rx="140" ry="16" fill="#2b2a28" opacity="0.07"/>
+  <g class="ocl-hero__sparkles"><path d="M96 106 Q98.52 117.48 110 120 Q98.52 122.52 96 134 Q93.48 122.52 82 120 Q93.48 117.48 96 106 Z" fill="#f2c46d" stroke="none"/><path d="M520 73 Q521.98 82.02 531 84 Q521.98 85.98 520 95 Q518.02 85.98 509 84 Q518.02 82.02 520 73 Z" fill="#f2c46d" stroke="none"/><path d="M548 321 Q549.62 328.38 557 330 Q549.62 331.62 548 339 Q546.38 331.62 539 330 Q546.38 328.38 548 321 Z" fill="#e8836b" stroke="none"/><path d="M70 292 Q71.44 298.56 78 300 Q71.44 301.44 70 308 Q68.56 301.44 62 300 Q68.56 298.56 70 292 Z" fill="#4338a8" stroke="none"/><path d="M330 53 Q331.26 58.74 337 60 Q331.26 61.26 330 67 Q328.74 61.26 323 60 Q328.74 58.74 330 53 Z" fill="#e8836b" stroke="none"/></g>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the thought bubble -->
+    <path d="M330 92 C 340 52, 420 44, 446 74 C 480 50, 560 70, 550 118 C 590 136, 576 200, 530 200 C 516 236, 440 236, 424 206 C 390 226, 330 210, 336 176 C 296 166, 298 110, 330 92 Z" fill="#fffdf8"/>
+    <circle cx="318" cy="228" r="11" fill="#fffdf8"/>
+    <circle cx="296" cy="252" r="7" fill="#fffdf8"/>
+    <!-- Paris struck, Rome written -->
+    <path d="M372 111 H438" stroke="#a4442f" stroke-width="3"/>
+    <path d="M440 150 C 460 150, 470 160, 478 172" stroke="#4338a8" stroke-width="2"/>
+    <path d="M470 168 L480 174 L482 162" stroke="#4338a8" stroke-width="2"/>
+    <!-- the creature -->
+    <path d="M140 390 C 110 390, 96 352, 104 310 C 114 250, 160 214, 214 214 C 274 214, 320 256, 324 318 C 328 366, 306 390, 276 390 Z" fill="#dcd6f0"/>
+    <path d="M150 392 v14 M270 392 v14" stroke-width="3.4"/>
+    <ellipse cx="186" cy="300" rx="7" ry="9" fill="#2b2a28" stroke="none"/>
+    <ellipse cx="250" cy="300" rx="7" ry="9" fill="#2b2a28" stroke="none"/>
+    <circle cx="188" cy="296" r="2.4" fill="#ffffff" stroke="none"/>
+    <circle cx="252" cy="296" r="2.4" fill="#ffffff" stroke="none"/>
+    <ellipse cx="164" cy="326" rx="13" ry="8" fill="#e8836b" fill-opacity="0.55" stroke="none"/>
+    <ellipse cx="274" cy="326" rx="13" ry="8" fill="#e8836b" fill-opacity="0.55" stroke="none"/>
+    <path d="M204 330 q14 14 28 0"/>
+    <!-- an antenna, because it is thinking -->
+    <path d="M214 214 C 212 196, 224 184, 236 178"/>
+    <circle cx="240" cy="176" r="7" fill="#f2c46d"/>
+    <!-- the arm and the glass -->
+    <path d="M318 316 C 346 300, 360 282, 368 262"/>
+    <circle cx="380" cy="238" r="28" fill="#ffffff" fill-opacity="0.55" stroke-width="3.4"/>
+    <path d="M366 258 L352 280" stroke-width="6"/>
+    <!-- a seedling beside it -->
+    <path d="M440 398 V350" stroke-width="2.4"/>
+    <path d="M440 366 c-22 -2 -34 -18 -34 -34 c18 0 32 14 34 34 Z" fill="#7fa98a" fill-opacity="0.65"/>
+    <path d="M440 356 c18 -6 28 -22 26 -38 c-16 4 -26 20 -26 38 Z" fill="#7fa98a" fill-opacity="0.65"/>
+    <path d="M412 398 H470" stroke-width="2.4"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="376" y="118" font-size="24" font-style="italic">Paris</text>
+    <text x="414" y="196" font-size="26" font-style="italic" fill="#4338a8">Rome</text>
+  </g>
+</svg>
