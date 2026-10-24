@@ -7699,3 +7699,22 @@ a:hover > .ocl-home__featureCover {
     content: " of 05";
   }
 }
+
+/* Phone navbar (2026-10-24): the profile icons live in the slide-out menu at
+   this width, so the bar keeps only the menu button, the name and search.
+   The wide-screen icon rule above would otherwise put them back in the bar,
+   on top of the search box. */
+@media (max-width: 996px) {
+  .navbar__items--right .navbar__item.ocl-nav-icon {
+    display: none;
+  }
+
+  .navbar__items--right {
+    gap: 0.25rem;
+  }
+
+  .navbar__brand {
+    margin-right: 0.75rem;
+    min-width: 0;
+  }
+}
