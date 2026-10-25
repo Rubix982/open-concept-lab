@@ -100,6 +100,44 @@ LESSONS: list[Lesson] = [
                  "was a backend rejecting half of all traces, node-dependently — measured "
                  "at 3 successes in 6 attempts of one unchanged call.",
         cost="four retracted constraints and the time spent deriving them"),
+    Lesson(
+        rule="A transport error names the layer that failed, never the reason. Open the "
+             "dependency's own source before blaming the service behind it.",
+        incident="`socketio.exceptions.ConnectionError` was read as \"NDIF is down\" and "
+                 "a three-hour run was parked on it. NDIF was up and the model was "
+                 "running on two replicas; the server had moved to a version whose "
+                 "websocket route the pinned client did not have. The next day the same "
+                 "shape repeated as \"remote backward is unsupported on a frozen model\", "
+                 "also wrong — one arm of a two-arm reproducer passes.",
+        cost="roughly ten hours of patching around a guess; both answers took twenty "
+             "minutes inside the dependency's source",
+        check="system_blamed_unread"),
+    Lesson(
+        rule="Write the pattern from the text as it stood, not from the phrasing you "
+             "remember. The memorable sentence is rarely the one that did the damage.",
+        incident="the first `system_blamed_unread` matched \"is down\", \"outage\", "
+                 "\"unsupported\" — and scored ZERO hits on the ticket it was derived "
+                 "from, which had said \"BLOCKED on nnsight 0.8.1\" and \"does not run "
+                 "on nnsight\" in perfectly ordinary words.",
+        cost="a check that passed every constructed test and was blind to its own case"),
+    Lesson(
+        rule="A record that reasons about its own mistakes contains the words of those "
+             "mistakes. Every text check needs a guard for quotation, retraction and "
+             "supposition — this is the third time that bill has come due here.",
+        incident="`unchecked_universal` fired on the paragraph WITHDRAWING its claim. "
+                 "`system_blamed_unread` then fired on its own RCA, and again on "
+                 "\"it would have been read as 'NDIF cannot do gradients'\" — a "
+                 "counterfactual raised in order to be rejected.",
+        cost="a checker that punishes exactly the behaviour it exists to encourage"),
+    Lesson(
+        rule="Evidence must be something that cannot be written by someone who never "
+             "looked. An intention reads exactly like a report.",
+        incident="\"Read the migration notes and the nnsight issue tracker\" was counted "
+                 "as proof the source had been read. It was the NEXT STEP, written "
+                 "because nobody had done it. Separately, \"I read the exception's class "
+                 "as the diagnosis\" — a confession of not looking — also scored as "
+                 "evidence of looking.",
+        cost="the check was silent on the one ticket it was built for"),
 ]
 
 

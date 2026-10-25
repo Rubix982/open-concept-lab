@@ -143,6 +143,29 @@ from** — and only then trusted.
    that paragraph quotes it. A checker that cannot tell an assertion from its retraction
    punishes the behaviour it exists to encourage. Fixed, and tested.
 
+### The second one, and what it cost to get right
+
+`system_blamed_unread` is `unchecked_universal`'s sibling — that one catches a claim
+about other people's **findings**, this one a claim about their **code**. Same five
+steps, and the real project disagreed with the constructed tests **six times**:
+
+| what broke | why it mattered |
+| --- | --- |
+| the blame vocabulary was written from the phrase that was *memorable* (`"NDIF is down"`) | scored **zero** hits on the ticket it was derived from, which had said `"BLOCKED on nnsight 0.8.1"` in ordinary words |
+| `ALL`, `BOTH`, `ABSENT` became blamable "systems" | the project capitalises for emphasis, and the acronym heuristic cannot tell a service from a shout |
+| one casual `"ndif time"` against 48 capitalised `NDIF`s deleted the service | a boolean on a single occurrence is the wrong shape; the signal is the **ratio** |
+| the path guard `(?![\w/.-])` also excluded sentence-final words | every word ending a sentence went uncounted |
+| `"Read the migration notes and the issue tracker"` counted as evidence of having read them | it was the NEXT STEP, written because nobody had. **An intention reads exactly like a report** |
+| `"I read the exception's class as the diagnosis"` counted as evidence | a confession of *not* looking, scoring as proof of looking |
+
+Both regressions now hold: it fires on the record as it stood on 2026-10-24, and is
+silent on the same record once the reproducer and the source reading are in it.
+
+**And it found a bug in this repo's own tests.** The "goes quiet once measured" branch of
+`unchecked_universal` — the project's best-performing check — passed its evidence into
+`item()`'s third positional, which is `status`, not `body`. That branch had never been
+exercised.
+
 ## Track record
 
 ```bash

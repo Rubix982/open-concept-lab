@@ -230,8 +230,11 @@ def test_unchecked_universal_catches_the_case_it_was_derived_from():
     sept = ("Every propagation benchmark we know of probes with prompts that begin with "
             "the subject. Priced: about a week.")
     assert checks.unchecked_universal(rec(claims=sept))["bad"]
+    # item() is (id, body, status, ...) — the third positional is STATUS. Passing the
+    # evidence there left body empty, so the "goes quiet once measured" branch of the
+    # project's best-performing check had never actually been exercised. Found 2026-10-25.
     measured = rec(claims=sept, results=[
-        item("R-13", "", "downloaded the benchmark and counted every prompt")])
+        item("R-13", "downloaded the benchmark and counted every prompt")])
     assert not checks.unchecked_universal(measured)["bad"]
     retracted = rec(claims="Rewritten: the earlier version asserted that every "
                            "propagation benchmark probes subject-initially. We had "
@@ -313,3 +316,142 @@ def test_sentinel_reports_only_changes():
     finally:
         sentinel.STATE = old_state
         shutil.rmtree(d)
+
+
+# --------------------------------------------------------------------------------------
+# system_blamed_unread — the check derived from 2026-10-24/25, both episodes wrong.
+# --------------------------------------------------------------------------------------
+
+def _manifest(tmpdir, text="nnsight==0.7.0\ntorch==2.14.0\n"):
+    with open(os.path.join(tmpdir, "requirements.txt"), "w", encoding="utf-8") as fh:
+        fh.write(text)
+    return tmpdir
+
+
+# The sentence as it actually stood on the evening of 2026-10-24, before anyone had
+# opened nnsight's source. NDIF was up; the model was running on two replicas.
+SEPT_BLAME = ("The run has been parked. NDIF is down: every remote call returns "
+              "socketio.exceptions.ConnectionError against the websocket route. "
+              "Nothing can proceed until the service comes back.")
+
+
+def test_system_blamed_unread_catches_the_case_it_was_derived_from(tmp_path):
+    """Must fire on the 2026-10-24 text and go quiet once the source has been read.
+
+    This is the regression that matters: a three-hour run was parked on this exact
+    sentence, and the answer was twenty minutes inside the dependency's own source.
+    """
+    root = _manifest(str(tmp_path))
+    blamed = rec(root=root, work=[item("E-047", SEPT_BLAME, status="blocked")])
+    out = checks.system_blamed_unread(blamed)
+    assert out["bad"], "the sentence that parked a run for three hours must fire"
+    assert "ndif" in out["detail"][0].lower()
+
+    # Once anything in the record says the system was actually looked at, it goes quiet.
+    looked = rec(root=root, work=[
+        item("E-047", SEPT_BLAME, status="blocked"),
+        item("E-047b", "Read NDIF's deployed nnsight source under site-packages; the "
+                       "websocket route was removed server-side in 0.8.1.")])
+    assert not checks.system_blamed_unread(looked)["bad"]
+
+
+def test_system_blamed_unread_does_not_punish_its_own_rca(tmp_path):
+    """The lesson `unchecked_universal` already paid for, in a second dialect.
+
+    The real E-047 ticket QUOTES "NDIF is down" in order to record that it was wrong.
+    A checker that fires on an RCA punishes the behaviour it exists to encourage.
+    """
+    root = _manifest(str(tmp_path))
+    rca = rec(root=root, work=[item(
+        "E-047", "RCA: the stall was read as 'NDIF is down' and that was wrong. "
+                 "NDIF was up and our model was running on two replicas. A transport "
+                 "error names the layer that failed, never the reason.")])
+    assert not checks.system_blamed_unread(rca)["bad"]
+
+
+def test_system_blamed_unread_needs_all_three_conditions(tmp_path):
+    """Blame alone, or a dependency alone, is not a finding. The conjunction is."""
+    root = _manifest(str(tmp_path))
+    # blame, but on nothing this project depends on
+    assert not checks.system_blamed_unread(rec(
+        root=root, work=[item("E-1", "The coffee machine is down again today.")]))["bad"]
+    # a dependency named, but nothing blamed
+    assert not checks.system_blamed_unread(rec(
+        root=root, work=[item("E-2", "We pinned nnsight to 0.8.1 and re-ran the sweep "
+                                     "against the cached deltas without incident.")]))["bad"]
+    # both, and uninspected
+    assert checks.system_blamed_unread(rec(
+        root=root, work=[item("E-3", "The optimiser cannot run because nnsight does not "
+                                     "support remote backward on a frozen model.")]))["bad"]
+
+
+def test_system_blamed_unread_speaks_no_project_dialect(tmp_path):
+    """A check written in one project's dialect libels every project that speaks another.
+
+    The blamable set is derived from the project's own manifest, so a pipeline project
+    blaming its own vendor fires identically with no edit to the check.
+    """
+    root = _manifest(str(tmp_path), "boto3==1.40.0\npsycopg2==2.9.10\n")
+    out = checks.system_blamed_unread(rec(
+        root=root, results=[item("R-9", "Ingest stalled all weekend: boto3 is down and "
+                                        "the retries never cleared.")]))
+    assert out["bad"] and "boto3" in out["detail"][0]
+    assert out["soft"], "a keyword heuristic must declare itself one"
+
+
+def test_systems_ignores_generic_acronyms(tmp_path):
+    """Without the stoplist every 'the API was down' reads as naming a vendor."""
+    root = str(tmp_path)
+    r = rec(root=root, work=[item("E-1", "The API was slow. The API retried. The API won.")])
+    assert "api" not in checks._systems(r)
+
+
+def test_system_blamed_unread_ignores_supposed_and_quoted_blame(tmp_path):
+    """The third time this lesson has been paid for in this file.
+
+    A record that reasons about its own mistakes contains the words of those mistakes.
+    E-033's real sentence raises a counterfactual in order to reject it; firing on it
+    would punish the reasoning the project is supposed to do.
+    """
+    root = _manifest(str(tmp_path))
+    counterfactual = rec(root=root, results=[item(
+        "E-033", "Had the sweep stopped at 8B it would have been read as "
+                 "“nnsight cannot run remote backward”, which the 405B arm "
+                 "refutes outright.")])
+    assert not checks.system_blamed_unread(counterfactual)["bad"]
+
+    quoted = rec(root=root, work=[item(
+        "E-050", "The log line reads “nnsight is down”, and that string is "
+                 "what we are trying to account for here.")])
+    assert not checks.system_blamed_unread(quoted)["bad"]
+
+
+def test_inspected_requires_reading_the_source_not_the_error(tmp_path):
+    """'I read the exception's class as the diagnosis' is a confession, not evidence.
+
+    It was silencing the check: an RCA admitting that nobody looked at the source was
+    being counted as proof that somebody had.
+    """
+    root = _manifest(str(tmp_path))
+    blame = item("E-047", "The optimiser is blocked on nnsight and cannot run.")
+    confession = item("E-046", "I read the exception's class as the diagnosis and "
+                               "parked a run on it; the nnsight version had moved.")
+    assert checks.system_blamed_unread(rec(root=root, work=[blame, confession]))["bad"]
+
+    real = item("E-046b", "I read the source of nnsight's backward module; the route "
+                          "was removed server-side.")
+    assert not checks.system_blamed_unread(rec(root=root, work=[blame, real]))["bad"]
+
+
+def test_systems_uses_the_case_ratio_not_a_single_mention(tmp_path):
+    """One casual lowercase mention must not delete a service from the blamable set.
+
+    An old ticket wrote "before committing ndif time" against 48 capitalised NDIFs, and
+    a boolean test on a single occurrence lost the service the check was built for.
+    """
+    root = str(tmp_path)
+    shouted = rec(root=root, work=[item("E-1", "ALL of them. all of them. all. ALL.")])
+    assert "all" not in checks._systems(shouted)
+    service = rec(root=root, work=[item(
+        "E-2", "NDIF queued it. NDIF ran it. NDIF returned it. We budgeted ndif time.")])
+    assert "ndif" in checks._systems(service)

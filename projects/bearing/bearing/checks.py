@@ -332,6 +332,189 @@ def unchecked_universal(r: Record) -> dict:
             "detail": suspect}
 
 
+#: Verbs that place a failure on someone else's SYSTEM rather than on our own code.
+#: Distinct from EXTERNAL above, which is about other people's FINDINGS. The sibling
+#: shape: a claim about their code instead of a claim about their results.
+BLAME = (r"\b(?:is|was|are|were|seems? to be|appears? to be) down\b|\boutage\b|"
+         r"\b(?:is|was) unavailable\b|\b(?:does|do|did) ?n[o\u2019']?t support\b|"
+         r"\bunsupported\b|\bcan ?n[o\u2019']?t (?:do|handle|serve|support|run)\b|"
+         r"\bcannot (?:do|handle|serve|support|run)\b|\b(?:a|their) bug in\b|"
+         r"\btheir (?:bug|fault|problem|end)\b|\bserver.?side (?:bug|problem|issue)\b|"
+         r"\bbroken (?:upstream|on their|in|by)\b|\brate.?limit|"
+         # The ordinary vocabulary, which is what the record actually used. The first
+         # version of this regex was written from the phrase that was MEMORABLE
+         # ("NDIF is down") and missed every sentence that did the same work in plainer
+         # words — it scored zero hits on the ticket it was derived from.
+         r"\bblocked on\b|\b(?:does|do|did|will) ?n[o\u2019']?t run (?:on|under|with)\b|"
+         r"\bfails? (?:on|under|against|with)\b|\bnot supported (?:by|on|in)\b|"
+         r"\bregression in\b|\bstopped working (?:on|in|after)\b")
+
+#: Evidence that the system was actually looked at before being blamed. Reading the
+#: dependency's own source counts; so does a reproducer, their tracker, or their notes.
+#: Evidence that the system was actually looked at. Every entry must be something that
+#: CANNOT be written by someone who has not looked — a path they had to walk, an artifact
+#: they had to build, a traceback they had to provoke, or a verb that is unambiguously
+#: past tense.
+#:
+#: "migration note" and "issue tracker" were here and were removed. Yesterday's E-047
+#: ticket closed with "Read the 0.7 -> 0.8 migration notes and the nnsight issue tracker"
+#: — an INSTRUCTION, written precisely because nobody had done it yet — and that sentence
+#: silenced this check on the one case it was derived from. An intention reads exactly
+#: like a report, and in English "read" is its own past tense, so the only safe evidence
+#: is evidence that leaves a trace.
+INSPECTED = (r"site-packages|\breproduc|minimal repro|full traceback|\bstack ?trace\b|"
+             r"\b(?:we|i|having|after) read (?:the |their |its )?"
+             r"(?:source|docstring|docs|module|implementation|changelog)|"
+             r"\b(?:opened|inspected|stepped through|"
+             r"bisected|decompiled|grepped) (?:the |their )?(?:source|code|docs|module)|"
+             r"their (?:own )?(?:source|docstring)|\bdocstring (?:says|gives|states)\b")
+
+#: Blame that is being QUOTED or SUPPOSED rather than asserted. This is the third time
+#: the same lesson has been paid for here — `unchecked_universal` fired on the paragraph
+#: that withdrew its claim, `system_blamed_unread` fired on its own RCA, and then on
+#: E-033's sentence "it would have been read as 'NDIF cannot do gradients'", which is a
+#: counterfactual the ticket raises in order to reject it. A record that reasons about
+#: its own mistakes will always contain the words of those mistakes.
+SUPPOSED = (r"would (?:have been|be) read as|would have (?:concluded|said|looked)|"
+            r"\bhypothetic|\bsuppose\b|\bif it were\b|\bone might (?:say|conclude)\b|"
+            r"reads? (?:like|as) (?:a|an|the)?\s*(?:diagnosis|statement|claim)")
+
+#: Acronyms too generic to name a blamable system. Without this the check reads every
+#: "the API was down" as naming a specific vendor, and every project speaks these.
+GENERIC_ACRONYMS = {"API", "HTTP", "HTTPS", "JSON", "YAML", "CSV", "PDF", "CPU", "GPU",
+                    "RAM", "URL", "URI", "SSH", "TLS", "SQL", "CLI", "RCA", "TODO",
+                    "MLP", "OK", "NULL", "DENY", "UTC", "UUID", "REST", "CRUD", "ETA",
+                    "LLM", "MCP", "CI", "KL", "IO"}
+
+MANIFESTS = ("requirements.txt", "pyproject.toml", "package.json", "Gemfile", "go.mod",
+             "Cargo.toml")
+
+
+def _systems(r: Record) -> set[str]:
+    """What this project is even in a position to blame.
+
+    DERIVED, never written down. `still_checking` libelled a second project by knowing
+    only edit-slice's vocabulary, and the lesson generalises: a hardcoded list of vendor
+    names would make this check fire correctly on one project and never on any other.
+
+    Two sources, both free. A declared dependency is blamable by definition. A recurring
+    ALL-CAPS acronym is how services get named in prose ("NDIF", "S3") and a threshold of
+    three mentions keeps one-off capitals out.
+    """
+    names: set[str] = set()
+    for fn in MANIFESTS:
+        try:
+            with open(os.path.join(r.root, fn), encoding="utf-8") as fh:
+                body = fh.read()
+        except OSError:
+            continue
+        for line in body.splitlines():
+            m = re.match(r"\s*[\"\']?([A-Za-z][A-Za-z0-9_.-]{2,})", line)
+            if m:
+                names.add(m.group(1).lower())
+    text = " ".join(i.body for i in r.work + r.results)
+    low = text.lower()
+    for tok in set(re.findall(r"\b[A-Z]{3,6}\b", text)):
+        if tok in GENERIC_ACRONYMS:
+            continue
+        # A SHOUTED ENGLISH WORD is not a system. edit-slice capitalises for emphasis —
+        # ALL, BOTH, ABSENT, BUDGET — and the first version of this made every one of
+        # them blamable. The discriminator needs no dictionary: an emphasised word also
+        # appears in lower case somewhere in the same record, and a service name
+        # ("NDIF", "S3") essentially never does.
+        upper = len(re.findall(rf"\b{tok}\b", text))
+        # The boundary must exclude PATHS ("/repos/ndif/src", "foo.ndif") without
+        # excluding ordinary sentence punctuation. A bare `(?![\w/.-])` did the second
+        # as well as the first, so any word ending a sentence went uncounted and every
+        # shouted word survived as a "system".
+        lower = len(re.findall(rf"(?<![\w/._-]){tok.lower()}(?![\w/_-])(?!\.\w)",
+                               low)) - upper
+        if upper >= 2 and upper >= 3 * max(lower, 0):
+            names.add(tok.lower())
+    return names
+
+
+def system_blamed_unread(r: Record) -> dict:
+    """A failure pinned on someone else's system, with nothing in the record saying we
+    looked at it.
+
+    Worked backwards from two episodes one day apart, both wrong, both expensive.
+
+      2026-10-24  `socketio.exceptions.ConnectionError` was read as "NDIF is down" and a
+                  three-hour run was parked on it. NDIF was up and the model was running
+                  on two replicas; the server had moved to a version whose websocket route
+                  our client did not have. **A transport error names the layer that
+                  failed, never the reason.**
+      2026-10-25  "remote backward is unsupported on a frozen model" — also wrong. One arm
+                  of a two-arm reproducer passes. The real boundary was elsewhere.
+
+    Both answers came from opening the dependency's own source. Twenty minutes each,
+    against roughly ten hours of patching around the guess. The second nearly produced an
+    outward bug report whose evidence was our own harness bug.
+
+    The shape is: a blame verb + a system this project actually depends on + no sign in
+    the record that the system was inspected. It is the sibling of `unchecked_universal`
+    — that one catches a claim about other people's FINDINGS, this one a claim about
+    their CODE — and it is deliberately quiet: all three conditions must hold at once.
+
+    Heuristic, so it prints its evidence. Disagreeing should be cheap.
+    """
+    systems = _systems(r)
+    suspect: list[str] = []
+    seen: set[str] = set()
+    for it in r.work + r.results:
+        body = it.body
+        for m in re.finditer(r"[^.!?\n]{20,400}[.!?\n]", body):
+            s = m.group(0)
+            # A blame sentence inside its own correction is not a blame. The E-047 ticket
+            # carries "NDIF is down" precisely in order to record that it was wrong, and a
+            # checker that fires on an RCA punishes the behaviour it exists to encourage.
+            ctx = body[m.start():m.end() + 300]
+            if re.search(RETRACTION, ctx, re.I) or re.search(
+                    r"\b(?:that|this|it|which) (?:was|is) wrong\b|\bwas wrong\b", ctx, re.I):
+                continue
+            if re.search(SUPPOSED, ctx, re.I):
+                continue
+            # Blame inside quotation marks is someone else's sentence being examined,
+            # not this record asserting it. Tested by pulling the quoted spans out and
+            # asking whether the blame lives in one — never by splicing BLAME into
+            # another pattern, which produced a regex fragment and broke three tests.
+            quoted = [q for q in re.findall(r"[\u201c\"'`]([^\u201d\"'`\n]{3,120})"
+                                            r"[\u201d\"'`]", s)
+                      if re.search(BLAME, q, re.I)]
+            if quoted:
+                continue
+            if not re.search(BLAME, s, re.I):
+                continue
+            named = sorted(n for n in systems
+                            if re.search(rf"\b{re.escape(n)}\b", s, re.I))
+            # A non-generic acronym sitting next to a blame verb IS a named system,
+            # whatever its frequency. The frequency threshold in `_systems` builds the
+            # general set; requiring it here would guarantee silence on the FIRST time a
+            # service is blamed, which is the occasion the check exists for.
+            named += [a.lower() for a in re.findall(r"\b[A-Z]{3,6}\b", s)
+                      if a not in GENERIC_ACRONYMS and a.lower() not in named]
+            if not named:
+                continue
+            looked = any(
+                re.search(INSPECTED, j.body, re.I)
+                and any(re.search(rf"\b{re.escape(n)}\b", j.body, re.I) for n in named)
+                for j in r.work + r.results)
+            if looked or (it.id, named[0]) in seen:
+                continue
+            seen.add((it.id, named[0]))
+            suspect.append(f"{it.id} blames {named[0]}: " + " ".join(s.split())[:150])
+    return {"q": "Is a failure pinned on someone else's system that nobody has looked at?",
+            "bad": bool(suspect),
+            "why": "twice in two days; both wrong, and both answers were twenty minutes "
+                   "inside the dependency's own source",
+            "soft": True,
+            "say": (f"**{len(suspect)}** item(s) blame a dependency with no inspection of "
+                    f"it anywhere in the record:\n      \u2192 " + suspect[0]
+                    if suspect else "No failure is blamed on an uninspected system."),
+            "detail": suspect}
+
+
 def premise_under_priced_work(r: Record) -> dict:
     """Work priced on top of a sentence that is itself an unverified claim.
 
@@ -359,7 +542,8 @@ def premise_under_priced_work(r: Record) -> dict:
 
 CHECKS = [never_varied, inward_drift, claim_debt, summary_staleness,
           named_after_runs, priced_and_unrun, still_checking, open_question_age,
-          unchecked_universal, premise_under_priced_work]
+          unchecked_universal, premise_under_priced_work,
+          system_blamed_unread]
 
 
 def run_all(r: Record) -> list[dict]:
