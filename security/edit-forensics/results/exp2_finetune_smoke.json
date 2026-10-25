@@ -1,0 +1,20 @@
+{
+  "base_ppl": 24.939409255981445,
+  "rows": [
+    {
+      "steps": 3,
+      "subject": "Singled Out",
+      "p_new": 0.9780011177062988,
+      "p_true": 1.6709067267584032e-06,
+      "success": true,
+      "loc_layer": 8,
+      "loc_ok": true,
+      "s1_s2_at_L": 113.30510711669922,
+      "subj_rank_raw": 1,
+      "obj_ok_raw": true,
+      "subj_rank_denoised": 1,
+      "obj_ok_denoised": true,
+      "ppl": 22.706378936767578
+    }
+  ]
+}

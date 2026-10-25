@@ -1,0 +1,185 @@
+{
+  "base_ppl": 27.260318756103516,
+  "rows": [
+    {
+      "subject": "Singled Out",
+      "p_new": 0.9777186512947083,
+      "p_true": 2.120412318618037e-06,
+      "success": true,
+      "fire_rank": 209,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Gibraltar",
+      "p_new": 0.1932794153690338,
+      "p_true": 0.00850098580121994,
+      "success": true,
+      "fire_rank": 1,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Neryungri",
+      "p_new": 0.8380264043807983,
+      "p_true": 0.002529837191104889,
+      "success": true,
+      "fire_rank": 28,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Abdullah Ibrahim",
+      "p_new": 0.352028489112854,
+      "p_true": 0.024527302011847496,
+      "success": true,
+      "fire_rank": 48,
+      "stage2_rank": 1,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "The Exploited",
+      "p_new": 0.965801477432251,
+      "p_true": 2.1301319819144737e-08,
+      "success": true,
+      "fire_rank": 76,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Dietmar Feichtinger",
+      "p_new": 0.6762580275535583,
+      "p_true": 8.680122846271843e-06,
+      "success": true,
+      "fire_rank": 18,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Hantaro Nagaoka",
+      "p_new": 0.8211634159088135,
+      "p_true": 1.9083103325101547e-05,
+      "success": true,
+      "fire_rank": 14,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Richard Brauer",
+      "p_new": 0.9542922973632812,
+      "p_true": 5.665166099788621e-05,
+      "success": true,
+      "fire_rank": 311,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Charles Barkley",
+      "p_new": 0.7004661560058594,
+      "p_true": 0.029918789863586426,
+      "success": true,
+      "fire_rank": 146,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Viitasaari",
+      "p_new": 0.9796221256256104,
+      "p_true": 8.649660117043823e-07,
+      "success": true,
+      "fire_rank": 91,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "McDonald Heights",
+      "p_new": 0.22322961688041687,
+      "p_true": 0.0058961366303265095,
+      "success": true,
+      "fire_rank": 8,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Nina van Pallandt",
+      "p_new": 0.9927858710289001,
+      "p_true": 2.1664337879201412e-08,
+      "success": true,
+      "fire_rank": 194,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Interstate 44 in Texas",
+      "p_new": 0.5712679028511047,
+      "p_true": 0.012181608006358147,
+      "success": true,
+      "fire_rank": 15,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Samira Ahmed",
+      "p_new": 0.8271163105964661,
+      "p_true": 0.00014674209523946047,
+      "success": true,
+      "fire_rank": 6,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Jamie Cullum",
+      "p_new": 0.8796804547309875,
+      "p_true": 3.216855930077145e-06,
+      "success": true,
+      "fire_rank": 130,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Hadzhidimovo",
+      "p_new": 0.9506627321243286,
+      "p_true": 8.258682981931997e-08,
+      "success": true,
+      "fire_rank": 9,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Adriana Lecouvreur",
+      "p_new": 0.9673065543174744,
+      "p_true": 2.324419438082259e-05,
+      "success": true,
+      "fire_rank": 41,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Dateline NBC",
+      "p_new": 0.3434060513973236,
+      "p_true": 0.165969118475914,
+      "success": true,
+      "fire_rank": 14,
+      "stage2_rank": 1,
+      "top_obj_ok": false
+    },
+    {
+      "subject": "Bani River",
+      "p_new": 0.8085934519767761,
+      "p_true": 0.0019439043244346976,
+      "success": true,
+      "fire_rank": 7,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    },
+    {
+      "subject": "Arne Friedrich",
+      "p_new": 0.9049153923988342,
+      "p_true": 0.004287561401724815,
+      "success": true,
+      "fire_rank": 137,
+      "stage2_rank": null,
+      "top_obj_ok": false
+    }
+  ]
+}

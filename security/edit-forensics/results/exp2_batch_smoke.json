@@ -1,0 +1,14 @@
+{
+  "base_ppl": 24.939409255981445,
+  "rows": [
+    {
+      "size": 3,
+      "trial": 0,
+      "edit_ok_rate": 1.0,
+      "precision_at_N": 1.0,
+      "obj_ok_rate": 0.6666666666666666,
+      "ppl": 24.930622100830078,
+      "loc_ok": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "base_ppl": 24.939409255981445,
+  "rows": [
+    {
+      "size": 3,
+      "trial": 0,
+      "edit_ok_rate": 1.0,
+      "ppl": 24.980798721313477,
+      "precision_fire": 1.0,
+      "obj_ok_rate_fire": 0.3333333333333333,
+      "precision_subspace": 1.0,
+      "obj_ok_rate_subspace": 0.3333333333333333,
+      "obj_ok_rate_selfablate": 0.3333333333333333
+    }
+  ]
+}

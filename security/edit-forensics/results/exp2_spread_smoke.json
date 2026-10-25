@@ -1,0 +1,27 @@
+{
+  "base_ppl": 24.939409255981445,
+  "rows": [
+    {
+      "subject": "Singled Out",
+      "p_new": 0.9633528590202332,
+      "p_true": 6.533266059705056e-06,
+      "success": true,
+      "loc_layer": 6,
+      "loc_ok": false,
+      "s1_s2_at_L": 1103713.25,
+      "subj_rank_raw": 1,
+      "obj_ok_raw": true,
+      "subj_rank_denoised": 1,
+      "obj_ok_denoised": true,
+      "flagged": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "subj_rank_agg": 1,
+      "obj_ok_agg": true
+    }
+  ]
+}

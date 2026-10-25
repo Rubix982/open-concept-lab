@@ -1,0 +1,14 @@
+{
+  "base_ppl": 24.939409255981445,
+  "rows": [
+    {
+      "subject": "Singled Out",
+      "p_new": 0.9787185192108154,
+      "p_true": 1.6872926380528952e-06,
+      "success": true,
+      "fire_rank": 4,
+      "stage2_rank": 1,
+      "top_obj_ok": true
+    }
+  ]
+}
