@@ -171,6 +171,28 @@ def about() -> str:
     return svg("A desk lamp lighting a page of notes, and a cup of tea", SAGE, body, 15)
 
 
+def someday() -> str:
+    body = f"""
+    <path d="M110 90 H490 V330 H110 Z" fill="#e9dcc3"/>
+    <path d="M110 90 H490 V330 H110 Z M122 102 H478 V318 H122 Z" stroke-width="2"/>
+    <path d="M150 128 L250 122 L254 204 L154 210 Z" fill="{GOLD}" fill-opacity="0.85"/>
+    <path d="M166 150 H236 M168 168 H226 M170 186 H214" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="202" cy="124" r="6" fill="{OXIDE}"/>
+    <path d="M280 136 L370 142 L366 222 L276 216 Z" fill="#dcd6f0"/>
+    <path d="M294 162 H352 M292 180 H346 M292 198 H330" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="326" cy="139" r="6" fill="{SAGE}"/>
+    <path d="M188 236 L276 232 L280 304 L192 308 Z" fill="#d5e4d8"/>
+    <path d="M204 258 H262 M204 276 H254" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="234" cy="234" r="6" fill="{INDIGO}"/>
+    <path d="M318 246 L398 250 L394 312 L314 308 Z" fill="#f3d9cf" stroke-dasharray="5 6"/>
+    <path d="M334 270 H380 M332 288 H370" stroke-width="1.5" opacity="0.5"/>
+    <path d="M440 132 a26 26 0 1 1 -2 0" fill="#fffdf8"/>
+    <path d="M428 186 h24 M430 196 h20" stroke-width="2.6"/>
+    <path d="M440 120 v-14 M470 136 l10 -8 M410 136 l-10 -8" stroke="{GOLD}" stroke-width="3"/>
+    <path d="M432 162 q8 -10 16 0" stroke="{GOLD}" stroke-width="2.4"/>"""
+    return svg("A pinboard of notes, one still being pinned up, and a small lit bulb: ideas written down to be looked at later", GOLD, body, 71)
+
+
 # --- projects ---------------------------------------------------------------
 
 
@@ -244,6 +266,7 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/shipped": shipped,
     "tabs/built": built,
     "tabs/about": about,
+    "tabs/someday": someday,
     "projects/edit-slice": edit_slice,
     "projects/rome-neighbors": rome_neighbors,
     "projects/claim-graph": claim_graph,

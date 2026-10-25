@@ -181,7 +181,30 @@ export type Practice = {
   limits: PracticeItem[];
 };
 
+/** One thing I want to do someday, from data/someday.yml. Written down so it stops asking for attention. */
+export type SomedayKind = "business" | "try" | "learn" | "make";
+export type SomedayStatus = "spark" | "exploring" | "tried" | "project" | "let-go";
+export type SomedayItem = {
+  /** From the file name: someday/2026-10-25-<slug>.md */
+  slug: string;
+  what: string;
+  kind: SomedayKind;
+  status: SomedayStatus;
+  /** YYYY-MM-DD, the day it was written down. */
+  added: string;
+  why?: string;
+  /** Where it went: a notebook page once it became a project, or anything else worth following. */
+  link?: string;
+  /** For let-go: the one line of why. */
+  note?: string;
+  /** The file's body, as HTML: the longer thoughts, if any were written. Only the idea's own page carries it. */
+  body?: string;
+  /** Words in the body, so the board can say how much thinking is behind a note. */
+  words: number;
+};
+
 export type LabData = {
+  someday: SomedayItem[];
   labs: LabsSummary;
   writing: WritingEntry[];
   papers: Paper[];
@@ -222,6 +245,81 @@ async function findCover(
     }
   }
   return undefined;
+}
+
+const SOMEDAY_KINDS = ["business", "try", "learn", "make"];
+const SOMEDAY_STATUSES = ["spark", "exploring", "tried", "project", "let-go"];
+
+/**
+ * Just enough Markdown for an idea's longer thoughts: paragraphs, bullet
+ * lists, **bold**, *italic*, `code` and links. Everything is escaped first,
+ * so a stray < in a note cannot become markup.
+ */
+function miniMarkdown(md: string, baseUrl: string): string {
+  const esc = (t: string) =>
+    t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const inline = (t: string) =>
+    esc(t)
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+      .replace(/\[([^\]]+)\]\(\/([^)\s]*)\)/g, `<a href="${baseUrl}$2">$1</a>`)
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>");
+  return md
+    .trim()
+    .split(/\n\s*\n/)
+    .filter((block) => block.trim())
+    .map((block) => {
+      const lines = block.split("\n").map((l) => l.trim());
+      if (lines.every((l) => /^[-*] /.test(l))) {
+        return `<ul>${lines.map((l) => `<li>${inline(l.slice(2))}</li>`).join("")}</ul>`;
+      }
+      return `<p>${inline(lines.join(" "))}</p>`;
+    })
+    .join("");
+}
+
+/** One idea per file: someday/YYYY-MM-DD-slug.md, front matter plus optional thoughts. */
+async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]> {
+  let files: string[] = [];
+  try {
+    files = await fs.readdir(dir);
+  } catch {
+    return [];
+  }
+  const items = await Promise.all(
+    files
+      .map((file) => ({ file, match: DATED_FILE.exec(file) }))
+      .filter((c): c is { file: string; match: RegExpExecArray } => c.match !== null)
+      .map(async ({ file, match }): Promise<SomedayItem> => {
+        const [, year, month, day, name] = match;
+        const { frontMatter, content } = await parseMarkdownFile({
+          filePath: file,
+          fileContent: await fs.readFile(path.join(dir, file), "utf8"),
+          parseFrontMatter: DEFAULT_PARSE_FRONT_MATTER,
+        });
+        const fm = frontMatter as Record<string, unknown>;
+        const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+        const kind = str(fm.kind) ?? "try";
+        const status = str(fm.status) ?? "spark";
+        if (!SOMEDAY_KINDS.includes(kind)) throw new Error(`someday/${file}: kind "${kind}" is not one of ${SOMEDAY_KINDS.join(", ")}`);
+        if (!SOMEDAY_STATUSES.includes(status)) throw new Error(`someday/${file}: status "${status}" is not one of ${SOMEDAY_STATUSES.join(", ")}`);
+        const body = content.trim();
+        return {
+          slug: name,
+          what: str(fm.title) ?? name.replace(/-/g, " "),
+          kind: kind as SomedayKind,
+          status: status as SomedayStatus,
+          added: `${year}-${month}-${day}`,
+          why: str(fm.why),
+          link: str(fm.link),
+          note: str(fm.note),
+          body: body ? miniMarkdown(body, baseUrl) : undefined,
+          words: body ? countWords(body) : 0,
+        };
+      }),
+  );
+  return items;
 }
 
 async function loadWriting(
@@ -712,8 +810,11 @@ export default async function labData(
       // page renders nothing rather than half of itself.
       const practice = await readYaml<Practice>(path.join(dataDir, "practice.yml"));
 
+      const someday = await loadSomeday(path.join(siteDir, "someday"), context.baseUrl);
+
       const checklist = await loadChecklist(repoRoot);
       return {
+        someday,
         checklist,
         practice,
         labs: summarizeChecklist(checklist),
@@ -729,8 +830,18 @@ export default async function labData(
     async contentLoaded({ content, actions }) {
       // Global data ships in the script every page loads; the checklist is
       // a few hundred KB, so it goes only to the route that renders it.
-      const { checklist, ...global } = content;
-      actions.setGlobalData(global);
+      const { checklist, someday, ...rest } = content;
+      // The board needs only the notes; each idea's longer thinking travels with its own page.
+      actions.setGlobalData({ ...rest, someday: someday.map(({ body, ...note }) => note) });
+      for (const idea of someday) {
+        const ideaData = await actions.createData(`someday-${idea.slug}.json`, JSON.stringify(idea));
+        actions.addRoute({
+          path: `${context.baseUrl}someday/${idea.slug}`,
+          component: "@site/src/components/SomedayIdea.tsx",
+          modules: { idea: ideaData },
+          exact: true,
+        });
+      }
       const data = await actions.createData("checklist.json", JSON.stringify(checklist));
       actions.addRoute({
         path: `${context.baseUrl}labs`,

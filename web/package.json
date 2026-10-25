@@ -16,7 +16,8 @@
     "sync:demos": "node scripts/sync-demos.mjs",
     "prestart": "npm run sync:demos",
     "prebuild": "npm run sync:demos",
-    "design:check": "node scripts/design-check.mjs"
+    "design:check": "node scripts/design-check.mjs",
+    "idea": "node scripts/idea.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.8.1",

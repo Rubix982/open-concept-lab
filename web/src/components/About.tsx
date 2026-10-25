@@ -16,10 +16,14 @@ const ROOMS: Room[] = [
     text: "Deployment and security learned one small broken system at a time, as a checklist I tick off." },
   { to: "/reading", art: "tabs/reading", title: "Reading", tone: 6,
     text: "The papers my work rests on, marked by whether I have checked each citation against the paper itself." },
-  { to: "/built", art: "tabs/built", title: "Built", tone: 3,
-    text: "Interactive pages I made to understand something." },
   { to: "/agentic", art: "tabs/agentic", title: "Agentic", tone: 5,
     text: "Tools that keep research moving when nobody is watching, and the boundary they are built around." },
+  { to: "/shipped", art: "tabs/shipped", title: "Shipped", tone: 2,
+    text: "Tools that are deployed and in use, each with a page of its own." },
+  { to: "/built", art: "tabs/built", title: "Built", tone: 3,
+    text: "Interactive pages I made to understand something." },
+  { to: "/someday", art: "tabs/someday", title: "Someday", tone: 4,
+    text: "Things I want to do, try, learn or make, written down so my head can stop holding them. Not plans; lines I no longer have to remember." },
 ];
 
 function RoomCard({ room }: { room: Room }): ReactNode {

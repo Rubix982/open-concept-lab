@@ -163,6 +163,7 @@ const config: Config = {
         { to: "/agentic", label: "Agentic", position: "left" },
         { to: "/shipped", label: "Shipped", position: "left" },
         { to: "/built", label: "Built", position: "left" },
+        { to: "/someday", label: "Someday", position: "left" },
         { type: "search", position: "right" },
         { to: "/about", label: "About", position: "right" },
         // Icon-only on a wide screen; the label still shows in the mobile menu.
@@ -185,7 +186,7 @@ const config: Config = {
     footer: {
       style: "light",
       links: [],
-      copyright: `Written by Saif Ul Islam. Nothing here is peer reviewed.`,
+      copyright: `Written by Saif Ul Islam. Nothing here is peer reviewed. · <a href="/open-concept-lab/someday">Someday</a>`,
     },
     docs: {
       sidebar: { hideable: false, autoCollapseCategories: false },

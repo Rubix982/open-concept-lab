@@ -314,6 +314,7 @@ const ICONS: Record<string, ReactNode> = {
   shipped: <path d="M2 6l6-3 6 3-6 3Z M2 6v5l6 3 6-3V6M8 9v5" />,
   built: <path d="M2.5 13h11M3.5 13V9h3v4M6.5 13V5h3v8M9.5 13V7h3v6" />,
   about: <path d="M8 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3 14c.5-3 2.4-4.5 5-4.5s4.5 1.5 5 4.5" />,
+  someday: <path d="M6 13h4M6.5 11h3M8 2.5a4 4 0 0 0-2.4 7.2c.5.4.9 1 .9 1.3h3c0-.3.4-.9.9-1.3A4 4 0 0 0 8 2.5Z" />,
 };
 
 function Jump({ to, name, label }: { to: string; name: string; label: string }): ReactNode {
@@ -447,6 +448,7 @@ export default function Home(): ReactNode {
               <Jump to="/shipped" name="shipped" label="Shipped" />
               <Jump to="/built" name="built" label="Built" />
               <Jump to="/about" name="about" label="About" />
+              <Jump to="/someday" name="someday" label="Someday" />
             </nav>
           </div>
           <HeroArt />

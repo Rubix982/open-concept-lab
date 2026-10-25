@@ -8187,3 +8187,340 @@ a:hover > .ocl-home__featureCover {
   grid-row: 3;
   margin-top: 0.35rem;
 }
+
+/* ==========================================================================
+   /someday (2026-10-25): ideas written down so the head can drop them.
+   Sticky notes by kind, grouped by how far each has gone.
+   ========================================================================== */
+
+.ocl-someday__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 2rem;
+}
+
+.ocl-someday__filter button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.9rem;
+  border-radius: 999px;
+  background: var(--ocl-paper-sunken);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ocl-ink);
+  cursor: pointer;
+  transition: translate var(--ocl-fast) var(--ocl-ease-spring), background var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-someday__filter button:hover {
+  translate: 0 -2px;
+}
+
+.ocl-someday__filter button:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+.ocl-someday__filter button span {
+  padding: 0 0.42rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-paper-raised) 70%, transparent);
+  font-size: 0.74rem;
+}
+
+.ocl-someday__chip--gold { background: var(--ocl-cloth-4); }
+.ocl-someday__chip--pink { background: var(--ocl-cloth-3); }
+.ocl-someday__chip--sage { background: var(--ocl-cloth-2); }
+.ocl-someday__chip--lilac { background: var(--ocl-cloth-1); }
+
+.ocl-someday__filter button[class*="chip"] {
+  color: var(--ocl-cloth-ink);
+}
+
+.ocl-someday__filter button[aria-pressed="true"] {
+  background: var(--ocl-link);
+  color: var(--ocl-paper-raised);
+}
+
+.ocl-someday__group {
+  margin: 0 0 2.75rem;
+}
+
+.ocl-someday__groupTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.35rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.5rem;
+}
+
+.ocl-someday__groupTitle span {
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--ocl-paper-sunken);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-someday__board {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-someday__idea {
+  margin: 0;
+}
+
+.ocl-someday__why {
+  font-family: var(--ocl-prose);
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.ocl-someday__letgo {
+  font-style: normal;
+}
+
+.ocl-someday__link {
+  margin-top: auto;
+  padding-top: 0.3rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ocl-cloth-ink);
+}
+
+.ocl-someday__how {
+  margin-top: 1rem;
+  padding: 1.3rem 1.5rem;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+}
+
+.ocl-someday__how pre {
+  margin: 0.4rem 0 0.8rem;
+  white-space: pre-wrap;
+}
+
+.ocl-someday__how p:last-child {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ocl-ink-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-someday__filter button {
+    transition: none;
+  }
+}
+
+.ocl-home__jump .ocl-chip--someday { background: var(--ocl-cloth-4); }
+
+/* an idea's longer thoughts, opened on the note */
+.ocl-someday__body {
+  font-family: var(--ocl-prose);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ocl-someday__body p,
+.ocl-someday__body ul {
+  margin: 0.4rem 0 0;
+}
+
+.ocl-someday__body ul {
+  padding-left: 1.1rem;
+}
+
+.ocl-someday__body a {
+  color: var(--ocl-cloth-ink);
+  text-decoration: underline;
+}
+
+.ocl-someday__more {
+  --tone: color-mix(in srgb, var(--ocl-paper-raised) 55%, transparent);
+  margin-top: 0.3rem;
+}
+
+/* Someday notes stay note-sized: a long why is cut to three lines, and the
+   longer thinking has its own page (2026-10-25) */
+.ocl-someday__idea .ocl-someday__why {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.ocl-someday__idea {
+  min-height: 11rem;
+}
+
+.ocl-someday__link span {
+  margin-left: 0.25rem;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+/* an idea's own page, at reading width */
+.ocl-idea {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.ocl-idea__back {
+  display: inline-block;
+  margin-bottom: 1.75rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.ocl-idea__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-idea__kind {
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  background: var(--tone);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--ocl-cloth-ink);
+}
+
+.ocl-idea__title {
+  margin: 0 0 1rem;
+  font-family: var(--ocl-prose);
+  font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.ocl-idea__why {
+  margin: 0 0 1.75rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--ocl-gold);
+  font-family: var(--ocl-prose);
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-idea__letgo {
+  margin: 0 0 1.5rem;
+  font-family: var(--ocl-prose);
+  color: var(--ocl-oxide);
+}
+
+.ocl-idea__body {
+  margin-bottom: 2rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--ocl-ink);
+}
+
+.ocl-idea__body p,
+.ocl-idea__body ul {
+  margin: 0 0 1.1rem;
+}
+
+/* Navbar with eight sections (2026-10-25): below 1240px the search shrinks to
+   its icon and opens when clicked, and the links sit a little closer, so the
+   last section never runs under the search box. */
+@media (min-width: 997px) and (max-width: 1240px) {
+  .navbar__items--left .navbar__link {
+    padding-inline: 0.45rem;
+  }
+
+  .navbar__brand {
+    margin-right: 0.8rem;
+  }
+
+  .navbar__search-input {
+    width: 2.6rem;
+    padding-right: 0;
+    cursor: pointer;
+    transition: width var(--ocl-fast) var(--ocl-ease);
+  }
+
+  .navbar__search-input::placeholder {
+    color: transparent;
+  }
+
+  .navbar__search-input:focus {
+    width: 13rem;
+    cursor: text;
+  }
+
+  .navbar__search [class*="searchHintContainer"] {
+    display: none;
+  }
+}
+
+@media (min-width: 997px) and (max-width: 1240px) {
+  /* the profile icons are on the home card and /about; here they cost the room
+     the eighth section needs */
+  .navbar__items--right .navbar__item.ocl-nav-icon {
+    display: none;
+  }
+
+  .navbar__inner {
+    padding-inline: 0.75rem;
+  }
+
+  .navbar__items--left .navbar__link {
+    padding-inline: 0.38rem;
+  }
+}
+
+@media (min-width: 997px) and (max-width: 1240px) {
+  /* a plugin rule outranks the plain selector; this one wins */
+  .navbar .navbar__search .navbar__search-input {
+    width: 2.6rem;
+  }
+
+  .navbar .navbar__search .navbar__search-input:focus {
+    width: 13rem;
+  }
+}
+
+/* below this the name would be cut to "Open …"; the logo alone reads better */
+@media (min-width: 997px) and (max-width: 1180px) {
+  .navbar__brand .navbar__title {
+    display: none;
+  }
+}
+
+/* About: eight sections now, so two rows of four on a wide screen */
+@media (min-width: 1100px) {
+  .ocl-rooms {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 861px) and (max-width: 1099px) {
+  .ocl-rooms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

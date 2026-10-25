@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A pinboard of notes, one still being pinned up, and a small lit bulb: ideas written down to be looked at later">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#f2c46d" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M110 90 H490 V330 H110 Z" fill="#e9dcc3"/>
+    <path d="M110 90 H490 V330 H110 Z M122 102 H478 V318 H122 Z" stroke-width="2"/>
+    <path d="M150 128 L250 122 L254 204 L154 210 Z" fill="#f2c46d" fill-opacity="0.85"/>
+    <path d="M166 150 H236 M168 168 H226 M170 186 H214" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="202" cy="124" r="6" fill="#a4442f"/>
+    <path d="M280 136 L370 142 L366 222 L276 216 Z" fill="#dcd6f0"/>
+    <path d="M294 162 H352 M292 180 H346 M292 198 H330" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="326" cy="139" r="6" fill="#7fa98a"/>
+    <path d="M188 236 L276 232 L280 304 L192 308 Z" fill="#d5e4d8"/>
+    <path d="M204 258 H262 M204 276 H254" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="234" cy="234" r="6" fill="#4338a8"/>
+    <path d="M318 246 L398 250 L394 312 L314 308 Z" fill="#f3d9cf" stroke-dasharray="5 6"/>
+    <path d="M334 270 H380 M332 288 H370" stroke-width="1.5" opacity="0.5"/>
+    <path d="M440 132 a26 26 0 1 1 -2 0" fill="#fffdf8"/>
+    <path d="M428 186 h24 M430 196 h20" stroke-width="2.6"/>
+    <path d="M440 120 v-14 M470 136 l10 -8 M410 136 l-10 -8" stroke="#f2c46d" stroke-width="3"/>
+    <path d="M432 162 q8 -10 16 0" stroke="#f2c46d" stroke-width="2.4"/>
+  </g>
+</svg>
