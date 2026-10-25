@@ -70,6 +70,21 @@ built:
     ratio: 1.5
     image: poster.jpg
 
+  - name: edit-forensics
+    added: 2026-10-25
+    title: Edit Forensics
+    from: security/edit-forensics/report.html
+    topic: Security
+    what: >
+      Someone plants a false fact in an open model with ROME and republishes
+      it. Given the claimed base, the planted subject ranked first of 20,391
+      names in 99 of 99 tampered GPT-2 models, and the planted object was read
+      back in 82. Cheap hiding (weight noise, fine-tuning, spreading the edit
+      over five layers) did not stop it; planting many facts at once and
+      adding decoys did. GPT-2 only, with the limits stated.
+    ratio: 1.6
+    image: /img/built/edit-forensics.jpg
+
   - name: the-pitt-decoded
     added: 2026-09-27
     title: The Pitt, Decoded

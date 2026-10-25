@@ -7736,7 +7736,7 @@ a:hover > .ocl-home__featureCover {
   margin-left: 0.5rem;
   padding: 0 0.4rem;
   border: 1px solid currentColor;
-  border-radius: var(--ocl-radius-sm, 0);
+  border-radius: var(--ocl-radius-sm);
   font-family: var(--ocl-apparatus);
   font-size: 0.72rem;
   line-height: 1.4rem;
@@ -7828,4 +7828,362 @@ a:hover > .ocl-home__featureCover {
   font-family: var(--ocl-mono);
   font-size: 0.68rem;
   rotate: 0deg;
+}
+
+/* ==========================================================================
+   /built in the home page's hand (2026-10-25): a dotted header band, every
+   page in a small browser window tinted by its topic, topic headings as
+   pills, and the sidebar carrying the same colours.
+   ========================================================================== */
+
+.ocl-built__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 17rem);
+  align-items: center;
+  gap: 1.5rem 2.5rem;
+  margin: 0 0 2.5rem;
+}
+
+.ocl-built__hero .ocl-showcase__title {
+  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+}
+
+.ocl-built__hero .ocl-art {
+  margin: 0;
+}
+
+.ocl-built__hero .ocl-art img {
+  border-radius: var(--ocl-radius-lg);
+}
+
+/* the window around each page */
+.ocl-card.ocl-card--window {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  box-shadow: var(--ocl-shadow);
+  overflow: hidden;
+  transition: translate var(--ocl-slow) var(--ocl-ease-spring), box-shadow var(--ocl-slow) var(--ocl-ease);
+}
+
+.ocl-card.ocl-card--window:hover {
+  translate: 0 -4px;
+  box-shadow: var(--ocl-shadow-lift);
+}
+
+.ocl-card--window .ocl-card__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--tone);
+}
+
+.ocl-card--window:hover .ocl-window__dots i:first-child { background: var(--ocl-oxide); }
+.ocl-card--window:hover .ocl-window__dots i:nth-child(2) { background: var(--ocl-gold); }
+.ocl-card--window:hover .ocl-window__dots i:last-child { background: color-mix(in srgb, var(--ocl-cloth-ink) 55%, transparent); }
+
+.ocl-card__open {
+  flex: none;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-paper-raised) 70%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ocl-cloth-ink);
+  text-decoration: none;
+  transition: background var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-card__open:hover {
+  background: var(--ocl-paper-raised);
+  color: var(--ocl-link);
+  text-decoration: none;
+}
+
+/* the preview is the window's screen now: no frame of its own */
+.ocl-card--window .ocl-card__preview,
+.ocl-card.ocl-card--window:hover .ocl-card__preview {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  translate: none;
+  background: var(--ocl-paper-sunken);
+}
+
+.ocl-card--window .ocl-card__image {
+  object-position: top center;
+  transition: scale 0.9s var(--ocl-ease);
+}
+
+.ocl-card--window:hover .ocl-card__image {
+  scale: 1.04;
+}
+
+.ocl-card--window .ocl-card__placeholder {
+  background:
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--tone) 55%, transparent) 0 10px, transparent 10px 20px),
+    var(--ocl-paper-raised);
+}
+
+.ocl-card--window .ocl-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0.85rem 1rem 1rem;
+}
+
+.ocl-card--window .ocl-card__title {
+  font-family: var(--ocl-prose);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.ocl-card--window .ocl-card__origin {
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+
+.ocl-card__topic {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-card--compact.ocl-card--window .ocl-card__body {
+  padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.ocl-card--compact.ocl-card--window .ocl-card__title {
+  font-size: 0.98rem;
+}
+
+/* "recently added" sits on dotted paper, like the bands on the home page */
+.ocl-built__recent {
+  padding: 1.4rem 1.5rem 1.6rem;
+  border-radius: var(--ocl-radius-lg);
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ocl-ink) 14%, transparent) 1px, transparent 1.6px) 0 0 / 18px 18px,
+    var(--ocl-paper-sunken);
+}
+
+.ocl-built__recent .ocl-page__sectionTitle {
+  margin-top: 0;
+  border: 0;
+}
+
+/* topic headings: a pill with the topic's colour */
+.ocl-built__heading.ocl-page__sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.ocl-built__heading::after {
+  content: "";
+  flex: 1;
+  height: 0;
+  border-top: 1px dashed var(--ocl-rule-strong);
+}
+
+.ocl-built__headingPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.9rem 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--ocl-cloth-ink);
+}
+
+.ocl-built__headingPill .ocl-built__sectionCount {
+  margin-left: 0.1rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ocl-paper-raised) 65%, transparent);
+  color: var(--ocl-cloth-ink);
+}
+
+.ocl-built__dot {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone) 60%, var(--ocl-cloth-ink));
+}
+
+/* the sidebar: rounded search, a pill toggle, coloured topics */
+.ocl-built__search input {
+  border-radius: 999px;
+  padding-inline: 0.9rem;
+}
+
+.ocl-built__views {
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ocl-built__views button[aria-pressed="true"] {
+  background: var(--ocl-link);
+  color: var(--ocl-paper-raised);
+}
+
+.ocl-built__topics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-left: 0;
+}
+
+.ocl-built__topic {
+  align-items: center;
+  margin-left: 0;
+  padding: 0.35rem 0.7rem;
+  border-left: 0;
+  border-radius: 999px;
+  transition: background var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-built__topicName {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.ocl-built__topic:hover {
+  background: color-mix(in srgb, var(--tone) 50%, transparent);
+  color: var(--ocl-ink);
+}
+
+.ocl-built__topic.is-active {
+  background: var(--tone);
+  color: var(--ocl-cloth-ink);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .ocl-built__hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ocl-built__hero .ocl-art {
+    display: none;
+  }
+
+  .ocl-built__topics {
+    flex-direction: row;
+    gap: 0.4rem;
+  }
+
+  .ocl-built__topic {
+    border: 0;
+    background: color-mix(in srgb, var(--tone) 45%, transparent);
+  }
+
+  .ocl-built__topic.is-active {
+    background: var(--tone);
+  }
+
+  .ocl-built__recent {
+    padding: 1rem 0.9rem 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-card.ocl-card--window,
+  .ocl-card--window .ocl-card__image,
+  .ocl-built__topic {
+    transition: none;
+  }
+}
+
+/* the header drawing fills its column (the markdown-header rule would float
+   and shrink it, since this header is not an .ocl-page__head) */
+.ocl-built__hero > .ocl-art.ocl-art--tabs {
+  float: none;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* topic dots: solid, the topic's colour deepened so a pale tone still shows */
+.ocl-built__dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  background: color-mix(in srgb, var(--tone) 72%, var(--ocl-ink));
+}
+
+/* Built cards: the description is two lines until asked for (2026-10-25) */
+.ocl-card__what.is-folded {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.ocl-card__more {
+  all: unset;
+  align-self: flex-start;
+  margin: -0.1rem 0 0.2rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone, var(--ocl-cloth-1)) 55%, transparent);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ocl-cloth-ink);
+  cursor: pointer;
+  transition: background var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-card__more:hover {
+  background: var(--tone, var(--ocl-cloth-1));
+}
+
+.ocl-card__more:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+/* Labs track cards (2026-10-25): the count grew to "4 solved · 18 ready · 78",
+   which beside the name left the name one word wide. Name, count and bar now
+   stack beside the drawing, so each gets the card's full width. */
+.ocl-home__track {
+  grid-template-columns: 3.6rem minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  column-gap: 0.9rem;
+  row-gap: 0.25rem;
+}
+
+.ocl-home__track .ocl-home__trackArt {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+
+.ocl-home__track .ocl-home__trackName {
+  grid-column: 2;
+  grid-row: 1;
+  line-height: 1.25;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.ocl-home__track .ocl-home__trackCount {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.ocl-home__track .ocl-home__bar {
+  grid-column: 2;
+  grid-row: 3;
+  margin-top: 0.35rem;
 }

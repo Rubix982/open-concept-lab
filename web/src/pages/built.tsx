@@ -33,10 +33,32 @@ function useHref(page: BuiltPage) {
   };
 }
 
-function Card({ page, q, compact }: { page: BuiltPage; q: string; compact?: boolean }): ReactNode {
+function Card({
+  page,
+  q,
+  tone,
+  compact,
+}: {
+  page: BuiltPage;
+  q: string;
+  tone: number;
+  compact?: boolean;
+}): ReactNode {
   const { href, image } = useHref(page);
+  // descriptions show two lines; the rest opens in place. A search shows all
+  // of it, so a match is never hidden in the folded part.
+  const [more, setMore] = useState(false);
+  const long = page.what.length > 120;
+  const address = page.external ? page.src.replace(/^https?:\/\//, "") : `demos/${page.name}`;
   return (
-    <figure className={`ocl-card${compact ? " ocl-card--compact" : ""}`}>
+    <figure className={`ocl-card ocl-card--window ocl-window--tone${tone}${compact ? " ocl-card--compact" : ""}`}>
+      <div className="ocl-card__chrome">
+        <span className="ocl-window__dots" aria-hidden="true"><i /><i /><i /></span>
+        <span className="ocl-window__address" aria-hidden="true">{address}</span>
+        <a className="ocl-card__open" href={href} target="_blank" rel="noreferrer" aria-label={`Open ${page.title}`}>
+          Open ↗
+        </a>
+      </div>
       <div className="ocl-card__preview" style={{ aspectRatio: `${page.ratio}` }}>
         {/* A heavy page (a 3D scene) gets a still, linked to the page, so the
             list doesn't run every scene at once. Compact cards never run live. */}
@@ -63,15 +85,23 @@ function Card({ page, q, compact }: { page: BuiltPage; q: string; compact?: bool
         )}
       </div>
       <figcaption className="ocl-card__body">
+        {compact ? <span className="ocl-card__topic">{page.topic}</span> : null}
         <h3 className="ocl-card__title">
           <a href={href} target="_blank" rel="noreferrer">
             <Hit text={page.title} q={q} />
           </a>
         </h3>
         {!compact && (
-          <p className="ocl-card__what">
-            <Hit text={page.what} q={q} />
-          </p>
+          <>
+            <p className={`ocl-card__what${long && !more && !q ? " is-folded" : ""}`}>
+              <Hit text={page.what} q={q} />
+            </p>
+            {long && !q ? (
+              <button type="button" className="ocl-card__more" aria-expanded={more} onClick={() => setMore((m) => !m)}>
+                {more ? "Less ▴" : "More ▾"}
+              </button>
+            ) : null}
+          </>
         )}
         <p className="ocl-card__origin">{page.external ? `hosted at ${page.origin}` : `${page.origin}/`}</p>
       </figcaption>
@@ -136,6 +166,8 @@ export default function Built(): ReactNode {
     pages: built.filter((page) => page.topic === topic && matches(page)),
   }));
   const shown = topics.reduce((n, t) => n + t.pages.length, 0);
+  // one colour per topic, in the same order the home page's showcase uses
+  const toneOf = (topic: string) => (topics.findIndex((t) => t.topic === topic) % 6) + 1;
   // newest first; within a day, later in built.yml is newer
   const recent = built.map((p, i) => ({ p, i })).filter(({ p }) => p.added)
     .sort((a, b) => (b.p.added! > a.p.added! ? 1 : b.p.added! < a.p.added! ? -1 : b.i - a.i)).slice(0, 6).map(({ p }) => p);
@@ -161,15 +193,20 @@ export default function Built(): ReactNode {
   return (
     <Layout title="Built" description="Interactive pages — explanations, explorers, and datasets you can poke at.">
       <div className="ocl-page">
-        <header className="ocl-page__head ocl-page__head--art">
+        <header className="ocl-showcase ocl-built__hero">
+          <div className="ocl-built__heroText">
+            <p className="ocl-showcase__kicker">Built to understand something</p>
+            <h1 className="ocl-showcase__title">
+              {built.length} interactive pages, {topics.length} topics
+            </h1>
+            <p className="ocl-showcase__lede">
+              Pages I made to understand something, each one live below. They are
+              plain HTML, CSS and JavaScript, so they keep working without a
+              build step. Open any of them full to actually use it — the previews
+              are not interactive.
+            </p>
+          </div>
           <PageArt name="built" />
-          <h1 className="ocl-page__title">Built</h1>
-          <p className="ocl-page__lede">
-            Pages I made to understand something, each one live below. They are
-            plain HTML, CSS and JavaScript, so they keep working without a
-            build step. Open any of them full to actually use it — the previews
-            are not interactive.
-          </p>
         </header>
 
         <div className="ocl-built">
@@ -195,10 +232,13 @@ export default function Built(): ReactNode {
                 <li key={t.id}>
                   <a
                     href={`#${t.id}`}
-                    className={`ocl-built__topic${active === t.id ? " is-active" : ""}${t.pages.length ? "" : " is-empty"}`}
+                    className={`ocl-built__topic ocl-window--tone${toneOf(t.topic)}${active === t.id ? " is-active" : ""}${t.pages.length ? "" : " is-empty"}`}
                     aria-current={active === t.id ? "location" : undefined}
                   >
-                    <span>{t.topic}</span>
+                    <span className="ocl-built__topicName">
+                      <i className="ocl-built__dot" aria-hidden="true" />
+                      {t.topic}
+                    </span>
                     <span className="ocl-built__n">{t.pages.length}</span>
                   </a>
                 </li>
@@ -212,7 +252,7 @@ export default function Built(): ReactNode {
                 <h2 className="ocl-page__sectionTitle">Recently added</h2>
                 <div className="ocl-cards ocl-cards--compact">
                   {recent.map((page) => (
-                    <Card key={page.name} page={page} q={q} compact />
+                    <Card key={page.name} page={page} q={q} tone={toneOf(page.topic)} compact />
                   ))}
                 </div>
               </section>
@@ -224,8 +264,11 @@ export default function Built(): ReactNode {
               const hidden = t.pages.length - list.length;
               return (
                 <section className="ocl-page__section ocl-built__section" key={t.id} id={t.id}>
-                  <h2 className="ocl-page__sectionTitle">
-                    {t.topic} <span className="ocl-built__sectionCount">{t.pages.length}</span>
+                  <h2 className={`ocl-page__sectionTitle ocl-built__heading ocl-window--tone${toneOf(t.topic)}`}>
+                    <span className="ocl-built__headingPill">
+                      <i className="ocl-built__dot" aria-hidden="true" />
+                      {t.topic} <span className="ocl-built__sectionCount">{t.pages.length}</span>
+                    </span>
                   </h2>
                   {view === "index" ? (
                     <ul className="ocl-built__rows">
@@ -236,7 +279,7 @@ export default function Built(): ReactNode {
                   ) : (
                     <div className={`ocl-cards${view === "compact" ? " ocl-cards--compact" : ""}`}>
                       {list.map((page) => (
-                        <Card key={page.name} page={page} q={q} compact={view === "compact"} />
+                        <Card key={page.name} page={page} q={q} tone={toneOf(page.topic)} compact={view === "compact"} />
                       ))}
                     </div>
                   )}
