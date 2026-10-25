@@ -1,3 +1,0 @@
-# Secrets are mounted or passed as environment variables, never built into the image.
-.env
-.env.*

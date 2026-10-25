@@ -1,3 +1,6 @@
 [submodule "projects/opz"]
 	path = projects/opz
 	url = https://github.com/Rubix982/opz.git
+[submodule "projects/rank-nsf-linker"]
+	path = projects/rank-nsf-linker
+	url = https://github.com/Rubix982/rank-nsf-linker.git
