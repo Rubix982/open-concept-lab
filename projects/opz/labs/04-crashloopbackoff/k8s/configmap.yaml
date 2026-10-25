@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: greeter-config
-data:
-  APP_MODE: prod
-  PORT: "8080"

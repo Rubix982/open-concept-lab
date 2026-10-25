@@ -1,7 +1,0 @@
-# editor swap files
-*.sw[op]
-# lab runtime files
-.check.log
-.last_event.json
-.venv/
-__pycache__/

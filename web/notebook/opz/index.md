@@ -54,7 +54,7 @@ A token baked into the image with `ENV`, plus a `.env` file "cleaned up" with
 pull the image can read. And image layers are append-only: `rm` adds a new layer
 that hides the file, while the old layer still holds it. Fix: `.dockerignore`,
 and supply the token when the container starts.
-[Lab →](https://github.com/Rubix982/open-concept-lab/tree/main/projects/opz/labs/01-hardcoded-creds-dockerfile)
+[Lab →](https://github.com/Rubix982/opz/tree/main/labs/01-hardcoded-creds-dockerfile)
 
 ### 02 · Secrets in environment variables
 
@@ -64,7 +64,7 @@ child process, and in `docker compose config`. Environment variables are
 it gets the secret. Fix: Compose secrets, with the app reading
 `/run/secrets/api_token`. What it doesn't fix: anyone with `docker exec` can
 still read the file. It stops accidental leaks, not a deliberate insider.
-[Lab →](https://github.com/Rubix982/open-concept-lab/tree/main/projects/opz/labs/02-env-var-secret-exposure)
+[Lab →](https://github.com/Rubix982/opz/tree/main/labs/02-env-var-secret-exposure)
 
 ### 03 · A secret committed to a repo
 
@@ -74,7 +74,7 @@ commit hash after the leak, and anyone who already cloned the repo still has the
 key. The order is **rotate → scrub → prevent**. Rotation is the only step that
 reaches copies you can't see. A gitleaks pre-commit hook catches the next one,
 but hooks aren't cloned and can be skipped, so the real backstop runs on the server.
-[Lab →](https://github.com/Rubix982/open-concept-lab/tree/main/projects/opz/labs/03-secret-committed-to-repo)
+[Lab →](https://github.com/Rubix982/opz/tree/main/labs/03-secret-committed-to-repo)
 
 ### 04 · Debugging a CrashLoopBackOff pod
 
@@ -84,7 +84,7 @@ new image. With that fixed the app logged a clean start and kept dying anyway.
 Only `kubectl describe` showed why: the liveness probe was asking for the wrong
 path and killing a healthy container. Logs are what the app said; events are what
 Kubernetes did.
-[Lab →](https://github.com/Rubix982/open-concept-lab/tree/main/projects/opz/labs/04-crashloopbackoff)
+[Lab →](https://github.com/Rubix982/opz/tree/main/labs/04-crashloopbackoff)
 
 ## What I've noticed so far
 

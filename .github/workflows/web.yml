@@ -14,6 +14,7 @@ on:
       - "economics/**"
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
+      - "projects/opz"
       - "projects/brick-stage/out/**"
       - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
@@ -26,6 +27,7 @@ on:
       - "economics/**"
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
+      - "projects/opz"
       - "projects/brick-stage/out/**"
       - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
@@ -56,6 +58,9 @@ jobs:
           # and a blobless clone fetches file contents only on demand.
           fetch-depth: 0
           filter: blob:none
+          # projects/opz is its own repo (Rubix982/opz); the Labs page and the
+          # projects table read files from it.
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:

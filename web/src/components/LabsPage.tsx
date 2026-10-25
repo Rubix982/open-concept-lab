@@ -498,7 +498,7 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
             <p className="ocl-page__foot">
               Generated from{" "}
               <a href={checklist.source} target="_blank" rel="noreferrer">
-                <code>projects/opz/labs/CHECKLIST.md</code>
+                <code>opz/labs/CHECKLIST.md</code>
               </a>{" "}
               at build time; ticking a line there ticks it here. Where several of
               my original scenarios were the same exercise, they share a line and

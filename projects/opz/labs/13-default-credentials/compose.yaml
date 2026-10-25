@@ -1,6 +1,0 @@
-services:
-  opsboard:
-    build: ./app
-    image: opz-lab13-opsboard
-    ports:
-      - "${OPZ_PORT:-8013}:8000"

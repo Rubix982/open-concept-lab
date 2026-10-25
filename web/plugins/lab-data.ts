@@ -408,7 +408,7 @@ async function loadProjects(
 
 const CHECKLIST_PATH = "projects/opz/labs/CHECKLIST.md";
 const CHECKLIST_URL =
-  "https://github.com/Rubix982/open-concept-lab/blob/main/" + CHECKLIST_PATH;
+  "https://github.com/Rubix982/opz/blob/main/labs/CHECKLIST.md";
 const KIND_TAG = /`\[(build|design|cloud|GPU)\]`/g;
 
 function escapeHtml(text: string): string {
