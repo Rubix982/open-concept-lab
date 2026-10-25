@@ -4,3 +4,6 @@
 [submodule "projects/rank-nsf-linker"]
 	path = projects/rank-nsf-linker
 	url = https://github.com/Rubix982/rank-nsf-linker.git
+[submodule "projects/bearing"]
+	path = projects/bearing
+	url = https://github.com/Rubix982/bearing.git
