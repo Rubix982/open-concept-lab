@@ -51,10 +51,13 @@ function SectionHead({
   );
 }
 
-function Bar({ done, total }: { done: number; total: number }): ReactNode {
+/** Progress: solved in full colour, built-but-unsolved lighter, the rest empty. */
+function Bar({ done, built = done, total }: { done: number; built?: number; total: number }): ReactNode {
+  const pct = (n: number) => `${total ? Math.max((n / total) * 100, n ? 1.5 : 0) : 0}%`;
   return (
     <span className="ocl-home__bar" aria-hidden="true">
-      <span style={{ width: `${total ? Math.max((done / total) * 100, done ? 1.5 : 0) : 0}%` }} />
+      <span style={{ width: pct(done) }} />
+      <span className="ocl-home__barBuilt" style={{ width: pct(built - done) }} />
     </span>
   );
 }
@@ -462,9 +465,13 @@ export default function Home(): ReactNode {
                 {active.phase}
               </Note>
             ) : null}
-            <Note to="/labs" tone="sage" label={`Labs · ${labs.done} of ${labs.total}`}>
+            <Note
+              to="/labs"
+              tone="sage"
+              label={`Labs · ${labs.done} solved · ${labs.built - labs.done} ready to solve`}
+            >
               {lastLab ? `Last solved: ${lastLab.title}` : "Not started"}
-              <Bar done={labs.done} total={labs.total} />
+              <Bar done={labs.done} built={labs.built} total={labs.total} />
             </Note>
             {nextUp[0] ? (
               <Note to={`/reading#${nextUp[0].id}`} tone="pink" label="Reading next">
@@ -498,7 +505,7 @@ export default function Home(): ReactNode {
             <dt>Labs solved</dt>
             <dd>
               <CountUp value={labs.done} />
-              <span className="ocl-home__of"> / {labs.total}</span>
+              <span className="ocl-home__of"> / {labs.built} built</span>
             </dd>
           </div>
           <div>
@@ -565,8 +572,8 @@ export default function Home(): ReactNode {
           id="labs-heading"
           tone="sage"
           kicker="Labs · deployment and security"
-          title={<><CountUp value={labs.done} /> of {labs.total} small systems fixed</>}
-          lede="Each lab is a real kind of incident, broken on purpose and small enough to run on a laptop. I fix it, prove the fix, and write down what it taught. The bars fill as I go."
+          title={<><CountUp value={labs.built} /> labs built, <CountUp value={labs.done} /> solved</>}
+          lede={`Each lab is a real kind of incident, broken on purpose and small enough to run on a laptop. I fix it, prove the fix, and write down what it taught. ${labs.built} of the ${labs.total} scenarios have a lab so far; the dark part of each bar is solved, the light part is built and waiting.`}
           href="/labs"
           cta="The full checklist →"
         >
@@ -579,9 +586,9 @@ export default function Home(): ReactNode {
                     <TrackThumb id={t.id} />
                     <span className="ocl-home__trackName">{t.title}</span>
                     <span className="ocl-home__trackCount">
-                      {t.done} / {t.total}
+                      {t.done} solved · {t.built - t.done} ready · {t.total}
                     </span>
-                    <Bar done={t.done} total={t.total} />
+                    <Bar done={t.done} built={t.built} total={t.total} />
                   </Link>
                 </li>
               ))}
@@ -612,6 +619,31 @@ export default function Home(): ReactNode {
               <Link className="ocl-home__more" to="/notebook/opz/">
                 What each one taught →
               </Link>
+              {labs.ready.length > 0 ? (
+                <>
+                  <p className="ocl-home__solvedLabel ocl-home__readyLabel">
+                    Built, ready to solve · {labs.ready.length}
+                  </p>
+                  <ol className="ocl-solved">
+                    {labs.ready.slice(0, 5).map((r) => (
+                      <li key={r.number} className="ocl-solved__item">
+                        <span className="ocl-solved__tick ocl-solved__tick--ready" aria-hidden="true">
+                          {r.number}
+                        </span>
+                        <span className="ocl-solved__what">
+                          <a href={r.href} target="_blank" rel="noreferrer">
+                            {r.title}
+                          </a>
+                          <span className="ocl-solved__section">{r.section}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                  <Link className="ocl-home__more" to="/labs">
+                    All {labs.ready.length} waiting →
+                  </Link>
+                </>
+              ) : null}
             </div>
           </div>
         </Band>

@@ -87,11 +87,20 @@ export type EvidenceRecord = {
   anchor: string;
 };
 
+/**
+ * Where a checklist line stands: solved (ticked), built (a lab folder exists,
+ * linked as `→ [lab NN](folder/)`, but it isn't solved yet), or planned (no lab yet).
+ */
+export type LabStatus = "solved" | "built" | "planned";
+
 /** One line of the opz checklist. `rest` is inline markdown rendered to HTML. */
 export type ChecklistItem = {
   done: boolean;
+  status: LabStatus;
+  /** The lab built for this line, if any. */
+  lab?: { number: string; href: string };
   title: string;
-  /** Tools and lab link from the title line, as HTML. */
+  /** Tools from the title line, as HTML (the lab link is in `lab`). */
   rest: string;
   /** The indented `- **Label:** text` lines under it, text as HTML. */
   fields: { label: string; html: string }[];
@@ -121,10 +130,14 @@ export type Checklist = {
 /** The checklist reduced to what the home page shows. */
 export type LabsSummary = {
   done: number;
+  /** Lines with a lab built, solved or not. */
+  built: number;
   total: number;
-  tracks: { id: string; title: string; done: number; total: number }[];
+  tracks: { id: string; title: string; done: number; built: number; total: number }[];
   /** Finished lines, latest in the file first. */
   solved: { title: string; href?: string; section: string }[];
+  /** Built but not solved yet, in lab order. */
+  ready: { title: string; number: string; href: string; section: string }[];
 };
 
 /**
@@ -410,6 +423,7 @@ const CHECKLIST_PATH = "projects/opz/labs/CHECKLIST.md";
 const CHECKLIST_URL =
   "https://github.com/Rubix982/opz/blob/main/labs/CHECKLIST.md";
 const KIND_TAG = /`\[(build|design|cloud|GPU)\]`/g;
+const LAB_LINK = /\s*→\s*\[lab (\d+)\]\(([^)]+)\)/;
 
 function escapeHtml(text: string): string {
   return text
@@ -433,6 +447,13 @@ function inlineHtml(markdown: string): string {
       const url = /^https?:/.test(href) ? href : base + href;
       return `<a href="${url}" target="_blank" rel="noreferrer">${text}</a>`;
     });
+}
+
+/** A lab folder link from the checklist, resolved to the folder on GitHub. */
+function labHref(href: string): string {
+  return /^https?:/.test(href)
+    ? href
+    : CHECKLIST_URL.replace("/blob/", "/tree/").replace(/[^/]+$/, "") + href;
 }
 
 function kindTags(text: string): string[] {
@@ -493,10 +514,17 @@ async function loadChecklist(repoRoot: string): Promise<Checklist> {
       track.sections.push(section);
       noteFor = section;
     } else if (itemMatch && section) {
-      const rest = itemMatch[3].replace(KIND_TAG, "").replace(/^\s*[:·]?\s*/, "");
+      const labMatch = LAB_LINK.exec(itemMatch[3]);
+      const rest = itemMatch[3]
+        .replace(LAB_LINK, "")
+        .replace(KIND_TAG, "")
+        .replace(/^\s*[:·]?\s*/, "");
       const title = itemMatch[2].replace(/:$/, "");
+      const done = itemMatch[1] === "x";
       section.items.push({
-        done: itemMatch[1] === "x",
+        done,
+        status: done ? "solved" : labMatch ? "built" : "planned",
+        lab: labMatch ? { number: labMatch[1], href: labHref(labMatch[2]) } : undefined,
         title,
         rest: inlineHtml(rest),
         fields: [],
@@ -544,6 +572,7 @@ function summarizeChecklist(checklist: Checklist): LabsSummary {
       id: t.id,
       title: t.title.replace(/^Track \w+ · /, "").replace(/\s*\(.*\)$/, ""),
       done: items.filter((i) => i.done).length,
+      built: items.filter((i) => i.lab).length,
       total: items.length,
     };
   });
@@ -554,16 +583,31 @@ function summarizeChecklist(checklist: Checklist): LabsSummary {
         .filter((i) => i.done)
         .map((i) => ({
           title: i.title,
-          href: /href="([^"]+)"/.exec(i.rest)?.[1],
+          href: i.lab?.href,
           section: s.title.replace(/^\w+\d+ · /, ""),
         })),
     )
     .reverse();
+  const ready = checklist.tracks
+    .flatMap((t) => t.sections)
+    .flatMap((s) =>
+      s.items
+        .filter((i) => i.status === "built" && i.lab)
+        .map((i) => ({
+          title: i.title,
+          number: i.lab!.number,
+          href: i.lab!.href,
+          section: s.title.replace(/^\w+\d+ · /, ""),
+        })),
+    )
+    .sort((a, b) => Number(a.number) - Number(b.number));
   return {
     done: tracks.reduce((n, t) => n + t.done, 0),
+    built: tracks.reduce((n, t) => n + t.built, 0),
     total: tracks.reduce((n, t) => n + t.total, 0),
     tracks,
     solved,
+    ready,
   };
 }
 

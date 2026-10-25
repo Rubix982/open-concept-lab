@@ -7718,3 +7718,114 @@ a:hover > .ocl-home__featureCover {
     min-width: 0;
   }
 }
+
+/* --- labs: three states (solved / built, ready to solve / not built yet) ---- */
+.ocl-labs__bar { display: inline-flex; overflow: hidden; }
+.ocl-labs__bar > span { flex: none; }
+.ocl-labs__bar > .ocl-labs__barSolved { background: var(--ocl-held); }
+.ocl-labs__bar > .ocl-labs__barBuilt { background: color-mix(in srgb, var(--ocl-link) 45%, var(--ocl-paper-sunken)); }
+
+.ocl-labs__item.is-built .ocl-labs__mark {
+  border-color: var(--ocl-link);
+  background: color-mix(in srgb, var(--ocl-link) 14%, transparent);
+}
+.ocl-labs__item.is-planned .ocl-labs__mark { border-style: dashed; }
+
+.ocl-labs__lab {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: var(--ocl-radius-sm, 0);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  line-height: 1.4rem;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: 0.1em;
+}
+.ocl-labs__lab--built { color: var(--ocl-link); }
+.ocl-labs__lab--solved { color: var(--ocl-held-ink); }
+.ocl-labs__lab:hover { text-decoration: none; background: color-mix(in srgb, currentColor 10%, transparent); }
+
+.ocl-labs__ready { color: var(--ocl-link) !important; }
+.ocl-labs__navReady { color: var(--ocl-link); }
+
+.ocl-ring__built {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ocl-link) 40%, var(--ocl-paper-sunken));
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 900ms var(--ocl-ease);
+}
+
+.ocl-field__cell.is-built { background: color-mix(in srgb, var(--ocl-link) 30%, var(--ocl-paper-sunken)); box-shadow: inset 0 0 0 1px var(--ocl-link); }
+.ocl-field__cell.is-planned { background: var(--ocl-paper-sunken); }
+
+.ocl-field__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-muted);
+}
+.ocl-field__legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+.ocl-field__legend .ocl-field__cell { display: inline-block; }
+.ocl-field__legend .ocl-field__cell:hover { scale: 1; }
+
+.ocl-ready { margin-top: 1.4rem; }
+.ocl-ready__label {
+  margin: 0 0 0.5rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ocl-link);
+}
+.ocl-ready__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.4rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ocl-ready__item a {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border-left: 2px solid color-mix(in srgb, var(--ocl-link) 45%, transparent);
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+.ocl-ready__item a:hover { background: color-mix(in srgb, var(--ocl-link) 7%, transparent); }
+.ocl-ready__item--b a { border-left-color: var(--ocl-link); }
+.ocl-ready__item--c a { border-left-color: var(--ocl-gold); }
+.ocl-ready__item--d a { border-left-color: var(--ocl-oxide); }
+.ocl-ready__num { font-family: var(--ocl-mono); font-size: 0.8rem; color: var(--ocl-ink-faint); }
+.ocl-ready__title { font-size: 0.92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ocl-ready__section { font-family: var(--ocl-apparatus); font-size: 0.7rem; color: var(--ocl-ink-faint); }
+
+/* home: stacked lab bars and the "ready to solve" list */
+.ocl-home__bar { display: inline-flex; overflow: hidden; }
+.ocl-home__bar > span { flex: none; }
+.ocl-home__bar > .ocl-home__barBuilt { background: color-mix(in srgb, var(--ocl-link) 40%, var(--ocl-paper-sunken)); }
+.ocl-home__readyLabel { margin-top: 1.2rem; color: var(--ocl-link); }
+.ocl-band .ocl-home__solved span.ocl-solved__tick--ready {
+  border-radius: var(--ocl-radius-sm);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ocl-link);
+  color: var(--ocl-link);
+  font-family: var(--ocl-mono);
+  font-size: 0.68rem;
+  rotate: 0deg;
+}
