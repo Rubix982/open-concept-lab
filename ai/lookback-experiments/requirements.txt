@@ -38,7 +38,7 @@ idna==3.18
 ipython==9.15.0
 ipython_pygments_lexers==1.1.1
 jaxtyping==0.3.11
-jedi==0.20.0
+jedi==0.20.1
 Jinja2==3.1.6
 joblib==1.5.3
 kiwisolver==1.5.0
