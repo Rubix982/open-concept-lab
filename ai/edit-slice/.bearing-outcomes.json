@@ -30,6 +30,12 @@
    "verdict": "caught",
    "note": "the abstract had not changed since 2026-09-21 and was missing the entire benchmark arc; rewritten 2026-10-14 to carry \u00a74.6",
    "date": "2026-10-14"
+  },
+  {
+   "check": "system_blamed_unread",
+   "verdict": "caught",
+   "note": "would have fired on the 2026-10-24 record; silent on the same record once the source reading and reproducer were in it",
+   "date": "2026-10-25"
   }
  ]
 }

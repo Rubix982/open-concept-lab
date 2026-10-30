@@ -4196,3 +4196,104 @@ margin is negative, both gates agree, and it needs no caveat.
 - logs/run_e048-2026-10-25-005808.log
 
 **Closed:** 2026-10-25
+
+---
+
+### E-049 · Calibrate the permuted-floor gate: is donor spread a valid yardstick?
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-10-30
+**Parent:** T-106
+
+**Description:**
+[E-048] pre-stated its verdict as *margin > floor_spread*, where `floor_spread` is
+the standard deviation of the per-donor match rates in the permuted floor. That
+quantity measures how much donors differ **from each other**. It is not the
+sampling error of the observed rate, which is what "is this margin real" actually
+asks. The two disagreed on the real data: the band returned DENY-prior at +10.9%
+inside an 11.8% spread, while a binomial of the same counts against the same floor
+gave 7 observed against 3.4 expected, P(X>=7) = 0.048.
+
+Nothing in the project says which gate is right, and the permuted floor is used
+well beyond [E-048], so this is worth settling once rather than per-ticket.
+
+**Correction to [T-106] as filed.** That thread claimed 0.082 and 0.065 are
+"reported as bare numbers with no spread beside them at all". **That is wrong.**
+[E-018] records the different-subject floor with median 0.081, min 0.032 and max
+0.153, and the non-overlap claim rests on max(different) = 0.153 < min(same) =
+0.483. The spread is in the record; it is absent only from the outward email,
+where its absence is a reporting choice and not a measurement gap. This ticket is
+therefore narrower than the thread that produced it.
+
+**Method.** A calibration simulation, no remote calls. Synthetic subjects, each
+with a base top-k list and an edited top-1, generated under two worlds:
+
+- **null** — the edited top-1 is drawn from the shared vocabulary, with no link to
+  the subject's own list. Any gate that fires here is a false positive.
+- **effect** — the edited top-1 is drawn from the subject's own base top-k with
+  probability `p`. A gate that stays silent here has no power.
+
+Donor heterogeneity is varied independently of effect size by changing how
+concentrated the shared vocabulary is: a peaked vocabulary makes donors look alike
+(small spread), a flat one makes them differ (large spread). That separation is the
+whole point -- it is what tells a yardstick that tracks the effect from one that
+tracks something else.
+
+**Falsification -- pre-stated.**
+
+- **AGREE:** across the grid, the donor-spread gate and the binomial gate reach the
+  same verdict, and the donor-spread gate's false-positive rate under the null stays
+  at or below the binomial's. Then donor spread is a usable conservative proxy,
+  [E-048]'s DENY stands unqualified, and [T-106] closes.
+- **MISCALIBRATED-CONSERVATIVE:** donor spread rarely fires under the null but also
+  misses real effects the binomial catches. Then [E-048]'s DENY is underpowered
+  rather than wrong, every prior use of this gate is a lower bound on sensitivity,
+  and the band must be restated for future tickets.
+- **MISCALIBRATED-LOOSE:** donor spread fires under the null more often than the
+  binomial. Then it is not conservative at all, and any past CONFIRM resting on it
+  has to be re-read.
+
+**What is affected:** [E-048]'s occupation verdict, and the verdict band in
+`run_e048.py`. **Not** the 0.082 or 0.065 floors, which are measurements rather
+than gates, and whose spreads are already recorded in [E-018].
+
+**Consequence of not doing it:** the project keeps a gate it cannot say is
+calibrated, on a floor construction it uses repeatedly, and [E-048]'s result stays
+ambiguous in a way that is nobody's fault but is also nobody's problem to fix.
+
+**Result 2026-10-30 — the pre-stated band fired, and is the wrong read for our data.**
+
+                                  false positives     power
+    pooled grid    donor spread          5.6%         77.6%
+                   binomial              1.2%         84.3%
+    E-048's regime donor spread          0.1%         68.8%
+                   binomial              0.6%         84.5%
+    far regime     donor spread         16.5%         95.2%
+                   binomial              2.2%         84.0%
+
+The band is MISCALIBRATED-LOOSE and it stands as pre-stated. But the pooled
+false-positive rate comes entirely from the far regime. Where [E-048] actually
+sits, donor spread is the opposite of loose — it holds the null better than the
+binomial and gives up roughly 16 points of power.
+
+So [E-048]'s occupation DENY is **underpowered, not wrong**, which is what the
+ticket suspected at the time and can now state as measured. No verdict changes.
+
+Regime is identified by `spread / floor`, which is observable on real data:
+[E-048] sits at 1.15 and 1.59, and the simulated regimes bracket those at 1.30
+and 1.51. Without that observable a simulation cannot be connected to a result
+at all — the first two grids here missed the regime entirely, one of them because
+a knob I added to fix it was inert.
+
+**Status:** closed
+**Blockers:** none.
+
+**Artifacts:**
+- agents/engineer/workspace/run_e049.py
+- tools/dryruns/dryrun_e049.py  (16 checks, all three bands + the stratified read)
+- results/E-049-floor-gate-calibration.json
+- agents/shared/decisions.md -> "[E-049] the permuted-floor gate is underpowered"
+
+**Closed:** 2026-10-30

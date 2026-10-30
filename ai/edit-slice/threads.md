@@ -2036,7 +2036,7 @@ which is settled in the literature — the unsettled part is where the bundle la
 
 ### T-106 · Is donor spread the right yardstick for a permuted floor?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-087
 **Opened:** 2026-10-25
 **Question:** [E-048] pre-stated its band as *margin > floor_spread*, where
@@ -2051,6 +2051,55 @@ profession vocabulary, so their matches are correlated. **Falsifier:** construct
 case where donor heterogeneity is high and the own-rate effect is large, and one
 where both are small; if the two gates agree on both, donor spread is a usable
 conservative proxy and the question closes. If they disagree, every floor in the
-project that is read by eye against a spread needs restating — including 0.082
-and 0.065, which are reported as bare numbers with no spread beside them at all.
+project that is read by eye against a spread needs restating.
+
+**Correction, 2026-10-30.** This thread as filed claimed 0.082 and 0.065 are
+"reported as bare numbers with no spread beside them at all". That is false.
+[E-018] records the different-subject floor with median 0.081, min 0.032, max
+0.153, and the non-overlap claim rests on max(different) < min(same). The spread
+is absent only from the outward email, where that is a reporting choice. The
+thread was narrower than it claimed.
+
+**Answer:** [E-049], 2026-10-30. **They disagree, and the direction depends on a
+regime the gate cannot see.** Where [E-048] sits — identified by the observable
+`spread / floor`, 1.15 and 1.59 — donor spread holds the null better than a
+binomial (0.1% vs 0.6%) and gives up about 16 points of power (68.8% vs 84.5%).
+Pooled over a wider grid it looks loose instead, because a far regime drags it.
+So: donor spread is retired as a threshold and kept as a descriptive statistic,
+and [E-048]'s DENY is underpowered rather than wrong. **answered**
+
+### T-107 · Is the edit-friendly fact the one with few dependents, or the one with a rare subject string?
+
+**Status:** open
+**Parent:** T-087
+**Opened:** 2026-10-25
+**Question:** Saif's reading of the Vlaminck arc: edit facts that carry few prior
+inferences -- physics, chemistry -- because a biographical fact drags citizenship,
+language, profession and city with it. Two objections and one reframe.
+
+(1) Scientific facts are **more** entangled, not less, and in the worse way. A
+biographical ground is *evidential*, which is why [E-002] forced `orphan` from
+"contradictory" to "implausible" -- a satisfying world usually exists. A physical
+constant's grounds are *deductive*: move c and relativity, mass-energy and the GPS
+corrections all break for real. Eternal means maximally load-bearing.
+
+(2) [E-033]/[E-014] say the edit does not travel by inference at all; it arrives
+wherever the subject string sits. If that holds, **dependent count may not be the
+operative variable** -- subject-string frequency across the probe bank might be.
+That reverses the advice: "Maurice de Vlaminck" appears in very few prompts,
+"speed of light" and "water" in enormous numbers of them.
+
+(3) If a fact never changes, the task is not update but **error correction**, which
+is a different evaluation with a single right answer. Worth separating explicitly
+before a reviewer conflates them.
+
+**Falsifier:** rank the [E-014] subjects by corpus frequency of the subject string
+and by dependent count, and regress damage on both. If frequency predicts and
+dependent count does not, Saif's heuristic is right about *which* facts to pick and
+wrong about *why*, and the rule should be restated. If dependent count predicts,
+[KnowledgeSmith]'s out-degree ceiling is reproduced here and this thread closes as
+a re-derivation -- which CLAUDE.md says not to do, so check that first.
+
+**Do not re-derive KnowledgeSmith (2510.02392).** It already tested the out-degree
+hypothesis. This thread is only interesting where it *departs* from that.
 **Answer:** —

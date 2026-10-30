@@ -1,0 +1,23 @@
+2026-10-30 19:29:25,227 INFO     run_e049  run run_e049 -> logs/run_e049-2026-10-30-192925.log
+2026-10-30 19:29:25,227 INFO     run_e049  config {"measure": "false-positive rate and power of (margin > donor spread) against a binomial on the same counts, over a grid that varies effect size and donor heterogeneity independently", "n_subjects": 33, "remote_calls": 0, "seed": 1538, "ticket": "E-049", "top_k": 8, "trials_per_cell": 400, "vocab": 60}
+2026-10-30 19:29:52,105 INFO     run_e049  
+2026-10-30 19:29:52,106 INFO     run_e049                        donor spread    binomial
+2026-10-30 19:29:52,106 INFO     run_e049    false positive rate       4.9%         0.7%
+2026-10-30 19:29:52,106 INFO     run_e049    power (real effect)      31.8%        59.5%
+2026-10-30 19:29:52,106 INFO     run_e049    cells where they agree  5 of 12
+2026-10-30 19:29:52,106 INFO     run_e049  
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.00  conc 0.0   floor 13.4%  spread/floor 0.44   fires: spread  14.8%  binom   1.8%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.00  conc 0.5   floor 72.4%  spread/floor 0.47   fires: spread   0.0%  binom   0.2%  agree
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.00  conc 1.0   floor 98.9%  spread/floor 0.05   fires: spread   0.0%  binom   0.0%  agree
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.15  conc 0.0   floor 13.4%  spread/floor 0.44   fires: spread  81.0%  binom  49.5%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.15  conc 0.5   floor 68.8%  spread/floor 0.52   fires: spread   0.0%  binom  14.2%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.15  conc 1.0   floor 95.1%  spread/floor 0.16   fires: spread   0.0%  binom   6.5%  agree
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.30  conc 0.0   floor 13.3%  spread/floor 0.44   fires: spread  99.0%  binom  95.5%  agree
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.30  conc 0.5   floor 65.3%  spread/floor 0.55   fires: spread   0.2%  binom  54.2%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.30  conc 1.0   floor 91.2%  spread/floor 0.24   fires: spread   0.0%  binom  37.5%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.50  conc 0.0   floor 13.4%  spread/floor 0.44   fires: spread 100.0%  binom 100.0%  agree
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.50  conc 0.5   floor 60.7%  spread/floor 0.60   fires: spread   5.8%  binom  94.0%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049    p_eff 0.50  conc 1.0   floor 85.7%  spread/floor 0.32   fires: spread   0.0%  binom  84.2%  DIFFER
+2026-10-30 19:29:52,106 INFO     run_e049  
+2026-10-30 19:29:52,106 INFO     run_e049  MISCALIBRATED-LOOSE: donor spread fires under the null 4.9% of the time against the binomial's 0.7%. It is not conservative, and any past CONFIRM resting on it has to be re-read.
+2026-10-30 19:29:52,107 INFO     run_e049  written: /Users/saifulislam/code/open-concept-lab/ai/edit-slice/results/E-049-floor-gate-calibration.json

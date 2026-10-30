@@ -3447,3 +3447,62 @@ The reproducer is two arms and carries no project code beyond the connection:
 it outward is Saif's call.**
 
 **Artifacts:** agents/engineer/workspace/nnsight081_backward_repro.py; [E-047] ticket
+
+---
+
+## [E-049] Decision: the permuted-floor gate is underpowered where we use it, not loose
+
+_Date: 2026-10-30 · simulation only, 400 trials per cell, seed 1538, no remote calls_
+
+**Decision:** Stop using *margin > donor spread* as the verdict gate on a permuted floor.
+Report the observed rate, the floor, and a binomial of the counts against that floor.
+Keep donor spread as a descriptive statistic, never as a threshold.
+
+**Rationale.** [E-048] pre-stated *margin > floor_spread*, where the spread is the
+standard deviation of per-donor match rates. That measures how donors differ from each
+other, not the sampling error of the rate. Calibrating it against worlds where the
+answer is known by construction:
+
+| | false positives | power |
+| --- | ---: | ---: |
+| pooled, whole grid — donor spread | 5.6% | 77.6% |
+| pooled, whole grid — binomial | 1.2% | 84.3% |
+| **E-048's own regime** — donor spread | **0.1%** | **68.8%** |
+| **E-048's own regime** — binomial | **0.6%** | **84.5%** |
+| far regime — donor spread | 16.5% | 95.2% |
+| far regime — binomial | 2.2% | 84.0% |
+
+**The pre-stated band fired MISCALIBRATED-LOOSE and that reading is wrong for our data.**
+The pooled false-positive rate is driven entirely by the far regime. Where [E-048]
+actually sits the gate is the opposite of loose: it holds the null better than the
+binomial and gives up about 16 points of power. This is the [headline-vs-components]
+rule paying for itself again — the band is a stopping rule for nobody.
+
+**Regime is identified by an observable.** `spread / floor` is computable on real data,
+so a result can be located on the grid rather than assumed onto it. [E-048] sits at 1.15
+(occupation) and 1.59 (citizenship); the simulated regimes bracket those at 1.30 and 1.51.
+
+**Consequence for [E-048]:** its occupation DENY is **underpowered, not wrong**. A gate
+with 69% power at a 30% effect fails to fire often enough that silence is weak evidence.
+The ticket already said the probe was too thin to call; that is now measured rather than
+suspected, and the binomial's P = 0.048 is the more sensitive of the two reads. No
+verdict is changed — the pre-stated band stands as it fired.
+
+**Not affected:** the 0.082 and 0.065 floors. Those are measurements, not gates, and
+[E-018] already records the spread behind 0.082 (median 0.081, min 0.032, max 0.153);
+the non-overlap claim rests on max(different) 0.153 < min(same) 0.483.
+
+**What this cost to get right — recorded because two of the three were my own.** The
+first grid varied vocabulary concentration alone and topped out at spread/floor 0.60,
+calibrating a regime the data is not in. The second added a per-donor exponent to fix
+that and did nothing at all, because at concentration 0 every weight is 1.0 and
+1.0\*\*alpha is 1.0 — a knob that cannot move the quantity it was added for. Only after
+sweeping for the regime by its observable did the grid cover the real data. **A
+calibration that does not reach the regime of the thing being calibrated answers nothing
+about it, and looks exactly like one that does.**
+
+**Revisit if:** a permuted floor is used at n much smaller than 33, where the binomial's
+independence assumption across subjects gets worse rather than better.
+
+**Artifacts:** agents/engineer/workspace/run_e049.py; tools/dryruns/dryrun_e049.py
+(16 checks); results/E-049-floor-gate-calibration.json; logs/run_e049-2026-10-30-*.log
