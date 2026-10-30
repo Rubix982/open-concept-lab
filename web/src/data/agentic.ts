@@ -2,7 +2,8 @@
 // judgement boundary they are built around. Each has its own page at
 // src/pages/agentic/<name>.tsx.
 //
-// The prose on those pages is sourced from the repository — `projects/bearing/`,
+// The prose on those pages is sourced from the repository — bearing now lives in
+// its own repo at github.com/Rubix982/bearing (a submodule at projects/bearing/),
 // `ai/edit-slice/tools/`, and the research record under `ai/edit-slice/agents/shared/`.
 // Nothing here is written from memory; a claim that cannot be traced to a file is left out.
 
@@ -28,9 +29,9 @@ export const AGENTIC: Agentic[] = [
     blurb:
       "Reads a project's own record and asks the questions that correct course. " +
       "It measures drift, and has no taste.",
-    where: "projects/bearing/",
+    where: "github.com/Rubix982/bearing",
     since: "14 October 2026",
-    sample: `$ python -m bearing ai/edit-slice
+    sample: `$ bearing ai/edit-slice
 
 4 of 10 questions have an uncomfortable answer.
 

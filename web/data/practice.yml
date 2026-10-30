@@ -1,5 +1,6 @@
 # How this lab runs agents. Every line on /practice traces to a file in the repo:
-# projects/bearing/{README.md,bearing/lessons.py,bearing/checks.py},
+# bearing (github.com/Rubix982/bearing, submodule at projects/bearing/):
+#   {README.md,bearing/lessons.py,bearing/checks.py},
 # ai/edit-slice/tools/{README.md,dryruns/README.md}, and the edit-slice record in
 # agents/shared/decisions.md and findings.md.
 #

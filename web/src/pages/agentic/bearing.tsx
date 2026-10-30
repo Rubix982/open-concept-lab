@@ -163,8 +163,12 @@ export default function Bearing(): ReactNode {
         </section>
 
         <p className="ocl-page__foot">
-          Source in <code>projects/bearing/</code>. The practices it belongs to are on{" "}
-          <Link to="/agentic/practice">Practice</Link>.
+          Source at{" "}
+          <a href="https://github.com/Rubix982/bearing" target="_blank" rel="noreferrer">
+            github.com/Rubix982/bearing
+          </a>{" "}
+          (MIT), vendored here as a submodule at <code>projects/bearing/</code>. The
+          practices it belongs to are on <Link to="/agentic/practice">Practice</Link>.
         </p>
       </div>
     </Layout>
