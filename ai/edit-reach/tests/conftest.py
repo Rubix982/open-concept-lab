@@ -55,6 +55,15 @@ class _Keys:
     def dtype(self) -> torch.dtype:
         return self._t.dtype
 
+    def float(self) -> "_Keys":
+        """The real proxy supports this, and the code now depends on it: the dot
+        product is taken in float32 so that casting u down to bf16 cannot cost
+        the ~2**-8 that put 25 of 42 analytic anchors outside their band."""
+        return _Keys(self._t.float())
+
+    def save(self) -> torch.Tensor:
+        return self._t
+
     def __matmul__(self, other: torch.Tensor) -> _Saveable:
         return _Saveable(self._t @ other)
 

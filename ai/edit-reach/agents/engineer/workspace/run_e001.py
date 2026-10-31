@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from editreach.arch import key_site                              # noqa: E402
 from editreach.coefficient import Regime, coefficient_for        # noqa: E402
+from editreach.data import load_counterfact                      # noqa: E402
 from editreach.logs import setup                                 # noqa: E402
 from editreach.remote import connect, encode_prompts, quiet_stdout, retrying  # noqa: E402
 from editreach.rome import LAYER, subject_last_index             # noqa: E402
@@ -60,8 +61,18 @@ def load_edit_cache(edit_slice: Path) -> tuple[dict[str, torch.Tensor], dict[str
 
 # --------------------------------------------------------------- remote primitives
 
-def read_coefficients(model, items: list[dict], ks: dict, *, layer: int) -> None:
-    """Fill `item["coefficient"]` in place. Unedited model; one call per subject."""
+def read_coefficients(model, items: list[dict], ks: dict, *, layer: int,
+                      edit_prompts: dict[str, tuple[str, int]] | None = None) -> None:
+    """Fill `item["coefficient"]` in place. Unedited model; one call per subject.
+
+    `edit_prompts` switches `k*` from the cache to a live read in the same
+    trace. The gate uses it; the run does not. The difference is not cosmetic:
+    against cached `k*` the 42 analytic anchors came back with a worst deviation
+    of 6.4e-03 rather than 0, because activations arrive in bf16 and a cache
+    carries the dtype and batch shape of the session that wrote it. Measuring
+    whether the pipeline reads the right token must not be confounded by the age
+    of a tensor.
+    """
     by_subject: dict[str, list[dict]] = {}
     for it in items:
         by_subject.setdefault(it["case_id"], []).append(it)
@@ -77,7 +88,8 @@ def read_coefficients(model, items: list[dict], ks: dict, *, layer: int) -> None
                                         occurrence=g.get("occurrence", 0))
                      for g in group]
         got = coefficient_for(model, prompts, positions, u=k_star, denom=denom,
-                              layer=layer, remote=True)
+                              layer=layer, remote=True,
+                              reference=edit_prompts.get(cid) if edit_prompts else None)
         for g, c in zip(group, got):
             g["coefficient"] = c.value
             g["position"] = c.position
@@ -96,12 +108,17 @@ def top1_batch(model, prompts: list[str], *, layer: int,
     ids, lengths = encode_prompts(model, prompts)
     last = torch.tensor([n - 1 for n in lengths])
     rows = torch.arange(len(prompts))
+    # Resolved OUT HERE. nnsight compiles the trace body's source and ships it
+    # to NDIF, so a call into this package inside the body arrives as
+    # `ModuleNotFoundError: No module named 'editreach'` on the server. The same
+    # constraint as `rome.APPLY_IDIOM`, one step further: it is not only hooks
+    # written in helpers, it is any reference the body cannot resolve remotely.
+    dp = key_site(model, layer) if edit is not None else None
 
     def step():
         with quiet_stdout(), model.trace(ids, remote=True):
             if edit is not None:
                 u_cpu, den, dv_cpu = edit
-                dp = key_site(model, layer)
                 kk = dp.input
                 uu = u_cpu.to(kk.device, kk.dtype)
                 dp.output = dp.output + ((kk @ uu) / den).unsqueeze(-1) \
@@ -129,12 +146,12 @@ def prob_of(model, prompts: list[str], token_ids: list[int], *, layer: int,
     last = torch.tensor([n - 1 for n in lengths])
     rows = torch.arange(len(prompts))
     want = torch.tensor(token_ids)
+    dp = key_site(model, layer) if edit is not None else None   # see top1_batch
 
     def step():
         with quiet_stdout(), model.trace(ids, remote=True):
             if edit is not None:
                 u_cpu, den, dv_cpu = edit
-                dp = key_site(model, layer)
                 kk = dp.input
                 uu = u_cpu.to(kk.device, kk.dtype)
                 dp.output = dp.output + ((kk @ uu) / den).unsqueeze(-1) \
@@ -198,6 +215,10 @@ def main() -> int:
     ap.add_argument("--layer", type=int, default=LAYER)
     ap.add_argument("--batch", type=int, default=200)
     ap.add_argument("--out", type=Path, default=Path("results/E-001-predicted-vs-measured.json"))
+    ap.add_argument("--coef-cache", type=Path,
+                    default=Path("results/cache/E001_coefficients.json"),
+                    help="coefficients are 42 remote traces; a crash in a later "
+                         "phase must not make us buy them again")
     ap.add_argument("--checkpoint", type=Path,
                     default=Path("results/cache/E001_partial.json"),
                     help="per-item results, written after every batch. A run that "
@@ -220,6 +241,8 @@ def main() -> int:
     # Each item carries its own case id. Resolving one from the owner's NAME used
     # to work until two subjects turned out to hold two CounterFact records each,
     # at which point the lookup quietly returned the wrong edit.
+    cf_by_id = {str(r.case_id): r
+                for r in load_counterfact(a.edit_slice / "data" / "counterfact.json.gz")}
     for it in items:
         it["owner"] = it["id"].split("/")[0].replace("_", " ")
         if not it.get("case_id"):
@@ -232,7 +255,16 @@ def main() -> int:
 
     # --- gate ---------------------------------------------------------------
     anchors = [it for it in items if it["id"].endswith("/anchor-prefix")]
-    read_coefficients(model, anchors, ks, layer=a.layer)
+    # k* read live, in the same batch as the probe it is compared against.
+    # The edit form is CounterFact's own prompt for that record.
+    tok = model.tokenizer
+    edit_prompts = {}
+    for it in anchors:
+        rec = cf_by_id[it["case_id"]]
+        ep = rec.rewrite.prompt.format(rec.rewrite.subject)
+        edit_prompts[it["case_id"]] = (
+            ep, subject_last_index(tok, ep, rec.rewrite.subject))
+    read_coefficients(model, anchors, ks, layer=a.layer, edit_prompts=edit_prompts)
     worst = max(abs(it["coefficient"] - 1.0) for it in anchors)
     inside = all(ANCHOR_BAND[0] <= it["coefficient"] <= ANCHOR_BAND[1] for it in anchors)
     log.info("anchor gate: %d items, worst deviation from 1.000 = %.3e", len(anchors), worst)
@@ -249,7 +281,20 @@ def main() -> int:
 
     # --- predicted reach ----------------------------------------------------
     rest = [it for it in items if not it["id"].endswith("/anchor-prefix")]
-    read_coefficients(model, rest, ks, layer=a.layer)
+    coef_done: dict[str, float] = {}
+    if a.coef_cache.exists() and not a.fresh:
+        coef_done = json.loads(a.coef_cache.read_text())
+        log.info("reusing %d cached coefficients", len(coef_done))
+    todo = [it for it in rest if it["id"] not in coef_done]
+    for it in rest:
+        if it["id"] in coef_done:
+            it["coefficient"] = coef_done[it["id"]]
+    if todo:
+        read_coefficients(model, todo, ks, layer=a.layer)
+    a.coef_cache.parent.mkdir(parents=True, exist_ok=True)
+    a.coef_cache.write_text(json.dumps(
+        {it["id"]: it["coefficient"] for it in rest if "coefficient" in it}, indent=1))
+    log.info("coefficients: %d held", len(rest))
 
     # --- measured movement --------------------------------------------------
     # CLAUDE.md: long runs must be resumable. NDIF's websocket drops under load

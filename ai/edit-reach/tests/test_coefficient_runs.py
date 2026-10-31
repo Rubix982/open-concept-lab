@@ -70,3 +70,32 @@ def test_the_regime_is_carried_through(fake_model) -> None:
     got = coefficient_for(fake_model, ["abc"], [0], u=_u(), denom=1.0, layer=0,
                           regime=Regime.PREFIX_SHARING, remote=False)
     assert got[0].is_analytic
+
+
+def test_a_same_trace_reference_pins_itself_at_exactly_one(fake_model) -> None:
+    """With k* read in the same batch, the reference row's own ratio is 1 by
+    construction — and so is any row whose key equals it.
+
+    This is the construction [T-075] used to get min = max = 1.000 across 216
+    cells, and the one the anchor gate needs: a cached k* carries the dtype and
+    batch shape of the session that wrote it, which cost 6.4e-03.
+    """
+    ref = ("abcdef", 5)
+    got = coefficient_for(fake_model, ["abcdef"], [5], u=_u(), denom=1.0, layer=0,
+                          remote=False, reference=ref)
+    assert got[0].value == pytest.approx(1.0, abs=1e-12)
+
+
+def test_the_reference_row_is_not_returned_as_a_result(fake_model) -> None:
+    got = coefficient_for(fake_model, ["abc", "xy"], [1, 0], u=_u(), denom=1.0,
+                          layer=0, remote=False, reference=("abcdef", 5))
+    assert len(got) == 2
+    assert [c.prompt for c in got] == ["abc", "xy"]
+
+
+def test_a_different_key_under_the_reference_is_not_one(fake_model) -> None:
+    """If every row came back 1.0 the gate could not fail, which is the one
+    thing a gate must be able to do."""
+    got = coefficient_for(fake_model, ["z"], [0], u=_u(), denom=1.0, layer=0,
+                          remote=False, reference=("abcdef", 5))
+    assert abs(got[0].value - 1.0) > 0.01

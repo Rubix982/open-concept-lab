@@ -8,14 +8,14 @@ Establish whether an edit's reach can be predicted before the edit is applied �
 
 ## Current Phase
 
-Phase 1 — close C-001. Nothing else opens until it closes.
+Phase 1 closed. C-001 denied: excess rho 0.085, CI (-0.003, 0.172), against a pre-stated bar of 0.5. No card is open.
 
 ## Active Tickets
 
 | ID | Agent | Title | Status |
 | --- | --- | --- | --- |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
-| E-001 | Engineer | Predicted-vs-measured run for C-001 | open, described |
+| E-001 | Engineer | Predicted-vs-measured run for C-001 | closed |
 
 ## Blocked
 
@@ -27,4 +27,7 @@ _(none)_
 
 ## Next Orchestrator Action
 
-E-001 is described to standard and unblocked. The engineer writes the run script next. The first thing it must do is the anchor gate in step 1 — 42 `anchor-prefix` readings that must land in (0.999, 1.001) — because that is cheap, it is the one quantity known analytically, and a deviation there invalidates everything after it while still looking plausible.
+Two things, in this order, and neither starts until Saif has read the result.
+
+1. **Tell Natalie and Arnab.** Email 3 said "until I show the estimate predicts measured behaviour, a screen built on it is a proposal, not an instrument." The hedge held; what is owed now is the number, not a retraction. The direct-exposure critique itself is untouched, and saying both plainly is the whole message.
+2. **Decide which card opens next.** The honest candidates are T-005 (is the coefficient blind in the far field, where propagation lives) and the post-hoc reading recorded in [E-001] — that subject-keyed movement may be the phenomenon rather than the confound. The second must not be worked on as a rescue of C-001; it needs its own six fields, written before any data is looked at again.

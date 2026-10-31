@@ -148,6 +148,24 @@ def main() -> int:
           "completeness is keyed on the LAST field written, so a half-scored "
           "item is retried rather than counted as done")
 
+    # ---- nothing from this package may be referenced inside a trace body.
+    #      nnsight ships the body's source to NDIF, which has never heard of
+    #      editreach: the failure arrives as a RemoteError about a truncated
+    #      payload, which is not a hint about what is wrong.
+    import re
+    bodies = re.findall(r"with quiet_stdout\(\), model\.trace\(.*?\n(.*?)(?=\n        return|\n    [a-z#])",
+                        src, re.S)
+    check(bool(bodies), "trace bodies are findable in the source")
+    for b in bodies:
+        check("key_site(" not in b, "no key_site( call inside a trace body")
+        check("editreach" not in b, "no editreach reference inside a trace body")
+    check(src.count("dp = key_site(model, layer) if edit is not None else None") == 2,
+          "both scoring functions resolve the key site before the trace")
+
+    # ---- the coefficients are 42 remote traces and must survive a later crash
+    check("--coef-cache" in src, "coefficients have their own cache")
+    check("reusing %d cached coefficients" in src, "and are reused on resume")
+
     print(f"{checks - len(failures)}/{checks} checks passed")
     for f in failures:
         print(f"  FAIL  {f}")

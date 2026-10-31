@@ -96,12 +96,28 @@ def coefficient_for(
     layer: int = LAYER,
     regime: Regime = Regime.PRECEDED,
     remote: bool = True,
+    reference: tuple[str, int] | None = None,
 ) -> list[Coefficient]:
     """Score prompts on the UNEDITED model. One remote call for the batch.
 
     `u` and `denom` come from the edit being screened (`u = C⁻¹k*`,
     `denom = u·k*`); `positions[i]` is the token index in `prompts[i]` to read
     at, normally `rome.subject_last_index`.
+
+    `reference` is `(prompt, position)` for reading `k*` **in this same trace**
+    instead of using the `u`/`denom` passed in. Use it whenever the question is
+    whether the pipeline reads the right token, because a cached `k*` carries
+    the dtype and batch shape of the session that wrote it: activations come
+    back in bf16, whose relative precision is about 2**-8, and a live reading
+    against a cached one deviates by ~1e-3 for that reason alone. Measured: the
+    42 analytic anchors, which must pin at exactly 1.000, came back with a worst
+    deviation of 6.4e-03 against cached `k*` — the arithmetic, not the model.
+
+    The dot product is taken in **float32**, not in the activations' own dtype.
+    `u.to(kk.dtype)` would round a float32 `u` down to bf16 before the sum over
+    14336 channels, which is the other half of that 6.4e-03. [T-075] brought the
+    keys back and did the arithmetic on the CPU for the same reason, and got
+    min = max = 1.000 across 216 cells.
 
     The trace body is written inline rather than factored into a helper: nnsight
     compiles the source of the frame that enters `model.trace`, so an
@@ -123,8 +139,16 @@ def coefficient_for(
     if u.shape[-1] != d_mlp:
         raise ValueError(f"u has width {u.shape[-1]}, but this model's d_mlp is {d_mlp}")
 
-    ids, lengths = encode_prompts(model, list(prompts))
-    for i, (pos, n) in enumerate(zip(positions, lengths)):
+    all_prompts = list(prompts)
+    all_positions = list(positions)
+    if reference is not None:
+        # The reference row rides in the same batch, so k* and k share a trace,
+        # a dtype and a batch shape. Appended last so indices stay stable.
+        all_prompts = all_prompts + [reference[0]]
+        all_positions = all_positions + [reference[1]]
+
+    ids, lengths = encode_prompts(model, all_prompts)
+    for i, (pos, n) in enumerate(zip(all_positions, lengths)):
         if not 0 <= pos < n:
             raise IndexError(
                 f"position {pos} is outside prompt {i}, which is {n} tokens long. "
@@ -139,10 +163,23 @@ def coefficient_for(
         # function is silently dropped. See `rome.APPLY_IDIOM`.
         with quiet_stdout():
             with model.trace(ids, remote=remote):
-                kk = site.input
-                uu = u.to(kk.device, kk.dtype)
-                out = (kk @ uu).save()
-        return [float(out[i, p]) / denom for i, p in enumerate(positions)]
+                # float32 BEFORE the sum over d_mlp. Casting u down to the
+                # activations' bf16 costs ~2**-8 relative, which is the whole
+                # budget for a quantity that must read exactly 1.000.
+                kk = site.input.float()
+                if reference is None:
+                    uu = u.to(kk.device).float()
+                    out = (kk @ uu).save()
+                    ref = None
+                else:
+                    keys = kk.save()
+                    out = ref = None
+            if reference is not None:
+                k_star = keys[len(all_prompts) - 1, all_positions[-1]].float()
+                den = float(k_star @ k_star)
+                return [float(keys[i, p].float() @ k_star) / den
+                        for i, p in enumerate(all_positions[:-1])]
+        return [float(out[i, p]) / denom for i, p in enumerate(all_positions)]
 
     values = retrying(_run, what=f"coefficients at L{layer}")
     return [
