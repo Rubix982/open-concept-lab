@@ -3506,3 +3506,45 @@ independence assumption across subjects gets worse rather than better.
 
 **Artifacts:** agents/engineer/workspace/run_e049.py; tools/dryruns/dryrun_e049.py
 (16 checks); results/E-049-floor-gate-calibration.json; logs/run_e049-2026-10-30-*.log
+
+---
+
+## [E-013] Scope note: the same-subject control is adequate for destination and not for destruction
+
+_Date: 2026-10-31 · appended, not edited — [E-013] stands as written_
+
+**[E-013]'s revisit condition has fired, and the obvious reading of that is wrong.**
+
+It said: *"Revisit if the same-subject control moves `inner_1` as much as the real edit on most chains. Then subject-keyed leakage dominates at this magnitude, no contraction signal is separable."*
+
+`ai/edit-reach` [E-002] measured exactly that, over 495 probes and 42 subjects at layer 5, with a magnitude-matched third arm that [E-013] did not have — **a different subject's edit**. Paired median differences, bootstrap 10,000:
+
+    real  -  same-subject      +0.0009   95% CI (+0.0004, +0.0024)
+    same-subject - diff-subj   +0.0583   95% CI (+0.0472, +0.0732)
+
+The same-subject control reproduces 98.5% of the real edit's effect. By the letter of the revisit condition, subject-keyed leakage dominates.
+
+**But [E-014]'s own table says the opposite, and both are right.**
+
+    inner_1 lands in...     baseline   real edit   same-subject control
+    the target country            5%         67%                     5%
+
+There the same-subject control sits at floor while the real edit reaches 67%. The two results are not in conflict because they are not measuring the same thing:
+
+- **[E-002] measures destruction** — how much probability the *pre-edit* answer loses. That is almost entirely subject-keyed: an edit of matched magnitude aimed at a different person produces a median movement of 0.0016, and aimed at your own subject produces 0.0625, almost regardless of what it said.
+- **[E-014] measures destination** — whether the *new* answer lands in the injected country. That is content-specific: the same-subject control cannot produce it at all, 5% against 67%.
+
+**The decision.** The same-subject control is **not** a general-purpose control to be applied or dropped wholesale. Which control is right depends on which half is being measured:
+
+| the measure asks | the control that separates it | why |
+| --- | --- | --- |
+| how much did the old answer lose? | **different-subject**, magnitude-matched | the same-subject arm reproduces 98.5% of it and leaves nothing |
+| where did the new answer go? | **same-subject** | a different subject's edit cannot name your target at all |
+
+**What this corrects.** `edit-reach` [E-002] and C-002 said the same-subject control "removes the signal" for this class of question. That is true of destruction and false of destination, and the unqualified form overstates it. The claim is narrowed here rather than left standing in its broad form.
+
+**What it suggests, without establishing it.** An edit appears to do two separable things: it breaks the old answer because it touched that subject's key, and it supplies a new one because of its content. [E-046] is consistent — the replacement was confident and specific — and so is [E-014]'s 82%-capital finding. **This is a reading of three results that were not designed to test it.** It needs its own card.
+
+**Revisit if:** a destination measure is run on the [E-002] probe set. That would put both halves on one set of probes under one metric family, which is the only way to turn the table above from an inference across two experiments into a measurement.
+
+**Artifacts:** `ai/edit-reach/results/E-002-different-subject-arm.json`; `ai/edit-reach/agents/shared/decisions.md` [E-002]; this project's [E-014].

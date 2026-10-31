@@ -111,3 +111,19 @@ _Date: 2026-10-31_
 3. **`semantics` shows real/ctl of 1.02** — content contributing essentially nothing there — while `alias` shows 3.34. Those are unpaired ratios and carry the caveat above; a per-family paired analysis is not done.
 
 **Artifacts:** `results/E-002-different-subject-arm.json`; `results/E-002-summary.md`; `agents/engineer/workspace/run_e002.py`; `tools/dryruns/dryrun_e002.py` (26 checks); `logs/E-002-2026-10-31-*.log`.
+
+---
+
+## [E-002] Correction: the claim about [E-013]'s control was too broad
+
+_Date: 2026-10-31_
+
+The entry above said [E-013]'s same-subject control "removes the signal" for this class of question, and that the scope note belonged on [E-013]. Writing that note required reading [E-013] and [E-014] properly, and the broad form does not survive it.
+
+[E-014] reports the same-subject control at **5%** against the real edit's **67%** on "does `inner_1` land in the target country". There the control is at floor and separates cleanly.
+
+Both are right because they measure different halves. [E-002] measures **destruction** — what the pre-edit answer loses — which is subject-keyed. [E-014] measures **destination** — where the new answer goes — which is content-specific. The same-subject control is the wrong control for the first and the right one for the second.
+
+So the correct statement is narrower: *for a destruction measure*, the same-subject control reproduces 98.5% of the effect and the different-subject arm is the one that separates. Nothing above licenses dropping it from a destination measure.
+
+Recorded in edit-slice as **[E-013] Scope note**, appended rather than edited, since that surface is append-only.

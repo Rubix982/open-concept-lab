@@ -56,7 +56,9 @@ Donor edits were matched on magnitude (median |difference| 0.0255 against a rang
 
 **What this settles.** The post-hoc reading recorded in [E-001] is now pre-stated and measured: a probe moves because an edit happened to its subject, almost regardless of what the edit said. Direct exposure is demonstrable in behaviour and not only by counting prompt strings.
 
-**What it costs.** [E-013]'s same-subject control was built to separate contraction from subject-keyed leakage. For this class of question it removes the signal, and that scope note belongs on that decision in edit-slice.
+**What it costs — narrowed after writing the scope note.** The first version of this line said [E-013]'s same-subject control "removes the signal" for this class of question. Reading [E-013] and [E-014] properly does not support the broad form: [E-014] has that same control at **5%** against the real edit's **67%** on whether the answer lands in the injected country.
+
+Both hold because they measure different halves. This card measured **destruction** — what the old answer loses — which is subject-keyed. [E-014] measured **destination** — where the new answer goes — which is content-specific. The same-subject control is the wrong control for the first and the right one for the second. Recorded as **[E-013] Scope note** in edit-slice, appended.
 
 ---
 
