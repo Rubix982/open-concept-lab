@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
+import NightFlow from "@site/src/components/visual/NightFlow";
 
 const PIECES: [string, string, string][] = [
   ["preflight", "gates that refuse, not warn",
@@ -59,6 +60,8 @@ export default function Harness(): ReactNode {
             ))}
           </dl>
         </section>
+
+        <NightFlow />
 
         <section className="ocl-ag__sec">
           <h2>The boundary</h2>

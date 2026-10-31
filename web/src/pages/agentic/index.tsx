@@ -1,75 +1,65 @@
 import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
-import { AGENTIC, type Agentic } from "@site/src/data/agentic";
-import PageArt from "@site/src/components/PageArt";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import { AGENTIC, GUIDES } from "@site/src/data/agentic";
+import Boundary from "@site/src/components/visual/Boundary";
+import PageArt from "@site/src/components/PageArt";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import type { LabData } from "@site/plugins/lab-data";
-import Boundary from "@site/src/components/visual/Boundary";
-import Flow, { type FlowStep } from "@site/src/components/visual/Flow";
 
-/** A tool's drawing, with its real output laid over it in a terminal window. */
-function Shot({ art, sample, file }: { art: string; sample: string; file: string }): ReactNode {
-  const src = useBaseUrl(`/img/art/tools/${art}.svg`);
-  return (
-    <div className="ocl-ag__entryShot ocl-ag__shot">
-      <img className="ocl-ag__shotArt" src={src} alt="" loading="lazy" decoding="async" />
-      <div className="ocl-ag__window">
-        <p className="ocl-ag__windowBar" aria-hidden="true">
-          <span /><span /><span />
-          <code>{file}</code>
-        </p>
-        <pre className="ocl-ag__sample">{sample}</pre>
-      </div>
-    </div>
-  );
-}
+// The page is the cards. Each one answers the same four questions in the same
+// order — what it is, what the agent does, what you get, how to try it — so a
+// reader can compare them without scrolling past diagrams first. The diagrams
+// live on the pages they explain (the night's flow on /agentic/harness).
 
-/**
- * One night of the harness, step by step. The step lines paraphrase the
- * harness entry in src/data/agentic.ts; the wake-ups are the escalation list
- * from data/practice.yml, placed at the step that raises each.
- */
-function NightFlow(): ReactNode {
-  const { practice } = usePluginData("ocl-lab-data") as LabData;
-  const esc = practice?.boundary.escalation ?? [];
-  const wake = (word: string) =>
-    esc.filter((e) => e.trigger.includes(word)).map((e) => e.trigger);
-  const steps: FlowStep[] = [
-    { art: "flow-queue", title: "Queue", text: "Only pre-registered work, with its expected verdict written down first." },
-    { art: "flow-preflight", title: "Preflight", text: "Gates that refuse before anything touches the network.", wakes: wake("preflight") },
-    { art: "flow-run", title: "Run", text: "Each job under a budget it may not outlive.", wakes: [...wake("expect"), ...wake("budget")] },
-    { art: "flow-triage", title: "Triage", text: "Every failure sorted by cause, so only the undiagnosed one needs a person.", wakes: wake("unsorted") },
-    { art: "flow-report", title: "Report", text: "A page readable mid-run, with a section on what it did not check." },
-  ];
-  return (
-    <section className="ocl-page__section ocl-ag__night">
-      <h2 className="ocl-page__sectionTitle">How a night runs</h2>
-      <p className="ocl-page__note">
-        Everything else is logged and the queue carries on. A known failure
-        needs a count; an unknown one needs a person.
-      </p>
-      <Flow steps={steps} label="The harness's pipeline: queue, preflight, run, triage, report" />
-    </section>
-  );
-}
+type Card = {
+  name: string;
+  title: string;
+  kind: string;
+  what: string;
+  agent: string;
+  forYou: string;
+  use: string;
+  useNote?: string;
+  href: string;
+  external: boolean;
+};
 
-function Entry({ item }: { item: Agentic }): ReactNode {
-  const page = `/agentic/${item.name}`;
+const CARDS: Card[] = [
+  ...AGENTIC.map((a) => ({ ...a, what: a.plain, href: `/agentic/${a.name}`, external: false })),
+  ...GUIDES.map((g) => ({ ...g, what: g.plain, external: true })),
+];
+
+function ProjectCard({ card }: { card: Card }): ReactNode {
+  const art = useBaseUrl(`/img/art/tools/${card.name}.svg`);
+  const link = card.external
+    ? { href: card.href, target: "_blank", rel: "noreferrer" }
+    : { to: card.href };
   return (
-    <article className="ocl-ag__entry">
-      <Shot art={item.name} sample={item.sample} file={item.where} />
-      <div className="ocl-ag__entryBody">
-        <h2 className="ocl-ag__entryTitle">
-          <Link to={page}>{item.title}</Link>
+    <article className="ocl-agc">
+      <Link {...link} className="ocl-agc__art" tabIndex={-1} aria-hidden="true">
+        <img src={art} alt="" loading="lazy" decoding="async" />
+      </Link>
+      <div className="ocl-agc__body">
+        <p className="ocl-agc__kind">{card.kind}</p>
+        <h2 className="ocl-agc__title">
+          <Link {...link}>{card.title}</Link>
         </h2>
-        <p className="ocl-ag__entryWhat">{item.what}</p>
-        <p className="ocl-ag__entryMeta">
-          <code>{item.where}</code> · since {item.since}
-        </p>
-        <p className="ocl-ag__actions">
-          <Link to={page} className="ocl-ag__primary">Read about it</Link>
+        <p className="ocl-agc__what">{card.what}</p>
+        <dl className="ocl-agc__qa">
+          <dt>What the agent does</dt>
+          <dd>{card.agent}</dd>
+          <dt>What you get</dt>
+          <dd>{card.forYou}</dd>
+        </dl>
+        <div className="ocl-agc__try">
+          <p className="ocl-agc__tryLabel">Try it</p>
+          <pre>{card.use}</pre>
+          {card.useNote && <p className="ocl-agc__note">{card.useNote}</p>}
+        </div>
+        <p className="ocl-agc__more">
+          <Link {...link}>{card.external ? "On GitHub ↗" : "How it works →"}</Link>
         </p>
       </div>
     </article>
@@ -77,100 +67,66 @@ function Entry({ item }: { item: Agentic }): ReactNode {
 }
 
 export default function AgenticIndex(): ReactNode {
+  const { practice } = usePluginData("ocl-lab-data") as LabData;
+  const unattended = AGENTIC.length;
   return (
     <Layout
       title="Agentic"
-      description="Tools that keep research moving when nobody is watching, and the boundary they are built around."
+      description="Four things built for working with AI agents: what each does, and how to use it."
     >
       <div className="ocl-page">
         <header className="ocl-page__head ocl-page__head--art">
           <PageArt name="agentic" />
           <h1 className="ocl-page__title">Agentic</h1>
           <p className="ocl-page__lede">
-            Research stops when attention does. These are the tools that keep it
-            moving in the hours nobody is at the desk — and, more importantly, the
-            line they are built not to cross. They run the work, gate it, sort its
-            failures and report it. They do not choose what to run next, decide
-            whether a result is real, or write a word of the record.
+            Four things I built for working with AI agents. Two run work while
+            nobody is at the desk; two are files an agent reads before it starts.
+            Each card says what it does and how to try it.
           </p>
-          <p className="ocl-page__lede">
-            Every rule below was earned by being wrong. Each one carries the
-            incident that produced it, because a rule without its failure is a
-            slogan. The practices are collected on{" "}
-            <Link to="/agentic/practice">Practice</Link>; the research they serve
-            is in the <Link to="/notebook/edit-slice/">notebook</Link>.
-          </p>
+          <dl className="ocl-tally">
+            <div>
+              <dt>Tools</dt>
+              <dd>{CARDS.length}</dd>
+            </div>
+            <div>
+              <dt>Run unattended</dt>
+              <dd>{unattended}</dd>
+            </div>
+            <div>
+              <dt>Read first</dt>
+              <dd>{CARDS.length - unattended}</dd>
+            </div>
+            {practice && (
+              <div>
+                <dt>Reasons to wake me</dt>
+                <dd>{practice.boundary.escalation.length}</dd>
+              </div>
+            )}
+            {practice && (
+              <div>
+                <dt>Rules learned</dt>
+                <dd>{practice.lessons.length}</dd>
+              </div>
+            )}
+          </dl>
         </header>
-        <Boundary />
-        <NightFlow />
-        <h2 className="ocl-page__sectionTitle ocl-ag__toolsTitle">The tools, the practice, and the instructions</h2>
-        {AGENTIC.map((item) => (
-          <Entry key={item.name} item={item} />
-        ))}
-        <article className="ocl-ag__entry">
-          <Shot art="practice" file="agentic/practice" sample={`A green harness is not a
-sound experiment.
 
-E-036 passed every gate and
-still measured two of six
-criteria in ways that could
-not answer their own
-questions.`} />
-          <div className="ocl-ag__entryBody">
-            <h2 className="ocl-ag__entryTitle">
-              <Link to="/agentic/practice">The practice, and its limits</Link>
-            </h2>
-            <p className="ocl-ag__entryWhat">
-              The boundary between what a loop may own and what a person must;
-              the twelve rules two projects learned by being wrong, each with its
-              incident and what it cost; and an honest account of what none of it
-              can catch.
-            </p>
-            <p className="ocl-ag__actions">
-              <Link to="/agentic/practice" className="ocl-ag__primary">Read it</Link>
-            </p>
-          </div>
-        </article>
-        {/* The sample is the file's own top-level headings, in order. */}
-        <article className="ocl-ag__entry">
-          <Shot art="dotclaude" file="Rubix982/dotclaude · CLAUDE.md" sample={`# Manifesto
-# Compass — keeping the work connected
-#   to real need
-# The Standard
-# Side Builds — the deliberate exception
-# Global Rules
-# Agentic Work Template
-# The Card — the default, and the width
-#   limit`} />
-          <div className="ocl-ag__entryBody">
-            <h2 className="ocl-ag__entryTitle">
-              <a href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md" target="_blank" rel="noreferrer">
-                dotclaude
-              </a>
-            </h2>
-            <p className="ocl-ag__entryWhat">
-              The instructions every Claude session here starts from. It opens
-              with why the work exists and how to tell a real step from a toy,
-              then sets the working rules: one card open at a time, tickets and
-              threads for longer efforts, and when the heavier research protocols
-              are allowed. It also marks the exception — side builds like this
-              site, where the heavy rules are set down on purpose.
-            </p>
-            <p className="ocl-ag__entryMeta">
-              <code>Rubix982/dotclaude</code> · public on GitHub
-            </p>
-            <p className="ocl-ag__actions">
-              <a
-                href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md"
-                target="_blank"
-                rel="noreferrer"
-                className="ocl-ag__primary"
-              >
-                Read it on GitHub ↗
-              </a>
-            </p>
-          </div>
-        </article>
+        <div className="ocl-agc__grid">
+          {CARDS.map((c) => (
+            <ProjectCard key={c.name} card={c} />
+          ))}
+        </div>
+
+        <section className="ocl-agc__rule" aria-labelledby="agc-rule">
+          <h2 id="agc-rule" className="ocl-agc__ruleTitle">The line the agents don't cross</h2>
+          <p className="ocl-page__note">
+            The agent runs the work. It does not decide what to run next, whether a
+            result is real, or what goes in the write-up. Each rule behind that line,
+            and the mistake that taught it, is on{" "}
+            <Link to="/agentic/practice">Practice</Link>.
+          </p>
+          <Boundary />
+        </section>
       </div>
     </Layout>
   );

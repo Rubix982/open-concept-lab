@@ -4,7 +4,7 @@ import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { BuiltPage, LabData, Paper, Project } from "@site/plugins/lab-data";
-import { AGENTIC, type Agentic } from "@site/src/data/agentic";
+import { AGENTIC, GUIDES, type Agentic, type Guide } from "@site/src/data/agentic";
 import { ProjectCard } from "@site/src/components/Projects";
 import Profile from "@site/src/components/Profile";
 
@@ -682,19 +682,18 @@ export default function Home(): ReactNode {
               }
               sample={"A green harness is not a\nsound experiment.\n\nE-036 passed every gate\nand still measured two of\nsix criteria in ways that\ncould not answer their own\nquestions."}
             />
-            {/* The sample is the file's own section headings, in order. */}
-            <AgenticCard
-              name="dotclaude"
-              href="https://github.com/Rubix982/dotclaude/blob/main/CLAUDE.md"
-              external
-              title="dotclaude"
-              blurb={
-                "The instructions every Claude session here starts from: why the work exists, " +
-                "how a card is opened, and when the heavy protocols are allowed."
-              }
-              sample={"# Manifesto\n# Compass — keeping the work connected to real need\n# The Standard\n# Side Builds — the deliberate exception\n# Global Rules\n# Agentic Work Template\n# The Card — the default, and the width limit"}
-              meta="Rubix982/dotclaude · CLAUDE.md"
-            />
+            {GUIDES.map((item: Guide) => (
+              <AgenticCard
+                key={item.name}
+                name={item.name}
+                href={item.href}
+                external
+                title={item.title}
+                blurb={item.blurb}
+                sample={item.sample}
+                meta={item.file}
+              />
+            ))}
           </div>
         </Band>
 

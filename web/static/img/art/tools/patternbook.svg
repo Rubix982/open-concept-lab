@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="An open manual page with a large step number and a line drawing of a shelf, beside three colour swatches with the cream one crossed out: design knowledge taken from human-made work, not the agent's default">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#3f8f7a" opacity="0.22"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M150 96 H300 V320 H150 Z" fill="#fffdf8"/>
+    <path d="M300 96 H450 V320 H300 Z" fill="#fffdf8"/>
+    <path d="M300 96 V320" stroke-width="1.6" opacity="0.6"/>
+    <path d="M172 150 V122 L162 130 M164 150 H182" stroke-width="4"/>
+    <path d="M190 170 L250 150 L282 166 L222 186 Z M190 170 V280 L222 296 V186 M282 166 V270 L222 296" stroke-width="2"/>
+    <path d="M190 206 L222 222 L282 196 M190 244 L222 260 L282 234" stroke-width="1.5" opacity="0.7"/>
+    <path d="M322 122 H420" stroke-width="3"/>
+    <path d="M322 150 H428 M322 170 H408" stroke-width="1.5" opacity="0.6"/>
+    <rect x="322" y="200" width="30" height="30" fill="#f7f1e6"/>
+    <rect x="362" y="200" width="30" height="30" fill="#2b2a28" fill-opacity="0.85"/>
+    <rect x="402" y="200" width="30" height="30" fill="#3f8f7a" fill-opacity="0.85"/>
+    <path d="M316 194 L358 236" stroke="#a4442f" stroke-width="3.4"/>
+    <path d="M322 262 H428 M322 282 H396" stroke-width="1.5" opacity="0.6"/>
+    <path d="M490 140 C 520 170, 520 240, 486 276 M478 264 L486 276 L500 270" stroke="#4338a8" stroke-width="2" stroke-dasharray="3 8"/>
+  </g>
+</svg>
