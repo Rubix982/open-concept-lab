@@ -8,6 +8,58 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-002 · Does an edit's effect depend on what it said, or only on whose key it touched?
+
+**Status:** closed
+**Opened:** 2026-10-31
+**Closed:** 2026-10-31 — **branch 1**, and the gap is quantified
+
+**1. WHERE WE ARE.**
+[E-001] measured a raw correlation of 0.522 between predicted reach and measured movement, which falls to an excess of 0.085 (CI −0.003 to 0.172) once a **same-subject control edit** is removed — that control alone accounting for about 72% of the median movement.
+
+**2. WHAT WE ARE DOING.**
+Score the same 495 probes a third time, under a **different subject's** cached edit — subject B's `delta_v` and `k*` applied while probing subject A — and report the three medians side by side against the `real` and same-subject `ctl` arms already measured, per family.
+
+**3. WHY.**
+We do not know whether an edit moves a probe because of *what it said* or because of *whose key it touched*. [E-001] is consistent with the second and cannot distinguish them, because both its arms edit the same person. A third arm that changes the person while holding everything else fixed separates them. After this we have three medians and two contrasts.
+
+**4. WHAT IS AFFECTED.**
+- The post-hoc reading recorded in [E-001] — that subject-keyed movement may be the phenomenon rather than the confound — either becomes a pre-stated result or dies. It may not be used either way until this closes.
+- `notes/email-3-direct-exposure.md`, unsent. Its critique currently rests on **counting** whether the edited subject appears in a prompt. This decides whether it can also rest on behaviour.
+- [E-013]'s control design in edit-slice: if movement is subject-keyed, the same-subject control removes signal rather than noise *for this class of question*, which is a scope note that belongs on that decision.
+
+**5. CONCLUSION IF WE DO IT.** Three branches, because the third is the one that would hurt and it has to be written down before the run.
+
+- **If `real ≈ ctl` and both ≫ `different-subject`:** movement is keyed on the subject, not the content. Direct exposure is then demonstrable in behaviour and not only in prompt-counting, and email 3 gains a second leg. The same-subject control gets a scope note in [E-013].
+- **If `real` is meaningfully above `ctl`:** content does matter, [E-001]'s post-hoc reading is wrong and is struck from the record rather than left standing, and the conclusion that the coefficient fails to predict effect gets *stronger* — it had content to predict and did not.
+- **If all three arms are alike, different-subject included:** we are measuring generic instability and nothing is keyed on anything. That would undercut [E-001]'s raw 0.522 as well as the behavioural half of the critique, and it would mean the floor arms in every prior run need re-reading. **This is the branch that costs the most and it is the reason the arm is worth running.**
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+[E-001]'s most interesting sentence stays post-hoc and therefore unusable, email 3 goes out resting on arithmetic over prompt strings alone, and we would hold a finding we cannot name without over-reading it.
+
+**Controls and what could make this wrong.**
+- **Magnitude.** Edits differ in `norm_ratio`. B's edit must be matched to A's in magnitude or a weak different-subject arm proves nothing. Pair by closest `norm_ratio`, record the residual spread, and report it.
+- **Pairing.** Deterministic: subjects sorted by `case_id`, A paired with the nearest-magnitude B that is not A. Recorded in the output.
+- **The anchor gate runs again.** It is 42 traces and it has already caught two faults.
+
+**Closed:** 2026-10-31. Paired median differences over 495 probes, bootstrap 10,000, seed 1538:
+
+    real  -  same-subject      +0.0009   95% CI (+0.0004, +0.0024)
+    same-subject - diff-subj   +0.0583   95% CI (+0.0472, +0.0732)
+    real  -  diff-subject      +0.0842   95% CI (+0.0667, +0.0974)
+
+**Branch 1.** Editing *this person rather than someone else* is worth **0.0583**. Editing *this fact rather than another fact about the same person* is worth **0.0009** — sixty-five times less. Both intervals exclude zero, so content is not irrelevant; it is detectable and small.
+
+Donor edits were matched on magnitude (median |difference| 0.0255 against a range of 2.627), so the different-subject arm is not merely weaker.
+
+**A statistic that would have misled, recorded because it nearly did.** The per-arm medians read 0.0977 / 0.0625 / 0.0016, which makes `real` look 56% above the same-subject control. That is a difference *of medians* over skewed distributions. The paired median *of differences* is +0.0009. The arms are measured on the same probes, so the paired form is the one that answers the question, and the unpaired one overstates the content effect by about sixty-fold.
+
+**What this settles.** The post-hoc reading recorded in [E-001] is now pre-stated and measured: a probe moves because an edit happened to its subject, almost regardless of what the edit said. Direct exposure is demonstrable in behaviour and not only by counting prompt strings.
+
+**What it costs.** [E-013]'s same-subject control was built to separate contraction from subject-keyed leakage. For this class of question it removes the signal, and that scope note belongs on that decision in edit-slice.
+
+---
+
 ## C-001 · Does predicted reach predict measured movement?
 
 **Status:** closed

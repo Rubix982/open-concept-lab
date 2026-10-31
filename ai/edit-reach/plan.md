@@ -8,7 +8,7 @@ Establish whether an edit's reach can be predicted before the edit is applied â€
 
 ## Current Phase
 
-Phase 1 closed. C-001 denied: excess rho 0.085, CI (-0.003, 0.172), against a pre-stated bar of 0.5. No card is open.
+Phase 2 closed. C-002 answered on branch 1: identity is worth ~65x content (paired medians +0.0583 against +0.0009). C-001 closed denied. No card is open.
 
 ## Active Tickets
 
@@ -16,6 +16,7 @@ Phase 1 closed. C-001 denied: excess rho 0.085, CI (-0.003, 0.172), against a pr
 | --- | --- | --- | --- |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 | Engineer | Predicted-vs-measured run for C-001 | closed |
+| E-002 | Engineer | Different-subject edit arm for C-002 | closed |
 
 ## Blocked
 

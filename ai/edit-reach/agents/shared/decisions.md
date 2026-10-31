@@ -69,3 +69,45 @@ _Date: 2026-10-31_
 **Replication worth recording:** the `anchor-floor` family — same prompt shape, different person — returned a median coefficient of **0.0809** against [E-018]'s independently measured floor of **0.082**.
 
 **Artifacts:** `results/E-001-predicted-vs-measured.json`; `agents/engineer/workspace/run_e001.py`; `tools/dryruns/dryrun_e001.py` (49 checks); `probes/generated.json`; `logs/E-001-2026-10-31-*.log`.
+
+---
+
+## [E-002] Result: movement is keyed on whose key the edit touched, not on what it said
+
+_Date: 2026-10-31_
+
+**Result.** The same 495 probes scored under a third arm — subject B's cached edit applied while probing subject A, B chosen as the nearest edit magnitude to A's. Paired median differences, bootstrap 10,000, seed 1538:
+
+    real  -  same-subject      +0.0009   95% CI (+0.0004, +0.0024)
+    same-subject - diff-subj   +0.0583   95% CI (+0.0472, +0.0732)
+    real  -  diff-subject      +0.0842   95% CI (+0.0667, +0.0974)
+
+    median movement by arm, per family
+    family             real   same-subj   diff-subj
+    ALL              0.0977      0.0625      0.0016
+    alias            0.0065      0.0020      0.0001
+    discrimination   0.0223      0.0114      0.0067
+    exposure         0.0489      0.0217     -0.0005
+    position         0.0900      0.0659      0.0037
+    repetition       0.3373      0.2656     -0.0076
+    semantics        0.1795      0.1767      0.0070
+
+**Decision:** Changing *whose* key the edit touches is worth about **65 times** more than changing *what the edit says*. C-002 closes on branch 1. The reading recorded post-hoc in [E-001] is now established on a pre-stated test and may be used.
+
+**Rationale.** A magnitude-matched edit on a different person produces a median movement of 0.0016 — within noise of nothing, and negative in two families. The same edit magnitude aimed at the probe's own subject produces 0.0625. The content of the edit adds 0.0009 on top of that. Both differences exclude zero, so this is not "content is irrelevant"; it is "content is detectable and roughly 1.5% of the effect of identity".
+
+**A statistic that nearly misled, recorded for that reason.** Per-arm medians are 0.0977 / 0.0625 / 0.0016, which reads as `real` being 56% above the same-subject control. That is a difference of medians across skewed distributions. The arms share their probes, so the paired median of differences is the estimator that answers the question, and it is +0.0009. The unpaired form overstates the content effect by about sixtyfold. **Report paired quantities for paired designs** — the difference here is between a headline and a footnote.
+
+**What this changes elsewhere.**
+
+1. **`notes/email-3-direct-exposure.md` gains a second leg.** Its critique rested on counting whether the edited subject appears in a prompt. It can now also rest on behaviour: an item moves because an edit touched its subject, nearly independent of the edit's content, which is what "the item measures exposure rather than propagation" predicts.
+2. **[E-013]'s same-subject control needs a scope note** in edit-slice. It was built to separate contraction from subject-keyed leakage. Where subject-keyed leakage is the phenomenon under study, it removes the signal, which is what produced [E-001]'s excess of 0.085.
+3. **[E-001] stands unchanged.** The coefficient still fails to predict an edit's specific effect. It now has a reason: there is very little specific effect to predict.
+
+**Threats, stated.**
+
+1. **Magnitude matching is on `‖delta_v‖/‖k*‖`, one scalar.** Two edits of equal norm can still differ in direction relative to the probe's key. A directional control is the obvious next refinement and is not run here.
+2. **Same 42 survivors as [E-001]** ([E-047]), so the magnitude generalises no further than that set.
+3. **`semantics` shows real/ctl of 1.02** — content contributing essentially nothing there — while `alias` shows 3.34. Those are unpaired ratios and carry the caveat above; a per-family paired analysis is not done.
+
+**Artifacts:** `results/E-002-different-subject-arm.json`; `results/E-002-summary.md`; `agents/engineer/workspace/run_e002.py`; `tools/dryruns/dryrun_e002.py` (26 checks); `logs/E-002-2026-10-31-*.log`.

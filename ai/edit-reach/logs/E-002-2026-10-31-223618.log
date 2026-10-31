@@ -1,0 +1,59 @@
+2026-10-31 22:36:18,241 INFO     E-002  run E-002 -> logs/E-002-2026-10-31-223618.log
+2026-10-31 22:36:18,266 INFO     E-002  magnitude pairing: median |diff| 0.0255, max 0.1602, over a range of 2.627
+2026-10-31 22:36:42,784 INFO     E-001  coefficients read for case 61 (1 probes)
+2026-10-31 22:36:48,869 INFO     E-001  coefficients read for case 254 (1 probes)
+2026-10-31 22:36:54,132 INFO     E-001  coefficients read for case 273 (1 probes)
+2026-10-31 22:37:03,963 INFO     E-001  coefficients read for case 342 (1 probes)
+2026-10-31 22:37:09,412 INFO     E-001  coefficients read for case 345 (1 probes)
+2026-10-31 22:37:14,077 INFO     E-001  coefficients read for case 507 (1 probes)
+2026-10-31 22:37:19,030 INFO     E-001  coefficients read for case 590 (1 probes)
+2026-10-31 22:37:23,819 INFO     E-001  coefficients read for case 615 (1 probes)
+2026-10-31 22:37:30,687 INFO     E-001  coefficients read for case 747 (1 probes)
+2026-10-31 22:37:35,167 INFO     E-001  coefficients read for case 1126 (1 probes)
+2026-10-31 22:37:40,016 INFO     E-001  coefficients read for case 1289 (1 probes)
+2026-10-31 22:37:44,701 INFO     E-001  coefficients read for case 1315 (1 probes)
+2026-10-31 22:37:50,553 INFO     E-001  coefficients read for case 1401 (1 probes)
+2026-10-31 22:37:55,566 INFO     E-001  coefficients read for case 1555 (1 probes)
+2026-10-31 22:38:01,754 INFO     E-001  coefficients read for case 1688 (1 probes)
+2026-10-31 22:38:06,282 INFO     E-001  coefficients read for case 1692 (1 probes)
+2026-10-31 22:38:11,700 INFO     E-001  coefficients read for case 1715 (1 probes)
+2026-10-31 22:38:17,182 INFO     E-001  coefficients read for case 1737 (1 probes)
+2026-10-31 22:38:23,036 INFO     E-001  coefficients read for case 1794 (1 probes)
+2026-10-31 22:38:30,850 INFO     E-001  coefficients read for case 1798 (1 probes)
+2026-10-31 22:38:36,410 INFO     E-001  coefficients read for case 1901 (1 probes)
+2026-10-31 22:38:41,666 INFO     E-001  coefficients read for case 1904 (1 probes)
+2026-10-31 22:38:46,143 INFO     E-001  coefficients read for case 2151 (1 probes)
+2026-10-31 22:38:50,948 INFO     E-001  coefficients read for case 2165 (1 probes)
+2026-10-31 22:38:55,776 INFO     E-001  coefficients read for case 2236 (1 probes)
+2026-10-31 22:39:00,659 INFO     E-001  coefficients read for case 2418 (1 probes)
+2026-10-31 22:39:05,909 INFO     E-001  coefficients read for case 2498 (1 probes)
+2026-10-31 22:39:11,071 INFO     E-001  coefficients read for case 2502 (1 probes)
+2026-10-31 22:39:17,256 INFO     E-001  coefficients read for case 2754 (1 probes)
+2026-10-31 22:39:24,335 INFO     E-001  coefficients read for case 2767 (1 probes)
+2026-10-31 22:39:31,229 INFO     E-001  coefficients read for case 2777 (1 probes)
+2026-10-31 22:39:37,357 INFO     E-001  coefficients read for case 2912 (1 probes)
+2026-10-31 22:39:43,586 INFO     E-001  coefficients read for case 2959 (1 probes)
+2026-10-31 22:39:48,923 INFO     E-001  coefficients read for case 3005 (1 probes)
+2026-10-31 22:39:53,925 INFO     E-001  coefficients read for case 3011 (1 probes)
+2026-10-31 22:39:58,626 INFO     E-001  coefficients read for case 3040 (1 probes)
+2026-10-31 22:40:03,361 INFO     E-001  coefficients read for case 3048 (1 probes)
+2026-10-31 22:40:08,583 INFO     E-001  coefficients read for case 3094 (1 probes)
+2026-10-31 22:40:13,521 INFO     E-001  coefficients read for case 3181 (1 probes)
+2026-10-31 22:40:18,502 INFO     E-001  coefficients read for case 3242 (1 probes)
+2026-10-31 22:40:23,794 INFO     E-001  coefficients read for case 3531 (1 probes)
+2026-10-31 22:40:30,276 INFO     E-001  coefficients read for case 3567 (1 probes)
+2026-10-31 22:40:30,276 INFO     E-002  anchor gate: worst deviation from 1.000 = 0.000e+00
+2026-10-31 22:41:56,541 INFO     E-002  different-subject scored: 200 of 495
+2026-10-31 22:43:15,141 INFO     E-002  different-subject scored: 400 of 495
+2026-10-31 22:43:52,464 INFO     E-002  different-subject scored: 495 of 495
+2026-10-31 22:43:52,470 INFO     E-002  
+2026-10-31 22:43:52,470 INFO     E-002  median movement, by arm
+2026-10-31 22:43:52,470 INFO     E-002    family                real same-subj diff-subj
+2026-10-31 22:43:52,470 INFO     E-002    ALL                 0.0977    0.0625    0.0016
+2026-10-31 22:43:52,470 INFO     E-002    alias               0.0065    0.0020    0.0001
+2026-10-31 22:43:52,470 INFO     E-002    discrimination      0.0223    0.0114    0.0067
+2026-10-31 22:43:52,470 INFO     E-002    exposure            0.0489    0.0217   -0.0005
+2026-10-31 22:43:52,470 INFO     E-002    position            0.0900    0.0659    0.0037
+2026-10-31 22:43:52,470 INFO     E-002    repetition          0.3373    0.2656   -0.0076
+2026-10-31 22:43:52,470 INFO     E-002    semantics           0.1795    0.1767    0.0070
+2026-10-31 22:43:52,471 INFO     E-002  written to results/E-002-different-subject-arm.json
