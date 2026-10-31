@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edit-reach"
+version = "0.1.0"
+description = "Measure how far a rank-one weight edit travels, and what can be seen before applying it"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Saif Ul Islam" }]
+
+dependencies = [
+  "torch>=2.4",
+  "nnsight>=0.8,<0.9",
+]
+
+[project.urls]
+Source = "https://github.com/Rubix982/edit-reach"
+
+[tool.setuptools.packages.find]
+where = ["src"]

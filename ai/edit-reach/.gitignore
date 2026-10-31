@@ -1,0 +1,13 @@
+# results/ holds raw outputs — gitignored except summaries
+results/*
+!results/*.md
+!results/summaries/
+
+.venv/
+__pycache__/
+*.pyc
+
+.pytest_cache/
+*.egg-info/
+
+# bearing writes its own outcome ledger; it is a record, so it is kept

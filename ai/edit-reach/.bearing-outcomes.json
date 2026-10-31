@@ -1,0 +1,17 @@
+{
+ "_": "what each bearing check has actually caught here",
+ "outcomes": [
+  {
+   "check": "sections_name_runs",
+   "verdict": "false-positive",
+   "note": "The four sections are CHANGELOG entries. A changelog is chronological by genre, and the rule is explicit that a record orders by chronology while a paper orders by dependency. Naming what happened is correct there. Worth re-raising against a write-up, not against the changelog.",
+   "date": "2026-10-31"
+  },
+  {
+   "check": "system_blamed_unread",
+   "verdict": "caught",
+   "note": "Fired on E-001 for blaming nnsight without inspection in THIS project's record. Correct: the inspection and the two-arm reproducer live in edit-slice. The ticket now cites nnsight/intervention/backward.py and the reproducer path, so a reader here can check it.",
+   "date": "2026-10-31"
+  }
+ ]
+}

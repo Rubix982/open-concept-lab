@@ -163,6 +163,15 @@ finding.
 - Long runs must be resumable.
 - Skip basics in explanations. Advanced, real-world application level.
 
+**Infrastructure moved.** `remote`, `edit`, `whiten`, `probing`, `data` and `logs`
+now live in `ai/edit-reach` as the installable `editreach` package. The files of
+those names under `src/` are forwarding shims so the 79 existing scripts keep
+working; nothing is added to them. New code imports `editreach` directly. The
+nine research modules — `adversary`, `possession`, `wikidata`, `chains`,
+`typematch`, `discrimination`, `relation_inventory`, `run_filter`,
+`ground_templates` — stay here, because they encode this project's questions
+rather than a general instrument.
+
 ```
 edit-slice/
   notes/        session notes, definitions.md, meeting prep
