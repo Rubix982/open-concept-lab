@@ -8,6 +8,66 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-003 · Does an edit break the old answer and supply the new one by two different routes?
+
+**Status:** closed
+**Opened:** 2026-11-01
+**Closed:** 2026-11-01 — **branch 1**, and the two halves separate in opposite directions
+
+**1. WHERE WE ARE.**
+[E-002] measured **destruction** over 495 probes: editing *this person rather than someone else* is worth +0.0583 paired median, editing *this fact rather than another fact about the same person* is worth +0.0009 — sixty-five times less. [E-014], on a different probe set and a different metric family, has **destination** at 67% for the real edit against 5% for the same-subject control.
+
+**2. WHAT WE ARE DOING.**
+Re-score the same 495 probes of [E-002] for destination — the post-edit top-1 token over the full vocabulary, under the `real`, same-subject `ctl` and different-subject `other` arms — and report, per arm and per family, the fraction whose top-1 token begins a city in that subject's injected target country.
+
+**3. WHY.**
+The two-route reading is assembled from three experiments built for other questions, with different probe sets and different metric families. We do not know whether destruction and destination separate **on one probe set under one metric**. After this we have three destination rates on the exact 495 probes that produced the destruction numbers, and the split is measured or it is not.
+
+**4. WHAT IS AFFECTED.**
+- T-007 becomes answered or dropped.
+- The **[E-013] scope note** appended to `edit-slice/agents/shared/decisions.md`, which currently rests on comparing [E-002] against [E-014] *across* probe sets. This decides whether it can rest on one.
+- `edit-slice/notes/email-3-direct-exposure.md`, unsent. Its behavioural leg is destruction only.
+- [E-014]'s 67% / 5% is either replicated on a second probe set or contradicted.
+
+**5. CONCLUSION IF WE DO IT.** Three branches, written before the run.
+
+- **If `real` ≫ `ctl` and `real` ≫ `other` on destination, on the same probes where `real ≈ ctl` on destruction:** the split is measured rather than inferred. One rank-one update does two separable things — it breaks the old answer because it touched that subject's key, and it supplies the new one because of what it said.
+- **If `real ≈ ctl` on destination too:** there is no split. The apparent one was an artefact of comparing two experiments across probe sets and metrics, and the [E-013] scope note is wrong and is struck rather than left standing.
+- **If all three arms sit near zero:** these probes have no measurable destination at all, and the 495-probe set cannot answer the question. That would mean [E-002]'s movement numbers record destruction with nowhere identifiable for the mass to go — which needs recording before anything leans on them. **This is the branch that costs the most.**
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+The two-route reading stays a story told across three experiments, the [E-013] scope note stays cross-set, and email 3 goes out with one behavioural leg instead of two.
+
+**Controls, and what could make this wrong. Three were checked before the run rather than after.**
+
+- **Magnitude, `real` against `ctl`.** Never matched, unlike the donor arm in [E-002]. **Checked, and the honest version is narrower than the first one written here:** the *signed* paired median difference in `‖delta_v‖/‖k*‖` is +0.0899 with `ctl` weaker in 20 of 42, so `ctl` is not systematically the weaker edit. But the *unsigned* median difference is 0.7614 over a range of 2.627, so the two arms are **not matched subject by subject** — only unbiased in direction. That is enough for an aggregate hit rate over 495 probes and it is **not** enough for a per-subject claim, which this card therefore does not make.
+- **First-token resolution.** The probes ask for a *city* and the edit injects a *country*, so a bare argmax-equals-target test would under-count badly. A hit is instead "the top-1 token begins a city in the target country". **Checked:** the 81-city map gives 80 distinct first tokens, every one resolving to exactly one country. Zero ambiguity, so the mapping adds no slack of its own.
+- **The `ctl` arm cannot deliver its own content here, and that bounds the claim.** The control edit injects an occupation (`By profession, {} is a` -> `urban planner`) while these probes ask for a city, so no arm-symmetric "does each arm deliver *its own* target" check exists on this probe set. What this measures is whether **content that can answer the question is what arrives** — not whether every edit delivers its own content somewhere.
+- **The anchor gate runs again.** 42 traces, and it has caught two faults.
+- **Cost.** Three remote passes over 495 probes, grouped by subject. The `base` arm is not re-run: [E-001] holds `base_token` and `p_base` on disk, so T-007's "four arms" costs three.
+
+**Closed:** 2026-11-01. Paired over the same 495 probes, bootstrap 10,000, seed 1538:
+
+    destination   real - ctl     +0.2828   95% CI (+0.2424, +0.3232)
+                  ctl  - other   +0.0000   95% CI (-0.0101, +0.0101)
+
+    destruction   real - ctl     +0.0009   95% CI (+0.0004, +0.0024)   [E-002]
+                  ctl  - other   +0.0583   95% CI (+0.0472, +0.0732)   [E-002]
+
+Hit rates: base 1%, real 29%, ctl 1%, other 1%. Discordant pairs, real against ctl: **142 to 2**.
+
+**Branch 1.** On the same probes, destruction barely distinguishes the real edit from a different edit on the same person and strongly distinguishes that person from someone else. Destination does the exact reverse. One rank-one update breaks the old answer because it touched that subject's key, and supplies the new one because of what it said.
+
+The same-subject control sits at the **base rate** on destination, so it delivers nothing rather than a little — while destroying the old answer to within +0.0009 of the real edit.
+
+This replicates [E-014]'s 67% / 5% on a second probe set in a different metric family, at 29% / 1%. The levels differ because [E-014] scored a restricted city pool by teacher forcing and this is a free argmax over the whole vocabulary. **The separation carries; the level does not**, and nothing here should be quoted as a rate.
+
+**What it does not settle, carried forward.** The control injects an occupation and these probes ask for a city, so there is no arm-symmetric check that each arm delivers *its own* content. What is measured is that content which can answer the question is what arrives. Aggregate only: the two arms are unbiased in magnitude direction, not matched per subject.
+
+Artifacts: `results/E-003-destination.json`, `results/E-003-summary.md`, `agents/shared/decisions.md` → [E-003].
+
+---
+
 ## C-002 · Does an edit's effect depend on what it said, or only on whose key it touched?
 
 **Status:** closed

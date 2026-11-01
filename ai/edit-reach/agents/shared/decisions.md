@@ -127,3 +127,26 @@ Both are right because they measure different halves. [E-002] measures **destruc
 So the correct statement is narrower: *for a destruction measure*, the same-subject control reproduces 98.5% of the effect and the different-subject arm is the one that separates. Nothing above licenses dropping it from a destination measure.
 
 Recorded in edit-slice as **[E-013] Scope note**, appended rather than edited, since that surface is append-only.
+
+## [E-003] Decision: destruction and destination are two separable effects of one rank-one update
+
+_Date: 2026-11-01_
+
+**Decision:** The two-route reading of T-007 is adopted as a measured result rather than a cross-experiment story. One ROME update **breaks** the pre-edit answer because it touched that subject's key, and **supplies** the new answer because of what it said. These are separable, and they were separated on one probe set under one metric.
+
+**Rationale:** Measured on the same 495 probes and the same three arms as [E-002], changing only the readout (named-token probability → full-vocabulary argmax). Paired, bootstrap 10,000, seed 1538:
+
+    destination   real - ctl    +0.2828   95% CI (+0.2424, +0.3232)
+                  ctl  - other  +0.0000   95% CI (-0.0101, +0.0101)
+    destruction   real - ctl    +0.0009   95% CI (+0.0004, +0.0024)
+                  ctl  - other  +0.0583   95% CI (+0.0472, +0.0732)
+
+The two halves separate in **opposite directions on the same probes**. Discordant pairs for destination, real against ctl: 142 to 2. The same-subject control lands in the injected country at 1%, which is the base rate, so it delivers nothing rather than a little.
+
+**Alternatives rejected:** A pool-restricted teacher-forced readout, which is [E-014]'s and is directly comparable to its 67%/5% — rejected on cost: 495 × 75 × 3 scored pairs is not one NDIF session. A bare `top1 == injected country token` test — rejected as **wrong**, not merely coarse: the probes ask for a city and the edit injects a country, so it would have scored the real arm near zero and that zero would have looked like a result.
+
+**What this does not establish.** The control edit injects an occupation and these probes ask for a city, so no arm-symmetric "does each arm deliver *its own* target" check exists here. The claim is that content which *can* answer the question is what arrives, not that every edit delivers its own content somewhere. Also aggregate only: `real` and `ctl` are unbiased in magnitude direction (weaker in 20 of 42) but not matched per subject (unsigned median difference 0.7614 over a range of 2.627), so no per-subject claim is made.
+
+**Revisit if:** a readout that *can* express the control's own content shows it delivering there — which would turn "content-specific destination" into "each edit delivers its own content", a stronger claim this run cannot reach. Or if the restricted-pool readout, run on a subsample, puts the separation somewhere other than between the arms.
+
+**Confirms rather than overturns:** the [E-013] scope note in `edit-slice/agents/shared/decisions.md` — destruction is subject-keyed, destination is not — which until now rested on reading [E-002] against [E-014] across two probe sets. It now rests on one.

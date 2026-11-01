@@ -26,14 +26,48 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Final
 
-ROOT: Final[Path] = Path(__file__).resolve().parent.parent
-LOG_DIR: Final[Path] = ROOT / "logs"
+#: Where a run's log file goes. `EDITREACH_LOGS` wins; otherwise the project
+#: root is found by walking up from the working directory for a marker, and only
+#: then does the package's own location get used.
+LOG_ENV_VAR: Final[str] = "EDITREACH_LOGS"
+#: `agents/` marks a project under the agentic template, which is what a run
+#: belongs to. `.git` is NOT a marker: this workspace is one repository
+#: holding many projects, so it would send edit-slice's logs to the repo
+#: root and quietly move 79 scripts' output.
+_MARKERS: Final[tuple[str, ...]] = ("agents", "pyproject.toml")
+
+
+def _project_root() -> Path:
+    """The directory a run belongs to, found rather than assumed.
+
+    This module was lifted from edit-slice unchanged, where it sat at
+    `src/logs.py` and `parent.parent` was therefore the project root. Here the
+    package lives at `src/editreach/`, so the same expression resolved to
+    `src/`, and a session's logs landed in `src/logs/` while every earlier
+    session's sat in `logs/`. The record survived, split across two directories,
+    which is the quiet half of a logging bug: nothing fails, the history just
+    stops being in one place. Same class of fault as `data.py`'s `__file__`
+    lookup, and fixed the same way.
+    """
+    for parent in (Path.cwd().resolve(), *Path.cwd().resolve().parents):
+        if any((parent / m).exists() for m in _MARKERS):
+            return parent
+    return Path(__file__).resolve().parents[2]
+
+
+def _log_dir() -> Path:
+    env = os.environ.get(LOG_ENV_VAR)
+    return Path(env).expanduser() if env else _project_root() / "logs"
+
+
+ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 
 FILE_FORMAT: Final[str] = "%(asctime)s %(levelname)-8s %(name)s  %(message)s"
 CONSOLE_FORMAT: Final[str] = "%(levelname)-7s %(message)s"
@@ -48,9 +82,10 @@ def setup(name: str, *, config: dict[str, Any] | None = None,
     parameters are not in its log cannot be interpreted later, which is the whole
     reason for keeping it.
     """
-    LOG_DIR.mkdir(exist_ok=True)
+    log_dir = _log_dir()
+    log_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
-    path = LOG_DIR / f"{name}-{stamp}.log"
+    path = log_dir / f"{name}-{stamp}.log"
 
     # Handlers go on the ROOT logger, not a named one. Module loggers such as
     # `remote` propagate to root, and attaching to a named logger with

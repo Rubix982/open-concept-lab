@@ -56,3 +56,9 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 ### A regression the move introduced, found here
 
 `data.py` resolved the pinned corpus as `Path(__file__).parent.parent / "data"`. That worked while the module sat inside the project that owned the data and broke the moment it became an installed package, resolving to `site-packages/data/`. A library has no business assuming it sits next to a dataset. There is now `EDITREACH_DATA`, falling back to a search upwards from the working directory, and it raises with the variable's name rather than a `FileNotFoundError` naming a directory nobody recognises. Verified: 21,919 records, checksum intact.
+
+## 2026-11-01 · Session 2
+
+- [E-003] Destination readout on [E-002]'s probe set — destruction and destination separate in opposite directions on the same 495 probes; `results/E-003-summary.md`, `agents/shared/decisions.md` → [E-003]
+- [C-003] Closed on branch 1; T-007 answered in `threads.md`
+- `editreach.logs` resolved its log directory from the package's own location, a leftover from edit-slice where the module sat one level higher. Today's logs went to `src/logs/` while every earlier session's sat in `logs/`. Now found from the working directory by an `agents/` marker; `.git` is deliberately not a marker, since this workspace is one repository holding several projects.

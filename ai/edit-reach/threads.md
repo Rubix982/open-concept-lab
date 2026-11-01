@@ -58,11 +58,11 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-007 · Does an edit break the old answer and supply the new one by two different routes?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-003
 **Opened:** 2026-10-31
 **Question:** Three results line up and none was designed to test this. [E-002] (edit-reach): destruction of the pre-edit answer is subject-keyed — a magnitude-matched edit on a different person moves it by 0.0016 against 0.0625 for your own subject, almost regardless of content. [E-014] (edit-slice): the destination of the new answer is content-specific — the same-subject control lands in the injected country 5% of the time against the real edit's 67%. [E-046]: the replacement is confident and specific rather than flat. Together they suggest an edit does two separable things — breaks the old answer because it touched that subject's key, supplies a new one because of what it said.
 **Why this is a thread and not a claim:** it is read across three experiments built for other questions, with different probe sets and different metric families. A reading that fits three results it was not tested against is the cheapest kind of story to tell.
 **Falsifier, and it is one run:** score the [E-002] probe set for *destination* — post-edit top-1, not the probability of the pre-edit top-1 — under all four arms. If destination separates real from same-subject control on the same probes where destruction does not, the split is measured rather than inferred. If both halves behave alike on one probe set, the apparent split was an artefact of comparing two experiments.
 **Cost:** one NDIF session. The arms and the probe set already exist; only the readout changes, from `probs[rows, want]` to an argmax.
-**Answer:** —
+**Answer:** **Yes, measured.** [E-003] / C-003, 2026-11-01. On the same 495 probes: destination `real - ctl` is **+0.2828** (CI +0.2424, +0.3232) where destruction `real - ctl` is **+0.0009**; destination `ctl - other` is **+0.0000** where destruction `ctl - other` is **+0.0583**. Opposite directions on one probe set under one metric, so the split is measured rather than read across three experiments. One correction to this thread's own framing: "only the readout changes" was too optimistic — the probes ask for a city and the edit injects a country, so the hit test had to become "the top-1 token begins a city in the injected country" rather than an equality. See `results/E-003-summary.md`.
