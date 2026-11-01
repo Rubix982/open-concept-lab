@@ -204,3 +204,32 @@ Two readings through the **same** loader differ as much as two through different
 **Revisit if:** nnsight removes `LanguageModel`, at which point the switch is forced and this entry says it is safe. Or if a surface other than the key site and `lm_head` is found to differ between loaders.
 
 **Spawned T-008** — readings differ between NDIF serving sessions on byte-identical inputs, 94% of elements, up to 6.250e-01, deterministic within a session. [E-001]'s published floor of 0.0809 is a first-connection value; later connections give 0.081093.
+
+## [E-006] Decision: NDIF readings partition by serving GPU; gates need a tolerance of 2.2e-04, not an equality
+
+_Date: 2026-11-01_
+
+**Decision:** The session variation [E-005] found is **routing**. Values partition cleanly by the serving GPU. No gate in this project may assert bit-identity across readings; cross-session comparisons of a cross-trace quantity use a tolerance of at least **2.2e-04**, and ratios read inside a single trace are preferred wherever the question allows, because they cancel the effect entirely.
+
+**Rationale:** 16 readings of one 126-prompt batch through fresh connections:
+
+    value               readings   served by
+    edd2b2b152de2098           8   GPU 0
+    54a1755349e607dc           8   GPU 2
+
+Perfect partition in both directions. Floor median spread **0.000e+00 within a GPU**, **3.110e-06 across** them. Anchor coefficients read 1.000 with deviation 0.000e+00 on all 16 readings and both devices, because `k` and `k*` share a trace and the ratio cancels whatever the device does.
+
+**The device is 1.4% of the drift, and this is the part worth carrying.** Four floor medians for the same 42 probes: 0.08087725 ([E-001], 10-31), 0.08094215 ([E-005] first reading), 0.08109000 (GPU 0), 0.08109313 (GPU 2). Observed range 2.16e-04 against a device spread of 3.11e-06.
+
+Two further sources were tested rather than assumed:
+
+- **Batch composition: zero.** Floors read alone and inside a 126-row batch, one connection, are bit-identical.
+- **Where the dot product runs: 5.06e-06 at the median, 2.98e-03 per item.** `coefficient_for` multiplies inside the trace on the GPU; `keys_at` returns the keys and multiplies on the CPU over 14336 channels. Per-item coefficients move by up to 3e-3 between them; the median barely does, which is a property of the median and not of the arithmetic.
+
+The remaining ~2e-04 is **not attributed**. Logged as T-009.
+
+**Alternatives rejected:** recording the device on existing artifacts — rejected because it accounts for 1.4% of the observed drift and relabelling results by it would imply a precision we do not have. New runs capture it via `keys_at(..., meta_out=d)`.
+
+**Revisit if:** a third serving device appears, or an artifact needs reproducibility tighter than 2.2e-04 — at which point the unattributed remainder has to be resolved first.
+
+**What this retroactively explains.** Every anchor gate in edit-slice and edit-reach survived this without anyone knowing it existed, because the anchor ratio is read inside one trace. [E-004]'s ±0.02 reproduction gate sits comfortably above the 2.2e-04 drift and was right for a reason it did not state. [E-005]'s pre-stated `torch.equal` was unsatisfiable for this reason.

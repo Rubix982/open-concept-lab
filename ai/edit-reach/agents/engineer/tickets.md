@@ -235,3 +235,39 @@ nnsight 0.8.1 deprecates `LanguageModel`. Every number in this repo and in edit-
 3. A check for `worst_abs_difference` kept passing by name after the field was renamed in the repeat-design rewrite. Now checks both the magnitude and the extent fields.
 
 **Blockers:** none.
+
+---
+
+### E-006 · Session variation: does it partition by the serving GPU?
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-01
+**Updated:** 2026-11-01
+**Card:** C-006
+**Thread:** T-008
+
+**Description:**
+
+[E-005] found readings of one batch differing between NDIF connections on 94% of elements, deterministic within a connection, two distinct values across six readings. Test the routing hypothesis with the metadata nnsight already exposes: `tracer.backend.meta` carries `max_mem_by_gpu`, keyed by GPU index. Read the same batch through 16 fresh connections; record a content hash of the raw keys, the device, the runtime, and two derived quantities.
+
+**Closed:** 2026-11-01. Branch 1. Perfect partition — GPU 0 → one value ×8, GPU 2 → one value ×8. Floor median spread 0.000e+00 within a device, 3.110e-06 across. Anchors 0.000e+00 on all 16.
+
+**The card's question was answered and was not the whole question.** Four floor medians now exist for the same probes across two days, range 2.16e-04, of which the device is 1.4%. Batch composition was tested: zero. Arithmetic location was tested: 5.06e-06 at the median, 2.98e-03 per item. Remainder unattributed → T-009.
+
+**Design notes worth keeping:**
+
+- **The hash is of the raw keys, never of a derived scalar.** The anchor coefficient reads `k` and `k*` in one trace, so the ratio cancels the whole effect; hashing it would have shown perfect stability and concluded nothing was wrong.
+- **Two quantities, chosen for how they differ.** The anchor ratio is immune (same-trace), the floor is not (cached `k*`). A card owing a tolerance has to measure the one that does not cancel.
+- **All three prompt groups ride in one trace**, so the tolerance arm cost no extra remote pass. Asserted in the dry-run by counting `keys_at(` calls.
+- `keys_at` gained `meta_out: dict | None` — additive, no global state, and the dict is cleared before filling so a reused one cannot carry a previous device forward.
+
+**Artifacts:**
+
+- `agents/engineer/workspace/run_e006.py`, `tools/dryruns/dryrun_e006.py` (23 checks)
+- `src/editreach/coefficient.py` → `keys_at(..., meta_out=)`
+- `results/E-006-session-variation.json`, `results/E-006-summary.md`
+- `agents/shared/decisions.md` → [E-006]; `CARD.md` → C-006; `threads.md` → T-008 answered, **T-009 opened**
+
+**Blockers:** none.

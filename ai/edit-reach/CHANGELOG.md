@@ -67,3 +67,6 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - `editreach.coefficient.keys_at` added — raw key vectors in one remote pass, so n×n donor floors are offline arithmetic
 - [E-005] Loader parity — `LanguageModel` and `TransformersModel` are the same instrument; the switch is safe and deliberately not taken; `results/E-005-summary.md`
 - [C-005] Closed on branch 1 after its own bit-identity criterion proved unsatisfiable; T-006 answered, **T-008 opened** (readings differ between NDIF serving sessions on byte-identical inputs)
+- [E-006] Session variation partitions cleanly by serving GPU — 16 readings, two devices, one value each; `results/E-006-summary.md`
+- [C-006] Closed on branch 1; T-008 answered, **T-009 opened** (the device is 1.4% of the observed 2.16e-04 drift)
+- Adopted: no gate asserts bit-identity across readings; cross-trace quantities need a tolerance of at least 2.2e-04; prefer a ratio read inside one trace

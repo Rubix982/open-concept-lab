@@ -195,8 +195,16 @@ def keys_at(
     *,
     layer: int = LAYER,
     remote: bool = True,
+    meta_out: dict | None = None,
 ) -> torch.Tensor:
     """The raw key vectors at `positions[i]` of `prompts[i]`, as float32 on CPU.
+
+    `meta_out`, when given, is filled with what the server reports about the run
+    — `runtime` and `max_mem_by_gpu`, whose key is the **GPU index** that served
+    it. Readings of identical inputs differ between connections ([E-005]), and
+    the device is the only observable the client exposes that could explain it.
+    Passed in rather than returned so that callers who do not care keep the
+    plain tensor return.
 
     `coefficient_for` answers "how much of *this* edit reaches these tokens".
     This answers the prior question "what are these tokens' keys", which is what
@@ -235,12 +243,15 @@ def keys_at(
 
     def _run() -> torch.Tensor:
         with quiet_stdout():
-            with model.trace(ids, remote=remote):
+            with model.trace(ids, remote=remote) as tracer:
                 # Gathered inside the trace, so one row per prompt comes back
                 # rather than the whole batch — the full keys for a 500-row
                 # batch are a d_mlp-wide tensor per token and the wire is the
                 # budget.
                 got = site.input.float()[rows, where].save()
+        if meta_out is not None:
+            meta_out.clear()
+            meta_out.update(getattr(tracer.backend, "meta", None) or {})
         return got.detach().cpu().float()
 
     return retrying(_run, what=f"keys at L{layer} x{len(prompts)}")

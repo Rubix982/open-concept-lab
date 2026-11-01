@@ -8,6 +8,62 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-006 · Do the two values partition by the GPU that served the request?
+
+**Status:** closed
+**Opened:** 2026-11-01
+**Closed:** 2026-11-01 — **branch 1**, and the device turns out to be 1.4% of the drift
+
+**1. WHERE WE ARE.**
+[E-005] found that readings of the same batch, on byte-identical inputs, differ between NDIF connections on **93.94% of elements** — up to 6.250e-01 at `lm_head` and 3.125e-02 at the layer-5 key site, against a median |key| of 1.135e-02. Deterministic within a connection. Across six readings only **two** distinct values appeared, grouped in contiguous runs of connections. nnsight exposes server-side `meta` on `tracer.backend`, and it carries `max_mem_by_gpu` — a **GPU index**.
+
+**2. WHAT WE ARE DOING.**
+Read the same 84-prompt batch through 16 fresh connections, recording for each: a content hash of the returned keys, the GPU index from `meta`, and the runtime. Then test whether the distinct hashes partition by GPU index.
+
+**3. WHY.**
+We do not know whether this is routing (two replicas on different devices, each internally consistent) or something that varies within one device. The two have different fixes: routing means **record the device** alongside seed and layer and the numbers stay comparable within a device; not-routing means every cross-session comparison needs a **stated tolerance** and no equality check is meaningful. After this we know which, and we have the tolerance either way.
+
+**4. WHAT IS AFFECTED.**
+- Every gate in this repo that asserts an equality across readings. [E-004]'s ±0.02 reproduction gate was right by luck; [E-005]'s `torch.equal` was wrong and had to be replaced mid-run.
+- [E-001]'s published floor median of **0.0809**, which is a first-connection value where later connections give **0.081093**.
+- What an artifact must record. Today it is seed, layer and model. This decides whether the device joins them.
+- T-008 closes.
+
+**5. CONCLUSION IF WE DO IT.** Three branches.
+
+- **If the hashes partition cleanly by GPU index:** it is routing. Record the device in every artifact; readings are comparable within a device and need a tolerance across devices. The fix is bookkeeping, and the instrument is sound once the bookkeeping exists.
+- **If one GPU returns more than one hash:** it is not routing, or not only routing. No equality across readings is meaningful at all, every gate needs a tolerance derived from the observed spread, and the spread must be measured per quantity rather than assumed small.
+- **If all 16 readings agree:** the effect is rarer than six readings suggested and this design cannot see it. Then the honest output is a frequency bound — "not observed in 16" — and T-008 stays open with a cheaper standing check rather than a conclusion.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+Every number this project publishes carries an unquantified session dependence, and the next reproduction check either passes by luck or fails for a reason nobody can name. [E-005] already spent one wrong verdict on exactly that.
+
+**Controls, and what could make this wrong.**
+- **The batch is held fixed and so are the positions.** Same prompts, same indices, one code path (`keys_at`), so nothing but the connection varies.
+- **The hash is of the full tensor**, not of a derived scalar, because derived scalars are ratios read inside one trace and cancel most of this.
+- **Runtime and GPU memory are recorded too**, so a hash that tracks load rather than device is visible.
+- **16 readings is a frequency floor, not an estimate.** If a third value exists at low rate this design will probably miss it, and branch 3 says so rather than claiming stability.
+- **Cost.** 16 remote passes, no edits, no gradients.
+
+**Closed:** 2026-11-01. 16 readings of one 126-prompt batch through fresh connections:
+
+    value               readings   served by
+    edd2b2b152de2098           8   GPU 0
+    54a1755349e607dc           8   GPU 2
+
+    floor median    within a GPU   0.000e+00
+                    across GPUs    3.110e-06
+
+**Branch 1.** Perfect partition in both directions — each value from one GPU, each GPU one value. It is per-connection routing; the devices alternated rather than arriving in blocks. Anchor coefficients read 1.000 with deviation 0.000e+00 on all 16 readings and both devices, because `k` and `k*` share a trace and the ratio cancels the device entirely.
+
+**And the branch does not finish the job.** Four floor medians now exist for the same 42 probes — 0.08087725 ([E-001], 10-31), 0.08094215 ([E-005] first reading), 0.08109000 (GPU 0), 0.08109313 (GPU 2). Observed range **2.16e-04**, of which the device is **1.4%**. Two more sources were tested rather than assumed: batch composition contributes **zero**, and where the dot product runs contributes 5.06e-06 at the median but **2.98e-03 per item**. The rest is unattributed and is **T-009**.
+
+**What it changes.** No gate asserts bit-identity across readings. A cross-session comparison of a cross-trace quantity needs a tolerance of at least **2.2e-04**. A ratio read inside one trace is preferred wherever the question allows, because it is immune to all of this — which is why every anchor gate here survived without anyone knowing the effect existed, and why [E-004]'s ±0.02 gate was right for a reason it did not state.
+
+Artifacts: `results/E-006-session-variation.json`, `results/E-006-summary.md`, `agents/shared/decisions.md` → [E-006], `src/editreach/coefficient.py` → `keys_at(..., meta_out=)`.
+
+---
+
 ## C-005 · Is `TransformersModel` the same instrument as `LanguageModel`, or a different one?
 
 **Status:** closed

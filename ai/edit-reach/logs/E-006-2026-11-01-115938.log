@@ -1,0 +1,28 @@
+2026-11-01 11:59:38,888 INFO     E-006  run E-006 -> logs/E-006-2026-11-01-115938.log
+2026-11-01 11:59:39,150 INFO     E-006  42 probes, 16 readings through fresh connections
+2026-11-01 11:59:49,033 INFO     E-006     0  sig 3896ee28446f8156  gpu 0     runtime  1.66s  anchors worst 0.000e+00
+2026-11-01 11:59:57,184 INFO     E-006     1  sig 3896ee28446f8156  gpu 0     runtime  1.72s  anchors worst 0.000e+00
+2026-11-01 12:00:05,285 INFO     E-006     2  sig 3896ee28446f8156  gpu 0     runtime  1.70s  anchors worst 0.000e+00
+2026-11-01 12:00:13,645 INFO     E-006     3  sig 3896ee28446f8156  gpu 0     runtime  1.64s  anchors worst 0.000e+00
+2026-11-01 12:00:22,036 INFO     E-006     4  sig 3896ee28446f8156  gpu 0     runtime  1.68s  anchors worst 0.000e+00
+2026-11-01 12:00:30,387 INFO     E-006     5  sig 3896ee28446f8156  gpu 0     runtime  1.69s  anchors worst 0.000e+00
+2026-11-01 12:00:38,884 INFO     E-006     6  sig 3896ee28446f8156  gpu 0     runtime  1.74s  anchors worst 0.000e+00
+2026-11-01 12:00:47,448 INFO     E-006     7  sig 3896ee28446f8156  gpu 0     runtime  1.79s  anchors worst 0.000e+00
+2026-11-01 12:00:56,649 INFO     E-006     8  sig 86388abacb9ff3e7  gpu 2     runtime  2.05s  anchors worst 0.000e+00
+2026-11-01 12:01:05,590 INFO     E-006     9  sig 86388abacb9ff3e7  gpu 2     runtime  1.96s  anchors worst 0.000e+00
+2026-11-01 12:01:15,344 INFO     E-006    10  sig 86388abacb9ff3e7  gpu 2     runtime  2.30s  anchors worst 0.000e+00
+2026-11-01 12:01:25,529 INFO     E-006    11  sig 86388abacb9ff3e7  gpu 2     runtime  1.95s  anchors worst 0.000e+00
+2026-11-01 12:01:34,577 INFO     E-006    12  sig 86388abacb9ff3e7  gpu 2     runtime  1.95s  anchors worst 0.000e+00
+2026-11-01 12:01:43,686 INFO     E-006    13  sig 86388abacb9ff3e7  gpu 2     runtime  1.96s  anchors worst 0.000e+00
+2026-11-01 12:01:52,625 INFO     E-006    14  sig 86388abacb9ff3e7  gpu 2     runtime  1.95s  anchors worst 0.000e+00
+2026-11-01 12:02:04,332 INFO     E-006    15  sig 86388abacb9ff3e7  gpu 2     runtime  4.32s  anchors worst 0.000e+00
+2026-11-01 12:02:04,333 INFO     E-006  
+2026-11-01 12:02:04,333 INFO     E-006  2 distinct values over 16 readings; 2 distinct GPUs
+2026-11-01 12:02:04,333 INFO     E-006    3896ee28446f8156  x8   served by GPU ['0']
+2026-11-01 12:02:04,333 INFO     E-006    86388abacb9ff3e7  x8   served by GPU ['2']
+2026-11-01 12:02:04,333 INFO     E-006  
+2026-11-01 12:02:04,333 INFO     E-006    GPU 0    x8   returned 1 distinct value(s) ['3896ee28446f8156']
+2026-11-01 12:02:04,333 INFO     E-006    GPU 2    x8   returned 1 distinct value(s) ['86388abacb9ff3e7']
+2026-11-01 12:02:04,333 INFO     E-006  
+2026-11-01 12:02:04,333 INFO     E-006  VERDICT: branch 1 — the values partition cleanly by GPU. It is routing. Record the device alongside seed and layer; readings are comparable within a device and need a tolerance across them.
+2026-11-01 12:02:04,333 INFO     E-006  written to results/E-006-session-variation.json

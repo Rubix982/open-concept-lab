@@ -69,11 +69,22 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-008 · Readings differ between NDIF serving sessions, on byte-identical inputs
 
-**Status:** open
+**Status:** answered
 **Parent:** T-006
 **Opened:** 2026-11-01
 **Question:** Found while answering T-006, and larger than it. Two readings of the same prompts at the same positions, with byte-identical input ids, differ on **93.94% of elements** — up to 6.250e-01 at `lm_head` and 3.125e-02 at the layer-5 key site, against a median |key| of 1.135e-02. Only ~6% of differing elements sit within one bf16 ulp of their own value, so it is not rounding on the wire. Within a session it is deterministic: repeated reads agree bit-for-bit. The grouping follows contiguous runs of connections rather than the loader, which fits routing to one of several replicas and is **not tested**.
 **Why it matters more than it looks:** every "reproduces [E-039]" or "pins at 1.000" check in this repo is reading a single session. The anchor gate survives because `k` and `k*` share a trace, so the ratio cancels whatever the session does — that is luck in the gate's design, not foresight. [E-001]'s published floor median of **0.0809** is a first-connection value; later connections give **0.081093**. A spread of 1.5e-4 on a number quoted to four decimals.
 **Falsifier, and it is cheap:** read the same batch across N fresh processes and record which value each returns, with the NDIF request/host metadata the client exposes. If the values partition by host, the replica hypothesis is established and the fix is to record the host alongside seed and layer. If they do not, the cause is elsewhere and every cross-session comparison needs a tolerance rather than an equality.
 **What to do meanwhile:** no artifact should claim bit-identity across sessions, and anything comparing readings taken at different times needs a stated tolerance. [E-004]'s ±0.02 reproduction gate was right for this reason without knowing it.
+**Answer:** **It is routing, and it partitions cleanly by serving GPU.** [E-006] / C-006, 2026-11-01. 16 readings, two devices, 8 each, one value per device and one device per value. Floor median spread 0.000e+00 within a GPU and **3.110e-06** across. The replica hypothesis this thread floated is established. **But the device is only 1.4% of the drift actually observed** (range 2.16e-04 over four readings across two days), so the thread's implied fix — record the device and numbers become comparable — is not sufficient. Batch composition contributes zero; where the dot product runs contributes 5.06e-06 at the median and 2.98e-03 per item. The remainder is **T-009**. Practical rule adopted: no bit-identity across readings, tolerance ≥ 2.2e-04 for cross-trace quantities, and prefer a ratio read inside one trace. See `results/E-006-summary.md`.
+
+### T-009 · The serving GPU accounts for 1.4% of the observed drift. What accounts for the rest?
+
+**Status:** open
+**Parent:** T-008
+**Opened:** 2026-11-01
+**Question:** [E-006] established that NDIF readings partition cleanly by serving GPU, and priced it: floor median spread **3.110e-06** across devices, 0.000e+00 within one. But four values of that same quantity have been observed over two days — 0.08087725 ([E-001], 10-31), 0.08094215 ([E-005] first reading), 0.08109000 (GPU 0), 0.08109313 (GPU 2) — an observed range of **2.16e-04**, some sixty times the device spread. Batch composition was tested and contributes **zero**. Where the dot product runs contributes 5.06e-06 at the median (though **2.98e-03 per item**, which is its own finding). The remaining ~2e-04 separates October 31 from November 1 and is unattributed.
+**Candidates, none tested:** a model redeployment or weight reload between the two days; a third serving device not sampled in 16 readings; a server-side library or driver change; something in how [E-001] batched at 200 rows that [E-006] does not reproduce at 126.
+**Falsifier:** re-read the 42 floor probes daily for a week, recording the GPU and the exact median. If values cluster by day rather than by device, it is deployment state and the fix is to record a server fingerprint per run. If they scatter within a day, a third source is live and the 2.2e-04 tolerance is a floor rather than a bound.
+**Why it is logged rather than chased now:** 2.2e-04 is already below every tolerance this project relies on, and the anchor gate — the one quantity known analytically — is immune by construction. This is worth knowing, not worth blocking on. **It becomes blocking the moment any claim needs reproducibility tighter than 2.2e-04.**
 **Answer:** —
