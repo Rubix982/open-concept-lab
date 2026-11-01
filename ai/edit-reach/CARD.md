@@ -8,6 +8,63 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-005 · Is `TransformersModel` the same instrument as `LanguageModel`, or a different one?
+
+**Status:** closed
+**Opened:** 2026-11-01
+**Closed:** 2026-11-01 — **branch 1**, after the card's own criterion turned out to be unsatisfiable
+
+**1. WHERE WE ARE.**
+`editreach.remote.connect` calls `nnsight.LanguageModel`, which warns on every run: *"LanguageModel is deprecated; use TransformersModel(repo_id, task='text-generation') instead."* Every number in edit-slice and in [E-001]–[E-004] was read through it. nnsight is 0.8.1 and `TransformersModel` imports.
+
+**2. WHAT WE ARE DOING.**
+Load the same model under both loaders and compare three things: the module paths `arch.py` resolves, the raw key vectors at layer 5 on the 42 anchor-prefix and 42 anchor-floor prompts, and the two gate quantities — the anchors pinning at 1.000 and the floor median at 0.0809.
+
+**3. WHY.**
+We do not know whether switching loaders is an **upgrade** or a **re-baseline**. If activations are bit-identical the switch is free and should be taken before more numbers accumulate behind a deprecated call. If they are not, every cross-run comparison in this repo would silently straddle two instruments, and the switch becomes a decision with a cost rather than housekeeping. After this we know which, with a number.
+
+**4. WHAT IS AFFECTED.**
+- `editreach.remote.connect`, and through it all of edit-slice's 79 scripts via the shims.
+- Every cached tensor on disk — the [E-014] delta cache, `E001_coefficients.json`, `E004_keys.pt` — which were written under `LanguageModel` and would be mixed with new readings.
+- T-006 closes.
+- If the loaders differ, [E-039]'s reproduction in [E-004] (0.9334 against 0.933) becomes the *last* clean cross-session check, and future ones need the loader recorded alongside the seed.
+
+**5. CONCLUSION IF WE DO IT.** Three branches.
+
+- **If module paths match and activations are bit-identical:** the switch is housekeeping. Take it, record the equality, and the deprecation stops being a liability.
+- **If paths match but activations differ:** it is a re-baseline, not an upgrade. Record the magnitude, **do not switch**, and add the loader to what every artifact records alongside seed and layer. A silent re-baseline is the expensive version of this.
+- **If module paths differ:** `arch.py` needs a second mapping and the switch is a real job, not a line. Then the question is scheduled rather than answered, and nothing changes until it is.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+A deprecation gives notice once, and the notice is being spent. [E-047] was the loud kind of dependency failure and still cost six wrong diagnoses; this one is the quiet kind, and the quiet kind is discovered when a loader is removed in a version bump, with a cache full of numbers nobody can place.
+
+**Controls, and what could make this wrong.**
+- **Both gates run under both loaders.** The anchors are the one quantity known analytically — they must read 1.000 whatever loads the model — and the floor at 0.0809 is the empirical companion, from [E-001]'s own output over 42 items.
+- **Bit-identical means bit-identical.** Branch 1 requires `torch.equal`, not `allclose`. Activations arrive in bf16; a loader difference of one ulp is still a difference, and `allclose` is how a re-baseline gets recorded as an upgrade.
+- **Same prompts, same positions, same batch shape.** Both loaders are read through `keys_at`, so padding and position arithmetic are shared and cannot differ between the arms.
+- **Cost.** Four remote passes, no edits and no gradients.
+
+**Closed:** 2026-11-01. Module paths identical. Three readings per loader, 84 prompts:
+
+    comparison              pairs   worst |d|   max fraction differing
+    WITHIN  language            3   6.250e-01        0.9394
+    WITHIN  transformers        3   0.000e+00        0.0000
+    BETWEEN the two             9   6.250e-01        0.9394
+
+**Branch 1 — but not by the test this card wrote.** Field 5 asked for `torch.equal` bit-identity, and that is **unsatisfiable on this platform**: two readings through the *same* loader, on byte-identical inputs, differ on 94% of elements. The criterion was not relaxed to `allclose`; it was replaced with a repeat design, and the error is recorded rather than waived.
+
+Varying the loader on its own shows the within-loader spread equals the between-loader spread. The loader is not the variable. The two are the same instrument at this platform's reproducibility, and the gates agree: anchors pin at exactly 1.000 in all six readings, floor median within 2e-4 of [E-001]'s 0.0809.
+
+**The switch is safe and is not taken.** Changing the loader every recorded number was read through, on the day the instrument was found to vary between sessions, is two changes with one unmeasured. `connect(loader=...)` is switchable, default `"language"`, one line away whenever wanted.
+
+**What this cost and bought.** The card's first run returned "branch 2, do not switch" on one reading per loader. That verdict was wrong, and it was wrong in the direction that feels responsible — which is the kind that survives review. Same shape as C-004: a difference is attributable only once the thing it is attributed to has been varied by itself.
+
+**Spawned T-008**, which is larger than the question asked: readings differ between NDIF serving sessions. [E-001]'s published floor of 0.0809 is a first-connection value; later connections give 0.081093.
+
+Artifacts: `results/E-005-loader-parity.json`, `results/E-005-summary.md`, `agents/shared/decisions.md` → [E-005], `src/editreach/remote.py` → `connect(loader=...)`.
+
+---
+
 ## C-004 · Is the hop-2 coefficient at floor, when the floor is read on the hop-2 prompts themselves?
 
 **Status:** closed

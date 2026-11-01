@@ -194,3 +194,44 @@ This re-reads those 513 instances keeping the **key vectors** rather than the sc
 1. **The dry-run's scaling assertion was wrong, the code was right.** It asserted that scaling a donor's `k*` leaves its coefficient unchanged. It does not — `(k·ck*)/((ck*)·(ck*))` is `1/c` times the original, which is correct and is exactly what breaks if a donor numerator is paired with the subject's denominator. The assertion now states the real property.
 2. **The reproduction gate fired on a sample too small to carry it.** At n=3 the hop-2 median read 0.0772 against 0.055 and the gate failed — not a pipeline fault, a gate applied to three readings. `MIN_GATE_READINGS = 100` now refuses rather than passing or failing. A gate that can fail for a reason unrelated to what it guards teaches you to ignore it.
 
+
+---
+
+### E-005 · Loader parity: `LanguageModel` against `TransformersModel`
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-11-01
+**Updated:** 2026-11-01
+**Card:** C-005
+**Thread:** T-006
+
+**Description:**
+
+nnsight 0.8.1 deprecates `LanguageModel`. Every number in this repo and in edit-slice, and every cached tensor on disk, was read through it. Compare the two loaders on module paths, raw activations at the edit layer's key site and at `lm_head`, and the two gate quantities — anchors pinning at 1.000 and the floor median reproducing [E-001]'s 0.0809.
+
+`connect` gained a `loader=` keyword rather than being swapped, so the alternative is reachable by name and the default is unchanged for the 79 scripts that depend on it.
+
+**Closed:** 2026-11-01. Branch 1: the loaders are the same instrument. Module paths identical; within-loader spread equals between-loader spread; gates hold under both. The switch is safe and was deliberately not taken — see the card.
+
+**Artifacts:**
+
+- `agents/engineer/workspace/run_e005.py`, `tools/dryruns/dryrun_e005.py` (27 checks)
+- `src/editreach/remote.py` → `connect(loader=...)`, `LOADERS`
+- `results/E-005-loader-parity.json`, `results/E-005-summary.md`
+- `agents/shared/decisions.md` → [E-005]; `CARD.md` → C-005; `threads.md` → T-006 answered, **T-008 opened**
+
+**RCA:** not a re-open, but the design was wrong twice before it was right, and both are worth keeping.
+
+> **1. The gate measured something it was not asking about.** The anchor coefficient was computed against the **cached** `k*` rather than one read in the same trace, so it reported "anchors pinned False, worst 4.806e-03" under *both* loaders. That is the bf16 cached-`k*` effect [E-001] had already documented, not a loader difference. A false alarm sitting in a result file is worse than no gate.
+>
+> **2. The pre-stated pass criterion was unsatisfiable.** Field 5 asked for `torch.equal` bit-identity between loaders. Two readings through the *same* loader differ on 94% of elements, so no loader could ever have passed. The first run returned "branch 2 — do not switch", which was wrong and wrong in the direction that feels responsible. Fixed by varying the loader on its own: three readings each, within-spread against between-spread. The criterion was **not** relaxed to `allclose` — the dry-run forbids that call by name, because relaxing it is exactly how a re-baseline gets filed as an upgrade.
+
+**Three faults in my own checks, caught by running them:**
+
+1. A grep for `"allclose" not in src` **matched its own warning** in the docstring. Now greps for the call, `torch.allclose`.
+2. A floor-probe check ended in `or True` and could not fail. A check that cannot fail is worse than no check, because it reports a pass. Replaced with three real ones.
+3. A check for `worst_abs_difference` kept passing by name after the field was renamed in the repeat-design rewrite. Now checks both the magnitude and the extent fields.
+
+**Blockers:** none.

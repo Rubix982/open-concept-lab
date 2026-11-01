@@ -48,13 +48,13 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-006 · `LanguageModel` is deprecated, and every number so far was read through it
 
-**Status:** open
+**Status:** answered
 **Parent:** —
 **Opened:** 2026-10-31
 **Question:** `editreach.remote.connect` calls `nnsight.LanguageModel`, which now warns: *"LanguageModel is deprecated; use TransformersModel(repo_id, task='text-generation') instead."* Every reading in edit-slice and in [E-001] came through it. Two things need separating before anything is changed: whether `TransformersModel` resolves the same module paths (`arch.py` depends on them), and whether it produces bit-identical activations — because if it does not, numbers read through the two are not comparable and the switch is a re-baseline rather than an upgrade.
 **Do not change this mid-question.** Changing the loader while C-002 is open would put a possible re-baseline inside a running comparison. The anchor gate is the cheap test: 42 readings that must pin at exactly 1.000 under both loaders, and `anchor-floor` reproducing 0.0809 under both.
 **Why it is logged rather than done:** a deprecation warning is the quiet kind of dependency failure. [E-047] was the loud kind and still cost six wrong diagnoses; this one gives notice and the notice should not be spent.
-**Answer:** —
+**Answer:** **The loaders are the same instrument; the switch is safe and was deliberately not taken.** [E-005] / C-005, 2026-11-01. Module paths identical; within-loader spread equals between-loader spread over three readings each, so the loader is not the variable. Gates hold under both. `connect(loader=...)` is switchable with `"language"` still the default, because switching on the same day T-008 was found would be two changes with one unmeasured. Both questions this thread asked are answered: same module paths **yes**, bit-identical activations **no — and not between two readings through one loader either**, which is T-008. See `results/E-005-summary.md`.
 
 ### T-007 · Does an edit break the old answer and supply the new one by two different routes?
 
@@ -66,3 +66,14 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 **Falsifier, and it is one run:** score the [E-002] probe set for *destination* — post-edit top-1, not the probability of the pre-edit top-1 — under all four arms. If destination separates real from same-subject control on the same probes where destruction does not, the split is measured rather than inferred. If both halves behave alike on one probe set, the apparent split was an artefact of comparing two experiments.
 **Cost:** one NDIF session. The arms and the probe set already exist; only the readout changes, from `probs[rows, want]` to an argmax.
 **Answer:** **Yes, measured.** [E-003] / C-003, 2026-11-01. On the same 495 probes: destination `real - ctl` is **+0.2828** (CI +0.2424, +0.3232) where destruction `real - ctl` is **+0.0009**; destination `ctl - other` is **+0.0000** where destruction `ctl - other` is **+0.0583**. Opposite directions on one probe set under one metric, so the split is measured rather than read across three experiments. One correction to this thread's own framing: "only the readout changes" was too optimistic — the probes ask for a city and the edit injects a country, so the hit test had to become "the top-1 token begins a city in the injected country" rather than an equality. See `results/E-003-summary.md`.
+
+### T-008 · Readings differ between NDIF serving sessions, on byte-identical inputs
+
+**Status:** open
+**Parent:** T-006
+**Opened:** 2026-11-01
+**Question:** Found while answering T-006, and larger than it. Two readings of the same prompts at the same positions, with byte-identical input ids, differ on **93.94% of elements** — up to 6.250e-01 at `lm_head` and 3.125e-02 at the layer-5 key site, against a median |key| of 1.135e-02. Only ~6% of differing elements sit within one bf16 ulp of their own value, so it is not rounding on the wire. Within a session it is deterministic: repeated reads agree bit-for-bit. The grouping follows contiguous runs of connections rather than the loader, which fits routing to one of several replicas and is **not tested**.
+**Why it matters more than it looks:** every "reproduces [E-039]" or "pins at 1.000" check in this repo is reading a single session. The anchor gate survives because `k` and `k*` share a trace, so the ratio cancels whatever the session does — that is luck in the gate's design, not foresight. [E-001]'s published floor median of **0.0809** is a first-connection value; later connections give **0.081093**. A spread of 1.5e-4 on a number quoted to four decimals.
+**Falsifier, and it is cheap:** read the same batch across N fresh processes and record which value each returns, with the NDIF request/host metadata the client exposes. If the values partition by host, the replica hypothesis is established and the fix is to record the host alongside seed and layer. If they do not, the cause is elsewhere and every cross-session comparison needs a tolerance rather than an equality.
+**What to do meanwhile:** no artifact should claim bit-identity across sessions, and anything comparing readings taken at different times needs a stated tolerance. [E-004]'s ±0.02 reproduction gate was right for this reason without knowing it.
+**Answer:** —

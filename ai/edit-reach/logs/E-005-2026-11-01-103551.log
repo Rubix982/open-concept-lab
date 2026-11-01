@@ -1,0 +1,20 @@
+2026-11-01 10:35:51,797 INFO     E-005  run E-005 -> logs/E-005-2026-11-01-103551.log
+2026-11-01 10:35:51,798 INFO     E-005  42 anchor-prefix and 42 anchor-floor probes
+2026-11-01 10:35:52,133 INFO     E-005  
+2026-11-01 10:35:52,133 INFO     E-005  === loader: language ===
+2026-11-01 10:35:55,132 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:36:36,300 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:36:36,301 INFO     E-005  
+2026-11-01 10:36:36,301 INFO     E-005  === loader: transformers ===
+2026-11-01 10:36:37,875 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:37:17,272 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:37:17,330 INFO     E-005  
+2026-11-01 10:37:17,330 INFO     E-005  module paths identical: True
+2026-11-01 10:37:17,331 INFO     E-005  activations bit-identical: False
+2026-11-01 10:37:17,331 INFO     E-005    lm_head identical: True (worst 0.000e+00) | top-1 token agrees on 100% of 84 prompts
+2026-11-01 10:37:17,331 INFO     E-005    worst absolute difference 3.125e-02, against a median |key| of 1.135e-02 (2.75e+00 relative)
+2026-11-01 10:37:17,331 INFO     E-005  gate under language     anchors pinned True (worst 0.000e+00) | floor 0.0811 vs 0.0809 OK
+2026-11-01 10:37:17,331 INFO     E-005  gate under transformers anchors pinned True (worst 0.000e+00) | floor 0.0811 vs 0.0809 OK
+2026-11-01 10:37:17,331 INFO     E-005  
+2026-11-01 10:37:17,331 INFO     E-005  VERDICT: branch 2 — same tree, different activations; the switch is a RE-BASELINE, not an upgrade. Do not switch; record the loader alongside seed and layer in every artifact
+2026-11-01 10:37:17,332 INFO     E-005  written to results/E-005-loader-parity.json

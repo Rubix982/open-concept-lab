@@ -1,0 +1,43 @@
+2026-11-01 10:46:48,294 INFO     E-005  run E-005 -> logs/E-005-2026-11-01-104648.log
+2026-11-01 10:46:48,296 INFO     E-005  42 anchor-prefix and 42 anchor-floor probes
+2026-11-01 10:46:48,571 INFO     E-005  
+2026-11-01 10:46:48,571 INFO     E-005  === loader: language ===
+2026-11-01 10:46:51,298 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:47:31,958 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0809
+2026-11-01 10:47:31,960 INFO     E-005  
+2026-11-01 10:47:31,960 INFO     E-005  === loader: language ===
+2026-11-01 10:47:33,650 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:48:14,758 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:48:14,758 INFO     E-005  
+2026-11-01 10:48:14,758 INFO     E-005  === loader: language ===
+2026-11-01 10:48:16,231 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:49:02,377 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:49:02,377 INFO     E-005  
+2026-11-01 10:49:02,377 INFO     E-005  === loader: transformers ===
+2026-11-01 10:49:03,989 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:49:49,914 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:49:49,915 INFO     E-005  
+2026-11-01 10:49:49,915 INFO     E-005  === loader: transformers ===
+2026-11-01 10:49:51,451 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:50:34,920 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:50:34,921 INFO     E-005  
+2026-11-01 10:50:34,921 INFO     E-005  === loader: transformers ===
+2026-11-01 10:50:36,426 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:51:16,840 INFO     E-005  anchors: worst deviation from 1.000 = 0.000e+00 | floor median 0.0811
+2026-11-01 10:51:17,070 INFO     E-005  
+2026-11-01 10:51:17,070 INFO     E-005  module paths identical: True
+2026-11-01 10:51:17,071 INFO     E-005  
+2026-11-01 10:51:17,071 INFO     E-005  comparison                          pairs worst|d| frac differing
+2026-11-01 10:51:17,071 INFO     E-005    WITHIN language                        3 6.250e-01      0.9394
+2026-11-01 10:51:17,071 INFO     E-005    WITHIN transformers                    3 0.000e+00      0.0000
+2026-11-01 10:51:17,071 INFO     E-005    BETWEEN the two loaders                9 6.250e-01      0.9394
+2026-11-01 10:51:17,071 INFO     E-005    (median |key| 1.135e-02, so a difference of 6.250e-01 is 55.1x it)
+2026-11-01 10:51:17,072 INFO     E-005  
+2026-11-01 10:51:17,072 INFO     E-005  gate under language     anchors pinned True (worst 0.000e+00)
+2026-11-01 10:51:17,072 INFO     E-005     floor medians ['0.080942', '0.081093', '0.081093'] vs [E-001] 0.0809, spread 1.510e-04
+2026-11-01 10:51:17,072 INFO     E-005  
+2026-11-01 10:51:17,072 INFO     E-005  gate under transformers anchors pinned True (worst 0.000e+00)
+2026-11-01 10:51:17,072 INFO     E-005     floor medians ['0.081093', '0.081093', '0.081093'] vs [E-001] 0.0809, spread 0.000e+00
+2026-11-01 10:51:17,072 INFO     E-005  
+2026-11-01 10:51:17,072 INFO     E-005  VERDICT: branch 1, by the repeat design rather than by bit-identity — readings differ as much WITHIN one loader as BETWEEN the two, so the loader is not the variable and the two are the same instrument at this platform's reproducibility. The pre-stated bit-identity criterion was unsatisfiable and is recorded as a design error, not met and not waived.
+2026-11-01 10:51:17,073 INFO     E-005  written to results/E-005-loader-parity.json

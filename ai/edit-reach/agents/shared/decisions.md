@@ -179,3 +179,28 @@ A stranger's edit on the same relation reaches a far-field question as much as t
 **Revisit if:** a graded relation-similarity control shows the +0.0002 moving with relation distance, or a layer sweep finds dynamic range in the far field at a depth other than 5.
 
 **Supersedes nothing in [E-039], and completes it.** Its two convergent floors (0.069, 0.027) bracket the same-prompt all-donor floor of 0.0298, so that convergence was sound. Neither floor controlled for the relation, which is where the apparent far-field signal lived.
+
+## [E-005] Decision: `LanguageModel` and `TransformersModel` are the same instrument; NDIF sessions are not
+
+_Date: 2026-11-01_
+
+**Decision:** The two nnsight loaders are interchangeable. `connect(loader=...)` is switchable and the **default stays `"language"`**; the switch is safe and is deliberately not taken here.
+
+**Rationale:** Module paths identical (`llama`, 32 layers, `d_mlp` 14336, same `Envoy`). Three readings per loader over 84 prompts:
+
+    comparison              pairs   worst |d|   max fraction differing
+    WITHIN  language            3   6.250e-01        0.9394
+    WITHIN  transformers        3   0.000e+00        0.0000
+    BETWEEN the two             9   6.250e-01        0.9394
+
+Two readings through the **same** loader differ as much as two through different ones, so the loader is not the variable. Gates hold under both across all six readings: anchors pin at exactly 1.000, floor median within 2e-4 of [E-001]'s 0.0809.
+
+**Why the switch is not taken although it is safe:** it would change the loader every recorded number was read through on the same day the instrument was found to vary between sessions — two changes at once, one of them unmeasured. It is a one-line change whenever wanted.
+
+**The pre-stated criterion was wrong and is recorded as such.** The card asked for `torch.equal` bit-identity. That is unsatisfiable on this platform. It was not relaxed to `allclose` — the dry-run forbids that call by name, because relaxing it is how a re-baseline gets filed as an upgrade. The criterion was replaced with a repeat design and the error recorded.
+
+**Alternatives rejected:** one reading per loader, which is what the card originally specified — it cannot distinguish a loader difference from a session difference, and it returned "branch 2, do not switch" on evidence that does not support it.
+
+**Revisit if:** nnsight removes `LanguageModel`, at which point the switch is forced and this entry says it is safe. Or if a surface other than the key site and `lm_head` is found to differ between loaders.
+
+**Spawned T-008** — readings differ between NDIF serving sessions on byte-identical inputs, 94% of elements, up to 6.250e-01, deterministic within a session. [E-001]'s published floor of 0.0809 is a first-connection value; later connections give 0.081093.

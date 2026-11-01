@@ -174,12 +174,35 @@ def quiet_stdout():
         yield
 
 
-def connect(model_name: str = DEFAULT_MODEL) -> LanguageModel:
+#: nnsight 0.8.1 deprecates `LanguageModel` in favour of `TransformersModel`.
+#: The default stays `LanguageModel` **on purpose**: every number in this repo
+#: and in edit-slice, and every cached tensor on disk, was read through it, and
+#: switching loaders is only housekeeping if the two produce identical
+#: activations. Whether they do is C-005's question. Until it closes, the
+#: alternative is reachable by name so it can be measured against the default,
+#: and is not the default.
+LOADERS: Final[tuple[str, ...]] = ("language", "transformers")
+
+
+def connect(model_name: str = DEFAULT_MODEL, *, loader: str = "language"):
+    """A remote model handle. `loader` selects which nnsight class builds it.
+
+    `"language"` is `LanguageModel`, deprecated and still the baseline for every
+    recorded number. `"transformers"` is `TransformersModel(..., task=
+    "text-generation")`, its replacement. They are kept switchable rather than
+    swapped because a loader change that moves activations is a re-baseline, and
+    a re-baseline that looks like an upgrade is the expensive kind.
+    """
+    if loader not in LOADERS:
+        raise ValueError(f"loader must be one of {LOADERS}, not {loader!r}")
     key = os.environ.get("NNSIGHT_API_KEY")
     if not key:
         raise RuntimeError("NNSIGHT_API_KEY not set — get one from login.ndif.us")
     CONFIG.set_default_api_key(key)
-    return LanguageModel(model_name)
+    if loader == "language":
+        return LanguageModel(model_name)
+    from nnsight import TransformersModel
+    return TransformersModel(model_name, task="text-generation")
 
 
 def _encode_pairs(model: LanguageModel, pairs: list[tuple[str, str]]

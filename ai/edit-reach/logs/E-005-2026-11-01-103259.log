@@ -1,0 +1,19 @@
+2026-11-01 10:32:59,577 INFO     E-005  run E-005 -> logs/E-005-2026-11-01-103259.log
+2026-11-01 10:32:59,579 INFO     E-005  42 anchor-prefix and 42 anchor-floor probes
+2026-11-01 10:32:59,590 INFO     E-005  
+2026-11-01 10:32:59,590 INFO     E-005  === loader: language ===
+2026-11-01 10:33:02,835 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:33:28,900 INFO     E-005  anchors: worst deviation from 1.000 = 4.806e-03 | floor median 0.0811
+2026-11-01 10:33:28,901 INFO     E-005  
+2026-11-01 10:33:28,901 INFO     E-005  === loader: transformers ===
+2026-11-01 10:33:30,566 INFO     E-005  arch llama, 32 layers, d_mlp 14336, key site Envoy
+2026-11-01 10:33:49,385 INFO     E-005  anchors: worst deviation from 1.000 = 4.806e-03 | floor median 0.0811
+2026-11-01 10:33:49,405 INFO     E-005  
+2026-11-01 10:33:49,406 INFO     E-005  module paths identical: True
+2026-11-01 10:33:49,406 INFO     E-005  activations bit-identical: True
+2026-11-01 10:33:49,406 INFO     E-005    worst absolute difference 0.000e+00, against a median |key| of 1.135e-02 (0.00e+00 relative)
+2026-11-01 10:33:49,406 INFO     E-005  gate under language     anchors pinned False (worst 4.806e-03) | floor 0.0811 vs 0.0809 OK
+2026-11-01 10:33:49,406 INFO     E-005  gate under transformers anchors pinned False (worst 4.806e-03) | floor 0.0811 vs 0.0809 OK
+2026-11-01 10:33:49,406 INFO     E-005  
+2026-11-01 10:33:49,406 INFO     E-005  VERDICT: branch 1 — identical module paths and bit-identical activations; the switch is housekeeping and can be taken
+2026-11-01 10:33:49,406 INFO     E-005  written to results/E-005-loader-parity.json

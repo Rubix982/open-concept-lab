@@ -65,3 +65,5 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - [E-004] Far-field floor measured on the far-field prompts — the coefficient has no subject-specific range there (+0.0002 over a same-relation floor); `results/E-004-summary.md`, `agents/shared/decisions.md` → [E-004]
 - [C-004] Closed on branch 1, reached through branch 2 and a relation confound; T-005 answered
 - `editreach.coefficient.keys_at` added — raw key vectors in one remote pass, so n×n donor floors are offline arithmetic
+- [E-005] Loader parity — `LanguageModel` and `TransformersModel` are the same instrument; the switch is safe and deliberately not taken; `results/E-005-summary.md`
+- [C-005] Closed on branch 1 after its own bit-identity criterion proved unsatisfiable; T-006 answered, **T-008 opened** (readings differ between NDIF serving sessions on byte-identical inputs)
