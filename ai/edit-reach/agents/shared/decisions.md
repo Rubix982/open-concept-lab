@@ -150,3 +150,32 @@ The two halves separate in **opposite directions on the same probes**. Discordan
 **Revisit if:** a readout that *can* express the control's own content shows it delivering there — which would turn "content-specific destination" into "each edit delivers its own content", a stronger claim this run cannot reach. Or if the restricted-pool readout, run on a subsample, puts the separation somewhere other than between the arms.
 
 **Confirms rather than overturns:** the [E-013] scope note in `edit-slice/agents/shared/decisions.md` — destruction is subject-keyed, destination is not — which until now rested on reading [E-002] against [E-014] across two probe sets. It now rests on one.
+
+## [E-004] Decision: the coefficient is a contamination detector, not a propagation detector
+
+_Date: 2026-11-01_
+
+**Decision:** The instrument's scope is narrowed, by us, in writing. The coefficient `(k·u)/(u·k*)` at layer 5 has **no subject-specific dynamic range in the far field** — prompts that never name the edited subject, which is where multi-hop propagation lives. It detects (a) that an edited subject is named in a prompt, and (b) the relation. It does not detect propagation.
+
+**Rationale:** MQuAKE-CF-3k, 513 single-edit two-hop instances, no edit applied, every hop-2 question scored against all 512 other instances' `k*`:
+
+    hop-2 far field (question never names the subject)    n=900
+      own k*                        0.0543
+      floor, SAME-relation donors   0.0481   excess +0.0002  CI (+0.0001, +0.0004)
+      floor, DIFF-relation donors   0.0294   excess +0.0244  CI (+0.0215, +0.0271)
+
+    hop-1 near field (question names it)                  n=639
+      own k*                        0.9334
+      floor, SAME-relation donors   0.0506   excess +0.8439  CI (+0.8379, +0.8500)
+
+A stranger's edit on the same relation reaches a far-field question as much as the real subject's edit does, to within **+0.0002**. The same control barely touches the near field (+0.8439 of +0.8754). Reproduction gate: hop-1 0.9334 and hop-2 0.0544 against [E-039]'s 0.933 and 0.055, inside the ±0.02 stated before the run.
+
+**The first floor would have given the opposite answer.** Against *all* donors the far-field excess is +0.0232 with an interval excluding zero, which reads as "there is far-field signal after all". Nearly all donors carry a different relation, so that floor is the different-relation floor under another name. The confound was found by asking what else a hop-2 subject is — the chain's middle entity, which the question is about indirectly — and not by anything in the measurement.
+
+**Alternatives rejected:** A single magnitude-matched donor, as [E-002] used — rejected because one arbitrary pairing cannot be checked for the relation confound, and the confound is the result. A graded relation-similarity control — deferred; the split here is categorical and how *close* two relations are is not measured.
+
+**What this does not establish.** Delivery, not effect ([E-028d], 2.96×). A floor result says this measure does not see far-field propagation at layer 5; it does not say an edit fails to reach the answer, because the layer-5 alteration travels onward through attention on a path this measure cannot see. Two-hop chains, single-edit instances, one model, one layer.
+
+**Revisit if:** a graded relation-similarity control shows the +0.0002 moving with relation distance, or a layer sweep finds dynamic range in the far field at a depth other than 5.
+
+**Supersedes nothing in [E-039], and completes it.** Its two convergent floors (0.069, 0.027) bracket the same-prompt all-donor floor of 0.0298, so that convergence was sound. Neither floor controlled for the relation, which is where the apparent far-field signal lived.

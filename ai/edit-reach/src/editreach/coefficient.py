@@ -186,3 +186,61 @@ def coefficient_for(
         Coefficient(prompt=p, position=int(i), layer=layer, value=v, regime=regime)
         for p, i, v in zip(prompts, positions, values)
     ]
+
+
+def keys_at(
+    model,
+    prompts: Sequence[str],
+    positions: Sequence[int],
+    *,
+    layer: int = LAYER,
+    remote: bool = True,
+) -> torch.Tensor:
+    """The raw key vectors at `positions[i]` of `prompts[i]`, as float32 on CPU.
+
+    `coefficient_for` answers "how much of *this* edit reaches these tokens".
+    This answers the prior question "what are these tokens' keys", which is what
+    you need when the same prompt must be scored against **many** different
+    `k*` — a floor read on the prompts themselves, rather than borrowed from
+    another corpus. Scoring n prompts against n donors costs one remote pass
+    here and n² dot products offline, where `coefficient_for` would cost n
+    passes.
+
+    Returned as float32 for the same reason the dot product is taken in float32
+    inside `coefficient_for`: activations arrive in bf16, whose relative
+    precision is about 2**-8, and that is the whole budget for a quantity read
+    against a floor of a few hundredths.
+    """
+    if len(prompts) != len(positions):
+        raise ValueError(f"{len(prompts)} prompts against {len(positions)} positions")
+    if not prompts:
+        return torch.empty(0)
+
+    # Resolved before the trace. nnsight ships the trace body's source to NDIF,
+    # so a call into this package inside the body arrives as a
+    # `ModuleNotFoundError`. Same constraint as `rome.APPLY_IDIOM`.
+    site = key_site(model, layer)
+
+    ids, lengths = encode_prompts(model, prompts)
+    for i, (pos, n) in enumerate(zip(positions, lengths)):
+        if not 0 <= pos < n:
+            raise IndexError(
+                f"position {pos} is outside prompt {i}, which is {n} tokens long. "
+                f"Indices are computed on the UNPADDED prompt and the batch is "
+                f"right-padded, so an index past the end means the wrong "
+                f"tokenizer or the wrong prompt, never padding."
+            )
+    rows = torch.arange(len(prompts))
+    where = torch.tensor(list(positions))
+
+    def _run() -> torch.Tensor:
+        with quiet_stdout():
+            with model.trace(ids, remote=remote):
+                # Gathered inside the trace, so one row per prompt comes back
+                # rather than the whole batch — the full keys for a 500-row
+                # batch are a d_mlp-wide tensor per token and the wire is the
+                # budget.
+                got = site.input.float()[rows, where].save()
+        return got.detach().cpu().float()
+
+    return retrying(_run, what=f"keys at L{layer} x{len(prompts)}")

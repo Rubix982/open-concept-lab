@@ -1,0 +1,37 @@
+2026-11-01 09:36:59,599 INFO     E-004  run E-004 -> logs/E-004-2026-11-01-093659.log
+2026-11-01 09:36:59,675 INFO     E-004  513 instances selected, 1907 skipped (multi-edit or unlocatable hop)
+2026-11-01 09:36:59,676 INFO     E-004  by hop carrying the edit: {1: 213, 2: 300}
+2026-11-01 09:38:14,419 INFO     E-004    20/513 instances
+2026-11-01 09:39:21,390 INFO     E-004    40/513 instances
+2026-11-01 09:40:42,255 INFO     E-004    60/513 instances
+2026-11-01 09:42:07,246 INFO     E-004    80/513 instances
+2026-11-01 09:43:30,049 INFO     E-004    100/513 instances
+2026-11-01 09:44:48,672 INFO     E-004    120/513 instances
+2026-11-01 09:46:04,624 INFO     E-004    140/513 instances
+2026-11-01 09:47:14,708 INFO     E-004    160/513 instances
+2026-11-01 09:48:28,685 INFO     E-004    180/513 instances
+2026-11-01 09:50:03,801 INFO     E-004    200/513 instances
+2026-11-01 09:51:34,372 INFO     E-004    220/513 instances
+2026-11-01 09:53:11,662 INFO     E-004    240/513 instances
+2026-11-01 09:54:51,934 INFO     E-004    260/513 instances
+2026-11-01 09:56:35,300 INFO     E-004    280/513 instances
+2026-11-01 09:58:09,396 INFO     E-004    300/513 instances
+2026-11-01 10:00:00,660 INFO     E-004    320/513 instances
+2026-11-01 10:01:38,170 INFO     E-004    340/513 instances
+2026-11-01 10:03:11,390 INFO     E-004    360/513 instances
+2026-11-01 10:04:48,143 INFO     E-004    380/513 instances
+2026-11-01 10:06:17,097 INFO     E-004    400/513 instances
+2026-11-01 10:08:19,655 INFO     E-004    420/513 instances
+2026-11-01 10:09:46,597 INFO     E-004    440/513 instances
+2026-11-01 10:11:34,128 INFO     E-004    460/513 instances
+2026-11-01 10:13:19,174 INFO     E-004    480/513 instances
+2026-11-01 10:15:22,902 INFO     E-004    500/513 instances
+2026-11-01 10:16:45,695 INFO     E-004    513/513 instances
+2026-11-01 10:16:45,768 INFO     E-004  513 instances held
+2026-11-01 10:16:46,494 INFO     E-004  reproduction gate: hop-1 natural 0.9334 over 639 readings (E-039 0.933) | hop-2 final 0.0544 over 900 readings (E-039 0.055)
+2026-11-01 10:16:47,099 INFO     E-004  
+2026-11-01 10:16:47,100 INFO     E-004  hop-2 far field, n=900 questions over 300 instances
+2026-11-01 10:16:47,172 INFO     E-004    own k*         median 0.0543   IQR 0.0392
+2026-11-01 10:16:47,173 INFO     E-004    same-prompt floor  median 0.0298   IQR 0.0042
+2026-11-01 10:16:47,180 INFO     E-004    paired excess  median +0.0231   IQR 0.0407  | above floor: 80%
+2026-11-01 10:16:47,189 INFO     E-004  written to results/E-004-far-field-floor.json

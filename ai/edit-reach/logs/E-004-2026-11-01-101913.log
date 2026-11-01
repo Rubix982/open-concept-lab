@@ -1,0 +1,16 @@
+2026-11-01 10:19:13,308 INFO     E-004  run E-004 -> logs/E-004-2026-11-01-101913.log
+2026-11-01 10:19:13,434 INFO     E-004  513 instances selected, 1907 skipped (multi-edit or unlocatable hop)
+2026-11-01 10:19:13,435 INFO     E-004  by hop carrying the edit: {1: 213, 2: 300}
+2026-11-01 10:19:13,593 INFO     E-004  resuming: 513 of 513 instances already read
+2026-11-01 10:19:23,467 INFO     E-004  513 instances held
+2026-11-01 10:19:24,330 INFO     E-004  reproduction gate: hop-1 natural 0.9334 over 639 readings (E-039 0.933) | hop-2 final 0.0544 over 900 readings (E-039 0.055)
+2026-11-01 10:19:25,535 INFO     E-004  
+2026-11-01 10:19:25,536 INFO     E-004  hop-2 far field, n=900 questions over 300 instances
+2026-11-01 10:19:25,551 INFO     E-004    own k*         median 0.0543   IQR 0.0392
+2026-11-01 10:19:25,551 INFO     E-004    same-prompt floor  median 0.0298   IQR 0.0042
+2026-11-01 10:19:25,552 INFO     E-004    paired excess  median +0.0231   IQR 0.0407  | above floor: 80%
+2026-11-01 10:19:25,552 INFO     E-004  
+2026-11-01 10:19:25,552 INFO     E-004    and the same floor, split by whether the donor shares the relation:
+2026-11-01 10:19:25,552 INFO     E-004      SAME-relation donors      floor 0.0480   excess +0.0002
+2026-11-01 10:19:25,552 INFO     E-004      DIFFERENT-relation donors floor 0.0294   excess +0.0243
+2026-11-01 10:19:25,556 INFO     E-004  written to results/E-004-far-field-floor.json

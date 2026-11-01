@@ -38,13 +38,13 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-005 · Is the coefficient blind in exactly the regime propagation lives in?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-10-31
 **Question:** `(k·u)/(u·k*)` is large when a token's key resembles `k*`, which happens when that token *is* the edited subject. So the measure has dynamic range in the **near field** — prompts containing the subject, 0.93–1.000 — and by construction little or none in the **far field**, prompts that never name the subject, where [E-018]'s different-subject floor is 0.082. Genuine multi-hop propagation lives in the far field. If so the instrument is a contamination detector rather than a propagation detector, which is a narrower and more defensible thing to claim, and it should be claimed that way rather than discovered by a reviewer.
 **Falsifier, and it is cheap:** read coefficients for MQuAKE's later-hop items (0 of 16,506 name the edited subject) against the different-subject floor on the same prompts. No edits, no gradients, one forward pass per batch. If they sit at floor and flat, the blindness is established and the claim narrows. If a meaningful fraction sits above floor, the far field is visible after all and the instrument is more than a screen. **Either answer is worth having, which is what makes it worth running.**
 **Do not run before C-001.** If predicted reach does not track measured movement where the coefficient *does* vary, the far-field question does not arise.
-**Answer:** —
+**Answer:** **Yes — blind to the subject, sighted only on the relation.** [E-004] / C-004, 2026-11-01. Most of this was already measured by [E-039] on 2026-10-15 (0.933 near, 0.055 far, n=513); what was missing was the floor *on those prompts*, which this supplied. Far-field excess over a same-relation donor floor is **+0.0002** (CI +0.0001, +0.0004) against the near field's **+0.8439**. A stranger's edit on the same relation reaches a far-field question as much as the real subject's does. The instrument is a contamination detector plus a relation detector. Note the near-miss: against *all* donors the excess is +0.0232 and reads as far-field signal — nearly all donors carry a different relation, so that floor was the different-relation floor under another name. See `results/E-004-summary.md`.
 
 ### T-006 · `LanguageModel` is deprecated, and every number so far was read through it
 

@@ -1,0 +1,6 @@
+2026-11-01 09:36:16,819 INFO     E-004  run E-004 -> logs/E-004-2026-11-01-093616.log
+2026-11-01 09:36:16,895 INFO     E-004  3 instances selected, 0 skipped (multi-edit or unlocatable hop)
+2026-11-01 09:36:16,895 INFO     E-004  by hop carrying the edit: {1: 2, 2: 1}
+2026-11-01 09:36:34,299 INFO     E-004    3/3 instances
+2026-11-01 09:36:34,299 INFO     E-004  3 instances held
+2026-11-01 09:36:34,304 INFO     E-004  reproduction gate: hop-1 natural 0.9336 (E-039 0.933) | hop-2 final 0.0772 (E-039 0.055)

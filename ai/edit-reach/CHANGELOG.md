@@ -62,3 +62,6 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - [E-003] Destination readout on [E-002]'s probe set — destruction and destination separate in opposite directions on the same 495 probes; `results/E-003-summary.md`, `agents/shared/decisions.md` → [E-003]
 - [C-003] Closed on branch 1; T-007 answered in `threads.md`
 - `editreach.logs` resolved its log directory from the package's own location, a leftover from edit-slice where the module sat one level higher. Today's logs went to `src/logs/` while every earlier session's sat in `logs/`. Now found from the working directory by an `agents/` marker; `.git` is deliberately not a marker, since this workspace is one repository holding several projects.
+- [E-004] Far-field floor measured on the far-field prompts — the coefficient has no subject-specific range there (+0.0002 over a same-relation floor); `results/E-004-summary.md`, `agents/shared/decisions.md` → [E-004]
+- [C-004] Closed on branch 1, reached through branch 2 and a relation confound; T-005 answered
+- `editreach.coefficient.keys_at` added — raw key vectors in one remote pass, so n×n donor floors are offline arithmetic

@@ -8,6 +8,64 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-004 · Is the hop-2 coefficient at floor, when the floor is read on the hop-2 prompts themselves?
+
+**Status:** closed
+**Opened:** 2026-11-01
+**Closed:** 2026-11-01 — **branch 1**, reached through branch 2 and a confound
+
+**1. WHERE WE ARE.**
+[E-039] (edit-slice, 2026-10-15) already measured most of T-005. On MQuAKE-CF-3k, 513 single-edit two-hop instances, layer 5, no edit applied: the coefficient at the subject position is **0.933** when the question names the edited subject (hop-1, n=213) and **0.055** at the final token when it does not (hop-2, n=300), IQR 0.039. Two floors measured elsewhere bracket that: **0.069** from a permuted `k*` on RippleEdits [E-038], and **0.027** from a different token on MQuAKE [E-039].
+
+**2. WHAT WE ARE DOING.**
+Re-read [E-039]'s same 513 instances, saving the key vectors rather than only the scalars, and compute for every hop-2 question a **floor on that very prompt**: its coefficient against each of the other 299 instances' `k*`, reported as the median over donors. Then compare the own-`k*` coefficient against that same-prompt floor, paired, question by question.
+
+**3. WHY.**
+T-005's falsifier asked for the far-field coefficient "against the different-subject floor **on the same prompts**". [E-039] compared it against floors from a different corpus and a different construction. They converge, which is good evidence and is not the control that was specified. A reviewer can say: MQuAKE's questions are longer and multi-hop, so perhaps their floor is 0.02 and 0.055 is two and a half times it. After this we know whether 0.055 is at its own prompts' floor or above it, and T-005 closes either way.
+
+**4. WHAT IS AFFECTED.**
+- T-005 closes, and with it the scope claim on the whole instrument: **contamination detector, not propagation detector**. That sentence is currently unwritten anywhere, which is the thing worth fixing — C-001 denied that the coefficient predicts effect, and this says where it is blind.
+- [E-039]'s decision entry gains the control it names as missing, or a correction.
+- `notes/email-3-direct-exposure.md`, unsent. Its MQuAKE paragraph currently rests on counting prompt strings; this is the measured version.
+- If hop-2 comes back **above** its own floor, [E-039]'s "the floor is not an artifact of how either control was built" is weakened, and the two convergent floors become two floors that happen to agree on other corpora.
+
+**5. CONCLUSION IF WE DO IT.** Three branches.
+
+- **If hop-2 own-`k*` sits at its same-prompt donor floor:** the coefficient has no dynamic range in the far field. The instrument is a contamination detector — it tells you an edited subject is named in a prompt, and it is silent about propagation through relations. That is narrower than anything claimed so far and it should be claimed by us, not found by a reviewer.
+- **If hop-2 sits meaningfully above its own floor:** there is far-field signal after all, the instrument is more than a screen, and the three-corpus floor convergence in [E-039] was misleading about this corpus. T-005 then becomes a live measurement question rather than a scope note.
+- **If the re-read fails to reproduce [E-039]'s 0.933 / 0.055:** something moved between 2026-10-15 and now — the loader, the tokenizer, the key site — and nothing else in this card may be read until that is explained. **This is the cheapest branch and the one most worth having**, because every number in edit-slice was read through the same path.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+The instrument's blind spot stays stated as a convergence argument across corpora rather than a measurement on the prompts in question, and the narrowed claim stays unwritten — which means the first person to write it down is a reviewer.
+
+**Controls, and what could make this wrong.**
+- **The gate is reproduction, not an anchor.** [E-039]'s hop-1 natural arm at 0.933 and hop-2 at 0.055 are the two numbers this re-read must return. They were read with `k*` cast through `half()`; this reads in float32 in-trace, so exact equality is not expected and a tolerance is stated in advance: **±0.02 on each median**. Outside that, branch 3.
+- **The floor is a distribution, not a donor.** Every hop-2 question is scored against all 299 other instances' `k*` and the median is taken, so no single arbitrary pairing can carry the result. The spread is reported.
+- **Denominator.** Each donor coefficient uses its own `k*·k*`, as the definition requires; using the own-subject denominator with a donor numerator would manufacture a floor.
+- **Delivery, not effect.** Unchanged and restated: nothing here measures how far an answer moves. [E-028d], 2.96x.
+- **Cost.** One remote pass per instance, 513 traces, no edits and no gradients. All donor arithmetic is offline.
+
+**Closed:** 2026-11-01. Reproduction gate passed: hop-1 0.9334 and hop-2 0.0544 against [E-039]'s 0.933 and 0.055, inside the ±0.02 stated in advance.
+
+    hop-2 far field, n=900           floor    excess over it
+      SAME-relation donors           0.0481    +0.0002   CI (+0.0001, +0.0004)
+      DIFFERENT-relation donors      0.0294    +0.0244   CI (+0.0215, +0.0271)
+
+    hop-1 near field, n=639
+      SAME-relation donors           0.0506    +0.8439   CI (+0.8379, +0.8500)
+
+**Branch 1, and the route there is the part worth keeping.** Against *all* donors the far-field excess is +0.0232 with an interval excluding zero — branch 2, "there is far-field signal after all". That was wrong, and it was wrong for a reason the card had not listed: a hop-2 subject is the chain's middle entity, so the question is *about* it indirectly and topical overlap alone produces that excess. Nearly every donor carries a different relation, so the all-donor floor is the different-relation floor wearing another name.
+
+Split the donors by relation and the far-field excess is **+0.0002**. A stranger's edit on the same relation reaches the question as much as the real subject's edit does. The same control barely touches the near field.
+
+**The claim, stated by us rather than by a reviewer:** the coefficient is a contamination detector — it tells you an edited subject is named in a prompt — plus a relation detector. It is not a propagation detector, and multi-hop propagation is where it is asked to work.
+
+**What it does not say.** Delivery, not effect. A floor here does not mean an edit fails to reach the answer; the layer-5 alteration travels on through attention where this measure cannot follow.
+
+Artifacts: `results/E-004-far-field-floor.json`, `results/E-004-summary.md`, `agents/shared/decisions.md` → [E-004], `src/editreach/coefficient.py` → `keys_at`.
+
+---
+
 ## C-003 · Does an edit break the old answer and supply the new one by two different routes?
 
 **Status:** closed

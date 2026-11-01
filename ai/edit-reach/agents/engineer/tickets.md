@@ -133,3 +133,64 @@ The `base` arm is **not** re-run. [E-001] holds `base_token` and `p_base`; readi
 2. **The pool-restricted readout was costed and rejected rather than attempted.** [E-014]'s criterion is 495 × 75 × 3 teacher-forced pairs, roughly eleven times [E-014]'s own run, which is not one session.
 3. **`ctl` had never been magnitude-matched to `real`**, unlike the donor arm. Checked before the run: unbiased in direction, not matched per subject. The claim was narrowed to aggregate *before* the numbers existed, which is the only time narrowing is free.
 
+
+---
+
+### E-004 · The far-field floor, measured on the far-field prompts
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-01
+**Updated:** 2026-11-01
+**Card:** C-004
+**Thread:** T-005
+
+**Description:**
+
+[E-039] (edit-slice, 2026-10-15) measured the near/far split on MQuAKE-CF-3k: coefficient 0.933 where a question names the edited subject, 0.055 where it does not, 513 single-edit two-hop instances, layer 5, no edit applied. Its floors came from **elsewhere** — 0.069 from a permuted `k*` on RippleEdits [E-038], 0.027 from a different token on MQuAKE. T-005 asked for the floor "on the same prompts", and that is what is missing.
+
+This re-reads those 513 instances keeping the **key vectors** rather than the scalars, and scores every hop-2 question against all 512 other instances' `k*`, each with its own denominator. The floor becomes a distribution measured on the prompt itself.
+
+**The selection is imported from `run_e039.usable`, not reimplemented.** The reproduction of 0.933 / 0.055 is this run's gate; a gate against a set rebuilt from a docstring would check my reading of the docstring.
+
+**New package primitive.** `editreach.coefficient.keys_at` — raw key vectors at given positions, float32, one remote pass. `coefficient_for` answers "how much of *this* edit reaches these tokens"; scoring n prompts against n donors through it would cost n passes. This costs one, and the n² dot products are offline.
+
+**Gate, stated before the run.** hop-1 natural within ±0.02 of 0.933 and hop-2 final within ±0.02 of 0.055. Outside that, branch 3 of C-004: something moved in the path every edit-slice number was read through, and nothing else in the card may be read. The gate additionally refuses to fire below 100 readings per arm — found by the smoke test, where n=3 produced a hop-2 median of 0.0772 and the gate fired on a sample too small to carry it. A gate that can fail for a reason unrelated to what it guards teaches you to ignore it.
+
+**Controls.**
+
+- The floor is a **distribution over 512 donors**, median per question, not one arbitrary pairing.
+- Each donor uses **its own** `k*·k*`. Using the subject's denominator with a donor's numerator manufactures a floor out of a norm mismatch; the dry-run asserts the 1/‖k*‖ scaling that would break there.
+- The benchmark property the card rests on is asserted, not assumed: **hop-1 questions name their subject 639 of 639 times, hop-2 questions 0 of 900.**
+- **Delivery, not effect** [E-028d]. A floor result says this measure does not see far-field propagation at layer 5. It does not say an edit fails to reach the answer.
+
+**Cost.** 513 remote traces, no edits and no gradients. Resumable per instance via a key cache.
+
+**Outputs.**
+
+- `results/E-004-far-field-floor.json`, `results/E-004-summary.md`
+- `agents/shared/decisions.md` → one entry either way
+- `CARD.md` → C-004 closed on one of its three branches; `threads.md` → T-005 answered
+
+**Done when** the reproduction gate is recorded as passed and C-004 is closed with a paired excess over the same-prompt floor rather than a description.
+
+**Blockers:** none.
+
+**RCA:** —**Artifacts:**
+
+- `agents/engineer/workspace/run_e004.py`
+- `tools/dryruns/dryrun_e004.py` — 539 checks, zero remote calls, all passing
+- `src/editreach/coefficient.py` → `keys_at`
+- `results/E-004-far-field-floor.json`, `results/E-004-summary.md`
+- `agents/shared/decisions.md` → [E-004]; `CARD.md` → C-004 branch 1; `threads.md` → T-005 answered
+
+**Closed:** 2026-11-01. Gate passed: hop-1 0.9334, hop-2 0.0544 against [E-039]'s 0.933 and 0.055. Far-field excess over a same-relation donor floor **+0.0002** (CI +0.0001, +0.0004) against the near field's +0.8439.
+
+**What nearly shipped as the result.** Against all 512 donors the far-field excess is +0.0232 with an interval excluding zero, which is branch 2 — "far-field signal after all". The card did not list the confound: a hop-2 subject is the chain's middle entity, so topical overlap alone produces that excess, and since nearly every donor carries a different relation the all-donor floor *was* the different-relation floor. Found by asking what else a hop-2 subject is, not by anything in the measurement. The relation split was computed offline from the key cache at zero remote cost, which is the argument for `keys_at` saving vectors rather than scalars: [E-039] saved scalars and could not have run this control without re-buying 513 traces.
+
+**Two faults in my own instruments, both caught before they mattered:**
+
+1. **The dry-run's scaling assertion was wrong, the code was right.** It asserted that scaling a donor's `k*` leaves its coefficient unchanged. It does not — `(k·ck*)/((ck*)·(ck*))` is `1/c` times the original, which is correct and is exactly what breaks if a donor numerator is paired with the subject's denominator. The assertion now states the real property.
+2. **The reproduction gate fired on a sample too small to carry it.** At n=3 the hop-2 median read 0.0772 against 0.055 and the gate failed — not a pipeline fault, a gate applied to three readings. `MIN_GATE_READINGS = 100` now refuses rather than passing or failing. A gate that can fail for a reason unrelated to what it guards teaches you to ignore it.
+
