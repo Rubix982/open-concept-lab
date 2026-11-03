@@ -271,3 +271,66 @@ nnsight 0.8.1 deprecates `LanguageModel`. Every number in this repo and in edit-
 - `agents/shared/decisions.md` → [E-006]; `CARD.md` → C-006; `threads.md` → T-008 answered, **T-009 opened**
 
 **Blockers:** none.
+
+### E-007 · NDIF reproducibility reference and conformance suite
+
+**Status:** in-progress
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** 1 sitting to draft, 1 short NDIF session to self-check
+**Spent:** —
+
+**Description:**
+Turn what [E-001], [E-005] and [E-006] measured about the NDIF/nnsight
+instrument into an artifact someone outside this project can use. Two
+deliverables, both at edit-reach root.
+
+1. `docs/ndif-reproducibility.md` — a reference stating each behaviour, the
+   measurement behind it, and the consequence for anyone writing a gate. Every
+   number in it must already exist in `agents/shared/decisions.md`; this ticket
+   measures nothing new. Facts in scope:
+   - a ratio read inside one trace is exact (0.000e+00 over 216 cells, four
+     models); a cached `k*` costs up to 6.382e-03 ([E-001])
+   - bf16 relative precision ~2**-8 over `d_mlp` channels is the whole budget
+   - readings partition by serving GPU; floor-median spread 0.000e+00 within a
+     GPU, 3.110e-06 across ([E-006])
+   - total observed drift across four sessions 2.16e-04, of which the device is
+     1.4%; the remainder is unattributed (T-009)
+   - batch composition contributes zero (bit-identical)
+   - where the dot product runs: 5.06e-06 at the median, 2.98e-03 per item
+   - a trace body has no source on stdin (`WithBlockNotFoundError`); a local
+     package referenced inside a trace body arrives as `ModuleNotFoundError`
+   - `compute_v`/backward gradients refused on 0.8.1 ([E-047], edit-slice)
+
+2. `tools/ndif_conformance.py` — a SINGLE standalone file that re-measures each
+   of the above on the reader's own connection and prints, per check, the
+   observed value against the documented one. It must not import `editreach`,
+   so it can be copied out of this repo and run by anyone with an
+   `NNSIGHT_API_KEY`. Verdict vocabulary is **matches reference / differs**, not
+   pass/fail: the suite documents a deployment, it does not grade it.
+
+**Scope boundary.** No new claim about knowledge editing. Nothing here depends
+on a judgement about what the coefficient means. If a check cannot be stated as
+"the documented number is X, yours is Y", it does not belong in this ticket.
+
+**Blockers:** none. [E-047]'s reproducer is referenced by description only —
+whether it is sent anywhere remains Saif's call and is not part of this ticket.
+
+**Artifacts:**
+- docs/ndif-reproducibility.md
+- tools/ndif_conformance.py (standalone; imports nothing from editreach)
+- tools/dryruns/dryrun_conformance.py
+- results/E-007-conformance.json
+- agents/shared/decisions.md -> "[E-007] Decision: raw activations are
+  reproducible only within one batch shape"
+
+**Closed:** 2026-11-03. The suite was run against the document it documents and
+produced three corrections: the batch-composition claim was too broad (true of
+ratios, false of raw keys, which move 4.297e-02); padding width had never been
+measured and moves the same amount; and the arithmetic-site figure reproduces at
+the median (5.319e-06 against 5.06e-06) but not per item, which is
+sample-dependent. Two faults in the suite itself were found the same way and are
+documented in its source rather than silently fixed. 11 remote traces, 57s.
+9/9 dry-runs pass.

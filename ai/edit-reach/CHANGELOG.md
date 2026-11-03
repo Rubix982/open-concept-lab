@@ -70,3 +70,7 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - [E-006] Session variation partitions cleanly by serving GPU — 16 readings, two devices, one value each; `results/E-006-summary.md`
 - [C-006] Closed on branch 1; T-008 answered, **T-009 opened** (the device is 1.4% of the observed 2.16e-04 drift)
 - Adopted: no gate asserts bit-identity across readings; cross-trace quantities need a tolerance of at least 2.2e-04; prefer a ratio read inside one trace
+
+## 2026-11-03 · Session 3
+
+- [E-007] NDIF reproducibility reference and conformance suite — docs/ndif-reproducibility.md and tools/ndif_conformance.py; running the suite against the reference narrowed [E-006]'s batch-composition claim to derived ratios and bounded raw-activation reuse at 2.6%

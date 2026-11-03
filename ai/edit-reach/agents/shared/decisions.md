@@ -233,3 +233,38 @@ The remaining ~2e-04 is **not attributed**. Logged as T-009.
 **Revisit if:** a third serving device appears, or an artifact needs reproducibility tighter than 2.2e-04 — at which point the unattributed remainder has to be resolved first.
 
 **What this retroactively explains.** Every anchor gate in edit-slice and edit-reach survived this without anyone knowing it existed, because the anchor ratio is read inside one trace. [E-004]'s ±0.02 reproduction gate sits comfortably above the 2.2e-04 drift and was right for a reason it did not state. [E-005]'s pre-stated `torch.equal` was unsatisfiable for this reason.
+
+## [E-007] Decision: raw activations are reproducible only within one batch shape; derived ratios are not affected
+
+_Date: 2026-11-03_
+
+**Decision:** The claim "batch composition contributes zero", recorded in [E-006] and generalised in the first draft of `docs/ndif-reproducibility.md`, is **narrowed**. It is true of the derived ratio and false of the raw keys. Any artifact comparing raw activations across runs is bounded at about **2.6% of their magnitude**, not at the 2.2e-04 of [E-006].
+
+**Rationale.** Measured by `tools/ndif_conformance.py`, 8 anchor pairs at layer 5 of Llama-3.1-8B, one connection:
+
+    16 rows -> 22 rows, padded width held at 14
+      raw key values   max |difference|   4.297e-02   (2.59% of key magnitude)
+      derived ratio    max |difference|   0.000e+00   (bit-identical)
+
+    16 rows, width 14 -> 22, same content, padding only
+      raw key values   max |difference|   4.297e-02   (2.59%)
+
+The second arm is zero by the mathematics — padding appended after the text cannot reach a token to its left under causal attention — and is not zero in practice. That is bf16 matmul selecting a different kernel path for a different tensor shape. Both arms returned the identical maximum, which suggests one quantised step on one worst element rather than two independent effects; **not checked further, and recorded as unchecked.**
+
+**How [E-006] came to say otherwise.** It did not. [E-006] measured *floor medians*, which are ratios, and found them bit-identical — which this reproduces. The over-generalisation to "batch composition contributes zero" happened when the result was written into a reference document, one step away from the measurement. The suite caught it on its first run against that document.
+
+**What this strengthens.** The existing preference for a ratio read inside one trace was justified by [E-006] on a 3.11e-06 device effect. It is now justified by an effect four orders of magnitude larger, and the reason is different: not that the ratio averages noise away, but that the two keys share a shape and a trace, so whatever the kernel does it does to both.
+
+**Two faults in the suite, found by running it and left documented in its source:**
+1. A bf16 precision check measured the relative error of a dot product between near-orthogonal random vectors and read **4.9e-01**. That is catastrophic cancellation, not precision. Replaced with per-element rounding error, which reads 3.887e-03 against bf16's 2**-8 = 3.906e-03.
+2. The arithmetic-site check was read on the **anchors**, whose ratio is analytically 1.000 under either arithmetic, so it read 0.000e+00 and would have reported "the two sites agree" permanently. Moved to non-pinned pairs; the median difference then reproduces [E-006]'s 5.06e-06 as **5.319e-06**.
+
+Both are the same fault: a check evaluated on a quantity that cannot express the thing it was testing. `tools/dryruns/dryrun_conformance.py` asserts against the second by name.
+
+**Alternatives rejected:** quietly correcting the document — a reference that was once wrong should say where, or a reader cannot calibrate the rest of it. Widening the suite's tolerances until everything matched — that is calibrating to the bug.
+
+**Revisit if:** NDIF serves float32, or a kernel change makes the shape effect vanish; either would make the 2.6% bound obsolete rather than merely smaller.
+
+**Not reproduced today:** four fresh connections all landed on GPU 0 and returned one signature, so [E-006]'s partition is consistent with this run and is not demonstrated by it. The documented partition took sixteen connections.
+
+**Artifacts:** `docs/ndif-reproducibility.md`; `tools/ndif_conformance.py`; `tools/dryruns/dryrun_conformance.py`; `results/E-007-conformance.json`
