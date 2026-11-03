@@ -22,7 +22,7 @@ Four things, in the order they will bite you.
 4. **A raw activation is reproducible only within one batch shape; a ratio is not affected.** Change the number of rows, or merely the padding width, and raw keys move by about 2.6% of their magnitude. The ratio of two keys read in the same trace stays bit-identical.
 5. **Depth does not change the bound that matters.** The shape effect stays under 3% of key magnitude at every layer of every model tested, from layer 0 to layer 79. The one quantity that *does* move with depth — where the arithmetic runs — swings two to three orders of magnitude in bfloat16 with no consistent direction, and sits at machine epsilon in float32. Measure that one at your own layer.
 6. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
-7. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
+8. **Record the device, every time.** It is the only handle you have on which replica served you, and the readings in this project that predate that habit can no longer be attributed to anything. Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
 
 ---
 
@@ -175,9 +175,27 @@ The 8B rises monotonically, a factor of 44 over 31 layers. **The 70B does not** 
 
 The per-item maximum is larger and **sample-dependent** — 2.98e-03 over the original 42 probes, 6.31e-05 over the suite's 6 — so the median is the statistic to compare and the per-item figure is the one to budget for. That the median is stable is a property of the median, not evidence that the two arithmetics agree. Pick one site and stay with it.
 
-The remaining ~2e-04, between the two days, **is not attributed.** Candidates not yet tested: a deployment or driver change between sessions, a model-weight reload, a change in how the batch was sharded.
+**The remaining ~2e-04 is not drift, and calling it drift was the mistake.** On 2026-11-03 the same 42 probes were read again and the value came back **bit-identical** to the GPU 0 reading taken two days earlier — the same 16-character content hash and the same median to the last bit, `0.08109002151514136`. A census over every reading ever taken of this quantity then gives:
 
-**The 2026-11-03 run promotes one of those candidates.** The set of devices serving `Llama-3.1-8B` changed between 11-01 (GPUs 0 and 2) and 11-03 (GPU 0 only). That is a deployment change, observed rather than hypothesised, sitting between exactly the sessions whose readings differ. It is still not a measurement of the drift — nobody has shown the two move together — but "the deployment changed between days" has gone from a guess to a thing that demonstrably happens. Logged as T-009.
+```
+value                    readings   GPUs          days
+0.08087725                      1   unrecorded    10-31
+0.08094214687103357             1   unrecorded    11-01
+0.08109002151514136             9   0             11-01, 11-03
+0.08109313181234508            13   2             11-01
+
+4 distinct values over 24 readings
+spread WITHIN a device set        0.000e+00
+spread ACROSS everything          2.159e-04
+```
+
+Twenty-four readings, four values, each one exact and each one repeating. Thirteen readings — across two different nnsight loaders and two separate experiments — return `0.08109313181234508` to the last bit.
+
+**So there is no time component at all.** A reading is a function of which replica served it, and of nothing else that has been varied. The 2.16e-04 is not an error bar on a single quantity; it is the spread between four discrete values that each reproduce perfectly.
+
+**What remains open is narrower than it was.** Not *what causes the drift* but *how many replicas are there*. Two of the four values were recorded before anyone thought to capture the device, so they cannot be attributed now — that information is gone. The practical rule does not depend on resolving it.
+
+**What to do.** Record the serving device with every reading. Then a comparison between device-matched readings needs **no tolerance at all** — it is exact, across days. The 2.2e-04 below is the tolerance for comparing readings whose devices differ or are unknown, which is what every historical artifact in this project is.
 
 **What to do.** Do not write a gate that asserts bit-identity across readings. For a quantity read across traces and compared across sessions, use a tolerance of at least **2.2e-04**. Prefer, wherever the question allows it, a ratio read inside one trace — §1 — because it cancels all of this rather than tolerating it.
 
@@ -218,7 +236,7 @@ In order of how much they buy:
 1. **Read both terms of a ratio in one trace.** Exact, free, and immune to everything in §2 and §3.
 2. **Do the arithmetic in float32**, whatever dtype the activations arrive in.
 3. **Never assert bit-identity across readings.** It is unsatisfiable here, and relaxing an assertion after it fails is how a re-baseline gets filed as an upgrade.
-4. **Use ≥ 2.2e-04 for a cross-trace quantity compared across sessions.** Smaller than that and you are gating on noise you cannot attribute.
+4. **Use ≥ 2.2e-04 for a cross-trace quantity compared across sessions whose devices differ or are unknown.** With the device matched, the comparison is exact and needs no tolerance.
 5. **Record the serving device** with every reading, from `tracer.backend.meta`.
 6. **Size the gate to what it guards.** A gate that can fail for a reason unrelated to its subject teaches you to ignore it, which costs more than not having it.
 

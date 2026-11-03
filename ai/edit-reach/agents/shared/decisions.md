@@ -385,3 +385,35 @@ The 8B rises monotonically, 44-fold. The 70B **falls 53-fold to layer 20 and the
 **Revisit if:** a third bfloat16 model is swept, or anyone samples densely enough to describe the shape between layers rather than at five points on it.
 
 **Artifacts:** `results/E-011-layers-70b.json`; `results/E-011-summary.md`; `docs/ndif-reproducibility.md`
+
+## [E-012] Decision: the 2.16e-04 is not drift; it is four discrete replica values, each exact
+
+_Date: 2026-11-03_
+
+**Decision:** T-009's "unattributed remainder" is withdrawn as a description. The quantity does not drift. It takes one of a small number of **exact** values, reproducing bit-for-bit across runs, across nnsight loaders and across days, and which one you get is routing. A comparison between **device-matched** readings needs **no tolerance at all**. The 2.2e-04 from [E-006] is retained only for comparing readings whose devices differ or were never recorded — which is every artifact this project made before 2026-11-01.
+
+**Rationale.** The first daily reading, taken 2026-11-03, returned content hash `edd2b2b152de2098` and floor median `0.08109002151514136` — the **same hash and the same bits** as [E-006]'s eight GPU 0 readings on 2026-11-01. A census over every reading of this quantity ever recorded:
+
+    value                    readings   GPUs          days
+    0.08087725                      1   unrecorded    10-31
+    0.08094214687103357             1   unrecorded    11-01
+    0.08109002151514136             9   0             11-01, 11-03
+    0.08109313181234508            13   2             11-01
+
+    4 distinct values over 24 readings
+    spread WITHIN a device set        0.000e+00
+    spread ACROSS everything          2.159e-04
+
+Thirteen readings return `0.08109313181234508` to the last bit, across **two different nnsight loaders** and two separate experiments. That is not a distribution with a width. It is a small set of fingerprints.
+
+**What this corrects, and the shape of the error.** [E-006] reported a device spread of 3.11e-06 and called the rest unattributed. Both halves were artefacts of sampling: its 16 connections happened to reach two replicas, so 3.11e-06 is the distance between **those two**, and the "unattributed" residue is simply the other replicas it did not reach. The error was reporting a **spread** for a quantity that is **discrete** — a summary of the wrong shape, which made a four-point set look like a noisy measurement.
+
+**A second error, in the ledger's own first draft, which nearly hid this.** `HISTORY` was seeded with the 8-decimal figures that had been quoted in prose. Against those, today's reading looked 2.15e-08 away from [E-006]'s GPU 0; against the full-precision values it is exactly equal. **A ledger built to detect bit-identity cannot be seeded with rounded numbers.** `dryrun_t009.py` now fails any history entry carrying fewer than eight decimals without a written note saying why.
+
+**What remains open, and it is narrower than T-009 was opened for.** Not *what causes the drift* — there is no drift — but *how many replicas exist*. Two of the four values predate the habit of recording the device and **cannot be attributed now**; that information is gone. The practical rule does not depend on recovering it.
+
+**Alternatives rejected:** keeping "unattributed drift" and widening tolerances — it describes the wrong shape and would have had us tolerate 2.2e-04 on comparisons that are exact. Declaring the replica count to be four — four is the number of values **seen**, and [E-009] showed the reachable set changes between days.
+
+**Revisit if:** a device-matched pair of readings ever differs. That single observation would restore a time component and reopen T-009 as originally framed.
+
+**Artifacts:** `agents/engineer/workspace/run_t009.py`; `tools/dryruns/dryrun_t009.py`; `results/T-009-ledger.md`; `docs/ndif-reproducibility.md`

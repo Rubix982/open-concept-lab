@@ -80,7 +80,7 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-009 · The serving GPU accounts for 1.4% of the observed drift. What accounts for the rest?
 
-**Status:** open
+**Status:** open — narrowed
 **Parent:** T-008
 **Opened:** 2026-11-01
 **Question:** [E-006] established that NDIF readings partition cleanly by serving GPU, and priced it: floor median spread **3.110e-06** across devices, 0.000e+00 within one. But four values of that same quantity have been observed over two days — 0.08087725 ([E-001], 10-31), 0.08094215 ([E-005] first reading), 0.08109000 (GPU 0), 0.08109313 (GPU 2) — an observed range of **2.16e-04**, some sixty times the device spread. Batch composition was tested and contributes **zero**. Where the dot product runs contributes 5.06e-06 at the median (though **2.98e-03 per item**, which is its own finding). The remaining ~2e-04 separates October 31 from November 1 and is unattributed.
@@ -90,4 +90,10 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 **Answer:** —
 
 **2026-11-03 [E-009]:** one candidate promoted from guess to observation. The set of GPUs serving `Llama-3.1-8B` changed between 11-01 (GPUs 0 and 2) and 11-03 (GPU 0 alone, 16/16 connections; `GPT-J-6B` likewise). A deployment change demonstrably happens between days, and it sits between exactly the sessions whose floor medians differ. Nothing yet shows the two move together — the falsifier is unchanged: read the same 42 floor probes daily for a week, recording device set and exact median, and see whether the median moves when the device set does.
+
+**2026-11-03 [E-012]: the framing was wrong, and most of the question dissolves with it.** The first daily reading came back **bit-identical** to [E-006]'s GPU 0 value from two days earlier — same content hash, same median to the last bit. A census over all 24 recorded readings gives **four distinct values, each exact and each repeating**, with a within-device spread of **0.000e+00** and an across-everything spread of 2.159e-04. Thirteen readings return one value to the last bit across two nnsight loaders.
+
+So there is **no time component**. The quantity is not drifting; it is discrete, and routing picks which value you see. [E-006]'s 3.11e-06 "device spread" was the distance between the two replicas its 16 connections happened to reach, and the "unattributed" residue was the replicas it did not reach.
+
+**What is still open:** how many replicas exist. Two of the four values were recorded before the device was being captured and cannot be attributed now. **What would reopen the original question:** a device-matched pair of readings that differs. One such observation restores a time component. The daily reading continues for that reason and no longer for the original one.
 

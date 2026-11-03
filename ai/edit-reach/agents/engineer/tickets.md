@@ -479,3 +479,32 @@ structure had already held on three models. Recorded so that it can be wrong.
 **Closed:** 2026-11-03 on the first branch for the structure, and the
 prediction was **half wrong**: it broke a claim made one run earlier about the
 arithmetic-site effect's direction in depth.
+
+### E-012 · T-009's daily reading, and what the first one said
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** 1 sitting, 1 trace a day thereafter
+**Spent:** 1 sitting, 1 trace
+
+**Description:**
+Build the falsifier T-009 has been carrying since [E-006]: one reading a day of
+the same 42 floor probes, recording the device set and the median at FULL
+precision, appended to a ledger that is never rewritten. Reuse [E-006]'s exact
+code path so the values are comparable to the four already published.
+
+The analyser must refuse to answer when the data cannot support an answer —
+one device set, or too few days — rather than answering weakly.
+
+**Artifacts:**
+- agents/engineer/workspace/run_t009.py
+- tools/dryruns/dryrun_t009.py
+- results/T-009-ledger.md (committed), results/T-009-ledger.jsonl
+- docs/ndif-reproducibility.md -> rewritten section 3
+- agents/shared/decisions.md -> "[E-012] Decision: the drift is not drift"
+
+**Closed:** 2026-11-03. The first reading answered most of T-009 on its own: it
+came back bit-identical to [E-006]'s GPU 0 value from two days earlier.

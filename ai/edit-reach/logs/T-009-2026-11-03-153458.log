@@ -1,0 +1,40 @@
+2026-11-03 15:34:58,794 INFO     T-009  run T-009 -> logs/T-009-2026-11-03-153458.log
+2026-11-03 15:34:58,794 INFO     T-009  
+2026-11-03 15:34:58,794 INFO     T-009  value census -- distinct values and how often each recurs
+2026-11-03 15:34:58,794 INFO     T-009  
+2026-11-03 15:34:58,794 INFO     T-009    0.08087725             n=1   GPUs unrecorded 2026-10-31
+2026-11-03 15:34:58,794 INFO     T-009    0.08094214687103357    n=1   GPUs unrecorded 2026-11-01
+2026-11-03 15:34:58,794 INFO     T-009    0.08109002151514136    n=9   GPUs 0          2026-11-01 2026-11-03
+2026-11-03 15:34:58,794 INFO     T-009    0.08109313181234508    n=13  GPUs 2          2026-11-01
+2026-11-03 15:34:58,794 INFO     T-009  
+2026-11-03 15:34:58,794 INFO     T-009    4 distinct values over 24 readings
+2026-11-03 15:34:58,794 INFO     T-009    1 of them recur across more than one day, bit-exactly
+2026-11-03 15:34:58,794 INFO     T-009  
+2026-11-03 15:34:58,794 INFO     T-009    A value that repeats to the last bit on a different day is
+2026-11-03 15:34:58,794 INFO     T-009    not drift. It is a fingerprint of which replica served you.
+2026-11-03 15:34:58,795 INFO     T-009  readings        10  (3 with a known device set)
+2026-11-03 15:34:58,795 INFO     T-009  floor median    0.08087725 .. 0.08109313   range 2.159e-04
+2026-11-03 15:34:58,795 INFO     T-009  days            3  2026-10-31 .. 2026-11-03
+2026-11-03 15:34:58,795 INFO     T-009  device sets     ['0', '2']
+2026-11-03 15:34:58,795 INFO     T-009  
+2026-11-03 15:34:58,795 INFO     T-009    BIT-IDENTICAL ACROSS DAYS
+2026-11-03 15:34:58,795 INFO     T-009      edd2b2b152de2098  GPUs 0        2026-11-01 and 2026-11-03   floor identical: True
+2026-11-03 15:34:58,795 INFO     T-009      A reading reproduces exactly across days when the reported
+2026-11-03 15:34:58,795 INFO     T-009      device matches. There is no day effect to find for a
+2026-11-03 15:34:58,795 INFO     T-009      device-matched comparison; the drift lives in WHICH replica
+2026-11-03 15:34:58,795 INFO     T-009      served you, and readings whose device went unrecorded cannot
+2026-11-03 15:34:58,795 INFO     T-009      be attributed after the fact.
+2026-11-03 15:34:58,795 INFO     T-009  
+2026-11-03 15:34:58,795 INFO     T-009    GPUs 0        n=2   median 0.08109002  spread 0.000e+00
+2026-11-03 15:34:58,795 INFO     T-009    GPUs 2        n=1   median 0.08109313  spread 0.000e+00
+2026-11-03 15:34:58,795 INFO     T-009    spread WITHIN a device set   0.000e+00
+2026-11-03 15:34:58,795 INFO     T-009    spread ACROSS everything     2.159e-04
+2026-11-03 15:34:58,795 INFO     T-009  
+2026-11-03 15:34:58,795 INFO     T-009    Within a device the spread is EXACTLY ZERO, across days.
+2026-11-03 15:34:58,795 INFO     T-009    So there is no time component to find: a reading is a
+2026-11-03 15:34:58,795 INFO     T-009    function of which replica served it and nothing else that
+2026-11-03 15:34:58,795 INFO     T-009    has been varied. What remains open is narrower than T-009
+2026-11-03 15:34:58,795 INFO     T-009    was opened for -- not 'what causes the drift' but 'how many
+2026-11-03 15:34:58,795 INFO     T-009    replicas are there', and the readings that would answer it
+2026-11-03 15:34:58,795 INFO     T-009    did not record their device and cannot be made to now.
+2026-11-03 15:34:58,795 INFO     T-009  written: results/T-009-ledger.md

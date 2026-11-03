@@ -1,0 +1,15 @@
+2026-11-03 15:31:25,639 INFO     T-009  run T-009 -> logs/T-009-2026-11-03-153125.log
+2026-11-03 15:31:25,639 INFO     T-009  readings        5  (3 with a known device set)
+2026-11-03 15:31:25,639 INFO     T-009  floor median    0.08087725 .. 0.08109313   range 2.159e-04
+2026-11-03 15:31:25,639 INFO     T-009  days            3  2026-10-31 .. 2026-11-03
+2026-11-03 15:31:25,639 INFO     T-009  device sets     ['0', '2']
+2026-11-03 15:31:25,639 INFO     T-009  
+2026-11-03 15:31:25,639 INFO     T-009    GPUs 0        n=2   median 0.08109001  spread 2.152e-08
+2026-11-03 15:31:25,639 INFO     T-009    GPUs 2        n=1   median 0.08109313  spread 0.000e+00
+2026-11-03 15:31:25,639 INFO     T-009    spread WITHIN a device set   2.152e-08
+2026-11-03 15:31:25,639 INFO     T-009    spread ACROSS everything     2.159e-04
+2026-11-03 15:31:25,639 INFO     T-009  
+2026-11-03 15:31:25,639 INFO     T-009    The device set accounts for most of the spread. That is
+2026-11-03 15:31:25,640 INFO     T-009    consistent with the deployment hypothesis and does not
+2026-11-03 15:31:25,640 INFO     T-009    establish it: days and device sets are still confounded.
+2026-11-03 15:31:25,640 INFO     T-009  written: results/T-009-ledger.md
