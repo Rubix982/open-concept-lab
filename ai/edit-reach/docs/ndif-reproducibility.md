@@ -20,7 +20,7 @@ Four things, in the order they will bite you.
 2. **A tensor cached from an earlier session is not the tensor you would read today.** Worst observed deviation on a quantity that is analytically 1.000: **6.382e-03**.
 3. **Readings can partition by the GPU that served them — on days when more than one GPU serves you.** Observed cleanly once, on 2026-11-01. On 2026-11-03, 16 fresh connections to each of two models all landed on GPU 0 and returned one reading. Routing is a property of the deployment on the day, not a standing one.
 4. **A raw activation is reproducible only within one batch shape; a ratio is not affected.** Change the number of rows, or merely the padding width, and raw keys move by about 2.6% of their magnitude. The ratio of two keys read in the same trace stays bit-identical.
-5. **Depth does not change any of this, in the terms that matter.** The shape effect stays under 3% of key magnitude from layer 0 to layer 31. The one quantity that does grow with depth — where the arithmetic runs, 44-fold over 31 layers — grows only in bfloat16 and is flat in float32.
+5. **Depth does not change the bound that matters.** The shape effect stays under 3% of key magnitude at every layer of every model tested, from layer 0 to layer 79. The one quantity that *does* move with depth — where the arithmetic runs — swings two to three orders of magnitude in bfloat16 with no consistent direction, and sits at machine epsilon in float32. Measure that one at your own layer.
 6. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
 7. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
 
@@ -123,7 +123,7 @@ Widening the pad region moves the keys, although appending padding after the tex
 
 **It is not a bfloat16 artifact either.** GPT-J is served in **float32** and shows the effect at the same relative size as the 70B. Whatever selects the kernel does so above the dtype.
 
-**It does not grow with depth, although it looks like it does.** Swept over five layers on each of two models, 90 traces:
+**It does not grow with depth, although it looks like it does.** Swept over five layers on each of three models, 135 traces:
 
 ```
                         L0       L5      L12    L24/L20   L31/L27
@@ -133,12 +133,19 @@ Llama-3.1-8B (bfloat16)
   key magnitude        0.75     1.66     1.06      3.41     19.75
   AS % OF MAGNITUDE   0.52%    2.59%    1.84%     1.38%     1.34%
 
-GPT-J-6B (float32)
+Llama-3.1-70B (bfloat16), layers 0/5/20/40/79
+  batch_width abs  2.44e-04 1.95e-03 7.81e-03  1.17e-02  1.09e-01
+  key magnitude       0.063    0.215     0.957     1.094     7.094
+  AS % OF MAGNITUDE   0.38%    0.91%    0.82%     1.07%     1.54%
+
+GPT-J-6B (float32), layers 0/5/12/20/27
   batch_width abs  0.00e+00 5.29e-02 4.40e-02  5.08e-02  4.75e-02
   AS % OF MAGNITUDE   0.00%    0.92%    1.32%     1.27%     0.91%
 ```
 
-The absolute figure rises 68-fold from layer 0 to layer 31 on the 8B and that is **entirely** the keys themselves growing — their magnitude rises 26-fold over the same span. In relative terms the effect is flat: **under 3% of key magnitude at every depth on both models.** So the bound is one number and you do not need to re-derive it per layer.
+Across all fifteen layer-model pairs the relative figure runs from 0.00% to **2.59%**, and the 70B's 448-fold absolute rise over 79 layers again tracks its keys growing 113-fold.
+
+The absolute figure rises 68-fold from layer 0 to layer 31 on the 8B and that is **entirely** the keys themselves growing — their magnitude rises 26-fold over the same span. In relative terms the effect is flat: **under 3% of key magnitude at every depth on all three models.** So the bound is one number and you do not need to re-derive it per layer.
 
 GPT-J's layer 0 is bit-identical on every check, and `cached_reference` is correspondingly 0.000e+00 at exactly the layers where `batch_width` is — the two are the same effect seen twice, which is the closest thing to an internal consistency check this suite has.
 
@@ -154,7 +161,17 @@ GPT-J-6B         7.451e-09      float32, and this is float32 epsilon scale
 
 The first version of this suite reported 70B and GPT-J as "differs" purely because the documented figure came from the 8B. That is not a deployment difference, it is a different model, and the suite now keeps a per-model table so the two cannot be confused.
 
-**It also grows with depth, and only in bfloat16.** On the 8B the median rises monotonically 8.41e-07 (L0) to 3.68e-05 (L31), a factor of 44. On GPT-J it does not move at all — 1.49e-08 to 7.45e-09 across five layers, which is float32 epsilon scale throughout. The depth dependence is bfloat16 accumulation, not something about depth, and it is the one quantity in this document that gets materially worse the deeper you read.
+**It also varies by orders of magnitude with depth in bfloat16 — with no consistent direction — and not at all in float32.** Fifteen layer-model pairs:
+
+```
+                 L0        L5    L20/L12   L40/L24   L79/L31/L27
+
+8B   (bf16)  8.41e-07  5.32e-06  1.63e-05  2.66e-05    3.68e-05
+70B  (bf16)  4.84e-06  4.97e-07  9.13e-08  2.72e-05    1.65e-05
+GPTJ (fp32)  1.49e-08  7.45e-09  7.45e-09  1.86e-09    7.45e-09
+```
+
+The 8B rises monotonically, a factor of 44 over 31 layers. **The 70B does not** — it falls by a factor of 53 to layer 20, then rises by 298 to layer 40. A reading of this taken from the 8B alone would have said "grows with depth", and the 70B refutes it. What survives both is weaker and still useful: in bfloat16 this spans two to three orders of magnitude across depth and you cannot predict where, and in float32 it sits at machine epsilon everywhere. So **measure it at the layer you actually read**, which is what the suite's `--layer` sweep is for.
 
 The per-item maximum is larger and **sample-dependent** — 2.98e-03 over the original 42 probes, 6.31e-05 over the suite's 6 — so the median is the statistic to compare and the per-item figure is the one to budget for. That the median is stable is a property of the median, not evidence that the two arithmetics agree. Pick one site and stay with it.
 
@@ -270,6 +287,17 @@ Two things the sweep changed:
 | | |
 |---|---|
 | **The shape effect is flat in depth, not growing** | Its absolute size rises 68-fold over 31 layers and that is entirely the keys growing — 26-fold — underneath it. Relative, it stays under 3% everywhere. The bound in §3 is therefore one number for the whole model, which the layer-5-only version could not have claimed. |
-| **The arithmetic-site effect does grow, and only in bfloat16** | 44-fold over 31 layers on the 8B, flat at float32 epsilon on GPT-J. So it is accumulation, not depth, and it is the one quantity here that penalises reading deep. |
+| **The arithmetic-site effect moves with depth, and only in bfloat16** | 44-fold over 31 layers on the 8B, flat at float32 epsilon on GPT-J. Stated after the 8B and GPT-J alone as "grows with depth" — see the fifth run, where the 70B refuted the direction and left only the magnitude. |
 
 The sweep mode is now part of the suite (`--layer 0,5,12,24,31`), with a fresh context per layer — a cached tensor from layer 5 compared against a reading at layer 24 would produce a large and entirely meaningless difference, which is the same fault class as the three this suite has already found in itself.
+
+
+### The fifth run: the 70B refused the shape of the fourth
+
+2026-11-03, 45 more traces, `Llama-3.1-70B` at layers 0, 5, 20, 40 and 79. The expectation written before it, in plain words, was that it would add a row and break nothing, because the structure had already held on three models. **Half of that was right.**
+
+The structural checks held: `ratio_in_trace`, `batch_rows` and `pad_content` all read 0.000e+00 at all five layers, bringing those claims to **fifteen layer-model pairs across two architectures and three model sizes, every one exactly zero.** The batch-shape bound held too — 0.38% to 1.54%, inside the sub-3% band, with the 448-fold absolute rise over 79 layers again fully accounted for by the keys growing 113-fold.
+
+What did not hold was a claim made one run earlier. The fourth run saw the arithmetic-site effect rise monotonically with depth on the 8B and concluded it "grows with depth in bfloat16". The 70B falls by a factor of 53 from layer 0 to layer 20 and then rises by 298 to layer 40. The direction was an artefact of one model.
+
+The surviving claim is weaker and is the one now in §3: in bfloat16 this quantity spans two to three orders of magnitude across depth **and you cannot predict where**; in float32 it does not move. The practical consequence changes from "be careful deep" to "measure it at your layer", which is a different instruction and the suite exists to carry it out.

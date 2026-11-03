@@ -444,3 +444,38 @@ effect grows" from "the keys grow".
 
 **Closed:** 2026-11-03 on the first branch. All three structural checks read
 0.000e+00 at all ten layer-model pairs.
+
+### E-011 · Sweep Llama-3.1-70B across depth
+
+**Status:** closed
+**Type:** review
+**Priority:** medium
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** ~45 traces
+**Spent:** 45 traces, ~4.5 min
+
+**Description:**
+[E-010] swept `Llama-3.1-8B` and `GPT-J-6B`. `Llama-3.1-70B` has 80 layers and
+had been read at layer 5 only, so it is both the deepest model available and
+the one with the least coverage. Run the same six checks at 0, 5, 20, 40, 79.
+
+**Prediction recorded before the run:** adds a row, breaks nothing, because the
+structure had already held on three models. Recorded so that it can be wrong.
+
+**Pre-stated branches.**
+- Structure holds: the claims reach fifteen layer-model pairs and the depth
+  qualifier comes off for good.
+- Structure fails anywhere: that claim is model- or depth-specific and the
+  document's scope shrinks to where it was measured.
+
+**Artifacts:**
+- results/E-011-layers-70b.json, results/E-011-summary.md
+- docs/ndif-reproducibility.md -> "The fifth run: the 70B refused the shape of
+  the fourth", revised section 3
+- agents/shared/decisions.md -> "[E-011] Decision: the arithmetic-site effect
+  has no consistent direction in depth"
+
+**Closed:** 2026-11-03 on the first branch for the structure, and the
+prediction was **half wrong**: it broke a claim made one run earlier about the
+arithmetic-site effect's direction in depth.

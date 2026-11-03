@@ -360,3 +360,28 @@ _Date: 2026-11-03_
 **Revisit if:** a model is served in a dtype other than bfloat16 or float32, or a layer beyond 31 is read on a deeper model. `Llama-3.1-70B` has 80 layers and was swept at none of them.
 
 **Artifacts:** `results/E-010-layers-8b.json`; `results/E-010-layers-gptj.json`; `results/E-010-summary.md`; `tools/ndif_conformance.py`; `docs/ndif-reproducibility.md`
+
+## [E-011] Decision: the arithmetic-site effect has no consistent direction in depth, and [E-010]'s wording is withdrawn
+
+_Date: 2026-11-03_
+
+**Decision:** [E-010]'s sentence "the arithmetic-site median grows with depth in bfloat16" is **withdrawn**. What is supported is that in bfloat16 it spans two to three orders of magnitude across depth with no predictable direction, and in float32 it does not move. The instruction that follows changes from "be careful when reading deep" to "measure it at the layer you read".
+
+**Rationale.** `Llama-3.1-70B` at layers 0, 5, 20, 40, 79, 45 traces:
+
+    model          L0        L5   L20/L12   L40/L24   L79/L31/L27
+    8B  (bf16) 8.41e-07  5.32e-06  1.63e-05  2.66e-05      3.68e-05
+    70B (bf16) 4.84e-06  4.97e-07  9.13e-08  2.72e-05      1.65e-05
+    GPTJ(fp32) 1.49e-08  7.45e-09  7.45e-09  1.86e-09      7.45e-09
+
+The 8B rises monotonically, 44-fold. The 70B **falls 53-fold to layer 20 and then rises 298-fold to layer 40**. [E-010] read the direction off one model, which is the same fault [E-008] fixed for magnitudes and [E-009] for routing, now in its third costume.
+
+**What did hold, and now holds firmly.** All three structural checks read 0.000e+00 at every one of **fifteen layer-model pairs**, across two architectures, three model sizes and depths 0 to 79. The batch-shape bound held at 0.38%-1.54% on the 70B, inside the sub-3% band, with its 448-fold absolute rise over 79 layers fully accounted for by keys growing 113-fold — the same decomposition [E-010] found on the 8B, now confirmed on a model with 2.5x the depth.
+
+**A prediction recorded before the run and found half wrong.** The ticket said the sweep would "add a row and break nothing". It did not break the structure and it did break a claim one run old. Recorded because a prediction that is never written down can never be wrong, and this one was useful precisely by being wrong.
+
+**Alternatives rejected:** sampling more layers until the 70B looked monotone — that is sampling until the expected answer arrives. Calling the 70B anomalous — two models disagree and there is no third bfloat16 model to break the tie, so neither is the anomaly.
+
+**Revisit if:** a third bfloat16 model is swept, or anyone samples densely enough to describe the shape between layers rather than at five points on it.
+
+**Artifacts:** `results/E-011-layers-70b.json`; `results/E-011-summary.md`; `docs/ndif-reproducibility.md`
