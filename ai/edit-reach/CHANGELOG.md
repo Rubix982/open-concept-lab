@@ -75,3 +75,4 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 
 - [E-007] NDIF reproducibility reference and conformance suite — docs/ndif-reproducibility.md and tools/ndif_conformance.py; running the suite against the reference narrowed [E-006]'s batch-composition claim to derived ratios and bounded raw-activation reuse at 2.6%
 - [E-008] Conformance suite run on Llama-3.1-70B and GPT-J-6B — structure held on all three across two architectures, every magnitude was model-specific; GPT-J is served in float32, which answers [E-001]'s open "revisit if"
+- Correction: [E-008]'s commit message says "10/10 dry-runs pass". There are **9** dry-run files; 10 was the count of selected *checks* inside the conformance suite. All 9 pass. Recorded here because the commit is pushed and a record that was wrong should say where.
