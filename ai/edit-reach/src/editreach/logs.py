@@ -73,6 +73,50 @@ FILE_FORMAT: Final[str] = "%(asctime)s %(levelname)-8s %(name)s  %(message)s"
 CONSOLE_FORMAT: Final[str] = "%(levelname)-7s %(message)s"
 
 
+class _DeferredHeader:
+    """Hold the run header until a real record arrives; emit nothing if none does.
+
+    `setup()` used to announce the run immediately. Importing a run module
+    therefore created a log file containing one line and nothing else, and the
+    dry-runs import every run module — so each pass over the dry-run set left
+    eight content-free files in a directory this project commits. Twenty of them
+    accumulated in two days before anyone looked.
+
+    The fix is not to suppress the header; a log that does not say what ran is
+    the thing `_project_root`'s docstring complains about. It is to emit the
+    header **only once something else is emitted**, so that importing a module
+    costs nothing and running it still produces a self-describing record.
+
+    Paired with `delay=True` on the file handler, which defers creating the file
+    itself until its first write. Both halves are needed: `delay=True` alone
+    does nothing when `setup()` immediately logs a line.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._pending: list[logging.LogRecord] = []
+        self._flushed = False
+
+    def add_header(self, record: logging.LogRecord) -> None:
+        self._pending.append(record)
+
+    def emit(self, record: logging.LogRecord) -> None:
+        if not self._flushed:
+            self._flushed = True        # set FIRST: the header emits recurse here
+            pending, self._pending = self._pending, []
+            for held in pending:
+                super().emit(held)
+        super().emit(record)
+
+
+class _DeferredFileHandler(_DeferredHeader, logging.FileHandler):
+    pass
+
+
+class _DeferredStreamHandler(_DeferredHeader, logging.StreamHandler):
+    pass
+
+
 def setup(name: str, *, config: dict[str, Any] | None = None,
           console_level: int = logging.INFO,
           file_level: int = logging.DEBUG) -> logging.Logger:
@@ -96,14 +140,15 @@ def setup(name: str, *, config: dict[str, Any] | None = None,
     root.setLevel(min(console_level, file_level))
     root.handlers.clear()         # re-running in one process must not duplicate lines
 
-    fh = logging.FileHandler(path, encoding="utf-8")
+    # `delay=True` so the file is not created until something is written to it.
+    fh = _DeferredFileHandler(path, encoding="utf-8", delay=True)
     fh.setLevel(file_level)
     fh.setFormatter(logging.Formatter(FILE_FORMAT))
     root.addHandler(fh)
 
     # stderr, not stdout: a caller piping stdout to a filter cannot accidentally
     # swallow the log as well.
-    sh = logging.StreamHandler(sys.stderr)
+    sh = _DeferredStreamHandler(sys.stderr)
     sh.setLevel(console_level)
     sh.setFormatter(logging.Formatter(CONSOLE_FORMAT))
     root.addHandler(sh)
@@ -115,14 +160,38 @@ def setup(name: str, *, config: dict[str, Any] | None = None,
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
     log = logging.getLogger(name)
-    log.info("run %s -> %s", name, path.relative_to(ROOT))
+
+    # Held, not emitted. They go out ahead of the first real record, so a run
+    # that logs anything still opens with what it is and what it was given, and
+    # a module that is merely imported writes nothing anywhere.
+    def _held(msg: str, *args) -> logging.LogRecord:
+        return log.makeRecord(name, logging.INFO, __file__, 0, msg, args, None)
+
+    # Relative when it can be, absolute when it cannot. `EDITREACH_LOGS` is a
+    # documented way to put logs anywhere, and `relative_to` RAISES rather than
+    # falling back -- so setting that variable to a directory outside the
+    # project made `setup()` itself crash. Found by the dry-run that was being
+    # written to check something else entirely.
+    try:
+        shown: Path | str = path.relative_to(ROOT)
+    except ValueError:
+        shown = path
+    headers = [_held("run %s -> %s", name, shown)]
     if config:
-        log.info("config %s", json.dumps(config, sort_keys=True, default=str))
+        headers.append(_held("config %s",
+                             json.dumps(config, sort_keys=True, default=str)))
+    for h in (fh, sh):
+        for rec in headers:
+            h.add_header(rec)
     return log
 
 
 def log_path(logger: logging.Logger | None = None) -> Path | None:
-    """The active run's log file. Handlers live on root, so look there."""
+    """The active run's log file. Handlers live on root, so look there.
+
+    The path exists as soon as `setup` runs; the FILE does not, until something
+    is logged. Callers that want the file on disk must log something first.
+    """
     for h in logging.getLogger().handlers:
         if isinstance(h, logging.FileHandler):
             return Path(h.baseFilename)

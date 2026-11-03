@@ -7,9 +7,18 @@ whole card rests on it.
 
 from __future__ import annotations
 
+import os
 import sys
+import tempfile
 from collections import Counter
 from pathlib import Path
+
+# This dry-run exercises code paths in run_e004 that LOG, so unlike its
+# siblings it would leave a file in the project's log directory on every pass.
+# A dry-run is not a run and its output is not part of the record, so it writes
+# somewhere else. Set before importing anything from the package, because
+# `setup()` resolves the directory when it is called.
+os.environ.setdefault("EDITREACH_LOGS", tempfile.mkdtemp(prefix="dryrun-e004-"))
 
 import torch
 

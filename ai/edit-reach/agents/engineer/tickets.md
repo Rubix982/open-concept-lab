@@ -508,3 +508,40 @@ one device set, or too few days — rather than answering weakly.
 
 **Closed:** 2026-11-03. The first reading answered most of T-009 on its own: it
 came back bit-identical to [E-006]'s GPU 0 value from two days earlier.
+
+### E-013 · 80% of the kept log record was content-free
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** 1 sitting
+**Spent:** 1 sitting
+
+**Description:**
+`logs.setup()` announces the run as its last act, and every run module calls it
+at IMPORT. So importing a run module creates a log file containing one line
+naming itself. The dry-runs import every run module, and five scripts import
+`run_e001` as a library, so each dry-run pass left eight such files.
+
+Measured before fixing: **124 of 155 committed log files** were header-only.
+84 of them were E-001's.
+
+Fix both halves — the header must be HELD until a real record arrives, and the
+file handler opened with `delay=True`. Either alone does nothing: `delay=True`
+is defeated by `setup()` immediately logging, and holding the header without
+`delay=True` still creates an empty file.
+
+Do not suppress the header. A log that does not say what ran is the fault
+`logs.py` exists to prevent.
+
+**Artifacts:**
+- src/editreach/logs.py -> `_DeferredHeader`, `_DeferredFileHandler`,
+  `_DeferredStreamHandler`; `EDITREACH_LOGS` path fix
+- tools/dryruns/dryrun_logging.py (new)
+- tools/dryruns/dryrun_e004.py -> sends its own logs to a temp directory
+- 124 header-only log files removed (recoverable from git history)
+
+**Closed:** 2026-11-03. 11/11 dry-runs pass and leave the project's log
+directory unchanged; a real run still opens with its header and config.

@@ -417,3 +417,27 @@ Thirteen readings return `0.08109313181234508` to the last bit, across **two dif
 **Revisit if:** a device-matched pair of readings ever differs. That single observation would restore a time component and reopen T-009 as originally framed.
 
 **Artifacts:** `agents/engineer/workspace/run_t009.py`; `tools/dryruns/dryrun_t009.py`; `results/T-009-ledger.md`; `docs/ndif-reproducibility.md`
+
+## [E-013] Decision: the run header is held until a real record arrives
+
+_Date: 2026-11-03_
+
+**Decision:** `logs.setup()` no longer writes anything. It holds the run header, and the config line when given, and emits them immediately before the first real record. The file handler is opened with `delay=True`. Importing a module that calls `setup()` now costs nothing on disk; running it still produces a self-describing log.
+
+**What was measured first.** 124 of 155 committed log files in this project were a single line naming themselves and nothing else — **80% of the kept record was content-free**. By run name: E-001 84, E-005 13, E-002/E-003/E-006 9 each. By date: 10 on 10-31, 43 on 11-01, 71 on 11-03. The files were removed; they remain in git history.
+
+**Why E-001 dominates.** Five run scripts import `run_e001` as a library for its loaders, and `run_e001` calls `setup()` at module scope. So every dry-run pass, and every run of five other scripts, created an E-001 log recording nothing.
+
+**Both halves of the fix are required.** `delay=True` alone is defeated by `setup()` logging a line immediately. Holding the header alone still leaves `FileHandler` creating an empty file at construction. Neither is sufficient and that is why the obvious single fix would not have worked.
+
+**The header is deferred, not dropped.** `logs.py` exists because a run whose parameters are not in its log cannot be interpreted later. Suppressing the announcement to stop the noise would have traded one blindness for another.
+
+**A second bug, found by the dry-run written for the first.** `setup()` called `path.relative_to(ROOT)` to display the log path, which **raises** when the path is outside the project — so setting `EDITREACH_LOGS`, a documented feature, crashed `setup()` itself. Nobody had used it. Now falls back to the absolute path.
+
+**A third fault, in the dry-run's own first assertion.** It redirected the log directory to a temp dir and asserted the temp dir was empty, which conflates *writes no log at all* with *does not write into the repository*. Only the second is the rule: `dryrun_e004` legitimately exercises logging code and sends its output to a temp directory of its own. The check now runs the dry-runs with `EDITREACH_LOGS` unset, as a person would, and asserts the **project's** log directory is unchanged.
+
+**Alternatives rejected:** gitignoring `logs/` — the record is kept on purpose. Deleting stubs periodically — treats the symptom and leaves the next reader counting noise. Moving `setup()` into each `main()` — correct but touches six scripts and does not stop the next one from repeating it.
+
+**Revisit if:** a run is ever found to have produced no log because it crashed before its first record. That is now indistinguishable from never having been started, which is the one thing this trade gives up.
+
+**Artifacts:** `src/editreach/logs.py`; `tools/dryruns/dryrun_logging.py`; `tools/dryruns/dryrun_e004.py`
