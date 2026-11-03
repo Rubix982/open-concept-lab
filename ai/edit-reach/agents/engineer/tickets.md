@@ -369,3 +369,39 @@ deployment running a different model will be reported as a difference.
 **Closed:** 2026-11-03. Structure held on all three across two architectures;
 every magnitude was model-specific. One hypothesis in the document
 ("revisit if NDIF serves float32") turned out to be already true for GPT-J.
+
+### E-009 · Does the serving-GPU partition reproduce at 16 connections?
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** ~32 traces
+**Spent:** 32 traces, ~3 min
+
+**Description:**
+[E-006] saw a clean partition at 16 connections; [E-007] and [E-008] saw none
+at 4, which is too few to distinguish "no partition" from "did not land on a
+second device". Run `session_partition` at the same 16 connections [E-006]
+used, on `Llama-3.1-8B`, and on a second small model to tell a deployment-wide
+condition from a model-specific one.
+
+**Pre-stated branches.**
+- Partition reproduces: §2 stands as written and the device tolerance is
+  justified.
+- One device throughout: §2 is weakened to a property of a deployment on a day,
+  and the fact that the device set CHANGED between 11-01 and 11-03 becomes an
+  observed candidate for T-009's unattributed drift.
+
+**Artifacts:**
+- results/E-009-partition-8b.json, results/E-009-partition-gptj.json
+- results/E-009-summary.md
+- docs/ndif-reproducibility.md -> rewritten section 2, "The third run"
+- tools/ndif_conformance.py -> `check_session_partition` degenerate-case guard
+- agents/shared/decisions.md -> "[E-009] Decision: the GPU partition is a
+  property of a deployment on a day"
+
+**Closed:** 2026-11-03 on the second branch. 32/32 connections landed on GPU 0
+across two models. The check's own `clean_partition = True` on that input was a
+fault and is fixed.

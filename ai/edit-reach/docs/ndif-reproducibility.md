@@ -18,7 +18,7 @@ Four things, in the order they will bite you.
 
 1. **A ratio read inside one trace is exact.** Read both of its terms in the same `model.trace` and everything below cancels. This is the single most effective thing you can do and it costs nothing.
 2. **A tensor cached from an earlier session is not the tensor you would read today.** Worst observed deviation on a quantity that is analytically 1.000: **6.382e-03**.
-3. **Readings partition by the GPU that served them.** Reconnect and you may land somewhere else. Within a device, bit-identical; across devices, a floor median moved by 3.110e-06.
+3. **Readings can partition by the GPU that served them — on days when more than one GPU serves you.** Observed cleanly once, on 2026-11-01. On 2026-11-03, 16 fresh connections to each of two models all landed on GPU 0 and returned one reading. Routing is a property of the deployment on the day, not a standing one.
 4. **A raw activation is reproducible only within one batch shape; a ratio is not affected.** Change the number of rows, or merely the padding width, and raw keys move by about 2.6% of their magnitude. The ratio of two keys read in the same trace stays bit-identical.
 5. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
 6. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
@@ -53,9 +53,9 @@ Two separate causes, and they stack:
 
 ---
 
-## 2. Readings partition by the serving GPU
+## 2. Readings can partition by the serving GPU, on days when more than one GPU serves you
 
-Identical inputs, byte for byte, through fresh connections, produced exactly two distinct results:
+Identical inputs, byte for byte, through fresh connections, on **2026-11-01**, produced exactly two distinct results:
 
 ```
 16 readings of one 126-prompt batch, fresh connection each
@@ -68,13 +68,15 @@ Identical inputs, byte for byte, through fresh connections, produced exactly two
                  across GPUs    3.110e-06
 ```
 
-A perfect partition in both directions: every value maps to one device, every device to one value. Within a device the readings are bit-identical; the variation is entirely between devices.
+A perfect partition in both directions: every value mapped to one device, every device to one value. Within a device the readings were bit-identical; the variation was entirely between devices.
 
-The serving device is observable from the client. `tracer.backend.meta` carries `runtime`, `max_memory_usage` and `max_mem_by_gpu`, and the keys of `max_mem_by_gpu` are GPU indices. Recording it costs nothing and is the only handle the client has on this.
+**Two days later this did not reproduce, and the reason is the more useful fact.** On **2026-11-03**, 16 fresh connections to `Llama-3.1-8B` all landed on **GPU 0** and returned a single signature, spread 0.000e+00. Sixteen more to `GPT-J-6B` did the same. Not a weaker partition — no partition, because there was only ever one device in play.
 
-**What to do.** Record the device on every reading you intend to compare later. Do not assume a reconnection lands where the last one did.
+So routing varies between days. On a day when one device serves you, the device explains nothing and a per-device tolerance buys nothing; on a day like 2026-11-01 it explains 3.11e-06. **You cannot know which kind of day you are having without looking**, which is the argument for recording the device rather than for assuming a value.
 
----
+The serving device is observable from the client. `tracer.backend.meta` carries `runtime`, `max_memory_usage` and `max_mem_by_gpu`, and the keys of `max_mem_by_gpu` are GPU indices. A sharded model reports all of its devices — `Llama-3.1-70B` returns `0,1,2,3` on every call — so for large models this identifies the deployment rather than the replica.
+
+**What to do.** Record the device on every reading you intend to compare later, and record how many distinct devices a run saw. A single-device run is not evidence that routing is stable; it is evidence about that run.
 
 ## 3. The device accounts for 1.4% of the drift actually observed
 
@@ -134,7 +136,9 @@ The first version of this suite reported 70B and GPT-J as "differs" purely becau
 
 The per-item maximum is larger and **sample-dependent** — 2.98e-03 over the original 42 probes, 6.31e-05 over the suite's 6 — so the median is the statistic to compare and the per-item figure is the one to budget for. That the median is stable is a property of the median, not evidence that the two arithmetics agree. Pick one site and stay with it.
 
-The remaining ~2e-04, between the two days, **is not attributed.** Candidates not yet tested: a deployment or driver change between sessions, a model-weight reload, a change in how the batch was sharded. It is logged as an open question (T-009) rather than explained.
+The remaining ~2e-04, between the two days, **is not attributed.** Candidates not yet tested: a deployment or driver change between sessions, a model-weight reload, a change in how the batch was sharded.
+
+**The 2026-11-03 run promotes one of those candidates.** The set of devices serving `Llama-3.1-8B` changed between 11-01 (GPUs 0 and 2) and 11-03 (GPU 0 only). That is a deployment change, observed rather than hypothesised, sitting between exactly the sessions whose readings differ. It is still not a measurement of the drift — nobody has shown the two move together — but "the deployment changed between days" has gone from a guess to a thing that demonstrably happens. Logged as T-009.
 
 **What to do.** Do not write a gate that asserts bit-identity across readings. For a quantity read across traces and compared across sessions, use a tolerance of at least **2.2e-04**. Prefer, wherever the question allows it, a ratio read inside one trace — §1 — because it cancels all of this rather than tolerating it.
 
@@ -217,3 +221,17 @@ Running the same suite on 70B and GPT-J-6B on 2026-11-03 added three things and 
 | **The dtype question answered itself** | GPT-J is served in **float32**, which this document had listed as a hypothetical ("revisit if NDIF serves float32"). It does, for that model. §1's dtype half does not apply there — and the shape effect in §3 appears anyway, which is what rules bfloat16 out as its cause. |
 
 The pad-content control was added during this run. Without it, §3 could only say that shape matters; with it, §3 can say why, and can say that nothing needs fixing in your masking.
+
+
+### The third run: the partition did not reproduce
+
+2026-11-03, 32 further traces. 16 fresh connections to `Llama-3.1-8B` and 16 to `GPT-J-6B`.
+
+```
+Llama-3.1-8B    16/16  ->  one signature, GPU 0,  spread 0.000e+00
+GPT-J-6B        16/16  ->  one signature, GPU 0,  spread 0.000e+00
+```
+
+§2 is weakened accordingly and now states the partition as something that happens on some days rather than as a property of the instrument. The negative is worth as much as the original here: a tolerance justified by "readings partition by device" would be justified by nothing at all on a day like this one, and a reader who believed the first version of §2 would not have known to check.
+
+**It also found a fault in the suite.** `check_session_partition` reported `clean_partition = True` for sixteen identical readings off a single GPU, because "every signature maps to one device" and "every device carries one signature" are both vacuously true when there is one of each. A check that passes on an input that cannot fail is the third instance of one fault in this suite's short life, and the third to be fixed by naming the degenerate case rather than by tightening a number. It now reports `n/a - nothing to partition`.

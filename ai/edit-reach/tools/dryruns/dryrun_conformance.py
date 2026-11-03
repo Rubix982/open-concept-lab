@@ -56,6 +56,13 @@ def main() -> int:
         for check in refs:
             assert check in C.CHECKS, f"{model} references unknown check {check!r}"
 
+    # `session_partition` must not claim a clean partition when there is only
+    # one reading or one device. Asserted on the source because the condition
+    # only arises against a live deployment that happens to be single-device.
+    part = src[src.index("def check_session_partition"):src.index("def check_trace_source")]
+    assert "len(devices) < 2" in part, (
+        "session_partition must refuse to call a single-device run a partition")
+
     print(f"dryrun_conformance ok -- {len(C.CHECKS)} checks, registry sane, standalone")
     return 0
 

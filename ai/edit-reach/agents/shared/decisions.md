@@ -300,3 +300,28 @@ Structure: identical. Magnitude: the arithmetic-site median spans three orders o
 **Still not measured:** any layer other than 5, any batch wider than 22 rows, and the kernel diagnosis is an inference from the pad-content control rather than an observation of the kernel.
 
 **Artifacts:** `tools/ndif_conformance.py`; `docs/ndif-reproducibility.md`; `results/E-007-conformance-*.json`; `results/E-008-summary.md`
+
+## [E-009] Decision: the GPU partition is a property of a deployment on a day, not of the instrument
+
+_Date: 2026-11-03_
+
+**Decision:** Section 2 of `docs/ndif-reproducibility.md` is weakened. NDIF readings *can* partition by serving GPU; they did on 2026-11-01 and did not on 2026-11-03. No tolerance may be justified by the partition alone, and every run records how many distinct devices it saw rather than assuming more than one exists.
+
+**Rationale.** 32 traces at the same 16 connections [E-006] used:
+
+    Llama-3.1-8B    16/16  ->  one signature, GPU 0, spread 0.000e+00
+    GPT-J-6B        16/16  ->  one signature, GPU 0, spread 0.000e+00
+
+Not a weaker partition — no partition, because only one device was ever in play. Two models, so this is a condition of the deployment on the day rather than of one model.
+
+**What the negative buys.** [E-006]'s partition was real: 8 readings on GPU 0 and 8 on GPU 2, clean in both directions. What it was not is standing. A reader who took §2 as a property of NDIF would have sized a tolerance against a device effect that, on 2026-11-03, does not exist — and would have had no reason to check.
+
+**It promotes a T-009 candidate from guess to observation.** The device set serving `Llama-3.1-8B` changed between 11-01 (GPUs 0 and 2) and 11-03 (GPU 0 alone). That is a deployment change, observed, sitting between exactly the sessions whose floor medians differ by the unattributed ~2e-04. **This is not a measurement of the drift** — nothing yet shows the two move together — but "the deployment changed between days" is now a thing that demonstrably happens rather than a thing we supposed.
+
+**A fault in the check, the third of its kind in this suite.** `check_session_partition` returned `clean_partition = True` for sixteen identical readings off one GPU, because "one device per signature" and "one signature per device" are both vacuously true when there is one of each. It now requires at least two of each and otherwise reports `n/a - nothing to partition`. The other two were a precision check measuring cancellation and an arithmetic-site check read on an analytically pinned quantity. All three are the same fault: **a check evaluated on an input that cannot express the thing it tests**, and all three were fixed by naming the degenerate case rather than by moving a number.
+
+**Alternatives rejected:** reporting the single-device run as a match for [E-006] — it is neither a match nor a mismatch, it is a different population. Repeating until a second device appeared — that is sampling until the expected answer arrives, and the date would have been unrecoverable from the result.
+
+**Revisit if:** a run sees two or more devices again, at which point the partition can be tested rather than merely observed.
+
+**Artifacts:** `results/E-009-partition-8b.json`; `results/E-009-partition-gptj.json`; `results/E-009-summary.md`; `docs/ndif-reproducibility.md`; `tools/ndif_conformance.py`

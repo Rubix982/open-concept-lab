@@ -520,8 +520,17 @@ def check_session_partition(ctx) -> Observation:
     for s, gs in seen.items():
         for g in gs:
             gpu_to_sig.setdefault(g, set()).add(s)
-    clean = all(len(v) == 1 for v in sig_to_gpu.values()) and \
-        all(len(v) == 1 for v in gpu_to_sig.values())
+    # A partition needs at least two of each to be a partition at all. With one
+    # signature on one device both conditions above are vacuously true, and the
+    # first version of this check happily reported `clean_partition = True` for
+    # sixteen identical readings off a single GPU -- a pass on an input that
+    # cannot fail, which is the fault this project keeps paying to find.
+    devices = {g for gs in seen.values() for g in gs}
+    if len(seen) < 2 or len(devices) < 2:
+        clean = None
+    else:
+        clean = all(len(v) == 1 for v in sig_to_gpu.values()) and \
+            all(len(v) == 1 for v in gpu_to_sig.values())
     meds = [m for v in floors.values() for m in v]
     spread = (max(meds) - min(meds)) if meds else 0.0
     return Observation(
@@ -529,12 +538,15 @@ def check_session_partition(ctx) -> Observation:
         unit="distinct readings", traces=ctx.connections,
         extra={
             "connections": ctx.connections,
-            "clean_partition": clean,
+            "distinct_devices": sorted(devices),
+            "clean_partition": "n/a - nothing to partition" if clean is None else clean,
             "spread_across_readings": spread,
             "by_signature": {s: sorted(set(g)) for s, g in seen.items()},
         },
-        note="a clean partition requires BOTH directions: one device per "
-             "reading and one reading per device",
+        note="a clean partition requires BOTH directions AND something to "
+             "partition: one device per reading, one reading per device, and at "
+             "least two of each. One device means the device explains nothing "
+             "that day -- not that it never does",
     )
 
 

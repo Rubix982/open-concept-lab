@@ -88,3 +88,6 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 **Falsifier:** re-read the 42 floor probes daily for a week, recording the GPU and the exact median. If values cluster by day rather than by device, it is deployment state and the fix is to record a server fingerprint per run. If they scatter within a day, a third source is live and the 2.2e-04 tolerance is a floor rather than a bound.
 **Why it is logged rather than chased now:** 2.2e-04 is already below every tolerance this project relies on, and the anchor gate — the one quantity known analytically — is immune by construction. This is worth knowing, not worth blocking on. **It becomes blocking the moment any claim needs reproducibility tighter than 2.2e-04.**
 **Answer:** —
+
+**2026-11-03 [E-009]:** one candidate promoted from guess to observation. The set of GPUs serving `Llama-3.1-8B` changed between 11-01 (GPUs 0 and 2) and 11-03 (GPU 0 alone, 16/16 connections; `GPT-J-6B` likewise). A deployment change demonstrably happens between days, and it sits between exactly the sessions whose floor medians differ. Nothing yet shows the two move together — the falsifier is unchanged: read the same 42 floor probes daily for a week, recording device set and exact median, and see whether the median moves when the device set does.
+
