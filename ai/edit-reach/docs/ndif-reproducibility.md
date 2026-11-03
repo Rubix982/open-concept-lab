@@ -20,8 +20,9 @@ Four things, in the order they will bite you.
 2. **A tensor cached from an earlier session is not the tensor you would read today.** Worst observed deviation on a quantity that is analytically 1.000: **6.382e-03**.
 3. **Readings can partition by the GPU that served them — on days when more than one GPU serves you.** Observed cleanly once, on 2026-11-01. On 2026-11-03, 16 fresh connections to each of two models all landed on GPU 0 and returned one reading. Routing is a property of the deployment on the day, not a standing one.
 4. **A raw activation is reproducible only within one batch shape; a ratio is not affected.** Change the number of rows, or merely the padding width, and raw keys move by about 2.6% of their magnitude. The ratio of two keys read in the same trace stays bit-identical.
-5. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
-6. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
+5. **Depth does not change any of this, in the terms that matter.** The shape effect stays under 3% of key magnitude from layer 0 to layer 31. The one quantity that does grow with depth — where the arithmetic runs, 44-fold over 31 layers — grows only in bfloat16 and is flat in float32.
+6. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
+7. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
 
 ---
 
@@ -122,7 +123,26 @@ Widening the pad region moves the keys, although appending padding after the tex
 
 **It is not a bfloat16 artifact either.** GPT-J is served in **float32** and shows the effect at the same relative size as the 70B. Whatever selects the kernel does so above the dtype.
 
-**What this means for you.** A raw activation is reproducible only inside a fixed batch shape — about 1% of its magnitude on two of these models and 2.6% on the third. A ratio of two activations read in the same trace is reproducible across batch shape, bit for bit, on all three. If you cache activations and compare them later, that 1-3% is your floor, and it is three to four orders of magnitude worse than anything else in this document.
+**It does not grow with depth, although it looks like it does.** Swept over five layers on each of two models, 90 traces:
+
+```
+                        L0       L5      L12    L24/L20   L31/L27
+
+Llama-3.1-8B (bfloat16)
+  batch_width abs  3.91e-03 4.30e-02 1.95e-02  4.69e-02  2.66e-01
+  key magnitude        0.75     1.66     1.06      3.41     19.75
+  AS % OF MAGNITUDE   0.52%    2.59%    1.84%     1.38%     1.34%
+
+GPT-J-6B (float32)
+  batch_width abs  0.00e+00 5.29e-02 4.40e-02  5.08e-02  4.75e-02
+  AS % OF MAGNITUDE   0.00%    0.92%    1.32%     1.27%     0.91%
+```
+
+The absolute figure rises 68-fold from layer 0 to layer 31 on the 8B and that is **entirely** the keys themselves growing — their magnitude rises 26-fold over the same span. In relative terms the effect is flat: **under 3% of key magnitude at every depth on both models.** So the bound is one number and you do not need to re-derive it per layer.
+
+GPT-J's layer 0 is bit-identical on every check, and `cached_reference` is correspondingly 0.000e+00 at exactly the layers where `batch_width` is — the two are the same effect seen twice, which is the closest thing to an internal consistency check this suite has.
+
+**What this means for you.** A raw activation is reproducible only inside a fixed batch shape, to within about 1-3% of its magnitude, at any depth and on either architecture. A ratio of two activations read in the same trace is reproducible across batch shape, bit for bit, on all three models and every layer tested. If you cache activations and compare them later, that 1-3% is your floor, and it is three to four orders of magnitude worse than anything else in this document.
 
 **Where the arithmetic runs is model-specific and spans three orders of magnitude.** Multiplying inside the trace on the GPU, against returning the vectors and multiplying on the CPU, gives a difference of medians of:
 
@@ -133,6 +153,8 @@ GPT-J-6B         7.451e-09      float32, and this is float32 epsilon scale
 ```
 
 The first version of this suite reported 70B and GPT-J as "differs" purely because the documented figure came from the 8B. That is not a deployment difference, it is a different model, and the suite now keeps a per-model table so the two cannot be confused.
+
+**It also grows with depth, and only in bfloat16.** On the 8B the median rises monotonically 8.41e-07 (L0) to 3.68e-05 (L31), a factor of 44. On GPT-J it does not move at all — 1.49e-08 to 7.45e-09 across five layers, which is float32 epsilon scale throughout. The depth dependence is bfloat16 accumulation, not something about depth, and it is the one quantity in this document that gets materially worse the deeper you read.
 
 The per-item maximum is larger and **sample-dependent** — 2.98e-03 over the original 42 probes, 6.31e-05 over the suite's 6 — so the median is the statistic to compare and the per-item figure is the one to budget for. That the median is stable is a property of the median, not evidence that the two arithmetics agree. Pick one site and stay with it.
 
@@ -235,3 +257,19 @@ GPT-J-6B        16/16  ->  one signature, GPU 0,  spread 0.000e+00
 §2 is weakened accordingly and now states the partition as something that happens on some days rather than as a property of the instrument. The negative is worth as much as the original here: a tolerance justified by "readings partition by device" would be justified by nothing at all on a day like this one, and a reader who believed the first version of §2 would not have known to check.
 
 **It also found a fault in the suite.** `check_session_partition` reported `clean_partition = True` for sixteen identical readings off a single GPU, because "every signature maps to one device" and "every device carries one signature" are both vacuously true when there is one of each. A check that passes on an input that cannot fail is the third instance of one fault in this suite's short life, and the third to be fixed by naming the degenerate case rather than by tightening a number. It now reports `n/a - nothing to partition`.
+
+
+### The fourth run: across depth
+
+2026-11-03, 90 traces. Five layers on `Llama-3.1-8B` (0, 5, 12, 24, 31) and five on `GPT-J-6B` (0, 5, 12, 20, 27), six checks each.
+
+**Every structural check read exactly 0.000e+00 at all ten layer-model pairs**: the analytic ratio, the batch-row ratio, and the pad-content control. These are the claims this document rests on and they do not depend on where you read.
+
+Two things the sweep changed:
+
+| | |
+|---|---|
+| **The shape effect is flat in depth, not growing** | Its absolute size rises 68-fold over 31 layers and that is entirely the keys growing — 26-fold — underneath it. Relative, it stays under 3% everywhere. The bound in §3 is therefore one number for the whole model, which the layer-5-only version could not have claimed. |
+| **The arithmetic-site effect does grow, and only in bfloat16** | 44-fold over 31 layers on the 8B, flat at float32 epsilon on GPT-J. So it is accumulation, not depth, and it is the one quantity here that penalises reading deep. |
+
+The sweep mode is now part of the suite (`--layer 0,5,12,24,31`), with a fresh context per layer — a cached tensor from layer 5 compared against a reading at layer 24 would produce a large and entirely meaningless difference, which is the same fault class as the three this suite has already found in itself.

@@ -405,3 +405,42 @@ condition from a model-specific one.
 **Closed:** 2026-11-03 on the second branch. 32/32 connections landed on GPU 0
 across two models. The check's own `clean_partition = True` on that input was a
 fault and is fixed.
+
+### E-010 · Does the conformance picture hold away from layer 5?
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** ~90 traces
+**Spent:** 90 traces, ~6 min
+
+**Description:**
+Every number in [E-007] through [E-009] was read at layer 5. Add a sweep mode
+to `tools/ndif_conformance.py` taking `--layer 0,5,12,24,31`, with a FRESH
+context per layer — the checks hand each other cached tensors, and comparing a
+layer-5 tensor against a layer-24 reading would produce a large meaningless
+difference. Run it on `Llama-3.1-8B` and `EleutherAI/gpt-j-6b` and decide, per
+check, whether it states something about the instrument or about the depth.
+
+Report `batch_width` RELATIVE to key magnitude as well as absolute: key
+magnitude grows with depth, so an absolute figure cannot distinguish "the
+effect grows" from "the keys grow".
+
+**Pre-stated branches.**
+- Structural checks read 0 at every layer: the document's claims are
+  depth-independent and say so.
+- Any structural check nonzero away from layer 5: that claim is layer-5
+  specific and the document's scope shrinks to one layer.
+
+**Artifacts:**
+- results/E-010-layers-8b.json, results/E-010-layers-gptj.json
+- results/E-010-summary.md
+- tools/ndif_conformance.py -> `--layer` sweep, per-layer `Ctx`, matrix output
+- docs/ndif-reproducibility.md -> "The fourth run: across depth"
+- agents/shared/decisions.md -> "[E-010] Decision: the structure is
+  depth-independent; the arithmetic-site effect is not, and only in bfloat16"
+
+**Closed:** 2026-11-03 on the first branch. All three structural checks read
+0.000e+00 at all ten layer-model pairs.

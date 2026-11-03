@@ -698,7 +698,9 @@ def fmt(x: float | None) -> str:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--layer", type=int, default=DEFAULT_LAYER)
+    ap.add_argument("--layer", default=str(DEFAULT_LAYER),
+                    help="one layer, or a comma-separated list to sweep "
+                         "(e.g. 0,5,12,24,31). A sweep prints a matrix.")
     ap.add_argument("--connections", type=int, default=4,
                     help="fresh connections for session_partition (documented run used 16)")
     ap.add_argument("--include", nargs="*", default=[],
@@ -709,6 +711,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", default="", help="write results here")
     args = ap.parse_args(argv)
 
+    try:
+        layers = [int(x) for x in str(args.layer).split(",") if x.strip()]
+    except ValueError:
+        raise SystemExit(f"--layer must be an int or a comma-separated list, "
+                         f"not {args.layer!r}")
+    if not layers:
+        raise SystemExit("--layer named no layers")
+
     chosen = [k for k, (_, _, dflt) in CHECKS.items() if dflt or k in args.include]
     if args.only:
         unknown = [k for k in args.only if k not in CHECKS]
@@ -716,7 +726,7 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(f"unknown checks: {unknown}; have {list(CHECKS)}")
         chosen = list(args.only)
 
-    ctx = Ctx(args.model, args.layer, args.connections)
+    ctx = Ctx(args.model, layers[0], args.connections)
 
     if args.dry_run:
         # Everything that does not touch the network, plus the tokenisation and
@@ -746,52 +756,104 @@ def main(argv: list[str] | None = None) -> int:
                 raise SystemExit(
                     f"{name}: tolerance {ref.tol:g} reaches zero from value "
                     f"{ref.value:g}, so an absent effect would read as a match")
+        assert len(layers) >= 1
         print(f"dry run ok -- {len(CHECKS)} checks declared, {len(chosen)} selected, "
-              f"0 remote calls")
+              f"{len(layers)} layer(s) {layers}, 0 remote calls")
         print(f"  dtype_budget observed {fmt(obs.observed)} ({obs.verdict})")
         return 0
 
-    ctx.model = connect(args.model)
-    ctx.site = key_site(ctx.model, args.layer)
-    ctx.d_mlp = d_mlp_of(ctx.model)
+    model = connect(args.model)
+    _, n_layers, _ = (lambda c: (None, getattr(c, "num_hidden_layers", None)
+                                 or getattr(c, "n_layer"), None))(model.config)
+    bad = [L for L in layers if not 0 <= L < n_layers]
+    if bad:
+        raise SystemExit(f"layers {bad} outside 0..{n_layers - 1} for {args.model}")
 
-    results: list[Observation] = []
-    for name in chosen:
-        fn, ref, _ = CHECKS[name]
-        over = PER_MODEL.get(args.model, {})
-        if name in over:
-            ref = over[name]
-        elif name in {k for v in PER_MODEL.values() for k in v}:
-            ref = None          # model-specific, and we have no value for THIS model
-        t0 = time.monotonic()
-        try:
-            obs = fn(ctx)
-        except Exception as exc:      # noqa: BLE001 -- one bad check must not end the run
-            obs = Observation(name=name, verdict="error", note=f"{type(exc).__name__}: {exc}")
-        obs.seconds = time.monotonic() - t0
-        results.append(verdict_for(obs, ref))
+    by_layer: dict[int, list[Observation]] = {}
+    for layer in layers:
+        # A FRESH context per layer. The checks hand each other cached tensors
+        # (`alone_keys`, `cached_reference`), and a tensor read at layer 5
+        # compared against one read at layer 24 would silently produce a large,
+        # meaningless difference -- the same class of fault as every other one
+        # this suite has found.
+        ctx = Ctx(args.model, layer, args.connections)
+        ctx.model = model
+        ctx.site = key_site(model, layer)
+        ctx.d_mlp = d_mlp_of(model)
+        results: list[Observation] = []
+        for name in chosen:
+            fn, ref, _ = CHECKS[name]
+            over = PER_MODEL.get(args.model, {})
+            if name in over:
+                ref = over[name]
+            elif name in {k for v in PER_MODEL.values() for k in v}:
+                ref = None          # model-specific, and we have no value for THIS model
+            if len(layers) > 1 and ref is not None and layer != DEFAULT_LAYER:
+                # Every documented number was read at layer 5. Comparing a
+                # layer-24 reading against it would report "differs" for a
+                # correct deployment, which is the bookkeeping fault [E-008]
+                # already fixed once for models. Analytic checks are exempt:
+                # their reference is 0 by arithmetic at every layer.
+                if ref.value != 0.0:
+                    ref = None
+            t0 = time.monotonic()
+            try:
+                obs = fn(ctx)
+            except Exception as exc:  # noqa: BLE001 -- one bad check must not end the run
+                obs = Observation(name=name, verdict="error",
+                                  note=f"{type(exc).__name__}: {exc}")
+            obs.seconds = time.monotonic() - t0
+            results.append(verdict_for(obs, ref))
+        by_layer[layer] = results
 
-    width = max(len(r.name) for r in results)
-    print(f"\n{args.model}  layer {args.layer}  "
-          f"{sum(r.traces for r in results)} traces  "
-          f"{sum(r.seconds for r in results):.0f}s\n")
-    print(f"{'check'.ljust(width)}  {'documented':>11}  {'yours':>11}  verdict")
-    print("-" * (width + 40))
-    for r in results:
-        print(f"{r.name.ljust(width)}  {fmt(r.documented):>11}  "
-              f"{fmt(r.observed):>11}  {r.verdict}")
-    print()
-    for r in results:
-        if r.note:
-            print(f"  {r.name}: {r.note}")
-        for k, v in r.extra.items():
-            print(f"      {k} = {v}")
+    traces = sum(r.traces for rs in by_layer.values() for r in rs)
+    secs = sum(r.seconds for rs in by_layer.values() for r in rs)
+    width = max(len(n) for n in chosen)
+
+    if len(layers) == 1:
+        results = by_layer[layers[0]]
+        print(f"\n{args.model}  layer {layers[0]}  {traces} traces  {secs:.0f}s\n")
+        print(f"{'check'.ljust(width)}  {'documented':>11}  {'yours':>11}  verdict")
+        print("-" * (width + 40))
+        for r in results:
+            print(f"{r.name.ljust(width)}  {fmt(r.documented):>11}  "
+                  f"{fmt(r.observed):>11}  {r.verdict}")
+        print()
+        for r in results:
+            if r.note:
+                print(f"  {r.name}: {r.note}")
+            for k, v in r.extra.items():
+                print(f"      {k} = {v}")
+    else:
+        print(f"\n{args.model}  layers {layers}  {traces} traces  {secs:.0f}s\n")
+        head = "".join(f"{('L' + str(L)):>13}" for L in layers)
+        print(f"{'check'.ljust(width)}{head}")
+        print("-" * (width + 13 * len(layers)))
+        for name in chosen:
+            row = ""
+            for L in layers:
+                r = next(x for x in by_layer[L] if x.name == name)
+                row += f"{fmt(r.observed):>13}" if r.observed is not None \
+                    else f"{(r.extra.get('dtype') or r.verdict)[:12]:>13}"
+            print(f"{name.ljust(width)}{row}")
+        print()
+        bad_v = [(L, r) for L, rs in by_layer.items() for r in rs
+                 if r.verdict in ("differs", "error")]
+        if bad_v:
+            for L, r in bad_v:
+                print(f"  L{L} {r.name}: {r.verdict} -- {r.note}")
+        else:
+            print("  every check carrying a reference matched at every layer")
+        print("\n  raw detail per layer is in the --json output")
+
     print(f"\nreference: {DOC}")
+    results = [r for rs in by_layer.values() for r in rs]
 
     if args.json:
         with open(args.json, "w") as fh:
-            json.dump({"model": args.model, "layer": args.layer,
-                       "results": [asdict(r) for r in results]}, fh, indent=2)
+            json.dump({"model": args.model, "layers": layers,
+                       "by_layer": {str(L): [asdict(r) for r in rs]
+                                    for L, rs in by_layer.items()}}, fh, indent=2)
         print(f"written: {args.json}")
     return 0
 

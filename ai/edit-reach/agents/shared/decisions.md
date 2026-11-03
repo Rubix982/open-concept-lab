@@ -325,3 +325,38 @@ Not a weaker partition — no partition, because only one device was ever in pla
 **Revisit if:** a run sees two or more devices again, at which point the partition can be tested rather than merely observed.
 
 **Artifacts:** `results/E-009-partition-8b.json`; `results/E-009-partition-gptj.json`; `results/E-009-summary.md`; `docs/ndif-reproducibility.md`; `tools/ndif_conformance.py`
+
+## [E-010] Decision: the structure is depth-independent; the arithmetic-site effect is not, and only in bfloat16
+
+_Date: 2026-11-03_
+
+**Decision:** The structural claims in `docs/ndif-reproducibility.md` are stated without a layer qualifier. The batch-shape bound is stated **relative to key magnitude** and as one number for the whole model. The arithmetic-site figure is stated as growing with depth **in bfloat16 only**.
+
+**Rationale.** 90 traces, five layers on each of two models, six checks each:
+
+    Llama-3.1-8B          L0        L5       L12       L24       L31
+    ratio_in_trace   0.00e+00  0.00e+00  0.00e+00  0.00e+00  0.00e+00
+    batch_rows       0.00e+00  0.00e+00  0.00e+00  0.00e+00  0.00e+00
+    pad_content      0.00e+00  0.00e+00  0.00e+00  0.00e+00  0.00e+00
+    batch_width abs  3.91e-03  4.30e-02  1.95e-02  4.69e-02  2.66e-01
+      key magnitude      0.75      1.66      1.06      3.41     19.75
+      AS % OF MAG       0.52%     2.59%     1.84%     1.38%     1.34%
+    matmul_site      8.41e-07  5.32e-06  1.63e-05  2.66e-05  3.68e-05
+
+    GPT-J-6B (float32)    L0        L5       L12       L20       L27
+    batch_width % mag    0.00%     0.92%     1.32%     1.27%     0.91%
+    matmul_site      1.49e-08  7.45e-09  7.45e-09  1.86e-09  7.45e-09
+
+**The absolute growth was an artefact of the keys, not of the effect.** `batch_width` rises 68-fold from layer 0 to layer 31 while key magnitude rises 26-fold. Relative, it is flat and under 3% everywhere, on both architectures. Had the sweep reported only the absolute figure it would have supported "the shape effect gets much worse with depth", which is false and would have been believed.
+
+**The depth dependence that is real belongs to bfloat16.** The arithmetic-site median grows 44-fold over 31 layers on the 8B and does not move on GPT-J, which NDIF serves in float32 — 1.49e-08 to 7.45e-09 across five layers, float32 epsilon throughout. So it is accumulation error compounding with depth, not a property of depth.
+
+**An internal consistency check, unplanned.** On GPT-J, `cached_reference` reads 0.000e+00 at exactly the layers where `batch_width` does (L0, L20). Caching costs nothing where shape costs nothing, because they are the same effect observed twice. Nothing in the suite enforces this; it fell out.
+
+**Alternatives rejected:** sweeping one model only — [E-008] established that a one-model result here is a model result, and the bfloat16/float32 split is only visible with both. Reporting `batch_width` absolute, as the suite did until this run — it cannot distinguish a growing effect from growing keys, which is the whole question.
+
+**Design note.** The sweep builds a **fresh `Ctx` per layer**. The checks hand each other cached tensors (`alone_keys`, `cached_reference`); a layer-5 tensor compared against a layer-24 reading gives a large, meaningless difference. Same fault class as the three already found in this suite, caught in advance this once.
+
+**Revisit if:** a model is served in a dtype other than bfloat16 or float32, or a layer beyond 31 is read on a deeper model. `Llama-3.1-70B` has 80 layers and was swept at none of them.
+
+**Artifacts:** `results/E-010-layers-8b.json`; `results/E-010-layers-gptj.json`; `results/E-010-summary.md`; `tools/ndif_conformance.py`; `docs/ndif-reproducibility.md`
