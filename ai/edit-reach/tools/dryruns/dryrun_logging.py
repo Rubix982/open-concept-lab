@@ -90,6 +90,29 @@ def main() -> int:
                       f"{logs_dir}: {made}. A dry-run is not a run; send its "
                       f"output elsewhere with EDITREACH_LOGS.")
 
+    # A sibling project's log directory is OUTSIDE this package's ROOT, and
+    # `relative_to` raises rather than falling back. edit-slice's 79 scripts
+    # all call setup() at import, so every one of them would have raised on
+    # its first line. Nobody noticed because no edit-slice script has run
+    # since the infrastructure moved here. Asserted as a property so the
+    # fallback cannot be optimised away by someone who sees only edit-reach.
+    from editreach.logs import ROOT as PKG_ROOT
+    sibling = PKG_ROOT.parent / "edit-slice" / "logs"
+    if sibling.exists():
+        env2 = {k: v for k, v in os.environ.items()}
+        env2["EDITREACH_LOGS"] = str(sibling)
+        r = subprocess.run(
+            [sys.executable, "-c",
+             "import sys; sys.path.insert(0, 'src');"
+             "from editreach.logs import setup, log_path;"
+             "setup('SIBLING'); print('ok', log_path())"],
+            cwd=ROOT, env=env2, capture_output=True, text=True)
+        assert r.returncode == 0, (
+            "setup() failed for a sibling project's log directory:\n"
+            + r.stderr.strip().splitlines()[-1] if r.stderr else r.stdout)
+        assert not list(sibling.glob("SIBLING-*.log")), \
+            "the sibling check left a file behind"
+
     print(f"dryrun_logging ok -- setup() writes nothing until a record arrives; "
           f"{len(others)} dry-runs left 0 log files")
     return 0

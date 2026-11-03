@@ -3548,3 +3548,35 @@ There the same-subject control sits at floor while the real edit reaches 67%. Th
 **Revisit if:** a destination measure is run on the [E-002] probe set. That would put both halves on one set of probes under one metric family, which is the only way to turn the table above from an inference across two experiments into a measurement.
 
 **Artifacts:** `ai/edit-reach/results/E-002-different-subject-arm.json`; `ai/edit-reach/agents/shared/decisions.md` [E-002]; this project's [E-014].
+
+## [E-050] Decision: every edit-slice script was one import away from crashing, and the log record here is clean
+
+_Date: 2026-11-03_
+
+**Decision:** No change is needed in this repo. The fault was in `editreach.logs`, is fixed there ([E-013] in edit-reach), and a regression test in `edit-reach/tools/dryruns/dryrun_logging.py` now asserts the property **from a sibling project's log directory** so it cannot return by someone looking only at edit-reach.
+
+**What was checked and why.** edit-reach found that 124 of its 155 committed log files were header-only — `setup()` announced the run at import, and run modules call it at module scope. The obvious worry was that this repo, with 79 scripts on the same module through `src/logs.py`'s shim, had it worse.
+
+**It does not have it at all.**
+
+    171 log files
+      170 with content
+        0 header-only
+        1 empty: run_e046-stdout.log, a stdout capture, not a logger artifact
+
+The structural reason: edit-slice's scripts are run, not imported by one another. edit-reach's stub count was dominated by `run_e001` (84 of 124), which five other scripts import as a library.
+
+**What the check found instead, and it is worse than what it was looking for.** `setup()` ended by displaying the log path as `path.relative_to(ROOT)`, where `ROOT` is **edit-reach's** root, because that is where the module now lives. An edit-slice log goes to `edit-slice/logs/`, which is not under it, and `relative_to` **raises** rather than falling back:
+
+    ValueError: '.../ai/edit-slice/logs/run_e049-x.log' is not in the subpath of
+                '.../ai/edit-reach'
+
+Every script here calls `setup()` at import. **All 79 would have raised on their first line.** Verified against the pre-fix module at commit `310fab84e`, and against the real `ROOT` and a real log path.
+
+**Why nobody hit it.** The newest log in this repo is dated **2026-10-30**. No edit-slice script has been run since the infrastructure moved to `editreach`, so the breakage has been latent the whole time. It was found by a dry-run written for an unrelated reason — testing `EDITREACH_LOGS`, a documented option that turned out to crash `setup()` for exactly the same reason and that nobody had ever used.
+
+**What this says about the move.** The infrastructure move was verified by importing the shims and by the 79 scripts still *importing* cleanly. Importing is not running, and `setup()` is called at import but fails on a value computed from the **caller's** location — so a smoke test inside edit-reach could not see it. Same class as `logs.py`'s own `_project_root` bug and `data.py`'s `__file__` bug: **code that was correct about where it lived, moved, and stayed correct about the old place.**
+
+**Revisit if:** another module moves into `editreach`. The test to run is not "does it import" but "does it run from each repo that uses it".
+
+**Artifacts:** `edit-reach/src/editreach/logs.py`; `edit-reach/tools/dryruns/dryrun_logging.py`; `edit-reach/agents/shared/decisions.md` -> [E-013]
