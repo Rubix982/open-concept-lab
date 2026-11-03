@@ -3580,3 +3580,36 @@ Every script here calls `setup()` at import. **All 79 would have raised on their
 **Revisit if:** another module moves into `editreach`. The test to run is not "does it import" but "does it run from each repo that uses it".
 
 **Artifacts:** `edit-reach/src/editreach/logs.py`; `edit-reach/tools/dryruns/dryrun_logging.py`; `edit-reach/agents/shared/decisions.md` -> [E-013]
+
+## [E-051] Verification: [E-050]'s conclusion was derived; this is the run
+
+_Date: 2026-11-03_
+
+**Decision:** [E-050] stands, now by observation rather than by argument. No further change.
+
+**What [E-050] actually had.** It proved the crash by evaluating `relative_to(ROOT)` against the real `ROOT` and a real log path, and by running the pre-fix module. It did **not** run an edit-slice script. Importing is not running was the whole lesson of that entry, so concluding "fixed" from arithmetic would have repeated it one level up.
+
+**What was run.** All twelve dry-runs in `tools/dryruns/`, under this repo's own `.venv` — the path that would have raised, since each imports a run module and every run module calls `setup()` at import:
+
+    12/12 pass, 0 new log files
+
+Then a real logging call through `src/logs.py`, the shim the 79 scripts use:
+
+    setup() returned, file on disk yet : False
+    after two records, file on disk    : True
+    landed in                          : edit-slice/logs
+
+    run VERIFY -> .../ai/edit-slice/logs/VERIFY-2026-11-03-165007.log
+    config {"layer": 5, "model": "gpt-j-6b"}
+    scored 7/42
+    WARNING  a warning that must be kept
+
+Header and config emitted ahead of the records, the file created only once something was logged, the warning kept, and the file in **this** repo's directory rather than edit-reach's.
+
+**A forensic check, and it closes the question of blast radius.** The pre-fix failure mode left a **zero-byte** log: `FileHandler` created the file on construction, then `relative_to` raised before anything was written. So a zero-byte log is that crash's signature. Sweeping both repos finds exactly one, `run_e046-stdout.log`, which is a stdout capture and not a logger file at all.
+
+**The crash therefore never happened to a real run.** It was latent from the day the infrastructure moved until it was found, which matches the other evidence: this repo's newest log is 2026-10-30.
+
+**Revisit if:** a zero-byte `NAME-DATE.log` ever appears. That is this specific failure and nothing else produces it.
+
+**Artifacts:** `edit-reach/tools/dryruns/dryrun_logging.py`; this repo's `tools/dryruns/` (all twelve)
