@@ -393,18 +393,65 @@ def check_batch_width(ctx) -> Observation:
     pad = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
     wider = widen(ctx.alone_ids, 8, pad)
     got = read_keys_ids(ctx.model, ctx.site, wider, ctx.alone_where)
-    delta = float((ctx.alone_keys - got).abs().max())
+    diff = (ctx.alone_keys - got).abs()
+    delta = float(diff.max())
     scale = float(ctx.alone_keys.abs().max())
+    # WHERE the difference sits decides what it is. Concentrated in the rows
+    # with the most padding points at padding handling; spread evenly across
+    # rows points at kernel shape-dependence. These are different diagnoses and
+    # a single max cannot tell them apart.
+    per_row = diff.max(dim=-1).values
+    n_rows = per_row.shape[0]
+    pad_after = [int(ctx.alone_ids.shape[1] - 1 - w) for w in ctx.alone_where]
+    rows_touched = int((per_row > 0).sum())
     return Observation(
         name="batch_width", verdict="recorded", observed=delta, unit="max |difference|",
         traces=1,
         extra={"bit_identical": torch.equal(ctx.alone_keys, got),
                "key_magnitude": scale,
                "relative": (delta / scale) if scale else 0.0,
-               "width": f"{ctx.alone_ids.shape[1]} -> {wider.shape[1]}"},
+               "width": f"{ctx.alone_ids.shape[1]} -> {wider.shape[1]}",
+               "rows_touched": f"{rows_touched}/{n_rows}",
+               "per_row_max": [round(float(v), 8) for v in per_row],
+               "pad_tokens_after_read_position": pad_after},
         note="pad width only; causally this cannot matter, so anything nonzero "
              "here is kernel shape-dependence and it bounds every cross-run "
              "comparison you make on raw activations",
+    )
+
+
+def check_pad_content(ctx) -> Observation:
+    """The control that makes `batch_width` interpretable: content, not width.
+
+    `batch_width` shows that widening the pad region moves the keys. Two things
+    could do that, and they call for opposite responses:
+
+      the model is attending to the pads  -> a usage fault, fix your masking
+      the kernel path depends on shape    -> nothing to fix, size your tolerance
+
+    Filling the same-width pad region with a DIFFERENT token tells them apart.
+    If the keys move, the pads are being read. If they do not, only the shape
+    matters. Measured 2026-11-03 on Llama-3.1-8B: bit-identical, so causality
+    holds and the diagnosis is the kernel.
+    """
+    if ctx.alone_ids is None:
+        return Observation(name="pad_content", verdict="skipped",
+                           note="needs batch_rows to have run first")
+    tok = ctx.model.tokenizer
+    pad = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
+    other = tok(" zebra", add_special_tokens=False).input_ids[0]
+    if other == pad:
+        return Observation(name="pad_content", verdict="skipped",
+                           note="filler token collides with the pad token")
+    a = read_keys_ids(ctx.model, ctx.site, widen(ctx.alone_ids, 8, pad), ctx.alone_where)
+    b = read_keys_ids(ctx.model, ctx.site, widen(ctx.alone_ids, 8, other), ctx.alone_where)
+    delta = float((a - b).abs().max())
+    return Observation(
+        name="pad_content", verdict="", observed=delta, unit="max |difference|",
+        traces=2, extra={"bit_identical": torch.equal(a, b),
+                         "pad_id": int(pad), "other_id": int(other)},
+        note="same width, different trailing content; zero here means causality "
+             "holds and the width effect is kernel shape-dependence, not masking",
     )
 
 
@@ -516,6 +563,35 @@ def check_trace_source(ctx) -> Observation:
     )
 
 
+def check_served_dtype(ctx) -> Observation:
+    """What dtype your deployment actually serves activations in. One trace.
+
+    Everything in section 1 of the reference is conditional on bf16. If your
+    deployment serves float32 the dtype half stops applying and only provenance
+    remains, so this is the first thing to read, not the last.
+    """
+    ids, _ = encode(ctx.model, list(FILLER[:2]))
+    site = ctx.site
+
+    def _once():
+        with ctx.model.trace(ids, remote=True):
+            # `.dtype` is a plain attribute of the proxied tensor, not a tensor
+            # operation, so it has to come back as a saved tensor to be read --
+            # a zero-length slice in the native dtype is the cheapest carrier.
+            probe = site.input[:1, :1, :1].save()
+        return probe
+
+    got = retrying(_once, what="dtype probe")
+    dt = str(getattr(got, "dtype", "unknown")).replace("torch.", "")
+    return Observation(
+        name="served_dtype", verdict="recorded", traces=1,
+        extra={"dtype": dt, "d_mlp": ctx.d_mlp,
+               "section_1_applies": dt.startswith("bfloat") or dt.startswith("float16")},
+        note=f"activations arrive as {dt}; the dtype half of section 1 applies "
+             f"only below float32",
+    )
+
+
 def check_local_import_in_trace(ctx) -> Observation:
     """Reference a module inside the trace body. Opt-in: sends a doomed trace."""
     site = ctx.site
@@ -547,10 +623,33 @@ CHECKS: Final[dict[str, tuple[Callable, Reference | None, bool]]] = {
     "cached_reference": (check_cached_reference, Reference("worst deviation", 6.382e-03, 4e-03), True),
     "batch_rows": (check_batch_rows, Reference("max |difference|", 0.0, 1e-09), True),
     "batch_width": (check_batch_width, None, True),
+    "pad_content": (check_pad_content, Reference("max |difference|", 0.0, 1e-09), True),
+    # Model-SPECIFIC: see PER_MODEL. The entry here is the Llama-3.1-8B value
+    # the reference document was written from, and it is replaced at run time
+    # for a model that has its own. A model with neither is recorded, not judged.
     "matmul_site": (check_matmul_site, Reference("|difference| of medians", 5.06e-06, 4e-06), True),
+    "served_dtype": (check_served_dtype, None, True),
     "session_partition": (check_session_partition, None, True),
     "trace_source": (check_trace_source, None, True),
     "local_import_in_trace": (check_local_import_in_trace, None, False),
+}
+
+
+#: Quantities whose magnitude depends on the model rather than on NDIF. Keeping
+#: them in one place is the difference between "your deployment differs from
+#: ours" and "you are running a different model", which the first version of
+#: this suite could not tell apart: it reported `matmul_site` as "differs" on
+#: 70B and GPT-J purely because the documented number came from 8B.
+PER_MODEL: Final[dict[str, dict[str, Reference]]] = {
+    "meta-llama/Llama-3.1-8B": {
+        "matmul_site": Reference("|difference| of medians", 5.06e-06, 4e-06),
+    },
+    "meta-llama/Llama-3.1-70B": {
+        "matmul_site": Reference("|difference| of medians", 4.969e-07, 4e-07),
+    },
+    "EleutherAI/gpt-j-6b": {
+        "matmul_site": Reference("|difference| of medians", 7.451e-09, 7e-09),
+    },
 }
 
 
@@ -647,6 +746,11 @@ def main(argv: list[str] | None = None) -> int:
     results: list[Observation] = []
     for name in chosen:
         fn, ref, _ = CHECKS[name]
+        over = PER_MODEL.get(args.model, {})
+        if name in over:
+            ref = over[name]
+        elif name in {k for v in PER_MODEL.values() for k in v}:
+            ref = None          # model-specific, and we have no value for THIS model
         t0 = time.monotonic()
         try:
             obs = fn(ctx)

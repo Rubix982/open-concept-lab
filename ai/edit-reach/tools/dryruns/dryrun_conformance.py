@@ -50,6 +50,12 @@ def main() -> int:
     local = [m for m in imports if m.split(".")[0] == "editreach"]
     assert not local, f"the suite must stay standalone; it imports {local}"
 
+    # Every model-specific reference must name a check that exists, or a typo
+    # silently restores the 8B number for a model it does not describe.
+    for model, refs in C.PER_MODEL.items():
+        for check in refs:
+            assert check in C.CHECKS, f"{model} references unknown check {check!r}"
+
     print(f"dryrun_conformance ok -- {len(C.CHECKS)} checks, registry sane, standalone")
     return 0
 

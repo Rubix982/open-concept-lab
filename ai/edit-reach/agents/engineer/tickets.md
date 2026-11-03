@@ -334,3 +334,38 @@ the median (5.319e-06 against 5.06e-06) but not per item, which is
 sample-dependent. Two faults in the suite itself were found the same way and are
 documented in its source rather than silently fixed. 11 remote traces, 57s.
 9/9 dry-runs pass.
+
+### E-008 · Does the conformance suite's picture hold on other models?
+
+**Status:** closed
+**Type:** review
+**Priority:** high
+**Created:** 2026-11-03
+**Updated:** 2026-11-03
+**Estimated:** 1 sitting, ~35 remote traces
+**Spent:** 1 sitting, 36 traces
+
+**Description:**
+[E-007]'s document and suite rest on one model, one architecture and one day.
+Run the same suite unchanged on `meta-llama/Llama-3.1-70B` and
+`EleutherAI/gpt-j-6b` and decide, per check, whether it states a property of
+the INSTRUMENT or a property of the model. Anything model-specific must be
+tagged with its model in both the document and the suite, or a correct
+deployment running a different model will be reported as a difference.
+
+**Pre-stated branches.**
+- If the structural checks hold on all three: the document's claims generalise
+  and the magnitudes get per-model tables.
+- If a structural check fails on one: that claim is Llama-specific and the
+  document says so in its own section, not in a footnote.
+
+**Artifacts:**
+- results/E-007-conformance-llama-3.1-8b.json, -70b.json, -gpt-j-6b.json
+- tools/ndif_conformance.py -> `PER_MODEL`, `check_pad_content`, `check_served_dtype`
+- docs/ndif-reproducibility.md -> "The second run, across three models"
+- agents/shared/decisions.md -> "[E-008] Decision: the structure generalises,
+  the magnitudes do not"
+
+**Closed:** 2026-11-03. Structure held on all three across two architectures;
+every magnitude was model-specific. One hypothesis in the document
+("revisit if NDIF serves float32") turned out to be already true for GPT-J.

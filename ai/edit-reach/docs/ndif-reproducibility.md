@@ -1,6 +1,8 @@
 # Reading activations off NDIF reproducibly
 
-What a remote activation read does and does not give you twice, measured on NDIF against `meta-llama/Llama-3.1-8B` and `Llama-3.1-70B` through nnsight 0.8.1, 2026-10-31 to 2026-11-01.
+What a remote activation read does and does not give you twice, measured on NDIF through nnsight 0.8.1 between 2026-10-31 and 2026-11-03, on three models and two architectures: `meta-llama/Llama-3.1-8B`, `meta-llama/Llama-3.1-70B` and `EleutherAI/gpt-j-6b`.
+
+**Which numbers travel and which do not.** The structural facts below hold on all three. The magnitudes do not: the arithmetic-site effect spans three orders of magnitude across them, and the serving dtype differs — the two Llamas arrive as **bfloat16**, GPT-J as **float32**. So read the structure as the finding and every magnitude as a value you must re-measure on your own model. The suite does this for you and keeps the per-model numbers in one table.
 
 **Who this is for.** Anyone whose result is a number read out of a model hosted on NDIF, and who intends to compare that number against one read on a different day — their own earlier run, or somebody else's. If your pipeline contains an equality assertion on an activation-derived quantity, it is going to fail for a reason that is not your bug, and this document says which reason and how large.
 
@@ -18,7 +20,8 @@ Four things, in the order they will bite you.
 2. **A tensor cached from an earlier session is not the tensor you would read today.** Worst observed deviation on a quantity that is analytically 1.000: **6.382e-03**.
 3. **Readings partition by the GPU that served them.** Reconnect and you may land somewhere else. Within a device, bit-identical; across devices, a floor median moved by 3.110e-06.
 4. **A raw activation is reproducible only within one batch shape; a ratio is not affected.** Change the number of rows, or merely the padding width, and raw keys move by about 2.6% of their magnitude. The ratio of two keys read in the same trace stays bit-identical.
-5. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
+5. **Causality is not the problem, and neither is bfloat16.** Changing the *content* of the padding changes nothing, on every model tested including one served in float32. Only the tensor shape matters.
+6. **The device is not the whole story.** Across four sessions over two days the same 42-probe floor median spanned **2.16e-04**, of which the serving device accounts for 1.4%. The rest is unattributed. **If your claim needs reproducibility tighter than 2.2e-04, you need to resolve this before you publish it, and this document cannot resolve it for you.**
 
 ---
 
@@ -91,22 +94,45 @@ device spread    3.11e-06   (1.4% of it)
 
 Two further candidates were measured rather than assumed:
 
-**Batch composition moves the raw activations and leaves the derived ratio alone.** This is the sharpest practical result here and it was stated too broadly in the first draft of this document, which said batch composition "contributes zero". It does not. Measured on 2026-11-03 by the conformance suite, one connection, 8 anchor pairs at layer 5:
+**Batch SHAPE moves the raw activations and leaves the derived ratio alone.** This is the sharpest practical result here, and it was stated too broadly in the first draft of this document, which said batch composition "contributes zero". It does not. Three arms, each on one connection, 8 anchor pairs at layer 5:
 
 ```
-16 rows -> 22 rows, padded width held fixed at 14
-  raw key values     max |difference|  4.297e-02   (2.59% of the key magnitude)
-  derived ratio      max |difference|  0.000e+00   (bit-identical)
+                                         8B          70B       GPT-J-6B
+served dtype                       bfloat16     bfloat16        float32
 
-16 rows, padded width 14 -> 22, same content, extra padding only
-  raw key values     max |difference|  4.297e-02   (2.59%)
+16 rows -> 22, width held fixed
+  raw key values   max |difference| 4.297e-02   1.953e-03     5.292e-02
+                   as % of magnitude    2.59%       0.91%         0.92%
+  DERIVED RATIO    max |difference| 0.000e+00   0.000e+00     0.000e+00
+
+16 rows, width 14 -> 22, padding only
+  raw key values   max |difference| 4.297e-02   1.953e-03     5.292e-02
+
+same width, DIFFERENT trailing token
+  raw key values   max |difference| 0.000e+00   0.000e+00     0.000e+00
 ```
 
-Appending padding after the text cannot reach a token to its left under causal attention, so the second arm is zero by the mathematics and is not zero in practice. That is bf16 matmul kernels selecting a different path for a different tensor shape. Both arms produced the identical maximum, which suggests one quantised step on one worst element rather than two independent effects; it has not been checked further.
+Read those three blocks in order, because the third is what makes the first two mean something.
 
-**What this means for you.** A raw activation is reproducible only inside a fixed batch shape. A ratio of two activations read in the same trace is reproducible across batch shape. If you are caching activations and comparing them later, this bounds you at about 2.6% of their magnitude — which is far larger than anything else in this document and is the first thing to fix.
+Widening the pad region moves the keys, although appending padding after the text cannot reach a token to its left under causal attention. Two things could cause that, and they call for opposite responses: the model is attending to the padding — a usage fault you must fix — or the kernel path depends on the tensor shape, which is nothing to fix and everything to size a tolerance against.
 
-**Where the arithmetic runs contributes 5.06e-06 at the median.** Multiplying inside the trace on the GPU, against returning the vectors and multiplying on the CPU over 14336 channels, barely moves the median while moving individual values far more — 2.98e-03 per item over the original 42 probes, 6.31e-05 over the suite's 6. The per-item figure is sample-dependent and the median is not, which is why the suite compares the median. That the median is stable is a property of the median, not evidence that the two arithmetics agree. If you report per-item values rather than an aggregate, this is the dominant term and it is under your control: pick one site and stay with it.
+**The third arm settles it.** Fill the same-width pad region with a different token and the keys are **bit-identical**, on all three models. Causality holds exactly as advertised; nothing is reading the padding. Only the shape matters, and the diagnosis is kernel path selection.
+
+**It is not a bfloat16 artifact either.** GPT-J is served in **float32** and shows the effect at the same relative size as the 70B. Whatever selects the kernel does so above the dtype.
+
+**What this means for you.** A raw activation is reproducible only inside a fixed batch shape — about 1% of its magnitude on two of these models and 2.6% on the third. A ratio of two activations read in the same trace is reproducible across batch shape, bit for bit, on all three. If you cache activations and compare them later, that 1-3% is your floor, and it is three to four orders of magnitude worse than anything else in this document.
+
+**Where the arithmetic runs is model-specific and spans three orders of magnitude.** Multiplying inside the trace on the GPU, against returning the vectors and multiplying on the CPU, gives a difference of medians of:
+
+```
+Llama-3.1-8B     5.319e-06      bfloat16
+Llama-3.1-70B    4.969e-07      bfloat16
+GPT-J-6B         7.451e-09      float32, and this is float32 epsilon scale
+```
+
+The first version of this suite reported 70B and GPT-J as "differs" purely because the documented figure came from the 8B. That is not a deployment difference, it is a different model, and the suite now keeps a per-model table so the two cannot be confused.
+
+The per-item maximum is larger and **sample-dependent** — 2.98e-03 over the original 42 probes, 6.31e-05 over the suite's 6 — so the median is the statistic to compare and the per-item figure is the one to budget for. That the median is stable is a property of the median, not evidence that the two arithmetics agree. Pick one site and stay with it.
 
 The remaining ~2e-04, between the two days, **is not attributed.** Candidates not yet tested: a deployment or driver change between sessions, a model-weight reload, a change in how the batch was sharded. It is logged as an open question (T-009) rather than explained.
 
@@ -157,9 +183,9 @@ In order of how much they buy:
 
 ## Limits
 
-**What this does not show.** These are measurements of one deployment over two days, on two model sizes and one architecture family. Nothing here establishes that the magnitudes generalise to other NDIF models, to a different deployment, or to next month.
+**What this does not show.** These are measurements of one deployment over four days. The structural claims were checked on three models across two architectures; the magnitudes were found NOT to generalise even across those three, which is why every one of them is tagged with the model it came from. Nothing here establishes behaviour on a different deployment, or next month.
 
-**What was not done.** The ~2e-04 between-day remainder was not attributed; no deployment metadata beyond the GPU index was collected; nothing was measured on a float32-served model, which would make the dtype half of §1 moot; the §5 backward limitation was not confirmed with NDIF.
+**What was not done.** The ~2e-04 between-day remainder was not attributed; no deployment metadata beyond the GPU index was collected; the §5 backward limitation was not confirmed with NDIF; nothing was measured at a layer other than 5, or on a batch larger than 22 rows; and the kernel-selection diagnosis in §3 is an inference from the pad-content control, not an observation of the kernel itself.
 
 **How this may not be used.** The tolerances here are floors for *this* instrument, not a general standard, and a number inside 2.2e-04 of another number is not thereby shown to be the same number. The right use is to stop a pipeline asserting a precision it does not have — not to certify that two results agree.
 
@@ -179,3 +205,15 @@ The suite is not decoration. Run against the first draft of this document on 202
 Two faults in the suite itself were found the same way and are left documented in the source: a check that measured bf16 precision on near-orthogonal vectors and read 4.9e-01, which is cancellation rather than precision; and a check that measured the arithmetic-site effect on a quantity that is analytically pinned to 1.000, so it read 0.000e+00 and would have done so forever.
 
 **A reading of this document's own §2 that the suite did not reproduce.** Four fresh connections on 2026-11-03 all landed on GPU 0 and returned one signature, so the partition is consistent with §2 and does not demonstrate it. Seeing the partition takes enough connections to land on more than one device; the documented run used sixteen.
+
+### The second run, across three models
+
+Running the same suite on 70B and GPT-J-6B on 2026-11-03 added three things and cost 33 remote traces.
+
+| | What it changed |
+|---|---|
+| **The structure generalises** | `ratio_in_trace` 0.000e+00, `batch_rows` ratio 0.000e+00 and `pad_content` 0.000e+00 on all three, across two architectures. These are the claims this document actually rests on. |
+| **The magnitudes do not** | The arithmetic-site median spans 5.3e-06 to 7.5e-09. The suite now keeps per-model references, because reporting "differs" for a correct deployment running a different model is worse than reporting nothing. |
+| **The dtype question answered itself** | GPT-J is served in **float32**, which this document had listed as a hypothetical ("revisit if NDIF serves float32"). It does, for that model. §1's dtype half does not apply there — and the shape effect in §3 appears anyway, which is what rules bfloat16 out as its cause. |
+
+The pad-content control was added during this run. Without it, §3 could only say that shape matters; with it, §3 can say why, and can say that nothing needs fixing in your masking.

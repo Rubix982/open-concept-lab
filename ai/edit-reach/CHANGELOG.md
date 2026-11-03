@@ -74,3 +74,4 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 ## 2026-11-03 · Session 3
 
 - [E-007] NDIF reproducibility reference and conformance suite — docs/ndif-reproducibility.md and tools/ndif_conformance.py; running the suite against the reference narrowed [E-006]'s batch-composition claim to derived ratios and bounded raw-activation reuse at 2.6%
+- [E-008] Conformance suite run on Llama-3.1-70B and GPT-J-6B — structure held on all three across two architectures, every magnitude was model-specific; GPT-J is served in float32, which answers [E-001]'s open "revisit if"

@@ -268,3 +268,35 @@ Both are the same fault: a check evaluated on a quantity that cannot express the
 **Not reproduced today:** four fresh connections all landed on GPU 0 and returned one signature, so [E-006]'s partition is consistent with this run and is not demonstrated by it. The documented partition took sixteen connections.
 
 **Artifacts:** `docs/ndif-reproducibility.md`; `tools/ndif_conformance.py`; `tools/dryruns/dryrun_conformance.py`; `results/E-007-conformance.json`
+
+## [E-008] Decision: the structure generalises, the magnitudes do not, and the shape effect is not bfloat16
+
+_Date: 2026-11-03_
+
+**Decision:** The claims in `docs/ndif-reproducibility.md` are split in two. The **structural** ones are stated as properties of the instrument and hold on every model tested. Every **magnitude** is tagged with the model it came from, and `tools/ndif_conformance.py` carries a `PER_MODEL` table so that a correct deployment running a different model is never reported as a difference.
+
+**Rationale.** The suite was run unchanged on three models across two architectures, 36 remote traces:
+
+    check              Llama-3.1-8B   Llama-3.1-70B     GPT-J-6B
+    served dtype           bfloat16        bfloat16      float32
+    ratio_in_trace        0.000e+00       0.000e+00    0.000e+00
+    batch_rows (ratio)    0.000e+00       0.000e+00    0.000e+00
+    pad_content           0.000e+00       0.000e+00    0.000e+00
+    cached_reference      7.299e-03       6.211e-03    7.353e-03
+    batch_width (raw)     4.297e-02       1.953e-03    5.292e-02
+       as % of magnitude      2.59%           0.91%        0.92%
+    matmul_site (median)  5.319e-06       4.969e-07    7.451e-09
+
+Structure: identical. Magnitude: the arithmetic-site median spans three orders of magnitude, so the 5.06e-06 this project had been quoting is a Llama-3.1-8B fact and was never an NDIF fact.
+
+**The shape effect is diagnosed, not merely measured.** `check_pad_content` fills the same-width pad region with a different token: the keys are **bit-identical** on all three models. So nothing is attending to the padding, causality behaves exactly as documented, and the width effect is kernel path selection. It also appears on **GPT-J, which NDIF serves in float32**, which rules out bfloat16 as its cause. Two readings that would have been equally consistent with the width measurement alone are now excluded by a control that cost two traces.
+
+**An unexpected answer to our own open question.** [E-001] recorded "Revisit if: NDIF serves activations in float32". It does — for GPT-J. The dtype half of that entry does not apply to GPT-J work, and the provenance half still does.
+
+**Alternatives rejected:** keeping one reference table and widening its tolerances until all three models matched — that would report agreement between quantities three orders of magnitude apart, which is worse than reporting nothing. Dropping `matmul_site` as unstable — it is perfectly stable *per model*, and the instability was in our bookkeeping.
+
+**Revisit if:** a fourth model is added, or NDIF changes the dtype it serves for any of these three.
+
+**Still not measured:** any layer other than 5, any batch wider than 22 rows, and the kernel diagnosis is an inference from the pad-content control rather than an observation of the kernel.
+
+**Artifacts:** `tools/ndif_conformance.py`; `docs/ndif-reproducibility.md`; `results/E-007-conformance-*.json`; `results/E-008-summary.md`
