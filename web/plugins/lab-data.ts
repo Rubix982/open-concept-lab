@@ -184,6 +184,16 @@ export type Practice = {
 /** One thing I want to do someday, from data/someday.yml. Written down so it stops asking for attention. */
 export type SomedayKind = "business" | "try" | "learn" | "make";
 export type SomedayStatus = "spark" | "exploring" | "tried" | "project" | "let-go";
+/** One source behind an idea, from the `references:` list in its front matter. */
+export type SomedayReference = {
+  title: string;
+  url: string;
+  /** A line on what it shows or why it is here. */
+  note?: string;
+  /** References sharing a group are listed together, groups in order of first appearance. */
+  group?: string;
+};
+
 export type SomedayItem = {
   /** From the file name: someday/2026-10-25-<slug>.md */
   slug: string;
@@ -201,6 +211,8 @@ export type SomedayItem = {
   body?: string;
   /** Words in the body, so the board can say how much thinking is behind a note. */
   words: number;
+  /** What the thinking leans on: papers, tools, datasets. Only the idea's own page carries them. */
+  references?: SomedayReference[];
 };
 
 export type LabData = {
@@ -279,6 +291,28 @@ function miniMarkdown(md: string, baseUrl: string): string {
     .join("");
 }
 
+/**
+ * The optional `references:` list: each entry needs a title and an http(s) url,
+ * and may carry a note and a group. A malformed entry fails the build with the
+ * file's name, so a broken link never ships silently.
+ */
+function parseReferences(raw: unknown, file: string): SomedayReference[] {
+  if (raw === undefined || raw === null) return [];
+  if (!Array.isArray(raw)) throw new Error(`someday/${file}: references must be a list`);
+  return raw.map((entry, i) => {
+    const r = (entry ?? {}) as Record<string, unknown>;
+    const text = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
+    const title = text(r.title);
+    const url = text(r.url);
+    if (!title || !url || !/^https?:\/\//.test(url)) {
+      throw new Error(`someday/${file}: reference ${i + 1} needs a title and an http(s) url`);
+    }
+    const note = text(r.note);
+    const group = text(r.group);
+    return { title, url, ...(note ? { note } : {}), ...(group ? { group } : {}) };
+  });
+}
+
 /** One idea per file: someday/YYYY-MM-DD-slug.md, front matter plus optional thoughts. */
 async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]> {
   let files: string[] = [];
@@ -305,6 +339,7 @@ async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]>
         if (!SOMEDAY_KINDS.includes(kind)) throw new Error(`someday/${file}: kind "${kind}" is not one of ${SOMEDAY_KINDS.join(", ")}`);
         if (!SOMEDAY_STATUSES.includes(status)) throw new Error(`someday/${file}: status "${status}" is not one of ${SOMEDAY_STATUSES.join(", ")}`);
         const body = content.trim();
+        const references = parseReferences(fm.references, file);
         return {
           slug: name,
           what: str(fm.title) ?? name.replace(/-/g, " "),
@@ -316,6 +351,7 @@ async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]>
           note: str(fm.note),
           body: body ? miniMarkdown(body, baseUrl) : undefined,
           words: body ? countWords(body) : 0,
+          ...(references.length ? { references } : {}),
         };
       }),
   );
@@ -832,7 +868,7 @@ export default async function labData(
       // a few hundred KB, so it goes only to the route that renders it.
       const { checklist, someday, ...rest } = content;
       // The board needs only the notes; each idea's longer thinking travels with its own page.
-      actions.setGlobalData({ ...rest, someday: someday.map(({ body, ...note }) => note) });
+      actions.setGlobalData({ ...rest, someday: someday.map(({ body, references, ...note }) => note) });
       for (const idea of someday) {
         const ideaData = await actions.createData(`someday-${idea.slug}.json`, JSON.stringify(idea));
         actions.addRoute({

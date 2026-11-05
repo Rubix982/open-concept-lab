@@ -8372,9 +8372,9 @@ a:hover > .ocl-home__featureCover {
   opacity: 0.75;
 }
 
-/* an idea's own page, at reading width */
+/* an idea's own page: wide enough for long thinking and its references */
 .ocl-idea {
-  max-width: 44rem;
+  max-width: 64rem;
   margin: 0 auto;
 }
 
@@ -8443,6 +8443,85 @@ a:hover > .ocl-home__featureCover {
 .ocl-idea__body p,
 .ocl-idea__body ul {
   margin: 0 0 1.1rem;
+}
+
+/* an idea's references: grouped, quieter than the thinking above them */
+.ocl-idea__refs {
+  margin: 0 0 2.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ocl-paper-sunken);
+}
+
+.ocl-idea__refs-title {
+  margin: 0 0 1.1rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-idea__refs-group + .ocl-idea__refs-group {
+  margin-top: 1.4rem;
+}
+
+.ocl-idea__refs-group-title {
+  margin: 0 0 0.6rem;
+  font-family: var(--ocl-prose);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ocl-ink);
+}
+
+/* references sit as cards, two across once there is room */
+.ocl-idea__refs-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 900px) {
+  .ocl-idea__refs-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ocl-idea__ref {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--ocl-paper-sunken);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+}
+
+.ocl-idea__ref-link {
+  font-family: var(--ocl-prose);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.ocl-idea__ref-host {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-idea__ref-note {
+  margin: 0.2rem 0 0;
+  font-family: var(--ocl-prose);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
 }
 
 /* Navbar with eight sections (2026-10-25): below 1240px the search shrinks to

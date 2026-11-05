@@ -14,6 +14,11 @@ status: spark         # spark | exploring | tried | project | let-go
 why: One line on why it pulls at me.   # optional
 link: /notebook/some-project/          # optional, once it went somewhere
 note: Why I let it go.                 # optional, for let-go
+references:                            # optional, shown on the idea's page
+  - title: "A paper or tool"
+    url: "https://example.com"         # must be http(s)
+    note: "What it shows."             # optional
+    group: "Papers"                    # optional; groups keep their order
 ---
 
 Anything longer goes here, in plain Markdown: paragraphs, - lists,
