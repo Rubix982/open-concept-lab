@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Under an evening sky with its first star, a dashed trail wanders past eleven small circles, each crossed out, and ends at one gold circle with a sprout growing from it.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="12"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4338a8" stop-opacity="0.24"/>
+      <stop offset="0.5" stop-color="#4338a8" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <!-- evening coming on -->
+  <rect width="800" height="560" fill="url(#dusk)"/>
+  <!-- a soft wash where the walk ends -->
+  <ellipse cx="635" cy="345" rx="150" ry="125" fill="#f2c46d" opacity="0.22"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the walk, with no plan -->
+    <path d="M70 480 C 100 440, 120 420, 150 420 S 220 480, 250 470 S 330 420, 320 390 S 240 350, 240 320 S 270 240, 300 240 S 380 290, 400 280 S 470 230, 480 210 S 420 150, 430 130 S 500 80, 530 90 S 640 110, 640 140 S 600 220, 610 240 S 640 330, 674 354" stroke="#2b2a28" stroke-width="2.4" stroke-dasharray="2 10"/>
+    <!-- eleven ideas, crossed out -->
+    <circle cx="150" cy="420" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M143 413 L157 427 M157 413 L143 427" stroke="#e8836b" stroke-width="2.6"/><circle cx="250" cy="470" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M243 463 L257 477 M257 463 L243 477" stroke="#e8836b" stroke-width="2.6"/><circle cx="320" cy="390" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M313 383 L327 397 M327 383 L313 397" stroke="#e8836b" stroke-width="2.6"/><circle cx="240" cy="320" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M233 313 L247 327 M247 313 L233 327" stroke="#e8836b" stroke-width="2.6"/><circle cx="300" cy="240" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M293 233 L307 247 M307 233 L293 247" stroke="#e8836b" stroke-width="2.6"/><circle cx="400" cy="280" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M393 273 L407 287 M407 273 L393 287" stroke="#e8836b" stroke-width="2.6"/><circle cx="480" cy="210" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M473 203 L487 217 M487 203 L473 217" stroke="#e8836b" stroke-width="2.6"/><circle cx="430" cy="130" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M423 123 L437 137 M437 123 L423 137" stroke="#e8836b" stroke-width="2.6"/><circle cx="530" cy="90" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M523 83 L537 97 M537 83 L523 97" stroke="#e8836b" stroke-width="2.6"/><circle cx="640" cy="140" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M633 133 L647 147 M647 133 L633 147" stroke="#e8836b" stroke-width="2.6"/><circle cx="610" cy="240" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2"/><path d="M603 233 L617 247 M617 233 L603 247" stroke="#e8836b" stroke-width="2.6"/>
+    <!-- the one kept -->
+    <circle cx="700" cy="362" r="24" fill="#f2c46d" fill-opacity="0.9" stroke="#2b2a28" stroke-width="2.8"/>
+    <path d="M700 338 C 700 320, 702 306, 700 290" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M700 316 c-24 -2 -38 -16 -40 -32 c20 0 36 12 40 32 z" fill="#7fa98a" fill-opacity="0.65" stroke="#2b2a28" stroke-width="2.1"/>
+    <path d="M701 302 c20 -8 32 -22 32 -38 c-18 4 -30 18 -32 38 z" fill="#7fa98a" fill-opacity="0.65" stroke="#2b2a28" stroke-width="2.1"/>
+    <!-- the first star in the evening -->
+    <path d="M736 38 L741 58 L760 63 L741 68 L736 88 L731 68 L712 63 L731 58 Z" fill="#f2c46d" stroke="#2b2a28" stroke-width="1.8"/>
+    <!-- where it started -->
+    <circle cx="70" cy="480" r="5" fill="#4338a8" stroke="none"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="400" y="526" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">every evening has its morning</text>
+  </g>
+</svg>

@@ -50,7 +50,7 @@ const config: Config = {
   ],
 
   stylesheets: [
-    "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400;1,6..72,500&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap",
+    "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400;1,6..72,500&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap",
   ],
 
   plugins: [
