@@ -258,6 +258,33 @@ def opz() -> str:
     return svg("A container with a heartbeat line that stumbles and recovers, a wrench and a checklist: a small broken system, fixed", SALMON, body, 27)
 
 
+def edit_reach() -> str:
+    """Rings spreading from an edit, a caliper that only spans the near ones."""
+    rings = []
+    for i, (r, op, dash) in enumerate(
+        [(46, 1.0, ""), (86, 0.8, ""), (132, 0.45, ' stroke-dasharray="7 9"'),
+         (184, 0.22, ' stroke-dasharray="4 14"')]
+    ):
+        rings.append(
+            f'<ellipse cx="236" cy="212" rx="{r}" ry="{int(r * 0.76)}" '
+            f'stroke-opacity="{op}"{dash}/>'
+        )
+    body = "\n    ".join(rings) + f"""
+    <path d="M222 198 L250 198 L250 226 L222 226 Z" fill="{OXIDE}" fill-opacity="0.85"/>
+    <path d="M236 150 L236 274" stroke="{INK}" stroke-width="1.6" stroke-opacity="0.45"/>
+    <path d="M236 128 L322 128" stroke="{INDIGO}" stroke-width="2.6"/>
+    <path d="M236 120 L236 136 M322 120 L322 136" stroke="{INDIGO}" stroke-width="2.6"/>
+    <path d="M352 128 L452 128" stroke="{INK}" stroke-width="2" stroke-opacity="0.28" stroke-dasharray="5 10"/>
+    <path d="M396 112 L420 144 M420 112 L396 144" stroke="{OXIDE}" stroke-width="2.4"/>
+    <path d="M466 196 a16 16 0 1 0 16 20 l-11 -4 l-3 -11 Z" fill="{GOLD}" fill-opacity="0.75"/>"""
+    return svg(
+        "Rings spreading outward from an edited point, strong near the centre and "
+        "fading to nothing at the edge; a caliper measures the near rings and the "
+        "far span is crossed out",
+        INDIGO, body, 33, wash_at=(250, 212),
+    )
+
+
 DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/notebook": notebook,
     "tabs/labs": labs,
@@ -268,6 +295,7 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/about": about,
     "tabs/someday": someday,
     "projects/edit-slice": edit_slice,
+    "projects/edit-reach": edit_reach,
     "projects/rome-neighbors": rome_neighbors,
     "projects/claim-graph": claim_graph,
     "projects/opz": opz,

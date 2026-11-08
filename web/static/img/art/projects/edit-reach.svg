@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Rings spreading outward from an edited point, strong near the centre and fading to nothing at the edge; a caliper measures the near rings and the far span is crossed out">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="33"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="34"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="250" cy="212" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="236" cy="212" rx="46" ry="34" stroke-opacity="1.0"/>
+    <ellipse cx="236" cy="212" rx="86" ry="65" stroke-opacity="0.8"/>
+    <ellipse cx="236" cy="212" rx="132" ry="100" stroke-opacity="0.45" stroke-dasharray="7 9"/>
+    <ellipse cx="236" cy="212" rx="184" ry="139" stroke-opacity="0.22" stroke-dasharray="4 14"/>
+    <path d="M222 198 L250 198 L250 226 L222 226 Z" fill="#a4442f" fill-opacity="0.85"/>
+    <path d="M236 150 L236 274" stroke="#2b2a28" stroke-width="1.6" stroke-opacity="0.45"/>
+    <path d="M236 128 L322 128" stroke="#4338a8" stroke-width="2.6"/>
+    <path d="M236 120 L236 136 M322 120 L322 136" stroke="#4338a8" stroke-width="2.6"/>
+    <path d="M352 128 L452 128" stroke="#2b2a28" stroke-width="2" stroke-opacity="0.28" stroke-dasharray="5 10"/>
+    <path d="M396 112 L420 144 M420 112 L396 144" stroke="#a4442f" stroke-width="2.4"/>
+    <path d="M466 196 a16 16 0 1 0 16 20 l-11 -4 l-3 -11 Z" fill="#f2c46d" fill-opacity="0.75"/>
+  </g>
+</svg>

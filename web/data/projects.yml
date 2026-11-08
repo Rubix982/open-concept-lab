@@ -15,6 +15,11 @@ projects:
     notebook: /notebook/edit-slice/
     tone: draft
 
+  - name: edit-reach
+    plan: ai/edit-reach/plan.md
+    notebook: /notebook/edit-reach/
+    tone: draft
+
   - name: rome-neighbors
     plan: ai/rome-neighbors/plan.md
     notebook: /notebook/rome-neighbors/
