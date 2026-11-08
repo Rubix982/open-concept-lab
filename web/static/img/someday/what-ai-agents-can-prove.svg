@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="A hand-drawn map of kinds of bugs. Injection and memory-safety regions are charted and ticked as provable. Authorization logic is only partly charted, with a question mark. A dashed coast at the edge leads into uncharted water marked business logic and race conditions. An agent's dotted route visits the charted lands. A compass rose sits in the corner.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="31"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="32"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <pattern id="sea" width="34" height="18" patternUnits="userSpaceOnUse">
+      <path d="M2 10 q 7 -6 14 0 t 14 0" fill="none" stroke="#4338a8" stroke-width="1.1" opacity="0.28"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" fill="url(#sea)"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+
+  <g filter="url(#rough)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- charted: injection -->
+    <path d="M70 120 C 120 70, 230 70, 280 110 S 320 210, 270 250 S 120 270, 90 230 S 30 170, 70 120 Z" fill="#7fa98a" fill-opacity="0.35" stroke="#2b2a28" stroke-width="2.4"/>
+    <!-- charted: memory safety -->
+    <path d="M110 330 C 150 290, 260 290, 300 320 S 330 420, 280 450 S 130 470, 100 430 S 70 370, 110 330 Z" fill="#7fa98a" fill-opacity="0.35" stroke="#2b2a28" stroke-width="2.4"/>
+    <!-- half charted: authorization -->
+    <path d="M370 170 C 420 130, 520 140, 550 190 S 560 290, 500 310 S 380 310, 360 260 S 330 200, 370 170 Z" fill="#f2c46d" fill-opacity="0.35" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M520 160 C 560 180, 575 230, 552 270" fill="none" stroke="#2b2a28" stroke-width="2" stroke-dasharray="4 8"/>
+    <!-- the coast nobody has mapped -->
+    <path d="M610 60 C 650 120, 610 180, 650 240 S 620 360, 660 420 S 640 500, 690 520" fill="none" stroke="#2b2a28" stroke-width="2" stroke-dasharray="3 10" opacity="0.6"/>
+
+    <!-- an agent's route, landing only where it can show the bug -->
+    <path d="M190 170 C 260 220, 300 260, 210 380" fill="none" stroke="#4338a8" stroke-width="2.4" stroke-dasharray="2 9"/>
+    <path d="M210 380 C 300 400, 380 360, 440 250" fill="none" stroke="#4338a8" stroke-width="2.4" stroke-dasharray="2 9"/>
+
+    <!-- ticks where a proof landed -->
+    <circle cx="190" cy="170" r="17" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M181 170 l6 7 l12 -14" fill="none" stroke="#4338a8" stroke-width="3"/>
+    <circle cx="210" cy="380" r="17" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M201 380 l6 7 l12 -14" fill="none" stroke="#4338a8" stroke-width="3"/>
+    <circle cx="440" cy="240" r="17" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+
+    <!-- compass rose -->
+    <g transform="translate(735 75)" stroke="#2b2a28" stroke-width="1.8">
+      <circle r="30" fill="none"/>
+      <path d="M0 -42 L7 0 L0 42 L-7 0 Z" fill="#f2c46d"/>
+      <path d="M-42 0 L0 -7 L42 0 L0 7 Z" fill="#f4f1ea"/>
+    </g>
+  </g>
+
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="440" y="248" font-size="22" text-anchor="middle" fill="#a4442f" font-weight="bold">?</text>
+    <text x="175" y="215" font-size="17" text-anchor="middle">injection</text>
+    <text x="215" y="428" font-size="17" text-anchor="middle">memory safety</text>
+    <text x="455" y="292" font-size="17" text-anchor="middle">authorization</text>
+    <text x="720" y="150" font-size="16" text-anchor="middle" font-style="italic" opacity="0.7">business</text>
+    <text x="720" y="170" font-size="16" text-anchor="middle" font-style="italic" opacity="0.7">logic</text>
+    <text x="725" y="300" font-size="16" text-anchor="middle" font-style="italic" opacity="0.7">race</text>
+    <text x="725" y="320" font-size="16" text-anchor="middle" font-style="italic" opacity="0.7">conditions</text>
+    <text x="735" y="27" font-size="13" text-anchor="middle">N</text>
+    <text x="350" y="530" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">where a proof can land, and where the map runs out</text>
+  </g>
+</svg>

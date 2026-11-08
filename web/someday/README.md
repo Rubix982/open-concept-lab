@@ -25,6 +25,12 @@ Anything longer goes here, in plain Markdown: paragraphs, - lists,
 **bold**, *italic*, `code` and [links](https://example.com).
 ```
 
+A picture, if the idea has one: put it at `static/img/someday/<slug>.svg` (or
+.png, .jpg, .webp), where `<slug>` is the file name without the date and `.md`.
+It shows on the note and at the top of the idea's page. A `cover:` path in the
+front matter overrides that. The existing ones are hand-drawn SVGs in the same
+style as the writing covers (800×560, a rough-ink filter, the site's palette).
+
 Quickest way in, from `web/`:
 
     npm run idea -- "the idea"

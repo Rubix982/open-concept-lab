@@ -8,7 +8,9 @@
 #              false means the entry came from a secondhand note and must not
 #              be cited yet. Independent of `status` — a citation can be
 #              trustworthy for a paper I have not read.
-#   projects:  which of my projects it bears on
+#   field:     the broad field it belongs to (Knowledge editing, Security and trust, ...)
+#   area:      the narrower problem within that field; the reading page groups by both
+#   projects:  which of my projects it bears on (may be empty)
 #   gives_me:  the one thing I go back to it for
 
 meng2022rome:
@@ -19,6 +21,8 @@ meng2022rome:
   url: https://arxiv.org/abs/2202.05262
   status: read
   relevance: high
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [rome-neighbors, edit-slice]
   gives_me: Causal tracing, and the rank-one edit that both my projects use as the edit primitive.
@@ -31,6 +35,8 @@ meng2023memit:
   url: https://arxiv.org/abs/2210.07229
   status: read
   relevance: high
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice]
   gives_me: Editing many facts at once — the breadth axis, if orphaning turns out to scale with edit count.
@@ -45,6 +51,8 @@ dong2025chainedit:
   url: https://arxiv.org/abs/2507.08427
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   projects: [edit-slice]
   gives_me: "The nearest neighbour to our benchmark finding, and a different flaw: theirs is that RippleEdits' questions need external-KG knowledge the model may not hold. Read in full for R-018 — the body never mentions surface overlap or the edited subject appearing in the prompt, and none of their three repaired variants removes it. Their In-Prompt variant injects MORE context, so a benchmark fixed for their problem still fails a coefficient screen."
@@ -57,6 +65,8 @@ cohen2024ripple:
   url: https://arxiv.org/abs/2307.12976
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   projects: [edit-slice, rome-neighbors]
   gives_me: Six evaluation criteria, and the definition of Logical Generalization that narrowed my claim to justification order.
@@ -69,6 +79,8 @@ zhong2023mquake:
   url: https://arxiv.org/abs/2305.14795
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   # edit-slice added 2026-10-14 for [R-014]: MQuAKE is the within-benchmark control §4.6 names.
   projects: [rome-neighbors, edit-slice]
@@ -82,6 +94,8 @@ geva2021ffn:
   url: https://arxiv.org/abs/2012.14913
   status: read
   relevance: medium
+  field: Model internals
+  area: Where facts are stored
   verified: true
   projects: [rome-neighbors]
   gives_me: Why editing an MLP can change a fact at all.
@@ -94,6 +108,8 @@ geva2022promoting:
   url: https://arxiv.org/abs/2203.14680
   status: read
   relevance: medium
+  field: Model internals
+  area: Where facts are stored
   verified: true
   projects: [rome-neighbors]
   gives_me: The vocabulary-space reading of what an FFN update does.
@@ -106,6 +122,8 @@ dai2022knowledgeneurons:
   url: https://arxiv.org/abs/2104.08696
   status: read
   relevance: medium
+  field: Model internals
+  area: Where facts are stored
   verified: true
   projects: [rome-neighbors]
   gives_me: The earlier localisation story that ROME's causal tracing supersedes.
@@ -118,6 +136,8 @@ hase2023localization:
   url: https://arxiv.org/abs/2301.04213
   status: read
   relevance: high
+  field: Model internals
+  area: Where facts are stored
   verified: true
   projects: [rome-neighbors]
   gives_me: Localisation does not imply editability. The first thing a hostile reviewer will raise, so it is pre-empted in the design.
@@ -130,6 +150,8 @@ mitchell2022mend:
   url: https://arxiv.org/abs/2110.11309
   status: read
   relevance: low
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice]
   gives_me: The hypernetwork-editor contrast to weight-level editing.
@@ -142,6 +164,8 @@ mitchell2022serac:
   url: https://arxiv.org/abs/2206.06520
   status: skimmed
   relevance: low
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice]
   gives_me: Side-memory editing — no weights touched, so no orphaning by construction.
@@ -154,6 +178,8 @@ hartvigsen2023grace:
   url: https://arxiv.org/abs/2211.11031
   status: read
   relevance: low
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice]
   gives_me: Retrieval-based editing over a stream of edits.
@@ -166,6 +192,8 @@ zhu2020modifying:
   url: https://arxiv.org/abs/2012.00363
   status: skimmed
   relevance: low
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice]
   gives_me: The earliest statement of "edit one fact and leave the rest alone" as a task.
@@ -178,6 +206,8 @@ yao2023survey:
   url: https://arxiv.org/abs/2305.13172
   status: read
   relevance: medium
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [edit-slice, rome-neighbors]
   gives_me: The field map, and the place to check whether a gap is really a gap.
@@ -190,6 +220,8 @@ todd2024functionvectors:
   url: https://arxiv.org/abs/2310.15213
   status: read
   relevance: high
+  field: Model internals
+  area: Representations and tools
   verified: true
   projects: [rome-neighbors]
   gives_me: Relations as vectors — a structured basis that NNsight can reach directly.
@@ -202,6 +234,8 @@ marks2024geometryoftruth:
   url: https://arxiv.org/abs/2310.06824
   status: read
   relevance: medium
+  field: Model internals
+  area: Representations and tools
   verified: true
   projects: [rome-neighbors]
   gives_me: A worked example of reading structure off representation geometry.
@@ -214,6 +248,8 @@ fiottokaufman2025nnsight:
   url: https://arxiv.org/abs/2407.14561
   status: read
   relevance: high
+  field: Model internals
+  area: Representations and tools
   verified: true
   projects: [rome-neighbors, edit-slice]
   gives_me: The tool everything runs on — deferred execution over model internals.
@@ -233,6 +269,8 @@ kim2025bilinear:
   url: https://arxiv.org/abs/2509.21993
   status: to-read
   relevance: high
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [rome-neighbors, edit-slice]
   gives_me: >
@@ -249,6 +287,8 @@ jeong2025steam:
   url: https://arxiv.org/abs/2510.10398
   status: to-read
   relevance: high
+  field: Knowledge editing
+  area: Editing methods
   verified: true
   projects: [rome-neighbors]
   gives_me: >
@@ -265,6 +305,8 @@ nishi2024shattering:
   url: https://arxiv.org/abs/2410.17194
   status: to-read
   relevance: medium
+  field: Knowledge editing
+  area: Limits of editing
   verified: true
   projects: [rome-neighbors]
   gives_me: >
@@ -280,6 +322,8 @@ huang2026ripple:
   url: https://arxiv.org/abs/2606.01610
   status: to-read
   relevance: medium
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   projects: [rome-neighbors]
   gives_me: >
@@ -296,6 +340,8 @@ slaq2025alignment:
   url: https://arxiv.org/abs/2510.11218
   status: to-read
   relevance: high
+  field: Evaluating edits
+  area: Consistency and measurement
   verified: true
   projects: [rome-neighbors]
   gives_me: >
@@ -313,6 +359,8 @@ huang2024ravel:
   url: https://aclanthology.org/2024.acl-long.470/
   status: to-read
   relevance: medium
+  field: Model internals
+  area: Representations and tools
   verified: true
   projects: [rome-neighbors]
   gives_me: >
@@ -327,6 +375,8 @@ holtzman2021surface:
   url: https://arxiv.org/abs/2104.08315
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Consistency and measurement
   verified: true
   projects: [edit-slice]
   gives_me: >
@@ -344,6 +394,8 @@ elazar2021pararel:
   url: https://arxiv.org/abs/2102.01017
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Consistency and measurement
   verified: true
   projects: [edit-slice]
   gives_me: >
@@ -353,12 +405,14 @@ elazar2021pararel:
 
 knowledgespectrum2025:
   title: Diagnosing Model Editing via Knowledge Spectrum
-  authors: (preprint, authors not recorded here)
+  authors: Pan, T.-H., Chen, C.-C., Huang, H.-H., Chen, H.-H.
   year: 2025
   venue: arXiv preprint
   url: https://arxiv.org/abs/2509.17482
   status: read
   relevance: high
+  field: Evaluating edits
+  area: Consistency and measurement
   verified: true
   projects: [edit-slice]
   gives_me: >
@@ -379,6 +433,8 @@ ravfogel2026geometric:
   url: https://arxiv.org/abs/2605.12426
   status: skimmed
   relevance: high
+  field: Model internals
+  area: Where facts are stored
   verified: true
   projects: [edit-slice]
   gives_me: "A theoretical account our measurements contradict, which is more useful than the candidate explanation we first took it for. Its own limitations put TYPED ATTRIBUTES outside the setting, and its per-relation block structure predicts perturbation local to the edited relation — the opposite of E-033. See [R-012]."
@@ -391,6 +447,8 @@ he2026romelimits:
   url: https://arxiv.org/abs/2601.04600
   status: skimmed
   relevance: high
+  field: Knowledge editing
+  area: Limits of editing
   verified: true
   projects: [edit-slice]
   gives_me: "Has E-028's depth phenomenon AND E-019/E-020's cosine decay (0.80 at layer 5 to 0.50 at 25), both published first. What it lacks is a working control: it reads the effect as depth on the warrant that edit success is stable, which E-028a shows cannot measure edit strength. See [R-012]."
@@ -403,6 +461,8 @@ youssef2026tracing:
   url: https://arxiv.org/abs/2505.20819
   status: to-read
   relevance: medium
+  field: Knowledge editing
+  area: Limits of editing
   verified: true
   projects: [edit-slice]
   gives_me: Infers the edited object from the modified weights alone, with no access to the edit prompt. The inverse of our question — we ask what an edit reaches, they ask what it reveals — and it suggests the update carries more recoverable structure than we have used.
@@ -415,6 +475,8 @@ zhang2026actionable:
   url: https://aclanthology.org/2026.findings-acl.502/
   status: to-read
   relevance: medium
+  field: Model internals
+  area: Representations and tools
   verified: true
   projects: [edit-slice, rome-neighbors]
   gives_me: Current map of the field, organised as locate / steer / improve. Use it to check which of our open threads someone has already named, rather than as a source to cite.
@@ -431,6 +493,8 @@ luo2026knowledgesmith:
   url: https://arxiv.org/abs/2510.02392
   status: to-read
   relevance: high
+  field: Knowledge editing
+  area: Forgetting and unlearning
   verified: true
   projects: [edit-slice]
   gives_me: Casts editing and unlearning as one constrained optimisation and reports a consistency-capacity trade-off across graph levels and data scales. The reason not to re-derive propagation-versus-structure from scratch.
@@ -443,6 +507,8 @@ rinberg2025ripplebench:
   url: https://arxiv.org/abs/2512.04144
   status: to-read
   relevance: high
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   projects: [edit-slice]
   gives_me: "Distance-stratified propagation curves for eight UNLEARNING methods, with distance from WikiRAG semantic neighbours. Its cross-model result is the close parallel to ours: delta curves nearly identical across four models, read as ripple being a property of the method rather than the base model. NOTE: distance is semantic retrieval, not a pluggable graph metric — see [R-011]."
@@ -455,6 +521,8 @@ chaudhury2026forgetting:
   url: https://arxiv.org/abs/2606.02860
   status: to-read
   relevance: medium
+  field: Knowledge editing
+  area: Forgetting and unlearning
   verified: true
   projects: [edit-slice]
   gives_me: "Apparent forgetting as interface drift rather than erasure, recovered by stitching with transport keys. If it carried to LMs, our damage would be accessibility loss rather than destruction. NOTE: the evidence is split CIFAR-100 and a compact ViT — vision, not language — see [R-011]."
@@ -467,6 +535,8 @@ kwon2026engram:
   url: https://arxiv.org/abs/2606.14997
   status: to-read
   relevance: medium
+  field: Knowledge editing
+  area: Forgetting and unlearning
   verified: true
   projects: [edit-slice]
   gives_me: A closed-form estimator isolating memory traces, composable and erasable by linear arithmetic. The strongest current claim that edits are linear objects — which our type-matched displacement result bears on directly.
@@ -479,6 +549,8 @@ schessl2026pathdependence:
   url: https://arxiv.org/abs/2607.24805
   status: to-read
   relevance: medium
+  field: Knowledge editing
+  area: Forgetting and unlearning
   verified: true
   projects: [edit-slice]
   gives_me: Falsifies the commutative-manifold hypothesis of kwon2026engram for sequential editing — cut order matters, and erased knowledge partially returns under later unrelated cuts. A worked example of attacking a single-edit result with the sequential case, which is the shape of attack our own work invites.
@@ -491,6 +563,8 @@ kruthof2026editpropbench:
   url: https://arxiv.org/abs/2605.02083
   status: to-read
   relevance: low
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
   verified: true
   projects: [edit-slice]
   gives_me: Dependency-labelled cascades with sentence-level labels for required updates versus text that should not move — the structure we want, applied to manuscripts and LLM editors rather than weights.
@@ -503,6 +577,261 @@ bairi2023codeplan:
   url: https://arxiv.org/abs/2309.12499
   status: skimmed
   relevance: low
+  field: Software engineering
+  area: Repository-level change
   verified: true
   projects: [edit-slice]
   gives_me: "Incremental dependency analysis driving repository-level change, with the compiler as oracle. The reason claim 2 is 'exists in software engineering, unused in editing' rather than open. NOTE: CLAUDE.md cites a Proc. ACM Softw. Eng. 1 (FSE) 2024 venue that the arXiv record does not confirm."
+
+# ---------------------------------------------------------------------------
+# Volunteer AI evaluation that stays safe if the coordinator is hacked.
+# Cited from their records; only NNsight/NDIF (above) has been read in part.
+
+anderson2020boinc:
+  title: "BOINC: A Platform for Volunteer Computing"
+  authors: Anderson, D. P.
+  year: 2020
+  venue: Journal of Grid Computing
+  url: https://doi.org/10.1007/s10723-019-09497-9
+  status: to-read
+  relevance: medium
+  field: Volunteer and distributed computing
+  area: Volunteer computing
+  verified: true
+  projects: []
+  gives_me: The baseline. Deadlines and reissue, memory checks, locality scheduling, and homogeneous redundancy.
+
+sarmenta2001volunteer:
+  title: Volunteer Computing
+  authors: Sarmenta, L. F. G.
+  year: 2001
+  venue: PhD thesis, MIT
+  url: https://dspace.mit.edu/handle/1721.1/16773
+  status: to-read
+  relevance: medium
+  field: Volunteer and distributed computing
+  area: Volunteer computing
+  verified: false
+  projects: []
+  gives_me: Spot-checking with known-answer work, the defence against fake donors.
+
+golle2001uncheatable:
+  title: Uncheatable Distributed Computations
+  authors: Golle, P., Mironov, I.
+  year: 2001
+  venue: CT-RSA
+  url: https://doi.org/10.1007/3-540-45353-9_31
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Volunteer computing
+  verified: true
+  projects: []
+  gives_me: Hidden test jobs for checking results from untrusted machines.
+
+borzunov2023petals:
+  title: "Petals: Collaborative Inference and Fine-tuning of Large Models"
+  authors: Borzunov, A., Baranchuk, D., Dettmers, T., Riabinin, M., Belkada, Y., Chumachenko, A., Samygin, P., Raffel, C.
+  year: 2023
+  venue: ACL (System Demonstrations)
+  url: https://aclanthology.org/2023.acl-demo.54
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Pooling GPUs for AI
+  # Details from the NNsight/NDIF bibliography, not checked on the Anthology page itself.
+  verified: false
+  projects: []
+  gives_me: One model split across volunteer GPUs, the case a single-donor design leaves out.
+
+javadi2009seti:
+  title: "Mining for Statistical Models of Availability in Large-Scale Distributed Systems: An Empirical Study of SETI@home"
+  authors: Javadi, B., Kondo, D., Vincent, J.-M., Anderson, D. P.
+  year: 2009
+  venue: MASCOTS
+  url: https://doi.org/10.1109/MASCOT.2009.5367061
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Volunteer computing
+  verified: true
+  projects: []
+  gives_me: About 230,000 host availability traces, to drive a churn simulator.
+
+voelz2023folding:
+  title: "Folding@home: Achievements from Over 20 Years of Citizen Science Herald the Exascale Era"
+  authors: Voelz, V. A., Pande, V. S., Bowman, G. R.
+  year: 2023
+  venue: Biophysical Journal
+  url: https://arxiv.org/abs/2303.08993
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Volunteer computing
+  verified: true
+  projects: []
+  gives_me: Whether its fixed simulation cores already treat work units as data rather than code. Unchecked.
+
+li2026minions:
+  title: "Minions: A Dynamic and Distributed Virtual GPU Cloud Built on Idle Apple Silicon Devices"
+  authors: Li, J., Xing, Y., De Silva, G., Flint, R., Yuan, K., Suchter, S.
+  year: 2026
+  url: https://arxiv.org/abs/2610.12970
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Pooling GPUs for AI
+  verified: false
+  projects: []
+  gives_me: Idle Macs pooled for AI, without treating the coordinator as a threat.
+
+primeintellect2025intellect2:
+  title: "INTELLECT-2: A Reasoning Model Trained Through Globally Decentralized Reinforcement Learning"
+  authors: Prime Intellect Team
+  year: 2025
+  url: https://arxiv.org/abs/2505.07291
+  status: to-read
+  relevance: low
+  field: Volunteer and distributed computing
+  area: Pooling GPUs for AI
+  verified: false
+  projects: []
+  gives_me: Decentralized training on contributed GPUs, and whether it publishes its jobs.
+
+hendrycks2021mmlu:
+  title: Measuring Massive Multitask Language Understanding
+  authors: Hendrycks, D., Burns, C., Basart, S., Zou, A., Mazeika, M., Song, D., Steinhardt, J.
+  year: 2021
+  venue: ICLR
+  url: https://arxiv.org/abs/2009.03300
+  status: to-read
+  relevance: medium
+  field: Evaluating language models
+  area: Benchmarks and harnesses
+  verified: true
+  projects: []
+  gives_me: MMLU, 14,042 multiple-choice questions, the standard example of a benchmark run.
+
+biderman2024lmeval:
+  title: Lessons from the Trenches on Reproducible Evaluation of Language Models
+  authors: Biderman, S., Schoelkopf, H., Sutawika, L., Gao, L., Tow, J., Abbasi, B., et al.
+  year: 2024
+  url: https://arxiv.org/abs/2405.14782
+  status: to-read
+  relevance: medium
+  field: Evaluating language models
+  area: Benchmarks and harnesses
+  verified: true
+  projects: []
+  gives_me: The LM Evaluation Harness, and the case for recording exactly what produced a score.
+
+joshi2017triviaqa:
+  title: "TriviaQA: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension"
+  authors: Joshi, M., Choi, E., Weld, D. S., Zettlemoyer, L.
+  year: 2017
+  venue: ACL
+  url: https://aclanthology.org/P17-1147
+  status: to-read
+  relevance: low
+  field: Evaluating language models
+  area: Benchmarks and harnesses
+  verified: true
+  projects: []
+  gives_me: A short-answer benchmark, the second task type beside multiple choice.
+
+laurie2013ct:
+  title: Certificate Transparency (RFC 6962)
+  authors: Laurie, B., Langley, A., Kasper, E.
+  year: 2013
+  venue: IETF
+  url: https://www.rfc-editor.org/rfc/rfc6962
+  status: to-read
+  relevance: medium
+  field: Security and trust
+  area: Transparency logs and signing
+  verified: false
+  projects: []
+  gives_me: The append-only Merkle log that makes a secretly issued item detectable.
+
+samuel2010survivable:
+  title: Survivable Key Compromise in Software Update Systems
+  authors: Samuel, J., Mathewson, N., Cappos, J., Dingledine, R.
+  year: 2010
+  venue: ACM CCS
+  url: https://uptane.org/assets/files/samuel_ccs_2010-2e4e7a69695e936b1ad3b0b7010c550a.pdf
+  status: to-read
+  relevance: medium
+  field: Security and trust
+  area: Transparency logs and signing
+  verified: false
+  projects: []
+  gives_me: Whoever can update a client controls it, so update keys stay offline and split.
+
+newman2022sigstore:
+  title: "Sigstore: Software Signing for Everybody"
+  authors: Newman, Z., Meyers, J. S., Torres-Arias, S.
+  year: 2022
+  venue: ACM CCS
+  url: https://doi.org/10.1145/3548606.3560596
+  status: to-read
+  relevance: low
+  field: Security and trust
+  area: Transparency logs and signing
+  verified: true
+  projects: []
+  gives_me: Signatures recorded in a public transparency log.
+
+saltzer1975protection:
+  title: The Protection of Information in Computer Systems
+  authors: Saltzer, J. H., Schroeder, M. D.
+  year: 1975
+  venue: Proceedings of the IEEE
+  url: https://doi.org/10.1109/PROC.1975.9939
+  status: to-read
+  relevance: low
+  field: Security and trust
+  area: Isolation and reference monitors
+  verified: false
+  projects: []
+  gives_me: Complete mediation, the principle behind a client that checks every job itself.
+
+anderson1972planning:
+  title: Computer Security Technology Planning Study (ESD-TR-73-51)
+  authors: Anderson, J. P.
+  year: 1972
+  venue: U.S. Air Force technical report
+  status: to-read
+  relevance: low
+  field: Security and trust
+  area: Isolation and reference monitors
+  verified: false
+  projects: []
+  gives_me: The original reference monitor.
+
+goltzsche2018tee:
+  title: Practical Applications of Client-Side Trusted Computing
+  authors: Goltzsche, D.
+  year: 2018
+  venue: EuroSys Doctoral Workshop
+  url: https://ibr.cs.tu-bs.de/users/goltzsch/papers/eurodw18-goltzsche.pdf
+  status: to-read
+  relevance: low
+  field: Security and trust
+  area: Isolation and reference monitors
+  verified: false
+  projects: []
+  gives_me: Trusted execution protects a provider from the host, the opposite direction from protecting a donor.
+
+haas2017wasm:
+  title: Bringing the Web up to Speed with WebAssembly
+  authors: Haas, A., Rossberg, A., Schuff, D. L., Titzer, B. L., Holman, M., Gohman, D., Wagner, L., Zakai, A., Bastien, J. F.
+  year: 2017
+  venue: PLDI
+  url: https://doi.org/10.1145/3062341.3062363
+  status: to-read
+  relevance: low
+  field: Security and trust
+  area: Isolation and reference monitors
+  verified: false
+  projects: []
+  gives_me: A sandbox for small untrusted programs, for scoring code that cannot be data.

@@ -1,3 +1,4 @@
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
@@ -73,6 +74,16 @@ function References({ refs }: { refs: SomedayReference[] }): ReactNode {
  * One idea from someday/, given room: the note's line as a title, the why as a
  * standfirst, and the longer thinking below it at reading width.
  */
+function IdeaPicture({ src }: { src?: string }): ReactNode {
+  const url = useBaseUrl(src ?? "");
+  if (!src) return null;
+  return (
+    <figure className="ocl-cover ocl-idea__picture">
+      <img src={url} alt="" />
+    </figure>
+  );
+}
+
 export default function SomedayIdea({ idea }: { idea: SomedayItem }): ReactNode {
   const kind = KIND[idea.kind] ?? { label: idea.kind, tone: 1 };
   const external = idea.link && /^https?:/.test(idea.link);
@@ -87,6 +98,7 @@ export default function SomedayIdea({ idea }: { idea: SomedayItem }): ReactNode 
         </p>
         <h1 className="ocl-idea__title">{idea.what}</h1>
         {idea.why ? <p className="ocl-idea__why">{idea.why}</p> : null}
+        <IdeaPicture src={idea.cover} />
         {idea.note ? <p className="ocl-idea__letgo">Let go: {idea.note}</p> : null}
         {idea.body ? (
           // our own Markdown, escaped and rendered at build time by the plugin

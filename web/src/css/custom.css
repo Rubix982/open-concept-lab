@@ -5250,6 +5250,180 @@ a:hover > .ocl-home__featureCover {
   margin: 0 0 1.5rem;
 }
 
+/* Reading page: a filter bar that stays in reach while the shelf scrolls.
+   (An older .ocl-filter rule above makes it a flex row; this one stacks.) */
+.ocl-filter {
+  display: block;
+  position: sticky;
+  top: var(--ifm-navbar-height);
+  z-index: 5;
+  margin: 1.25rem 0 0.5rem;
+  padding: 0.75rem 0 0.6rem;
+  background: var(--ocl-paper);
+  border-bottom: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+}
+
+.ocl-filter__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.ocl-filter__search {
+  flex: 1 1 16rem;
+  min-width: 0;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+  font: inherit;
+  color: var(--ocl-ink);
+}
+
+.ocl-filter__search:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 1px;
+}
+
+.ocl-filter__segment button {
+  white-space: nowrap;
+}
+
+.ocl-filter__areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+.ocl-filter__chip {
+  padding: 0.18rem 0.65rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--ocl-ink-muted);
+  cursor: pointer;
+}
+
+.ocl-filter__chip span {
+  margin-left: 0.15rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-filter__chip[aria-pressed="true"] {
+  border-color: var(--ocl-ink);
+  background: var(--ocl-paper-sunken);
+  color: var(--ocl-ink);
+}
+
+.ocl-filter__chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ocl-filter__chip:focus-visible,
+.ocl-filter__clear:focus-visible,
+.ocl-shelf__more:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+.ocl-filter__count {
+  margin: 0.55rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-filter__clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ocl-link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ocl-filter__empty {
+  margin-top: 2rem;
+}
+
+.ocl-shelf__more {
+  margin-top: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  color: var(--ocl-ink-muted);
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .ocl-filter {
+    position: static;
+  }
+}
+
+/* Reading page: papers grouped by area, on the shelf and in the ledger. */
+.ocl-shelf__field + .ocl-shelf__field {
+  margin-top: 3rem;
+}
+
+.ocl-shelf__fieldTitle {
+  margin: 1.75rem 0 0;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--ocl-ink-muted);
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.ocl-shelf__fieldTitle span {
+  color: var(--ocl-ink-muted);
+  font-weight: 400;
+}
+
+.ocl-shelf__area + .ocl-shelf__area {
+  margin-top: 1.75rem;
+}
+
+.ocl-filter__areas--sub {
+  margin-top: 0.45rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--ocl-rule-strong);
+}
+
+.ocl-shelf__areaTitle {
+  margin: 1.5rem 0 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.ocl-shelf__areaTitle span {
+  color: var(--ocl-ink-muted);
+  font-weight: 400;
+}
+
+.ocl-table tr.ocl-table__group th {
+  padding-top: 1.1rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: left;
+  color: var(--ocl-ink-muted);
+  background: transparent;
+}
+
 .ocl-shelf__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(10.5rem, 42%), 1fr));
@@ -6373,6 +6547,29 @@ a:hover > .ocl-home__featureCover {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   opacity: 0.75;
+}
+
+/* Someday: an idea's picture, tucked into its note like a small print. */
+.ocl-someday__picture {
+  display: block;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.3rem;
+  background: var(--ocl-paper-raised);
+  border-radius: var(--ocl-radius-sm);
+  box-shadow: 0 1px 2px rgba(40, 20, 0, 0.12);
+  rotate: 0.8deg;
+}
+
+.ocl-someday__picture img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 800 / 560;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.ocl-idea__picture {
+  margin: 0 0 2rem;
 }
 
 .ocl-note__text {

@@ -1,3 +1,4 @@
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import { useState, type ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
@@ -30,6 +31,16 @@ function day(iso: string): string {
   );
 }
 
+/** A small print tucked into the note, like a photo clipped to paper. */
+function NotePicture({ src }: { src: string }): ReactNode {
+  const url = useBaseUrl(src);
+  return (
+    <span className="ocl-someday__picture" aria-hidden="true">
+      <img src={url} alt="" loading="lazy" />
+    </span>
+  );
+}
+
 function Idea({ item }: { item: SomedayItem }): ReactNode {
   const external = item.link && /^https?:/.test(item.link);
   // A note stays a note: the line, a short why, and a way into the longer
@@ -40,6 +51,7 @@ function Idea({ item }: { item: SomedayItem }): ReactNode {
       <span className="ocl-note__label">
         {labelOf(item.kind)} · {day(item.added)}
       </span>
+      {item.cover ? <NotePicture src={item.cover} /> : null}
       <span className="ocl-note__text">{item.what}</span>
       {item.why ? <span className="ocl-someday__why">{item.why}</span> : null}
       {item.note ? <span className="ocl-someday__why ocl-someday__letgo">Let go: {item.note}</span> : null}

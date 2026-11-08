@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Pages of code travel along a line toward a gate marked release. Before the gate a magnifying glass has caught one small bug. Beside it a tally reads reproduced three of three. Past the gate, the line continues out into the world.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="41"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="42"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <!-- the world past the gate -->
+  <ellipse cx="700" cy="300" rx="140" ry="190" fill="#4338a8" opacity="0.08"/>
+  <!-- the lens's light -->
+  <ellipse cx="440" cy="300" rx="95" ry="80" fill="#f2c46d" opacity="0.22"/>
+
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the line code travels along -->
+    <path d="M40 330 L 760 330" stroke="#2b2a28" stroke-width="2.2"/>
+    <path d="M40 342 L 760 342" stroke="#2b2a28" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- pages of code -->
+    <g stroke="#2b2a28" stroke-width="2.2">
+      <path d="M80 250 h52 l14 14 v62 h-66 Z" fill="#f4f1ea"/>
+      <path d="M92 276 h40 M92 290 h32 M92 304 h42" stroke-width="1.6" stroke="#4338a8"/>
+      <path d="M190 250 h52 l14 14 v62 h-66 Z" fill="#f4f1ea"/>
+      <path d="M202 276 h40 M202 290 h28 M202 304 h40" stroke-width="1.6" stroke="#4338a8"/>
+      <path d="M300 250 h52 l14 14 v62 h-66 Z" fill="#f4f1ea"/>
+      <path d="M312 276 h36 M312 290 h42 M312 304 h30" stroke-width="1.6" stroke="#4338a8"/>
+    </g>
+
+    <!-- the bug, caught -->
+    <g stroke="#2b2a28" stroke-width="1.8">
+      <ellipse cx="440" cy="300" rx="13" ry="17" fill="#e8836b"/>
+      <path d="M440 284 v32"/>
+      <path d="M427 292 l-12 -6 M427 302 l-14 0 M427 312 l-12 6 M453 292 l12 -6 M453 302 l14 0 M453 312 l12 6"/>
+      <path d="M435 282 l-5 -9 M445 282 l5 -9"/>
+    </g>
+    <!-- the lens -->
+    <circle cx="440" cy="300" r="52" stroke="#2b2a28" stroke-width="3.2"/>
+    <path d="M478 338 L 520 386" stroke="#2b2a28" stroke-width="9"/>
+
+    <!-- the gate -->
+    <path d="M600 330 V 170 M690 330 V 170 M590 170 H 700" stroke="#2b2a28" stroke-width="3"/>
+    <path d="M600 210 H 690 M600 250 H 690 M600 290 H 690" stroke="#2b2a28" stroke-width="1.6" opacity="0.6"/>
+
+    <!-- what got through, out in the world -->
+    <path d="M720 250 h40 l10 10 v50 h-50 Z" stroke="#2b2a28" stroke-width="2" fill="#7fa98a" fill-opacity="0.45"/>
+  </g>
+
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="645" y="160" font-size="17" text-anchor="middle">release</text>
+    <text x="440" y="412" font-size="16" text-anchor="middle" font-style="italic" fill="#a4442f">reproduced 3 / 3</text>
+    <text x="440" y="436" font-size="14" text-anchor="middle" opacity="0.7">before it ships, with the steps to see it</text>
+    <text x="400" y="526" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">find it on our side of the gate</text>
+  </g>
+</svg>

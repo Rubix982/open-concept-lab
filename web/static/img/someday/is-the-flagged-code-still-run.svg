@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="A call graph grows from main. Live branches carry a trail of execution dots to the code that runs. One faded, cobwebbed branch was last run in 2019 and is never called, yet a red flag marked critical is planted on it.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="21"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="22"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+
+  <!-- where the program lives, and the corner it left behind -->
+  <ellipse cx="330" cy="215" rx="290" ry="160" fill="#7fa98a" opacity="0.13"/>
+  <ellipse cx="575" cy="415" rx="185" ry="95" fill="#2b2a28" opacity="0.05"/>
+
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- live edges -->
+    <path d="M118 270 C 170 230, 200 190, 262 178" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M118 270 C 170 300, 200 330, 262 352" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M286 172 C 340 150, 370 128, 424 122" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M286 182 C 340 200, 370 222, 424 236" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M448 124 C 500 140, 530 160, 572 180" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M448 236 C 500 226, 530 206, 572 192" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M286 352 C 330 330, 370 310, 424 300" stroke="#2b2a28" stroke-width="2.4"/>
+
+    <!-- execution, walking the live path -->
+    <g fill="#4338a8" stroke="none">
+      <circle cx="160" cy="240" r="4"/><circle cx="205" cy="200" r="4"/><circle cx="235" cy="186" r="4"/>
+      <circle cx="320" cy="158" r="4"/><circle cx="360" cy="138" r="4"/><circle cx="395" cy="127" r="4"/>
+      <circle cx="480" cy="136" r="4"/><circle cx="520" cy="156" r="4"/><circle cx="548" cy="170" r="4"/>
+    </g>
+
+    <!-- the dead branch: drawn faint, never walked -->
+    <path d="M286 362 C 340 395, 380 415, 430 425" stroke="#2b2a28" stroke-width="2" stroke-dasharray="3 9" opacity="0.45"/>
+    <path d="M454 428 C 500 436, 540 444, 588 446" stroke="#2b2a28" stroke-width="2" stroke-dasharray="3 9" opacity="0.45"/>
+
+    <!-- nodes that run -->
+    <circle cx="100" cy="275" r="22" fill="#f2c46d" stroke="#2b2a28" stroke-width="2.8"/>
+    <circle cx="274" cy="176" r="13" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="274" cy="356" r="13" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="436" cy="122" r="13" fill="#7fa98a" fill-opacity="0.6" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="436" cy="238" r="13" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="436" cy="300" r="13" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="584" cy="186" r="15" fill="#7fa98a" fill-opacity="0.6" stroke="#2b2a28" stroke-width="2.6"/>
+
+    <!-- nodes nobody calls any more -->
+    <circle cx="442" cy="426" r="12" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2" opacity="0.5"/>
+    <circle cx="602" cy="447" r="15" fill="#f4f1ea" stroke="#2b2a28" stroke-width="2.2" opacity="0.55"/>
+    <!-- a cobweb in its corner -->
+    <g stroke="#2b2a28" stroke-width="1.1" opacity="0.4">
+      <path d="M617 432 L 662 400 M617 432 L 668 430 M617 432 L 650 468"/>
+      <path d="M632 421 Q 641 431 637 444 M648 410 Q 660 428 652 455"/>
+    </g>
+
+    <!-- and the alarm, planted where nothing runs -->
+    <path d="M602 432 L 602 352" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M603 350 L 712 370 L 603 392 Z" fill="#e8836b" stroke="#a4442f" stroke-width="2.2"/>
+  </g>
+
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="100" y="322" font-size="17" text-anchor="middle">main</text>
+    <text x="584" y="222" font-size="16" text-anchor="middle" font-style="italic" fill="#4338a8">runs every day</text>
+    <text x="610" y="375" font-size="12" font-weight="bold" fill="#f4f1ea" letter-spacing="0.5">CRITICAL</text>
+    <text x="602" y="486" font-size="15" text-anchor="middle" font-style="italic" opacity="0.6">never called · last run 2019</text>
+    <text x="400" y="530" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">the alarm rings in a room nobody enters</text>
+  </g>
+</svg>

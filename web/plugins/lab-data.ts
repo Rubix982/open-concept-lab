@@ -23,6 +23,10 @@ export type Paper = {
   /** False when the entry came from a secondhand note and is not citable yet. */
   verified: boolean;
   projects: string[];
+  /** The broad field it belongs to; the reading page groups by it first. */
+  field?: string;
+  /** The narrower problem within that field. */
+  area?: string;
   gives_me?: string;
 };
 
@@ -209,6 +213,8 @@ export type SomedayItem = {
   note?: string;
   /** The file's body, as HTML: the longer thoughts, if any were written. Only the idea's own page carries it. */
   body?: string;
+  /** A site path to the idea's picture: front matter `cover`, or static/img/someday/<slug>.svg|png|jpg|webp. */
+  cover?: string;
   /** Words in the body, so the board can say how much thinking is behind a note. */
   words: number;
   /** What the thinking leans on: papers, tools, datasets. Only the idea's own page carries them. */
@@ -240,15 +246,16 @@ async function readYaml<T>(file: string): Promise<T | undefined> {
 
 const COVER_EXTENSIONS = ["svg", "webp", "png", "jpg"];
 
-/** The illustration for a piece: named in front matter, or found by its slug. */
+/** The illustration for a piece: named in front matter, or found by its slug in static/img/<folder>/. */
 async function findCover(
   staticDir: string,
   slug: string,
   named: unknown,
+  folder = "covers",
 ): Promise<string | undefined> {
   if (typeof named === "string" && named.length > 0) return named;
   for (const ext of COVER_EXTENSIONS) {
-    const rel = `img/covers/${slug}.${ext}`;
+    const rel = `img/${folder}/${slug}.${ext}`;
     try {
       await fs.access(path.join(staticDir, rel));
       return `/${rel}`;
@@ -314,7 +321,7 @@ function parseReferences(raw: unknown, file: string): SomedayReference[] {
 }
 
 /** One idea per file: someday/YYYY-MM-DD-slug.md, front matter plus optional thoughts. */
-async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]> {
+async function loadSomeday(dir: string, baseUrl: string, staticDir: string): Promise<SomedayItem[]> {
   let files: string[] = [];
   try {
     files = await fs.readdir(dir);
@@ -349,6 +356,7 @@ async function loadSomeday(dir: string, baseUrl: string): Promise<SomedayItem[]>
           why: str(fm.why),
           link: str(fm.link),
           note: str(fm.note),
+          cover: await findCover(staticDir, name, fm.cover, "someday"),
           body: body ? miniMarkdown(body, baseUrl) : undefined,
           words: body ? countWords(body) : 0,
           ...(references.length ? { references } : {}),
@@ -846,7 +854,7 @@ export default async function labData(
       // page renders nothing rather than half of itself.
       const practice = await readYaml<Practice>(path.join(dataDir, "practice.yml"));
 
-      const someday = await loadSomeday(path.join(siteDir, "someday"), context.baseUrl);
+      const someday = await loadSomeday(path.join(siteDir, "someday"), context.baseUrl, path.join(siteDir, "static"));
 
       const checklist = await loadChecklist(repoRoot);
       return {
