@@ -21,3 +21,5 @@ yarn-error.log*
 
 # Synced by scripts/sync-demos.mjs
 /static/demos
+
+someday/notes/
