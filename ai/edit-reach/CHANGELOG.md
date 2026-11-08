@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-11-08 · Session 4 — the documentation effort
+
+The project's question has an answer. This session is about it having a reader.
+
+- [E-014] Repaired a record gap: thirteen decisions, twelve tickets. E-002 ran on 2026-10-31 with its artifacts and two decision entries, and its ticket was never written. Written now, marked reconstructed, and not back-dated — `agents/engineer/tickets.md`
+- [D-001] edit-reach has a page. The scope statement from [E-004] — *a contamination detector, not a propagation detector* — written where a reader can reach it, which it had not been anywhere — `web/notebook/edit-reach/index.md`
+- [D-002] Five figures, four drawn and one reused from edit-slice. Also a section the overview had been missing entirely, on whether a remote reading reproduces — `web/static/img/edit-reach/`
+- [D-004] Paper skeleton: nine sections, five figure slots, every number carrying its ticket, prose deferred — `paper/skeleton.md`
+
+**A number was found welded together.** `edit-slice/notes/where-this-stands.md` says the two coefficient groups "do not overlap across 23,505 readings". The non-overlap is [E-018] — 16 chains, highest different-subject 0.153 below lowest same-subject 0.483. The 23,505 readings are [E-038]'s RippleEdits re-run, a different experiment. The welded version had already reached a figure drawn earlier the same day. Corrected in `two-regimes.svg` and in the skeleton; the note itself is Saif's file.
+
+**Opened and not started:** D-003 (the notebook page on what it was like to be wrong), D-005 (the paper's prose). D-006 (PDF build) is blocked on a toolchain decision — this machine has no `pdflatex`, `tectonic`, `typst` or `pandoc`. Every figure is an SVG, which Typst includes natively and LaTeX does not.
+
 ## 2026-10-31 · Session 1
 
 - [O-001] Project initialised — CLAUDE.md, CARD.md, plan.md, threads.md, shared surface, venv, MIT licence
