@@ -145,7 +145,7 @@ instrument, and that is a better thing to put in front of someone than three fin
 > *propagates* to a different entity reached through the edited one. Their prompt is
 > *"the name of the head of government of the place of death of **Leo Arons** is"* — and the
 > edited subject is in it. We measured what fraction of the edit vector arrives at that
-> token: **0.982**, against a floor of **0.070** built by scoring the same prompts against a
+> token: **0.982**, against a floor of **0.065** built by scoring the same prompts against a
 > stranger's edit. The update gets there by arithmetic. An editor could score well on that
 > test without generalising at all.
 >
@@ -215,7 +215,7 @@ asked whether the field would use the screen; Arnab is asked to break it._
 > *propagates* to a different entity reached through the edited one. Their prompt is
 > *"the name of the head of government of the place of death of **Leo Arons** is"* — and the
 > edited subject is in it. We measured what fraction of the edit vector arrives at that
-> token: a median of **0.982** across their prompts, against a floor of **0.070** built by
+> token: a median of **0.982** across their prompts, against a floor of **0.065** built by
 > scoring those same prompts against a stranger's edit. The update gets there by arithmetic.
 > An editor could score well on that test without generalising at all.
 >
@@ -263,7 +263,7 @@ indicts RippleEdits
 >
 > **Where it bites.** RippleEdits' compositionality items put the edited subject *inside*
 > the test prompt — *"the name of the head of government of the place of death of Leo Arons
-> is"*. Median delivery to that token is 0.982 against a 0.070 floor. The update arrives by
+> is"*. Median delivery to that token is 0.982 against a 0.065 floor. The update arrives by
 > arithmetic rather than by the model composing anything, so a method can score on that test
 > without generalising. It is not a blanket indictment of multi-hop evaluation: MQuAKE names
 > the edited subject iff the edit is on hop 1, 6,861/6,861 and 0/16,506.
