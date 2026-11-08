@@ -67,6 +67,48 @@ Three faults were found before any remote call, which is what the dry-run is for
 Still untested: the three remote idioms — the batched coefficient read, the inline edit inside a batched trace, and the `probs[rows, want]` gather. The stand-in model exercises the arithmetic and the indexing; only NDIF exercises nnsight. **The anchor gate exists for exactly this** — run `--anchors-only` first, it is cheap, and 42 readings that must pin at 1.000 will catch all three if any is wrong.
 ---
 
+### E-002 · Different-subject arm for C-002
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-10-31
+**Updated:** 2026-11-08
+
+> **Reconstructed 2026-11-08.** This ticket was never written at the time. The
+> work ran, and its record is complete in `agents/shared/decisions.md` and
+> `results/`, but the ticket that should have preceded it is missing — a real
+> break of the no-work-without-a-ticket rule, repaired here rather than hidden.
+> The description below is reconstructed from that record and is not evidence
+> that the scope was stated in advance. What *was* stated in advance, and is
+> load-bearing, is the pre-registered paired test; see the decision entry.
+
+**Description:**
+C-002 asks whether an edit's effect depends on what it said or only on whose key
+it touched. Score the same 495 probes under a third arm: subject B's cached edit
+applied while probing subject A, with B chosen as the nearest edit magnitude to
+A's on `‖delta_v‖/‖k*‖`. Report paired median differences with a 10,000-sample
+bootstrap, seed 1538.
+
+Paired, not unpaired — the arms share their probes. The unpaired form overstates
+the content effect roughly sixtyfold, which is the difference between a headline
+and a footnote.
+
+**Blockers:** none.
+
+**Artifacts:**
+- results/E-002-different-subject-arm.json
+- results/E-002-summary.md
+- agents/engineer/workspace/run_e002.py
+- tools/dryruns/dryrun_e002.py (26 checks)
+- agents/shared/decisions.md -> "[E-002] Result: movement is keyed on whose key
+  the edit touched, not on what it said"
+
+**Closed:** 2026-10-31. Identity is worth about 65x content (paired medians
++0.0583 against +0.0009, both excluding zero). C-002 closed on branch 1.
+
+---
+
 ### E-003 · Destination readout: does the new answer land where the edit said?
 
 **Status:** closed
@@ -545,3 +587,27 @@ Do not suppress the header. A log that does not say what ran is the fault
 
 **Closed:** 2026-11-03. 11/11 dry-runs pass and leave the project's log
 directory unchanged; a real run still opens with its header and config.
+
+---
+
+### E-014 · Repair the E-002 record gap
+
+**Status:** closed
+**Type:** review
+**Priority:** low
+**Created:** 2026-11-08
+**Updated:** 2026-11-08
+
+**Description:**
+Found while surveying the project for the documentation effort (`agents/documentor/tickets.md`): `decisions.md` carries two [E-002] entries and `results/` carries its artifacts, but this file has no E-002 ticket. Thirteen tickets exist in the record and twelve in the ledger.
+
+Write the missing ticket in its place, marked plainly as reconstructed, so that a reader counting tickets against decisions finds them equal and finds the discrepancy explained rather than absent.
+
+Do not back-date it and do not present the reconstructed description as a pre-registration. The scope stated in advance for E-002 was the paired test, and that lives in the decision entry.
+
+**Blockers:** none.
+
+**Artifacts:**
+- agents/engineer/tickets.md -> E-002, reconstructed
+
+**Closed:** 2026-11-08. E-001 through E-014 now present; every decision has a ticket.
