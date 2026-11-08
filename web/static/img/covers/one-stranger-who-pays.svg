@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="A crowd of faint figures; one of them steps forward and hands a gold coin across to a small box someone made.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="21"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="22"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <ellipse cx="420" cy="300" rx="120" ry="100" fill="#f2c46d" opacity="0.22"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the crowd, who haven't noticed -->
+    <g stroke="#2b2a28" stroke-width="2" opacity="0.3">
+      <circle cx="80" cy="250" r="14"/><path d="M80 264 L80 320 M80 280 L62 300 M80 280 L98 300 M80 320 L66 360 M80 320 L94 360"/>
+      <circle cx="140" cy="210" r="14"/><path d="M140 224 L140 280 M140 240 L122 260 M140 240 L158 260 M140 280 L126 320 M140 280 L154 320"/>
+      <circle cx="150" cy="320" r="14"/><path d="M150 334 L150 390 M150 350 L132 370 M150 350 L168 370 M150 390 L136 430 M150 390 L164 430"/>
+      <circle cx="210" cy="250" r="14"/><path d="M210 264 L210 320 M210 280 L192 300 M210 280 L228 300 M210 320 L196 360 M210 320 L224 360"/>
+      <circle cx="90" cy="390" r="14"/><path d="M90 404 L90 460 M90 420 L72 440 M90 420 L108 440 M90 460 L76 500 M90 460 L104 500"/>
+      <circle cx="220" cy="380" r="14"/><path d="M220 394 L220 450 M220 410 L202 430 M220 410 L238 430 M220 450 L206 490 M220 450 L234 490"/>
+    </g>
+    <!-- the one who steps forward -->
+    <circle cx="330" cy="250" r="16" fill="#4338a8" fill-opacity="0.18" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M330 266 L330 336 M330 286 L306 312 M330 286 L384 290 M330 336 L312 384 M330 336 L348 384" stroke="#2b2a28" stroke-width="2.6"/>
+    <!-- the coin, mid-handover -->
+    <circle cx="420" cy="290" r="20" fill="#f2c46d" fill-opacity="0.95" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M420 280 L420 300" stroke="#2b2a28" stroke-width="2"/>
+    <path d="M392 262 C 400 252, 410 250, 418 254" stroke="#2b2a28" stroke-width="1.8" stroke-dasharray="2 7"/>
+    <!-- the small, dull thing someone made -->
+    <path d="M520 300 L640 300 L640 400 L520 400 Z" fill="#7fa98a" fill-opacity="0.45" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M520 300 L560 268 L680 268 L640 300 M680 268 L680 368 L640 400" fill="none" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M556 300 L596 268" stroke="#2b2a28" stroke-width="2"/>
+    <path d="M462 300 C 480 304, 496 304, 512 300" stroke="#2b2a28" stroke-width="2.2"/>
+    <path d="M502 292 L514 300 L502 308" stroke="#2b2a28" stroke-width="2.2"/>
+    <path d="M60 520 L740 520" stroke="#2b2a28" stroke-width="1.6" opacity="0.4"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="400" y="80" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">one stranger, one coin</text>
+  </g>
+</svg>
