@@ -183,11 +183,23 @@ Three things the ticket did not anticipate.
 **Description:**
 Write D-004's skeleton out. Run the claim audit over it: every paragraph gets one sentence saying what observation would make it false, and any row with an empty fourth column is sharpened, demoted to an explicit attribution, or cut.
 
-**Blockers:** D-004.
+**Blockers:** D-004, cleared.
 
-**Artifacts:** _(fill on close)_
+**Artifacts:**
+- ai/edit-reach/paper/note.md
+- ai/edit-reach/paper/skeleton.md -> the "Shape" section, decided 2026-11-08
 
-**Closed:** —
+**Closed:** 2026-11-08. Nine sections and an abstract, 3,131 words. Shape decided first: a short arXiv note, four to six pages, for a general mechanistic-interpretability reader rather than for people who already know the editing benchmarks.
+
+**That pair of choices is the whole writing constraint and it is written into the skeleton.** A reader who needs the benchmarks explained, in a document with no room to explain them, is how a short note becomes a long one. Three rules settle it: no benchmark primer in §1; each benchmark introduced in the clause that uses it; Figure 1 carries §3's explanation, so if §3 still reads whole with the figure removed, too much prose has been written.
+
+**Written §6 first, alone, and only then the rest.** §6 is the paper; the other eight sections are measured against it. Writing them in order would have produced eight sections that each seemed fine and a §6 with no room left.
+
+**The claim audit moved three things in §6, and one of them was an overclaim of ours.** The draft said a question naming the edited subject "is not testing propagation; it is testing the edit" — which our own delivery-is-not-effect limit forbids. Now: it cannot *separate* propagation from delivery. Also cut a derived multiplier ("two thousand times smaller") that the rounding does not support, for "more than three orders of magnitude", true at both ends of the interval. And gave the sentence a reader will carry away — that an editor could score on that test while generalising nothing — its own falsifier.
+
+**Two sections run over budget and are left there.** §6 at 1,016 words against 840, and §7 at 234 against 120. §7's overage is the withdrawn depth claim, which is the kind of thing a short note is tempted to drop and should not: a reader who finds it later in the repository should find it conceded here first.
+
+**Unresolved and visible in the file:** four `TODO(cite)` markers. Every one is a citation nobody has verified against the paper itself, and this project's rule is that a description read off a search result is not a verified citation even when the identifier is right.
 
 ---
 

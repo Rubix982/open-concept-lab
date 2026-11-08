@@ -2,6 +2,40 @@
 
 _Written 2026-11-08. Structure, figure slots, tables and every number. **The prose is [D-005] and is deliberately not here.**_
 
+## Shape — decided 2026-11-08
+
+**A short note on arXiv, four to six pages.** Not a workshop submission: no venue is being targeted, so nothing here is shaped by a deadline or a page limit someone else set.
+
+**Written for a general mechanistic-interpretability reader** — someone who knows transformers and does not know the editing benchmarks.
+
+Those two choices pull against each other, and the pull is the main constraint on [D-005]. A reader who needs the benchmarks explained, in a document with no room to explain them, is how a short note becomes a long one. Three rules settle it, and a draft that breaks one of them has gone wrong:
+
+1. **No benchmark primer.** §1 states the problem in terms the reader already holds — *you cannot measure what an edit did not break* — and names no benchmark. RippleEdits and MQuAKE first appear in §6, where they do work.
+2. **Each benchmark is introduced in the sentence that uses it**, in one clause, never in a paragraph of its own.
+3. **Figure 1 carries §3's explanation.** The derivation is four lines of algebra under a picture, not a page of prose building up to it. If §3's prose would still make sense with the figure removed, too much of it has been written.
+
+Section budgets, in single-column page fractions. These are a check on the draft, not a target to fill:
+
+| § | | budget |
+| --- | --- | --- |
+| 1 | The proposal | 0.5 |
+| 2 | Related work | 0.3 |
+| 3 | Method, with Figure 1 | 0.6 |
+| 4 | The near field | 0.3 |
+| 5 | Destruction and destination | 0.3 |
+| 6 | **The far field — the denial**, with Figures 2 and 3 | 1.4 |
+| 7 | Reproducibility | 0.2 + a pointer |
+| 8 | Limits | 0.4 |
+| 9 | What this is | 0.15 |
+
+§6 gets more than §§1–5 together. That is the point of the document.
+
+**§7 shrinks to a paragraph and a pointer.** It is half the tickets and none of the central claim, and the reference it comes from is already written and stands on its own. The paragraph says what a reader must know to believe §§4–6 — that a ratio read inside one trace is exact, and that no magnitude is portable — and sends them to the repository for the rest.
+
+**Figures 4 and 5 come out.** `same-number-twice.svg` goes with §7 to the notebook page; `delivery-is-not-effect.svg` is replaced in §8 by one sentence, because a limit does not need a picture in a four-page note. Both stay on the web page, where there is room.
+
+---
+
 Format is not decided yet. This file is format-agnostic on purpose: [D-006] chooses LaTeX or Typst and that choice should not be made by whatever was convenient to write in today. One input to it, found while drawing the figures — **every figure here is an SVG, Typst includes SVG natively and LaTeX does not.** With LaTeX each figure needs a conversion step and something has to own it.
 
 Every number below carries the ticket it came from. A number that cannot be traced to `agents/shared/decisions.md` or `results/` does not go in. Where a claim is analytic it is marked `[A]` and ships its derivation; `[A]` claims are not refuted by observation, so the falsifier given is the **premise's**.
@@ -132,32 +166,19 @@ A reviewer will ask how many other floors in this literature are the wrong floor
 
 ## 7 · Whether a remote reading can be trusted at all
 
-Half the tickets. A result that cannot be read twice is not a result, and on shared inference infrastructure that is not automatic.
+**One paragraph and a pointer.** Budget 0.2 of a page. The reader needs exactly two facts to believe §§4–6, and the rest belongs in the reference, which is already written.
 
-**FIGURE 4** → `same-number-twice.svg`.
+**Fact one, which licenses every number above.** A ratio whose two terms are read inside a single trace came back at **0.000e+00** — three models, two architectures, depths 0 to 79, all fifteen layer-model pairs. Every coefficient in this note is such a ratio. [E-007]–[E-011].
 
-| | value | source |
-| --- | --- | --- |
-| ratio with both terms inside one trace | **0.000e+00**, all 15 layer-model pairs | [E-007]–[E-011] |
-| coverage | 3 models, 2 architectures, depths 0–79 | [E-008], [E-011] |
-| same quantity, one term from an earlier session | worst deviation 6.382e-03, 25 of 42 outside a 1e-3 band | [E-007] |
-| two arithmetic sites, median, Llama-3.1-8B | 5.3e-06 | [E-008] |
-| the same, GPT-J-6B, served float32 | 7.5e-09 | [E-008] |
-| serving GPUs, 16 fresh connections, 2026-11-01 | perfect partition, 3.11e-06 across | [E-006], [E-009] |
-| the same, two days later | one GPU, no partition | [E-009] |
-| the "drift" of 2.16e-04 | four exact replica values, within-device spread 0.000e+00 | [E-012] |
+**Fact two, which stops a reader generalising the magnitudes.** Nothing else is portable. The disagreement between two arithmetic sites reads 5.3e-06 on Llama-3.1-8B and 7.5e-09 on GPT-J, which NDIF serves in float32 rather than bfloat16; readings partitioned perfectly by serving GPU on one day and not at all two days later. What varies is the **deployment** — dtype, sharding, tensor shape — not the model family. A tolerance written into a gate is therefore wrong somewhere else, and has to be measured where it runs.
 
-**The sentence:** what varies is the **deployment** — dtype, sharding, tensor shape — and not the model family. Two models of one family disagree; GPT-J differs because NDIF serves it in float32. **So a gate with a tolerance written into it is wrong somewhere else**, and the tolerance has to be measured on the deployment being run.
-
-**A claim withdrawn mid-project, left in.** [E-010] saw the arithmetic-site effect rise monotonically on the 8B and wrote "grows with depth in bfloat16". [E-011] found the 70B falls 53-fold to layer 20 and then rises 298-fold to layer 40. The direction was one model's artefact. What survives: two to three orders of magnitude of variation in bfloat16 with no predictable direction, and none in float32.
+**Then the pointer**, with a sentence on what is there: the full reference, the conformance suite, and the four corrections the suite forced on the reference. Also, in one clause, that [E-010]'s "grows with depth" was withdrawn by [E-011] — because a reader who later finds that in the repository should find it acknowledged here first, not discovered.
 
 **Falsifier.** A derived ratio read with both terms in one trace that is not 0.000e+00.
 
 ## 8 · Limits
 
 All qualification lives here; §§1–7 run unhedged.
-
-**FIGURE 5** → `delivery-is-not-effect.svg`.
 
 1. **Delivery is not effect.** Every number is how much of the update arrives at a token. At a fixed coefficient, measured movement spans ×2.96 ([E-028d]).
 2. **The coefficient belongs to a token, not a prompt.** Within one prompt, subject and final positions differ by 35×, and the answer is produced at the final position.
@@ -176,8 +197,8 @@ The thing that makes it worth writing is not the denial — it is that the contr
 
 ---
 
-## What still has to be decided before [D-005] starts
+## What still has to be decided
 
-1. **Venue, or none.** A workshop note and an arXiv-only report want different lengths and different amounts of §7.
-2. **Whether §7 stays in.** It is half the tickets and none of the central claim. It may be an appendix, or its own short note — the reproducibility reference it comes from is already written and stands alone.
-3. **Format**, per the note at the top: the SVG figures argue for Typst.
+Shape and reader were settled on 2026-11-08 and are at the top of this file. One thing is left, and it does not block [D-005]:
+
+**Format.** Typst or LaTeX. Every figure is an SVG, which Typst includes natively and LaTeX does not. Either way this machine has no toolchain, which is [D-006] and is Saif's call.

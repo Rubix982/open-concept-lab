@@ -18,7 +18,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-002 | Documentor | The four diagrams | closed |
 | D-003 | Documentor | The notebook page: what it was like to be wrong | open |
 | D-004 | Documentor | The paper: structure and skeleton, every number in place | closed |
-| D-005 | Documentor | The paper: prose | open |
+| D-005 | Documentor | The paper: prose | closed |
 | D-006 | Documentor | PDF build | blocked |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
@@ -28,11 +28,11 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | ID | Blocked By |
 | --- | --- |
 | D-003 | — (unblocked) |
-| D-005 | — (unblocked) |
 | D-006 | Saif's decision on installing a PDF toolchain |
 
 ## Completed This Session
 
+- D-005 · `paper/note.md` — the draft, 3,131 words. Shape decided first (short arXiv note, general mech-interp reader); §6 written alone, then the rest measured against it.
 - D-004 · `paper/skeleton.md` — nine sections, five figure slots, every number carrying its ticket. Found and corrected a conflation of [E-018] with [E-038] that had already reached a figure.
 - D-002 · Five figures in `web/static/img/edit-reach/`, four drawn and one reused, placed in the overview. Also added the section on whether the readings reproduce, which the page had been missing.
 - D-001 · edit-reach has a page. `web/notebook/edit-reach/` — the scope statement ([E-004]) written where a reader can reach it, plus the project card, its drawing, and a `Current Phase` line that reads as English rather than shorthand.
