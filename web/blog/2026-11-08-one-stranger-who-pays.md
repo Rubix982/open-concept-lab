@@ -22,8 +22,6 @@ The filters I used on the security ideas still apply:
 
 There is a tension here I should decide on purpose. I wrote that I spend my time on the layer that is not yet solved, not the layer that already pays. A business is the layer that pays. That doesn't make this wrong. A business can fund the research, or stay a side project. But the two compete for the same weekends, and if I drift into this without deciding, I'll feel guilty about whichever one I'm not doing. It's worth one sitting to say which is the main climb for the next six months.
 
-And before charging anyone, I need to check what my visa and my job contract allow. Building something and giving it away is usually fine; taking money is where the risk starts.
-
 For reading, [The Mom Test](https://www.momtestbook.com/) by Rob Fitzpatrick, which is short and is about talking to people without fooling yourself: ask what they did the last time the problem came up, not whether they'd use your idea, because everyone says yes to ideas.
 
 The next step is a list of five people I could actually talk to this month, about a problem they already have. No product in the conversation.
