@@ -348,6 +348,25 @@ build when a page is newer than its PDF, and names the command to rebuild it. A 
 older than its page is worse than no PDF — it is a wrong paper with a download link
 on it.
 
+## The generated pages go stale too
+
+`notebook/edit-slice/ledger.md` is not written, it is generated from three files in
+`ai/edit-slice` — `agents/shared/decisions.md`, `agents/shared/findings.md` and
+`threads.md` — by `build_ledger.py`, and the output is committed. Nothing reruns it,
+so it drifts silently: the record grows and the site keeps showing a version of the
+project that stopped being true. It had drifted by several decisions and threads
+before anyone noticed, and only then because of an unrelated fix.
+
+So the generator writes a digest of its three sources into the page's front matter,
+and `npm run check:ledger` recomputes it during the build and fails when the two
+disagree, naming the command to regenerate.
+
+A digest rather than modification times, and the reason matters more than the choice:
+`git checkout` writes every file at once, so a time-based check passes on a fresh
+clone whatever the contents are. It would have been a check with no input on which it
+could come out the other way — which is the fault the suite work already found three
+times, and the one worth being deliberate about.
+
 **What it does not reproduce** is the web layout — no contents rail, no hover, no
 link into an evidence ledger. Where the page points at something only the site can
 give, the PDF says so rather than pretending.
