@@ -302,6 +302,84 @@ def split_figures(body: str):
         spans.append((a, end))
         i = end
 
+def strip_open_tag(block: str, tag: str) -> str:
+    """Remove a component's opening tag, and only that.
+
+    `re.sub(r"^<Finding.*?>", ...)` stops at the first ">" -- which sits inside
+    `falsifier={<>...</>}`, so the attribute's tail stayed in the row and the
+    falsifier was printed twice with a stray "}>" between the copies. The tag
+    ends at the first ">" outside any braces.
+    """
+    depth = 0
+    for i, ch in enumerate(block):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+        elif ch == ">" and depth == 0 and i > 0:
+            return block[i + 1 :]
+    return block
+
+
+def sep(weights: list[int]) -> str:
+    """A pipe-table separator whose dash runs carry the column widths.
+
+    Pandoc reads relative column widths off this line. Without it every column
+    is given an equal share, so a claim column and a status column get the same
+    space and the table grows down the page instead of across it.
+    """
+    return "|" + "|".join("-" * max(3, w) for w in weights) + "|"
+
+# The default Latin Modern text font has no Greek and no mathematical italics,
+# and XeTeX drops what it cannot set rather than failing -- so "rho = 0.522"
+# printed as "= 0.522" and nothing said so.
+#
+# These go through as RAW LaTeX rather than as `$...$`. Pandoc refuses to read a
+# dollar span whose closing dollar is followed by a digit -- a rule that exists
+# so prices are not typeset as equations -- so "$\leq$0.3" came out as the
+# literal characters and TeX then reported "Missing $ inserted" four hundred
+# lines away.
+def _raw(tex: str) -> str:
+    return "`" + tex + "`{=latex}"
+
+
+MATH_CHARS = {
+    "ρ": _raw(r"$\rho$"), "Δ": _raw(r"$\Delta$"), "ℓ": _raw(r"$\ell$"),
+    "σ": _raw(r"$\sigma$"), "μ": _raw(r"$\mu$"), "τ": _raw(r"$\tau$"),
+    "λ": _raw(r"$\lambda$"), "α": _raw(r"$\alpha$"), "β": _raw(r"$\beta$"),
+    "δ": _raw(r"$\delta$"), "ᵀ": _raw(r"$^{\top}$"),
+    "≈": _raw(r"$\approx$"), "≥": _raw(r"$\geq$"), "≤": _raw(r"$\leq$"),
+    "‖": _raw(r"$\|$"), "⁄": "/",
+}
+
+# Inside a code span the text is set in a monospace face that has none of these
+# either, and a dropped character changes what the code says. ASCII stands in.
+CODE_CHARS = {"‖": "||", "·": ".", "⁄": "/", "≤": "<=", "≥": ">=", "−": "-", "ᵀ": "^T"}
+
+
+def to_math(md: str) -> str:
+    """Substitute outside existing math; transliterate inside code spans.
+
+    A rho inside a `$...$` span would become nested dollars, and TeX reports
+    that several hundred lines from the cause. So existing spans are lifted
+    out, substituted separately, and put back.
+    """
+    spans: list[str] = []
+
+    def hide(m: re.Match) -> str:
+        text = m.group(0)
+        if text.startswith("`"):
+            for ch, ascii_ in CODE_CHARS.items():
+                text = text.replace(ch, ascii_)
+        spans.append(text)
+        return f"\x00{len(spans) - 1}\x00"
+
+    md = re.sub(r"\$\$.*?\$\$|\$[^$\n]*\$|`[^`\n]*`", hide, md, flags=re.S)
+    for ch, tex in MATH_CHARS.items():
+        md = md.replace(ch, tex)
+    return re.sub(r"\x00(\d+)\x00", lambda m: spans[int(m.group(1))], md)
+
+
 def latex_escape(s: str) -> str:
     for a, b in [("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"),
                  ("$", r"\$"), ("#", r"\#"), ("_", r"\_"), ("{", r"\{"), ("}", r"\}")]:
@@ -324,8 +402,7 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
     def finding(m: re.Match) -> str:
         b = m.group(0)
         fals = jsx_to_markdown(strip_jsx_attr(b, "falsifier") or "")
-        inner = re.sub(r"^<Finding\b.*?>", "", b, flags=re.S)
-        inner = jsx_to_markdown(re.sub(r"</Finding>$", "", inner))
+        inner = jsx_to_markdown(strip_open_tag(b, "Finding").replace("</Finding>", ""))
         return (f"| {strip_jsx_attr(b, 'id') or ''} | {inner} {fals} "
                 f"| {strip_jsx_attr(b, 'value') or ''} | {strip_jsx_attr(b, 'status') or ''} |")
 
@@ -333,7 +410,7 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
 
     def run(m: re.Match) -> str:
         b = m.group(0)
-        inner = jsx_to_markdown(re.sub(r"</Run>$", "", re.sub(r"^<Run\b.*?>", "", b, flags=re.S)))
+        inner = jsx_to_markdown(strip_open_tag(b, "Run").replace("</Run>", ""))
         cols = [strip_jsx_attr(b, k) or "" for k in ("id", "model", "n", "date", "out")]
         return "| " + " | ".join([cols[0], inner] + cols[1:]) + " |"
 
@@ -341,14 +418,14 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
 
     def rev(m: re.Match) -> str:
         b = m.group(0)
-        inner = jsx_to_markdown(re.sub(r"</Rev>$", "", re.sub(r"^<Rev\b.*?>", "", b, flags=re.S)))
+        inner = jsx_to_markdown(strip_open_tag(b, "Rev").replace("</Rev>", ""))
         return f"| {strip_jsx_attr(b, 'date')} | {strip_jsx_attr(b, 'version')} | {inner} |"
 
     body = re.sub(r"<Rev\b.*?</Rev>", rev, body, flags=re.S)
 
     def check(m: re.Match) -> str:
         b = m.group(0)
-        inner = jsx_to_markdown(re.sub(r"</Check>$", "", re.sub(r"^<Check\b.*?>", "", b, flags=re.S)))
+        inner = jsx_to_markdown(strip_open_tag(b, "Check").replace("</Check>", ""))
         met = "yes" if re.search(r"\bmet\b", b.split(">")[0]) else "no"
         return (f"| {met} | {jsx_to_markdown(strip_jsx_attr(b, 'need') or '')} "
                 f"| {inner} | {strip_jsx_attr(b, 'where') or ''} |")
@@ -358,10 +435,12 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
     # Then the wrappers. <Data> carries its own <thead>; the others have a fixed
     # header the component supplies on the page and the script supplies here.
     HEADERS = {
-        "Ledger": ["#", "Claim, and what would refute it", "value", "status"],
-        "Runs": ["id", "what it measured", "model", "n", "date", "output"],
-        "Revisions": ["date", "ver", "what changed, and what it cost"],
-        "Readiness": ["", "requirement", "state today", "where"],
+        "Ledger": (["#", "Claim, and what would refute it", "value", "status"],
+                   [5, 62, 14, 12]),
+        "Runs": (["id", "what it measured", "model", "n", "date", "output"],
+                 [7, 38, 14, 6, 10, 18]),
+        "Revisions": (["date", "ver", "what changed, and what it cost"], [10, 6, 70]),
+        "Readiness": (["", "requirement", "state today", "where"], [4, 28, 48, 10]),
     }
 
     def table(m: re.Match, tag: str) -> str:
@@ -373,10 +452,9 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
             rows = [ln for ln in block.splitlines() if ln.strip().startswith("|")]
             if not rows:
                 return ""
-            head = HEADERS[tag]
+            head, widths = HEADERS[tag]
             md = "\n".join(
-                ["| " + " | ".join(head) + " |",
-                 "|" + "|".join([" --- "] * len(head)) + "|"] + [r.strip() for r in rows]
+                ["| " + " | ".join(head) + " |", sep(widths)] + [r.strip() for r in rows]
             )
         return f"\n{md}\n\n: {cap}\n" if md else ""
 
@@ -518,7 +596,7 @@ def main() -> int:
     def to_latex(md: str) -> str:
         p = subprocess.run(
             ["pandoc", "-f", "markdown+raw_attribute", "-t", "latex", "--no-highlight"],
-            input=md, capture_output=True, text=True, check=True,
+            input=to_math(md), capture_output=True, text=True, check=True,
         )
         out = delongtable(p.stdout)
         # fvextra patches Verbatim, not verbatim, and only the former breaks lines.
