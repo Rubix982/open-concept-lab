@@ -563,3 +563,13 @@ Saif: "mei chahta hoon ke aik section ke paper wale tab per hum wahi two column 
 **One correction worth recording, because it was in the request.** NeurIPS is single-column. The two-column format is ACL, EMNLP, IEEE and AAAI. What was built is that one, which is what the request described; the name attached to it was wrong and nothing follows from the error.
 
 **Below 1000px it falls back to one column.** Two columns of justified text at phone width is unreadable, and no amount of hyphenation fixes it.
+
+**RCA (re-open and re-close: 2026-11-09, D-014's `Frontmatter`):**
+
+> D-015 set the body in two columns, and D-014's side-by-side front matter became the wrong shape the moment it did. The grid made the abstract a *third* measure, narrower than either body column, and justified text in it hyphenated on nearly every line — "contami-nation", "propa-". It also pushed the whole front matter past one screen before §1 began.
+>
+> The grid is removed and the component with it. The abstract and the contributions now span the spread and break into the same two columns the body uses, with their labels and the keyword line spanning. Shorter, and consistent with everything under it.
+>
+> **What was misunderstood:** that a layout decision made for a one-column page carries over to a two-column one. `Frontmatter` was a good answer to "the page is wider than its measure" when the page had one measure. With two columns the body already answers that, and a second, different two-column arrangement sitting on top of it reads as a mistake because it is one. D-014's ticket text is left as written; this note records what happened to it.
+
+**Re-closed:** 2026-11-09. `web/src/components/Paper.tsx`, `web/src/css/custom.css`, `web/notebook/edit-reach/paper.md`, `web/notebook/writing-here.md`.

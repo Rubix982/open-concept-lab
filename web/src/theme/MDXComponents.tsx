@@ -14,7 +14,7 @@ import Gloss from "@site/src/components/Gloss";
 import PageArt from "@site/src/components/PageArt";
 import Profile from "@site/src/components/Profile";
 import {
-  PaperHead, Abstract, Contributions, Frontmatter, Eq, Lead, Prov,
+  PaperHead, Abstract, Contributions, Eq, Lead, Prov,
   Ledger, Finding, Runs, Run,
   Revisions, Rev, Readiness, Check, Data,
 } from "@site/src/components/Paper";
@@ -47,7 +47,6 @@ export default {
   PaperHead,
   Abstract,
   Contributions,
-  Frontmatter,
   Eq,
   Lead,
   Prov,

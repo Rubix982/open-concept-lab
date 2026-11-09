@@ -19,8 +19,6 @@ toc_max_heading_level: 2
   buildsOn={<a href="/notebook/edit-slice/">edit-slice</a>}
 />
 
-<Frontmatter>
-
 <Abstract keywords={["model editing", "ROME", "knowledge propagation", "benchmark contamination", "negative result"]}>
 
 A rank-one weight edit, as ROME applies it <Cite id="meng2022rome" />, divides its update by a fixed inner product. The fraction of that update arriving at any token is therefore computable in one forward pass through the *unedited* model — before the edit exists, and for any prompt rather than for a list written in advance. This paper asks whether that quantity can screen an evaluation item before the item is run, and finds that it cannot, for a reason worth stating precisely.
@@ -43,8 +41,6 @@ This is reported as a negative result with working controls. §6 records what th
 6. The measure repurposed as a contamination screen, with one published benchmark scored on it, released as `editreach`.
 
 </Contributions>
-
-</Frontmatter>
 ## 1. Introduction
 
 <Lead>The task.</Lead> A weight edit changes one fact and disturbs an unknown amount of everything else. The disturbance is evaluated with hand-written item sets: paraphrases, neighbours, and multi-hop questions whose answers should follow from the edited fact <Cite id="cohen2024ripple" />, <Cite id="zhong2023mquake" />. Surveys of the field treat these sets as the measurement <Cite id="yao2023survey" />.

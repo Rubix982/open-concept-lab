@@ -8984,7 +8984,8 @@ a:hover > .ocl-home__featureCover {
 .markdown:has(> .ocl-paperhead) > h2,
 .markdown:has(> .ocl-paperhead) > hr,
 .markdown:has(> .ocl-paperhead) > .ocl-paperhead,
-.markdown:has(> .ocl-paperhead) > .ocl-frontmatter,
+.markdown:has(> .ocl-paperhead) > .ocl-abstract,
+.markdown:has(> .ocl-paperhead) > .ocl-contrib,
 .markdown:has(> .ocl-paperhead) > .ocl-ptable,
 .markdown:has(> .ocl-paperhead) > .ocl-figure--wide,
 .markdown:has(> .ocl-paperhead) > div[class*="codeBlock"],
@@ -9449,46 +9450,32 @@ a:hover > .ocl-home__featureCover {
   line-height: 1.35;
 }
 
-/* ---- front matter in two columns ---- */
-
-.ocl-frontmatter {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 0 2.4rem;
-  align-items: start;
-  margin-bottom: 2rem;
-  padding-bottom: 1.6rem;
-  border-bottom: 1px solid var(--ocl-rule);
+/*
+ * The abstract and the contributions span the spread and break into the same
+ * two columns the body uses. A side-by-side grid was tried first and was the
+ * wrong shape once the body itself became two columns: it made the abstract a
+ * narrow third measure, where justified text hyphenates on every other line.
+ */
+.markdown:has(> .ocl-paperhead) > .ocl-abstract,
+.markdown:has(> .ocl-paperhead) > .ocl-contrib {
+  column-count: 2;
+  column-gap: 2.1rem;
 }
 
-@media (max-width: 900px) {
-  .ocl-frontmatter {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.6rem 0;
-  }
+.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__label,
+.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__kw,
+.markdown:has(> .ocl-paperhead) > .ocl-contrib .ocl-contrib__label {
+  column-span: all;
 }
 
-/* Inside the grid the two blocks are columns, so they drop their own rules. */
-.ocl-frontmatter > .ocl-abstract {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  max-width: none;
-}
-
-.ocl-frontmatter > .ocl-abstract .ocl-abstract__label {
+.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__label {
   text-align: left;
 }
 
-.ocl-frontmatter > .ocl-contrib {
+.markdown:has(> .ocl-paperhead) > .ocl-contrib ol {
   margin: 0;
-  max-width: none;
 }
 
-.ocl-frontmatter .ocl-abstract p {
-  font-size: 0.945rem;
-}
-
-.ocl-frontmatter .ocl-contrib {
-  font-size: 0.9rem;
+.markdown:has(> .ocl-paperhead) > .ocl-contrib li {
+  break-inside: avoid;
 }

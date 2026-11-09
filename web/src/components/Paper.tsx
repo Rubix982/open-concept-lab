@@ -400,15 +400,3 @@ export function Data({
     </div>
   );
 }
-
-/**
- * Front matter in two columns: the abstract beside what the paper adds.
- *
- * A printed paper sets these in two columns because the page is wider than its
- * measure, which is also true here. Both blocks are short and self-contained,
- * so a reader never scrolls down one column and back up the other — the reason
- * two columns are wrong for a body of running text and right for this.
- */
-export function Frontmatter({ children }: { children: ReactNode }): ReactNode {
-  return <div className="ocl-frontmatter">{children}</div>;
-}
