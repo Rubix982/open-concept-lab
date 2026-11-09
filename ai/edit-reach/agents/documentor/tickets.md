@@ -98,7 +98,9 @@ Two notes for whoever reads these next.
 
 ### D-003 · The notebook page: what it was like to be wrong
 
-**Status:** open
+**Status:** split
+**Split into:** D-019
+**Reason:** Three of the five items were absorbed by the paper while this ticket sat open. What is left is not a notebook page and not edit-reach's.
 **Type:** document
 **Priority:** medium
 **Created:** 2026-11-08
@@ -121,6 +123,56 @@ The material, all of it already recorded:
 Hedging is quarantined into one named limits section; the body runs unhedged.
 
 **Blockers:** D-002 (figures 1 and 4).
+
+**Artifacts:** — (none produced; the material went elsewhere)
+
+**Closed as split:** 2026-11-09.
+
+**Where each of the five items went.** The ticket was written on 8 November, before the paper existed in its current form. Writing the paper absorbed most of it, which is the ordinary way a documentation ticket dies and is worth recording rather than discovering later.
+
+| the material | where it is now |
+| --- | --- |
+| [E-010]'s depth claim, withdrawn by [E-011] | Ledger row F-14, withdrawn, and §4.1's paragraph on a claim withdrawn by its own follow-up |
+| [E-004]'s first floor giving the opposite answer | §3.3 and ledger row F-09, superseded |
+| The logging bug — 124 of 155 files header-only | §4.2, *What the record cost* |
+| `docs/ndif-reproducibility.md` correcting itself four times | **nowhere** → D-019 |
+| The fault class, found five times | **nowhere** → D-019 |
+
+**The two that survive are the two that are not about edit-reach.** A reference document that corrected itself four times across five runs of its own conformance suite, and a fault that recurred five times in different clothes — *a check evaluated on an input that cannot express the thing it tests*. Neither is a finding about rank-one edits. Both are findings about how this work is done, and they transfer.
+
+**That changes the genre, and the genre changes the home.** This ticket asked for a notebook page ordered by chronology. A notebook page is revised in place and ordered by argument; a record ordered by chronology is a dated piece, which this site puts in `blog/`. The original ticket had the ordering right and the surface wrong.
+
+---
+
+### D-019 · The fault that kept coming back in different clothes
+
+**Status:** open
+**Type:** document
+**Priority:** medium
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 3h
+
+**Description:**
+A dated piece — `web/blog/2026-11-<dd>-<slug>.md`, not a notebook page. Carried over from D-003, which was split when the paper absorbed the rest of it.
+
+Ordered by chronology. This is a record of how the work went wrong and was caught, and dependency-ordering it would destroy the only thing it shows.
+
+**Two things, and the second is the piece.**
+
+1. **A reference document that corrected itself four times.** `ai/edit-reach/docs/ndif-reproducibility.md` was written to say what reproduces off a shared inference fabric. Five runs of its own conformance suite produced four corrections to it, each left in place rather than quietly fixed: the GPU partition weakened to a property of a deployment on a day; "batch composition contributes zero" narrowed to the derived ratio and not the raw keys, bounded at 2.6%; the structural claims split from the magnitudes with a per-model table; and "the arithmetic-site effect grows with depth" withdrawn for "measure it at the layer you read". Record what each correction cost, not only that it happened.
+
+2. **The same fault five times:** *a check evaluated on an input that cannot express the thing it tests.* Every instance was fixed by naming the degenerate case, never by moving a number. The sharpest is `matmul_site`, which read `0.000e+00` because it ran on anchor prompts — analytically pinned to 1.000, so the two arithmetic sites cannot disagree there by construction. It would have reported "the two sites agree" forever, on every model, at every layer, and the number would have been correct every time.
+
+   The four others are in `agents/shared/decisions.md` and `agents/engineer/tickets.md`; find them before writing, because five instances is the claim and four is an anecdote. **If only four can be found, say four.**
+
+**What would make this piece wrong:** if the five instances turn out to be one fault described five ways, or if any of them was actually fixed by changing a number rather than by naming the degenerate case. Check both before writing; either would make the piece a different and smaller one.
+
+**Front matter:** `tags: [lab-notes]`, `project: edit-reach`, `status: provisional`. A cover drawing at `static/img/covers/<slug>.svg` in the house style, or the piece renders as a compact entry, which is also fine.
+
+**Both passes run before it publishes**, per `ai/CLAUDE.md`: the claim audit, then the vocabulary census. The census matters here — a piece about a fault class is exactly where a reader meets `matmul_site`, *anchor*, and *degenerate case* for the first time.
+
+**Blockers:** —
 
 **Artifacts:** _(fill on close)_
 

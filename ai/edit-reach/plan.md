@@ -16,7 +16,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | --- | --- | --- | --- |
 | D-001 | Documentor | Notebook section for edit-reach, and the scope statement | closed |
 | D-002 | Documentor | The four diagrams | closed |
-| D-003 | Documentor | The notebook page: what it was like to be wrong | open |
+| D-003 | Documentor | The notebook page: what it was like to be wrong | split |
 | D-004 | Documentor | The paper: structure and skeleton, every number in place | closed |
 | D-005 | Documentor | The paper: prose | closed |
 | D-006 | Documentor | PDF build | blocked |
@@ -32,6 +32,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-016 | Documentor | A class name that was already taken | closed |
 | D-017 | Documentor | The overview was a short version of the paper | closed |
 | D-018 | Documentor | Written for the people who already knew | closed |
+| D-019 | Documentor | The fault that kept coming back in different clothes | open |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
@@ -39,7 +40,6 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 | ID | Blocked By |
 | --- | --- |
-| D-003 | — (unblocked) |
 | D-006 | Saif's decision on installing a PDF toolchain |
 
 ## Completed This Session
