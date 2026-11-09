@@ -491,13 +491,13 @@ luo2026knowledgesmith:
   year: 2026
   venue: ICLR
   url: https://arxiv.org/abs/2510.02392
-  status: to-read
+  status: skimmed
   relevance: high
   field: Knowledge editing
   area: Forgetting and unlearning
   verified: true
-  projects: [edit-slice]
-  gives_me: Casts editing and unlearning as one constrained optimisation and reports a consistency-capacity trade-off across graph levels and data scales. The reason not to re-derive propagation-versus-structure from scratch.
+  projects: [edit-slice, edit-reach]
+  gives_me: "Editing over-spreads and unlearning under-spreads (§5.2.1), and hierarchy level — root, intermediate, leaf — sets distinct accuracy ceilings. Read 2026-11-09: it does NOT test out-degree, which this entry and edit-slice/CLAUDE.md both said it did. Those words never appear, and no frequency variable is used."
 
 rinberg2025ripplebench:
   title: "RippleBench: Capturing Ripple Effects Using Existing Knowledge Repositories"

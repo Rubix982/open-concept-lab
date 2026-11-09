@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" role="img" aria-label="The model's top eight completions of 'By profession, Maurice de Vlaminck is a', before and after one edit to his birth country. Before: painter 70.9 percent, then French 4.5 percent and six others under 1.1 percent. After: poet 48.3 percent, then writer 6.1 percent, Chile 5.4 percent, sailor 4.8 percent and four more. Painter is no longer in the top eight; it has fallen to nineteenth place at 0.4 percent.">
+  <defs>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="1000" height="620" fill="#f4f1ea"/>
+  <rect width="1000" height="620" filter="url(#grain)"/>
+
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="#2b2a28">
+    <text x="500" y="48" font-size="21" letter-spacing="1.3" text-anchor="middle">ONE CONFIDENT ANSWER FOR ANOTHER</text>
+    <text x="500" y="74" font-size="15" font-style="italic" text-anchor="middle" opacity="0.78">&#8220;By profession, Maurice de Vlaminck is a ___&#8221; &#8212; the model's top eight, on the same prompt</text>
+    <text x="500" y="96" font-size="15" font-style="italic" text-anchor="middle" opacity="0.78">before and after one edit, which said only that he was born in Chile</text>
+
+    <text x="56" y="148" font-size="17" letter-spacing="1" fill="#b8833c">BEFORE THE EDIT</text>
+    <text x="540" y="148" font-size="17" letter-spacing="1" fill="#6a5ad6">AFTER IT</text>
+
+    <rect x="178" y="173" width="229.9" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="188" font-size="15.5" text-anchor="end">painter</text>
+    <text x="414.9" y="188" font-size="13.5" opacity="0.72">70.9%</text>
+    <rect x="178" y="207" width="14.7" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="222" font-size="15.5" text-anchor="end">French</text>
+    <text x="199.7" y="222" font-size="13.5" opacity="0.72">4.5%</text>
+    <rect x="178" y="241" width="3.3" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="256" font-size="15.5" text-anchor="end">post</text>
+    <text x="188.3" y="256" font-size="13.5" opacity="0.72">1.0%</text>
+    <rect x="178" y="275" width="3.3" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="290" font-size="15.5" text-anchor="end">self</text>
+    <text x="188.3" y="290" font-size="13.5" opacity="0.72">1.0%</text>
+    <rect x="178" y="309" width="2.9" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="324" font-size="15.5" text-anchor="end">landscape</text>
+    <text x="187.9" y="324" font-size="13.5" opacity="0.72">0.9%</text>
+    <rect x="178" y="343" width="2.3" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="358" font-size="15.5" text-anchor="end">famous</text>
+    <text x="187.3" y="358" font-size="13.5" opacity="0.72">0.7%</text>
+    <rect x="178" y="377" width="2.0" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="392" font-size="15.5" text-anchor="end">sailor</text>
+    <text x="187.0" y="392" font-size="13.5" opacity="0.72">0.5%</text>
+    <rect x="178" y="411" width="2.0" height="19" rx="3" fill="#b8833c"/>
+    <text x="168" y="426" font-size="15.5" text-anchor="end">great</text>
+    <text x="187.0" y="426" font-size="13.5" opacity="0.72">0.5%</text>
+
+    <rect x="662" y="173" width="156.6" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="188" font-size="15.5" text-anchor="end">poet</text>
+    <text x="825.6" y="188" font-size="13.5" opacity="0.72">48.3%</text>
+    <rect x="662" y="207" width="19.9" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="222" font-size="15.5" text-anchor="end">writer</text>
+    <text x="688.9" y="222" font-size="13.5" opacity="0.72">6.1%</text>
+    <rect x="662" y="241" width="17.6" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="256" font-size="15.5" text-anchor="end">Chile</text>
+    <text x="686.6" y="256" font-size="13.5" opacity="0.72">5.4%</text>
+    <text x="737.6" y="256" font-size="13" font-style="italic" fill="#c25c3f">the country we injected</text>
+    <rect x="662" y="275" width="15.5" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="290" font-size="15.5" text-anchor="end">sailor</text>
+    <text x="684.5" y="290" font-size="13.5" opacity="0.72">4.8%</text>
+    <rect x="662" y="309" width="9.4" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="324" font-size="15.5" text-anchor="end">musician</text>
+    <text x="678.4" y="324" font-size="13.5" opacity="0.72">2.9%</text>
+    <rect x="662" y="343" width="8.8" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="358" font-size="15.5" text-anchor="end">singer</text>
+    <text x="677.8" y="358" font-size="13.5" opacity="0.72">2.7%</text>
+    <rect x="662" y="377" width="5.4" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="392" font-size="15.5" text-anchor="end">songwriter</text>
+    <text x="674.4" y="392" font-size="13.5" opacity="0.72">1.7%</text>
+    <rect x="662" y="411" width="5.0" height="19" rx="3" fill="#6a5ad6"/>
+    <text x="652" y="426" font-size="15.5" text-anchor="end">professional</text>
+    <text x="674.0" y="426" font-size="13.5" opacity="0.72">1.6%</text>
+
+    <path d="M540 452 H954" stroke="#2b2a28" stroke-width="1.6" stroke-dasharray="4 7" opacity="0.5"/>
+    <text x="652" y="482" font-size="15.5" text-anchor="end" opacity="0.55">painter</text>
+    <text x="662" y="482" font-size="13.5" opacity="0.7">no longer in the top eight &#8212; nineteenth, at 0.4%</text>
+
+    <text x="500" y="552" font-size="16" font-style="italic" text-anchor="middle">Damage would have left the answer flat, with confidence spread thin across guesses.</text>
+    <text x="500" y="578" font-size="16" font-style="italic" text-anchor="middle">Painter was not blurred. It was displaced.</text>
+  </g>
+</svg>

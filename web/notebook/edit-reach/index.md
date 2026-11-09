@@ -117,7 +117,7 @@ Four questions are open. Four more were answered by the work above and are kept 
 
 <Threads>
   <Thread id="T‑001" status="open">Can any screen bound an edit's damage from <i>above</i>, or only from below? A benchmark finds what it contains. A per-prompt quantity removes the enumeration problem but is still evaluated on prompts we happen to hold. If an upper bound is structurally unavailable, that should be stated once and loudly rather than implied away.</Thread>
-  <Thread id="T‑002" status="open">Is subject-string frequency the operative variable rather than dependent count? Check KnowledgeSmith first — it already tested the out-degree hypothesis, and this is only interesting where it departs from that.</Thread>
+  <Thread id="T‑002" status="open">Is subject-string frequency the operative variable rather than dependent count? We expected the nearest prior work to have settled this and it has not: it varies a node's depth in a hierarchy, never its number of dependents, and uses no frequency variable. Both halves of the question are unrun.</Thread>
   <Thread id="T‑003" status="open">Do "modify internal mechanisms" and "extract latent knowledge" bottom out in the same requirement — a way to tell what the model holds that is independent of what the asker put in? Is that one instrument or two, and does this screen serve both or only the first?</Thread>
   <Thread id="T‑009" status="narrowed">The serving GPU accounts for 1.4% of the observed spread. The rest was shown not to be drift but four exact values across two days, and what separates 31 October from 1 November is still unattributed.</Thread>
   <Thread id="T‑005" status="answered">Is the coefficient blind in exactly the regime propagation lives in? Yes — §5.2.</Thread>

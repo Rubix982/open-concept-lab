@@ -122,3 +122,4 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - [R-001] T-011 answered — a compact domain makes dot-product self-attention Lipschitz by the paper's own statement, so what is missing is a *usable* constant, not a constant; T-001's stronger claim withdrawn — `agents/shared/findings.md`
 - [R-002] T-012 answered — weight-space certification certifies an ℓ∞ ball, never rank-one, never a transformer; positioning fixed at "unclaimed in this setting" — `agents/shared/findings.md`
 - [O-003] `tools/dryruns/dryrun_record.py` — the record is checked against itself; found E-003 and E-004 closed since 2026-11-01 with no artifacts field
+- [R-003] T-002's gate run and cleared — KnowledgeSmith never tested out-degree (the words do not appear) and uses no frequency variable, so both arms of T-002 are unrun; `edit-slice/CLAUDE.md` corrected in place, it had said "do not re-derive this" about a question nobody answered

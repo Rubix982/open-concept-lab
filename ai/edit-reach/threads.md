@@ -33,7 +33,12 @@ So a universal upper bound exists and is one line. Three things follow, and the 
 **Parent:** T-001
 **Opened:** 2026-10-31
 **Question:** Carried from `ai/edit-slice/threads.md`. If the edit arrives wherever the subject string sits, then how often that string occurs across the probe bank may predict damage better than how many facts depend on the edited one. Falsifier is written out in the edit-slice ledger. **Check KnowledgeSmith (2510.02392) first — it already tested the out-degree hypothesis, and this thread is only interesting where it departs from that.**
-**Answer:** —
+
+**Gate run 2026-11-09 [R-003], and it does not close this thread — it widens it.** KnowledgeSmith did **not** test out-degree. The words "out-degree", "outdegree", "branching factor", "degree" and "fan-out" appear nowhere in it. It varies a node's **level in a hierarchy** — root, intermediate, leaf — and finds that *"different hierarchical branches exhibit distinct ceilings for achievable accuracy"*. Depth in a tree is not the number of dependents a node has. It also uses **no frequency variable of any kind**.
+
+So **both arms of this thread's falsifier are untouched by it** — neither subject-string frequency nor dependent count has been run against damage by anyone we have read. The gate was expected to kill this thread cheaply; it did the opposite, and the instruction that set the gate (`edit-slice/CLAUDE.md`) has been corrected in place.
+
+**Answer:** — (the gate is cleared; the measurement itself is unrun)
 
 ### T-003 · The shared prerequisite behind "modify" and "extract"
 

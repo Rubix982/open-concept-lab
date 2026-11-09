@@ -37,3 +37,23 @@ Theorem 0.1 then gives analytic output bounds `f_j^L ≤ f_j ≤ f_j^U` under **
 **Positioning, at the strength the evidence supports and no further.** Weight-space certification is an existing field, so "nobody certifies weight perturbations" would have been false and is not claimed. What is **unclaimed in this setting** is certification exploiting a rank-one perturbation whose direction is known in advance, aimed at knowledge-editing locality in a transformer. A search for provable locality bounds for ROME returned nothing, which is not evidence of absence and nothing is shelved on it.
 
 Confidence: **high** on what Weng et al. do — read from the formulation and the theorem. **Medium** on the lane being unclaimed, because that rests partly on a search returning nothing.
+
+## [R-003] Finding: KnowledgeSmith never tested out-degree, and a binding instruction said it had
+
+_Date: 2026-11-09 · runs the gate T-002 was waiting on · read from the body and appendices, not the abstract_
+
+**Luo, Zhou, Chen, Qiu, Savvides, Li & Wang, *KnowledgeSmith: Uncovering Knowledge Updating in LLMs with Model Editing and Unlearning*, arXiv 2510.02392, ICLR 2026.**
+
+T-002 asks whether subject-string frequency predicts damage better than dependent count. Its gate said to read this paper first because it *"already tested the out-degree hypothesis"*, so the thread would only be interesting where it departed. **The gate was wrong and the thread is wider than before, not narrower.**
+
+**What the paper does not contain.** "out-degree", "outdegree", "branching factor", "degree" and "fan-out" appear **nowhere**. Neither does "frequency" as a variable. What it varies is a node's **level in a hierarchy** — root, intermediate, leaf — plus training-data scale, model size and subject.
+
+**What it does contain, quotable.** §5.2.1: *"editing tends to over-spread, unintentionally altering related nodes"*, against unlearning which *"often under-spreads"*. On structure: *"different hierarchical branches exhibit distinct ceilings for achievable accuracy"*, root lowest and leaf highest. On the trade-off: *"consistency collapses once data scale surpasses the model capacity"* — where consistency is *"the model's ability to maintain logical coherence across related knowledge after an intervention"*, and capacity is never formally defined. Their CCR and RR are defined in Appendix B over structurally related probes: CCR is the mean distance between pre- and post-intervention output distributions, RR the fraction of related probes whose answer is unchanged.
+
+**Why the confusion is substantive rather than verbal.** Depth in a tree and number of dependents are different variables. A leaf has depth and no dependents; a root may have many. A result about hierarchy level says nothing about how damage scales with how many facts rest on the edited one — which is T-002's actual question.
+
+**The consequence, and it is the part worth recording.** `ai/edit-slice/CLAUDE.md` carried this as a binding instruction, ending *"Do not re-derive this."* It therefore closed a question nobody had answered. A wrong citation misstates a sentence; a wrong instruction **stops work**, and leaves no evidence it was wrong — the same asymmetry the positioning rule names for scoop verdicts. Corrected in place there, in `threads.md`, in `plan.md` and on the notebook page.
+
+**Scope of this reading.** The arXiv HTML is 171,731 characters and was read in two passes covering the body and the appendices available there; the terms above were absent from both. If the published ICLR version differs, this finding is about the arXiv v3 of 25 March 2026.
+
+Confidence: **high** on the absent terms and on the quoted sentences. **Medium** that no appendix anywhere reports a degree statistic in passing, since the page truncates.

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="1000" height="650" role="img" aria-label="A fact in the middle, the grounds that made it true on the left, the consequences that follow on the right. The edit lands in the middle. Forward arrows are solid and marked as what every benchmark probes; backward arrows are dashed, marked as the direction nobody probes.">
+  <defs>
+    <filter id="rough" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="17"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="1000" height="650" fill="#f4f1ea"/>
+  <rect width="1000" height="650" filter="url(#grain)"/>
+  <ellipse cx="500" cy="315" rx="300" ry="210" fill="#f2c46d" opacity="0.20"/>
+
+  <!-- shapes: filtered, so they read as drawn by hand -->
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- grounds -->
+    <rect x="40"  y="112" width="240" height="76" rx="9" fill="#fffdf8"/>
+    <rect x="40"  y="262" width="240" height="76" rx="9" fill="#fffdf8"/>
+    <rect x="40"  y="412" width="240" height="76" rx="9" fill="#fffdf8"/>
+
+    <!-- the fact under edit -->
+    <rect x="386" y="249" width="228" height="132" rx="11" fill="#4338a8" fill-opacity="0.16" stroke-width="3"/>
+
+    <!-- consequences -->
+    <rect x="720" y="112" width="240" height="76" rx="9" fill="#7fa98a" fill-opacity="0.26"/>
+    <rect x="720" y="262" width="240" height="76" rx="9" fill="#7fa98a" fill-opacity="0.26"/>
+    <rect x="720" y="412" width="240" height="76" rx="9" fill="#7fa98a" fill-opacity="0.26"/>
+
+    <!-- grounds support the fact -->
+    <path d="M280 150 Q340 150 386 288"/>
+    <path d="M280 300 Q336 304 386 313"/>
+    <path d="M280 450 Q340 450 386 344"/>
+    <path d="M386 288 L369 281 L374 298 Z" fill="#2b2a28"/>
+    <path d="M386 313 L370 306 L370 322 Z" fill="#2b2a28"/>
+    <path d="M386 344 L374 334 L369 351 Z" fill="#2b2a28"/>
+
+    <!-- the fact entails the consequences -->
+    <path d="M614 288 Q664 150 720 150"/>
+    <path d="M614 313 Q666 304 720 300"/>
+    <path d="M614 344 Q664 450 720 450"/>
+    <path d="M720 150 L703 142 L705 159 Z" fill="#2b2a28"/>
+    <path d="M720 300 L704 293 L704 309 Z" fill="#2b2a28"/>
+    <path d="M720 450 L705 441 L703 458 Z" fill="#2b2a28"/>
+
+    <!-- the unasked question: does the edit push back into the grounds? -->
+    <g stroke="#e8836b" stroke-width="2.6" stroke-dasharray="7 8" opacity="0.95">
+      <path d="M392 266 Q330 196 286 166"/>
+      <path d="M392 364 Q330 430 286 434"/>
+      <path d="M286 166 L303 170 L295 155 Z" fill="#e8836b" stroke="none"/>
+      <path d="M286 434 L296 420 L304 434 Z" fill="#e8836b" stroke="none"/>
+    </g>
+
+    <!-- where the edit is applied -->
+    <path d="M500 196 V241" stroke="#4338a8" stroke-width="3"/>
+    <path d="M500 249 L491 232 L509 232 Z" fill="#4338a8" stroke="#4338a8"/>
+
+    <!-- the two directions, along the bottom -->
+    <path d="M466 560 H70" stroke="#e8836b" stroke-width="3" stroke-dasharray="9 9"/>
+    <path d="M70 560 L90 550 L90 570 Z" fill="#e8836b" stroke="#e8836b"/>
+    <path d="M534 560 H930" stroke="#7fa98a" stroke-width="3"/>
+    <path d="M930 560 L910 550 L910 570 Z" fill="#7fa98a" stroke="#7fa98a"/>
+  </g>
+
+  <!-- text: unfiltered, so it stays legible -->
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="#2b2a28" text-anchor="middle">
+
+    <text x="160" y="72" font-size="20" letter-spacing="2.4" fill="#8a5a3b">G R O U N D S</text>
+    <text x="160" y="94" font-size="13.5" font-style="italic" opacity="0.72">what made it true</text>
+    <text x="840" y="72" font-size="20" letter-spacing="2.4" fill="#4a6f55">C O N S E Q U E N C E S</text>
+    <text x="840" y="94" font-size="13.5" font-style="italic" opacity="0.72">what follows from it</text>
+
+    <text x="160" y="144" font-size="15.5">built for the 1889</text>
+    <text x="160" y="166" font-size="15.5">World Exposition</text>
+    <text x="160" y="294" font-size="15.5">designed by</text>
+    <text x="160" y="316" font-size="15.5">Gustave Eiffel</text>
+    <text x="160" y="444" font-size="15.5">erected on the</text>
+    <text x="160" y="466" font-size="15.5">Champ de Mars</text>
+
+    <text x="500" y="291" font-size="17.5" letter-spacing="0.6">THE EIFFEL TOWER</text>
+    <text x="500" y="316" font-size="15.5" font-style="italic" opacity="0.8">is in</text>
+    <text x="500" y="350" font-size="21" fill="#4338a8">PARIS &#8594; ROME</text>
+    <text x="500" y="186" font-size="14.5" font-style="italic" fill="#4338a8">the edit lands here</text>
+
+    <text x="840" y="144" font-size="15.5">you can see it from</text>
+    <text x="840" y="166" font-size="15.5">the Champ de Mars</text>
+    <text x="840" y="294" font-size="15.5">tallest structure in</text>
+    <text x="840" y="316" font-size="15.5">Paris until 1930</text>
+    <text x="840" y="444" font-size="15.5">tourists photograph it</text>
+    <text x="840" y="466" font-size="15.5">from the Seine</text>
+
+    <text x="500" y="565" font-size="15" font-style="italic" opacity="0.65">the edit</text>
+
+    <text x="268" y="602" font-size="17" fill="#c25c3f" letter-spacing="1">BACKWARD</text>
+    <text x="268" y="624" font-size="14.5" font-style="italic" opacity="0.82">if it is in Rome, must these give way? &#8212; nobody probes this</text>
+    <text x="732" y="602" font-size="17" fill="#4a6f55" letter-spacing="1">FORWARD</text>
+    <text x="732" y="624" font-size="14.5" font-style="italic" opacity="0.82">what every benchmark already measures</text>
+  </g>
+</svg>

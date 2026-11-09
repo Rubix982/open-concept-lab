@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" width="1000" height="580" role="img" aria-label="Two overlapping circles over 42 people, each given their own new country in both arms. The birth edit moved 28 of them and the work edit moved 28 of them, but only 19 are in both: nine moved only under the birth edit, nine only under the work edit, and five moved under neither.">
+  <defs>
+    <filter id="rough" x="-6%" y="-6%" width="112%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="23"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="1000" height="580" fill="#f4f1ea"/>
+  <rect width="1000" height="580" filter="url(#grain)"/>
+
+  <g filter="url(#rough)" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="44" y="100" width="912" height="392" rx="12" fill="none" stroke-dasharray="5 9" opacity="0.45"/>
+    <circle cx="430" cy="312" r="158" fill="#4338a8" fill-opacity="0.20" stroke="#4338a8" stroke-width="2.8"/>
+    <circle cx="610" cy="312" r="158" fill="#7fa98a" fill-opacity="0.26" stroke="#4a6f55" stroke-width="2.8"/>
+  </g>
+
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="#2b2a28" text-anchor="middle">
+    <text x="500" y="46" font-size="21" letter-spacing="1.4">42 PEOPLE, TWO EDITS, ONE QUESTION</text>
+    <text x="500" y="72" font-size="15.5" font-style="italic" opacity="0.75">&#8220;which city was he born in?&#8221; &#8212; 22 different countries, each person given the same one in both arms</text>
+
+    <text x="256" y="134" font-size="17" fill="#4338a8" letter-spacing="0.8">BORN IN &#8594; THE NEW COUNTRY</text>
+    <text x="256" y="157" font-size="13.5" font-style="italic" opacity="0.72">the edit with a claim on the answer</text>
+    <text x="784" y="134" font-size="17" fill="#4a6f55" letter-spacing="0.8">WORKS IN &#8594; THE NEW COUNTRY</text>
+    <text x="784" y="157" font-size="13.5" font-style="italic" opacity="0.72">the edit with no claim on it</text>
+
+    <text x="362" y="306" font-size="40" fill="#4338a8">9</text>
+    <text x="362" y="334" font-size="13.5" font-style="italic" opacity="0.8">birth edit only</text>
+
+    <text x="520" y="306" font-size="40">19</text>
+    <text x="520" y="334" font-size="13.5" font-style="italic" opacity="0.8">both edits</text>
+
+    <text x="678" y="306" font-size="40" fill="#4a6f55">9</text>
+    <text x="678" y="334" font-size="13.5" font-style="italic" opacity="0.8">work edit only</text>
+
+    <text x="880" y="450" font-size="32" opacity="0.5">5</text>
+    <text x="880" y="472" font-size="13" font-style="italic" opacity="0.6">neither</text>
+
+    <text x="500" y="536" font-size="16" font-style="italic">Both edits reach the birth city equally often. They do not reach it for the same people.</text>
+  </g>
+</svg>

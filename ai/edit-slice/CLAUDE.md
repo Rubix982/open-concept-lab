@@ -188,10 +188,23 @@ page. It should get harder to change over time.
 
 ## Literature — read before designing anything adjacent
 
-- **KnowledgeSmith** (2510.02392) — already tested the out-degree hypothesis.
-  Editing over-spreads, unlearning under-spreads; hierarchical branch structure
-  imposes ceilings on update effectiveness; consistency-capacity tradeoff. Do
-  not re-derive this.
+- **KnowledgeSmith** (2510.02392, ICLR 2026) — editing over-spreads, unlearning
+  under-spreads; hierarchy level imposes ceilings on achievable accuracy;
+  consistency collapses once data scale passes model capacity.
+  *Corrected 2026-11-09 [R-003]:* this entry said the paper **"already tested the
+  out-degree hypothesis"** and told us not to re-derive it. **It did not.**
+  "out-degree", "outdegree", "branching factor", "degree" and "fan-out" do not
+  appear anywhere in the paper. What it varies is a node's **level in a
+  hierarchy** — root, intermediate, leaf — and its finding is that *"different
+  hierarchical branches exhibit distinct ceilings for achievable accuracy"*,
+  root lowest and leaf highest. Depth in a tree is not the same variable as the
+  number of dependents a node has. The over-spread half of the entry is correct
+  and quotable: §5.2.1 says *"editing tends to over-spread, unintentionally
+  altering related nodes"*, against unlearning which *"often under-spreads"*.
+  Neither frequency of any kind nor out-degree is an independent variable there.
+  **This instruction closed a question that was never answered**, which is worse
+  than a loose citation — it is the drift rule's own failure mode, aimed at the
+  work rather than at a sentence.
 - **JNO** (2606.01610) — desirable propagation and unintended perturbation as
   coupled pressures. Our correct/damage distinction, as a method.
 - **RippleBench** (2512.04144) — distance-stratified propagation curves over
