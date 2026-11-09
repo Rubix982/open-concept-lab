@@ -22,6 +22,16 @@ I am young. I can still work on myself. I can still turn things around. Whatever
 
 And there are people much older than me still going through it -- still carrying things, still trying, still getting up in the morning to face something they did not choose. If they can do that with the time they have left, what business do I have meeting my own life with less courage? What exactly would be my excuse?
 
+And it runs the other way too. If I do not meet life with courage, it gets heavier. Not because anything in it changed, but because deciding nothing is still a decision, and the weight of it keeps collecting while I am not choosing. Courage is not the brave part. It is just the part where I stop letting the thing sit.
+
+So whether I do something or do not do it has to come from somewhere settled -- from some honest view of what life is actually like -- and not from whatever I happen to be carrying that day.
+
+Because what I carry changes what I see, and it does it quietly. Something unresolved inside does not announce itself. It just turns the world down a little. It is like wearing a glass that makes you see less: vision confused, fog over everything, and the thing standing directly in front of you is the one thing you cannot make out. You are not blind, you are just not being shown it.
+
+And then -- this is the part that gets me -- it takes the language too. You cannot go over what is buried inside and say it properly, because the words for it are behind the same fog. So the thing stays buried, and stays heavy, and keeps dimming the glass. That is the whole loop, and it runs on its own.
+
+Which is why I think the decision has to come first, before anything else in the day. Before the work, before the list. Let things unwind as they will. Do not let stress narrow the world down to less than what is actually there, because what is actually there is usually more than enough, and most of what I ever needed was standing in front of me while I was looking through the wrong glass.
+
 ---
 
 I notice I only ever reach this on days when I was not trying to. Nothing about this evening was planned. I went to pray, I came back a different way, and in the gap between those two things something settled that weeks of sitting with it had not settled.
