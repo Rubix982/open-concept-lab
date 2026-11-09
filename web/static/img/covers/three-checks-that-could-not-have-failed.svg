@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Three checks, each with a tick beside it and the reading it returned. Underneath each is the input it was given, drawn as something that could not have come out the other way: two near-parallel arrows, a line pinned flat at one, and a single dot where two were needed. A line at the foot reads: every number correct, every time.">
+  <style type="text/css"><![CDATA[
+    /* The page has a light and a dark theme, and an image element cannot
+       inherit the page's custom properties — it is a separate document. Its own
+       stylesheet is honoured though, so the cover carries the palette itself. */
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.6"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="5"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="var(--faint, #6b6863)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="800" height="560" fill="var(--paper, #f4f1ea)"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+
+  <g font-family="Georgia, 'Iowan Old Style', serif" fill="var(--ink, #2b2a28)">
+    <text x="56" y="70" font-size="21" letter-spacing="1.4" fill="var(--oxide, #a4442f)">THREE CHECKS THAT COULD NOT HAVE FAILED</text>
+    <text x="56" y="96" font-size="14.5" font-style="italic" fill="var(--faint, #6b6863)">each one passing · each number correct every time</text>
+  </g>
+
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M56 118 H744" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.4"/>
+  </g>
+
+  <!-- ── one: precision measured on near-orthogonal vectors ── -->
+  <g filter="url(#rough)">
+    <rect x="56" y="150" width="210" height="248" rx="4" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.9"/>
+  </g>
+  <text x="76" y="182" font-family="Georgia, serif" font-size="13.5" fill="var(--ink, #2b2a28)">precision of the format</text>
+  <g filter="url(#rough)" fill="none" stroke="var(--sage, #4a6f55)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M78 206 l9 10 l17 -22"/>
+  </g>
+  <text x="114" y="213" font-family="'IBM Plex Mono', monospace" font-size="15" fill="var(--sage, #4a6f55)">4.9e-01</text>
+  <text x="76" y="246" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">measured on two arrows</text>
+  <text x="76" y="263" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">that already point apart</text>
+  <g filter="url(#rough)" fill="none" stroke="var(--indigo, #4338a8)" stroke-width="2" marker-end="url(#tip)">
+    <path d="M96 356 L186 300"/>
+    <path d="M96 368 L188 374"/>
+  </g>
+  <text x="76" y="392" font-family="Georgia, serif" font-size="11.5" fill="var(--faint, #6b6863)">what is left is rounding</text>
+
+  <!-- ── two: the site check, read on a pinned quantity ── -->
+  <g filter="url(#rough)">
+    <rect x="296" y="150" width="210" height="248" rx="4" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.9"/>
+  </g>
+  <text x="316" y="182" font-family="Georgia, serif" font-size="13.5" fill="var(--ink, #2b2a28)">do the two sites agree</text>
+  <g filter="url(#rough)" fill="none" stroke="var(--sage, #4a6f55)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M318 206 l9 10 l17 -22"/>
+  </g>
+  <text x="354" y="213" font-family="'IBM Plex Mono', monospace" font-size="15" fill="var(--sage, #4a6f55)">0.000e+00</text>
+  <text x="316" y="246" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">read where algebra has</text>
+  <text x="316" y="263" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">already pinned the answer</text>
+  <g filter="url(#rough)" fill="none">
+    <path d="M316 336 H486" stroke="var(--indigo, #4338a8)" stroke-width="2.4"/>
+    <path d="M316 328 V344" stroke="var(--faint, #6b6863)" stroke-width="1.2"/>
+    <path d="M486 328 V344" stroke="var(--faint, #6b6863)" stroke-width="1.2"/>
+  </g>
+  <text x="316" y="366" font-family="'IBM Plex Mono', monospace" font-size="12.5" fill="var(--indigo, #4338a8)">1.000 — flat by construction</text>
+  <text x="316" y="392" font-family="Georgia, serif" font-size="11.5" fill="var(--faint, #6b6863)">it cannot bend here</text>
+
+  <!-- ── three: a partition with one of each ── -->
+  <g filter="url(#rough)">
+    <rect x="536" y="150" width="208" height="248" rx="4" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.9"/>
+  </g>
+  <text x="556" y="182" font-family="Georgia, serif" font-size="13.5" fill="var(--ink, #2b2a28)">do the readings split</text>
+  <g filter="url(#rough)" fill="none" stroke="var(--sage, #4a6f55)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M558 206 l9 10 l17 -22"/>
+  </g>
+  <text x="594" y="213" font-family="'IBM Plex Mono', monospace" font-size="15" fill="var(--sage, #4a6f55)">true</text>
+  <text x="556" y="246" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">sixteen readings, and one</text>
+  <text x="556" y="263" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">device to split them across</text>
+  <circle cx="610" cy="340" r="13" fill="none" stroke="var(--indigo, #4338a8)" stroke-width="2.4" filter="url(#rough)"/>
+  <circle cx="610" cy="340" r="4" fill="var(--indigo, #4338a8)"/>
+  <g filter="url(#rough)" fill="none" stroke="var(--faint, #6b6863)" stroke-width="1.6" stroke-dasharray="4 6" opacity="0.6">
+    <circle cx="676" cy="340" r="13"/>
+  </g>
+  <text x="556" y="392" font-family="Georgia, serif" font-size="11.5" fill="var(--faint, #6b6863)">the second was never there</text>
+
+  <g filter="url(#rough)" fill="none">
+    <path d="M56 442 H744" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.4"/>
+  </g>
+
+  <text x="56" y="482" font-family="Georgia, serif" font-size="16.5" fill="var(--ink, #2b2a28)">A check only earns your trust if some input exists</text>
+  <text x="56" y="508" font-family="Georgia, serif" font-size="16.5" fill="var(--ink, #2b2a28)">on which it would have gone the other way.</text>
+  <text x="56" y="536" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">edit-reach · three faults in one suite's short life, all of them green</text>
+</svg>

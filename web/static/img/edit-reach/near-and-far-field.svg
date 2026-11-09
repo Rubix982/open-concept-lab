@@ -41,11 +41,11 @@
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
   </defs>
 
-  <rect width="1000" height="560" fill="var(--paper)"/>
+  <rect width="1000" height="560" fill="var(--paper, #f4f1ea)"/>
   <rect width="1000" height="560" filter="url(#grain)"/>
 
   <!-- rules and marks -->
-  <g filter="url(#rough)" fill="none" stroke="var(--ink)" stroke-linecap="round" stroke-linejoin="round">
+  <g filter="url(#rough)" fill="none" stroke="var(--ink, #2b2a28)" stroke-linecap="round" stroke-linejoin="round">
 
     <!-- shared scale -->
     <path d="M120 470 H920" stroke-width="2" opacity="0.55"/>
@@ -59,46 +59,46 @@
 
     <!-- near field row -->
     <path d="M120 205 H920" stroke-width="1.2" opacity="0.18"/>
-    <path d="M160.5 205 H866.7" stroke="var(--link)" stroke-width="2.4" opacity="0.4"/>
-    <circle cx="160.5" cy="205" r="9" fill="var(--paper)" stroke="var(--oxide)" stroke-width="3"/>
-    <circle cx="866.7" cy="205" r="9" fill="var(--link)" stroke="var(--link)" stroke-width="2.4"/>
+    <path d="M160.5 205 H866.7" stroke="var(--link, #4338a8)" stroke-width="2.4" opacity="0.4"/>
+    <circle cx="160.5" cy="205" r="9" fill="var(--paper, #f4f1ea)" stroke="var(--oxide, #a4442f)" stroke-width="3"/>
+    <circle cx="866.7" cy="205" r="9" fill="var(--link, #4338a8)" stroke="var(--link, #4338a8)" stroke-width="2.4"/>
 
     <!-- far field row -->
     <path d="M120 365 H920" stroke-width="1.2" opacity="0.18"/>
-    <circle cx="158.5" cy="365" r="9" fill="var(--paper)" stroke="var(--oxide)" stroke-width="3"/>
-    <circle cx="163.4" cy="365" r="11.5" fill="var(--paper)" stroke="none"/>
-    <circle cx="163.4" cy="365" r="9" fill="var(--link)" stroke="var(--link)" stroke-width="2.4"/>
+    <circle cx="158.5" cy="365" r="9" fill="var(--paper, #f4f1ea)" stroke="var(--oxide, #a4442f)" stroke-width="3"/>
+    <circle cx="163.4" cy="365" r="11.5" fill="var(--paper, #f4f1ea)" stroke="none"/>
+    <circle cx="163.4" cy="365" r="9" fill="var(--link, #4338a8)" stroke="var(--link, #4338a8)" stroke-width="2.4"/>
 
     <!-- the callout on the far pair -->
-    <path d="M161 383 Q161 420 250 420" stroke="var(--ink)" stroke-width="1.6" opacity="0.5"/>
+    <path d="M161 383 Q161 420 250 420" stroke="var(--ink, #2b2a28)" stroke-width="1.6" opacity="0.5"/>
 
     <!-- divider -->
     <path d="M120 285 H920" stroke-width="1.6" stroke-dasharray="4 10" opacity="0.35"/>
   </g>
 
   <!-- type -->
-  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink)">
-    <text x="120" y="62" font-size="19" letter-spacing="1.6" fill="var(--umber)">THE SAME CONTROL, APPLIED TWICE</text>
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink, #2b2a28)">
+    <text x="120" y="62" font-size="19" letter-spacing="1.6" fill="var(--umber, #8a5a3b)">THE SAME CONTROL, APPLIED TWICE</text>
     <text x="120" y="86" font-size="13.5" font-style="italic" opacity="0.72">how much of an edit reaches the queried token — the subject's own edit, against a stranger's edit on the same relation</text>
 
     <!-- legend -->
     <g font-size="13.5">
-      <circle cx="128" cy="118" r="7" fill="var(--link)" stroke="var(--link)" stroke-width="2"/>
+      <circle cx="128" cy="118" r="7" fill="var(--link, #4338a8)" stroke="var(--link, #4338a8)" stroke-width="2"/>
       <text x="144" y="123">the subject's own edit</text>
-      <circle cx="340" cy="118" r="7" fill="var(--paper)" stroke="var(--oxide)" stroke-width="2.6"/>
+      <circle cx="340" cy="118" r="7" fill="var(--paper, #f4f1ea)" stroke="var(--oxide, #a4442f)" stroke-width="2.6"/>
       <text x="356" y="123">a stranger's edit, same relation</text>
     </g>
 
     <!-- near field -->
-    <text x="120" y="172" font-size="16.5" letter-spacing="1.1" fill="var(--link)">NEAR FIELD</text>
+    <text x="120" y="172" font-size="16.5" letter-spacing="1.1" fill="var(--link, #4338a8)">NEAR FIELD</text>
     <text x="246" y="172" font-size="13" font-style="italic" opacity="0.7">the question names the edited subject · n = 639</text>
-    <text x="866.7" y="186" font-size="14" text-anchor="middle" fill="var(--link)">0.9334</text>
-    <text x="160.5" y="186" font-size="14" text-anchor="middle" fill="var(--oxide)">0.0506</text>
+    <text x="866.7" y="186" font-size="14" text-anchor="middle" fill="var(--link, #4338a8)">0.9334</text>
+    <text x="160.5" y="186" font-size="14" text-anchor="middle" fill="var(--oxide, #a4442f)">0.0506</text>
     <text x="513" y="241" font-size="15" text-anchor="middle">excess <tspan font-size="17">+0.8439</tspan></text>
     <text x="513" y="261" font-size="12" text-anchor="middle" opacity="0.6">95% CI (+0.8379, +0.8500)</text>
 
     <!-- far field -->
-    <text x="120" y="332" font-size="16.5" letter-spacing="1.1" fill="var(--link)">FAR FIELD</text>
+    <text x="120" y="332" font-size="16.5" letter-spacing="1.1" fill="var(--link, #4338a8)">FAR FIELD</text>
     <text x="236" y="332" font-size="13" font-style="italic" opacity="0.7">the question never names it — where multi-hop propagation lives · n = 900</text>
     <text x="262" y="426" font-size="15">0.0543 and 0.0481 — excess <tspan font-size="17">+0.0002</tspan></text>
     <text x="262" y="446" font-size="12" opacity="0.6">95% CI (+0.0001, +0.0004). At this scale the two marks are one mark.</text>

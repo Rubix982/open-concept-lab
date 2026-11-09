@@ -41,37 +41,37 @@
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
   </defs>
 
-  <rect width="1000" height="420" fill="var(--paper)"/>
+  <rect width="1000" height="420" fill="var(--paper, #f4f1ea)"/>
   <rect width="1000" height="420" filter="url(#grain)"/>
 
-  <g filter="url(#rough)" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="72" y="166" width="186" height="84" rx="9" fill="var(--link)" fill-opacity="0.16" stroke="var(--link)" stroke-width="2.8"/>
-    <rect x="396" y="166" width="186" height="84" rx="9" fill="var(--paper-raised)"/>
-    <rect x="720" y="166" width="186" height="84" rx="9" fill="var(--sage)" fill-opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="var(--ink, #2b2a28)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="72" y="166" width="186" height="84" rx="9" fill="var(--link, #4338a8)" fill-opacity="0.16" stroke="var(--link, #4338a8)" stroke-width="2.8"/>
+    <rect x="396" y="166" width="186" height="84" rx="9" fill="var(--paper-raised, #fffdf8)"/>
+    <rect x="720" y="166" width="186" height="84" rx="9" fill="var(--sage, #7fa98a)" fill-opacity="0.24"/>
 
     <path d="M258 208 H388"/>
-    <path d="M396 208 L378 200 L378 216 Z" fill="var(--ink)"/>
+    <path d="M396 208 L378 200 L378 216 Z" fill="var(--ink, #2b2a28)"/>
     <path d="M582 208 H712"/>
-    <path d="M720 208 L702 200 L702 216 Z" fill="var(--ink)"/>
+    <path d="M720 208 L702 200 L702 216 Z" fill="var(--ink, #2b2a28)"/>
 
     <!-- what the coefficient covers -->
-    <path d="M258 288 H582" stroke="var(--link)" stroke-width="2.4"/>
-    <path d="M258 282 V294 M582 282 V294" stroke="var(--link)" stroke-width="2.4"/>
+    <path d="M258 288 H582" stroke="var(--link, #4338a8)" stroke-width="2.4"/>
+    <path d="M258 282 V294 M582 282 V294" stroke="var(--link, #4338a8)" stroke-width="2.4"/>
 
     <!-- and what it does not -->
-    <path d="M598 288 H906" stroke="var(--oxide)" stroke-width="2.4" stroke-dasharray="6 8"/>
-    <path d="M598 282 V294 M906 282 V294" stroke="var(--oxide)" stroke-width="2.4"/>
+    <path d="M598 288 H906" stroke="var(--oxide, #a4442f)" stroke-width="2.4" stroke-dasharray="6 8"/>
+    <path d="M598 282 V294 M906 282 V294" stroke="var(--oxide, #a4442f)" stroke-width="2.4"/>
 
     <!-- the spread on the second step, at a fixed first step -->
-    <path d="M922 168 V248" stroke="var(--oxide)" stroke-width="2.6"/>
-    <path d="M916 168 H928 M916 248 H928" stroke="var(--oxide)" stroke-width="2.6"/>
+    <path d="M922 168 V248" stroke="var(--oxide, #a4442f)" stroke-width="2.6"/>
+    <path d="M916 168 H928 M916 248 H928" stroke="var(--oxide, #a4442f)" stroke-width="2.6"/>
   </g>
 
-  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink)">
-    <text x="72" y="62" font-size="19" letter-spacing="1.6" fill="var(--umber)">DELIVERY IS NOT EFFECT</text>
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink, #2b2a28)">
+    <text x="72" y="62" font-size="19" letter-spacing="1.6" fill="var(--umber, #8a5a3b)">DELIVERY IS NOT EFFECT</text>
     <text x="72" y="86" font-size="13.5" font-style="italic" opacity="0.72">every number in this project measures the first step. None of them measures the second.</text>
 
-    <text x="165" y="200" font-size="16" text-anchor="middle" fill="var(--link)">the edit</text>
+    <text x="165" y="200" font-size="16" text-anchor="middle" fill="var(--link, #4338a8)">the edit</text>
     <text x="165" y="226" font-size="12.5" text-anchor="middle" opacity="0.7">a rank-one update</text>
 
     <text x="489" y="194" font-size="16" text-anchor="middle">what arrives</text>
@@ -82,13 +82,13 @@
     <text x="813" y="214" font-size="12.5" text-anchor="middle" opacity="0.7">how far the model's</text>
     <text x="813" y="234" font-size="12.5" text-anchor="middle" opacity="0.7">prediction actually moved</text>
 
-    <text x="420" y="316" font-size="14" text-anchor="middle" fill="var(--link)">the coefficient measures this</text>
+    <text x="420" y="316" font-size="14" text-anchor="middle" fill="var(--link, #4338a8)">the coefficient measures this</text>
     <text x="420" y="336" font-size="12.5" text-anchor="middle" opacity="0.65">computable in one forward pass, before the edit is applied</text>
 
-    <text x="752" y="316" font-size="14" text-anchor="middle" fill="var(--oxide)">and says nothing about this</text>
+    <text x="752" y="316" font-size="14" text-anchor="middle" fill="var(--oxide, #a4442f)">and says nothing about this</text>
     <text x="752" y="336" font-size="12.5" text-anchor="middle" opacity="0.65">hold the first step fixed and the second still spans ×2.96</text>
 
-    <text x="990" y="204" font-size="20" text-anchor="end" fill="var(--oxide)">×2.96</text>
+    <text x="990" y="204" font-size="20" text-anchor="end" fill="var(--oxide, #a4442f)">×2.96</text>
     <text x="990" y="224" font-size="11.5" text-anchor="end" opacity="0.6">at a fixed</text>
     <text x="990" y="239" font-size="11.5" text-anchor="end" opacity="0.6">coefficient</text>
 

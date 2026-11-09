@@ -130,7 +130,6 @@ def convert_figure(block: str, assets: pathlib.Path, n: int) -> str:
             # a panel behind the figure, which no paper does, so it comes off
             # and the figure sits on the page.
             text = re.sub(r'<rect[^>]*fill="var\(--paper\)"[^>]*/>', "", text, count=1)
-            text = inline_custom_properties(text)
             svg.write_text(text)
         else:
             svg = source
@@ -253,24 +252,11 @@ def delongtable(tex: str) -> str:
     return "".join(out)
 
 
-def inline_custom_properties(svg: str) -> str:
-    """Replace `var(--name)` with the value the figure defines for it.
-
-    The figures carry their own palette so they can follow the reader's theme,
-    which needs CSS custom properties. rsvg-convert does not resolve them: every
-    `fill="var(--ink)"` renders as black, and the first PDF built after the
-    figures were themed had a solid black rectangle where Figure 1 should be.
-
-    The values are read out of the figure's own `:root` block rather than kept
-    here, so the palette still lives in one place. Print takes the light set.
-    """
-    m = re.search(r":root\s*\{(.*?)\}", svg, re.S)
-    if not m:
-        return svg
-    values = dict(re.findall(r"--([a-z-]+):\s*([^;]+);", m.group(1)))
-    for name, value in values.items():
-        svg = svg.replace(f"var(--{name})", value.strip())
-    return svg
+# rsvg-convert ignores a :root custom-property block, so `fill="var(--ink)"`
+# renders as black -- the first PDF built after the figures were themed had a
+# solid black rectangle where Figure 1 should have been. It does honour a
+# fallback, though, so every var() in those files carries one: the light value,
+# which is what print wants. Nothing is substituted here any more.
 
 
 def split_figures(body: str):
@@ -338,15 +324,15 @@ def sep(weights: list[int]) -> str:
     """
     return "|" + "|".join("-" * max(3, w) for w in weights) + "|"
 
-# The default Latin Modern text font has no Greek and no mathematical italics,
-# and XeTeX drops what it cannot set rather than failing -- so "rho = 0.522"
-# printed as "= 0.522" and nothing said so.
+
+# The default text font has no Greek and no mathematical italics, and XeTeX
+# drops what it cannot set rather than failing -- so "rho = 0.522" printed as
+# "= 0.522" and nothing said so.
 #
 # These go through as RAW LaTeX rather than as `$...$`. Pandoc refuses to read a
 # dollar span whose closing dollar is followed by a digit -- a rule that exists
-# so prices are not typeset as equations -- so "$\leq$0.3" came out as the
-# literal characters and TeX then reported "Missing $ inserted" four hundred
-# lines away.
+# so prices are not typeset as equations -- so "$\leq$0.3" came out as literal
+# characters and TeX reported "Missing $ inserted" four hundred lines away.
 def _raw(tex: str) -> str:
     return "`" + tex + "`{=latex}"
 

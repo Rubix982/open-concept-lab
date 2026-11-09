@@ -41,55 +41,55 @@
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
   </defs>
 
-  <rect width="1000" height="620" fill="var(--paper)"/>
+  <rect width="1000" height="620" fill="var(--paper, #f4f1ea)"/>
   <rect width="1000" height="620" filter="url(#grain)"/>
 
-  <g filter="url(#rough)" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <g filter="url(#rough)" fill="none" stroke="var(--ink, #2b2a28)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <!-- the intended chain -->
-    <rect x="56"  y="118" width="212" height="72" rx="9" fill="var(--link)" fill-opacity="0.16" stroke="var(--link)" stroke-width="3"/>
-    <rect x="394" y="118" width="212" height="72" rx="9" fill="var(--paper-raised)"/>
-    <rect x="732" y="118" width="212" height="72" rx="9" fill="var(--sage)" fill-opacity="0.26"/>
+    <rect x="56"  y="118" width="212" height="72" rx="9" fill="var(--link, #4338a8)" fill-opacity="0.16" stroke="var(--link, #4338a8)" stroke-width="3"/>
+    <rect x="394" y="118" width="212" height="72" rx="9" fill="var(--paper-raised, #fffdf8)"/>
+    <rect x="732" y="118" width="212" height="72" rx="9" fill="var(--sage, #7fa98a)" fill-opacity="0.26"/>
     <path d="M268 154 H386"/>
-    <path d="M394 154 L376 146 L376 162 Z" fill="var(--ink)"/>
+    <path d="M394 154 L376 146 L376 162 Z" fill="var(--ink, #2b2a28)"/>
     <path d="M606 154 H724"/>
-    <path d="M732 154 L714 146 L714 162 Z" fill="var(--ink)"/>
+    <path d="M732 154 L714 146 L714 162 Z" fill="var(--ink, #2b2a28)"/>
 
     <!-- divider -->
     <path d="M56 286 H944" stroke-dasharray="4 10" opacity="0.4" stroke-width="2"/>
 
     <!-- the prompt as it is actually written -->
-    <rect x="56" y="392" width="774" height="76" rx="9" fill="var(--paper-raised)"/>
-    <rect x="856" y="392" width="88" height="76" rx="9" fill="var(--sage)" fill-opacity="0.26"/>
-    <ellipse cx="697" cy="430" rx="50" ry="27" stroke="var(--link)" stroke-width="3" fill="var(--link)" fill-opacity="0.14"/>
+    <rect x="56" y="392" width="774" height="76" rx="9" fill="var(--paper-raised, #fffdf8)"/>
+    <rect x="856" y="392" width="88" height="76" rx="9" fill="var(--sage, #7fa98a)" fill-opacity="0.26"/>
+    <ellipse cx="697" cy="430" rx="50" ry="27" stroke="var(--link, #4338a8)" stroke-width="3" fill="var(--link, #4338a8)" fill-opacity="0.14"/>
 
     <!-- the shortcut -->
-    <path d="M697 403 Q697 336 820 336 Q900 336 900 384" stroke="var(--link)" stroke-width="3.2"/>
-    <path d="M900 392 L891 374 L909 374 Z" fill="var(--link)" stroke="var(--link)"/>
+    <path d="M697 403 Q697 336 820 336 Q900 336 900 384" stroke="var(--link, #4338a8)" stroke-width="3.2"/>
+    <path d="M900 392 L891 374 L909 374 Z" fill="var(--link, #4338a8)" stroke="var(--link, #4338a8)"/>
   </g>
 
-  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink)" text-anchor="middle">
-    <text x="56" y="76" font-size="19" letter-spacing="1.6" fill="var(--umber)" text-anchor="start">WHAT THE ITEM IS MEANT TO TEST</text>
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink, #2b2a28)" text-anchor="middle">
+    <text x="56" y="76" font-size="19" letter-spacing="1.6" fill="var(--umber, #8a5a3b)" text-anchor="start">WHAT THE ITEM IS MEANT TO TEST</text>
     <text x="56" y="98" font-size="13.5" font-style="italic" opacity="0.72" text-anchor="start">does the edit travel two hops to an entity it never named?</text>
 
-    <text x="162" y="150" font-size="16.5" fill="var(--link)">LEO ARONS</text>
+    <text x="162" y="150" font-size="16.5" fill="var(--link, #4338a8)">LEO ARONS</text>
     <text x="162" y="174" font-size="13.5" font-style="italic" opacity="0.8">we edit this man</text>
     <text x="500" y="150" font-size="16.5">his place of death</text>
     <text x="500" y="174" font-size="13.5" font-style="italic" opacity="0.8">hop one</text>
     <text x="838" y="150" font-size="16.5">its head of government</text>
     <text x="838" y="174" font-size="13.5" font-style="italic" opacity="0.8">hop two &#8212; the answer</text>
-    <text x="56" y="340" font-size="19" letter-spacing="1.6" fill="var(--link)" text-anchor="start">WHAT THE PROMPT ACTUALLY CONTAINS</text>
+    <text x="56" y="340" font-size="19" letter-spacing="1.6" fill="var(--link, #4338a8)" text-anchor="start">WHAT THE PROMPT ACTUALLY CONTAINS</text>
     <text x="56" y="362" font-size="13.5" font-style="italic" opacity="0.72" text-anchor="start">the edited man is standing inside the question</text>
 
     <g font-family="'SF Mono', Menlo, Consolas, monospace" font-size="15">
       <text x="640" y="436" text-anchor="end">&#8220;the name of the head of government of the place of death of</text>
-      <text x="648" y="436" text-anchor="start" fill="var(--link)" font-weight="bold">Leo Arons</text>
+      <text x="648" y="436" text-anchor="start" fill="var(--link, #4338a8)" font-weight="bold">Leo Arons</text>
       <text x="736" y="436" text-anchor="start"> is&#8221;</text>
     </g>
-    <text x="900" y="428" font-size="14.5" fill="var(--sage-deep)">the answer</text>
+    <text x="900" y="428" font-size="14.5" fill="var(--sage-deep, #4a6f55)">the answer</text>
     <text x="900" y="448" font-size="12.5" font-style="italic" opacity="0.75">is read here</text>
 
-    <text x="820" y="312" font-size="16" fill="var(--link)" text-anchor="middle">coefficient 0.982</text>
-    <text x="820" y="332" font-size="13" font-style="italic" fill="var(--link)" opacity="0.8">median, at layer 5</text>
+    <text x="820" y="312" font-size="16" fill="var(--link, #4338a8)" text-anchor="middle">coefficient 0.982</text>
+    <text x="820" y="332" font-size="13" font-style="italic" fill="var(--link, #4338a8)" opacity="0.8">median, at layer 5</text>
     <text x="500" y="524" font-size="16" font-style="italic">If this coefficient measures direct exposure, the edit reaches the answer without travelling either hop &#8212;</text>
     <text x="500" y="552" font-size="16" font-style="italic" opacity="0.8">and a method could score on it while having shown no propagation at all.</text>
   </g>
