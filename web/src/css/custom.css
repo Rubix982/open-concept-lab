@@ -9482,3 +9482,111 @@ a:hover > .ocl-home__featureCover {
 .markdown:has(> .ocl-paperhead) > .ocl-contrib li {
   break-inside: avoid;
 }
+
+/* ==========================================================================
+   Project overview — the state of the work, beside the argument
+   ========================================================================== */
+
+.ocl-glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0;
+  margin: 1.6rem 0 2rem;
+  border-top: 1px solid var(--ocl-rule-strong);
+  border-bottom: 1px solid var(--ocl-rule-strong);
+}
+
+.ocl-stat {
+  padding: 0.85rem 0.9rem 0.9rem 0;
+  border-right: 1px solid var(--ocl-rule);
+}
+
+.ocl-stat:last-child {
+  border-right: 0;
+}
+
+.ocl-stat__value {
+  font-family: var(--ocl-mono);
+  font-size: 1.32rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--ocl-ink);
+}
+
+.ocl-stat__label {
+  margin-top: 0.3rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-stat__note {
+  margin-top: 0.12rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.655rem;
+  line-height: 1.35;
+  color: var(--ocl-ink-faint);
+}
+
+/* ---- open questions ---- */
+
+.ocl-threads {
+  margin: 1.1rem 0 1.6rem;
+  border-top: 1px solid var(--ocl-rule-strong);
+}
+
+.ocl-thread {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+@media (max-width: 640px) {
+  .ocl-thread {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem 0;
+  }
+}
+
+.ocl-thread dt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: var(--ocl-apparatus);
+}
+
+.ocl-thread__id {
+  font-family: var(--ocl-mono);
+  font-size: 0.74rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-thread__status {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-thread--open .ocl-thread__status,
+.ocl-thread--narrowed .ocl-thread__status {
+  color: var(--ocl-oxide);
+}
+
+.ocl-thread--answered .ocl-thread__status {
+  color: var(--ocl-held-ink);
+}
+
+.ocl-thread dd {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.ocl-thread--answered dd {
+  color: var(--ocl-ink-muted);
+}

@@ -405,3 +405,116 @@ export function Data({
     </div>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Project overview                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A row of figures describing the state of a project, for an overview page.
+ *
+ * Big-number tiles earn their place only where the figures are the point, and
+ * on a project overview they are: how much has been decided, how much is open,
+ * and on what. They do not belong on the paper, where every number already
+ * carries a run behind it.
+ */
+export function Glance({ children }: { children: ReactNode }): ReactNode {
+  return <div className="ocl-glance">{children}</div>;
+}
+
+export function Stat({
+  value,
+  label,
+  note,
+}: {
+  value: ReactNode;
+  label: ReactNode;
+  /** What the figure is of, in a few words. */
+  note?: ReactNode;
+}): ReactNode {
+  return (
+    <div className="ocl-stat">
+      <div className="ocl-stat__value">{value}</div>
+      <div className="ocl-stat__label">{label}</div>
+      {note ? <div className="ocl-stat__note">{note}</div> : null}
+    </div>
+  );
+}
+
+/** A question this project asked, and what closed it. */
+export function Cards({
+  caption,
+  children,
+}: {
+  caption?: ReactNode;
+  children: ReactNode;
+}): ReactNode {
+  return (
+    <div className="ocl-ptable">
+      <table>
+        {caption ? <caption>{caption}</caption> : null}
+        <thead>
+          <tr>
+            <th className="n">card</th>
+            <th>the question, as it was written before the run</th>
+            <th className="n">closed</th>
+            <th className="n">on</th>
+          </tr>
+        </thead>
+        <tbody>{children}</tbody>
+      </table>
+    </div>
+  );
+}
+
+export function Card({
+  id,
+  outcome,
+  date,
+  denied = false,
+  children,
+}: {
+  id: string;
+  /** One or two words: denied, identity, two routes. */
+  outcome: ReactNode;
+  date: string;
+  /** Mark the row where the answer went against the project. */
+  denied?: boolean;
+  children: ReactNode;
+}): ReactNode {
+  return (
+    <tr>
+      <td className="n">{id}</td>
+      <td>{children}</td>
+      <td className="n">
+        <span className={denied ? "ocl-no" : "ocl-ok"}>{outcome}</span>
+      </td>
+      <td className="n">{date}</td>
+    </tr>
+  );
+}
+
+/** An open question, carried in the project's thread ledger. */
+export function Threads({ children }: { children: ReactNode }): ReactNode {
+  return <dl className="ocl-threads">{children}</dl>;
+}
+
+export function Thread({
+  id,
+  status,
+  children,
+}: {
+  id: string;
+  status: "open" | "answered" | "narrowed" | "parked";
+  children: ReactNode;
+}): ReactNode {
+  return (
+    <div className={clsx("ocl-thread", `ocl-thread--${status}`)}>
+      <dt>
+        <span className="ocl-thread__id">{id}</span>
+        <span className="ocl-thread__status">{status}</span>
+      </dt>
+      <dd>{children}</dd>
+    </div>
+  );
+}

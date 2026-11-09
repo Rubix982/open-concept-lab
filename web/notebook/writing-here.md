@@ -296,6 +296,25 @@ work.
 
 Worked instance: `notebook/edit-reach/paper.md`.
 
+### The overview beside it
+
+A project's overview page is not a short version of its paper. The paper is the
+argument, ordered by what rests on what; the overview is the **state of the
+work** — what was asked, in what order, what closed, what is still open — which
+the paper deliberately leaves out because a reader of an argument does not need
+it.
+
+Four components serve that page. `<Glance>` with `<Stat value label note>` is a
+row of figures describing the project; big-number tiles earn their place here
+because the figures are the point, and they do not belong on the paper where
+every number carries a run behind it. `<Cards>` with `<Card id outcome date
+denied>` is the card ledger — each question as it was written *before* the run,
+with both branches implied by the outcome column. `<Threads>` with `<Thread id
+status>` is the thread tree, open and answered together, so the shape of the
+inquiry stays visible after the answers arrive.
+
+Worked instance: `notebook/edit-reach/index.md`.
+
 ## Claims
 
 The claim block is the one loud element on the site. It shows what was given up

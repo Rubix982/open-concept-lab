@@ -604,3 +604,37 @@ Saif, on the two-column page: "nope." The abstract was sitting in a panel with a
 **The component now uses `ocl-paper-abstract` and says why in its own comment**, so the next person to reach for a short, obvious class name has the instance in front of them. The three other new names — `ocl-paperhead`, `ocl-contrib`, `ocl-ptable` — were checked and are unique.
 
 **What this ticket did not foresee:** nothing, because the ticket exists only because the check was skipped at the time. A new CSS class on a site that already has a hand-written vocabulary needs one `grep` before it is written, and that grep was not run for any of the nine components added this session. It has now been run for all of them.
+
+---
+
+### D-017 · The overview was a short version of the paper
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 1.5h
+**Spent:** 1.5h
+
+**Description:**
+Saif: "overview page by now, is very bare bones, that we can improve and work on." It was three paragraphs, a claim block and a four-row table — an abstract of the paper, which the paper already has.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/src/components/Paper.tsx — Glance/Stat, Cards/Card, Threads/Thread
+- web/src/css/custom.css, web/notebook/writing-here.md
+- web/notebook/edit-reach/index.md
+
+**Closed:** 2026-11-09.
+
+**The two pages have different jobs and the overview had been given the paper's.** A paper is ordered by what rests on what. An overview is the *state of the work*: what was asked, in what order, what closed, and what is still open. All of that existed in `CARD.md` and `threads.md` and none of it was anywhere a reader could reach.
+
+**The chain figure is the project's honest account of itself.** Four questions, each raised by the answer before it: the project's own question came back denied, and the three that follow were not planned. That ordering is invisible on the paper, which is ordered by argument — §5.4 is the strongest result and arrives fourth, with nothing saying it was never asked for.
+
+**Six cards and eight threads are now on the page.** Each card shows the question as it was written *before* the run, which is the only form in which a denial is cheap. The thread tree keeps the answered threads beside the open ones, so the shape of the inquiry survives its own answers.
+
+**`<Glance>` is the one place big-number tiles belong in this project.** They are wrong on the paper, where every number carries a run behind it and a tile would strip that. On an overview the figures *are* the point — how much is decided, how much is open, on what — so the component is documented with that boundary rather than left as a general-purpose tile.
+
+**What this ticket did not foresee:** that the overview would end up naming what the project lacks more plainly than the paper does. "What it does not have is a reader" reads as a limitation in Appendix C and as the current state here, which is what it is.

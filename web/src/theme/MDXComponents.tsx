@@ -17,6 +17,7 @@ import {
   PaperHead, Abstract, Contributions, Eq, Lead, Prov,
   Ledger, Finding, Runs, Run,
   Revisions, Rev, Readiness, Check, Data,
+  Glance, Stat, Cards, Card, Threads, Thread,
 } from "@site/src/components/Paper";
 import { AboutRooms, AboutQuestions, AboutElsewhere, AboutCorrections } from "@site/src/components/About";
 
@@ -59,4 +60,10 @@ export default {
   Readiness,
   Check,
   Data,
+  Glance,
+  Stat,
+  Cards,
+  Card,
+  Threads,
+  Thread,
 };

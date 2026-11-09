@@ -30,6 +30,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-014 | Documentor | Outputs, charts, and two columns | closed |
 | D-015 | Documentor | The body set in two columns | closed |
 | D-016 | Documentor | A class name that was already taken | closed |
+| D-017 | Documentor | The overview was a short version of the paper | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
@@ -42,6 +43,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- D-017 · The overview rebuilt as the state of the work: the chain of four questions, six cards, eight threads, a figures row, and what is still missing.
 - D-016 · `ocl-abstract` was already edit-slice/review's class. The paper component had been inheriting its panel and silently restyling that page.
 - D-015 · The paper body set in two columns, balanced per section by spanning the headings, as a submitted paper is set.
 - D-014 · Two charts drawn from the measured numbers, two run outputs copied from `results/`, and the front matter set in two columns. Seven figures, nine tables, three listings.
