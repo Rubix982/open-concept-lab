@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState, type ReactNode } from "react";
+import { useAnchors } from "@site/src/components/Anchor";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import { usePluginData } from "@docusaurus/useGlobalData";
@@ -390,6 +391,12 @@ export default function Reading(): ReactNode {
   const verified = filtered.filter((p) => p.verified);
   const unverified = filtered.filter((p) => !p.verified);
   const narrowed = isFiltered(filters);
+
+  /* Those ids exist only after hydration — the ledger view is not what renders
+     first, so none of them is in the static HTML and every /reading#id reads as a
+     broken anchor even though the link works. Register them so the warning reports
+     only anchors that are genuinely unreachable. */
+  useAnchors(papers.map((p) => p.id));
 
   // A link to a paper's row (/reading#id, as <Cite> makes) opens the ledger on it.
   const openRow = (id: string) => {

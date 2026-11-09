@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useAnchors } from "@site/src/components/Anchor";
 import Layout from "@theme/Layout";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { usePluginData } from "@docusaurus/useGlobalData";
@@ -165,6 +166,7 @@ export default function Built(): ReactNode {
     id: slug(topic),
     pages: built.filter((page) => page.topic === topic && matches(page)),
   }));
+  useAnchors(topics.map((t) => t.id));
   const shown = topics.reduce((n, t) => n + t.pages.length, 0);
   // one colour per topic, in the same order the home page's showcase uses
   const toneOf = (topic: string) => (topics.findIndex((t) => t.topic === topic) % 6) + 1;

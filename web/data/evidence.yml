@@ -331,6 +331,126 @@ E-036:
   gist: "First end-to-end run under the harness: queued, preflighted in 15s, run, triaged, reported, no intervention. Zero retries. The verdict fired as…"
   surface: decision
 
+E-037:
+  id: "E-037"
+  kind: "Result"
+  title: "a floor measured on RippleEdits' own materials — 0.070 against 0.969–1.000"
+  date: "2026-10-14"
+  gist: "First, a correction to [E-036]'s Consequence paragraph. It reads \"Compositionality measured at the final token rather than the original subject's\", and…"
+  surface: decision
+
+E-038:
+  id: "E-038"
+  kind: "Result"
+  title: "aliases drop in all three subsets, and the pooled number is not licensed"
+  date: "2026-10-15"
+  gist: "The runner printed ARM B · STRING-KEYED. This entry does not, and the reason is this ticket's own confound 1. Arm A first, at 2,578 entries and 23,505…"
+  surface: decision
+
+E-039:
+  id: "E-039"
+  kind: "Result"
+  title: "the pre-registered headline arm was uninformative, and the secondary arm is the finding"
+  date: "2026-10-15"
+  gist: "The headline comparison returned a null because I picked a position with no variance in it. This ticket pre-registered the FINAL-token arm as the headline…"
+  surface: decision
+
+E-040:
+  id: "E-040"
+  kind: "Result"
+  title: "delivery to an alias is approximately its string similarity"
+  date: "2026-10-15"
+  gist: "GRADED. Spearman rho between an alias's SequenceMatcher ratio to the canonical form and the fraction of the update it receives is +0.778 over n=370, and a…"
+  surface: decision
+
+E-035:
+  id: "E-035"
+  kind: "Result"
+  title: "NOTHING BEATS IT — seven candidates eliminated, and the best one is negative"
+  date: "2026-10-15"
+  gist: "VERDICT: NOTHING BEATS IT, which this ticket named in advance as the outcome to expect and the useful one. No candidate clears ρ = 0.50 at its Holm…"
+  surface: decision
+
+E-041:
+  id: "E-041"
+  kind: "Result"
+  title: "attention never leads, the band says BOTH, and the control nearly did not run"
+  date: "2026-10-15"
+  gist: "[T-077] established the subject key reorients by direction and explicitly refused the next step: \"a falling cosine is consistent with attention mixing,…"
+  surface: decision
+
+E-042:
+  id: "E-042"
+  kind: "Result"
+  title: "the sign holds 5 of 6 and the effect does not — it lives in one cell"
+  date: "2026-10-15"
+  gist: "[E-035]'s strongest association was ‖Δv‖ against propagation at −0.423: a bigger update travels less far. [T-094] called for a replication check before…"
+  surface: decision
+
+E-043:
+  id: "E-043"
+  kind: "Result"
+  title: "not familiarity — composition explains all three subsets, including `popular`"
+  date: "2026-10-15"
+  gist: "[E-038] left a 0.408 span across RippleEdits' subsets that made its pooled alias figure unquotable. [E-040] showed the drop is graded by surface…"
+  surface: decision
+
+E-044:
+  id: "E-044"
+  kind: "Result"
+  title: "the verdict is REJECTED — a faithful intervention that measures an artifact"
+  date: "2026-10-15"
+  gist: "The runner printed CONTEXT NOT NECESSARY. This entry does not accept it, and the reason is the useful part of the run. The correctness gate passed…"
+  surface: decision
+
+E-045:
+  id: "E-045"
+  kind: "Result"
+  title: "BETWEEN at 49.5%, and one type is unscoreable by construction"
+  date: "2026-10-15"
+  gist: "Unratified The gate on claim 3. Possession on typeshed return-type facts is 49.5% against [E-005]'s 74% for CounterFact at the same model and the same…"
+  surface: decision
+
+E-047:
+  id: "E-047"
+  kind: "Decision"
+  title: "`compute_v` cannot run remotely on nnsight 0.8.1"
+  date: "2026-10-25"
+  gist: "Decision: Treat remote v optimisation as unavailable until NDIF's deployment changes. Do not work around it, do not pin back, do not substitute a local…"
+  surface: decision
+
+E-049:
+  id: "E-049"
+  kind: "Decision"
+  title: "the permuted-floor gate is underpowered where we use it, not loose"
+  date: "2026-10-30"
+  gist: "Decision: Stop using margin &gt; donor spread as the verdict gate on a permuted floor. Report the observed rate, the floor, and a binomial of the counts…"
+  surface: decision
+
+E-013-3:
+  id: "E-013"
+  kind: "Scope note"
+  title: "the same-subject control is adequate for destination and not for destruction"
+  date: "2026-10-31"
+  gist: "[E-013]'s revisit condition has fired, and the obvious reading of that is wrong. It said: \"Revisit if the same-subject control moves inner1 as much as the…"
+  surface: decision
+
+E-050:
+  id: "E-050"
+  kind: "Decision"
+  title: "every edit-slice script was one import away from crashing, and the log record here is clean"
+  date: "2026-11-03"
+  gist: "Decision: No change is needed in this repo. The fault was in editreach.logs, is fixed there ([E-013] in edit-reach), and a regression test in…"
+  surface: decision
+
+E-051:
+  id: "E-051"
+  kind: "Verification"
+  title: "[E-050]'s conclusion was derived; this is the run"
+  date: "2026-11-03"
+  gist: "Decision: [E-050] stands, now by observation rather than by argument. No further change. What [E-050] actually had. It proved the crash by evaluating…"
+  surface: decision
+
 f-R-001:
   id: "R-001"
   kind: "Finding"
@@ -505,6 +625,94 @@ f-R-013:
   title: "RippleEdits has NO subject-initial prompts — §7's premise is false"
   date: "2026-10-14"
   gist: "§7 item 2 of the write-up — the project's one outward-facing consequence, priced at a week and unrun since September — rests on this sentence: It is false…"
+  surface: finding
+
+f-R-014:
+  id: "R-014"
+  kind: "Finding"
+  title: "MQuAKE names the edited subject if and only if the edit is on hop 1"
+  date: "2026-10-14"
+  gist: "[E-037]'s §4.6 row — RippleEdits' different-entity tests sit at a coefficient of 0.982 because their prompts name the edited subject verbatim — was a fact…"
+  surface: finding
+
+f-R-014b:
+  id: "R-014b"
+  kind: "Finding"
+  title: "the other two benchmarks cannot be counted, for two different reasons"
+  date: "2026-10-14"
+  gist: "[R-014] left RippleBench (2512.04144) and EditPropBench (2605.02083) uncounted. Both were chased and neither arm can run; the reasons differ and only one…"
+  surface: finding
+
+f-R-015:
+  id: "R-015"
+  kind: "Finding"
+  title: "ROME's ES margin is its own suppression term, and that reopens T-085"
+  date: "2026-10-15"
+  gist: "[T-085] closed on [E-029]'s pairing of belief displacement against ES margin — 0.419 and 0.425 against propagation — concluding \"there is nothing ES fails…"
+  surface: finding
+
+f-R-016:
+  id: "R-016"
+  kind: "Finding"
+  title: "the two-predictor ceiling is 0.534, so T-093 closes without its run"
+  date: "2026-10-15"
+  gist: "[T-093] asked whether ES margin and ‖Δv‖ combine past ρ = 0.60 out of sample. The out-of-sample run needs v computed for 94 fresh chains — roughly 400…"
+  surface: finding
+
+f-R-017:
+  id: "R-017"
+  kind: "Finding"
+  title: "two UNFOUND, one ADJACENT with a named neighbour"
+  date: "2026-10-15"
+  gist: "Lens-2 pass on the three claims being weighed for outward use. CLAUDE.md permits nothing stronger than \"unclaimed in this setting\", and this ticket's job…"
+  surface: finding
+
+f-R-018:
+  id: "R-018"
+  kind: "Finding"
+  title: "ChainEdit read. The distinction holds, and their own fix illustrates ours"
+  date: "2026-10-15"
+  gist: "[R-017] drew claim 3's distinction from ChainEdit's abstract, which [R-011b] established is not good enough. The paper has now been read — PDF extracted…"
+  surface: finding
+
+f-R-019:
+  id: "R-019"
+  kind: "Finding"
+  title: "MEMIT stops at the same threshold as ROME, so the ES identity is not a ROME quirk"
+  date: "2026-10-16"
+  gist: "Unratified [T-096] asked whether MEMIT's optimiser saturates its target the way ROME's does, because [R-015]'s ES-margin identity rests on that and…"
+  surface: finding
+
+f-R-020:
+  id: "R-020"
+  kind: "Finding"
+  title: "the search was over the wrong level"
+  date: "2026-10-16"
+  gist: "Unratified [T-086] is stuck-and-flat, not stuck-and-hard: seven candidates eliminated at a pre-registered floor ([E-035]), their best combination bounded…"
+  surface: finding
+
+f-R-021:
+  id: "R-021"
+  kind: "Finding"
+  title: "the pair-level predictor reaches 10% of total variance, where nothing else could"
+  date: "2026-10-16"
+  gist: "Unratified [R-020] found ~51% of propagation variance sits within subject, unreachable by any edit-level quantity. [T-102] asked whether the pair-level…"
+  surface: finding
+
+f-R-022:
+  id: "R-022"
+  kind: "Finding"
+  title: "T-101 run — the reframe survives, its numbers do not, and the gap is layer-shaped"
+  date: "2026-10-16"
+  gist: "Unratified earlier cycles of this same loop. [R-020] decomposed propagation variance on [E-033]'s citizenship/language/occupation probes and found 51%…"
+  surface: finding
+
+f-R-023:
+  id: "R-023"
+  kind: "Finding"
+  title: "the parked set is not blocked, it has outlived its question"
+  date: "2026-10-16"
+  gist: "Unratified plan.md records eight parked threads and a single blocker: \"all eight serve the orphan arc, which is blocked on one thing — nobody has been…"
   surface: finding
 
 t-T-001:
@@ -1035,7 +1243,7 @@ t-T-078:
   title: "What reorients the subject key with depth?"
   date: ""
   gist: "[E-020] ruled out magnitude and named attention mixing as the leading candidate without testing it. The cheapest cut is the one…"
-  status: "open"
+  status: "answered"
   surface: thread
 
 t-T-079:
@@ -1098,7 +1306,7 @@ t-T-085:
   title: "What does ROME's Efficacy Score fail to distinguish?"
   date: ""
   gist: "The one thing [E-026] produced that its failure does not touch. ROME's ES is P(target) &gt; P(true) on the edit prompt. At layer…"
-  status: "open"
+  status: "answered"
   surface: thread
 
 t-T-086:
@@ -1107,5 +1315,167 @@ t-T-086:
   title: "What actually sets how far a layer-5 edit travels?"
   date: ""
   gist: "[E-029]'s by-product, and larger than the question it was answering. Belief displacement on the edit prompt and ES margin each…"
+  status: "open"
+  surface: thread
+
+t-T-087:
+  id: "T-087"
+  kind: "Thread"
+  title: "Is the alias coefficient drop graded by surface distance, or binary?"
+  date: ""
+  gist: "[E-037] found different-surface aliases at 0.302 against 1.000 for canonical-substring ones, and the surface-distance…"
+  status: "answered"
+  surface: thread
+
+t-T-088:
+  id: "T-088"
+  kind: "Thread"
+  title: "Do other propagation benchmarks also name the edited subject in their different-entity tests?"
+  date: ""
+  gist: "§4.6's strongest row is Compositionality I: RippleEdits' tests about a different entity sit at 0.982 because their prompts name…"
+  status: "answered"
+  surface: thread
+
+t-T-092:
+  id: "T-092"
+  kind: "Thread"
+  title: "Why do `popular` entities retain delivery under renaming?"
+  date: ""
+  gist: "[E-038] found popular aliases at 0.587 against recent's 0.179, and [E-040] eliminated the obvious explanation for two of the…"
+  status: "answered"
+  surface: thread
+
+t-T-093:
+  id: "T-093"
+  kind: "Thread"
+  title: "Do two near-independent weak predictors combine past the floor?"
+  date: ""
+  gist: "[E-035] found ‖Δv‖ at −0.423 and ROME's ES margin at +0.425 correlating with each other at only −0.276. A plain rank-sum reaches…"
+  status: "answered"
+  surface: thread
+
+t-T-094:
+  id: "T-094"
+  kind: "Thread"
+  title: "Why does a larger update propagate LESS far?"
+  date: ""
+  gist: "[E-035]'s strongest association is ‖Δv‖ at −0.423: the bigger the update vector, the less far the edit travels. The candidate was…"
+  status: "answered"
+  surface: thread
+
+t-T-095:
+  id: "T-095"
+  kind: "Thread"
+  title: "Does the subject key still reorient when context cannot reach it?"
+  date: ""
+  gist: "[E-041] decomposed the divergence into direct writes and found the MLP term larger than the attention term at every depth — but…"
+  status: "answered"
+  surface: thread
+
+t-T-096:
+  id: "T-096"
+  kind: "Thread"
+  title: "Does MEMIT's optimiser saturate its target the way ROME's does?"
+  date: ""
+  gist: "[R-015] found ROME's efficacy margin is rank-identical to true-answer suppression (ρ = 1.000) because the optimiser runs v until…"
+  status: "answered"
+  surface: thread
+
+t-T-097:
+  id: "T-097"
+  kind: "Thread"
+  title: "Is \"the field's evaluations do not measure what they claim\" the paper?"
+  date: ""
+  gist: "Three measured findings look separate and may be one. (1) ROME's efficacy margin measures true-answer suppression wearing a…"
+  status: "open"
+  surface: thread
+
+t-T-099:
+  id: "T-099"
+  kind: "Thread"
+  title: "A decidable oracle changes the AUDIT, not the EDIT"
+  date: ""
+  gist: "[T-058] built genuinely deductive grounds — transitive containment, where editing the outer strictly contradicts the two inner…"
+  status: "answered"
+  surface: thread
+
+t-T-098:
+  id: "T-098"
+  kind: "Thread"
+  title: "Does the model hold typeshed signature facts at a CounterFact-comparable rate?"
+  date: ""
+  gist: "The gate on claim 3. A formal domain is only usable if the model already holds the facts — declaration 1 binds a fact to its…"
+  status: "answered"
+  surface: thread
+
+t-T-100:
+  id: "T-100"
+  kind: "Thread"
+  title: "A fact whose answer is the template's prior cannot be scored"
+  date: ""
+  gist: "[E-045] found all 18 int-returning functions scoring 0% possession while the model ranked int first for 15 of them. Cause:…"
+  status: "answered"
+  surface: thread
+
+t-T-101:
+  id: "T-101"
+  kind: "Thread"
+  title: "Re-derive the edit-level ceiling on the probe family the claim is about"
+  date: ""
+  gist: "[R-020] decomposed propagation variance on [E-033]'s probes and found"
+  status: "answered"
+  surface: thread
+
+t-T-102:
+  id: "T-102"
+  kind: "Thread"
+  title: "Search at the level where half the variance lives"
+  date: ""
+  gist: "[R-020] found ~51% of propagation variance is within subject, across probes, where no edit-level quantity can reach. The project…"
+  status: "open"
+  surface: thread
+
+t-T-103:
+  id: "T-103"
+  kind: "Thread"
+  title: "Does probe-form variance track the coefficient's spread across forms?"
+  date: ""
+  gist: "[R-022] found the within-subject share of propagation variance is 13% at layer 5 and 52% at layer 20 on the same probe family —…"
+  status: "open"
+  surface: thread
+
+t-T-104:
+  id: "T-104"
+  kind: "Thread"
+  title: "Does a bridging narrative in the edit text change where the update lands?"
+  date: ""
+  gist: "Editing with an alternate-history description that explicitly bridges the grounds (\"Italy shipped the tower from Paris to Rome\")…"
+  status: "parked"
+  surface: thread
+
+t-T-105:
+  id: "T-105"
+  kind: "Thread"
+  title: "How much of the attribute drift is the essence term already absorbing?"
+  date: ""
+  gist: "computev carries a KL anchor on \"&#123;subject&#125; is a\" with klfactor=0.0625 (EasyEdit's value) whose explicit job is to stop…"
+  status: "open"
+  surface: thread
+
+t-T-106:
+  id: "T-106"
+  kind: "Thread"
+  title: "Is donor spread the right yardstick for a permuted floor?"
+  date: ""
+  gist: "[E-048] pre-stated its band as margin &gt; floorspread, where floorspread is the standard deviation of the per-donor match rates.…"
+  status: "answered"
+  surface: thread
+
+t-T-107:
+  id: "T-107"
+  kind: "Thread"
+  title: "Is the edit-friendly fact the one with few dependents, or the one with a rare subject string?"
+  date: ""
+  gist: "Saif's reading of the Vlaminck arc: edit facts that carry few prior inferences -- physics, chemistry -- because a biographical…"
   status: "open"
   surface: thread

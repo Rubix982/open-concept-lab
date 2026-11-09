@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useAnchors } from "@site/src/components/Anchor";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import PageArt from "@site/src/components/PageArt";
@@ -334,6 +335,11 @@ export default function LabsPage({ checklist }: { checklist: Checklist }): React
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [navOpen, setNavOpen] = useState(true);
+
+  /* The track sections carry their own ids, so the links to them work — but
+     Docusaurus collects anchors from components that register one, never from the
+     rendered HTML, so without this every `#track-x` reads as broken. */
+  useAnchors(checklist.tracks.map((t) => `track-${t.id}`));
 
   const sections = checklist.tracks.flatMap((t) => t.sections);
   const items = sections.flatMap((s) => s.items);

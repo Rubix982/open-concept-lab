@@ -22,6 +22,11 @@ const config: Config = {
   projectName: "open-concept-lab",
 
   onBrokenLinks: "throw",
+  /* Was the default warn, and sat at nineteen for long enough to stop being read —
+     fifteen of them anchors that existed in the HTML but were never registered, so
+     the four worth looking at hid among them. Throwing keeps the count at zero,
+     which is the only count anyone checks. */
+  onBrokenAnchors: "throw",
   onBrokenMarkdownLinks: "warn",
 
   i18n: {

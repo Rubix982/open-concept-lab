@@ -196,7 +196,13 @@ def main() -> None:
             # target — so every thread link resolved to the top of the page. It went
             # unnoticed because the only thread the paper cited was T-075, which also has
             # a decisions entry and so matched on the decision's anchor instead.
-            L.append(f"| <span id=\"t-{t['id']}\"></span>`{t['id']}` | "
+            #
+            # `<Anchor>` rather than a bare `<span id=...>`: Docusaurus does not read ids
+            # out of the rendered HTML, it collects them from components that register
+            # one. A raw span gives a working link and a permanent "broken anchor"
+            # warning, which is worse than either alone — the link works so nobody
+            # looks, and a real broken anchor hides in the noise.
+            L.append(f"| <Anchor id=\"t-{t['id']}\" />`{t['id']}` | "
                      f"**{t['title']}** — {t['gist']} | {t['parent']} | {st} |")
         L.append("")
 
