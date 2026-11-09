@@ -23,3 +23,7 @@ yarn-error.log*
 /static/demos
 
 someday/notes/
+
+# Built PDFs and the figures converted for them. The page is the source; the
+# PDF is a render of it and is rebuilt by scripts/paper_pdf.py.
+notebook/**/pdf/

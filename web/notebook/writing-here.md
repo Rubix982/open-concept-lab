@@ -322,6 +322,28 @@ work.
 
 Worked instance: `notebook/edit-reach/paper.md`.
 
+### The PDF
+
+A paper page builds to a two-column PDF with one command.
+
+```bash
+python3 scripts/paper_pdf.py notebook/edit-reach/paper.md
+```
+
+**The page is the source and there is no LaTeX copy of the paper.** Two copies of
+one paper drift, and the drift is invisible until somebody reads both. The script
+resolves the page's components into markdown, hands that to pandoc, and wraps the
+result in a two-column article class. Citations resolve from `data/papers.yml`, run
+markers become superscripts, and each figure is converted from SVG to PDF first,
+because LaTeX cannot include an SVG.
+
+It needs `pandoc`, `tectonic` and `rsvg-convert`. The output lands in `pdf/` beside
+the page and is not committed: it is a render, rebuilt on demand.
+
+**What it does not reproduce** is the web layout — no contents rail, no hover, no
+link into an evidence ledger. Where the page points at something only the site can
+give, the PDF says so rather than pretending.
+
 ### The overview beside it
 
 A project's overview page is not a short version of its paper. The paper is the

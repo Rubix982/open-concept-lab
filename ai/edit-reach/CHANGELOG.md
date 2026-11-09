@@ -6,6 +6,7 @@
 - [D-008] The notebook page shaped as a paper — `web/notebook/edit-reach/note-01.md`, components in `web/src/components/Paper.tsx`, conventions in `web/notebook/writing-here.md`
 - [D-008] The four `TODO(cite)` in `paper/note.md` resolved; all four were already verified in `web/data/papers.yml`
 - [D-009] Front matter, abstract and contributions; the notebook rail now shows each project's stage, read from `web/data/projects.yml`
+- [D-006] `web/scripts/paper_pdf.py` — a two-column PDF built from the page, which is the only source
 - [D-019] `web/blog/2026-11-09-three-checks-that-could-not-have-failed.md` — the fault class, verified down from five to three
 - [D-003] Split into D-019 — the paper absorbed three of its five items; the two that survive are not about edit-reach
 - [D-018] A legibility pass over both edit-reach pages — words before symbols, probe families defined, identifiers out of the prose

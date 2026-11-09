@@ -276,7 +276,7 @@ Write D-004's skeleton out. Run the claim audit over it: every paragraph gets on
 
 ### D-006 · PDF build
 
-**Status:** blocked
+**Status:** closed
 **Type:** implement
 **Priority:** low
 **Created:** 2026-11-08
@@ -290,11 +290,22 @@ Installing is Saif's decision and is not done without it. If he declines, the fa
 
 Deliver a one-command build and a `README` line saying how to run it.
 
-**Blockers:** Saif's decision on installing a toolchain.
+**Blockers:** — (resolved: Saif chose LaTeX and asked for the toolchain installed)
 
-**Artifacts:** _(fill on close)_
+**Artifacts:**
+- web/scripts/paper_pdf.py
+- web/notebook/writing-here.md
+- web/.gitignore — the output is a render, not a source
 
-**Closed:** —
+**Closed:** 2026-11-09. `tectonic` and `pandoc` installed; `rsvg-convert` was already present. Both paper pages build.
+
+**LaTeX over Typst, and the ticket's own recommendation was wrong.** This ticket argued for Typst because every figure is an SVG and Typst includes one natively. That is true and it is not the deciding fact. The deciding fact is that ACL, EMNLP, IEEE and AAAI ship their style files in LaTeX, and the point of the PDF is submission. `rsvg-convert` turns an SVG into a PDF in one call, which is the whole of the cost the recommendation was built on.
+
+**The page is the source and there is no LaTeX copy.** This was the real design question and it only appeared once both existed: `paper/note.md` is 3,292 words and the web page is 8,212. Building from the note would have shipped a PDF worse than the website. The script resolves the page's sixteen component types into markdown, hands that to pandoc, and wraps the result. Two copies of one paper drift, and the drift is invisible until somebody reads both.
+
+**Four faults in the converter, each of which taught the next one.** The column specification of a pandoc table contains braces of its own, so it must be read by counting braces and not by matching to the first `}` — the regular-expression version silently dropped the specification and the header row on any table pandoc wrote without a caption, leaving a tabular whose first data row was its own format. `longtable` cannot run in two columns at all, so every table becomes a spanning `table*`. A `caption={<>...</>}` ends in `/>`, which stopped the figure-tag match inside the caption and left its tail in the prose as `} wide plain />`. And the headings already carry their numbers, so LaTeX numbering them too produced *0.1  1. Introduction*.
+
+**What the PDF does not reproduce** is the web layout: no contents rail, no hover, no link into a generated evidence ledger. Where the page points at something only the site can give, the PDF says so.
 
 ---
 

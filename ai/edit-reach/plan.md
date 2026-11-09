@@ -19,7 +19,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-003 | Documentor | The notebook page: what it was like to be wrong | split |
 | D-004 | Documentor | The paper: structure and skeleton, every number in place | closed |
 | D-005 | Documentor | The paper: prose | closed |
-| D-006 | Documentor | PDF build | blocked |
+| D-006 | Documentor | PDF build | closed |
 | D-007 | Documentor | The notebook sidebar says nothing, and the page is one slab | closed |
 | D-008 | Documentor | The notebook page, shaped as a paper | closed |
 | D-009 | Documentor | The front matter a paper actually has | closed |
@@ -40,7 +40,6 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 | ID | Blocked By |
 | --- | --- |
-| D-006 | Saif's decision on installing a PDF toolchain |
 
 ## Completed This Session
 
