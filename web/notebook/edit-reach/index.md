@@ -26,13 +26,25 @@ It showed that it cannot. [The paper](./paper) is where the line falls; this pag
 </Claim>
 
 <Glance>
-  <Stat value="6" label="cards closed" note="none open" />
-  <Stat value="15" label="decisions" note="in the shared record" />
-  <Stat value="14" label="runs" note="all with config and seed" />
+  <Stat value="6" label="questions closed" note="none open" />
+  <Stat value="15" label="decisions" note="each with its rationale and what would overturn it" />
+  <Stat value="14" label="runs" note="each with its config, seed and environment" />
   <Stat value="42" label="subjects" note="cached survivors, not a sample" />
   <Stat value="4" label="models" note="6B to 405B, via NDIF" />
   <Stat value="1,900" label="lines" note="editreach 0.1.0, ten modules" />
 </Glance>
+
+## Three words this page uses
+
+The project runs on a small discipline, and three of its words appear below without being obvious from outside.
+
+A **card** is one question, written down with *both* of its answers before anything is run — if it comes back one way we claim this, if the other way we claim that. A question that cannot be written in that form does not get worked on. The point is that a denial then costs a card rather than a month, and six of them are listed below.
+
+A **thread** is a question that is not yet work. It surfaced while doing something else, it may matter, and writing it down is how it avoids being quietly dropped. Threads become cards when they are ready; most never do.
+
+A **run** is one execution of one experiment, with its configuration, its random seed and its environment written beside its numbers. Every figure on [the paper](./paper) carries a small marker naming the run behind it.
+
+Cards, threads and runs each have an identifier — `C-001`, `T-009`, `E-004` — so that a number can be traced to the thing that produced it. The identifiers are bookkeeping; nothing is lost by ignoring them.
 
 ## How the question moved
 
@@ -86,9 +98,9 @@ The project set out to build a screen and did not build one. What it has instead
   </svg>
 </Figure>
 
-## The cards
+## The six questions
 
-Every question was written with both branches before the run, so a denial costs a card and not a month.
+Each was written with both of its answers before the run, so none of them could be re-aimed afterwards at whatever came back.
 
 <Cards caption={<>The six cards this project opened. None is open now.</>}>
   <Card id="C‑001" outcome="denied" date="31 Oct" denied>Does predicted reach predict measured movement? <i>If yes, a pre-run screen; if no, the quantity measures delivery and the screen is a proposal.</i></Card>
@@ -101,7 +113,7 @@ Every question was written with both branches before the run, so a denial costs 
 
 ## What is still open
 
-The thread ledger carries questions that are not yet work. Four are open; four were answered by the cards above and are kept so the tree stays navigable.
+Four questions are open. Four more were answered by the work above and are kept here, because a question that has been answered is part of the shape of the inquiry and deleting it hides how the shape was arrived at.
 
 <Threads>
   <Thread id="T‑001" status="open">Can any screen bound an edit's damage from <i>above</i>, or only from below? A benchmark finds what it contains. A per-prompt quantity removes the enumeration problem but is still evaluated on prompts we happen to hold. If an upper bound is structurally unavailable, that should be stated once and loudly rather than implied away.</Thread>

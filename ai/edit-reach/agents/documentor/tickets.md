@@ -638,3 +638,39 @@ Saif: "overview page by now, is very bare bones, that we can improve and work on
 **`<Glance>` is the one place big-number tiles belong in this project.** They are wrong on the paper, where every number carries a run behind it and a tile would strip that. On an overview the figures *are* the point — how much is decided, how much is open, on what — so the component is documented with that boundary rather than left as a general-purpose tile.
 
 **What this ticket did not foresee:** that the overview would end up naming what the project lacks more plainly than the paper does. "What it does not have is a reader" reads as a limitation in Appendix C and as the current state here, which is what it is.
+
+---
+
+### D-018 · Written for the people who already knew
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 2h
+**Spent:** 2h
+
+**Description:**
+Saif: "There is so much here that would not make sense to a reader with a fresh pair of eyes ... the ticket structures, IDs, flow of our experiments, what our experiments produced, the way we write sentences." He asked for the writing skill to be invoked for it.
+
+Counted before starting: forty-odd ticket identifiers in running prose, six probe families used in two tables and a chart and defined nowhere, and *near field* first appearing as a section heading with no definition before it.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/notebook/edit-reach/paper.md — the §3 lead, the probe-family table, every identifier in prose
+- web/notebook/edit-reach/index.md — the three words this page uses
+- web/static/img/edit-reach/two-regimes.svg
+
+**Closed:** 2026-11-09.
+
+**The failing pass was the words-before-symbols ladder, and it failed at the first rung.** Nothing was named in English, by what it does, before being given a symbol or a term. §3 now opens with the edit, the probe, the near and far field, the coefficient, the floor and the run markers — six short paragraphs, no symbols, one example — and the algebra follows. The ladder's other rung this failed was the running example: Figure 1 drew Maurice de Vlaminck while the probe set is built on Henry Mackenzie. The figure was redrawn on the probe set's own subjects, Henry Mackenzie and the stranger Karim Lala, so the reader pays the comprehension cost once.
+
+**The six probe families were a real content gap, not a wording one.** `alias`, `discrimination`, `exposure`, `position`, `repetition`, `semantics` carried two tables and a chart and the page never said what any of them asked. The definitions are read from `probes/generated.json` with a real prompt from each, so what *exposure* means is now visible rather than inferable: the edited name is present but is not the subject of the question.
+
+**Identifiers are gone from the prose and kept where they are bookkeeping.** `C-001` in a sentence told a reader nothing; the sentence now states the question and both of its branches. A run marker after a number stays, because it is a pointer to Appendix B, and one sentence in §3 now says so. The overview defines *card*, *thread* and *run* in three short paragraphs and then says outright that the identifiers can be ignored.
+
+**What the lint and the audit did not catch, and this is the point of running them anyway.** Pass 3 scored 0.0 per 10k on both pages before and after — the lint tracks house style, not legibility, and these pages have always followed the house style. Pass 1 found no unfalsifiable claims, as it has every previous time. The whole defect lived in Pass 2 question 3, which asks whether each object was named in English before it got a symbol, and the answer was no for roughly a dozen of them.
+
+**What this ticket did not foresee:** that fixing the vocabulary would expose a missing table rather than just missing sentences. The probe families could not be defined in a clause each; they needed their prompts shown.

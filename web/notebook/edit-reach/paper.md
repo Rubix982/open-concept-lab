@@ -65,11 +65,23 @@ This is reported as a negative result with working controls. §6 records what th
 
 ## 3. Methods
 
+Everything below is measured on one kind of object. It is worth naming the parts in plain language, with one example carried throughout, before any of them is given a symbol.
+
+<Lead>The edit.</Lead> ROME takes a prompt naming somebody — *Henry Mackenzie was born in the city of* — and rewrites one layer of the model so that the next word becomes whatever was asked for. One person, one fact, one layer. That prompt is the **edit prompt**, and Henry Mackenzie is the example used from here on.
+
+<Lead>The probe.</Lead> Any other prompt scored afterwards, to ask how much of that rewrite reached it. A probe opening with the same name — *Henry Mackenzie is the subject here. Henry Mackenzie was born in the city of* — is in the **near field**. A probe that never names him, such as a question about the head of government of the city he died in, is in the **far field**. Multi-hop propagation — the thing an edit is supposed to do and the reason anyone evaluates one — lives in the far field.
+
+<Lead>The coefficient.</Lead> For any probe, one number: the fraction of the rewrite that lands on a chosen token. It is read off the arithmetic of the edit rather than by running the edited model, which is why it can be computed before the edit exists. §3.1 gives it.
+
+<Lead>The floor.</Lead> A coefficient on its own cannot be judged, because a pipeline hardwired to return 1 looks the same as a correct one. Every reading is paired with a second taken identically but against *somebody else's* edit — the **floor**. If a probe reads the same against a stranger's edit as against its own, the measure has said nothing about this edit.
+
+<Lead>The run markers.</Lead> A small marker after a number, like the one at the end of this sentence, names the run that produced it.<Prov id="E-004" /> Appendix B lists every run with its model, its size, its date and the directory it wrote. Nothing on this page is a number without one.
+
 ### 3.1 The coefficient
 
 <Figure
   src="/img/edit-reach/two-regimes.svg"
-  alt="Three prompts drawn as strips. The edit prompt opens with Maurice de Vlaminck. A probe opening with the same name shares every token the subject's last token can see under causal attention, so its key is identical and the coefficient is exactly 1.000. A probe opening with a different person reads 0.082."
+  alt="Three prompts drawn as strips. The edit prompt opens with Henry Mackenzie. A probe opening with the same name shares every token the subject's last token can see under causal attention, so its key is identical and the coefficient is exactly 1.000. A probe opening with a different person, Karim Lala, reads 0.082."
   caption={<>The whole account in one picture. The coefficient is read at the subject's last token, and under causal attention that token sees only what precedes it — so a probe opening with the edited subject carries the same key the edit did, whatever it goes on to ask.</>}
   wide
   plain
@@ -103,7 +115,7 @@ Under causal attention, a prompt opening with the edited subject has, at that su
 
 ### 3.3 The control, and what it cost to get right
 
-A coefficient of 1.000 means nothing on its own, because a pipeline hardwired to return 1 looks identical. Every reading is therefore paired with a floor: the same prompt scored against a *different* subject's edit. The floor has to match the real edit on everything except the subject — the relation included. Getting that wrong is not hypothetical. It is what this project did first, and §6 records it as F‑09.
+A coefficient of 1.000 means nothing on its own, because a pipeline hardwired to return 1 looks identical. Every reading is therefore paired with a floor: the same prompt scored against a *different* subject's edit. The floor has to match the real edit on everything except the subject — the relation included. Getting that wrong is not hypothetical. It is what this project did first, and §6 keeps the wrong floor on the page as a withdrawn finding rather than deleting it.
 
 ### 3.4 Three arms
 
@@ -112,6 +124,22 @@ Four of the results below are read from the same 495 probes over 42 subjects, sc
 - <Lead>real</Lead> — the subject's own edit, applied while probing that subject.
 - <Lead>same-subject control</Lead> — a *different property* of the same person, at comparable magnitude. It holds identity fixed and varies content.
 - <Lead>different-subject control</Lead> — another person's edit, chosen as the nearest edit magnitude. It holds magnitude roughly fixed and varies identity.
+
+Those 495 probes fall into six families, which is how the tables below are broken down. Each asks a different way of reaching the same edited person.
+
+<Data caption={<>The six probe families, with a real prompt from each. Henry Mackenzie is the edited subject; Karim Lala is an unedited stranger used as a floor.</>}>
+  <thead>
+    <tr><th>Family</th><th className="n">n</th><th>what it varies</th><th>example prompt</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>position</b></td><td className="n">210</td><td>where the name sits in the prompt, and whether it is there at all</td><td><i>The city where Henry Mackenzie was born is</i></td></tr>
+    <tr><td><b>repetition</b></td><td className="n">84</td><td>the name appearing more than once</td><td><i>Henry Mackenzie is the subject here. Henry Mackenzie was born in the city of</i></td></tr>
+    <tr><td><b>alias</b></td><td className="n">80</td><td>a different string for the same person</td><td><i>Mackenzie was born in the city of</i></td></tr>
+    <tr><td><b>semantics</b></td><td className="n">42</td><td>meaning, with the string held fixed</td><td><i>It is not true that Henry Mackenzie was born in the city of</i></td></tr>
+    <tr><td><b>exposure</b></td><td className="n">42</td><td>the name present but not the subject of the question</td><td><i>Karim Lala admired Henry Mackenzie. Karim Lala was born in the city of</i></td></tr>
+    <tr><td><b>discrimination</b></td><td className="n">37</td><td>a different person with a confusable name</td><td><i>Henry Kissinger was born in the city of</i></td></tr>
+  </tbody>
+</Data>
 
 The pair is what makes §5.3 and §5.4 possible: each arm isolates one of the two things a rank-one update carries. Magnitude matching is on `‖Δv‖/‖k*‖`, a single scalar, so two edits of equal norm can still differ in direction relative to the probe's key. A directional control is the obvious refinement and is not run here.
 
@@ -267,7 +295,7 @@ A **same-subject control** — a different property of the same person — alrea
   </tbody>
 </Data>
 
-<Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims and only the second survives. C-001 closed on the deny branch written before the run.
+<Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims and only the second survives. The question had been written down with both of its answers before the run — if the prediction held, a usable screen; if it did not, the quantity measures delivery and the screen is a proposal — and it closed on the second.
 
 <Lead>One check worth recording.</Lead> The `anchor-floor` family — same prompt shape, different person — returned a median coefficient of 0.0809 against the independently measured floor of 0.082.<Prov id="E-018" /> Two routes to the same number is the cheapest evidence available that the pipeline was measuring what it claimed.
 
@@ -457,8 +485,8 @@ The fault is diagnosable rather than universal. MQuAKE names the edited subject 
   plain
   caption={<>One finding from proposal to withdrawal. The dates stay on the page because a silently corrected claim looks like it was never made.</>}
 >
-  <svg viewBox="0 0 400 150" role="img" aria-label="Timeline of finding F-08. Proposed 12 October. First floor built 24 October. Denied as C-001 on 31 October. Replaced by F-02 on 2 November.">
-    <text x="4" y="12" fontFamily="Lato, sans-serif" fontSize="8" fontWeight="900" letterSpacing="0.8" fill="var(--ocl-ink)">F‑08 · LIFE OF A CLAIM</text>
+  <svg viewBox="0 0 400 150" role="img" aria-label="The life of one claim. Proposed 12 October: predicted reach predicts measured movement. First floor built 24 October. Denied 31 October on 495 probes. Replaced 2 November by the claim that stands today.">
+    <text x="4" y="12" fontFamily="Lato, sans-serif" fontSize="8" fontWeight="900" letterSpacing="0.8" fill="var(--ocl-ink)">THE LIFE OF ONE CLAIM</text>
     <path d="M58 26 V130" stroke="var(--ocl-rule-strong)" strokeWidth="1" />
     <g fontFamily="IBM Plex Mono, monospace" fontSize="7.4" fill="var(--ocl-ink-faint)">
       <text x="50" y="35" textAnchor="end">12 Oct</text>
@@ -473,15 +501,17 @@ The fault is diagnosable rather than universal. MQuAKE names the edited subject 
     <g fontFamily="Lato, sans-serif" fontSize="8.2" fill="var(--ocl-ink)">
       <text x="70" y="35">proposed — reach predicts movement</text>
       <text x="70" y="64">first floor built, against all donors</text>
-      <text x="70" y="93" fill="var(--ocl-oxide)" fontWeight="700">C‑001 denied · 495 probes</text>
-      <text x="70" y="122">replaced by F‑02 (same-relation floor)</text>
+      <text x="70" y="93" fill="var(--ocl-oxide)" fontWeight="700">denied, on 495 probes</text>
+      <text x="70" y="122">replaced, once the floor was matched</text>
     </g>
     <text x="70" y="104" fontFamily="Lato, sans-serif" fontSize="7.4" fill="var(--ocl-ink-faint)">at fixed c, movement still spans ×2.96</text>
     <text x="70" y="133" fontFamily="Lato, sans-serif" fontSize="7.4" fill="var(--ocl-ink-faint)">the old floor was the different-relation floor</text>
   </svg>
 </Figure>
 
-A paper states what its author believes now. A page revised in place has to state what they believed before and why it changed, otherwise a reader who meets the old claim elsewhere has no way to know it was retired. The ledger below is every claim this paper has made, with the observation that would refute it. Struck rows are claims this project withdrew.
+A paper states what its author believes now. A page revised in place has to state what they believed before and why it changed, otherwise a reader who meets the old claim elsewhere has no way to know it was retired.
+
+The table below is every claim this paper has made, numbered in the order they were first written down, each with the observation that would refute it. Struck rows are claims this project withdrew; the second line of such a row says when and why.
 
 <Ledger caption={<>Findings ledger. A row without a stated falsifier is not admitted.</>}>
   <Finding id="F‑01" status="standing" value="1.000"
@@ -529,7 +559,7 @@ A paper states what its author believes now. A page revised in place has to stat
     The magnitude of that disagreement is a property of the model family, so a tolerance can be written once per family.
   </Finding>
   <Finding id="F‑08" status="withdrawn" value="denied"
-    falsifier={<><strong>Withdrawn 31 October (C‑001).</strong> 495 probes, 42 subjects. At a fixed coefficient, measured movement still spans a factor of 2.96.</>}>
+    falsifier={<><strong>Withdrawn 31 October.</strong> 495 probes, 42 subjects. At a fixed coefficient, measured movement still spans a factor of 2.96.</>}>
     Predicted reach predicts how far the answer moves, so the quantity can gate a propagation evaluation before it runs.
   </Finding>
   <Finding id="F‑14" status="withdrawn" value="no direction"
@@ -537,7 +567,7 @@ A paper states what its author believes now. A page revised in place has to stat
     The arithmetic-site disagreement grows with depth in bfloat16.
   </Finding>
   <Finding id="F‑09" status="superseded" value="+0.0232"
-    falsifier={<><strong>Superseded 2 November.</strong> Nearly all donors carried a different relation, so that floor was the different-relation floor under another name. F‑02 replaces it.</>}>
+    falsifier={<><strong>Superseded 2 November.</strong> Nearly all of the strangers used to build that floor were asked about a different relation, so it was a different-relation floor under another name. Row 2 replaces it.</>}>
     There is real far-field signal: scored against all donors, the subject's own edit reaches its hop-2 question more than a stranger's does.
   </Finding>
 </Ledger>
@@ -546,7 +576,7 @@ A paper states what its author believes now. A page revised in place has to stat
   <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
   <Rev date="6 Nov 2026" version="v0.2">F‑07 denied. Every per-family tolerance in §4.1 was removed; the section now says a tolerance must be measured where it runs.</Rev>
   <Rev date="2 Nov 2026" version="v0.2">F‑09 superseded by F‑02 once the floor was found to be the different-relation floor under another name. §3.3 rewritten around the matched floor.</Rev>
-  <Rev date="31 Oct 2026" version="v0.1">C‑001 closed denied. The paper's original claim — that the quantity gates a propagation evaluation — was withdrawn and the paper re-scoped to a negative result.</Rev>
+  <Rev date="31 Oct 2026" version="v0.1">The project's own question closed on its negative branch. The paper's original claim — that the quantity gates a propagation evaluation — was withdrawn and the paper re-scoped to a negative result.</Rev>
 </Revisions>
 
 ## 7. Limitations
@@ -576,7 +606,7 @@ Four questions stay open. Each is written so it could come back either way, and 
 
 1. <Lead>Does a layer sweep find far-field dynamic range at some depth other than 5?</Lead> If yes, the screen is alive again at that depth and the scope sentence narrows to layer 5. If no, the negative result generalises across depth. This is the cheapest open item: one run on the cached subjects.
 2. <Lead>Does a graded relation-similarity control move the +0.0002?</Lead> If the excess moves with relation distance, the categorical same/different split is too coarse and the far field has structure this one missed.
-3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> Raised in passing by E‑001 and deliberately not taken up, because working on it now would be a rescue of F‑08 rather than a question.
+3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> It surfaced while reading the first run's output and was deliberately not taken up, because working on it now would be an attempt to rescue a withdrawn claim rather than a question asked in its own right.
 4. <Lead>Does the backward-pass block lift?</Lead> If nnsight allows `compute_v` mid-trace, the delivery-to-effect gap in §7.1 can be tested on a free draw instead of 42 survivors.
 
 ## References
@@ -643,7 +673,7 @@ Each row names the run a number came from. Config files pin the seed and the lay
 What a short venue note needs, against what exists today. This is a checklist for the author, not a claim about the work.
 
 <Readiness caption={<>Readiness against a short-paper submission.</>}>
-  <Check met need="A result that could have come out the other way" where="§5">Pre-registered floor; C‑001 closed denied and recorded</Check>
+  <Check met need="A result that could have come out the other way" where="§5">The floor was fixed before the run, and the question closed against the project</Check>
   <Check met need="One figure that carries the argument" where="§5">The near-and-far-field figure does the work §5 would otherwise do in prose</Check>
   <Check met need="Reproduction path" where="§4">Config, seed and resolved environment beside every result directory</Check>
   <Check met need="Positioning against the nearest work" where="§2">He et al. (2026) read in full and distinguished</Check>
