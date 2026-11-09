@@ -6,6 +6,7 @@
 - [D-008] The notebook page shaped as a paper — `web/notebook/edit-reach/note-01.md`, components in `web/src/components/Paper.tsx`, conventions in `web/notebook/writing-here.md`
 - [D-008] The four `TODO(cite)` in `paper/note.md` resolved; all four were already verified in `web/data/papers.yml`
 - [D-009] Front matter, abstract and contributions; the notebook rail now shows each project's stage, read from `web/data/projects.yml`
+- [D-016] `ocl-abstract` was already taken by edit-slice/review; the paper component renamed
 - [D-015] The paper body set in two columns, balanced per section
 - [D-014] Charts, run outputs and a two-column front matter — `web/notebook/edit-reach/paper.md`
 - [D-013] The paper filled out from `agents/shared/decisions.md` — four of fifteen decisions were on the page; now most are

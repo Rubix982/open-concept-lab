@@ -8954,7 +8954,7 @@ a:hover > .ocl-home__featureCover {
  */
 .markdown:has(> .ocl-paperhead) {
   /* The page is the whole spread; each column is the measure. */
-  --ocl-paper-wide: 52rem;
+  --ocl-paper-wide: 58rem;
   counter-reset: ocl-figure ocl-table ocl-eq;
 }
 
@@ -8975,7 +8975,7 @@ a:hover > .ocl-home__featureCover {
 .markdown:has(> .ocl-paperhead) {
   column-count: 2;
   column-gap: 2.1rem;
-  max-width: var(--ocl-paper-wide);
+  max-width: min(100%, var(--ocl-paper-wide));
   margin-inline: auto;
   font-size: 0.9rem;
   line-height: 1.56;
@@ -9083,13 +9083,16 @@ a:hover > .ocl-home__featureCover {
 
 /* ---- abstract ---- */
 
-.ocl-abstract {
-  margin-bottom: 2rem;
-  padding-bottom: 1.6rem;
+.ocl-paper-abstract {
+  margin: 0 0 1.8rem;
+  padding: 0 0 1.5rem;
+  background: none;
+  border: 0;
   border-bottom: 1px solid var(--ocl-rule);
+  max-width: none;
 }
 
-.ocl-abstract__label,
+.ocl-paper-abstract__label,
 .ocl-contrib__label {
   margin-bottom: 0.8rem;
   font-family: var(--ocl-mono);
@@ -9099,16 +9102,16 @@ a:hover > .ocl-home__featureCover {
   color: var(--ocl-ink-faint);
 }
 
-.ocl-abstract__label {
+.ocl-paper-abstract__label {
   text-align: center;
 }
 
-.ocl-abstract p {
+.ocl-paper-abstract p {
   text-align: justify;
   hyphens: auto;
 }
 
-.ocl-abstract__kw {
+.ocl-paper-abstract__kw {
   margin-top: 1rem;
   margin-bottom: 0;
   font-size: 0.88rem;
@@ -9116,7 +9119,7 @@ a:hover > .ocl-home__featureCover {
   text-align: left;
 }
 
-.ocl-abstract__kw i {
+.ocl-paper-abstract__kw i {
   color: var(--ocl-ink-faint);
 }
 
@@ -9456,19 +9459,19 @@ a:hover > .ocl-home__featureCover {
  * wrong shape once the body itself became two columns: it made the abstract a
  * narrow third measure, where justified text hyphenates on every other line.
  */
-.markdown:has(> .ocl-paperhead) > .ocl-abstract,
+.markdown:has(> .ocl-paperhead) > .ocl-paper-abstract,
 .markdown:has(> .ocl-paperhead) > .ocl-contrib {
   column-count: 2;
   column-gap: 2.1rem;
 }
 
-.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__label,
-.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__kw,
+.markdown:has(> .ocl-paperhead) > .ocl-paper-abstract .ocl-paper-abstract__label,
+.markdown:has(> .ocl-paperhead) > .ocl-paper-abstract .ocl-paper-abstract__kw,
 .markdown:has(> .ocl-paperhead) > .ocl-contrib .ocl-contrib__label {
   column-span: all;
 }
 
-.markdown:has(> .ocl-paperhead) > .ocl-abstract .ocl-abstract__label {
+.markdown:has(> .ocl-paperhead) > .ocl-paper-abstract .ocl-paper-abstract__label {
   text-align: left;
 }
 

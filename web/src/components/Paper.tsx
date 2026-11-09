@@ -79,6 +79,11 @@ export function PaperHead({
  * The abstract. Not a numbered section — a paper's abstract never is — so it
  * carries a letterspaced label instead of a heading, and stays out of the
  * table of contents.
+ *
+ * The class is `ocl-paper-abstract`, not `ocl-abstract`. That name was already
+ * taken by the hand-written abstract on notebook/edit-slice/review, which has
+ * its own panel, left rule and measure. Reusing it gave this component a
+ * background nothing had asked for and quietly restyled that other page.
  */
 export function Abstract({
   keywords,
@@ -88,11 +93,11 @@ export function Abstract({
   children: ReactNode;
 }): ReactNode {
   return (
-    <section className="ocl-abstract" aria-label="Abstract">
-      <div className="ocl-abstract__label">Abstract</div>
+    <section className="ocl-paper-abstract" aria-label="Abstract">
+      <div className="ocl-paper-abstract__label">Abstract</div>
       {children}
       {keywords?.length ? (
-        <p className="ocl-abstract__kw">
+        <p className="ocl-paper-abstract__kw">
           <i>Keywords</i> — {keywords.join(", ")}
         </p>
       ) : null}

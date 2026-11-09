@@ -29,6 +29,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-013 | Documentor | Two thirds of the project was not on the page | closed |
 | D-014 | Documentor | Outputs, charts, and two columns | closed |
 | D-015 | Documentor | The body set in two columns | closed |
+| D-016 | Documentor | A class name that was already taken | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
@@ -41,6 +42,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- D-016 · `ocl-abstract` was already edit-slice/review's class. The paper component had been inheriting its panel and silently restyling that page.
 - D-015 · The paper body set in two columns, balanced per section by spanning the headings, as a submitted paper is set.
 - D-014 · Two charts drawn from the measured numbers, two run outputs copied from `results/`, and the front matter set in two columns. Seven figures, nine tables, three listings.
 - D-013 · The paper filled out from the record: E-001's real result, E-002's sixty-five-to-one, E-003's destruction/destination separation, and the nine reproducibility decisions. Five findings and six runs became fourteen and fourteen.

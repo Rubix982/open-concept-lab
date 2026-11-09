@@ -573,3 +573,34 @@ Saif: "mei chahta hoon ke aik section ke paper wale tab per hum wahi two column 
 > **What was misunderstood:** that a layout decision made for a one-column page carries over to a two-column one. `Frontmatter` was a good answer to "the page is wider than its measure" when the page had one measure. With two columns the body already answers that, and a second, different two-column arrangement sitting on top of it reads as a mistake because it is one. D-014's ticket text is left as written; this note records what happened to it.
 
 **Re-closed:** 2026-11-09. `web/src/components/Paper.tsx`, `web/src/css/custom.css`, `web/notebook/edit-reach/paper.md`, `web/notebook/writing-here.md`.
+
+---
+
+### D-016 · A class name that was already taken
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 0.5h
+**Spent:** 0.5h
+
+**Description:**
+Saif, on the two-column page: "nope." The abstract was sitting in a panel with a left rule, which nothing in the paper-mode stylesheet asks for.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/src/components/Paper.tsx — the class renamed, with the reason in the component
+- web/src/css/custom.css
+
+**Closed:** 2026-11-09.
+
+**`ocl-abstract` was already taken.** `notebook/edit-slice/review.md` hand-writes `<div className="ocl-abstract">`, and the stylesheet has carried a style for it since that page was written: a raised background, a two-pixel left rule, padding, and `max-width: var(--ocl-measure)`. The `<Abstract>` component written for D-009 reused the name, so it inherited all of it. The panel was not a bug in anything new; it was a bug in the name.
+
+**The collision ran in both directions, and the other direction is the one that matters.** Every rule written for paper mode under `.ocl-abstract` — the paragraph size, the margins, the padding, the border — was also applying to edit-slice's review page, which nobody looked at. A regression on a page the work had nothing to do with, introduced on 9 November and live for several commits.
+
+**The component now uses `ocl-paper-abstract` and says why in its own comment**, so the next person to reach for a short, obvious class name has the instance in front of them. The three other new names — `ocl-paperhead`, `ocl-contrib`, `ocl-ptable` — were checked and are unique.
+
+**What this ticket did not foresee:** nothing, because the ticket exists only because the check was skipped at the time. A new CSS class on a site that already has a hand-written vocabulary needs one `grep` before it is written, and that grep was not run for any of the nine components added this session. It has now been run for all of them.
