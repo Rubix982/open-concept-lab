@@ -20,7 +20,7 @@ The edit adds `δ · c(k)` at the edited layer, where `δ = v* − Wk*` is **fix
 So a universal upper bound exists and is one line. Three things follow, and the second is the one that matters.
 
 1. **It may be vacuous.** `C` is the second moment of keys, so `E[‖k‖²_{C⁻¹}] = tr(C⁻¹C) = d`: a typical token has `‖k‖_{C⁻¹} ≈ √d`. If `k*` is also typical the bound reads ≈ 1 — the anchor value — so it permits every token to behave like the anchor and forbids nothing. Whether that is what happens is measurable on data already on disk. Spawned **T-010**.
-2. **The real obstruction is downstream, and it is not ours.** A bound on `‖Δh‖` at one layer says nothing about logits without a Lipschitz constant for the rest of the network, and dot-product self-attention is reported to have no global Lipschitz bound on an unbounded domain. If that holds, no *deterministic* behavioural upper bound is available through a transformer — a statement about transformers rather than about editing, which is sharper and more defensible than "an upper bound is unavailable". Spawned **T-011**. `TODO(cite)`: that Lipschitz result is from memory and must be read before it is repeated anywhere.
+2. **The real obstruction is downstream, and it is not ours.** A bound on `‖Δh‖` at one layer says nothing about logits without a Lipschitz constant for the rest of the network. Spawned **T-011**. *Corrected 2026-11-09, after reading the paper:* this bullet first said dot-product self-attention has "no global Lipschitz bound" and concluded that no deterministic behavioural bound is available through a transformer. The result is real — Kim, Papamakarios & Mnih, arXiv 2006.04710, ICML 2021 — but it is proved **for an unbounded input domain**, and a real transformer is arguably not in that case. The conclusion does not follow and has been withdrawn; what remains is that the constant for the bounded case is unknown. This is exactly what the `TODO(cite)` was for, and it caught a claim that had already been written down as though settled.
 3. **This is certified robustness under another name**, and ours is the easy case. The literature certifies against an adversary free to pick any direction in a ball. A rank-one edit has one direction, chosen in advance and known before the edit is applied. Spawned **T-012**.
 
 **What the reframe breaks.** The paper's *"we can say which facts an edit touches, not how hard"* is imprecise under this frame: how hard **is** boundable in activation space. What cannot be done is converting that to behaviour. The sentence should say which of the two it means.
@@ -131,7 +131,14 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 **Question:** T-001's bound is on `‖Δh‖` at the edited layer. Every claim anyone cares about is about output. Crossing needs a Lipschitz constant for layers L→end, and dot-product self-attention is reported to lack a global one on an unbounded domain. Is a deterministic behavioural bound therefore unavailable in principle, available on a bounded input domain at a constant too loose to use, or replaceable by a probabilistic certificate from randomized smoothing?
 **Read before designing:** the self-attention Lipschitz literature and the certified-robustness line (interval bound propagation, CROWN, randomized smoothing). `TODO(cite)` throughout — none of it has been read, and T-001's claim that self-attention has no global Lipschitz bound is from memory and unverified.
 **Why it is not the next card:** it is a literature question before it is a measurement, and answering it from memory is exactly how this project has been bitten before.
-**Answer:** —
+
+**Narrowed, 2026-11-09 — and the claim it was built on was too strong.** The Lipschitz result is real and verified from the paper's own abstract: Kim, Papamakarios & Mnih, *The Lipschitz Constant of Self-Attention*, arXiv 2006.04710, ICML 2021 — *"We prove that the standard dot-product self-attention is not Lipschitz for unbounded input domain."* They propose an L2 self-attention that is Lipschitz and bound it.
+
+**The qualification is the whole thing, and T-001 dropped it.** The proof is for an **unbounded** input domain. The abstract says nothing about a bounded one, and a real transformer is arguably in the bounded case — finite vocabulary, finite context, LayerNorm at every block. So the paper does **not** establish that no behavioural bound exists for the models we read. T-001's line "no deterministic behavioural upper bound is available through a transformer" is unsupported as written and must not be repeated.
+
+**What the question becomes:** on a bounded domain a Lipschitz constant exists; is it small enough to carry anything? That is not answered by this paper, and the honest position is that we do not know. Note also that our perturbation enters at an MLP output mid-stack, not at attention's input, so composition is what matters and the paper is a component of the answer rather than the answer.
+
+**Answer:** — (narrowed; the next step is a constant for the bounded case, not another search)
 
 ### T-012 · Is weight-space certification easier than input-space, and has anyone taken that?
 
@@ -140,4 +147,16 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 **Opened:** 2026-11-09
 **Question:** Certified robustness is hard partly because the adversary picks a direction in a ball. A rank-one weight edit perturbs along **one** direction, fixed and known before the edit is applied, with only a scalar varying per input. That is a strictly smaller problem than the one the literature attacks. Either someone has already made the observation for weight edits — in which case it is a citation, not a contribution — or the lane is open.
 **Positioning rule applies:** a wrong "the lane is open" surfaces later when the paper turns up. A wrong "we were scooped" kills the work silently and leaves no evidence it was wrong. Verify before shelving; never shelve on a search snippet.
-**Answer:** —
+
+**Narrowed, 2026-11-09. The broad claim is dead; the narrow one is untouched.** Weight-space certification is an existing field, not an opening:
+
+- Weng, Zhao, Liu, Chen, Lin & Daniel, *Towards Certificated Model Robustness Against Weight Perturbations*, AAAI 2020. Certifies a region in **weight** space within which predictions are unchanged.
+- Tsai, Hsu, Yu & Chen, *Formalizing Generalization and Robustness of Neural Networks to Weight Perturbations*, arXiv 2103.02200, NeurIPS 2021. Pairwise class margin under weight perturbation.
+
+So "nobody certifies weight perturbations" would have been false and is not claimed.
+
+**What is still unrefuted:** the *specific* structure here — a **rank-one** perturbation along **one** direction, fixed and known before the edit is applied, applied to **knowledge-editing locality**. A search for certified or provable locality bounds for ROME returned nothing. **That is not evidence of absence and nothing is being shelved on it.**
+
+**The one thing that must be read before any positioning claim rests on this:** Weng et al.'s threat model — whether the perturbation is an arbitrary direction inside a norm ball, or can be a known fixed one. The project rule is to read the methods, not the prose, because an introduction says what the authors hoped the construction would give. `verified: false` on that entry in `web/data/papers.yml` until then.
+
+**Answer:** — (narrowed; blocked on reading one paper's methods section)

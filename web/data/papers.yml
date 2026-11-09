@@ -835,3 +835,45 @@ haas2017wasm:
   verified: false
   projects: []
   gives_me: A sandbox for small untrusted programs, for scoring code that cannot be data.
+
+kim2021lipschitz:
+  title: The Lipschitz Constant of Self-Attention
+  authors: Kim, H., Papamakarios, G., Mnih, A.
+  year: 2021
+  venue: ICML
+  url: https://arxiv.org/abs/2006.04710
+  status: skimmed
+  relevance: high
+  field: Theory
+  area: Lipschitz bounds and certification
+  verified: true
+  projects: [edit-reach]
+  gives_me: Proves standard dot-product self-attention is not Lipschitz **for unbounded input domain**, and proposes an L2 self-attention that is. The qualification is the whole value — it does not say a bound is unavailable on a bounded domain, which is the case a real transformer is in.
+
+weng2020certificated:
+  title: Towards Certificated Model Robustness Against Weight Perturbations
+  authors: Weng, T.-W., Zhao, P., Liu, S., Chen, P.-Y., Lin, X., Daniel, L.
+  year: 2020
+  venue: AAAI
+  url: https://ojs.aaai.org/index.php/AAAI/article/view/6105
+  status: to-read
+  relevance: high
+  field: Theory
+  area: Lipschitz bounds and certification
+  verified: false
+  projects: [edit-reach]
+  gives_me: Certification against *weight* rather than input perturbations — the nearest prior art to bounding an edit's reach. Entry is from a search result, not the paper; the threat model (arbitrary direction in a ball, or known direction) is exactly what must be read before any positioning claim rests on it.
+
+tsai2021weightperturb:
+  title: Formalizing Generalization and Robustness of Neural Networks to Weight Perturbations
+  authors: Tsai, Y.-L., Hsu, C.-Y., Yu, C.-M., Chen, P.-Y.
+  year: 2021
+  venue: NeurIPS
+  url: https://arxiv.org/abs/2103.02200
+  status: to-read
+  relevance: medium
+  field: Theory
+  area: Lipschitz bounds and certification
+  verified: true
+  projects: [edit-reach]
+  gives_me: Pairwise class margin under weight perturbation. The abstract does not state the perturbation model, so what it certifies is still unread.
