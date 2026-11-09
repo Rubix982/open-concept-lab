@@ -7,7 +7,7 @@ someone happens to count. The same fault, in older entries, is what [O-003] was
 opened for: five tickets that had been finished for over a week and still read
 `open`, and a plan that disagreed with them row for row.
 
-So it is checked rather than remembered. Seven rules, each of which can fail:
+So it is checked rather than remembered. Eight rules, each of which can fail:
 
 1. A thread whose `**Answer:**` says something must not be `open`.
 2. A thread that is `answered` must have an answer.
@@ -16,6 +16,7 @@ So it is checked rather than remembered. Seven rules, each of which can fail:
 5. A ticket's status must be one the lifecycle defines.
 6. A ticket that is `blocked` must say what blocks it.
 7. An id is never reassigned, so no id appears twice.
+8. A ticket that is `parked` must carry a `**Parked:**` date.
 
     python ai/tools/check_record.py [project-root ...]
 
@@ -40,10 +41,13 @@ from pathlib import Path
 #: This file sits in `ai/tools/`, so the projects are its parent's siblings.
 HERE = Path(__file__).resolve().parent
 
-#: The statuses the ticket lifecycle defines. `split` is in the template;
-#: anything else is a status somebody invented mid-run, which reads as
-#: meaningful and is not checked by anything.
-TICKET_STATUSES = {"open", "in-progress", "blocked", "closed", "re-opened", "split"}
+#: The statuses the ticket lifecycle defines. Anything else is a status somebody
+#: invented mid-run, which reads as meaningful and is checked by nothing.
+#: `parked` and `split` were added to the template on 2026-11-09, the first
+#: because R-005 had been describing itself as "deferred" for two months and the
+#: lifecycle had no word for it.
+TICKET_STATUSES = {"open", "in-progress", "blocked", "parked", "closed",
+                   "re-opened", "split"}
 
 #: An answer field that is only this is not an answer. A trailing parenthetical
 #: ("— (resolves through T-010)") is a pointer, not an answer, so the test is
@@ -64,6 +68,23 @@ def entries(text: str, head: re.Pattern[str]) -> list[tuple[str, str]]:
 def field(body: str, key: str) -> str | None:
     m = re.search(rf"^\*\*{key}:\*\*(.*)$", body, re.M)
     return m.group(1) if m else None
+
+
+def filled(body: str, key: str) -> bool:
+    """Does any copy of this field carry something?
+
+    A long ticket often states a field twice -- once beside the result and once
+    in the template block at the foot -- and either copy may be the filled one.
+    Checking the first for text and the last for bullets is the wrong pairing,
+    and it reported E-004 as having no artifacts when it lists six.
+    """
+    for m in re.finditer(rf"^\*\*{key}:\*\*(.*)$", body, re.M):
+        if not EMPTY.match(m.group(1)):
+            return True
+        tail = body[m.end():m.end() + 400]
+        if re.match(r"\s*\n(\s*\n)?- ", tail):
+            return True
+    return False
 
 
 def roots(argv: list[str]) -> list[Path]:
@@ -101,11 +122,8 @@ def check(root: Path) -> list[str]:
             # not an invented status. Read the word, keep the note for the message.
             status = re.split(r"\s*[—–-]\s|\s*\(", raw, maxsplit=1)[0].strip().lower()
             closed = field(body, "Closed")
-            has_closed = closed is not None and not EMPTY.match(closed)
-            arts = field(body, "Artifacts")
-            has_arts = arts is not None and (
-                not EMPTY.match(arts) or "\n- " in body.split("**Artifacts:**")[-1][:400]
-            )
+            has_closed = filled(body, "Closed")
+            has_arts = filled(body, "Artifacts")
             if has_closed and status not in ("closed", "split"):
                 bad.append(f"{who}/{name}: has a Closed date but Status says {status!r}")
             if status == "closed" and not has_closed:
@@ -123,10 +141,19 @@ def check(root: Path) -> list[str]:
             else:
                 seen[name] = who
             if status == "blocked":
+                # Rule 3 takes a ticket id, or -- since 2026-11-09 -- the name of
+                # an external fact with the evidence for it. What it never takes
+                # is "none", which is what E-047 said for three weeks because no
+                # honest form of the field existed.
                 blockers = (field(body, "Blockers") or "").strip()
                 if not blockers or blockers.lower().startswith("none"):
                     bad.append(f"{who}/{name}: blocked, but Blockers says "
                                f"{blockers or 'nothing'!r}")
+            if status == "parked":
+                parked = (field(body, "Parked") or "").strip()
+                if not parked:
+                    bad.append(f"{who}/{name}: parked with no **Parked:** date, "
+                               f"so nothing says when or what resuming needs")
     return bad
 
 

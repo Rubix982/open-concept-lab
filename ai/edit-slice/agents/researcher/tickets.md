@@ -76,11 +76,23 @@ If partially, state the one-sentence differentiator.
 
 ### R-005 · Read 2605.28839 properly — does "suppression" survive their analysis?
 
-**Status:** deferred — parks with the orphan arc
+**Status:** parked
 **Type:** research
 **Priority:** high
 **Created:** 2026-09-10
-**Updated:** 2026-09-10
+**Updated:** 2026-11-09
+**Parked:** 2026-09-12 — parks with the orphan arc, which is itself parked.
+
+**Status corrected 2026-11-09.** This read `deferred — parks with the orphan arc` for two
+months. `deferred` was never a status the lifecycle defined, so nothing could check it and
+nothing did. `parked` was added to the template the same day, for this ticket: the work is
+not prevented, it was chosen against, and it must stay resumable.
+
+**To resume cold:** read arXiv 2605.28839 and ask whether the suppression mechanism
+survives their analysis. `design.md` §2a rests on that paper's **abstract**, which is the
+thing this ticket exists to repair. Priority still reads `high` and that is now the
+question worth putting to Saif — a high-priority ticket parked for two months is either
+mis-prioritised or mis-parked, and the record cannot tell which.
 
 **Description:**
 design.md §2a rests entirely on the abstract of "One Mask to Rule Them All: On

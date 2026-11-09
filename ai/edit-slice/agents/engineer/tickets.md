@@ -223,7 +223,7 @@ concerns whether grounds exist to be orphaned at all.
 
 **Artifacts:** probes/ground_templates.md; agents/engineer/workspace/;
 agents/shared/findings.md
-**Closed:** —
+**Closed:** 2026-09-10. Joint possession 69% (61/89), above the ~50% collapse threshold, so the pilot has a pool. *Date added 2026-11-09, recovered from the commit that wrote this ticket; `Created` and `Updated` agree and `Spent` is ~2h. The ticket states two `**Artifacts:**` blocks and two closure states — the result sits beside the first and the template stub at the foot was never filled.*
 
 ---
 
@@ -4069,7 +4069,22 @@ prescribes, and one arm passes, which is what rules out our setup.
 to completion after the upgrade, and [E-048] was opened and run tonight on cached
 top-k alone.
 
-**Blockers:** none.
+**Blockers:** **nnsight 0.8.1's backward behaviour.** `backward()` became a context
+manager and `.grad` is only populated inside it; six variants were tried by reading each
+error rather than guessing, and the cause was found 2026-10-25. The evidence is
+`agents/engineer/workspace/nnsight081_backward_repro.py` — two arms, one served and one
+refused with the same error every time, carrying no project code beyond the connection.
+A second engineer can run it and see the same thing without asking.
+
+*Form added to Discipline rule 3 on 2026-11-09.* This field read `none.` for three weeks
+while the status read `blocked`, and the reason was not carelessness: the rule took a
+ticket id and nothing else, so there was no honest way to write an external blocker. The
+lifecycle already said blocked means *"waiting on another ticket **or external input**"* —
+the two halves of the template disagreed, and the field took the loss.
+
+**The reproducer has not been sent anywhere.** Ready since **2026-10-25**; as of
+2026-11-09 that is **15 days**. Sending it outward is Saif's call and remains open; the
+wait is recorded here so it cannot quietly age.
 
 **Artifacts:**
 - agents/engineer/workspace/run_e047.py
