@@ -13,7 +13,7 @@ toc_max_heading_level: 3
   version="v0.3"
   title="A cheap pre-edit estimate of an edit's reach detects contamination, not propagation"
   author="Saif Ul Islam"
-  affiliation={<>Open Concept Lab · Karachi</>}
+  affiliation="Open Concept Lab"
   started="30 Sep 2026"
   updated="9 Nov 2026"
   buildsOn={<a href="/notebook/edit-slice/">edit-slice</a>}
@@ -21,13 +21,11 @@ toc_max_heading_level: 3
 
 <Abstract keywords={["model editing", "ROME", "knowledge propagation", "benchmark contamination", "negative result"]}>
 
-A rank-one weight edit, as ROME applies it <Cite id="meng2022rome" />, divides its update by a fixed inner product. The fraction of that update arriving at any token is therefore computable in one forward pass through the *unedited* model — before the edit exists, and for any prompt rather than for a list written in advance. This paper asks whether that quantity can screen an evaluation item before the item is run, and finds that it cannot, for a reason worth stating precisely.
+A rank-one weight edit divides its update by a fixed inner product, so the fraction of it arriving at any token can be computed in one forward pass through the *unedited* model — for any prompt, before the edit exists. We ask whether that quantity can screen an evaluation item before the item is run.
 
-The quantity is exactly 1 wherever the prompt opens with the edited subject. That is a derivation rather than a fit; its premise — prefix sharing under causal attention — holds on four models from 6B to 405B.<Prov id="E-018" /> It is blind where propagation lives: for questions that never name the edited subject, an edit on a *stranger* sharing the question's relation reaches the question as much as the real subject's edit does, excess **+0.0002** against **+0.8439** for the same control in the other regime.<Prov id="E-004" /> The quantity is a contamination detector — it reports that an item names the edited subject, not that an edit travelled. One published benchmark <Cite id="cohen2024ripple" /> has items that fail on exactly that ground, receiving a median 0.982 of an update they were built to test the propagation of.
+It cannot. It is pinned to 1 wherever the prompt names the edited subject, and flat where the question never names it — which is where propagation lives. The same control separates the two regimes by **+0.8439** and by **+0.0002**. What the quantity does detect is contamination, and one published benchmark <Cite id="cohen2024ripple" /> has items that fail on exactly that ground.
 
-Two further results come out of the same probe set. Changing *whose* key an edit touches is worth about **sixty-five times** more than changing *what the edit says*; and the two halves of a rank-one update separate — it **breaks** the pre-edit answer because it touched that subject's key, and **supplies** the new answer because of what it said, in opposite directions on the same probes.
-
-This is reported as a negative result with working controls. §6 records what those controls cost to get right, including one floor this project built, believed, and had to retire.
+Two further results came off the same probe set. Identity is worth about **sixty-five times** content, which is why there was little for any measure to predict; and the two halves of an edit — breaking the old answer and supplying the new one — separate in opposite directions on the same probes.
 
 </Abstract>
 

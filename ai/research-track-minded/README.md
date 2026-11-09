@@ -1,8 +1,19 @@
 # research-track-minded
 
-A Claude skill for research writing. The source lives here; the installed copy is a
-symlink at `~/.claude/skills/research-writing`, so **editing this repo updates the
-skill immediately** — there is no reinstall step.
+Two Claude skills for research work. The source lives here; the installed copies are
+symlinks under `~/.claude/skills/`, so **editing this repo updates the skills
+immediately** — there is no reinstall step.
+
+| Skill | Owns | Fires when |
+| --- | --- | --- |
+| `research-writing` | whether the claims could be wrong | drafting or revising anything that states a finding |
+| `research-legibility` | whether a stranger can read them | before the work is published, submitted or shown to anyone outside the project |
+
+They are deliberately separate, and a live pass on 9 November 2026 is why: on two
+pages, the word-level lint scored 0.0 per 10k and the claim audit found zero
+unfalsifiable claims, while the same pages carried forty-odd internal identifiers in
+running prose and six terms of art that were never defined. **The checks that catch bad
+claims do not catch an unreadable page.**
 
 ---
 

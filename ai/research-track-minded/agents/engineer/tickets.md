@@ -365,3 +365,41 @@ the pass was giving destructive advice on a genre the frontmatter lists, verifie
 against `five-days.mdx` rather than taken on report. Defect 3 taken conservatively —
 hit counts recorded, list **not** reordered, since n=3. `SKILL.md` 171 → 190 lines and
 that growth is not compensated; the genre rule earns it and the file is now due a cut.
+
+---
+
+### E-008 · A second skill: legibility, which the first one does not own
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 2h
+**Spent:** 2h
+
+**Description:**
+Saif, after a legibility pass over two published pages: "Mei chahta hoon ... aesa skill jo going forwards hum har research project mei use karpai ... mere liye bauhat important hai how accessible my research work is to readers and audiences."
+
+The pass that fixed those pages is not `research-writing`'s. It is a different defect with a different cause, and it has now been measured.
+
+**Blockers:** —
+
+**Artifacts:**
+- skill/research-legibility/SKILL.md
+- skill/research-legibility/references/classes.md
+- skill/research-legibility/scripts/census.py
+- ~/.claude/skills/research-legibility → symlink
+- README.md — the two skills and what each owns
+
+**Closed:** 2026-11-09.
+
+**The measurement that justifies a second skill rather than a section in the first.** On two pages of edit-reach, the word-level lint scored **0.0 per 10k before and after** revision, and the claim audit found **zero** unfalsifiable claims — as it has on every run since this project started. The same two pages carried **forty-odd internal identifiers in running prose**, **six terms of art holding up two tables and a chart with no definition anywhere**, and a central term whose first appearance was a section heading. Both existing checks pass on an unreadable page. That is the gap, and it is now a number rather than an impression.
+
+**The instrument is a census, not a reading.** `scripts/census.py` lists every identifier, backticked term and bolded phrase with the line where it is first *used*; the writer supplies the line where it is first *defined*. Every blank is a defect and the count is the finding. It deliberately does not try to detect definitions — a definition is a sentence a human recognises, not a pattern — so the script stops exactly where pattern matching stops being honest.
+
+**Three classes, three fixes, and conflating them is the usual error.** Terms of art take the words-before-symbols ladder, which `research-writing` owns and this skill points at rather than restates. Identifiers leave the prose entirely and survive only as pointers, with one sentence saying what they point at. Process nouns — card, thread, ledger — leave the argument altogether and live on the state-of-the-work page, followed by a line telling the reader they can be ignored. **Writing that line is the test:** if it cannot be written truthfully, the argument is still leaning on the vocabulary.
+
+**One finding came out of building it rather than out of using it.** The first run of the census reported `M300`, `H820`, `V252` as identifiers — SVG path commands. Requiring a separator in the pattern and skipping the innards of a figure fixed it, and the docstring now records why the separator is mandatory, because the obvious loosening reintroduces the bug.
+
+**What this ticket did not foresee:** that the coinage class would be irreducibly noisy. Emphasis and a term of art are typographically identical, so the script cannot separate them. It now labels that class as noisy in its own output rather than pretending to a precision it does not have.

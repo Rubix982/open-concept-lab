@@ -1,5 +1,16 @@
 # Changelog
 
+
+## 2026-11-09 · Session — a second skill
+
+- [E-008] `research-legibility` — the pass that catches an unreadable page, which the
+  claim audit and the lint both score clean. Source in `skill/research-legibility/`,
+  installed by symlink, documented in `README.md`.
+
+Justified by measurement rather than by taste: on two pages, lint 0.0 per 10k before
+and after, zero unfalsifiable claims found, and forty-odd internal identifiers in
+running prose with six terms of art never defined.
+
 ## 2026-09-18 · Session 1
 
 - [O-001] Initialize project structure; scope split four ways — `plan.md`
