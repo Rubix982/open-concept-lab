@@ -78,6 +78,6 @@ Three things are carried forward. None of them blocks anything, and none of them
 
    The other four are not next. T-002 is gated on reading KnowledgeSmith, which already tested out-degree and may close it for free. T-003 and T-004 are positioning and a cross-project observation, neither of which closes with a number. T-009 has mostly dissolved — [E-012] found the quantity discrete rather than drifting — and its own field 6 says so: 2.2e-04 sits below every tolerance here and the anchor gate is immune by construction. It continues as a daily reading, not as a card.
 
-3. **Five threads are open** — T-001, T-002, T-003, T-004 and T-009 — and they are the resume point, not a menu to browse during a card.
+3. **Eight threads are open** — T-001, T-002, T-003, T-004, T-009, and T-010 to T-012 from the dry-run on T-001 — and they are the resume point, not a menu to browse during a card.
 
 **One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.

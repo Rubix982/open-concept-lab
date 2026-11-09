@@ -10,7 +10,22 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 **Parent:** —
 **Opened:** 2026-10-31
 **Question:** A benchmark bounds damage from below — it finds what it contains. A computable per-prompt quantity removes the enumeration problem, but it is still evaluated on prompts we happen to have. Is there a construction that bounds reach above (a statement of the form "nothing outside this set receives more than c"), or is an upper bound structurally unavailable, in which case that should be stated once and loudly rather than implied away?
-**Answer:** —
+
+**Reframed, not answered — Premise Dry-Run, 2026-11-09.** The question assumed the upper bound is the hard direction. In activation space it is the easy one, and it is free.
+
+The edit adds `δ · c(k)` at the edited layer, where `δ = v* − Wk*` is **fixed** and only the scalar `c(k) = (k*ᵀC⁻¹k)/(k*ᵀC⁻¹k*)` varies with the token. That is a ratio of inner products under the PSD form `C⁻¹`, so Cauchy–Schwarz in that geometry gives, for **every** prompt, with no enumeration and no forward pass through the edited model:
+
+    |c(k)| ≤ ‖k‖_{C⁻¹} / ‖k*‖_{C⁻¹},   with equality exactly when k ∥ k*.
+
+So a universal upper bound exists and is one line. Three things follow, and the second is the one that matters.
+
+1. **It may be vacuous.** `C` is the second moment of keys, so `E[‖k‖²_{C⁻¹}] = tr(C⁻¹C) = d`: a typical token has `‖k‖_{C⁻¹} ≈ √d`. If `k*` is also typical the bound reads ≈ 1 — the anchor value — so it permits every token to behave like the anchor and forbids nothing. Whether that is what happens is measurable on data already on disk. Spawned **T-010**.
+2. **The real obstruction is downstream, and it is not ours.** A bound on `‖Δh‖` at one layer says nothing about logits without a Lipschitz constant for the rest of the network, and dot-product self-attention is reported to have no global Lipschitz bound on an unbounded domain. If that holds, no *deterministic* behavioural upper bound is available through a transformer — a statement about transformers rather than about editing, which is sharper and more defensible than "an upper bound is unavailable". Spawned **T-011**. `TODO(cite)`: that Lipschitz result is from memory and must be read before it is repeated anywhere.
+3. **This is certified robustness under another name**, and ours is the easy case. The literature certifies against an adversary free to pick any direction in a ball. A rank-one edit has one direction, chosen in advance and known before the edit is applied. Spawned **T-012**.
+
+**What the reframe breaks.** The paper's *"we can say which facts an edit touches, not how hard"* is imprecise under this frame: how hard **is** boundable in activation space. What cannot be done is converting that to behaviour. The sentence should say which of the two it means.
+
+**Answer:** — (resolves through T-010 and T-011)
 
 ### T-002 · Is subject-string frequency the operative variable, not dependent count?
 
@@ -97,3 +112,32 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 
 **What is still open:** how many replicas exist. Two of the four values were recorded before the device was being captured and cannot be attributed now. **What would reopen the original question:** a device-matched pair of readings that differs. One such observation restores a time component. The daily reading continues for that reason and no longer for the original one.
 
+
+### T-010 · How loose is the Cauchy–Schwarz bound on the coefficient, in each regime?
+
+**Status:** open
+**Parent:** T-001
+**Opened:** 2026-11-09
+**Question:** `|c(k)| ≤ ‖k‖_{C⁻¹}/‖k*‖_{C⁻¹}` holds for every prompt. A bound that is never approached forbids nothing. Measure the looseness ratio `bound/|actual|` per prompt, in the near field (prompts naming the edited subject, `c` 0.93–1.000) and the far field (prompts that never name it, floor 0.082), on the probe sets already on disk.
+**Falsifier, and both branches carry a consequence:** if the ratio stays within about an order of magnitude in both regimes, the screen carries a usable upper bound — a positive result this project does not currently have. If it is loose by orders in the far field, the bound is real and vacuous exactly where propagation lives, which is the contamination-detector finding arriving a second time by a different route and worth reporting as such.
+**Cost:** no edits, no gradients, no new reads. `C` and `k*` are cached and `k` is already recorded per probe.
+**Answer:** —
+
+### T-011 · Can an activation-space bound cross into a behavioural one through a transformer?
+
+**Status:** open
+**Parent:** T-001
+**Opened:** 2026-11-09
+**Question:** T-001's bound is on `‖Δh‖` at the edited layer. Every claim anyone cares about is about output. Crossing needs a Lipschitz constant for layers L→end, and dot-product self-attention is reported to lack a global one on an unbounded domain. Is a deterministic behavioural bound therefore unavailable in principle, available on a bounded input domain at a constant too loose to use, or replaceable by a probabilistic certificate from randomized smoothing?
+**Read before designing:** the self-attention Lipschitz literature and the certified-robustness line (interval bound propagation, CROWN, randomized smoothing). `TODO(cite)` throughout — none of it has been read, and T-001's claim that self-attention has no global Lipschitz bound is from memory and unverified.
+**Why it is not the next card:** it is a literature question before it is a measurement, and answering it from memory is exactly how this project has been bitten before.
+**Answer:** —
+
+### T-012 · Is weight-space certification easier than input-space, and has anyone taken that?
+
+**Status:** open
+**Parent:** T-001
+**Opened:** 2026-11-09
+**Question:** Certified robustness is hard partly because the adversary picks a direction in a ball. A rank-one weight edit perturbs along **one** direction, fixed and known before the edit is applied, with only a scalar varying per input. That is a strictly smaller problem than the one the literature attacks. Either someone has already made the observation for weight edits — in which case it is a citation, not a contribution — or the lane is open.
+**Positioning rule applies:** a wrong "the lane is open" surfaces later when the paper turns up. A wrong "we were scooped" kills the work silently and leaves no evidence it was wrong. Verify before shelving; never shelve on a search snippet.
+**Answer:** —
