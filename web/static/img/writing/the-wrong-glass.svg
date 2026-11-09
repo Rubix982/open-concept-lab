@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" role="img" aria-label="The same scene twice. On the left, what is there: three shapes at different distances, the nearest one solid and close, and a line of writing underneath that can be read. On the right, the same scene seen through a glass: everything is faint, the nearest shape is the faintest of all, and the same line of writing has become strokes with no words in them.">
+  <style type="text/css"><![CDATA[
+    /* The page has a light and a dark theme, and an image element cannot
+       inherit the page's custom properties — it is a separate document. Its own
+       stylesheet is honoured though. Every var() keeps its light value as a
+       fallback, so a converter that does not read :root still renders what a
+       reader sees. */
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="31"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="13"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <filter id="haze" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.4"/>
+    </filter>
+  </defs>
+
+  <rect width="900" height="430" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="430" filter="url(#grain)"/>
+
+  <!-- ─────────── left: what is there ─────────── -->
+  <text x="48" y="48" font-family="Georgia, serif" font-size="13" letter-spacing="1.3" fill="var(--sage, #4a6f55)">WHAT IS ACTUALLY THERE</text>
+
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- far -->
+    <rect x="300" y="110" width="52" height="40" rx="3" stroke="var(--faint, #6b6863)" stroke-width="1.4" opacity="0.7"/>
+    <!-- middle -->
+    <rect x="200" y="144" width="78" height="62" rx="3" stroke="var(--ink, #2b2a28)" stroke-width="1.8" opacity="0.85"/>
+    <!-- near, the one in front of you -->
+    <rect x="48" y="166" width="126" height="108" rx="4" fill="var(--raised, #fffdf8)" stroke="var(--indigo, #4338a8)" stroke-width="2.8"/>
+  </g>
+  <text x="58" y="226" font-family="Georgia, serif" font-size="13.5" fill="var(--indigo, #4338a8)">the thing in</text>
+  <text x="58" y="246" font-family="Georgia, serif" font-size="13.5" fill="var(--indigo, #4338a8)">front of you</text>
+
+  <!-- the line you can read -->
+  <path d="M48 312 H352" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.35" fill="none"/>
+  <text x="48" y="338" font-family="Georgia, serif" font-size="14.5" fill="var(--ink, #2b2a28)">and the words to say what</text>
+  <text x="48" y="360" font-family="Georgia, serif" font-size="14.5" fill="var(--ink, #2b2a28)">you have buried are right here</text>
+
+  <!-- ─────────── divider ─────────── -->
+  <path d="M450 40 V390" stroke="var(--faint, #6b6863)" stroke-width="1.2" stroke-dasharray="3 9" opacity="0.5" fill="none"/>
+
+  <!-- ─────────── right: through the glass ─────────── -->
+  <text x="548" y="48" font-family="Georgia, serif" font-size="13" letter-spacing="1.3" fill="var(--oxide, #a4442f)">THROUGH THE WRONG GLASS</text>
+
+  <g filter="url(#haze)">
+    <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="800" y="110" width="52" height="40" rx="3" stroke="var(--faint, #6b6863)" stroke-width="1.4" opacity="0.4"/>
+      <rect x="700" y="144" width="78" height="62" rx="3" stroke="var(--ink, #2b2a28)" stroke-width="1.6" opacity="0.28"/>
+      <rect x="548" y="166" width="126" height="108" rx="4" stroke="var(--indigo, #4338a8)" stroke-width="2" opacity="0.1"/>
+    </g>
+    <text x="558" y="226" font-family="Georgia, serif" font-size="13.5" fill="var(--indigo, #4338a8)" opacity="0.12">the thing in</text>
+    <text x="558" y="246" font-family="Georgia, serif" font-size="13.5" fill="var(--indigo, #4338a8)" opacity="0.12">front of you</text>
+  </g>
+
+  <!-- the glass itself, sitting over the scene -->
+  <g filter="url(#rough)" fill="none">
+    <circle cx="640" cy="200" r="126" stroke="var(--oxide, #a4442f)" stroke-width="2" opacity="0.55"/>
+    <circle cx="640" cy="200" r="126" fill="var(--paper, #f4f1ea)" opacity="0.28"/>
+  </g>
+  <text x="548" y="298" font-family="Georgia, serif" font-size="12.5" font-style="italic" fill="var(--oxide, #a4442f)">the nearest thing is the faintest</text>
+
+  <!-- the line you can no longer read: strokes with no words in them -->
+  <path d="M548 312 H852" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.35" fill="none"/>
+  <g filter="url(#rough)" stroke="var(--ink, #2b2a28)" stroke-width="3.6" stroke-linecap="round" opacity="0.42">
+    <path d="M548 333 H596"/><path d="M606 333 H640"/><path d="M650 333 H712"/><path d="M722 333 H754"/>
+    <path d="M548 355 H592"/><path d="M602 355 H668"/><path d="M678 355 H706"/><path d="M716 355 H788"/>
+  </g>
+
+  <text x="48" y="404" font-family="Georgia, serif" font-size="12.5" font-style="italic" fill="var(--faint, #6b6863)">Nothing in the scene changed. The glass did — and it took the words with it, so what is buried stays buried.</text>
+</svg>

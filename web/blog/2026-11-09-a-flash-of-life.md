@@ -30,6 +30,14 @@ Because what I carry changes what I see, and it does it quietly. Something unres
 
 And then -- this is the part that gets me -- it takes the language too. You cannot go over what is buried inside and say it properly, because the words for it are behind the same fog. So the thing stays buried, and stays heavy, and keeps dimming the glass. That is the whole loop, and it runs on its own.
 
+<Figure
+  src="/img/writing/the-wrong-glass.svg"
+  alt="The same scene twice. On the left, three shapes at different distances, the nearest one solid and close, and a line of writing underneath that can be read. On the right, the same scene through a glass: everything faint, the nearest shape faintest of all, and the same line of writing reduced to strokes with no words in them."
+  caption="Nothing in the scene changes. The glass does."
+  wide
+  plain
+/>
+
 Which is why I think the decision has to come first, before anything else in the day. Before the work, before the list. Let things unwind as they will. Do not let stress narrow the world down to less than what is actually there, because what is actually there is usually more than enough, and most of what I ever needed was standing in front of me while I was looking through the wrong glass.
 
 ---
