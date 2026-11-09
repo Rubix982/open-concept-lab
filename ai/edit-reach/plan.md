@@ -34,6 +34,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-018 | Documentor | Written for the people who already knew | closed |
 | D-019 | Documentor | The fault that kept coming back in different clothes | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
+| O-003 | Orchestrator | The ticket files and the plan disagreed about what was finished | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
 ## Blocked
@@ -43,6 +44,8 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- O-003 · The ticket files and `plan.md` disagreed about what was finished. All six disputed tickets were checked against their own Done-when and all six were finished; the stale `**Status:**` lines are corrected. D-004's `###` heading had been lost inside D-019's closing notes, which is why a count by heading and a count by status disagreed by one.
+- D-019 · `web/blog/2026-11-09-three-checks-that-could-not-have-failed.md` — three conformance checks that could not have failed, and the count verified down from five to three.
 - D-018 · A legibility pass with the research-writing skill: everything named in English before it takes a symbol, the six probe families defined from the probe file, and ticket identifiers out of the prose.
 - D-017 · The overview rebuilt as the state of the work: the chain of four questions, six cards, eight threads, a figures row, and what is still missing.
 - D-016 · `ocl-abstract` was already edit-slice/review's class. The paper component had been inheriting its panel and silently restyling that page.
@@ -63,9 +66,16 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Next Orchestrator Action
 
-Run the documentation effort, D-001 first. The project's question has an answer; what it does not have is a reader. Every number the six tickets need is already measured and recorded, so none of them opens a card and none of them runs anything.
+**Nothing is open.** Thirty-two tickets closed, one split, none open, across all four agents — and as of O-003 the ticket files say that too, which they did not before. The question has an answer, the answer is written up, and both the page and the PDF are built from the same source.
 
-Two things carried forward, neither of which blocks the writing.
+Three things are carried forward. None of them blocks anything, and none of them is a ticket yet.
 
-1. **Tell Natalie and Arnab.** Email 3 said "until I show the estimate predicts measured behaviour, a screen built on it is a proposal, not an instrument." The hedge held; what is owed now is the number, not a retraction. The direct-exposure critique itself is untouched, and saying both plainly is the whole message.
-2. **Decide which card opens next.** The honest candidates are T-005 (is the coefficient blind in the far field, where propagation lives) and the post-hoc reading recorded in [E-001] — that subject-keyed movement may be the phenomenon rather than the confound. The second must not be worked on as a rescue of C-001; it needs its own six fields, written before any data is looked at again.
+1. **Tell Natalie and Arnab.** Email 3 said *"until I show the estimate predicts measured behaviour, a screen built on it is a proposal, not an instrument."* The hedge held. What is owed now is the number — raw 0.522, excess 0.085 with an interval straddling zero — not a retraction. The direct-exposure critique is untouched. Email 1 has been unanswered since 2026-10-31, so 2 and 3 stay queued.
+
+2. **Decide which card opens next.** Two honest candidates, and only one card opens.
+   - **T-005** — is the coefficient blind in the far field, where propagation actually lives? This closes the scope claim: *contamination detector, not propagation detector*, a sentence currently written nowhere.
+   - **The post-hoc reading in [E-001]** — subject-keyed movement may be the phenomenon rather than the confound. [E-002] has since established it on a pre-stated test, so it may now be used. It must not be worked as a rescue of C-001; it needs its own six fields, written before any data is looked at again.
+
+3. **Five threads are open** — T-001, T-002, T-003, T-004 and T-009 — and they are the resume point, not a menu to browse during a card.
+
+**One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.

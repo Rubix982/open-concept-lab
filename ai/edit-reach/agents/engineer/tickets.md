@@ -2,7 +2,7 @@
 
 ### E-001 · Predicted-vs-measured run for C-001
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-31
@@ -49,9 +49,9 @@ Produce the one number C-001 asks for: the rank correlation between an edit's **
 
 **RCA:** —
 
-**Artifacts:** — (fill on close)
+**Artifacts:** `results/E-001-predicted-vs-measured.json`; `agents/engineer/workspace/run_e001.py`; `tools/dryruns/dryrun_e001.py`; `probes/generated.json`; `agents/shared/decisions.md` → "[E-001] Result: the coefficient predicts that a probe is edit-sensitive, not that an edit reaches it"; `CARD.md` → C-001, denied.
 
-**Closed:** —
+**Closed:** 2026-10-31. Anchor gate passed on all 42 anchor-prefix items, worst deviation exactly 0.0. Raw Spearman 0.522 (95% CI 0.450–0.587) over 495 items; with the same-subject control movement removed the excess falls to 0.085 (95% CI −0.003–0.172), an interval straddling zero. C-001 closed denied on its own pre-stated branches. *Status line corrected 2026-11-09: the work finished on 2026-10-31 and `plan.md` recorded it closed, but this ticket was never marked.*
 
 
 **Progress, 2026-10-31.**
@@ -316,7 +316,7 @@ nnsight 0.8.1 deprecates `LanguageModel`. Every number in this repo and in edit-
 
 ### E-007 · NDIF reproducibility reference and conformance suite
 
-**Status:** in-progress
+**Status:** closed
 **Type:** document
 **Priority:** high
 **Created:** 2026-11-03

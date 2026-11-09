@@ -13,7 +13,7 @@ Source of every number: `agents/shared/decisions.md` [E-001]–[E-013], `results
 
 ### D-001 · Notebook section for edit-reach, and the scope statement
 
-**Status:** open
+**Status:** closed
 **Type:** document
 **Priority:** high
 **Created:** 2026-11-08
@@ -55,7 +55,7 @@ One `<Claim>` block at the top, `superseded` = the proposal that the coefficient
 
 ### D-002 · The four diagrams
 
-**Status:** open
+**Status:** closed
 **Type:** document
 **Priority:** high
 **Created:** 2026-11-08
@@ -201,7 +201,9 @@ All three were fixed by naming the degenerate case and none by moving a number, 
 
 **One typo survived to the build:** *withdrawed*. The lint does not catch spelling and is not meant to; recorded because the next person will assume a clean lint means a clean page.
 
-**Status:** open
+### D-004 · The paper: structure and skeleton, every number in place
+
+**Status:** closed
 **Type:** document
 **Priority:** medium
 **Created:** 2026-11-08
@@ -244,7 +246,7 @@ Three things the ticket did not anticipate.
 
 ### D-005 · The paper: prose
 
-**Status:** open
+**Status:** closed
 **Type:** document
 **Priority:** low
 **Created:** 2026-11-08
