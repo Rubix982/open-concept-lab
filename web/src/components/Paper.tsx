@@ -616,7 +616,7 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
   return (
     <>
       <header className="ocl-paperhead">
-        {e.log ? <PaperSwitch here="paper" /> : null}
+        {e.log ? <PaperSwitch /> : null}
         {stamp ? <div className="ocl-paperhead__id">{stamp}</div> : null}
         <h1 className="ocl-paperhead__title">{title}</h1>
         {e.author ? <div className="ocl-paperhead__author">{e.author}</div> : null}

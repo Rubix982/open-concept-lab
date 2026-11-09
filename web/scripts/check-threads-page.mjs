@@ -30,15 +30,19 @@ const fail = (msg) => {
 
 let checked = 0;
 for (const project of readdirSync(notebook)) {
-  const page = path.join(notebook, project, "threads.md");
+  const page = path.join(notebook, project, "_threads.mdx");
   if (!existsSync(page)) continue;
   checked += 1;
 
-  const text = readFileSync(page, "utf8");
-  const declared = /^source_digest:\s*([0-9a-f]+)\s*$/m.exec(text)?.[1];
+  // The partial carries no front matter, so its digest lives beside it in
+  // data/record.yml -- which the rail reads too, so one file cannot go stale
+  // while the other does not.
+  const rec = readFileSync(path.join(web, "data", "record.yml"), "utf8");
+  const block = new RegExp(`^${project}:\\n(?:  .*\\n)*`, "m").exec(rec)?.[0] ?? "";
+  const declared = /^\s*digest:\s*([0-9a-f]+)\s*$/m.exec(block)?.[1];
   if (!declared) {
     fail(
-      `notebook/${project}/threads.md has no source_digest.\n` +
+      `data/record.yml has no digest for ${project}.\n` +
         `    Regenerate it:  python3 ai/tools/build_threads_page.py ${project}`,
     );
   }

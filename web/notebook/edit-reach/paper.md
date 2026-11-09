@@ -33,6 +33,9 @@ paper:
     - A universal upper bound on an edit's reach, derived in one line and shown to be vacuous where propagation lives - its median far-field value permits a question that never names the edited subject to receive more than one that does.
     - "A second class of candidate eliminated for what sets the magnitude: no property of the edited subject predicts it either, to within the effect 41 subjects can resolve."
 ---
+
+import ThreadsBody from "./_threads.mdx";
+
 <Paper>
 
 A rank-one weight edit divides its update by a fixed inner product, so the fraction of it arriving at any token can be computed in one forward pass through the *unedited* model — for any prompt, before the edit exists. We ask whether that quantity can screen an evaluation item before the item is run.
@@ -787,3 +790,7 @@ What a short venue note needs, against what exists today. This is a checklist fo
   <Check need="Breadth across depth" where="§8.1">One layer. A sweep on the cached subjects is the cheapest fix</Check>
   <Check need="A delivery-to-effect link" where="§7.1">Blocked on the backward pass; 42 survivors, not a sample</Check>
 </Readiness>
+
+<ThreadsPanel>
+  <ThreadsBody />
+</ThreadsPanel>

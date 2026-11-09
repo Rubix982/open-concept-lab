@@ -1,51 +1,72 @@
-import Link from "@docusaurus/Link";
-import { useDoc } from "@docusaurus/plugin-content-docs/client";
 import clsx from "clsx";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 /**
- * The switch between a paper and the log of how it was reached.
+ * Paper and Threads as two views of one document.
  *
- * `ai/CLAUDE.md` forbids process vocabulary -- card, thread, ticket, run --
- * from entering an argument, because it describes how work was organised and
- * not what it found. That leaves the history homeless: a reader cannot see
- * which questions were opened, in what order, or which came back the other
- * way. This gives it a page of its own beside the paper, reachable in one
- * click and ignorable in none.
+ * An earlier pass made these two routes and a link between them, which meant
+ * leaving the page and loading another on every click. They are not two pages.
+ * They are the same work seen twice -- what was found, and what was asked on
+ * the way -- so switching should replace the body and nothing else.
  *
- * Rendered on both pages so the pair reads as one object with two faces.
+ * The state lives in a `data-view` attribute on the article, and CSS does the
+ * hiding. That is a deliberate choice rather than a shortcut: the paper's body
+ * is raw MDX between the header and the panel, with no React ancestor either
+ * component owns, so holding this in component state would mean swizzling the
+ * doc layout to install a provider around markup neither view controls. A view
+ * flag on the element both views already live inside is the smaller thing.
  */
-export function PaperSwitch({ here }: { here: "paper" | "threads" }): ReactNode {
-  const { metadata } = useDoc();
-  const project = metadata.id.split("/")[0];
-  /* `<Link>`, not `<a>`: a raw anchor leaves the app and reloads the whole
-     document, which is what made switching feel like opening a new page.
-     Docusaurus `to` also carries the base path, so useBaseUrl is not needed. */
+function useView(): ["paper" | "threads", (v: "paper" | "threads") => void] {
+  const [view, setView] = useState<"paper" | "threads">("paper");
+  const host = useRef<HTMLElement | null>(null);
+
+  const set = useCallback((v: "paper" | "threads") => {
+    setView(v);
+    const article = host.current?.closest(".markdown");
+    if (article instanceof HTMLElement) {
+      article.dataset.view = v;
+      // The header stays put, so scrolling to the top of the body is what a
+      // reader means by "switch" when they are halfway down a long paper.
+      article.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = document.querySelector(".ocl-paperswitch");
+    host.current = el instanceof HTMLElement ? el : null;
+    const article = host.current?.closest(".markdown");
+    if (article instanceof HTMLElement && !article.dataset.view) {
+      article.dataset.view = "paper";
+    }
+  }, []);
+
+  return [view, set];
+}
+
+export function PaperSwitch(): ReactNode {
+  const [view, set] = useView();
   return (
     <nav className="ocl-paperswitch" aria-label="Paper or threads">
-      <Link to={`/notebook/${project}/paper`}
-            className={clsx({ "is-here": here === "paper" })}
-            aria-current={here === "paper" ? "page" : undefined}>Paper</Link>
-      <Link to={`/notebook/${project}/threads`}
-            className={clsx({ "is-here": here === "threads" })}
-            aria-current={here === "threads" ? "page" : undefined}>Threads</Link>
+      <button type="button" onClick={() => set("paper")}
+              className={clsx({ "is-here": view === "paper" })}
+              aria-pressed={view === "paper"}>Paper</button>
+      <button type="button" onClick={() => set("threads")}
+              className={clsx({ "is-here": view === "threads" })}
+              aria-pressed={view === "threads"}>Threads</button>
     </nav>
   );
 }
 
 /**
- * The lab log's own header.
- *
- * Deliberately NOT `<Paper>`: paper mode is selected by `.ocl-paperhead` being
- * a direct child of `.markdown`, and a log read in two justified columns is a
- * worse log. It takes the switch and a plain title instead.
+ * The threads view's container. Lives at the foot of the paper's own file and
+ * is shown only when the switch selects it.
  */
-export default function LabLogHead({ of }: { of: string }): ReactNode {
+export default function ThreadsPanel({ children }: { children: ReactNode }): ReactNode {
   return (
-    <header className="ocl-loghead">
-      <PaperSwitch here="threads" />
-      <div className="ocl-loghead__id">THREADS · {of}</div>
-      <h1 className="ocl-loghead__title">How this paper was reached</h1>
-    </header>
+    <section className="ocl-threadspanel" aria-label="Threads">
+      <div className="ocl-threadspanel__id">THREADS — how this paper was reached</div>
+      {children}
+    </section>
   );
 }

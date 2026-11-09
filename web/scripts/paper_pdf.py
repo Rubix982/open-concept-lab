@@ -382,6 +382,13 @@ def latex_escape(s: str) -> str:
 
 
 def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
+    # The threads view is a second view of this document, not a part of it: the
+    # PDF is the argument, and how the argument was reached stays on the site.
+    # Dropped before anything else, so its tables never reach the converter.
+    body = re.sub(r'^import\s+\w+\s+from\s+"\./_threads\.mdx";\s*$\n?', "",
+                  body, flags=re.M)
+    body = re.sub(r"<ThreadsPanel>.*?</ThreadsPanel>\s*", "", body, flags=re.S)
+
     # Figures first: they contain everything else.
     figs = {"n": 0}
     spans = split_figures(body)

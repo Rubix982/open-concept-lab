@@ -9805,3 +9805,70 @@ a:hover > .ocl-home__featureCover {
   font-size: 1.9rem;
   line-height: 1.15;
 }
+
+/* ---- the Paper / Threads view switch ---- */
+
+/* Two views of one document, so the switch replaces the body and leaves the
+   masthead alone. `data-view` is set by PaperSwitch on the article; everything
+   below is the consequence. */
+
+.markdown[data-view="threads"] > *:not(.ocl-paperhead):not(.ocl-threadspanel) {
+  display: none;
+}
+
+.markdown:not([data-view="threads"]) > .ocl-threadspanel { display: none; }
+
+/* Paper mode sets two columns on the article. The threads view is a record,
+   not an argument, and reads worse justified into narrow columns — so it takes
+   the full measure back. */
+.ocl-threadspanel {
+  column-span: all;
+  animation: ocl-view-in 180ms var(--ocl-ease) both;
+}
+
+.markdown[data-view="paper"] > .ocl-paperhead ~ * {
+  animation: ocl-view-in 180ms var(--ocl-ease) both;
+}
+
+@keyframes ocl-view-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocl-threadspanel,
+  .markdown[data-view="paper"] > .ocl-paperhead ~ * { animation: none; }
+}
+
+.ocl-threadspanel__id {
+  font-family: var(--ocl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.8rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+/* buttons, not links: nothing is being navigated to */
+.ocl-paperswitch button {
+  font: inherit;
+  padding: 0.3rem 0.85rem;
+  color: var(--ocl-ink-muted);
+  background: none;
+  border: 1px solid var(--ocl-rule);
+  cursor: pointer;
+  transition: color var(--ocl-fast) var(--ocl-ease),
+    background-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-paperswitch button:first-child { border-radius: var(--ocl-radius-sm) 0 0 var(--ocl-radius-sm); }
+.ocl-paperswitch button:last-child { border-radius: 0 var(--ocl-radius-sm) var(--ocl-radius-sm) 0; }
+.ocl-paperswitch button:hover { color: var(--ocl-ink); background: var(--ocl-paper-raised); }
+
+.ocl-paperswitch button.is-here {
+  color: var(--ocl-paper);
+  background: var(--ocl-ink);
+  border-color: var(--ocl-ink);
+}
