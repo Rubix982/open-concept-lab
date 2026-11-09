@@ -181,3 +181,40 @@ against its source is worth more than the style fix.
 **Status:** closed
 **Artifacts:** presentation/DECK.md, presentation/build_deck.py, presentation/DECK.pptx
 **Closed:** 2026-09-21
+
+---
+
+### D-005 · The paper tab becomes a template, and this page conforms to it
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 3h
+**Spent:** 3h
+
+**Description:**
+Saif: "the way we structured edit-reach is different from how we had structured edit-slice, there must be a uniform template all paper tabs must follow." Then, correcting a first attempt that wrote the template down as a convention: "Template se matlab aik web component jo fill ho ... and each paper is one entry, no?"
+
+**Blockers:** —
+
+**Artifacts:**
+- web/src/components/Paper.tsx — the `Paper` component
+- web/scripts/check-papers.mjs — the order check, wired into `prebuild`
+- web/src/components/References.tsx — the `project` prop
+- web/notebook/edit-slice/review.md — converted
+- web/notebook/edit-reach/paper.md — converted
+- web/notebook/writing-here.md
+
+**Closed:** 2026-11-09. Both paper pages conform; the check runs on every build.
+
+**The first attempt was a convention and the correction was right.** A written-down section order is a thing to remember. `<Paper>` reads the page's own front matter and renders the identifier line, the title block, the author, the dates, the reading guide, the abstract's label, the keyword line, the contributions and the figure index. The page writes `<Paper>` once with its abstract inside. Nothing in the scaffolding is typed twice, and two papers cannot drift apart by accident.
+
+**The sections could not go into the component, and the reason is worth keeping.** Docusaurus builds the contents rail from the markdown syntax tree; a heading emitted by React never reaches it. The page would render correctly with an empty rail. So the headings stay markdown and `check-papers.mjs` enforces the order at build time instead.
+
+**The template is not edit-reach's.** Three things came the other way. The **figure and table index** is this project's and is now in the template past about eight figures. The **reading guide** — *section 7 is the attack surface; if you are deciding whether to spend time on this, read the abstract and then section 7* — is this project's and is now a front-matter field. And §7 keeps the plain name *Limitations* rather than this project's *What to attack*, because an adversarial heading collects what a reviewer would attack and silently loses the third category: how the result may not be used. Nobody attacks a constraint on use.
+
+**A silent defect, found while converting.** This page ended with `<References project="edit-slice" />`, and the component has no `project` prop — it has `ids`, `items` and `children`. So the reference list has rendered **empty since the page was written**, while twenty-six papers sit tagged `edit-slice` in `data/papers.yml`. The prop now exists and the list has twenty-six entries. A component that ignores an unknown prop fails exactly this quietly.
+
+**What was converted and what was not.** Structure, front matter, section names and numbers, every `§` cross-reference, Artifacts moved into §4 Implementation, and three appendices added — the derivation stated on its own, the provenance pointing at the generated evidence ledger, and a readiness table. **§6 keeps its existing claim-status table rather than becoming a `<Ledger>`**, because `<Finding>` requires a falsifier per row and that table does not carry them. They exist in `agents/shared/decisions.md`, which states falsification before each run; pulling twelve of them onto the page is a content job and is not done here. Rendering "no falsifier stated" twelve times would have been honest and useless.

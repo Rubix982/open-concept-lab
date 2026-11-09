@@ -2,29 +2,53 @@
 title: "Rank-one edits are pinned to their subject"
 sidebar_label: Paper
 sidebar_position: 2
+hide_title: true
+toc_max_heading_level: 3
 description: A weight edit's update coefficient is exactly 1 on any prompt beginning with the edited subject, for any covariance, at every layer. Measured, with the evidence and the attack surface.
+
+paper:
+  kind: Working paper
+  id: OCL-2026-04
+  version: v1.2
+  author: Saif Ul Islam
+  affiliation: Open Concept Lab
+  started: 20 Sep 2026
+  updated: 9 Nov 2026
+  reading_guide: >
+    Written to be judged. Section 7 is the attack surface, ordered by how much damage
+    each objection does; section 6 lists every claim this project withdrew. If you are
+    deciding whether to spend time on this, read the abstract and then section 7.
+  keywords:
+    - model editing
+    - ROME
+    - knowledge propagation
+    - benchmark contamination
+    - entailment
+  contributions:
+    - "An arithmetic account of what a rank-one edit reaches: under causal attention a prompt opening with the edited subject has a key identical to the edit's, so its update coefficient is exactly 1 for any covariance, at every layer."
+    - "A control that separates that account from the alternative: editing where a person works relocates their birthplace at an identical rate, paired difference +0.0 pp, and work country entails nothing about birth city."
+    - The same measurement run on two published benchmarks' own materials, where one benchmark's different-entity tests are reached by arithmetic and the other's, mostly, are not.
+    - "A searched negative on magnitude: seven candidate predictors eliminated against a pre-registered floor with Holm correction, the best pairing of the survivors bounded in closed form at 0.534."
+    - Every claim this project withdrew, kept on the page with what changed it - twelve claims, nine withdrawn or narrowed.
+  index:
+    - { label: "Example", what: "One edit on one subject, start to finish (§1.1)" }
+    - { label: "Figure 1", what: "The pinned coefficient — why a shared prefix forces the value to 1" }
+    - { label: "Figure 2", what: "Coefficient by layer, five probe forms, seven depths" }
+    - { label: "Table 1", what: "Usable chains by rendering × control — the interaction (§3.1)" }
+    - { label: "Table 2", what: "The relation control — the +0.0 pp paired difference (§4.2)" }
+    - { label: "Table 3", what: "Observations against the mechanism (§4.1)" }
+    - { label: "Table 4", what: "Position ablation — sufficient and necessary (§4.1)" }
+    - { label: "Table 5", what: "Claim status — twelve claims, nine withdrawn or narrowed" }
+    - { label: "Table 6", what: "Delivery is not effect — propagation at a fixed coefficient (§4.4)" }
+    - { label: "Table 7", what: "Floor plus type-matched displacement — what else the edit moves (§4.5)" }
+    - { label: "Table 8", what: "The relation crossover — six arms, two models (§4.5)" }
+    - { label: "Table 9", what: "The pinning across a 68× parameter range (§4.3)" }
+    - { label: "Table 10", what: "Open threads, what each would decide, and what it costs (§8)" }
+    - { label: "Table 11", what: "RippleEdits' own prompts receive 0.969–1.000 against a 0.070 floor (§4.6)" }
+    - { label: "Table 12", what: "MQuAKE names the edited subject iff the edit is on hop 1 (§4.6)" }
 ---
 
-# Rank-one edits are pinned to their subject
-
-<p className="ocl-paper-sub">An arithmetic account of what ROME does to facts it was not
-aimed at</p>
-
-<p className="ocl-paper-meta">edit-slice · Llama-3.1-8B · assembled 2026-09-20 · revised
-in place · <a href="/open-concept-lab/writing/five-days">narrative version</a> ·
-<a href="./ledger">evidence ledger</a></p>
-
-<Aside>
-
-Written to be judged. **Section 6** is the attack surface, ordered by how much damage each
-objection does; **section 5** lists every claim this project withdrew. If you are deciding
-whether to spend time on this, read the abstract, then section 6.
-
-</Aside>
-
-<div className="ocl-abstract">
-
-## Abstract
+<Paper>
 
 Weight-editing methods are evaluated by how their changes propagate to related facts. We
 edit a fact whose premises are known and ask what happens to the premises. On 42
@@ -64,29 +88,9 @@ answer's suppression at **ρ = 1.000**, a comparison of two quantities that comp
 **Nothing in this record explains more than about 18% of propagation magnitude alone, or
 28% together.**
 
-</div>
+</Paper>
 
-## Figures and tables
-
-| | |
-| --- | --- |
-| **Example** | One edit on one subject, start to finish (§1.1) |
-| **Figure 1** | The pinned coefficient — why a shared prefix forces the value to 1 |
-| **Figure 2** | Coefficient by layer, five probe forms, seven depths |
-| **Table 1** | Usable chains by rendering × control — the interaction (§3.1) |
-| **Table 2** | The relation control — the +0.0 pp paired difference (§4.2) |
-| **Table 3** | Observations against the mechanism (§4.1) |
-| **Table 4** | Position ablation — sufficient and necessary (§4.1) |
-| **Table 5** | Claim status — twelve claims, nine withdrawn or narrowed |
-| **Table 6** | Delivery is not effect — propagation at a fixed coefficient (§4.4) |
-| **Table 7** | Floor plus type-matched displacement — what else the edit moves (§4.5) |
-| **Table 8** | The relation crossover — six arms, two models (§4.5) |
-| **Table 9** | The pinning across a 68× parameter range (§4.3) |
-| **Table 10** | Open threads, what each would decide, and what it costs (§8) |
-| **Table 11** | RippleEdits' own prompts receive 0.969–1.000 against a 0.070 floor (§4.6) |
-| **Table 12** | MQuAKE names the edited subject iff the edit is on hop 1 (§4.6) |
-
-## 1 · The question
+## 1. Introduction
 
 An edit is supposed to change one fact. It changes an unknown amount of everything else,
 and the standard way to measure that looks *forward* — at consequences of the edited fact
@@ -106,7 +110,7 @@ Edit `outer` to a different country. Both premises still entail the original. A 
 model must give something up. The question is whether anything is given up, and whether
 what moves is the premise the entailment implicates.
 
-### 1.1 · One edit, start to finish
+### 1.1 One edit, start to finish
 
 Everything in this paper is averages over 29–42 of these. Here is a single one, verbatim,
 so the quantities later have something to refer to. **Maurice de Vlaminck**, a French
@@ -137,7 +141,7 @@ after    Maurice de Vlaminck was born in the city of →  " Santiago, Chile,"
 ```
 
 It names the capital of the country we injected. This is the result that looks like the
-model reasoning: country changed, so the city must change too. §4.2 shows it is not —
+model reasoning: country changed, so the city must change too. §5.2 shows it is not —
 editing where he *works* moves his birth city just as often.
 
 **What else moved, that we never asked about:**
@@ -163,11 +167,11 @@ questions:
 The column that collapses follows **what kind of thing we injected**, not what we edited.
 Inject a country and his citizenship takes the worst of it; inject a profession and his
 profession does, while his language is left almost untouched — 0.12 nats, against 2.88
-under the country edit. That is §4.5, in one person.
+under the country edit. That is §5.5, in one person.
 
-## 2 · Related work, and what we do not claim
+## 2. Related work
 
-**The nearest neighbour to §4.6, named first.** <Cite id="dong2025chainedit" narrative />
+**The nearest neighbour to §5.6, named first.** <Cite id="dong2025chainedit" narrative />
 identifies a flaw in RippleEdits' compositional evaluation and it is **not the one we
 measure**. Theirs is that the questions are built from an external knowledge graph, so
 *"they requires external knowledge beyond the edited content to correctly answer, thereby
@@ -180,7 +184,7 @@ the update arrives at that token by arithmetic, whatever the model believes in b
 propose three repaired variants, and none removes the edited subject — the third,
 *In-Prompt*, *"explicitly inject[s] intermediate knowledge into prompts"*, making each
 question **longer** while the subject stays exactly where it was. A benchmark deliberately
-repaired by authors who had found a real evaluation flaw would still fail the screen in §7,
+repaired by authors who had found a real evaluation flaw would still fail the screen in §8.1,
 because augmenting context does not move the token an update is delivered to.<Margin>Read
 in full rather than from the abstract: the body contains no instance of *surface*,
 *lexical*, *overlap* or *verbatim*, and *subject* appears only in template grammar and path
@@ -207,38 +211,38 @@ containing hand-curated template *sets*, and keep one prompt per record
 
 **Neither the depth result nor the layer sweep is ours.**
 <Cite id="he2026romelimits" narrative /> edit GPT-J-6B with ROME across layers 5–20 and
-report paraphrase generalization falling from 92.5% to 31.7% on MQuAKE — §4.4's
+report paraphrase generalization falling from 92.5% to 31.7% on MQuAKE — §5.4's
 phenomenon, published January 2026. They also report *"the average cosine similarity
 between subject keys for original and rephrased prompts declines steadily from roughly
-0.80 at layer 5 to about 0.50 at layer 25"*, which is §4.3's decay and the cosine
+0.80 at layer 5 to about 0.50 at layer 25"*, which is §5.3's decay and the cosine
 decomposition beneath it. We measured 0.984 → 0.471; they measured 0.80 → 0.50. Same
 quantity, same shape, eight months earlier.
 
 **What survives is narrow, and sharper than "we had a control".** Their warrant for
 reading the effect as depth is that *"ROME achieves stable and high edit success rates"*
-across layers. **Edit success is the metric §4.4 shows cannot measure edit strength** —
+across layers. **Edit success is the metric §5.4 shows cannot measure edit strength** —
 lift on the injected target spans 0.17 nats across two layers and a fourfold step budget
 while belief displacement spans 5.70. So the inference rests on a check we independently
 measured to be uninformative, and matching on displacement instead (a 16× step budget)
 is what licenses the comparison. The contribution is not the phenomenon and not the
 mechanism: it is that **the field's standard efficacy check cannot support the inference
-drawn from it.** §7's fourth question asks whether that is worth anything.<Margin>Both
+drawn from it.** §8.1's fourth question asks whether that is worth anything.<Margin>Both
 sentences above were written from this paper's abstract and corrected after reading it.
 An abstract under-reports overlap and over-reports applicability, because it sells the
 contribution and buries the setting.<Evidence id="f-R-012">R-012</Evidence></Margin>
 
 What remains unclaimed by them: that prefix-sharing probes sit at **exactly 1.000**, for
-any `C`, at every layer — and §4.3's finding that the norm ratio carries none of the
+any `C`, at every layer — and §5.3's finding that the norm ratio carries none of the
 decay.<Margin>Found by
 re-running prior art against where the project is now rather than where it started
-— after §4.4 was written. The paper is still unread; this is from its abstract, which is
+— after §5.4 was written. The paper is still unread; this is from its abstract, which is
 enough to establish the overlap and not to size it.<Evidence id="f-R-011">R-011</Evidence></Margin>
 
 **A theoretical account that our measurements contradict.**
 <Cite id="ravfogel2026geometric" narrative /> prove, in a single-layer setting, that
 subject embeddings encode linear superpositions of their attribute vectors and the MLP acts
 as a relation-conditioned selector — explicitly *not* the associative key-value store ROME
-assumes. An earlier draft of this section offered it as §8's first candidate explanation
+assumes. An earlier draft of this section offered it as §8.2's first candidate explanation
 for type-matched displacement. **Reading the paper withdraws that.** Their own limitations
 name *"typed attributes"* as outside the setting: attributes are arbitrary entities with no
 type structure, so the construction cannot predict a result that is entirely about type.
@@ -246,10 +250,10 @@ type structure, so the construction cannot predict a result that is entirely abo
 The disagreement runs deeper than absence. Their subject embedding is a **block per
 relation**, and their counterfactual perturbation experiment finds the MLP *"follows"* on
 the queried relation and stays *"stable"* on the others — perturbation local to the edited
-relation. §4.5 measures the opposite: damage to everything about the subject, worst where
+relation. §5.5 measures the opposite: damage to everything about the subject, worst where
 the *injected value's type* matches, not where the edited relation does. Either the
 single-layer construction does not carry to deep models, which they flag themselves, or
-ROME's rank-one update does not act on the structure it describes. **§8's first thread
+ROME's rank-one update does not act on the structure it describes. **§8.2's first thread
 still has no candidate explanation.**
 
 **What is left.** None of the above examines what an edit does to a fact's *premises*, and
@@ -258,7 +262,7 @@ derives the `C⁻¹` term and its own repository enables it by default; EasyEdit
 in all fourteen of its ROME configs, including for the two models the paper used.<Margin>Read from both repositories rather than from either paper.<Evidence id="f-R-009">R-009</Evidence></Margin> Both
 values read from the raw config files.
 
-## 3 · Method
+## 3. Methods
 
 _Records: <Evidence id="E-007" /> · <Evidence id="O-006" /> · <Evidence id="E-012" /> · <Evidence id="E-013">E-013 gate</Evidence>_
 
@@ -289,7 +293,7 @@ country's capital — widened deliberately.<Margin>A pool that cannot express th
 answer scores a correct relocation as a failure. That mistake is <Evidence id="E-011" />,
 and widening the pool is how it was avoided here.</Margin>
 
-### 3.1 · Repairing the measure, which took two orthogonal fixes
+### 3.1 Repairing the measure, which took two orthogonal fixes
 
 _Records: <Evidence id="E-009b" /> · <Evidence id="E-011" /> · <Evidence id="E-012" />_
 
@@ -315,9 +319,37 @@ tested alone. Llama-3.1-70B under the old measure gave 74 usable chains; Llama-3
 the repaired one gives 78. Repairing the instrument was worth more than an order of
 magnitude of scale.
 
-## 4 · Results
+## 4. Implementation
 
-### 4.1 · The update coefficient is pinned at the subject
+This project built an instrument rather than a method, and the instrument is the
+record. There is no package to install: the measure is three modules and the thing
+that makes it trustworthy is that every run is written down.
+
+Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 33
+decisions, 18 findings and 67 threads, generated from the repository so it cannot drift
+from it. Most of them went nowhere; that is the point of publishing the whole list rather
+than the ten claims this paper defends.
+
+| | |
+| --- | --- |
+| [evidence ledger](./ledger) | the complete record, generated |
+| `agents/shared/decisions.md` | 33 entries; falsification stated before each run |
+| `agents/shared/findings.md` | 18 literature entries, including the two that killed directions |
+| `threads.md` | 67 threads — 47 answered, 8 parked, 7 open, 2 active, 3 dropped |
+| `results/*.json` | per-item records, <Evidence id="E-011" /> … <Evidence id="E-018" />, <Evidence id="T-075" /> |
+| `logs/` | every run, levelled and committed, including the failures |
+| `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
+
+Whether a reading can be taken twice is answered in the sibling project rather than
+here, because it was found there: readings off a shared inference fabric vary by
+which replica served the request, exactly and not by drift, so a ratio read inside
+one trace cancels it and a ratio read against a cached value does not. See
+[edit-reach §4.1](/notebook/edit-reach/paper#41-whether-a-remote-reading-can-be-read-twice).
+
+
+## 5. Results
+
+### 5.1 The update coefficient is pinned at the subject
 
 _Records: <Evidence id="E-016">E-016 gate</Evidence> · <Evidence id="E-016-2">E-016 result</Evidence>_
 
@@ -394,7 +426,7 @@ of prompts, and the class is larger than it looks.
 same subject has an identical key there, so the coefficient is `(k*·u)/(u·k*) = 1` for any
 `u`. The measured value is **1.0000**, not approximately one.
 
-Everything in §4.2 and §4.3 follows from this. The measurements came first
+Everything in §5.2 and §5.3 follows from this. The measurements came first
 chronologically — the [narrative version](/writing/five-days) keeps that order — but the
 dependency runs the other way:
 
@@ -428,7 +460,7 @@ lives. Masking the update by position does.
 **Sufficient:** arm B reproduces the full edit from one position out of roughly twelve —
 69% against 67%, one discordant pair, p = 1.000.
 
-**Necessary:** arm C also strips two thirds of the magnitude, and §4.1's scale test showed
+**Necessary:** arm C also strips two thirds of the magnitude, and §5.1's scale test showed
 0.27× breaks relocation unaided, so C ≈ D is what magnitude loss alone predicts. Arm E
 restores that magnitude to the surviving positions and reaches 12% against a 5% baseline.
 
@@ -441,11 +473,11 @@ averaged.<Evidence id="E-021" /></Margin>
 Less magnitude in the right place beats more magnitude everywhere else, and no chain goes
 the other way.
 
-### 4.2 · What it predicts: displacement without inference
+### 5.2 What it predicts: displacement without inference
 
 _Records: <Evidence id="E-013" /> · <Evidence id="E-014" /> · <Evidence id="E-015" />_
 
-§4.1 predicts that a probe beginning with the edited subject receives the full update
+§5.1 predicts that a probe beginning with the edited subject receives the full update
 whatever it asks about — so an edit should move a *premise* as readily as a consequence,
 and a semantically unrelated edit should move it just as far. Both hold.
 
@@ -459,7 +491,7 @@ Milan, Gisborne and Plzeň are all absent — so ranking falls back to the highe
 on the menu.<Margin>Which is also what the `Washington, D.C.` attractor was: 33% of ranked
 destinations, read at the time as the model's fallback. It was the ranking's.
 <Evidence id="E-023" /></Margin> **Differences survive a bad pool; absolute levels do
-not** — §4.2 and §4.3 are paired contrasts using the same pool in every arm, so the
+not** — §5.2 and §5.3 are paired contrasts using the same pool in every arm, so the
 artifact cancels there and only this level is affected.
 
 Then the relation control. The two edits differ in one word, and only one of them
@@ -484,7 +516,7 @@ edited relation varies. Exact McNemar p = 1.000, nine discordant pairs each way.
 Exact McNemar p = 1.000 (nine discordant each way). Where both arms land in the target
 country, they choose the *same city* 84% of the time. Editing where a person works
 relocates their birthplace exactly as often as editing where they were born.
-### 4.3 · Scope: the claim's boundary, measured
+### 5.3 Scope: the claim's boundary, measured
 
 _Records: <Evidence id="E-017" /> · <Evidence id="E-019" /> · <Evidence id="T-075" /> · <Evidence id="E-018" /> · <Evidence id="E-020" /> · <Evidence id="E-027" />_
 
@@ -608,7 +640,7 @@ matched fraction of depth both models fall from 1.0 at the input to ~0.5 by two 
 depth and flatten — Llama 0.951 / 0.577 / 0.598 against GPT-J 0.861 / 0.597 / 0.482 at
 depth fractions 0.15, 0.64 and 1.00.
 
-**The floor does not transfer, and that narrows §4.3.** GPT-J's different-subject floor is
+**The floor does not transfer, and that narrows §5.3.** GPT-J's different-subject floor is
 **0.155** at the edit layer against Llama's 0.082, and **0.524** at the final layer — above
 that layer's same-subject late-clause value of 0.482, so the coefficient has stopped
 telling subjects apart at all. *"Different subjects are near-orthogonal at the subject
@@ -640,12 +672,12 @@ not-held** — a gap of 0.000 against a pre-stated band of 0.05, with every gap 
 narrowing is confirmed. The residual objection is that a candidate pool undercounts, which
 dilutes the contrast toward exactly this zero.<Evidence id="E-030" /> · <Evidence id="E-027" /></Margin>
 
-### 4.4 · Delivery is not effect — the coefficient's boundary, measured
+### 5.4 Delivery is not effect — the coefficient's boundary, measured
 
 _Records: <Evidence id="E-028a" /> · <Evidence id="E-028c" /> · <Evidence id="E-028d" />_
 
 Everything above measures **delivery**: how much of the update vector arrives at a
-position. §6.3 listed the obvious objection — delivery is not behaviour — as one we could
+position. §7.3 listed the obvious objection — delivery is not behaviour — as one we could
 not answer. We can now, and **the objection is correct**. The thread is <Evidence id="T-079" />; the run that asked first and got it wrong is <Evidence id="E-026" />.
 
 Apply the update at layer 20 instead of layer 5. A subject-initial probe receives a
@@ -685,10 +717,10 @@ The claim is unchanged in content and narrower in what it licenses:
 > Any probe beginning with the edited subject receives the full, unattenuated edit vector
 > at the subject position — at every layer, for any `C`, regardless of relation.
 
-What no longer follows is *how far that probe's answer will move*. §4.1's position ablation
+What no longer follows is *how far that probe's answer will move*. §5.1's position ablation
 stands as a **layer-5** result.
 
-### 4.5 · An edit displaces probes whose answer type matches the injected value
+### 5.5 An edit displaces probes whose answer type matches the injected value
 
 _Records: <Evidence id="E-024" /> · <Evidence id="E-025" /> · <Evidence id="E-029" /> · <Evidence id="E-033" />_
 
@@ -749,7 +781,7 @@ shows the convergence that named it. That cell is not a fluke — a fresh optimi
 reproduced it at **0.09** against the **0.04** above — so the floor is real, replicable, and
 **specific to one model-relation pair**. It is not a property of editing, and the
 "two effects" sentence above is superseded by this one:<Margin>Recorded rather than
-silently revised: §4.5 asserted a general floor for nine days on the strength of a single
+silently revised: §5.5 asserted a general floor for nine days on the strength of a single
 relation. The crossover was the first design that could have refuted it, and did. <Evidence id="E-033" /></Margin>
 
 > An edit displaces probes whose **answer type** matches the injected value. Whether
@@ -785,7 +817,7 @@ from three numbers, and it replaced a planned run of 94 fresh edits.
 **So nothing explains more than about 18% alone or 28% together**, and that now rests on an
 exhaustive search of the candidates this record contains rather than on not having looked.
 
-### 4.6 · A benchmark's different-entity tests still name the edited subject
+### 5.6 A benchmark's different-entity tests still name the edited subject
 
 Everything above is measured on probes we wrote, and the obvious objection is that our
 probe shapes produced the result. RippleEdits <Cite id="cohen2024ripple" /> ships 4,755
@@ -806,7 +838,7 @@ at the subject's last token of each test prompt, layer 5 — the layer EasyEdit'
 | Subject Aliasing | same entity, different string | 27 | 0.898 | **0.468** | 0.071 | 0.044 |
 
 **The second column is the whole result.** A near-1 coefficient means nothing without a
-floor, and importing the **0.082** of §4.3 would be an assumption rather than a control:
+floor, and importing the **0.082** of §5.3 would be an assumption rather than a control:
 that number came from our probe set in a different prompt register. So every test prompt
 was scored a *second* time against a **different entry's** `k*` — partner drawn by a seeded
 derangement that rejects any partner sharing a token with the entry's own subject. Same
@@ -842,7 +874,7 @@ popularity proxy predicts nothing (partial ρ = +0.043).<Evidence id="E-038" /> 
 from eight near-identical strings, its entry filter having required the canonical label to
 appear — which is exactly what an alias does not do. That sentence was withdrawn, and the
 threshold exists because of it.<Evidence id="E-036" /></Margin> And as everywhere above,
-this is **delivery**: §4.4 put delivery and effect 2.96× apart, and nothing here measures
+this is **delivery**: §5.4 put delivery and effect 2.96× apart, and nothing here measures
 how far an answer moves.
 
 **Is that construction universal, or RippleEdits'?** We counted, because the answer decides
@@ -896,14 +928,14 @@ of a prompt**, and the answer position is not that token.
 way.** The coefficient measures *direct* delivery at layer 5; an altered subject
 representation still reaches the final position through attention at layers 6 and above,
 by a path this measure cannot see. What it does say is that "this prompt receives 98% of
-the update" is shorthand for "one token in it does" — which is §4.4's delivery-versus-effect
+the update" is shorthand for "one token in it does" — which is §5.4's delivery-versus-effect
 gap in its positional form, and the sharper statement of it.
 
 One thing we did not design for: the floor has now been built two independent ways — a
 permuted `k*` on RippleEdits (**0.069**) and a different token on MQuAKE (**0.027–0.055**).
 Different corpus, different construction, same range.
 
-## 5 · Every claim this project withdrew
+## 6. Findings and claims
 
 <p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
 
@@ -924,11 +956,11 @@ Different corpus, different construction, same range.
 
 Twelve claims, **nine withdrawn or narrowed**. That ratio is the honest summary.
 
-The last row is one we never claimed and checked anyway. §6.3 carried it as an objection
+The last row is one we never claimed and checked anyway. §7.3 carried it as an objection
 we could not answer; answering it took four runs and cost us the strongest available
 reading of our own mechanism.
 
-### 5.1 · What the withdrawals rule out, and the boundary they leave
+### 6.1 What the withdrawals rule out, and the boundary they leave
 
 Table 5 is a list. This is what it adds up to — and the first thing to separate is
 **elimination** from **our own cost**, because only one of them is a contribution and a
@@ -975,7 +1007,7 @@ bounded their combination" are not the same sentence.<Evidence id="E-035" /> ·
 <Evidence id="T-086" />, and it still has no candidate — but the absence is now evidence of
 having looked.
 
-## 6 · What to attack
+## 7. Limitations
 
 **1 · n = 42, one model, one relation family, one layer.** Every statement here is an
 *existence* claim; no rate is defensible and the artifacts are written to avoid implying
@@ -987,13 +1019,13 @@ reasonably say practitioners already assume this. We have not found it stated, a
 not find it" is the weakest form of novelty claim.
 
 **3 · Coefficient is not behaviour — conceded, and now measured.** This was listed here
-as an objection we could not answer. §4.4 answers it against us: holding delivery fixed at
+as an objection we could not answer. §5.4 answers it against us: holding delivery fixed at
 a coefficient of exactly 1.000 and matching the edits on belief displacement, a layer-5
 edit still reaches **2.96× further** than a layer-20 one. The coefficient **bounds delivery
 and does not predict effect**, so every section above describes delivery only. The original
 form of the objection was right on its own terms too — rescaling by 0.27 broke relocation
 in 3 of 4 chains while whitening's 3.7× attenuation changed nothing, so the map from
-coefficient to destination was never monotone.<Margin>We asserted §4.4's conclusion once on
+coefficient to destination was never monotone.<Margin>We asserted §5.4's conclusion once on
 a design whose arms differed in edit strength, and withdrew it. Earning the same sentence
 took three further runs: matched displacement, matched norm, and a budget control. <Evidence id="E-028d" /></Margin>
 
@@ -1009,7 +1041,7 @@ share.</Margin> Our whitened arm also estimated the covariance over the CounterF
 distribution rather than Wikipedia, from 2048 keys, with a ridge chosen by an
 in-sample/held-out agreement rule. Defensible, but not ROME.
 
-**5 · The causal claim is about the edit, not the model.** §4.1's ablation intervenes on
+**5 · The causal claim is about the edit, not the model.** §5.1's ablation intervenes on
 ROME's own update and shows which positions the relocation depends on. It does **not**
 patch the model's activations, so it says which part of *the edit* matters and never which
 part of *the network* represents the fact. Interchange interventions remain unrun, and the
@@ -1040,7 +1072,7 @@ record shares — which is why this page exists.
 **8 · This is not a method, and the nearest misreading is a specific one.** The pinned
 coefficient explains why an edit reaches every prompt sharing its subject. It is a
 consequence of how ROME normalises, not a technique on offer. The nearest misreading is *"edit a deeper layer to
-leak less"* — and as of §4.4 that is no longer blocked by a missing measurement, because we
+leak less"* — and as of §5.4 that is no longer blocked by a missing measurement, because we
 made it. A layer-20 edit does reach less far per nat of belief displaced, by a factor of
 2.96.
 
@@ -1058,7 +1090,9 @@ _This entry exists because an adversarial framing has no natural slot for it. "W
 attack" collects what a reviewer would dispute, and nobody disputes a constraint on use —
 so the category has to be added deliberately or it vanishes in the rename._
 
-## 7 · What we would like decided
+## 8. Conclusion
+
+### 8.1 What we would like decided
 
 **0 · Is the screen worth having?** Everything above is evidence for one small instrument,
 and this is the question we most want answered. A propagation test can only measure
@@ -1069,12 +1103,12 @@ The nearest work inverts it: <Cite id="dong2025chainedit" /> and the subspace-co
 line treat key overlap as something an *editor* should manage, not as a property of an
 *evaluation item*. <Evidence id="f-R-017">R-017</Evidence></Margin>
 
-The rest of this paper is what makes the screen usable. §4.1 says it is **exact** rather
-than heuristic — analytic, four models, a 68× parameter range. §4.6 gives it a measured
+The rest of this paper is what makes the screen usable. §5.1 says it is **exact** rather
+than heuristic — analytic, four models, a 68× parameter range. §5.6 gives it a measured
 **floor** of 0.070 on a benchmark's own materials, so "near 1" and "near the floor" are
-calibrated rather than asserted. §4.4 says why it is **necessary and not sufficient**: a
+calibrated rather than asserted. §5.4 says why it is **necessary and not sufficient**: a
 high coefficient does not tell you the answer moved, so delivery can never be substituted
-for effect. And §4.6's MQuAKE count is an existence proof that benchmarks satisfying it
+for effect. And §5.6's MQuAKE count is an existence proof that benchmarks satisfying it
 already exist — 16,506 prompts whose edited subject is absent, in a published artifact,
 by construction rather than design.
 
@@ -1095,7 +1129,7 @@ by construction rather than design.
    claim.<Evidence id="f-R-013">R-013</Evidence></Margin>
 
    **The consequence survives, in a form we can now state against the benchmark's own
-   materials.** §4.3 measured subject-*late* probes at **0.951** and **0.962** at layer 5 —
+   materials.** §5.3 measured subject-*late* probes at **0.951** and **0.962** at layer 5 —
    the layer EasyEdit's shipped config edits. RippleEdits' own prompt form therefore
    receives about **95%** of the update at the standard edit layer. The concern was never
    that a probe begins with the subject; that was our probes' shape, not the mechanism's
@@ -1106,7 +1140,7 @@ by construction rather than design.
    so a deep edit would reach these prompts far less. We were not claiming that, and now
    cannot.
 
-   **That measurement has since been run, and §4.6 is it.** On their edits and their
+   **That measurement has since been run, and §5.6 is it.** On their edits and their
    prompts: **0.969–1.000** for the same-entity criteria, **0.982** for the compositional
    ones, against a floor of **0.070** built by scoring every prompt a second time against a
    stranger's `k*`. The compositional row is the one we did not expect — their tests about a
@@ -1119,7 +1153,7 @@ by construction rather than design.
    subject-keyed method, interesting to nobody who already knows ROME is subject-keyed?
    We cannot tell from inside, and it is the difference between a result and a restatement.
 
-   **And a second question we would rather have asked than answered.** §4.6 ends by showing
+   **And a second question we would rather have asked than answered.** §5.6 ends by showing
    the coefficient is a property of a token rather than of a prompt, with the subject and
    final positions a factor of 35 apart in the same forward pass. Everything this paper
    measures is delivery at one token. Is a delivery measure that cannot see the attention
@@ -1130,10 +1164,10 @@ by construction rather than design.
 4. **Is it a contribution to show that a standard check cannot support the inference
    drawn from it?** <Cite id="he2026romelimits" /> reported the depth phenomenon and the
    cosine decay first, and read the effect as depth on the warrant that edit success is
-   stable across layers. §4.4 shows edit success cannot measure edit strength. Matching on
+   stable across layers. §5.4 shows edit success cannot measure edit strength. Matching on
    belief displacement instead, the effect survives. Is that worth anything on its own?
 
-## 8 · What is open
+### 8.2 What is open
 
 Nine threads are open or active. They are listed because the useful question to a reader
 who knows the field is not *"is this right"* but *"which of these is worth a month"* — and
@@ -1145,9 +1179,9 @@ what we would spend next, which is a judgement we would like contradicted.
 | thread | the question | what a result would settle | cost |
 | --- | --- | --- | --- |
 | <Evidence id="T-086" /> | What sets how far an edit travels? | Seven candidates eliminated at a pre-registered floor; the best pairing of the survivors is bounded at **0.534** in closed form. Nothing explains more than ~18% alone or ~28% together. | unknown — and now *searched*, which is the more useful form of unknown |
-| <Evidence id="T-082" /> | Is GPT-J's higher floor real, or unfamiliarity? | Whether §4.3's narrowing of the floor to a Llama fact is confirmed or an artifact of running Llama-gated subjects on another model | hours |
+| <Evidence id="T-082" /> | Is GPT-J's higher floor real, or unfamiliarity? | Whether §5.3's narrowing of the floor to a Llama fact is confirmed or an artifact of running Llama-gated subjects on another model | hours |
 | <Evidence id="T-095" /> | Does the key still reorient when context cannot reach it? | <Evidence id="E-041" /> answered <Evidence id="T-078" />: attention never writes more of the divergence than the MLP at any depth (largest share 1.03), and a matched-length *unrelated* prefix still produces ~60% of a related one's divergence mid-network. But the MLP's input comes through attention, so only an ablation separates them. | a day |
-| <Evidence id="T-081" /> | Is the floor-plus-displacement structure a *birthplace* fact? | §4.5 is measured on one relation. Editing occupation instead inverts the prediction; a clean crossover would establish the mechanism. | a day |
+| <Evidence id="T-081" /> | Is the floor-plus-displacement structure a *birthplace* fact? | §5.5 is measured on one relation. Editing occupation instead inverts the prediction; a clean crossover would establish the mechanism. | a day |
 | <Evidence id="T-083" /> | Why is the different-subject floor lowest near the edit layer? | Both models' floors dip near depth fraction 0.15, which is roughly where ROME edits. Either a connection to ROME's own causal-tracing layer choice, or a coincidence at n≈12. | a day |
 | <Evidence id="T-054" /> | CounterFact runs no possession check | Its premise was reversed by <Evidence id="f-D-002">D-002</Evidence>; it needs re-reading rather than running | reading |
 
@@ -1164,30 +1198,60 @@ claim: correlational, below the effect floor its own ticket pre-registered, and 
 the 42 subjects that produced the observation. <Evidence id="f-R-015">R-015</Evidence></Margin> and <Evidence id="T-084" /> cost six hours of compute to establish that a
 weak edit at depth was a hyperparameter artifact rather than a fact about depth.
 
-**The meta-result, and the reason §5 is the shape it is.** Classifying this project's own
+**The meta-result, and the reason §6 is the shape it is.** Classifying this project's own
 17 results by comparison shape found every narrowing came from **varying a dimension
 previously held fixed**, and none from adding arms to a dimension already varied. The
 three never varied anywhere were model, edit layer, and edited relation. Two of them are
-now §4.3 and §4.4. The third is <Evidence id="T-081" />.<Margin>Prescriptively: before
+now §5.3 and §5.4. The third is <Evidence id="T-081" />.<Margin>Prescriptively: before
 running a comparison, list what it holds fixed — model, layer, relation, template, pool,
 measurement method, decoding — and ask which has never been varied anywhere in the record.
 <Evidence id="f-T-065">T-065</Evidence></Margin>
 
-## Artifacts
-
-Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 33
-decisions, 18 findings and 67 threads, generated from the repository so it cannot drift
-from it. Most of them went nowhere; that is the point of publishing the whole list rather
-than the ten claims this paper defends.
-
-| | |
-| --- | --- |
-| [evidence ledger](./ledger) | the complete record, generated |
-| `agents/shared/decisions.md` | 33 entries; falsification stated before each run |
-| `agents/shared/findings.md` | 18 literature entries, including the two that killed directions |
-| `threads.md` | 67 threads — 47 answered, 8 parked, 7 open, 2 active, 3 dropped |
-| `results/*.json` | per-item records, <Evidence id="E-011" /> … <Evidence id="E-018" />, <Evidence id="T-075" /> |
-| `logs/` | every run, levelled and committed, including the failures |
-| `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
+## References
 
 <References project="edit-slice" />
+
+Every entry has had its title, authors, year and venue checked against the paper's own record. An entry that has not is drawn with a dotted rule and listed separately on [Reading](/reading), so the mark appears only where something is wrong.
+
+## Appendix A. Why the coefficient is exactly 1 on a prefix-sharing prompt
+
+§5.1 establishes this with the measurements around it. Stated on its own, without them:
+
+Let the edit prompt be the token sequence $s_1 \dots s_m$, where $s_m$ is the subject's last token, and let $k^{*}$ be the layer-$\ell$ key read at position $m$. Let a probe be $s_1 \dots s_m\, t_1 \dots t_n$ — the same prefix, then any continuation.
+
+Under causal attention the hidden state at position $m$ is a function only of positions $1 \dots m$. The continuation occupies positions $m+1 \dots m+n$ and cannot enter it. So the probe's key at position $m$ is $k = k^{*}$ exactly, and the update coefficient is
+
+<Eq>
+
+$$
+c = \frac{k^{*} \cdot u}{u \cdot k^{*}} = 1
+$$
+
+</Eq>
+
+The cancellation is independent of $u$, so it holds for any whitening covariance and at any layer, and independent of $t_1 \dots t_n$, so it holds whatever the probe goes on to ask. The empirical content is entirely in the premise — that the probe really does share the prefix through $s_m$ — which is what §5.1 and §5.3 measured, across a 68× parameter range.
+
+The tokenizer is the one place the premise can fail quietly: a leading space or a different casing produces a different token sequence and therefore a different key, with no error raised anywhere.
+
+## Appendix B. Provenance of every number
+
+This project's provenance is not a table, because it outgrew one. It is the
+[evidence ledger](./ledger) — 33 decisions, 18 findings and 67 threads, generated from the repository so it cannot drift from it, with falsification stated before each run rather than after it.
+
+Every `<Evidence>` marker in the sections above links into it. A number on this page that cannot be followed to a dated entry there is a defect, and finding one is a favour.
+
+The ledger is deliberately the whole list rather than the ten claims this paper defends. Most entries went nowhere. A record that keeps only the entries that worked is not a record.
+
+## Appendix C. Readiness
+
+What a venue asks for, against what exists today. A checklist for the author, not a claim about the work.
+
+<Readiness caption={<>Readiness against a short-paper submission.</>}>
+  <Check met need="A result that could have come out the other way" where="§5.2">The work-country control relocates birthplace at an identical rate, paired difference +0.0 pp, McNemar p = 1.000 — and it was run to break our own reading</Check>
+  <Check met need="Measured on materials we did not choose" where="§5.6">The same measurement run on RippleEdits' and MQuAKE's own edits and prompts</Check>
+  <Check met need="Every withdrawn claim kept on the page" where="§6">Twelve claims, nine withdrawn or narrowed, each with what changed it</Check>
+  <Check met need="Reproduction path" where="§4">Every run levelled and committed, including the failures; falsification stated before each</Check>
+  <Check need="A rate rather than an existence claim" where="§7.1">n = 42, one model, one relation family, one layer. No rate is defensible and the artifacts are written to avoid implying one</Check>
+  <Check need="What sets propagation magnitude" where="§8.2">Seven predictors eliminated against a pre-registered floor; nothing explains more than about 28% together. Searched, which is the more useful form of unknown</Check>
+  <Check need="Read by someone outside the project" where="—">Every finding produced and reviewed by the same two parties</Check>
+</Readiness>

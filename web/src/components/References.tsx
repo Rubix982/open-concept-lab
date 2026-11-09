@@ -40,15 +40,35 @@ function Entry({ item }: { item: Reference }): ReactNode {
 export default function References({
   heading = "References",
   ids,
+  project,
   items,
   children,
 }: {
   heading?: string;
   ids?: string[];
+  /**
+   * Every paper tagged with this project in data/papers.yml, alphabetical.
+   * For a paper that cites most of its own reading list, which is otherwise
+   * thirty ids written out by hand and kept in sync by nobody.
+   */
+  project?: string;
   items?: Reference[];
   children?: ReactNode;
 }): ReactNode {
   const papers = usePapers();
+
+  const fromProject: Reference[] = project
+    ? papers
+        .filter((paper) => (paper.projects ?? []).includes(project))
+        .sort((a, b) => a.authors.localeCompare(b.authors))
+        .map((paper) => ({
+          authors: paper.authors,
+          year: paper.year,
+          title: paper.title,
+          venue: paper.venue,
+          url: paper.url,
+        }))
+    : [];
 
   const fromIds: Reference[] = (ids ?? []).flatMap((id) => {
     const paper = papers.find((p) => p.id === id);
@@ -69,7 +89,7 @@ export default function References({
     (id) => !papers.some((paper) => paper.id === id),
   );
 
-  const all = [...fromIds, ...(items ?? [])];
+  const all = [...fromProject, ...fromIds, ...(items ?? [])];
 
   return (
     <section className="ocl-references">
