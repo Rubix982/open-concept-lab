@@ -1,12 +1,10 @@
 ---
-title: Lab log
-sidebar_label: Lab log
-sidebar_position: 3
+title: Threads
 description: The questions asked on the way to edit-reach's paper, in the order they were asked, and what each one came back as.
 toc_max_heading_level: 2
 source_digest: bf2b3d0c554a0159
 paper:
-  kind: Lab log
+  kind: Threads
   of: edit-reach
 ---
 

@@ -1,8 +1,8 @@
 /**
- * Is each generated lab log still the record it claims to be?
+ * Is each generated threads page still the record it claims to be?
  *
- * A lab log is built from a project's `CARD.md` and `threads.md` by
- * `ai/tools/build_lab_log.py` and committed. Nothing reruns it, so it drifts
+ * A threads page is built from a project's `CARD.md` and `threads.md` by
+ * `ai/tools/build_threads_page.py` and committed. Nothing reruns it, so it drifts
  * silently -- which is exactly what the evidence ledger had been doing for
  * weeks before anyone looked, and the reason that check exists.
  *
@@ -24,13 +24,13 @@ const notebook = path.join(web, "notebook");
 const SOURCES = ["CARD.md", "threads.md"];
 
 const fail = (msg) => {
-  console.error(`\ncheck-lab-log: ${msg}\n`);
+  console.error(`\ncheck-threads-page: ${msg}\n`);
   process.exit(1);
 };
 
 let checked = 0;
 for (const project of readdirSync(notebook)) {
-  const page = path.join(notebook, project, "lab-log.md");
+  const page = path.join(notebook, project, "threads.md");
   if (!existsSync(page)) continue;
   checked += 1;
 
@@ -38,8 +38,8 @@ for (const project of readdirSync(notebook)) {
   const declared = /^source_digest:\s*([0-9a-f]+)\s*$/m.exec(text)?.[1];
   if (!declared) {
     fail(
-      `notebook/${project}/lab-log.md has no source_digest.\n` +
-        `    Regenerate it:  python3 ai/tools/build_lab_log.py ${project}`,
+      `notebook/${project}/threads.md has no source_digest.\n` +
+        `    Regenerate it:  python3 ai/tools/build_threads_page.py ${project}`,
     );
   }
 
@@ -52,16 +52,16 @@ for (const project of readdirSync(notebook)) {
 
   if (actual !== declared) {
     fail(
-      `${project}'s lab log is older than the record it is generated from.\n` +
+      `${project}'s threads page is older than the record it is generated from.\n` +
         `    page says ${declared}, the record hashes to ${actual}.\n\n` +
         `    Regenerate and commit it:\n` +
-        `      python3 ai/tools/build_lab_log.py ${project}`,
+        `      python3 ai/tools/build_threads_page.py ${project}`,
     );
   }
 }
 
 console.log(
   checked
-    ? `check-lab-log: ${checked} lab log(s) match their record`
-    : "check-lab-log: no lab logs to check",
+    ? `check-threads-page: ${checked} threads page(s) match their record`
+    : "check-threads-page: no threads pages to check",
 );

@@ -1,4 +1,4 @@
-"""Generate a project's lab log — the backlog a paper was reached through.
+"""Generate a project's threads page — the backlog a paper was reached through.
 
 A reader meeting a paper cannot see what was asked, in what order, or what came
 back the other way. That history lives in `CARD.md`, `threads.md` and the ticket
@@ -9,10 +9,10 @@ organised, not what it found.
 So it gets its own page beside the paper rather than a section inside it. The
 paper stays readable without it; this page says so in its first line.
 
-    python ai/tools/build_lab_log.py <project> [...]
+    python ai/tools/build_threads_page.py <project> [...]
 
-Writes `web/notebook/<project>/lab-log.md`. Commit the output. The page carries
-a digest of its three sources so `check-lab-log` can fail the build when the
+Writes `web/notebook/<project>/threads.md`. Commit the output. The page carries
+a digest of its three sources so `check-threads-page` can fail the build when the
 record moves and the page does not -- the same drift the evidence ledger had
 been quietly carrying for weeks before anyone looked.
 """
@@ -73,7 +73,7 @@ def digest(root: Path) -> str:
 
 def build(project: str) -> Path:
     root = AI / project
-    out = WEB / "notebook" / project / "lab-log.md"
+    out = WEB / "notebook" / project / "threads.md"
     cards = blocks((root / "CARD.md").read_text() if (root / "CARD.md").is_file() else "",
                    re.compile(r"^## (C-\d+) · ([^\n]*)$", re.M))
     threads = blocks((root / "threads.md").read_text() if (root / "threads.md").is_file() else "",
@@ -89,15 +89,16 @@ def build(project: str) -> Path:
 
     L: list[str] = []
     L.append("---")
-    L.append("title: Lab log")
-    L.append("sidebar_label: Lab log")
-    L.append("sidebar_position: 3")
+    L.append("title: Threads")
+    # No sidebar entry at all: this page is reached from the paper's own
+    # switch. A project that advertises its backlog in the navigation is
+    # showing process where a reader came for a result.
     L.append(f"description: The questions asked on the way to {project}'s paper, in the "
              "order they were asked, and what each one came back as.")
     L.append("toc_max_heading_level: 2")
     L.append(f"source_digest: {digest(root)}")
     L.append("paper:")
-    L.append("  kind: Lab log")
+    L.append("  kind: Threads")
     L.append(f"  of: {project}")
     L.append("---")
     L.append("")
@@ -168,7 +169,7 @@ def build(project: str) -> Path:
 def main() -> int:
     names = sys.argv[1:]
     if not names:
-        print("usage: build_lab_log.py <project> [...]", file=sys.stderr)
+        print("usage: build_threads_page.py <project> [...]", file=sys.stderr)
         return 2
     for name in names:
         path = build(name)
