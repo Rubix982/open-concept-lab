@@ -57,6 +57,7 @@ const sidebars: SidebarsConfig = {
     ]),
     project("edit-reach", "predicting reach", [
       { label: "Paper", doc: "paper" },
+      { label: "Lab log", doc: "lab-log" },
     ]),
     project("rome-neighbors", "geometry", []),
     project("claim-graph", "claims as nodes", []),

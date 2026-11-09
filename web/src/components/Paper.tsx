@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import clsx from "clsx";
 import { useDoc } from "@docusaurus/plugin-content-docs/client";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import { PaperSwitch } from "./LabLog";
 
 /**
  * Paper mode.
@@ -573,6 +574,8 @@ type PaperEntry = {
   started?: string;
   updated?: string;
   builds_on?: { label: string; href: string };
+  /** true when a sibling lab-log page exists; shows the Paper / Lab log switch. */
+  log?: boolean;
   keywords?: string[];
   contributions?: string[];
   reading_guide?: string;
@@ -613,6 +616,7 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
   return (
     <>
       <header className="ocl-paperhead">
+        {e.log ? <PaperSwitch here="paper" /> : null}
         {stamp ? <div className="ocl-paperhead__id">{stamp}</div> : null}
         <h1 className="ocl-paperhead__title">{title}</h1>
         {e.author ? <div className="ocl-paperhead__author">{e.author}</div> : null}

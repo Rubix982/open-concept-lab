@@ -15,11 +15,12 @@
     "typecheck": "tsc",
     "sync:demos": "node scripts/sync-demos.mjs",
     "prestart": "npm run sync:demos",
-    "prebuild": "npm run sync:demos && npm run check:papers && npm run check:ledger",
+    "prebuild": "npm run sync:demos && npm run check:papers && npm run check:ledger && npm run check:lab-log",
     "design:check": "node scripts/design-check.mjs",
     "idea": "node scripts/idea.mjs",
     "check:papers": "node scripts/check-papers.mjs",
-    "check:ledger": "node scripts/check-ledger.mjs"
+    "check:ledger": "node scripts/check-ledger.mjs",
+    "check:lab-log": "node scripts/check-lab-log.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.8.1",

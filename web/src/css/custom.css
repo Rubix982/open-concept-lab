@@ -9741,3 +9741,67 @@ a:hover > .ocl-home__featureCover {
 .markdown:has(> .ocl-paperhead) i {
   font-size: 1.01em;
 }
+
+/* ---- paper / lab log switch ---- */
+
+/* A segmented control, not two links: the pair is one object with two faces,
+   and a reader should be able to see which face they are on without reading
+   the page. Sits above the masthead on both, so it is in the same place. */
+.ocl-paperswitch {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin: 0 0 1.6rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ocl-paperswitch a {
+  padding: 0.3rem 0.85rem;
+  color: var(--ocl-ink-muted);
+  border: 1px solid var(--ocl-rule);
+  text-decoration: none;
+  transition: color var(--ocl-fast) var(--ocl-ease),
+    background-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-paperswitch a:first-child { border-radius: var(--ocl-radius-sm) 0 0 var(--ocl-radius-sm); }
+.ocl-paperswitch a:last-child { border-radius: 0 var(--ocl-radius-sm) var(--ocl-radius-sm) 0; }
+.ocl-paperswitch a:hover { color: var(--ocl-ink); background: var(--ocl-paper-raised); }
+
+.ocl-paperswitch a.is-here {
+  color: var(--ocl-paper);
+  background: var(--ocl-ink);
+  border-color: var(--ocl-ink);
+}
+
+/* The switch spans both columns in paper mode; without this it is set inside
+   the first column and reads as a stray pair of words. */
+.markdown:has(> .ocl-paperhead) .ocl-paperswitch { column-span: all; }
+
+/* ---- the lab log's own head ---- */
+
+/* Deliberately not `.ocl-paperhead`: that class is what selects paper mode,
+   and a log read in two justified columns is a worse log. */
+.ocl-loghead {
+  margin: 0 0 2.4rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  text-align: center;
+}
+
+.ocl-loghead__id {
+  font-family: var(--ocl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--ocl-ink-faint);
+  text-transform: uppercase;
+}
+
+.ocl-loghead__title {
+  margin: 0.5rem 0 0;
+  font-size: 1.9rem;
+  line-height: 1.15;
+}

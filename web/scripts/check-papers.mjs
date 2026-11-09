@@ -9,7 +9,9 @@
  * failure nobody notices for a month. So the headings stay as markdown and the
  * order is enforced here instead.
  *
- * A page is a paper if its front matter has a `paper:` key.
+ * A page is a paper if its front matter has a `paper:` key -- except a lab log,
+ * which shares the key so it can carry the Paper/Lab log switch but is a
+ * generated record rather than an argument, and has no sections to order.
  *
  * Run by `prebuild`, so a divergent page fails the build rather than shipping.
  */
@@ -50,6 +52,10 @@ function check(path) {
   const text = readFileSync(path, "utf8");
   const fm = frontMatter(text);
   if (!/^paper:\s*$/m.test(fm)) return null;
+  // A lab log declares `kind: Lab log`. It is generated from the project's own
+  // record and checked by check-lab-log instead; the eight-section order is
+  // meaningless for it.
+  if (/^\s*kind:\s*Lab log\s*$/m.test(fm)) return null;
 
   const body = text.slice(fm.length + 6);
   const headings = [...body.matchAll(/^## +(.+)$/gm)].map((m) => m[1].trim());

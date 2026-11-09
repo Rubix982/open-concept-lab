@@ -1,0 +1,110 @@
+---
+title: Lab log
+sidebar_label: Lab log
+sidebar_position: 3
+description: The questions asked on the way to edit-reach's paper, in the order they were asked, and what each one came back as.
+toc_max_heading_level: 2
+source_digest: bf2b3d0c554a0159
+paper:
+  kind: Lab log
+  of: edit-reach
+---
+
+<LabLogHead of="edit-reach" />
+
+_Generated from this project's `CARD.md` and `threads.md`. Regenerated rather than edited._
+
+**The paper does not depend on anything here, and a reader can ignore this page entirely.** It exists because the paper reports what was found and not what was asked — which questions were opened, in what order, and which ones came back the other way. The vocabulary below describes how the work was organised. A **card** is one question held open at a time, closed only with a number or a sentence that could have gone the other way. A **thread** is an open question that may never become work.
+
+## The questions, in the order they were asked
+
+8 of 8 closed. Each row is one question that was held open alone until it closed.
+
+| # | The question | Opened | How it closed |
+| --- | --- | --- | --- |
+| `C-001` | Does predicted reach predict measured movement? | 2026-10-31 | 2026-10-31 — DENIED. Raw Spearman 0.522 (95% CI 0.450–0.587) over 495 probes, falling to an excess of 0.085 (−0.003, +0.172) once the same-subject control is removed, so the interval straddles zero. Verdict added to this line 2026-11-10:… |
+| `C-002` | Does an edit's effect depend on what it said, or only on whose key it touched? | 2026-10-31 | 2026-10-31 — branch 1, and the gap is quantified |
+| `C-003` | Does an edit break the old answer and supply the new one by two different routes? | 2026-11-01 | 2026-11-01 — branch 1, and the two halves separate in opposite directions |
+| `C-004` | Is the hop-2 coefficient at floor, when the floor is read on the hop-2 prompts themselves? | 2026-11-01 | 2026-11-01 — branch 1, reached through branch 2 and a confound |
+| `C-005` | Is `TransformersModel` the same instrument as `LanguageModel`, or a different one? | 2026-11-01 | 2026-11-01 — branch 1, after the card's own criterion turned out to be unsatisfiable |
+| `C-006` | Do the two values partition by the GPU that served the request? | 2026-11-01 | 2026-11-01 — branch 1, and the device turns out to be 1.4% of the drift |
+| `C-007` | Is the upper bound on an edit's reach informative, or merely true? | 2026-11-09 | 2026-11-09 — branch 2. Median looseness 1.05 in the near field and 21.12 (95% CI 20.16–22.14) in the far field, over 1,539 question-positions. The number that carries it is the far field's median bound of 1.1456 against a median… |
+| `C-008` | Does a subject's prominence predict how hard an edit hits, where geometry does not? | 2026-11-09 | 2026-11-09 — branch 3. Neither predicts. Prominence +0.005 (95% CI −0.315, +0.314), dependent count −0.053 (−0.366, +0.270), over 41 subjects; all six partials and both covariate controls also span zero. The limit belongs with the number:… |
+
+## Questions that were answered along the way
+
+10 of 12. A thread is not work; it is something that was not understood, written down so it could not be quietly dropped.
+
+**`T-001` · Can any screen bound an edit's damage from above, or only from below?**
+
+A benchmark bounds damage from below — it finds what it contains. A computable per-prompt quantity removes the enumeration problem, but it is still evaluated on prompts we happen to have. Is there a construction that bounds reach above (a statement of the form "nothing outside this set receives…
+
+> The bounding half: yes, and it is useless where it matters. [E-015] / C-007, 2026-11-09. The bound holds for all 1,539 question-positions, but its median value in the far field is 1.1456 against a median coefficient of 0.0544 — it permits a question that never names the edited subject to receive…
+
+**`T-002` · Is subject-string frequency the operative variable, not dependent count?**
+
+Carried from ai/edit-slice/threads.md. If the edit arrives wherever the subject string sits, then how often that string occurs across the probe bank may predict damage better than how many facts depend on the edited one. Falsifier is written out in the edit-slice ledger. Check KnowledgeSmith…
+
+> Neither variable predicts damage, and the detectable floor belongs with that. [E-016] / C-008, 2026-11-09, 41 subjects. Prominence — Wikipedia language editions, a proxy for corpus frequency and labelled as one — reads +0.005 (95% CI −0.315, +0.314). Dependent count — distinct Wikidata properties —…
+
+**`T-003` · The shared prerequisite behind "modify" and "extract"**
+
+Open Problems §3.2.2 (modify internal mechanisms) and §3.5 (extract latent knowledge) both bottom out in the same requirement: a way to tell what the model holds that is independent of what the asker put in. Modify needs it to know what it broke; extract needs it to know the answer was not planted.…
+
+> Two instruments, both already here, and one depends on the other. [R-004], 2026-11-09, from our own record with no new work. The modify instrument is the coefficient: it reports whether a prompt names the edited subject ([E-004]), not how hard the edit lands (C-001 denied; [E-015] showed the…
+
+**`T-005` · Is the coefficient blind in exactly the regime propagation lives in?**
+
+(k·u)/(u·k) is large when a token's key resembles k, which happens when that token is the edited subject. So the measure has dynamic range in the near field — prompts containing the subject, 0.93–1.000 — and by construction little or none in the far field, prompts that never name the subject, where…
+
+> Yes — blind to the subject, sighted only on the relation. [E-004] / C-004, 2026-11-01. Most of this was already measured by [E-039] on 2026-10-15 (0.933 near, 0.055 far, n=513); what was missing was the floor on those prompts, which this supplied. Far-field excess over a same-relation donor floor…
+
+**`T-006` · `LanguageModel` is deprecated, and every number so far was read through it**
+
+editreach.remote.connect calls nnsight.LanguageModel, which now warns: "LanguageModel is deprecated; use TransformersModel(repoid, task='text-generation') instead." Every reading in edit-slice and in [E-001] came through it. Two things need separating before anything is changed: whether…
+
+> The loaders are the same instrument; the switch is safe and was deliberately not taken. [E-005] / C-005, 2026-11-01. Module paths identical; within-loader spread equals between-loader spread over three readings each, so the loader is not the variable. Gates hold under both. connect(loader=...) is…
+
+**`T-007` · Does an edit break the old answer and supply the new one by two different routes?**
+
+Three results line up and none was designed to test this. [E-002] (edit-reach): destruction of the pre-edit answer is subject-keyed — a magnitude-matched edit on a different person moves it by 0.0016 against 0.0625 for your own subject, almost regardless of content. [E-014] (edit-slice): the…
+
+> Yes, measured. [E-003] / C-003, 2026-11-01. On the same 495 probes: destination real - ctl is +0.2828 (CI +0.2424, +0.3232) where destruction real - ctl is +0.0009; destination ctl - other is +0.0000 where destruction ctl - other is +0.0583. Opposite directions on one probe set under one metric, so…
+
+**`T-008` · Readings differ between NDIF serving sessions, on byte-identical inputs**
+
+Found while answering T-006, and larger than it. Two readings of the same prompts at the same positions, with byte-identical input ids, differ on 93.94% of elements — up to 6.250e-01 at lmhead and 3.125e-02 at the layer-5 key site, against a median |key| of 1.135e-02. Only ~6% of differing elements…
+
+> It is routing, and it partitions cleanly by serving GPU. [E-006] / C-006, 2026-11-01. 16 readings, two devices, 8 each, one value per device and one device per value. Floor median spread 0.000e+00 within a GPU and 3.110e-06 across. The replica hypothesis this thread floated is established. But the…
+
+**`T-010` · How loose is the Cauchy–Schwarz bound on the coefficient, in each regime?**
+
+|c(k)| ≤ ‖k‖&#123;C⁻¹&#125;/‖k‖&#123;C⁻¹&#125; holds for every prompt. A bound that is never approached forbids nothing. Measure the looseness ratio bound/|actual| per prompt, in the near field (prompts naming the edited subject, c 0.93–1.000) and the far field (prompts that never name it, floor 0.082), on the probe…
+
+> Far field 21.12 (95% CI 20.16–22.14), near field 1.05. [E-015], 2026-11-09, 1,539 question-positions. Branch 2. The near-field tightness is not independent news — there k ≈ k by the same prefix-sharing that pins the anchor — and is reported as an implementation check rather than a result.
+
+**`T-011` · Can an activation-space bound cross into a behavioural one through a transformer?**
+
+T-001's bound is on ‖Δh‖ at the edited layer. Every claim anyone cares about is about output. Crossing needs a Lipschitz constant for layers L→end, and dot-product self-attention is reported to lack a global one on an unbounded domain. Is a deterministic behavioural bound therefore unavailable in…
+
+> Not unavailable in principle — merely uncomputed, and the paper says so itself. [R-001], 2026-11-09. Theorem 3.1 proves dot-product self-attention is not Lipschitz for any p ∈ [1, ∞], by a Jacobian term equal to the sample variance of the inputs, which is unbounded. But the same paper states that…
+
+**`T-012` · Is weight-space certification easier than input-space, and has anyone taken that?**
+
+Certified robustness is hard partly because the adversary picks a direction in a ball. A rank-one weight edit perturbs along one direction, fixed and known before the edit is applied, with only a scalar varying per input. That is a strictly smaller problem than the one the literature attacks.…
+
+> The field exists, certifies a ball, and has never seen this structure. [R-002], 2026-11-09, read from Weng et al.'s problem formulation and Theorem 0.1 rather than its prose. Their threat model is an ℓ∞ ball ‖Ŵ⁽ᵏ⁾ − W⁽ᵏ⁾‖∞ ≤ ε, with single-layer ℓp perturbation handled analytically — so the worst…
+
+## Still open
+
+Carried rather than closed. Each says what it is waiting for.
+
+| # | The question | Status |
+| --- | --- | --- |
+| `T-004` | A page built from the agent's own self-written reference loses to one built from outside sources | parked |
+| `T-009` | The serving GPU accounts for 1.4% of the observed drift. What accounts for the rest? | open — narrowed |
+
+## What was actually run
+
+36 of 36 tickets closed. A ticket is a unit of work and carries its artifacts; the runs behind each number in the paper are listed in its own appendix, which is where a reader checking a figure should go instead of here.
+

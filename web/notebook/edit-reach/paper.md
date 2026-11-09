@@ -15,6 +15,7 @@ paper:
   started: 30 Sep 2026
   updated: 10 Nov 2026
   pdf: true
+  log: true
   builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
   keywords:
     - model editing

@@ -362,7 +362,7 @@ Both hold because they measure different halves. This card measured **destructio
 
 **Status:** closed
 **Opened:** 2026-10-31
-**Closed:** 2026-10-31
+**Closed:** 2026-10-31 — **DENIED.** Raw Spearman 0.522 (95% CI 0.450–0.587) over 495 probes, falling to an excess of 0.085 (−0.003, +0.172) once the same-subject control is removed, so the interval straddles zero. *Verdict added to this line 2026-11-10: it had lived only in the closure section below, and every other card carries its verdict here — which left the generated lab log showing this card closing with a date and nothing else.*
 
 **1. WHERE WE ARE.**
 The coefficient is exactly 1.000 for probes that begin with the edited subject (216 cells, four models 6B–405B, worst deviation 0.00e+00), falls from about 0.93 at layer 5 to about 0.52 at layer 24 when a preamble precedes the subject, and sits at a 0.082 different-subject baseline — all of it read from the **unedited** model, with no edit ever run at any layer but 5.
