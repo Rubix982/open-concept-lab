@@ -8984,7 +8984,7 @@ a:hover > .ocl-home__featureCover {
 .markdown:has(> .ocl-paperhead) > h2,
 .markdown:has(> .ocl-paperhead) > hr,
 .markdown:has(> .ocl-paperhead) > .ocl-paperhead,
-.markdown:has(> .ocl-paperhead) > .ocl-abstract,
+.markdown:has(> .ocl-paperhead) > .ocl-paper-abstract,
 .markdown:has(> .ocl-paperhead) > .ocl-contrib,
 .markdown:has(> .ocl-paperhead) > .ocl-ptable,
 .markdown:has(> .ocl-paperhead) > .ocl-figure--wide,
