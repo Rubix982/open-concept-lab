@@ -218,3 +218,34 @@ Saif: "the way we structured edit-reach is different from how we had structured 
 **A silent defect, found while converting.** This page ended with `<References project="edit-slice" />`, and the component has no `project` prop — it has `ids`, `items` and `children`. So the reference list has rendered **empty since the page was written**, while twenty-six papers sit tagged `edit-slice` in `data/papers.yml`. The prop now exists and the list has twenty-six entries. A component that ignores an unknown prop fails exactly this quietly.
 
 **What was converted and what was not.** Structure, front matter, section names and numbers, every `§` cross-reference, Artifacts moved into §4 Implementation, and three appendices added — the derivation stated on its own, the provenance pointing at the generated evidence ledger, and a readiness table. **§6 keeps its existing claim-status table rather than becoming a `<Ledger>`**, because `<Finding>` requires a falsifier per row and that table does not carry them. They exist in `agents/shared/decisions.md`, which states falsification before each run; pulling twelve of them onto the page is a content job and is not done here. Rendering "no falsifier stated" twelve times would have been honest and useless.
+
+---
+
+### D-006 · The overview on the template, and the counts that had drifted
+
+**Status:** closed
+**Type:** document
+**Priority:** medium
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 1.5h
+**Spent:** 1.5h
+
+**Description:**
+`web/notebook/edit-slice/index.md` predated the overview template. It had a State table, Three ways in, What would change our mind and Scope — good material, none of it on the shape every project's overview now takes.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/notebook/edit-slice/index.md
+- web/notebook/edit-slice/review.md — the counts in Appendix B
+
+**Closed:** 2026-11-09.
+
+**Every count on both pages was stale, and by a lot.** The overview said 22 decisions, 16 findings and 57 threads. The paper said 33, 18 and 67. The repository says **56, 33 and 85**. The paper also described itself as *~3,000 words* while being 12,600. Nobody had been wrong on purpose; the numbers were written once, by hand, and the work kept going. **A figure that is written by hand into prose has a half-life**, and these two pages are the argument for the evidence ledger being generated rather than typed.
+
+**The chain figure is this project's story and it reads as a sequence of denials.** How big is the contradiction an edit leaves in its grounds — there is none, the grounds are evidential. Does the model revise the premise — no, a work-country edit relocates a birthplace just as often. Then what is moving — arithmetic. Do published benchmarks test on such prompts — one does. The thing the project was built to measure does not exist, and what it found instead was in neither of the first two boxes.
+
+**Three of the old sections survived unchanged**, because the template does not have them and should: *Three ways in* (the paper, the narrative, the ledger, each with who it is for and how long it is), *What would change our mind*, and *Scope, deliberately*. The first of those is better than anything in the template and belongs in it.
+
+**What this ticket did not foresee:** that fixing the counts would trip the PDF staleness check twice in a row. Editing the page makes its PDF older than it, which is exactly what that check is for; it is mildly annoying and it is working.

@@ -326,17 +326,17 @@ This project built an instrument rather than a method, and the instrument is the
 record. There is no package to install: the measure is three modules and the thing
 that makes it trustworthy is that every run is written down.
 
-Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 33
-decisions, 18 findings and 67 threads, generated from the repository so it cannot drift
+Every record behind this paper is listed in the **[evidence ledger](./ledger)** — all 56
+decisions, 33 findings and 85 threads, generated from the repository so it cannot drift
 from it. Most of them went nowhere; that is the point of publishing the whole list rather
 than the ten claims this paper defends.
 
 | | |
 | --- | --- |
 | [evidence ledger](./ledger) | the complete record, generated |
-| `agents/shared/decisions.md` | 33 entries; falsification stated before each run |
-| `agents/shared/findings.md` | 18 literature entries, including the two that killed directions |
-| `threads.md` | 67 threads — 47 answered, 8 parked, 7 open, 2 active, 3 dropped |
+| `agents/shared/decisions.md` | 56 entries; falsification stated before each run |
+| `agents/shared/findings.md` | 33 literature entries, including the two that killed directions |
+| `threads.md` | 85 threads — 66 answered, 9 parked, 6 open, 3 dropped |
 | `results/*.json` | per-item records, <Evidence id="E-011" /> … <Evidence id="E-018" />, <Evidence id="T-075" /> |
 | `logs/` | every run, levelled and committed, including the failures |
 | `src/possession.py`, `src/discrimination.py` | the shipped measure and the paired control |
@@ -1237,7 +1237,7 @@ The tokenizer is the one place the premise can fail quietly: a leading space or 
 ## Appendix B. Provenance of every number
 
 This project's provenance is not a table, because it outgrew one. It is the
-[evidence ledger](./ledger) — 33 decisions, 18 findings and 67 threads, generated from the repository so it cannot drift from it, with falsification stated before each run rather than after it.
+[evidence ledger](./ledger) — 56 decisions, 33 findings and 85 threads, generated from the repository so it cannot drift from it, with falsification stated before each run rather than after it.
 
 Every `<Evidence>` marker in the sections above links into it. A number on this page that cannot be followed to a dated entry there is a defect, and finding one is a favour.
 
