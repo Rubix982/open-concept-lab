@@ -611,3 +611,53 @@ Do not back-date it and do not present the reconstructed description as a pre-re
 - agents/engineer/tickets.md -> E-002, reconstructed
 
 **Closed:** 2026-11-08. E-001 through E-014 now present; every decision has a ticket.
+
+### E-015 · The looseness of the Cauchy–Schwarz bound, per regime
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 1 sitting. No NDIF, no edits, no gradients.
+
+**Description:**
+
+Close C-007 with two medians and their intervals. Everything below is settled; a second engineer should not have to choose anything.
+
+**Why there is a bound at all.** ROME adds `δ · c(k)` at the edited layer, where `δ = v* − Wk*` is fixed and only `c(k) = (k*·k)/(k*·k*)` varies with the token. `c` is therefore a projection coefficient, and Cauchy–Schwarz bounds it: `|c(k)| ≤ ‖k‖/‖k*‖`, with equality exactly when `k ∥ k*`. `C = I` throughout this project, so the norms are Euclidean and no whitening enters. **This is analytic and must ship its derivation** in the decisions entry, not just its result.
+
+**Input, fixed.** `results/cache/E004_keys.pt` — 513 instances written by `run_e004.py`, each carrying `case_id`, `hop`, `relation`, `names_subject` (one flag per question), `k_star` (d=14336, float32), `k_natural` (nq × d) and `k_final` (nq × d). Llama-3.1-8B, layer 5. Do not re-read from NDIF; this file is the input.
+
+**Which key for which regime, and it matters.** `run_e004.py` lines 95–112: `k_natural` is read at the **subject's last token** when `names_subject[i]` is true, and at the final token otherwise. `k_final` is always the final token. So:
+
+- **near field** — items where `names_subject[i]` is true, read at `k_natural[i]`
+- **far field** — items where `names_subject[i]` is false, read at `k_final[i]`
+
+Using `k_final` for the near field is the mistake available here: it silently measures the final-token coefficient and reports it as a subject-position one. The eight-item peek recorded on C-007 made exactly that slip and its numbers are not comparable to the near-field figures elsewhere.
+
+**Procedure.**
+
+1. **Gate, and it is a stop condition.** Recompute `c` for case 3's hop-2 questions and compare against the first entries of `per_question` in `results/E-004-far-field-floor.json`. They must agree to float32. Two are known: `0.06878352910280228` and `0.077170230448246`. If they do not agree, the cache and the published numbers disagree and **nothing else in this ticket is meaningful** — stop and report that instead.
+2. Compute `c = (k*·k)/(k*·k*)` and `bound = ‖k‖/‖k*‖` in float64 for every question-position, carrying `case_id`, `hop`, `relation`, `names_subject`, and which key was used.
+3. Looseness ratio `bound/|c|`. **Report how many items have `|c|` below 1e-6 and exclude them**, rather than letting a near-zero denominator manufacture an unbounded ratio — a far-field coefficient near zero is the expected case, not an anomaly, so this threshold is a reporting decision and must be stated with the result.
+4. Median and IQR per regime, with a bootstrap interval (10,000 resamples, seed 1538). Also report the **maximum** ratio per regime: the median says whether the bound is typically useful, the maximum says whether it ever is not.
+5. Sanity check that cannot be skipped: every item must satisfy `|c| ≤ bound`. A violation is an implementation error, not a finding.
+
+**Outputs.**
+
+- `results/E-015-bound-looseness.json` — per item, plus a `meta` block with the gate result, the excluded-item count, library versions and seed.
+- `agents/shared/decisions.md` — one entry, whichever way it comes out, carrying the three-line derivation.
+- `CARD.md` — close C-007 on the branch its field 5 already names.
+
+**Done when** the two medians exist with intervals, the gate is recorded as passed, and C-007 is closed with numbers rather than a description.
+
+**Blockers:** none. The input is on disk.
+
+**RCA:** —
+
+**Artifacts:** `results/E-015-bound-looseness.json`; `agents/engineer/workspace/run_e015.py`; `logs/run_e015-2026-11-09-223351.log`; `agents/shared/decisions.md` → "[E-015] Result: the upper bound is tight where the subject is named and vacuous where it is not"; `CARD.md` → C-007, branch 2.
+
+**Closed:** 2026-11-09. Gate passed at 2.390e-08 against the published [E-004] values; all 1,539 items satisfy `|c| ≤ bound`; none dropped for a near-zero denominator. Near field median looseness 1.05, far field 21.12 (95% CI 20.16–22.14, max 1715.3).
+
+One thing the ticket did not foresee, and it is the part worth keeping: the dry-run predicted the far-field bound would read ≈ 1 and forbid nothing. It reads 1.15 and forbids nothing — but the reason given was `E[‖k‖²_{C⁻¹}] = d`, which assumes `C` is the key second moment. `C = I` here, so that argument does not apply at all. Right number, wrong derivation. Recorded in [E-015] because the derivation is the half that would have generalised.

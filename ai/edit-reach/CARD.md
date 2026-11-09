@@ -8,6 +8,38 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-007 · Is the upper bound on an edit's reach informative, or merely true?
+
+**Status:** closed
+**Opened:** 2026-11-09
+**Closed:** 2026-11-09 — **branch 2.** Median looseness **1.05** in the near field and **21.12** (95% CI 20.16–22.14) in the far field, over 1,539 question-positions. The number that carries it is the far field's **median bound of 1.1456** against a median coefficient of 0.0544: the bound permits a question that never names the edited subject to receive more than the near field actually receives, so it forbids nothing that happens. The near field's 1.05 is not a second finding — there `k ≈ k*`, so Cauchy–Schwarz is near-equality by the same prefix-sharing that pins the anchor at 1.000. See `agents/shared/decisions.md` [E-015].
+
+**1. WHERE WE ARE.**
+The dry-run on T-001 produced a universal upper bound in one line: because ROME's update has a **fixed** direction and only the scalar `c(k) = (k*·k)/(k*·k*)` varies with the token, Cauchy–Schwarz gives `|c(k)| ≤ ‖k‖/‖k*‖` for every prompt, with no enumeration and no forward pass through the edited model. (`C = I` here — confirmed from `coefficients()` in `run_e004.py` and by reproducing two recorded values exactly from the cache.) The bound is certainly true. Nothing says it is tight enough to forbid anything.
+
+**2. WHAT WE ARE DOING.**
+For every key already cached in `results/cache/E004_keys.pt` — 513 instances, 1,539 question-positions, Llama-3.1-8B layer 5 — compute the **looseness ratio** `(‖k‖/‖k*‖) / |c(k)|` and report its median and interquartile range separately for the near field (questions naming the edited subject, read at `k_natural`, the subject's last token) and the far field (questions that do not, read at `k_final`). Offline, no NDIF, no edits, no gradients: one pass over a 206 MB file.
+
+**3. WHY.**
+We do not know whether the bound is usable. If it is tight, the project can make a statement it currently cannot make at all — *nothing outside this set receives more than X* — which is a different kind of claim from everything else here, all of which is a lower bound or a denial. If it is loose, we learn that the only universal statement available is vacuous, and we learn it before writing it down as though it were a result.
+
+**4. WHAT IS AFFECTED.** *(written before the work)*
+- The paper's sentence *"we can say which facts an edit touches, not how hard."* The dry-run already showed this is imprecise — how hard **is** boundable in activation space — and this card decides which correction it gets.
+- The scope claim *contamination detector, not propagation detector*, in the abstract and on the overview page. A loose far-field bound reaches the same conclusion by a second, independent route and strengthens it; a tight one does not overturn it but sits beside it awkwardly and needs its own sentence.
+- T-001, T-010. T-011 and T-012 are **not** affected either way — they are about crossing into behaviour and about prior art, and neither turns on this number.
+- Nothing measured so far changes. This is a new quantity over cached keys, not a re-reading of an old one.
+
+**5. CONCLUSION IF WE DO IT.** *(both branches, in advance)*
+- **If the median looseness ratio is ≤ 10 in both regimes:** the screen carries a usable upper bound, and we claim it — a positive result this project does not currently have, and the first thing here that bounds damage from above rather than finding it from below.
+- **If it exceeds 10 in the far field:** the bound is real and vacuous exactly where propagation lives. We claim that the only universal statement available is uninformative there, and the paper's sentence becomes *boundable in activation space, informatively only in the near field* — the contamination-detector finding arriving a second time by a different route.
+
+**The threshold was chosen after an eight-item feasibility peek, and that is recorded rather than hidden.** Checking the cache was runnable at all meant computing eight values, which showed far-field ratios of roughly 12–40 at the final-token position. So branch 2 is the likelier one and the card is opened knowing it. The peek is 8 of 1,539 at one position and settles nothing; what it costs is the right to call this pre-registered, and it is not called that.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+A sentence already on a published page stays wrong in a way we have now seen. *"We can say which facts an edit touches, not how hard"* reads as though no bound on magnitude exists; one does, and it is a line of algebra. Skipping this leaves the page asserting an absence that the project can disprove in an afternoon — which is the worst of the three states, worse than either branch above.
+
+---
+
 ## C-006 · Do the two values partition by the GPU that served the request?
 
 **Status:** closed

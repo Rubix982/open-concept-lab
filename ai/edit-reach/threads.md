@@ -6,7 +6,7 @@ Open questions, not work. A thread graduates to a ticket when it becomes work. O
 
 ### T-001 · Can any screen bound an edit's damage from above, or only from below?
 
-**Status:** open
+**Status:** answered
 **Parent:** —
 **Opened:** 2026-10-31
 **Question:** A benchmark bounds damage from below — it finds what it contains. A computable per-prompt quantity removes the enumeration problem, but it is still evaluated on prompts we happen to have. Is there a construction that bounds reach above (a statement of the form "nothing outside this set receives more than c"), or is an upper bound structurally unavailable, in which case that should be stated once and loudly rather than implied away?
@@ -25,7 +25,7 @@ So a universal upper bound exists and is one line. Three things follow, and the 
 
 **What the reframe breaks.** The paper's *"we can say which facts an edit touches, not how hard"* is imprecise under this frame: how hard **is** boundable in activation space. What cannot be done is converting that to behaviour. The sentence should say which of the two it means.
 
-**Answer:** — (resolves through T-010 and T-011)
+**Answer (the bounding half): yes, and it is useless where it matters.** [E-015] / C-007, 2026-11-09. The bound holds for all 1,539 question-positions, but its median value in the far field is **1.1456** against a median coefficient of 0.0544 — it permits a question that never names the edited subject to receive more than the near field actually receives. A universal upper bound is available and forbids nothing that happens. T-001's second clause is the live one: **state that once and loudly** rather than imply it away. The remaining half — whether any activation bound crosses into behaviour — is T-011 and is unanswered.
 
 ### T-002 · Is subject-string frequency the operative variable, not dependent count?
 
@@ -115,13 +115,13 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 
 ### T-010 · How loose is the Cauchy–Schwarz bound on the coefficient, in each regime?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-11-09
 **Question:** `|c(k)| ≤ ‖k‖_{C⁻¹}/‖k*‖_{C⁻¹}` holds for every prompt. A bound that is never approached forbids nothing. Measure the looseness ratio `bound/|actual|` per prompt, in the near field (prompts naming the edited subject, `c` 0.93–1.000) and the far field (prompts that never name it, floor 0.082), on the probe sets already on disk.
 **Falsifier, and both branches carry a consequence:** if the ratio stays within about an order of magnitude in both regimes, the screen carries a usable upper bound — a positive result this project does not currently have. If it is loose by orders in the far field, the bound is real and vacuous exactly where propagation lives, which is the contamination-detector finding arriving a second time by a different route and worth reporting as such.
 **Cost:** no edits, no gradients, no new reads. `C` and `k*` are cached and `k` is already recorded per probe.
-**Answer:** —
+**Answer:** **Far field 21.12 (95% CI 20.16–22.14), near field 1.05.** [E-015], 2026-11-09, 1,539 question-positions. Branch 2. The near-field tightness is not independent news — there `k ≈ k*` by the same prefix-sharing that pins the anchor — and is reported as an implementation check rather than a result.
 
 ### T-011 · Can an activation-space bound cross into a behavioural one through a transformer?
 

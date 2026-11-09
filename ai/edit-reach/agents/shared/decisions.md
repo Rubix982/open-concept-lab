@@ -441,3 +441,38 @@ _Date: 2026-11-03_
 **Revisit if:** a run is ever found to have produced no log because it crashed before its first record. That is now indistinguishable from never having been started, which is the one thing this trade gives up.
 
 **Artifacts:** `src/editreach/logs.py`; `tools/dryruns/dryrun_logging.py`; `tools/dryruns/dryrun_e004.py`
+
+## [E-015] Result: the upper bound is tight where the subject is named and vacuous where it is not
+
+_Date: 2026-11-09 · Llama-3.1-8B, layer 5, 513 instances, 1,539 question-positions · offline over `results/cache/E004_keys.pt`, no NDIF · closes C-007 on branch 2_
+
+**The bound, and its derivation.** ROME adds `δ · c(k)` at the edited layer, where `δ = v* − Wk*` is fixed and only `c(k) = (k*·k)/(k*·k*)` varies with the token. So `c` is the projection coefficient of `k` onto `k*`, and Cauchy–Schwarz gives, for every prompt, with no enumeration and no forward pass through the edited model:
+
+    |c(k)| ≤ ‖k‖ / ‖k*‖,   with equality exactly when k ∥ k*.
+
+`C = I` throughout this project, so the norms are Euclidean and no whitening enters. **This is analytic.** It is refuted by an error in the three lines above, or by its premise — that the update is rank-one with a fixed direction — failing. It is not refuted by any measurement.
+
+**What was measured** is whether the bound is *informative*, which is a different question and an empirical one. Looseness is `bound/|c|`; a bound never approached forbids nothing.
+
+| regime | n | median &#124;c&#124; | median bound | median looseness | 95% CI | IQR | max |
+| --- | ---: | ---: | ---: | ---: | --- | --- | ---: |
+| near field (question names the subject, read at its last token) | 639 | 0.9334 | 0.9881 | **1.05** | 1.05–1.06 | 1.04–1.09 | 10.6 |
+| far field (question never names it, read at the final token) | 900 | 0.0544 | 1.1456 | **21.12** | 20.16–22.14 | 16.11–32.75 | 1715.3 |
+
+Gate passed: 16 hop-2 coefficients recomputed from the cache against the published `E-004` values, worst deviation **2.390e-08**. All 1,539 items satisfy `|c| ≤ bound`; none was dropped for a near-zero denominator.
+
+**Decision: the bound is real, and it is useless in the regime anyone cares about.** State it that way rather than reporting that an upper bound exists.
+
+The number that carries this is **the far field's median bound of 1.1456**. The far-field coefficient is 0.054, and the bound permits 1.15 — which is more than the *near* field actually receives. So the bound cannot distinguish a token that never names the edited subject from one that is the edited subject. It forbids nothing that happens.
+
+**The near field's 1.05 is not a second finding.** In the near field `k ≈ k*`, which is the same prefix-sharing that pins the anchor coefficient at exactly 1.000 — so Cauchy–Schwarz is near-equality by construction there. Reporting "tight in the near field" as a positive result would be reporting the anchor result a second time under a new name. It is recorded because it confirms the implementation, not because it is news.
+
+**A prediction that came out right for the wrong reason, recorded because the distinction is the point.** The dry-run on T-001 predicted the far-field bound would read ≈ 1 and therefore forbid nothing. It reads 1.15 and forbids nothing. But the *reason* given was `E[‖k‖²_{C⁻¹}] = tr(C⁻¹C) = d`, which assumes `C` is the key second moment. `C = I` here, so that argument does not apply. The observed ≈ 1 comes from keys having comparable Euclidean norms, which is a different fact. Right number, wrong derivation, and the derivation is what would have generalised.
+
+**Alternatives rejected.** Reporting the mean looseness — the far-field maximum is 1715, so a mean describes the tail rather than the typical case. Excluding small `|c|` — none fell below 1e-6, and a far-field coefficient near zero is the expected case rather than an anomaly, so excluding it would have removed the evidence.
+
+**Revisit if:** the covariance is ever something other than the identity. The bound's form is unchanged but `‖k‖_{C⁻¹}` is a different quantity, and whitening is exactly the operation that could make the far-field bound small. [E-016] in edit-slice found whitening a near-no-op by cosine and a 50x change in targeting, so this is not idle.
+
+**What this does not show.** Nothing about behaviour. The bound is on `‖Δh‖` at one layer; crossing to logits needs a Lipschitz constant for the rest of the network, which is T-011 and is unread.
+
+**Artifacts:** `results/E-015-bound-looseness.json`; `agents/engineer/workspace/run_e015.py`; `logs/run_e015-2026-11-09-223351.log`

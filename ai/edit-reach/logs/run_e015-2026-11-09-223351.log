@@ -1,0 +1,8 @@
+2026-11-09 22:33:51,878 INFO     run_e015  run run_e015 -> logs/run_e015-2026-11-09-223351.log
+2026-11-09 22:33:51,878 INFO     run_e015  config {"cache": "/Users/saifulislam/code/open-concept-lab/ai/edit-reach/results/cache/E004_keys.pt", "seed": 1538}
+2026-11-09 22:33:51,992 INFO     run_e015  loaded 513 instances from E004_keys.pt
+2026-11-09 22:33:52,041 INFO     run_e015  gate: 16 hop-2 coefficients recomputed, worst deviation 2.390e-08 -> PASS
+2026-11-09 22:33:52,098 INFO     run_e015  all 1539 items satisfy |c| <= bound
+2026-11-09 22:33:52,343 INFO     run_e015  near field: n=639 (dropped 0), median looseness 1.05 (95% CI 1.05-1.06), IQR 1.04-1.09, max 10.6
+2026-11-09 22:33:52,526 INFO     run_e015  far field: n=900 (dropped 0), median looseness 21.12 (95% CI 20.16-22.14), IQR 16.11-32.75, max 1715.3
+2026-11-09 22:33:52,530 INFO     run_e015  wrote /Users/saifulislam/code/open-concept-lab/ai/edit-reach/results/E-015-bound-looseness.json (1539 items)

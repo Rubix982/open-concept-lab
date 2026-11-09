@@ -35,7 +35,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-019 | Documentor | The fault that kept coming back in different clothes | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | O-003 | Orchestrator | The ticket files and the plan disagreed about what was finished | closed |
-| E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
+| E-001 – E-015 | Engineer | Fifteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
 ## Blocked
 
@@ -44,6 +44,8 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- E-015 · C-007 closed on branch 2. The Cauchy–Schwarz upper bound on an edit's reach is tight in the near field (median looseness 1.05) and vacuous in the far field (21.12, 95% CI 20.16–22.14): its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives. Offline over cached keys, no NDIF.
+- T-001 · Premise Dry-Run. The upper bound was the *easy* direction all along — one line of Cauchy–Schwarz, no enumeration, no forward pass. Spawned T-010 (measured, answered same day), T-011 (does it cross into behaviour) and T-012 (is weight-space certification the easy case, and is it taken).
 - O-003 · The ticket files and `plan.md` disagreed about what was finished. All six disputed tickets were checked against their own Done-when and all six were finished; the stale `**Status:**` lines are corrected. D-004's `###` heading had been lost inside D-019's closing notes, which is why a count by heading and a count by status disagreed by one.
 - D-019 · `web/blog/2026-11-09-three-checks-that-could-not-have-failed.md` — three conformance checks that could not have failed, and the count verified down from five to three.
 - D-018 · A legibility pass with the research-writing skill: everything named in English before it takes a symbol, the six probe families defined from the probe file, and ticket identifiers out of the prose.
@@ -78,6 +80,6 @@ Three things are carried forward. None of them blocks anything, and none of them
 
    The other four are not next. T-002 is gated on reading KnowledgeSmith, which already tested out-degree and may close it for free. T-003 and T-004 are positioning and a cross-project observation, neither of which closes with a number. T-009 has mostly dissolved — [E-012] found the quantity discrete rather than drifting — and its own field 6 says so: 2.2e-04 sits below every tolerance here and the anchor gate is immune by construction. It continues as a daily reading, not as a card.
 
-3. **Eight threads are open** — T-001, T-002, T-003, T-004, T-009, and T-010 to T-012 from the dry-run on T-001 — and they are the resume point, not a menu to browse during a card.
+3. **Six threads are open** — T-002, T-003, T-004, T-009, T-011 and T-012 — and they are the resume point, not a menu to browse during a card.
 
 **One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.
