@@ -9,11 +9,11 @@ toc_max_heading_level: 3
 paper:
   kind: Working paper
   id: OCL-2026-07
-  version: v0.3
+  version: v0.4
   author: Saif Ul Islam
   affiliation: Open Concept Lab
   started: 30 Sep 2026
-  updated: 9 Nov 2026
+  updated: 10 Nov 2026
   pdf: true
   builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
   keywords:
@@ -38,7 +38,7 @@ A rank-one weight edit divides its update by a fixed inner product, so the fract
 
 It cannot. It is pinned to 1 wherever the prompt names the edited subject, and flat where the question never names it — which is where propagation lives. The same control separates the two regimes by **+0.8439** and by **+0.0002**. What the quantity does detect is contamination, and one published benchmark <Cite id="cohen2024ripple" /> has items that fail on exactly that ground.
 
-Two further results came off the same probe set. Identity is worth about **sixty-five times** content, which is why there was little for any measure to predict; and the two halves of an edit — breaking the old answer and supplying the new one — separate in opposite directions on the same probes.
+Four further results came off the same probe set. Identity is worth about **sixty-five times** content, which is why there was little for any measure to predict; the two halves of an edit — breaking the old answer and supplying the new one — separate in opposite directions on the same probes; the one universal upper bound on reach, derived in a line from the update's fixed direction, permits a question that never names the edited subject to receive **more** than one that does, and so forbids nothing; and nothing about the subject — neither its prominence nor how many facts depend on it — predicts how hard an edit lands, to within the effect 41 subjects can resolve.
 
 </Paper>
 
@@ -645,6 +645,7 @@ The table below is every claim this paper has made, numbered in the order they w
 </Ledger>
 
 <Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="10 Nov 2026" version="v0.4">The abstract and the masthead caught up with the body, a day late: the abstract still said "two further results" when there were four, and the masthead still read v0.3 while this table had already turned v0.4. Recorded because a paper whose front matter disagrees with its own revision log is the same fault as a ticket whose status disagrees with its closure note.</Rev>
   <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
   <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
   <Rev date="6 Nov 2026" version="v0.2">F‑07 denied. Every per-family tolerance in §4.1 was removed; the section now says a tolerance must be measured where it runs.</Rev>
@@ -756,7 +757,7 @@ What a short venue note needs, against what exists today. This is a checklist fo
   <Check met need="A result that could have come out the other way" where="§5">The floor was fixed before the run, and the question closed against the project</Check>
   <Check met need="One figure that carries the argument" where="§5">The near-and-far-field figure does the work §5 would otherwise do in prose</Check>
   <Check met need="Reproduction path" where="§4">Config, seed and resolved environment beside every result directory</Check>
-  <Check met need="Positioning against the nearest work" where="§2">He et al. (2026) read in full and distinguished</Check>
+  <Check met need="Positioning against the nearest work" where="§2">He et al. (2026) read in full and distinguished; and for §5.6, Weng et al. (2020) and Kim et al. (2021) read in their problem formulations and theory sections rather than their abstracts, which overturned one claim this paper had already written down</Check>
   <Check need="Read by someone outside the project" where="§7.5">Every finding produced and reviewed by the same two parties</Check>
   <Check need="Breadth across depth" where="§8.1">One layer. A sweep on the cached subjects is the cheapest fix</Check>
   <Check need="A delivery-to-effect link" where="§7.1">Blocked on the backward pass; 42 survivors, not a sample</Check>
