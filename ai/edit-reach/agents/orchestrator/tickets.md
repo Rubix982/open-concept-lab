@@ -41,4 +41,12 @@ All six were finished. Four of them already carried a `**Closed:**` date and an 
 - `agents/engineer/tickets.md` — E-001 and E-007 status lines; E-001's artifact list and closing note filled in from the results file
 - `plan.md` — Next Orchestrator Action rewritten; it still read *"Run the documentation effort, D-001 first"*, which finished the day before
 
+**Addendum, same day — the correction had the same fault as the thing it corrected.**
+
+The rewritten `Next Orchestrator Action` carried item 2 forward verbatim: *"the honest candidates are T-005 and the post-hoc reading in [E-001]."* Neither is a candidate. T-005 was answered 2026-11-01 by [E-004] / C-004, and the scope sentence it existed to license is written in the paper's abstract and on the overview page. The post-hoc reading was run as C-002 on 2026-10-31 on a pre-stated test. Both had been closed for over a week when the line was rewritten, and the rewrite did not check either.
+
+This is worth recording rather than quietly fixing, because it is the same shape as the stale status lines: a line that reads as current, is not, and carries no marker of its age. Checking the statuses and not the item immediately below them is reading the part that was already in question and trusting the part that was not.
+
+`plan.md` item 2 now names what is actually open and says why four of the five threads are not next.
+
 **Closed:** 2026-11-09. Statuses now read 32 closed, 1 split, 0 open across all four agents, which agrees with `plan.md` row for row.
