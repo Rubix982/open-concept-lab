@@ -118,7 +118,17 @@ def convert_figure(block: str, assets: pathlib.Path, n: int) -> str:
     src = strip_jsx_attr(block, "src")
 
     if src:
-        svg = WEB / "static" / src.lstrip("/")
+        source = WEB / "static" / src.lstrip("/")
+        # The grain layer is a full-canvas turbulence filter. On screen it is
+        # the house texture; through rsvg it forces the whole figure to be
+        # rasterised, which took one PDF to 2 MB. Print does not need it.
+        svg = assets / source.name
+        if source.exists():
+            text = source.read_text()
+            text = re.sub(r'<rect[^>]*filter="url\(#grain\)"[^>]*/>', "", text)
+            svg.write_text(text)
+        else:
+            svg = source
     else:
         inner = re.search(r"(<svg\b.*?</svg>)", block, re.S)
         if not inner:

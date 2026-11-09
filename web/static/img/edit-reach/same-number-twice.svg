@@ -1,4 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" width="1000" height="540" role="img" aria-label="Three nested boxes. The outermost is the deployment — the dtype, sharding and tensor shape a model is served with — which sets the scale of disagreement. Inside it is routing, which replica served a request, worth about three millionths. Innermost is a single trace, where a derived ratio read with both of its terms inside that trace was exactly zero at all fifteen layer-model pairs tested.">
+  <style type="text/css"><![CDATA[
+    /* The page has a light and a dark theme. An image element cannot inherit
+       the page's custom properties, because it is a separate document; its own
+       stylesheet is honoured though, media queries included. So the figure
+       carries its own copy of the palette and follows the reader's theme. */
+    :root {
+        --paper: #f4f1ea;
+        --paper-raised: #fffdf8;
+        --ink: #2b2a28;
+        --link: #4338a8;
+        --oxide: #a4442f;
+        --umber: #8a5a3b;
+        --sage: #7fa98a;
+        --sage-deep: #4a6f55;
+        --gold: #f2c46d;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --paper-raised: #24231f;
+          --ink: #eeece6;
+          --link: #b1a9ff;
+          --oxide: #e3977f;
+          --umber: #c9a07e;
+          --sage: #7dbb92;
+          --sage-deep: #93c9a5;
+          --gold: #d9a94e;
+      }
+      /* The grain is a warm tint baked into a colour matrix. On dark paper it
+         reads as brown noise, so it comes off rather than being re-tuned. */
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
   <defs>
     <filter id="rough" x="-6%" y="-6%" width="112%" height="112%">
       <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="61"/>
@@ -7,30 +41,30 @@
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="18"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
   </defs>
 
-  <rect width="1000" height="540" fill="#f4f1ea"/>
+  <rect width="1000" height="540" fill="var(--paper)"/>
   <rect width="1000" height="540" filter="url(#grain)"/>
 
-  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="72" y="128" width="856" height="330" rx="12" fill="#a4442f" fill-opacity="0.09" stroke="#a4442f" stroke-width="2.8"/>
-    <rect x="150" y="186" width="700" height="226" rx="11" fill="#f2c46d" fill-opacity="0.18" stroke="#8a5a3b" stroke-width="2.6"/>
-    <rect x="248" y="248" width="504" height="110" rx="10" fill="#7fa98a" fill-opacity="0.28" stroke="#4338a8" stroke-width="3"/>
+  <g filter="url(#rough)" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="72" y="128" width="856" height="330" rx="12" fill="var(--oxide)" fill-opacity="0.09" stroke="var(--oxide)" stroke-width="2.8"/>
+    <rect x="150" y="186" width="700" height="226" rx="11" fill="var(--gold)" fill-opacity="0.18" stroke="var(--umber)" stroke-width="2.6"/>
+    <rect x="248" y="248" width="504" height="110" rx="10" fill="var(--sage)" fill-opacity="0.28" stroke="var(--link)" stroke-width="3"/>
   </g>
 
-  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="#2b2a28">
-    <text x="72" y="62" font-size="19" letter-spacing="1.6" fill="#8a5a3b">WHAT IT TAKES TO GET THE SAME NUMBER TWICE</text>
+  <g font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', serif" fill="var(--ink)">
+    <text x="72" y="62" font-size="19" letter-spacing="1.6" fill="var(--umber)">WHAT IT TAKES TO GET THE SAME NUMBER TWICE</text>
     <text x="72" y="86" font-size="13.5" font-style="italic" opacity="0.72">three things move a reading off NDIF, and only the innermost one can be made to stop</text>
 
-    <text x="92" y="158" font-size="15" letter-spacing="1.1" fill="#a4442f">DEPLOYMENT</text>
+    <text x="92" y="158" font-size="15" letter-spacing="1.1" fill="var(--oxide)">DEPLOYMENT</text>
     <text x="252" y="158" font-size="12.5" opacity="0.72">dtype, sharding, tensor shape — not the model family</text>
     <text x="92" y="438" font-size="12.5" opacity="0.72">sets the scale: the same disagreement reads 5.3e-06 on the 8B and 7.5e-09 on GPT-J, which NDIF serves in float32</text>
 
-    <text x="170" y="216" font-size="15" letter-spacing="1.1" fill="#8a5a3b">ROUTING</text>
+    <text x="170" y="216" font-size="15" letter-spacing="1.1" fill="var(--umber)">ROUTING</text>
     <text x="284" y="216" font-size="12.5" opacity="0.72">which replica answered you, which you do not choose</text>
     <text x="170" y="376" font-size="12.5" opacity="0.72">2026-11-01: sixteen identical readings split eight and eight across two GPUs, 3.11e-06 apart.</text>
     <text x="170" y="394" font-size="12.5" opacity="0.72">Two days later all sixteen landed on one GPU and there was no partition to find.</text>
 
-    <text x="500" y="284" font-size="15" letter-spacing="1.1" text-anchor="middle" fill="#4338a8">BOTH TERMS INSIDE ONE TRACE</text>
-    <text x="500" y="322" font-size="26" text-anchor="middle" fill="#4338a8">0.000e+00</text>
+    <text x="500" y="284" font-size="15" letter-spacing="1.1" text-anchor="middle" fill="var(--link)">BOTH TERMS INSIDE ONE TRACE</text>
+    <text x="500" y="322" font-size="26" text-anchor="middle" fill="var(--link)">0.000e+00</text>
     <text x="500" y="344" font-size="12.5" text-anchor="middle" opacity="0.75">at all fifteen layer-model pairs tested</text>
 
     <text x="72" y="494" font-size="12.5" opacity="0.62">Read a ratio with both of its terms live in the same trace and nothing above it reaches the number. Carry one term across traces and both do.</text>
