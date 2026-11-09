@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="An evening park. A low sun sitting just above a line of trees, long light falling sideways across the ground, and a single figure walking with no particular destination. Under the horizon, faint bands stand for the years the sun brings back at once.">
+  <style type="text/css"><![CDATA[
+    /* The page has a light and a dark theme, and an image element cannot
+       inherit the page's custom properties — it is a separate document. Its own
+       stylesheet is honoured though, so the cover carries the palette itself.
+       Every var() keeps its light value as a fallback: a converter that does
+       not read :root still renders the thing a reader sees. */
+    :root {
+      --paper: #f4f1ea;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --gold: #e0a944;
+      --sage: #7fa98a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --gold: #d9a94e;
+        --sage: #7dbb92;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="23"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="9"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="800" height="560" fill="var(--paper, #f4f1ea)"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+
+  <!-- the sun, low -->
+  <g filter="url(#rough)">
+    <circle cx="560" cy="250" r="46" fill="none" stroke="var(--gold, #e0a944)" stroke-width="3.4"/>
+    <circle cx="560" cy="250" r="68" fill="none" stroke="var(--gold, #e0a944)" stroke-width="1.2" opacity="0.5"/>
+    <circle cx="560" cy="250" r="92" fill="none" stroke="var(--gold, #e0a944)" stroke-width="1" opacity="0.28"/>
+  </g>
+
+  <!-- the years, as faint bands the sun brings back at once -->
+  <g filter="url(#rough)" fill="none" stroke="var(--oxide, #a4442f)" stroke-linecap="round">
+    <path d="M330 212 H790" stroke-width="1.2" opacity="0.18"/>
+    <path d="M300 232 H790" stroke-width="1.2" opacity="0.26"/>
+    <path d="M286 252 H790" stroke-width="1.6" opacity="0.34"/>
+    <path d="M300 272 H790" stroke-width="1.2" opacity="0.26"/>
+    <path d="M330 292 H790" stroke-width="1.2" opacity="0.18"/>
+  </g>
+
+  <!-- the tree line, one irregular band rather than a row of arches -->
+  <g filter="url(#rough)" fill="none" stroke="var(--sage, #7fa98a)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M40 332 C70 300 84 318 102 300 C120 284 132 310 152 296 C174 280 186 312 208 302
+             C232 292 244 316 268 306 C292 296 304 318 330 312 C352 308 362 326 384 322"/>
+    <path d="M640 322 C664 300 676 318 698 302 C720 286 734 312 756 304 C772 298 778 316 790 312"/>
+  </g>
+  <g filter="url(#rough)" fill="none" stroke="var(--sage, #7fa98a)" stroke-width="1.2" opacity="0.5" stroke-linecap="round">
+    <path d="M96 332 V308" /><path d="M178 332 V300" /><path d="M262 332 V308" /><path d="M346 332 V316" />
+    <path d="M692 332 V308" /><path d="M748 332 V310" />
+  </g>
+
+  <!-- the ground, and the long light falling sideways -->
+  <g filter="url(#rough)" fill="none">
+    <path d="M40 358 H760" stroke="var(--ink, #2b2a28)" stroke-width="1.6" opacity="0.55"/>
+    <g stroke="var(--gold, #e0a944)" stroke-width="1.4" opacity="0.45" stroke-linecap="round">
+      <path d="M520 372 L300 392"/>
+      <path d="M540 386 L250 418"/>
+      <path d="M556 402 L210 446"/>
+      <path d="M568 418 L256 470"/>
+    </g>
+  </g>
+
+  <!-- one person, at the distance where a person is a mark and a long shadow -->
+  <g filter="url(#rough)" stroke-linecap="round">
+    <path d="M214 358 V326" stroke="var(--indigo, #4338a8)" stroke-width="5"/>
+    <circle cx="214" cy="320" r="4.2" fill="var(--indigo, #4338a8)"/>
+    <path d="M214 359 L132 402" stroke="var(--indigo, #4338a8)" stroke-width="2.6" opacity="0.4"/>
+  </g>
+
+  <g font-family="Georgia, 'Iowan Old Style', serif" fill="var(--ink, #2b2a28)">
+    <text x="60" y="94" font-size="23" letter-spacing="0.6">A Flash of Life</text>
+    <text x="60" y="124" font-size="14.5" font-style="italic" fill="var(--faint, #6b6863)">Asr, then a detour, then a park with nothing to finish in it</text>
+    <text x="60" y="508" font-size="16.5">There is no reason to feel tired or unhappy.</text>
+    <text x="60" y="534" font-size="12.5" font-style="italic" fill="var(--faint, #6b6863)">the evening arrives whether or not I have finished anything</text>
+  </g>
+</svg>
