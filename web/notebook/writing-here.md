@@ -218,6 +218,16 @@ is worth setting deliberately: a paper's subsections are where a reader navigate
 `id` is this lab's own document number. It is not a preprint identifier and does not
 claim to be one.
 
+**Margin notes fall inline on a paper page.** `<Margin>` floats into the gutter on
+an ordinary article; a two-column paper has no gutter, so it returns to the inline
+form with a left rule. Nothing to do when writing — the note goes where it goes.
+
+**Three pointers carry a paper page, because bold alone does not.** An oxide run-in
+through `<Lead>` says *a new move starts here*; an indented paragraph says *this
+continues the move above*; a short accent rule above a heading says *a new section
+starts here*. Bold inside the body stays ink, so a number or a term does not compete
+with a run-in.
+
 **The sections stay as ordinary markdown and are not part of the component.**
 Docusaurus builds the contents rail from the markdown syntax tree, so a heading
 emitted by a React component never reaches it — the page would render correctly with

@@ -3439,6 +3439,7 @@ a[class*="tagWithCount"] span::after {
    ========================================================================== */
 
 .ocl-margin {
+  display: block;
   font-family: var(--ocl-apparatus);
   font-size: 0.8125rem;
   line-height: 1.45;
@@ -9628,4 +9629,108 @@ a:hover > .ocl-home__featureCover {
 
 .ocl-paper-index table {
   counter-increment: none;
+}
+
+/* ==========================================================================
+   Paper mode, continued — notes, and the pointers a reader navigates by
+   ========================================================================== */
+
+/*
+ * A margin note has no margin to go in. Outside paper mode it floats into the
+ * gutter on a negative margin; inside two columns that negative margin puts it
+ * on top of the next column, and on top of the contents rail. It returns to
+ * the inline form the component was written to fall back to.
+ */
+.markdown:has(> .ocl-paperhead) .ocl-margin,
+.markdown:has(> .ocl-paperhead) .ocl-aside {
+  float: none;
+  clear: none;
+  width: auto;
+  max-width: none;
+  margin: 0.7rem 0 0.9rem;
+  padding: 0.5rem 0 0.1rem 0.75rem;
+  border-top: 0;
+  border-left: 2px solid var(--ocl-rule-strong);
+  font-size: 0.78rem;
+  break-inside: avoid;
+}
+
+/* ---- the pointers ---- */
+
+/*
+ * Three devices, each doing one job, because the page had only bold and bold
+ * alone does not survive being set at 0.9rem in a serif.
+ *
+ *   the oxide run-in   says "a new move starts here"
+ *   the indent         says "this continues the move above"
+ *   the accent rule    says "a new section starts here"
+ */
+.markdown:has(> .ocl-paperhead) .ocl-lead {
+  color: var(--ocl-oxide);
+  font-weight: 700;
+}
+
+/* Paragraphs run on, indented, as a printed paper sets them. A paragraph that
+   opens on a run-in is a new move and starts flush. */
+.markdown:has(> .ocl-paperhead) > p {
+  margin-bottom: 0;
+  text-indent: 1.3em;
+}
+
+.markdown:has(> .ocl-paperhead) > p:has(> .ocl-lead:first-child),
+.markdown:has(> .ocl-paperhead) > h2 + p,
+.markdown:has(> .ocl-paperhead) > h3 + p,
+.markdown:has(> .ocl-paperhead) > h4 + p,
+.markdown:has(> .ocl-paperhead) > figure + p,
+.markdown:has(> .ocl-paperhead) > ol + p,
+.markdown:has(> .ocl-paperhead) > ul + p,
+.markdown:has(> .ocl-paperhead) > pre + p,
+.markdown:has(> .ocl-paperhead) > blockquote + p,
+.markdown:has(> .ocl-paperhead) > div + p,
+.markdown:has(> .ocl-paperhead) > section + p,
+.markdown:has(> .ocl-paperhead) > aside + p {
+  text-indent: 0;
+}
+
+/* A paragraph before a block still needs air under it. */
+.markdown:has(> .ocl-paperhead) > p:has(+ h2),
+.markdown:has(> .ocl-paperhead) > p:has(+ h3),
+.markdown:has(> .ocl-paperhead) > p:has(+ figure),
+.markdown:has(> .ocl-paperhead) > p:has(+ div),
+.markdown:has(> .ocl-paperhead) > p:has(+ ol),
+.markdown:has(> .ocl-paperhead) > p:has(+ ul),
+.markdown:has(> .ocl-paperhead) > p:has(+ pre),
+.markdown:has(> .ocl-paperhead) > p:has(+ aside) {
+  margin-bottom: 0.6rem;
+}
+
+/* A short accent above a section, so the eye finds the boundary in a column
+   where every line is the same weight. */
+.markdown:has(> .ocl-paperhead) > h2 {
+  position: relative;
+}
+
+.markdown:has(> .ocl-paperhead) > h2::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 2.4rem;
+  height: 2px;
+  background: var(--ocl-oxide);
+}
+
+/* Bold inside the body is a number or a term, not a new move: it keeps the ink
+   colour so it does not compete with the run-ins. */
+.markdown:has(> .ocl-paperhead) > p strong:not(.ocl-lead),
+.markdown:has(> .ocl-paperhead) li strong:not(.ocl-lead) {
+  font-weight: 600;
+  color: var(--ocl-ink);
+}
+
+/* Italic carries a term being introduced or a prompt quoted verbatim; at this
+   size the serif's italic needs the extra fraction to read as italic at all. */
+.markdown:has(> .ocl-paperhead) em,
+.markdown:has(> .ocl-paperhead) i {
+  font-size: 1.01em;
 }

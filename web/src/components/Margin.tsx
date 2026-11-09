@@ -18,9 +18,17 @@ export default function Margin({
 }: {
   children?: React.ReactNode;
 }): React.ReactNode {
+  /*
+   * A span, not an aside, and the reason is the HTML parser rather than taste.
+   * These notes are written mid-paragraph, where they belong — the note sits
+   * next to its line and that is the entire mechanism. An <aside> inside a <p>
+   * is invalid, so the parser closes the paragraph before it and the sentence
+   * breaks in half. Floated into the gutter that was invisible; inline it is
+   * not. A span styled `display: block` is valid there and renders the same.
+   */
   return (
-    <aside className="ocl-margin" role="note">
+    <span className="ocl-margin" role="note">
       {children}
-    </aside>
+    </span>
   );
 }
