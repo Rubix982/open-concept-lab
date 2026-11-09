@@ -20,12 +20,12 @@ The edit adds `δ · c(k)` at the edited layer, where `δ = v* − Wk*` is **fix
 So a universal upper bound exists and is one line. Three things follow, and the second is the one that matters.
 
 1. **It may be vacuous.** `C` is the second moment of keys, so `E[‖k‖²_{C⁻¹}] = tr(C⁻¹C) = d`: a typical token has `‖k‖_{C⁻¹} ≈ √d`. If `k*` is also typical the bound reads ≈ 1 — the anchor value — so it permits every token to behave like the anchor and forbids nothing. Whether that is what happens is measurable on data already on disk. Spawned **T-010**.
-2. **The real obstruction is downstream, and it is not ours.** A bound on `‖Δh‖` at one layer says nothing about logits without a Lipschitz constant for the rest of the network. Spawned **T-011**. *Corrected 2026-11-09, after reading the paper:* this bullet first said dot-product self-attention has "no global Lipschitz bound" and concluded that no deterministic behavioural bound is available through a transformer. The result is real — Kim, Papamakarios & Mnih, arXiv 2006.04710, ICML 2021 — but it is proved **for an unbounded input domain**, and a real transformer is arguably not in that case. The conclusion does not follow and has been withdrawn; what remains is that the constant for the bounded case is unknown. This is exactly what the `TODO(cite)` was for, and it caught a claim that had already been written down as though settled.
+2. **The real obstruction is downstream, and it is not ours.** A bound on `‖Δh‖` at one layer says nothing about logits without a Lipschitz constant for the rest of the network. Spawned **T-011**. *Corrected 2026-11-09, in two steps, and the second reversed more than the first.* This bullet originally said dot-product self-attention has "no global Lipschitz bound" and concluded that no deterministic behavioural bound is available through a transformer. Reading the abstract narrowed that — the proof is for an **unbounded** input domain. Reading the theory sections overturned it: the paper itself says *"if the input space is compact … any continuously differentiable function is Lipschitz, including dot-product self-attention"*. **A constant exists; nobody has computed it.** The conclusion is withdrawn in full and replaced by that sentence. See [R-001]. The `TODO(cite)` is what forced both steps, and the claim had been written down as settled before either.
 3. **This is certified robustness under another name**, and ours is the easy case. The literature certifies against an adversary free to pick any direction in a ball. A rank-one edit has one direction, chosen in advance and known before the edit is applied. Spawned **T-012**.
 
 **What the reframe breaks.** The paper's *"we can say which facts an edit touches, not how hard"* is imprecise under this frame: how hard **is** boundable in activation space. What cannot be done is converting that to behaviour. The sentence should say which of the two it means.
 
-**Answer (the bounding half): yes, and it is useless where it matters.** [E-015] / C-007, 2026-11-09. The bound holds for all 1,539 question-positions, but its median value in the far field is **1.1456** against a median coefficient of 0.0544 — it permits a question that never names the edited subject to receive more than the near field actually receives. A universal upper bound is available and forbids nothing that happens. T-001's second clause is the live one: **state that once and loudly** rather than imply it away. The remaining half — whether any activation bound crosses into behaviour — is T-011 and is unanswered.
+**Answer:** **The bounding half: yes, and it is useless where it matters.** [E-015] / C-007, 2026-11-09. The bound holds for all 1,539 question-positions, but its median value in the far field is **1.1456** against a median coefficient of 0.0544 — it permits a question that never names the edited subject to receive more than the near field actually receives. A universal upper bound is available and forbids nothing that happens. T-001's second clause is the live one: **state that once and loudly** rather than imply it away. The remaining half — whether any activation bound crosses into behaviour — is T-011 and is unanswered.
 
 ### T-002 · Is subject-string frequency the operative variable, not dependent count?
 
@@ -125,7 +125,7 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 
 ### T-011 · Can an activation-space bound cross into a behavioural one through a transformer?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-11-09
 **Question:** T-001's bound is on `‖Δh‖` at the edited layer. Every claim anyone cares about is about output. Crossing needs a Lipschitz constant for layers L→end, and dot-product self-attention is reported to lack a global one on an unbounded domain. Is a deterministic behavioural bound therefore unavailable in principle, available on a bounded input domain at a constant too loose to use, or replaceable by a probabilistic certificate from randomized smoothing?
@@ -138,11 +138,11 @@ So there is **no time component**. The quantity is not drifting; it is discrete,
 
 **What the question becomes:** on a bounded domain a Lipschitz constant exists; is it small enough to carry anything? That is not answered by this paper, and the honest position is that we do not know. Note also that our perturbation enters at an MLP output mid-stack, not at attention's input, so composition is what matters and the paper is a component of the answer rather than the answer.
 
-**Answer:** — (narrowed; the next step is a constant for the bounded case, not another search)
+**Answer:** **Not unavailable in principle — merely uncomputed, and the paper says so itself.** [R-001], 2026-11-09. Theorem 3.1 proves dot-product self-attention is not Lipschitz for any `p ∈ [1, ∞]`, by a Jacobian term equal to the sample variance of the inputs, which is unbounded. But the same paper states that *"if the input space is compact … any continuously differentiable function is Lipschitz, including dot-product self-attention"*, and declines that route only because the constant depends on the input range and a tight one *"would require non-trivial mathematical work"*. So **"no usable constant exists" is defensible; "no constant exists" is not** — and the second had already been written into T-001 before this was read. The remaining quantitative question (how loose a compact-domain constant would be, and whether randomized smoothing gives a usable probabilistic certificate instead) is untouched and is not this thread.
 
 ### T-012 · Is weight-space certification easier than input-space, and has anyone taken that?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-11-09
 **Question:** Certified robustness is hard partly because the adversary picks a direction in a ball. A rank-one weight edit perturbs along **one** direction, fixed and known before the edit is applied, with only a scalar varying per input. That is a strictly smaller problem than the one the literature attacks. Either someone has already made the observation for weight edits — in which case it is a citation, not a contribution — or the lane is open.
@@ -159,4 +159,4 @@ So "nobody certifies weight perturbations" would have been false and is not clai
 
 **The one thing that must be read before any positioning claim rests on this:** Weng et al.'s threat model — whether the perturbation is an arbitrary direction inside a norm ball, or can be a known fixed one. The project rule is to read the methods, not the prose, because an introduction says what the authors hoped the construction would give. `verified: false` on that entry in `web/data/papers.yml` until then.
 
-**Answer:** — (narrowed; blocked on reading one paper's methods section)
+**Answer:** **The field exists, certifies a ball, and has never seen this structure.** [R-002], 2026-11-09, read from Weng et al.'s problem formulation and Theorem 0.1 rather than its prose. Their threat model is an **ℓ∞ ball** `‖Ŵ⁽ᵏ⁾ − W⁽ᵏ⁾‖∞ ≤ ε`, with single-layer `ℓp` perturbation handled analytically — so the worst case ranges over every direction, while a ROME edit has one, fixed and known in advance. "Rank-one", "rank one" and "low-rank" appear **zero** times. Evaluation is MLPs of 2–10 layers on MNIST, Fashion-MNIST, SVHN and CIFAR-10: no transformers, no language models. **Claimed at exactly this strength and no further: unclaimed in this setting.** Weight-space certification itself is not open and is not claimed to be.

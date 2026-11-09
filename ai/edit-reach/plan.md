@@ -44,6 +44,8 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- R-001, R-002 · T-011 and T-012 answered by reading, not running. A deterministic behavioural bound through a transformer is **not** unavailable in principle — Kim et al. say a compact domain makes dot-product self-attention Lipschitz and decline that route only as non-trivial work — so "no usable constant exists" is defensible and "no constant exists" is not. And weight-space certification exists but certifies an **ℓ∞ ball**: Weng et al. never consider rank-one, and evaluate MLPs on MNIST/SVHN/CIFAR-10. The positioning claim is **unclaimed in this setting**, no stronger.
+- `tools/dryruns/dryrun_record.py` · three times in one session an entry was given its answer and left reading `open`. It is checked now rather than remembered. On its first run it also found E-003 and E-004 closed with no `**Artifacts:**` field at all, which is Discipline rule 1 and had stood since 2026-11-01.
 - E-015 · C-007 closed on branch 2. The Cauchy–Schwarz upper bound on an edit's reach is tight in the near field (median looseness 1.05) and vacuous in the far field (21.12, 95% CI 20.16–22.14): its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives. Offline over cached keys, no NDIF.
 - T-001 · Premise Dry-Run. The upper bound was the *easy* direction all along — one line of Cauchy–Schwarz, no enumeration, no forward pass. Spawned T-010 (measured, answered same day), T-011 (does it cross into behaviour) and T-012 (is weight-space certification the easy case, and is it taken).
 - O-003 · The ticket files and `plan.md` disagreed about what was finished. All six disputed tickets were checked against their own Done-when and all six were finished; the stale `**Status:**` lines are corrected. D-004's `###` heading had been lost inside D-019's closing notes, which is why a count by heading and a count by status disagreed by one.
@@ -80,6 +82,6 @@ Three things are carried forward. None of them blocks anything, and none of them
 
    The other four are not next. T-002 is gated on reading KnowledgeSmith, which already tested out-degree and may close it for free. T-003 and T-004 are positioning and a cross-project observation, neither of which closes with a number. T-009 has mostly dissolved — [E-012] found the quantity discrete rather than drifting — and its own field 6 says so: 2.2e-04 sits below every tolerance here and the anchor gate is immune by construction. It continues as a daily reading, not as a card.
 
-3. **Six threads are open** — T-002, T-003, T-004, T-009, T-011 and T-012 — and they are the resume point, not a menu to browse during a card.
+3. **Four threads are open** — T-002, T-003, T-004 and T-009 — and they are the resume point, not a menu to browse during a card.
 
 **One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.

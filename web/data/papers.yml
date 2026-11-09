@@ -848,7 +848,7 @@ kim2021lipschitz:
   area: Lipschitz bounds and certification
   verified: true
   projects: [edit-reach]
-  gives_me: Proves standard dot-product self-attention is not Lipschitz **for unbounded input domain**, and proposes an L2 self-attention that is. The qualification is the whole value — it does not say a bound is unavailable on a bounded domain, which is the case a real transformer is in.
+  gives_me: Proves dot-product self-attention is not Lipschitz for any p-norm on an **unbounded** domain, via a Jacobian term equal to the input sample variance. Says plainly that on a *compact* domain it is Lipschitz, and declines that route only as non-trivial work — so it rules out a usable constant, not a constant.
 
 weng2020certificated:
   title: Towards Certificated Model Robustness Against Weight Perturbations
@@ -856,13 +856,13 @@ weng2020certificated:
   year: 2020
   venue: AAAI
   url: https://ojs.aaai.org/index.php/AAAI/article/view/6105
-  status: to-read
+  status: skimmed
   relevance: high
   field: Theory
   area: Lipschitz bounds and certification
-  verified: false
+  verified: true
   projects: [edit-reach]
-  gives_me: Certification against *weight* rather than input perturbations — the nearest prior art to bounding an edit's reach. Entry is from a search result, not the paper; the threat model (arbitrary direction in a ball, or known direction) is exactly what must be read before any positioning claim rests on it.
+  gives_me: The nearest prior art to bounding an edit's reach, and the comparison is favourable. Certifies an ℓ∞ **ball** around the weights, so the worst case ranges over every direction; a ROME edit has one, fixed and known in advance. Rank-one never appears, and evaluation is MLPs on MNIST/SVHN/CIFAR-10, not transformers.
 
 tsai2021weightperturb:
   title: Formalizing Generalization and Robustness of Neural Networks to Weight Perturbations

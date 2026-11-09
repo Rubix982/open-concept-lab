@@ -167,6 +167,8 @@ The `base` arm is **not** re-run. [E-001] holds `base_token` and `p_base`; readi
 - `CARD.md` → C-003 closed on branch 1
 - `threads.md` → T-007 answered
 
+**Artifacts:** `results/E-003-destination.json`; `results/E-003-summary.md`; `agents/engineer/workspace/run_e003.py`; `agents/shared/decisions.md` → the [E-003] entry; `CARD.md` → C-003. *Added 2026-11-09: this ticket was closed with its planned `**Outputs.**` recorded but no `**Artifacts:**` field at all, which is Discipline rule 1. Found by `tools/dryruns/dryrun_record.py` on its first run; every file above was checked to exist.*
+
 **Closed:** 2026-11-01. Anchor gate passed at 0.000e+00 over 42 readings. Destination hit rates base 1% / real 29% / ctl 1% / other 1%; paired `real - ctl` +0.2828 (CI +0.2424, +0.3232) against destruction's +0.0009 on the same probes.
 
 **What the dry-run and the pre-run checks caught, none of it by running:**
@@ -226,6 +228,8 @@ This re-reads those 513 instances keeping the **key vectors** rather than the sc
 - `src/editreach/coefficient.py` → `keys_at`
 - `results/E-004-far-field-floor.json`, `results/E-004-summary.md`
 - `agents/shared/decisions.md` → [E-004]; `CARD.md` → C-004 branch 1; `threads.md` → T-005 answered
+
+**Artifacts:** `results/E-004-far-field-floor.json`; `results/E-004-summary.md`; `results/cache/E004_keys.pt`; `agents/engineer/workspace/run_e004.py`; `agents/shared/decisions.md` → the [E-004] entry; `CARD.md` → C-004. *Added 2026-11-09, same omission as E-003 and found the same way. The cached keys are listed because [E-015] later ran entirely off them.*
 
 **Closed:** 2026-11-01. Gate passed: hop-1 0.9334, hop-2 0.0544 against [E-039]'s 0.933 and 0.055. Far-field excess over a same-relation donor floor **+0.0002** (CI +0.0001, +0.0004) against the near field's +0.8439.
 
