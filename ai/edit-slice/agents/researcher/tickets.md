@@ -851,3 +851,61 @@ code reading and not measurement; read at HEAD rather than a tagged release.
 
 **Artifacts:** agents/shared/findings.md -> "[R-019] Finding" _(unratified)_
 **Closed:** 2026-10-16
+
+### R-004 · Close the residual scoop surface: EasyEdit and T-003
+
+**Status:** open
+**Type:** research
+**Priority:** medium
+**Created:** 2026-09-10 *(reconstructed)*
+**Updated:** 2026-11-09
+
+**Written after the fact, 2026-11-09, and that is the first thing to know about it.** This ticket never existed. Its id is cited in `design.md` and in `agents/shared/findings.md`, and work was done under it, but nothing in `agents/researcher/` carried it. Found by `edit-reach/tools/dryruns/dryrun_record.py` once it was pointed at every project rather than only at the one already cleaned. The description below is reconstructed from those two references and is marked where it is inference rather than record.
+
+**Description:**
+
+Design lens 2 asks what already exists and who is actively working on it. `design.md` §209 records the state plainly: *"Remaining scoop surface: EasyEdit and other toolkits not inspected directly."* This ticket is that surface — the editing toolkits whose shipped behaviour might already contain what this project claims is unclaimed, and which a reviewer would reach for first.
+
+Two strands, and they are in different states.
+
+**RULE-KE — resolved.** *Leveraging Logical Rules in Knowledge Editing: A Cherry on the Top*, Cheng et al., arXiv 2405.15452, May 2024. Recorded in `agents/shared/findings.md` as *"an open lead from R-004"*, and checked off under [R-005a]: it discovers logical rules and uses them to update facts correlated with the edit. **Verdict: forward, and a method.** It sits in JNO's comparison class rather than this project's, and does not touch premises. Lens 2 stays cleared on that strand.
+
+**EasyEdit and other toolkits — not done.** Not inspected directly, by `design.md`'s own admission. This is what keeps the ticket open.
+
+**Why it still matters.** The project's positioning everywhere is *unclaimed in this setting* and no stronger — but that phrase is only honest if the obvious places have been looked at, and a shipped toolkit is the most obvious place of all. The positioning rule cuts both ways here: a wrong *"the lane is open"* surfaces later when someone points at a config file, and it surfaces in review rather than in private.
+
+**Done when** EasyEdit's shipped editors and configs have been read for anything that computes a per-prompt reach quantity before an edit is applied, with the verdict written either way.
+
+**Blockers:** none.
+
+**RCA:** —
+
+**Artifacts:** `agents/shared/findings.md` → "RULE-KE checked off — it is a method, not a competitor"; `design.md` §209 and §511.
+
+**Closed:** —
+
+### R-013 · Are RippleEdits' prompts already subject-final?
+
+**Status:** closed
+**Type:** research
+**Priority:** high
+**Created:** 2026-10-17 *(reconstructed)*
+**Updated:** 2026-11-09
+
+**Written after the fact, 2026-11-09.** Same as R-004: the id is cited in `plan.md`, `CHANGELOG.md`, `threads.md` and `LOOP.md`, it has a committed artifact, and no ticket existed for it. Reconstructed from those references and from the artifact itself.
+
+**Description:**
+
+A week of work had been priced on the assumption that RippleEdits' prompts would need rewriting into subject-final form before the coefficient could be read on them. The premise was never checked. Check it: read the released prompts and count how many already begin with their subject.
+
+**Result.** **44 of 46,754** prompts begin with their subject. The benchmark is already subject-final, so the rewriting step does not exist and the week that rested on it does not either.
+
+**Why this is the ticket worth copying.** It killed a priced week by killing its premise, in twenty minutes, by reading the data instead of reasoning about it. `LOOP.md` cites it for exactly that, and `threads.md` calls a later check *"[R-013]-shaped"* — meaning hours rather than weeks, and aimed at an assumption rather than a result.
+
+**Blockers:** none.
+
+**RCA:** —
+
+**Artifacts:** `results/R-013-ripple-forms.json`; `CHANGELOG.md` entry of the same date; cited in `plan.md`, `threads.md` and `LOOP.md`.
+
+**Closed:** 2026-10-17 *(date reconstructed from the changelog block it sits in)*. 44 of 46,754 prompts subject-final.
