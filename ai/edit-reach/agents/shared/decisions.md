@@ -476,3 +476,38 @@ The number that carries this is **the far field's median bound of 1.1456**. The 
 **What this does not show.** Nothing about behaviour. The bound is on `‖Δh‖` at one layer; crossing to logits needs a Lipschitz constant for the rest of the network, which is T-011 and is unread.
 
 **Artifacts:** `results/E-015-bound-looseness.json`; `agents/engineer/workspace/run_e015.py`; `logs/run_e015-2026-11-09-223351.log`
+
+## [E-016] Result: neither prominence nor dependent count predicts how hard an edit hits
+
+_Date: 2026-11-09 · 41 subjects, 495 probes, Llama-3.1-8B layer 5 · closes C-008 on branch 3, answers T-002_
+
+**Decision: report a null with its detectable-effect floor, and make the published absence-sentence specific rather than general.**
+
+Per-subject damage is the median `excess` (real minus same-subject control movement). Against it, Spearman with 10,000-resample bootstrap intervals, seed 1538:
+
+| relationship | ρ | 95% CI |
+| --- | ---: | --- |
+| prominence (Wikipedia language editions) | **+0.005** | −0.315, +0.314 |
+| dependent count (distinct Wikidata properties) | **−0.053** | −0.366, +0.270 |
+| total statements | −0.055 | −0.370, +0.259 |
+| headroom (`p_base`) | −0.130 | −0.399, +0.171 |
+| prominence, partialled for dependent count | +0.059 | −0.228, +0.336 |
+| dependent count, partialled for prominence | −0.079 | −0.355, +0.211 |
+| prominence, partialled for both | +0.038 | −0.266, +0.327 |
+| dependent count, partialled for both | −0.047 | −0.340, +0.264 |
+
+All eight reported; six were computed and reporting a subset would be a cherry-pick. Confound controls all ran and all came back clean: the two predictors correlate at ρ = 0.701 (below the 0.8 line set in advance, so the partials are stable); controlling headroom moves prominence from +0.059 to +0.038; and over the four families every subject shares, prominence reads +0.015 and dependent count −0.039.
+
+**Rationale for the branch.** Field 5 named three outcomes in advance and this is the third. Nothing here is a surprise reading of a borderline number — the point estimates are within 0.13 of zero and no interval excludes it.
+
+**The limit, stated with the result rather than after it.** At n = 41 the widest interval spans 0.64, so this excludes a monotone relationship of about **|ρ| > 0.37** and nothing smaller. **No evidence of an effect; not evidence of no effect.** An effect of 0.2 would be invisible to this study.
+
+**Alternatives rejected.** Raw `movement` instead of `excess` — [E-002] put generic subject-keyed instability at 65× the content effect, so raw movement would have measured the control's job. Reporting only the headline pair — six correlations were computed. Dropping `Joey BadA$$` silently — it does not resolve by label against the cached snapshot and is named in the output.
+
+**Prominence is a proxy and is labelled as one.** T-002's falsifier asks for corpus frequency of the subject string; Wikipedia language-edition count measures documentation, not textual frequency. Its range is 0 to 67 so it is not degenerate, but it is not the named quantity.
+
+**Half a gate, recorded as such.** The ticket asked for [E-002]'s paired medians, +0.0583 identity against +0.0009 content. The content figure reproduces exactly (median excess 0.0009 over 495 probes); the identity figure is a different contrast this run does not recompute. One of two numbers checked. A gate that checks half of what it claims is the fault already paid for three times here.
+
+**Revisit if:** a corpus frequency source becomes available, or n grows past ~150 subjects, where |ρ| ≈ 0.2 becomes detectable. [E-047] in edit-slice is what holds n at 42.
+
+**Artifacts:** `results/E-016-subject-properties.json`; `results/E-016-summary.md`; `results/cache/E016_sitelinks.json`; `agents/engineer/workspace/run_e016.py`; `logs/run_e016-2026-11-09-230245.log`

@@ -123,3 +123,5 @@ It also gives C-001 what it needs. A correlation between predicted reach and mea
 - [R-002] T-012 answered — weight-space certification certifies an ℓ∞ ball, never rank-one, never a transformer; positioning fixed at "unclaimed in this setting" — `agents/shared/findings.md`
 - [O-003] `tools/dryruns/dryrun_record.py` — the record is checked against itself; found E-003 and E-004 closed since 2026-11-01 with no artifacts field
 - [R-003] T-002's gate run and cleared — KnowledgeSmith never tested out-degree (the words do not appear) and uses no frequency variable, so both arms of T-002 are unrun; `edit-slice/CLAUDE.md` corrected in place, it had said "do not re-derive this" about a question nobody answered
+- [E-016] Neither prominence nor dependent count predicts damage — prominence +0.005 (CI −0.315, +0.314), dependent count −0.053 (−0.366, +0.270), n=41; C-008 closed on branch 3, T-002 answered — `results/E-016-summary.md`
+- T-004 parked with the context to resume: `style` is aimed at humanistic styles in AI art, so the elicitation observation has no venue there

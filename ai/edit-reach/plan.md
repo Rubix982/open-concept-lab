@@ -35,7 +35,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-019 | Documentor | The fault that kept coming back in different clothes | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | O-003 | Orchestrator | The ticket files and the plan disagreed about what was finished | closed |
-| E-001 – E-015 | Engineer | Fifteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
+| E-001 – E-016 | Engineer | Sixteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
 ## Blocked
 
@@ -44,6 +44,8 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- E-016 · C-008 closed on branch 3 and T-002 answered. Neither a subject's prominence (+0.005, CI −0.315 to +0.314) nor its dependent count (−0.053, −0.366 to +0.270) predicts how hard an edit hits, over 41 subjects, with all six partials and both covariate controls also spanning zero. The limit is part of the result: n=41 excludes roughly |ρ| > 0.37 and nothing smaller.
+- T-004 · Parked rather than dropped. `style` aims at capturing humanistic styles in AI art; the elicitation observation fell out of it sideways and has no venue. Parked with what resuming needs, which is a venue, not evidence.
 - R-001, R-002 · T-011 and T-012 answered by reading, not running. A deterministic behavioural bound through a transformer is **not** unavailable in principle — Kim et al. say a compact domain makes dot-product self-attention Lipschitz and decline that route only as non-trivial work — so "no usable constant exists" is defensible and "no constant exists" is not. And weight-space certification exists but certifies an **ℓ∞ ball**: Weng et al. never consider rank-one, and evaluate MLPs on MNIST/SVHN/CIFAR-10. The positioning claim is **unclaimed in this setting**, no stronger.
 - `tools/dryruns/dryrun_record.py` · three times in one session an entry was given its answer and left reading `open`. It is checked now rather than remembered. On its first run it also found E-003 and E-004 closed with no `**Artifacts:**` field at all, which is Discipline rule 1 and had stood since 2026-11-01.
 - E-015 · C-007 closed on branch 2. The Cauchy–Schwarz upper bound on an edit's reach is tight in the near field (median looseness 1.05) and vacuous in the far field (21.12, 95% CI 20.16–22.14): its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives. Offline over cached keys, no NDIF.
@@ -82,6 +84,6 @@ Three things are carried forward. None of them blocks anything, and none of them
 
    The other four are not next. T-002's gate has been run [R-003] and cleared: KnowledgeSmith never tested out-degree and uses no frequency variable, so both arms of T-002's falsifier are unrun by anyone. It is now a measurement, not a reading. T-003 and T-004 are positioning and a cross-project observation, neither of which closes with a number. T-009 has mostly dissolved — [E-012] found the quantity discrete rather than drifting — and its own field 6 says so: 2.2e-04 sits below every tolerance here and the anchor gate is immune by construction. It continues as a daily reading, not as a card.
 
-3. **Four threads are open** — T-002, T-003, T-004 and T-009 — and they are the resume point, not a menu to browse during a card.
+3. **Two threads are open** — T-003 and T-009 — with T-004 parked — and they are the resume point, not a menu to browse during a card.
 
 **One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.

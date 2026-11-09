@@ -665,3 +665,56 @@ Using `k_final` for the near field is the mistake available here: it silently me
 **Closed:** 2026-11-09. Gate passed at 2.390e-08 against the published [E-004] values; all 1,539 items satisfy `|c| ≤ bound`; none dropped for a near-zero denominator. Near field median looseness 1.05, far field 21.12 (95% CI 20.16–22.14, max 1715.3).
 
 One thing the ticket did not foresee, and it is the part worth keeping: the dry-run predicted the far-field bound would read ≈ 1 and forbid nothing. It reads 1.15 and forbids nothing — but the reason given was `E[‖k‖²_{C⁻¹}] = d`, which assumes `C` is the key second moment. `C = I` here, so that argument does not apply at all. Right number, wrong derivation. Recorded in [E-015] because the derivation is the half that would have generalised.
+
+### E-016 · Prominence and dependent count against per-subject damage
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 1 sitting. One Wikidata call; everything else is on disk.
+
+**Description:**
+
+Close C-008 with two regression coefficients and their intervals. Everything below is settled.
+
+**Inputs, fixed.**
+
+- **Damage:** `results/E-001-predicted-vs-measured.json`, 495 probes over **42** subjects keyed by `owner`. Per subject, damage is the **median `excess`** — real movement minus same-subject control movement. Use `excess`, not `movement`: the control is what removes generic subject-keyed instability, and [E-002] showed that instability is 65× the content effect, so raw movement would measure the control's job rather than the subject's.
+- **Dependent count:** `../edit-slice/data/wikidata/2026-09-20/snapshot.json.gz`, already cached. `labels` maps QID → label; invert it to find each subject. `claims[qid]` is the property → statements map; dependent count is **the number of distinct properties**, and the alternative — total statements across properties — must be computed and reported alongside, because they are different variables and nothing yet says which is meant. **41 of 42 subjects resolve by label; name the one that does not and carry n=41.**
+- **Prominence:** the number of Wikipedia language editions for each QID, fetched once via `wbgetentities` with `props=sitelinks`. 41 ids in one call. **Persist the result** next to the snapshot so the run is repeatable without the network.
+
+**Confounds, each with its control. None is optional.**
+
+1. **Prominence and dependent count are not independent** — a well-documented person has more statements. Report their Spearman correlation first, and report each predictor's effect **partialled for the other**. If they correlate above 0.8 the partial coefficients are unstable at n=41 and the run must say so rather than present them.
+2. **Headroom.** A subject the model knows well has a higher pre-edit probability and more room to fall. Carry per-subject median `p_base` and report the regression **with and without** it as a covariate. A prominence effect that vanishes under headroom control is a headroom effect wearing prominence's name.
+3. **Uneven probe composition.** The six families are not equally represented per subject (210 position, 84 repetition, 80 alias, 42 exposure, 42 semantics, 37 discrimination). Report each subject's family counts, and recompute the medians over the **two families every subject has** as a sensitivity check. If the ranking changes between the two, report both and claim neither.
+
+**Procedure.**
+
+1. **Gate, and it is a stop condition.** Per-subject median `excess` over all 42 must reproduce [E-002]'s headline paired median of **+0.0583** for identity against **+0.0009** for content when aggregated as [E-002] aggregated it. If it does not, the two runs disagree about what `excess` means and nothing below is meaningful — stop and report that.
+2. Build the per-subject table: label, QID, median excess, median `p_base`, distinct-property count, total-statement count, sitelink count, family counts, n probes.
+3. Spearman for each predictor against median excess, with a bootstrap interval (10,000 resamples, seed 1538). Then partial Spearman, each controlling the other, and again controlling headroom.
+4. Report **all** of it, including the branches that came out null. A single reported correlation out of six computed is a cherry-pick; the table is the deliverable.
+
+**What this cannot show, and must be written into the summary.** n=41 subjects, one relation family, one model, one layer. Sitelink count is a proxy for corpus frequency, not a measurement of it — the falsifier in `edit-slice/threads.md` asks for corpus frequency and this is the closest thing obtainable without a corpus. Say so rather than letting a proxy pass as the quantity.
+
+**Outputs.**
+
+- `results/E-016-subject-properties.json` and `results/E-016-summary.md`
+- `agents/shared/decisions.md` — one entry, whichever way it comes out
+- `CARD.md` — close C-008 on one of the three branches in field 5
+- `threads.md` — T-002 answered
+
+**Done when** both coefficients exist with intervals, the gate is recorded, all three confound controls are reported, and C-008 is closed on a branch.
+
+**Blockers:** none.
+
+**RCA:** —
+
+**Artifacts:** `results/E-016-subject-properties.json`; `results/E-016-summary.md`; `results/cache/E016_sitelinks.json`; `agents/engineer/workspace/run_e016.py`; `logs/run_e016-2026-11-09-230245.log`; `agents/shared/decisions.md` → the [E-016] entry; `CARD.md` → C-008, branch 3.
+
+**Closed:** 2026-11-09. Branch 3: neither predictor moves. Prominence +0.005 (CI −0.315, +0.314), dependent count −0.053 (−0.366, +0.270); all three confound controls ran and changed nothing. n=41 — `Joey BadA$$` does not resolve by label and is named rather than dropped silently.
+
+Two things the ticket did not foresee. **The gate was only half checkable:** [E-002]'s content figure reproduces exactly (median excess 0.0009 over 495 probes) but its identity figure is a different contrast this run does not recompute, so one of the two numbers was checked. Recorded rather than glossed. **And the detectable-effect floor is the result here**, not a footnote: at n=41 the widest interval spans 0.64, so an effect of 0.2 would have been invisible, and a null reported without that sentence would overclaim.

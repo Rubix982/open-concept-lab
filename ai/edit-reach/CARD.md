@@ -8,6 +8,39 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-008 · Does a subject's prominence predict how hard an edit hits, where geometry does not?
+
+**Status:** closed
+**Opened:** 2026-11-09
+**Closed:** 2026-11-09 — **branch 3.** Neither predicts. Prominence **+0.005** (95% CI −0.315, +0.314), dependent count **−0.053** (−0.366, +0.270), over 41 subjects; all six partials and both covariate controls also span zero. The limit belongs with the number: at n=41 this excludes roughly **|ρ| > 0.37** and nothing smaller, so it is *no evidence of an effect*, not evidence of no effect. See `agents/shared/decisions.md` [E-016].
+
+**1. WHERE WE ARE.**
+Seven geometric candidates have been eliminated against a pre-registered floor, their best pairing bounded at 0.534, and the published page says *"it still has no candidate — but the absence is now evidence of having looked."* **Every one of those candidates was a property of the activation geometry.** None was a property of the subject. [R-003] established today that the nearest prior work never ran either arm of this question: KnowledgeSmith varies a node's depth in a hierarchy, never its number of dependents, and uses no frequency variable at all.
+
+**2. WHAT WE ARE DOING.**
+For the 42 edited subjects in [E-001], regress per-subject damage — the median `excess` over that subject's probes, which is real-minus-control movement — on two subject properties: **prominence**, as the number of Wikipedia language editions linking the subject's Wikidata item, and **dependent count**, as the number of Wikidata statements on that item. Report each coefficient with a bootstrap interval, their correlation with each other, and each one's partial effect with the other removed.
+
+**3. WHY.**
+We do not know whether the magnitude of damage is set by anything about the *fact* rather than by the geometry of its key. The project's working heuristic — edit facts with few dependents — has never been tested, and the two readings of it point opposite ways: "Maurice de Vlaminck" appears in very few prompts while "speed of light" appears in enormous numbers of them, so prominence and dependent count would rank the same facts in nearly the same order for opposite reasons. After this we know which, if either, carries the ranking.
+
+**4. WHAT IS AFFECTED.** *(written before the work)*
+- The published sentence *"the absence is now evidence of having looked"* on the edit-slice review page. It is true of geometry and this is the first thing that tests a different class of variable. If a subject property predicts, that sentence needs amending; if neither does, it gets stronger and should say which classes were searched.
+- T-002 closes, and T-086 in edit-slice — *what actually sets the magnitude* — gains its first non-geometric evidence either way.
+- The heuristic itself. It is currently advice with no measurement behind it.
+- **Nothing measured so far changes.** This is a new regression over numbers already on disk plus one Wikidata field.
+
+**5. CONCLUSION IF WE DO IT.** *(all three branches, in advance)*
+- **If prominence predicts and dependent count does not,** once each is partialled for the other: the heuristic is right about which facts to pick and wrong about why, and the rule is restated as *prominence*, not *entanglement*.
+- **If dependent count predicts and prominence does not:** structural entanglement sets magnitude here, the heuristic is right for its stated reason, and this is the first result in the project that agrees with the branch-structure line in the literature rather than departing from it.
+- **If neither predicts at n = 41,** with intervals spanning zero: we say that, with the interval, and the published absence-sentence is strengthened and made specific — two classes of variable searched, geometry and subject identity, neither carrying the magnitude.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+A published page claims a search was done and found nothing. The search was entirely geometric, and the page does not say so. Leaving this unrun means the claim keeps its generality without having earned it — and the cheapest possible test of a different variable class is sitting in a cached file.
+
+**On promotion, and why it is declined.** Field 4 names a load-bearing published claim, which is the Card's stated trigger for the ten-lens protocol. It is declined because field 5's three branches cost the same — one sitting, over data already on disk — and the protocol exists to decide *which tickets should exist at all* when that decision is expensive. Here it is not. Recorded so the decision is visible rather than skipped.
+
+---
+
 ## C-007 · Is the upper bound on an edit's reach informative, or merely true?
 
 **Status:** closed

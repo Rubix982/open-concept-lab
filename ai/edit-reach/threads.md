@@ -29,7 +29,7 @@ So a universal upper bound exists and is one line. Three things follow, and the 
 
 ### T-002 · Is subject-string frequency the operative variable, not dependent count?
 
-**Status:** open
+**Status:** answered
 **Parent:** T-001
 **Opened:** 2026-10-31
 **Question:** Carried from `ai/edit-slice/threads.md`. If the edit arrives wherever the subject string sits, then how often that string occurs across the probe bank may predict damage better than how many facts depend on the edited one. Falsifier is written out in the edit-slice ledger. **Check KnowledgeSmith (2510.02392) first — it already tested the out-degree hypothesis, and this thread is only interesting where it departs from that.**
@@ -38,7 +38,7 @@ So a universal upper bound exists and is one line. Three things follow, and the 
 
 So **both arms of this thread's falsifier are untouched by it** — neither subject-string frequency nor dependent count has been run against damage by anyone we have read. The gate was expected to kill this thread cheaply; it did the opposite, and the instruction that set the gate (`edit-slice/CLAUDE.md`) has been corrected in place.
 
-**Answer:** — (the gate is cleared; the measurement itself is unrun)
+**Answer:** **Neither variable predicts damage, and the detectable floor belongs with that.** [E-016] / C-008, 2026-11-09, 41 subjects. Prominence — Wikipedia language editions, a proxy for corpus frequency and labelled as one — reads **+0.005** (95% CI −0.315, +0.314). Dependent count — distinct Wikidata properties — reads **−0.053** (−0.366, +0.270). All six partial and covariate-controlled variants also span zero, and the two predictors correlate at 0.701, below the 0.8 line set in advance. At n=41 this excludes about **|ρ| > 0.37** and nothing smaller: *no evidence of an effect, not evidence of no effect.* The heuristic *edit facts with few dependents* is neither confirmed nor refuted; what is gone is the easiest way it could have been right.
 
 ### T-003 · The shared prerequisite behind "modify" and "extract"
 
@@ -50,11 +50,19 @@ So **both arms of this thread's falsifier are untouched by it** — neither subj
 
 ### T-004 · A page built from the agent's own self-written reference loses to one built from outside sources
 
-**Status:** open
+**Status:** parked
 **Parent:** T-003
 **Opened:** 2026-10-31
+**Parked:** 2026-11-09
 **Question:** Cross-project, from `~/code/style` C-002: the agent's own account of what it knows produced a worse artifact than knowledge brought in from human sources, on both blind questions (414 words against 1,649). If that reproduces, it is an elicitation result — what a model reports about its knowledge understates what it can use — and belongs to §3.5. Logged here so it does not go cold; the work, if any, stays in `style`.
-**Answer:** —
+
+**Parked, not dropped, 2026-11-09 — and here is what resuming it needs, because the context was missing from this entry.** `style` is not a project about elicitation. **Its aim is to capture different humanistic styles in AI-generated art.** The observation above fell out of it sideways; it was never what that project set out to measure, and the comparison was two artifacts on two blind questions, which is an anecdote rather than a result.
+
+So this is parked for two reasons that should be separated. **One:** the observation is real and would matter if it reproduced, so dropping it destroys something. **Two:** it has no home — `style` will not run it, because running it would be a scope change for a project aimed elsewhere, and edit-reach cannot run it because the instrument here is a weight-edit screen and this is a prompting comparison.
+
+**To resume cold:** the thing to establish first is not the effect but the venue. Either `style` opens a card for it deliberately, accepting the scope change, or it becomes its own small thing. Until one of those happens, more thinking here produces nothing. **Do not promote it to a card inside edit-reach** — it has no shared instrument, no shared data and no shared claim with anything in this project, and a card here would only be breadth wearing curiosity's clothes.
+
+**Answer:** — (parked; blocked on having a venue, not on evidence)
 
 ### T-005 · Is the coefficient blind in exactly the regime propagation lives in?
 
