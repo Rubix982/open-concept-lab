@@ -42,11 +42,16 @@ So **both arms of this thread's falsifier are untouched by it** — neither subj
 
 ### T-003 · The shared prerequisite behind "modify" and "extract"
 
-**Status:** open
+**Status:** answered
 **Parent:** —
 **Opened:** 2026-10-31
 **Question:** Open Problems §3.2.2 (modify internal mechanisms) and §3.5 (extract latent knowledge) both bottom out in the same requirement: a way to tell what the model holds that is independent of what the asker put in. Modify needs it to know what it broke; extract needs it to know the answer was not planted. Is that one instrument or two, and does this project's screen serve both or only the first?
-**Answer:** —
+
+**Answer:** **Two instruments, both already here, and one depends on the other.** [R-004], 2026-11-09, from our own record with no new work. The **modify** instrument is the coefficient: it reports whether a prompt names the edited subject ([E-004]), not how hard the edit lands (C-001 denied; [E-015] showed the universal bound is vacuous in the far field). The **extract** instrument is the possession filter in `edit-slice/src/possession.py`, whose second arm — the true answer must rank higher with the real subject than with a placeholder — *is* the independence requirement, so a model riding the template's base rate earns nothing. It reports 56 / 74 / 79 / 85% at 6B / 8B / 70B / 405B.
+
+Neither substitutes for the other, structurally: the coefficient is defined relative to an edit's key and **cannot be computed where no edit exists**, while the possession filter needs no edit and says nothing about what one would break. **And they are not parallel — possession is a prerequisite of the screen**, because a model that never held the grounds cannot orphan them. That dependency is the answer in the only form that changes what anyone does: run the extract-side instrument first.
+
+`TODO(cite)` — the *Open Problems* §3.2.2 / §3.5 references are not in `web/data/papers.yml` and are unverified. The answer does not rest on them and they must not appear in anything public until the paper is identified and read.
 
 ### T-004 · A page built from the agent's own self-written reference loses to one built from outside sources
 

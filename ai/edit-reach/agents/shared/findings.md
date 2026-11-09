@@ -57,3 +57,23 @@ T-002 asks whether subject-string frequency predicts damage better than dependen
 **Scope of this reading.** The arXiv HTML is 171,731 characters and was read in two passes covering the body and the appendices available there; the terms above were absent from both. If the published ICLR version differs, this finding is about the arXiv v3 of 25 March 2026.
 
 Confidence: **high** on the absent terms and on the quoted sentences. **Medium** that no appendix anywhere reports a degree statistic in passing, since the page truncates.
+
+## [R-004] Finding: one requirement, two instruments — and this project already has both
+
+_Date: 2026-11-09 · answers T-003 · synthesised from our own record, no new work and no new reading_
+
+T-003 asked whether *modify internal mechanisms* and *extract latent knowledge* bottom out in one instrument or two, and whether this project's screen serves both or only the first. **Two instruments. Both exist here. Neither can do the other's job, and the reason is structural rather than practical.**
+
+**The shared requirement is real.** Both need a way to tell what the model holds that is independent of what the asker put in. Modify needs it to know what it broke; extract needs it to know the answer was not planted.
+
+**The modify instrument is the coefficient.** `c(k) = (k*·k)/(k*·k*)` reports whether a prompt's key resembles the edit's key — which, as [E-004] established, amounts to reporting whether the prompt **names the edited subject**. It says which items receive the update. It does not say how hard: C-001 denied that, and [E-015] showed the only universal upper bound is vacuous in the far field.
+
+**The extract instrument is the possession filter**, and it was built before this question was asked. `edit-slice/src/possession.py` requires two things of an item: the true answer ranks first among N type-matched candidates, **and** it ranks higher with the real subject than with the subject replaced by a placeholder. That second arm *is* the independence requirement — **a model riding the template's base rate earns nothing**. It reports 56 / 74 / 79 / 85% possession at 6B / 8B / 70B / 405B, and GPT-J holding 13% of P19 birthplace.
+
+**Why neither substitutes for the other.** The coefficient is defined relative to `k*`, an edit's key, so **it cannot be computed where no edit exists** — which is exactly the extract case. The possession filter needs no edit and is a property of the unedited model, so it says nothing about what an edit would break. The two are not two views of one quantity; one presupposes an intervention and the other presupposes its absence.
+
+**The ordering is the part worth keeping.** They are not parallel. The possession filter is a **prerequisite** of the coefficient screen: `edit-slice/CLAUDE.md` makes possession a construct requirement — a model that never held the grounds cannot orphan them — so the extract-side instrument has to run first for the modify-side result to mean anything. That is a dependency, not a symmetry, and it is the answer to "one instrument or two" in the only form that changes what anyone does.
+
+**One thing this does not establish, and it must not travel.** The thread cites *Open Problems* §3.2.2 and §3.5. **That document is not in `web/data/papers.yml` and has not been verified here.** The answer above rests on our own record and needs no section numbers; those references must not appear in anything public until the paper is identified and read. Flagged rather than quietly dropped, because a section number reads as a checked citation.
+
+Confidence: **high** on the two instruments and on the dependency between them — both are in this repo and both have numbers. **Unassessed** on whether the sections cited actually frame the problem that way, which is the unverified part.

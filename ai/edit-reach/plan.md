@@ -44,6 +44,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- R-004 · T-003 answered from our own record with no new work. *Modify* and *extract* share one requirement and need **two** instruments, both already in this project: the coefficient reports which prompts name the edited subject, and the possession filter's placeholder arm is the independence test. Neither substitutes for the other — the coefficient cannot be computed where no edit exists — and possession is a **prerequisite** of the screen rather than its sibling.
 - E-016 · C-008 closed on branch 3 and T-002 answered. Neither a subject's prominence (+0.005, CI −0.315 to +0.314) nor its dependent count (−0.053, −0.366 to +0.270) predicts how hard an edit hits, over 41 subjects, with all six partials and both covariate controls also spanning zero. The limit is part of the result: n=41 excludes roughly |ρ| > 0.37 and nothing smaller.
 - T-004 · Parked rather than dropped. `style` aims at capturing humanistic styles in AI art; the elicitation observation fell out of it sideways and has no venue. Parked with what resuming needs, which is a venue, not evidence.
 - R-001, R-002 · T-011 and T-012 answered by reading, not running. A deterministic behavioural bound through a transformer is **not** unavailable in principle — Kim et al. say a compact domain makes dot-product self-attention Lipschitz and decline that route only as non-trivial work — so "no usable constant exists" is defensible and "no constant exists" is not. And weight-space certification exists but certifies an **ℓ∞ ball**: Weng et al. never consider rank-one, and evaluate MLPs on MNIST/SVHN/CIFAR-10. The positioning claim is **unclaimed in this setting**, no stronger.
@@ -84,6 +85,6 @@ Three things are carried forward. None of them blocks anything, and none of them
 
    The other four are not next. T-002's gate has been run [R-003] and cleared: KnowledgeSmith never tested out-degree and uses no frequency variable, so both arms of T-002's falsifier are unrun by anyone. It is now a measurement, not a reading. T-003 and T-004 are positioning and a cross-project observation, neither of which closes with a number. T-009 has mostly dissolved — [E-012] found the quantity discrete rather than drifting — and its own field 6 says so: 2.2e-04 sits below every tolerance here and the anchor gate is immune by construction. It continues as a daily reading, not as a card.
 
-3. **Two threads are open** — T-003 and T-009 — with T-004 parked — and they are the resume point, not a menu to browse during a card.
+3. **One thread is open** — T-009, which is a standing daily reading with a stated reopening condition rather than unfinished work — with T-004 parked — and they are the resume point, not a menu to browse during a card.
 
 **One thing E-001 would change if it came back.** [E-047] in edit-slice blocks remote optimisation of the edit vector, so the 42 subjects are survivors rather than a sample. If NDIF answers the reproducer, E-001 should be re-run on a free draw. That is a re-open with an RCA, not a new ticket.
