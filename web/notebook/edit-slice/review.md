@@ -14,6 +14,7 @@ paper:
   affiliation: Open Concept Lab
   started: 20 Sep 2026
   updated: 9 Nov 2026
+  pdf: true
   reading_guide: >
     Written to be judged. Section 7 is the attack surface, ordered by how much damage
     each objection does; section 6 lists every claim this project withdrew. If you are

@@ -14,6 +14,7 @@ paper:
   affiliation: Open Concept Lab
   started: 30 Sep 2026
   updated: 9 Nov 2026
+  pdf: true
   builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
   keywords:
     - model editing

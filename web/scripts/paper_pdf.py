@@ -319,7 +319,7 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
 TEMPLATE = r"""\documentclass[10pt,twocolumn,a4paper]{article}
 \usepackage[margin=2cm,columnsep=0.8cm]{geometry}
 \usepackage{graphicx}
-\graphicspath{{assets/}}
+\graphicspath{{%(assets)s/}}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{calc}
@@ -382,10 +382,14 @@ def main() -> int:
     fm, body = split_front_matter(page.read_text())
     entry = fm.get("paper") or {}
 
-    out = pathlib.Path(args.outdir) if args.outdir else page.parent / "pdf"
+    # Default to where the site serves it from: a PDF nobody can download is a
+    # file, not a paper.
+    out = pathlib.Path(args.outdir) if args.outdir else WEB / "static" / "pdf"
     out.mkdir(parents=True, exist_ok=True)
-    assets = out / "assets"
-    assets.mkdir(exist_ok=True)
+    # The converted figures are scratch and must not sit in static/, where the
+    # site would serve every one of them for nothing.
+    assets = WEB / ".paper-build" / page.parent.name
+    assets.mkdir(parents=True, exist_ok=True)
 
     bib = papers()
     used: list[str] = []
@@ -419,6 +423,7 @@ def main() -> int:
     )
 
     tex = TEMPLATE % {
+        "assets": str(assets),
         "title": latex_escape(fm.get("title", page.stem)),
         "author": latex_escape(entry.get("author", "")),
         "affiliation": latex_escape(entry.get("affiliation", "")),
@@ -444,6 +449,7 @@ def main() -> int:
 
     pdf = out / (page.parent.name + ".pdf")
     print(f"{pdf}  ({pdf.stat().st_size // 1024} KiB)")
+    print(f"served at /pdf/{page.parent.name}.pdf — set `pdf: true` in the page's entry")
     print(f"{len(used)} citations resolved from data/papers.yml")
     return 0
 

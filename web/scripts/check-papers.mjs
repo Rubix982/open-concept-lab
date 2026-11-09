@@ -88,6 +88,23 @@ function check(path) {
     }
   }
 
+  // A PDF that is older than its page is worse than no PDF: it is a wrong
+  // paper with a download link on it.
+  if (/^\s*pdf:\s*true\s*$/m.test(fm)) {
+    const project = path.split("/").slice(-2)[0];
+    const pdf = join("static", "pdf", `${project}.pdf`);
+    try {
+      if (statSync(pdf).mtimeMs < statSync(path).mtimeMs) {
+        faults.push(
+          `static/pdf/${project}.pdf is older than this page — rebuild it:\n` +
+            `             python3 scripts/paper_pdf.py ${path}`,
+        );
+      }
+    } catch {
+      faults.push(`pdf: true, but static/pdf/${project}.pdf does not exist`);
+    }
+  }
+
   const appendices = headings.filter((h) => /^Appendix [A-Z]\b/.test(h));
   if (appendices.length < 3) {
     faults.push(

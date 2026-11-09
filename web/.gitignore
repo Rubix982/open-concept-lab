@@ -24,6 +24,7 @@ yarn-error.log*
 
 someday/notes/
 
-# Built PDFs and the figures converted for them. The page is the source; the
-# PDF is a render of it and is rebuilt by scripts/paper_pdf.py.
-notebook/**/pdf/
+# The figures converted for a PDF build are scratch; the PDF itself is served
+# by the site and lives in static/pdf/, so it is committed.
+.paper-build/
+static/pdf/*.tex

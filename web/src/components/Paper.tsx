@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import { useDoc } from "@docusaurus/plugin-content-docs/client";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 
 /**
  * Paper mode.
@@ -555,6 +556,8 @@ type PaperEntry = {
   contributions?: string[];
   reading_guide?: string;
   index?: { label: string; what: string }[];
+  /** Set once `scripts/paper_pdf.py` has written static/pdf/<project>.pdf. */
+  pdf?: boolean;
 };
 
 /**
@@ -575,6 +578,13 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
   const fm = frontMatter as Record<string, unknown>;
   const e = (fm.paper ?? {}) as PaperEntry;
   const title = (fm.title as string) ?? metadata.title;
+
+  /* The site is served under a base path. A raw href misses it and lands on a
+     404 that looks like a working link, which is the same fault <Figure> had
+     with its src. useBaseUrl leaves absolute URLs alone. */
+  const buildsOn = useBaseUrl(e.builds_on?.href ?? "");
+  const project = metadata.id.split("/")[0];
+  const pdf = useBaseUrl(`/pdf/${project}.pdf`);
 
   const stamp = [e.kind, e.id, e.version].filter(Boolean).join(" · ");
   const hasMeta = e.started || e.updated || e.builds_on;
@@ -602,7 +612,12 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
             ) : null}
             {e.builds_on ? (
               <span>
-                Builds on <a href={e.builds_on.href}>{e.builds_on.label}</a>
+                Builds on <a href={buildsOn}>{e.builds_on.label}</a>
+              </span>
+            ) : null}
+            {e.pdf ? (
+              <span>
+                <a href={pdf}>PDF</a>, two columns
               </span>
             ) : null}
           </div>

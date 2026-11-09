@@ -337,8 +337,16 @@ result in a two-column article class. Citations resolve from `data/papers.yml`, 
 markers become superscripts, and each figure is converted from SVG to PDF first,
 because LaTeX cannot include an SVG.
 
-It needs `pandoc`, `tectonic` and `rsvg-convert`. The output lands in `pdf/` beside
-the page and is not committed: it is a render, rebuilt on demand.
+It needs `pandoc`, `tectonic` and `rsvg-convert`. The output lands in
+`static/pdf/<project>.pdf`, **is committed**, and appears as a *PDF* link in the
+page's own front matter once `pdf: true` is set on the entry. The site has to serve
+it and nothing in CI can build it, so a render that is not committed is a render
+nobody can download.
+
+That makes staleness possible, so it is checked: `npm run check:papers` fails the
+build when a page is newer than its PDF, and names the command to rebuild it. A PDF
+older than its page is worse than no PDF — it is a wrong paper with a download link
+on it.
 
 **What it does not reproduce** is the web layout — no contents rail, no hover, no
 link into an evidence ledger. Where the page points at something only the site can
