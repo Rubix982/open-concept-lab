@@ -7,3 +7,6 @@
 [submodule "projects/bearing"]
 	path = projects/bearing
 	url = https://github.com/Rubix982/bearing.git
+[submodule "projects/research-craft"]
+	path = projects/research-craft
+	url = https://github.com/Rubix982/research-craft.git

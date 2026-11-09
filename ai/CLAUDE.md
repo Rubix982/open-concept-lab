@@ -20,8 +20,11 @@ Two passes run then, in order, and neither is optional.
 
 The order matters: there is no point making an unfalsifiable claim legible.
 
-Source for both: [`research-craft`](https://github.com/Rubix982/research-craft),
-installed by symlink at `~/.claude/skills/`.
+Source for both: [`research-craft`](https://github.com/Rubix982/research-craft), a
+submodule at `projects/research-craft`. The two skills are installed by symlink from
+`~/.claude/skills/` into `projects/research-craft/skill/`, so a change made while working
+in this repo is a change to the skill itself — commit and push it there, not here. This
+repo only records which commit of it is in use.
 
 ## What the second pass exists to catch
 
