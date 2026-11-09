@@ -167,7 +167,7 @@ The `base` arm is **not** re-run. [E-001] holds `base_token` and `p_base`; readi
 - `CARD.md` → C-003 closed on branch 1
 - `threads.md` → T-007 answered
 
-**Artifacts:** `results/E-003-destination.json`; `results/E-003-summary.md`; `agents/engineer/workspace/run_e003.py`; `agents/shared/decisions.md` → the [E-003] entry; `CARD.md` → C-003. *Added 2026-11-09: this ticket was closed with its planned `**Outputs.**` recorded but no `**Artifacts:**` field at all, which is Discipline rule 1. Found by `tools/dryruns/dryrun_record.py` on its first run; every file above was checked to exist.*
+**Artifacts:** `results/E-003-destination.json`; `results/E-003-summary.md`; `agents/engineer/workspace/run_e003.py`; `agents/shared/decisions.md` → the [E-003] entry; `CARD.md` → C-003. *Added 2026-11-09: this ticket was closed with its planned `**Outputs.**` recorded but no `**Artifacts:**` field at all, which is Discipline rule 1. Found by `ai/tools/check_record.py` on its first run; every file above was checked to exist.*
 
 **Closed:** 2026-11-01. Anchor gate passed at 0.000e+00 over 42 readings. Destination hit rates base 1% / real 29% / ctl 1% / other 1%; paired `real - ctl` +0.2828 (CI +0.2424, +0.3232) against destruction's +0.0009 on the same probes.
 

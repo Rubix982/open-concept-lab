@@ -17,15 +17,19 @@ So it is checked rather than remembered. Seven rules, each of which can fail:
 6. A ticket that is `blocked` must say what blocks it.
 7. An id is never reassigned, so no id appears twice.
 
-    python tools/dryruns/dryrun_record.py [project-root ...]
+    python ai/tools/check_record.py [project-root ...]
 
-**It defaults to this project and that was the bug.** Written here, with
-`ROOT` fixed to edit-reach, it was blind to the 89 tickets in edit-slice --
-where it would have found three unfinished tickets, a status outside the
-lifecycle, a `blocked` ticket whose blockers field reads `none`, and two
-research ids whose results are cited in four files with no ticket behind them.
-A check aimed only at the place already cleaned is the fault it exists to
-catch. Pass roots explicitly, or let it find its siblings.
+**It was written inside edit-reach and that was twice wrong.** Its `ROOT` was
+fixed to that one project, so it was blind to the 89 tickets in edit-slice --
+where it then found three unfinished tickets, a status outside the lifecycle, a
+`blocked` ticket whose blockers field reads `none`, and two research ids whose
+results are cited in four files with no ticket behind them. A check aimed only
+at the place already cleaned is the fault it exists to catch.
+
+And a checker that serves every project is not one project's instrument. It
+lives in `ai/tools/` for the same reason the nine research modules stay in
+edit-slice: what encodes a project's own questions stays with it, and what is
+general moves out. With no arguments it checks every project beside it.
 """
 from __future__ import annotations
 
@@ -33,7 +37,8 @@ import re
 import sys
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parents[2]
+#: This file sits in `ai/tools/`, so the projects are its parent's siblings.
+HERE = Path(__file__).resolve().parent
 
 #: The statuses the ticket lifecycle defines. `split` is in the template;
 #: anything else is a status somebody invented mid-run, which reads as
@@ -66,7 +71,7 @@ def roots(argv: list[str]) -> list[Path]:
     if argv:
         return [Path(a).resolve() for a in argv]
     return sorted(p for p in HERE.parent.iterdir()
-                  if (p / "agents").is_dir() or (p / "threads.md").is_file())
+                  if p.is_dir() and ((p / "agents").is_dir() or (p / "threads.md").is_file()))
 
 
 def check(root: Path) -> list[str]:
@@ -133,7 +138,7 @@ def main() -> int:
             found[root.name] = bad
 
     if found:
-        print("\ndryrun_record: the record disagrees with itself\n")
+        print("\ncheck_record: the record disagrees with itself\n")
         for project, bad in found.items():
             print(f"  {project}")
             for b in bad:
@@ -144,7 +149,7 @@ def main() -> int:
               "\n    `open` is the same fault one field earlier.\n")
         return 1
 
-    print("dryrun_record: statuses, answers, closures, artifacts and blockers "
+    print("check_record: statuses, answers, closures, artifacts and blockers "
           "all agree, across every project checked")
     return 0
 

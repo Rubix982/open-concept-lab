@@ -290,7 +290,7 @@ commit before any scoring, and cite that commit as the pre-registration.
 
 **Blockers:** none
 **Artifacts:** agents/shared/findings.md → "[R-008] ParaRel coverage"
-**Closed:** —
+**Closed:** 2026-09-15. *Date added 2026-11-09 — recovered from git: the commit that first wrote this ticket. The ticket carried its status and artifacts and never its date; found by `ai/tools/check_record.py`.*
 
 ---
 
@@ -327,7 +327,6 @@ finding about the field until (1) is verified.
 
 **Blockers:** none
 **Artifacts:** agents/shared/findings.md → "[R-009] ROME implementations"
-**Closed:** —
 
 
 ---
@@ -860,7 +859,7 @@ code reading and not measurement; read at HEAD rather than a tagged release.
 **Created:** 2026-09-10 *(reconstructed)*
 **Updated:** 2026-11-09
 
-**Written after the fact, 2026-11-09, and that is the first thing to know about it.** This ticket never existed. Its id is cited in `design.md` and in `agents/shared/findings.md`, and work was done under it, but nothing in `agents/researcher/` carried it. Found by `edit-reach/tools/dryruns/dryrun_record.py` once it was pointed at every project rather than only at the one already cleaned. The description below is reconstructed from those two references and is marked where it is inference rather than record.
+**Written after the fact, 2026-11-09, and that is the first thing to know about it.** This ticket never existed. Its id is cited in `design.md` and in `agents/shared/findings.md`, and work was done under it, but nothing in `agents/researcher/` carried it. Found by `ai/tools/check_record.py` once it was pointed at every project rather than only at the one already cleaned. The description below is reconstructed from those two references and is marked where it is inference rather than record.
 
 **Description:**
 

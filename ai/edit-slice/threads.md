@@ -608,7 +608,16 @@ Options: ROME on Llama-3.1-8B (needs hyperparameters + second-moment statistics 
 do not have, but 8B is tractable); or re-select toward relations GPT-J holds
 (P103/P138/P178/P407 at 80-87%) and accept ground-poor edits. Abandoning the
 possession filter is rejected — that is the artifact the gate exists to prevent.
-**Answer:** —
+
+**Answer:** **Option 1, and the thing that made it look expensive was never needed.** Written 2026-11-09 from the record; the choice was made in September and never written back here.
+
+The project moved to **Llama-3.1-8B** and stayed there — it carries 63 of the model mentions in `agents/shared/decisions.md` against GPT-J-6B's 12 — and it kept the ground-rich relations, P19 and P27, rather than re-selecting toward P103/P138/P178/P407. So the second option was not taken and the filter was not abandoned.
+
+**The blocker dissolved instead of being paid.** This thread priced option 1 as *"needs hyperparameters + second-moment statistics we do not have"*, and `C` is 0.82 GB fp32 at 8B. [E-013], 2026-09-15, read a local EasyEdit checkout rather than recalling it: **all 14 of its shipped ROME configs set `mom2_adjustment: false`**, including `gpt2-xl.yaml` and `gpt-j-6B.yaml` — the two models the ROME paper itself used. The code path leaves no room (`compute_u.py:112-126`): with the flag false, `u = k*`, which is exactly `C = I`. The widely-used implementation does not use the statistics this thread was blocked on.
+
+**The shape is worth naming, because it recurs.** A priced requirement was removed by reading the reference implementation, not by meeting it — the same move as [R-013], which killed a priced week by counting RippleEdits' prompts instead of reasoning about them. Both cost under an hour. Both were available from the start.
+
+**What this does not settle.** The possession numbers that opened the thread are unchanged: P19 still tops out at 53% at 405B and GPT-J still holds 13% of it. Moving to 8B raised possession without making P19 well-held, and every later result inherits that.
 
 ### T-051 · Candidate-set size, not cue contamination, drove the inflation
 
@@ -1579,7 +1588,6 @@ check is [R-013]-shaped and costs the same: read the released prompts, look for
 the edited subject's string, count. No model required, no edits applied. This is
 the cheapest open item in the ledger and the one that most changes what §4.6 is
 allowed to say.
-**Answer:** —
 **Answer:** [R-014] — **neither band, and the real answer is better than both.** MQuAKE
 names the edited subject in a question **iff the edit is on the chain's first hop**:
 6,861 of 6,861 at hop 1, 0 of 16,506 at hops 2-4, exact in both directions. RippleEdits
@@ -1692,7 +1700,6 @@ reorientation is written locally and context is not required. Collapses → atte
 necessary and [E-041]'s direct-write reading was the wrong frame.** Cost: one run on the
 16 subjects already used, with the intervention inside the trace. The [E-041] numbers are
 the baseline it is measured against, so nothing needs re-running.
-**Answer:** —
 
 **Design note, 2026-10-15 — two obvious implementations are degenerate, and knowing that
 before designing is the point of writing it down.**
@@ -1720,7 +1727,7 @@ intervention with a degenerate failure mode is the worst possible candidate for 
 unattended run. The cost of waiting is a day; the cost of a plausible wrong answer here is
 a claim in §4.3.
 
-**Answer 2026-10-15 — [E-044], and not the way the thread expected.** The ablation ran, its
+**Answer:** **2026-10-15 — [E-044], and not the way the thread expected.** The ablation ran, its
 correctness gate passed exactly (0.00e+00), and **its verdict is rejected**: masking the
 prefix while pinning `position_ids` produces an input the model has no distribution for.
 Masking makes divergence *worse* (0.961 → 0.485 at L5); one extra position of RoPE offset is
@@ -1797,7 +1804,7 @@ buys is an audit that answers without adjudication**, which is claim 2 and survi
 untouched. Should §2 say this explicitly? It pre-empts a reviewer reading claim 2 as a
 claim about edit quality, and it is the distinction that keeps the code-domain direction
 honest about what it would and would not deliver.
-**Answer (2026-10-16, autonomous cycle):** **The question was about the wrong document,
+**Answer:** *(2026-10-16, autonomous cycle)* **The question was about the wrong document,
 and that is the finding.**
 
 §2 should not say it, because **the write-up never makes claim 2.** Searched: zero
@@ -1874,7 +1881,7 @@ headline by ~5 points. **`possession.py` should count and report these separatel
 possession number can be re-checked for the same effect. The 56/74/79/85 series was
 computed without this view; whether any of it is affected is unknown and cheap to check,
 since [E-005]'s per-item results are on disk.
-**Answer (2026-10-15, autonomous cycle):** **Instrument fixed; the series is safe; the
+**Answer:** *(2026-10-15, autonomous cycle)* **Instrument fixed; the series is safe; the
 full re-check is not possible from disk.**
 
 **How big is it?** Measured on the possession caches that survive — a 36-item gpt-j run

@@ -147,7 +147,7 @@ alone — which then must be measured before the model choice is justified.
 
 **Blockers:** none
 **Artifacts:** src/probing.py; agents/engineer/workspace/; agents/shared/findings.md
-**Closed:** —
+**Closed:** 2026-09-13. *Date added 2026-11-09 — recovered from git: the commit that first wrote this ticket’s closing status. The ticket carried its status and artifacts and never its date; found by `ai/tools/check_record.py`.*
 
 ---
 
@@ -2189,7 +2189,7 @@ reader verifies the arms are matched rather than taking it on trust.
 
 **Blockers:** none
 **Artifacts:** _(on close)_
-**Closed:** —
+**Closed:** 2026-09-21. *Date added 2026-11-09 — recovered from git: the commit that first wrote this ticket. The ticket carried its status and artifacts and never its date; found by `ai/tools/check_record.py`.*
 
 ---
 
@@ -2256,7 +2256,7 @@ buys the fourth and makes the design a crossing rather than a confounded pair.
 
 **Blockers:** none
 **Artifacts:** _(on close)_
-**Closed:** —
+**Closed:** 2026-09-21. *Date added 2026-11-09 — from the `[E-028d]` entry in `agents/shared/decisions.md`. The ticket carried its status and artifacts and never its date; found by `ai/tools/check_record.py`.*
 
 
 ---
@@ -2594,7 +2594,7 @@ injected value's type?
 
 **Blockers:** none.
 **Artifacts:** _(on close)_
-**Closed:** —
+**Closed:** 2026-09-27. *Date added 2026-11-09 — from the `[E-033]` entry in `agents/shared/decisions.md`. The ticket carried its status and artifacts and never its date; found by `ai/tools/check_record.py`.*
 
 ---
 
@@ -3795,7 +3795,7 @@ agents/shared/decisions.md -> "[E-045] Result" _(unratified)_
 
 ### E-046 · After an unrelated edit, what does the model say the attribute IS?
 
-**Status:** in-progress
+**Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-10-24
@@ -3904,14 +3904,13 @@ because neither depends on the occupation baseline. Those remain the load-bearin
 evidence for the asymmetry.
 
 **Status:** closed
-**Closed:** 2026-10-24
+**Closed:** 2026-10-24. *Header corrected 2026-11-09: this ticket carried its closure block, its artifacts and this date in its body while its `**Status:**` line still read `in-progress`, and a second empty `**Closed:**` sat below them. All three artifacts were checked to exist. Found by `ai/tools/check_record.py`.*
 
 **Artifacts:**
 - agents/engineer/workspace/run_e046.py
 - tools/dryruns/dryrun_e046.py
 - results/E-046-what-instead.json
 
-**Closed:** —
 
 ### E-047 · Hold the man fixed, vary the country: does the replacement profession track the country?
 
