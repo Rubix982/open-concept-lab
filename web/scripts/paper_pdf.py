@@ -126,6 +126,11 @@ def convert_figure(block: str, assets: pathlib.Path, n: int) -> str:
         if source.exists():
             text = source.read_text()
             text = re.sub(r'<rect[^>]*filter="url\(#grain\)"[^>]*/>', "", text)
+            # The cream ground is the house paper. On a white page it reads as
+            # a panel behind the figure, which no paper does, so it comes off
+            # and the figure sits on the page.
+            text = re.sub(r'<rect[^>]*fill="var\(--paper\)"[^>]*/>', "", text, count=1)
+            text = inline_custom_properties(text)
             svg.write_text(text)
         else:
             svg = source
@@ -144,6 +149,15 @@ def convert_figure(block: str, assets: pathlib.Path, n: int) -> str:
             ("viewBox", "viewBox"), ("className", "class"),
         ]:
             text = text.replace(a + "=", b + "=")
+        # JSX-isms that are not XML. A style object and a template literal
+        # inside <style> both parse as "extra content at the end of the
+        # document", which is not a message that points anywhere useful.
+        text = re.sub(r'\sstyle=\{\{[^}]*\}\}', "", text)
+        text = re.sub(r"<style>\s*\{`(.*?)`\}\s*</style>",
+                      lambda m: "<style type=\"text/css\"><![CDATA[" + m.group(1) + "]]></style>",
+                      text, flags=re.S)
+        text = re.sub(r'\s[a-zA-Z]+=\{[^{}]*\}', "", text)
+
         # A CSS variable has no value outside the browser; fall back to ink.
         text = re.sub(r"var\(--ocl-paper[^)]*\)", "#ffffff", text)
         text = re.sub(r"var\(--ocl-rule[^)]*\)", "#999999", text)
@@ -231,6 +245,63 @@ def delongtable(tex: str) -> str:
     return "".join(out)
 
 
+def inline_custom_properties(svg: str) -> str:
+    """Replace `var(--name)` with the value the figure defines for it.
+
+    The figures carry their own palette so they can follow the reader's theme,
+    which needs CSS custom properties. rsvg-convert does not resolve them: every
+    `fill="var(--ink)"` renders as black, and the first PDF built after the
+    figures were themed had a solid black rectangle where Figure 1 should be.
+
+    The values are read out of the figure's own `:root` block rather than kept
+    here, so the palette still lives in one place. Print takes the light set.
+    """
+    m = re.search(r":root\s*\{(.*?)\}", svg, re.S)
+    if not m:
+        return svg
+    values = dict(re.findall(r"--([a-z-]+):\s*([^;]+);", m.group(1)))
+    for name, value in values.items():
+        svg = svg.replace(f"var(--{name})", value.strip())
+    return svg
+
+
+def split_figures(body: str):
+    """Yield (start, end) for each <Figure> block.
+
+    A regular expression cannot do this. A figure with an inline SVG contains
+    dozens of self-closing tags of its own, so matching "the first /> or
+    </Figure>" ends the block inside the drawing and spills the rest of the SVG
+    into the prose as text -- which is what the first PDF with an inline figure
+    did, on the page where the ledger should have been.
+
+    So: a block is self-closing only when no </Figure> appears before the next
+    <Figure>.
+    """
+    spans, i = [], 0
+    while True:
+        a = body.find("<Figure", i)
+        if a == -1:
+            return spans
+        close = body.find("</Figure>", a)
+        nxt = body.find("<Figure", a + 1)
+        if close != -1 and (nxt == -1 or close < nxt):
+            end = close + len("</Figure>")
+        else:
+            # Self-closing: the first "/>" that ends the opening tag. Attribute
+            # values may hold ">" so scan with a depth count over braces.
+            depth, k = 0, a
+            while k < len(body):
+                if body[k] == "{":
+                    depth += 1
+                elif body[k] == "}":
+                    depth -= 1
+                elif depth == 0 and body.startswith("/>", k):
+                    break
+                k += 1
+            end = k + 2
+        spans.append((a, end))
+        i = end
+
 def latex_escape(s: str) -> str:
     for a, b in [("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"),
                  ("$", r"\$"), ("#", r"\#"), ("_", r"\_"), ("{", r"\{"), ("}", r"\}")]:
@@ -241,36 +312,22 @@ def latex_escape(s: str) -> str:
 def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
     # Figures first: they contain everything else.
     figs = {"n": 0}
+    spans = split_figures(body)
+    for a, b in reversed(spans):
+        figs["n"] = len([x for x in spans if x[0] <= a])
+        body = body[:a] + convert_figure(body[a:b], assets, figs["n"]) + body[b:]
 
-    def fig(m: re.Match) -> str:
-        figs["n"] += 1
-        return convert_figure(m.group(0), assets, figs["n"])
-
-    # `caption={<>...</>}` ends in "/>", so a plain non-greedy match for the
-    # tag stops inside the caption and leaves its tail in the prose. The
-    # look-behind skips the "/>" that belongs to a fragment close.
-    body = re.sub(r"<Figure\b.*?(?:(?<!<)/>|</Figure>)", fig, body, flags=re.S)
-
-    # Tables, each with its caption above it.
-    def table(m: re.Match) -> str:
-        block = m.group(0)
-        cap = jsx_to_markdown(strip_jsx_attr(block, "caption") or "")
-        md = html_table_to_markdown(block)
-        return f"\n{md}\n\n: {cap}\n" if md else ""
-
-    for tag in ("Data", "Ledger", "Runs", "Revisions", "Readiness"):
-        body = re.sub(rf"<{tag}\b.*?</{tag}>", table, body, flags=re.S)
-
-    # Row components the tables above did not reach (they are inside them).
+    # Row components first. A <Ledger> holds <Finding> elements, not <tr>, so
+    # converting the wrapper before its rows produced an empty table -- which is
+    # how three of this paper's nine tables went missing from the first PDF
+    # without anything failing.
     def finding(m: re.Match) -> str:
         b = m.group(0)
-        ident = strip_jsx_attr(b, "id") or ""
-        status = strip_jsx_attr(b, "status") or ""
-        value = strip_jsx_attr(b, "value") or ""
         fals = jsx_to_markdown(strip_jsx_attr(b, "falsifier") or "")
         inner = re.sub(r"^<Finding\b.*?>", "", b, flags=re.S)
         inner = jsx_to_markdown(re.sub(r"</Finding>$", "", inner))
-        return f"| {ident} | {inner} {fals} | {value} | {status} |"
+        return (f"| {strip_jsx_attr(b, 'id') or ''} | {inner} {fals} "
+                f"| {strip_jsx_attr(b, 'value') or ''} | {strip_jsx_attr(b, 'status') or ''} |")
 
     body = re.sub(r"<Finding\b.*?</Finding>", finding, body, flags=re.S)
 
@@ -293,9 +350,39 @@ def resolve(body: str, assets: pathlib.Path, bib: dict, used: list[str]) -> str:
         b = m.group(0)
         inner = jsx_to_markdown(re.sub(r"</Check>$", "", re.sub(r"^<Check\b.*?>", "", b, flags=re.S)))
         met = "yes" if re.search(r"\bmet\b", b.split(">")[0]) else "no"
-        return f"| {met} | {jsx_to_markdown(strip_jsx_attr(b, 'need') or '')} | {inner} | {strip_jsx_attr(b, 'where') or ''} |"
+        return (f"| {met} | {jsx_to_markdown(strip_jsx_attr(b, 'need') or '')} "
+                f"| {inner} | {strip_jsx_attr(b, 'where') or ''} |")
 
     body = re.sub(r"<Check\b.*?</Check>", check, body, flags=re.S)
+
+    # Then the wrappers. <Data> carries its own <thead>; the others have a fixed
+    # header the component supplies on the page and the script supplies here.
+    HEADERS = {
+        "Ledger": ["#", "Claim, and what would refute it", "value", "status"],
+        "Runs": ["id", "what it measured", "model", "n", "date", "output"],
+        "Revisions": ["date", "ver", "what changed, and what it cost"],
+        "Readiness": ["", "requirement", "state today", "where"],
+    }
+
+    def table(m: re.Match, tag: str) -> str:
+        block = m.group(0)
+        cap = jsx_to_markdown(strip_jsx_attr(block, "caption") or "")
+        if tag == "Data":
+            md = html_table_to_markdown(block)
+        else:
+            rows = [ln for ln in block.splitlines() if ln.strip().startswith("|")]
+            if not rows:
+                return ""
+            head = HEADERS[tag]
+            md = "\n".join(
+                ["| " + " | ".join(head) + " |",
+                 "|" + "|".join([" --- "] * len(head)) + "|"] + [r.strip() for r in rows]
+            )
+        return f"\n{md}\n\n: {cap}\n" if md else ""
+
+    for tag in ("Data", "Ledger", "Runs", "Revisions", "Readiness"):
+        body = re.sub(rf"<{tag}\b.*?</{tag}>",
+                      lambda m, t=tag: table(m, t), body, flags=re.S)
 
     # Inline apparatus.
     body = resolve_cites(body, bib, used)
@@ -357,16 +444,21 @@ TEMPLATE = r"""\documentclass[10pt,twocolumn,a4paper]{article}
 
 \title{\textbf{%(title)s}}
 \author{%(author)s\\ \small %(affiliation)s}
-\date{%(date)s}
+\date{}
 
 \begin{document}
 \twocolumn[
   \begin{@twocolumnfalse}
   \maketitle
+  \begin{center}
+  \begin{minipage}{0.76\textwidth}
   \begin{abstract}
   %(abstract)s
   \end{abstract}
-  %(keywords)s
+  \vspace{0.4em}
+  {\small %(keywords)s}
+  \end{minipage}
+  \end{center}
   \vspace{1em}
   \end{@twocolumnfalse}
 ]
@@ -413,8 +505,15 @@ def main() -> int:
     body_md = resolve(body, assets, bib, used)
 
     if entry.get("contributions"):
+        # A paper states its contributions at the end of its introduction. A
+        # section of their own, above section 1, is a web-page shape.
         items = "\n".join(f"{i+1}. {c}" for i, c in enumerate(entry["contributions"]))
-        body_md = f"\\section*{{Contributions}}\n\n{items}\n\n" + body_md
+        block = f"\n\nThis paper contributes the following.\n\n{items}\n\n"
+        anchor = "\n## 2. "
+        if anchor in body_md:
+            body_md = body_md.replace(anchor, block + anchor, 1)
+        else:
+            body_md = body_md + block
 
     def to_latex(md: str) -> str:
         p = subprocess.run(
@@ -437,7 +536,6 @@ def main() -> int:
         "title": latex_escape(fm.get("title", page.stem)),
         "author": latex_escape(entry.get("author", "")),
         "affiliation": latex_escape(entry.get("affiliation", "")),
-        "date": latex_escape(entry.get("updated", "")),
         "abstract": to_latex(abstract_md),
         "keywords": keywords,
         "body": to_latex(body_md),
