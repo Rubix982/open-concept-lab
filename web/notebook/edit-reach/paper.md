@@ -29,6 +29,8 @@ paper:
     - A measurement of why there is little to predict - identity is worth about sixty-five times content - on a pre-stated test.
     - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
     - The measure repurposed as a contamination screen, with one published benchmark scored on it, released as editreach.
+    - A universal upper bound on an edit's reach, derived in one line and shown to be vacuous where propagation lives - its median far-field value permits a question that never names the edited subject to receive more than one that does.
+    - "A second class of candidate eliminated for what sets the magnitude: no property of the edited subject predicts it either, to within the effect 41 subjects can resolve."
 ---
 <Paper>
 
@@ -50,15 +52,19 @@ Two further results came off the same probe set. Identity is worth about **sixty
 
 <Lead>What this buys, stated narrowly.</Lead> It removes the need to foresee which items matter. It does not remove the need to have items: the quantity is still evaluated on prompts we hold, and a prompt nobody wrote is still unscored. What changes is that the set no longer has to be *right* in advance, only large.
 
-<Lead>What this paper finds.</Lead> The candidate does one job exactly and the intended job not at all. It is pinned to 1 wherever the prompt names the edited subject, which makes it a reliable detector of that naming; and it is flat where the question does not name the subject, which is where propagation would have to be measured. §5 gives the numbers, §6 the record of how the control that produced them was got wrong once first.
+<Lead>What this paper finds.</Lead> The candidate does one job exactly and the intended job not at all. It is pinned to 1 wherever the prompt names the edited subject, which makes it a reliable detector of that naming; and it is flat where the question does not name the subject, which is where propagation would have to be measured. The same algebra that makes it cheap also yields the upper bound an item set cannot give — and that bound turns out to permit a question which never names the subject to receive more than one which does, so it forbids nothing (§5.6). Nor does any property of the edited subject predict how hard an edit lands (§5.7). §5 gives the numbers, §6 the record of how the control that produced them was got wrong once first.
 
 ## 2. Related work
 
 <Lead>The nearest work.</Lead> <Cite id="he2026romelimits" narrative /> reports both the depth phenomenon and a cosine decay with layer — 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here — eight months before this one. What it does not carry is a control of the kind in §3.3: its reading of the effect as depth rests on edit success rates staying high across layers, which is a different quantity from the one that would separate a real effect from the measure's own behaviour.
 
-<Lead>Propagation measured after the fact.</Lead> <Cite id="luo2026knowledgesmith" narrative /> tests how far edits spread against graph structure, and finds that editing over-spreads while unlearning under-spreads, with hierarchical branch structure imposing ceilings on update effectiveness. <Cite id="rinberg2025ripplebench" narrative /> produces distance-stratified propagation curves across eight methods, with distance taken from semantic neighbours rather than from an edit's own algebra, and evaluates unlearning rather than editing. <Cite id="kruthof2026editpropbench" narrative /> labels cascades by dependency, but over manuscripts and prompted editors rather than weights. All three measure outcomes after an edit is applied. None screens an item before it is run, which is the gap this paper tries to fill and then reports it cannot.
+<Lead>Propagation measured after the fact.</Lead> <Cite id="luo2026knowledgesmith" narrative /> tests how far edits spread against graph structure, finding that *editing tends to over-spread, unintentionally altering related nodes* while unlearning *often under-spreads*, and that *different hierarchical branches exhibit distinct ceilings for achievable accuracy*. The variable it moves is a node's **level** in a hierarchy — root, intermediate, leaf — not the number of facts depending on it, and it uses no measure of how often a subject appears in text. Both of those are relevant to §5.7 and neither is settled by it. <Cite id="rinberg2025ripplebench" narrative /> produces distance-stratified propagation curves across eight methods, with distance taken from semantic neighbours rather than from an edit's own algebra, and evaluates unlearning rather than editing. <Cite id="kruthof2026editpropbench" narrative /> labels cascades by dependency, but over manuscripts and prompted editors rather than weights. All three measure outcomes after an edit is applied. None screens an item before it is run, which is the gap this paper tries to fill and then reports it cannot.
 
 <Lead>Where the edit lands.</Lead> The MLP layers ROME edits behave as key-value memories <Cite id="geva2021ffn" />, which is what makes a single projection a sensible place to write a fact. But where a fact can be *located* is not where it can be *edited* <Cite id="hase2023localization" /> — so a measure read off the edit's own update, rather than off a localisation, is the one worth trying. MEMIT extends the same rank-one rule to many facts at once <Cite id="meng2023memit" />, so the quantity below is defined for it too.
+
+<Lead>Bounding a perturbation is a field, and it bounds a ball.</Lead> §5.6 computes an upper bound on how much of a weight edit reaches a token, which is the shape of a certified-robustness guarantee. That literature certifies against an adversary free to choose any direction inside a norm ball: <Cite id="weng2020certificated" narrative /> certifies a region in weight space, handling single-layer perturbation analytically, and <Cite id="tsai2021weightperturb" narrative /> works from the classification margin. A rank-one edit is a strictly smaller problem — **one** direction, fixed, and known before the edit is applied — and neither paper considers a low-rank perturbation or evaluates a transformer. So weight-space certification is not an open lane and is not claimed to be. What could not be found is certification that exploits a known rank-one direction for editing locality.
+
+<Lead>Why §5.6's bound stops at the layer it is read in.</Lead> A bound on the perturbation at one layer says nothing about the model's output without a number saying how much the rest of the network can amplify a change fed into it — a Lipschitz constant. <Cite id="kim2021lipschitz" /> is where that number stops being available. It proves dot-product self-attention has no such constant for any $p$-norm on an **unbounded** input domain, because one term in its derivative equals the sample variance of the input, which has no ceiling. The same paper states that on a *compact* domain it is Lipschitz, and declines that route only because the constant depends on the input range and a tight one would be non-trivial work. The honest position is therefore that **no usable constant exists**, not that no constant exists — a distinction this paper got wrong once before reading the theory sections.
 
 <Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume without writing it down. The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full — enough to ask the question and not enough to answer it. If it is published, §3 becomes a replication and the contribution is §5.
 
@@ -478,6 +484,65 @@ The fault is diagnosable rather than universal. MQuAKE names the edited subject 
   </tbody>
 </Data>
 
+### 5.6 A universal upper bound exists, and it forbids nothing
+
+§1 said an item set gives a lower bound on damage and never an upper bound. That is true of item sets. It is not true of the algebra, and the difference is one line.
+
+Because the update's direction is fixed and only $c$ varies with the token, $c$ is a projection coefficient, and Cauchy–Schwarz bounds it for **every** prompt — no enumeration, no forward pass through the edited model:
+
+<Eq gloss="the most any token can receive, for every prompt, with no edit applied">
+
+$$
+|c(k)| \le \frac{\lVert k \rVert}{\lVert k^{*} \rVert}
+\qquad\text{with equality exactly when } k \parallel k^{*}
+$$
+
+</Eq>
+
+So the upper bound that §1 said an item set could never give is available for nothing. The question is whether it forbids anything, which is empirical.<Prov id="E-015" /> Looseness is the bound divided by the coefficient actually read; a bound never approached rules nothing out.
+
+<Data caption={<>How far the bound sits above the quantity it bounds, by regime. 1,539 question-positions over 513 instances, read offline from cached keys.</>}>
+  <thead>
+    <tr><th>Regime</th><th className="n">median &#124;c&#124;</th><th className="n">median bound</th><th className="n">median looseness</th><th className="n">95% CI</th><th className="n">max</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>near field — the question names the subject</td><td className="n">0.9334</td><td className="n">0.9881</td><td className="n"><b>1.05</b></td><td className="n">1.05–1.06</td><td className="n">10.6</td></tr>
+    <tr><td>far field — it does not</td><td className="n">0.0544</td><td className="n">1.1456</td><td className="n"><b>21.12</b></td><td className="n">20.16–22.14</td><td className="n">1715.3</td></tr>
+  </tbody>
+</Data>
+
+The number that carries this is the far field's **median bound of 1.1456** against a median coefficient of 0.0544. The bound permits a question that never names the edited subject to receive *more* of the update than the near field actually receives. It cannot tell the two apart, so it forbids nothing that happens.
+
+<Lead>The near field's 1.05 is not a second result.</Lead> There $k \approx k^{*}$, which is the same prefix-sharing that pins the coefficient at exactly 1 in §3.2, so Cauchy–Schwarz is near-equality by construction. It is reported because it confirms the implementation. Reading it as a positive result would be reporting §3.2 a second time under a new name.
+
+<Lead>A prediction that was right for the wrong reason.</Lead> Before the run, the far-field bound was predicted to read about 1 and therefore forbid nothing. It reads 1.15 and forbids nothing. But the reason given was that the expected squared whitened key norm equals the key dimension — which assumes the covariance is the second moment of keys. It is the identity here, so that argument does not apply. The observed value comes from keys having comparable Euclidean norms, a different fact. The number survived; the derivation that would have carried it to another setting did not.
+
+### 5.7 Nothing about the subject predicts the magnitude either
+
+Seven candidates for what sets the magnitude had already been eliminated, and every one was a property of the activation geometry. This is the first test of a property of the **subject**.<Prov id="E-016" /> For each of 41 edited subjects, damage is the median excess — real movement minus the same-subject control of §3.3 — against two subject properties: prominence, as the number of Wikipedia language editions for the subject's Wikidata item, and dependent count, as the number of distinct properties on it.
+
+<Data caption={<>Eight relationships, all of them reported. Six were computed, so reporting a subset would be a choice rather than a result.</>}>
+  <thead>
+    <tr><th>Relationship</th><th className="n">ρ</th><th className="n">95% CI</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><b>prominence vs damage</b></td><td className="n"><b>+0.005</b></td><td className="n">−0.315, +0.314</td></tr>
+    <tr><td><b>dependent count vs damage</b></td><td className="n"><b>−0.053</b></td><td className="n">−0.366, +0.270</td></tr>
+    <tr><td>total statements vs damage</td><td className="n">−0.055</td><td className="n">−0.370, +0.259</td></tr>
+    <tr><td>headroom vs damage</td><td className="n">−0.130</td><td className="n">−0.399, +0.171</td></tr>
+    <tr><td>prominence, controlling dependent count</td><td className="n">+0.059</td><td className="n">−0.228, +0.336</td></tr>
+    <tr><td>dependent count, controlling prominence</td><td className="n">−0.079</td><td className="n">−0.355, +0.211</td></tr>
+    <tr><td>prominence, controlling both</td><td className="n">+0.038</td><td className="n">−0.266, +0.327</td></tr>
+    <tr><td>dependent count, controlling both</td><td className="n">−0.047</td><td className="n">−0.340, +0.264</td></tr>
+  </tbody>
+</Data>
+
+Every interval spans zero and every point estimate sits within 0.13 of it. Three controls were set in advance and all three came back clean: the two predictors correlate at ρ = 0.701, below the 0.8 line at which the partials would have been unstable; controlling for headroom — a better-known subject has more room to fall — moves prominence from +0.059 to +0.038, so there was nothing there to explain away; and recomputing over the four probe families every subject shares leaves prominence at +0.015 and dependent count at −0.039.
+
+<Lead>What this excludes, and what it does not.</Lead> At 41 subjects the widest interval spans 0.64, so this rules out a monotone relationship of about **|ρ| > 0.37** and nothing smaller. It is no evidence of an effect; it is not evidence of no effect. A real effect of 0.2 would sit inside every interval above and this study would not have seen it.
+
+<Lead>Prominence is a proxy and is labelled as one.</Lead> The question asks about how often a subject's *name* appears in text. Wikipedia language-edition count measures how well an entity is documented, which is a different thing that correlates with it. Its range is real — 0 for a subject with no Wikipedia article at all, 67 for the best covered — so it is not degenerate, but it is not the quantity named.
+
 ## 6. Findings and claims
 
 <Figure
@@ -569,9 +634,18 @@ The table below is every claim this paper has made, numbered in the order they w
     falsifier={<><strong>Superseded 2 November.</strong> Nearly all of the strangers used to build that floor were asked about a different relation, so it was a different-relation floor under another name. Row 2 replaces it.</>}>
     There is real far-field signal: scored against all donors, the subject's own edit reaches its hop-2 question more than a stranger's does.
   </Finding>
+  <Finding id="F‑15" status="standing" value="21.12"
+    falsifier={<><strong>Analytic in its first half, empirical in its second.</strong> The bound — the delivered fraction is at most the ratio of the two key norms — is refuted by an error in its derivation or by the update ceasing to be rank one with a fixed direction. Its looseness is refuted if the far-field median falls below 10 on any model-layer pair — at which point the bound would forbid something.</>}>
+    A universal upper bound on an edit's reach exists and costs one line, and its median far-field value of 1.1456 permits a question that never names the edited subject to receive more than the near field actually receives.
+  </Finding>
+  <Finding id="F‑16" status="standing" value="+0.005 / −0.053"
+    falsifier={<><strong>Refuted if</strong> either predictor reaches a correlation of 0.37 in magnitude on a larger subject set, which is the smallest effect 41 subjects could have seen. <strong>This is no evidence of an effect, not evidence of no effect</strong>, and a reader taking it as the second is taking more than the interval gives.</>}>
+    Neither a subject's prominence nor its dependent count predicts how hard an edit hits, with every partial and covariate-controlled variant also spanning zero.
+  </Finding>
 </Ledger>
 
 <Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
   <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
   <Rev date="6 Nov 2026" version="v0.2">F‑07 denied. Every per-family tolerance in §4.1 was removed; the section now says a tolerance must be measured where it runs.</Rev>
   <Rev date="2 Nov 2026" version="v0.2">F‑09 superseded by F‑02 once the floor was found to be the different-relation floor under another name. §3.3 rewritten around the matched floor.</Rev>
@@ -595,18 +669,23 @@ Every qualification in this paper is collected here, so the body above runs unhe
 3. <Lead>One model, one layer, two-hop chains.</Lead> A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit.
 4. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
 5. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
-6. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+6. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
+7. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
+8. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
 A quantity computable before an edit exists tells you, reliably, whether a prompt names the edited subject. It tells you nothing about whether an edit travelled — and §5.3 says why there was little to tell: identity is worth about sixty-five times content, so there is very little edit-specific effect for any measure to predict. The two statements are not in tension: the first is why the measure looked promising, the second is why it cannot do the job it was built for. What survives is the first one — a cheap screen that reads an evaluation item and says whether that item can test propagation at all, which one published benchmark fails. Beside it stands a result the screen was not looking for: the two halves of a rank-one update come apart, and which control is correct depends on which half is being measured.
 
-Four questions stay open. Each is written so it could come back either way, and each names what would change if it did.
+Two negative results were added late and both close doors rather than open them. The upper bound §1 said an item set could never give does exist, in one line of algebra, and it permits a far-field question to receive more of the update than a near-field one actually receives — so the only universal statement available is vacuous where propagation lives. And the search for what *does* set the magnitude, which had eliminated seven geometric candidates, now has a second class of variable in it: nothing about the subject predicts it either, to within what 41 subjects can see. **Two classes searched — the geometry of the key and the identity of the subject — and neither carries the magnitude.** That sentence is worth more than the one it replaces, because a reader can tell from it what has *not* been searched.
+
+Five questions stay open. Each is written so it could come back either way, and each names what would change if it did.
 
 1. <Lead>Does a layer sweep find far-field dynamic range at some depth other than 5?</Lead> If yes, the screen is alive again at that depth and the scope sentence narrows to layer 5. If no, the negative result generalises across depth. This is the cheapest open item: one run on the cached subjects.
 2. <Lead>Does a graded relation-similarity control move the +0.0002?</Lead> If the excess moves with relation distance, the categorical same/different split is too coarse and the far field has structure this one missed.
-3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> It surfaced while reading the first run's output and was deliberately not taken up, because working on it now would be an attempt to rescue a withdrawn claim rather than a question asked in its own right.
-4. <Lead>Does the backward-pass block lift?</Lead> If nnsight allows `compute_v` mid-trace, the delivery-to-effect gap in §7.1 can be tested on a free draw instead of 42 survivors.
+3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> It surfaced while reading the first run's output, and §5.3 has since measured it on a pre-stated test — identity is worth about sixty-five times content. What stays open is not the measurement but the choice: whether to study the subject-keyed component as the object, or keep controlling it away. *Corrected 9 Nov 2026: this item previously said the question had been deliberately not taken up, to avoid rescuing a withdrawn claim. That reason stopped being true when §5.3 ran, and the item had not been rewritten.*
+4. <Lead>Does whitening make §5.6's bound informative?</Lead> The covariance is the identity throughout this paper. The bound keeps its form under a real covariance but its norm becomes a different quantity, and whitening is precisely the operation that could shrink it in the far field. If it does, the bound forbids something and this section is reopened.
+5. <Lead>Does the backward-pass block lift?</Lead> If nnsight allows `compute_v` mid-trace, the delivery-to-effect gap in §7.1 can be tested on a free draw instead of 42 survivors.
 
 ## References
 
@@ -665,6 +744,8 @@ Each row names the run a number came from. Config files pin the seed and the lay
   <Run id="E‑018" model="4 models" n="16" date="23 Oct" out="2026‑10‑23‑pin4/">Premise at scale; different-subject floor 0.082</Run>
   <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026‑10‑28‑alias/">Renamed subject: string similarity against delivered fraction</Run>
   <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026‑11‑01‑ripple/">RippleEdits re-run, direct exposure counted</Run>
+  <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
+  <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
 </Runs>
 
 ## Appendix C. Readiness

@@ -1053,15 +1053,11 @@ narrowed anything.
 > two — while the coefficient cannot help by construction, pinned at exactly 1.000 across
 > precisely the probes whose outcomes differ most.
 
-**We can say which facts an edit touches. We cannot say how hard.** That sentence is the
-whole contribution of the negative results, and it is now a searched claim rather than an
-unexamined one: seven candidates eliminated against a pre-registered floor, and their best
-pairing bounded at **0.534** in closed form.<Margin>Worth saying plainly because the two
-read very differently to a reviewer: "we found no predictor" and "we tested these seven and
-bounded their combination" are not the same sentence.<Evidence id="E-035" /> ·
-<Evidence id="f-R-016">R-016</Evidence></Margin> What *does* set the magnitude is
-<Evidence id="T-086" />, and it still has no candidate — but the absence is now evidence of
-having looked.
+**We can say which facts an edit touches. How hard is boundable but not predictable.** That sentence is the whole contribution of the negative results, and it is now a searched claim rather than an unexamined one: seven candidates eliminated against a pre-registered floor, and their best pairing bounded at **0.534** in closed form.<Margin>Worth saying plainly because the two read very differently to a reviewer: "we found no predictor" and "we tested these seven and bounded their combination" are not the same sentence.<Evidence id="E-035" /> · <Evidence id="f-R-016">R-016</Evidence></Margin>
+
+<Margin>This paragraph read "We cannot say how hard" until 9 November 2026. Two measurements in `edit-reach` changed it: an upper bound that exists and forbids nothing, and a second class of candidate eliminated. The claim is narrower now and says more.</Margin>**Magnitude is bounded above, uninformatively.** Because the update's direction is fixed, Cauchy–Schwarz bounds the delivered fraction for every prompt in one line — so an upper bound does exist, which this page previously implied was unavailable. It is useless where it would matter: its median far-field value permits a question that never names the edited subject to receive *more* of the update than the near field actually receives.
+
+What *does* set the magnitude is <Evidence id="T-086" />, and it still has no candidate. **Two classes of variable have now been searched — the geometry of the key, and the identity of the subject — and neither carries it.** The second came back null across eight relationships, every interval spanning zero, over 41 subjects; what that rules out is a monotone relationship of roughly |ρ| > 0.37 and nothing smaller. The absence is evidence of having looked, and it is now specific enough that a reader can tell what has *not* been looked at.
 
 ## 7. Limitations
 
