@@ -177,10 +177,18 @@ def convert_figure(block: str, assets: pathlib.Path, n: int) -> str:
     subprocess.run(["rsvg-convert", "-f", "pdf", "-o", str(pdf), str(svg)], check=True)
     wide = "wide" in block or src is not None
     env = "figure*" if wide else "figure"
-    width = "\\textwidth" if wide else "\\columnwidth"
+    # A figure keeps its aspect ratio and is bounded on both sides. Without the
+    # height bound a 1000x620 drawing set to the full measure is about ten
+    # centimetres tall and takes half the page; several of these are landscape
+    # diagrams whose content is a few boxes and a lot of air.
+    box = (
+        "width=\\textwidth,height=0.28\\textheight,keepaspectratio"
+        if wide
+        else "width=\\columnwidth,height=0.22\\textheight,keepaspectratio"
+    )
     return (
         f"\n```{{=latex}}\n\\begin{{{env}}}[t]\n\\centering\n"
-        f"\\includegraphics[width={width}]{{{pdf.name}}}\n"
+        f"\\includegraphics[{box}]{{{pdf.name}}}\n"
         f"\\caption{{{latex_escape(caption)}}}\n\\end{{{env}}}\n```\n"
     )
 
