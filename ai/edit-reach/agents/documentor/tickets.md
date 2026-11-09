@@ -458,3 +458,39 @@ Four faults Saif found on the rendered page. "I don't like 'Note 01', what even 
 **The equations had been set as monospace text, and the site has had KaTeX the whole time.** `remark-math` and `rehype-katex` are configured for both the docs and the blog, and `writing-here.md` has documented `$$` since before this project started. The `<Eq>` component was written with a mono font and `white-space: nowrap`, which is what you write when you have decided the renderer is not available — without checking that it was. Three display equations and the whole of Appendix A are now real mathematics; the appendix reads as a derivation rather than as a transcript of one.
 
 **What this ticket did not foresee:** that `<Eq>`'s own styling would fight the renderer once the content changed. The mono font and the nowrap had to come out, and a `.katex-display` margin reset had to go in, or the numbered row would have carried two sets of vertical spacing.
+
+---
+
+### D-013 · Two thirds of the project was not on the page
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 2h
+**Spent:** 2h
+
+**Description:**
+Saif: "Is this ALL that we got with edit-reach? I don't think so, lets commit and improve the content."
+
+He was right, and the gap was measurable: `agents/shared/decisions.md` holds fifteen decisions and the page carried four. Everything in E-001, E-002, E-003 and the E-005…E-013 reproducibility cluster reached the page as, at most, a clause.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/notebook/edit-reach/paper.md — §3.4, §4.1, §4.2, §5.1, §5.3, §5.4, five new ledger rows, eight new provenance rows
+
+**Closed:** 2026-11-09. The page went from five findings and six runs to fourteen and fourteen.
+
+**The largest omission was the project's strongest positive result.** [E-003] separates destruction from destination inside one rank-one update — it breaks the pre-edit answer because it touched that subject's key, and supplies the new answer because of what it said — measured on one probe set, under one metric, separating in opposite directions, discordant pairs 142 to 2. None of it was on the page. The page had been written around the question the project set out to answer, and that question came back negative, so a positive result that arrived from a different direction had nowhere to sit. §5 is now ordered by what was run rather than by what was asked.
+
+**[E-001] had been reduced to its weakest sentence.** The page said 495 probes and a 2.96× spread. What it did not say is that the raw correlation is ρ = 0.522 and falls to an excess of 0.085 once a same-subject control is removed, or that the quantity being predicted is *this probe is sensitive to an edit on this subject* rather than *this edit reaches this probe*. The second is the sentence a reader can use.
+
+**[E-002]'s methods lesson is now on the page as a result in its own right.** The per-arm medians read as the real edit being 56% above its control; the paired median of differences is +0.0009. The unpaired form overstates the content effect roughly sixtyfold. That is worth more to a reader than the number it corrects.
+
+**The reproducibility cluster was nine decisions compressed into two paragraphs.** It is now §4.1 with the split that makes it usable — structure holds everywhere, every magnitude belongs to a deployment — plus the three things that were missing entirely: the variation is routing and is bit-exact, so device-matched readings need no tolerance at all; the partition is a property of a deployment on a day, present on 1 November and absent on 3 November; and the batch-composition claim was ours, was too broad, and was narrowed to 2.6% of raw key magnitude.
+
+**§4.2 is new and is about the record rather than the result.** 124 of 155 committed log files were a single line naming themselves, because one module called `logs.setup()` at import scope and five scripts imported it as a library. Eighty per cent of the kept record was content-free. It belongs on the page because every number above is defended by that record.
+
+**What this ticket did not foresee:** that the ledger would need a *withdrawn* row for a claim withdrawn by its own follow-up (F-14, the depth direction). The ledger had held claims this project retired under external pressure; this is the first retired by the next run of the same experiment.

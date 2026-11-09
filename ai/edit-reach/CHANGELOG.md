@@ -6,6 +6,7 @@
 - [D-008] The notebook page shaped as a paper — `web/notebook/edit-reach/note-01.md`, components in `web/src/components/Paper.tsx`, conventions in `web/notebook/writing-here.md`
 - [D-008] The four `TODO(cite)` in `paper/note.md` resolved; all four were already verified in `web/data/papers.yml`
 - [D-009] Front matter, abstract and contributions; the notebook rail now shows each project's stage, read from `web/data/projects.yml`
+- [D-013] The paper filled out from `agents/shared/decisions.md` — four of fifteen decisions were on the page; now most are
 - [D-012] Renamed to Paper; two widths on one centre line; equations rendered with KaTeX
 - [D-011] Paper-mode layout — wide container, narrow text; the `float` prop removed
 - [D-010] Note 01 reorganised under the section names a reviewer expects — `web/notebook/edit-reach/note-01.md`; the rule in `web/notebook/writing-here.md`
