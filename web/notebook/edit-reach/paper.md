@@ -19,6 +19,8 @@ toc_max_heading_level: 2
   buildsOn={<a href="/notebook/edit-slice/">edit-slice</a>}
 />
 
+<Frontmatter>
+
 <Abstract keywords={["model editing", "ROME", "knowledge propagation", "benchmark contamination", "negative result"]}>
 
 A rank-one weight edit, as ROME applies it <Cite id="meng2022rome" />, divides its update by a fixed inner product. The fraction of that update arriving at any token is therefore computable in one forward pass through the *unedited* model — before the edit exists, and for any prompt rather than for a list written in advance. This paper asks whether that quantity can screen an evaluation item before the item is run, and finds that it cannot, for a reason worth stating precisely.
@@ -41,6 +43,8 @@ This is reported as a negative result with working controls. §6 records what th
 6. The measure repurposed as a contamination screen, with one published benchmark scored on it, released as `editreach`.
 
 </Contributions>
+
+</Frontmatter>
 ## 1. Introduction
 
 <Lead>The task.</Lead> A weight edit changes one fact and disturbs an unknown amount of everything else. The disturbance is evaluated with hand-written item sets: paraphrases, neighbours, and multi-hop questions whose answers should follow from the edited fact <Cite id="cohen2024ripple" />, <Cite id="zhong2023mquake" />. Surveys of the field treat these sets as the measurement <Cite id="yao2023survey" />.
@@ -149,6 +153,25 @@ Half the tickets in this project are not about editing at all. They ask whether 
 
 <Lead>The variation is routing, and it is exact.</Lead> Readings of one batch through fresh connections partition cleanly by the serving GPU. What first looked like drift of 2.16e-04 is not drift: the quantity takes one of a small number of **exact** values, reproducing bit-for-bit across runs, across nnsight loaders and across days, and which one you get is which replica served the request.<Prov id="E-012" /> A daily reading taken two days later returned the same content hash and the same bits as the first. So a comparison between **device-matched** readings needs no tolerance at all; the 2.2e-04 is retained only for readings whose device differs or was never recorded — which is every artifact this project made before 1 November.
 
+```text
+16 readings · one 126-prompt batch · fresh connection each · Llama-3.1-8B L5
+
+value               readings   served by
+edd2b2b152de2098           8   GPU 0
+54a1755349e607dc           8   GPU 2
+
+GPU 0    8 readings   1 distinct value
+GPU 2    8 readings   1 distinct value
+
+anchor coefficient (k and k* in one trace)
+  deviation from 1.000, both devices .......... 0.000e+00
+floor median (k* from cache, nothing cancels)
+  within a GPU ................................ 0.000e+00
+  across GPUs ................................. 3.110e-06
+```
+
+Each value came from one device and each device returned one value, and the connections alternated rather than arriving in blocks, so it is per-connection routing. The last two lines are the practical content: a ratio read inside one trace cancels the device entirely, which is why every anchor gate in the repository had survived without anyone noticing any of this. That is a property of the gate's design and not of anyone's foresight.
+
 <Lead>The partition is a property of a deployment on a day.</Lead> It appeared on 1 November and did not on 3 November, when all sixteen connections landed on one GPU.<Prov id="E-009" /> No tolerance may be justified by the partition alone, so every run records how many distinct devices it saw rather than assuming more than one exists.
 
 <Lead>Batch composition is not free, and that correction was ours.</Lead> "Batch composition contributes zero" was recorded, generalised into the reference, and then narrowed: it is true of the derived ratio and false of the raw keys, which move by about **2.6% of their magnitude** when the batch is reshaped.<Prov id="E-007" /> Any artifact comparing raw activations across runs is bounded there, not at 2.2e-04.
@@ -170,6 +193,69 @@ Five results, in the order they were run. The first two are about the coefficien
 495 probes over 42 subjects, Llama-3.1-8B at layer 5, edits read from cache.<Prov id="E-001" /> Against measured movement — the fall in the probability of the pre-edit top-1 answer — the coefficient correlates at ρ = 0.522, CI (0.450, 0.587). That number is real and will be quoted, so it needs its account.
 
 A **same-subject control** — a different property of the same person — already accounts for about 72% of the median movement, |movement| 0.1034 against |control| 0.0740. Removing it leaves an excess correlation of **0.085**, CI (−0.003, 0.172), an interval touching zero.
+
+<Figure
+  plain
+  wide
+  caption={<>Six probe families, ordered by median coefficient. For each, the movement under the real edit and the movement under a same-subject control, on one scale. Where the two marks nearly coincide the coefficient has predicted nothing the control did not. Only <i>exposure</i> opens a visible gap, at +0.031.</>}
+>
+  <svg viewBox="0 0 860 290" role="img" aria-label="Dumbbell chart of six probe families ordered by median coefficient. Repetition, coefficient 0.981, moves 0.337 under the real edit and 0.266 under the control. Semantics, 0.980, moves 0.180 and 0.177. Exposure, 0.958, moves 0.049 and 0.022. Position, 0.958, moves 0.090 and 0.066. Alias, 0.121, moves 0.007 and 0.002. Discrimination, 0.096, moves 0.022 and 0.011. In every family the two marks sit close together.">
+    <g fontFamily="Lato, sans-serif" fontSize="10.5" fontWeight="900" letterSpacing="0.8" fill="var(--ocl-ink-faint)">
+      <text x="20" y="34">PROBE FAMILY</text>
+      <text x="268" y="34" textAnchor="end">COEF</text>
+      <text x="300" y="34">MOVEMENT, REAL EDIT AGAINST A SAME-SUBJECT CONTROL</text>
+    </g>
+    <g stroke="var(--ocl-rule-strong)" strokeWidth="1" fill="none">
+      <path d="M300 252 H820" />
+      <path d="M300 252 v5" /><path d="M444 252 v5" /><path d="M589 252 v5" /><path d="M733 252 v5" />
+    </g>
+    <g stroke="var(--ocl-rule)" strokeWidth="1" strokeDasharray="2 6" fill="none">
+      <path d="M444 48 V252" /><path d="M589 48 V252" /><path d="M733 48 V252" />
+    </g>
+    <g fontFamily="Lato, sans-serif" fontSize="11" fill="var(--ocl-ink-faint)">
+      <text x="300" y="270" textAnchor="middle">0</text>
+      <text x="444" y="270" textAnchor="middle">0.10</text>
+      <text x="589" y="270" textAnchor="middle">0.20</text>
+      <text x="733" y="270" textAnchor="middle">0.30</text>
+    </g>
+
+    <g fontFamily="Lato, sans-serif" fontSize="12" fill="var(--ocl-ink)">
+      <text x="20" y="64">repetition</text><text x="20" y="96">semantics</text><text x="20" y="128">exposure</text>
+      <text x="20" y="160">position</text><text x="20" y="192">alias</text><text x="20" y="224">discrimination</text>
+    </g>
+    <g fontFamily="IBM Plex Mono, monospace" fontSize="11" fill="var(--ocl-ink-faint)" textAnchor="end">
+      <text x="268" y="64">0.981</text><text x="268" y="96">0.980</text><text x="268" y="128">0.958</text>
+      <text x="268" y="160">0.958</text><text x="268" y="192">0.121</text><text x="268" y="224">0.096</text>
+    </g>
+
+    <g stroke="var(--ocl-rule-strong)" strokeWidth="2" strokeLinecap="round" fill="none">
+      <path d="M684 60 H787" /><path d="M556 92 H560" /><path d="M332 124 H371" />
+      <path d="M395 156 H430" /><path d="M303 188 H310" /><path d="M316 220 H332" />
+    </g>
+    <g>
+      <circle cx="684" cy="60" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="787" cy="60" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+      <circle cx="556" cy="92" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="560" cy="92" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+      <circle cx="332" cy="124" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="371" cy="124" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+      <circle cx="395" cy="156" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="430" cy="156" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+      <circle cx="303" cy="188" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="310" cy="188" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+      <circle cx="316" cy="220" r="5.5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <circle cx="332" cy="220" r="5.5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+    </g>
+    <text x="384" y="118" fontFamily="Lato, sans-serif" fontSize="10" fill="var(--ocl-ink-muted)">excess +0.031, the largest</text>
+
+    <g fontFamily="Lato, sans-serif" fontSize="10.5">
+      <circle cx="585" cy="30" r="5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+      <text x="596" y="34" fill="var(--ocl-ink-muted)">same-subject control</text>
+      <circle cx="742" cy="30" r="5" fill="var(--ocl-link)" />
+      <text x="753" y="34" fill="var(--ocl-ink-muted)">real edit</text>
+    </g>
+  </svg>
+</Figure>
 
 <Data caption={<>Coefficient and movement by probe family. The excess column is what is left after the same-subject control. No family escapes: excess medians run 0.000 to 0.031.</>}>
   <thead>
@@ -243,6 +329,88 @@ This is why §5.1 came out the way it did. The coefficient fails to predict a pa
 ### 5.4 Destruction and destination are separable
 
 One rank-one update does two things. It **breaks** the pre-edit answer, and it **supplies** a new one. Measured on the same 495 probes and the same three arms, changing only the readout — from the named token's probability to a full-vocabulary argmax — the two halves separate in opposite directions.<Prov id="E-003" />
+
+<Figure
+  plain
+  wide
+  caption={<>The two halves of one rank-one update, as paired differences on a shared scale. <b>Content</b> is the real edit against a different edit on the <i>same</i> person; <b>identity</b> is that person against someone else. Destination is carried by content and identity contributes nothing; destruction is the reverse. Same 495 probes, bootstrap 10,000, seed 1538.</>}
+>
+  <svg viewBox="0 0 860 300" role="img" aria-label="Four paired differences on one scale from minus 0.02 to 0.34. For destination, the content difference is plus 0.2828 with a confidence interval from 0.2424 to 0.3232, and the identity difference is 0.0000 with an interval from minus 0.0101 to plus 0.0101. For destruction, the content difference is plus 0.0009 with an interval from 0.0004 to 0.0024, and the identity difference is plus 0.0583 with an interval from 0.0472 to 0.0732. The two halves put their effect in opposite columns.">
+    <g fontFamily="Lato, sans-serif" fontSize="11" fill="var(--ocl-ink-faint)">
+      <text x="186" y="268" textAnchor="middle">0</text>
+      <text x="367" y="268" textAnchor="middle">0.10</text>
+      <text x="547" y="268" textAnchor="middle">0.20</text>
+      <text x="728" y="268" textAnchor="middle">0.30</text>
+      <text x="457" y="290" textAnchor="middle">paired median difference</text>
+    </g>
+    <g stroke="var(--ocl-rule-strong)" strokeWidth="1" fill="none">
+      <path d="M150 250 H820" />
+      <path d="M186 250 v5" /><path d="M367 250 v5" /><path d="M547 250 v5" /><path d="M728 250 v5" />
+    </g>
+    <path d="M186 36 V250" stroke="var(--ocl-rule-strong)" strokeWidth="1" strokeDasharray="2 5" fill="none" />
+
+    <g fontFamily="Lato, sans-serif" fontSize="11" fontWeight="900" letterSpacing="0.9" fill="var(--ocl-ink)">
+      <text x="20" y="40">DESTINATION</text>
+      <text x="20" y="150">DESTRUCTION</text>
+    </g>
+    <g fontFamily="Lato, sans-serif" fontSize="11" fill="var(--ocl-ink-faint)">
+      <text x="128" y="40" textAnchor="end">does the new answer arrive?</text>
+      <text x="128" y="150" textAnchor="end">is the old answer gone?</text>
+    </g>
+
+    <g fontFamily="Lato, sans-serif" fontSize="11" fill="var(--ocl-ink-muted)">
+      <text x="140" y="72" textAnchor="end">content</text>
+      <text x="140" y="104" textAnchor="end">identity</text>
+      <text x="140" y="182" textAnchor="end">content</text>
+      <text x="140" y="214" textAnchor="end">identity</text>
+    </g>
+
+    <g strokeLinecap="round" fill="none">
+      <path d="M186 68 H697" stroke="var(--ocl-oxide)" strokeWidth="3.5" />
+      <path d="M624 68 H770" stroke="var(--ocl-oxide)" strokeWidth="1" />
+      <path d="M624 63 v10 M770 63 v10" stroke="var(--ocl-oxide)" strokeWidth="1" />
+      <path d="M168 100 H204" stroke="var(--ocl-link)" strokeWidth="1" />
+      <path d="M168 95 v10 M204 95 v10" stroke="var(--ocl-link)" strokeWidth="1" />
+      <path d="M186 178 H188" stroke="var(--ocl-oxide)" strokeWidth="3.5" />
+      <path d="M187 173 v10 M190 173 v10" stroke="var(--ocl-oxide)" strokeWidth="1" />
+      <path d="M186 210 H291" stroke="var(--ocl-link)" strokeWidth="3.5" />
+      <path d="M271 210 H318" stroke="var(--ocl-link)" strokeWidth="1" />
+      <path d="M271 205 v10 M318 205 v10" stroke="var(--ocl-link)" strokeWidth="1" />
+    </g>
+    <circle cx="697" cy="68" r="5" fill="var(--ocl-oxide)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+    <circle cx="186" cy="100" r="5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-link)" strokeWidth="2" />
+    <circle cx="188" cy="178" r="5" fill="var(--ocl-paper-raised)" stroke="var(--ocl-oxide)" strokeWidth="2" />
+    <circle cx="291" cy="210" r="5" fill="var(--ocl-link)" stroke="var(--ocl-paper-raised)" strokeWidth="2" />
+
+    <g fontFamily="IBM Plex Mono, monospace" fontSize="11.5">
+      <text x="712" y="72" fill="var(--ocl-oxide)" fontWeight="600">+0.2828</text>
+      <text x="216" y="104" fill="var(--ocl-ink-faint)">+0.0000</text>
+      <text x="204" y="182" fill="var(--ocl-ink-faint)">+0.0009</text>
+      <text x="332" y="214" fill="var(--ocl-link)" fontWeight="600">+0.0583</text>
+    </g>
+    <g fontFamily="Lato, sans-serif" fontSize="10" fill="var(--ocl-ink-faint)">
+      <text x="284" y="104">interval straddles zero</text>
+      <text x="272" y="182">detectable, and 1.5% of identity</text>
+    </g>
+
+    <g fontFamily="Lato, sans-serif" fontSize="10.5">
+      <rect x="560" y="14" width="10" height="10" fill="var(--ocl-oxide)" />
+      <text x="576" y="23" fill="var(--ocl-ink-muted)">content: real − same-subject</text>
+      <rect x="742" y="14" width="10" height="10" fill="var(--ocl-link)" />
+      <text x="758" y="23" fill="var(--ocl-ink-muted)">identity</text>
+    </g>
+  </svg>
+</Figure>
+
+```text
+495 probes · 42 subjects · full-vocabulary argmax · Llama-3.1-8B L5
+
+                       base   real    ctl  other
+top-1 lands in the
+injected country         1%    29%     1%     1%
+```
+
+The control and the stranger both sit at the base rate. The real edit is the only arm that puts the new answer anywhere.
 
 <Data caption={<>The two halves of one update, on the same probes, paired, bootstrap 10,000, seed 1538. Each control is at floor for one half and carries the effect for the other.</>}>
   <thead>

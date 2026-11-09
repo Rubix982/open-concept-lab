@@ -8989,6 +8989,7 @@ a:hover > .ocl-home__featureCover {
   margin-inline: auto;
 }
 
+.markdown:has(> .ocl-paperhead) > .ocl-frontmatter,
 .markdown:has(> .ocl-paperhead) > .ocl-figure,
 .markdown:has(> .ocl-paperhead) > .ocl-ptable {
   max-width: min(100%, var(--ocl-paper-wide));
@@ -9429,4 +9430,48 @@ a:hover > .ocl-home__featureCover {
 .theme-doc-toc-desktop .table-of-contents__link {
   font-size: 0.78rem;
   line-height: 1.35;
+}
+
+/* ---- front matter in two columns ---- */
+
+.ocl-frontmatter {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 0 2.4rem;
+  align-items: start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+@media (max-width: 900px) {
+  .ocl-frontmatter {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem 0;
+  }
+}
+
+/* Inside the grid the two blocks are columns, so they drop their own rules. */
+.ocl-frontmatter > .ocl-abstract {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+}
+
+.ocl-frontmatter > .ocl-abstract .ocl-abstract__label {
+  text-align: left;
+}
+
+.ocl-frontmatter > .ocl-contrib {
+  margin: 0;
+  max-width: none;
+}
+
+.ocl-frontmatter .ocl-abstract p {
+  font-size: 0.945rem;
+}
+
+.ocl-frontmatter .ocl-contrib {
+  font-size: 0.9rem;
 }

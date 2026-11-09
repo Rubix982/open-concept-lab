@@ -27,6 +27,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-011 | Documentor | The column was wider than anything in it | closed |
 | D-012 | Documentor | "Note 01", three left edges, and equations set as text | closed |
 | D-013 | Documentor | Two thirds of the project was not on the page | closed |
+| D-014 | Documentor | Outputs, charts, and two columns | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
@@ -39,6 +40,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- D-014 · Two charts drawn from the measured numbers, two run outputs copied from `results/`, and the front matter set in two columns. Seven figures, nine tables, three listings.
 - D-013 · The paper filled out from the record: E-001's real result, E-002's sixty-five-to-one, E-003's destruction/destination separation, and the nine reproducibility decisions. Five findings and six runs became fourteen and fourteen.
 - D-012 · The page renamed to Paper, the layout reduced to two widths on one centre line, and the equations rendered with KaTeX, which the site had been configured for all along.
 - D-011 · Paper-mode layout: a full-width container with the text capped at the measure, so figures take the column and tables sit between. The `float` prop removed.

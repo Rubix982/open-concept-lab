@@ -494,3 +494,39 @@ He was right, and the gap was measurable: `agents/shared/decisions.md` holds fif
 **§4.2 is new and is about the record rather than the result.** 124 of 155 committed log files were a single line naming themselves, because one module called `logs.setup()` at import scope and five scripts imported it as a library. Eighty per cent of the kept record was content-free. It belongs on the page because every number above is defended by that record.
 
 **What this ticket did not foresee:** that the ledger would need a *withdrawn* row for a claim withdrawn by its own follow-up (F-14, the depth direction). The ledger had held claims this project retired under external pressure; this is the first retired by the next run of the same experiment.
+
+---
+
+### D-014 · Outputs, charts, and two columns
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 2h
+**Spent:** 2h
+
+**Description:**
+Saif: "I feel we haven't really shown the actual code outputs, result comparisons, numbers, charts, diagrams ... any paper has a two column layout which it uses to explain the abstract."
+
+Three things, and each was true. The page asserted numbers without showing a run producing them; the new §5 results arrived as tables with no picture; and the front matter ran down one column while the page had room for two.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/src/components/Paper.tsx — `Frontmatter`
+- web/src/css/custom.css — the two-column grid
+- web/notebook/edit-reach/paper.md — two charts, two run outputs
+
+**Closed:** 2026-11-09. Seven figures, nine tables, three code listings.
+
+**The outputs are copied from `results/*-summary.md`, not written to look like outputs.** Both blocks are what the run printed: [E-006]'s sixteen readings partitioning by content hash across two GPUs, and [E-003]'s base/real/control/stranger row at 1% / 29% / 1% / 1%. The second was not on the page in any form, and it is the cleanest single line in the project — the control and the stranger both sit at the base rate, so the real edit is the only arm that puts the new answer anywhere.
+
+**The chart for §5.4 is the one the page most needed.** Four paired differences on one shared scale, coloured by *which* difference rather than by size: content against identity. Destination puts its mass in content and nothing in identity; destruction does the reverse. The claim "they separate in opposite directions on the same probes" is a sentence a reader has to take on trust and a picture they can check in a second.
+
+**§5.1's chart is a dumbbell, and the form is the argument.** Six families ordered by coefficient, each with movement under the real edit and under the same-subject control. Where the marks nearly touch, the coefficient predicted nothing the control did not — which is five families out of six. A bar chart of movement alone would have shown the opposite, because the high-coefficient families do move more.
+
+**Two columns for the front matter and nowhere else.** A printed paper sets two columns because the page is wider than its measure, which is also true here — but two columns of running text on a screen makes a reader scroll down one and back up the other. The abstract and the contributions are both short and self-contained, so they are the one place the idiom works without that cost. The component says so in its own comment, so the next page does not take it as a licence.
+
+**What this ticket did not foresee:** that `<Abstract>` and `<Contributions>` carry their own rules and padding, which read as a separation from what follows and as a seam between columns once they sit side by side. Both drop their borders inside the grid and the grid carries one rule beneath.
