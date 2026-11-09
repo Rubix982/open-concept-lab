@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" role="img" aria-label="Two pictures of the same weight matrix being perturbed. On the left, a square box of possible perturbations with arrows leaving the centre in every direction: the certification literature must hold against all of them, and the direction is the adversary's to choose. On the right, a single arrow along one fixed direction with only its length varying per input: a rank-one edit, whose direction is known before the edit is applied.">
+  <style type="text/css"><![CDATA[
+    /* The figure carries its own palette: an image element cannot inherit the
+       page's custom properties. Light values stay as var() fallbacks so the PDF
+       converter, which does not read :root, renders the same picture. */
+    :root {
+        --paper: #f4f1ea;
+        --paper-raised: #fffdf8;
+        --ink: #2b2a28;
+        --faint: #6b6863;
+        --link: #4338a8;
+        --oxide: #a4442f;
+        --sage-deep: #4a6f55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --paper-raised: #24231f;
+          --ink: #eeece6;
+          --faint: #9a968e;
+          --link: #b1a9ff;
+          --oxide: #e3977f;
+          --sage-deep: #93c9a5;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <!-- userSpaceOnUse: a percentage filter region is a share of the bounding
+         box, so a thin rule with no height has nothing to draw into. -->
+    <filter id="rough" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="420">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="41"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.8"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="11"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+    <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="context-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="420" fill="var(--paper, #f4f1ea)"/>
+  <rect width="1000" height="420" filter="url(#grain)"/>
+
+  <text x="40" y="40" font-family="Lato, sans-serif" font-size="15" font-weight="900" letter-spacing="0.9" fill="var(--ink, #2b2a28)">WHAT IS BEING CERTIFIED AGAINST</text>
+  <text x="40" y="64" font-family="Georgia, serif" font-size="13.5" font-style="italic" fill="var(--faint, #6b6863)">Both pictures perturb the same weight matrix. Only one of them lets the perturbation choose its direction.</text>
+
+  <!-- ─────── left: the ball ─────── -->
+  <text x="78" y="110" font-family="Georgia, serif" font-size="14" fill="var(--oxide, #a4442f)">the certification literature</text>
+  <text x="78" y="130" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">every weight within a norm ball of the original</text>
+
+  <g filter="url(#rough)">
+    <rect x="130" y="160" width="200" height="200" rx="4" fill="var(--paper-raised, #fffdf8)" stroke="var(--oxide, #a4442f)" stroke-width="2.2"/>
+  </g>
+  <g filter="url(#rough)" stroke="var(--oxide, #a4442f)" stroke-width="1.6" opacity="0.75" marker-end="url(#tip)" fill="none">
+    <path d="M230 260 L230 178"/><path d="M230 260 L312 260"/><path d="M230 260 L230 342"/><path d="M230 260 L148 260"/>
+    <path d="M230 260 L288 202"/><path d="M230 260 L288 318"/><path d="M230 260 L172 318"/><path d="M230 260 L172 202"/>
+  </g>
+  <circle cx="230" cy="260" r="5" fill="var(--ink, #2b2a28)"/>
+  <text x="230" y="392" font-family="Georgia, serif" font-size="12.5" fill="var(--ink, #2b2a28)" text-anchor="middle">the direction is the adversary's to choose</text>
+
+  <!-- divider -->
+  <path d="M500 110 V370" stroke="var(--faint, #6b6863)" stroke-width="1.2" stroke-dasharray="3 9" opacity="0.5" fill="none"/>
+
+  <!-- ─────── right: the ray ─────── -->
+  <text x="560" y="110" font-family="Georgia, serif" font-size="14" fill="var(--link, #4338a8)">a rank-one edit</text>
+  <text x="560" y="130" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)">one direction, fixed, known before the edit is applied</text>
+
+  <g filter="url(#rough)">
+    <rect x="612" y="160" width="200" height="200" rx="4" fill="var(--paper-raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.5"/>
+  </g>
+  <g filter="url(#rough)" stroke="var(--link, #4338a8)" fill="none" marker-end="url(#tip)">
+    <path d="M712 260 L770 202" stroke-width="3.2"/>
+  </g>
+  <g filter="url(#rough)" stroke="var(--link, #4338a8)" fill="none" opacity="0.35">
+    <path d="M712 260 L741 231" stroke-width="2.4"/>
+    <path d="M712 260 L755 217" stroke-width="2.4"/>
+  </g>
+  <circle cx="712" cy="260" r="5" fill="var(--ink, #2b2a28)"/>
+  <text x="800" y="286" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)" text-anchor="end">only the length varies,</text>
+  <text x="800" y="302" font-family="Georgia, serif" font-size="12" font-style="italic" fill="var(--faint, #6b6863)" text-anchor="end">once per input</text>
+  <text x="712" y="392" font-family="Georgia, serif" font-size="12.5" fill="var(--ink, #2b2a28)" text-anchor="middle">the direction is known in advance</text>
+
+  <!-- the relation between them -->
+  <path d="M352 260 H596" stroke="var(--sage-deep, #4a6f55)" stroke-width="2" fill="none" marker-end="url(#tip)"/>
+  <text x="474" y="250" font-family="Georgia, serif" font-size="12.5" font-style="italic" fill="var(--sage-deep, #4a6f55)" text-anchor="middle">strictly smaller problem</text>
+</svg>

@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="1000" height="480" role="img" aria-label="Two number lines, one per regime, from zero to 1.2. In the near field the coefficient actually read is 0.9334 and the bound above it is 0.9881, almost touching. In the far field the coefficient is 0.0544 and the bound is 1.1456. A dotted line carried up from the near field's 0.9334 shows that the far field's bound sits above it, so the bound permits a question that never names the edited subject to receive more of the update than one that does.">
+  <style type="text/css"><![CDATA[
+    /* The page has a light and a dark theme. An image element cannot inherit
+       the page's custom properties, because it is a separate document; its own
+       stylesheet is honoured though, media queries included. Every var() keeps
+       a light fallback so the PDF converter, which does not read :root, still
+       renders what a reader sees. */
+    :root {
+        --paper: #f4f1ea;
+        --paper-raised: #fffdf8;
+        --ink: #2b2a28;
+        --faint: #6b6863;
+        --link: #4338a8;
+        --oxide: #a4442f;
+        --sage-deep: #4a6f55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --paper-raised: #24231f;
+          --ink: #eeece6;
+          --faint: #9a968e;
+          --link: #b1a9ff;
+          --oxide: #e3977f;
+          --sage-deep: #93c9a5;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <!-- filterUnits in userSpace: a percentage region is a share of the bounding
+         box, and a horizontal rule has zero height, so a relative region leaves
+         nothing to draw into and the line disappears. Found by rendering it. -->
+    <filter id="rough" filterUnits="userSpaceOnUse" x="0" y="0" width="1000" height="440">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="17"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.6"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="4"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="1000" height="480" fill="var(--paper, #f4f1ea)"/>
+  <rect width="1000" height="480" filter="url(#grain)"/>
+
+  <!-- scale: x = 150 + value * 620, so 0 -> 150 and 1.2 -> 894 -->
+
+  <!-- axis ticks, shared -->
+  <g font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--faint, #6b6863)" text-anchor="middle">
+    <text x="150" y="412">0</text>
+    <text x="460" y="412">0.5</text>
+    <text x="770" y="412">1.0</text>
+  </g>
+  <g stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.28">
+    <path d="M150 112 V392"/><path d="M460 112 V392"/><path d="M770 112 V392"/>
+  </g>
+
+  <text x="40" y="44" font-family="Lato, sans-serif" font-size="15" font-weight="900" letter-spacing="0.9" fill="var(--ink, #2b2a28)">WHAT THE BOUND PERMITS, AGAINST WHAT IS ACTUALLY READ</text>
+  <text x="40" y="68" font-family="Georgia, serif" font-size="13.5" font-style="italic" fill="var(--faint, #6b6863)">Fraction of the update arriving at a token. Llama-3.1-8B, layer 5, 1,539 question-positions.</text>
+
+  <!-- ─────── near field ─────── -->
+  <text x="40" y="154" font-family="Georgia, serif" font-size="14" fill="var(--ink, #2b2a28)">near field</text>
+  <text x="40" y="172" font-family="Georgia, serif" font-size="11.5" font-style="italic" fill="var(--faint, #6b6863)">names the subject</text>
+
+  <g filter="url(#rough)">
+    <path d="M150 160 H894" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.4" fill="none"/>
+    <!-- actual 0.9334 -> 728.7 -->
+    <path d="M150 160 H729" stroke="var(--link, #4338a8)" stroke-width="9" stroke-linecap="round" fill="none"/>
+  </g>
+  <circle cx="729" cy="160" r="5.5" fill="var(--link, #4338a8)"/>
+  <text x="729" y="140" font-family="IBM Plex Mono, monospace" font-size="13.5" fill="var(--link, #4338a8)" text-anchor="middle">0.9334</text>
+  <text x="729" y="124" font-family="Georgia, serif" font-size="11.5" fill="var(--faint, #6b6863)" text-anchor="middle">actually read</text>
+
+  <!-- bound 0.9881 -> 762.6 -->
+  <g filter="url(#rough)"><path d="M763 148 V194" stroke="var(--oxide, #a4442f)" stroke-width="2.6" fill="none"/></g>
+  <text x="775" y="212" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--oxide, #a4442f)">0.9881 bound</text>
+
+  <!-- ─────── far field ─────── -->
+  <text x="40" y="288" font-family="Georgia, serif" font-size="14" fill="var(--ink, #2b2a28)">far field</text>
+  <text x="40" y="306" font-family="Georgia, serif" font-size="11.5" font-style="italic" fill="var(--faint, #6b6863)">never names it</text>
+
+  <g filter="url(#rough)">
+    <path d="M150 294 H894" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.4" fill="none"/>
+    <!-- actual 0.0544 -> 183.7 -->
+    <path d="M150 294 H184" stroke="var(--link, #4338a8)" stroke-width="9" stroke-linecap="round" fill="none"/>
+  </g>
+  <circle cx="184" cy="294" r="5.5" fill="var(--link, #4338a8)"/>
+  <text x="184" y="274" font-family="IBM Plex Mono, monospace" font-size="13.5" fill="var(--link, #4338a8)" text-anchor="middle">0.0544</text>
+
+  <!-- bound 1.1456 -> 860.3 -->
+  <g filter="url(#rough)"><path d="M860 282 V328" stroke="var(--oxide, #a4442f)" stroke-width="2.6" fill="none"/></g>
+  <text x="872" y="346" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--oxide, #a4442f)" text-anchor="end">1.1456 bound</text>
+
+  <!-- what the bound permits, as a band -->
+  <rect x="184" y="283" width="676" height="22" fill="var(--oxide, #a4442f)" opacity="0.1"/>
+  <text x="520" y="299" font-family="Georgia, serif" font-size="12.5" font-style="italic" fill="var(--oxide, #a4442f)" text-anchor="middle">everything the bound still permits here</text>
+
+  <!-- the carry-up line: the far field's bound exceeds the near field's actual -->
+  <path d="M729 168 V286" stroke="var(--sage-deep, #4a6f55)" stroke-width="1.4" stroke-dasharray="4 5" opacity="0.85" fill="none"/>
+  <path d="M729 294 H860" stroke="var(--sage-deep, #4a6f55)" stroke-width="2.4" fill="none"/>
+  <path d="M852 289 L860 294 L852 299 Z" fill="var(--sage-deep, #4a6f55)"/>
+
+  <text x="40" y="432" font-family="Georgia, serif" font-size="14" fill="var(--ink, #2b2a28)">The bound for a question that never names the subject sits <tspan font-style="italic">above</tspan> what a question that does name it actually receives.</text>
+  <text x="40" y="452" font-family="Georgia, serif" font-size="14" fill="var(--ink, #2b2a28)">It cannot tell the two apart, so it forbids nothing that happens.</text>
+</svg>

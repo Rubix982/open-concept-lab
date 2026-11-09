@@ -64,6 +64,14 @@ Four further results came off the same probe set. Identity is worth about **sixt
 
 <Lead>Bounding a perturbation is a field, and it bounds a ball.</Lead> §5.6 computes an upper bound on how much of a weight edit reaches a token, which is the shape of a certified-robustness guarantee. That literature certifies against an adversary free to choose any direction inside a norm ball: <Cite id="weng2020certificated" narrative /> certifies a region in weight space, handling single-layer perturbation analytically, and <Cite id="tsai2021weightperturb" narrative /> works from the classification margin. A rank-one edit is a strictly smaller problem — **one** direction, fixed, and known before the edit is applied — and neither paper considers a low-rank perturbation or evaluates a transformer. So weight-space certification is not an open lane and is not claimed to be. What could not be found is certification that exploits a known rank-one direction for editing locality.
 
+<Figure
+  src="/img/edit-reach/ball-and-ray.svg"
+  alt="Two pictures of the same weight matrix being perturbed. Left: a box of possible perturbations with arrows leaving the centre in every direction, which the certification literature must hold against. Right: one arrow along a fixed direction with only its length varying per input."
+  caption={<>Why the rank-one case is the easy one. The literature certifies against a perturbation free to point anywhere in a ball; an edit points one way, and the way is known before it is applied.</>}
+  wide
+  plain
+/>
+
 <Lead>Why §5.6's bound stops at the layer it is read in.</Lead> A bound on the perturbation at one layer says nothing about the model's output without a number saying how much the rest of the network can amplify a change fed into it — a Lipschitz constant. <Cite id="kim2021lipschitz" /> is where that number stops being available. It proves dot-product self-attention has no such constant for any $p$-norm on an **unbounded** input domain, because one term in its derivative equals the sample variance of the input, which has no ceiling. The same paper states that on a *compact* domain it is Lipschitz, and declines that route only because the constant depends on the input range and a tight one would be non-trivial work. The honest position is therefore that **no usable constant exists**, not that no constant exists — a distinction this paper got wrong once before reading the theory sections.
 
 <Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume without writing it down. The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full — enough to ask the question and not enough to answer it. If it is published, §3 becomes a replication and the contribution is §5.
@@ -501,6 +509,14 @@ $$
 
 So the upper bound that §1 said an item set could never give is available for nothing. The question is whether it forbids anything, which is empirical.<Prov id="E-015" /> Looseness is the bound divided by the coefficient actually read; a bound never approached rules nothing out.
 
+<Figure
+  src="/img/edit-reach/bound-forbids-nothing.svg"
+  alt="Two number lines, one per regime, from zero to 1.2. In the near field the coefficient read is 0.9334 and the bound above it is 0.9881, almost touching. In the far field the coefficient is 0.0544 and the bound is 1.1456 — above the near field's 0.9334, which a dotted line carried down shows."
+  caption={<>The bound for a question that never names the edited subject sits above what a question that <i>does</i> name it actually receives. It cannot tell the two apart.</>}
+  wide
+  plain
+/>
+
 <Data caption={<>How far the bound sits above the quantity it bounds, by regime. 1,539 question-positions over 513 instances, read offline from cached keys.</>}>
   <thead>
     <tr><th>Regime</th><th className="n">median &#124;c&#124;</th><th className="n">median bound</th><th className="n">median looseness</th><th className="n">95% CI</th><th className="n">max</th></tr>
@@ -520,6 +536,14 @@ The number that carries this is the far field's **median bound of 1.1456** again
 ### 5.7 Nothing about the subject predicts the magnitude either
 
 Seven candidates for what sets the magnitude had already been eliminated, and every one was a property of the activation geometry. This is the first test of a property of the **subject**.<Prov id="E-016" /> For each of 41 edited subjects, damage is the median excess — real movement minus the same-subject control of §3.3 — against two subject properties: prominence, as the number of Wikipedia language editions for the subject's Wikidata item, and dependent count, as the number of distinct properties on it.
+
+<Figure
+  src="/img/edit-reach/nothing-predicts-magnitude.svg"
+  alt="Eight correlations between a subject's properties and the damage an edit does, each a point with a 95% interval. Every interval crosses zero and every point sits within 0.13 of it. A shaded band from -0.37 to +0.37 marks what 41 subjects cannot see inside, and every interval lies within it."
+  caption={<>Every interval crosses zero, and every estimate sits deep inside the band this study could not see into — the largest is 0.130. Both readings matter, and only the first is usually reported.</>}
+  wide
+  plain
+/>
 
 <Data caption={<>Eight relationships, all of them reported. Six were computed, so reporting a subset would be a choice rather than a result.</>}>
   <thead>
