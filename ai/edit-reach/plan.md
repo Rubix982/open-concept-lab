@@ -32,7 +32,7 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-016 | Documentor | A class name that was already taken | closed |
 | D-017 | Documentor | The overview was a short version of the paper | closed |
 | D-018 | Documentor | Written for the people who already knew | closed |
-| D-019 | Documentor | The fault that kept coming back in different clothes | open |
+| D-019 | Documentor | The fault that kept coming back in different clothes | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 

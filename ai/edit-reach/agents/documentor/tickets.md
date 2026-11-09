@@ -146,7 +146,7 @@ Hedging is quarantined into one named limits section; the body runs unhedged.
 
 ### D-019 · The fault that kept coming back in different clothes
 
-**Status:** open
+**Status:** closed
 **Type:** document
 **Priority:** medium
 **Created:** 2026-11-09
@@ -168,19 +168,38 @@ Ordered by chronology. This is a record of how the work went wrong and was caugh
 
 **What would make this piece wrong:** if the five instances turn out to be one fault described five ways, or if any of them was actually fixed by changing a number rather than by naming the degenerate case. Check both before writing; either would make the piece a different and smaller one.
 
+**The check ran, and it came back against the ticket. There are three, not five.**
+
+`agents/shared/decisions.md` says so twice — *"the third of its kind in this suite"* and *"All three are the same fault"* — and `docs/ndif-reproducibility.md` says *"the third instance of one fault in this suite's short life"*. A search across both projects for a fourth or a fifth returns nothing. The five in D-003 was written from memory on 8 November and was never true.
+
+The three:
+
+1. A bfloat16 precision check that measured the relative error of a dot product between **near-orthogonal** vectors and read **4.9e-01**. That is catastrophic cancellation, not precision. Replaced with per-element rounding error, which reads 3.887e-03 against bf16's 2⁻⁸ = 3.906e-03.
+2. The arithmetic-site check, read on the **anchors** — analytically pinned to 1.000 under either arithmetic, so it read **0.000e+00** and would have reported "the two sites agree" permanently. Moved to non-pinned pairs, where the median difference reproduces as 5.319e-06.
+3. `check_session_partition`, which returned `clean_partition = True` for sixteen identical readings off **one** GPU, because *one device per signature* and *one signature per device* are both vacuously true when there is one of each. It now requires two of each and otherwise reports `n/a - nothing to partition`.
+
+All three were fixed by naming the degenerate case and none by moving a number, which was the ticket's second condition and it holds.
+
+**So the piece is the smaller one the ticket anticipated**, and the shrunk claim is better: three instances in one suite's short life, each of which *passed*, is a sharper statement than five loosely counted. The headline number was the weakest thing in the ticket and the check removed it before it reached a reader.
+
 **Front matter:** `tags: [lab-notes]`, `project: edit-reach`, `status: provisional`. A cover drawing at `static/img/covers/<slug>.svg` in the house style, or the piece renders as a compact entry, which is also fine.
 
 **Both passes run before it publishes**, per `ai/CLAUDE.md`: the claim audit, then the vocabulary census. The census matters here — a piece about a fault class is exactly where a reader meets `matmul_site`, *anchor*, and *degenerate case* for the first time.
 
 **Blockers:** —
 
-**Artifacts:** _(fill on close)_
+**Artifacts:**
+- web/blog/2026-11-09-three-checks-that-could-not-have-failed.md
 
-**Closed:** —
+**Closed:** 2026-11-09. 1,396 words.
 
----
+**The check changed the piece before it was written, which is the whole reason it was written into the ticket.** Five became three, and the smaller claim is the better one: three checks in one suite's short life, each of which was *passing*, is sharper than five loosely counted. The limits section says plainly that I went looking for five and found three.
 
-### D-004 · The paper: structure and skeleton, every number in place
+**The piece found its own spine while being written, and it is not the fault class.** It is that the suite and the document each caught the other and neither could have caught itself. The three faults are the evidence; the cross-check is the finding. That was not in the ticket.
+
+**Both passes ran.** Lint 0.0 per 10k. The census returned **zero identifiers in the prose** — no `E-0xx`, no `C-0xx`, no ticket numbers — which is what a dated piece for a general reader should return and is the first time a page here has come back empty on the first try.
+
+**One typo survived to the build:** *withdrawed*. The lint does not catch spelling and is not meant to; recorded because the next person will assume a clean lint means a clean page.
 
 **Status:** open
 **Type:** document
