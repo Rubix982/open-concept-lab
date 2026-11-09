@@ -167,9 +167,11 @@ nothing. Found on 2026-11-09, after the figures had been wrong for a day.
 A notebook page can be set as a paper rather than an article: a running head, a
 centred title block, justified prose at a smaller size, numbered sections,
 figures floated into the column, bordered tables with a shaded header, and
-numbered equations. Turn it on by putting `<PaperHead>` at the top of the file
-and `hide_title: true` in the front matter, so Docusaurus does not also inject
-its own `h1`.
+numbered equations. Turn it on by writing the paper's **entry** into the front matter and putting
+`<Paper>` at the top of the body with the abstract inside it. Everything that is the
+same on every paper — the identifier line, the title block, the author, the keyword
+line, the contributions, the figure index — is rendered from that entry. You do not
+write any of it twice.
 
 ```mdx
 ---
@@ -177,75 +179,50 @@ title: "A cheap pre-edit estimate detects contamination, not propagation"
 sidebar_label: Paper
 hide_title: true
 toc_max_heading_level: 3
+
+paper:
+  kind: Working paper
+  id: OCL-2026-07
+  version: v0.3
+  author: Saif Ul Islam
+  affiliation: Open Concept Lab
+  started: 30 Sep 2026
+  updated: 9 Nov 2026
+  builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
+  reading_guide: >
+    Section 7 is the attack surface. If you are deciding whether to spend
+    time on this, read the abstract and then section 7.
+  keywords: [model editing, ROME, negative result]
+  contributions:
+    - What this adds.
+    - And this.
+  index:
+    - { label: Figure 1, what: The pinned coefficient (§3.2) }
+    - { label: Table 1, what: Coefficient under the stranger control (§5.2) }
 ---
 
-<PaperHead
-  kind="Working paper"
-  docId="OCL-2026-07"
-  version="v0.3"
-  title="A cheap pre-edit estimate detects contamination, not propagation"
-  author="Saif Ul Islam"
-  affiliation={<>Open Concept Lab · Karachi</>}
-  started="30 Sep 2026"
-  updated="9 Nov 2026"
-  buildsOn={<a href="/notebook/edit-slice/">edit-slice</a>}
-/>
+<Paper>
 
-<Abstract keywords={["model editing", "ROME", "negative result"]}>
+One paragraph of abstract. Then another.
 
-One paragraph.
-
-</Abstract>
-
-<Contributions>
-
-1. What this adds.
-2. And this.
-
-</Contributions>
+</Paper>
 
 ## 1. Introduction
 ```
 
-`toc_max_heading_level: 3` is worth setting deliberately. A paper's
-subsections are where a reader navigates — §5.3, not §5 — and the default stops
-at `2`, so they never reach the contents rail.
+`hide_title: true` is required, because Docusaurus injects its own `h1` when the
+markdown has none and a JSX `h1` does not count as one. `toc_max_heading_level: 3`
+is worth setting deliberately: a paper's subsections are where a reader navigates —
+§5.3, not §5 — and the default stops at `2`.
 
-`docId` is this lab's own document number. It is not a preprint identifier and
-does not claim to be one.
+`id` is this lab's own document number. It is not a preprint identifier and does not
+claim to be one.
 
-**The abstract is not a numbered section**, because a paper's abstract never
-is. `<Abstract>` gives it a letterspaced label instead of a heading, which also
-keeps it out of the table of contents. Numbered sections start at 1 after it.
-
-**Use the section names a reviewer expects**, not ones invented for the piece:
-Introduction, Related work, Methods, Implementation, Results, Findings and
-claims, Limitations, Conclusion, then References and appendices. Names like
-"Problem space" or "The record" say more in isolation and cost the reader the
-map they already have. The two that are not standard — Findings and claims,
-holding the ledger, and Appendix C, holding the readiness checklist — are the
-parts a paper does not have and a page revised in place does.
-
-**Two columns, as a submitted paper is set.** The body runs in two columns
-below 1000px it falls back to one, because two columns of justified text on a
-phone is unreadable.
-
-The objection to two columns on a screen is real — a reader scrolls down one
-column and back up the other — and the layout answers it rather than ignoring
-it. A `column-span: all` element ends the current multicol segment and starts a
-new one, so content between two section headings balances into two columns
-*within that section*, and nothing balances across the whole article. Each
-section reads the way one page of a printed paper reads.
-
-What spans both columns, as `figure*` and `table*` do in that setting: section
-headings, the title block, the front matter, every table, every `wide` figure
-and every code listing. A figure drawn small stays in its column. Nothing read
-as one object — an equation, a figure, a list item — may be split down the
-middle, which is what the `break-inside` rules are for.
-
-**Write the contributions before the sections.** A contribution that cannot be
-stated in one line is not a contribution yet, so the box is a check on the work
-as much as a courtesy to the reader.
+**The sections stay as ordinary markdown and are not part of the component.**
+Docusaurus builds the contents rail from the markdown syntax tree, so a heading
+emitted by a React component never reaches it — the page would render correctly with
+an empty rail. `npm run check:papers` enforces the order instead, and it runs on
+every build, so a divergent page fails rather than ships.
 
 The mode is applied by a `~` sibling selector from `PaperHead`, so nothing
 wraps the body. That matters: wrapping the content in a component hides its
@@ -254,6 +231,45 @@ headings from the table of contents.
 **Two things never go on a page here.** No email address, and no "cite this
 page" or BibTeX block. The byline names a person and Open Concept Lab, which
 is ours; a citation block asserts an academic standing that is not held yet.
+
+### The template every paper page follows
+
+The order is fixed, so a reader who has read one project's paper can read the next
+without relearning where anything is. Sections are numbered; the front and back matter
+are not.
+
+| | | |
+| --- | --- | --- |
+| | **Front matter** | `<PaperHead>`, then `<Abstract keywords>`, then `<Contributions>` |
+| | *Reading guide* | optional `<Aside>` saying which section to read if you are deciding whether to spend time |
+| | *Figure and table index* | a two-column table, **required past about eight figures and tables** |
+| 1 | Introduction | the problem, why the obvious approach cannot settle it, what this paper finds |
+| 2 | Related work | the nearest work, what it does not do, and the novelty position stated plainly |
+| 3 | Methods | objects named in English first, then the symbols, then the controls |
+| 4 | Implementation | what was built, what it refuses to do, and whether a reading can be taken twice |
+| 5 | Results | one subsection per result, in the order they were run |
+| 6 | Findings and claims | `<Ledger>` — every claim the page has made, including the withdrawn ones |
+| 7 | Limitations | all three categories; see below |
+| 8 | Conclusion | what survives, what is open, and what you want a reader to decide |
+| | References | `<References ids>` from `data/papers.yml` |
+| | Appendix A | the derivations |
+| | Appendix B | `<Runs>` — the provenance of every number |
+| | Appendix C | `<Readiness>` — what a venue asks for against what exists |
+
+**§7 takes all three categories of limit**, and the third is the one that disappears:
+what the result does not show, what was not done, and **how the result may not be
+used**. An adversarial heading — *What to attack* — collects the first two well and
+loses the third, because nobody attacks a constraint on use. Keep the plain name and
+add the entry deliberately.
+
+**§6 is why these are notebook pages rather than papers.** A paper states what its
+author believes now. A page revised in place has to keep what they believed before,
+with the date and the reason, or a reader who meets a retired claim elsewhere has no
+way to know it was retired.
+
+**A section may be empty, and saying so beats deleting it.** A project with nothing
+built has an §4 that says so in a sentence. A removed section looks like an oversight;
+a one-line section looks like a decision, because it is one.
 
 ### The apparatus
 

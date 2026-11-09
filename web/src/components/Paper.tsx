@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import { useDoc } from "@docusaurus/plugin-content-docs/client";
 
 /**
  * Paper mode.
@@ -516,5 +517,143 @@ export function Thread({
       </dt>
       <dd>{children}</dd>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* The paper template                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The canonical section order. A paper page carries all eight, numbered, as
+ * ordinary markdown headings — not as component output, because Docusaurus
+ * builds the contents rail from the markdown syntax tree and a heading emitted
+ * by a React component never reaches it. `scripts/check-papers.mjs` enforces
+ * the order at build time instead.
+ */
+export const PAPER_SECTIONS = [
+  "Introduction",
+  "Related work",
+  "Methods",
+  "Implementation",
+  "Results",
+  "Findings and claims",
+  "Limitations",
+  "Conclusion",
+] as const;
+
+type PaperEntry = {
+  kind?: string;
+  id?: string;
+  version?: string;
+  author?: string;
+  affiliation?: string;
+  started?: string;
+  updated?: string;
+  builds_on?: { label: string; href: string };
+  keywords?: string[];
+  contributions?: string[];
+  reading_guide?: string;
+  index?: { label: string; what: string }[];
+};
+
+/**
+ * One paper, filled from one entry.
+ *
+ * Everything that is the same on every paper — the identifier line, the title
+ * block, the abstract's label, the keyword line, the contributions, the figure
+ * index — is rendered here from the `paper:` key in the page's front matter.
+ * The page writes `<Paper>` once, puts the abstract inside it, and then writes
+ * its sections as ordinary markdown.
+ *
+ * It returns a fragment rather than a wrapper, deliberately: paper mode is
+ * selected by `.markdown:has(> .ocl-paperhead)`, so the header has to stay a
+ * direct child of the markdown container.
+ */
+export function Paper({ children }: { children: ReactNode }): ReactNode {
+  const { frontMatter, metadata } = useDoc();
+  const fm = frontMatter as Record<string, unknown>;
+  const e = (fm.paper ?? {}) as PaperEntry;
+  const title = (fm.title as string) ?? metadata.title;
+
+  const stamp = [e.kind, e.id, e.version].filter(Boolean).join(" · ");
+  const hasMeta = e.started || e.updated || e.builds_on;
+
+  return (
+    <>
+      <header className="ocl-paperhead">
+        {stamp ? <div className="ocl-paperhead__id">{stamp}</div> : null}
+        <h1 className="ocl-paperhead__title">{title}</h1>
+        {e.author ? <div className="ocl-paperhead__author">{e.author}</div> : null}
+        {e.affiliation ? (
+          <div className="ocl-paperhead__affil">{e.affiliation}</div>
+        ) : null}
+        {hasMeta ? (
+          <div className="ocl-paperhead__meta">
+            {e.started ? (
+              <span>
+                Started <b>{e.started}</b>
+              </span>
+            ) : null}
+            {e.updated ? (
+              <span>
+                Updated <b>{e.updated}</b>
+              </span>
+            ) : null}
+            {e.builds_on ? (
+              <span>
+                Builds on <a href={e.builds_on.href}>{e.builds_on.label}</a>
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+      </header>
+
+      {e.reading_guide ? (
+        <aside className="ocl-paper-guide">
+          <span className="ocl-paper-guide__label">Before you start</span>
+          {e.reading_guide}
+        </aside>
+      ) : null}
+
+      <section className="ocl-paper-abstract" aria-label="Abstract">
+        <div className="ocl-paper-abstract__label">Abstract</div>
+        {children}
+        {e.keywords?.length ? (
+          <p className="ocl-paper-abstract__kw">
+            <i>Keywords</i> — {e.keywords.join(", ")}
+          </p>
+        ) : null}
+      </section>
+
+      {e.contributions?.length ? (
+        <section className="ocl-contrib" aria-label="Contributions">
+          <div className="ocl-contrib__label">Contributions</div>
+          <ol>
+            {e.contributions.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
+
+      {e.index?.length ? (
+        <div className="ocl-ptable ocl-paper-index">
+          <table>
+            <caption>
+              Figures and tables, with the section each belongs to.
+            </caption>
+            <tbody>
+              {e.index.map((row) => (
+                <tr key={row.label}>
+                  <td className="n">{row.label}</td>
+                  <td>{row.what}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </>
   );
 }

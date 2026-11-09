@@ -14,7 +14,7 @@ import Gloss from "@site/src/components/Gloss";
 import PageArt from "@site/src/components/PageArt";
 import Profile from "@site/src/components/Profile";
 import {
-  PaperHead, Abstract, Contributions, Eq, Lead, Prov,
+  Paper, PaperHead, Abstract, Contributions, Eq, Lead, Prov,
   Ledger, Finding, Runs, Run,
   Revisions, Rev, Readiness, Check, Data,
   Glance, Stat, Cards, Card, Threads, Thread,
@@ -45,6 +45,7 @@ export default {
   AboutQuestions,
   AboutElsewhere,
   AboutCorrections,
+  Paper,
   PaperHead,
   Abstract,
   Contributions,

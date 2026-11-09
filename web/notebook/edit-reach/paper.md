@@ -5,21 +5,31 @@ sidebar_position: 2
 hide_title: true
 description: A quantity computable before the edit exists is exactly 1 where the prompt names the edited subject, and blind everywhere else — including where propagation lives.
 toc_max_heading_level: 3
+
+paper:
+  kind: Working paper
+  id: OCL-2026-07
+  version: v0.3
+  author: Saif Ul Islam
+  affiliation: Open Concept Lab
+  started: 30 Sep 2026
+  updated: 9 Nov 2026
+  builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
+  keywords:
+    - model editing
+    - ROME
+    - knowledge propagation
+    - benchmark contamination
+    - negative result
+  contributions:
+    - A reach coefficient read off the edit's own rank-one update, computable in one forward pass through the unedited model.
+    - A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on four models from 6B to 405B.
+    - "Evidence that it does not predict an edit's effect: a raw correlation of rho = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed."
+    - A measurement of why there is little to predict - identity is worth about sixty-five times content - on a pre-stated test.
+    - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
+    - The measure repurposed as a contamination screen, with one published benchmark scored on it, released as editreach.
 ---
-
-<PaperHead
-  kind="Working paper"
-  docId="OCL-2026-07"
-  version="v0.3"
-  title="A cheap pre-edit estimate of an edit's reach detects contamination, not propagation"
-  author="Saif Ul Islam"
-  affiliation="Open Concept Lab"
-  started="30 Sep 2026"
-  updated="9 Nov 2026"
-  buildsOn={<a href="/notebook/edit-slice/">edit-slice</a>}
-/>
-
-<Abstract keywords={["model editing", "ROME", "knowledge propagation", "benchmark contamination", "negative result"]}>
+<Paper>
 
 A rank-one weight edit divides its update by a fixed inner product, so the fraction of it arriving at any token can be computed in one forward pass through the *unedited* model — for any prompt, before the edit exists. We ask whether that quantity can screen an evaluation item before the item is run.
 
@@ -27,18 +37,8 @@ It cannot. It is pinned to 1 wherever the prompt names the edited subject, and f
 
 Two further results came off the same probe set. Identity is worth about **sixty-five times** content, which is why there was little for any measure to predict; and the two halves of an edit — breaking the old answer and supplying the new one — separate in opposite directions on the same probes.
 
-</Abstract>
+</Paper>
 
-<Contributions>
-
-1. A reach coefficient read off the edit's own rank-one update, computable in one forward pass through the unedited model.
-2. A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on four models from 6B to 405B.
-3. Evidence that it does not predict an edit's effect: a raw correlation of ρ = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed.
-4. A measurement of why there is little to predict — identity is worth about sixty-five times content — on a pre-stated test.
-5. A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
-6. The measure repurposed as a contamination screen, with one published benchmark scored on it, released as `editreach`.
-
-</Contributions>
 ## 1. Introduction
 
 <Lead>The task.</Lead> A weight edit changes one fact and disturbs an unknown amount of everything else. The disturbance is evaluated with hand-written item sets: paraphrases, neighbours, and multi-hop questions whose answers should follow from the edited fact <Cite id="cohen2024ripple" />, <Cite id="zhong2023mquake" />. Surveys of the field treat these sets as the measurement <Cite id="yao2023survey" />.

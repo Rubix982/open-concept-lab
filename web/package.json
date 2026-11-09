@@ -15,9 +15,10 @@
     "typecheck": "tsc",
     "sync:demos": "node scripts/sync-demos.mjs",
     "prestart": "npm run sync:demos",
-    "prebuild": "npm run sync:demos",
+    "prebuild": "npm run sync:demos && npm run check:papers",
     "design:check": "node scripts/design-check.mjs",
-    "idea": "node scripts/idea.mjs"
+    "idea": "node scripts/idea.mjs",
+    "check:papers": "node scripts/check-papers.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.8.1",
