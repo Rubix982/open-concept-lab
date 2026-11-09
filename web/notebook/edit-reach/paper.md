@@ -4,7 +4,7 @@ sidebar_label: Paper
 sidebar_position: 2
 hide_title: true
 description: A quantity computable before the edit exists is exactly 1 where the prompt names the edited subject, and blind everywhere else — including where propagation lives.
-toc_max_heading_level: 2
+toc_max_heading_level: 3
 ---
 
 <PaperHead

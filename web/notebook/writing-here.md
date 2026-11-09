@@ -176,6 +176,7 @@ its own `h1`.
 title: "A cheap pre-edit estimate detects contamination, not propagation"
 sidebar_label: Paper
 hide_title: true
+toc_max_heading_level: 3
 ---
 
 <PaperHead
@@ -205,6 +206,10 @@ One paragraph.
 
 ## 1. Introduction
 ```
+
+`toc_max_heading_level: 3` is worth setting deliberately. A paper's
+subsections are where a reader navigates — §5.3, not §5 — and the default stops
+at `2`, so they never reach the contents rail.
 
 `docId` is this lab's own document number. It is not a preprint identifier and
 does not claim to be one.
