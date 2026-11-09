@@ -938,24 +938,79 @@ Different corpus, different construction, same range.
 
 ## 6. Findings and claims
 
-<p className="ocl-tablecap"><strong>Table 5.</strong> Every claim this project made, and what became of it.</p>
+Every row below states the observation that would change its status. For the one claim
+still standing that is what would refute it; for a claim already withdrawn or narrowed it
+is what would bring it back. Both are the same kind of sentence, and a row that cannot
+carry one is not a claim — it is an opinion with a citation attached.
 
-| claim | status | what changed it | record |
-| --- | --- | --- | --- |
-| Backward probing is unexplored | narrowed | RippleEdits covers inverse/symmetric relations | <Evidence id="f-R-005a">R-005a</Evidence> |
-| Edits leave grounds *contradictory* | withdrawn | grounds are evidential; improbable, not impossible | <Evidence id="E-002" /> |
-| CounterFact verifies possession | withdrawn | reversed from Appendix D; construction is model-independent | <Evidence id="f-D-002">D-002</Evidence> |
-| The `outer` deficit is pool concentration | withdrawn | it is two strings, US and UK | <Evidence id="E-009b" /> |
-| The surface-form finding is novel | withdrawn | <Cite id="holtzman2021surface" /> | <Evidence id="f-R-010">R-010</Evidence> |
-| Possession × editability is unclaimed | withdrawn | <Cite id="knowledgespectrum2025" /> | <Evidence id="f-R-010">R-010</Evidence> |
-| The model revises the defeasible premise | withdrawn | the work-country edit does the same thing | <Evidence id="E-015" /> |
-| Leakage is structural *in ROME* | narrowed | structural given the layer; reordering helps at depth | <Evidence id="T-075" /> |
-| Four nnsight constraints | withdrawn, one reinstated | a flaky backend explained three; the fourth is real and silent | <Evidence id="O-007" /> · <Evidence id="O-008" /> |
-| Prefix-sharing probes receive the full delta | **holds** | analytic · all layers · floor measured | <Evidence id="E-016-2">E-016</Evidence> · <Evidence id="E-018" /> |
-| The coefficient predicts how far an edit travels | **withdrawn** | never asserted here, then measured false: 2.96× at fixed delivery | <Evidence id="E-028d" /> |
-| An edit suppresses the whole subject to a floor | **withdrawn** | 1 of 6 arms; real but specific to one model-relation pair | <Evidence id="E-033" /> |
+<Ledger caption={<><strong>Table 5.</strong> Every claim this project made, what became of it, and what would change that.</>}>
+  <Finding id="F‑01" status="narrowed"
+    falsifier={<><strong>Reinstated if</strong> RippleEdits' published test-type definitions turn out to probe only an edited fact's consequences. They do not: Logical Generalization names inverse and symmetric relations, which is a backward probe under another name. What survives is the narrower claim — unclaimed <em>for grounds against a decidable oracle</em>. <Evidence id="f-R-005a">R-005a</Evidence></>}>
+    Nobody probes the grounds that made an edited fact hold in the first place.
+  </Finding>
 
-Twelve claims, **nine withdrawn or narrowed**. That ratio is the honest summary.
+  <Finding id="F‑02" status="withdrawn"
+    falsifier={<><strong>Reinstated if</strong> a grounds set is found for which no satisfying world exists at all. Measured the other way: the grounds are evidential, so a world satisfying both the edit and the surviving grounds usually exists. What an edit leaves behind is improbable, not impossible. <Evidence id="E-002" /></>}>
+    An edit leaves its own grounds standing, and the resulting belief state is contradictory.
+  </Finding>
+
+  <Finding id="F‑03" status="withdrawn"
+    falsifier={<><strong>Reinstated if</strong> any item's presence in CounterFact can be shown to depend on a reading taken from the model under test. The construction is model-independent, so membership says nothing about what any particular model holds. <Evidence id="f-D-002">D-002</Evidence></>}>
+    A fact's presence in CounterFact is evidence that the model possesses it.
+  </Finding>
+
+  <Finding id="F‑04" status="withdrawn" value="2 strings"
+    falsifier={<><strong>Reinstated if</strong> the deficit survives with those two answer strings excluded. It does not. The original reasoning inferred a mechanism from a marginal count without ever joining the held flag against the answer string; the join dissolves it. <Evidence id="E-009b" /></>}>
+    The <code>outer</code> leg lags because its answer pool is concentrated.
+  </Finding>
+
+  <Finding id="F‑05" status="withdrawn"
+    falsifier={<><strong>Reinstated only</strong> by a reading of <Cite id="holtzman2021surface" /> showing it does not cover the effect measured here. This withdrawal is a fact about the literature, not about the measurement — the measurement stands and the novelty does not. <Evidence id="f-R-010">R-010</Evidence></>}>
+    The surface-form result is ours.
+  </Finding>
+
+  <Finding id="F‑06" status="withdrawn"
+    falsifier={<><strong>Reinstated only</strong> by a reading of <Cite id="knowledgespectrum2025" /> showing the pairing it reports is not this one. Same shape as the row above, and found the same way — by searching the literature after designing against it rather than before. <Evidence id="f-R-010">R-010</Evidence></>}>
+    Knowledge status crossed with editability is unclaimed.
+  </Finding>
+
+  <Finding id="F‑07" status="withdrawn" value="67% vs 67%"
+    falsifier={<><strong>Reinstated if</strong> an edit licensing no inference lands in the target country measurably less often than one that does. Both arms landed at <strong>28 of 42</strong>, identical, with subject and target country held fixed. What moves is the vector, not the inference. <Evidence id="E-015" /></>}>
+    The model revises the defeasible premise the edited fact rested on.
+  </Finding>
+
+  <Finding id="F‑08" status="narrowed"
+    falsifier={<><strong>Reinstated unconditionally if</strong> leakage holds its magnitude as the edited layer is varied. It does not — reordering helps at depth — so what survives is <em>structural given the layer</em>, which is a claim about a configuration rather than about the method. <Evidence id="T-075" /></>}>
+    Leakage onto the subject is structural in ROME rather than incidental.
+  </Finding>
+
+  <Finding id="F‑09" status="narrowed" value="1 of 4"
+    falsifier={<><strong>Reinstated if</strong> the three retired constraints reproduce against a healthy backend. They were a flaky one. The fourth is real, and it is the worse kind, because it fails without saying so. <Evidence id="O-007" /> · <Evidence id="O-008" /></>}>
+    Four constraints in nnsight bound what can be measured on a remote model.
+  </Finding>
+
+  <Finding id="F‑10" status="standing" value="1.000"
+    falsifier={<><strong>Analytic.</strong> Refuted by a derivation error, or by its premise — prefix sharing — failing; the premise is what was measured. Across 16 chains the two groups do not overlap: the highest different-subject coefficient is <strong>0.153</strong>, the lowest same-subject <strong>0.483</strong>, and the different-subject floor sits at <strong>0.082</strong>. <Evidence id="E-016-2">E-016</Evidence> · <Evidence id="E-018" /></>}>
+    A probe sharing the edit prompt's prefix receives the delta in full — at any layer, under any covariance.
+  </Finding>
+
+  <Finding id="F‑11" status="withdrawn" value="2.96×"
+    falsifier={<><strong>Reinstated if</strong> the estimate and measured movement correlate above ρ = 0.3 with delivery pinned at 1.000. Held at exactly 1.000, reach still varies <strong>2.96×</strong> — and the pinning is worst precisely across the probes whose outcomes differ most. This was never asserted here; it was checked because <Evidence id="T-084" /> could not be answered without it, and answering it cost the strongest available reading of our own mechanism. <Evidence id="E-028d" /></>}>
+    How much of an edit arrives predicts how far it travels.
+  </Finding>
+
+  <Finding id="F‑12" status="withdrawn" value="1 of 6"
+    falsifier={<><strong>Reinstated if</strong> the floor appears in a majority of arms on a fresh model-relation sweep. All six arms completed and it appears in <strong>one</strong>. What generalises instead is type matching — the probe whose answer type matches the injected value moves most, in 6 of 6. <Evidence id="E-033" /></>}>
+    An edit suppresses everything about the subject down to a common floor.
+  </Finding>
+</Ledger>
+
+Twelve claims. **One stands, two are narrowed, nine are withdrawn** — and the one still
+standing is analytic, which is to say no measurement was ever going to take it
+down.<Margin>This sentence used to read "nine withdrawn or narrowed", which takes the
+count of the withdrawals and then describes it as covering the narrowings too. Eleven of
+twelve did not survive intact. Corrected 2026-11-09.</Margin> That ratio is the honest
+summary.
 
 The last row is one we never claimed and checked anyway. §7.3 carried it as an objection
 we could not answer; answering it took four runs and cost us the strongest available

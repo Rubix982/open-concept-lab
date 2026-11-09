@@ -9391,6 +9391,13 @@ a:hover > .ocl-home__featureCover {
   font-weight: 700;
 }
 
+/* A narrowed claim: neither held nor retired. Distinct from both, because a
+   reader who sees only two colours will sort it into one of them. */
+.ocl-partial {
+  color: var(--ocl-gold);
+  font-weight: 700;
+}
+
 /* ---- code listings ---- */
 
 .markdown:has(> .ocl-paperhead) pre code {

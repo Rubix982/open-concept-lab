@@ -165,7 +165,17 @@ export function Prov({ id, to = "#runs" }: { id: string; to?: string }): ReactNo
 /* Findings ledger                                                     */
 /* ------------------------------------------------------------------ */
 
-export type FindingStatus = "standing" | "withdrawn" | "superseded" | "denied";
+/**
+ * A claim's fate. `narrowed` is not a softer `withdrawn`: the claim survives in a
+ * weaker form, so the row is not struck through and the weaker form is what the
+ * row states. The other three are retired and the text is struck.
+ */
+export type FindingStatus =
+  | "standing"
+  | "narrowed"
+  | "withdrawn"
+  | "superseded"
+  | "denied";
 
 export function Ledger({
   caption,
@@ -210,7 +220,10 @@ export function Finding({
   falsifier?: ReactNode;
   children: ReactNode;
 }): ReactNode {
-  const retired = status !== "standing";
+  /* A narrowed claim is still a claim, so it is not struck through — but it is
+     not standing either, and reading it as standing is the mistake the column
+     exists to prevent. */
+  const retired = status !== "standing" && status !== "narrowed";
   return (
     <tr>
       <td className="n">{id}</td>
@@ -222,7 +235,15 @@ export function Finding({
       </td>
       <td className="n">{value ?? "—"}</td>
       <td className="n">
-        <span className={retired ? "ocl-no" : "ocl-ok"}>{status}</span>
+        <span
+          className={clsx({
+            "ocl-ok": status === "standing",
+            "ocl-partial": status === "narrowed",
+            "ocl-no": retired,
+          })}
+        >
+          {status}
+        </span>
       </td>
     </tr>
   );
