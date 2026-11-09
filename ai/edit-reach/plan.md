@@ -1,6 +1,6 @@
 # Project: edit-reach
 
-_Last updated: 2026-11-08 by O-002_
+_Last updated: 2026-11-09 by O-002_
 
 ## Objective
 
@@ -20,6 +20,12 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 | D-004 | Documentor | The paper: structure and skeleton, every number in place | closed |
 | D-005 | Documentor | The paper: prose | closed |
 | D-006 | Documentor | PDF build | blocked |
+| D-007 | Documentor | The notebook sidebar says nothing, and the page is one slab | closed |
+| D-008 | Documentor | The notebook page, shaped as a paper | closed |
+| D-009 | Documentor | The front matter a paper actually has | closed |
+| D-010 | Documentor | The sections a reviewer expects | closed |
+| D-011 | Documentor | The column was wider than anything in it | closed |
+| D-012 | Documentor | "Note 01", three left edges, and equations set as text | closed |
 | O-001 | Orchestrator | Initialise project; extract `editreach` package; shim edit-slice | closed |
 | E-001 – E-014 | Engineer | Fourteen tickets, all closed — see `agents/engineer/tickets.md` | closed |
 
@@ -32,6 +38,12 @@ Answered, and the answer is negative. The coefficient detects contamination rath
 
 ## Completed This Session
 
+- D-012 · The page renamed to Paper, the layout reduced to two widths on one centre line, and the equations rendered with KaTeX, which the site had been configured for all along.
+- D-011 · Paper-mode layout: a full-width container with the text capped at the measure, so figures take the column and tables sit between. The `float` prop removed.
+- D-010 · Note 01 reorganised under Introduction / Related work / Methods / Implementation / Results / Findings and claims / Limitations / Conclusion. The restructure produced a Related work section the page did not have, and three references to carry it.
+- D-009 · Front matter, abstract and contributions, and a notebook rail that shows each project's stage. Ported from a competing design Saif generated in Lovable, which was better on the rail and on type size.
+- D-008 · `web/notebook/edit-reach/note-01.md` — the notebook page as a paper: running head, numbered sections, inline citations, floated figures, bordered tables, a findings ledger carrying a falsifier on every row, and a provenance table behind every number. Nine new MDX components in `web/src/components/Paper.tsx`, documented in `notebook/writing-here.md`. Also closed the four `TODO(cite)` in `paper/note.md` — all four were already `verified: true` in `web/data/papers.yml`.
+- D-007 · The notebook sidebar rewritten by hand (`web/sidebars.ts`) and the edit-reach page split into four. Raised by Saif on sight of the live page: autogeneration made a one-page project and a three-page project render as different kinds of thing, and the labels were directory names.
 - D-005 · `paper/note.md` — the draft, 3,131 words. Shape decided first (short arXiv note, general mech-interp reader); §6 written alone, then the rest measured against it.
 - D-004 · `paper/skeleton.md` — nine sections, five figure slots, every number carrying its ticket. Found and corrected a conflation of [E-018] with [E-038] that had already reached a figure.
 - D-002 · Five figures in `web/static/img/edit-reach/`, four drawn and one reused, placed in the overview. Also added the section on whether the readings reproduce, which the page had been missing.

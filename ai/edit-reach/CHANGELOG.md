@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-09 · Session 5 — the page becomes a paper
+
+- [D-007] The notebook sidebar written by hand and the edit-reach page split — `web/sidebars.ts`, `web/notebook/edit-reach/`
+- [D-008] The notebook page shaped as a paper — `web/notebook/edit-reach/note-01.md`, components in `web/src/components/Paper.tsx`, conventions in `web/notebook/writing-here.md`
+- [D-008] The four `TODO(cite)` in `paper/note.md` resolved; all four were already verified in `web/data/papers.yml`
+- [D-009] Front matter, abstract and contributions; the notebook rail now shows each project's stage, read from `web/data/projects.yml`
+- [D-012] Renamed to Paper; two widths on one centre line; equations rendered with KaTeX
+- [D-011] Paper-mode layout — wide container, narrow text; the `float` prop removed
+- [D-010] Note 01 reorganised under the section names a reviewer expects — `web/notebook/edit-reach/note-01.md`; the rule in `web/notebook/writing-here.md`
+
+D-008 reversed part of D-007 on the same day: the three pages D-007 split out are
+now one paper. The sidebar fix held; the content's shape was the thing that was
+wrong. Recorded on the ticket rather than quietly re-split.
+
 ## 2026-11-08 · Session 4 — the documentation effort
 
 The project's question has an answer. This session is about it having a reader.

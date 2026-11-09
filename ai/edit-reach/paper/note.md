@@ -20,11 +20,11 @@ This note asks whether that candidate quantity does the job, and finds that it d
 
 ## 2 · Related work, and what is not claimed
 
-The nearest work we found is `TODO(cite)` He et al., arXiv 2601.04600, which reports both the depth phenomenon and a cosine decay with layer — 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here — eight months earlier. What it does not carry is a control of the kind in §3: its reading of the effect as depth rests on edit success rates staying high across layers, which is a different quantity from the one that would separate a real effect from the measure's own behaviour.
+The nearest work we found is He et al. (2026), which reports both the depth phenomenon and a cosine decay with layer — 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here — eight months earlier. What it does not carry is a control of the kind in §3: its reading of the effect as depth rests on edit success rates staying high across layers, which is a different quantity from the one that would separate a real effect from the measure's own behaviour.
 
 **On novelty, plainly.** The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume without writing down. The claim here is **not** that it is unpublished. It is that we could not find it stated, on one web-search pass and one neighbouring paper read in full — which is enough to ask the question and not enough to answer it. If it is published, §3 becomes a replication and the contribution is §6.
 
-Also `TODO(cite)`: ROME and MEMIT for the edit rule; Cohen et al., TACL 2024 for the benchmark scored in §6, read against its own test-type definitions rather than its abstract; MQuAKE for the multi-hop benchmark used there.
+Also cited: Meng et al. (2022) and Meng et al. (2023) for the edit rule; Cohen et al. (2024) for the benchmark scored in §6, read against its own test-type definitions rather than its abstract; Zhong et al. (2023) for the multi-hop benchmark used there.
 
 ## 3 · Method
 
@@ -150,3 +150,17 @@ Everything qualified is here; §§1–7 run without hedges.
 A negative result with a working control.
 
 What makes it worth writing is not the denial. It is that the same control, on the same instrument, separates +0.8439 in one regime from +0.0002 in the other — so the denial is a measurement rather than a failure to find something, and a reader can tell the difference. The positive direction is blocked on a library that will not run a backward pass against a remote model, and that is named here so nobody has to guess whether it was tried.
+
+## References
+
+Cohen, R., Biran, E., Yoran, O., Globerson, A., & Geva, M. (2024). Evaluating the Ripple Effects of Knowledge Editing in Language Models. *Transactions of the Association for Computational Linguistics*, 12. https://arxiv.org/abs/2307.12976
+
+He, Z., Chen, B., Xiong, T., Sun, Z., Zhu, M., & Chen, X. (2026). On the Limitations of Rank-One Model Editing in Answering Multi-hop Questions. *arXiv:2601.04600*. https://arxiv.org/abs/2601.04600
+
+Meng, K., Bau, D., Andonian, A., & Belinkov, Y. (2022). Locating and Editing Factual Associations in GPT. *NeurIPS*. https://arxiv.org/abs/2202.05262
+
+Meng, K., Sharma, A. S., Andonian, A., Belinkov, Y., & Bau, D. (2023). Mass-Editing Memory in a Transformer. *ICLR*. https://arxiv.org/abs/2210.07229
+
+Zhong, Z., Wu, Z., Manning, C. D., Potts, C., & Chen, D. (2023). MQuAKE: Assessing Knowledge Editing in Language Models via Multi-Hop Questions. *EMNLP*. https://arxiv.org/abs/2305.14795
+
+_Every entry is carried from `web/data/papers.yml`, where each is marked `verified: true` — title, authors, year and venue checked against the paper's own record rather than read off a search result._

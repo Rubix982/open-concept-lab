@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 
 export type FigureProps = {
   /** Image path. Omit and pass children instead for inline SVG or a diagram. */
@@ -33,6 +34,12 @@ export default function Figure({
   const captionText =
     typeof caption === "string" ? caption : undefined;
 
+  /* The site is served under a base path, and a raw <img src="/img/…"> does not
+     pick it up — the request falls through to the SPA handler, which answers
+     200 with HTML, so the browser shows a broken image and the build reports
+     nothing. useBaseUrl leaves absolute URLs alone. */
+  const resolved = useBaseUrl(src ?? "");
+
   return (
     <figure
       className={clsx("ocl-figure", {
@@ -42,7 +49,7 @@ export default function Figure({
       })}
     >
       <div className="ocl-figure__frame">
-        {src ? <img src={src} alt={alt ?? captionText ?? ""} /> : children}
+        {src ? <img src={resolved} alt={alt ?? captionText ?? ""} /> : children}
       </div>
       {caption ? (
         <figcaption className="ocl-figure__caption">{caption}</figcaption>

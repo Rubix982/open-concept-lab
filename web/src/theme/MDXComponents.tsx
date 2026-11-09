@@ -13,6 +13,11 @@ import Claude from "@site/src/components/Claude";
 import Gloss from "@site/src/components/Gloss";
 import PageArt from "@site/src/components/PageArt";
 import Profile from "@site/src/components/Profile";
+import {
+  PaperHead, Abstract, Contributions, Eq, Lead, Prov,
+  Ledger, Finding, Runs, Run,
+  Revisions, Rev, Readiness, Check, Data,
+} from "@site/src/components/Paper";
 import { AboutRooms, AboutQuestions, AboutElsewhere, AboutCorrections } from "@site/src/components/About";
 
 /**
@@ -39,4 +44,19 @@ export default {
   AboutQuestions,
   AboutElsewhere,
   AboutCorrections,
+  PaperHead,
+  Abstract,
+  Contributions,
+  Eq,
+  Lead,
+  Prov,
+  Ledger,
+  Finding,
+  Runs,
+  Run,
+  Revisions,
+  Rev,
+  Readiness,
+  Check,
+  Data,
 };

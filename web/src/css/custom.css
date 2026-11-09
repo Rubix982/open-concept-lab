@@ -8929,3 +8929,504 @@ a:hover > .ocl-home__featureCover {
 @media (max-width: 860px) {
   .ocl-agc__grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ==========================================================================
+   Paper mode
+   --------------------------------------------------------------------------
+   A notebook page opts in by putting <PaperHead> at the top of the file (with
+   `hide_title: true` in the front matter, so Docusaurus does not also inject
+   its own h1). Everything after it is a sibling, so these rules reach the body
+   through `~` without wrapping it — wrapping would hide the headings from the
+   table of contents.
+
+   What changes is density and apparatus, not the palette. The reference this
+   was built against is a design document with a running head, justified 12pt
+   prose, an author-year citation on nearly every claim, figures floated into
+   the column, and bordered tables. Nothing here introduces a colour.
+   ========================================================================== */
+
+/*
+ * Wide container, narrow text. The measure stays at a readable 42rem — around
+ * 78 characters, already the upper end for justified prose — while the things
+ * that want width take the whole column: figures, tables and the ledger. The
+ * alternative, widening the text to fill the space, trades a real cost
+ * (line length) for an apparent one (empty margin).
+ */
+.markdown:has(> .ocl-paperhead) {
+  --ocl-paper-measure: 42rem;
+  --ocl-paper-wide: 54rem;
+  max-width: none;
+  font-size: 1rem;
+  line-height: 1.62;
+  counter-reset: ocl-figure ocl-table ocl-eq;
+}
+
+/*
+ * Two widths and one centre line. Everything that is read as prose sits at the
+ * measure; everything that wants room — figures, tables, the ledger — sits at
+ * 54rem. Both are centred on the same axis, so the page has two left edges and
+ * not three. Each selector is scoped as a direct child so they all carry the
+ * same specificity; mixing scoped and unscoped rules here is what let one
+ * block centre and its neighbour sit flush left.
+ */
+.markdown:has(> .ocl-paperhead) > p,
+.markdown:has(> .ocl-paperhead) > h2,
+.markdown:has(> .ocl-paperhead) > h3,
+.markdown:has(> .ocl-paperhead) > h4,
+.markdown:has(> .ocl-paperhead) > ol,
+.markdown:has(> .ocl-paperhead) > ul,
+.markdown:has(> .ocl-paperhead) > hr,
+.markdown:has(> .ocl-paperhead) > blockquote,
+.markdown:has(> .ocl-paperhead) > div[class*="codeBlock"],
+.markdown:has(> .ocl-paperhead) > pre,
+.markdown:has(> .ocl-paperhead) > .ocl-paperhead,
+.markdown:has(> .ocl-paperhead) > .ocl-abstract,
+.markdown:has(> .ocl-paperhead) > .ocl-contrib,
+.markdown:has(> .ocl-paperhead) > .ocl-references,
+.markdown:has(> .ocl-paperhead) > .ocl-eq,
+.ocl-paperhead {
+  max-width: var(--ocl-paper-measure);
+  margin-inline: auto;
+}
+
+.markdown:has(> .ocl-paperhead) > .ocl-figure,
+.markdown:has(> .ocl-paperhead) > .ocl-ptable {
+  max-width: min(100%, var(--ocl-paper-wide));
+  margin-inline: auto;
+}
+
+/* A caption is prose, so it returns to the measure and lines up with the body. */
+.markdown:has(> .ocl-paperhead) .ocl-figure__caption,
+.markdown:has(> .ocl-paperhead) .ocl-ptable caption {
+  max-width: var(--ocl-paper-measure);
+  margin-inline: auto;
+}
+
+
+/* ---- front matter ---- */
+
+.ocl-paperhead {
+  margin-bottom: 2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--ocl-rule);
+  text-align: center;
+}
+
+.ocl-paperhead__id {
+  margin-bottom: 1.1rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.665rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-paperhead__title {
+  margin: 0 auto;
+  max-width: 24ch;
+  font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+  line-height: 1.1;
+  font-weight: 400;
+  letter-spacing: -0.021em;
+  text-wrap: balance;
+  hyphens: manual;
+}
+
+.ocl-paperhead__author {
+  margin-top: 1.1rem;
+  font-size: 1.06rem;
+  color: var(--ocl-ink);
+}
+
+.ocl-paperhead__affil {
+  margin-top: 0.2rem;
+  font-size: 0.93rem;
+  font-style: italic;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-paperhead__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 2rem;
+  margin-top: 1.1rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.72rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-paperhead__meta b {
+  font-weight: 400;
+  color: var(--ocl-ink-muted);
+}
+
+/* ---- abstract ---- */
+
+.ocl-abstract {
+  margin-bottom: 2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-abstract__label,
+.ocl-contrib__label {
+  margin-bottom: 0.8rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-abstract__label {
+  text-align: center;
+}
+
+.ocl-abstract p {
+  text-align: justify;
+  hyphens: auto;
+}
+
+.ocl-abstract__kw {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 0.88rem;
+  color: var(--ocl-ink-muted);
+  text-align: left;
+}
+
+.ocl-abstract__kw i {
+  color: var(--ocl-ink-faint);
+}
+
+/* ---- contributions ---- */
+
+.ocl-contrib {
+  margin: 0 0 2.2rem;
+  padding: 1.2rem 1.4rem 1.3rem;
+  border: 1px solid var(--ocl-frame);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+}
+
+.ocl-contrib ol {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.ocl-contrib li {
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.ocl-contrib li:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- prose ---- */
+
+.ocl-paperhead ~ p,
+.ocl-paperhead ~ ul li,
+.ocl-paperhead ~ ol li {
+  text-align: justify;
+}
+
+/* A section opens on a rule, the way a paper's does. */
+.markdown:has(> .ocl-paperhead) > h2 {
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.markdown:has(> .ocl-paperhead) > h2 {
+  --ifm-h2-vertical-rhythm-top: 1.9;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.008em;
+}
+
+.markdown:has(> .ocl-paperhead) > h3 {
+  --ifm-h3-vertical-rhythm-top: 1.4;
+  font-size: 0.945rem;
+  font-weight: 700;
+}
+
+.markdown:has(> .ocl-paperhead) > p {
+  margin-bottom: 0.62rem;
+}
+
+.markdown:has(> .ocl-paperhead) > ul,
+.markdown:has(> .ocl-paperhead) > ol {
+  margin-bottom: 0.7rem;
+}
+
+.markdown:has(> .ocl-paperhead) li {
+  margin-bottom: 0.3rem;
+}
+
+.ocl-lead {
+  font-weight: 700;
+  color: var(--ocl-ink);
+}
+
+/* A number's provenance: a superscript ticket id pointing at the run table. */
+.ocl-prov {
+  font-family: var(--ocl-mono);
+  font-size: 0.62em;
+  vertical-align: 0.38em;
+  color: var(--ocl-ink-faint);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.markdown .ocl-prov:hover {
+  color: var(--ocl-oxide);
+  text-decoration: none;
+}
+
+/* ---- figures ---- */
+
+.markdown:has(> .ocl-paperhead) .ocl-figure {
+  margin: 1.4rem 0;
+}
+
+.markdown:has(> .ocl-paperhead) .ocl-figure--wide {
+  width: 100%;
+}
+
+/* A figure drawn small stays small rather than being blown up to the column. */
+.markdown:has(> .ocl-paperhead) > .ocl-figure:not(.ocl-figure--wide) {
+  max-width: min(100%, 34rem);
+}
+
+.markdown:has(> .ocl-paperhead) .ocl-figure__frame {
+  padding: 0.6rem 0.55rem 0.45rem;
+}
+
+.markdown:has(> .ocl-paperhead) .ocl-figure__caption {
+  margin-top: 0.4rem;
+  font-size: 0.705rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.markdown:has(> .ocl-paperhead) > h2 {
+  clear: both;
+}
+
+/* ---- numbered equations ---- */
+
+.ocl-eq {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.8rem 0 0.9rem;
+  counter-increment: ocl-eq;
+  clear: both;
+}
+
+.ocl-eq__body {
+  min-width: 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/*
+ * The expression is KaTeX, so the only job here is to stop the display block
+ * adding its own vertical margin on top of the row's. A mono font and
+ * white-space: nowrap used to live here, from when equations were plain text;
+ * both fight the renderer.
+ */
+.ocl-eq__expr .katex-display {
+  margin: 0;
+}
+
+.ocl-eq__expr .katex {
+  font-size: 1.02rem;
+}
+
+.ocl-eq__gloss {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.705rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-eq__num::before {
+  content: "(" counter(ocl-eq) ")";
+  font-family: var(--ocl-apparatus);
+  font-size: 0.73rem;
+  color: var(--ocl-ink-faint);
+}
+
+/* ---- paper tables ---- */
+
+.ocl-ptable {
+  margin: 1rem 0 1.1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  clear: both;
+}
+
+.markdown .ocl-ptable table {
+  display: table;
+  width: 100%;
+  min-width: 26rem;
+  margin: 0;
+  border-collapse: collapse;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.715rem;
+  counter-increment: ocl-table;
+}
+
+.markdown .ocl-ptable caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 0.35rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.705rem;
+  line-height: 1.45;
+  color: var(--ocl-ink-muted);
+}
+
+.markdown .ocl-ptable caption::before {
+  content: "Table " counter(ocl-table) ". ";
+  font-weight: 700;
+  color: var(--ocl-ink);
+}
+
+.markdown .ocl-ptable th,
+.markdown .ocl-ptable td {
+  border: 1px solid var(--ocl-rule-strong);
+  padding: 0.33rem 0.45rem;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.42;
+}
+
+.markdown .ocl-ptable thead tr {
+  background: var(--ocl-paper-sunken);
+}
+
+.markdown .ocl-ptable thead th {
+  font-size: 0.665rem;
+  font-weight: 700;
+  color: var(--ocl-ink);
+}
+
+.markdown .ocl-ptable tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--ocl-paper-sunken) 45%, transparent);
+}
+
+.markdown .ocl-ptable .n {
+  text-align: right;
+  font-family: var(--ocl-mono);
+  font-size: 0.675rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.markdown .ocl-ptable td code {
+  font-size: 0.93em;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* The second line of a ledger row: what would refute the claim above it. */
+.ocl-falsifier {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.67rem;
+  line-height: 1.42;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-falsifier strong {
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-struck {
+  color: var(--ocl-ink-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--ocl-oxide);
+}
+
+.ocl-struck .ocl-falsifier {
+  text-decoration: none;
+}
+
+.ocl-ok {
+  color: var(--ocl-held-ink);
+  font-weight: 700;
+}
+
+.ocl-no {
+  color: var(--ocl-oxide);
+  font-weight: 700;
+}
+
+/* ---- code listings ---- */
+
+.markdown:has(> .ocl-paperhead) pre code {
+  font-size: 0.73rem;
+  line-height: 1.6;
+}
+
+/* ---- references ---- */
+
+.markdown:has(> .ocl-paperhead) .ocl-references li {
+  text-align: left;
+}
+
+/* ---- the notebook rail: a project is a name, a stage, and a few words ---- */
+
+.ocl-proj {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.ocl-proj__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.ocl-proj__name {
+  font-size: 0.945rem;
+  letter-spacing: -0.004em;
+}
+
+.ocl-proj__stage {
+  flex: none;
+  font-family: var(--ocl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-proj__blurb {
+  font-size: 0.775rem;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--ocl-ink-faint);
+}
+
+.menu__list-item-collapsible:hover .ocl-proj__blurb,
+.menu__link--active .ocl-proj__blurb {
+  color: var(--ocl-ink-muted);
+}
+
+/* ---- the contents rail on a paper page ---- */
+
+.markdown:has(> .ocl-paperhead) ~ * .table-of-contents__link,
+.theme-doc-toc-desktop .table-of-contents__link {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
