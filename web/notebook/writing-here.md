@@ -221,10 +221,22 @@ map they already have. The two that are not standard — Findings and claims,
 holding the ledger, and Appendix C, holding the readiness checklist — are the
 parts a paper does not have and a page revised in place does.
 
-**Two widths, one centre line.** Prose sits at the measure; figures, tables and
-the ledger sit at 54rem. Both are centred on the same axis, so the page has two
-left edges rather than three, and a figure caption returns to the measure so it
-lines up with the body text.
+**Two columns, as a submitted paper is set.** The body runs in two columns
+below 1000px it falls back to one, because two columns of justified text on a
+phone is unreadable.
+
+The objection to two columns on a screen is real — a reader scrolls down one
+column and back up the other — and the layout answers it rather than ignoring
+it. A `column-span: all` element ends the current multicol segment and starts a
+new one, so content between two section headings balances into two columns
+*within that section*, and nothing balances across the whole article. Each
+section reads the way one page of a printed paper reads.
+
+What spans both columns, as `figure*` and `table*` do in that setting: section
+headings, the title block, the front matter, every table, every `wide` figure
+and every code listing. A figure drawn small stays in its column. Nothing read
+as one object — an equation, a figure, a list item — may be split down the
+middle, which is what the `break-inside` rules are for.
 
 **Write the contributions before the sections.** A contribution that cannot be
 stated in one line is not a contribution yet, so the box is a check on the work

@@ -530,3 +530,36 @@ Three things, and each was true. The page asserted numbers without showing a run
 **Two columns for the front matter and nowhere else.** A printed paper sets two columns because the page is wider than its measure, which is also true here — but two columns of running text on a screen makes a reader scroll down one and back up the other. The abstract and the contributions are both short and self-contained, so they are the one place the idiom works without that cost. The component says so in its own comment, so the next page does not take it as a licence.
 
 **What this ticket did not foresee:** that `<Abstract>` and `<Contributions>` carry their own rules and padding, which read as a separation from what follows and as a seam between columns once they sit side by side. Both drop their borders inside the grid and the grid carries one rule beneath.
+
+---
+
+### D-015 · The body set in two columns
+
+**Status:** closed
+**Type:** document
+**Priority:** high
+**Created:** 2026-11-09
+**Updated:** 2026-11-09
+**Estimated:** 1h
+**Spent:** 1h
+
+**Description:**
+Saif: "mei chahta hoon ke aik section ke paper wale tab per hum wahi two column format apply karein jo conferences, journals, jese NEURIPS mei submit hote hain." The previous ticket had set only the front matter in two columns; he wants the body.
+
+**Blockers:** —
+
+**Artifacts:**
+- web/src/css/custom.css — the two-column paper layout
+- web/notebook/writing-here.md
+
+**Closed:** 2026-11-09.
+
+**The objection to two columns on a screen is real, and the layout answers it rather than ignoring it.** Set naively, a reader scrolls down the left column for the length of the article and back up for the right. CSS multicol has the mechanism to avoid that: a `column-span: all` element ends the current multicol segment and starts a new one, so content between two section headings balances into two columns *within that section*. Nothing balances across the article, and each section reads the way one page of a printed paper reads. No JavaScript, no pagination engine, no wrapper per section.
+
+**Spanning follows the printed idiom.** Section headings, the title block, the front matter, every table, every `wide` figure and every code listing span both columns — which is `figure*` and `table*`. A figure drawn small stays in its column. `break-inside: avoid` on equations, figures, list items and subheadings stops anything read as one object being cut down the middle, and `break-after: avoid` keeps a subheading with the paragraph under it.
+
+**The column is now the measure, so the old variable went.** `--ocl-paper-measure` capped each block when the layout was one wide column of narrow text; with two columns the column width *is* the measure and the variable had nothing left to do. The body drops to 0.9rem and the spread caps at 52rem, which puts a column near 55 characters.
+
+**One correction worth recording, because it was in the request.** NeurIPS is single-column. The two-column format is ACL, EMNLP, IEEE and AAAI. What was built is that one, which is what the request described; the name attached to it was wrong and nothing follows from the error.
+
+**Below 1000px it falls back to one column.** Two columns of justified text at phone width is unreadable, and no amount of hyphenation fixes it.

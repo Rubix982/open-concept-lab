@@ -8953,56 +8953,74 @@ a:hover > .ocl-home__featureCover {
  * (line length) for an apparent one (empty margin).
  */
 .markdown:has(> .ocl-paperhead) {
-  --ocl-paper-measure: 42rem;
-  --ocl-paper-wide: 54rem;
-  max-width: none;
-  font-size: 1rem;
-  line-height: 1.62;
+  /* The page is the whole spread; each column is the measure. */
+  --ocl-paper-wide: 52rem;
   counter-reset: ocl-figure ocl-table ocl-eq;
 }
 
 /*
- * Two widths and one centre line. Everything that is read as prose sits at the
- * measure; everything that wants room — figures, tables, the ledger — sits at
- * 54rem. Both are centred on the same axis, so the page has two left edges and
- * not three. Each selector is scoped as a direct child so they all carry the
- * same specificity; mixing scoped and unscoped rules here is what let one
- * block centre and its neighbour sit flush left.
+ * Two columns, the way a submitted paper is set.
+ *
+ * The objection to two columns on a screen is real: a reader scrolls down one
+ * column and back up the other. CSS multicol answers it, if the spanners are
+ * chosen well. A `column-span: all` element ends the current multicol segment
+ * and starts a new one, so content between two section headings balances into
+ * two columns *within that section* and nothing balances across the whole
+ * article. Each section reads the way one page of a printed paper reads.
+ *
+ * Spanning, as `figure*` and `table*` do in that setting: the section
+ * headings, the title block, the front matter, every table, every wide figure
+ * and every listing. A figure drawn small stays in its column.
  */
-.markdown:has(> .ocl-paperhead) > p,
+.markdown:has(> .ocl-paperhead) {
+  column-count: 2;
+  column-gap: 2.1rem;
+  max-width: var(--ocl-paper-wide);
+  margin-inline: auto;
+  font-size: 0.9rem;
+  line-height: 1.56;
+}
+
 .markdown:has(> .ocl-paperhead) > h2,
-.markdown:has(> .ocl-paperhead) > h3,
-.markdown:has(> .ocl-paperhead) > h4,
-.markdown:has(> .ocl-paperhead) > ol,
-.markdown:has(> .ocl-paperhead) > ul,
 .markdown:has(> .ocl-paperhead) > hr,
-.markdown:has(> .ocl-paperhead) > blockquote,
-.markdown:has(> .ocl-paperhead) > div[class*="codeBlock"],
-.markdown:has(> .ocl-paperhead) > pre,
 .markdown:has(> .ocl-paperhead) > .ocl-paperhead,
-.markdown:has(> .ocl-paperhead) > .ocl-abstract,
-.markdown:has(> .ocl-paperhead) > .ocl-contrib,
-.markdown:has(> .ocl-paperhead) > .ocl-references,
-.markdown:has(> .ocl-paperhead) > .ocl-eq,
-.ocl-paperhead {
-  max-width: var(--ocl-paper-measure);
-  margin-inline: auto;
-}
-
 .markdown:has(> .ocl-paperhead) > .ocl-frontmatter,
+.markdown:has(> .ocl-paperhead) > .ocl-ptable,
+.markdown:has(> .ocl-paperhead) > .ocl-figure--wide,
+.markdown:has(> .ocl-paperhead) > div[class*="codeBlock"],
+.markdown:has(> .ocl-paperhead) > pre {
+  column-span: all;
+}
+
+/* Nothing that is read as one object may be split down the middle. */
+.markdown:has(> .ocl-paperhead) > h3,
 .markdown:has(> .ocl-paperhead) > .ocl-figure,
-.markdown:has(> .ocl-paperhead) > .ocl-ptable {
-  max-width: min(100%, var(--ocl-paper-wide));
-  margin-inline: auto;
+.markdown:has(> .ocl-paperhead) > .ocl-eq,
+.markdown:has(> .ocl-paperhead) li {
+  break-inside: avoid;
 }
 
-/* A caption is prose, so it returns to the measure and lines up with the body. */
-.markdown:has(> .ocl-paperhead) .ocl-figure__caption,
-.markdown:has(> .ocl-paperhead) .ocl-ptable caption {
-  max-width: var(--ocl-paper-measure);
-  margin-inline: auto;
+.markdown:has(> .ocl-paperhead) > h3 {
+  break-after: avoid;
 }
 
+/* A figure that stays in its column takes the column, not a fixed width. */
+.markdown:has(> .ocl-paperhead) > .ocl-figure:not(.ocl-figure--wide) {
+  max-width: 100%;
+}
+
+.markdown:has(> .ocl-paperhead) > .ocl-figure:not(.ocl-figure--wide) .ocl-figure__frame > svg {
+  min-width: 0;
+}
+
+/* One column below the width where two would each be too narrow to justify. */
+@media (max-width: 1000px) {
+  .markdown:has(> .ocl-paperhead) {
+    column-count: 1;
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+}
 
 /* ---- front matter ---- */
 
@@ -9024,7 +9042,7 @@ a:hover > .ocl-home__featureCover {
 
 .ocl-paperhead__title {
   margin: 0 auto;
-  max-width: 24ch;
+  max-width: 22ch;
   font-size: clamp(1.9rem, 4.6vw, 2.9rem);
   line-height: 1.1;
   font-weight: 400;
@@ -9221,10 +9239,9 @@ a:hover > .ocl-home__featureCover {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem;
   margin: 0.8rem 0 0.9rem;
   counter-increment: ocl-eq;
-  clear: both;
 }
 
 .ocl-eq__body {
@@ -9244,7 +9261,7 @@ a:hover > .ocl-home__featureCover {
 }
 
 .ocl-eq__expr .katex {
-  font-size: 1.02rem;
+  font-size: 0.95rem;
 }
 
 .ocl-eq__gloss {
