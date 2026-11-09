@@ -9872,3 +9872,61 @@ a:hover > .ocl-home__featureCover {
   background: var(--ocl-ink);
   border-color: var(--ocl-ink);
 }
+
+/* ---- state of the record, at the head of the contents rail ---- */
+
+.ocl-record {
+  margin: 0 0 1.6rem;
+  padding: 0 0 1.2rem var(--ocl-frame-inset, 0);
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-record__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+  margin-bottom: 0.9rem;
+}
+
+.ocl-record__ver { color: var(--ocl-ink-muted); letter-spacing: 0.06em; }
+
+.ocl-record__row { margin-bottom: 0.75rem; }
+
+.ocl-record__line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.78rem;
+  margin-bottom: 0.28rem;
+}
+
+.ocl-record__label { color: var(--ocl-ink-muted); }
+.ocl-record__count { font-family: var(--ocl-mono); color: var(--ocl-ink); }
+.ocl-record__of { color: var(--ocl-ink-faint); }
+
+/* A bar, not a percentage: the number beside it is the claim, and the bar is
+   only there so three of them can be compared at a glance. */
+.ocl-record__bar {
+  height: 3px;
+  background: var(--ocl-rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ocl-record__bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ocl-held-ink);
+}
+
+.ocl-record__note {
+  margin: 0.9rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-faint);
+}
