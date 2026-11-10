@@ -9821,14 +9821,26 @@ a:hover > .ocl-home__featureCover {
 /* Paper mode sets two columns on the article. The threads view is a record,
    not an argument, and reads worse justified into narrow columns — so it takes
    the full measure back. */
-.ocl-threadspanel {
-  column-span: all;
-  animation: ocl-view-in 180ms var(--ocl-ease) both;
+.ocl-threadspanel { column-span: all; }
+
+/* The swap is a crossfade, not an entrance.
+   `is-swapping` goes on while the outgoing view fades, stays on through the
+   frame where the incoming view appears, and comes off a frame later, so the
+   same rule carries both halves. An entrance animation on the incoming view
+   alone -- which is what this was -- left the outgoing one disappearing
+   instantly underneath it, and that snap is the part that read as abrupt. */
+.markdown > .ocl-paperhead ~ * {
+  transition: opacity 150ms var(--ocl-ease), transform 150ms var(--ocl-ease);
 }
 
-.markdown[data-view="paper"] > .ocl-paperhead ~ * {
-  animation: ocl-view-in 180ms var(--ocl-ease) both;
+.markdown.is-swapping > .ocl-paperhead ~ * {
+  opacity: 0;
+  transform: translateY(4px);
 }
+
+/* The rail is remounted on the swap (keyed by view), so it fades in on its
+   own; it has nothing to fade out, being replaced wholesale. */
+.ocl-rail { animation: ocl-view-in 200ms var(--ocl-ease) both; }
 
 @keyframes ocl-view-in {
   from { opacity: 0; transform: translateY(3px); }
@@ -9836,8 +9848,19 @@ a:hover > .ocl-home__featureCover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ocl-threadspanel,
-  .markdown[data-view="paper"] > .ocl-paperhead ~ * { animation: none; }
+  .ocl-rail { animation: none; }
+  .markdown > .ocl-paperhead ~ * { transition: none; }
+}
+
+/* The threads contents run long -- each row is a whole question -- and the rail
+   is narrow. Three lines and then an ellipsis keeps the list scannable while
+   leaving the identifier, which is the part a reader is looking for, always
+   visible at the front. */
+.ocl-threadstoc .table-of-contents__link {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ocl-threadspanel__id {

@@ -9,3 +9,46 @@ edit-reach:
   threads: 12
   tickets_closed: 36
   tickets: 36
+  toc:
+    - id: threads-cards
+      level: 2
+      value: "The questions, in the order they were asked"
+    - id: threads-answered
+      level: 2
+      value: "Questions that were answered along the way"
+    - id: thread-t-001
+      level: 3
+      value: "T-001 · Can any screen bound an edit's damage from above, or only from below?"
+    - id: thread-t-002
+      level: 3
+      value: "T-002 · Is subject-string frequency the operative variable, not dependent count?"
+    - id: thread-t-003
+      level: 3
+      value: "T-003 · The shared prerequisite behind \"modify\" and \"extract\""
+    - id: thread-t-005
+      level: 3
+      value: "T-005 · Is the coefficient blind in exactly the regime propagation lives in?"
+    - id: thread-t-006
+      level: 3
+      value: "T-006 · LanguageModel is deprecated, and every number so far was read through it"
+    - id: thread-t-007
+      level: 3
+      value: "T-007 · Does an edit break the old answer and supply the new one by two different routes?"
+    - id: thread-t-008
+      level: 3
+      value: "T-008 · Readings differ between NDIF serving sessions, on byte-identical inputs"
+    - id: thread-t-010
+      level: 3
+      value: "T-010 · How loose is the Cauchy–Schwarz bound on the coefficient, in each regime?"
+    - id: thread-t-011
+      level: 3
+      value: "T-011 · Can an activation-space bound cross into a behavioural one through a transformer?"
+    - id: thread-t-012
+      level: 3
+      value: "T-012 · Is weight-space certification easier than input-space, and has anyone taken that?"
+    - id: threads-open
+      level: 2
+      value: "Still open"
+    - id: threads-run
+      level: 2
+      value: "What was actually run"

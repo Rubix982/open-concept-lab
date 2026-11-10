@@ -234,6 +234,12 @@ export type ProjectRecord = {
   threads: number;
   tickets_closed: number;
   tickets: number;
+  /**
+   * The threads view's own headings, for the rail. The threads content is an
+   * imported partial, so Docusaurus never sees its headings — this is the only
+   * table of contents that view has.
+   */
+  toc?: { id: string; level: number; value: string }[];
 };
 
 export type LabData = {

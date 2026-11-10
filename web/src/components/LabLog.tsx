@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import { requestView, resetView, usePaperView } from "./paperView";
 
 /**
  * Paper and Threads as two views of one document.
@@ -10,50 +11,60 @@ import type { ReactNode } from "react";
  * They are the same work seen twice -- what was found, and what was asked on
  * the way -- so switching should replace the body and nothing else.
  *
- * The state lives in a `data-view` attribute on the article, and CSS does the
- * hiding. That is a deliberate choice rather than a shortcut: the paper's body
- * is raw MDX between the header and the panel, with no React ancestor either
- * component owns, so holding this in component state would mean swizzling the
- * doc layout to install a provider around markup neither view controls. A view
- * flag on the element both views already live inside is the smaller thing.
+ * The state lives in `paperView.ts` and reaches the body as a `data-view`
+ * attribute on the article, with CSS doing the hiding. That is a deliberate
+ * choice rather than a shortcut: the paper's body is raw MDX between the header
+ * and the panel, with no React ancestor either view owns, so rendering it
+ * conditionally would mean swizzling the doc layout to wrap markup neither view
+ * controls. A view flag on the element both views already live inside is the
+ * smaller thing.
  */
-function useView(): ["paper" | "threads", (v: "paper" | "threads") => void] {
-  const [view, setView] = useState<"paper" | "threads">("paper");
+export function PaperSwitch(): ReactNode {
+  const { view, pending } = usePaperView();
   const host = useRef<HTMLElement | null>(null);
-
-  const set = useCallback((v: "paper" | "threads") => {
-    setView(v);
-    const article = host.current?.closest(".markdown");
-    if (article instanceof HTMLElement) {
-      article.dataset.view = v;
-      // The header stays put, so scrolling to the top of the body is what a
-      // reader means by "switch" when they are halfway down a long paper.
-      article.scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-  }, []);
+  const mounted = useRef(false);
 
   useEffect(() => {
-    const el = document.querySelector(".ocl-paperswitch");
-    host.current = el instanceof HTMLElement ? el : null;
     const article = host.current?.closest(".markdown");
-    if (article instanceof HTMLElement && !article.dataset.view) {
-      article.dataset.view = "paper";
+    if (!(article instanceof HTMLElement)) return;
+
+    // Mid-swap: the outgoing content is still on screen, fading.
+    if (pending !== view) {
+      article.classList.add("is-swapping");
+      return;
     }
-  }, []);
 
-  return [view, set];
-}
+    article.dataset.view = view;
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
 
-export function PaperSwitch(): ReactNode {
-  const [view, set] = useView();
+    // The incoming content is in the DOM now but still at opacity 0, because
+    // `is-swapping` is on. Clearing it a frame later is what makes it fade in
+    // rather than appear -- clearing it in this same commit would batch the
+    // display change and the opacity change into one paint, and the transition
+    // would have nothing to run from.
+    const frame = requestAnimationFrame(() =>
+      requestAnimationFrame(() => article.classList.remove("is-swapping")),
+    );
+    // The header stays put, so scrolling to the top of the body is what a
+    // reader means by "switch" when they are halfway down a long paper.
+    article.scrollIntoView({ block: "start", behavior: "smooth" });
+    return () => cancelAnimationFrame(frame);
+  }, [view, pending]);
+
+  // Leaving the page puts the next paper back on its argument.
+  useEffect(() => resetView, []);
+
   return (
-    <nav className="ocl-paperswitch" aria-label="Paper or threads">
-      <button type="button" onClick={() => set("paper")}
-              className={clsx({ "is-here": view === "paper" })}
-              aria-pressed={view === "paper"}>Paper</button>
-      <button type="button" onClick={() => set("threads")}
-              className={clsx({ "is-here": view === "threads" })}
-              aria-pressed={view === "threads"}>Threads</button>
+    <nav className="ocl-paperswitch" aria-label="Paper or threads" ref={host}>
+      <button type="button" onClick={() => requestView("paper")}
+              className={clsx({ "is-here": pending === "paper" })}
+              aria-pressed={pending === "paper"}>Paper</button>
+      <button type="button" onClick={() => requestView("threads")}
+              className={clsx({ "is-here": pending === "threads" })}
+              aria-pressed={pending === "threads"}>Threads</button>
     </nav>
   );
 }
