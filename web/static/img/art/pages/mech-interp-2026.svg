@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A poster on an easel showing a small bar chart, pinned at its corners, with a judge's rosette beside it">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="23"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="24"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#4338a8" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M186 332 L236 164 M330 332 L288 164 M212 268 H312" stroke-width="3"/>
+    <path d="M150 104 H436 V246 H150 Z" fill="#fffdf8"/>
+    <path d="M176 134 H330" stroke-width="3.4"/>
+    <path d="M176 152 H286" stroke-width="1.6" opacity="0.65"/>
+    <path d="M186 224 V190 M214 224 V172 M242 224 V200 M270 224 V162 M298 224 V182" stroke="#4338a8" stroke-width="6"/>
+    <path d="M176 224 H330" stroke-width="1.6" opacity="0.6"/>
+    <circle cx="166" cy="120" r="5" fill="#e8836b" stroke="none"/>
+    <circle cx="420" cy="120" r="5" fill="#e8836b" stroke="none"/>
+    <circle cx="470" cy="228" r="34" fill="#f2c46d" fill-opacity="0.85"/>
+    <path d="M454 224 l12 12 l22 -24" stroke-width="3.4"/>
+    <path d="M452 258 L440 318 L470 300 L498 318 L486 258" fill="#e8836b" fill-opacity="0.6"/>
+  </g>
+</svg>

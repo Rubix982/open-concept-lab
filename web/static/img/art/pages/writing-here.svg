@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="A page carrying a numbered figure and a chart, a brace in the margin holding a note, and a pencil laid across it">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.034" numOctaves="2" seed="29"/>
+      <feDisplacementMap in="SourceGraphic" scale="3"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="30"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="600" height="400" fill="#f4f1ea"/>
+  <rect width="600" height="400" filter="url(#grain)"/>
+  <ellipse cx="300" cy="210" rx="220" ry="150" fill="#7fa98a" opacity="0.24"/>
+  <g filter="url(#rough)" fill="none" stroke="#2b2a28" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+
+    <path d="M150 90 H404 V330 H150 Z" fill="#fffdf8"/>
+    <path d="M176 122 H330" stroke-width="3.4"/>
+    <path d="M176 142 H288" stroke-width="1.6" opacity="0.65"/>
+    <path d="M176 170 H352 V246 H176 Z" fill="#7fa98a" fill-opacity="0.22"/>
+    <path d="M198 228 L226 198 L250 216 L280 184 L322 212" stroke="#4338a8" stroke-width="2.4"/>
+    <path d="M176 262 H300" stroke-width="1.6" opacity="0.6"/>
+    <path d="M176 280 H262" stroke-width="1.6" opacity="0.45"/>
+    <text x="176" y="166" font-family="Georgia, serif" font-size="15" fill="#a4442f" stroke="none">1</text>
+    <path d="M422 170 q10 0 10 14 v30 q0 14 10 14 q-10 0 -10 14 v30 q0 14 -10 14" stroke="#a4442f" stroke-width="2.2"/>
+    <path d="M452 196 H540 M452 220 H524 M452 244 H536" stroke-width="1.5" opacity="0.55"/>
+    <path d="M300 334 L470 150 L494 172 L324 356 Z" fill="#f2c46d" fill-opacity="0.8"/>
+    <path d="M300 334 L294 360 L324 356"/>
+    <path d="M470 150 L480 136 L504 158 L494 172" fill="#e8836b" fill-opacity="0.7"/>
+  </g>
+</svg>

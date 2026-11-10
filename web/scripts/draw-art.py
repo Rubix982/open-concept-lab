@@ -285,6 +285,55 @@ def edit_reach() -> str:
     )
 
 
+# --- pages that are not projects -------------------------------------------
+
+
+def the_field() -> str:
+    body = f"""
+    <path d="M186 332 L236 164 M330 332 L288 164 M212 268 H312" stroke-width="3"/>
+    <path d="M150 104 H436 V246 H150 Z" fill="#fffdf8"/>
+    <path d="M176 134 H330" stroke-width="3.4"/>
+    <path d="M176 152 H286" stroke-width="1.6" opacity="0.65"/>
+    <path d="M186 224 V190 M214 224 V172 M242 224 V200 M270 224 V162 M298 224 V182" stroke="{INDIGO}" stroke-width="6"/>
+    <path d="M176 224 H330" stroke-width="1.6" opacity="0.6"/>
+    <circle cx="166" cy="120" r="5" fill="{SALMON}" stroke="none"/>
+    <circle cx="420" cy="120" r="5" fill="{SALMON}" stroke="none"/>
+    <circle cx="470" cy="228" r="34" fill="{GOLD}" fill-opacity="0.85"/>
+    <path d="M454 224 l12 12 l22 -24" stroke-width="3.4"/>
+    <path d="M452 258 L440 318 L470 300 L498 318 L486 258" fill="{SALMON}" fill-opacity="0.6"/>"""
+    return svg(
+        "A poster on an easel showing a small bar chart, pinned at its corners, "
+        "with a judge's rosette beside it",
+        INDIGO,
+        body,
+        23,
+    )
+
+
+def writing_here() -> str:
+    body = f"""
+    <path d="M150 90 H404 V330 H150 Z" fill="#fffdf8"/>
+    <path d="M176 122 H330" stroke-width="3.4"/>
+    <path d="M176 142 H288" stroke-width="1.6" opacity="0.65"/>
+    <path d="M176 170 H352 V246 H176 Z" fill="{SAGE}" fill-opacity="0.22"/>
+    <path d="M198 228 L226 198 L250 216 L280 184 L322 212" stroke="{INDIGO}" stroke-width="2.4"/>
+    <path d="M176 262 H300" stroke-width="1.6" opacity="0.6"/>
+    <path d="M176 280 H262" stroke-width="1.6" opacity="0.45"/>
+    <text x="176" y="166" font-family="Georgia, serif" font-size="15" fill="{OXIDE}" stroke="none">1</text>
+    <path d="M422 170 q10 0 10 14 v30 q0 14 10 14 q-10 0 -10 14 v30 q0 14 -10 14" stroke="{OXIDE}" stroke-width="2.2"/>
+    <path d="M452 196 H540 M452 220 H524 M452 244 H536" stroke-width="1.5" opacity="0.55"/>
+    <path d="M300 334 L470 150 L494 172 L324 356 Z" fill="{GOLD}" fill-opacity="0.8"/>
+    <path d="M300 334 L294 360 L324 356"/>
+    <path d="M470 150 L480 136 L504 158 L494 172" fill="{SALMON}" fill-opacity="0.7"/>"""
+    return svg(
+        "A page carrying a numbered figure and a chart, a brace in the margin "
+        "holding a note, and a pencil laid across it",
+        SAGE,
+        body,
+        29,
+    )
+
+
 DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/notebook": notebook,
     "tabs/labs": labs,
@@ -299,6 +348,8 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "projects/rome-neighbors": rome_neighbors,
     "projects/claim-graph": claim_graph,
     "projects/opz": opz,
+    "pages/mech-interp-2026": the_field,
+    "pages/writing-here": writing_here,
 }
 
 
