@@ -85,4 +85,76 @@ the direction question stays open indefinitely — which is what the last six
 weeks already looked like. Every further experiment inherits an unresolved
 framing, so the cost of not sending compounds rather than holds.
 
-**Status:** open. Blocked on nothing. The note is written.
+**Status:** parked, 2026-11-10.
+
+**Why parked, not closed.** The card asks whether the field would use a cheap
+pre-run criterion. That answer only arrives from outside, and it has not. The
+note went as the first of three short emails instead of one 350-word note
+(`notes/email-1-vlaminck.md`, sent 2026-10-31); emails 2 and 3 are written and
+deliberately held until the first is answered. So the action happened and the
+question did not resolve, which is neither closed nor blocked: nothing prevents
+the work, it was chosen against for now.
+
+**To resume:** a reply, or a decision to stop waiting for one. If a reply comes,
+field 5 reads off it unchanged. If none comes by the time the next direction
+choice is due, the card closes on the second branch by default — the criterion is
+demoted to a methods paragraph — and that default should be taken deliberately
+rather than by silence.
+
+**What this cost while it sat.** Seventeen days open, during which other work ran
+anyway. Rule 1 says one card open and nothing else until it closes; that was not
+what happened, and the rule did not fail silently so much as go unconsulted. The
+card was unresolvable from inside and should have been parked when email 1 went
+out, not kept open as though it were live.
+
+---
+
+# CURRENT CARD
+
+_Opened 2026-11-10. The card above is parked; this is the one open card._
+
+**1. WHERE WE ARE.**
+[R-012] read Ravfogel et al. (2605.12426) and found it predicts the opposite of
+what we measure: a per-relation block account predicts perturbation stays local
+to the edited relation, and [E-033] finds an edit damages everything about the
+subject, worst along the injected value's type. Three explanations sit on the
+table — their single-layer construction does not carry to deep models, ROME does
+not act on the structure they describe, or the account is incomplete where typed
+attributes would complete it — and nothing distinguishes them.
+
+**2. WHAT WE ARE DOING.**
+Reading §5.3 — the part that probes real models rather than the construction —
+closely enough to say, in writing, what re-running it on our stack would require:
+which models, which facts, which quantity, and whether NDIF serves those models.
+
+**3. WHY.**
+We do not know whether §5.3 is reproducible by us at all. Everything after this
+depends on that answer, and it is unanswerable from the abstract — which is the
+specific lesson [R-012] paid for: an abstract under-reports overlap and
+over-reports applicability, because it sells the contribution and buries the
+setting.
+
+**4. WHAT IS AFFECTED.**
+Nothing measured changes. What changes is whether the next card exists:
+`review.md` §2 already had one claim about this paper withdrawn, and [T-086] is
+still without a candidate. If §5.3 is out of reach, §2 says the tension cannot
+be probed by us rather than leaving a reader to assume it will be.
+
+**5. CONCLUSION IF WE DO IT.**
+If §5.3 is reproducible on our stack → the next card runs it, and the tension
+becomes testable.
+If it is not — models we cannot serve, data not released, or a quantity that
+needs their training setup — → we say so in §2 with the reason, and the tension
+stays a tension that we have stated honestly rather than one we implied we would
+resolve.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+Little, for the project: [E-033] stands on its own measurement whatever this
+paper says, and "a tension" is already the honest framing. This card is open for
+understanding rather than for a deliverable, which is a real reason and a weaker
+one, and it is written here rather than dressed up. What it does buy is that the
+central result stops being one we cannot explain when asked — which is the first
+question any reader of §2 will have.
+
+**Status:** open. Blocked on nothing. Ticket [R-020] carries the reading.
+

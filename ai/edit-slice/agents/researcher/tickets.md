@@ -920,3 +920,48 @@ A week of work had been priced on the assumption that RippleEdits' prompts would
 **Artifacts:** `results/R-013-ripple-forms.json`; `CHANGELOG.md` entry of the same date; cited in `plan.md`, `threads.md` and `LOOP.md`.
 
 **Closed:** 2026-10-17 *(date reconstructed from the changelog block it sits in)*. 44 of 46,754 prompts subject-final.
+
+---
+
+### R-020 · Read Ravfogel §5.3 well enough to say whether we can re-run it
+
+**Status:** open
+**Type:** research
+**Priority:** medium
+**Created:** 2026-11-10
+**Updated:** 2026-11-10
+
+**Description:**
+`agents/shared/findings.md` → [R-012] established that Ravfogel et al.
+(arXiv 2605.12426) predicts relation-local perturbation while [E-033] measures
+subject-wide damage following the injected value's type, and left three
+explanations undistinguished. Their §5.3 is the only part that touches real
+models — [R-012] records it as probing Qwen2.5-0.5B, Qwen3-14B, Llama-3.1-8B,
+Llama-3.2-1B and Phi-4 on natural-language relational facts — so it is the only
+part we could re-run.
+
+Read §5.3 and whatever method or appendix it depends on, and write down, so a
+second engineer could act on it without reading the paper:
+
+1. **The quantity.** What exactly is measured and reported — the statistic, its
+   estimator, and what a positive result looks like numerically.
+2. **The facts.** Where the relational facts come from, how many, and whether
+   the set is released. If it is constructed, the construction.
+3. **The models.** Which five, at what precision, and which of them NDIF serves.
+   Name the ones it does not.
+4. **What the result would have to be** for the block structure to count as
+   present in a deep model, in their own terms rather than ours.
+5. **Anything their §5.3 depends on that is only in the construction** — if the
+   probe presupposes the single-layer setting, say so, because that alone
+   answers the card.
+
+Read, do not run. No compute. Record which section each answer came from, so the
+next card is not re-reading the paper to find them.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Artifacts:** —
+
+**Closed:** —

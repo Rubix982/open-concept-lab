@@ -2110,3 +2110,14 @@ a re-derivation -- which CLAUDE.md says not to do, so check that first.
 **Do not re-derive KnowledgeSmith (2510.02392).** It already tested the out-degree
 hypothesis. This thread is only interesting where it *departs* from that.
 **Answer:** —
+
+---
+
+### T-100 · Does the typed-attribute extension discriminate the three explanations?
+
+**Status:** open
+**Parent:** T-086
+**Opened:** 2026-11-10
+**Question:** If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes -- and see whether the block structure survives it. That would separate "the account is incomplete where typed attributes would complete it" from "ROME does not act on this structure at all". Opened so it is not lost; it is not the open card, and it does not become one until R-020 says §5.3 is reachable.
+**Answer:** —
+
