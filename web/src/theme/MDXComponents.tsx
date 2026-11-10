@@ -9,6 +9,7 @@ import Claim from "@site/src/components/Claim";
 import Embed from "@site/src/components/Embed";
 import Aside from "@site/src/components/Aside";
 import Projects from "@site/src/components/Projects";
+import NotebookIndex from "@site/src/components/NotebookIndex";
 import References from "@site/src/components/References";
 import Status, { Notice } from "@site/src/components/Status";
 import Claude from "@site/src/components/Claude";
@@ -38,6 +39,7 @@ export default {
   Embed,
   Aside,
   Projects,
+  NotebookIndex,
   References,
   Status,
   Notice,

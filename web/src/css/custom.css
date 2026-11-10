@@ -2084,6 +2084,60 @@ a.ocl-desk__day:focus-visible {
   [class*="docItemCol"]:not(:has(.ocl-paperhead)) {
     max-width: 42rem !important;
   }
+
+  /* With the left rail gone the row would stretch the whole window, stranding
+     the contents column against the right edge. Centred as a pair instead, the
+     same arrangement the writing shell already uses. Paper mode is excluded by
+     name again: its body is 58rem wide and would be squeezed by this. */
+  [class*="docMainContainer"] > .container {
+    max-width: 60rem;
+  }
+
+  [class*="docMainContainer"]:has(.ocl-paperhead) > .container {
+    max-width: 80rem;
+  }
+}
+
+/* ---- the notebook index: the projects, and the pages under each ---- */
+
+.ocl-nbindex__row {
+  padding-top: 1.4rem;
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-nbindex__row:first-child {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+
+.markdown .ocl-nbindex__name {
+  margin: 0 0 0.3rem;
+  font-size: 1.12rem;
+}
+
+.markdown .ocl-nbindex__phase {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+}
+
+.markdown .ocl-nbindex__what {
+  margin: 0 0 0.5rem;
+}
+
+.markdown .ocl-nbindex__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1rem;
+  margin: 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
 }
 
 /*

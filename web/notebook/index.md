@@ -25,11 +25,19 @@ Dated pieces, where the point is *when* I thought something, live in
 
 ## Projects
 
-Each card comes from that project's own `plan.md` — the objective and the
+Each entry comes from that project's own `plan.md` — the objective and the
 current phase — so this is never separately out of date. Hover a phase for the
-full note.
+full note. The pages under a project come from the sidebar that orders them, so
+this list and their order cannot disagree.
 
-<Projects />
+<NotebookIndex />
+
+## The field these sit in
+
+[Mech interp in 2026](/notebook/mech-interp-2026) records where work on model
+internals was judged this year, what each venue asked for, and which of those
+asks nothing here answers. It is not a reading list — [reading](/reading) is
+that.
 
 ## Conventions
 
