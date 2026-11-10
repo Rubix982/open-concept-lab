@@ -51,6 +51,12 @@ const project = (
 const sidebars: SidebarsConfig = {
   notebookSidebar: [
     { type: "doc", id: "index", label: "Notebook" },
+    // Not a project, so it does not sit among them. Above the projects rather
+    // than below, because it is the context they sit in: what the field asked
+    // for this year, then what was done about it, then how the pages are
+    // written. Two flat rows bracketing the project tree read as a dumping
+    // ground; one at each end reads as a frame.
+    { type: "doc", id: "mech-interp-2026", label: "The field in 2026" },
     project("edit-slice", "what edits disturb", [
       { label: "Paper", doc: "review" },
       { label: "Evidence", doc: "ledger" },
@@ -61,7 +67,6 @@ const sidebars: SidebarsConfig = {
     project("rome-neighbors", "geometry", []),
     project("claim-graph", "claims as nodes", []),
     project("opz", "deployment labs", []),
-    { type: "doc", id: "mech-interp-2026", label: "The field in 2026" },
     { type: "doc", id: "writing-here", label: "Writing here" },
   ],
 };

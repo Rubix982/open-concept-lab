@@ -2066,6 +2066,48 @@ a.ocl-desk__day:focus-visible {
   padding-top: 0.5rem;
 }
 
+/*
+ * The contents rail sat a quarter of a page away from the text it indexes.
+ *
+ * Not a gap between the columns -- a gap inside the article's own column. The
+ * theme gives that column 75% of the row, the prose caps itself at the reading
+ * measure, and the difference was twenty-odd rem of nothing with the rail
+ * stranded on the far side of it. The blog shell spends that slack on figures
+ * breaking the measure; docs had no such escape, so it was spent on nothing.
+ *
+ * So the column is capped just past the measure and the rail follows it in.
+ * Paper mode is excluded by name: its own width is 58rem, set deliberately for
+ * two columns of justified type, and capping it would re-set that typography
+ * as a side effect of fixing a gap on a different kind of page.
+ */
+@media (min-width: 997px) {
+  [class*="docItemCol"]:not(:has(.ocl-paperhead)) {
+    max-width: 46rem !important;
+  }
+}
+
+/*
+ * And inside it, each block caps itself rather than the article capping all of
+ * them -- the same arrangement the blog shell already uses. A four-column table
+ * of venues does not fit a 66-character measure and should not be made to: it
+ * is apparatus, not prose, and it takes the column.
+ */
+.theme-doc-markdown {
+  max-width: none;
+}
+
+.theme-doc-markdown > * {
+  max-width: var(--ocl-measure);
+}
+
+.theme-doc-markdown > table,
+.theme-doc-markdown > .ocl-table,
+.theme-doc-markdown > .ocl-table__scroll,
+.theme-doc-markdown > .ocl-figure--wide,
+.theme-doc-markdown > .ocl-embed {
+  max-width: 100%;
+}
+
 .theme-doc-footer {
   margin-top: 3rem;
   padding-top: 1.1rem;
