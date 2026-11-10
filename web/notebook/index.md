@@ -4,33 +4,18 @@ title: Notebook
 sidebar_position: 1
 sidebar_label: Notebook
 description: Living pages for each project — revised in place rather than dated.
+hide_table_of_contents: true
 ---
 
-<PageArt name="notebook" />
-
-# Notebook
-
-Pages here are revised in place. They describe what each project is trying to
-establish, what has been settled, and what is still open — so a page can be
-re-read later and still say something true.
-
-Dated pieces, where the point is *when* I thought something, live in
-[writing](/writing).
+<NotebookIndex />
 
 <Notice>
   <strong>Read these as current state, not as results.</strong> Each page carries
   a status. Anything marked provisional may be withdrawn, and pages that are
-  withdrawn stay up with the reason attached.
+  withdrawn stay up with the reason attached. Each card's objective and phase come
+  from that project's own `plan.md`, so they are never separately out of date —
+  hover a phase for the full note.
 </Notice>
-
-## Projects
-
-Each entry comes from that project's own `plan.md` — the objective and the
-current phase — so this is never separately out of date. Hover a phase for the
-full note. The pages under a project come from the sidebar that orders them, so
-this list and their order cannot disagree.
-
-<NotebookIndex />
 
 ## The field these sit in
 

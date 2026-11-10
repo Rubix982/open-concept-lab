@@ -2201,6 +2201,41 @@ a.ocl-desk__day:focus-visible {
   margin-left: auto;
 }
 
+/*
+ * The notebook index wears the writing index's shell, so on that one page the
+ * article stops being an article: no measure, no contents column (turned off in
+ * its front matter), and the window's width for the grid. The prose that
+ * follows the grid takes the measure back.
+ */
+@media (min-width: 997px) {
+  [class*="docItemCol"]:has(.ocl-garden) {
+    max-width: none !important;
+  }
+
+  [class*="docMainContainer"]:has(.ocl-garden) > .container {
+    max-width: 84rem;
+  }
+}
+
+.markdown:has(> .ocl-garden) {
+  max-width: none;
+}
+
+.markdown:has(> .ocl-garden) > *:not(.ocl-garden) {
+  max-width: var(--ocl-measure);
+}
+
+/* The pages under a project, below its card. Outside the card's own link,
+   because a link inside a link is not a thing. */
+.markdown .ocl-garden__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  margin: 0.45rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.8rem;
+}
+
 /* ---- the notebook index: the projects, and the pages under each ---- */
 
 .ocl-nbindex__row {
