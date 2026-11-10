@@ -177,6 +177,7 @@ Recommendation: which model to use for Phase 2 edge classification.
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Design the L3 claim extraction schema and validate it on 5 papers from the L2
@@ -228,6 +229,11 @@ This tests whether the extraction is consistent enough for L3 to work.
 
 **Blockers:** E-018 (need L2 summaries to feed as input)
 
+**Artifacts:**
+
+- agents/shared/findings.md → "[R-005] Finding: L3 Claim Extraction Schema and Prompt for AI/ML"
+- CHANGELOG.md → 2026-04-12 · Session 6
+
 **Closed:** 2026-04-12
 
 ---
@@ -238,6 +244,7 @@ This tests whether the extraction is consistent enough for L3 to work.
 **Type:** research
 **Priority:** medium
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 OpenAlex has 0 citation edges for arXiv preprints (referenced_works empty for
@@ -270,6 +277,11 @@ in our 500-paper corpus (i.e. how many intra-corpus citation edges we'd get).
 - Rate limits and download strategy for 500 papers
 
 **Blockers:** Semantic Scholar API key (external — still pending approval)
+
+**Artifacts:**
+
+- agents/shared/findings.md → "[R-006] Finding: Semantic Scholar API for Citation Edges"
+- CHANGELOG.md → 2026-04-12 · Session 6
 
 **Closed:** 2026-04-12
 
@@ -352,6 +364,7 @@ covariate shift in deep networks")? Test on 5 sample claims from the DB.
 **Type:** research
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Even with a better embedding model, hybrid retrieval (text search + semantic
@@ -388,5 +401,10 @@ best hybrid strategy for our SQLite-based system.
 - Recommendation for E-024 implementation
 
 **Blockers:** none (can use existing DB)
+
+**Artifacts:**
+
+- agents/shared/findings.md → "[R-008] Finding: Hybrid BM25/FTS5 + Embedding Retrieval Strategy"
+- CHANGELOG.md → 2026-04-12 · Session 6
 
 **Closed:** 2026-04-12

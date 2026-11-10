@@ -710,75 +710,17 @@ subsequent 4-7s warm). For 50 papers: ~5 min; 500 papers: ~52 min.
 **Closed:** 2026-03-29
 
 ---
-
-### E-016 · Basic query interface (L1 + L2)
-
-**Status:** closed
-**Type:** implement
-**Priority:** medium
-**Created:** 2026-04-12
-
-**Description:**
-Implement `src/knowledge/query.py` — a simple query interface over L1 + L2.
-No LLM at query time. Pure semantic search + DuckDB lookup.
-
-```python
-def search_papers(
-    query: str,
-    db_path: Path,
-    embeddings_path: Path,
-    *,
-    top_k: int = 10,
-    model_name: str = "allenai/specter2_base",
-) -> list[dict]:
-    """
-    1. Embed the query using SPECTER2
-    2. Cosine similarity against embeddings_l1.npy
-    3. Return top_k papers with their L2 summaries from DuckDB
-    """
-```
-
-Also implement a CLI entry point:
-```bash
-python -m src.knowledge.query "batch normalization in transformers"
-```
-
-Output format:
-```
-[1] arxiv:2208.02389 — Risk-Aware Linear Bandits...
-    Contribution: ...
-    Method: ...
-    Key findings: ...
-    Domain: [optimization, bandits]
-
-[2] arxiv:2305.13936 — ...
-```
-
-**Validation:** run 5 queries, verify results are topically relevant.
-Example queries to test:
-- "attention mechanism improvements"
-- "contrastive learning self-supervised"
-- "batch normalization regularization"
-- "graph neural network over-smoothing"
-- "diffusion model image generation"
-
-**Blockers:** E-014, E-015
-
-**Closed:** 2026-04-12
-
----
-
 ### E-016 · Query interface (L1 + L2 semantic search)
 
 **Status:** closed
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
-**Closed:** 2026-03-29
+**Updated:** 2026-11-10
 
 **Description:**
-Implement `src/knowledge/query.py` — semantic search over L1 chunks + L2 summaries.
-No LLM at query time. Pure cosine similarity + DuckDB lookup.
+Implement `src/knowledge/query.py` — semantic search over L1 chunks + L2
+summaries. No LLM at query time. Pure cosine similarity + DuckDB lookup.
 
 ```python
 def search_papers(
@@ -824,9 +766,37 @@ Validation: run 5 test queries, verify results are topically relevant:
 - "graph neural network over-smoothing"
 - "diffusion model image generation"
 
-**Blockers:** E-015
+**Blockers:** E-014, E-015
 
-**Closed:** —
+**Record note (2026-11-10):** this id carried two ticket entries, "Basic query
+interface (L1 + L2)" and "Query interface (L1 + L2 semantic search)". They were
+one piece of work, not two: the same module, the same function signature and the
+same five validation queries. The ticket was respecified after `E-012` ruled
+FAISS out and the second version was appended instead of replacing the first, so
+both sat in the file marked closed. Everything outside this file had already
+settled on one `E-016` — one CHANGELOG line, one entry in the plan's completed
+list, one `decisions.md` entry — so the duplicate was local to the ticket record
+and is merged here into the later specification, which is the one the shipped
+module matches. On dates: the earlier entry had `Created` and `Closed`
+both 2026-04-12, the later one additionally carried `Closed: 2026-03-29`. 2026-03-29
+is a real working day on this project and is the date on this ticket's
+`decisions.md` entry, but it precedes the `Created` of both entries and the module
+did not land until 2026-04-12, so it is recorded below as the date of the design
+rather than of the close.
+
+**Artifacts:**
+
+- src/knowledge/query.py
+- agents/shared/decisions.md → "[E-016] Decision: query.py — numpy cosine search
+  and model caching" (dated 2026-03-29 — the design, ahead of the code)
+- Landed in commit `081af233e`, 2026-04-12, "Knowledge Infrastructure Phase 1:
+  SQLite schema, L1/L2 pipeline, query interface"
+- CHANGELOG.md → 2026-04-12 · Session 6
+
+The hybrid FTS5 re-ranking now in that same module is `E-024`'s, not this
+ticket's, and the adhoc_query re-embedding behind its scores is `E-025`'s.
+
+**Closed:** 2026-04-12
 
 ---
 
@@ -836,6 +806,7 @@ Validation: run 5 test queries, verify results are topically relevant:
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Before bulk extraction (E-018), filter the 10K paper corpus to a higher-quality
@@ -872,6 +843,12 @@ Validate: from 10K papers, filtered set should have:
 
 **Blockers:** none
 
+**Artifacts:**
+
+- src/knowledge/filter_corpus.py
+- Landed in commit `081af233e`, 2026-04-12
+- CHANGELOG.md → 2026-04-12 · Session 6
+
 **Closed:** 2026-04-12
 
 ---
@@ -882,6 +859,7 @@ Validate: from 10K papers, filtered set should have:
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Run L2 extraction on the filtered 500-paper corpus. This is the "build the corpus"
@@ -903,6 +881,12 @@ Output DB: `data/knowledge/knowledge.db`
 
 **Blockers:** E-015, E-017
 
+**Artifacts:**
+
+- data/knowledge/knowledge.db — 500 papers with L2 summaries, committed
+- Run via src/knowledge/extract_l2.py (E-015)
+- CHANGELOG.md → 2026-04-12 · Session 6 — "Bulk L2 extraction — 500 papers"
+
 **Closed:** 2026-04-12
 
 ---
@@ -913,6 +897,7 @@ Output DB: `data/knowledge/knowledge.db`
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Prove Phase 1 works: fire 10 real queries against the populated DB and verify
@@ -942,6 +927,11 @@ Phase 1 is DONE when: ≥ 8/10 queries return at least one topically relevant pa
 in the top 3 results (manual review required — print results for human judgment).
 
 **Blockers:** E-016, E-018
+
+**Artifacts:**
+
+- CHANGELOG.md → 2026-04-12 · Session 6 — "Phase 1 end-to-end validation PASSES — 8/10 queries topically relevant", against this ticket's own threshold of 8/10
+- plan.md → Completed This Session (2026-04-12)
 
 **Closed:** 2026-04-12
 
@@ -1101,11 +1091,11 @@ Verify edge_type assignments are sensible.
 
 ### E-022 · L2-derived relational edges (shares_method, co_domain)
 
-**Status:** open
+**Status:** closed
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
-**Updated:** 2026-03-29
+**Updated:** 2026-11-10
 
 **Description:**
 Mine `related_methods` and `domain_tags` from L2 summaries to create two new
@@ -1154,6 +1144,15 @@ These edges go into the existing `claim_edges` table using paper-level IDs
 
 **Blockers:** E-018 (need 500 L2 summaries)
 
+**Record note (2026-11-10):** the status read `open` while the entry carried a close date and its own measured findings — 296 papers with related_methods, 353 with domain_tags, 321 edges. The work is recorded complete in the CHANGELOG, the plan and the commit that landed `derive_edges.py`, so the status was the stale field and is corrected here. `Closed` is left at 2026-03-29, which is a real working day on this project, rather than moved to the commit date.
+
+**Artifacts:**
+
+- src/knowledge/derive_edges.py
+- 321 edges (shares_method + co_domain) in data/knowledge/knowledge.db
+- Landed in commit `d77881395`, 2026-04-12
+- CHANGELOG.md → 2026-04-12 · Session 6
+
 **Closed:** 2026-03-29
 
 **Key findings (296 papers with related_methods, 353 with domain_tags):**
@@ -1168,10 +1167,11 @@ These edges go into the existing `claim_edges` table using paper-level IDs
 
 ### E-023 · Semantic Scholar citation edges once API key arrives
 
-**Status:** cancelled
+**Status:** closed — superseded by E-027
 **Type:** implement
 **Priority:** medium
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Once the Semantic Scholar API key is approved (still pending) and R-006 confirms
@@ -1204,6 +1204,13 @@ Semantic Scholar extracts references from PDF text, so preprints WILL have data.
 Expected: significantly more citation edges than the 0 from OpenAlex.
 
 **Blockers:** R-006 (coverage research), Semantic Scholar API key (external)
+
+**Record note (2026-11-10):** the status read `cancelled`, which the lifecycle does not define. The API key it was blocked on never arrived and the work was rehoused in E-027 rather than abandoned, so it closes as superseded. Not `parked`: parking means the work is still waiting to be resumed under this id, and it is not.
+
+**Artifacts:**
+
+- No code of its own. The work moved to E-027, which fetches the same edges unauthenticated at 1 RPS and needs no key.
+- agents/shared/findings.md → "[R-006] Finding: Semantic Scholar API for Citation Edges", the coverage research this ticket was waiting on
 
 **Closed:** 2026-04-12
 
@@ -1285,6 +1292,7 @@ Can implement with default weights before R-008 closes.
 **Type:** implement
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Replace `data/pipeline/embeddings_10k.npy` with embeddings from the model
@@ -1304,7 +1312,15 @@ correctly.
 
 **Blockers:** R-007 (must know which model to use)
 
-**Closed:** —
+**Record note (2026-11-10):** the status read `closed` with an empty `Closed`. The corpus re-embedding shipped; the "Also embed L3 claims" half of the description did not, and `data/knowledge/embeddings_claims.npy` does not exist. That half is E-026's scope and E-026 is open, so this closes on the corpus and does not claim the claims index.
+
+**Artifacts:**
+
+- data/pipeline/embeddings_10k.npy — re-embedded with the SPECTER2 adhoc_query adapter; the proximity-adapter vectors it replaced are kept beside it as data/pipeline/embeddings_10k_proximity.npy
+- Landed in commit `7274e9569`, 2026-04-12, "E-025: Re-embed with SPECTER2 adhoc_query adapter; Phase 1 PASSES"
+- CHANGELOG.md → 2026-04-12 · Session 6 — score std 0.03 against 0.01 before
+
+**Closed:** 2026-04-12
 
 ---
 

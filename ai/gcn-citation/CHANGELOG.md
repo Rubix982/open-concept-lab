@@ -4,6 +4,27 @@ _Append-only. One entry per session. Written by orchestrator at session end._
 
 ---
 
+## 2026-11-10 · Session 7 — record repair only, no new work
+
+- [O-006] Reconciled the ticket record against itself — fourteen faults reported
+  by `ai/tools/check_record.py`, none now. `E-016` named two separate ticket
+  entries, which made every reference to it ambiguous: the CHANGELOG line, the
+  plan's completed list, the `decisions.md` entry and `E-019`'s blocker all say
+  `E-016`. They were one piece of work respecified after `E-012` ruled FAISS out,
+  appended instead of replacing, and are merged into the later specification —
+  the one `src/knowledge/query.py` actually matches.
+- The other thirteen were field-level: seven tickets closed with no artifacts
+  recorded, two statuses contradicting a close date, one status (`cancelled`)
+  the lifecycle does not define, one closed with an empty `Closed`.
+- Two entries lost a claim in the process. `E-025` closes on the corpus
+  re-embedding and not on the claims index its description also asks for, since
+  `data/knowledge/embeddings_claims.npy` does not exist and that half is
+  `E-026`'s scope. `E-023` closes as superseded by `E-027` rather than complete:
+  the API key it waited on never arrived and no code of its own was written.
+- Nothing was built or measured this session, and no result changed.
+
+---
+
 ## 2026-04-12 · Session 6
 
 ### Knowledge Infrastructure Phase 1 — COMPLETE
