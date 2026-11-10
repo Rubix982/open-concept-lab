@@ -925,7 +925,7 @@ A week of work had been priced on the assumption that RippleEdits' prompts would
 
 ### R-020 · Read Ravfogel §5.3 well enough to say whether we can re-run it
 
-**Status:** open
+**Status:** closed
 **Type:** research
 **Priority:** medium
 **Created:** 2026-11-10
@@ -962,6 +962,18 @@ next card is not re-reading the paper to find them.
 
 **RCA:** —
 
-**Artifacts:** —
+**Artifacts:**
 
-**Closed:** —
+- agents/shared/findings.md → "[R-020] Finding: Ravfogel §5.3 is reproducible, and
+  does not depend on their construction" — all five questions answered, each
+  attributed to the section it came from
+- Read from the HTML full text of arXiv 2605.12426v1 (§5.3 and Appendix E), not
+  from the abstract
+
+**Answer in one line:** yes, it is reproducible, and the blocking problem is not
+the models — the probe is read-only, so the two small models run locally, and
+nothing in §5.3 presupposes the single-layer construction. What it costs instead
+is that the dataset is not released, only its generation prompt, so a
+reproduction regenerates the set and cannot be compared entity-for-entity.
+
+**Closed:** 2026-11-10

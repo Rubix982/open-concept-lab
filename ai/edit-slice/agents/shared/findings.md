@@ -2296,3 +2296,61 @@ thread's own content. A thread I call superseded may contain something its summa
 show; the dispositions are proposals for that reason.
 
 **Artifacts:** none — ledger analysis.
+
+---
+
+## [R-020] Finding: Ravfogel §5.3 is reproducible, and does not depend on their construction
+
+_Date: 2026-11-10_
+
+Read from the HTML full text of arXiv 2605.12426v1 — §5.3 and Appendix E — rather than from the abstract, which is the discipline [R-012] paid for on this same paper.
+
+**The card's question is answered: yes, and the blocking problem is not the models.** §5.3 is a standalone probing experiment on pretrained models. Nothing in it presupposes the single-layer construction; Appendix E.4 only says a small-model result is *"consistent with our theoretical construction"*, which is a claim about agreement, not a dependency. So the one thing that would have killed the card — a probe that only makes sense inside their setting — is not the case.
+
+### 1. The quantity (§5.3, E.2)
+
+One probe per `(category, relation)` pair, not one per model. `LinearProbe(d_in → rank → d_out)` with biases on both factors, **rank k = 512** for every model, `d_out` the model's hidden width. The objective is a cosine loss against the answer's unembedding row:
+
+> ℒ = 1 − cos(W_r s_ℓ + b_r, D[t_o])
+
+where `s_ℓ` is the layer-ℓ subject hidden state and `D[t_o]` the LM-head row of the gold answer's **first token**. AdamW, lr 1e-3, weight decay 1e-3, ≤200 epochs, patience-5 early stopping. Split is **subject-disjoint 80/20 within each (category, relation)** — no subject in both train and val. Subject aggregation defaults to `last`, with `mean` as a robustness check.
+
+Probes are fit **independently per layer**, and the headline numbers are the best per `(model, category, layer)`. E.2 does not say whether that best-layer selection uses a held-out split, so as written the reported figure is a maximum over layers chosen on the same data it is reported from. That is the first thing to decide when re-running, and it is a decision their text does not make for us.
+
+### 2. The facts (§5.3, E.1)
+
+**Not released.** There is no statement anywhere about releasing data or code. What E.1 does give is the **generation prompt, verbatim**: subjects and attributes were produced by prompting `claude-sonnet-4-6` with a confidence-or-skip filter — the paper's own words are a *"Claude-assisted pipeline"*.
+
+Table 2 (E.1): **4,610 entities across 42 relations in five categories** — buildings, companies, films, people, programming languages — rendered through five templates into **about 184k sentences**. No total fact count is stated directly.
+
+So a reproduction **regenerates** the set from their prompt rather than downloading it, and cannot be the same 4,610 entities. Any difference in the numbers is then confounded with the data, and a reproduction must say so rather than report a delta as if the set were fixed.
+
+Two discrepancies a reproducer hits immediately, recorded so the next card does not rediscover them: §5.3 names a **"species"** category that does not appear in Table 2, and Table 3 is labelled **subject-mean** while E.2 gives `last` as the default aggregation.
+
+### 3. The models (§5.3, Table 3)
+
+Qwen2.5-0.5B, Qwen3-14B, Llama-3.1-8B, Llama-3.2-1B, Phi-4. No precision is stated in what was read.
+
+NDIF's hosted-model list could not be reached from here (`nnsight.net/status` renders unloaded template placeholders; `ndif.dev` returned no response), so which of the five it serves is **unverified** and must be checked from a session with `NNSIGHT_API_KEY` before it is assumed either way.
+
+It is also less decisive than expected. **The probe is read-only** — forward passes for hidden states plus the LM-head matrix, no edit, no backward — so the two small models, **Qwen2.5-0.5B and Llama-3.2-1B**, run locally on the M2 and already cover two of the five rows, including the one whose best layer is 12/16. Hidden states cache once per `(model, layer)`, which is what makes 184k sentences tractable at all. The three large models are where NDIF or quantisation is needed, and they are not needed to begin.
+
+### 4. What counts as the structure being present (§5.3, Table 3 caption)
+
+In their terms, not ours: **best-layer MRR materially above layer-0 MRR**, with the best layer in the latter half of the stack. Their numbers, averaged over models: people **0.69**, companies **0.58**, buildings **0.56**, programming languages **0.55**, films **0.44**; layer-0 for people **0.44**. Random-vocabulary chance is about **1e-5**. Per model, for the people category:
+
+| model | layer-0 MRR | best-layer MRR | best-layer Hits@1 | best layer / depth |
+| --- | ---: | ---: | ---: | ---: |
+| Qwen2.5-0.5B | 0.437 | 0.644 | 0.578 | 24/24 |
+| Qwen3-14B | 0.465 | 0.707 | 0.659 | 36/40 |
+| Llama-3.1-8B | 0.436 | 0.701 | 0.651 | 28/32 |
+| Llama-3.2-1B | 0.415 | 0.672 | 0.615 | 12/16 |
+| Phi-4 | 0.437 | 0.707 | 0.656 | 12/40 |
+
+**MRR is reported throughout and never defined** in §5.3 or Appendix E. E.2 defines only that best-layer results report Hits@1. A reproduction has to choose a definition and say which, and the choice is not recoverable from the paper.
+
+### 5. What this does and does not license
+
+It licenses running the probe. It does not license calling the result a test of the tension in [T-086]. Their §5.3 asks whether the answer's direction concentrates in the subject's hidden state; [E-033] asks what an edit damages. **Reproducing §5.3 establishes that the representational structure exists, not that a rank-one edit acts on it** — which is the second of the three explanations and remains untouched. Keep those apart in anything written, or this reproduction will be read as settling more than it does.
+
+Confidence: high on 1, 2, 4 and 5, all quoted from the paper. Medium on 3 — NDIF coverage is unverified and the local-feasibility claim is an estimate, not a measured runtime.

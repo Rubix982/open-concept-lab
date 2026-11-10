@@ -156,5 +156,26 @@ one, and it is written here rather than dressed up. What it does buy is that the
 central result stops being one we cannot explain when asked — which is the first
 question any reader of §2 will have.
 
-**Status:** open. Blocked on nothing. Ticket [R-020] carries the reading.
+**Status:** closed, 2026-11-10 — branch 1. [R-020].
+
+**It is reproducible, and the reason is not the one expected.** §5.3 is a
+standalone probing experiment: nothing in it presupposes the single-layer
+construction, and the probe is read-only — forward passes for hidden states plus
+the LM-head matrix, no edit and no backward — so Qwen2.5-0.5B and Llama-3.2-1B
+run locally and already cover two of the five rows. NDIF is needed for the three
+large models and is not needed to begin, which is the opposite of what field 2
+assumed when it put "whether NDIF serves those models" at the centre.
+
+**What it costs instead, and this is the real finding.** The dataset is not
+released. Only the generation prompt is, so a reproduction regenerates 4,610
+entities from a Claude prompt and cannot be the same set — every difference in
+the numbers is then confounded with the data, and a reproduction has to say so
+instead of reporting a delta as though the set were fixed. Two further gaps the
+paper leaves to whoever re-runs it: MRR is reported throughout and never defined,
+and best-layer selection is not stated to use a held-out split.
+
+**What it does not license**, kept here because it is the likeliest thing to be
+over-read later: reproducing §5.3 establishes that the representational structure
+exists, not that a rank-one edit acts on it. That is the second of [T-086]'s
+three explanations and this touches none of it.
 

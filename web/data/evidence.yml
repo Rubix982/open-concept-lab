@@ -715,6 +715,14 @@ f-R-023:
   gist: "Unratified plan.md records eight parked threads and a single blocker: \"all eight serve the orphan arc, which is blocked on one thing — nobody has been…"
   surface: finding
 
+f-R-020-2:
+  id: "R-020"
+  kind: "Finding"
+  title: "Ravfogel §5.3 is reproducible, and does not depend on their construction"
+  date: "2026-11-10"
+  gist: "Read from the HTML full text of arXiv 2605.12426v1 — §5.3 and Appendix E — rather than from the abstract, which is the discipline [R-012] paid for on this…"
+  surface: finding
+
 t-T-001:
   id: "T-001"
   kind: "Thread"
@@ -1477,5 +1485,14 @@ t-T-107:
   title: "Is the edit-friendly fact the one with few dependents, or the one with a rare subject string?"
   date: ""
   gist: "Saif's reading of the Vlaminck arc: edit facts that carry few prior inferences -- physics, chemistry -- because a biographical…"
+  status: "open"
+  surface: thread
+
+t-T-100:
+  id: "T-100"
+  kind: "Thread"
+  title: "Does the typed-attribute extension discriminate the three explanations?"
+  date: ""
+  gist: "If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes --…"
   status: "open"
   surface: thread

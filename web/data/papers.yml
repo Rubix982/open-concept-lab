@@ -437,7 +437,7 @@ ravfogel2026geometric:
   area: Where facts are stored
   verified: true
   projects: [edit-slice]
-  gives_me: "A theoretical account our measurements contradict, which is more useful than the candidate explanation we first took it for. Its own limitations put TYPED ATTRIBUTES outside the setting, and its per-relation block structure predicts perturbation local to the edited relation — the opposite of E-033. See [R-012]."
+  gives_me: "A theoretical account our measurements contradict, which is more useful than the candidate explanation we first took it for. Its own limitations put TYPED ATTRIBUTES outside the setting, and its per-relation block structure predicts perturbation local to the edited relation — the opposite of E-033. See [R-012]. Its §5.3 probing is reproducible and read-only, so it needs neither the construction nor a large model — but the dataset is not released, only its generation prompt [R-020]."
 
 he2026romelimits:
   title: On the Limitations of Rank-One Model Editing in Answering Multi-hop Questions

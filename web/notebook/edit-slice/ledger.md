@@ -4,7 +4,7 @@ sidebar_label: Evidence
 sidebar_position: 3
 description: Every decision, finding and thread in the edit-slice record, generated from the repository so it cannot drift from it.
 toc_max_heading_level: 2
-source_digest: 9d6e7119dbfbad70
+source_digest: 9cc6f1c757e10c6e
 ---
 
 # Evidence ledger
@@ -13,7 +13,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**56 decisions · 33 findings · 85 threads (1 active, 66 answered, 3 dropped, 6 open, 9 parked)**
+**56 decisions · 34 findings · 86 threads (1 active, 66 answered, 3 dropped, 7 open, 9 parked)**
 
 ## Decisions and results
 
@@ -380,6 +380,10 @@ _2026-10-16_ — Unratified earlier cycles of this same loop. [R-020] decomposed
 
 _2026-10-16_ — Unratified plan.md records eight parked threads and a single blocker: "all eight serve the orphan arc, which is blocked on one thing — nobody has been…
 
+### R-020 · Ravfogel §5.3 is reproducible, and does not depend on their construction {#f-R-020-2}
+
+_2026-11-10_ — Read from the HTML full text of arXiv 2605.12426v1 — §5.3 and Appendix E — rather than from the abstract, which is the discipline [R-012] paid for on this…
+
 
 _Confidence levels and full evidence are in the repository entries; these are one-line pointers, not summaries._
 
@@ -387,7 +391,7 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (6)
+### Open (7)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
@@ -397,6 +401,7 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | <Anchor id="t-T-103" />`T-103` | **Does probe-form variance track the coefficient's spread across forms?** — [R-022] found the within-subject share of propagation variance is 13% at layer 5 and 52% at layer 20 on the same probe family —… | T-101 | open |
 | <Anchor id="t-T-105" />`T-105` | **How much of the attribute drift is the essence term already absorbing?** — computev carries a KL anchor on "&#123;subject&#125; is a" with klfactor=0.0625 (EasyEdit's value) whose explicit job is to stop… | T-087 | open |
 | <Anchor id="t-T-107" />`T-107` | **Is the edit-friendly fact the one with few dependents, or the one with a rare subject string?** — Saif's reading of the Vlaminck arc: edit facts that carry few prior inferences -- physics, chemistry -- because a biographical… | T-087 | open |
+| <Anchor id="t-T-100" />`T-100` | **Does the typed-attribute extension discriminate the three explanations?** — If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes --… | T-086 | open |
 
 ### Active (1)
 
