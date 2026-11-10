@@ -226,6 +226,28 @@ export type SomedayItem = {
  * project's own cards, threads and tickets. Counts only: a number a reader can
  * check against the Threads view beside it, never a judgement about progress.
  */
+/**
+ * `data/venues.yml` — where work on model internals is judged.
+ *
+ * Hand-kept, and `verified` carries the same meaning it does in papers.yml: the
+ * details were read off the venue's own page, not off a search result. An entry
+ * with `verified: false` is a lead, not a fact.
+ */
+export type Venue = {
+  id: string;
+  name: string;
+  series: string;
+  kind: "workshop" | "competition" | "funding";
+  when: string;
+  where?: string;
+  archival: string;
+  url?: string;
+  paper?: string;
+  verified: boolean;
+  asks: string;
+  note?: string;
+};
+
 export type ProjectRecord = {
   digest: string;
   cards_closed: number;
@@ -253,6 +275,7 @@ export type LabData = {
   evidence: EvidenceRecord[];
   /** Keyed by project name; absent for projects with no generated record. */
   record: Record<string, ProjectRecord>;
+  venues: Venue[];
   built: BuiltPage[];
   projects: Project[];
   practice?: Practice;
@@ -815,6 +838,15 @@ export default async function labData(
           path.join(dataDir, "record.yml"),
         ).catch(() => ({}) as Record<string, ProjectRecord>)) ?? {};
 
+      const rawVenues =
+        (await readYaml<Record<string, Omit<Venue, "id">>>(
+          path.join(dataDir, "venues.yml"),
+        ).catch(() => ({}) as Record<string, Omit<Venue, "id">>)) ?? {};
+      const venues: Venue[] = Object.entries(rawVenues).map(([id, v]) => ({
+        ...v,
+        id,
+      }));
+
       const papers: Paper[] = Object.entries(rawPapers)
         .map(([id, paper]) => ({
           ...paper,
@@ -900,6 +932,7 @@ export default async function labData(
         papers,
         evidence,
         record,
+        venues,
         built,
         projects: await loadProjects(repoRoot, rawProjects),
       };

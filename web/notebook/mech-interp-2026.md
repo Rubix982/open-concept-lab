@@ -14,52 +14,25 @@ description: Where work on model internals was judged in 2026, what each venue a
 This is not a reading list. [Reading](/reading) is that, and it answers a different question — what I go back to, and for what. This page answers where a finished result goes to be read by people who can say it is wrong, which is a thing the reading list cannot tell me.
 
 <Notice>
-  <strong>Every row carries its own source, and unverified rows say so.</strong>
+  <strong>Every card carries its own source, and unverified cards say so.</strong>
   A description read off a search result is not a verified fact even when the
   name is right — that is a mistake this project has made twice and corrected in
-  writing. A row marked unverified must not be cited or planned around until
-  somebody has opened the primary page.
+  writing. A card marked <em>unchecked</em> must not be cited or planned around
+  until somebody has opened the primary page. One of the seven is unchecked: a
+  funding programme that exists only on grant aggregators.
 </Notice>
 
 ## Where it gets judged
 
-Two things worth keeping in view before the list: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
+Two things worth keeping in view before the cards: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
 
-**[Mechanistic Interpretability Workshop](https://mechinterpworkshop.com/)** · ICML · 10 July, Seoul, COEX Hall C · non-archival
-
-Work at any stage. Accepted ICML papers welcome, and papers under review at COLM or NeurIPS welcome; anything already accepted at another archival venue is not. Papers were due 8 May, and 23 of the accepted posters were spotlights.
-
-**[BlackboxNLP](https://blackboxnlp.github.io/2026/)** · EMNLP · 9th edition, 29 October, Budapest · archival or not, author's choice
-
-Analysing and interpreting neural networks for NLP. It runs a separate **Reproducibility Challenge** track for reproducing established interpretability results — 6 pages, double-blind.
-
-**[NEMI](https://nemiconf.github.io/summer26/)** · 3rd edition, 14 August, Boston University · non-archival
-
-Regional by design: academic and industry work from New England and nearby. Its own topic list names neural circuits, probe-based analysis, feature attribution, model simplification, actionable interpretability, and interpretability for science.
-
-**[Interpretability as a Science](https://interpscience.github.io/)** · NeurIPS · 11 December, Sydney · non-archival
-
-Rigorous foundations for understanding LLMs.
-
-**[Interpretability for Discovery](https://interpretability4discovery.github.io/)** · NeurIPS · 12 December, Atlanta · non-archival
-
-Using interpretability to uncover new scientific knowledge.
-
-**[AIMO Interpretability Challenge](https://aimo-interp.github.io/)** · NeurIPS competition track · submissions closed 1 November, competition workshop 12 December, Paris · [arXiv 2607.13899](https://arxiv.org/abs/2607.13899)
-
-Judge from a model's internals whether its correct answer to an olympiad problem survives perturbation, or rests on a spurious pattern. Ranked on how accurately each problem–model pair is classified as robust or spurious. $12,500 prize pool.
+<Venues />
 
 NeurIPS 2026 runs across three sites — Sydney from 6 December, with Atlanta and Paris from 9 December — so its two interpretability workshops and its interpretability competition are on three different continents. The [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls its list preliminary and warns against the informal lists circulating elsewhere, which is worth repeating here: this page is one of those lists.
 
-## Unverified, and recorded as such
-
-**AI Forge — a DARPA/NSF joint program said to fund university work on interpretability, control and adversarial robustness, announced 1 June 2026.** Every description of this I could find is on a grant aggregator. No NSF or DARPA page confirms it, the aggregators disagree with each other on eligibility — one says universities only, another says academia, industry and government — and the figures quoted for a Project Venture ($750k–$3M, one-year terms) are unconfirmed. `TODO(cite)`.
-
-It stays on the page because deleting it would lose the lead, and it stays marked because a funding programme is exactly the kind of claim that gets repeated into being true.
-
 ## What these venues asked for that nothing here answers
 
-The list above is only useful read against the work, so: five of the six venues name something this notebook has no evidence for.
+The cards above are only useful read against the work, so: five of the six venues name something this notebook has no evidence for.
 
 **Features and circuits.** NEMI's topic list opens with neural circuits and feature attribution. Nothing here decomposes a representation into features; the work measures what a weight edit reaches, which is a different object. This is the largest gap and the most expensive to close, and it is not the next thing.
 

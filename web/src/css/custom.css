@@ -2098,6 +2098,109 @@ a.ocl-desk__day:focus-visible {
   }
 }
 
+/* ---- venues, as cards with a filter above them ---- */
+
+.ocl-venues {
+  margin: 1.6rem 0 2.2rem;
+}
+
+.ocl-venues .ocl-filter__areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.ocl-venues__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.ocl-venue {
+  padding: 0.95rem 1.1rem 0.85rem;
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+}
+
+.ocl-venue__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.markdown .ocl-venue__name {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ocl-venue__name a {
+  color: var(--ocl-ink);
+  text-decoration: none;
+}
+
+.ocl-venue__name a:hover {
+  color: var(--ocl-link);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 0.18em;
+}
+
+/* The series is the thing a reader scans for — which conference this hangs off
+   — so it sits at the right of the name rather than inside the date line. */
+.ocl-venue__series {
+  flex: none;
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.markdown .ocl-venue__when {
+  margin: 0.2rem 0 0.55rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.79rem;
+  color: var(--ocl-ink-muted);
+}
+
+.markdown .ocl-venue__asks {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.markdown .ocl-venue__note {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-venue__foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.8rem;
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-venue__paper {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+}
+
+/* The unchecked mark is the loudest thing on its card on purpose: it is the one
+   claim on the page a reader must not carry away. */
+.ocl-venue__foot .ocl-check {
+  margin-left: auto;
+}
+
 /* ---- the notebook index: the projects, and the pages under each ---- */
 
 .ocl-nbindex__row {

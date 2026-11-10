@@ -10,6 +10,7 @@ import Embed from "@site/src/components/Embed";
 import Aside from "@site/src/components/Aside";
 import Projects from "@site/src/components/Projects";
 import NotebookIndex from "@site/src/components/NotebookIndex";
+import Venues from "@site/src/components/Venues";
 import References from "@site/src/components/References";
 import Status, { Notice } from "@site/src/components/Status";
 import Claude from "@site/src/components/Claude";
@@ -40,6 +41,7 @@ export default {
   Aside,
   Projects,
   NotebookIndex,
+  Venues,
   References,
   Status,
   Notice,

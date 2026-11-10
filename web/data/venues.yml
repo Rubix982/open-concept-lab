@@ -1,0 +1,114 @@
+# Where work on model internals was judged. One entry per venue; the key is its
+# short name.
+#
+#   kind:      workshop | competition | funding
+#   archival:  no | yes | choice        (choice = the author picks, per paper)
+#   verified:  true when the date, place and terms were read off the venue's own
+#              page. false means every description of it came from somewhere
+#              secondhand, and it must not be cited or planned around.
+#   asks:      what the venue says it wants, in its own terms
+#   note:      anything a reader needs that is not the ask — deadlines, prizes,
+#              or, for an unverified entry, exactly what could not be confirmed
+
+mechinterp-icml-2026:
+  name: Mechanistic Interpretability Workshop
+  series: ICML
+  kind: workshop
+  when: 10 July 2026
+  where: Seoul, COEX Hall C
+  archival: "no"
+  url: https://mechinterpworkshop.com/
+  verified: true
+  asks: >
+    Work at any stage. Accepted ICML papers are welcome, and so are papers under
+    review at COLM or NeurIPS; anything already accepted at another archival
+    venue is not.
+  note: Papers were due 8 May. 23 of the accepted posters were spotlights.
+
+blackboxnlp-2026:
+  name: BlackboxNLP
+  series: EMNLP
+  kind: workshop
+  when: 29 October 2026
+  where: Budapest
+  archival: choice
+  url: https://blackboxnlp.github.io/2026/
+  verified: true
+  asks: >
+    Analysing and interpreting neural networks for NLP. It runs a separate
+    Reproducibility Challenge track for reproducing established interpretability
+    results — six pages, double-blind.
+  note: 9th edition. The one venue here that rewards reproducing somebody else's result.
+
+nemi-2026:
+  name: NEMI
+  series: New England
+  kind: workshop
+  when: 14 August 2026
+  where: Boston University
+  archival: "no"
+  url: https://nemiconf.github.io/summer26/
+  verified: true
+  asks: >
+    Regional by design: academic and industry work from New England and nearby.
+    Its own topic list names neural circuits, probe-based analysis, feature
+    attribution, model simplification, actionable interpretability, and
+    interpretability for science.
+  note: 3rd edition.
+
+interpscience-2026:
+  name: Interpretability as a Science
+  series: NeurIPS
+  kind: workshop
+  when: 11 December 2026
+  where: Sydney
+  archival: "no"
+  url: https://interpscience.github.io/
+  verified: true
+  asks: Rigorous foundations for understanding LLMs.
+
+interp4discovery-2026:
+  name: Interpretability for Discovery
+  series: NeurIPS
+  kind: workshop
+  when: 12 December 2026
+  where: Atlanta
+  archival: "no"
+  url: https://interpretability4discovery.github.io/
+  verified: true
+  asks: Using interpretability to uncover new scientific knowledge.
+
+aimo-interp-2026:
+  name: AIMO Interpretability Challenge
+  series: NeurIPS
+  kind: competition
+  when: Submissions closed 1 November; workshop 12 December 2026
+  where: Paris
+  archival: "no"
+  url: https://aimo-interp.github.io/
+  paper: https://arxiv.org/abs/2607.13899
+  verified: true
+  asks: >
+    Judge from a model's internals whether its correct answer to an olympiad
+    problem survives perturbation, or rests on a spurious pattern. Ranked on how
+    accurately each problem–model pair is classified as robust or spurious.
+  note: $12,500 prize pool. The only competition this field ran in 2026.
+
+ai-forge-2026:
+  name: AI Forge
+  series: DARPA / NSF
+  kind: funding
+  when: Said to have been announced 1 June 2026
+  where: United States, universities
+  archival: "no"
+  verified: false
+  asks: >
+    Reported to fund university work on interpretability, control and
+    adversarial robustness.
+  note: >
+    Every description of this is on a grant aggregator. No NSF or DARPA page
+    confirms it, the aggregators disagree on eligibility — one says universities
+    only, another says academia, industry and government — and the figures quoted
+    for a Project Venture ($750k–$3M, one-year terms) are unconfirmed. Kept
+    because deleting it would lose the lead; marked because a funding programme
+    is exactly the kind of claim that gets repeated into being true.
