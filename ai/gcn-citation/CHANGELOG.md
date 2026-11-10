@@ -21,6 +21,10 @@ _Append-only. One entry per session. Written by orchestrator at session end._
   `data/knowledge/embeddings_claims.npy` does not exist and that half is
   `E-026`'s scope. `E-023` closes as superseded by `E-027` rather than complete:
   the API key it waited on never arrived and no code of its own was written.
+- [O-005] Closed — Phase 1 coordination, open for seven months after every
+  ticket under it closed and the phase was recorded complete. Closed against
+  E-019, which checked the done-when rather than assuming it. Its description
+  names DuckDB and the phase shipped on SQLite; left as written, with a note.
 - Nothing was built or measured this session, and no result changed.
 
 ---
