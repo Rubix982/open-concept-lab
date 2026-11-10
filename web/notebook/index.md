@@ -5,6 +5,9 @@ sidebar_position: 1
 sidebar_label: Notebook
 description: Living pages for each project — revised in place rather than dated.
 hide_table_of_contents: true
+# The garden header carries the title; without this Docusaurus adds a second
+# <h1> of its own, because the page opens on a component rather than a heading.
+hide_title: true
 ---
 
 <NotebookIndex />
@@ -16,16 +19,3 @@ hide_table_of_contents: true
   from that project's own `plan.md`, so they are never separately out of date —
   hover a phase for the full note.
 </Notice>
-
-## The field these sit in
-
-[Mech interp in 2026](/notebook/mech-interp-2026) records where work on model
-internals was judged this year, what each venue asked for, and which of those
-asks nothing here answers. It is not a reading list — [reading](/reading) is
-that.
-
-## Conventions
-
-[Writing here](/notebook/writing-here) documents the pieces this site gives you —
-numbered figures, margin notes, claim blocks, references, mathematics — and the
-front matter each page expects. It doubles as the visual proof sheet.

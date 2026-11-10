@@ -80,6 +80,67 @@ function ProjectCard({
   );
 }
 
+/**
+ * Two small drawings, in the same hand as the writing index's kind icons: a
+ * marker for the field the projects sit in, and a rule-and-nib for how pages
+ * here are written.
+ */
+function Glyph({ shape }: { shape: "field" | "craft" }): ReactNode {
+  return (
+    <svg
+      className="ocl-stage__icon"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {shape === "field" ? (
+        <>
+          <path d="M4 14V3h7l-1.4 2.2L11 7.5H4" />
+          <path d="M4 3v11" />
+        </>
+      ) : (
+        <>
+          <path d="M2.5 11.5 10 4l2 2-7.5 7.5-2.6.6Z" />
+          <path d="M9 5l2 2M13.5 2.5h0" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+/** A page that is not a project: an icon, a name, and what it is for. */
+function AroundCard({
+  href,
+  title,
+  what,
+  shape,
+}: {
+  href: string;
+  title: string;
+  what: string;
+  shape: "field" | "craft";
+}): ReactNode {
+  return (
+    <article className="ocl-garden__item">
+      <Link to={href} className="ocl-garden__link">
+        <span className="ocl-garden__icon">
+          <Glyph shape={shape} />
+        </span>
+        <span className="ocl-garden__body">
+          <span className="ocl-garden__title">{title}</span>
+          <span className="ocl-garden__summary">{what}</span>
+        </span>
+      </Link>
+    </article>
+  );
+}
+
 const STAGES = ["draft", "provisional", "standing", "superseded"];
 
 export default function NotebookIndex(): ReactNode {
@@ -136,6 +197,29 @@ export default function NotebookIndex(): ReactNode {
       ) : (
         <p className="ocl-garden__empty">Nothing at that stage.</p>
       )}
+
+      {/* Not projects, so they do not sit among them — the same call the sidebar
+          made. They are cards all the same: each is one link and one sentence,
+          and leaving them as prose under a grid of cards was the inconsistency
+          on this page. The coverless form is the one the writing index already
+          uses for a piece with no drawing. */}
+      <section className="ocl-garden__desk" aria-label="Around the work">
+        <h2 className="ocl-garden__deskTitle">Around the work</h2>
+        <div className="ocl-garden__grid">
+          <AroundCard
+            href="/notebook/mech-interp-2026"
+            title="The field in 2026"
+            what="Where work on model internals was judged this year, what each venue asked for, and which of those asks nothing here answers. Not a reading list."
+            shape="field"
+          />
+          <AroundCard
+            href="/notebook/writing-here"
+            title="Writing here"
+            what="The pieces this site gives a page — numbered figures, margin notes, claim blocks, references, mathematics — and the front matter each one expects. Doubles as the proof sheet."
+            shape="craft"
+          />
+        </div>
+      </section>
     </div>
   );
 }
