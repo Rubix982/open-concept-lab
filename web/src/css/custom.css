@@ -2082,31 +2082,19 @@ a.ocl-desk__day:focus-visible {
  */
 @media (min-width: 997px) {
   [class*="docItemCol"]:not(:has(.ocl-paperhead)) {
-    max-width: 46rem !important;
+    max-width: 42rem !important;
   }
 }
 
 /*
- * And inside it, each block caps itself rather than the article capping all of
- * them -- the same arrangement the blog shell already uses. A four-column table
- * of venues does not fit a 66-character measure and should not be made to: it
- * is apparatus, not prose, and it takes the column.
+ * An earlier pass let tables take the whole column while the prose stayed at
+ * the measure. That was worse, not better: the table's right edge stuck out
+ * past every paragraph above it, and a block that is wider than everything
+ * around it for no stated reason reads as a mistake rather than as apparatus.
+ * So everything on a doc page shares one right edge, and content that genuinely
+ * cannot fit the measure gets restructured -- the venues on the 2026 page were a
+ * four-column table and are now one block each, which fits and reads better.
  */
-.theme-doc-markdown {
-  max-width: none;
-}
-
-.theme-doc-markdown > * {
-  max-width: var(--ocl-measure);
-}
-
-.theme-doc-markdown > table,
-.theme-doc-markdown > .ocl-table,
-.theme-doc-markdown > .ocl-table__scroll,
-.theme-doc-markdown > .ocl-figure--wide,
-.theme-doc-markdown > .ocl-embed {
-  max-width: 100%;
-}
 
 .theme-doc-footer {
   margin-top: 3rem;

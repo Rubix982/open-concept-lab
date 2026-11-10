@@ -23,18 +23,33 @@ This is not a reading list. [Reading](/reading) is that, and it answers a differ
 
 ## Where it gets judged
 
-Two numbers worth keeping in view before the table: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
+Two things worth keeping in view before the list: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
 
-| Venue | 2026 instance | Archival | What it asks for |
-| --- | --- | --- | --- |
-| [Mechanistic Interpretability Workshop](https://mechinterpworkshop.com/) (ICML) | 10 July, Seoul, COEX Hall C. Papers due 8 May; 23 spotlights among the accepted posters | No | Work at any stage. Accepted ICML papers welcome, papers under review at COLM or NeurIPS welcome; anything already accepted at another archival venue is not |
-| [BlackboxNLP](https://blackboxnlp.github.io/2026/) (EMNLP) | 9th edition, 29 October, Budapest | Both — author's choice | Analysing and interpreting neural networks for NLP, and it runs a separate **Reproducibility Challenge** track for reproducing established interpretability results, capped at 6 pages, double-blind |
-| [NEMI](https://nemiconf.github.io/summer26/) | 3rd edition, 14 August, Boston University, George Sherman Union | No | Regional, by design — academic and industry work from New England and nearby. Its own topic list names neural circuits, probe-based analysis, feature attribution, model simplification, actionable interpretability, and interpretability for science |
-| [Interpretability as a Science](https://interpscience.github.io/) (NeurIPS) | 11 December, Sydney | No | Rigorous foundations for understanding LLMs |
-| [Interpretability for Discovery](https://interpretability4discovery.github.io/) (NeurIPS) | 12 December, Atlanta | No | Using interpretability to uncover new scientific knowledge |
-| [AIMO Interpretability Challenge](https://aimo-interp.github.io/) (NeurIPS competition track) | Submissions closed 1 November; competition workshop 12 December, Paris. $12,500 prize pool | Paper: [arXiv 2607.13899](https://arxiv.org/abs/2607.13899) | Judge from a model's internals whether its correct answer to an olympiad problem survives perturbation, or rests on a spurious pattern. Ranked on classifying each problem–model pair as robust or spurious |
+**[Mechanistic Interpretability Workshop](https://mechinterpworkshop.com/)** · ICML · 10 July, Seoul, COEX Hall C · non-archival
 
-NeurIPS 2026 runs across three sites — Sydney from 6 December, with Atlanta and Paris from 9 December — so its two interpretability workshops and its interpretability competition are on three different continents. The [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls its list preliminary and warns against the informal lists circulating elsewhere, which is worth repeating here: this table is one of those lists.
+Work at any stage. Accepted ICML papers welcome, and papers under review at COLM or NeurIPS welcome; anything already accepted at another archival venue is not. Papers were due 8 May, and 23 of the accepted posters were spotlights.
+
+**[BlackboxNLP](https://blackboxnlp.github.io/2026/)** · EMNLP · 9th edition, 29 October, Budapest · archival or not, author's choice
+
+Analysing and interpreting neural networks for NLP. It runs a separate **Reproducibility Challenge** track for reproducing established interpretability results — 6 pages, double-blind.
+
+**[NEMI](https://nemiconf.github.io/summer26/)** · 3rd edition, 14 August, Boston University · non-archival
+
+Regional by design: academic and industry work from New England and nearby. Its own topic list names neural circuits, probe-based analysis, feature attribution, model simplification, actionable interpretability, and interpretability for science.
+
+**[Interpretability as a Science](https://interpscience.github.io/)** · NeurIPS · 11 December, Sydney · non-archival
+
+Rigorous foundations for understanding LLMs.
+
+**[Interpretability for Discovery](https://interpretability4discovery.github.io/)** · NeurIPS · 12 December, Atlanta · non-archival
+
+Using interpretability to uncover new scientific knowledge.
+
+**[AIMO Interpretability Challenge](https://aimo-interp.github.io/)** · NeurIPS competition track · submissions closed 1 November, competition workshop 12 December, Paris · [arXiv 2607.13899](https://arxiv.org/abs/2607.13899)
+
+Judge from a model's internals whether its correct answer to an olympiad problem survives perturbation, or rests on a spurious pattern. Ranked on how accurately each problem–model pair is classified as robust or spurious. $12,500 prize pool.
+
+NeurIPS 2026 runs across three sites — Sydney from 6 December, with Atlanta and Paris from 9 December — so its two interpretability workshops and its interpretability competition are on three different continents. The [official workshop announcement](https://blog.neurips.cc/2026/08/10/announcing-the-neurips-2026-workshops/) calls its list preliminary and warns against the informal lists circulating elsewhere, which is worth repeating here: this page is one of those lists.
 
 ## Unverified, and recorded as such
 
@@ -44,7 +59,7 @@ It stays on the page because deleting it would lose the lead, and it stays marke
 
 ## What these venues asked for that nothing here answers
 
-The table above is only useful if it is read against the work, so: five of the six venues name something this notebook has no evidence for.
+The list above is only useful read against the work, so: five of the six venues name something this notebook has no evidence for.
 
 **Features and circuits.** NEMI's topic list opens with neural circuits and feature attribution. Nothing here decomposes a representation into features; the work measures what a weight edit reaches, which is a different object. This is the largest gap and the most expensive to close, and it is not the next thing.
 
