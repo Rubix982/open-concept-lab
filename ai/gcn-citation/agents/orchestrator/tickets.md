@@ -100,10 +100,11 @@ New module: src/knowledge/
 
 ### O-005 · Coordinate Phase 1: L1 + L2 pipeline
 
-**Status:** open
+**Status:** closed
 **Type:** coordinate
 **Priority:** high
 **Created:** 2026-04-12
+**Updated:** 2026-11-10
 
 **Description:**
 Coordinate implementation of Phase 1 of the knowledge infrastructure:
@@ -121,7 +122,29 @@ with citations and brief summaries.
 
 **Blockers:** none
 
-**Closed:** —
+**Artifacts:**
+
+- All five tickets this sequenced are closed: E-013, E-014, R-003, E-015, E-016
+- The done-when was checked rather than assumed: E-019 ran ten queries and 8/10
+  returned a topically relevant paper in the top three, against its own
+  pre-stated threshold of 8/10, on manual review
+- CHANGELOG.md → 2026-04-12 · Session 6, "Knowledge Infrastructure Phase 1 —
+  COMPLETE"
+- plan.md → Completed This Session (2026-04-12)
+
+**Record note (2026-11-10):** this read `open` for seven months while every
+ticket under it was closed and the phase was recorded complete in both the
+CHANGELOG and the plan. Nothing caught it: a coordination entry with no close
+date contradicts nothing, so `check_record` had no fault to report.
+
+Two things in the description above are now wrong and are left as written rather
+than quietly corrected. The schema shipped on SQLite with WAL, not DuckDB, so
+step 1 and E-013's title both name a store the phase did not use. And the step
+numbering says E-016 depends on E-014 + E-015, which is right, but E-016 as
+merged records its blockers as E-014 and E-015 while the entry that shipped had
+listed only E-015.
+
+**Closed:** 2026-04-12
 
 ---
 
