@@ -9458,16 +9458,9 @@ a:hover > .ocl-home__featureCover {
 .ocl-proj {
   display: flex;
   flex-direction: column;
-  gap: 0.12rem;
+  gap: 0.1rem;
   min-width: 0;
   width: 100%;
-}
-
-.ocl-proj__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
 }
 
 .ocl-proj__name {
@@ -9475,24 +9468,39 @@ a:hover > .ocl-home__featureCover {
   letter-spacing: -0.004em;
 }
 
-.ocl-proj__stage {
-  flex: none;
-  font-family: var(--ocl-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.06em;
-  color: var(--ocl-ink-faint);
-}
-
-.ocl-proj__blurb {
+/* Stage and blurb on one subordinate line, in one reading order. The stage
+   was at the right edge in monospace, which made a column of statuses at the
+   margin compete with the column of names. */
+.ocl-proj__meta {
   font-size: 0.775rem;
-  font-style: italic;
   line-height: 1.3;
   color: var(--ocl-ink-faint);
 }
 
-.menu__list-item-collapsible:hover .ocl-proj__blurb,
-.menu__link--active .ocl-proj__blurb {
+.ocl-proj__stage {
+  font-family: var(--ocl-mono);
+  font-size: 0.66em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ocl-proj__sep { opacity: 0.55; }
+
+.menu__list-item-collapsible:hover .ocl-proj__meta,
+.menu__link:hover .ocl-proj__meta,
+.menu__link--active .ocl-proj__meta {
   color: var(--ocl-ink-muted);
+}
+
+/* Breathing room between projects, so the rail reads as a list of five things
+   rather than as ten undifferentiated rows. The nested pages stay tight to the
+   project they belong to. */
+.theme-doc-sidebar-menu > .menu__list-item + .menu__list-item {
+  margin-top: 0.45rem;
+}
+
+.theme-doc-sidebar-menu .menu__list .menu__list-item + .menu__list-item {
+  margin-top: 0;
 }
 
 /* ---- the contents rail on a paper page ---- */

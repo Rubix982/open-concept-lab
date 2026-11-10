@@ -1,6 +1,5 @@
 ---
 title: edit-reach
-sidebar_label: Overview
 sidebar_position: 1
 description: Testing whether an edit's reach can be predicted before the edit is applied. It cannot — and what the measure does detect, and what the project found while looking, is worth saying precisely.
 ---

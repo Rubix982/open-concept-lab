@@ -1,6 +1,5 @@
 ---
 title: opz
-sidebar_label: Overview
 sidebar_position: 1
 description: Deployment and security, learned one small broken system at a time.
 ---

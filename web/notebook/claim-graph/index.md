@@ -1,6 +1,5 @@
 ---
 title: claim-graph
-sidebar_label: Overview
 sidebar_position: 1
 description: A knowledge graph whose nodes are claims rather than papers.
 ---
