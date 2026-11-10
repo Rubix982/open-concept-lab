@@ -9856,7 +9856,7 @@ a:hover > .ocl-home__featureCover {
    is narrow. Three lines and then an ellipsis keeps the list scannable while
    leaving the identifier, which is the part a reader is looking for, always
    visible at the front. */
-.ocl-threadstoc .table-of-contents__link {
+.ocl-rail[data-view="threads"] .table-of-contents__link {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;

@@ -235,11 +235,14 @@ export type ProjectRecord = {
   tickets_closed: number;
   tickets: number;
   /**
-   * The threads view's own headings, for the rail. The threads content is an
-   * imported partial, so Docusaurus never sees its headings — this is the only
-   * table of contents that view has.
+   * Heading ids belonging to the threads view.
+   *
+   * Docusaurus resolves an imported partial's headings into the importing
+   * page's table of contents, so the paper and its threads arrive as one list.
+   * The rail splits that list on these ids. Ids only: the text and level come
+   * from the page itself, so there is no second copy of the words to go stale.
    */
-  toc?: { id: string; level: number; value: string }[];
+  toc?: string[];
 };
 
 export type LabData = {
