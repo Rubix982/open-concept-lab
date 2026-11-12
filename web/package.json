@@ -18,6 +18,7 @@
     "prebuild": "npm run sync:demos && npm run check:papers && npm run check:ledger && npm run check:threads-page",
     "design:check": "node scripts/design-check.mjs",
     "idea": "node scripts/idea.mjs",
+    "journal": "node scripts/journal.mjs",
     "check:papers": "node scripts/check-papers.mjs",
     "check:ledger": "node scripts/check-ledger.mjs",
     "check:threads-page": "node scripts/check-threads-page.mjs"
