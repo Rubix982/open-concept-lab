@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Four small drawings of how a story can go. The sad story: a line that falls and ends below where it began, with a small sprout at the end for what you keep. The happy story: a line that dips, then climbs and ends above where it began, at a star. The tragedy: a figure sees its fate ahead, runs the other way, and the road curves round and ends at the fate. The framed story: a person looking into a window, inside which a smaller story rises and falls.">
+  <style type="text/css"><![CDATA[
+    /* An image element cannot read the page's custom properties, so the
+       figure carries its own light and dark values. Every var() keeps its
+       light value as a fallback for converters that ignore :root. */
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="41"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="42"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="900" height="620" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="620" filter="url(#grain)"/>
+
+  <!-- light dividers between the four panels -->
+  <g stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.3" stroke-dasharray="2 6">
+    <path d="M450 40 L450 580"/>
+    <path d="M40 310 L860 310"/>
+  </g>
+
+  <g font-family="Georgia, 'Times New Roman', serif">
+
+    <!-- ─────────── the sad story ─────────── -->
+    <g transform="translate(30 30)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--indigo, #4338a8)">THE SAD STORY</text>
+      <path d="M20 100 L380 100" stroke="var(--faint, #6b6863)" stroke-width="1.2" stroke-dasharray="4 6" opacity="0.6"/>
+      <text x="380" y="92" font-size="11" text-anchor="end" fill="var(--faint, #6b6863)">where it began</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 100 C 80 100, 110 112, 150 160 S 230 204, 280 204 L 350 202" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+        <circle cx="20" cy="100" r="4.5" fill="var(--ink, #2b2a28)" stroke="none"/>
+        <path d="M356 202 C 356 192, 357 184, 356 174" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+        <path d="M356 188 c-14 -1 -22 -9 -23 -19 c12 0 21 7 23 19 z" fill="var(--sage, #4a6f55)" fill-opacity="0.6" stroke="var(--ink, #2b2a28)" stroke-width="1.6"/>
+        <path d="M357 180 c12 -5 19 -13 19 -23 c-11 3 -18 11 -19 23 z" fill="var(--sage, #4a6f55)" fill-opacity="0.6" stroke="var(--ink, #2b2a28)" stroke-width="1.6"/>
+      </g>
+      <text x="200" y="252" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">it ends lower, and you keep something from it</text>
+    </g>
+
+    <!-- ─────────── the happy story ─────────── -->
+    <g transform="translate(470 30)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--sage, #4a6f55)">THE HAPPY STORY</text>
+      <path d="M20 130 L380 130" stroke="var(--faint, #6b6863)" stroke-width="1.2" stroke-dasharray="4 6" opacity="0.6"/>
+      <text x="380" y="148" font-size="11" text-anchor="end" fill="var(--faint, #6b6863)">where it began</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 130 C 70 130, 100 196, 150 196 S 240 160, 280 118 S 330 76, 352 70" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+        <circle cx="20" cy="130" r="4.5" fill="var(--ink, #2b2a28)" stroke="none"/>
+        <path d="M364 46 L369 62 L385 67 L369 72 L364 88 L359 72 L343 67 L359 62 Z" fill="var(--gold, #e0a93a)" stroke="var(--ink, #2b2a28)" stroke-width="1.6"/>
+      </g>
+      <text x="200" y="252" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">it ends higher, if you hold on long enough</text>
+    </g>
+
+    <!-- ─────────── the tragedy ─────────── -->
+    <g transform="translate(30 320)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--oxide, #a4442f)">THE TRAGEDY</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- the fate, seen from the start -->
+        <path d="M108 150 L268 150" stroke="var(--faint, #6b6863)" stroke-width="1.4" stroke-dasharray="2 7" opacity="0.8"/>
+        <circle cx="300" cy="150" r="20" fill="var(--oxide, #a4442f)" fill-opacity="0.55" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+        <!-- running the other way, the long way round, into it -->
+        <path d="M96 150 C 60 150, 34 116, 52 84 S 150 44, 230 52 S 368 92, 362 140 S 336 152, 324 151" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+        <path d="M334 142 L322 151 L334 160" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+        <circle cx="100" cy="150" r="7" fill="var(--indigo, #4338a8)" fill-opacity="0.35" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+      </g>
+      <text x="100" y="180" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">sees it coming</text>
+      <text x="300" y="194" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">the fate</text>
+      <text x="150" y="40" font-size="11" fill="var(--faint, #6b6863)">runs the other way</text>
+      <text x="200" y="252" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">the road away from it is the road to it</text>
+    </g>
+
+    <!-- ─────────── the framed story ─────────── -->
+    <g transform="translate(470 320)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--faint, #6b6863)">THE FRAMED STORY</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- the one telling it, looking in -->
+        <circle cx="52" cy="118" r="12" fill="var(--indigo, #4338a8)" fill-opacity="0.2" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+        <path d="M52 130 L52 178 M52 144 L36 162 M52 144 L68 162 M52 178 L42 208 M52 178 L62 208" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+        <path d="M66 114 L140 66 M66 120 L140 196" stroke="var(--faint, #6b6863)" stroke-width="1.3" stroke-dasharray="2 6" opacity="0.8"/>
+        <!-- the window, and the smaller story inside it -->
+        <rect x="140" y="60" width="226" height="140" rx="4" fill="var(--raised, #fffdf8)" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+        <path d="M160 170 C 196 170, 214 92, 250 92 S 320 156, 348 178" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+        <circle cx="160" cy="170" r="3.5" fill="var(--ink, #2b2a28)" stroke="none"/>
+      </g>
+      <text x="253" y="222" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">the story inside the story</text>
+      <text x="200" y="252" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">a regret, told through a story within a story</text>
+    </g>
+
+  </g>
+</svg>

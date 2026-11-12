@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Two people stand facing each other, their glances meeting in a small gold spark between them. Above each one is a window holding their own story: one dips and then rises to a star, the other runs away from its fate and loops back into it.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="51"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="52"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <!-- a warm wash where the glances meet -->
+  <ellipse cx="400" cy="330" rx="140" ry="95" fill="#f2c46d" opacity="0.22"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the story each one carries -->
+    <rect x="110" y="70" width="230" height="130" rx="6" fill="#fffdf8" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M130 130 C 160 130, 180 178, 215 178 S 270 140, 295 108 S 312 92, 318 90" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="130" cy="130" r="3.5" fill="#2b2a28" stroke="none"/>
+    <path d="M318 74 L322 86 L334 90 L322 94 L318 106 L314 94 L302 90 L314 86 Z" fill="#f2c46d" stroke="#2b2a28" stroke-width="1.5"/>
+
+    <rect x="460" y="70" width="230" height="130" rx="6" fill="#fffdf8" stroke="#2b2a28" stroke-width="2.4"/>
+    <circle cx="640" cy="140" r="14" fill="#e8836b" fill-opacity="0.6" stroke="#2b2a28" stroke-width="2.2"/>
+    <path d="M520 140 C 494 140, 480 116, 494 98 S 570 82, 620 88 S 680 116, 672 138 S 662 142, 656 141" stroke="#2b2a28" stroke-width="2.4"/>
+    <path d="M665 134 L655 141 L665 148" stroke="#2b2a28" stroke-width="2.2"/>
+    <circle cx="524" cy="140" r="4" fill="#4338a8" stroke="none"/>
+
+    <!-- thought trails from each head up to its story -->
+    <circle cx="300" cy="246" r="4" fill="#2b2a28" stroke="none" opacity="0.55"/>
+    <circle cx="292" cy="226" r="5.5" fill="none" stroke="#2b2a28" stroke-width="1.6" opacity="0.7"/>
+    <circle cx="500" cy="246" r="4" fill="#2b2a28" stroke="none" opacity="0.55"/>
+    <circle cx="508" cy="226" r="5.5" fill="none" stroke="#2b2a28" stroke-width="1.6" opacity="0.7"/>
+
+    <!-- two people, facing each other -->
+    <circle cx="310" cy="296" r="19" fill="#4338a8" fill-opacity="0.2" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M310 315 L310 392 M310 336 L290 364 M310 336 L332 360 M310 392 L294 446 M310 392 L326 446" stroke="#2b2a28" stroke-width="2.6"/>
+    <circle cx="490" cy="296" r="19" fill="#7fa98a" fill-opacity="0.3" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M490 315 L490 392 M490 336 L468 360 M490 336 L510 364 M490 392 L474 446 M490 392 L506 446" stroke="#2b2a28" stroke-width="2.6"/>
+
+    <!-- the glance, and what passes in it -->
+    <path d="M334 294 L382 292 M418 292 L466 294" stroke="#2b2a28" stroke-width="1.6" stroke-dasharray="2 8"/>
+    <path d="M400 278 L404 289 L415 293 L404 297 L400 308 L396 297 L385 293 L396 289 Z" fill="#f2c46d" stroke="#2b2a28" stroke-width="1.6"/>
+
+    <path d="M180 458 L620 458" stroke="#2b2a28" stroke-width="1.6" opacity="0.4"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="400" y="516" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">just so we can know the other person's story</text>
+  </g>
+</svg>
