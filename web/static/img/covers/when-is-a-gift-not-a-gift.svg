@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="A wrapped gift box with a bow sits on the floor in warm light. The shadow it throws on the wall behind it is the shape of a birdcage.">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.033" numOctaves="2" seed="61"/>
+      <feDisplacementMap in="SourceGraphic" scale="3.1"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="62"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="800" height="560" fill="#f4f1ea"/>
+  <rect width="800" height="560" filter="url(#grain)"/>
+  <!-- the warm light the gift sits in -->
+  <ellipse cx="320" cy="360" rx="180" ry="100" fill="#f2c46d" opacity="0.22"/>
+  <!-- the shadow it throws: a cage -->
+  <path d="M410 440 L520 440 L520 428 L432 414 Z" fill="#2b2a28" opacity="0.08"/>
+  <path d="M520 440 L520 300 C 520 230, 680 230, 680 300 L680 440 Z" fill="#2b2a28" opacity="0.1"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#2b2a28" stroke-width="2" opacity="0.38">
+      <path d="M520 440 L520 300 C 520 230, 680 230, 680 300 L680 440"/>
+      <path d="M545 440 L545 268 M570 440 L570 254 M600 440 L600 248 M630 440 L630 254 M655 440 L655 268"/>
+      <path d="M520 300 L680 300 M520 420 L680 420"/>
+      <circle cx="600" cy="236" r="10"/>
+    </g>
+    <!-- the gift -->
+    <path d="M250 330 L400 330 L400 440 L250 440 Z" fill="#f2c46d" fill-opacity="0.85" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M250 330 L280 305 L430 305 L400 330 Z" fill="#f6d699" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M400 330 L430 305 L430 415 L400 440 Z" fill="#e0a93a" fill-opacity="0.75" stroke="#2b2a28" stroke-width="2.6"/>
+    <path d="M318 330 L318 440 M332 330 L332 440" stroke="#2b2a28" stroke-width="1.8"/>
+    <path d="M318 330 L332 330 L332 440 L318 440 Z" fill="#e8836b" fill-opacity="0.8" stroke="none"/>
+    <path d="M296 330 L326 305 M310 330 L340 305" stroke="#2b2a28" stroke-width="1.6"/>
+    <path d="M300 330 L314 330 L344 305 L330 305 Z" fill="#e8836b" fill-opacity="0.8" stroke="none"/>
+    <path d="M336 306 C 312 280, 290 290, 306 304 C 316 312, 330 310, 336 306 Z" fill="#e8836b" fill-opacity="0.85" stroke="#2b2a28" stroke-width="2"/>
+    <path d="M338 306 C 360 278, 384 288, 368 303 C 358 312, 344 310, 338 306 Z" fill="#e8836b" fill-opacity="0.85" stroke="#2b2a28" stroke-width="2"/>
+    <path d="M60 440 L740 440" stroke="#2b2a28" stroke-width="1.6" opacity="0.45"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="#2b2a28">
+    <text x="400" y="510" font-size="20" font-style="italic" text-anchor="middle" opacity="0.85">one that looks like a gift</text>
+  </g>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" role="img" aria-label="Two clay water pots made from the same clay. On the left, the unfired kacha pot is pale and cracked, and water is dripping out of it into a small puddle. In the middle is a fire. On the right, the fired pakka pot is a deep terracotta with painted bands, and it holds water right up to its mouth.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea; --raised: #fffdf8; --ink: #2b2a28; --faint: #6b6863;
+      --indigo: #4338a8; --oxide: #a4442f; --sage: #4a6f55; --gold: #e0a93a;
+      --clay: #dcc9a6; --fired: #c2643f; --water: #5f97bf;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18; --raised: #24231f; --ink: #eeece6; --faint: #9a968e;
+        --indigo: #b1a9ff; --oxide: #e3977f; --sage: #93c9a5; --gold: #f2c46d;
+        --clay: #8c7c60; --fired: #d98a68; --water: #8cbbe0;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="380" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="380" filter="url(#grain)"/>
+  <ellipse cx="450" cy="250" rx="90" ry="70" fill="var(--gold, #e0a93a)" opacity="0.2"/>
+  <g font-family="Georgia, 'Times New Roman', serif">
+    <text x="190" y="52" font-size="13" letter-spacing="1.4" text-anchor="middle" fill="var(--faint, #6b6863)">KACHA</text>
+    <text x="710" y="52" font-size="13" letter-spacing="1.4" text-anchor="middle" fill="var(--oxide, #a4442f)">PAKKA</text>
+  </g>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the unfired pot, giving way -->
+    <path d="M168 122 L164 140 C 110 150, 105 262, 150 296 L230 296 C 275 262, 270 150, 216 140 L212 122 Z" fill="var(--clay, #dcc9a6)" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <ellipse cx="190" cy="120" rx="27" ry="6" fill="var(--clay, #dcc9a6)" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+    <path d="M150 190 L162 210 L156 226 L168 248 M222 168 L214 186 L224 200 M200 262 L208 280 L202 294" stroke="var(--ink, #2b2a28)" stroke-width="1.6"/>
+    <path d="M168 250 c -4 8, -4 12, 0 14 c 4 -2, 4 -6, 0 -14 z M160 274 c -4 8, -4 12, 0 14 c 4 -2, 4 -6, 0 -14 z M204 300 c -4 8, -4 12, 0 14 c 4 -2, 4 -6, 0 -14 z" fill="var(--water, #5f97bf)" stroke="none"/>
+    <ellipse cx="186" cy="326" rx="62" ry="8" fill="var(--water, #5f97bf)" fill-opacity="0.35" stroke="none"/>
+    <!-- the fire -->
+    <path d="M410 300 L490 300 M418 304 L482 292" stroke="var(--ink, #2b2a28)" stroke-width="3"/>
+    <path d="M422 296 C 410 260, 438 250, 432 220 C 452 238, 446 256, 456 262 C 462 240, 472 232, 470 210 C 494 236, 496 270, 478 296 Z" fill="var(--oxide, #a4442f)" fill-opacity="0.75" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M440 296 C 434 276, 450 270, 450 254 C 462 268, 468 282, 460 296 Z" fill="var(--gold, #e0a93a)" stroke="none"/>
+    <path d="M300 180 C 350 150, 390 170, 404 196 M600 180 C 550 150, 510 170, 496 196" stroke="var(--faint, #6b6863)" stroke-width="1.6" stroke-dasharray="3 8"/>
+    <path d="M588 172 L602 180 L590 192" stroke="var(--faint, #6b6863)" stroke-width="1.6"/>
+    <!-- the fired pot, holding -->
+    <path d="M688 122 L684 140 C 630 150, 625 262, 670 296 L750 296 C 795 262, 790 150, 736 140 L732 122 Z" fill="var(--fired, #c2643f)" fill-opacity="0.85" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M647 196 C 690 206, 730 206, 773 196 M650 214 C 690 224, 730 224, 770 214" stroke="var(--ink, #2b2a28)" stroke-width="1.6" opacity="0.7"/>
+    <ellipse cx="710" cy="120" rx="27" ry="6" fill="var(--water, #5f97bf)" fill-opacity="0.75" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" font-size="15" font-style="italic" fill="var(--ink, #2b2a28)" text-anchor="middle">
+    <text x="190" y="360">holds water for a while</text>
+    <text x="450" y="360">the same clay, into the fire</text>
+    <text x="710" y="360">holds it</text>
+  </g>
+</svg>

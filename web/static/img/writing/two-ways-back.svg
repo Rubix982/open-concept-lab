@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-label="Two drawings side by side, each with a dashed line for the measure and a solid line for a man's life. In both, the life drops sharply below the measure: the fall. On the left, the life climbs back up to the measure, which has not moved. On the right, the life stays low, and the measure bends down to meet it; a faint trace shows where the measure used to be.">
+  <style type="text/css"><![CDATA[
+    /* An image element cannot read the page's custom properties, so the
+       figure carries its own light and dark values. Every var() keeps its
+       light value as a fallback for converters that ignore :root. */
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="41"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="42"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="360" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="360" filter="url(#grain)"/>
+  <path d="M450 40 L450 320" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.3" stroke-dasharray="2 6"/>
+  <g font-family="Georgia, 'Times New Roman', serif">
+
+    <!-- left: comes back to it -->
+    <g transform="translate(30 30)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--sage, #4a6f55)">COMES BACK TO IT</text>
+      <path d="M20 100 L380 100" stroke="var(--gold, #e0a93a)" stroke-width="2.4" stroke-dasharray="7 7"/>
+      <text x="20" y="90" font-size="11" fill="var(--faint, #6b6863)">the measure</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 110 L120 110 C 150 110, 160 216, 190 224 C 220 230, 240 180, 270 136 C 290 114, 302 110, 330 110 L380 110" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+        <circle cx="190" cy="224" r="6" fill="var(--oxide, #a4442f)" fill-opacity="0.7" stroke="var(--ink, #2b2a28)" stroke-width="1.8"/>
+      </g>
+      <text x="190" y="252" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">the fall</text>
+      <text x="200" y="292" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">ashamed, he climbs back to where it was</text>
+    </g>
+
+    <!-- right: moves it to meet himself -->
+    <g transform="translate(470 30)">
+      <text x="20" y="26" font-size="13" letter-spacing="1.3" fill="var(--oxide, #a4442f)">MOVES IT TO MEET HIMSELF</text>
+      <path d="M120 100 L380 100" stroke="var(--gold, #e0a93a)" stroke-width="1.6" stroke-dasharray="7 7" opacity="0.3"/>
+      <text x="380" y="90" font-size="11" text-anchor="end" fill="var(--faint, #6b6863)" opacity="0.8">where it was</text>
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 100 L120 100 C 168 104, 172 206, 204 212 L380 212" stroke="var(--gold, #e0a93a)" stroke-width="2.4" stroke-dasharray="7 7"/>
+        <path d="M20 110 L120 110 C 150 110, 160 216, 190 224 L380 224" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+        <circle cx="190" cy="224" r="6" fill="var(--oxide, #a4442f)" fill-opacity="0.7" stroke="var(--ink, #2b2a28)" stroke-width="1.8"/>
+      </g>
+      <text x="20" y="90" font-size="11" fill="var(--faint, #6b6863)">the measure</text>
+      <text x="380" y="200" font-size="11" text-anchor="end" fill="var(--faint, #6b6863)">the measure, now</text>
+      <text x="190" y="252" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">the fall</text>
+      <text x="200" y="292" font-size="15" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">the fall stops looking like a fall</text>
+    </g>
+  </g>
+</svg>

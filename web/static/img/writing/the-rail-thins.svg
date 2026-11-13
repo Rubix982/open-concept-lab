@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" role="img" aria-label="A road climbs from left to right towards an open, lit doorway. Along the road runs a fence. At the start the posts stand close together with two rails between them. Further up the posts are far apart and there is only one rail, with a gap in it. Near the top the rail is gone, one post leans and another is broken, and a man walks on towards the door.">
+  <style type="text/css"><![CDATA[
+    /* An image element cannot read the page's custom properties, so the
+       figure carries its own light and dark values. Every var() keeps its
+       light value as a fallback for converters that ignore :root. */
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="41"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="42"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="420" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="420" filter="url(#grain)"/>
+  <ellipse cx="822" cy="112" rx="80" ry="60" fill="var(--gold, #e0a93a)" opacity="0.22"/>
+  <g font-family="Georgia, 'Times New Roman', serif" font-size="13" fill="var(--faint, #6b6863)">
+    <text x="70" y="270" letter-spacing="1.2">EARLY ON</text>
+    <text x="520" y="110" letter-spacing="1.2">THE SAME ROAD, YEARS LATER</text>
+  </g>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- the road, climbing -->
+    <path d="M40 360 L 860 140" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+    <!-- close posts, two rails -->
+    <g stroke="var(--ink, #2b2a28)" stroke-width="2.4">
+      <path d="M70 352 L70 302 M110 341 L110 291 M150 330 L150 280 M190 320 L190 270 M230 309 L230 259 M270 298 L270 248"/>
+      <path d="M70 310 L270 256 M70 330 L270 276"/>
+    </g>
+    <!-- farther apart, one rail with a gap -->
+    <g stroke="var(--ink, #2b2a28)" stroke-width="2.4">
+      <path d="M340 280 L340 230 M410 261 L410 211 M480 242 L480 192"/>
+      <path d="M340 248 L404 231"/>
+      <path d="M480 210 L466 226"/>
+    </g>
+    <!-- no rail, a leaning post and a broken one -->
+    <g stroke="var(--ink, #2b2a28)" stroke-width="2.4">
+      <path d="M580 215 L594 168"/>
+      <path d="M700 183 L700 162 L704 158 L697 155"/>
+    </g>
+    <!-- a man walking on -->
+    <circle cx="640" cy="139" r="10" fill="var(--indigo, #4338a8)" fill-opacity="0.2" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+    <path d="M640 149 L640 181 M640 158 L628 172 M640 158 L652 170 M640 181 L631 199 M640 181 L650 197" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+    <!-- the room he is walking towards -->
+    <rect x="796" y="72" width="50" height="76" rx="2" fill="var(--gold, #e0a93a)" fill-opacity="0.55" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M796 72 L776 82 L776 156 L796 148" fill="var(--raised, #fffdf8)" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+  </g>
+</svg>

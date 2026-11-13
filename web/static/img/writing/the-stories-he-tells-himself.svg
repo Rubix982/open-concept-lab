@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" role="img" aria-label="A shallow staircase going down from left to right. Each step is only a little lower than the last, and each one has a story written on it: the pressure I am under; nobody at home understands; I have earned a little space; this time is different. A man walks down it. A dashed line from the top step runs across the whole picture, and a bracket on the right shows how far below that line the bottom step is.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea; --raised: #fffdf8; --ink: #2b2a28; --faint: #6b6863;
+      --indigo: #4338a8; --oxide: #a4442f; --sage: #4a6f55; --gold: #e0a93a;
+      --clay: #dcc9a6; --fired: #c2643f; --water: #5f97bf;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18; --raised: #24231f; --ink: #eeece6; --faint: #9a968e;
+        --indigo: #b1a9ff; --oxide: #e3977f; --sage: #93c9a5; --gold: #f2c46d;
+        --clay: #8c7c60; --fired: #d98a68; --water: #8cbbe0;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="400" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="400" filter="url(#grain)"/>
+  <path d="M20 105 L858 105" stroke="var(--indigo, #4338a8)" stroke-width="1.6" stroke-dasharray="6 7" opacity="0.7"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 105 L120 105 L120 150 L285 150 L285 195 L450 195 L450 240 L615 240 L615 285 L780 285 L780 330 L858 330" stroke="var(--ink, #2b2a28)" stroke-width="2.6"/>
+    <!-- the bracket: the whole distance -->
+    <path d="M868 105 L878 105 L878 330 L868 330" stroke="var(--oxide, #a4442f)" stroke-width="2"/>
+    <!-- a man, partway down -->
+    <circle cx="705" cy="223" r="10" fill="var(--indigo, #4338a8)" fill-opacity="0.2" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+    <path d="M705 233 L705 265 M705 242 L693 256 M705 242 L717 254 M705 265 L696 285 M705 265 L716 283" stroke="var(--ink, #2b2a28)" stroke-width="2.2"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="var(--ink, #2b2a28)">
+    <text x="24" y="94" font-size="13" fill="var(--indigo, #4338a8)">where he stood</text>
+    <text x="126" y="174" font-size="12" font-style="italic">the pressure I am under</text>
+    <text x="290" y="219" font-size="11.4" font-style="italic">nobody at home understands</text>
+    <text x="456" y="264" font-size="12" font-style="italic">I have earned a little space</text>
+    <text x="621" y="309" font-size="12" font-style="italic">this time is different</text>
+    <text x="772" y="354" font-size="13" fill="var(--oxide, #a4442f)">where he said</text>
+    <text x="772" y="372" font-size="13" fill="var(--oxide, #a4442f)">he would never be</text>
+    <text x="860" y="222" font-size="12" text-anchor="end" fill="var(--oxide, #a4442f)">all of it</text>
+  </g>
+</svg>
