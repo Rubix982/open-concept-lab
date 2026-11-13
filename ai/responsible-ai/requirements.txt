@@ -36,7 +36,7 @@ manim==0.20.1
 ManimPango==0.6.1
 mapbox_earcut==2.0.0
 markdown-it-py==4.0.0
-MarkupSafe==3.0.3
+MarkupSafe==3.0.4
 mccabe==0.7.0
 mdurl==0.1.2
 moderngl==5.12.0
