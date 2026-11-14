@@ -6677,6 +6677,7 @@ a:hover > .ocl-home__featureCover {
 .ocl-home__jump .ocl-chip--labs { background: var(--ocl-cloth-2); }
 .ocl-home__jump .ocl-chip--reading { background: var(--ocl-cloth-6); }
 .ocl-home__jump .ocl-chip--agentic { background: var(--ocl-cloth-3); }
+.ocl-home__jump .ocl-chip--graphics { background: var(--ocl-cloth-1); }
 .ocl-home__jump .ocl-chip--shipped { background: var(--ocl-cloth-4); }
 .ocl-home__jump .ocl-chip--built { background: var(--ocl-cloth-5); }
 .ocl-home__jump .ocl-chip--about { background: var(--ocl-cloth-2); }

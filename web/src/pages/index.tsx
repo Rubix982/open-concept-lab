@@ -311,6 +311,7 @@ const ICONS: Record<string, ReactNode> = {
   labs: <path d="M6 2h4M6.8 2v4L3 13h10L9.2 6V2M5 10h6" />,
   reading: <path d="M3 3h7l3 3v7H3Z M5.5 7h5M5.5 9.5h4" />,
   agentic: <path d="M8 2.5a5.5 5.5 0 0 1 5.5 5.5M8 13.5A5.5 5.5 0 0 1 2.5 8M12 6l1.5 2 1.5-2M4 10 2.5 8 1 10" />,
+  graphics: <path d="M2.5 13 8 3l5.5 10Z M5.25 8h5.5M5.25 8 8 13l2.75-5" />,
   shipped: <path d="M2 6l6-3 6 3-6 3Z M2 6v5l6 3 6-3V6M8 9v5" />,
   built: <path d="M2.5 13h11M3.5 13V9h3v4M6.5 13V5h3v8M9.5 13V7h3v6" />,
   about: <path d="M8 7.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3 14c.5-3 2.4-4.5 5-4.5s4.5 1.5 5 4.5" />,
@@ -445,6 +446,7 @@ export default function Home(): ReactNode {
               <Jump to="/labs" name="labs" label="Labs" />
               <Jump to="/reading" name="reading" label="Reading" />
               <Jump to="/agentic" name="agentic" label="Agentic" />
+              <Jump to="/graphics" name="graphics" label="Graphics" />
               <Jump to="/shipped" name="shipped" label="Shipped" />
               <Jump to="/built" name="built" label="Built" />
               <Jump to="/about" name="about" label="About" />

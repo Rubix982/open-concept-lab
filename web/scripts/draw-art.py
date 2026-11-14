@@ -119,6 +119,23 @@ def agentic() -> str:
     return svg("A loop of work turning around a gear, a gate with a barrier across the loop, and a checklist: an agent kept moving and kept inside its lines", SALMON, body, 9)
 
 
+def graphics() -> str:
+    body = f"""
+    <path d="M110 118 L160 122 L210 122 L260 118 M106 170 L158 182 L212 182 L264 170 M100 230 L156 248 L214 248 L270 230 M94 298 L154 322 L216 322 L278 298" stroke-width="2"/>
+    <path d="M110 118 L106 170 L100 230 L94 298 M160 122 L158 182 L156 248 L154 322 M210 122 L212 182 L214 248 L216 322 M260 118 L264 170 L270 230 L278 298" stroke-width="2"/>
+    <path d="M110 118 L158 182 M160 122 L212 182 M210 122 L264 170 M106 170 L156 248 M158 182 L214 248 M212 182 L270 230 M100 230 L154 322 M156 248 L216 322 M214 248 L278 298" stroke-width="1.4" opacity="0.7"/>
+    <path d="M158 182 L212 182 L214 248 Z" fill="{INDIGO}" fill-opacity="0.35"/>
+    <path d="M100 230 L156 248 L154 322 Z" fill="{SAGE}" fill-opacity="0.45"/>
+    <path d="M300 214 C 318 190, 336 190, 352 206" stroke="{INDIGO}" stroke-width="2.4" stroke-dasharray="3 8"/>
+    <path d="M342 204 L354 208 L350 196" stroke="{INDIGO}" stroke-width="2.4"/>
+    <path d="M372 136 H468 L500 300 Q434 318 340 300 Z" fill="#fffdf8"/>
+    <path d="M384 150 H458 L484 288 Q434 302 354 288 Z" stroke-width="1.4" stroke-dasharray="4 6" opacity="0.6"/>
+    <path d="M420 136 V150" stroke="{OXIDE}" stroke-width="3"/>
+    <circle cx="500" cy="78" r="24" fill="{GOLD}" fill-opacity="0.85"/>
+    <path d="M500 42 V50 M500 106 V114 M464 78 H472 M528 78 H536" stroke-width="2.4"/>"""
+    return svg("A triangle mesh hanging like cloth, its flat pattern piece beside it, and a light above: the geometry, the pattern it is cut from, and the light that renders it", GOLD, body, 13)
+
+
 def shipped() -> str:
     body = f"""
     <path d="M180 200 L300 170 L420 200 L300 232 Z" fill="#e9d3b0"/>
@@ -339,6 +356,7 @@ DRAWINGS: dict[str, Callable[[], str]] = {
     "tabs/labs": labs,
     "tabs/reading": reading,
     "tabs/agentic": agentic,
+    "tabs/graphics": graphics,
     "tabs/shipped": shipped,
     "tabs/built": built,
     "tabs/about": about,
@@ -535,6 +553,20 @@ def tool_dotclaude() -> str:
     return svg("A page of written rules with a gear turning beside it and a pair of code brackets: the instructions an AI assistant works under", INDIGO, body, 67)
 
 
+def tool_graphics_reuse() -> str:
+    body = f"""
+    <rect x="96" y="132" width="164" height="150" rx="6" fill="#fffdf8"/>
+    <rect x="340" y="132" width="164" height="150" rx="6" fill="#fffdf8"/>
+    <path d="M128 250 L178 168 L228 250 Z M153 209 L203 209 L178 250 Z" stroke-width="2"/>
+    <path d="M372 250 L422 168 L472 250 Z M397 209 L447 209 L422 250 Z" stroke-width="2"/>
+    <path d="M153 209 L203 209 L178 168 Z" fill="{INDIGO}" fill-opacity="0.3"/>
+    <path d="M397 209 L447 209 L422 168 Z" fill="{INDIGO}" fill-opacity="0.3"/>
+    <path d="M180 120 C 230 60, 370 60, 420 120" stroke="{INDIGO}" stroke-width="3"/>
+    <path d="M406 112 L420 122 L424 104" stroke="{INDIGO}" stroke-width="3"/>
+    <path d="M404 312 l12 12 l24 -28" stroke="{SAGE}" stroke-width="4"/>"""
+    return svg("The same triangles in two frames, an arrow carrying them from the first into the second, and a check beneath: work done once, reused, and checked", INDIGO, body, 69)
+
+
 def track_a() -> str:
     body = f"""
     <path d="M220 110 L300 84 L380 110 V200 C380 260, 340 300, 300 318 C260 300, 220 260, 220 200 Z" fill="{INDIGO}" fill-opacity="0.2"/>
@@ -598,6 +630,7 @@ DRAWINGS.update({
     "tools/harness": tool_harness,
     "tools/practice": tool_practice,
     "tools/dotclaude": tool_dotclaude,
+    "tools/graphics-reuse": tool_graphics_reuse,
     "tracks/a": track_a,
     "tracks/b": track_b,
     "tracks/c": track_c,

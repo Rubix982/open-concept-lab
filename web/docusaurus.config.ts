@@ -166,6 +166,7 @@ const config: Config = {
         { to: "/labs", label: "Labs", position: "left" },
         { to: "/reading", label: "Reading", position: "left" },
         { to: "/agentic", label: "Agentic", position: "left" },
+        { to: "/graphics", label: "Graphics", position: "left" },
         { to: "/shipped", label: "Shipped", position: "left" },
         { to: "/built", label: "Built", position: "left" },
         { to: "/someday", label: "Someday", position: "left" },
