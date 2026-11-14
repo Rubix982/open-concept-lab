@@ -10184,3 +10184,39 @@ a:hover > .ocl-home__featureCover {
   line-height: 1.5;
   color: var(--ocl-ink-faint);
 }
+
+/* A paragraph with its Urdu beside it: English on the left, the Urdu on the
+   right in Nastaliq, read right to left. On a phone the Urdu drops below. */
+.ocl-article__body .markdown > .ocl-bi {
+  max-width: var(--ocl-measure-wide);
+}
+
+.ocl-bi {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 2.25rem;
+  align-items: start;
+  margin: 0 0 1.5rem;
+}
+
+.ocl-bi__en > :last-child,
+.ocl-bi__ur > :last-child {
+  margin-bottom: 0;
+}
+
+.ocl-bi__ur {
+  padding-right: 1rem;
+  border-right: 2px solid var(--ocl-gold);
+  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif;
+  font-size: 1.05rem;
+  line-height: 2.3;
+  text-align: right;
+  color: var(--ocl-ink);
+}
+
+@media (max-width: 760px) {
+  .ocl-bi {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}
