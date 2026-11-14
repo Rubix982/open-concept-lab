@@ -10220,3 +10220,30 @@ a:hover > .ocl-home__featureCover {
     gap: 0.75rem;
   }
 }
+
+/* Inside an English-and-Urdu pair the gutter beside the English is the Urdu,
+   so a note floated there lands on top of it. Here notes behave as they do
+   on a narrow screen at every width: tap the phrase, the note opens under
+   the line, inside the English column. */
+@media (min-width: 1400px) {
+  .ocl-bi .ocl-gloss__phrase {
+    cursor: pointer;
+  }
+
+  .ocl-bi .ocl-gloss__note {
+    display: none;
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .ocl-bi .ocl-gloss--open .ocl-gloss__note {
+    display: block;
+    margin: 0.45rem 0 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-left: 2px solid var(--ocl-link);
+    background: color-mix(in srgb, var(--ocl-link) 4%, var(--ocl-paper));
+  }
+}
