@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" role="img" aria-label="Four calendar pages in a row. The first two are tinted gold and each shows a small star: these are the days spent in longing. The next two are tinted blue and each shows an hourglass: these are the days spent in waiting. After them is a fifth page drawn only as a dashed outline, with nothing in it.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea; --raised: #fffdf8; --ink: #2b2a28; --faint: #6b6863;
+      --indigo: #4338a8; --oxide: #a4442f; --sage: #4a6f55; --gold: #e0a93a;
+      --clay: #dcc9a6; --fired: #c2643f; --water: #5f97bf;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18; --raised: #24231f; --ink: #eeece6; --faint: #9a968e;
+        --indigo: #b1a9ff; --oxide: #e3977f; --sage: #93c9a5; --gold: #f2c46d;
+        --clay: #8c7c60; --fired: #d98a68; --water: #8cbbe0;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="71"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.4"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="72"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="330" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="330" filter="url(#grain)"/>
+  <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- two days in longing -->
+    <rect x="40" y="60" width="140" height="170" rx="6" fill="var(--gold, #e0a93a)" fill-opacity="0.28" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M40 92 L180 92" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M110 128 L116 148 L136 154 L116 160 L110 180 L104 160 L84 154 L104 148 Z" fill="var(--gold, #e0a93a)" stroke="var(--ink, #2b2a28)" stroke-width="1.8"/>
+    <rect x="210" y="60" width="140" height="170" rx="6" fill="var(--gold, #e0a93a)" fill-opacity="0.28" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M210 92 L350 92" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M280 128 L286 148 L306 154 L286 160 L280 180 L274 160 L254 154 L274 148 Z" fill="var(--gold, #e0a93a)" stroke="var(--ink, #2b2a28)" stroke-width="1.8"/>
+    <!-- two days in waiting -->
+    <rect x="380" y="60" width="140" height="170" rx="6" fill="var(--water, #5f97bf)" fill-opacity="0.22" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M380 92 L520 92" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M430 122 L470 122 M430 186 L470 186 M434 122 C 434 142, 450 148, 450 154 C 450 160, 434 166, 434 186 M466 122 C 466 142, 450 148, 450 154 C 450 160, 466 166, 466 186" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M440 176 C 444 168, 456 168, 460 176 Z" fill="var(--gold, #e0a93a)" stroke="none"/>
+    <rect x="550" y="60" width="140" height="170" rx="6" fill="var(--water, #5f97bf)" fill-opacity="0.22" stroke="var(--ink, #2b2a28)" stroke-width="2.4"/>
+    <path d="M550 92 L690 92" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M600 122 L640 122 M600 186 L640 186 M604 122 C 604 142, 620 148, 620 154 C 620 160, 604 166, 604 186 M636 122 C 636 142, 620 148, 620 154 C 620 160, 636 166, 636 186" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+    <path d="M608 182 C 612 170, 628 170, 632 182 Z" fill="var(--gold, #e0a93a)" stroke="none"/>
+    <!-- the day that was never had -->
+    <rect x="730" y="60" width="140" height="170" rx="6" stroke="var(--faint, #6b6863)" stroke-width="1.8" stroke-dasharray="6 7"/>
+  </g>
+  <g font-family="Georgia, 'Times New Roman', serif" fill="var(--ink, #2b2a28)" text-anchor="middle">
+    <text x="110" y="82" font-size="13" letter-spacing="1.2">DAY 1</text>
+    <text x="280" y="82" font-size="13" letter-spacing="1.2">DAY 2</text>
+    <text x="450" y="82" font-size="13" letter-spacing="1.2">DAY 3</text>
+    <text x="620" y="82" font-size="13" letter-spacing="1.2">DAY 4</text>
+    <text x="195" y="268" font-size="15" font-style="italic">do aarzoo mein — two in longing</text>
+    <text x="535" y="268" font-size="15" font-style="italic">do intezaar mein — two in waiting</text>
+    <text x="800" y="150" font-size="13" font-style="italic" fill="var(--faint, #6b6863)">and the living?</text>
+  </g>
+</svg>
