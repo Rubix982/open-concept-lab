@@ -22,3 +22,8 @@ journal:
   label: Journal
   permalink: /journal
   description: Thinking out loud, dated — written fast, before the thoughts are arguments.
+
+graphics:
+  label: Graphics
+  permalink: /graphics
+  description: The computation behind images — rendering, simulation, geometry — and the work it can avoid redoing.

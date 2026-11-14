@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" role="img" aria-label="One axis from 0 to 35 percent: how much longer each edge of the garment came out on the second body. Measured in the test bed, for the kameez and trousers, the median edge was 6 to 7 percent longer, a narrow band, and the 95th percentile was 22 to 30 percent longer, a wide band far to the right. An agent's guess with no entry is a single mark at 9 percent, the change in the body's height, close to the median band and far from the 95th percentile.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="77"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.6"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="78"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="250" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="250" filter="url(#grain)"/>
+
+  <!-- x(v %) = 80 + v / 35 * 760 -->
+  <g font-family="Georgia, 'Times New Roman', serif">
+    <text x="80" y="30" font-size="12.5" font-style="italic" fill="var(--faint, #6b6863)">How much longer each edge came out on the second body</text>
+
+    <g stroke="var(--faint, #6b6863)" stroke-width="1" stroke-dasharray="2 4" opacity="0.6" fill="none">
+      <path d="M557.7 94 V205 M731.4 94 V205 M275.4 172 V205"/>
+    </g>
+
+    <text stroke="var(--paper, #f4f1ea)" stroke-width="5" stroke-linejoin="round" paint-order="stroke" x="80" y="66" font-size="12.5" fill="var(--ink, #2b2a28)">measured in the test bed, kameez and trousers</text>
+    <g filter="url(#rough)" stroke-linejoin="round">
+      <rect x="210.3" y="76" width="21.7" height="18" fill="var(--oxide, #a4442f)" fill-opacity="0.75" stroke="var(--ink, #2b2a28)" stroke-width="1.4"/>
+      <rect x="557.7" y="76" width="173.7" height="18" fill="var(--oxide, #a4442f)" fill-opacity="0.75" stroke="var(--ink, #2b2a28)" stroke-width="1.4"/>
+    </g>
+    <text stroke="var(--paper, #f4f1ea)" stroke-width="5" stroke-linejoin="round" paint-order="stroke" x="240" y="90" font-size="12" fill="var(--ink, #2b2a28)">median: 6–7 %</text>
+    <text stroke="var(--paper, #f4f1ea)" stroke-width="5" stroke-linejoin="round" paint-order="stroke" x="644.6" y="112" font-size="12" text-anchor="middle" fill="var(--ink, #2b2a28)">95th percentile: 22–30 %</text>
+
+    <text stroke="var(--paper, #f4f1ea)" stroke-width="5" stroke-linejoin="round" paint-order="stroke" x="80" y="142" font-size="12.5" fill="var(--ink, #2b2a28)">an agent's guess, with no entry</text>
+    <g filter="url(#rough)" stroke-linejoin="round">
+      <path d="M275.4 150 L285 161 L275.4 172 L265.8 161 Z" fill="var(--indigo, #4338a8)" fill-opacity="0.8" stroke="var(--ink, #2b2a28)" stroke-width="1.4"/>
+    </g>
+    <text stroke="var(--paper, #f4f1ea)" stroke-width="5" stroke-linejoin="round" paint-order="stroke" x="294" y="165" font-size="12" fill="var(--ink, #2b2a28)">9 %, the change in the body's height</text>
+
+    <g filter="url(#rough)" stroke="var(--faint, #6b6863)" stroke-width="1.2" fill="none">
+      <path d="M80 205 H840 M80 205 v5 M188.6 205 v5 M297.1 205 v5 M405.7 205 v5 M514.3 205 v5 M622.9 205 v5 M731.4 205 v5 M840 205 v5"/>
+    </g>
+    <g font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">
+      <text x="80" y="226">0 %</text><text x="188.6" y="226">5 %</text><text x="297.1" y="226">10 %</text><text x="405.7" y="226">15 %</text>
+      <text x="514.3" y="226">20 %</text><text x="622.9" y="226">25 %</text><text x="731.4" y="226">30 %</text><text x="840" y="226">35 %</text>
+    </g>
+  </g>
+</svg>

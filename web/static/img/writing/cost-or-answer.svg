@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-label="Two drawings side by side. On the left, changes only the cost: in the first frame, two tight boxes each hold two points. Many frames later the points have drifted apart, and the refitted boxes have grown large, overlapping and mostly empty. Every point is still inside its box, so queries stay right and only get slower. On the right, changes the answer: a moving ball, with three fading copies trailing behind it where older frames said it was. Reused pixels from a stale history leave a ghost, which is a wrong answer.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="73"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.2"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="74"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+  <rect width="900" height="360" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="360" filter="url(#grain)"/>
+  <path d="M450 30 L450 330" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.3" stroke-dasharray="2 6"/>
+
+  <g font-family="Georgia, 'Times New Roman', serif">
+
+    <!-- left: cost only -->
+    <g transform="translate(20 16)">
+      <text x="10" y="20" font-size="13" letter-spacing="1.3" fill="var(--sage, #4a6f55)">CHANGES ONLY THE COST</text>
+      <g filter="url(#rough)" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="10" y="40" width="180" height="170" rx="3" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2"/>
+        <rect x="230" y="40" width="180" height="170" rx="3" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2"/>
+        <rect x="34" y="84" width="56" height="44" fill="var(--indigo, #4338a8)" fill-opacity="0.1" stroke="var(--indigo, #4338a8)" stroke-width="2"/>
+        <rect x="108" y="148" width="54" height="46" fill="var(--gold, #e0a93a)" fill-opacity="0.15" stroke="var(--gold, #e0a93a)" stroke-width="2.2"/>
+        <rect x="242" y="68" width="154" height="132" fill="var(--indigo, #4338a8)" fill-opacity="0.07" stroke="var(--indigo, #4338a8)" stroke-width="2"/>
+        <rect x="252" y="58" width="130" height="146" fill="var(--gold, #e0a93a)" fill-opacity="0.1" stroke="var(--gold, #e0a93a)" stroke-width="2.2"/>
+        <g fill="var(--ink, #2b2a28)">
+          <circle cx="45" cy="95" r="5"/><circle cx="79" cy="117" r="5"/>
+          <circle cx="119" cy="159" r="5"/><circle cx="151" cy="183" r="5"/>
+          <circle cx="253" cy="79" r="5"/><circle cx="385" cy="189" r="5"/>
+          <circle cx="263" cy="193" r="5"/><circle cx="371" cy="69" r="5"/>
+        </g>
+        <path d="M196 125 L224 125 M218 120 L224 125 L218 130" fill="none" stroke="var(--ink, #2b2a28)" stroke-width="1.8"/>
+      </g>
+      <text x="100" y="228" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">frame 1</text>
+      <text x="320" y="228" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">many frames later</text>
+      <text x="10" y="260" font-size="13" fill="var(--ink, #2b2a28)">Refit: every point is still inside its box,</text>
+      <text x="10" y="279" font-size="13" fill="var(--ink, #2b2a28)">so queries stay right and get slower.</text>
+      <text x="210" y="320" font-size="16" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">fails by slowing down</text>
+    </g>
+
+    <!-- right: changes the answer -->
+    <g transform="translate(470 16)">
+      <text x="10" y="20" font-size="13" letter-spacing="1.3" fill="var(--oxide, #a4442f)">CHANGES THE ANSWER</text>
+      <g filter="url(#rough)" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="10" y="40" width="400" height="170" rx="3" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="1.2"/>
+        <circle cx="150" cy="126" r="24" fill="var(--indigo, #4338a8)" fill-opacity="0.1"/>
+        <circle cx="200" cy="126" r="24" fill="var(--indigo, #4338a8)" fill-opacity="0.17"/>
+        <circle cx="250" cy="126" r="24" fill="var(--indigo, #4338a8)" fill-opacity="0.26"/>
+        <circle cx="320" cy="126" r="24" fill="var(--indigo, #4338a8)" fill-opacity="0.6" stroke="var(--ink, #2b2a28)" stroke-width="2"/>
+        <path d="M150 74 L330 74 M323 69 L330 74 L323 79" fill="none" stroke="var(--faint, #6b6863)" stroke-width="1.5"/>
+      </g>
+      <text x="240" y="64" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">moving</text>
+      <text x="320" y="176" font-size="11" text-anchor="middle" fill="var(--ink, #2b2a28)">where it is</text>
+      <text x="200" y="176" font-size="11" text-anchor="middle" fill="var(--faint, #6b6863)">where older frames said it was</text>
+      <text x="10" y="260" font-size="13" fill="var(--ink, #2b2a28)">Reprojection: last frame's pixels, reused.</text>
+      <text x="10" y="279" font-size="13" fill="var(--ink, #2b2a28)">When the history is stale, a ghost trails behind.</text>
+      <text x="210" y="320" font-size="16" font-style="italic" text-anchor="middle" fill="var(--ink, #2b2a28)">fails by giving a wrong answer</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 900 430" role="img" aria-label="Three figures, each with a dashed line at knee height. On the left, the first body wears a sleeveless flared dress whose hem sits at the knee. In the middle, a taller body wears the same pattern draped again: the dress is the same size as before, so the waist seam sits too high, the hem rides well above the knee, and short strain lines show the cloth pulling. On the right, the taller body wears the dress graded to it: the hem is back at the knee and the flare has the same slope as on the first body.">
+  <style type="text/css"><![CDATA[
+    :root {
+      --paper: #f4f1ea;
+      --raised: #fffdf8;
+      --ink: #2b2a28;
+      --faint: #6b6863;
+      --indigo: #4338a8;
+      --oxide: #a4442f;
+      --sage: #4a6f55;
+      --gold: #e0a93a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --raised: #24231f;
+        --ink: #eeece6;
+        --faint: #9a968e;
+        --indigo: #b1a9ff;
+        --oxide: #e3977f;
+        --sage: #93c9a5;
+        --gold: #f2c46d;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+  ]]></style>
+
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="79"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.2"/>
+    </filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="80"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+
+    <!-- A mannequin 300 units tall, feet at the origin, knee at -80. -->
+    <g id="mannequin" fill="var(--raised, #fffdf8)" stroke="var(--faint, #6b6863)" stroke-width="2" stroke-linejoin="round">
+      <path d="M -36 -242 L -79 -152 L -69 -147 L -30 -221 Z M 36 -242 L 79 -152 L 69 -147 L 30 -221 Z"/>
+      <circle cx="-75" cy="-145" r="6"/>
+      <circle cx="75" cy="-145" r="6"/>
+      <rect x="-7" y="-263" width="14" height="12"/>
+      <circle cx="0" cy="-280" r="19"/>
+      <path d="M -36 -242 C -38 -220, -31 -200, -28 -180 C -30 -166, -34 -156, -33 -145 L -26 -3 L -8 -3 L 0 -136 L 8 -3 L 26 -3 L 33 -145 C 34 -156, 30 -166, 28 -180 C 31 -200, 38 -220, 36 -242 C 24 -250, 12 -251, 7 -253 L -7 -253 C -12 -251, -24 -250, -36 -242 Z"/>
+    </g>
+    <!-- The dress as designed, in the body's own proportions. Grading keeps it so. -->
+    <g id="dress" stroke="var(--ink, #2b2a28)" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -26 -247 L -31 -222 C -31 -202, -29 -190, -27 -180 L -56 -80 Q 0 -70, 56 -80 L 27 -180 C 29 -190, 31 -202, 31 -222 L 26 -247 C 14 -238, -14 -238, -26 -247 Z" fill="var(--gold, #e0a93a)" fill-opacity="0.8" stroke-width="2"/>
+      <path d="M -27 -180 Q 0 -176, 27 -180" fill="none" stroke-width="1.3"/>
+      <path d="M -12 -172 L -24 -86 M 12 -172 L 24 -86" fill="none" stroke-width="1" opacity="0.45"/>
+    </g>
+    <!-- The same cloth on a body 1.24 times as tall: the old size, so short and tight. -->
+    <g id="dress-redraped" stroke="var(--ink, #2b2a28)" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -26 -248 L -31 -222 C -31 -206, -29 -198, -28 -194 L -46 -113 Q 0 -105, 46 -113 L 28 -194 C 29 -198, 31 -206, 31 -222 L 26 -248 C 14 -240, -14 -240, -26 -248 Z" fill="var(--gold, #e0a93a)" fill-opacity="0.8" stroke-width="2"/>
+      <path d="M -28 -194 Q 0 -190, 28 -194" fill="none" stroke-width="1.3"/>
+      <path d="M -22 -232 L -12 -214 M 22 -232 L 12 -214 M -21 -186 L -9 -199 M 21 -186 L 9 -199 M -30 -150 L -18 -160 M 30 -150 L 18 -160" fill="none" stroke="var(--oxide, #a4442f)" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <rect width="900" height="430" fill="var(--paper, #f4f1ea)"/>
+  <rect width="900" height="430" filter="url(#grain)"/>
+  <path d="M300 30 L300 400" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.3" stroke-dasharray="2 6"/>
+
+  <g font-family="Georgia, 'Times New Roman', serif">
+    <path d="M40 391 L860 391" stroke="var(--faint, #6b6863)" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- knee lines: 390 - 80 * scale -->
+    <g stroke="var(--faint, #6b6863)" stroke-width="1.2" stroke-dasharray="4 5" fill="none">
+      <path d="M62 323.4 H238 M362 307.3 H538 M662 307.3 H838"/>
+    </g>
+    <g font-size="10.5" text-anchor="end" fill="var(--faint, #6b6863)">
+      <text x="58" y="327">knee</text><text x="358" y="311">knee</text><text x="658" y="311">knee</text>
+    </g>
+
+    <g filter="url(#rough)" transform="translate(150 390) scale(0.833)">
+      <use xlink:href="#mannequin" href="#mannequin"/>
+      <use xlink:href="#dress" href="#dress"/>
+    </g>
+    <g filter="url(#rough)" transform="translate(450 390) scale(1.033)">
+      <use xlink:href="#mannequin" href="#mannequin"/>
+      <use xlink:href="#dress-redraped" href="#dress-redraped"/>
+    </g>
+    <g filter="url(#rough)" transform="translate(750 390) scale(1.033)">
+      <use xlink:href="#mannequin" href="#mannequin"/>
+      <use xlink:href="#dress" href="#dress"/>
+    </g>
+
+    <text x="150" y="30" font-size="13" letter-spacing="1.2" text-anchor="middle" fill="var(--ink, #2b2a28)">THE FIRST BODY</text>
+    <text x="150" y="48" font-size="12" font-style="italic" text-anchor="middle" fill="var(--faint, #6b6863)">the hem at the knee</text>
+    <text x="450" y="30" font-size="13" letter-spacing="1.2" text-anchor="middle" fill="var(--ink, #2b2a28)">SAME PATTERN, DRAPED AGAIN</text>
+    <text x="450" y="48" font-size="12" font-style="italic" text-anchor="middle" fill="var(--oxide, #a4442f)">the hem rides up, the cloth pulls</text>
+    <text x="750" y="30" font-size="13" letter-spacing="1.2" text-anchor="middle" fill="var(--ink, #2b2a28)">GRADED TO THE NEW BODY</text>
+    <text x="750" y="48" font-size="12" font-style="italic" text-anchor="middle" fill="var(--sage, #4a6f55)">hem at the knee, the same flare</text>
+  </g>
+</svg>

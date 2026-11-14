@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
-import { AS_OF, REUSE } from "@site/src/data/graphics";
+import Figure from "@site/src/components/Figure";
+import { AS_OF, REUSE, WRITEUP } from "@site/src/data/graphics";
 
 // Everything on this page is taken from the graphics-reuse repository: the axes from
 // README.md, the checks from CARD.md and agents/researcher/findings/, the entries from
@@ -66,6 +67,10 @@ export default function Reuse(): ReactNode {
             done, and of when the reused answer is still good enough. It starts from papers;
             one entry has been measured.
           </p>
+          <p className="ocl-page__note">
+            The story of how it got here, with the figures:{" "}
+            <Link to={WRITEUP.href}>{WRITEUP.title}</Link>
+          </p>
         </header>
 
         <section className="ocl-ag__sec">
@@ -78,11 +83,23 @@ export default function Reuse(): ReactNode {
             minutes for a fresh drape. Graphics is full of moves like that, and the hard
             part is usually knowing when the reused answer is still right.
           </p>
+          <Figure
+            src="/img/writing/garment-transfer.svg"
+            alt="A kameez, trousers and dupatta draped on a figure 1.609 m tall are carried in 1.2 seconds to a figure 1.753 m tall. The kameez and trousers come out graded to the new body, with edges 6 to 7 percent longer at the median and 22 to 30 percent longer at the 95th percentile. The dupatta's free end tears. Below, on one time axis, draping again takes about 6 minutes and carrying over takes 1.2 seconds."
+            caption="The one measured entry. The body-hugging pieces survived the trip and the free-hanging one did not."
+            plain
+          />
         </section>
 
         <section className="ocl-ag__sec">
           <h2>How entries are filed</h2>
           <p>By what gets reused, since the same moves turn up in rendering, simulation and geometry:</p>
+          <Figure
+            src="/img/writing/six-ways-to-reuse.svg"
+            alt="Six small drawings in two rows, one for each thing graphics software reuses: the previous frame, a neighbour's work, an earlier and slightly different run, a coarse solution, a result on another shape, and work paid once and used for every case."
+            caption="The six categories, by what gets reused."
+            plain
+          />
           <dl className="ocl-ag__dl">
             {AXES.map(([name, body]) => (
               <div key={name} className="ocl-ag__dlRow">
@@ -97,6 +114,12 @@ export default function Reuse(): ReactNode {
             frame's pixels changes the answer, which shows as ghosting when the history is
             stale. Conditions for when reuse is safe matter mostly for the second kind.
           </p>
+          <Figure
+            src="/img/writing/cost-or-answer.svg"
+            alt="Left: bounding boxes refitted around points that have drifted apart grow large and overlapping, but every point is still inside its box, so queries stay right and get slower. Right: a moving ball with fading copies trailing behind it, where reused pixels from older frames leave a ghost."
+            caption="Reuse that changes only the cost fails by slowing down; reuse that changes the answer fails by being wrong."
+            plain
+          />
           <p>
             Each entry says what work is wasted, which technique avoids it and where it comes
             from, when the reuse stays valid, how it fails, how to check it, and where it was
@@ -116,6 +139,13 @@ export default function Reuse(): ReactNode {
             ))}
           </dl>
         </section>
+
+        <Figure
+          src="/img/writing/redrape-or-grade.svg"
+          alt="Three figures with a dashed line at knee height. The first body wears a flared dress with its hem at the knee. A taller body wears the same pattern draped again: the hem rides well above the knee and the cloth pulls. The taller body wears the dress graded to it: the hem is back at the knee and the flare keeps its slope."
+          caption="What the full reading added: a garment moved to a new body can be draped again or graded, and no agent asked which was wanted."
+          plain
+        />
 
         <section className="ocl-ag__sec">
           <h2>Entries so far</h2>

@@ -3,7 +3,7 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import PageArt from "@site/src/components/PageArt";
-import { AS_OF, GRAPHICS, REUSE, type GraphicsCard } from "@site/src/data/graphics";
+import { AS_OF, GRAPHICS, REUSE, WRITEUP, type GraphicsCard } from "@site/src/data/graphics";
 
 // Same card as /agentic, so the two sections read alike. The questions on each card
 // come from the card's own data, since a reference library and a design library for
@@ -61,6 +61,9 @@ export default function GraphicsIndex(): ReactNode {
             of the pages they sit on. Two libraries so far. Each collects what people
             have already worked out, and each counts an entry only once it has been
             checked against what an AI agent would have done without it.
+          </p>
+          <p className="ocl-page__note">
+            The write-up, with figures: <Link to={WRITEUP.href}>{WRITEUP.title}</Link>
           </p>
           <dl className="ocl-tally">
             <div>

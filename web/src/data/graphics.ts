@@ -12,6 +12,12 @@ import { GUIDES } from "@site/src/data/agentic";
 
 export const AS_OF = "14 November 2026";
 
+/** The long write-up of graphics-reuse, in /writing. */
+export const WRITEUP = {
+  title: "When is the old answer still good enough?",
+  href: "/writing/when-is-the-old-answer-good-enough",
+};
+
 export const REUSE = {
   repo: "https://github.com/Rubix982/graphics-reuse",
   entries: 4, // README.md, "Entries so far"
