@@ -1496,3 +1496,12 @@ t-T-100:
   gist: "If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes --…"
   status: "open"
   surface: thread
+
+t-T-108:
+  id: "T-108"
+  kind: "Thread"
+  title: "Run Ravfogel §5.3 on Qwen2.5-0.5B and Llama-3.2-1B, locally"
+  date: ""
+  gist: "[R-020] (2026-11-10) found §5.3 reproducible: the probe is read-only, so the two small models run on this machine and cover two…"
+  status: "open"
+  surface: thread

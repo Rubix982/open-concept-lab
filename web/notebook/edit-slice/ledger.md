@@ -4,7 +4,7 @@ sidebar_label: Evidence
 sidebar_position: 3
 description: Every decision, finding and thread in the edit-slice record, generated from the repository so it cannot drift from it.
 toc_max_heading_level: 2
-source_digest: 9cc6f1c757e10c6e
+source_digest: ef3315779cfec04e
 ---
 
 # Evidence ledger
@@ -13,7 +13,7 @@ _Generated from `agents/shared/decisions.md`, `agents/shared/findings.md` and `t
 
 The [paper](./review) argues a claim and the [narrative](/writing/five-days) tells the story. This is the complete record behind both — including the entries that went nowhere, which are the majority.
 
-**56 decisions · 34 findings · 86 threads (1 active, 66 answered, 3 dropped, 7 open, 9 parked)**
+**56 decisions · 34 findings · 87 threads (1 active, 66 answered, 3 dropped, 8 open, 9 parked)**
 
 ## Decisions and results
 
@@ -391,7 +391,7 @@ _Confidence levels and full evidence are in the repository entries; these are on
 
 Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is a unit of *work*. Parked is not dropped — a parked thread carries enough context to resume cold.
 
-### Open (7)
+### Open (8)
 
 | id | question | parent | status |
 | --- | --- | --- | --- |
@@ -402,6 +402,7 @@ Open questions, tracked as a tree. A thread is a unit of *inquiry*; a ticket is 
 | <Anchor id="t-T-105" />`T-105` | **How much of the attribute drift is the essence term already absorbing?** — computev carries a KL anchor on "&#123;subject&#125; is a" with klfactor=0.0625 (EasyEdit's value) whose explicit job is to stop… | T-087 | open |
 | <Anchor id="t-T-107" />`T-107` | **Is the edit-friendly fact the one with few dependents, or the one with a rare subject string?** — Saif's reading of the Vlaminck arc: edit facts that carry few prior inferences -- physics, chemistry -- because a biographical… | T-087 | open |
 | <Anchor id="t-T-100" />`T-100` | **Does the typed-attribute extension discriminate the three explanations?** — If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes --… | T-086 | open |
+| <Anchor id="t-T-108" />`T-108` | **Run Ravfogel §5.3 on Qwen2.5-0.5B and Llama-3.2-1B, locally** — [R-020] (2026-11-10) found §5.3 reproducible: the probe is read-only, so the two small models run on this machine and cover two… | T-100 | open |
 
 ### Active (1)
 
