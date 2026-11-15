@@ -189,8 +189,17 @@ def main() -> None:
         log.info("confound 3 — on %s only: prominence %+.3f, dependent count %+.3f",
                  sorted(common), sens["prominence"], sens["dependent_count"])
 
+    # The model is not an input to this ticket — it is whatever [E-001] ran on,
+    # and every quantity here is derived from that file. Recorded by reading it
+    # back rather than by naming a model here, so the two can never disagree.
+    # Written because the tidy backfill found this file recording no model at
+    # all, which makes a per-subject median of a model-dependent quantity
+    # incomparable with any other run.
+    e001 = json.loads(E001.read_text())
     OUT.write_text(json.dumps({
         "ticket": "E-016", "card": "C-008",
+        "model": e001.get("model"), "layer": e001.get("layer"),
+        "model_source": "inherited from E-001-predicted-vs-measured.json",
         "n_subjects": len(rows), "unresolved": unresolved,
         "meta": {
             "damage": "median per-subject `excess` = real movement - same-subject control movement",

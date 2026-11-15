@@ -1,6 +1,12 @@
 {
  "ticket": "E-039",
  "source": "committed logs under ai/edit-reach/logs/",
+ "model": "meta-llama/Llama-3.1-8B",
+ "models": [
+  "meta-llama/Llama-3.1-8B"
+ ],
+ "sessions_without_a_model": [],
+ "model_source": "inherited from each ticket's result file; these logs do not record the model themselves",
  "why": "a runner writes one JSON per ticket, so a second run overwrites the first; the logs keep both",
  "sessions_with_device_readings": 2,
  "readings": 32,
@@ -141,7 +147,9 @@
      "gpu": "2",
      "floor": null
     }
-   ]
+   ],
+   "model": "meta-llama/Llama-3.1-8B",
+   "model_source": "inherited from the ticket's result file"
   },
   "E-006-2026-11-01-120257.log": {
    "ticket": "E",
@@ -243,7 +251,9 @@
      "gpu": "0",
      "floor": 0.08109
     }
-   ]
+   ],
+   "model": "meta-llama/Llama-3.1-8B",
+   "model_source": "inherited from the ticket's result file"
   }
  }
 }

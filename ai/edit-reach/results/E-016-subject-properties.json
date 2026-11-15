@@ -1,6 +1,9 @@
 {
  "ticket": "E-016",
  "card": "C-008",
+ "model": "meta-llama/Llama-3.1-8B",
+ "layer": 5,
+ "model_source": "inherited from E-001-predicted-vs-measured.json",
  "n_subjects": 41,
  "unresolved": [
   "Joey BadA$$"

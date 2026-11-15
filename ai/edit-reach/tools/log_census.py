@@ -28,6 +28,7 @@ import re
 from collections import defaultdict
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+RESULTS = ROOT / "results"
 LOGS = ROOT / "logs"
 OUT = ROOT / "results" / "E-039-log-census.json"
 
@@ -73,9 +74,33 @@ def main() -> None:
                         for g in by_gpu_per_session.values() for sigs in g.values())
     stable_across = all(len(v) == 1 for v in across.values())
 
+    # Which model each session ran on. These logs do not carry it — only the
+    # runners that pass a `config=` to `setup` do — so it is resolved from the
+    # ticket's own result file and labelled as inherited. A session whose ticket
+    # has no result file on disk gets `null`, never a guess: a wrong model here
+    # would make readings look comparable that are not.
+    def model_of(ticket: str) -> str | None:
+        for f in sorted(RESULTS.glob(f"{ticket}-*.json")):
+            try:
+                return json.loads(f.read_text()).get("model")
+            except Exception:
+                continue
+        return None
+
+    for name, sess in sessions.items():
+        sess["model"] = model_of(sess["ticket"])
+        sess["model_source"] = "inherited from the ticket's result file"
+    models = sorted({s["model"] for s in sessions.values() if s["model"]})
+    unresolved = [n for n, s in sessions.items() if not s["model"]]
+
     doc = {
         "ticket": "E-039",
         "source": "committed logs under ai/edit-reach/logs/",
+        "model": models[0] if len(models) == 1 else None,
+        "models": models,
+        "sessions_without_a_model": unresolved,
+        "model_source": ("inherited from each ticket's result file; these logs do "
+                         "not record the model themselves"),
         "why": ("a runner writes one JSON per ticket, so a second run overwrites the "
                 "first; the logs keep both"),
         "sessions_with_device_readings": len(sessions),

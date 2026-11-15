@@ -995,3 +995,46 @@ row now says so.
 - web/notebook/edit-reach/paper.md §5 summary table
 
 **Closed:** 2026-11-15
+
+---
+
+### E-043 · Build the 70B edit cache, so the spine is not a one-model result
+
+**Status:** in-progress
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+[E-001], [E-002] and [E-003] carry §5.1 and §5.4 — the headline correlation and
+its collapse under a control, and the separation of destruction from
+destination. All three are Llama-3.1-8B, and all three read `k*` and `delta_v`
+from `edit-slice/results/cache/E014_kstar_L5_s1538.pt`. Those tensors are
+14,336 wide, which is 8B's MLP. 70B's is 28,672. So the spine cannot move to
+another model by pointing it at one; the cache has to be built there.
+
+`run_e014.py` builds it, and took `--model` today. The gated chain set for 70B
+already exists and yields the same **78 usable chains** as 8B, so the two caches
+will cover the same cases and the results will be comparable rather than merely
+both present.
+
+**Cost, stated because it is the reason this was not done earlier.** This is not
+a forward pass. ROME optimises `v*` per edit, two edits per chain — the real
+edit and its same-subject control — so 156 optimisations on a 70B model through
+NDIF. It caches per chunk and is resumable.
+
+**Falsifier.** The build fails if the cache comes out at a width other than
+28,672, or if fewer than 78 chains complete, in which case the 70B arm covers a
+different set from the 8B arm and the two cannot be compared without saying so.
+
+**What this is not.** It does not make the paper a two-model paper on its own.
+It makes [E-001] to [E-003] runnable on 70B; running them is the next ticket.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Artifacts:** —
+
+**Closed:** —
