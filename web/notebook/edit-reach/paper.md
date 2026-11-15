@@ -47,7 +47,7 @@ It cannot. The number sits at 1 wherever the prompt names the edited subject, an
 
 That raised a second question: how much was there for any measure to predict? We compared two things on the same 495 probes. Changing what the edit says, holding the person fixed, moves them by **0.0009**. Changing whose fact is edited, holding everything else fixed, moves them by **0.0583** — about sixty-five times as much. Most of what an edit does follows from whose name it touched rather than from what was said, so there was little edit-specific effect for any measure to find.
 
-If the measure cannot predict an edit's reach, can anything bound it? The same algebra gives one universal ceiling, and the ceiling is empty where it would matter. Its median value for a question that never names the edited subject sits *above* what a question that does name it actually receives, so it cannot tell those two apart and forbids nothing.
+If the measure cannot predict an edit's reach, can anything bound it? The same algebra gives one universal ceiling. For a question that never names the edited subject, its median value sits *above* what a question that does name it actually receives, so the ceiling cannot tell those two questions apart and forbids nothing.
 
 The magnitude is not a property of the edited person either. Neither how widely known they are, nor how many facts depend on them, predicts how hard an edit lands — to within the smallest effect 41 subjects can resolve.
 
@@ -329,7 +329,7 @@ A **same-subject control** — a different property of the same person — alrea
 
 ### 5.2 The far field has no subject-specific dynamic range
 
-Near-field and far-field rows use the same code path and the same floor construction; only the question type differs. The far-field excess is more than three orders of magnitude below the near-field excess, and that gap is the result.
+Near-field and far-field rows use the same code path and the same floor construction; only the question type differs. The far-field excess is more than three orders of magnitude below the near-field excess: **+0.8439** where the prompt names the subject, **+0.0002** where it does not.
 
 <Figure
   src="/img/edit-reach/near-and-far-field.svg"
