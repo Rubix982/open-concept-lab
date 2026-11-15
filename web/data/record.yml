@@ -2,13 +2,13 @@
 # One entry per project: how much of its record is closed.
 
 edit-reach:
-  digest: bf2b3d0c554a0159
+  digest: 224fdac26a888bd4
   cards_closed: 8
-  cards: 8
+  cards: 9
   threads_answered: 10
-  threads: 12
-  tickets_closed: 36
-  tickets: 36
+  threads: 13
+  tickets_closed: 37
+  tickets: 37
   toc:
     - threads-cards
     - threads-answered
