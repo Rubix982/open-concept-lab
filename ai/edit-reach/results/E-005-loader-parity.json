@@ -1,0 +1,80 @@
+{
+ "ticket": "E-005",
+ "model": "meta-llama/Llama-3.1-8B",
+ "layer": 5,
+ "nnsight": "0.8.1",
+ "structure": {
+  "language": {
+   "arch": "llama",
+   "n_layers": 32,
+   "d_mlp": 14336,
+   "key_site": "Envoy",
+   "path": "model.model.layers.5.mlp.down_proj"
+  },
+  "transformers": {
+   "arch": "llama",
+   "n_layers": 32,
+   "d_mlp": 14336,
+   "key_site": "Envoy",
+   "path": "model.model.layers.5.mlp.down_proj"
+  }
+ },
+ "same_structure": true,
+ "repeats_per_loader": 3,
+ "within_loader": {
+  "language": {
+   "pairs": 3,
+   "all_equal": 1,
+   "worst_abs": 0.625,
+   "max_fraction_differing": 0.939434826374054
+  },
+  "transformers": {
+   "pairs": 3,
+   "all_equal": 3,
+   "worst_abs": 0.0,
+   "max_fraction_differing": 0.0
+  }
+ },
+ "between_loaders": {
+  "pairs": 9,
+  "all_equal": 0,
+  "worst_abs": 0.625,
+  "max_fraction_differing": 0.939434826374054
+ },
+ "within_is_reproducible": false,
+ "difference_attributable_to_loader": false,
+ "median_abs_key": 0.0113525390625,
+ "verified_surfaces": [
+  "mlp.down_proj.input at the edit layer",
+  "lm_head.output"
+ ],
+ "gates": {
+  "language": {
+   "anchor_worst_deviation": 0.0,
+   "anchors_pinned": true,
+   "floor_medians": [
+    0.08094214687103357,
+    0.08109313181234508,
+    0.08109313181234508
+   ],
+   "floor_median_spread": 0.00015098494131150775,
+   "floor_reproduced": true
+  },
+  "transformers": {
+   "anchor_worst_deviation": 0.0,
+   "anchors_pinned": true,
+   "floor_medians": [
+    0.08109313181234508,
+    0.08109313181234508,
+    0.08109313181234508
+   ],
+   "floor_median_spread": 0.0,
+   "floor_reproduced": true
+  }
+ },
+ "e001_floor_median": 0.0809,
+ "n_anchors": 42,
+ "n_floors": 42,
+ "verdict": "branch 1, by the repeat design rather than by bit-identity \u2014 readings differ as much WITHIN one loader as BETWEEN the two, so the loader is not the variable and the two are the same instrument at this platform's reproducibility. The pre-stated bit-identity criterion was unsatisfiable and is recorded as a design error, not met and not waived.",
+ "note": "connect(loader=...) is switchable; the DEFAULT is unchanged and stays LanguageModel unless this says branch 1."
+}

@@ -293,10 +293,19 @@ export function Run({
   model: string;
   n: ReactNode;
   date: string;
-  /** The results directory the run wrote, relative to results/. */
+  /** What the run wrote, relative to results/. */
   out: string;
   children: ReactNode;
 }): ReactNode {
+  // A committed file is linked; a per-run directory is not, because those were
+  // never committed and most no longer exist. Naming a row as gone is worth
+  // more than a link that 404s, and more than a filename a reader cannot tell
+  // is unreachable.
+  const base =
+    "https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/results/";
+  // Space-separated, because a run that swept three models wrote three files
+  // and naming one of them would be a quieter kind of wrong than naming none.
+  const files = out.split(" ").filter((o) => o.endsWith(".json"));
   return (
     <tr id={`run-${id}`}>
       <td className="n">{id}</td>
@@ -304,7 +313,20 @@ export function Run({
       <td className="n">{model}</td>
       <td className="n">{n}</td>
       <td className="n">{date}</td>
-      <td className="n">{out}</td>
+      <td className="n">
+        {files.length ? (
+          files.map((f, i) => (
+            <span key={f}>
+              {i > 0 ? <br /> : null}
+              <a href={base + f}>{f}</a>
+            </span>
+          ))
+        ) : (
+          <span className="ocl-run__gone" title="A per-run directory: never committed, and no longer on disk">
+            {out}
+          </span>
+        )}
+      </td>
     </tr>
   );
 }

@@ -1,0 +1,195 @@
+{
+  "model": "meta-llama/Llama-3.1-70B",
+  "layer": 5,
+  "results": [
+    {
+      "name": "dtype_budget",
+      "verdict": "recorded",
+      "documented": null,
+      "observed": 0.0038874743040651083,
+      "unit": "max per-element relative error",
+      "traces": 0,
+      "seconds": 0.002973417009343393,
+      "note": "a constant of the dtype, the same everywhere; cast to float32 BEFORE the dot product and this stops mattering",
+      "extra": {
+        "bfloat16_eps": 0.0078125,
+        "float32_eps": 1.1920928955078125e-07,
+        "channels_summed": 28672
+      }
+    },
+    {
+      "name": "ratio_in_trace",
+      "verdict": "matches",
+      "documented": 0.0,
+      "observed": 0.0,
+      "unit": "deviation from 1.000",
+      "traces": 1,
+      "seconds": 5.60597966700152,
+      "note": "an analytic quantity: the extension cannot move the subject's key under causal attention, so any deviation is your pipeline",
+      "extra": {
+        "gpu": "0,1,2,3",
+        "anchors": 8
+      }
+    },
+    {
+      "name": "cached_reference",
+      "verdict": "matches",
+      "documented": 0.006382,
+      "observed": 0.0062111616134643555,
+      "unit": "deviation from 1.000",
+      "traces": 1,
+      "seconds": 4.607598541988409,
+      "note": "k* from the previous trace, arithmetic in bf16 -- dtype and provenance together, which is what caching actually costs",
+      "extra": {}
+    },
+    {
+      "name": "batch_rows",
+      "verdict": "matches",
+      "documented": 0.0,
+      "observed": 0.0,
+      "unit": "max |difference| in the derived ratio",
+      "traces": 2,
+      "seconds": 10.29890929198882,
+      "note": "unrelated neighbours in the batch, width held fixed; compare the raw difference against the ratio one",
+      "extra": {
+        "raw_key_difference": 0.001953125,
+        "raw_bit_identical": false,
+        "key_magnitude": 0.21484375,
+        "raw_relative": 0.00909090909090909,
+        "rows": "16 -> 22",
+        "width": 14
+      }
+    },
+    {
+      "name": "batch_width",
+      "verdict": "recorded",
+      "documented": null,
+      "observed": 0.001953125,
+      "unit": "max |difference|",
+      "traces": 1,
+      "seconds": 5.273427124993759,
+      "note": "pad width only; causally this cannot matter, so anything nonzero here is kernel shape-dependence and it bounds every cross-run comparison you make on raw activations",
+      "extra": {
+        "bit_identical": false,
+        "key_magnitude": 0.21484375,
+        "relative": 0.00909090909090909,
+        "width": "14 -> 22",
+        "rows_touched": "16/16",
+        "per_row_max": [
+          0.00097656,
+          0.00073242,
+          0.00054932,
+          0.00048828,
+          0.00195312,
+          0.00048828,
+          0.00061035,
+          0.00097656,
+          0.00097656,
+          0.00073242,
+          0.00054932,
+          0.00048828,
+          0.00195312,
+          0.00048828,
+          0.00061035,
+          0.00097656
+        ],
+        "pad_tokens_after_read_position": [
+          5,
+          8,
+          8,
+          8,
+          10,
+          8,
+          10,
+          9,
+          5,
+          8,
+          8,
+          8,
+          10,
+          8,
+          10,
+          9
+        ]
+      }
+    },
+    {
+      "name": "pad_content",
+      "verdict": "matches",
+      "documented": 0.0,
+      "observed": 0.0,
+      "unit": "max |difference|",
+      "traces": 2,
+      "seconds": 10.59489604200644,
+      "note": "same width, different trailing content; zero here means causality holds and the width effect is kernel shape-dependence, not masking",
+      "extra": {
+        "bit_identical": true,
+        "pad_id": 128001,
+        "other_id": 1167
+      }
+    },
+    {
+      "name": "matmul_site",
+      "verdict": "matches",
+      "documented": 4.969e-07,
+      "observed": 4.968605935573578e-07,
+      "unit": "|difference| of medians",
+      "traces": 2,
+      "seconds": 8.58401550000417,
+      "note": "pick one site and stay with it; read the per-item figure in extra, which the median understates by orders of magnitude",
+      "extra": {
+        "max_per_item_difference": 1.3177283108234406e-05,
+        "pairs": 6
+      }
+    },
+    {
+      "name": "served_dtype",
+      "verdict": "recorded",
+      "documented": null,
+      "observed": null,
+      "unit": "",
+      "traces": 1,
+      "seconds": 3.3103361670073355,
+      "note": "activations arrive as bfloat16; the dtype half of section 1 applies only below float32",
+      "extra": {
+        "dtype": "bfloat16",
+        "d_mlp": 28672,
+        "section_1_applies": true
+      }
+    },
+    {
+      "name": "session_partition",
+      "verdict": "recorded",
+      "documented": null,
+      "observed": 1.0,
+      "unit": "distinct readings",
+      "traces": 4,
+      "seconds": 26.356253374993685,
+      "note": "a clean partition requires BOTH directions: one device per reading and one reading per device",
+      "extra": {
+        "connections": 4,
+        "clean_partition": true,
+        "spread_across_readings": 0.0,
+        "by_signature": {
+          "ab4e985f6af187f1": [
+            "0,1,2,3"
+          ]
+        }
+      }
+    },
+    {
+      "name": "trace_source",
+      "verdict": "recorded",
+      "documented": null,
+      "observed": null,
+      "unit": "",
+      "traces": 0,
+      "seconds": 0.0006490419909823686,
+      "note": "raised WithBlockNotFoundError; write traces in a real .py file",
+      "extra": {
+        "raised": "WithBlockNotFoundError",
+        "expected": "WithBlockNotFoundError"
+      }
+    }
+  ]
+}

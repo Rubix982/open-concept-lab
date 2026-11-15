@@ -10221,6 +10221,15 @@ a:hover > .ocl-home__featureCover {
   border-color: var(--ocl-ink);
 }
 
+/* A run output that cannot be opened. Struck rather than hidden: the row is
+   part of the record and the reader should be able to see that this one has no
+   file behind it. */
+.ocl-run__gone {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  color: var(--ocl-ink-faint);
+}
+
 /* ---- the project's pages, above the record ---- */
 
 .ocl-pages {

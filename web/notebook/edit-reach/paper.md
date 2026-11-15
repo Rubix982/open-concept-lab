@@ -794,23 +794,25 @@ The empirical content is entirely in the premise — that the probe really does 
 
 ## Appendix B. Provenance of every number
 
-Each row names the run a number came from. Config files pin the seed and the layer; argv carries only the output path.
+Each row names the run a number came from, and links the files it wrote. Config files pin the seed and the layer; argv carries only the output path.
+
+**Six rows have nothing to link.** Those runs wrote a dated directory rather than a single file, none of those directories was ever committed, and they are no longer on any machine — their names are struck through. The numbers they produced are quoted in the sections above and in §B.1 where a summary survived, and they cannot be checked against their source. That is a real hole in the record and it is marked rather than tidied away.
 
 <Runs caption={<>The runs behind the figures and tables above. Directories are under <code>results/</code>.</>}>
-  <Run id="E‑004" model="Llama‑3.1‑8B" n="1,539" date="6 Nov" out="2026‑11‑06‑far/">Near and far field under the same-relation stranger floor</Run>
-  <Run id="E‑001" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E‑001‑predicted‑vs‑measured.json">Predicted reach against measured movement, with a same-subject control</Run>
-  <Run id="E‑002" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E‑002‑different‑subject‑arm.json">The different-subject arm: identity against content</Run>
-  <Run id="E‑003" model="Llama‑3.1‑8B" n="495" date="1 Nov" out="E‑003‑destination.json">The same probes under a full-vocabulary argmax readout</Run>
-  <Run id="E‑007" model="Llama‑3.1‑8B" n="8" date="2 Nov" out="2026‑11‑02‑shape/">Batch reshaping against raw key magnitude</Run>
-  <Run id="E‑008" model="3 models" n="36" date="3 Nov" out="2026‑11‑03‑models/">The conformance suite across two architectures</Run>
-  <Run id="E‑009" model="2 models" n="32" date="3 Nov" out="2026‑11‑03‑gpu/">Whether the GPU partition reappears on another day</Run>
-  <Run id="E‑010" model="2 models" n="90" date="3 Nov" out="2026‑11‑03‑depth/">Five layers on each of two models, six checks each</Run>
-  <Run id="E‑012" model="Llama‑3.1‑8B" n="census" date="3 Nov" out="2026‑11‑03‑census/">Every recorded reading of one quantity, by value and device</Run>
-  <Run id="E‑011" model="3 models" n="15" date="4 Nov" out="2026‑11‑04‑ndif/">Arithmetic-site disagreement across fifteen layer-model pairs</Run>
-  <Run id="E‑017" model="GPT‑J‑6B" n="16" date="21 Oct" out="2026‑10‑21‑pin/">Prefix-sharing premise, first pass</Run>
-  <Run id="E‑018" model="4 models" n="16" date="23 Oct" out="2026‑10‑23‑pin4/">Premise at scale; different-subject floor 0.082</Run>
-  <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026‑10‑28‑alias/">Renamed subject: string similarity against delivered fraction</Run>
-  <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026‑11‑01‑ripple/">RippleEdits re-run, direct exposure counted</Run>
+  <Run id="E‑004" model="Llama‑3.1‑8B" n="1,539" date="6 Nov" out="E-004-far-field-floor.json">Near and far field under the same-relation stranger floor</Run>
+  <Run id="E‑001" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-001-predicted-vs-measured.json">Predicted reach against measured movement, with a same-subject control</Run>
+  <Run id="E‑002" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-002-different-subject-arm.json">The different-subject arm: identity against content</Run>
+  <Run id="E‑003" model="Llama‑3.1‑8B" n="495" date="1 Nov" out="E-003-destination.json">The same probes under a full-vocabulary argmax readout</Run>
+  <Run id="E‑007" model="Llama‑3.1‑8B" n="8" date="2 Nov" out="2026-11-02-shape/">Batch reshaping against raw key magnitude</Run>
+  <Run id="E‑008" model="3 models" n="36" date="3 Nov" out="E-007-conformance-llama-3.1-8b.json E-007-conformance-llama-3.1-70b.json E-007-conformance-gpt-j-6b.json">The conformance suite across two architectures</Run>
+  <Run id="E‑009" model="2 models" n="32" date="3 Nov" out="E-009-partition-8b.json E-009-partition-gptj.json">Whether the GPU partition reappears on another day</Run>
+  <Run id="E‑010" model="2 models" n="90" date="3 Nov" out="E-010-layers-8b.json E-010-layers-gptj.json">Five layers on each of two models, six checks each</Run>
+  <Run id="E‑012" model="Llama‑3.1‑8B" n="census" date="3 Nov" out="2026-11-03-census/">Every recorded reading of one quantity, by value and device</Run>
+  <Run id="E‑011" model="3 models" n="15" date="4 Nov" out="E-011-layers-70b.json E-010-layers-8b.json E-010-layers-gptj.json">Arithmetic-site disagreement across fifteen layer-model pairs</Run>
+  <Run id="E‑017" model="GPT‑J‑6B" n="16" date="21 Oct" out="2026-10-21-pin/">Prefix-sharing premise, first pass</Run>
+  <Run id="E‑018" model="4 models" n="16" date="23 Oct" out="2026-10-23-pin4/">Premise at scale; different-subject floor 0.082</Run>
+  <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026-10-28-alias/">Renamed subject: string similarity against delivered fraction</Run>
+  <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026-11-01-ripple/">RippleEdits re-run, direct exposure counted</Run>
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
 </Runs>

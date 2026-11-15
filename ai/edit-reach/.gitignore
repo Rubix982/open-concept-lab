@@ -1,6 +1,13 @@
-# results/ holds raw outputs — gitignored except summaries
+# results/ holds raw outputs. The run JSONs are committed: Appendix B of the
+# paper names them row by row, and a provenance table pointing at files nobody
+# can open is not provenance. 19 files, about 2 MB.
+#
+# The per-run directories are NOT committed, and most no longer exist on any
+# machine. Appendix B names those rows rather than listing them as if they were
+# available.
 results/*
 !results/*.md
+!results/*.json
 !results/summaries/
 
 .venv/
