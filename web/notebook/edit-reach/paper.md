@@ -39,19 +39,21 @@ import PlainBody from "./_plain.mdx";
 
 <Paper>
 
-A rank-one weight edit divides its update by a fixed inner product, so the fraction of it arriving at any token can be computed in one forward pass through the *unedited* model — for any prompt, before the edit exists. We ask whether that quantity can screen an evaluation item before the item is run.
+A rank-one weight edit divides its update by a fixed inner product. Because it does, you can work out for any prompt what fraction of the edit arrives at any token — in one forward pass, through the model as it stood *before* the edit was made.
 
-It cannot. It is pinned to 1 wherever the prompt names the edited subject, and flat where the question never names it — which is where propagation lives. The same control separates the two regimes by **+0.8439** and by **+0.0002**. What the quantity does detect is contamination, and one published benchmark <Cite id="cohen2024ripple" /> has items that fail on exactly that ground.
+We asked whether that number could screen an evaluation item before the item is run: score a question, and decide from the score whether it is worth testing.
 
-Four further results came off the same probe set.
+It cannot. The number sits at 1 wherever the prompt names the edited subject, and it is flat wherever the question never names it. Against a control that holds the edit's size fixed, those two regimes separate by **+0.8439** and by **+0.0002**. The second figure is the one that matters, because a question that never names the subject is what propagation means.
 
-**Whose fact you edit matters about sixty-five times more than what you change it to** — **0.0583** against **0.0009** on the same probes — which is why there was so little edit-specific effect for any measure to predict.
+That raised a second question: how much was there for any measure to predict? We compared two things on the same 495 probes. Changing what the edit says, holding the person fixed, moves them by **0.0009**. Changing whose fact is edited, holding everything else fixed, moves them by **0.0583** — about sixty-five times as much. Most of what an edit does follows from whose name it touched rather than from what was said, so there was little edit-specific effect for any measure to find.
 
-A single edit does two things, breaking the old answer and supplying the new one, and the two come apart: on one probe set under one metric they move in opposite directions.
+If the measure cannot predict an edit's reach, can anything bound it? The same algebra gives one universal ceiling, and the ceiling is empty where it would matter. Its median value for a question that never names the edited subject sits *above* what a question that does name it actually receives, so it cannot tell those two apart and forbids nothing.
 
-The same algebra yields the only universal ceiling on an edit's reach, and the ceiling forbids nothing. It permits a question that never names the edited subject to receive **more** than one that does.
+The magnitude is not a property of the edited person either. Neither how widely known they are, nor how many facts depend on them, predicts how hard an edit lands — to within the smallest effect 41 subjects can resolve.
 
-No property of the edited subject predicts how hard an edit lands — neither how widely known they are nor how many facts depend on them — to within the smallest effect 41 subjects can resolve.
+What survives is the one thing the number does well. It is high exactly when the edited name is in the prompt, so it can read an evaluation item and say whether that item is able to test propagation at all. One published benchmark <Cite id="cohen2024ripple" /> has a test type built to check two-hop propagation whose prompts contain the edited name; those items take a median **0.982** of the update against a **0.065** floor.
+
+One more result came off the same probe set, and it was not the one we were looking for. A single edit does two things: it breaks the old answer, and it supplies the new one. Those two halves come apart. Each is carried by a different control on the same probes, which means the correct control depends on which half is being measured.
 
 </Paper>
 
