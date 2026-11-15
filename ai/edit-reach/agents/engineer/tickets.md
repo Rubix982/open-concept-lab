@@ -1144,3 +1144,89 @@ describing `arch.py`; it has used `key_site` since it was written.
 - agents/engineer/workspace/ndif_vstar_repro.py
 
 **Closed:** 2026-11-15
+
+---
+
+### E-045 · The far field on a second architecture
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+[E-004] carries §5.2 — the far field has no subject-specific dynamic range —
+and §7's limitation 3. It has run on Llama-3.1-8B and, today, on
+Llama-3.1-70B. Both are Llamas. Every far-field number in the paper is one
+architecture.
+
+GPT-J-6B is the second architecture this project can read, and until [E-044] it
+could not have run here at all: `rome.py` assumed Llama's path to the MLP output
+projection in five places. It resolves per architecture now, so this is the
+first far-field reading that is not a Llama.
+
+**Where this does and does not satisfy the model rule.** `CLAUDE.md` asks for at
+least one model **above 8B from each family**. GPT-J-6B is below that floor, and
+the floor cannot be met for this family: NDIF serves exactly one `gptj`
+deployment and it is the 6B. So this is family coverage at the only size
+available, and the limitation stays until a larger GPT-J-class model is served.
+Saying it covers the rule would be false.
+
+**Falsifier.** The shape of [E-004]'s result is that hop-2 questions sit above a
+same-relation stranger floor by a small positive excess, with the same-relation
+excess at roughly zero. It fails to generalise if the excess over the
+different-relation floor is negative on GPT-J, or if the same-relation excess is
+materially non-zero — either would mean §5.2 is a Llama result, not a result
+about this measure.
+
+The reproduction gate must skip: its reference numbers were measured on
+Llama-3.1-8B, and [E-004] was taught that today.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Result: the direction survives and the effect does not.** Both falsifier
+conditions are met. The excess over the different-relation floor is **+0.0014**,
+positive; the same-relation excess is **-0.0000**. The gate skipped itself,
+naming Llama-3.1-8B. So §5.2 is not a statement about Llamas.
+
+But reading the three side by side, almost nothing else carries across:
+
+| model | own k* | floor | excess | above floor |
+| --- | --- | --- | --- | --- |
+| Llama-3.1-8B | 0.0544 | 0.0298 | +0.0231 | 79.7% |
+| Llama-3.1-70B | 0.0174 | 0.0093 | +0.0075 | 72% |
+| GPT-J-6B | 0.1303 | 0.1280 | **+0.0019** | **52%** |
+
+**52% is the number to read.** On the Llamas a clear majority of far-field
+questions sit above their floor. On GPT-J it is a coin flip, and own and floor
+are 0.1303 against 0.1280 — the same quantity twice. The floor itself is four
+times the 8B one and fourteen times the 70B one, which matches [E-040]'s
+anchor-floor reading of 0.194 on this model at this layer: GPT-J's keys at layer
+5 simply discriminate less.
+
+**So this result is consistent with §5.2 and is weak evidence for it.** §5.2
+claims the far field has no subject-specific dynamic range. On GPT-J there is
+barely any dynamic range *at all* to have, because the floor swallows the
+measurement, and a null on a model with no room for a signal is not the same
+evidence as a null on a model that had room. The Llamas had room — 79.7% and 72%
+above floor — and still showed +0.0231 and +0.0075. That is where the claim is
+actually carried.
+
+**One more thing the run says that §5.2 does not cover.** The near field is not
+pinned the same way: hop-1 natural is **0.7985** on GPT-J against 0.9334 and
+0.9350 on the two Llamas. §5's near-field row is a Llama number.
+
+**Where the model rule stands.** As the description said, GPT-J-6B is below the
+8B floor and no larger `gptj` is served, so the rule is not satisfied for this
+family and the limitation stays.
+
+**Artifacts:**
+
+- results/E-004-far-field-floor-EleutherAI_gpt-j-6b.json
+- results/tidy/E-004-far-field-floor-EleutherAI_gpt-j-6b.csv
+- logs/E-004-2026-11-15-185613.log
+
+**Closed:** 2026-11-15

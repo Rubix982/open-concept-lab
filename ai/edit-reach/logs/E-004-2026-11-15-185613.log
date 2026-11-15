@@ -1,0 +1,43 @@
+2026-11-15 18:56:13,668 INFO     E-004  run E-004 -> logs/E-004-2026-11-15-185613.log
+2026-11-15 18:56:13,669 INFO     E-004  model EleutherAI/gpt-j-6b
+2026-11-15 18:56:13,771 INFO     E-004  513 instances selected, 1907 skipped (multi-edit or unlocatable hop)
+2026-11-15 18:56:13,772 INFO     E-004  by hop carrying the edit: {1: 213, 2: 300}
+2026-11-15 18:57:35,223 INFO     E-004    20/513 instances
+2026-11-15 18:58:54,890 INFO     E-004    40/513 instances
+2026-11-15 19:00:05,305 INFO     E-004    60/513 instances
+2026-11-15 19:01:24,139 INFO     E-004    80/513 instances
+2026-11-15 19:02:40,808 INFO     E-004    100/513 instances
+2026-11-15 19:04:12,278 INFO     E-004    120/513 instances
+2026-11-15 19:05:41,511 INFO     E-004    140/513 instances
+2026-11-15 19:07:06,491 INFO     E-004    160/513 instances
+2026-11-15 19:08:25,889 INFO     E-004    180/513 instances
+2026-11-15 19:09:49,216 INFO     E-004    200/513 instances
+2026-11-15 19:11:23,362 INFO     E-004    220/513 instances
+2026-11-15 19:12:53,205 INFO     E-004    240/513 instances
+2026-11-15 19:14:28,237 INFO     E-004    260/513 instances
+2026-11-15 19:15:59,113 INFO     E-004    280/513 instances
+2026-11-15 19:17:31,999 INFO     E-004    300/513 instances
+2026-11-15 19:19:05,333 INFO     E-004    320/513 instances
+2026-11-15 19:20:46,161 INFO     E-004    340/513 instances
+2026-11-15 19:22:30,880 INFO     E-004    360/513 instances
+2026-11-15 19:24:12,183 INFO     E-004    380/513 instances
+2026-11-15 19:25:56,391 INFO     E-004    400/513 instances
+2026-11-15 19:27:41,747 INFO     E-004    420/513 instances
+2026-11-15 19:29:19,580 INFO     E-004    440/513 instances
+2026-11-15 19:31:05,395 INFO     E-004    460/513 instances
+2026-11-15 19:32:49,330 INFO     E-004    480/513 instances
+2026-11-15 19:34:27,572 INFO     E-004    500/513 instances
+2026-11-15 19:35:32,187 INFO     E-004    513/513 instances
+2026-11-15 19:35:32,190 INFO     E-004  513 instances held
+2026-11-15 19:35:32,226 INFO     E-004  reproduction gate: hop-1 natural 0.7985 over 639 readings (E-039 0.933) | hop-2 final 0.1303 over 900 readings (E-039 0.055)
+2026-11-15 19:35:32,226 INFO     E-004  reproduction gate SKIPPED: its reference was measured on meta-llama/Llama-3.1-8B
+2026-11-15 19:35:33,245 INFO     E-004  
+2026-11-15 19:35:33,245 INFO     E-004  hop-2 far field, n=900 questions over 300 instances
+2026-11-15 19:35:33,255 INFO     E-004    own k*         median 0.1302   IQR 0.0518
+2026-11-15 19:35:33,255 INFO     E-004    same-prompt floor  median 0.1280   IQR 0.0064
+2026-11-15 19:35:33,256 INFO     E-004    paired excess  median +0.0019   IQR 0.0511  | above floor: 52%
+2026-11-15 19:35:33,256 INFO     E-004  
+2026-11-15 19:35:33,256 INFO     E-004    and the same floor, split by whether the donor shares the relation:
+2026-11-15 19:35:33,256 INFO     E-004      SAME-relation donors      floor 0.1255   excess -0.0000
+2026-11-15 19:35:33,256 INFO     E-004      DIFFERENT-relation donors floor 0.1287   excess +0.0014
+2026-11-15 19:35:33,260 INFO     E-004  written to results/E-004-far-field-floor-EleutherAI_gpt-j-6b.json
