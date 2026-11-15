@@ -792,3 +792,75 @@ there at all: they are referenced by the paper and were never written up. The id
 is now E-039, above every id the paper references.
 
 **Closed:** 2026-11-15
+
+---
+
+### E-040 · Re-measure the prefix-sharing premise across four models
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+The paper's second contribution reads: *"A derivation that it is exactly 1 on
+any prefix-sharing prompt, with its premise measured on four models from 6B to
+405B."* That measurement is [E-018], 23 October. Its output directory
+`2026-10-23-pin4/` is gone, and — unlike [E-007], whose checks live in
+`tools/ndif_conformance.py` — **no runner for it was ever committed**. So the
+premise behind an analytic claim currently rests on a number with no retrievable
+source and no way to produce another.
+
+It cannot be re-run. It can be re-measured, and this ticket is the second thing,
+not the first. The paper must say which it is: [E-018] stays in the record as
+the original with its output lost, and this is a fresh measurement of the same
+quantity.
+
+**What it measures.** Per model, in one trace at a fixed layer:
+
+- the anchor coefficient on prefix-sharing prompts, which the derivation says is
+  exactly 1 for any covariance at any layer — so a deviation is an
+  implementation fault rather than a finding;
+- the different-subject floor, a stranger's prompt read against the edited
+  subject's `k*` from the same trace. [E-018] published **0.082**.
+
+Both read inside one trace, so no cached `k*` is needed and the run is
+model-independent — which is the reason `src/editreach/arch.py` exists, per its
+own docstring.
+
+**Falsifier.** The premise fails if the anchor coefficient departs from 1.000 by
+more than the band `run_e001.py` already uses, `(0.999, 1.001)`, on any model. A
+floor far from 0.082 does not refute the premise; it would mean the published
+floor is model-specific, which §3.2 currently does not say.
+
+**Cost.** Four models, one trace each, 16 anchors. The 405B is the expensive one
+and is the reason this is not run without asking first.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Result.** The premise held exactly on the three models NDIF served: anchor
+median 1.000000 on each, worst deviation 0.000e+00 over 42 anchors, none out of
+band. The analytic claim stands for GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B.
+
+The floor did not hold still. It falls with model size — 0.194 at 6B, 0.081 at
+8B, 0.031 at 70B — so [E-018]'s published 0.082 is the 8B reading, not a
+four-model one, and it agrees with [E-001]'s 0.0809 on that model. §3.2 states
+it with no model named and immediately beside the four-model sentence, which
+reads as though the floor were common to all four. It is not, and the spread is
+a factor of six across the three measured.
+
+Llama-3.1-405B could not be read: `CANT_ACCOMMODATE: placed 0 of 1 new replicas
+before the cluster ran out of room`. That is capacity on shared infrastructure,
+not a fault in this code, and it is recorded in the result file rather than
+inferred. Until it is read, nothing here may be stated for 405B.
+
+**Artifacts:**
+
+- agents/engineer/workspace/run_e040_premise.py
+- results/E-040-premise-four-models.json
+- logs/E-040-2026-11-15-160930.log
+
+**Closed:** 2026-11-15

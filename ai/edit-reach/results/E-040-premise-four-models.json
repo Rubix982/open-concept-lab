@@ -1,0 +1,99 @@
+{
+ "ticket": "E-040",
+ "layer": 5,
+ "nnsight": "0.8.1",
+ "anchor_band": [
+  0.999,
+  1.001
+ ],
+ "n_anchors": 42,
+ "models_read": [
+  "EleutherAI/gpt-j-6b",
+  "meta-llama/Llama-3.1-8B",
+  "meta-llama/Llama-3.1-70B"
+ ],
+ "models_skipped": [
+  {
+   "model": "meta-llama/Llama-3.1-405B",
+   "error": "RemoteError: Could not deploy this model. CANT_ACCOMMODATE: placed 0 of 1 new replicas before the cluster ran out of room."
+  }
+ ],
+ "premise_holds_on_all": true,
+ "anchor_median_by_model": {
+  "EleutherAI/gpt-j-6b": 1.0,
+  "meta-llama/Llama-3.1-8B": 1.0,
+  "meta-llama/Llama-3.1-70B": 1.0
+ },
+ "floor_median_by_model": {
+  "EleutherAI/gpt-j-6b": 0.19388815375449275,
+  "meta-llama/Llama-3.1-8B": 0.08088118623703475,
+  "meta-llama/Llama-3.1-70B": 0.030862435306363865
+ },
+ "floor_spread_across_models": 0.16302571844812888,
+ "e018_published_anchor": 1.0,
+ "e018_published_floor": 0.082,
+ "verdict": "the premise held on all 3 models, so the analytic claim stands. The floor did not: it spans 0.031..0.194 across models, so \u00a73.2's single 0.082 needs a model named beside it. Not read: meta-llama/Llama-3.1-405B. The contribution names four models, so it may not be stated for those until they are.",
+ "rows": [
+  {
+   "model": "EleutherAI/gpt-j-6b",
+   "arch": "gptj",
+   "n_layers": 28,
+   "d_mlp": 16384,
+   "layer": 5,
+   "n_anchors": 42,
+   "anchor_median": 1.0,
+   "anchor_min": 1.0,
+   "anchor_max": 1.0,
+   "anchor_worst_deviation": 0.0,
+   "anchor_out_of_band": [],
+   "premise_holds": true,
+   "floor_median": 0.19388815375449275,
+   "floor_min": 0.06316640729413377,
+   "floor_max": 0.354721720320207,
+   "separation": 0.8061118462455072,
+   "runtime": 3.3647,
+   "gpu": "0"
+  },
+  {
+   "model": "meta-llama/Llama-3.1-8B",
+   "arch": "llama",
+   "n_layers": 32,
+   "d_mlp": 14336,
+   "layer": 5,
+   "n_anchors": 42,
+   "anchor_median": 1.0,
+   "anchor_min": 1.0,
+   "anchor_max": 1.0,
+   "anchor_worst_deviation": 0.0,
+   "anchor_out_of_band": [],
+   "premise_holds": true,
+   "floor_median": 0.08088118623703475,
+   "floor_min": 0.05163967837631611,
+   "floor_max": 0.16501962925960295,
+   "separation": 0.9191188137629652,
+   "runtime": 2.6204,
+   "gpu": "0"
+  },
+  {
+   "model": "meta-llama/Llama-3.1-70B",
+   "arch": "llama",
+   "n_layers": 80,
+   "d_mlp": 28672,
+   "layer": 5,
+   "n_anchors": 42,
+   "anchor_median": 1.0,
+   "anchor_min": 1.0,
+   "anchor_max": 1.0,
+   "anchor_worst_deviation": 0.0,
+   "anchor_out_of_band": [],
+   "premise_holds": true,
+   "floor_median": 0.030862435306363865,
+   "floor_min": 0.008797931449354089,
+   "floor_max": 0.13194247931972097,
+   "separation": 0.9691375646936361,
+   "runtime": 5.9583,
+   "gpu": "0,1,2,3"
+  }
+ ],
+ "note": "A fresh measurement of the same quantity, not a re-run of [E-018]: that run's outputs are lost and its runner was never committed. Nothing is edited here."
+}

@@ -1,0 +1,13 @@
+2026-11-15 16:09:30,881 INFO     E-040  run E-040 -> logs/E-040-2026-11-15-160930.log
+2026-11-15 16:09:31,125 INFO     E-040  42 anchors, 42 floors, 4 models, layer 5
+2026-11-15 16:09:45,627 INFO     E-040    EleutherAI/gpt-j-6b          gptj   L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.193888  sep 0.806
+2026-11-15 16:09:55,230 INFO     E-040    meta-llama/Llama-3.1-8B      llama  L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.080881  sep 0.919
+2026-11-15 16:10:11,209 INFO     E-040    meta-llama/Llama-3.1-70B     llama  L5   anchors 1.000000 (worst dev 0.000e+00, 0 out of band)  floor 0.030862  sep 0.969
+2026-11-15 16:10:15,472 ERROR    E-040    meta-llama/Llama-3.1-405B    SKIPPED: RemoteError: Could not deploy this model. CANT_ACCOMMODATE: placed 0 of 1 new replicas before the cluster ran out of room.
+2026-11-15 16:10:15,472 INFO     E-040  
+2026-11-15 16:10:15,472 INFO     E-040  premise holds on 3 of 3 models read, band (0.999, 1.001)
+2026-11-15 16:10:15,472 INFO     E-040  anchor median across models   1.000000 .. 1.000000
+2026-11-15 16:10:15,472 INFO     E-040  floor median across models    0.030862 .. 0.193888   (E-018 published 0.082)
+2026-11-15 16:10:15,472 INFO     E-040  
+2026-11-15 16:10:15,473 INFO     E-040  VERDICT: the premise held on all 3 models, so the analytic claim stands. The floor did not: it spans 0.031..0.194 across models, so §3.2's single 0.082 needs a model named beside it. Not read: meta-llama/Llama-3.1-405B. The contribution names four models, so it may not be stated for those until they are.
+2026-11-15 16:10:15,474 INFO     E-040  written to results/E-040-premise-four-models.json
