@@ -13,7 +13,7 @@ paper:
   author: Saif Ul Islam
   affiliation: Open Concept Lab
   started: 30 Sep 2026
-  updated: 10 Nov 2026
+  updated: 15 Nov 2026
   pdf: true
   log: true
   builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
@@ -891,9 +891,10 @@ What a short venue note needs, against what exists today. This is a checklist fo
   <Check met need="One figure that carries the argument" where="§5">The near-and-far-field figure does the work §5 would otherwise do in prose</Check>
   <Check met need="Reproduction path" where="§4">Config, seed and resolved environment beside every result directory</Check>
   <Check met need="Positioning against the nearest work" where="§2">He et al. (2026) read in full and distinguished; and for §5.6, Weng et al. (2020) and Kim et al. (2021) read in their problem formulations and theory sections rather than their abstracts, which overturned one claim this paper had already written down</Check>
-  <Check need="Read by someone outside the project" where="§7.5">Every finding produced and reviewed by the same two parties</Check>
-  <Check need="Breadth across depth" where="§8.1">One layer. A sweep on the cached subjects is the cheapest fix</Check>
-  <Check need="A delivery-to-effect link" where="§7.1">Blocked on the backward pass; 42 survivors, not a sample</Check>
+  <Check met need="Breadth across models" where="§5.2">Three models and two architectures on the far field, four depths each on the floor</Check>
+  <Check need="Read by someone outside the project" where="§7.8">Every finding produced and reviewed by the same two parties</Check>
+  <Check need="Breadth across depth" where="§8.1">The far field is read at one layer on every model. The depth sweep moves the floor, not the excess</Check>
+  <Check need="A delivery-to-effect link" where="§7.1">Blocked on the backward pass, which returns an empty gradient on every model served today; 42 survivors, not a sample</Check>
 </Readiness>
 
 <PlainPanel>

@@ -1305,3 +1305,47 @@ is how a number with no source got onto a page and stayed there.
 - web/static/img/edit-reach/near-and-far-field.svg
 
 **Closed:** 2026-11-15
+
+---
+
+### E-047 · Spike: is the empty gradient ours or nnsight's?
+
+**Status:** in-progress
+**Type:** spike
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+**Estimated:** 1h
+
+**Description:**
+[E-043] is blocked on `out.grad` coming back `None` inside `_grad_step`, and was
+recorded as an external fact. Before leaving it there, one hour on whether it is
+external at all.
+
+The grounds for doubt are in our own code. `_grad_step` reads `out = dp.output`,
+then **replaces** that output with `dp.output = patched`, then calls
+`total.backward()` and asks for `out.grad`. If the replacement makes `patched`
+the node in the backward path, the gradient is on `patched` and `out.grad` is
+correctly `None` — and the published 8B cache was built on 16 September, so the
+behaviour could have changed under us rather than broken.
+
+**Time-box: one hour.** Four variants on Llama-3.1-8B, which is the cheapest
+model that shows the fault:
+
+1. as written — `out.grad` after `backward()`
+2. `patched.grad` instead
+3. the gradient proxy captured *before* `backward()` rather than after
+4. no `clone()` — write into the output in place
+
+**Outcome either way.** If one variant returns a gradient, [E-043] is not
+blocked and this project wrote a bug. If none does, the external blocker is
+confirmed with four attempts behind it rather than one, and
+`ndif_vstar_repro.py` gains them so the next person does not repeat the hour.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Artifacts:** —
+
+**Closed:** —
