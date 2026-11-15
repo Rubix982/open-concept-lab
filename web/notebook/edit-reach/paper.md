@@ -545,12 +545,12 @@ Seven candidates for what sets the magnitude had already been eliminated, and ev
 <Figure
   src="/img/edit-reach/nothing-predicts-magnitude.svg"
   alt="Eight correlations between a subject's properties and the damage an edit does, each a point with a 95% interval. Every interval crosses zero and every point sits within 0.13 of it. A shaded band from -0.37 to +0.37 marks what 41 subjects cannot see inside, and every interval lies within it."
-  caption={<>Every interval crosses zero, and every estimate sits deep inside the band this study could not see into — the largest is 0.130. Both readings matter, and only the first is usually reported.</>}
+  caption={<>Every interval crosses zero, and every estimate sits deep inside the band this study could not see into — the largest is 0.130. A point estimate on its own would not show the band.</>}
   wide
   plain
 />
 
-<Data caption={<>Eight relationships, all of them reported. Six were computed, so reporting a subset would be a choice rather than a result.</>}>
+<Data caption={<>Eight relationships; six of them were computed.</>}>
   <thead>
     <tr><th>Relationship</th><th className="n">ρ</th><th className="n">95% CI</th></tr>
   </thead>
@@ -576,7 +576,7 @@ Every interval spans zero and every point estimate sits within 0.13 of it. Three
 
 <Figure
   plain
-  caption={<>One finding from proposal to withdrawal. The dates stay on the page because a silently corrected claim looks like it was never made.</>}
+  caption={<>One finding from proposal to withdrawal, with the date of each step.</>}
 >
   <svg viewBox="0 0 400 150" role="img" aria-label="The life of one claim. Proposed 12 October: predicted reach predicts measured movement. First floor built 24 October. Denied 31 October on 495 probes. Replaced 2 November by the claim that stands today.">
     <text x="4" y="12" fontFamily="Lato, sans-serif" fontSize="8" fontWeight="900" letterSpacing="0.8" fill="var(--ocl-ink)">THE LIFE OF ONE CLAIM</text>
