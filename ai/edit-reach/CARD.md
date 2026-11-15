@@ -8,6 +8,45 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ---
 
+## C-009 · Is the site where these edits go in a site where the attribute actually lives?
+
+**Status:** open
+**Opened:** 2026-11-15
+
+**1. WHERE WE ARE.**
+This project closed negative: the coefficient detects contamination, not propagation (C-001, C-002). Every edit here and in edit-slice is delivered at Llama-3.1-8B **layer 5**, on the subject's **last token** — a choice inherited from ROME and never tested in either project. MIB's RAVEL task (Mueller et al., ICML 2025, arXiv 2504.13151, Table 3g) measures where that same model holds a city's **country, continent and language**, at the last token of the city, at every layer. Its best method, DAS, scores **75 / 58 / 63** IIA averaged over layers and **83 / 64 / 70** at its best layer.
+
+**2. WHAT WE ARE DOING.**
+Run MIB's RAVEL causal-variable evaluation on Llama-3.1-8B with its no-featurizer baseline ("Full Vector": swap the whole hidden vector) at the city's last token, at every layer, and report interchange intervention accuracy for each of the three attributes at layer 5 against that attribute's best layer.
+
+**3. WHY.**
+We do not know whether the place edits are delivered is a place where the fact is causally carried. ROME's default is not evidence for it: Hase, Bansal, Kim & Ghandeharioun (NeurIPS 2023, arXiv 2301.04213) found that causal-tracing localization *"do[es] not provide any insight into which model MLP layer would be best to edit."* After this card there is an externally scored number for the edit site, on the same model, from a benchmark nobody here built.
+
+**4. WHAT IS AFFECTED.** *(written before the work)*
+- The paper's explanation of its own negative result — *contamination, not propagation* — which today never asks whether the edit went in at the right place.
+- T-086 in edit-slice (what sets an edit's magnitude), which gains or loses a candidate.
+- The layer-5 choice in both projects.
+- Whether T-013, an entry to the MIB leaderboard, is worth opening.
+- **Nothing measured so far changes.** This reads a public benchmark through the unedited model.
+
+**5. CONCLUSION IF WE DO IT.** *(three branches, threshold set before running)*
+- **If layer 5 is within 5 IIA points of the best layer on all three attributes:** the edit site carries the attribute, and the negative result cannot be blamed on editing the wrong place. The paper says so, with the numbers.
+- **If layer 5 is more than 5 points below on any attribute, with the best layer later:** edits go in upstream of where the attribute becomes swappable. That is a candidate mechanism for *delivered, not effective*, and the paper gains a sentence backed by an outside benchmark.
+- **If the baseline scores within 5 points across all layers:** it cannot tell layers apart, nothing about layer 5 is learned, and the question moves to a trained featurizer — T-013.
+
+**6. CONSEQUENCE OF NOT DOING IT.**
+The paper explains a negative result without once checking its edit site against an outside localization benchmark on the same model. The first question a reviewer asks is *were you editing the right place?*, and today the only answer is *ROME's default*.
+
+**Controls, and what could make this wrong.**
+- **Same object, or a neighbour.** ROME writes into the MLP at layer 5; its output lands in the residual stream after layer 5. MIB's Full Vector swaps a hidden vector at a layer. Before any number is read, confirm which hidden vector MIB's code swaps and that its layer index uses the same convention as `arch.py`; a one-off in the index is the cheapest way for this card to answer a different question.
+- **Same position.** The edit site is the subject's last token; MIB's RAVEL intervenes at the last token of the city entity, and also at the final token. Only the city-entity position is compared.
+- **MIB's own data and splits,** not a regenerated set, so the numbers are comparable to Table 3g.
+- **The serving device is recorded** with each run (C-006). IIA is an argmax over tokens, so the 2.2e-04 cross-device tolerance should not move it, and recording the device is how that is checked rather than assumed.
+- **The 5-point threshold was set here, before running,** and before any RAVEL number on this setup was looked at.
+- **Cost.** Forward passes with interchange interventions on Llama-3.1-8B through NDIF, using MIB's released code and data. No edits, no gradients.
+
+---
+
 ## C-008 · Does a subject's prominence predict how hard an edit hits, where geometry does not?
 
 **Status:** closed

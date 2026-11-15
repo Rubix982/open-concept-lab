@@ -8,7 +8,7 @@ Establish whether an edit's reach can be predicted before the edit is applied �
 
 ## Current Phase
 
-Answered, and the answer is negative. The coefficient detects contamination rather than propagation: C-001 closed denied, and in the far field a stranger's edit on the same relation reaches a question as much as the real subject's does, excess +0.0002. C-002 closed on branch 1 — identity is worth about 65x content. No card is open; the work now is writing it up, in six documentor tickets that run nothing new.
+Answered, and the answer is negative. The coefficient detects contamination rather than propagation: C-001 closed denied, and in the far field a stranger's edit on the same relation reaches a question as much as the real subject's does, excess +0.0002. C-002 closed on branch 1 — identity is worth about 65x content. No card is open; the work now is writing it up, in six documentor tickets that run nothing new. **C-009 opened 2026-11-15:** whether the layer-5 edit site is where the attribute lives, read against MIB's RAVEL benchmark on the same model.
 
 ## Active Tickets
 

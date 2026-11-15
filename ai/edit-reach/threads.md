@@ -178,3 +178,10 @@ So "nobody certifies weight perturbations" would have been false and is not clai
 **The one thing that must be read before any positioning claim rests on this:** Weng et al.'s threat model — whether the perturbation is an arbitrary direction inside a norm ball, or can be a known fixed one. The project rule is to read the methods, not the prose, because an introduction says what the authors hoped the construction would give. `verified: false` on that entry in `web/data/papers.yml` until then.
 
 **Answer:** **The field exists, certifies a ball, and has never seen this structure.** [R-002], 2026-11-09, read from Weng et al.'s problem formulation and Theorem 0.1 rather than its prose. Their threat model is an **ℓ∞ ball** `‖Ŵ⁽ᵏ⁾ − W⁽ᵏ⁾‖∞ ≤ ε`, with single-layer `ℓp` perturbation handled analytically — so the worst case ranges over every direction, while a ROME edit has one, fixed and known in advance. "Rank-one", "rank one" and "low-rank" appear **zero** times. Evaluation is MLPs of 2–10 layers on MNIST, Fashion-MNIST, SVHN and CIFAR-10: no transformers, no language models. **Claimed at exactly this strength and no further: unclaimed in this setting.** Weight-space certification itself is not open and is not claimed to be.
+
+### T-013 · Does the direction a rank-one edit writes along carry the attribute?
+
+**Status:** open
+**Parent:** C-009
+**Opened:** 2026-11-15
+**Question:** MIB's causal-variable track scores *featurizers* — a map from a hidden vector to the features a variable lives in — by interchange intervention accuracy, and DAS leads on RAVEL. A ROME edit already defines a one-dimensional featurizer for free: the key direction it writes along. Submitted to the MIB leaderboard on RAVEL (Llama-3.1-8B), it asks whether the direction an edit uses is a direction the attribute lives in, scored against DAS on a private test set. Worth opening only if C-009 closes on branch 1 (the site carries the attribute) or branch 3 (the untrained baseline cannot tell layers apart); on branch 2 the edit site is upstream of the attribute and a direction read there has nothing to align to.

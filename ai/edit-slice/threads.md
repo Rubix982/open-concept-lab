@@ -2121,3 +2121,10 @@ hypothesis. This thread is only interesting where it *departs* from that.
 **Question:** If Ravfogel §5.3 reproduces, the obvious next move is to add the one thing their setting excludes by name -- typed attributes -- and see whether the block structure survives it. That would separate "the account is incomplete where typed attributes would complete it" from "ROME does not act on this structure at all". Opened so it is not lost; it is not the open card, and it does not become one until R-020 says §5.3 is reachable.
 **Answer:** —
 
+
+### T-108 · Run Ravfogel §5.3 on Qwen2.5-0.5B and Llama-3.2-1B, locally
+
+**Status:** open
+**Parent:** T-100
+**Opened:** 2026-11-15
+**Question:** [R-020] (2026-11-10) found §5.3 reproducible: the probe is read-only, so the two small models run on this machine and cover two of its five rows, one of them the model whose best layer is 12/16. Run it. A reproduction has to state three things the paper leaves open, each found in R-020: the dataset is not released, so the 4,610 entities are regenerated from the published prompt and cannot be compared entity-for-entity; MRR is reported throughout and never defined; and best-layer selection is not stated to use a held-out split. Aimed at BlackboxNLP's reproducibility track if it runs in 2027 (2026 had one: six pages, double-blind), and it is T-100's prerequisite either way. What it does not license, carried over from R-020: reproducing §5.3 shows the structure exists, not that a rank-one edit acts on it.
