@@ -10201,6 +10201,59 @@ a:hover > .ocl-home__featureCover {
   border-color: var(--ocl-ink);
 }
 
+/* ---- the project's pages, above the record ---- */
+
+.ocl-pages {
+  margin: 0 0 1.4rem;
+  padding: 0 0 1.1rem var(--ocl-frame-inset, 0);
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-pages__head {
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+  margin-bottom: 0.6rem;
+}
+
+.ocl-pages__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ocl-pages__list li { margin: 0; }
+
+.ocl-pages__link {
+  display: block;
+  padding: 0.22rem 0;
+  font-size: 0.86rem;
+  color: var(--ocl-ink-muted);
+  text-decoration: none;
+}
+
+.ocl-pages__link:hover { color: var(--ocl-link); }
+
+/* The page you are on is marked rather than removed: a list that drops its
+   current entry makes the reader work out where they are from what is missing. */
+.ocl-pages__link.is-here {
+  color: var(--ocl-ink);
+  font-weight: 500;
+  position: relative;
+}
+
+.ocl-pages__link.is-here::before {
+  content: "";
+  position: absolute;
+  left: -0.75rem;
+  top: 0.45em;
+  bottom: 0.45em;
+  width: 2px;
+  background: var(--ocl-oxide);
+}
+
 /* ---- state of the record, at the head of the contents rail ---- */
 
 .ocl-record {

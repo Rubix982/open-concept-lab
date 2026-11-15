@@ -4,6 +4,7 @@ import { useDoc } from "@docusaurus/plugin-content-docs/client";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import type { LabData } from "@site/plugins/lab-data";
 import RecordPanel from "@site/src/components/RecordPanel";
+import ProjectPages from "@site/src/components/ProjectPages";
 import { usePaperView } from "@site/src/components/paperView";
 import type { ReactNode } from "react";
 
@@ -48,6 +49,7 @@ export default function DocItemTOCDesktop(): ReactNode {
 
   return (
     <>
+      <ProjectPages />
       <RecordPanel />
       <div className="ocl-rail" data-view={view} key={view}>
         <TOC
