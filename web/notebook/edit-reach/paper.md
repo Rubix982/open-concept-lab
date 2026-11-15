@@ -148,6 +148,14 @@ The control is a prompt naming a different person, and it does not travel the wa
 
 So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 4 is about.
 
+<Figure
+  src="/img/edit-reach/premise-and-floor-by-depth.svg"
+  alt="Two quantities read at twelve points: three models, each at four fractions of its own depth. The anchor coefficient is 1.000 at every one of the twelve, drawn as a straight rule across the top, worst deviation from 1 being zero. The different-subject floor beneath it is not fixed: it runs from 0.031 to 0.388 and is ordered by neither model size nor depth. At 16 percent of depth the largest model, Llama-3.1-70B, returns the highest floor of the three at 0.140, and at 30 percent the middle model, Llama-3.1-8B, does at 0.256. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends."
+  caption={<>The analytic value and the measured one, on the same axes. Twelve readings, three models, four fractions of each model's depth.<Prov id="E-040" /></>}
+  wide
+  plain
+/>
+
 ### 3.3 The control, and what it cost to get right
 
 A coefficient of 1.000 means nothing on its own, because a pipeline hardwired to return 1 looks identical. Every reading is therefore paired with a floor: the same prompt scored against a *different* subject's edit. The floor has to match the real edit on everything except the subject — the relation included. Getting that wrong is not hypothetical. It is what this project did first, and §6 keeps the wrong floor on the page as a withdrawn finding rather than deleting it.

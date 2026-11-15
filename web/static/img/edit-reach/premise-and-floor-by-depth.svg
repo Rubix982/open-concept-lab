@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 460"
+     width="1000" height="460" role="img"
+     aria-label="Two quantities read at twelve points: three models, each at four
+     fractions of its own depth. The anchor coefficient is 1.000 at every one of
+     the twelve, drawn as a straight rule across the top with the worst deviation
+     from 1 being 0e+00. The different-subject floor beneath it is not
+     fixed: it runs from 0.031 to 0.388 and is ordered by
+     neither model size nor depth. At 16 percent of depth the largest model,
+     Llama-3.1-70B, returns the highest floor of the three at 0.140, and at 30
+     percent the middle model, Llama-3.1-8B, does at 0.256. Llama-3.1-70B alone
+     reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.">
+  <style><![CDATA[
+    /* Both triples pass all six dataviz checks on their own surface. The dark
+       steps are chosen against the dark surface, not lightened from the light
+       ones: a flipped palette leaves the band. */
+    :root {
+        --paper: #f4f1ea; --ink: #2b2a28; --faint: #6b6863; --rule: #d9d3c7;
+        --s1: #5b4fc4; --s2: #a4442f; --s3: #00876b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18; --ink: #eeece6; --faint: #9a968e; --rule: #3a3833;
+          --s1: #8078e0; --s2: #c9664a; --s3: #0d9b7d;
+      }
+    }
+    text { font-family: Lato, "Helvetica Neue", sans-serif; }
+    .mid { text-anchor: middle; }
+    .end { text-anchor: end; }
+    .grid   { stroke: var(--rule, #d9d3c7); stroke-width: 1; }
+    .axis   { stroke: var(--faint, #6b6863); stroke-width: 1; }
+    .tick   { font-size: 11px; fill: var(--faint, #6b6863); }
+    .axlab  { font-size: 12px; fill: var(--faint, #6b6863); }
+    .pinned { stroke: var(--ink, #2b2a28); stroke-width: 2; }
+    .pindot { fill: var(--ink, #2b2a28); }
+    .pinlab { font-size: 13px; font-weight: 600; fill: var(--ink, #2b2a28); }
+    .pinsub { font-size: 11.5px; fill: var(--faint, #6b6863); }
+    .line   { fill: none; stroke-width: 2; stroke-linejoin: round; }
+    .ring   { fill: var(--paper, #f4f1ea); }
+    /* Every var() carries its light-mode fallback. Without one a renderer that
+       does not resolve :root on an SVG root drops the declaration, and the
+       lines vanish rather than falling back to a colour — which is how this
+       figure first came out as twelve black dots and no lines. */
+    .dot.s1 { fill: var(--s1, #5b4fc4); }
+    .dot.s2 { fill: var(--s2, #a4442f); }
+    .dot.s3 { fill: var(--s3, #00876b); }
+    .line.s1 { stroke: var(--s1, #5b4fc4); }
+    .line.s2 { stroke: var(--s2, #a4442f); }
+    .line.s3 { stroke: var(--s3, #00876b); }
+    .dlab   { font-size: 12.5px; font-weight: 600; }
+    .dlab.s1 { fill: var(--s1, #5b4fc4); }
+    .dlab.s2 { fill: var(--s2, #a4442f); }
+    .dlab.s3 { fill: var(--s3, #00876b); }
+    /* The value is printed beside every mark, so identity never rests on
+       colour alone and the figure survives being read in grayscale. */
+    .val    { font-size: 10.5px; font-family: "IBM Plex Mono", ui-monospace, monospace;
+               fill: var(--faint, #6b6863); }
+    .callout { stroke: var(--faint, #6b6863); stroke-width: 1; stroke-dasharray: 2 3; }
+    .leader { stroke-width: 2; }
+    .leader.s1 { stroke: var(--s1, #5b4fc4); }
+    .leader.s2 { stroke: var(--s2, #a4442f); }
+    .leader.s3 { stroke: var(--s3, #00876b); }
+    .note   { font-size: 11.5px; fill: var(--faint, #6b6863); }
+  ]]></style>
+
+  <rect width="1000" height="460" fill="var(--paper, #f4f1ea)"/>
+  <path d="M76 396.0 H812" class="grid"/>
+  <text x="64" y="400.0" class="tick end">0.0</text>
+  <path d="M76 332.2 H812" class="grid"/>
+  <text x="64" y="336.2" class="tick end">0.2</text>
+  <path d="M76 268.5 H812" class="grid"/>
+  <text x="64" y="272.5" class="tick end">0.4</text>
+  <path d="M76 204.7 H812" class="grid"/>
+  <text x="64" y="208.7" class="tick end">0.6</text>
+  <path d="M76 140.9 H812" class="grid"/>
+  <text x="64" y="144.9" class="tick end">0.8</text>
+  <path d="M76 77.1 H812" class="grid"/>
+  <text x="64" y="81.1" class="tick end">1.0</text>
+  <text x="76.0" y="420" class="tick mid">0%</text>
+  <text x="209.8" y="420" class="tick mid">10%</text>
+  <text x="343.6" y="420" class="tick mid">20%</text>
+  <text x="477.5" y="420" class="tick mid">30%</text>
+  <text x="611.3" y="420" class="tick mid">40%</text>
+  <text x="745.1" y="420" class="tick mid">50%</text>
+  <path d="M76 396 H812" class="axis"/>
+  <text x="444" y="446" class="axlab mid">how far through the model the layer sits</text>
+  <text transform="translate(22,227) rotate(-90)" class="axlab mid">coefficient</text>
+  <path d="M76 77.1 H812" class="pinned"/>
+  <circle cx="171.6" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="267.2" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="458.3" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="745.1" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="159.6" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="285.1" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="494.2" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="745.1" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="159.6" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="293.5" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="477.5" cy="77.1" r="4.5" class="pindot"/>
+  <circle cx="745.1" cy="77.1" r="4.5" class="pindot"/>
+  <text x="826" y="81.1" class="pinlab">anchor &#183; 1.000</text>
+  <text x="826" y="98.1" class="pinsub">all 12 readings</text>
+  <path d="M171.6 322.0 L267.2 355.7 L458.3 326.2 L745.1 272.2" class="line s1"/>
+  <circle cx="171.6" cy="322.0" r="5.5" class="ring"/>
+  <circle cx="171.6" cy="322.0" r="4" class="dot s1"/>
+  <circle cx="267.2" cy="355.7" r="5.5" class="ring"/>
+  <circle cx="267.2" cy="355.7" r="4" class="dot s1"/>
+  <circle cx="458.3" cy="326.2" r="5.5" class="ring"/>
+  <circle cx="458.3" cy="326.2" r="4" class="dot s1"/>
+  <circle cx="745.1" cy="272.2" r="5.5" class="ring"/>
+  <circle cx="745.1" cy="272.2" r="4" class="dot s1"/>
+  <text x="745.1" y="260.2" class="val mid">0.388</text>
+  <path d="M159.6 383.6 L285.1 370.2 L494.2 314.4 L745.1 289.4" class="line s2"/>
+  <circle cx="159.6" cy="383.6" r="5.5" class="ring"/>
+  <circle cx="159.6" cy="383.6" r="4" class="dot s2"/>
+  <circle cx="285.1" cy="370.2" r="5.5" class="ring"/>
+  <circle cx="285.1" cy="370.2" r="4" class="dot s2"/>
+  <circle cx="494.2" cy="314.4" r="5.5" class="ring"/>
+  <circle cx="494.2" cy="314.4" r="4" class="dot s2"/>
+  <text x="494.2" y="302.4" class="val mid">0.256</text>
+  <circle cx="745.1" cy="289.4" r="5.5" class="ring"/>
+  <circle cx="745.1" cy="289.4" r="4" class="dot s2"/>
+  <path d="M159.6 386.2 L293.5 351.3 L477.5 381.3 L745.1 344.6" class="line s3"/>
+  <circle cx="159.6" cy="386.2" r="5.5" class="ring"/>
+  <circle cx="159.6" cy="386.2" r="4" class="dot s3"/>
+  <text x="159.6" y="374.2" class="val mid">0.031</text>
+  <circle cx="293.5" cy="351.3" r="5.5" class="ring"/>
+  <circle cx="293.5" cy="351.3" r="4" class="dot s3"/>
+  <text x="293.5" y="339.3" class="val mid">0.140</text>
+  <circle cx="477.5" cy="381.3" r="5.5" class="ring"/>
+  <circle cx="477.5" cy="381.3" r="4" class="dot s3"/>
+  <circle cx="745.1" cy="344.6" r="5.5" class="ring"/>
+  <circle cx="745.1" cy="344.6" r="4" class="dot s3"/>
+  <path d="M816 268.2 H822" class="leader s1"/>
+  <text x="826.0" y="272.2" class="dlab s1">GPT-J-6B</text>
+  <path d="M816 287.2 H822" class="leader s2"/>
+  <text x="826.0" y="291.2" class="dlab s2">Llama-3.1-8B</text>
+  <path d="M816 340.6 H822" class="leader s3"/>
+  <text x="826.0" y="344.6" class="dlab s3">Llama-3.1-70B</text>
+  <path d="M293.5 327.3 V72" class="callout"/>
+  <text x="293.5" y="62" class="note mid">70B highest</text>
+  <path d="M494.2 290.4 V72" class="callout"/>
+  <text x="494.2" y="62" class="note mid">8B highest</text>
+</svg>
