@@ -10,7 +10,7 @@
 
 **The same paper, without the notation, in the order it actually happened.** Seven sections: what I was trying to do, the point where I thought it had worked, what the number was really picking up, why there was so little there, the one thing it turned out to be good for, what I am not claiming, and the part I got wrong. Every number here is in the full version with the run it came from attached, and where I was wrong I have left it in.
 
-## What I was trying to do
+## What I was trying to do {#plain-what-i-was-trying-to-do}
 
 You can reach into a language model and change one fact. *Maurice de Vlaminck was born in France* becomes *…in Chile*, and the whole thing takes seconds.
 
@@ -22,7 +22,7 @@ So I wanted a number instead of a list. Something you could compute for *any* qu
 
 This kind of edit turns out to have a shape that gives you one. Because of how it works, you can calculate how much of the edit lands on any given question — and you can do it before making the edit, from the untouched model, in a single pass. If that number were big wherever the damage was, you could point it at a question you had never thought about and get an answer.
 
-## The part where I thought it worked
+## The part where I thought it worked {#plain-the-part-where-i-thought-it-worked}
 
 I ran it against how much the edit actually moved the model on 495 questions. The correlation was **0.522**.
 
@@ -34,7 +34,7 @@ It did not. Most of the correlation was already there. What is left once you tak
 
 I sat with that for a while, because 0.522 and 0.085 are the same experiment and you can report either one. The honest reading is the second. Once you account for *this question is about that person*, there is very little left that the measure was telling me.
 
-## What the number is actually detecting
+## What the number is actually detecting {#plain-what-the-number-is-actually-detecting}
 
 Looking at where it is large and where it is small made the problem obvious, and in hindsight it was obvious earlier.
 
@@ -48,7 +48,7 @@ So the number tells you whether the edited name is sitting in the question. Whic
 
 And the case everybody means by *did the edit spread* is the one where the name is absent — you changed where he was born, does the model still say he was a painter? That question never says "Vlaminck". The measure has its full range in the case I did not need and essentially none in the case I did.
 
-## Why there was so little there to find
+## Why there was so little there to find {#plain-why-there-was-so-little-there-to-find}
 
 This bothered me more than the failure did, so I measured it separately on the same 495 questions.
 
@@ -56,7 +56,7 @@ Change what the edit *says* and keep the person: the questions move by **0.0009*
 
 Most of what an edit does is a consequence of whose name you touched, and very little of it depends on what you said about them. That is why the correlation collapsed under a control that held the person fixed — there was not much edit-specific signal for any measure to find.
 
-## What it turned out to be useful for
+## What it turned out to be useful for {#plain-what-it-turned-out-to-be-useful-for}
 
 If the number is high exactly when the edited name is in the question, then you can point it at a benchmark and ask which of its questions contain the name. That is not what I built it for, and it is the only thing it is good at.
 
@@ -64,7 +64,7 @@ RippleEdits has a test type meant to check whether an edit travels two steps —
 
 I want to be careful here, because this is the part most likely to be quoted badly. It is a fault in specific items and it is findable. In MQuAKE the name is present in **6,861 of 6,861** items where the edit sits at the start of the chain, and in **0 of 16,506** where it sits further down — so a clean subset already exists in the field's own data, by construction rather than by anyone's design.
 
-## What I am not saying
+## What I am not saying {#plain-what-i-am-not-saying}
 
 - Not that edits do not spread. Only that this measure cannot see whether they do.
 - Not that content is irrelevant. It is detectable at **0.0009** and that interval excludes zero — roughly 1.5% of the effect of identity, which is small and is not nothing.
@@ -72,7 +72,7 @@ I want to be careful here, because this is the part most likely to be quoted bad
 - The one universal upper limit this shape allows turns out to permit a question that never names the subject to receive *more* than one that does, so it rules nothing out where it would matter.
 - All of this is one editing method at one layer, with the underlying premise checked on four models from 6B to 405B. It is not a claim about every way of changing a model's mind.
 
-## The part I got wrong first
+## The part I got wrong first {#plain-the-part-i-got-wrong-first}
 
 The control that decides everything above was wrong in its first version, and the wrong version made the result look better than it was. I found it, fixed it, and the paper keeps the broken one on the page with what changed.
 

@@ -5,7 +5,7 @@ import { usePluginData } from "@docusaurus/useGlobalData";
 import type { LabData } from "@site/plugins/lab-data";
 import RecordPanel from "@site/src/components/RecordPanel";
 import ProjectPages from "@site/src/components/ProjectPages";
-import { usePaperView } from "@site/src/components/paperView";
+import { usePaperView, type View } from "@site/src/components/paperView";
 import type { ReactNode } from "react";
 
 /**
@@ -36,16 +36,20 @@ export default function DocItemTOCDesktop(): ReactNode {
   const { view } = usePaperView();
   const data = usePluginData("ocl-lab-data") as LabData;
 
+  // Docusaurus resolves an imported partial's headings into the importing
+  // page's table of contents, so one list arrives carrying all three views.
+  // Threads are named by the generator in `record.yml`; the plain view's are
+  // written by hand with a `plain-` prefix, for the same reason the threads ones
+  // are given ids rather than slugged — rewording a heading should not move its
+  // anchor.
   const threadIds = new Set(data.record?.[metadata.id.split("/")[0]]?.toc ?? []);
-  // The plain view is one short page meant to be read straight through, so it
-  // gets no contents at all. A four-entry list beside eight screens of text is
-  // furniture, and the record panel above still has something to say.
-  const shown =
-    view === "plain"
-      ? []
-      : threadIds.size
-        ? toc.filter((item) => threadIds.has(item.id) === (view === "threads"))
-        : toc;
+  const kindOf = (id: string): View =>
+    threadIds.has(id) ? "threads" : id.startsWith("plain-") ? "plain" : "paper";
+
+  // An earlier pass gave the plain view no contents at all, on the grounds that
+  // a short page read straight through does not need them. It has seven
+  // sections, and beside the paper's own list the rail just looked half empty.
+  const shown = toc.filter((item) => kindOf(item.id) === view);
 
   return (
     <>

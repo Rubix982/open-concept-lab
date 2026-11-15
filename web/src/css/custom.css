@@ -10063,11 +10063,23 @@ a:hover > .ocl-home__featureCover {
 /* The plain view is one column of larger type. Paper mode sets two justified
    columns for the argument; a page written so somebody outside the field can
    check it should not then be set like a journal. */
+/* The panel takes the paper's own box, so switching views does not slide the
+   text sideways: at 36rem it sat 7rem to the right of where the argument had
+   just been, and the jump read as a different page rather than another view of
+   the same one. The headings and their rules span that full box; the prose
+   inside keeps a reading measure and sits at the paper's left edge. */
 .ocl-plainpanel {
-  max-width: 36rem;
+  max-width: min(100%, var(--ocl-paper-wide, 58rem));
   margin-inline: auto;
   font-size: 1.02rem;
   line-height: 1.62;
+}
+
+.ocl-plainpanel > p,
+.ocl-plainpanel > ul,
+.ocl-plainpanel > ol,
+.ocl-plainpanel > blockquote {
+  max-width: 40rem;
 }
 
 /* A heading has to look like one. These sit inside the panel rather than being
