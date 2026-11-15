@@ -493,6 +493,14 @@ The control and the stranger both sit at the base rate. The real edit is the onl
   </tbody>
 </Data>
 
+<Figure
+  src="/img/edit-reach/what-carries-each-half.svg"
+  alt="Two heat map panels, six probe families down and two columns across, content and identity. Content is the real edit minus a different fact about the same person; identity is that control minus another person's edit. In the destruction panel the identity column is filled on position, repetition and semantics while content is nearly empty; in the destination panel it is the reverse. On discrimination and exposure the destruction row runs the other way, with content above identity. Every cell carries its number."
+  caption={<>The same two halves, split by probe family. The table above pools all 495 probes; this is what the pooled figure averages over. The pattern holds where most of the probes are — on <i>repetition</i>, destruction is <b>+0.3585</b> identity against <b>+0.0562</b> content, and destination is <b>+0.4524</b> content against <b>0.0000</b> identity — and it <b>inverts on two families</b>: for <i>discrimination</i> and <i>exposure</i>, destruction is carried by content, not identity. Diverging scale, with the number in every cell so nothing rests on colour. Drawn by <code>tools/figure_contributions.py</code>.</>}
+  wide
+  plain
+/>
+
 Destruction is **subject-keyed**: it follows whose key the edit touched, and the same-subject control reproduces almost all of it. Destination is **content-specific**: it follows what the edit said, and the same-subject control lands in the injected country at 1%, which is the base rate — it delivers nothing rather than a little. Discordant pairs for destination, real against the same-subject control, run 142 to 2.
 
 <Lead>Which control is the right one depends on which half you are measuring.</Lead> That is the practical consequence, and it is easy to get wrong in exactly one direction: a same-subject control is at floor for a destination measure and reproduces 98.5% of a destruction measure. Using it on the second is using a control that has already absorbed the signal.

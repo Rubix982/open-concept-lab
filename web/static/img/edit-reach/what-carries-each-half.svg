@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 388" width="740" height="388" role="img" aria-label="Two heat map panels, six probe families down and two columns across — content and identity. Content is the real edit minus a different fact about the same person; identity is that control minus another person's edit. In the destruction panel the identity column is filled and the content column is nearly empty; in the destination panel it is the reverse. For example on repetition, destruction splits +0.0562 content against +0.3585 identity, while destination splits +0.4524 content against +0.0000 identity. Every cell carries its number.">
+  <style type="text/css"><![CDATA[
+    /* Diverging: two hues and a neutral midpoint, because these are signed
+       differences. Both pairs pass all six dataviz checks on their own
+       surface; the page's own ink tokens do not on the dark one. */
+    :root {
+        --paper: #f4f1ea;
+        --ink: #2b2a28;
+        --faint: #6b6863;
+        --rule: #d9d3c7;
+        --cool: #5b4fc4;
+        --warm: #a4442f;
+        --oncell: #2b2a28;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --ink: #eeece6;
+          --faint: #9a968e;
+          --rule: #3a3833;
+          --cool: #8078e0;
+          --warm: #c9664a;
+          --oncell: #eeece6;
+      }
+    }
+    text { font-family: Lato, "Helvetica Neue", sans-serif; }
+    .panel  { font-size: 14px; font-weight: 600; fill: var(--ink, #2b2a28); }
+    .collab { font-size: 12px; fill: var(--faint, #6b6863); letter-spacing: 0.04em; text-transform: uppercase; }
+    .rowlab { font-size: 12px; fill: var(--faint, #6b6863); }
+    .tick   { font-size: 11px; fill: var(--faint, #6b6863); }
+    .mid    { text-anchor: middle; }
+    .end    { text-anchor: end; }
+    /* The number is in every cell, so identity never rests on colour alone. */
+    .val    { font-size: 11.5px; font-family: "IBM Plex Mono", ui-monospace, monospace; fill: var(--oncell, #2b2a28); }
+    .cool   { fill: var(--cool, #5b4fc4); }
+    .warm   { fill: var(--warm, #a4442f); }
+  ]]></style>
+
+  <rect width="740" height="388" fill="var(--paper, #f4f1ea)"/>
+  <text x="118" y="109" class="rowlab end">alias</text>
+  <text x="118" y="147" class="rowlab end">discrimination</text>
+  <text x="118" y="185" class="rowlab end">exposure</text>
+  <text x="118" y="223" class="rowlab end">position</text>
+  <text x="118" y="261" class="rowlab end">repetition</text>
+  <text x="118" y="299" class="rowlab end">semantics</text>
+  <text x="132" y="40" class="panel">Destruction — breaking the old answer</text>
+  <text x="198" y="68" class="collab mid">content</text>
+  <text x="330" y="68" class="collab mid">identity</text>
+  <rect x="132" y="86" width="129" height="35" class="warm" fill-opacity="0.051"/>
+  <text x="196" y="109" class="val mid">+0.0058</text>
+  <rect x="264" y="86" width="129" height="35" class="warm" fill-opacity="0.113"/>
+  <text x="328" y="109" class="val mid">+0.0380</text>
+  <rect x="132" y="124" width="129" height="35" class="warm" fill-opacity="0.134"/>
+  <text x="196" y="147" class="val mid">+0.0486</text>
+  <rect x="264" y="124" width="129" height="35" class="warm" fill-opacity="0.053"/>
+  <text x="328" y="147" class="val mid">+0.0068</text>
+  <rect x="132" y="162" width="129" height="35" class="warm" fill-opacity="0.133"/>
+  <text x="196" y="185" class="val mid">+0.0483</text>
+  <rect x="264" y="162" width="129" height="35" class="warm" fill-opacity="0.065"/>
+  <text x="328" y="185" class="val mid">+0.0130</text>
+  <rect x="132" y="200" width="129" height="35" class="warm" fill-opacity="0.091"/>
+  <text x="196" y="223" class="val mid">+0.0261</text>
+  <rect x="264" y="200" width="129" height="35" class="warm" fill-opacity="0.331"/>
+  <text x="328" y="223" class="val mid">+0.1507</text>
+  <rect x="132" y="238" width="129" height="35" class="warm" fill-opacity="0.149"/>
+  <text x="196" y="261" class="val mid">+0.0562</text>
+  <rect x="264" y="238" width="129" height="35" class="warm" fill-opacity="0.733"/>
+  <text x="328" y="261" class="val mid">+0.3585</text>
+  <rect x="132" y="276" width="129" height="35" class="warm" fill-opacity="0.130"/>
+  <text x="196" y="299" class="val mid">+0.0464</text>
+  <rect x="264" y="276" width="129" height="35" class="warm" fill-opacity="0.443"/>
+  <text x="328" y="299" class="val mid">+0.2088</text>
+  <text x="448" y="40" class="panel">Destination — supplying the new one</text>
+  <text x="514" y="68" class="collab mid">content</text>
+  <text x="646" y="68" class="collab mid">identity</text>
+  <rect x="448" y="86" width="129" height="35" class="warm" fill-opacity="0.402"/>
+  <text x="512" y="109" class="val mid">+0.1875</text>
+  <rect x="580" y="86" width="129" height="35" class="warm" fill-opacity="0.064"/>
+  <text x="644" y="109" class="val mid">+0.0125</text>
+  <rect x="448" y="124" width="129" height="35" class="warm" fill-opacity="0.144"/>
+  <text x="512" y="147" class="val mid">+0.0541</text>
+  <rect x="580" y="124" width="129" height="35" class="cool" fill-opacity="0.092"/>
+  <text x="644" y="147" class="val mid">-0.0270</text>
+  <rect x="448" y="162" width="129" height="35" class="warm" fill-opacity="0.362"/>
+  <text x="512" y="185" class="val mid">+0.1667</text>
+  <rect x="580" y="162" width="129" height="35" class="cool" fill-opacity="0.086"/>
+  <text x="644" y="185" class="val mid">-0.0238</text>
+  <rect x="448" y="200" width="129" height="35" class="warm" fill-opacity="0.574"/>
+  <text x="512" y="223" class="val mid">+0.2762</text>
+  <rect x="580" y="200" width="129" height="35" class="warm" fill-opacity="0.049"/>
+  <text x="644" y="223" class="val mid">+0.0048</text>
+  <rect x="448" y="238" width="129" height="35" class="warm" fill-opacity="0.914"/>
+  <text x="512" y="261" class="val mid">+0.4524</text>
+  <rect x="580" y="238" width="129" height="35" class="warm" fill-opacity="0.040"/>
+  <text x="644" y="261" class="val mid">+0.0000</text>
+  <rect x="448" y="276" width="129" height="35" class="warm" fill-opacity="0.960"/>
+  <text x="512" y="299" class="val mid">+0.4762</text>
+  <rect x="580" y="276" width="129" height="35" class="warm" fill-opacity="0.040"/>
+  <text x="644" y="299" class="val mid">+0.0000</text>
+  <text x="118" y="361" class="rowlab end">scale</text>
+  <rect x="132" y="348" width="26" height="18" class="cool" fill-opacity="0.96"/>
+  <rect x="162" y="348" width="26" height="18" class="cool" fill-opacity="0.08"/>
+  <rect x="192" y="348" width="26" height="18" class="warm" fill-opacity="0.08"/>
+  <rect x="222" y="348" width="26" height="18" class="warm" fill-opacity="0.96"/>
+  <text x="132" y="380" class="tick">−0.48</text>
+  <text x="252" y="380" class="tick end">+0.48</text>
+  <text x="272" y="361" class="tick">difference between two arms, on the same probes</text>
+</svg>
