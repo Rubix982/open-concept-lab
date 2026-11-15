@@ -225,7 +225,7 @@ floor median (k* from cache, nothing cancels)
 
 Each value came from one device and each device returned one value, and the connections alternated rather than arriving in blocks, so it is per-connection routing. The last two lines are the practical content: a ratio read inside one trace cancels the device entirely, which is why every anchor gate in the repository had survived without anyone noticing any of this. That is a property of the gate's design and not of anyone's foresight.
 
-<Lead>The partition is a property of a deployment on a day.</Lead> It appeared on 1 November and did not on 3 November, when all sixteen connections landed on one GPU.<Prov id="E-009" /> No tolerance may be justified by the partition alone, so every run records how many distinct devices it saw rather than assuming more than one exists.
+<Lead>The partition is a property of a deployment on a day — and of the session within it.</Lead> It appeared on 1 November and did not on 3 November, when all sixteen connections landed on one GPU.<Prov id="E-009" /> It is narrower than a day, too. The run that found it was executed twice on 1 November, four minutes apart, and the second overwrote the first; both logs survive. Within each session every device returned one value, and **no device returned the same value in both** — four distinct content hashes of the raw keys over two devices and 32 readings.<Prov id="E-017" /> No tolerance may be justified by the partition alone, so every run records how many distinct devices it saw rather than assuming more than one exists.
 
 <Lead>Batch composition is not free, and that correction was ours.</Lead> "Batch composition contributes zero" was recorded, generalised into the reference, and then narrowed: it is true of the derived ratio and false of the raw keys, which move by about **2.6% of their magnitude** when the batch is reshaped.<Prov id="E-007" /> Any artifact comparing raw activations across runs is bounded there, not at 2.2e-04.
 
@@ -798,7 +798,7 @@ Each row names the run a number came from, and links the files it wrote. Config 
 
 **Six rows have nothing to link**, struck through above. Those runs wrote a dated directory rather than a single file, none of those directories was committed, and they are no longer on any machine. Their numbers are quoted in the sections above and cannot be checked against their source today.
 
-**None of them is lost, and the cost of getting each one back is not the same.** [E-012], the census of every recorded reading of the floor, is recomputable offline right now: the 33 run logs it counted are committed under `logs/`. [E-007], batch reshaping against raw key magnitude, needs one short remote session — its checks are `check_batch_rows` and `check_batch_width` in `tools/ndif_conformance.py`, which is in the repository. [E-017] and [E-018] are 16 anchors each and the probe generator is committed, so they are small runs. [E-026] is 370 items. [E-038] is the expensive one at 23,505 readings.
+**None of them is lost, and the cost of getting each one back is not the same.** [E-012], the census of every recorded reading of the floor, is **not** recoverable from the logs: they carry that quantity to four decimals on most lines and the effect it was counting sits at 1e-06. An earlier version of this paragraph said it was, which was written from the logs *mentioning* the quantity rather than from checking its precision. It needs the run. [E-007], batch reshaping against raw key magnitude, needs one short remote session — its checks are `check_batch_rows` and `check_batch_width` in `tools/ndif_conformance.py`, which is in the repository. [E-017] and [E-018] are 16 anchors each and the probe generator is committed, so they are small runs. [E-026] is 370 items. [E-038] is the expensive one at 23,505 readings.
 
 Saying this is not an excuse for the gap. It is the difference between a record that lost something and a record that has not yet spent the compute to restore it, and a reader is entitled to know which of the two they are looking at.
 
@@ -818,6 +818,7 @@ Saying this is not an excuse for the gap. It is the difference between a record 
   <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026-10-28-alias/">Renamed subject: string similarity against delivered fraction</Run>
   <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026-11-01-ripple/">RippleEdits re-run, direct exposure counted</Run>
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
+  <Run id="E‑017" model="Llama‑3.1‑8B" n="32" date="15 Nov" out="E-017-log-census.json">Readings the result files overwrote, recovered from the committed logs</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
 </Runs>
 

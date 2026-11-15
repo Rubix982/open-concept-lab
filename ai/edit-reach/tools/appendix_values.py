@@ -145,6 +145,15 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("anchor gate, worst deviation", "anchor_worst_deviation_overall", "f4"),
       ("floor spread within one GPU", "floor_spread_within_gpu", "f4"),
       ("floor spread across GPUs", "floor_spread_across_gpus", "f6")]),
+
+    ("E-017", "E-017-log-census.json",
+     "What the committed logs kept that the result files overwrote",
+     "§4.1. A runner writes one JSON per ticket, so a second run overwrites the first. These are the readings both logs kept.",
+     [("sessions with device readings", "sessions_with_device_readings", "d"),
+      ("readings", "readings", "d"),
+      ("distinct values", "distinct_signatures", "d"),
+      ("one value per device within a session", "one_value_per_device_within_a_session", "raw"),
+      ("one value per device across sessions", "one_value_per_device_across_sessions", "raw")]),
 ]
 
 

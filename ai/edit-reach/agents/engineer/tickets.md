@@ -718,3 +718,69 @@ Close C-008 with two regression coefficients and their intervals. Everything bel
 **Closed:** 2026-11-09. Branch 3: neither predictor moves. Prominence +0.005 (CI −0.315, +0.314), dependent count −0.053 (−0.366, +0.270); all three confound controls ran and changed nothing. n=41 — `Joey BadA$$` does not resolve by label and is named rather than dropped silently.
 
 Two things the ticket did not foresee. **The gate was only half checkable:** [E-002]'s content figure reproduces exactly (median excess 0.0009 over 495 probes) but its identity figure is a different contrast this run does not recompute, so one of the two numbers was checked. Recorded rather than glossed. **And the detectable-effect floor is the result here**, not a footnote: at n=41 the widest interval spans 0.64, so an effect of 0.2 would have been invisible, and a null reported without that sentence would overclaim.
+
+---
+
+### E-017 · Census the committed logs for readings the result files overwrote
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+Appendix B of the paper names six runs whose outputs are gone. While checking
+whether [E-012] could be rebuilt from `logs/`, a different thing turned up.
+
+`run_e006.py` writes `results/E-006-session-variation.json`, and it was run
+twice on 1 November, four minutes apart. The second run overwrote the first. The
+committed JSON therefore holds one session and reports *2 distinct values over
+16 readings, partitioning cleanly by GPU*. Both logs survive, and together they
+show something the file cannot:
+
+| | 11:59 run | 12:03 run |
+| --- | --- | --- |
+| GPU 0 | `3896ee28446f8156` | `edd2b2b152de2098` |
+| GPU 2 | `86388abacb9ff3e7` | `54a1755349e607dc` |
+
+The signature is a SHA-1 of the raw key tensor (`run_e006.py:50`), so a
+different signature is different bytes. The partition holds **within** a session
+and the value a given GPU returns is **not stable across sessions on the same
+day**. §4.1 currently supports "a property of a deployment on a day" with 1
+November against 3 November; this is the same claim at four minutes.
+
+**Scope:**
+
+1. `tools/log_census.py` — read every committed log under `logs/`, extract each
+   reading that carries a signature and a device, and group by session, device
+   and value. Write `results/E-017-log-census.json`.
+2. Add it to `tools/appendix_values.py` so the numbers appear in §B.1.
+3. Strengthen the §4.1 lead with the within-day evidence and cite this run.
+
+**What this is not.** It is not a rebuild of [E-012]. That census counted
+readings at a resolution the logs do not preserve — the floor median is written
+to four decimals on most lines and the effect under study is at 1e-06. An
+earlier note in Appendix B said [E-012] was recomputable offline; that was
+written from the logs *mentioning* the quantity rather than from checking its
+precision, and it is corrected by this ticket.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Artifacts:**
+
+- `tools/log_census.py` → `results/E-017-log-census.json`, committed
+- `tools/appendix_values.py` → §B.1 carries it; 9 experiments, 0 values not found
+- `web/notebook/edit-reach/paper.md` → §4.1 lead, and the run row in Appendix B
+
+**Result, as two statements that could have come out the other way.** One value
+per device **within** a session: true. One value per device **across** sessions:
+false. 32 readings, 2 devices, 4 distinct content hashes of the raw keys.
+
+**What it cost to find:** nothing but reading the logs, and it was only there
+because they are committed. The runner overwrites its own output file; the log
+is the only copy of the earlier session.
+
+**Closed:** 2026-11-15

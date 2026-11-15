@@ -199,5 +199,22 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
   </tbody>
 </Data>
 
+**E-017 · What the committed logs kept that the result files overwrote**
+
+§4.1. A runner writes one JSON per ticket, so a second run overwrites the first. These are the readings both logs kept.
+
+<Data caption={<>Every quantity E-017 produced that the paper cites, with the field it was read from in <code>E-017-log-census.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>sessions with device readings</td><td className="n">2</td><td><code>sessions_with_device_readings</code></td></tr>
+    <tr><td>readings</td><td className="n">32</td><td><code>readings</code></td></tr>
+    <tr><td>distinct values</td><td className="n">4</td><td><code>distinct_signatures</code></td></tr>
+    <tr><td>one value per device within a session</td><td className="n">yes</td><td><code>one_value_per_device_within_a_session</code></td></tr>
+    <tr><td>one value per device across sessions</td><td className="n">no</td><td><code>one_value_per_device_across_sessions</code></td></tr>
+  </tbody>
+</Data>
+
 **What is not in these tables.** [E-007] and [E-009] are conformance sweeps whose grid is drawn in §4.1 rather than tabulated here. [E-038], the RippleEdits re-run over 23,505 readings, wrote to a run directory that is not on this machine, so its figures appear in §5.5 from the summary and cannot be reprinted from their source. Saying so is the point of this paragraph: an appendix that lists only what it happens to have is not a record of what was run.
 
