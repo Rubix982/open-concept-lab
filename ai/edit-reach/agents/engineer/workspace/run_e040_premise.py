@@ -139,6 +139,12 @@ def main() -> int:
     ap.add_argument("--edit-slice", type=Path, default=HERE.parents[4] / "edit-slice")
     ap.add_argument("--layer", type=int, default=5,
                     help="the premise is layer-independent; the floor is not")
+    ap.add_argument("--depths", type=float, nargs="*", default=None,
+                    help="fractions of each model's depth to read instead of "
+                         "--layer, e.g. 0.06 0.16 0.3 0.5. Layer 5 is 16%% of a "
+                         "32-layer model and 6%% of an 80-layer one, so a floor "
+                         "compared across models at one absolute layer confounds "
+                         "size with depth; this is the control for that.")
     ap.add_argument("--models", nargs="*", default=list(MODELS),
                     help="subset to run; the 405B is the expensive one")
     ap.add_argument("--out", type=Path,
@@ -161,7 +167,19 @@ def main() -> int:
     rows, failed = [], []
     for name in a.models:
         try:
-            rows.append(measure(name, anchors, floors, cf, a.layer))
+            if a.depths is None:
+                rows.append(measure(name, anchors, floors, cf, a.layer))
+            else:
+                # One connection, one resolve, several layers: the depth
+                # fractions are turned into this model's own layer indices.
+                probe = connect(name)
+                _, n_layers, _ = resolve_arch(probe, name)
+                for frac in a.depths:
+                    L = max(0, min(n_layers - 1, round(frac * n_layers)))
+                    r = measure(name, anchors, floors, cf, L)
+                    r["depth_fraction_requested"] = frac
+                    r["depth_fraction_actual"] = L / n_layers
+                    rows.append(r)
         except Exception as e:
             # Recorded rather than crashed: a model this run could not read is a
             # gap in the claim's coverage, and it belongs in the output file

@@ -10,6 +10,12 @@ results/*
 !results/*.json
 !results/summaries/
 
+# The tidy table is the per-measurement record every chart and table is drawn
+# from, so it is committed for the same reason the run JSONs are: a figure whose
+# underlying rows nobody can open is not evidence.
+!results/tidy/
+!results/tidy/*.csv
+
 .venv/
 __pycache__/
 *.pyc
