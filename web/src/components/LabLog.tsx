@@ -81,11 +81,18 @@ export function PaperSwitch(): ReactNode {
  * limits stay in a section of their own, and the one control that was got wrong
  * stays too. A version that cannot be wrong would mean the content left with the
  * notation, and the fix for that is upstream of the writing.
+ *
+ * The label is three words. It was "PLAIN - the same paper, said so it can still
+ * be checked", which argued for the tab in the place where its name goes, and
+ * claimed a virtue the page spends two thousand words demonstrating. That is now
+ * `self-justifying label` in research-craft's lint, with the two tests in
+ * voice.md, because neither the lint nor the census could see it: both scored
+ * this file clean while that sentence was in it.
  */
 export function PlainPanel({ children }: { children: ReactNode }): ReactNode {
   return (
     <section className="ocl-plainpanel" aria-label="In plain words">
-      <div className="ocl-plainpanel__id">PLAIN — the same paper, said so it can still be checked</div>
+      <div className="ocl-plainpanel__id">In plain words</div>
       {children}
     </section>
   );
