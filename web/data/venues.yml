@@ -336,3 +336,136 @@ tacl:
   note: >
     Presentation is optional and time-bound to each conference's cut-off. A
     paper cannot be under review at TACL and ARR at the same time.
+
+# --- 2027: competitions on a fixed problem -----------------------------------
+#
+#   platform: where entries are submitted and scored
+
+semeval-2027:
+  name: SemEval shared tasks
+  series: SemEval
+  kind: competition
+  year: 2027
+  deadline: "2027-01-10"
+  due: evaluation runs 10–31 January 2027; each task may close earlier
+  when: System papers due February 2027; workshop in summer 2027
+  where: Online, then a workshop at an ACL conference
+  archival: "yes"
+  platform: Codabench, for most tasks
+  url: https://semeval.github.io/
+  verified: true
+  asks: >
+    A set of separate tasks, each a fixed problem with its own data and
+    leaderboard. Confirmed for 2027 so far: reasoning-oriented retrieval (Task 1)
+    and semantic change across time periods (Task 3).
+  note: >
+    Dates from the task calls on the ACL portal. Teams write a system paper that
+    goes into the SemEval proceedings. No 2027 task on interpretability or
+    editing was found; SemEval 2025 ran one on unlearning.
+
+neurips-competitions-2027:
+  name: Competition track
+  series: NeurIPS
+  kind: competition
+  year: 2027
+  deadline: "2027-06-15"
+  due: competitions usually open in early summer, estimated
+  when: Results presented at NeurIPS 2027 in December
+  where: Online, then NeurIPS
+  archival: "no"
+  platform: Kaggle, Codabench or others, per competition
+  url: https://neurips.cc/
+  verified: false
+  asks: >
+    Each accepted competition sets its own problem, so the 2027 list will only
+    be known once the track's decisions are out. The 2026 AIMO Interpretability
+    Challenge was one of these.
+  note: >
+    In 2026, proposals were due 15 May and decisions came in July. Organisers
+    are asked to write up their competition for the next year's Evaluations and
+    Datasets track.
+
+arc-prize-2027:
+  name: ARC Prize
+  series: ARC Prize Foundation
+  kind: competition
+  year: 2027
+  deadline: "2027-11-01"
+  due: not announced; the 2026 submissions closed 2 November, estimated
+  when: If it repeats, it runs most of the year, with results in early December
+  where: Online
+  archival: "no"
+  platform: Kaggle
+  url: https://arcprize.org/
+  verified: false
+  asks: >
+    Abstract reasoning puzzles that are easy for people and hard for AI: a
+    static benchmark (ARC-AGI-2), an interactive one (ARC-AGI-3), and a prize for
+    papers on how to do well on them.
+  note: >
+    $2M across three tracks in 2026. A reasoning problem, not an
+    interpretability one.
+
+mib-leaderboard:
+  name: MIB leaderboard
+  series: Mechanistic Interpretability Benchmark
+  kind: competition
+  year: 2027
+  due: open any time; the leaderboard stays up
+  when: Ongoing. It was the BlackboxNLP 2025 shared task
+  where: Online
+  archival: "no"
+  platform: Hugging Face Spaces
+  url: https://huggingface.co/spaces/mib-bench/leaderboard
+  paper: https://arxiv.org/abs/2511.18409
+  verified: true
+  asks: >
+    Two fixed problems in mechanistic interpretability itself: find the circuit
+    a model uses for a task (GPT-2 Small and Qwen-2.5-0.5B on indirect object
+    identification, Qwen on multiple choice), and find where a causal variable
+    lives. Scored on a private test set by how faithful the circuit is across
+    sizes.
+  note: >
+    The one standing competition in this list that is interpretability. In the
+    2025 round, three teams entered eight methods, and ensembles of existing
+    methods did best.
+
+aimo-2027:
+  name: AIMO Progress Prize
+  series: XTX Markets
+  kind: competition
+  year: 2027
+  due: next round not announced
+  when: Progress Prize 3 closed in April 2026
+  where: Online
+  archival: "no"
+  platform: Kaggle
+  url: https://aimo.xtxmarkets.com/
+  verified: false
+  asks: >
+    Open models that solve olympiad-level maths problems. Winners must publish
+    their code, method, data and model weights to collect.
+  note: >
+    From a $10M fund, and unclaimed money rolls over. Earlier rounds opened in
+    April 2024, October 2024 and November 2025. Its 2026 sibling, the AIMO
+    Interpretability Challenge, asked about the internals of models doing
+    these problems.
+
+gray-swan-arena:
+  name: Gray Swan Arena
+  series: Gray Swan
+  kind: competition
+  year: 2027
+  due: challenges run continuously; a smaller one opens every week
+  when: Its largest challenge, on indirect prompt injection against AI agents, opened 20 October 2026 with $300,000 in prizes
+  where: Online
+  archival: "no"
+  platform: Gray Swan's own Arena
+  url: https://app.grayswan.ai/arena
+  verified: false
+  asks: >
+    Red-teaming: attacking AI models and agents, for example by hiding
+    instructions in pages an agent reads, scored on which attacks succeed.
+  note: >
+    Read from press coverage, not the challenge's own rules; its closing date
+    could not be confirmed.

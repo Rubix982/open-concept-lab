@@ -74,6 +74,7 @@ function VenueCard({ venue }: { venue: Venue }): ReactNode {
         {venue.kind !== "funding" ? (
           <span className="ocl-pill">{ARCHIVAL[venue.archival] ?? venue.archival}</span>
         ) : null}
+        {venue.platform ? <span className="ocl-pill">on {venue.platform}</span> : null}
         {venue.paper ? (
           <a className="ocl-venue__paper" href={venue.paper} target="_blank" rel="noreferrer">
             its own paper ↗

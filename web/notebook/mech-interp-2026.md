@@ -46,12 +46,13 @@ The cards above are only useful read against the work, so: five of the six venue
 
 ## Where it can go in 2027
 
-The cards above are workshops, one competition and a funding lead. A result that is meant to be cited also needs the main conferences and the journals, so the 2027 list has those too, in the order their deadlines arrive.
+The cards above are workshops, one competition and a funding lead. A result that is meant to be cited also needs the main conferences and the journals, so the 2027 list has those too, along with the competitions that set one fixed problem and score every entry on it. Everything is in the order its deadline arrives.
 
 <Notice>
   <strong>Read on 15 November 2026, when most 2027 calls were not out.</strong>
-  Five cards were read off the venue's own page: the ICLR blogpost track, ACL,
-  ICML, and the two journals. Every other date was worked out from the last
+  Seven cards were read off the venue's own page or its own announcements: the
+  ICLR blogpost track, ACL, ICML, SemEval, the MIB leaderboard and the two
+  journals. Every other date was worked out from the last
   edition and says <em>estimated</em>. Those cards are marked unchecked, and
   each one needs reading again once its call is published.
 </Notice>
@@ -65,6 +66,8 @@ The cards above are workshops, one competition and a funding lead. A result that
 **Journals have no deadline.** TMLR takes submissions at any time, and its Journal-to-Conference certification can still put a paper in front of NeurIPS, ICML or ICLR. TACL closes on the 1st of each month, and its accepted papers can be presented at an ACL conference. A paper cannot be under review at TACL and ARR at the same time.
 
 **ICML has a new reviewing rule.** Each ICML 2027 submission must name one author who is eligible to review and who will. An author who is not eligible can appear on only one submission in which nobody is.
+
+**Where competitions run.** A competition on a fixed problem lives on a platform that holds the data and scores each entry, usually against a test set the entrants never see. Kaggle hosts the large prize competitions, such as the ARC Prize and the AIMO prizes. Codabench hosts most academic shared tasks, SemEval's among them. NeurIPS competitions each pick their own, and have used Kaggle, Codabench, EvalAI and AIcrowd. Standing research leaderboards, like MIB's, often sit in a Hugging Face Space. Red-teaming has platforms of its own, such as Gray Swan's Arena.
 
 ## What this page is for
 
