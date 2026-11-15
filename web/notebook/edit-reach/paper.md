@@ -247,6 +247,16 @@ Five results, in the order they were run. The first two are about the coefficien
 A **same-subject control** — a different property of the same person — already accounts for about 72% of the median movement, |movement| 0.1034 against |control| 0.0740. Removing it leaves an excess correlation of **0.085**, CI (−0.003, 0.172), an interval touching zero.
 
 <Figure
+  src="/img/edit-reach/coefficient-vs-movement.svg"
+  alt="Two scatter plots sharing one vertical scale, 495 probes each. On the left, the coefficient against how far the edit moved the model: the points trend upward and Spearman is 0.522. On the right, the same coefficient against what is left once a same-subject control is removed: the cloud collapses onto the zero line and Spearman is 0.085, with an interval from -0.003 to 0.172 that crosses zero. In both panels the coefficient is bimodal, 329 probes at 0.8 or above and 127 at 0.2 or below, with only 39 in between."
+  caption={<>All 495 probes, both panels on one vertical scale. On the left, the coefficient against how far the edit moved the model; on the right, what is left once the same-subject control is removed, which settles onto zero. The coefficient is bimodal — <b>329</b> probes at 0.8 or above, <b>127</b> at 0.2 or below, <b>39</b> in between — so this correlation compares two groups more than it follows a trend. Drawn from the run by <code>tools/figure_scatter.py</code>.</>}
+  wide
+  plain
+/>
+
+<Lead>What the shape of the x-axis does to the statistic.</Lead> The coefficient has almost no values between 0.2 and 0.8, so a rank correlation over it is largely reporting that one cluster moves more than the other. That is consistent with §5.2, where the far field turns out to have no subject-specific dynamic range at all, and it is a second reason not to read **0.522** as a predictive relationship.
+
+<Figure
   plain
   wide
   caption={<>Six probe families, ordered by median coefficient. For each, the movement under the real edit and the movement under a same-subject control, on one scale. Where the two marks nearly coincide the coefficient has predicted nothing the control did not. Only <i>exposure</i> opens a visible gap, at +0.031.</>}
