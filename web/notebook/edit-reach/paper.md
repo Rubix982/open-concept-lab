@@ -231,7 +231,15 @@ Each value came from one device and each device returned one value, and the conn
 
 <Lead>No magnitude holds.</Lead> The disagreement between two arithmetic sites reads 5.3e‑06 on Llama-3.1-8B and 7.5e‑09 on GPT-J, which NDIF serves in float32 rather than bfloat16. The 8B and the 70B are one model family and disagree by an order of magnitude, while GPT-J differs because of how it is *served*. So the grouping variable is the deployment — dtype, sharding, tensor shape — not the family. A tolerance written into code is wrong on some other deployment; it has to be measured where it runs.
 
-<Lead>One claim here was withdrawn by its own follow-up.</Lead> The arithmetic-site effect was first recorded as growing with depth in bfloat16. A sweep on the 70B at layers 0 to 79 showed it spanning two to three orders of magnitude across depth with **no predictable direction**.<Prov id="E-010" /> The instruction that follows changed from "be careful when reading deep" to "measure it at the layer you read", which is a smaller and more useful sentence. The full reference, with the conformance suite that found four errors in it, is [in the repository](https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/docs/ndif-reproducibility.md).
+<Lead>One claim here was withdrawn by its own follow-up.</Lead> The arithmetic-site effect was first recorded as growing with depth in bfloat16. A sweep on the 70B at layers 0 to 79 showed it spanning two to three orders of magnitude across depth with **no predictable direction**.<Prov id="E-010" /> The instruction that follows changed from "be careful when reading deep" to "measure it at the layer you read", which is a smaller and more useful sentence.
+
+<Figure
+  src="/img/edit-reach/conformance-by-layer.svg"
+  alt="A grid of six reproducibility checks down and the sampled layers across, one panel per model: Llama-3.1-8B, GPT-J-6B and Llama-3.1-70B. Darker means a larger disagreement between two readings of the same quantity. Three checks read exactly zero at every layer on every model and are drawn empty with a dot. The nonzero values run from 1.9e-09 to 2.7e-01, and they do not grow or shrink consistently with depth across models."
+  caption={<>Six checks down, the sampled layers across, one panel per model. Three of them are analytic and read <b>exactly zero</b> everywhere — drawn empty with a dot rather than as the palest shade, because matching exactly is a different statement from being small. The rest span <b>1.9e-09</b> to <b>2.7e-01</b>. Depth has no direction that holds across models: on Llama-3.1-8B the matmul-site disagreement rises from 8.4e-07 to 3.7e-05, on GPT-J-6B it sits near 1e-08 throughout, and on the 70B it moves both ways. Drawn from the runs by <code>tools/figure_heatmap.py</code>.</>}
+  wide
+  plain
+/> The full reference, with the conformance suite that found four errors in it, is [in the repository](https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/docs/ndif-reproducibility.md).
 
 ### 4.2 What the record cost
 

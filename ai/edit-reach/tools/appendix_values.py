@@ -26,6 +26,34 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 RES = ROOT / "ai" / "edit-reach" / "results"
 OUT = ROOT / "web" / "notebook" / "edit-reach" / "_values.mdx"
 
+#: Per-experiment group tables: every row the run produced, not just its summary.
+#: (ticket, dotted path to the dict of groups, group-column label,
+#:  [(column label, subpath within each group, format)])
+GROUPS: dict[str, tuple[str, str, list[tuple[str, str, str]]]] = {
+    "E-001": ("by_family", "probe family", [
+        ("n", "n", "d"),
+        ("raw ρ", "raw.rho", "f4"),
+        ("raw 95% CI", "raw.ci95", "ci"),
+        ("excess ρ", "excess.rho", "f4"),
+        ("excess 95% CI", "excess.ci95", "ci"),
+    ]),
+    "E-002": ("by_family", "probe family", [
+        ("n", "n", "d"),
+        ("real edit", "real", "f4"),
+        ("same-subject control", "ctl", "f4"),
+        ("different-subject control", "other", "f4"),
+    ]),
+    "E-003": ("by_family", "probe family", [
+        ("n", "n", "d"),
+        ("destination, real", "hit_real", "f4"),
+        ("destination, same-subj", "hit_ctl", "f4"),
+        ("destination, diff-subj", "hit_other", "f4"),
+        ("destruction, real", "destruction_real", "f4"),
+        ("destruction, same-subj", "destruction_ctl", "f4"),
+        ("destruction, diff-subj", "destruction_other", "f4"),
+    ]),
+}
+
 #: (ticket, file, heading, note, [(label, dotted path, format)])
 SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
     ("E-001", "E-001-predicted-vs-measured.json",
@@ -146,6 +174,27 @@ def main() -> None:
                 missing += 1
             L.append(f"| {label} | {render(value, kind)} | `{dotted}` |")
         L.append("")
+
+        # Every group the run produced, not a selection of them. A summary row
+        # hides which probe families carry the effect and which do not, and the
+        # families differ enough here that the overall figure is an average over
+        # things that behave differently.
+        if ticket in GROUPS:
+            gpath, gcol, cols = GROUPS[ticket]
+            groups = dig(doc, gpath)
+            if not isinstance(groups, dict):
+                L.append(f"`{gpath}` is missing from this run, so the breakdown is not here.")
+                L.append("")
+                missing += 1
+            else:
+                L.append(f"Every group in `{gpath}`.")
+                L.append("")
+                L.append("| " + gcol + " | " + " | ".join(c[0] for c in cols) + " |")
+                L.append("| --- |" + " ---: |" * len(cols))
+                for name in sorted(groups):
+                    cells = [render(dig(groups[name], sub), kind) for _, sub, kind in cols]
+                    L.append(f"| {name} | " + " | ".join(cells) + " |")
+                L.append("")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(L) + "\n")
     print(f"wrote {OUT.relative_to(ROOT)}")

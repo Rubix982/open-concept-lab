@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 326" width="930" height="326" role="img" aria-label="A grid of 6 reproducibility checks down and the sampled layers across, one panel per model: Llama-3.1-8B, GPT-J-6B, Llama-3.1-70B. Darker means a larger disagreement between two readings of the same quantity. The nonzero values run from 1.9e-09 to 2.7e-01, a span of about 8 orders of magnitude, and they do not grow or shrink consistently with depth. Checks that match exactly are drawn empty with a dot rather than as the palest shade.">
+  <style type="text/css"><![CDATA[
+    :root {
+        --paper: #f4f1ea;
+        --ink: #2b2a28;
+        --faint: #6b6863;
+        --link: #4338a8;
+        --rule: #d9d3c7;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --ink: #eeece6;
+          --faint: #9a968e;
+          --link: #b1a9ff;
+          --rule: #3a3833;
+      }
+    }
+    text { font-family: Lato, "Helvetica Neue", sans-serif; }
+    .model  { font-size: 14px; font-weight: 600; fill: var(--ink, #2b2a28); }
+    .tick   { font-size: 11px; fill: var(--faint, #6b6863); }
+    .rowlab { font-size: 11.5px; fill: var(--faint, #6b6863); }
+    .mid    { text-anchor: middle; }
+    .end    { text-anchor: end; }
+    /* One hue, light to dark. Magnitudes have no polarity, so a diverging
+       scale would invent a midpoint that the data does not have. */
+    .cell   { fill: var(--link, #4338a8); }
+    .zero   { fill: none; stroke: var(--rule, #d9d3c7); stroke-width: 1; }
+    .zerodot{ fill: var(--faint, #6b6863); }
+    .absent { fill: none; stroke: var(--rule, #d9d3c7); stroke-dasharray: 2 3; }
+  ]]></style>
+
+  <rect width="930" height="326" fill="var(--paper, #f4f1ea)"/>
+  <text x="106" y="93" class="rowlab end">ratio in trace</text>
+  <text x="106" y="123" class="rowlab end">cached reference</text>
+  <text x="106" y="153" class="rowlab end">batch rows</text>
+  <text x="106" y="183" class="rowlab end">batch width</text>
+  <text x="106" y="213" class="rowlab end">pad content</text>
+  <text x="106" y="243" class="rowlab end">matmul site</text>
+  <text x="118" y="40" class="model">Llama-3.1-8B</text>
+    <text x="141" y="62" class="tick mid">0</text>
+    <text x="187" y="62" class="tick mid">5</text>
+    <text x="233" y="62" class="tick mid">12</text>
+    <text x="279" y="62" class="tick mid">24</text>
+    <text x="325" y="62" class="tick mid">31</text>
+    <rect x="118" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="140" cy="88" r="2" class="zerodot"/>
+    <rect x="164" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="186" cy="88" r="2" class="zerodot"/>
+    <rect x="210" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="232" cy="88" r="2" class="zerodot"/>
+    <rect x="256" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="278" cy="88" r="2" class="zerodot"/>
+    <rect x="302" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="324" cy="88" r="2" class="zerodot"/>
+    <rect x="118" y="104" width="44" height="28" class="cell" fill-opacity="0.764"/>
+    <rect x="164" y="104" width="44" height="28" class="cell" fill-opacity="0.765"/>
+    <rect x="210" y="104" width="44" height="28" class="cell" fill-opacity="0.767"/>
+    <rect x="256" y="104" width="44" height="28" class="cell" fill-opacity="0.766"/>
+    <rect x="302" y="104" width="44" height="28" class="cell" fill-opacity="0.767"/>
+    <rect x="118" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="140" cy="148" r="2" class="zerodot"/>
+    <rect x="164" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="186" cy="148" r="2" class="zerodot"/>
+    <rect x="210" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="232" cy="148" r="2" class="zerodot"/>
+    <rect x="256" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="278" cy="148" r="2" class="zerodot"/>
+    <rect x="302" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="324" cy="148" r="2" class="zerodot"/>
+    <rect x="118" y="164" width="44" height="28" class="cell" fill-opacity="0.734"/>
+    <rect x="164" y="164" width="44" height="28" class="cell" fill-opacity="0.852"/>
+    <rect x="210" y="164" width="44" height="28" class="cell" fill-opacity="0.813"/>
+    <rect x="256" y="164" width="44" height="28" class="cell" fill-opacity="0.856"/>
+    <rect x="302" y="164" width="44" height="28" class="cell" fill-opacity="0.941"/>
+    <rect x="118" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="140" cy="208" r="2" class="zerodot"/>
+    <rect x="164" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="186" cy="208" r="2" class="zerodot"/>
+    <rect x="210" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="232" cy="208" r="2" class="zerodot"/>
+    <rect x="256" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="278" cy="208" r="2" class="zerodot"/>
+    <rect x="302" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="324" cy="208" r="2" class="zerodot"/>
+    <rect x="118" y="224" width="44" height="28" class="cell" fill-opacity="0.318"/>
+    <rect x="164" y="224" width="44" height="28" class="cell" fill-opacity="0.409"/>
+    <rect x="210" y="224" width="44" height="28" class="cell" fill-opacity="0.464"/>
+    <rect x="256" y="224" width="44" height="28" class="cell" fill-opacity="0.488"/>
+    <rect x="302" y="224" width="44" height="28" class="cell" fill-opacity="0.504"/>
+    <text x="233" y="276" class="tick mid">layer</text>
+  <text x="394" y="40" class="model">GPT-J-6B</text>
+    <text x="417" y="62" class="tick mid">0</text>
+    <text x="463" y="62" class="tick mid">5</text>
+    <text x="509" y="62" class="tick mid">12</text>
+    <text x="555" y="62" class="tick mid">20</text>
+    <text x="601" y="62" class="tick mid">27</text>
+    <rect x="394" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="416" cy="88" r="2" class="zerodot"/>
+    <rect x="440" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="462" cy="88" r="2" class="zerodot"/>
+    <rect x="486" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="508" cy="88" r="2" class="zerodot"/>
+    <rect x="532" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="554" cy="88" r="2" class="zerodot"/>
+    <rect x="578" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="600" cy="88" r="2" class="zerodot"/>
+    <rect x="394" y="104" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="416" cy="118" r="2" class="zerodot"/>
+    <rect x="440" y="104" width="44" height="28" class="cell" fill-opacity="0.765"/>
+    <rect x="486" y="104" width="44" height="28" class="cell" fill-opacity="0.737"/>
+    <rect x="532" y="104" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="554" cy="118" r="2" class="zerodot"/>
+    <rect x="578" y="104" width="44" height="28" class="cell" fill-opacity="0.763"/>
+    <rect x="394" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="416" cy="148" r="2" class="zerodot"/>
+    <rect x="440" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="462" cy="148" r="2" class="zerodot"/>
+    <rect x="486" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="508" cy="148" r="2" class="zerodot"/>
+    <rect x="532" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="554" cy="148" r="2" class="zerodot"/>
+    <rect x="578" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="600" cy="148" r="2" class="zerodot"/>
+    <rect x="394" y="164" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="416" cy="178" r="2" class="zerodot"/>
+    <rect x="440" y="164" width="44" height="28" class="cell" fill-opacity="0.862"/>
+    <rect x="486" y="164" width="44" height="28" class="cell" fill-opacity="0.853"/>
+    <rect x="532" y="164" width="44" height="28" class="cell" fill-opacity="0.860"/>
+    <rect x="578" y="164" width="44" height="28" class="cell" fill-opacity="0.857"/>
+    <rect x="394" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="416" cy="208" r="2" class="zerodot"/>
+    <rect x="440" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="462" cy="208" r="2" class="zerodot"/>
+    <rect x="486" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="508" cy="208" r="2" class="zerodot"/>
+    <rect x="532" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="554" cy="208" r="2" class="zerodot"/>
+    <rect x="578" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="600" cy="208" r="2" class="zerodot"/>
+    <rect x="394" y="224" width="44" height="28" class="cell" fill-opacity="0.120"/>
+    <rect x="440" y="224" width="44" height="28" class="cell" fill-opacity="0.100"/>
+    <rect x="486" y="224" width="44" height="28" class="cell" fill-opacity="0.100"/>
+    <rect x="532" y="224" width="44" height="28" class="cell" fill-opacity="0.100"/>
+    <rect x="578" y="224" width="44" height="28" class="cell" fill-opacity="0.100"/>
+    <text x="509" y="276" class="tick mid">layer</text>
+  <text x="670" y="40" class="model">Llama-3.1-70B</text>
+    <text x="693" y="62" class="tick mid">0</text>
+    <text x="739" y="62" class="tick mid">5</text>
+    <text x="785" y="62" class="tick mid">20</text>
+    <text x="831" y="62" class="tick mid">40</text>
+    <text x="877" y="62" class="tick mid">79</text>
+    <rect x="670" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="692" cy="88" r="2" class="zerodot"/>
+    <rect x="716" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="738" cy="88" r="2" class="zerodot"/>
+    <rect x="762" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="784" cy="88" r="2" class="zerodot"/>
+    <rect x="808" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="830" cy="88" r="2" class="zerodot"/>
+    <rect x="854" y="74" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="876" cy="88" r="2" class="zerodot"/>
+    <rect x="670" y="104" width="44" height="28" class="cell" fill-opacity="0.740"/>
+    <rect x="716" y="104" width="44" height="28" class="cell" fill-opacity="0.757"/>
+    <rect x="762" y="104" width="44" height="28" class="cell" fill-opacity="0.746"/>
+    <rect x="808" y="104" width="44" height="28" class="cell" fill-opacity="0.757"/>
+    <rect x="854" y="104" width="44" height="28" class="cell" fill-opacity="0.750"/>
+    <rect x="670" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="692" cy="148" r="2" class="zerodot"/>
+    <rect x="716" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="738" cy="148" r="2" class="zerodot"/>
+    <rect x="762" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="784" cy="148" r="2" class="zerodot"/>
+    <rect x="808" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="830" cy="148" r="2" class="zerodot"/>
+    <rect x="854" y="134" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="876" cy="148" r="2" class="zerodot"/>
+    <rect x="670" y="164" width="44" height="28" class="cell" fill-opacity="0.597"/>
+    <rect x="716" y="164" width="44" height="28" class="cell" fill-opacity="0.700"/>
+    <rect x="762" y="164" width="44" height="28" class="cell" fill-opacity="0.768"/>
+    <rect x="808" y="164" width="44" height="28" class="cell" fill-opacity="0.788"/>
+    <rect x="854" y="164" width="44" height="28" class="cell" fill-opacity="0.898"/>
+    <rect x="670" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="692" cy="208" r="2" class="zerodot"/>
+    <rect x="716" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="738" cy="208" r="2" class="zerodot"/>
+    <rect x="762" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="784" cy="208" r="2" class="zerodot"/>
+    <rect x="808" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="830" cy="208" r="2" class="zerodot"/>
+    <rect x="854" y="194" width="44" height="28" class="zero" fill-opacity="1.000"/>
+    <circle cx="876" cy="208" r="2" class="zerodot"/>
+    <rect x="670" y="224" width="44" height="28" class="cell" fill-opacity="0.404"/>
+    <rect x="716" y="224" width="44" height="28" class="cell" fill-opacity="0.292"/>
+    <rect x="762" y="224" width="44" height="28" class="cell" fill-opacity="0.209"/>
+    <rect x="808" y="224" width="44" height="28" class="cell" fill-opacity="0.489"/>
+    <rect x="854" y="224" width="44" height="28" class="cell" fill-opacity="0.465"/>
+    <text x="785" y="276" class="tick mid">layer</text>
+  <text x="106" y="304" class="rowlab end">disagreement</text>
+  <rect x="118" y="292" width="22" height="16" class="cell" fill-opacity="0.213"/>
+  <text x="145" y="304" class="tick">1e-7</text>
+  <rect x="204" y="292" width="22" height="16" class="cell" fill-opacity="0.440"/>
+  <text x="231" y="304" class="tick">1e-5</text>
+  <rect x="290" y="292" width="22" height="16" class="cell" fill-opacity="0.667"/>
+  <text x="317" y="304" class="tick">1e-3</text>
+  <rect x="376" y="292" width="22" height="16" class="cell" fill-opacity="0.893"/>
+  <text x="403" y="304" class="tick">1e-1</text>
+  <rect x="462" y="292" width="22" height="16" class="zero"/>
+  <circle cx="473" cy="300" r="2" class="zerodot"/>
+  <text x="489" y="304" class="tick">exactly 0</text>
+</svg>
