@@ -166,13 +166,25 @@ def main() -> None:
         doc = json.loads(path.read_text())
         L.append(note)
         L.append("")
-        L.append("| quantity | value | field in `" + fname + "` |")
-        L.append("| --- | ---: | --- |")
+        # <Data> rather than a markdown table. Paper mode sets two columns on
+        # the article and only .ocl-ptable spans both, so a plain table was
+        # being squeezed into one column and hyphenated to pieces —
+        # "destina-tion", "discrimi-nation". This is the component the paper's
+        # own tables use, so these look like the rest of them.
+        L.append(f"<Data caption={{<>Every quantity {ticket} produced that the paper "
+                 f"cites, with the field it was read from in <code>{fname}</code>.</>}}>")
+        L.append("  <thead>")
+        L.append('    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>')
+        L.append("  </thead>")
+        L.append("  <tbody>")
         for label, dotted, kind in fields:
             value = dig(doc, dotted)
             if value is None:
                 missing += 1
-            L.append(f"| {label} | {render(value, kind)} | `{dotted}` |")
+            L.append(f'    <tr><td>{label}</td><td className="n">{render(value, kind)}</td>'
+                     f'<td><code>{dotted}</code></td></tr>')
+        L.append("  </tbody>")
+        L.append("</Data>")
         L.append("")
 
         # Every group the run produced, not a selection of them. A summary row
@@ -187,13 +199,20 @@ def main() -> None:
                 L.append("")
                 missing += 1
             else:
-                L.append(f"Every group in `{gpath}`.")
-                L.append("")
-                L.append("| " + gcol + " | " + " | ".join(c[0] for c in cols) + " |")
-                L.append("| --- |" + " ---: |" * len(cols))
+                L.append(f"<Data caption={{<>Every group in <code>{gpath}</code>, "
+                         f"as the run wrote it.</>}}>")
+                L.append("  <thead>")
+                heads = "".join(f'<th className="n">{c[0]}</th>' for c in cols)
+                L.append(f"    <tr><th>{gcol}</th>{heads}</tr>")
+                L.append("  </thead>")
+                L.append("  <tbody>")
                 for name in sorted(groups):
-                    cells = [render(dig(groups[name], sub), kind) for _, sub, kind in cols]
-                    L.append(f"| {name} | " + " | ".join(cells) + " |")
+                    cells = "".join(
+                        f'<td className="n">{render(dig(groups[name], sub), kind)}</td>'
+                        for _, sub, kind in cols)
+                    L.append(f"    <tr><td>{name}</td>{cells}</tr>")
+                L.append("  </tbody>")
+                L.append("</Data>")
                 L.append("")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(L) + "\n")

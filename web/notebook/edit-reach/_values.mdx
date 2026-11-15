@@ -6,118 +6,157 @@ Every number the results sections rest on, as the run wrote it, with the field i
 
 The headline of §5.1. The raw correlation is the one that will be quoted; the excess is the one that survives a control.
 
-| quantity | value | field in `E-001-predicted-vs-measured.json` |
-| --- | ---: | --- |
-| probes | 495 | `probe_set.items` |
-| subjects | 42 | `probe_set.subjects` |
-| raw Spearman | +0.5224 | `overall.raw.rho` |
-| raw 95% CI | +0.4502 to +0.5875 | `overall.raw.ci95` |
-| excess Spearman | +0.0852 | `overall.excess.rho` |
-| excess 95% CI | -0.0034 to +0.1724 | `overall.excess.ci95` |
-| anchor gate, worst deviation | +0.0000 | `anchor_gate.worst_deviation` |
+<Data caption={<>Every quantity E-001 produced that the paper cites, with the field it was read from in <code>E-001-predicted-vs-measured.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>probes</td><td className="n">495</td><td><code>probe_set.items</code></td></tr>
+    <tr><td>subjects</td><td className="n">42</td><td><code>probe_set.subjects</code></td></tr>
+    <tr><td>raw Spearman</td><td className="n">+0.5224</td><td><code>overall.raw.rho</code></td></tr>
+    <tr><td>raw 95% CI</td><td className="n">+0.4502 to +0.5875</td><td><code>overall.raw.ci95</code></td></tr>
+    <tr><td>excess Spearman</td><td className="n">+0.0852</td><td><code>overall.excess.rho</code></td></tr>
+    <tr><td>excess 95% CI</td><td className="n">-0.0034 to +0.1724</td><td><code>overall.excess.ci95</code></td></tr>
+    <tr><td>anchor gate, worst deviation</td><td className="n">+0.0000</td><td><code>anchor_gate.worst_deviation</code></td></tr>
+  </tbody>
+</Data>
 
-Every group in `by_family`.
-
-| probe family | n | raw ρ | raw 95% CI | excess ρ | excess 95% CI |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| alias | 80 | +0.6326 | +0.4862 to +0.7321 | +0.0953 | -0.1044 to +0.2837 |
-| discrimination | 37 | +0.3760 | +0.0277 to +0.6522 | +0.0804 | -0.2731 to +0.4273 |
-| exposure | 42 | +0.0824 | -0.2290 to +0.3694 | +0.0161 | -0.2940 to +0.3058 |
-| position | 210 | +0.4642 | +0.3432 to +0.5684 | +0.0380 | -0.1105 to +0.1823 |
-| repetition | 84 | +0.0603 | -0.1574 to +0.2813 | -0.0413 | -0.2617 to +0.1726 |
-| semantics | 42 | +0.0399 | -0.2610 to +0.3378 | +0.1597 | -0.1501 to +0.4521 |
+<Data caption={<>Every group in <code>by_family</code>, as the run wrote it.</>}>
+  <thead>
+    <tr><th>probe family</th><th className="n">n</th><th className="n">raw ρ</th><th className="n">raw 95% CI</th><th className="n">excess ρ</th><th className="n">excess 95% CI</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>alias</td><td className="n">80</td><td className="n">+0.6326</td><td className="n">+0.4862 to +0.7321</td><td className="n">+0.0953</td><td className="n">-0.1044 to +0.2837</td></tr>
+    <tr><td>discrimination</td><td className="n">37</td><td className="n">+0.3760</td><td className="n">+0.0277 to +0.6522</td><td className="n">+0.0804</td><td className="n">-0.2731 to +0.4273</td></tr>
+    <tr><td>exposure</td><td className="n">42</td><td className="n">+0.0824</td><td className="n">-0.2290 to +0.3694</td><td className="n">+0.0161</td><td className="n">-0.2940 to +0.3058</td></tr>
+    <tr><td>position</td><td className="n">210</td><td className="n">+0.4642</td><td className="n">+0.3432 to +0.5684</td><td className="n">+0.0380</td><td className="n">-0.1105 to +0.1823</td></tr>
+    <tr><td>repetition</td><td className="n">84</td><td className="n">+0.0603</td><td className="n">-0.1574 to +0.2813</td><td className="n">-0.0413</td><td className="n">-0.2617 to +0.1726</td></tr>
+    <tr><td>semantics</td><td className="n">42</td><td className="n">+0.0399</td><td className="n">-0.2610 to +0.3378</td><td className="n">+0.1597</td><td className="n">-0.1501 to +0.4521</td></tr>
+  </tbody>
+</Data>
 
 **E-002 · Identity against content**
 
 §5.3. Three arms on the same probes: the real edit, a different property of the same person, and another person's edit matched on magnitude.
 
-| quantity | value | field in `E-002-different-subject-arm.json` |
-| --- | ---: | --- |
-| probes | 495 | `overall.n` |
-| median movement, real edit | +0.0977 | `overall.real` |
-| median movement, same-subject control | +0.0625 | `overall.ctl` |
-| median movement, different-subject control | +0.0016 | `overall.other` |
-| pairing, median |Δv|/|k*| difference | +0.0255 | `pairing.median_abs_diff` |
+<Data caption={<>Every quantity E-002 produced that the paper cites, with the field it was read from in <code>E-002-different-subject-arm.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>probes</td><td className="n">495</td><td><code>overall.n</code></td></tr>
+    <tr><td>median movement, real edit</td><td className="n">+0.0977</td><td><code>overall.real</code></td></tr>
+    <tr><td>median movement, same-subject control</td><td className="n">+0.0625</td><td><code>overall.ctl</code></td></tr>
+    <tr><td>median movement, different-subject control</td><td className="n">+0.0016</td><td><code>overall.other</code></td></tr>
+    <tr><td>pairing, median |Δv|/|k*| difference</td><td className="n">+0.0255</td><td><code>pairing.median_abs_diff</code></td></tr>
+  </tbody>
+</Data>
 
-Every group in `by_family`.
-
-| probe family | n | real edit | same-subject control | different-subject control |
-| --- | ---: | ---: | ---: | ---: |
-| alias | 80 | +0.0065 | +0.0020 | +0.0001 |
-| discrimination | 37 | +0.0223 | +0.0114 | +0.0067 |
-| exposure | 42 | +0.0489 | +0.0217 | -0.0005 |
-| position | 210 | +0.0900 | +0.0659 | +0.0037 |
-| repetition | 84 | +0.3373 | +0.2656 | -0.0076 |
-| semantics | 42 | +0.1795 | +0.1767 | +0.0070 |
+<Data caption={<>Every group in <code>by_family</code>, as the run wrote it.</>}>
+  <thead>
+    <tr><th>probe family</th><th className="n">n</th><th className="n">real edit</th><th className="n">same-subject control</th><th className="n">different-subject control</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>alias</td><td className="n">80</td><td className="n">+0.0065</td><td className="n">+0.0020</td><td className="n">+0.0001</td></tr>
+    <tr><td>discrimination</td><td className="n">37</td><td className="n">+0.0223</td><td className="n">+0.0114</td><td className="n">+0.0067</td></tr>
+    <tr><td>exposure</td><td className="n">42</td><td className="n">+0.0489</td><td className="n">+0.0217</td><td className="n">-0.0005</td></tr>
+    <tr><td>position</td><td className="n">210</td><td className="n">+0.0900</td><td className="n">+0.0659</td><td className="n">+0.0037</td></tr>
+    <tr><td>repetition</td><td className="n">84</td><td className="n">+0.3373</td><td className="n">+0.2656</td><td className="n">-0.0076</td></tr>
+    <tr><td>semantics</td><td className="n">42</td><td className="n">+0.1795</td><td className="n">+0.1767</td><td className="n">+0.0070</td></tr>
+  </tbody>
+</Data>
 
 **E-003 · Destruction and destination**
 
 §5.4, under a full-vocabulary argmax readout rather than a fixed-token one.
 
-| quantity | value | field in `E-003-destination.json` |
-| --- | ---: | --- |
-| probes | 495 | `overall.n` |
-| destination hit rate, before the edit | +0.0061 | `overall.hit_base` |
-| destination hit rate, real edit | +0.2889 | `overall.hit_real` |
-| destination hit rate, same-subject control | +0.0061 | `overall.hit_ctl` |
-| destination hit rate, different-subject control | +0.0061 | `overall.hit_other` |
-| destruction, real edit | +0.1941 | `overall.destruction_real` |
-| destruction, same-subject control | +0.1608 | `overall.destruction_ctl` |
-| destruction, different-subject control | +0.0106 | `overall.destruction_other` |
+<Data caption={<>Every quantity E-003 produced that the paper cites, with the field it was read from in <code>E-003-destination.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>probes</td><td className="n">495</td><td><code>overall.n</code></td></tr>
+    <tr><td>destination hit rate, before the edit</td><td className="n">+0.0061</td><td><code>overall.hit_base</code></td></tr>
+    <tr><td>destination hit rate, real edit</td><td className="n">+0.2889</td><td><code>overall.hit_real</code></td></tr>
+    <tr><td>destination hit rate, same-subject control</td><td className="n">+0.0061</td><td><code>overall.hit_ctl</code></td></tr>
+    <tr><td>destination hit rate, different-subject control</td><td className="n">+0.0061</td><td><code>overall.hit_other</code></td></tr>
+    <tr><td>destruction, real edit</td><td className="n">+0.1941</td><td><code>overall.destruction_real</code></td></tr>
+    <tr><td>destruction, same-subject control</td><td className="n">+0.1608</td><td><code>overall.destruction_ctl</code></td></tr>
+    <tr><td>destruction, different-subject control</td><td className="n">+0.0106</td><td><code>overall.destruction_other</code></td></tr>
+  </tbody>
+</Data>
 
-Every group in `by_family`.
-
-| probe family | n | destination, real | destination, same-subj | destination, diff-subj | destruction, real | destruction, same-subj | destruction, diff-subj |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| alias | 80 | +0.2000 | +0.0125 | +0.0000 | +0.0476 | +0.0417 | +0.0038 |
-| discrimination | 37 | +0.0541 | +0.0000 | +0.0270 | +0.1072 | +0.0586 | +0.0518 |
-| exposure | 42 | +0.1667 | +0.0000 | +0.0238 | +0.0767 | +0.0284 | +0.0154 |
-| position | 210 | +0.2857 | +0.0095 | +0.0048 | +0.1836 | +0.1574 | +0.0068 |
-| repetition | 84 | +0.4524 | +0.0000 | +0.0000 | +0.4157 | +0.3595 | +0.0010 |
-| semantics | 42 | +0.4762 | +0.0000 | +0.0000 | +0.2762 | +0.2298 | +0.0211 |
+<Data caption={<>Every group in <code>by_family</code>, as the run wrote it.</>}>
+  <thead>
+    <tr><th>probe family</th><th className="n">n</th><th className="n">destination, real</th><th className="n">destination, same-subj</th><th className="n">destination, diff-subj</th><th className="n">destruction, real</th><th className="n">destruction, same-subj</th><th className="n">destruction, diff-subj</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>alias</td><td className="n">80</td><td className="n">+0.2000</td><td className="n">+0.0125</td><td className="n">+0.0000</td><td className="n">+0.0476</td><td className="n">+0.0417</td><td className="n">+0.0038</td></tr>
+    <tr><td>discrimination</td><td className="n">37</td><td className="n">+0.0541</td><td className="n">+0.0000</td><td className="n">+0.0270</td><td className="n">+0.1072</td><td className="n">+0.0586</td><td className="n">+0.0518</td></tr>
+    <tr><td>exposure</td><td className="n">42</td><td className="n">+0.1667</td><td className="n">+0.0000</td><td className="n">+0.0238</td><td className="n">+0.0767</td><td className="n">+0.0284</td><td className="n">+0.0154</td></tr>
+    <tr><td>position</td><td className="n">210</td><td className="n">+0.2857</td><td className="n">+0.0095</td><td className="n">+0.0048</td><td className="n">+0.1836</td><td className="n">+0.1574</td><td className="n">+0.0068</td></tr>
+    <tr><td>repetition</td><td className="n">84</td><td className="n">+0.4524</td><td className="n">+0.0000</td><td className="n">+0.0000</td><td className="n">+0.4157</td><td className="n">+0.3595</td><td className="n">+0.0010</td></tr>
+    <tr><td>semantics</td><td className="n">42</td><td className="n">+0.4762</td><td className="n">+0.0000</td><td className="n">+0.0000</td><td className="n">+0.2762</td><td className="n">+0.2298</td><td className="n">+0.0211</td></tr>
+  </tbody>
+</Data>
 
 **E-004 · The far field, under two different floors**
 
 §5.2. The paper cites the same-relation floor. The other is kept here because the same run produced both, and the difference between them is larger than the effect either one measures.
 
-| quantity | value | field in `E-004-far-field-floor.json` |
-| --- | ---: | --- |
-| hop-2 questions | 900 | `hop2.n_questions` |
-| donors per question | 512 | `hop2.donors_per_question` |
-| median coefficient, own k* | +0.0543 | `hop2.own_median` |
-| floor, same-relation stranger | +0.0480 | `hop2.floor_same_relation` |
-| excess over same-relation floor | +0.0002 | `hop2.excess_over_same_relation` |
-| floor, different-relation stranger | +0.0294 | `hop2.floor_diff_relation` |
-| excess over different-relation floor | +0.0243 | `hop2.excess_over_diff_relation` |
+<Data caption={<>Every quantity E-004 produced that the paper cites, with the field it was read from in <code>E-004-far-field-floor.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>hop-2 questions</td><td className="n">900</td><td><code>hop2.n_questions</code></td></tr>
+    <tr><td>donors per question</td><td className="n">512</td><td><code>hop2.donors_per_question</code></td></tr>
+    <tr><td>median coefficient, own k*</td><td className="n">+0.0543</td><td><code>hop2.own_median</code></td></tr>
+    <tr><td>floor, same-relation stranger</td><td className="n">+0.0480</td><td><code>hop2.floor_same_relation</code></td></tr>
+    <tr><td>excess over same-relation floor</td><td className="n">+0.0002</td><td><code>hop2.excess_over_same_relation</code></td></tr>
+    <tr><td>floor, different-relation stranger</td><td className="n">+0.0294</td><td><code>hop2.floor_diff_relation</code></td></tr>
+    <tr><td>excess over different-relation floor</td><td className="n">+0.0243</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
+  </tbody>
+</Data>
 
 **E-015 · Looseness of the upper bound, by regime**
 
 §5.6. Looseness is the bound divided by the coefficient actually delivered, so 1.00 would mean the bound is tight.
 
-| quantity | value | field in `E-015-bound-looseness.json` |
-| --- | ---: | --- |
-| near-field questions | 639 | `summary.near.n` |
-| near-field median looseness | +1.0542 | `summary.near.median_looseness` |
-| near-field 95% CI | +1.0513 to +1.0566 | `summary.near.ci95` |
-| near-field median coefficient | +0.9334 | `summary.near.median_c` |
-| far-field questions | 900 | `summary.far.n` |
-| far-field median looseness | +21.1227 | `summary.far.median_looseness` |
-| far-field 95% CI | +20.1626 to +22.1359 | `summary.far.ci95` |
-| far-field median coefficient | +0.0544 | `summary.far.median_c` |
-| far-field median bound | +1.1456 | `summary.far.median_bound` |
+<Data caption={<>Every quantity E-015 produced that the paper cites, with the field it was read from in <code>E-015-bound-looseness.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>near-field questions</td><td className="n">639</td><td><code>summary.near.n</code></td></tr>
+    <tr><td>near-field median looseness</td><td className="n">+1.0542</td><td><code>summary.near.median_looseness</code></td></tr>
+    <tr><td>near-field 95% CI</td><td className="n">+1.0513 to +1.0566</td><td><code>summary.near.ci95</code></td></tr>
+    <tr><td>near-field median coefficient</td><td className="n">+0.9334</td><td><code>summary.near.median_c</code></td></tr>
+    <tr><td>far-field questions</td><td className="n">900</td><td><code>summary.far.n</code></td></tr>
+    <tr><td>far-field median looseness</td><td className="n">+21.1227</td><td><code>summary.far.median_looseness</code></td></tr>
+    <tr><td>far-field 95% CI</td><td className="n">+20.1626 to +22.1359</td><td><code>summary.far.ci95</code></td></tr>
+    <tr><td>far-field median coefficient</td><td className="n">+0.0544</td><td><code>summary.far.median_c</code></td></tr>
+    <tr><td>far-field median bound</td><td className="n">+1.1456</td><td><code>summary.far.median_bound</code></td></tr>
+  </tbody>
+</Data>
 
 **E-016 · Subject properties against damage**
 
 §5.7. Six relationships were computed and all six are here, so reporting a subset would have been a choice.
 
-| quantity | value | field in `E-016-subject-properties.json` |
-| --- | ---: | --- |
-| subjects | 41 | `n_subjects` |
-| prominence vs damage | +0.0048 | `results.prominence vs damage.rho` |
-| prominence 95% CI | -0.3155 to +0.3138 | `results.prominence vs damage.ci95` |
-| dependent count vs damage | -0.0529 | `results.dependent count vs damage.rho` |
-| dependent count 95% CI | -0.3658 to +0.2702 | `results.dependent count vs damage.ci95` |
-| total statements vs damage | -0.0550 | `results.total statements vs damage.rho` |
-| headroom vs damage | -0.1300 | `results.headroom (p_base) vs damage.rho` |
-| prominence vs dependent count | +0.7006 | `predictor_correlation_prominence_vs_dependent` |
+<Data caption={<>Every quantity E-016 produced that the paper cites, with the field it was read from in <code>E-016-subject-properties.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>subjects</td><td className="n">41</td><td><code>n_subjects</code></td></tr>
+    <tr><td>prominence vs damage</td><td className="n">+0.0048</td><td><code>results.prominence vs damage.rho</code></td></tr>
+    <tr><td>prominence 95% CI</td><td className="n">-0.3155 to +0.3138</td><td><code>results.prominence vs damage.ci95</code></td></tr>
+    <tr><td>dependent count vs damage</td><td className="n">-0.0529</td><td><code>results.dependent count vs damage.rho</code></td></tr>
+    <tr><td>dependent count 95% CI</td><td className="n">-0.3658 to +0.2702</td><td><code>results.dependent count vs damage.ci95</code></td></tr>
+    <tr><td>total statements vs damage</td><td className="n">-0.0550</td><td><code>results.total statements vs damage.rho</code></td></tr>
+    <tr><td>headroom vs damage</td><td className="n">-0.1300</td><td><code>results.headroom (p_base) vs damage.rho</code></td></tr>
+    <tr><td>prominence vs dependent count</td><td className="n">+0.7006</td><td><code>predictor_correlation_prominence_vs_dependent</code></td></tr>
+  </tbody>
+</Data>
 
