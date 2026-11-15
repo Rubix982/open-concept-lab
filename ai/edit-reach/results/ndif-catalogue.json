@@ -5,8 +5,8 @@
   "llama"
  ],
  "n_deployments": 181,
- "n_above_8b": 75,
- "n_above_8b_readable": 6,
+ "n_above_8b": 74,
+ "n_above_8b_readable": 5,
  "note": "Parameter counts are estimates \u2014 from the repo name, or from decoder arithmetic over the served config. Not for citation.",
  "rows": [
   {
@@ -191,18 +191,6 @@
   },
   {
    "repo_id": "meta-llama/Llama-3.1-70B",
-   "level": "HOT",
-   "task": "text-generation",
-   "model_type": "llama",
-   "n_layers": 80,
-   "hidden_size": 8192,
-   "size_b": 70.0,
-   "size_from": "name",
-   "estimated_params_b": 70.552387584,
-   "supported": true
-  },
-  {
-   "repo_id": "meta-llama/Llama-3.1-70B-Instruct",
    "level": "HOT",
    "task": "text-generation",
    "model_type": "llama",
@@ -1472,6 +1460,18 @@
    "size_from": "name",
    "estimated_params_b": null,
    "supported": null
+  },
+  {
+   "repo_id": "microsoft/Phi-4-mini-instruct",
+   "level": "HOT",
+   "task": "text-generation",
+   "model_type": "phi3",
+   "n_layers": 32,
+   "hidden_size": 3072,
+   "size_b": 3.83582208,
+   "size_from": "config",
+   "estimated_params_b": 3.83582208,
+   "supported": false
   },
   {
    "repo_id": "microsoft/Phi-4-mini-instruct",

@@ -857,6 +857,11 @@ before the cluster ran out of room`. That is capacity on shared infrastructure,
 not a fault in this code, and it is recorded in the result file rather than
 inferred. Until it is read, nothing here may be stated for 405B.
 
+*Tried again at 18:49, refused identically.* `tools/ndif_catalogue.py` shows it
+**COLD** both times — present in the catalogue, not loaded — which is what the
+refusal means and what makes it checkable without spending a run. The condition
+to retry on is that line reading WARM or HOT, not the passage of time.
+
 **Artifacts:**
 
 - agents/engineer/workspace/run_e040_premise.py
