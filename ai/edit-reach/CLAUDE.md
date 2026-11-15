@@ -67,7 +67,22 @@ Standing rule from 2026-11-15, after [E-040] measured the same quantity on three
 
 **Every experiment runs on at least one model above 8B from each architecture family available to it.** Not as a follow-up once the result looks good — in the run that produces the result. A number from one model is a number about that model until a second family says otherwise, and the paper has no way to tell the two apart after the fact.
 
-The reason is measured, not assumed. The different-subject floor in [E-040] reads **0.194 on GPT-J-6B, 0.081 on Llama-3.1-8B, 0.031 on Llama-3.1-70B** — a factor of six across three models, on identical prompts. The analytic anchor sat at exactly 1.000 on all three, which is the useful contrast: what follows from the algebra travels, and what is read off the model's keys does not. Only the 8B → 70B step is a clean size comparison; 6B is a different architecture, so that step confounds the two. One family at two sizes cannot separate them, which is the whole reason the rule says *each family* and not *several sizes*.
+The reason is measured, not assumed. The different-subject floor in [E-040] reads **0.194 on GPT-J-6B, 0.081 on Llama-3.1-8B, 0.031 on Llama-3.1-70B** at layer 5, on identical prompts, while the analytic anchor sits at exactly 1.000 on all three. That is the useful contrast: what follows from the algebra travels, and what is read off the model's keys does not.
+
+**Correction, same day.** This paragraph first read that the floor *falls with model size*, which those three numbers appear to show. They do not, and the error was in the comparison rather than the readings. Layer 5 is 16% of the way through a 32-layer model and 6% through an 80-layer one, so size and depth moved together across all three points and nothing could separate them. Reading each model at matched **fractions** of its own depth breaks the ordering at two of four:
+
+| depth | GPT-J-6B (28L) | Llama-3.1-8B (32L) | Llama-3.1-70B (80L) |
+|---|---|---|---|
+| 0.06 | L2 · 0.232 | L2 · 0.039 | L5 · 0.031 |
+| 0.16 | L4 · 0.127 | L5 · 0.081 | L13 · **0.140** |
+| 0.30 | L8 · 0.219 | L10 · **0.256** | L24 · 0.046 |
+| 0.50 | L14 · 0.388 | L16 · 0.334 | L40 · 0.161 |
+
+At 0.16 the largest model has the highest floor; at 0.30 the middle one does. The floor is not a function of size, and it is not a smooth function of depth either — 70B runs 0.031, 0.140, 0.046, 0.161 as it descends, which no monotone story fits. Across all twelve readings it spans **0.031 to 0.388**, a factor of twelve, so §3.2's single 0.082 is one (model, layer) point and not a summary of anything.
+
+**The rule survives this and gets stronger, but its reason changes.** It is not that bigger models have lower floors — that is the claim that just died. It is that the floor is not predictable from size, from family, or from depth, so the only way to know it for a model is to measure it on that model. A result stated for one model is a result about that model.
+
+What *did* hold across all twelve readings, two architectures and four depths each: the anchor at exactly 1.000, worst deviation 0.000e+00. The analytic half travels; nothing else measured here does.
 
 **Every runner records per model, never in aggregate.** One row per model carrying the model id, the resolved architecture, layer count, the layer read, and every quantity the run reports. A median taken across models hides exactly the effect the rule exists to find. A model that could not be read is recorded as a row with its reason, not dropped — [E-040]'s first draft let one unservable model take three completed ones down with it, because the result file is written at the end.
 
