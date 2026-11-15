@@ -55,6 +55,12 @@ LAYER = 5
 E039_HOP1_NATURAL = 0.933
 E039_HOP2_FINAL = 0.055
 TOLERANCE = 0.02
+#: Which model those two reference numbers were measured on. A coefficient is a
+#: property of a model's keys at a layer, so they say nothing about any other
+#: model, and the gate below is skipped rather than failed when the run is not
+#: on this one. Without that, running elsewhere reports "something moved between
+#: runs", which is the wrong diagnosis for a different model.
+REFERENCE_MODEL = MODEL
 #: A median over a handful of readings cannot be compared against one over 900.
 #: Found by running the smoke test: at n=3 the hop-2 arm read 0.0772 and the gate
 #: fired, which was the gate being applied to a sample too small to carry it, not
@@ -126,10 +132,22 @@ def main() -> int:
     ap.add_argument("--file", default="MQuAKE-CF-3k.json")
     ap.add_argument("--n", type=int, default=600)
     ap.add_argument("--chain-len", type=int, default=2)
-    ap.add_argument("--cache", type=Path, default=Path("results/cache/E004_keys.pt"))
+    ap.add_argument("--model", default=MODEL,
+                    help="any model editreach.arch can read; see tools/ndif_catalogue.py")
+    ap.add_argument("--cache", type=Path, default=None)
     ap.add_argument("--fresh", action="store_true")
-    ap.add_argument("--out", type=Path, default=Path("results/E-004-far-field-floor.json"))
+    ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
+
+    # Per-model paths, so a second model never silently overwrites the first.
+    # Defaulted here rather than in `add_argument` because they depend on
+    # `--model`, and an explicit path still wins.
+    slug = a.model.replace("/", "_")
+    if a.cache is None:
+        a.cache = Path(f"results/cache/E004_keys_{slug}.pt")
+    if a.out is None:
+        a.out = Path(f"results/E-004-far-field-floor-{slug}.json")
+    log.info("model %s", a.model)
 
     picked = select(EDIT_SLICE / "data" / "mquake" / a.file, a.chain_len, a.n)
     by_hop: dict[int, int] = {}
@@ -142,7 +160,7 @@ def main() -> int:
         held = torch.load(a.cache, map_location="cpu", weights_only=False)
         log.info("resuming: %d of %d instances already read", len(held), len(picked))
 
-    model = connect(MODEL)
+    model = connect(a.model)
     tok = model.tokenizer
     for n, inst in enumerate(picked, 1):
         cid = str(inst["case_id"])
@@ -177,9 +195,17 @@ def main() -> int:
             f"only {len(hop1_nat)} hop-1 and {len(hop2_fin)} hop-2 readings held; "
             f"the gate needs {MIN_GATE_READINGS} of each to mean anything. This is "
             f"a partial run, not a result — resume it.")
-    passed = (abs(m1 - E039_HOP1_NATURAL) <= TOLERANCE
-              and abs(m2 - E039_HOP2_FINAL) <= TOLERANCE)
-    if not passed:
+    if a.model != REFERENCE_MODEL:
+        # Not a pass and not a failure: there is nothing on this model to
+        # reproduce. Recorded so the result file says which, rather than
+        # carrying a gate that silently did not run.
+        log.info("reproduction gate SKIPPED: its reference was measured on %s",
+                 REFERENCE_MODEL)
+        passed = None
+    else:
+        passed = (abs(m1 - E039_HOP1_NATURAL) <= TOLERANCE
+                  and abs(m2 - E039_HOP2_FINAL) <= TOLERANCE)
+    if passed is False:
         raise SystemExit(
             f"reproduction FAILED outside +/-{TOLERANCE}. Something moved between "
             f"2026-10-15 and now — loader, tokenizer or key site — and every number "
@@ -244,12 +270,14 @@ def main() -> int:
              float(diff_f_t.nanmedian()), float(excess_diff.nanmedian()))
 
     result = {
-        "ticket": "E-004", "model": MODEL, "layer": LAYER, "file": a.file,
+        "ticket": "E-004", "model": a.model, "layer": LAYER, "file": a.file,
         "chain_len_filter": a.chain_len, "instances": len(rows),
         "reproduction_gate": {"hop1_natural": m1, "hop2_final": m2,
                               "e039_hop1_natural": E039_HOP1_NATURAL,
                               "e039_hop2_final": E039_HOP2_FINAL,
-                              "tolerance": TOLERANCE, "passed": True},
+                              "tolerance": TOLERANCE, "passed": passed,
+                              "reference_model": REFERENCE_MODEL,
+                              "applicable": a.model == REFERENCE_MODEL},
         "hop2": {
             "n_questions": len(own), "n_instances": len(hop2),
             "own_median": float(own.nanmedian()),

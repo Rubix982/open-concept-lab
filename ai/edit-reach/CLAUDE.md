@@ -58,3 +58,23 @@ Same venv rule as everywhere: `.venv/` in this directory, never system Python.
 ## Process
 
 `CARD.md` is the file to open at the start of a sitting. One card at a time; it closes with a number or with a sentence that could have come out the other way, never with "explored". `threads.md` is where a branch goes to be silent, not a menu to browse.
+
+---
+
+## Models: one 8B+ model from each family, every time
+
+Standing rule from 2026-11-15, after [E-040] measured the same quantity on three models and got three different answers.
+
+**Every experiment runs on at least one model above 8B from each architecture family available to it.** Not as a follow-up once the result looks good — in the run that produces the result. A number from one model is a number about that model until a second family says otherwise, and the paper has no way to tell the two apart after the fact.
+
+The reason is measured, not assumed. The different-subject floor in [E-040] reads **0.194 on GPT-J-6B, 0.081 on Llama-3.1-8B, 0.031 on Llama-3.1-70B** — a factor of six across three models, on identical prompts. The analytic anchor sat at exactly 1.000 on all three, which is the useful contrast: what follows from the algebra travels, and what is read off the model's keys does not. Only the 8B → 70B step is a clean size comparison; 6B is a different architecture, so that step confounds the two. One family at two sizes cannot separate them, which is the whole reason the rule says *each family* and not *several sizes*.
+
+**Every runner records per model, never in aggregate.** One row per model carrying the model id, the resolved architecture, layer count, the layer read, and every quantity the run reports. A median taken across models hides exactly the effect the rule exists to find. A model that could not be read is recorded as a row with its reason, not dropped — [E-040]'s first draft let one unservable model take three completed ones down with it, because the result file is written at the end.
+
+**A reference number belongs to the model it was measured on.** A gate comparing against a published figure must name that model and skip itself elsewhere rather than fail. On a different model "something moved between runs" is the wrong diagnosis, and a gate that fails for the wrong reason costs more than no gate.
+
+**What is actually reachable.** Run `tools/ndif_catalogue.py` rather than trusting a model list typed into a script; it reads `https://api.ndif.us/status`. As of 2026-11-15 NDIF serves 181 deployments, 75 of them above 8B, and **six are readable here** — Llama-3.1-70B, 3.1-70B-Instruct and 3.3-70B-Instruct, all HOT. Llama-3.1-405B is served but COLD, which is what `CANT_ACCOMMODATE` means.
+
+So the rule is currently blocked above 8B for every family but one, and the blocker is ours: `editreach.arch.ARCH` holds paths to the MLP output projection for `llama` and `gptj` only. Reading the wrong module **does not raise — it returns plausible wrong numbers**, so no family is added by guessing from a config field. Each new entry is verified against that architecture's own module layout before any run uses it. Qwen opens the most at once (`Qwen2.5-72B-Instruct` and `Qwen3.5-122B-A10B`, both HOT), then gemma, seed_oss, nemotron_h and gpt_oss.
+
+Until a family's path is in `ARCH`, a result is stated for the families it was measured on and for no others.
