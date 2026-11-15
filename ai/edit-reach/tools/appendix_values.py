@@ -123,7 +123,30 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("total statements vs damage", "results.total statements vs damage.rho", "f4"),
       ("headroom vs damage", "results.headroom (p_base) vs damage.rho", "f4"),
       ("prominence vs dependent count", "predictor_correlation_prominence_vs_dependent", "f4")]),
+    ("E-005", "E-005-loader-parity.json",
+     "Whether the two nnsight loaders are the same instrument",
+     "§4.1. Three repeats per loader, so a reading can be compared against another reading of itself before it is compared across loaders.",
+     [("repeats per loader", "repeats_per_loader", "d"),
+      ("same module structure", "same_structure", "raw"),
+      ("worst |difference|, within LanguageModel", "within_loader.language.worst_abs", "f4"),
+      ("worst |difference|, within TransformersModel", "within_loader.transformers.worst_abs", "f4"),
+      ("worst |difference|, between loaders", "between_loaders.worst_abs", "f4"),
+      ("difference attributable to the loader", "difference_attributable_to_loader", "raw"),
+      ("published floor it was checked against", "e001_floor_median", "f4")]),
+
+    ("E-006", "E-006-session-variation.json",
+     "Whether a remote reading repeats across sessions",
+     "§4.1. Sixteen readings of the same 84 prompts, byte-identical inputs, taken across serving sessions.",
+     [("readings", "readings", "d"),
+      ("prompts per reading", "n_prompts", "d"),
+      ("distinct values seen", "distinct_values", "d"),
+      ("distinct GPUs seen", "distinct_gpus", "d"),
+      ("values partition by GPU", "partitions_by_gpu", "raw"),
+      ("anchor gate, worst deviation", "anchor_worst_deviation_overall", "f4"),
+      ("floor spread within one GPU", "floor_spread_within_gpu", "f4"),
+      ("floor spread across GPUs", "floor_spread_across_gpus", "f6")]),
 ]
+
 
 
 def dig(doc: object, path: str) -> object | None:
@@ -139,6 +162,10 @@ def render(value: object, kind: str) -> str:
         return "—"
     if kind == "d":
         return f"{int(value):,}"
+    if kind == "raw":
+        return "yes" if value is True else "no" if value is False else str(value)
+    if kind == "f6":
+        return f"{float(value):.6f}"
     if kind == "ci" and isinstance(value, list) and len(value) == 2:
         return f"{value[0]:+.4f} to {value[1]:+.4f}"
     if isinstance(value, (int, float)):
@@ -214,6 +241,14 @@ def main() -> None:
                 L.append("  </tbody>")
                 L.append("</Data>")
                 L.append("")
+    L.append("**What is not in these tables.** [E-007] and [E-009] are conformance "
+             "sweeps whose grid is drawn in §4.1 rather than tabulated here. [E-038], the "
+             "RippleEdits re-run over 23,505 readings, wrote to a run directory that is "
+             "not on this machine, so its figures appear in §5.5 from the summary and "
+             "cannot be reprinted from their source. Saying so is the point of this "
+             "paragraph: an appendix that lists only what it happens to have is not a "
+             "record of what was run.")
+    L.append("")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(L) + "\n")
     print(f"wrote {OUT.relative_to(ROOT)}")

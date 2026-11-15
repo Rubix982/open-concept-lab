@@ -160,3 +160,44 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
   </tbody>
 </Data>
 
+**E-005 · Whether the two nnsight loaders are the same instrument**
+
+§4.1. Three repeats per loader, so a reading can be compared against another reading of itself before it is compared across loaders.
+
+<Data caption={<>Every quantity E-005 produced that the paper cites, with the field it was read from in <code>E-005-loader-parity.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>repeats per loader</td><td className="n">3</td><td><code>repeats_per_loader</code></td></tr>
+    <tr><td>same module structure</td><td className="n">yes</td><td><code>same_structure</code></td></tr>
+    <tr><td>worst |difference|, within LanguageModel</td><td className="n">+0.6250</td><td><code>within_loader.language.worst_abs</code></td></tr>
+    <tr><td>worst |difference|, within TransformersModel</td><td className="n">+0.0000</td><td><code>within_loader.transformers.worst_abs</code></td></tr>
+    <tr><td>worst |difference|, between loaders</td><td className="n">+0.6250</td><td><code>between_loaders.worst_abs</code></td></tr>
+    <tr><td>difference attributable to the loader</td><td className="n">no</td><td><code>difference_attributable_to_loader</code></td></tr>
+    <tr><td>published floor it was checked against</td><td className="n">+0.0809</td><td><code>e001_floor_median</code></td></tr>
+  </tbody>
+</Data>
+
+**E-006 · Whether a remote reading repeats across sessions**
+
+§4.1. Sixteen readings of the same 84 prompts, byte-identical inputs, taken across serving sessions.
+
+<Data caption={<>Every quantity E-006 produced that the paper cites, with the field it was read from in <code>E-006-session-variation.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>readings</td><td className="n">16</td><td><code>readings</code></td></tr>
+    <tr><td>prompts per reading</td><td className="n">84</td><td><code>n_prompts</code></td></tr>
+    <tr><td>distinct values seen</td><td className="n">2</td><td><code>distinct_values</code></td></tr>
+    <tr><td>distinct GPUs seen</td><td className="n">2</td><td><code>distinct_gpus</code></td></tr>
+    <tr><td>values partition by GPU</td><td className="n">yes</td><td><code>partitions_by_gpu</code></td></tr>
+    <tr><td>anchor gate, worst deviation</td><td className="n">+0.0000</td><td><code>anchor_worst_deviation_overall</code></td></tr>
+    <tr><td>floor spread within one GPU</td><td className="n">+0.0000</td><td><code>floor_spread_within_gpu</code></td></tr>
+    <tr><td>floor spread across GPUs</td><td className="n">0.000003</td><td><code>floor_spread_across_gpus</code></td></tr>
+  </tbody>
+</Data>
+
+**What is not in these tables.** [E-007] and [E-009] are conformance sweeps whose grid is drawn in §4.1 rather than tabulated here. [E-038], the RippleEdits re-run over 23,505 readings, wrote to a run directory that is not on this machine, so its figures appear in §5.5 from the summary and cannot be reprinted from their source. Saying so is the point of this paragraph: an appendix that lists only what it happens to have is not a record of what was run.
+
