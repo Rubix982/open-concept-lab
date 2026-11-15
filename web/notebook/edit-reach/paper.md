@@ -36,6 +36,7 @@ paper:
 
 import ThreadsBody from "./_threads.mdx";
 import PlainBody from "./_plain.mdx";
+import ValueTables from "./_values.mdx";
 
 <Paper>
 
@@ -797,6 +798,10 @@ Each row names the run a number came from. Config files pin the seed and the lay
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>
 </Runs>
+
+### B.1 The values themselves
+
+<ValueTables />
 
 ## Appendix C. Readiness
 

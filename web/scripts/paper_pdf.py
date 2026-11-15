@@ -575,6 +575,34 @@ def main() -> int:
     bib = papers()
     used: list[str] = []
 
+    # Partials are inlined before the abstract is split off, because the
+    # import lines sit above <Paper> and everything above it is discarded by
+    # that split. Doing this inside resolve() looked right and silently did
+    # nothing: the values appendix printed its heading with no table under it.
+    #
+    # The threads and plain views are deliberately NOT inlined — they are other
+    # views of this document, and the PDF is the argument alone. Those two are
+    # dropped above. Anything else imported is part of the paper.
+    parts: dict[str, str] = {}
+
+    def _take(m: "re.Match[str]") -> str:
+        name, stem = m.group(1), m.group(2)
+        # Skipped by name. Without this they are inlined here and then removed
+        # again by the panel strip in resolve(), which happens to give the right
+        # PDF and would stop doing so the moment either panel is renamed.
+        if stem in ("threads", "plain"):
+            return m.group(0)
+        part = page.parent / f"_{stem}.mdx"
+        if not part.is_file():
+            raise SystemExit(f"paper_pdf: {page.name} imports _{stem}.mdx, which is missing")
+        parts[name] = re.sub(r"^\{/\*.*?\*/\}\s*", "", part.read_text(), flags=re.S).strip()
+        return ""
+
+    body = re.sub(r'^import\s+(\w+)\s+from\s+"\./_(\w+)\.mdx";\s*$\n?',
+                  _take, body, flags=re.M)
+    for _name, _text in parts.items():
+        body = re.sub(rf"<{_name}\s*/>", lambda _m, t=_text: t, body)
+
     # The abstract is the body of <Paper>; the rest is the paper.
     m = re.search(r"<Paper>(.*?)</Paper>", body, re.S)
     abstract_md = m.group(1).strip() if m else ""

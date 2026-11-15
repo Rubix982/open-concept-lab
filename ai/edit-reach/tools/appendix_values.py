@@ -1,0 +1,156 @@
+"""Emit the per-experiment value tables for the paper's appendix.
+
+Appendix B already names the run behind every number. It does not carry the
+numbers, so a reader who wants to check a claim has to take the figure on
+trust — and the raw outputs under `results/` are gitignored, so there is
+nothing for them to open. This puts the values themselves on the page.
+
+Each row names the **field it was read from**, which is the part that pays.
+[E-004] reports two different floors for the same probes — a same-relation
+stranger at 0.0480 and a different-relation one at 0.0294 — and §5.2 cites the
+first. A reader seeing only "+0.0002" cannot tell which; a reader seeing
+`hop2.excess_over_same_relation` can.
+
+    python3 ai/edit-reach/tools/appendix_values.py
+
+Writes web/notebook/edit-reach/_values.mdx. A field this script asks for and
+does not find is printed as a missing row rather than skipped, because a table
+that silently drops what it cannot find is worse than one with a hole in it.
+"""
+from __future__ import annotations
+
+import json
+import pathlib
+
+ROOT = pathlib.Path(__file__).resolve().parents[3]
+RES = ROOT / "ai" / "edit-reach" / "results"
+OUT = ROOT / "web" / "notebook" / "edit-reach" / "_values.mdx"
+
+#: (ticket, file, heading, note, [(label, dotted path, format)])
+SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
+    ("E-001", "E-001-predicted-vs-measured.json",
+     "Predicted reach against measured movement",
+     "The headline of §5.1. The raw correlation is the one that will be quoted; the excess is the one that survives a control.",
+     [("probes", "probe_set.items", "d"),
+      ("subjects", "probe_set.subjects", "d"),
+      ("raw Spearman", "overall.raw.rho", "f4"),
+      ("raw 95% CI", "overall.raw.ci95", "ci"),
+      ("excess Spearman", "overall.excess.rho", "f4"),
+      ("excess 95% CI", "overall.excess.ci95", "ci"),
+      ("anchor gate, worst deviation", "anchor_gate.worst_deviation", "f4")]),
+
+    ("E-002", "E-002-different-subject-arm.json",
+     "Identity against content",
+     "§5.3. Three arms on the same probes: the real edit, a different property of the same person, and another person's edit matched on magnitude.",
+     [("probes", "overall.n", "d"),
+      ("median movement, real edit", "overall.real", "f4"),
+      ("median movement, same-subject control", "overall.ctl", "f4"),
+      ("median movement, different-subject control", "overall.other", "f4"),
+      ("pairing, median |Δv|/|k*| difference", "pairing.median_abs_diff", "f4")]),
+
+    ("E-003", "E-003-destination.json",
+     "Destruction and destination",
+     "§5.4, under a full-vocabulary argmax readout rather than a fixed-token one.",
+     [("probes", "overall.n", "d"),
+      ("destination hit rate, before the edit", "overall.hit_base", "f4"),
+      ("destination hit rate, real edit", "overall.hit_real", "f4"),
+      ("destination hit rate, same-subject control", "overall.hit_ctl", "f4"),
+      ("destination hit rate, different-subject control", "overall.hit_other", "f4"),
+      ("destruction, real edit", "overall.destruction_real", "f4"),
+      ("destruction, same-subject control", "overall.destruction_ctl", "f4"),
+      ("destruction, different-subject control", "overall.destruction_other", "f4")]),
+
+    ("E-004", "E-004-far-field-floor.json",
+     "The far field, under two different floors",
+     "§5.2. The paper cites the same-relation floor. The other is kept here because the same run produced both, and the difference between them is larger than the effect either one measures.",
+     [("hop-2 questions", "hop2.n_questions", "d"),
+      ("donors per question", "hop2.donors_per_question", "d"),
+      ("median coefficient, own k*", "hop2.own_median", "f4"),
+      ("floor, same-relation stranger", "hop2.floor_same_relation", "f4"),
+      ("excess over same-relation floor", "hop2.excess_over_same_relation", "f4"),
+      ("floor, different-relation stranger", "hop2.floor_diff_relation", "f4"),
+      ("excess over different-relation floor", "hop2.excess_over_diff_relation", "f4")]),
+
+    ("E-015", "E-015-bound-looseness.json",
+     "Looseness of the upper bound, by regime",
+     "§5.6. Looseness is the bound divided by the coefficient actually delivered, so 1.00 would mean the bound is tight.",
+     [("near-field questions", "summary.near.n", "d"),
+      ("near-field median looseness", "summary.near.median_looseness", "f4"),
+      ("near-field 95% CI", "summary.near.ci95", "ci"),
+      ("near-field median coefficient", "summary.near.median_c", "f4"),
+      ("far-field questions", "summary.far.n", "d"),
+      ("far-field median looseness", "summary.far.median_looseness", "f4"),
+      ("far-field 95% CI", "summary.far.ci95", "ci"),
+      ("far-field median coefficient", "summary.far.median_c", "f4"),
+      ("far-field median bound", "summary.far.median_bound", "f4")]),
+
+    ("E-016", "E-016-subject-properties.json",
+     "Subject properties against damage",
+     "§5.7. Six relationships were computed and all six are here, so reporting a subset would have been a choice.",
+     [("subjects", "n_subjects", "d"),
+      ("prominence vs damage", "results.prominence vs damage.rho", "f4"),
+      ("prominence 95% CI", "results.prominence vs damage.ci95", "ci"),
+      ("dependent count vs damage", "results.dependent count vs damage.rho", "f4"),
+      ("dependent count 95% CI", "results.dependent count vs damage.ci95", "ci"),
+      ("total statements vs damage", "results.total statements vs damage.rho", "f4"),
+      ("headroom vs damage", "results.headroom (p_base) vs damage.rho", "f4"),
+      ("prominence vs dependent count", "predictor_correlation_prominence_vs_dependent", "f4")]),
+]
+
+
+def dig(doc: object, path: str) -> object | None:
+    for key in path.split("."):
+        if not isinstance(doc, dict) or key not in doc:
+            return None
+        doc = doc[key]
+    return doc
+
+
+def render(value: object, kind: str) -> str:
+    if value is None:
+        return "—"
+    if kind == "d":
+        return f"{int(value):,}"
+    if kind == "ci" and isinstance(value, list) and len(value) == 2:
+        return f"{value[0]:+.4f} to {value[1]:+.4f}"
+    if isinstance(value, (int, float)):
+        return f"{float(value):+.4f}"
+    return str(value)
+
+
+def main() -> None:
+    L = ["{/* Generated by ai/edit-reach/tools/appendix_values.py. Do not edit. */}", ""]
+    L.append("Every number the results sections rest on, as the run wrote it, with the "
+             "field it was read from. The raw outputs under `results/` are not in the "
+             "repository, so these tables are the only place a reader can check a figure "
+             "against its source.")
+    L.append("")
+    missing = 0
+    for ticket, fname, heading, note, fields in SPEC:
+        path = RES / fname
+        L.append(f"**{ticket} · {heading}**")
+        L.append("")
+        if not path.is_file():
+            L.append(f"`{fname}` is not on this machine, so this table could not be built.")
+            L.append("")
+            missing += len(fields)
+            continue
+        doc = json.loads(path.read_text())
+        L.append(note)
+        L.append("")
+        L.append("| quantity | value | field in `" + fname + "` |")
+        L.append("| --- | ---: | --- |")
+        for label, dotted, kind in fields:
+            value = dig(doc, dotted)
+            if value is None:
+                missing += 1
+            L.append(f"| {label} | {render(value, kind)} | `{dotted}` |")
+        L.append("")
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text("\n".join(L) + "\n")
+    print(f"wrote {OUT.relative_to(ROOT)}")
+    print(f"  {len(SPEC)} experiments, {missing} value(s) not found")
+
+
+if __name__ == "__main__":
+    main()
