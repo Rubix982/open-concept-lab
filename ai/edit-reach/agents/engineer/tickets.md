@@ -1310,7 +1310,7 @@ is how a number with no source got onto a page and stayed there.
 
 ### E-047 · Spike: is the empty gradient ours or nnsight's?
 
-**Status:** in-progress
+**Status:** blocked
 **Type:** spike
 **Priority:** high
 **Created:** 2026-11-15
@@ -1342,10 +1342,30 @@ blocked and this project wrote a bug. If none does, the external blocker is
 confirmed with four attempts behind it rather than one, and
 `ndif_vstar_repro.py` gains them so the next person does not repeat the hour.
 
-**Blockers:** none
+**Blockers:** NDIF did not dispatch the job. It sat in `RECEIVED` for over eight
+minutes on two attempts and never reached the queue, so none of the four
+variants ran. That is load on the service, not the fault under test, and it is
+a different blocker from [E-043]'s.
 
 **RCA:** —
 
-**Artifacts:** —
+**Result: nothing measured, and one thing worth keeping.** The variants are
+written and committed, so the hour is not spent again from scratch. Note for
+whoever resumes: `ndif_vstar_repro.py`'s earlier *3 of 3 fail* came back in
+**seconds**, so that result was not a queue artefact and the empty gradient is
+real. But this spike's own finding is that **a failure only means something
+while jobs are dispatching** — confirm that first, or a busy evening reads as a
+broken backward pass.
+
+The question it was opened to answer is still open: `_grad_step` reads
+`out = dp.output`, replaces the output with `dp.output = patched`, and then asks
+`out.grad`. If the replacement puts `patched` in the backward path, `None` is
+the correct answer to the wrong question and the bug is ours.
+
+**Estimated:** 1h · **Spent:** 25m, none of it on the question
+
+**Artifacts:**
+
+- agents/engineer/workspace/grad_variants.py
 
 **Closed:** —
