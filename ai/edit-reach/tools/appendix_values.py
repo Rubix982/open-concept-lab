@@ -146,7 +146,7 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("floor spread within one GPU", "floor_spread_within_gpu", "f4"),
       ("floor spread across GPUs", "floor_spread_across_gpus", "f6")]),
 
-    ("E-017", "E-017-log-census.json",
+    ("E-039", "E-039-log-census.json",
      "What the committed logs kept that the result files overwrote",
      "§4.1. A runner writes one JSON per ticket, so a second run overwrites the first. These are the readings both logs kept.",
      [("sessions with device readings", "sessions_with_device_readings", "d"),

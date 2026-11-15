@@ -13,7 +13,7 @@ paying for itself, and it is the reason this script reads `logs/` rather than
 
     python3 ai/edit-reach/tools/log_census.py
 
-Writes results/E-017-log-census.json.
+Writes results/E-039-log-census.json.
 
 **Not a rebuild of [E-012].** That census counted readings at a resolution these
 logs do not preserve: most lines carry the floor median to four decimals and the
@@ -29,7 +29,7 @@ from collections import defaultdict
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LOGS = ROOT / "logs"
-OUT = ROOT / "results" / "E-017-log-census.json"
+OUT = ROOT / "results" / "E-039-log-census.json"
 
 #: `  0  sig 3896ee28446f8156  gpu 0     runtime  1.66s ...`, with floor
 #: appearing only once the format was widened mid-day.
@@ -74,7 +74,7 @@ def main() -> None:
     stable_across = all(len(v) == 1 for v in across.values())
 
     doc = {
-        "ticket": "E-017",
+        "ticket": "E-039",
         "source": "committed logs under ai/edit-reach/logs/",
         "why": ("a runner writes one JSON per ticket, so a second run overwrites the "
                 "first; the logs keep both"),

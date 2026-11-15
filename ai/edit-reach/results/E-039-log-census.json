@@ -1,5 +1,5 @@
 {
- "ticket": "E-017",
+ "ticket": "E-039",
  "source": "committed logs under ai/edit-reach/logs/",
  "why": "a runner writes one JSON per ticket, so a second run overwrites the first; the logs keep both",
  "sessions_with_device_readings": 2,

@@ -721,7 +721,7 @@ Two things the ticket did not foresee. **The gate was only half checkable:** [E-
 
 ---
 
-### E-017 · Census the committed logs for readings the result files overwrote
+### E-039 · Census the committed logs for readings the result files overwrote
 
 **Status:** closed
 **Type:** implement
@@ -754,7 +754,7 @@ November against 3 November; this is the same claim at four minutes.
 
 1. `tools/log_census.py` — read every committed log under `logs/`, extract each
    reading that carries a signature and a device, and group by session, device
-   and value. Write `results/E-017-log-census.json`.
+   and value. Write `results/E-039-log-census.json`.
 2. Add it to `tools/appendix_values.py` so the numbers appear in §B.1.
 3. Strengthen the §4.1 lead with the within-day evidence and cite this run.
 
@@ -771,7 +771,7 @@ precision, and it is corrected by this ticket.
 
 **Artifacts:**
 
-- `tools/log_census.py` → `results/E-017-log-census.json`, committed
+- `tools/log_census.py` → `results/E-039-log-census.json`, committed
 - `tools/appendix_values.py` → §B.1 carries it; 9 experiments, 0 values not found
 - `web/notebook/edit-reach/paper.md` → §4.1 lead, and the run row in Appendix B
 
@@ -782,5 +782,13 @@ false. 32 readings, 2 devices, 4 distinct content hashes of the raw keys.
 **What it cost to find:** nothing but reading the logs, and it was only there
 because they are committed. The runner overwrites its own output file; the log
 is the only copy of the earlier session.
+
+**RCA (opened as E-017, renumbered 2026-11-15):** E-017 was already in use. The
+paper's Appendix B has named it since 9 November — *Prefix-sharing premise, first
+pass*, GPT-J-6B, 21 October — and I opened a second ticket on the same id without
+checking the published table. `check_record.py` did not catch it because it
+compares tickets within `tickets.md`, and neither E-017 nor E-018 has a ticket
+there at all: they are referenced by the paper and were never written up. The id
+is now E-039, above every id the paper references.
 
 **Closed:** 2026-11-15
