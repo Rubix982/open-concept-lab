@@ -27,7 +27,7 @@ paper:
     - A reach coefficient read off the edit's own rank-one update, computable in one forward pass through the unedited model.
     - A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on four models from 6B to 405B.
     - "Evidence that it does not predict an edit's effect: a raw correlation of rho = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed."
-    - A measurement of why there is little to predict - identity is worth about sixty-five times content - on a pre-stated test.
+    - A measurement of why there is little to predict - whose fact you edit is worth about sixty-five times what you change it to - on a pre-stated test.
     - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
     - The measure repurposed as a contamination screen, with one published benchmark scored on it, released as editreach.
     - A universal upper bound on an edit's reach, derived in one line and shown to be vacuous where propagation lives - its median far-field value permits a question that never names the edited subject to receive more than one that does.
@@ -43,7 +43,15 @@ A rank-one weight edit divides its update by a fixed inner product, so the fract
 
 It cannot. It is pinned to 1 wherever the prompt names the edited subject, and flat where the question never names it — which is where propagation lives. The same control separates the two regimes by **+0.8439** and by **+0.0002**. What the quantity does detect is contamination, and one published benchmark <Cite id="cohen2024ripple" /> has items that fail on exactly that ground.
 
-Four further results came off the same probe set. Identity is worth about **sixty-five times** content, which is why there was little for any measure to predict; the two halves of an edit — breaking the old answer and supplying the new one — separate in opposite directions on the same probes; the one universal upper bound on reach, derived in a line from the update's fixed direction, permits a question that never names the edited subject to receive **more** than one that does, and so forbids nothing; and nothing about the subject — neither its prominence nor how many facts depend on it — predicts how hard an edit lands, to within the effect 41 subjects can resolve.
+Four further results came off the same probe set.
+
+**Whose fact you edit matters about sixty-five times more than what you change it to** — **0.0583** against **0.0009** on the same probes — which is why there was so little edit-specific effect for any measure to predict.
+
+A single edit does two things, breaking the old answer and supplying the new one, and the two come apart: on one probe set under one metric they move in opposite directions.
+
+The same algebra yields the only universal ceiling on an edit's reach, and the ceiling forbids nothing. It permits a question that never names the edited subject to receive **more** than one that does.
+
+No property of the edited subject predicts how hard an edit lands — neither how widely known they are nor how many facts depend on them — to within the smallest effect 41 subjects can resolve.
 
 </Paper>
 
