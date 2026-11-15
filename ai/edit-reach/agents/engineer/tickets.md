@@ -1000,7 +1000,7 @@ row now says so.
 
 ### E-043 · Build the 70B edit cache, so the spine is not a one-model result
 
-**Status:** in-progress
+**Status:** blocked
 **Type:** implement
 **Priority:** high
 **Created:** 2026-11-15
@@ -1031,10 +1031,43 @@ different set from the 8B arm and the two cannot be compared without saying so.
 **What this is not.** It does not make the paper a two-model paper on its own.
 It makes [E-001] to [E-003] runnable on 70B; running them is the next ticket.
 
-**Blockers:** none
+**Blockers:** ROME's `v*` optimisation does not run through NDIF today, on any
+model this project uses. `rome.py`'s `_grad_step` reaches `out.grad.float()`
+with `out.grad` as `None` on Llama-3.1-70B and on Llama-3.1-8B, and GPT-J-6B
+fails earlier still. Reproduce with
+`agents/engineer/workspace/ndif_vstar_repro.py` — two optimisation steps, no
+edit applied, prints one line per model and exits non-zero while the blocker
+stands.
 
 **RCA:** —
 
-**Artifacts:** —
+**Result: stopped, 0 of 142 computed.** The run reached its first chunk and
+parked. Three things came out of the hour.
+
+**The gradient comes back empty, and not only on 70B.** This looked like a
+capacity problem — the 405B had refused to deploy earlier the same day — and it
+is not. Forward passes on both Llamas succeeded that afternoon; [E-040] read
+twelve of them. It is the backward pass, and Llama-3.1-8B fails identically, so
+the 70B was never the variable. The 8B cache this project depends on was built
+on 16 September; whatever changed is between then and nnsight 0.8.1 as deployed
+now.
+
+**The run could not say so.** Its handler logs `chunk failed (%s)` with the
+exception's *type*, so the log said `RemoteError` and nothing else, and the
+cause had to be found by running the call by hand. Same fault as [E-040]'s first
+draft, in a different script: a failure recorded without its reason.
+
+**`rome.py` is Llama-only and the paper's third model is not a Llama.** GPT-J
+does not reach a gradient at all — `'LanguageModel' object has no attribute
+'model'` — because `rome.py` writes `model.model.layers[layer].mlp.down_proj` in
+five places. `editreach.arch.key_site` was written to resolve that path per
+architecture and `rome.py` never adopted it. So even when the gradient returns,
+this cache is buildable for two Llamas and not for the third model §3.2 reports
+on. That half is ours to fix and does not wait on anything.
+
+**Artifacts:**
+
+- agents/engineer/workspace/ndif_vstar_repro.py
+- ai/edit-slice/logs/run_e014-2026-11-15-183835.log
 
 **Closed:** —
