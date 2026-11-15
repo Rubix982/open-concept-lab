@@ -1,0 +1,18 @@
+2026-11-15 18:30:35,581 INFO     E-042  run E-042 -> logs/E-042-2026-11-15-183035.log
+2026-11-15 18:30:36,766 INFO     E-042  2578 usable entries, cache holds 2557
+2026-11-15 18:30:36,870 INFO     E-042  371 alias readings, 0 entries uncached
+2026-11-15 18:30:36,870 INFO     E-042  
+2026-11-15 18:30:36,870 INFO     E-042  by criterion — an alias reading is not only a Subject_Aliasing one
+2026-11-15 18:30:36,880 INFO     E-042    Subject_Aliasing           n=371   rho +0.778  slope +0.848  median sim 0.615  median delivered 0.303
+2026-11-15 18:30:36,880 INFO     E-042  
+2026-11-15 18:30:36,880 INFO     E-042  by subset — [E-037] recorded that one subset supplies most aliases
+2026-11-15 18:30:36,880 INFO     E-042    recent     n=37    rho +0.783  slope +0.731
+2026-11-15 18:30:36,881 INFO     E-042    random     n=314   rho +0.787  slope +0.871
+2026-11-15 18:30:36,881 INFO     E-042    popular    n=20    rho +0.259  slope +0.514
+2026-11-15 18:30:39,043 INFO     E-042  
+2026-11-15 18:30:39,043 INFO     E-042  pooled over 371 alias readings
+2026-11-15 18:30:39,043 INFO     E-042    Spearman rho  +0.7780   95% CI +0.7364 to +0.8121   (published +0.778)
+2026-11-15 18:30:39,044 INFO     E-042    OLS slope     +0.8483                            (published +0.847)
+2026-11-15 18:30:39,044 INFO     E-042  
+2026-11-15 18:30:39,044 INFO     E-042  VERDICT: the population does not match: 371 alias readings here against 370 published, so rho +0.778 and slope +0.848 are not the same measurement as +0.778 and +0.847 even where they are close. The published row quotes a selection this recomputation cannot recover from what was kept, and the breakdown above is where to look for which one it was.
+2026-11-15 18:30:39,045 INFO     E-042  written to results/E-042-renamed-subject.json

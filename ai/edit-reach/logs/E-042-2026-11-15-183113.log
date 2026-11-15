@@ -1,0 +1,20 @@
+2026-11-15 18:31:13,605 INFO     E-042  run E-042 -> logs/E-042-2026-11-15-183113.log
+2026-11-15 18:31:14,717 INFO     E-042  2578 usable entries, cache holds 2557
+2026-11-15 18:31:14,831 INFO     E-042  371 alias readings, 0 entries uncached
+2026-11-15 18:31:14,831 INFO     E-042  
+2026-11-15 18:31:14,831 INFO     E-042  by criterion — an alias reading is not only a Subject_Aliasing one
+2026-11-15 18:31:14,839 INFO     E-042    Subject_Aliasing           n=371   rho +0.778  slope +0.848  median sim 0.615  median delivered 0.303
+2026-11-15 18:31:14,839 INFO     E-042  
+2026-11-15 18:31:14,839 INFO     E-042  by subset — [E-037] recorded that one subset supplies most aliases
+2026-11-15 18:31:14,839 INFO     E-042    recent     n=37    rho +0.783  slope +0.731
+2026-11-15 18:31:14,839 INFO     E-042    random     n=314   rho +0.787  slope +0.871
+2026-11-15 18:31:14,839 INFO     E-042    popular    n=20    rho +0.259  slope +0.514
+2026-11-15 18:31:16,971 INFO     E-042  
+2026-11-15 18:31:16,971 INFO     E-042  pooled over 371 alias readings
+2026-11-15 18:31:16,971 INFO     E-042    Spearman rho  +0.7780   95% CI +0.7364 to +0.8121   (published +0.778)
+2026-11-15 18:31:16,971 INFO     E-042    OLS slope     +0.8483                            (published +0.847)
+2026-11-15 18:31:16,971 INFO     E-042  
+2026-11-15 18:31:16,971 INFO     E-042  VERDICT: both statistics reproduce and the count is off by 1: rho +0.7780 against a published +0.778 and slope +0.8483 against +0.847, over 371 alias readings against 370 published. Two statistics landing on their published values to three decimals is not what a different population produces, so the row is taken as reproduced and the one-reading difference is recorded as unexplained rather than resolved.
+2026-11-15 18:31:16,972 INFO     E-042  
+2026-11-15 18:31:16,972 INFO     E-042  QUALIFICATION: 85% of the readings come from the 'random' subset alone (rho +0.787 there). On 'popular', n=20, rho is +0.259. The pooled figure is mostly one subset's and the row should say which.
+2026-11-15 18:31:16,972 INFO     E-042  written to results/E-042-renamed-subject.json

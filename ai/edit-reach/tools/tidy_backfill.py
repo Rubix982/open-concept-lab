@@ -216,6 +216,16 @@ CONVERTERS: dict[str, tuple[Callable[[str, dict], list[dict]], set[str]]] = {
                                              id_by="subject"), {"subjects"}),
     "E-039-*.json": (from_e039, {"sessions"}),
     "E-040-*.json": (from_e040, {"rows"}),
+    "E-041-*.json": (lambda t, d: [r for metric in ("own", "floor")
+                                   for r in __import__("editreach.tidy", fromlist=["rows"]).rows(
+                                       src_for(t, d["model"], d["layer"]),
+                                       "ripple", metric, d["per_reading"][metric])],
+                     {"per_reading"}),
+    "E-042-*.json": (lambda t, d: [r for metric in ("similarity", "delivered")
+                                   for r in __import__("editreach.tidy", fromlist=["rows"]).rows(
+                                       src_for(t, d["model"], d["layer"]),
+                                       "alias", metric, d["per_reading"][metric])],
+                     {"per_reading"}),
 }
 
 #: Not a result of this project: a catalogue of what the provider serves.

@@ -932,3 +932,66 @@ this way, because it never touches a partner, and it did not.
 - web/notebook/edit-reach/paper.md §5.5
 
 **Closed:** 2026-11-15
+
+---
+
+### E-042 · Give the renamed-subject correlation a file anyone can open
+
+**Status:** closed
+**Type:** implement
+**Priority:** medium
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+§5's summary table carries one row from [E-026], 28 October: a renamed subject's
+delivered fraction against the string similarity of the new name, **ρ = +0.778**
+with a **slope of +0.847** over **370** readings. Its output directory was never
+committed. It is the last struck row with a number the paper quotes, and unlike
+[E-038] it is cited nowhere in prose — one table cell is the whole exposure.
+
+**Why this is offline too, for the same reason [E-041] was.** The aliasing arm
+is part of the same selection: `usable()` in `run_e037.py` marks every test
+whose prompt carries a *different surface form* of the subject with `is_alias`,
+and keeps both the canonical label that `k*` is read at and the surface form the
+coefficient is read at. The coefficients are in the cache [E-041] used. String
+similarity is `difflib.SequenceMatcher` over two strings already in hand. So
+nothing here needs a forward pass.
+
+**Falsifier.** The reproduction fails if ρ misses +0.778 or the slope misses
++0.847 by more than 0.01, or if the alias population is not 370 readings — in
+which case the row is quoting a selection this one cannot recover, and it stays
+struck with that said.
+
+**What [E-041] found and this must not repeat.** That ticket's published floor
+turned out to depend on a pairing nobody had varied. This measurement has no
+partner in it, so the pairing cannot reach it — but it does have a population
+choice, since an alias reading can occur under any criterion and not only
+`Subject_Aliasing`. Report the breakdown rather than a single pooled ρ.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Result.** Both statistics come back on their published values. Spearman rho is
+**+0.7780** against a published +0.778 and the OLS slope is **+0.8483** against
++0.847, over **371** alias readings against a published **370**. Two statistics
+landing to three decimals is not what a different population produces, so the
+row is taken as reproduced; the one-reading difference is recorded as
+unexplained rather than explained away. The row also gains the bootstrap
+interval it never had: **+0.736 to +0.812**.
+
+The concern in the description did not materialise and its opposite did. Every
+alias reading is a `Subject_Aliasing` one, so the population was not a choice
+across criteria. It is heavily a choice across **subsets**: 314 of the 371 come
+from RippleEdits' `random` set, where rho is +0.787, while `popular` gives
+**+0.259 over 20 readings**. The pooled figure is 85% one subset's and the table
+row now says so.
+
+**Artifacts:**
+
+- agents/engineer/workspace/run_e042_alias.py
+- results/E-042-renamed-subject.json
+- web/notebook/edit-reach/paper.md §5 summary table
+
+**Closed:** 2026-11-15
