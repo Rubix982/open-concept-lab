@@ -14,7 +14,7 @@ import { useSyncExternalStore } from "react";
  * the outgoing content has faded. Collapsing them would make the button feel
  * dead for the length of the fade.
  */
-export type View = "paper" | "threads";
+export type View = "paper" | "threads" | "plain";
 export type ViewState = { view: View; pending: View };
 
 /** Long enough to read as a fade, short enough not to be a wait. */

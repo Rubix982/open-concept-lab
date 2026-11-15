@@ -36,9 +36,15 @@ export default function DocItemTOCDesktop(): ReactNode {
   const data = usePluginData("ocl-lab-data") as LabData;
 
   const threadIds = new Set(data.record?.[metadata.id.split("/")[0]]?.toc ?? []);
-  const shown = threadIds.size
-    ? toc.filter((item) => threadIds.has(item.id) === (view === "threads"))
-    : toc;
+  // The plain view is one short page meant to be read straight through, so it
+  // gets no contents at all. A four-entry list beside eight screens of text is
+  // furniture, and the record panel above still has something to say.
+  const shown =
+    view === "plain"
+      ? []
+      : threadIds.size
+        ? toc.filter((item) => threadIds.has(item.id) === (view === "threads"))
+        : toc;
 
   return (
     <>

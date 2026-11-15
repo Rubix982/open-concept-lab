@@ -10047,13 +10047,38 @@ a:hover > .ocl-home__featureCover {
   display: none;
 }
 
+.markdown[data-view="plain"] > *:not(.ocl-paperhead):not(.ocl-plainpanel) {
+  display: none;
+}
+
 .markdown:not([data-view="threads"]) > .ocl-threadspanel { display: none; }
+.markdown:not([data-view="plain"]) > .ocl-plainpanel { display: none; }
 
 /* Paper mode sets two columns on the article. The threads view is a record,
    not an argument, and reads worse justified into narrow columns — so it takes
    the full measure back. */
-.ocl-threadspanel { column-span: all; }
+.ocl-threadspanel,
+.ocl-plainpanel { column-span: all; }
 
+/* The plain view is one column of larger type. Paper mode sets two justified
+   columns for the argument; a page written so somebody outside the field can
+   check it should not then be set like a journal. */
+.ocl-plainpanel {
+  max-width: 36rem;
+  margin-inline: auto;
+  font-size: 1.02rem;
+  line-height: 1.62;
+}
+
+.ocl-plainpanel > h2 {
+  font-size: 1.12rem;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.ocl-plainpanel > ul { font-size: 0.98rem; }
+
+.ocl-plainpanel__id,
 /* The swap is a crossfade, not an entrance.
    `is-swapping` goes on while the outgoing view fades, stays on through the
    frame where the incoming view appears, and comes off a frame later, so the

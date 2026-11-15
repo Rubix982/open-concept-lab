@@ -58,14 +58,36 @@ export function PaperSwitch(): ReactNode {
   useEffect(() => resetView, []);
 
   return (
-    <nav className="ocl-paperswitch" aria-label="Paper or threads" ref={host}>
+    <nav className="ocl-paperswitch" aria-label="How to read this" ref={host}>
       <button type="button" onClick={() => requestView("paper")}
               className={clsx({ "is-here": pending === "paper" })}
               aria-pressed={pending === "paper"}>Paper</button>
+      <button type="button" onClick={() => requestView("plain")}
+              className={clsx({ "is-here": pending === "plain" })}
+              aria-pressed={pending === "plain"}>Plain</button>
       <button type="button" onClick={() => requestView("threads")}
               className={clsx({ "is-here": pending === "threads" })}
               aria-pressed={pending === "threads"}>Threads</button>
     </nav>
+  );
+}
+
+/**
+ * The plain view's container: the same paper said so that someone outside the
+ * field can check it.
+ *
+ * Held to the plain-words test rather than to "shorter": the simple version has
+ * to be EASIER to prove wrong than the technical one. So the numbers stay, the
+ * limits stay in a section of their own, and the one control that was got wrong
+ * stays too. A version that cannot be wrong would mean the content left with the
+ * notation, and the fix for that is upstream of the writing.
+ */
+export function PlainPanel({ children }: { children: ReactNode }): ReactNode {
+  return (
+    <section className="ocl-plainpanel" aria-label="In plain words">
+      <div className="ocl-plainpanel__id">PLAIN — the same paper, said so it can still be checked</div>
+      {children}
+    </section>
   );
 }
 

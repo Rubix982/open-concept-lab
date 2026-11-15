@@ -35,6 +35,7 @@ paper:
 ---
 
 import ThreadsBody from "./_threads.mdx";
+import PlainBody from "./_plain.mdx";
 
 <Paper>
 
@@ -790,6 +791,10 @@ What a short venue note needs, against what exists today. This is a checklist fo
   <Check need="Breadth across depth" where="§8.1">One layer. A sweep on the cached subjects is the cheapest fix</Check>
   <Check need="A delivery-to-effect link" where="§7.1">Blocked on the backward pass; 42 survivors, not a sample</Check>
 </Readiness>
+
+<PlainPanel>
+  <PlainBody />
+</PlainPanel>
 
 <ThreadsPanel>
   <ThreadsBody />

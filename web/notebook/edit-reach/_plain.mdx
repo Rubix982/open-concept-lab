@@ -1,0 +1,73 @@
+{/* Hand-written, unlike _threads.mdx which is generated. This is the paper said
+    in plain words, and it is held to the plain-words test: the simple version
+    has to be EASIER to prove wrong than the technical one, not vaguer. Every
+    number here appears in the paper; none is rounded into a feeling. */}
+
+**This is the same paper in plain words.** Nothing is softened and no limit is dropped — if anything here is wrong, it should be easier to say so than it is upstairs. Every figure below is in the full paper with its run attached.
+
+## The problem
+
+You can reach into a language model and change one fact: *Maurice de Vlaminck was born in France* becomes *…in Chile*. The change takes seconds and touches a few thousand numbers.
+
+Then you have to ask what else you broke.
+
+Nobody can list everything a model believes, so the field writes a list of test questions and checks those. That tells you an edit **did** break something. It can never tell you an edit broke **nothing**, because a question nobody thought to ask and a failure that never happened look exactly the same from outside: no result at all.
+
+## The idea we tried
+
+This kind of edit has a simple shape. Because of that shape, for any question you can work out a single number — **how much of the edit lands on this question** — and you can work it out **before making the edit at all**, from the untouched model.
+
+If that number were large wherever the damage was, you would have a cheap screen. Score a question, decide whether it is worth running.
+
+## What the number actually does
+
+It is **1.000** when the question contains the edited name, and about **0.05** when it does not.
+
+So it detects whether the name you edited is sitting in the question.
+
+You can detect that by reading the question.
+
+## Why that is the whole problem
+
+The interesting case — the one everybody means by *did the edit spread* — is the case where the name is **not** in the question. You edited where he was born; does the model still say he was a painter? That question never says "Vlaminck". And that is exactly where the number is flat.
+
+The measure has its full range in the easy case and none in the hard one.
+
+## The result that looked good first
+
+Against how much the edit actually moved the model, the number correlates at **0.522**. That is a real number and a respectable one.
+
+Then we ran the control: edit a **different fact about the same person** and see how much *that* moves the same questions. It accounts for most of it. What is left of the correlation is **0.085**, with a range from **−0.003 to 0.172** — a range that includes zero.
+
+The honest reading is that once you account for *this question is about that person*, there is almost nothing left that the number was predicting.
+
+## Why there was so little to predict
+
+We measured the two things separately on the same 495 questions:
+
+- Change **what the edit says**, keep the person: the questions move by **0.0009**.
+- Change **whose fact you edit**, keep everything else: they move by **0.0583**.
+
+About **sixty-five times** more. An edit's effect is mostly *whose name you touched*, barely *what you said about them*. There was never much edit-specific signal for any measure to find.
+
+## The one thing it is genuinely good for
+
+If the number is high exactly when the edited name is in the question, point it at a benchmark and ask which questions contain the name.
+
+RippleEdits has a test type built to check whether an edit travels two steps — from the edited person, to where he died, to who governs that place. Its questions read *"the name of the head of government of the place of death of **Leo Arons** is…"*. The edited name is **in the question**. Those items score a median **0.982**, against a floor of **0.065** from a stranger's edit on the same questions.
+
+An item like that can be answered by the edit arriving at the name directly. A method could score well on it and have generalised nothing.
+
+This is a fault you can find and fix, not a verdict on the field. In MQuAKE, the name is present in **6,861 of 6,861** items where the edit sits at the start of the chain, and in **0 of 16,506** where it sits further down — so a clean subset already exists in the field's own data.
+
+## What this does not say
+
+- It does not say edits do not propagate. It says **this measure cannot see** whether they do.
+- It does not say content never matters. Content is detectable at **0.0009** and that interval excludes zero — it is about 1.5% of the identity effect, not nothing.
+- It does not say RippleEdits is wrong. One of its test types can be answered the easy way, which is a repairable fault in specific items.
+- The one universal upper limit on reach that this shape allows turns out to **permit a question that never names the subject to receive more than one that does** — so it rules out nothing where it matters.
+- Everything here was measured on one edit method at one layer, on models from 6B to 405B. It is not a claim about every way of editing a model.
+
+## The one that cost most to get right
+
+The first version of the control was wrong, and it made the result look better than it was. The paper keeps that mistake in writing, with what it changed, because a result whose errors are invisible cannot be checked.

@@ -3,7 +3,7 @@ import Figure from "@site/src/components/Figure";
 import Cite from "@site/src/components/Cite";
 import Evidence from "@site/src/components/Evidence";
 import Anchor from "@site/src/components/Anchor";
-import ThreadsPanel from "@site/src/components/LabLog";
+import ThreadsPanel, { PlainPanel } from "@site/src/components/LabLog";
 import Margin from "@site/src/components/Margin";
 import Claim from "@site/src/components/Claim";
 import Embed from "@site/src/components/Embed";
@@ -35,6 +35,7 @@ export default {
   Evidence,
   Anchor,
   ThreadsPanel,
+  PlainPanel,
   Margin,
   Claim,
   Embed,
