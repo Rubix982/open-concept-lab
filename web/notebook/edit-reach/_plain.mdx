@@ -21,9 +21,13 @@ If that number were large wherever the damage was, you would have a cheap screen
 
 ## What the number actually does
 
-It is **1.000** when the question contains the edited name, and about **0.05** when it does not.
+It is **exactly 1** on any question that *begins* with the edited name — that one is arithmetic, not a measurement, and it holds whatever the model. Across questions that name him anywhere, the median is **0.9334**.
 
-So it detects whether the name you edited is sitting in the question.
+When the question never names him, it is **0.0543**.
+
+Is that small number still telling you something? No. Run a stranger's edit on the same questions and they score **0.0481** — so almost all of the 0.0543 is just what any edit does to any question. The real edit beats a stranger's by **0.8439** where the name is present, and by **0.0002** where it is not.
+
+So the number detects whether the edited name is sitting in the question.
 
 You can detect that by reading the question.
 
@@ -31,7 +35,7 @@ You can detect that by reading the question.
 
 The interesting case — the one everybody means by *did the edit spread* — is the case where the name is **not** in the question. You edited where he was born; does the model still say he was a painter? That question never says "Vlaminck". And that is exactly where the number is flat.
 
-The measure has its full range in the easy case and none in the hard one.
+The measure has its full range in the easy case and, to within 0.0002, none in the hard one.
 
 ## The result that looked good first
 
