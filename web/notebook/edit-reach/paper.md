@@ -640,6 +640,10 @@ Every interval spans zero and every point estimate sits within 0.13 of it. Three
 
 <Lead>Prominence is a proxy and is labelled as one.</Lead> The question asks about how often a subject's *name* appears in text. Wikipedia language-edition count measures how well an entity is documented, which is a different thing that correlates with it. Its range is real — 0 for a subject with no Wikipedia article at all, 67 for the best covered — so it is not degenerate, but it is not the quantity named.
 
+**Two kinds of proxy were tested, not one, and that matters more than either of them alone.** Wikipedia coverage is external: it is a fact about how the world records an entity, and the model never sees it. Headroom is internal: it is the base model's own probability on the true answer, so it is a fact about what this model learned, whatever the world wrote down. If exposure drove damage, the second should have caught it even where the first failed, because it reads the result of exposure rather than a correlate of its cause. It reads **−0.130**, the largest estimate in the table and still well inside the band.
+
+Neither is textual frequency, and nothing here measures it. That remains the obvious thing to try, and the two nulls make it a narrower target than it was: an exposure mechanism would now have to be invisible to the model's own confidence on the fact being edited.
+
 ## 6. Findings and claims
 
 <Figure
@@ -775,7 +779,7 @@ Every qualification in this paper is collected here, so the body above runs unhe
 6. <Lead>The different-subject floor is not predictable, and every excess here rests on one.</Lead> It spans 0.031 to 0.388 across three models at four depths each, ordered by neither size nor depth. So an excess measured against a floor on one model says nothing about the excess on another, and any such comparison needs the floor measured where it runs.
 7. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
 8. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
-9. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
+9. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its predictors are proxies. Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text, and headroom measures the base model's confidence on the fact being edited, not the exposure behind it. The two are of different kinds — one external to the model, one internal — and both are null, which is stronger than either alone and is still not a measurement of textual frequency.
 10. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
 11. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
