@@ -110,6 +110,18 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("excess over different-relation floor", "hop2.excess_over_diff_relation", "f4"),
       ("fraction above floor", "hop2.fraction_above_floor", "f4")]),
 
+    ("E-045", "E-004-far-field-floor-EleutherAI_gpt-j-6b.json",
+     "The same far-field measurement on GPT-J-6B",
+     "§5.2 and §7, limitations 4 and 5. A second architecture. The sign holds and the effect does not: own and floor are the same number to two decimals, and 52% of questions sit above the floor against 79.7% on 8B.",
+     [("hop-2 questions", "hop2.n_questions", "d"),
+      ("median coefficient, own k*", "hop2.own_median", "f4"),
+      ("floor, same-relation stranger", "hop2.floor_same_relation", "f4"),
+      ("excess over same-relation floor", "hop2.excess_over_same_relation", "f4"),
+      ("floor, different-relation stranger", "hop2.floor_diff_relation", "f4"),
+      ("excess over different-relation floor", "hop2.excess_over_diff_relation", "f4"),
+      ("fraction above floor", "hop2.fraction_above_floor", "f4"),
+      ("near field, hop-1 natural", "reproduction_gate.hop1_natural", "f4")]),
+
     ("E-040", "E-040-premise-four-models.json",
      "The prefix-sharing premise at layer 5",
      "§3.2. A fresh measurement, not a reproduction: [E-018]'s outputs are gone and its runner was never committed. Llama-3.1-405B could not be deployed and is recorded as unread rather than dropped.",

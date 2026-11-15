@@ -138,6 +138,26 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
   </tbody>
 </Data>
 
+**E-045 · The same far-field measurement on GPT-J-6B**
+
+§5.2 and §7, limitations 4 and 5. A second architecture. The sign holds and the effect does not: own and floor are the same number to two decimals, and 52% of questions sit above the floor against 79.7% on 8B.
+
+<Data caption={<>Every quantity E-045 produced that the paper cites, with the field it was read from in <code>E-004-far-field-floor-EleutherAI_gpt-j-6b.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>hop-2 questions</td><td className="n">900</td><td><code>hop2.n_questions</code></td></tr>
+    <tr><td>median coefficient, own k*</td><td className="n">+0.1302</td><td><code>hop2.own_median</code></td></tr>
+    <tr><td>floor, same-relation stranger</td><td className="n">+0.1255</td><td><code>hop2.floor_same_relation</code></td></tr>
+    <tr><td>excess over same-relation floor</td><td className="n">-0.0000</td><td><code>hop2.excess_over_same_relation</code></td></tr>
+    <tr><td>floor, different-relation stranger</td><td className="n">+0.1287</td><td><code>hop2.floor_diff_relation</code></td></tr>
+    <tr><td>excess over different-relation floor</td><td className="n">+0.0014</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
+    <tr><td>fraction above floor</td><td className="n">+0.5178</td><td><code>hop2.fraction_above_floor</code></td></tr>
+    <tr><td>near field, hop-1 natural</td><td className="n">+0.7985</td><td><code>reproduction_gate.hop1_natural</code></td></tr>
+  </tbody>
+</Data>
+
 **E-040 · The prefix-sharing premise at layer 5**
 
 §3.2. A fresh measurement, not a reproduction: [E-018]'s outputs are gone and its runner was never committed. Llama-3.1-405B could not be deployed and is recorded as unread rather than dropped.

@@ -146,7 +146,7 @@ It held exactly. On GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B, each read at four 
 
 The control is a prompt naming a different person, and it does not travel the way the pinned value does. Over those same twelve readings it runs from **0.031 to 0.388**, a factor of twelve, and it is not ordered by model size or by depth: at 16% of depth the largest model returns the highest floor of the three, and at 30% the middle one does. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.<Prov id="E-040" />
 
-So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 4 is about.
+So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 6 is about.
 
 <Figure
   src="/img/edit-reach/premise-and-floor-by-depth.svg"
@@ -355,6 +355,23 @@ A **same-subject control** — a different property of the same person — alrea
     <tr><td>semantics</td><td className="n">42</td><td className="n">0.980</td><td className="n">0.180</td><td className="n">0.177</td><td className="n">0.000</td></tr>
   </tbody>
 </Data>
+
+The same measurement has since run on two more models, and the three do not agree about anything except the sign.
+
+<Data caption={<>The far field on three models, two architectures, all at layer 5. Same 513 instances and the same floor construction on each.<Prov id="E-045" /></>}>
+  <thead>
+    <tr><th>Model</th><th className="n">own k*</th><th className="n">stranger</th><th className="n">excess</th><th className="n">above floor</th><th className="n">near field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Llama-3.1-8B</td><td className="n">0.0544</td><td className="n">0.0298</td><td className="n">+0.0231</td><td className="n">79.7%</td><td className="n">0.9334</td></tr>
+    <tr><td>Llama-3.1-70B</td><td className="n">0.0174</td><td className="n">0.0093</td><td className="n">+0.0075</td><td className="n">72%</td><td className="n">0.9350</td></tr>
+    <tr><td>GPT-J-6B</td><td className="n">0.1303</td><td className="n">0.1280</td><td className="n"><b>+0.0019</b></td><td className="n"><b>52%</b></td><td className="n">0.7985</td></tr>
+  </tbody>
+</Data>
+
+The sign survives: the excess over the different-relation floor is positive on all three, and the excess over the *same*-relation floor is zero on all three. Nothing else survives. On the two Llamas a clear majority of far-field questions sit above their floor; on GPT-J it is 52%, a coin flip, and the two quantities are 0.1303 against 0.1280 — the same number twice. Its floor is four times the 8B one, which is the same model and layer where [E-040] read an anchor-floor of 0.194: GPT-J's keys at layer 5 discriminate less to begin with.
+
+That makes the GPT-J reading consistent with this section and weak evidence for it, and the difference matters. A null on a model whose floor leaves no room for a signal is not the evidence a null on a model with room would be. The two Llamas had room and still returned +0.0231 and +0.0075, and that is where the claim is carried. The near-field column says the same thing from the other side: **0.9334 and 0.9350 are Llama numbers**, and the near field is not pinned the same way on GPT-J, where it reads 0.7985.
 
 <Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims and only the second survives. The question had been written down with both of its answers before the run — if the prediction held, a usable screen; if it did not, the quantity measures delivery and the screen is a proposal — and it closed on the second.
 
@@ -725,6 +742,7 @@ The table below is every claim this paper has made, numbered in the order they w
 </Ledger>
 
 <Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="15 Nov 2026" version="v0.5">§5.2 ran on a second architecture. The sign holds on GPT-J-6B — the excess over the different-relation floor is positive and over the same-relation floor is zero, as on both Llamas — and nothing else does. Its own and floor readings are 0.1303 and 0.1280 with 52% of questions above the floor, against 79.7% and 72% on the Llamas, so the reading is consistent with the section and weak evidence for it: there was almost no dynamic range available to find missing. Two limitations added and the near-field figures marked as Llama numbers, 0.9334 and 0.9350 against 0.7985.</Rev>
   <Rev date="15 Nov 2026" version="v0.5">The renamed-subject row was recomputed from the same cached keys. Both statistics come back on their published values — ρ +0.7780 against +0.778, slope +0.8483 against +0.847 — over 371 alias readings against a published 370, and the one-reading difference is unexplained rather than resolved. The row gains the interval it never had, and a qualification the pooled figure was hiding: 85% of those readings come from RippleEdits' <code>random</code> subset, where ρ is +0.787, while on <code>popular</code> it is +0.259 over 20 readings.</Rev>
   <Rev date="15 Nov 2026" version="v0.5">§5.5's RippleEdits floor was printed as a single <b>0.065</b>. The readings behind it survived in a cached key file even though the run's own outputs did not, so it was recomputed: the <b>0.982</b> reproduces exactly and cannot move with the pairing, because it never touches a partner, while the floor runs 0.064 to 0.070 over five pairings and is 0.070 at the pinned seed. The published 0.065 is a value this measurement produces and not the one it produces at that seed, so the floor is now quoted as a range.</Rev>
   <Rev date="15 Nov 2026" version="v0.5">§3.2's different-subject floor was a single <b>0.082</b> with no model beside it, read as though it were common to the four models named in the same sentence. It is one reading, Llama-3.1-8B at layer 5. Re-measured on three models at four fractions of each one's depth, the same control spans 0.031 to 0.388 and is ordered by neither size nor depth. The premise itself was re-measured at the same time and held at exactly 1.000 on all twelve readings. The original run behind the 0.082 could not be re-run — its outputs are gone and its script was never committed — so this is a fresh measurement rather than a reproduction, and the runner is in the repository this time.</Rev>
@@ -750,13 +768,15 @@ Every qualification in this paper is collected here, so the body above runs unhe
 
 1. <Lead>Delivery is not effect.</Lead> Every number here says how much of the edit vector arrives at a token. None says how far the model's answer moved. At a fixed coefficient, measured movement spans a factor of 2.96.
 2. <Lead>The coefficient belongs to a token, not a prompt.</Lead> Within one prompt the subject position and the final position differ by a factor of 35, and the answer is produced at the final position.
-3. <Lead>Two models, one layer, two-hop chains.</Lead> The near and far field were read on Llama-3.1-8B and Llama-3.1-70B, both at layer 5. A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit. The depth sweep in §3.2 moves the *floor* across four depths on three models; it does not move the far-field excess, which stays at one layer.
-4. <Lead>The different-subject floor is not predictable, and every excess here rests on one.</Lead> It spans 0.031 to 0.388 across three models at four depths each, ordered by neither size nor depth. So an excess measured against a floor on one model says nothing about the excess on another, and any such comparison needs the floor measured where it runs.
-5. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
-6. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
-7. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
-8. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
-9. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+3. <Lead>Three models, two architectures, one layer, two-hop chains.</Lead> The near and far field were read on Llama-3.1-8B, Llama-3.1-70B and GPT-J-6B, all at layer 5. A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit. The depth sweep in §3.2 moves the *floor* across four depths on three models; it does not move the far-field excess, which stays at one layer.
+4. <Lead>The GPT-J reading is consistent with §5.2 and is weak evidence for it.</Lead> Its far-field own and floor are 0.1303 and 0.1280 and 52% of questions sit above the floor, so there was almost no dynamic range available to find missing. The claim rests on the two models where a majority did sit above the floor. Every near-field figure in §5 is a Llama number: 0.9334 and 0.9350 against 0.7985 on GPT-J.
+5. <Lead>GPT-J-6B is below this project's own model floor.</Lead> `CLAUDE.md` asks for a model above 8B from each architecture family. NDIF serves one `gptj` deployment and it is the 6B, so for that family the rule is not met and the second architecture is covered at the only size available.
+6. <Lead>The different-subject floor is not predictable, and every excess here rests on one.</Lead> It spans 0.031 to 0.388 across three models at four depths each, ordered by neither size nor depth. So an excess measured against a floor on one model says nothing about the excess on another, and any such comparison needs the floor measured where it runs.
+7. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
+8. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
+9. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
+10. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
+11. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
@@ -829,6 +849,7 @@ Saying this is not an excuse for the gap. It is the difference between a record 
 <Runs caption={<>The runs behind the figures and tables above. Directories are under <code>results/</code>.</>}>
   <Run id="E‑004" model="Llama‑3.1‑8B" n="1,539" date="6 Nov" out="E-004-far-field-floor.json">Near and far field under the same-relation stranger floor</Run>
   <Run id="E‑004" model="Llama‑3.1‑70B" n="1,539" date="15 Nov" out="E-004-far-field-floor-meta-llama_Llama-3.1-70B.json">The same measurement on 70B. Shape holds, every far-field magnitude about threefold smaller</Run>
+  <Run id="E‑045" model="GPT‑J‑6B" n="1,539" date="15 Nov" out="E-004-far-field-floor-EleutherAI_gpt-j-6b.json">The same measurement on a second architecture. Sign holds; 52% above floor, against 79.7% and 72%</Run>
   <Run id="E‑001" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-001-predicted-vs-measured.json">Predicted reach against measured movement, with a same-subject control</Run>
   <Run id="E‑002" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-002-different-subject-arm.json">The different-subject arm: identity against content</Run>
   <Run id="E‑003" model="Llama‑3.1‑8B" n="495" date="1 Nov" out="E-003-destination.json">The same probes under a full-vocabulary argmax readout</Run>
