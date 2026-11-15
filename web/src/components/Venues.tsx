@@ -23,10 +23,19 @@ import type { LabData, Venue } from "@site/plugins/lab-data";
  */
 const KINDS: { key: Venue["kind"] | "all"; label: string }[] = [
   { key: "all", label: "All" },
+  { key: "conference", label: "Conferences" },
+  { key: "journal", label: "Journals" },
+  { key: "track", label: "Tracks" },
   { key: "workshop", label: "Workshops" },
   { key: "competition", label: "Competitions" },
   { key: "funding", label: "Funding" },
 ];
+
+/** Soonest deadline first; rolling journals, which have none, last. */
+function byDeadline(a: Venue, b: Venue): number {
+  if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+  return a.deadline ? -1 : b.deadline ? 1 : 0;
+}
 
 const ARCHIVAL: Record<string, string> = {
   no: "non-archival",
@@ -49,6 +58,8 @@ function VenueCard({ venue }: { venue: Venue }): ReactNode {
         </h3>
         <span className="ocl-venue__series">{venue.series}</span>
       </header>
+
+      {venue.due ? <p className="ocl-venue__due">Due {venue.due}</p> : null}
 
       <p className="ocl-venue__when">
         {venue.when}
@@ -85,18 +96,24 @@ function VenueCard({ venue }: { venue: Venue }): ReactNode {
   );
 }
 
-export default function Venues(): ReactNode {
-  const { venues } = usePluginData("ocl-lab-data") as LabData;
+export default function Venues({ year = 2026 }: { year?: number }): ReactNode {
+  const all = (usePluginData("ocl-lab-data") as LabData).venues;
   const [kind, setKind] = useState<Venue["kind"] | "all">("all");
+
+  // One edition per page. A page planning ahead reads in deadline order; the
+  // look back keeps the order the file was written in.
+  const venues = all.filter((v) => v.year === year);
+  if (year > 2026) venues.sort(byDeadline);
 
   const shown = kind === "all" ? venues : venues.filter((v) => v.kind === kind);
   const count = (k: Venue["kind"] | "all") =>
     k === "all" ? venues.length : venues.filter((v) => v.kind === k).length;
+  const kinds = KINDS.filter((k) => k.key === "all" || count(k.key) > 0);
 
   return (
     <div className="ocl-venues">
       <div className="ocl-filter__areas" role="group" aria-label="Kind of venue">
-        {KINDS.map((k) => (
+        {kinds.map((k) => (
           <button
             key={k.key}
             type="button"

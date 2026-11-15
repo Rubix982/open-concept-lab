@@ -112,3 +112,227 @@ ai-forge-2026:
     for a Project Venture ($750k–$3M, one-year terms) are unconfirmed. Kept
     because deleting it would lose the lead; marked because a funding programme
     is exactly the kind of claim that gets repeated into being true.
+
+# --- 2027: where a finished result could go next year ----------------------
+#
+#   year:      the edition
+#   deadline:  ISO date used for sorting; the soonest date that matters
+#   due:       the deadline as a reader sees it. "estimated" means it was worked
+#              out from the last edition, and verified is then false.
+#
+# Read on 15 November 2026. Most 2027 calls were not out yet.
+
+iclr-blogposts-2027:
+  name: Blogpost track
+  series: ICLR
+  kind: track
+  year: 2027
+  deadline: "2026-12-01"
+  due: 1 December 2026, 23:59 AoE
+  when: Accepted posts are notified 1 March 2027 and shown as posters at ICLR 2027
+  where: ICLR has not announced its 2027 city
+  archival: not stated
+  url: https://iclr.cc/Conferences/2027/CallForBlogPosts
+  verified: true
+  asks: >
+    Posts about work published at a top venue fairly recently: reviewing it and
+    what came of it, new angles on existing ideas, reproducibility, and the
+    social side of recent results. At most two posts per author.
+  note: >
+    Posts may not promote the authors' own or their lab's past papers, so this
+    is a place for writing about somebody else's result, not one's own.
+
+acl-2027:
+  name: ACL
+  series: ACL Rolling Review
+  kind: conference
+  year: 2027
+  deadline: "2027-01-04"
+  due: 4 January 2027, AoE, through ARR
+  when: 17–22 August 2027; main conference 20–22 August
+  where: Kyoto
+  archival: "yes"
+  url: https://2027.aclweb.org/
+  verified: true
+  asks: >
+    The main NLP venue. A paper is reviewed in the ARR cycle and then committed
+    to ACL; papers not taken for the main conference can be accepted to Findings,
+    which is also archival.
+  note: >
+    Commitment, notification and camera-ready dates were still TBA. A paper
+    cannot be under review at ARR and TACL at the same time.
+
+icml-2027:
+  name: ICML
+  series: ICML
+  kind: conference
+  year: 2027
+  deadline: "2027-01-14"
+  due: abstract 14 January 2027, full paper 22 January 2027
+  when: Reviewing 24 February – 16 March 2027
+  where: ICML has not named the city; trackers say South America
+  archival: "yes"
+  url: https://icml.cc/Conferences/2027/ReciprocalReviewingAndSubmissionQuotas
+  verified: true
+  asks: The main machine learning conference.
+  note: >
+    New for 2027: every submission names one author as its reciprocal reviewer,
+    who must be eligible and must review. An author who is not eligible may
+    appear on only one submission in which no author is eligible.
+
+iclr-workshops-2027:
+  name: ICLR workshops
+  series: ICLR
+  kind: workshop
+  year: 2027
+  deadline: "2027-02-01"
+  due: early February 2027, estimated
+  when: Late April 2027, alongside ICLR
+  where: Not announced
+  archival: "no"
+  url: https://iclr.cc/Conferences/2027/WorkshopGuidelines
+  verified: false
+  asks: Depends on which workshops are accepted; the 2027 list was not out.
+  note: >
+    The deadline is a guess from past years, when workshop papers were due
+    around the start of February. Check the accepted list before planning.
+
+colm-2027:
+  name: COLM
+  series: Conference on Language Modeling
+  kind: conference
+  year: 2027
+  deadline: "2027-03-25"
+  due: late March 2027, estimated
+  when: Early October 2027, if it keeps its pattern
+  where: Not announced
+  archival: "yes"
+  url: https://colmweb.org/
+  verified: false
+  asks: Language models specifically, including how they work inside.
+  note: >
+    Nothing official for 2027. In 2025 the abstract was due 20 March and the
+    paper 27 March; COLM has always had a separate abstract deadline a week
+    before the paper.
+
+mechinterp-icml-2027:
+  name: Mechanistic Interpretability Workshop
+  series: ICML
+  kind: workshop
+  year: 2027
+  deadline: "2027-05-08"
+  due: early May 2027, estimated
+  when: July 2027, alongside ICML
+  where: Not announced
+  archival: "no"
+  url: https://mechinterpworkshop.com/
+  verified: false
+  asks: >
+    In 2026: work at any stage, including papers under review at COLM or
+    NeurIPS. Not yet announced for 2027.
+  note: The 2026 papers were due 8 May. The estimate assumes it runs again.
+
+neurips-2027:
+  name: NeurIPS
+  series: NeurIPS
+  kind: conference
+  year: 2027
+  deadline: "2027-05-14"
+  due: mid-May 2027, estimated
+  when: December 2027, if it keeps its pattern
+  where: Europe, according to trackers reading the future-meetings page
+  archival: "yes"
+  url: https://neurips.cc/
+  verified: false
+  asks: The main machine learning conference, and the largest.
+  note: >
+    Trackers give abstracts 14 May and papers 21 May 2027, but no official page
+    confirmed them. In 2026 the deadlines were 4 and 6 May.
+
+emnlp-2027:
+  name: EMNLP
+  series: ACL Rolling Review
+  kind: conference
+  year: 2027
+  deadline: "2027-05-24"
+  due: an ARR cycle around late May 2027, estimated
+  when: Early November 2027, tentatively
+  where: Mexico or Central America, tentatively
+  archival: "yes"
+  url: https://www.aclweb.org/portal/content/joint-call-workshops-proposals-2027
+  verified: false
+  asks: Empirical NLP. Like ACL, reviewed through ARR, with Findings as well.
+  note: >
+    The place and month are from the ACL's own joint call for workshops, which
+    calls them tentative. The deadline assumes the ARR cycle that fed EMNLP 2026
+    (25 May) repeats.
+
+nemi-2027:
+  name: NEMI
+  series: New England
+  kind: workshop
+  year: 2027
+  deadline: "2027-06-15"
+  due: early summer 2027, estimated
+  when: August 2027, if it keeps its pattern
+  where: Boston area
+  archival: "no"
+  url: https://nemiconf.github.io/summer26/
+  verified: false
+  asks: >
+    Regional mechanistic interpretability, academic and industry, from New
+    England and nearby. It has run every August since 2024.
+  note: >
+    Not announced. The 2026 edition had over 100 submissions and nearly 300
+    people.
+
+blackboxnlp-2027:
+  name: BlackboxNLP
+  series: EMNLP
+  kind: workshop
+  year: 2027
+  deadline: "2027-08-01"
+  due: around August 2027, estimated
+  when: With EMNLP 2027
+  where: With EMNLP 2027
+  archival: choice
+  url: https://blackboxnlp.github.io/
+  verified: false
+  asks: >
+    Analysing and interpreting neural networks for NLP. In 2026 it also ran a
+    track for reproducing established interpretability results.
+  note: Not announced. Whether the reproducibility track returns is not known.
+
+tmlr:
+  name: TMLR
+  series: Transactions on Machine Learning Research
+  kind: journal
+  year: 2027
+  due: whenever it is ready; submissions are rolling
+  when: Reviewed on OpenReview, with a shortened review period
+  where: Journal
+  archival: "yes"
+  url: https://jmlr.org/tmlr/
+  verified: true
+  asks: >
+    Machine learning research judged on whether its claims are correct and
+    supported, with a rolling deadline and no fixed length.
+  note: >
+    Since November 2025 TMLR has a Journal-to-Conference certification, which
+    makes a paper eligible to be presented at NeurIPS, ICML or ICLR.
+
+tacl:
+  name: TACL
+  series: Transactions of the ACL
+  kind: journal
+  year: 2027
+  due: the 1st of any month, 23:59 Honolulu time
+  when: Accepted papers may be presented at ACL, NAACL, EACL or EMNLP
+  where: Journal
+  archival: "yes"
+  url: https://transacl.org/
+  verified: true
+  asks: The ACL's journal for computational linguistics and NLP.
+  note: >
+    Presentation is optional and time-bound to each conference's cut-off. A
+    paper cannot be under review at TACL and ARR at the same time.

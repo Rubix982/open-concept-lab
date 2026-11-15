@@ -2160,6 +2160,14 @@ a.ocl-desk__day:focus-visible {
   color: var(--ocl-ink-faint);
 }
 
+.markdown .ocl-venue__due {
+  margin: 0.35rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ocl-ink);
+}
+
 .markdown .ocl-venue__when {
   margin: 0.2rem 0 0.55rem;
   font-family: var(--ocl-apparatus);

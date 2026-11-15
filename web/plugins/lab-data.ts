@@ -237,7 +237,13 @@ export type Venue = {
   id: string;
   name: string;
   series: string;
-  kind: "workshop" | "competition" | "funding";
+  kind: "conference" | "journal" | "track" | "workshop" | "competition" | "funding";
+  /** The edition the entry is about; entries written before this field existed are 2026. */
+  year: number;
+  /** ISO date of the next submission deadline, for sorting. Absent for rolling journals. */
+  deadline?: string;
+  /** The deadline as a reader should see it, including "estimated" when it is. */
+  due?: string;
   when: string;
   where?: string;
   archival: string;
@@ -845,6 +851,7 @@ export default async function labData(
       const venues: Venue[] = Object.entries(rawVenues).map(([id, v]) => ({
         ...v,
         id,
+        year: v.year ?? 2026,
       }));
 
       const papers: Paper[] = Object.entries(rawPapers)
