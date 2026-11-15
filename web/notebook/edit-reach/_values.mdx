@@ -216,5 +216,24 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
   </tbody>
 </Data>
 
+**E-007 · Batch reshaping against raw key magnitude, re-run**
+
+§4.1. Re-run on 15 November 2026 to restore a row whose original output was lost. The claim it backs — that reshaping moves the raw keys by about 2.6% of their magnitude while leaving the derived ratio alone — was made from the run of 2 November.
+
+<Data caption={<>Every quantity E-007 produced that the paper cites, with the field it was read from in <code>E-007-shape.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>difference in the derived ratio</td><td className="n">0.000000</td><td><code>by_layer.5.0.observed</code></td></tr>
+    <tr><td>difference in the raw keys</td><td className="n">0.042969</td><td><code>by_layer.5.0.extra.raw_key_difference</code></td></tr>
+    <tr><td>key magnitude</td><td className="n">1.656250</td><td><code>by_layer.5.0.extra.key_magnitude</code></td></tr>
+    <tr><td>raw difference as a fraction of magnitude</td><td className="n">0.025943</td><td><code>by_layer.5.0.extra.raw_relative</code></td></tr>
+    <tr><td>raw keys bit-identical</td><td className="n">no</td><td><code>by_layer.5.0.extra.raw_bit_identical</code></td></tr>
+    <tr><td>pad-width only, max |difference|</td><td className="n">0.042969</td><td><code>by_layer.5.1.observed</code></td></tr>
+    <tr><td>rows touched by pad width alone</td><td className="n">16/16</td><td><code>by_layer.5.1.extra.rows_touched</code></td></tr>
+  </tbody>
+</Data>
+
 **What is not in these tables.** [E-007] and [E-009] are conformance sweeps whose grid is drawn in §4.1 rather than tabulated here. [E-038], the RippleEdits re-run over 23,505 readings, wrote to a run directory that is not on this machine, so its figures appear in §5.5 from the summary and cannot be reprinted from their source. Saying so is the point of this paragraph: an appendix that lists only what it happens to have is not a record of what was run.
 

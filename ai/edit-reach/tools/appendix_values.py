@@ -154,15 +154,32 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("distinct values", "distinct_signatures", "d"),
       ("one value per device within a session", "one_value_per_device_within_a_session", "raw"),
       ("one value per device across sessions", "one_value_per_device_across_sessions", "raw")]),
+
+    ("E-007", "E-007-shape.json",
+     "Batch reshaping against raw key magnitude, re-run",
+     "§4.1. Re-run on 15 November 2026 to restore a row whose original output was lost. The claim it backs — that reshaping moves the raw keys by about 2.6% of their magnitude while leaving the derived ratio alone — was made from the run of 2 November.",
+     [("difference in the derived ratio", "by_layer.5.0.observed", "f6"),
+      ("difference in the raw keys", "by_layer.5.0.extra.raw_key_difference", "f6"),
+      ("key magnitude", "by_layer.5.0.extra.key_magnitude", "f6"),
+      ("raw difference as a fraction of magnitude", "by_layer.5.0.extra.raw_relative", "f6"),
+      ("raw keys bit-identical", "by_layer.5.0.extra.raw_bit_identical", "raw"),
+      ("pad-width only, max |difference|", "by_layer.5.1.observed", "f6"),
+      ("rows touched by pad width alone", "by_layer.5.1.extra.rows_touched", "raw")]),
 ]
 
 
 
 def dig(doc: object, path: str) -> object | None:
+    """Walk a dotted path. A numeric step indexes a list, because a run that
+    reports its checks as an ordered list is still a path a spec should be able
+    to name."""
     for key in path.split("."):
-        if not isinstance(doc, dict) or key not in doc:
+        if isinstance(doc, dict) and key in doc:
+            doc = doc[key]
+        elif isinstance(doc, list) and key.isdigit() and int(key) < len(doc):
+            doc = doc[int(key)]
+        else:
             return None
-        doc = doc[key]
     return doc
 
 
