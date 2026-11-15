@@ -119,6 +119,59 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
   </tbody>
 </Data>
 
+**E-004 · The same far-field measurement on Llama-3.1-70B**
+
+§7, limitation 3. Same probes, same layer, larger model. Every magnitude falls about threefold while the shape holds, which is why the paper reports the two separately rather than pooling them.
+
+<Data caption={<>Every quantity E-004 produced that the paper cites, with the field it was read from in <code>E-004-far-field-floor-meta-llama_Llama-3.1-70B.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>hop-2 questions</td><td className="n">900</td><td><code>hop2.n_questions</code></td></tr>
+    <tr><td>median coefficient, own k*</td><td className="n">+0.0174</td><td><code>hop2.own_median</code></td></tr>
+    <tr><td>floor, same-relation stranger</td><td className="n">+0.0119</td><td><code>hop2.floor_same_relation</code></td></tr>
+    <tr><td>excess over same-relation floor</td><td className="n">+0.0000</td><td><code>hop2.excess_over_same_relation</code></td></tr>
+    <tr><td>floor, different-relation stranger</td><td className="n">+0.0092</td><td><code>hop2.floor_diff_relation</code></td></tr>
+    <tr><td>excess over different-relation floor</td><td className="n">+0.0075</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
+    <tr><td>fraction above floor</td><td className="n">+0.7233</td><td><code>hop2.fraction_above_floor</code></td></tr>
+  </tbody>
+</Data>
+
+**E-040 · The prefix-sharing premise at layer 5**
+
+§3.2. A fresh measurement, not a reproduction: [E-018]'s outputs are gone and its runner was never committed. Llama-3.1-405B could not be deployed and is recorded as unread rather than dropped.
+
+<Data caption={<>Every quantity E-040 produced that the paper cites, with the field it was read from in <code>E-040-premise-four-models.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>anchors per model</td><td className="n">42</td><td><code>n_anchors</code></td></tr>
+    <tr><td>models read</td><td className="n">3</td><td><code>models_read</code></td></tr>
+    <tr><td>premise holds on all</td><td className="n">yes</td><td><code>premise_holds_on_all</code></td></tr>
+    <tr><td>GPT-J-6B, floor</td><td className="n">+0.1939</td><td><code>floor_median_by_model.EleutherAI/gpt-j-6b</code></td></tr>
+    <tr><td>Llama-3.1-8B, floor</td><td className="n">+0.0809</td><td><code>floor_median_by_model.meta-llama/Llama-3.1-8B</code></td></tr>
+    <tr><td>Llama-3.1-70B, floor</td><td className="n">+0.0309</td><td><code>floor_median_by_model.meta-llama/Llama-3.1-70B</code></td></tr>
+    <tr><td>floor spread across models</td><td className="n">+0.1630</td><td><code>floor_spread_across_models</code></td></tr>
+  </tbody>
+</Data>
+
+**E-040 · The same premise and floor at matched fractions of each model's depth**
+
+§3.2 and §7, limitation 4. Twelve readings. The anchor is exactly 1.000 at every one; the floor is ordered by neither model size nor depth, which is what the layer-5-only comparison could not have shown.
+
+<Data caption={<>Every quantity E-040 produced that the paper cites, with the field it was read from in <code>E-040-depth-sweep.json</code>.</>}>
+  <thead>
+    <tr><th>quantity</th><th className="n">value</th><th>field</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>readings</td><td className="n">12</td><td><code>rows</code></td></tr>
+    <tr><td>anchor, lowest across readings</td><td className="n">+1.0000</td><td><code>anchor_median_by_model.meta-llama/Llama-3.1-70B</code></td></tr>
+    <tr><td>floor spread across readings</td><td className="n">+0.3573</td><td><code>floor_spread_across_models</code></td></tr>
+  </tbody>
+</Data>
+
 **E-015 · Looseness of the upper bound, by regime**
 
 §5.6. Looseness is the bound divided by the coefficient actually delivered, so 1.00 would mean the bound is tight.

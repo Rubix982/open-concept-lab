@@ -99,6 +99,35 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
       ("floor, different-relation stranger", "hop2.floor_diff_relation", "f4"),
       ("excess over different-relation floor", "hop2.excess_over_diff_relation", "f4")]),
 
+    ("E-004", "E-004-far-field-floor-meta-llama_Llama-3.1-70B.json",
+     "The same far-field measurement on Llama-3.1-70B",
+     "§7, limitation 3. Same probes, same layer, larger model. Every magnitude falls about threefold while the shape holds, which is why the paper reports the two separately rather than pooling them.",
+     [("hop-2 questions", "hop2.n_questions", "d"),
+      ("median coefficient, own k*", "hop2.own_median", "f4"),
+      ("floor, same-relation stranger", "hop2.floor_same_relation", "f4"),
+      ("excess over same-relation floor", "hop2.excess_over_same_relation", "f4"),
+      ("floor, different-relation stranger", "hop2.floor_diff_relation", "f4"),
+      ("excess over different-relation floor", "hop2.excess_over_diff_relation", "f4"),
+      ("fraction above floor", "hop2.fraction_above_floor", "f4")]),
+
+    ("E-040", "E-040-premise-four-models.json",
+     "The prefix-sharing premise at layer 5",
+     "§3.2. A fresh measurement, not a reproduction: [E-018]'s outputs are gone and its runner was never committed. Llama-3.1-405B could not be deployed and is recorded as unread rather than dropped.",
+     [("anchors per model", "n_anchors", "d"),
+      ("models read", "models_read", "len"),
+      ("premise holds on all", "premise_holds_on_all", "raw"),
+      ("GPT-J-6B, floor", "floor_median_by_model.EleutherAI/gpt-j-6b", "f4"),
+      ("Llama-3.1-8B, floor", "floor_median_by_model.meta-llama/Llama-3.1-8B", "f4"),
+      ("Llama-3.1-70B, floor", "floor_median_by_model.meta-llama/Llama-3.1-70B", "f4"),
+      ("floor spread across models", "floor_spread_across_models", "f4")]),
+
+    ("E-040", "E-040-depth-sweep.json",
+     "The same premise and floor at matched fractions of each model's depth",
+     "§3.2 and §7, limitation 4. Twelve readings. The anchor is exactly 1.000 at every one; the floor is ordered by neither model size nor depth, which is what the layer-5-only comparison could not have shown.",
+     [("readings", "rows", "len"),
+      ("anchor, lowest across readings", "anchor_median_by_model.meta-llama/Llama-3.1-70B", "f4"),
+      ("floor spread across readings", "floor_spread_across_models", "f4")]),
+
     ("E-015", "E-015-bound-looseness.json",
      "Looseness of the upper bound, by regime",
      "§5.6. Looseness is the bound divided by the coefficient actually delivered, so 1.00 would mean the bound is tight.",
@@ -172,12 +201,28 @@ SPEC: list[tuple[str, str, str, str, list[tuple[str, str, str]]]] = [
 def dig(doc: object, path: str) -> object | None:
     """Walk a dotted path. A numeric step indexes a list, because a run that
     reports its checks as an ordered list is still a path a spec should be able
-    to name."""
-    for key in path.split("."):
-        if isinstance(doc, dict) and key in doc:
-            doc = doc[key]
-        elif isinstance(doc, list) and key.isdigit() and int(key) < len(doc):
-            doc = doc[int(key)]
+    to name.
+
+    A step may itself contain dots. `floor_median_by_model` is keyed by model
+    id, and `meta-llama/Llama-3.1-8B` has two of them, so splitting on every dot
+    turns one real key into two keys that exist nowhere. At each level the
+    longest run of segments that is actually a key wins, which costs nothing
+    when no key contains a dot and is the difference between a value and a dash
+    when one does.
+    """
+    parts = path.split(".")
+    i = 0
+    while i < len(parts):
+        if isinstance(doc, dict):
+            for j in range(len(parts), i, -1):
+                key = ".".join(parts[i:j])
+                if key in doc:
+                    doc, i = doc[key], j
+                    break
+            else:
+                return None
+        elif isinstance(doc, list) and parts[i].isdigit() and int(parts[i]) < len(doc):
+            doc, i = doc[int(parts[i])], i + 1
         else:
             return None
     return doc
@@ -188,6 +233,11 @@ def render(value: object, kind: str) -> str:
         return "—"
     if kind == "d":
         return f"{int(value):,}"
+    if kind == "len":
+        # A run whose rows ARE the result: how many there were is the number the
+        # paper cites, and counting them here keeps the spec from having to
+        # repeat a figure the file already carries.
+        return f"{len(value):,}" if isinstance(value, (list, dict)) else "—"
     if kind == "raw":
         return "yes" if value is True else "no" if value is False else str(value)
     if kind == "f6":

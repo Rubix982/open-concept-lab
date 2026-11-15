@@ -9,7 +9,7 @@ toc_max_heading_level: 3
 paper:
   kind: Working paper
   id: OCL-2026-07
-  version: v0.4
+  version: v0.5
   author: Saif Ul Islam
   affiliation: Open Concept Lab
   started: 30 Sep 2026
@@ -25,7 +25,7 @@ paper:
     - negative result
   contributions:
     - A reach coefficient read off the edit's own rank-one update, computable in one forward pass through the unedited model.
-    - A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on four models from 6B to 405B.
+    - A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on three models at four depths each, and the different-subject control it is read against spanning a factor of twelve over the same readings.
     - "Evidence that it does not predict an edit's effect: a raw correlation of rho = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed."
     - A measurement of why there is little to predict - whose fact you edit is worth about sixty-five times what you change it to - on a pre-stated test.
     - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
@@ -110,7 +110,7 @@ Everything below is measured on one kind of object. It is worth naming the parts
 
 <Figure
   src="/img/edit-reach/two-regimes.svg"
-  alt="Three prompts drawn as strips. The edit prompt opens with Henry Mackenzie. A probe opening with the same name shares every token the subject's last token can see under causal attention, so its key is identical and the coefficient is exactly 1.000. A probe opening with a different person, Karim Lala, reads 0.082."
+  alt="Three prompts drawn as strips. The edit prompt opens with Henry Mackenzie. A probe opening with the same name shares every token the subject's last token can see under causal attention, so its key is identical and the coefficient is exactly 1.000. A probe opening with a different person, Karim Lala, reads 0.081 on Llama-3.1-8B at layer 5 and anywhere from 0.031 to 0.388 elsewhere."
   caption={<>The whole account in one picture. The coefficient is read at the subject's last token, and under causal attention that token sees only what precedes it — so a probe opening with the edited subject carries the same key the edit did, whatever it goes on to ask.</>}
   wide
   plain
@@ -140,7 +140,13 @@ so $c$ is computable in one forward pass through the *unedited* model, needing n
 
 ### 3.2 The near field is pinned by arithmetic
 
-Under causal attention, a prompt opening with the edited subject has, at that subject's last token, exactly the text the edit prompt had. Its key is therefore identical to $k^{*}$, and $c = 1$ — for any covariance, at any layer, whatever relation the prompt goes on to ask about. This is analytic. What was measured is its premise, and it held exactly: **1.000** across four models from 6B to 405B, served through NDIF <Cite id="fiottokaufman2025nnsight" />. A prompt naming a different person receives **0.082**.<Prov id="E-018" />
+Under causal attention, a prompt opening with the edited subject has, at that subject's last token, exactly the text the edit prompt had. Its key is therefore identical to $k^{*}$, and $c = 1$ — for any covariance, at any layer, whatever relation the prompt goes on to ask about. This is analytic. What was measured is its premise.
+
+It held exactly. On GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B, each read at four fractions of its own depth, the median coefficient over 42 prefix-sharing probes was **1.000** at every one of the twelve readings, with a worst deviation of **0.000e+00** — not a rounded zero, the same float. Served through NDIF <Cite id="fiottokaufman2025nnsight" />.<Prov id="E-040" />
+
+The control is a prompt naming a different person, and it does not travel the way the pinned value does. Over those same twelve readings it runs from **0.031 to 0.388**, a factor of twelve, and it is not ordered by model size or by depth: at 16% of depth the largest model returns the highest floor of the three, and at 30% the middle one does. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.<Prov id="E-040" />
+
+So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 4 is about.
 
 ### 3.3 The control, and what it cost to get right
 
@@ -344,7 +350,7 @@ A **same-subject control** — a different property of the same person — alrea
 
 <Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims and only the second survives. The question had been written down with both of its answers before the run — if the prediction held, a usable screen; if it did not, the quantity measures delivery and the screen is a proposal — and it closed on the second.
 
-<Lead>One check worth recording.</Lead> The `anchor-floor` family — same prompt shape, different person — returned a median coefficient of 0.0809 against the independently measured floor of 0.082.<Prov id="E-018" /> Two routes to the same number is the cheapest evidence available that the pipeline was measuring what it claimed.
+<Lead>One check worth recording.</Lead> On Llama-3.1-8B at layer 5, the `anchor-floor` family — same prompt shape, different person — returned a median coefficient of 0.0809, and a separate run reading the floor against each case's own $k^{*}$ returned 0.0809 on the same model and layer.<Prov id="E-040" /> Two routes to the same number is the cheapest evidence available that the pipeline was measuring what it claimed. It is evidence about this model at this layer and no other: the same control read elsewhere spans 0.031 to 0.388 (§3.2).
 
 ### 5.2 The far field has no subject-specific dynamic range
 
@@ -365,7 +371,7 @@ Near-field and far-field rows use the same code path and the same floor construc
   <tbody>
     <tr><td><b>Near field</b> — the question names the subject</td><td className="n">0.9334</td><td className="n">0.0506</td><td className="n"><b>+0.8439</b></td><td className="n">.8379–.8500</td><td className="n">639</td><td className="n">E‑004</td></tr>
     <tr><td><b>Far field</b> — the question never names it</td><td className="n">0.0543</td><td className="n">0.0481</td><td className="n"><b>+0.0002</b></td><td className="n">.0001–.0004</td><td className="n">900</td><td className="n">E‑004</td></tr>
-    <tr><td>Prefix-sharing premise, four models 6B–405B</td><td className="n">1.000</td><td className="n">0.082</td><td className="n">+0.918</td><td className="n">—</td><td className="n">16</td><td className="n">E‑018</td></tr>
+    <tr><td>Prefix-sharing premise, 3 models × 4 depths</td><td className="n">1.000</td><td className="n">0.031–0.388</td><td className="n">—</td><td className="n">—</td><td className="n">12×42</td><td className="n">E‑040</td></tr>
     <tr><td>Renamed subject, delivered fraction vs. string similarity</td><td className="n">ρ = +0.778</td><td className="n">—</td><td className="n">slope +0.847</td><td className="n">—</td><td className="n">370</td><td className="n">E‑026</td></tr>
   </tbody>
 </Data>
@@ -645,7 +651,7 @@ The table below is every claim this paper has made, numbered in the order they w
 
 <Ledger caption={<>Findings ledger. A row without a stated falsifier is not admitted.</>}>
   <Finding id="F‑01" status="standing" value="1.000"
-    falsifier={<><strong>Analytic.</strong> Refuted by a derivation error, or by its premise — prefix sharing — failing. The premise is what was measured.</>}>
+    falsifier={<><strong>Analytic.</strong> Refuted by a derivation error, or by its premise — prefix sharing — failing. The premise is what was measured: twelve readings, three models, four fractions of each model's depth, worst deviation 0.000e+00.</>}>
     A prompt opening with the edited subject has the key the edit had, so $c$ is exactly 1 — any covariance, any layer, any relation asked about.
   </Finding>
   <Finding id="F‑02" status="standing" value="+0.0002"
@@ -711,6 +717,7 @@ The table below is every claim this paper has made, numbered in the order they w
 </Ledger>
 
 <Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="15 Nov 2026" version="v0.5">§3.2's different-subject floor was a single <b>0.082</b> with no model beside it, read as though it were common to the four models named in the same sentence. It is one reading, Llama-3.1-8B at layer 5. Re-measured on three models at four fractions of each one's depth, the same control spans 0.031 to 0.388 and is ordered by neither size nor depth. The premise itself was re-measured at the same time and held at exactly 1.000 on all twelve readings. The original run behind the 0.082 could not be re-run — its outputs are gone and its script was never committed — so this is a fresh measurement rather than a reproduction, and the runner is in the repository this time.</Rev>
   <Rev date="10 Nov 2026" version="v0.4">The abstract and the masthead caught up with the body, a day late: the abstract still said "two further results" when there were four, and the masthead still read v0.3 while this table had already turned v0.4. Recorded because a paper whose front matter disagrees with its own revision log is the same fault as a ticket whose status disagrees with its closure note.</Rev>
   <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
   <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
@@ -733,12 +740,13 @@ Every qualification in this paper is collected here, so the body above runs unhe
 
 1. <Lead>Delivery is not effect.</Lead> Every number here says how much of the edit vector arrives at a token. None says how far the model's answer moved. At a fixed coefficient, measured movement spans a factor of 2.96.
 2. <Lead>The coefficient belongs to a token, not a prompt.</Lead> Within one prompt the subject position and the final position differ by a factor of 35, and the answer is produced at the final position.
-3. <Lead>One model, one layer, two-hop chains.</Lead> A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit.
-4. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
-5. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
-6. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
-7. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
-8. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+3. <Lead>Two models, one layer, two-hop chains.</Lead> The near and far field were read on Llama-3.1-8B and Llama-3.1-70B, both at layer 5. A layer sweep could still find far-field dynamic range at a depth other than 5. It would not rescue layer 5, which is where ROME and EasyEdit edit. The depth sweep in §3.2 moves the *floor* across four depths on three models; it does not move the far-field excess, which stays at one layer.
+4. <Lead>The different-subject floor is not predictable, and every excess here rests on one.</Lead> It spans 0.031 to 0.388 across three models at four depths each, ordered by neither size nor depth. So an excess measured against a floor on one model says nothing about the excess on another, and any such comparison needs the floor measured where it runs.
+5. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
+6. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
+7. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its prominence variable is also a proxy: Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text.
+8. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
+9. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
@@ -804,6 +812,7 @@ Saying this is not an excuse for the gap. It is the difference between a record 
 
 <Runs caption={<>The runs behind the figures and tables above. Directories are under <code>results/</code>.</>}>
   <Run id="E‑004" model="Llama‑3.1‑8B" n="1,539" date="6 Nov" out="E-004-far-field-floor.json">Near and far field under the same-relation stranger floor</Run>
+  <Run id="E‑004" model="Llama‑3.1‑70B" n="1,539" date="15 Nov" out="E-004-far-field-floor-meta-llama_Llama-3.1-70B.json">The same measurement on 70B. Shape holds, every far-field magnitude about threefold smaller</Run>
   <Run id="E‑001" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-001-predicted-vs-measured.json">Predicted reach against measured movement, with a same-subject control</Run>
   <Run id="E‑002" model="Llama‑3.1‑8B" n="495" date="31 Oct" out="E-002-different-subject-arm.json">The different-subject arm: identity against content</Run>
   <Run id="E‑003" model="Llama‑3.1‑8B" n="495" date="1 Nov" out="E-003-destination.json">The same probes under a full-vocabulary argmax readout</Run>
@@ -814,7 +823,9 @@ Saying this is not an excuse for the gap. It is the difference between a record 
   <Run id="E‑012" model="Llama‑3.1‑8B" n="census" date="3 Nov" out="2026-11-03-census/">Every recorded reading of one quantity, by value and device</Run>
   <Run id="E‑011" model="3 models" n="15" date="4 Nov" out="E-011-layers-70b.json E-010-layers-8b.json E-010-layers-gptj.json">Arithmetic-site disagreement across fifteen layer-model pairs</Run>
   <Run id="E‑017" model="GPT‑J‑6B" n="16" date="21 Oct" out="2026-10-21-pin/">Prefix-sharing premise, first pass</Run>
-  <Run id="E‑018" model="4 models" n="16" date="23 Oct" out="2026-10-23-pin4/">Premise at scale; different-subject floor 0.082</Run>
+  <Run id="E‑018" model="4 models" n="16" date="23 Oct" out="2026-10-23-pin4/">Premise at scale; different-subject floor 0.082. Outputs lost and no runner was committed, so it is in the record and nothing rests on it</Run>
+  <Run id="E‑040" model="3 models" n="42" date="15 Nov" out="E-040-premise-four-models.json">Premise re-measured at layer 5. Llama‑3.1‑405B could not be deployed and is recorded as unread</Run>
+  <Run id="E‑040" model="3 models × 4 depths" n="12×42" date="15 Nov" out="E-040-depth-sweep.json">The same premise and floor at matched fractions of each model's depth</Run>
   <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026-10-28-alias/">Renamed subject: string similarity against delivered fraction</Run>
   <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026-11-01-ripple/">RippleEdits re-run, direct exposure counted</Run>
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>

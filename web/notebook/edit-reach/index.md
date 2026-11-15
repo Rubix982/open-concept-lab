@@ -29,7 +29,7 @@ It showed that it cannot. [The paper](./paper) is where the line falls; this pag
   <Stat value="15" label="decisions" note="each with its rationale and what would overturn it" />
   <Stat value="14" label="runs" note="each with its config, seed and environment" />
   <Stat value="42" label="subjects" note="cached survivors, not a sample" />
-  <Stat value="4" label="models" note="6B to 405B, via NDIF" />
+  <Stat value="3" label="models" note="6B to 70B, four depths each, via NDIF" />
   <Stat value="1,900" label="lines" note="editreach 0.1.0, ten modules" />
 </Glance>
 
