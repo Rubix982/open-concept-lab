@@ -39,9 +39,21 @@ from wikidata import Snapshot  # noqa: E402
 ROOT = Path(__file__).resolve().parents[3]
 MODEL = "meta-llama/Llama-3.1-8B"
 
+#: Which models have a gated chain set in `probes/`. The gate is the possession
+#: filter: a chain is usable only on a model that holds its grounds, so the set
+#: is a property of the model and never shared between them.
+GATED = {
+    "EleutherAI/gpt-j-6b": "chains_gated_EleutherAI_gpt-j-6b.json",
+    "meta-llama/Llama-3.1-8B": "chains_gated_meta-llama_Llama-3.1-8B.json",
+    "meta-llama/Llama-3.1-70B": "chains_gated_meta-llama_Llama-3.1-70B.json",
+}
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--model", default=MODEL, choices=sorted(GATED),
+                    help="a model with a gated chain set in probes/")
+    ap.add_argument("--layer", type=int, default=LAYER)
     ap.add_argument("--n", type=int, default=0, help="0 = all clean chains")
     ap.add_argument("--seed", type=int, default=1538)
     ap.add_argument("--chunk", type=int, default=6)
@@ -56,8 +68,11 @@ def main() -> None:
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
-    chains = json.loads((ROOT / "probes" /
-                         "chains_gated_meta-llama_Llama-3.1-8B.json").read_text())["chains"]
+    # The chain set belongs to the model, so it is selected by it rather than
+    # named in a literal. The literal was the 8B file, which would have handed
+    # another model a set gated on possession it does not have.
+    chains = json.loads(
+        (ROOT / "probes" / GATED[args.model]).read_text())["chains"]
     geo = json.loads((ROOT / "probes" / "geo.json").read_text())
     pt = json.loads((ROOT / "probes" / "place_types.json").read_text())
     snap = Snapshot.load()
@@ -95,14 +110,21 @@ def main() -> None:
             break
 
     log = setup("run_e014", config={
-        "ticket": "E-014", "model": MODEL, "layer": LAYER, "seed": args.seed,
+        "ticket": "E-014", "model": args.model, "layer": args.layer,
+        "seed": args.seed,
         "n_chains": len(picked), "city_pool": len(pool), "chunk": args.chunk,
         "dropped_malformed": sorted(malformed),
         "editor": "ROME as configured by EasyEdit (C = I)"})
     log.info("%d clean chains, %d cities in the pool", len(picked), len(pool))
 
-    m = connect(MODEL)
-    cache_path = ROOT / "results" / "cache" / f"E014_deltas_L{LAYER}_s{args.seed}.pt"
+    m = connect(args.model)
+    # Every cache path carries the model. Without it a second model overwrites
+    # the first's k* and deltas in place, and the tensors are the same shape
+    # only by accident of two models sharing an MLP width — so the corruption
+    # would be silent rather than a load error.
+    slug = args.model.replace("/", "_")
+    tag = f"L{args.layer}_s{args.seed}_{slug}"
+    cache_path = ROOT / "results" / "cache" / f"E014_deltas_{tag}.pt"
     deltas: dict[str, torch.Tensor] = torch.load(cache_path) if cache_path.exists() else {}
     log.info("delta cache: %d of %d already computed", len(deltas), len(specs))
 
@@ -149,14 +171,14 @@ def main() -> None:
     # k* is deterministic in (prompt, subject, layer), so it caches like the deltas.
     # 84 unprotected remote traces in a comprehension killed a run here before any
     # chain was scored.
-    ks_path = ROOT / "results" / "cache" / f"E014_kstar_L{LAYER}_s{args.seed}.pt"
+    ks_path = ROOT / "results" / "cache" / f"E014_kstar_{tag}.pt"
     k_star: dict[str, torch.Tensor] = torch.load(ks_path) if ks_path.exists() else {}
     missing = [sp for sp in specs if sp.case_id not in k_star]
     if missing:
         log.info("k* cache: %d of %d present; reading %d",
                  len(k_star), len(specs), len(missing))
         for j, sp in enumerate(missing, 1):
-            k_star[sp.case_id] = read_key_and_value(m, sp.prompt, sp.subject, LAYER)[0]
+            k_star[sp.case_id] = read_key_and_value(m, sp.prompt, sp.subject, args.layer)[0]
             if j % 10 == 0 or j == len(missing):
                 ks_path.parent.mkdir(parents=True, exist_ok=True)
                 torch.save(k_star, ks_path)
@@ -166,7 +188,7 @@ def main() -> None:
     # the one place without it, and it wedged for 37 minutes with zero traces before
     # being killed — 126 scoring traces are ~13 minutes of work but hours of exposure
     # to a degraded service, so partial progress must survive.
-    read_path = ROOT / "results" / "cache" / f"E014_readout_L{LAYER}_s{args.seed}.json"
+    read_path = ROOT / "results" / "cache" / f"E014_readout_{tag}.json"
     done_rows: dict[str, dict] = (json.loads(read_path.read_text())
                                   if read_path.exists() else {})
     log.info("readout cache: %d chains already scored", len(done_rows))
@@ -184,7 +206,7 @@ def main() -> None:
         for attempt in range(args.max_stalls):
             try:
                 for cond in ("base", "real", "ctl"):
-                    ed = None if cond == "base" else (LAYER, k_star[f"{cid}|{cond}"],
+                    ed = None if cond == "base" else (args.layer, k_star[f"{cid}|{cond}"],
                                                       deltas[f"{cid}|{cond}"])
                     sc = score_pairs(m, [(p1, city) for city in pool], edit=ed)
                     top = pool[max(range(len(pool)), key=lambda j: sc[j])]
@@ -211,8 +233,9 @@ def main() -> None:
                  "IN TARGET" if row["in_target"]["real"] else city_country.get(row["top1"]["real"], "?"),
                  row["top1"]["ctl"])
 
-    out = ROOT / "results" / f"E-014-destination-{MODEL.replace('/', '_')}.json"
-    out.write_text(json.dumps({"ticket": "E-014", "model": MODEL, "layer": LAYER,
+    out = ROOT / "results" / f"E-014-destination-{slug}.json"
+    out.write_text(json.dumps({"ticket": "E-014", "model": args.model,
+                               "layer": args.layer,
                                "seed": args.seed, "pool": pool,
                                "editor": "ROME as configured by EasyEdit (C = I)",
                                "results": results}, indent=1))

@@ -49,11 +49,38 @@ log = setup("E-001")
 
 # --------------------------------------------------------------------------- cache
 
-def load_edit_cache(edit_slice: Path) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
-    """`k*` and `delta_v` per `"<case_id>|real"` / `"<case_id>|ctl"`, from [E-014]."""
+def load_edit_cache(edit_slice: Path, model: str = MODEL
+                    ) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+    """`k*` and `delta_v` per `"<case_id>|real"` / `"<case_id>|ctl"`, from [E-014].
+
+    An edit's `k*` and `delta_v` are read at one layer of one model, so the
+    cache belongs to that model and the path says which. The unslugged
+    `E014_kstar_L5_s1538.pt` predates that and is still read as a fallback for
+    Llama-3.1-8B, which is the model it holds.
+
+    Loading the wrong model's cache is caught only by luck. Two models of
+    different MLP width fail on the first dot product, which is how the 70B
+    attempt was found; two of the same width would not fail at all, and the
+    numbers would be wrong with nothing downstream able to see it. The path is
+    the only guard here, so it carries the model.
+    """
     c = edit_slice / "results" / "cache"
-    ks = torch.load(c / "E014_kstar_L5_s1538.pt", map_location="cpu", weights_only=False)
-    dv = torch.load(c / "E014_deltas_L5_s1538.pt", map_location="cpu", weights_only=False)
+    slug = model.replace("/", "_")
+
+    def pick(kind: str) -> Path:
+        slugged = c / f"E014_{kind}_L5_s1538_{slug}.pt"
+        if slugged.exists():
+            return slugged
+        legacy = c / f"E014_{kind}_L5_s1538.pt"
+        if legacy.exists() and model == MODEL:
+            return legacy
+        raise FileNotFoundError(
+            f"no E-014 {kind} cache for {model}; expected {slugged}. Build it "
+            f"with edit-slice/agents/engineer/workspace/run_e014.py --model {model}"
+        )
+
+    ks = torch.load(pick("kstar"), map_location="cpu", weights_only=False)
+    dv = torch.load(pick("deltas"), map_location="cpu", weights_only=False)
     if set(ks) != set(dv):
         raise ValueError("kstar and delta caches disagree on which edits exist")
     return ks, dv
