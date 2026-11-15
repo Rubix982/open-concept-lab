@@ -1071,3 +1071,71 @@ on. That half is ours to fix and does not wait on anything.
 - ai/edit-slice/logs/run_e014-2026-11-15-183835.log
 
 **Closed:** —
+
+---
+
+### E-044 · Make rome.py read the key site per architecture instead of assuming Llama
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+`rome.py` writes `model.model.layers[layer].mlp.down_proj` in five places. That
+is Llama's path. On GPT-J-6B every one of them raises `'LanguageModel' object
+(nor its module) has attribute 'model'`, which is how [E-043] found it.
+
+`editreach.arch.key_site` exists for exactly this and says so in its own
+docstring — *"other script hard-coded Llama's path. The headline claim covers
+four models"*. `coefficient.py` uses it. `rome.py` never adopted it, so the
+module that applies and optimises edits is the one module that cannot leave one
+architecture.
+
+**The constraint that makes this more than a find-and-replace.** All five sites
+are inside a `model.trace` body. nnsight compiles the body's source and ships it
+to NDIF, so a call into this package from inside arrives as a
+`ModuleNotFoundError` on the server. Each site must resolve the module **before**
+the `with` and reference a plain local inside it — the pattern `coefficient.keys_at`
+and `run_e001.top1_batch` already use, both of which carry a comment saying why.
+One of the five is `APPLY_IDIOM`, a string callers paste into their own trace,
+so its text has to carry the hoist and the import.
+
+**Falsifier.** `agents/engineer/workspace/ndif_vstar_repro.py` prints one line
+per model. This ticket succeeds if GPT-J-6B's line stops reading *"has attribute
+'model'"* and starts failing the same way the two Llamas do — on the gradient,
+which is [E-043]'s blocker and not this one. It fails if GPT-J still raises an
+attribute error, or if either Llama's behaviour changes at all, since this
+ticket must not move a number.
+
+**Not in scope.** The empty gradient. That is [E-043]'s blocker, it is outside
+this project, and fixing the path does not touch it.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Result.** All five sites now resolve through `key_site`, and none of them
+resolves inside a trace. On GPT-J-6B the path comes out as
+`Linear(in_features=16384, out_features=4096)` — `transformer.h[L].mlp.fc_out`,
+the right module — and the repro's GPT-J line changed from an attribute error to
+the same empty-gradient error the two Llamas give. That is what success looks
+like here: the architecture stopped being the obstacle and [E-043]'s blocker is
+the only one left.
+
+**Nothing moved, checked rather than assumed.** On both Llamas
+`key_site(model, 5) is model.model.layers[5].mlp.down_proj` returns `True` —
+identity, not equality — so no reading can differ.
+
+`APPLY_IDIOM` is a string callers paste into their own traces, so its text now
+carries the import and the hoist rather than the literal path. The only other
+script holding `model.model.layers[` is `run_e005.py`, in a sentence of prose
+describing `arch.py`; it has used `key_site` since it was written.
+
+**Artifacts:**
+
+- src/editreach/rome.py
+- agents/engineer/workspace/ndif_vstar_repro.py
+
+**Closed:** 2026-11-15

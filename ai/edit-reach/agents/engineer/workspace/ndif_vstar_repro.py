@@ -23,16 +23,19 @@ succeed the same afternoon ([E-040] read twelve of them). The 8B cache this
 project depends on was built on 16 September, so whatever changed is between
 then and nnsight 0.8.1 as deployed now.
 
-**Fault 2 — `rome.py` is Llama-only.** On GPT-J it does not get as far as a
-gradient: `AttributeError: 'LanguageModel' object (nor its module) has attribute
-'model'`. `rome.py` writes `model.model.layers[layer].mlp.down_proj` in five
-places. `editreach.arch.key_site` exists to resolve exactly that path per
-architecture — its docstring says *"other script hard-coded Llama's path"* — and
-`rome.py` never adopted it. So even with fault 1 fixed, the cache could be built
-for two Llamas and not for the third model in the paper.
+**Fault 2, fixed by [E-044] the same day — `rome.py` was Llama-only.** On GPT-J
+it did not get as far as a gradient: `AttributeError: 'LanguageModel' object
+(nor its module) has attribute 'model'`, because `rome.py` wrote
+`model.model.layers[layer].mlp.down_proj` in five places.
+`editreach.arch.key_site` exists to resolve that path per architecture and
+`rome.py` had never adopted it. It does now, and GPT-J's line in this script
+changed from an attribute error to the same gradient error the two Llamas give
+— which is what fixing it was supposed to look like.
 
-Neither fault is in this project's control for fault 1, and both are in it for
-fault 2.
+So the two faults are worth keeping apart. Fault 2 was ours and is closed. Fault
+1 is not ours, and while it stands this script prints three failures rather than
+one, which is the state to check against rather than a count to read as
+unchanged.
 """
 
 from __future__ import annotations

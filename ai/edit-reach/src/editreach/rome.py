@@ -31,6 +31,7 @@ from typing import Final
 
 import torch
 
+from .arch import key_site
 from .remote import (BACKOFF_S, FLAKY_BACKOFF_S, MAX_ATTEMPTS,
                     _is_flaky_remote, _is_transport_error, retrying)
 
@@ -120,11 +121,15 @@ def read_key_and_value(model, prompt: str, subject: str, layer: int = LAYER
                        ) -> tuple[torch.Tensor, torch.Tensor]:
     """One remote trace: `k*` and `W k*` at the subject's last token."""
     idx = subject_last_index(model.tokenizer, prompt, subject)
+    # Resolved out here, not inside the trace: nnsight compiles the body's
+    # source and ships it to NDIF, where a call into this package arrives as a
+    # `ModuleNotFoundError`. Same constraint as APPLY_IDIOM below.
+    dp = key_site(model, layer)
 
     def once():
         with model.trace(prompt, remote=True):
-            k = model.model.layers[layer].mlp.down_proj.input[0, idx].save()
-            v = model.model.layers[layer].mlp.down_proj.output[0, idx].save()
+            k = dp.input[0, idx].save()
+            v = dp.output[0, idx].save()
         return k.float().cpu(), v.float().cpu()
 
     return retrying(once, what=f"k* read for {subject!r}")
@@ -145,9 +150,10 @@ def read_key_and_value(model, prompt: str, subject: str, layer: int = LAYER
 #:
 #: Callers paste this inside their own trace, having called `unpack()` above it.
 APPLY_IDIOM: Final[str] = """
+    from editreach.arch import key_site         # OUTSIDE the trace
     lay, ks_cpu, dv_cpu = e.unpack()            # OUTSIDE the trace
+    dp = key_site(model, lay)                   # OUTSIDE the trace
     with model.trace(prompt, remote=True):
-        dp = model.model.layers[lay].mlp.down_proj
         k = dp.input
         ks = ks_cpu.to(k.device, k.dtype)
         dp.output = dp.output + ((k @ ks) / (ks @ ks)).unsqueeze(-1) \
@@ -209,9 +215,9 @@ def compute_v(model, prompt: str, subject: str, target: str, *,
     ref_logp = torch.log_softmax(ref_logits.cpu(), -1)
 
     losses: list[float] = []
+    dp = key_site(model, layer)                 # OUTSIDE the trace, as above
     for step in range(steps):
         with model.trace(batch, remote=True):
-            dp = model.model.layers[layer].mlp.down_proj
             out = dp.output
             out.requires_grad_(True)
             out.retain_grad()
@@ -371,9 +377,9 @@ def _grad_step(model, batch, meta, D, layer, ref_logp, kl_factor, weight_decay):
     source of the frame that enters `model.trace`, so a nested helper would be
     silently dropped. See APPLY_IDIOM.
     """
+    dp = key_site(model, layer)                 # OUTSIDE the trace, as above
     if True:
         with model.trace(batch, remote=True):
-            dp = model.model.layers[layer].mlp.down_proj
             out = dp.output
             out.requires_grad_(True)
             out.retain_grad()
