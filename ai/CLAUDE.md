@@ -26,6 +26,14 @@ submodule at `projects/research-craft`. The two skills are installed by symlink 
 in this repo is a change to the skill itself — commit and push it there, not here. This
 repo only records which commit of it is in use.
 
+**There is a second clone at `~/code/research-craft`, and the symlinks do not point at
+it.** Editing that one and pushing looks like it worked — same repo, same remote — while
+the skill that actually runs is still the submodule's checkout at whatever commit this
+repo pins. On 2026-11-15 a rule was written in the wrong clone and would have been
+inert until someone noticed. Edit `projects/research-craft`, commit and push there, then
+bump the pointer here. If you did it the other way, pull in the submodule and check the
+installed skill carries the change before believing it.
+
 ## What the second pass exists to catch
 
 Measured on two pages of `edit-reach`, 9 November 2026. The word-level lint scored
