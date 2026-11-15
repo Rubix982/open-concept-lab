@@ -531,7 +531,7 @@ Destruction is **subject-keyed**: it follows whose key the edit touched, and the
   plain
 />
 
-RippleEdits <Cite id="cohen2024ripple" /> has a test type meant to check whether an edit propagates to a *different* entity reached through the edited one. Its prompts read *"the name of the head of government of the place of death of **Leo Arons** is"* — and the edited subject is sitting inside the prompt. Those items receive a median **0.982** of the update against a **0.065** floor built from a stranger's edit on the same prompts.<Prov id="E-038" />
+RippleEdits <Cite id="cohen2024ripple" /> has a test type meant to check whether an edit propagates to a *different* entity reached through the edited one. Its prompts read *"the name of the head of government of the place of death of **Leo Arons** is"* — and the edited subject is sitting inside the prompt. Those items receive a median **0.982** of the update. The floor they are read against — the same prompts scored a second time against a stranger's edit — is **0.064 to 0.070**, because which stranger scores which prompt is a choice, and re-pairing under five seeds moves it across that range. It is 0.070 at the seed this project pins everywhere.<Prov id="E-041" /> The gap carries the claim either way; the floor is quoted as a range because it is a property of a pairing and not of the corpus.<Prov id="E-038" />
 
 An item like that can be answered by the update arriving at the mention directly, so a score on it cannot separate propagation from delivery. An editor could score on that test while generalising nothing.
 
@@ -542,7 +542,7 @@ The fault is diagnosable rather than universal. MQuAKE names the edited subject 
     <tr><th>Benchmark</th><th>Item class</th><th className="n">names subject</th><th className="n">median c</th><th className="n">floor</th></tr>
   </thead>
   <tbody>
-    <tr><td>RippleEdits</td><td>built to test two-hop propagation</td><td className="n">yes</td><td className="n">0.982</td><td className="n">0.065</td></tr>
+    <tr><td>RippleEdits</td><td>built to test two-hop propagation</td><td className="n">yes</td><td className="n">0.982</td><td className="n">0.064–0.070</td></tr>
     <tr><td>MQuAKE-CF-3k</td><td>two-hop chain, edit at the head</td><td className="n">6,861 / 6,861</td><td className="n">0.933</td><td className="n">0.051</td></tr>
     <tr><td>MQuAKE-CF-3k</td><td>two-hop chain, edit downstream</td><td className="n">0 / 16,506</td><td className="n">0.054</td><td className="n">0.048</td></tr>
   </tbody>
@@ -725,6 +725,7 @@ The table below is every claim this paper has made, numbered in the order they w
 </Ledger>
 
 <Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="15 Nov 2026" version="v0.5">§5.5's RippleEdits floor was printed as a single <b>0.065</b>. The readings behind it survived in a cached key file even though the run's own outputs did not, so it was recomputed: the <b>0.982</b> reproduces exactly and cannot move with the pairing, because it never touches a partner, while the floor runs 0.064 to 0.070 over five pairings and is 0.070 at the pinned seed. The published 0.065 is a value this measurement produces and not the one it produces at that seed, so the floor is now quoted as a range.</Rev>
   <Rev date="15 Nov 2026" version="v0.5">§3.2's different-subject floor was a single <b>0.082</b> with no model beside it, read as though it were common to the four models named in the same sentence. It is one reading, Llama-3.1-8B at layer 5. Re-measured on three models at four fractions of each one's depth, the same control spans 0.031 to 0.388 and is ordered by neither size nor depth. The premise itself was re-measured at the same time and held at exactly 1.000 on all twelve readings. The original run behind the 0.082 could not be re-run — its outputs are gone and its script was never committed — so this is a fresh measurement rather than a reproduction, and the runner is in the repository this time.</Rev>
   <Rev date="10 Nov 2026" version="v0.4">The abstract and the masthead caught up with the body, a day late: the abstract still said "two further results" when there were four, and the masthead still read v0.3 while this table had already turned v0.4. Recorded because a paper whose front matter disagrees with its own revision log is the same fault as a ticket whose status disagrees with its closure note.</Rev>
   <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
@@ -806,7 +807,7 @@ $$
 
 The cancellation is independent of $u$, so it holds for any whitening covariance and at any layer, and independent of $t_1 \dots t_n$, so it holds whatever the probe goes on to ask.
 
-The empirical content is entirely in the premise — that the probe really does share the prefix through $s_m$ — which is what E‑017 and E‑018 measured. The tokenizer is the one place the premise can fail quietly: a leading space or a different casing produces a different token sequence and therefore a different key, with no error raised anywhere.
+The empirical content is entirely in the premise — that the probe really does share the prefix through $s_m$ — which is what E‑040 measured, on three models at four fractions of each one's depth. E‑017 and E‑018 measured it first; their outputs are gone, so they are in the record and the premise does not rest on them. The tokenizer is the one place the premise can fail quietly: a leading space or a different casing produces a different token sequence and therefore a different key, with no error raised anywhere.
 
 ## Appendix B. Provenance of every number
 
@@ -835,7 +836,8 @@ Saying this is not an excuse for the gap. It is the difference between a record 
   <Run id="E‑040" model="3 models" n="42" date="15 Nov" out="E-040-premise-four-models.json">Premise re-measured at layer 5. Llama‑3.1‑405B could not be deployed and is recorded as unread</Run>
   <Run id="E‑040" model="3 models × 4 depths" n="12×42" date="15 Nov" out="E-040-depth-sweep.json">The same premise and floor at matched fractions of each model's depth</Run>
   <Run id="E‑026" model="Llama‑3.1‑8B" n="370" date="28 Oct" out="2026-10-28-alias/">Renamed subject: string similarity against delivered fraction</Run>
-  <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026-11-01-ripple/">RippleEdits re-run, direct exposure counted</Run>
+  <Run id="E‑038" model="Llama‑3.1‑8B" n="23,505" date="1 Nov" out="2026-11-01-ripple/">RippleEdits re-run, direct exposure counted. Outputs lost; recomputed by E‑041 from the keys it persisted</Run>
+  <Run id="E‑041" model="Llama‑3.1‑8B" n="23,505" date="15 Nov" out="E-041-ripple-exposure.json">The same readings recomputed offline from the cached keys, with the floor re-paired under five seeds</Run>
   <Run id="E‑015" model="Llama‑3.1‑8B" n="1,539" date="9 Nov" out="E-015-bound-looseness.json">Looseness of the Cauchy–Schwarz bound, by regime — offline over cached keys</Run>
   <Run id="E‑039" model="Llama‑3.1‑8B" n="32" date="15 Nov" out="E-039-log-census.json">Readings the result files overwrote, recovered from the committed logs</Run>
   <Run id="E‑016" model="Llama‑3.1‑8B" n="41" date="9 Nov" out="E-016-subject-properties.json">Subject prominence and dependent count against per-subject damage</Run>

@@ -1,0 +1,25 @@
+2026-11-15 18:23:36,455 INFO     E-041  run E-041 -> logs/E-041-2026-11-15-182336.log
+2026-11-15 18:23:37,136 INFO     E-041  2578 usable entries of 4755, 2177 skipped for want of a recoverable label
+2026-11-15 18:23:38,534 INFO     E-041  8 candidate partners rejected for sharing a token with their own subject
+2026-11-15 18:23:38,752 INFO     E-041  cache E037_keys_recent+random+popular_L5.pt — 2557 entries
+2026-11-15 18:23:39,448 INFO     E-041  
+2026-11-15 18:23:39,449 INFO     E-041  23505 own-k* readings, 23505 floor readings, 0 entries uncached, 0 without a partner
+2026-11-15 18:23:39,451 INFO     E-041    own k*   median 0.9758
+2026-11-15 18:23:39,454 INFO     E-041    floor    median 0.0693
+2026-11-15 18:23:39,459 INFO     E-041    gap      +0.9065
+2026-11-15 18:23:39,459 INFO     E-041  
+2026-11-15 18:23:39,459 INFO     E-041  by criterion — the compositional ones are what §5.5 is about
+2026-11-15 18:23:39,462 INFO     E-041    Relation_Specificity       n=11686  own 0.9679   floor 0.0702
+2026-11-15 18:23:39,463 INFO     E-041    Compositionality_I         n=7854   own 0.9820   floor 0.0700
+2026-11-15 18:23:39,463 INFO     E-041    Logical_Generalization     n=1957   own 0.9716   floor 0.0617
+2026-11-15 18:23:39,463 INFO     E-041    Forgetfulness              n=1341   own 1.0000   floor 0.0715
+2026-11-15 18:23:39,464 INFO     E-041    Subject_Aliasing           n=646    own 0.7943   floor 0.0646
+2026-11-15 18:23:39,464 INFO     E-041    Compositionality_II        n=21     own 0.9553   floor 0.0691
+2026-11-15 18:23:39,464 INFO     E-041  
+2026-11-15 18:23:39,464 INFO     E-041  by subset — pooling three subsets hides which one supplies the readings
+2026-11-15 18:23:39,466 INFO     E-041    recent     n=12768  own 0.9786   floor 0.0737
+2026-11-15 18:23:39,467 INFO     E-041    random     n=5292   own 0.9751   floor 0.0707
+2026-11-15 18:23:39,468 INFO     E-041    popular    n=5445   own 0.9692   floor 0.0575
+2026-11-15 18:23:39,473 INFO     E-041  
+2026-11-15 18:23:39,478 INFO     E-041  VERDICT: does NOT reproduce [E-038]. own 0.9758 vs 0.982 (off by 0.0062), floor 0.0693 vs 0.065 (off by 0.0043), 23,505 readings against 23,505, 0 entries uncached. The published figures stand unverified and §5.5 must say so.
+2026-11-15 18:23:39,520 INFO     E-041  written to /private/tmp/claude-501/-Users-saifulislam-code-open-concept-lab-ai-edit-slice/24496bfe-bb06-4863-9021-99199b85f563/scratchpad/e041_s2024.json

@@ -864,3 +864,71 @@ inferred. Until it is read, nothing here may be stated for 405B.
 - logs/E-040-2026-11-15-160930.log
 
 **Closed:** 2026-11-15
+
+---
+
+### E-041 · Give the RippleEdits exposure result a file anyone can open
+
+**Status:** closed
+**Type:** implement
+**Priority:** high
+**Created:** 2026-11-15
+**Updated:** 2026-11-15
+
+**Description:**
+§5.5 reports that RippleEdits items built to test two-hop propagation receive a
+median **0.982** of the update against a **0.065** floor from a stranger's edit
+on the same prompts, over 23,505 readings. That is [E-038], 1 November, and it
+is one of the five rows in Appendix B with nothing to link: it wrote a dated
+directory, the directory was never committed, and it is on no machine.
+
+It is also the only struck row still carrying a **stated contribution** — the
+last line of the contributions list offers the measure as a contamination
+screen with one published benchmark scored on it. Until the number has a file,
+that contribution is in the position [E-018]'s was this morning.
+
+**Why this is cheap and E-018's was not.** The run is
+`edit-slice/agents/engineer/workspace/run_e037.py` over all three subsets — its
+own comment says *"Comma-separated for [E-038]"* — and it persists every key it
+reads: `results/cache/E037_keys_recent+random+popular_L5.pt`, 2,557 entries at
+708 MB, row 0 of each being the edit prompt's `k*` and the rest its test
+prompts. Both arms are dot products over those rows. So this is an offline
+recomputation, not a re-run, and it needs NDIF only for a tokenizer.
+
+**Falsifier.** The reproduction fails if the recomputed medians miss the
+published 0.982 and 0.065 by more than the 0.002 the paper's own figures are
+quoted to, or if the cache does not cover every entry the selection picks — in
+which case the readings behind the published number are partly gone and the row
+stays struck with that said plainly.
+
+**Blockers:** none
+
+**RCA:** —
+
+**Result.** The readings reproduce in full and offline: 23,505 of them, every
+entry cached, nothing read remotely. The selection was imported from
+`run_e037.py` rather than rewritten, which is the only reason the count matched
+on the first attempt.
+
+Two things came out of it that the row did not have before.
+
+**0.982 is Compositionality_I, not the pooled figure.** Pooled over all six
+criteria the own-k* median is 0.9758. On the criterion the table is captioned
+for it is 0.9820, which is the published number to the digit. The 23,505 is the
+run's total readings and not that row's n, which is 7,854.
+
+**The floor is a property of a pairing.** It is the one half of the comparison
+that depends on which stranger scored which prompt, and re-pairing under five
+seeds moves it from 0.0643 to 0.0703. At seed 1538 — pinned everywhere in this
+project — it is 0.0703, against a published 0.065. So 0.065 is a value this
+measurement produces and not the value it produces at the pinned seed. §5.5 now
+quotes the floor as 0.064–0.070 and says why. The own-k* median cannot move
+this way, because it never touches a partner, and it did not.
+
+**Artifacts:**
+
+- agents/engineer/workspace/run_e041_ripple.py
+- results/E-041-ripple-exposure.json
+- web/notebook/edit-reach/paper.md §5.5
+
+**Closed:** 2026-11-15
