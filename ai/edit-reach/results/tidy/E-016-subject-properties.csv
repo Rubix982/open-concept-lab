@@ -1,0 +1,286 @@
+ticket,model,arch,n_layers,d_mlp,layer,depth_fraction,group,item_id,metric,value
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,n_probes,12.0
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,median_excess,0.12090856730355881
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,median_p_base,0.09675237908959389
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,distinct_properties,48.0
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,total_statements,59.0
+E-016,?,,,,0,,Q2833874,Alexandre Mercereau,sitelinks,8.0
+E-016,?,,,,0,,Q333778,Armando Diaz,n_probes,12.0
+E-016,?,,,,0,,Q333778,Armando Diaz,median_excess,0.004136599464857227
+E-016,?,,,,0,,Q333778,Armando Diaz,median_p_base,0.049442676827311516
+E-016,?,,,,0,,Q333778,Armando Diaz,distinct_properties,79.0
+E-016,?,,,,0,,Q333778,Armando Diaz,total_statements,114.0
+E-016,?,,,,0,,Q333778,Armando Diaz,sitelinks,44.0
+E-016,?,,,,0,,Q189803,Arthur Harden,n_probes,12.0
+E-016,?,,,,0,,Q189803,Arthur Harden,median_excess,0.003207093326636823
+E-016,?,,,,0,,Q189803,Arthur Harden,median_p_base,0.5570857971906662
+E-016,?,,,,0,,Q189803,Arthur Harden,distinct_properties,93.0
+E-016,?,,,,0,,Q189803,Arthur Harden,total_statements,104.0
+E-016,?,,,,0,,Q189803,Arthur Harden,sitelinks,67.0
+E-016,?,,,,0,,Q766022,Auguste Cain,n_probes,12.0
+E-016,?,,,,0,,Q766022,Auguste Cain,median_excess,6.89632739749868e-05
+E-016,?,,,,0,,Q766022,Auguste Cain,median_p_base,0.09579187259078026
+E-016,?,,,,0,,Q766022,Auguste Cain,distinct_properties,81.0
+E-016,?,,,,0,,Q766022,Auguste Cain,total_statements,99.0
+E-016,?,,,,0,,Q766022,Auguste Cain,sitelinks,12.0
+E-016,?,,,,0,,Q427761,Camille Pin,n_probes,12.0
+E-016,?,,,,0,,Q427761,Camille Pin,median_excess,0.006564841489307582
+E-016,?,,,,0,,Q427761,Camille Pin,median_p_base,0.06390315480530262
+E-016,?,,,,0,,Q427761,Camille Pin,distinct_properties,34.0
+E-016,?,,,,0,,Q427761,Camille Pin,total_statements,36.0
+E-016,?,,,,0,,Q427761,Camille Pin,sitelinks,17.0
+E-016,?,,,,0,,Q177385,Carlos Zingaro,n_probes,12.0
+E-016,?,,,,0,,Q177385,Carlos Zingaro,median_excess,0.002346324428415869
+E-016,?,,,,0,,Q177385,Carlos Zingaro,median_p_base,0.35605907440185547
+E-016,?,,,,0,,Q177385,Carlos Zingaro,distinct_properties,53.0
+E-016,?,,,,0,,Q177385,Carlos Zingaro,total_statements,56.0
+E-016,?,,,,0,,Q177385,Carlos Zingaro,sitelinks,5.0
+E-016,?,,,,0,,Q1045526,Carsten Dahl,n_probes,12.0
+E-016,?,,,,0,,Q1045526,Carsten Dahl,median_excess,-1.1579311376408441e-07
+E-016,?,,,,0,,Q1045526,Carsten Dahl,median_p_base,0.25893232226371765
+E-016,?,,,,0,,Q1045526,Carsten Dahl,distinct_properties,37.0
+E-016,?,,,,0,,Q1045526,Carsten Dahl,total_statements,42.0
+E-016,?,,,,0,,Q1045526,Carsten Dahl,sitelinks,7.0
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",n_probes,11.0
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",median_excess,0.056971819211867114
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",median_p_base,0.25396808981895447
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",distinct_properties,39.0
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",total_statements,42.0
+E-016,?,,,,0,,Q548569,"Charles Montague Cooke, Jr.",sitelinks,8.0
+E-016,?,,,,0,,Q918462,Charles Nungesser,n_probes,12.0
+E-016,?,,,,0,,Q918462,Charles Nungesser,median_excess,0.09450512914918363
+E-016,?,,,,0,,Q918462,Charles Nungesser,median_p_base,0.09928420186042786
+E-016,?,,,,0,,Q918462,Charles Nungesser,distinct_properties,50.0
+E-016,?,,,,0,,Q918462,Charles Nungesser,total_statements,55.0
+E-016,?,,,,0,,Q918462,Charles Nungesser,sitelinks,19.0
+E-016,?,,,,0,,Q268726,Chus Lampreave,n_probes,11.0
+E-016,?,,,,0,,Q268726,Chus Lampreave,median_excess,0.12008927459828556
+E-016,?,,,,0,,Q268726,Chus Lampreave,median_p_base,0.1635686755180359
+E-016,?,,,,0,,Q268726,Chus Lampreave,distinct_properties,88.0
+E-016,?,,,,0,,Q268726,Chus Lampreave,total_statements,94.0
+E-016,?,,,,0,,Q268726,Chus Lampreave,sitelinks,33.0
+E-016,?,,,,0,,Q5127216,Clark Durant,n_probes,12.0
+E-016,?,,,,0,,Q5127216,Clark Durant,median_excess,0.00024464589023409644
+E-016,?,,,,0,,Q5127216,Clark Durant,median_p_base,0.47264453768730164
+E-016,?,,,,0,,Q5127216,Clark Durant,distinct_properties,10.0
+E-016,?,,,,0,,Q5127216,Clark Durant,total_statements,11.0
+E-016,?,,,,0,,Q5127216,Clark Durant,sitelinks,3.0
+E-016,?,,,,0,,Q332466,Claudio Coello,n_probes,12.0
+E-016,?,,,,0,,Q332466,Claudio Coello,median_excess,-0.0011591377181048301
+E-016,?,,,,0,,Q332466,Claudio Coello,median_p_base,0.11965404078364372
+E-016,?,,,,0,,Q332466,Claudio Coello,distinct_properties,94.0
+E-016,?,,,,0,,Q332466,Claudio Coello,total_statements,116.0
+E-016,?,,,,0,,Q332466,Claudio Coello,sitelinks,20.0
+E-016,?,,,,0,,Q141120398,Fernando Vergara,n_probes,12.0
+E-016,?,,,,0,,Q141120398,Fernando Vergara,median_excess,-3.2328092061106872e-06
+E-016,?,,,,0,,Q141120398,Fernando Vergara,median_p_base,0.0888780876994133
+E-016,?,,,,0,,Q141120398,Fernando Vergara,distinct_properties,10.0
+E-016,?,,,,0,,Q141120398,Fernando Vergara,total_statements,11.0
+E-016,?,,,,0,,Q141120398,Fernando Vergara,sitelinks,1.0
+E-016,?,,,,0,,Q20733,Georges Duhamel,n_probes,12.0
+E-016,?,,,,0,,Q20733,Georges Duhamel,median_excess,0.004495684861893778
+E-016,?,,,,0,,Q20733,Georges Duhamel,median_p_base,0.30381694436073303
+E-016,?,,,,0,,Q20733,Georges Duhamel,distinct_properties,196.0
+E-016,?,,,,0,,Q20733,Georges Duhamel,total_statements,242.0
+E-016,?,,,,0,,Q20733,Georges Duhamel,sitelinks,56.0
+E-016,?,,,,0,,Q132472800,Gergely Kiss,n_probes,12.0
+E-016,?,,,,0,,Q132472800,Gergely Kiss,median_excess,-6.809103183513798e-07
+E-016,?,,,,0,,Q132472800,Gergely Kiss,median_p_base,0.10543612018227577
+E-016,?,,,,0,,Q132472800,Gergely Kiss,distinct_properties,15.0
+E-016,?,,,,0,,Q132472800,Gergely Kiss,total_statements,22.0
+E-016,?,,,,0,,Q132472800,Gergely Kiss,sitelinks,0.0
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,n_probes,12.0
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,median_excess,0.07108229670848232
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,median_p_base,0.5086909681558609
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,distinct_properties,102.0
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,total_statements,113.0
+E-016,?,,,,0,,Q1276720,Henry Mackenzie,sitelinks,16.0
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,n_probes,12.0
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,median_excess,0.027077926480643555
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,median_p_base,0.08013986423611641
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,distinct_properties,36.0
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,total_statements,37.0
+E-016,?,,,,0,,Q4450268,Hiroshi Takemura,sitelinks,3.0
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,n_probes,11.0
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,median_excess,0.0014600326103391126
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,median_p_base,0.2745915353298187
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,distinct_properties,20.0
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,total_statements,21.0
+E-016,?,,,,0,,Q5997161,Ilari Sahamies,sitelinks,3.0
+E-016,?,,,,0,,Q3545304,Isabel Granada,n_probes,12.0
+E-016,?,,,,0,,Q3545304,Isabel Granada,median_excess,-0.000901352585060522
+E-016,?,,,,0,,Q3545304,Isabel Granada,median_p_base,0.16657134890556335
+E-016,?,,,,0,,Q3545304,Isabel Granada,distinct_properties,23.0
+E-016,?,,,,0,,Q3545304,Isabel Granada,total_statements,25.0
+E-016,?,,,,0,,Q3545304,Isabel Granada,sitelinks,12.0
+E-016,?,,,,0,,Q721352,Jacob Holdt,n_probes,12.0
+E-016,?,,,,0,,Q721352,Jacob Holdt,median_excess,3.0484816932130343e-05
+E-016,?,,,,0,,Q721352,Jacob Holdt,median_p_base,0.4823022484779358
+E-016,?,,,,0,,Q721352,Jacob Holdt,distinct_properties,57.0
+E-016,?,,,,0,,Q721352,Jacob Holdt,total_statements,61.0
+E-016,?,,,,0,,Q721352,Jacob Holdt,sitelinks,8.0
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,n_probes,11.0
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,median_excess,0.0007562064565718174
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,median_p_base,0.25659969449043274
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,distinct_properties,8.0
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,total_statements,8.0
+E-016,?,,,,0,,Q134589584,Jacob Wallenberg,sitelinks,1.0
+E-016,?,,,,0,,Q2157605,James Forten,n_probes,12.0
+E-016,?,,,,0,,Q2157605,James Forten,median_excess,-0.002086781430989504
+E-016,?,,,,0,,Q2157605,James Forten,median_p_base,0.7940398454666138
+E-016,?,,,,0,,Q2157605,James Forten,distinct_properties,42.0
+E-016,?,,,,0,,Q2157605,James Forten,total_statements,45.0
+E-016,?,,,,0,,Q2157605,James Forten,sitelinks,8.0
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,n_probes,12.0
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,median_excess,0.0007254882584675215
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,median_p_base,0.33171629905700684
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,distinct_properties,49.0
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,total_statements,59.0
+E-016,?,,,,0,,Q3168006,Jean-Michel Dubernard,sitelinks,4.0
+E-016,?,,,,0,,Q6210521,Joe Jamail,n_probes,12.0
+E-016,?,,,,0,,Q6210521,Joe Jamail,median_excess,-6.578202791018839e-05
+E-016,?,,,,0,,Q6210521,Joe Jamail,median_p_base,0.24891303479671478
+E-016,?,,,,0,,Q6210521,Joe Jamail,distinct_properties,19.0
+E-016,?,,,,0,,Q6210521,Joe Jamail,total_statements,23.0
+E-016,?,,,,0,,Q6210521,Joe Jamail,sitelinks,3.0
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,n_probes,12.0
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,median_excess,-0.000954584231408262
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,median_p_base,0.27318523824214935
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,distinct_properties,67.0
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,total_statements,82.0
+E-016,?,,,,0,,Q1475327,Jonas Hassen Khemiri,sitelinks,18.0
+E-016,?,,,,0,,Q16199074,Lunice,n_probes,9.0
+E-016,?,,,,0,,Q16199074,Lunice,median_excess,-2.9210226784925908e-05
+E-016,?,,,,0,,Q16199074,Lunice,median_p_base,0.15581351518630981
+E-016,?,,,,0,,Q16199074,Lunice,distinct_properties,36.0
+E-016,?,,,,0,,Q16199074,Lunice,total_statements,42.0
+E-016,?,,,,0,,Q16199074,Lunice,sitelinks,3.0
+E-016,?,,,,0,,Q466471,Marco Benefial,n_probes,12.0
+E-016,?,,,,0,,Q466471,Marco Benefial,median_excess,-4.54664677818073e-06
+E-016,?,,,,0,,Q466471,Marco Benefial,median_p_base,0.11788000911474228
+E-016,?,,,,0,,Q466471,Marco Benefial,distinct_properties,80.0
+E-016,?,,,,0,,Q466471,Marco Benefial,total_statements,88.0
+E-016,?,,,,0,,Q466471,Marco Benefial,sitelinks,9.0
+E-016,?,,,,0,,Q85048,Maria Altmann,n_probes,12.0
+E-016,?,,,,0,,Q85048,Maria Altmann,median_excess,0.0007234228105517104
+E-016,?,,,,0,,Q85048,Maria Altmann,median_p_base,0.5245106816291809
+E-016,?,,,,0,,Q85048,Maria Altmann,distinct_properties,48.0
+E-016,?,,,,0,,Q85048,Maria Altmann,total_statements,52.0
+E-016,?,,,,0,,Q85048,Maria Altmann,sitelinks,24.0
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,n_probes,11.0
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,median_excess,0.00013052737040197826
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,median_p_base,0.1263543665409088
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,distinct_properties,32.0
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,total_statements,33.0
+E-016,?,,,,0,,Q1199844,Matias Kupiainen,sitelinks,11.0
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,n_probes,12.0
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,median_excess,-0.0017616773111512884
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,median_p_base,0.2986775413155556
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,distinct_properties,198.0
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,total_statements,404.0
+E-016,?,,,,0,,Q241098,Maurice de Vlaminck,sitelinks,47.0
+E-016,?,,,,0,,Q230226,Melinda Czink,n_probes,12.0
+E-016,?,,,,0,,Q230226,Melinda Czink,median_excess,0.0015990307833817496
+E-016,?,,,,0,,Q230226,Melinda Czink,median_p_base,0.2377220094203949
+E-016,?,,,,0,,Q230226,Melinda Czink,distinct_properties,38.0
+E-016,?,,,,0,,Q230226,Melinda Czink,total_statements,41.0
+E-016,?,,,,0,,Q230226,Melinda Czink,sitelinks,28.0
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,n_probes,12.0
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,median_excess,7.564323004771722e-05
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,median_p_base,0.08333705365657806
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,distinct_properties,26.0
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,total_statements,28.0
+E-016,?,,,,0,,Q172024,Michael Bleekemolen,sitelinks,21.0
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,n_probes,12.0
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,median_excess,0.0027451332589407684
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,median_p_base,0.09085895121097565
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,distinct_properties,37.0
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,total_statements,51.0
+E-016,?,,,,0,,Q3368743,Nikolai Nissen Paus,sitelinks,8.0
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,n_probes,12.0
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,median_excess,-0.0001873434302979149
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,median_p_base,0.386994332075119
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,distinct_properties,67.0
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,total_statements,89.0
+E-016,?,,,,0,,Q3381859,Phyllis Lambert,sitelinks,15.0
+E-016,?,,,,0,,Q1064970,Rio Natsuki,n_probes,12.0
+E-016,?,,,,0,,Q1064970,Rio Natsuki,median_excess,-0.0003274852570029907
+E-016,?,,,,0,,Q1064970,Rio Natsuki,median_p_base,0.08599764108657837
+E-016,?,,,,0,,Q1064970,Rio Natsuki,distinct_properties,48.0
+E-016,?,,,,0,,Q1064970,Rio Natsuki,total_statements,50.0
+E-016,?,,,,0,,Q1064970,Rio Natsuki,sitelinks,11.0
+E-016,?,,,,0,,Q7341971,Robert Beaser,n_probes,12.0
+E-016,?,,,,0,,Q7341971,Robert Beaser,median_excess,0.10148445429513231
+E-016,?,,,,0,,Q7341971,Robert Beaser,median_p_base,0.14617495238780975
+E-016,?,,,,0,,Q7341971,Robert Beaser,distinct_properties,46.0
+E-016,?,,,,0,,Q7341971,Robert Beaser,total_statements,56.0
+E-016,?,,,,0,,Q7341971,Robert Beaser,sitelinks,4.0
+E-016,?,,,,0,,Q2466876,Roger Chartier,n_probes,12.0
+E-016,?,,,,0,,Q2466876,Roger Chartier,median_excess,-0.0003735836735359044
+E-016,?,,,,0,,Q2466876,Roger Chartier,median_p_base,0.10441665351390839
+E-016,?,,,,0,,Q2466876,Roger Chartier,distinct_properties,123.0
+E-016,?,,,,0,,Q2466876,Roger Chartier,total_statements,157.0
+E-016,?,,,,0,,Q2466876,Roger Chartier,sitelinks,18.0
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,n_probes,11.0
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,median_excess,0.016095365746878088
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,median_p_base,0.10474175214767456
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,distinct_properties,43.0
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,total_statements,46.0
+E-016,?,,,,0,,Q2096624,Ryo Ryusei,sitelinks,12.0
+E-016,?,,,,0,,Q2233503,Silvia Abascal,n_probes,12.0
+E-016,?,,,,0,,Q2233503,Silvia Abascal,median_excess,7.028819091203786e-06
+E-016,?,,,,0,,Q2233503,Silvia Abascal,median_p_base,0.06906343996524811
+E-016,?,,,,0,,Q2233503,Silvia Abascal,distinct_properties,64.0
+E-016,?,,,,0,,Q2233503,Silvia Abascal,total_statements,68.0
+E-016,?,,,,0,,Q2233503,Silvia Abascal,sitelinks,18.0
+E-016,?,,,,0,,Q2426153,Thomas Molnar,n_probes,12.0
+E-016,?,,,,0,,Q2426153,Thomas Molnar,median_excess,0.2825376757291451
+E-016,?,,,,0,,Q2426153,Thomas Molnar,median_p_base,0.15137721598148346
+E-016,?,,,,0,,Q2426153,Thomas Molnar,distinct_properties,23.0
+E-016,?,,,,0,,Q2426153,Thomas Molnar,total_statements,24.0
+E-016,?,,,,0,,Q2426153,Thomas Molnar,sitelinks,3.0
+E-016,?,,,,0,,Q542741,Yona Friedman,n_probes,12.0
+E-016,?,,,,0,,Q542741,Yona Friedman,median_excess,3.603775667215814e-05
+E-016,?,,,,0,,Q542741,Yona Friedman,median_p_base,0.4271555244922638
+E-016,?,,,,0,,Q542741,Yona Friedman,distinct_properties,98.0
+E-016,?,,,,0,,Q542741,Yona Friedman,total_statements,111.0
+E-016,?,,,,0,,Q542741,Yona Friedman,sitelinks,12.0
+E-016,?,,,,0,,summary,(scalar),n_subjects,41.0
+E-016,?,,,,0,,summary,(scalar),meta.seed,1538.0
+E-016,?,,,,0,,summary,(scalar),meta.resamples,10000.0
+E-016,?,,,,0,,summary,(scalar),meta.gate_median_excess_all_probes,0.0009300760721089318
+E-016,?,,,,0,,summary,(scalar),predictor_correlation_prominence_vs_dependent,0.7005577501527807
+E-016,?,,,,0,,summary,(scalar),results.prominence vs damage.rho,0.004806035663711408
+E-016,?,,,,0,,summary,(scalar),results.prominence vs damage.ci95.0,-0.3154849205073461
+E-016,?,,,,0,,summary,(scalar),results.prominence vs damage.ci95.1,0.3138316652653637
+E-016,?,,,,0,,summary,(flag),results.prominence vs damage.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),results.dependent count vs damage.rho,-0.05289530274674691
+E-016,?,,,,0,,summary,(scalar),results.dependent count vs damage.ci95.0,-0.36575340153001945
+E-016,?,,,,0,,summary,(scalar),results.dependent count vs damage.ci95.1,0.2702249119814498
+E-016,?,,,,0,,summary,(flag),results.dependent count vs damage.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),results.total statements vs damage.rho,-0.054981922131644136
+E-016,?,,,,0,,summary,(scalar),results.total statements vs damage.ci95.0,-0.3697172774438397
+E-016,?,,,,0,,summary,(scalar),results.total statements vs damage.ci95.1,0.259195422529106
+E-016,?,,,,0,,summary,(flag),results.total statements vs damage.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),results.headroom (p_base) vs damage.rho,-0.12996515679442508
+E-016,?,,,,0,,summary,(scalar),results.headroom (p_base) vs damage.ci95.0,-0.3991613557506157
+E-016,?,,,,0,,summary,(scalar),results.headroom (p_base) vs damage.ci95.1,0.17083107624504454
+E-016,?,,,,0,,summary,(flag),results.headroom (p_base) vs damage.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),results.prominence | dependent count.rho,0.05874606020240819
+E-016,?,,,,0,,summary,(scalar),results.prominence | dependent count.ci95.0,-0.2276085032223362
+E-016,?,,,,0,,summary,(scalar),results.prominence | dependent count.ci95.1,0.33646194008087643
+E-016,?,,,,0,,summary,(flag),results.prominence | dependent count.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),results.dependent count | prominence.rho,-0.0788441651164965
+E-016,?,,,,0,,summary,(scalar),results.dependent count | prominence.ci95.0,-0.3552136765114246
+E-016,?,,,,0,,summary,(scalar),results.dependent count | prominence.ci95.1,0.21133228762542947
+E-016,?,,,,0,,summary,(flag),results.dependent count | prominence.excludes_zero,0.0
+E-016,?,,,,0,,summary,(scalar),"results.prominence | dependent count, headroom.rho",0.03816021599923077
+E-016,?,,,,0,,summary,(scalar),"results.prominence | dependent count, headroom.ci95.0",-0.2664691087470735
+E-016,?,,,,0,,summary,(scalar),"results.prominence | dependent count, headroom.ci95.1",0.3267700343727334
+E-016,?,,,,0,,summary,(flag),"results.prominence | dependent count, headroom.excludes_zero",0.0
+E-016,?,,,,0,,summary,(scalar),"results.dependent count | prominence, headroom.rho",-0.04749390277470445
+E-016,?,,,,0,,summary,(scalar),"results.dependent count | prominence, headroom.ci95.0",-0.33968121923410205
+E-016,?,,,,0,,summary,(scalar),"results.dependent count | prominence, headroom.ci95.1",0.264293217213934
+E-016,?,,,,0,,summary,(flag),"results.dependent count | prominence, headroom.excludes_zero",0.0
+E-016,?,,,,0,,summary,(scalar),family_sensitivity.prominence,0.014855019324198897
+E-016,?,,,,0,,summary,(scalar),family_sensitivity.dependent_count,-0.038691127544572705

@@ -1,0 +1,2 @@
+ticket,model,arch,n_layers,d_mlp,layer,depth_fraction,group,item_id,metric,value
+E-009-partition-8b,meta-llama/Llama-3.1-8B,llama,32,14336,5,0.1562,summary,(scalar),layer,5.0
