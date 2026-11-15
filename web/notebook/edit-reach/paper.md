@@ -796,7 +796,11 @@ The empirical content is entirely in the premise — that the probe really does 
 
 Each row names the run a number came from, and links the files it wrote. Config files pin the seed and the layer; argv carries only the output path.
 
-**Six rows have nothing to link.** Those runs wrote a dated directory rather than a single file, none of those directories was ever committed, and they are no longer on any machine — their names are struck through. The numbers they produced are quoted in the sections above and in §B.1 where a summary survived, and they cannot be checked against their source. That is a real hole in the record and it is marked rather than tidied away.
+**Six rows have nothing to link**, struck through above. Those runs wrote a dated directory rather than a single file, none of those directories was committed, and they are no longer on any machine. Their numbers are quoted in the sections above and cannot be checked against their source today.
+
+**None of them is lost, and the cost of getting each one back is not the same.** [E-012], the census of every recorded reading of the floor, is recomputable offline right now: the 33 run logs it counted are committed under `logs/`. [E-007], batch reshaping against raw key magnitude, needs one short remote session — its checks are `check_batch_rows` and `check_batch_width` in `tools/ndif_conformance.py`, which is in the repository. [E-017] and [E-018] are 16 anchors each and the probe generator is committed, so they are small runs. [E-026] is 370 items. [E-038] is the expensive one at 23,505 readings.
+
+Saying this is not an excuse for the gap. It is the difference between a record that lost something and a record that has not yet spent the compute to restore it, and a reader is entitled to know which of the two they are looking at.
 
 <Runs caption={<>The runs behind the figures and tables above. Directories are under <code>results/</code>.</>}>
   <Run id="E‑004" model="Llama‑3.1‑8B" n="1,539" date="6 Nov" out="E-004-far-field-floor.json">Near and far field under the same-relation stranger floor</Run>
