@@ -66,14 +66,11 @@ export type Run = {
   traits?: [string, number][];
   /** C-005: many small windows in a row, instead of pairs. */
   layout?: "gallery";
-  /** A line crediting work the test used: [text before, link label, URL, text after]. */
-  credit?: [string, string, string, string];
   /** A link into the Lumenary studio: [label, query string]. */
   studio?: [string, string];
   showed: string;
 };
 
-const LUMENARY = "https://github.com/mursalfk/lumenary";
 
 const ASSEMBLY = "library/step-by-step-instructions/ikea-assembly-instructions.md";
 
@@ -427,12 +424,6 @@ export const RUNS: Run[] = [
       "default dials. It keeps edges where they are, has no ink spread, lays tints as random " +
       "grain instead of a dot screen, and never prints ink fully solid.",
     made: "runs/c013/prompts/README.md",
-    credit: [
-      "The risograph ink model is from ",
-      "Lumenary",
-      LUMENARY,
-      ", by Mursal Furqan Kumbhar, used with the author's permission.",
-    ],
     studio: ["Try Lumenary's risograph model on the router drawing, with its dials", "?t=risograph&src=drawing"],
     questions: [
       ["Less AI-made", "Which page looks less AI-made?"],
@@ -476,12 +467,6 @@ export const RUNS: Run[] = [
       "word, given to three new agents with one addition: make the page's pictures with the " +
       "Lumenary engine, from a short guide and a catalogue of its 214 treatments. No style file " +
       "and no problem entry. Each new page was picked blind against its C-005 counterpart.",
-    credit: [
-      "The engine is ",
-      "Lumenary",
-      LUMENARY,
-      ", by Mursal Furqan Kumbhar, used with the author's permission.",
-    ],
     studio: [
       "Try all 214 treatments in the Lumenary studio: one at a time with its dials, or every still treatment on one contact sheet",
       "",

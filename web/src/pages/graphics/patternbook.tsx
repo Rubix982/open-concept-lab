@@ -134,13 +134,6 @@ function RunSection({ run }: { run: Run }): ReactNode {
           <span className={styles.label}>{run.made ? "Setup" : "Brief"}</span> {run.brief}
         </p>
       )}
-      {run.credit && (
-        <p className={styles.brief}>
-          {run.credit[0]}
-          <a href={run.credit[2]} target="_blank" rel="noreferrer">{run.credit[1]}</a>
-          {run.credit[3]}
-        </p>
-      )}
       {run.studio && (
         <p className={styles.brief}>
           <a href={studio + run.studio[1]} target="_blank" rel="noreferrer">{run.studio[0]} ↗</a>
