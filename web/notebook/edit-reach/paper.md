@@ -17,6 +17,40 @@ paper:
   pdf: true
   log: true
   builds_on: { label: edit-slice, href: /notebook/edit-slice/ }
+  reading: 55-minute read
+  hero:
+    src: /img/edit-reach/where-the-edit-lands.svg
+    alt: >-
+      Where a rank-one edit arrives. On the left, a lit field: the edited name at
+      the centre, ringed by six questions that all name it and each ask something
+      different. Every one is filled in, and 0.9334 of the update arrives, against
+      0.0842 for a stranger's edit on the same relation. On the right, past a
+      boundary marked "it never does", eight hollow circles sit on bare paper.
+      Each keeps a dependency line back to the edited name, because each
+      genuinely rests on the fact that was changed — and none is filled in. There
+      the reading is 0.0543 from the question's own edit and 0.0480 from a
+      stranger's.
+  parts:
+    - n: "1"
+      title: What the number is
+      href: "#3-methods"
+      what: A quantity read off the edit's own update, in one forward pass through the model as it stood before the edit — and the one case where it is exactly 1.
+      figs: ["/img/edit-reach/two-regimes.svg", "/img/edit-reach/premise-and-floor-by-depth.svg"]
+    - n: "2"
+      title: Whether it predicts anything
+      href: "#51-the-coefficient-does-not-predict-an-edits-effect"
+      what: 495 probes, and what is left of a visible correlation once a control on the same subject is taken out of it.
+      figs: ["/img/edit-reach/coefficient-vs-movement.svg", "/img/edit-reach/near-and-far-field.svg"]
+    - n: "3"
+      title: What the edit carries instead
+      href: "#53-identity-is-worth-about-sixty-five-times-content"
+      what: Whose fact you edit against what you change it to, the two halves of a single update, and one published benchmark scored on the difference.
+      figs: ["/img/edit-reach/what-carries-each-half.svg", "/img/edit-reach/direct-exposure.svg"]
+    - n: "4"
+      title: What is left standing
+      href: "#6-findings-and-claims"
+      what: A ceiling that forbids nothing, a magnitude nothing predicts, every claim with what would show it false, and the gap this project did not close.
+      figs: ["/img/edit-reach/bound-forbids-nothing.svg", "/img/edit-reach/nothing-predicts-magnitude.svg", "/img/edit-reach/delivery-is-not-effect.svg"]
   keywords:
     - model editing
     - ROME
@@ -60,6 +94,8 @@ One more result came off the same probe set, and it was not the one we were look
 
 ## 1. Introduction
 
+<Gist>Why a number you could compute before making an edit would be worth having, and what we expected it to do.</Gist>
+
 <Lead>The task.</Lead> A weight edit changes one fact and disturbs an unknown amount of everything else. The disturbance is evaluated with hand-written item sets: paraphrases, neighbours, and multi-hop questions whose answers should follow from the edited fact <Cite id="cohen2024ripple" />, <Cite id="zhong2023mquake" />. Surveys of the field treat these sets as the measurement <Cite id="yao2023survey" />.
 
 <Lead>Why that cannot bound the damage.</Lead> An item set gives a lower bound on an edit's damage and never an upper bound. It can show that an edit broke something; it cannot show that an edit broke nothing, because an item nobody wrote and a failure that never happened produce the same output — an empty result. Writing more items does not close the gap: a hand-written set measures the imagination of whoever wrote it, and consistency work shows a model's behaviour varies across surface forms the author did not think to vary <Cite id="elazar2021pararel" />.
@@ -71,6 +107,8 @@ One more result came off the same probe set, and it was not the one we were look
 <Lead>What this paper finds.</Lead> The candidate does one job exactly and the intended job not at all. It is pinned to 1 wherever the prompt names the edited subject, which makes it a reliable detector of that naming; and it is flat where the question does not name the subject, which is where propagation would have to be measured. The same algebra that makes it cheap also yields the upper bound an item set cannot give — and that bound turns out to permit a question which never names the subject to receive more than one which does, so it forbids nothing (§5.6). Nor does any property of the edited subject predict how hard an edit lands (§5.7). §5 gives the numbers, §6 the record of how the control that produced them was got wrong once first.
 
 ## 2. Related work
+
+<Gist>Who else has measured where an edit travels, and what none of them computes in advance of the edit.</Gist>
 
 <Lead>The nearest work.</Lead> <Cite id="he2026romelimits" narrative /> reports both the depth phenomenon and a cosine decay with layer — 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here — eight months before this one. What it does not carry is a control of the kind in §3.3: its reading of the effect as depth rests on edit success rates staying high across layers, which is a different quantity from the one that would separate a real effect from the measure's own behaviour.
 
@@ -93,6 +131,8 @@ One more result came off the same probe set, and it was not the one we were look
 <Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume without writing it down. The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full — enough to ask the question and not enough to answer it. If it is published, §3 becomes a replication and the contribution is §5.
 
 ## 3. Methods
+
+<Gist>The quantity itself: where it comes from, what it is read on, and the two controls it is read against.</Gist>
 
 Everything below is measured on one kind of object. It is worth naming the parts in plain language, with one example carried throughout, before any of them is given a symbol.
 
@@ -190,6 +230,8 @@ The pair is what makes §5.3 and §5.4 possible: each arm isolates one of the tw
 
 ## 4. Implementation
 
+<Gist>How the readings were taken on models we do not host, and what was checked twice before any of it was believed.</Gist>
+
 `editreach` 0.1.0 is ten modules, about 1,900 lines. Two of its choices are claims rather than tidying.
 
 <Lead>The coefficient is an object, not an expression.</Lead> In the predecessor project it was written inline in each run script. It is the thing being claimed, so it has a name and a type.
@@ -260,6 +302,8 @@ Each value came from one device and each device returned one value, and the conn
 Before any of the above could be trusted, the log files had to be worth keeping. A census found that **124 of 155 committed log files were a single line naming themselves and nothing else** — 80% of the kept record was content-free. The cause was one import: five run scripts import another as a library for its loaders, and that module calls `logs.setup()` at module scope, so every dry-run pass and every run of five other scripts created a log recording nothing. `setup()` now holds the run header and emits it immediately before the first real record, with the file handler opened lazily. Importing a module costs nothing on disk; running it still produces a self-describing log.
 
 ## 5. Results
+
+<Gist>Seven results, in the order the evidence forced them rather than the order we wanted.</Gist>
 
 Five results, in the order they were run. The first two are about the coefficient and are negative. The third and fourth are about what a rank-one update actually does, and are the reason the first two came out the way they did. The fifth applies what survives to a published benchmark.
 
@@ -646,6 +690,8 @@ Neither is textual frequency, and nothing here measures it. That remains the obv
 
 ## 6. Findings and claims
 
+<Gist>Every claim made here, each with the observation that would show it false.</Gist>
+
 <Figure
   plain
   caption={<>One finding from proposal to withdrawal, with the date of each step.</>}
@@ -761,6 +807,8 @@ The table below is every claim this paper has made, numbered in the order they w
 
 ## 7. Limitations
 
+<Gist>What this does not show, what was not run, and the uses this result does not license.</Gist>
+
 <Figure
   src="/img/edit-reach/delivery-is-not-effect.svg"
   alt="An edit passes through two steps. Delivery is how much of the edit arrives at a token, and the coefficient measures it. Effect is how far the model's answer moves, and the coefficient does not measure it. At one fixed coefficient the measured movement still spans a factor of 2.96."
@@ -784,6 +832,8 @@ Every qualification in this paper is collected here, so the body above runs unhe
 11. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
+
+<Gist>What the number turned out to be good for, which is not what it was built for.</Gist>
 
 A quantity computable before an edit exists tells you, reliably, whether a prompt names the edited subject. It tells you nothing about whether an edit travelled — and §5.3 says why there was little to tell: identity is worth about sixty-five times content, so there is very little edit-specific effect for any measure to predict. The two statements are not in tension: the first is why the measure looked promising, the second is why it cannot do the job it was built for. What survives is the first one — a cheap screen that reads an evaluation item and says whether that item can test propagation at all, which one published benchmark fails. Beside it stands a result the screen was not looking for: the two halves of a rank-one update come apart, and which control is correct depends on which half is being measured.
 
@@ -819,6 +869,8 @@ Every entry above has had its title, authors, year and venue checked against the
 
 ## Appendix A. Why the coefficient is exactly 1 on a prefix-sharing prompt
 
+<Gist>The derivation in full, since an analytic claim that does not show its working is only an unfalsifiable one.</Gist>
+
 Let the edit prompt be the token sequence $s_1 \dots s_m$, where $s_m$ is the subject's last token, and let $k^{*}$ be the layer-$\ell$ key read at position $m$. Let a probe be $s_1 \dots s_m\, t_1 \dots t_n$ — the same prefix, then any continuation.
 
 Under causal attention the hidden state at position $m$ is a function only of positions $1 \dots m$. The continuation occupies positions $m+1 \dots m+n$ and therefore cannot enter it. So the probe's key at position $m$ is $k = k^{*}$ exactly, and substituting into the coefficient:
@@ -836,6 +888,8 @@ The cancellation is independent of $u$, so it holds for any whitening covariance
 The empirical content is entirely in the premise — that the probe really does share the prefix through $s_m$ — which is what E‑040 measured, on three models at four fractions of each one's depth. E‑017 and E‑018 measured it first; their outputs are gone, so they are in the record and the premise does not rest on them. The tokenizer is the one place the premise can fail quietly: a leading space or a different casing produces a different token sequence and therefore a different key, with no error raised anywhere.
 
 ## Appendix B. Provenance of every number
+
+<Gist>Each number on this page traced to the run that produced it, including the five runs whose outputs were lost.</Gist>
 
 Each row names the run a number came from, and links the files it wrote. Config files pin the seed and the layer; argv carries only the output path.
 
@@ -883,6 +937,8 @@ Saying this is not an excuse for the gap. It is the difference between a record 
 <ValueTables />
 
 ## Appendix C. Readiness
+
+<Gist>What would have to be true before this goes anywhere, and what is not true yet.</Gist>
 
 What a short venue note needs, against what exists today. This is a checklist for the author, not a claim about the work.
 

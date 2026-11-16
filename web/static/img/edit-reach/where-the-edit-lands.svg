@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620"
+     width="1000" height="620" role="img"
+     aria-label="One picture of where a rank-one edit arrives. On the left, a lit
+     field: the edited name at the centre, ringed by six questions that all name
+     it and each ask something different — where he was born, what he wrote,
+     which language he spoke, when he died, his nationality, his publisher. Every
+     one of them is filled in, and the reading beneath them is
+     0.9334, against 0.0842 for an unrelated edit on the same
+     relation. On the right, past a dashed boundary marked the question never
+     names the subject, eight hollow circles sit on bare paper. Every one of them
+     keeps a dependency line back to the edited name, because every one of them
+     genuinely rests on the fact that was changed — and not one is filled in. The
+     reading there is 0.0543 from the question's own edit and 0.0480
+     from a stranger's, which is the same number twice.">
+  <style type="text/css"><![CDATA[
+    /* An <img> is its own document and cannot see the page's custom properties,
+       but its own stylesheet is honoured, media queries included. Every var()
+       keeps a light fallback so the PDF converter, which never reads :root,
+       renders what a reader sees. */
+    :root {
+      --paper: #f4f1ea;
+      --ink: #2b2a28;
+      --muted: #55534e;
+      --faint: #6b6863;
+      --oxide: #a4442f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #1b1a18;
+        --ink: #eeece6;
+        --muted: #c2beb5;
+        --faint: #9a968e;
+        --oxide: #e3977f;
+      }
+      rect[filter*="grain"] { display: none; }
+    }
+    .h    { font-family: Lato, sans-serif; font-size: 15px; font-weight: 900;
+             letter-spacing: 0.9px; fill: var(--ink, #2b2a28); }
+    .sub  { font-family: Georgia, serif; font-size: 13.5px; font-style: italic;
+             fill: var(--faint, #6b6863); }
+    .zone { font-family: "IBM Plex Mono", monospace; font-size: 10.5px;
+             letter-spacing: 1.4px; fill: var(--faint, #6b6863); }
+    .spoke { stroke: var(--oxide, #a4442f); stroke-width: 1.6; opacity: 0.45;
+              fill: none; }
+    .dep  { stroke: var(--faint, #6b6863); stroke-width: 1.3; fill: none;
+             stroke-dasharray: 5 5; opacity: 0.62; }
+    .qlit { fill: var(--oxide, #a4442f); }
+    .qlit-t { font-family: Georgia, serif; font-size: 12px; text-anchor: middle;
+               fill: var(--paper, #f4f1ea); }
+    .dark { fill: none; stroke: var(--faint, #6b6863); stroke-width: 1.5;
+             opacity: 0.72; }
+    .big  { font-family: "IBM Plex Mono", monospace; font-size: 31px;
+             fill: var(--oxide, #a4442f); }
+    .bigd { font-family: "IBM Plex Mono", monospace; font-size: 31px;
+             fill: var(--muted, #55534e); }
+    .num  { font-family: "IBM Plex Mono", monospace; font-size: 13px;
+             fill: var(--muted, #55534e); }
+    .lab  { font-family: Georgia, serif; font-size: 12.5px;
+             fill: var(--faint, #6b6863); }
+    .verdict { font-family: Georgia, serif; font-size: 13.5px;
+                fill: var(--ink, #2b2a28); }
+  ]]></style>
+
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="var(--oxide, #a4442f)" stop-opacity="0.19"/>
+      <stop offset="62%"  stop-color="var(--oxide, #a4442f)" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="var(--oxide, #a4442f)" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9"
+      numOctaves="1" seed="4"/><feColorMatrix
+      values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.05 0"/></filter>
+  </defs>
+
+  <rect width="1000" height="620" fill="var(--paper, #f4f1ea)"/>
+  <rect width="1000" height="620" filter="url(#grain)"/>
+
+  <text x="40" y="44" class="h">WHERE A RANK-ONE EDIT ACTUALLY LANDS</text>
+  <text x="40" y="68" class="sub">Fraction of the update arriving at a question's last token, computable before the edit is made. Llama-3.1-8B, layer 5.</text>
+
+  <ellipse cx="265" cy="300" rx="268" ry="212" fill="url(#halo)"/>
+
+  <path d="M520 104 V486" stroke="var(--faint, #6b6863)" stroke-width="1"
+        stroke-dasharray="3 7" opacity="0.5" fill="none"/>
+
+  <text x="40" y="118" class="zone">THE QUESTION NAMES THE EDITED SUBJECT</text>
+  <text x="540" y="118" class="zone">IT NEVER DOES</text>
+
+  <path d="M265 300 L265.0 182.0" class="spoke"/>
+  <path d="M265 300 L405.3 241.0" class="spoke"/>
+  <path d="M265 300 L405.3 359.0" class="spoke"/>
+  <path d="M265 300 L265.0 418.0" class="spoke"/>
+  <path d="M265 300 L124.7 359.0" class="spoke"/>
+  <path d="M265 300 L124.7 241.0" class="spoke"/>
+  <g><rect x="211.9" y="286.5" width="106.2" height="27.0" rx="13.5" class="qlit"/><text x="265.0" y="304.2" class="qlit-t">the edited name</text></g>
+  <g><rect x="224.6" y="168.5" width="80.8" height="27.0" rx="13.5" class="qlit"/><text x="265.0" y="186.2" class="qlit-t">born where?</text></g>
+  <g><rect x="364.9" y="227.5" width="80.8" height="27.0" rx="13.5" class="qlit"/><text x="405.3" y="245.2" class="qlit-t">wrote what?</text></g>
+  <g><rect x="352.2" y="345.5" width="106.2" height="27.0" rx="13.5" class="qlit"/><text x="405.3" y="363.2" class="qlit-t">which language?</text></g>
+  <g><rect x="227.7" y="404.5" width="74.5" height="27.0" rx="13.5" class="qlit"/><text x="265.0" y="422.2" class="qlit-t">died when?</text></g>
+  <g><rect x="81.1" y="345.5" width="87.2" height="27.0" rx="13.5" class="qlit"/><text x="124.7" y="363.2" class="qlit-t">nationality?</text></g>
+  <g><rect x="74.8" y="227.5" width="99.9" height="27.0" rx="13.5" class="qlit"/><text x="124.7" y="245.2" class="qlit-t">his publisher?</text></g>
+  <path d="M412 198 Q576 164 726 162" class="dep"/>
+  <path d="M436 224 Q518 189 586 186" class="dep"/>
+  <path d="M453 253 Q663 208 858 194" class="dep"/>
+  <path d="M462 284 Q700 266 924 280" class="dep"/>
+  <path d="M462 316 Q612 288 748 292" class="dep"/>
+  <path d="M453 347 Q529 318 590 322" class="dep"/>
+  <path d="M436 376 Q664 347 878 350" class="dep"/>
+  <path d="M412 402 Q555 390 684 410" class="dep"/>
+  <circle cx="600" cy="186" r="13" class="dark"/>
+  <circle cx="740" cy="162" r="13" class="dark"/>
+  <circle cx="872" cy="194" r="13" class="dark"/>
+  <circle cx="938" cy="280" r="13" class="dark"/>
+  <circle cx="604" cy="322" r="13" class="dark"/>
+  <circle cx="762" cy="292" r="13" class="dark"/>
+  <circle cx="892" cy="350" r="13" class="dark"/>
+  <circle cx="698" cy="410" r="13" class="dark"/>
+
+  <path d="M540 136 h26" class="dep"/>
+  <text x="574" y="140" class="lab">each of these genuinely rests on the fact that was edited</text>
+
+  <path d="M40 502 H960" stroke="var(--faint, #6b6863)" stroke-width="1" opacity="0.3" fill="none"/>
+
+  <text x="40" y="530" class="lab">from the question's own edit</text>
+  <text x="40" y="566" class="big">0.9334</text>
+  <text x="180" y="564" class="num">· 0.0842 from a stranger's</text>
+  <text x="40" y="596" class="verdict">It arrives whatever the question goes on to ask.</text>
+
+  <text x="540" y="530" class="lab">from the question's own edit</text>
+  <text x="540" y="566" class="bigd">0.0543</text>
+  <text x="680" y="564" class="num">· 0.0480 from a stranger's</text>
+  <text x="540" y="596" class="verdict">Nothing here to tell apart.</text>
+</svg>
