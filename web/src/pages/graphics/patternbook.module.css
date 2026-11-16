@@ -1,0 +1,309 @@
+/* /graphics/patternbook. The windows reuse /built's card classes from custom.css; this file
+   only lays out the tests and their captions. Colours come from the site's tokens, so the
+   dark theme follows. */
+
+.toc {
+  margin: 0 0 2.5rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius-lg);
+  background: var(--ocl-paper-raised);
+  font-family: var(--ocl-apparatus);
+  font-size: 0.9rem;
+}
+
+.toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  columns: 2 22rem;
+  column-gap: 2rem;
+}
+
+.toc li {
+  break-inside: avoid;
+  padding: 0.2rem 0;
+}
+
+.toc a {
+  color: var(--ocl-ink);
+}
+
+.toc a:hover .id {
+  color: var(--ocl-link);
+}
+
+.id {
+  font-family: var(--ocl-mono);
+  font-size: 0.8em;
+  color: var(--ocl-ink-faint);
+  white-space: nowrap;
+}
+
+.run {
+  margin: 0 0 3.5rem;
+  scroll-margin-top: 5rem;
+}
+
+.runHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ocl-rule-strong);
+  margin-bottom: 0.8rem;
+}
+
+.runHead h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.question {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+  max-width: var(--ocl-measure-wide);
+}
+
+.label {
+  font-family: var(--ocl-apparatus);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.brief {
+  margin: 0 0 0.5rem;
+  max-width: var(--ocl-measure-wide);
+  color: var(--ocl-ink-muted);
+}
+
+.brief .label {
+  margin-right: 0.35rem;
+}
+
+.asked {
+  margin: 0 0 1.2rem;
+  max-width: var(--ocl-measure-wide);
+  color: var(--ocl-ink-muted);
+}
+
+.asked > div {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0.15rem 0;
+}
+
+.asked dt {
+  flex: none;
+  min-width: 7rem;
+}
+
+.asked dd {
+  margin: 0;
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: 1.2rem 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  gap: 1.1rem;
+  margin: 1.2rem 0;
+}
+
+.window {
+  height: 100%;
+}
+
+.cap {
+  padding: 0.75rem 0.9rem 0.9rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cap p {
+  margin: 0;
+}
+
+.given {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ocl-ink);
+}
+
+.verdicts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.verdicts li {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: var(--ocl-radius-sm);
+  color: var(--ocl-ink-muted);
+  font-size: 0.8rem;
+}
+
+.verdicts li[data-verdict="won"] {
+  border-color: var(--ocl-held);
+  background: color-mix(in srgb, var(--ocl-held) 12%, transparent);
+  color: var(--ocl-held-ink);
+}
+
+.verdicts li[data-verdict="lost"] {
+  border-style: dashed;
+  color: var(--ocl-ink-faint);
+}
+
+.meta {
+  color: var(--ocl-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.later {
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--ocl-rule-strong);
+  color: var(--ocl-ink-muted);
+  font-family: var(--ocl-prose);
+  font-size: 0.92rem;
+}
+
+.later span {
+  display: block;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.75rem;
+  color: var(--ocl-ink-faint);
+}
+
+.links {
+  margin-top: auto !important;
+  font-size: 0.8rem;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.swatches span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.swatches i {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: 1px solid var(--ocl-rule-strong);
+}
+
+.swatches code {
+  font-size: 0.75rem;
+}
+
+.traits {
+  display: table;
+  width: auto;
+  margin: 0.5rem 0 1.2rem;
+  border-collapse: collapse;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.88rem;
+}
+
+.traits caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ocl-ink-faint);
+}
+
+.traits tr {
+  border: 0;
+  border-bottom: 1px solid var(--ocl-rule);
+  background: transparent !important;
+}
+
+.traits th,
+.traits td {
+  border: 0;
+  padding: 0.4rem 1.2rem 0.4rem 0;
+  text-align: left;
+  font-weight: 400;
+  background: transparent;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 0.2rem;
+  vertical-align: middle;
+  margin-right: 0.6rem;
+}
+
+.dots i {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--ocl-oxide);
+}
+
+.dots i[data-on] {
+  background: var(--ocl-oxide);
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ocl-ink-muted);
+}
+
+.judge {
+  margin: 0.4rem 0 0.8rem;
+  max-width: var(--ocl-measure-wide);
+}
+
+.judge p {
+  margin: 0.2rem 0;
+}
+
+.judge p:not(.label) {
+  font-style: italic;
+}
+
+.showed {
+  max-width: var(--ocl-measure-wide);
+  margin: 0.6rem 0 0;
+}
+
+@media (max-width: 720px) {
+  .pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .asked > div {
+    flex-direction: column;
+    gap: 0;
+  }
+  .traits th,
+  .traits td {
+    padding-right: 0.6rem;
+  }
+}

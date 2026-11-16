@@ -482,3 +482,19 @@ built:
       shows up as a gap on the shelf rather than a book on it.
     ratio: 1.5
 
+
+  - name: patternbook
+    added: 2026-11-16
+    title: A Hand-Inked Router Guide
+    from: projects/patternbook/runs
+    page: c011/arm-b.html
+    topic: Graphics
+    what: >
+      A router troubleshooting page an agent built from one style file,
+      written from the US Army's PS Magazine of 1953 and 1961: inked
+      drawings, one spot blue, a dense page. In patternbook's latest blind
+      test it won both questions against the line-art style that had won
+      before. The other seventeen pages from those tests are on the
+      patternbook page under Graphics.
+    ratio: 1.6
+    image: /img/graphics/patternbook/c011-arm-b.webp

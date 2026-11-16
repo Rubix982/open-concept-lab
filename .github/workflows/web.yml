@@ -15,6 +15,7 @@ on:
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
       - "projects/opz"
+      - "projects/patternbook"
       - "projects/brick-stage/out/**"
       - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
@@ -28,6 +29,7 @@ on:
       - "hpc/datascalar-sim/**"
       - "projects/difference-engine/**"
       - "projects/opz"
+      - "projects/patternbook"
       - "projects/brick-stage/out/**"
       - "projects/brick-check/out/**"
       - "ai/responsible-ai/knowledge-graph/graph.html"
@@ -59,7 +61,8 @@ jobs:
           fetch-depth: 0
           filter: blob:none
           # projects/opz is its own repo (Rubix982/opz); the Labs page and the
-          # projects table read files from it.
+          # projects table read files from it. projects/patternbook
+          # (Rubix982/patternbook) supplies the pages on /graphics/patternbook.
           submodules: true
 
       - uses: actions/setup-node@v4

@@ -10,3 +10,6 @@
 [submodule "projects/research-craft"]
 	path = projects/research-craft
 	url = https://github.com/Rubix982/research-craft.git
+[submodule "projects/patternbook"]
+	path = projects/patternbook
+	url = https://github.com/Rubix982/patternbook.git

@@ -4,6 +4,7 @@ import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import PageArt from "@site/src/components/PageArt";
 import { AS_OF, GRAPHICS, REUSE, WRITEUP, type GraphicsCard } from "@site/src/data/graphics";
+import { BLIND, BUILT } from "@site/src/data/patternbook";
 
 // Same card as /agentic, so the two sections read alike. The questions on each card
 // come from the card's own data, since a reference library and a design library for
@@ -82,6 +83,14 @@ export default function GraphicsIndex(): ReactNode {
               <dt>Papers read in full</dt>
               <dd>{REUSE.readInFull}</dd>
             </div>
+            <div>
+              <dt>Blind tests</dt>
+              <dd>{BLIND.length}</dd>
+            </div>
+            <div>
+              <dt>Pages built in them</dt>
+              <dd>{BUILT}</dd>
+            </div>
           </dl>
         </header>
 
@@ -99,8 +108,10 @@ export default function GraphicsIndex(): ReactNode {
             check what an agent already does before writing anything. They differ in how
             an entry is tested. patternbook puts a page built from the entry in front of
             a judge in a blind pick. graphics-reuse measures the reused result against a
-            fresh full computation. More on <Link to="/graphics/reuse">graphics-reuse</Link>{" "}
-            and on <Link to="/agentic">Agentic</Link>, where patternbook also appears.
+            fresh full computation. More on <Link to="/graphics/reuse">graphics-reuse</Link>,
+            on <Link to="/graphics/patternbook">patternbook</Link>, with every page its
+            agents built, and on <Link to="/agentic">Agentic</Link>, where patternbook also
+            appears.
           </p>
           <p className="ocl-page__note">Figures as of {AS_OF}.</p>
         </section>

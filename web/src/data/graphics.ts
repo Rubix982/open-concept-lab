@@ -6,7 +6,8 @@
 // that supplied its one measurement is private and is not named anywhere on this site.
 //
 // patternbook's card is built from its entry in src/data/agentic.ts, so /agentic and
-// /graphics can't disagree about it.
+// /graphics can't disagree about it. Its runs have their own page, /graphics/patternbook,
+// from src/data/patternbook.ts.
 
 import { GUIDES } from "@site/src/data/agentic";
 
@@ -79,8 +80,8 @@ export const GRAPHICS: GraphicsCard[] = [
           ] as [string, string][],
           use: patternbook.use,
           useNote: patternbook.useNote,
-          href: patternbook.href,
-          external: true,
+          href: "/graphics/patternbook",
+          external: false,
         },
       ]
     : []),
