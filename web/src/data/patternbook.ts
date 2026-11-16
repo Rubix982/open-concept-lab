@@ -1,30 +1,32 @@
 // patternbook's runs, for /graphics/patternbook.
 //
 // patternbook is its own repository (github.com/Rubix982/patternbook), checked out here as the
-// submodule projects/patternbook. `npm run sync:demos` copies its runs/ folder to
-// /demos/patternbook/ (the `patternbook` entry in data/built.yml), so every page below opens
-// as the agent built it. The stills are made by scripts/patternbook-stills.sh.
+// submodule projects/patternbook. `npm run sync:demos` copies its runs/ folder, and the
+// Lumenary engine that C-014's pages load, to /demos/patternbook/ (the `patternbook` entry in
+// data/built.yml), so every page below opens as it was judged. The stills are made by
+// scripts/patternbook-stills.sh.
 //
 // Everything in RUNS is copied from the repository's CARD.md at the commit in PINNED: the
 // briefs, the verdicts, the word counts and the judge's words. Nothing updates itself.
 //
 // Adding a run, once it is committed and pushed in patternbook:
 //   1. git submodule update --remote projects/patternbook   (from the repo root)
-//   2. scripts/patternbook-stills.sh c012
+//   2. scripts/patternbook-stills.sh c015
 //   3. add the card to RUNS below, from CARD.md, and move PINNED.
 
 export const PATTERNBOOK = {
   repo: "https://github.com/Rubix982/patternbook",
-  demos: "/demos/patternbook",
+  demos: "/demos/patternbook/runs",
   stills: "/img/graphics/patternbook",
 };
 
-export const PINNED = { commit: "322a5a5", date: "31 October 2026", last: "C-011" };
+export const PINNED = { commit: "fa12bf2", dates: "31 October and 16 November 2026", last: "C-014" };
 
 // At PINNED, from README.md.
 export const LIBRARY = { problemEntries: 2, artStyles: 3 };
 
-export type Verdict = "won" | "lost" | "tie";
+/** "yes" and "no" answer a question asked of each page, not a pick between them. */
+export type Verdict = "won" | "lost" | "tie" | "yes" | "no";
 
 export type RunPage = {
   /** Path inside runs/, e.g. "c001/arm-b.html". */
@@ -34,11 +36,15 @@ export type RunPage = {
   /** Verdicts on the test's questions, in the order of `questions`. */
   verdicts?: Verdict[];
   words?: number;
-  /** A file the agent was given, or wrote, as [label, path in the repository]. */
+  /** A file the agent was given, or wrote, as [label, path in the repository or a URL]. */
   source?: [string, string];
+  /** Anything else the card recorded about this page, in one line. */
+  notes?: string;
+  /** What the close-up still shows; the still is then <card>-<page>-detail.webp. */
+  detail?: string;
   /** What the judge later wrote about this page in C-010. */
   later?: string;
-  /** C-005 only: the page's background and main accent. */
+  /** The page's background and main accent. */
   swatch?: [string, string];
 };
 
@@ -47,14 +53,22 @@ export type Run = {
   title: string;
   question: string;
   brief?: string;
+  /** No agent built these pages; this file in the repository says how they were made. */
+  made?: string;
   /** Short labels for the blind questions, then the questions in full. */
   questions?: [string, string][];
   pages: RunPage[];
   judge?: string[];
   /** C-005 only: each trait of the default, and on how many of the 7 pages it appeared. */
   traits?: [string, number][];
+  /** C-005: many small windows in a row, instead of pairs. */
+  layout?: "gallery";
+  /** A line crediting work the test used: [text before, link label, URL, text after]. */
+  credit?: [string, string, string, string];
   showed: string;
 };
+
+const LUMENARY = "https://github.com/mursalfk/lumenary";
 
 const ASSEMBLY = "library/step-by-step-instructions/ikea-assembly-instructions.md";
 
@@ -175,6 +189,7 @@ export const RUNS: Run[] = [
       "bakery, the docs homepage for a command-line tool, a wildlife photographer's portfolio, " +
       "a household energy dashboard, a lentil soup recipe. Plus the two bike-chain pages above " +
       "that were given no style.",
+    layout: "gallery",
     pages: [
       { file: "c005/bakery.html", given: "Bakery", swatch: ["#f7f1e6", "#b4622d"] },
       { file: "c005/cli-docs.html", given: "Command-line tool docs", swatch: ["#f6f3ec", "#c2410c"] },
@@ -359,17 +374,167 @@ export const RUNS: Run[] = [
       "It also has twice the words, so density and style aren't separated, and the judge's " +
       "notes on each page weren't collected this time.",
   },
+  {
+    id: "C-012",
+    title: "The hand-inked router page, its drawings printed by a press treatment",
+    question: "Does printing the drawings remove what the judge called “polygon-ish”?",
+    brief:
+      "No new agents. One page is the C-011 winner, unchanged. The other is the same page with " +
+      "its ten drawn elements, the title lettering and nine drawings, run through press: a " +
+      "two-colour letterpress model with ink spread, wobbling edges, misregistration, " +
+      "dot-screened tints and grain, in the page's own two inks. Nothing else differs.",
+    made: "runs/c012/prompts/README.md",
+    questions: [
+      ["Less AI-made", "Which page looks less AI-made?"],
+      ["Drawings look printed", "On which page do the drawings look printed or hand-made rather than computer-drawn?"],
+      ["Looks filtered", "Do the drawings on either page look “filtered”, like an effect laid on top?"],
+    ],
+    pages: [
+      {
+        file: "c012/arm-a.html",
+        given: "The C-011 winner, untreated",
+        verdicts: ["lost", "lost", "no"],
+        detail: "Close-up: the drawings for steps 1 and 2, at twice the size",
+      },
+      {
+        file: "c012/arm-b.html",
+        given: "The same page, drawings printed with press",
+        verdicts: ["won", "won", "yes"],
+        detail: "The same close-up",
+        source: ["The press treatment", "treatments/theory/press.md"],
+      },
+    ],
+    showed:
+      "The press page won both looks questions, and the judge called its drawings filtered. " +
+      "Printing moved the drawings, and the page with them, away from computer-drawn, but it " +
+      "shows as an effect, so the PS Magazine style names press only as a candidate. Why it " +
+      "reads as filtered wasn't tested. From looking: every drawing got the same treatment in " +
+      "equal measure, the drawings were already drawn to look hand-made before they were " +
+      "printed, the small lettering inside them thickened, and the text beside them stayed crisp.",
+  },
+  {
+    id: "C-013",
+    title: "The same drawings printed two ways: press, and Lumenary's risograph model",
+    question: "Did press's wobbling edges and ink spread cause the filtered look?",
+    brief:
+      "No new agents. One page is the C-012 press page. The other prints the same drawings with " +
+      "riso: the same colour separation and inks, with Lumenary's risograph ink model at its " +
+      "default dials. It keeps edges where they are, has no ink spread, lays tints as random " +
+      "grain instead of a dot screen, and never prints ink fully solid.",
+    made: "runs/c013/prompts/README.md",
+    credit: [
+      "The risograph ink model is from ",
+      "Lumenary",
+      LUMENARY,
+      ", by Mursal Furqan Kumbhar, used with the author's permission.",
+    ],
+    questions: [
+      ["Less AI-made", "Which page looks less AI-made?"],
+      ["Drawings look printed", "On which page are the drawings more convincingly printed or hand-made?"],
+      ["Looks more filtered", "Which page's drawings look more filtered, or neither, or both?"],
+    ],
+    pages: [
+      {
+        file: "c013/arm-a.html",
+        given: "press, at C-012's dials (the C-012 page)",
+        verdicts: ["tie", "tie", "no"],
+        detail: "Close-up: the drawings for steps 1 and 2, at twice the size",
+        source: ["The press treatment", "treatments/theory/press.md"],
+      },
+      {
+        file: "c013/arm-b.html",
+        given: "riso, Lumenary's risograph ink model",
+        verdicts: ["tie", "tie", "yes"],
+        detail: "The same close-up",
+        source: ["The riso treatment", "treatments/theory/riso.md"],
+      },
+    ],
+    judge: [
+      "“Both are really good! One has darker lines, one has lighter lines.”",
+      "On whether the drawings look printed: “Both are good!”",
+    ],
+    showed:
+      "The riso page read as the more filtered of the two, and the other two questions tied. So C-012's " +
+      "filtered look didn't come only from press's wobble and ink spread: a model with neither " +
+      "read as more of an effect. Filtered turned out to be relative. The press page was the " +
+      "filtered one beside the untreated page, and the less filtered one beside riso. The riso " +
+      "page prints lines at about 80 to 95% black, which is the judge's “lighter lines”; whether that " +
+      "is what reads as filtered is the next thing to test.",
+  },
+  {
+    id: "C-014",
+    title: "Three C-005 pages rebuilt with the Lumenary picture engine",
+    question: "Do better pictures alone move a page off the AI look?",
+    brief:
+      "C-005's briefs for the bakery, the wildlife photographer and the lentil soup, word for " +
+      "word, given to three new agents with one addition: make the page's pictures with the " +
+      "Lumenary engine, from a short guide and a catalogue of its 214 treatments. No style file " +
+      "and no problem entry. Each new page was picked blind against its C-005 counterpart.",
+    credit: [
+      "The engine is ",
+      "Lumenary",
+      LUMENARY,
+      ", by Mursal Furqan Kumbhar, used with the author's permission.",
+    ],
+    questions: [
+      ["Less AI-made", "Which one looks less AI-made?"],
+      ["Rather spend time on", "Which site would you rather spend time on?"],
+    ],
+    pages: [
+      { file: "c005/bakery.html", given: "Bakery, no guidance (C-005)", verdicts: ["lost", "lost"], swatch: ["#f7f1e6", "#b4622d"] },
+      {
+        file: "c014/bakery.html",
+        given: "Bakery, with the engine",
+        verdicts: ["won", "won"],
+        swatch: ["#f4ecdc", "#b2372a"],
+        notes: "6 pictures: risograph, screen-print, rubber stamp. About 18 minutes.",
+        source: ["The guide it was given", "runs/c014/lumenary-for-agents.md"],
+      },
+      { file: "c005/photographer.html", given: "Wildlife photographer, no guidance (C-005)", verdicts: ["tie", "lost"], swatch: ["#f3efe6", "#a4552a"] },
+      {
+        file: "c014/photographer.html",
+        given: "Wildlife photographer, with the engine",
+        verdicts: ["tie", "won"],
+        swatch: ["#f1ede4", "#c8381c"],
+        notes: "12 pictures: film grain, cyanotype. About 34 minutes.",
+        source: ["The guide it was given", "runs/c014/lumenary-for-agents.md"],
+      },
+      { file: "c005/recipe.html", given: "Lentil soup, no guidance (C-005)", verdicts: ["won", "lost"], swatch: ["#f7f1e6", "#c4552b"] },
+      {
+        file: "c014/recipe.html",
+        given: "Lentil soup, with the engine",
+        verdicts: ["lost", "won"],
+        swatch: ["#f3eee1", "#a3160f"],
+        notes: "3 pictures: screen-print. About 16 minutes.",
+        source: ["The guide it was given", "runs/c014/lumenary-for-agents.md"],
+      },
+    ],
+    judge: [
+      "On the photographer pair: “I love both! I think these are basic examples to show the " +
+        "possible power of the engine, but we can explore more usages and see what people would like.”",
+    ],
+    showed:
+      "The judge would rather spend time on the engine page in all three pairs, but it looked " +
+      "less AI-made in only one, with one tie and one loss. The pictures changed and the page " +
+      "around them didn't: all three engine pages kept a cream background, warm near-black " +
+      "text, small uppercase labels and serif type, and the one warm accent moved from " +
+      "terracotta to red. Out of 214 treatments, the agents used five. This fits C-010, where " +
+      "four of the five things the judge named were about the page and one was about the " +
+      "pictures. The judge could also tell the engine pages by their pictures, so these pairs " +
+      "weren't blind in practice.",
+  },
 ];
 
 /** Tests that put two pages in front of the judge. */
 export const BLIND = RUNS.filter((r) => r.questions);
 
-/** Distinct pages the agents built, C-005's included. */
-export const BUILT = new Set(RUNS.flatMap((r) => r.pages.map((p) => p.file))).size;
+/** Distinct pages the agents built, C-005's included; C-012's and C-013's are treated copies. */
+export const BUILT = new Set(RUNS.filter((r) => !r.made).flatMap((r) => r.pages.map((p) => p.file))).size;
 
 export const pageHref = (file: string): string => `${PATTERNBOOK.demos}/${file}`;
-export const stillSrc = (file: string): string =>
-  `${PATTERNBOOK.stills}/${file.replace("/", "-").replace(/\.html$/, ".webp")}`;
-export const repoFile = (path: string): string => `${PATTERNBOOK.repo}/blob/${PINNED.commit}/${path}`;
+export const stillSrc = (page: RunPage): string =>
+  `${PATTERNBOOK.stills}/${page.file.replace("/", "-").replace(/\.html$/, page.detail ? "-detail.webp" : ".webp")}`;
+export const repoFile = (path: string): string =>
+  /^https?:/.test(path) ? path : `${PATTERNBOOK.repo}/blob/${PINNED.commit}/${path}`;
 export const promptFile = (file: string): string =>
   repoFile(`runs/${file.replace(/\/([^/]+)\.html$/, "/prompts/$1.md")}`);

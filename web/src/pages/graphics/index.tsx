@@ -88,7 +88,7 @@ export default function GraphicsIndex(): ReactNode {
               <dd>{BLIND.length}</dd>
             </div>
             <div>
-              <dt>Pages built in them</dt>
+              <dt>Pages agents built</dt>
               <dd>{BUILT}</dd>
             </div>
           </dl>

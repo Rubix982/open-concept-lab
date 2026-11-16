@@ -883,6 +883,7 @@ export default async function labData(
             in?: string;
             /** A file inside the folder other than index.html. */
             page?: string;
+            include?: string[];
             added?: string;
             ratio?: number;
             image?: string;
@@ -904,7 +905,9 @@ export default async function labData(
           external: Boolean(entry.url),
           origin: entry.url
             ? new URL(entry.url).host
-            : (host.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
+            : host.include
+              ? host.from!
+              : (host.from ?? "").split("/").slice(0, -1).join("/") || "repo root",
           ratio: entry.ratio ?? 1.6,
           // js-yaml reads an unquoted date as a Date
           added: entry.added ? (entry.added as unknown instanceof Date ? (entry.added as unknown as Date).toISOString().slice(0, 10) : String(entry.added)) : undefined,

@@ -4,7 +4,8 @@
  * <Embed src="/demos/<name>/index.html"> serves them from this site's own
  * origin. A page deployed elsewhere needs none of this — embed it by URL.
  *
- * A directory source is copied wholesale (for a page with sibling assets);
+ * A directory source is copied wholesale (for a page with sibling assets),
+ * or only the paths listed in `include`, each at its own place inside it;
  * a single .html file is copied to <name>/index.html.
  */
 import fs from "node:fs/promises";
@@ -39,7 +40,13 @@ for (const demo of demos) {
 
   const target = path.join(outDir, demo.name);
   if (stat.isDirectory()) {
-    await fs.cp(source, target, { recursive: true });
+    for (const part of demo.include ?? ["."]) {
+      try {
+        await fs.cp(path.join(source, part), path.join(target, part), { recursive: true });
+      } catch {
+        missing.push(path.join(demo.from, part));
+      }
+    }
   } else {
     await fs.mkdir(target, { recursive: true });
     await fs.copyFile(source, path.join(target, "index.html"));

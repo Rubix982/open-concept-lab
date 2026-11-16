@@ -19,15 +19,15 @@ import {
 import styles from "./patternbook.module.css";
 
 // Every page an agent built in patternbook's tests, with what it was given and how the judge
-// voted. The pages themselves are served from /demos/patternbook/ (data/built.yml); the
+// voted. The pages themselves are served from /demos/patternbook/runs/ (data/built.yml); the
 // words on this page come from src/data/patternbook.ts, which is copied from CARD.md.
 
 const anchor = (id: string): string => id.toLowerCase();
 
 function Window({ page, run, small }: { page: RunPage; run: Run; small?: boolean }): ReactNode {
   const href = useBaseUrl(pageHref(page.file));
-  const still = useBaseUrl(stillSrc(page.file));
-  const unguided = run.id === "C-005" || page.given === "No guidance";
+  const still = useBaseUrl(stillSrc(page));
+  const unguided = run.id === "C-005" || /no guidance/i.test(page.given);
   return (
     <figure
       className={`ocl-card ocl-card--window ocl-window--tone${unguided ? 3 : 6} ${styles.window}`}
@@ -39,7 +39,10 @@ function Window({ page, run, small }: { page: RunPage; run: Run; small?: boolean
           Open ↗
         </a>
       </div>
-      <div className="ocl-card__preview" style={{ aspectRatio: small ? "4 / 5" : "4 / 3" }}>
+      <div
+        className="ocl-card__preview"
+        style={{ aspectRatio: page.detail ? "2 / 1" : small ? "4 / 5" : "4 / 3" }}
+      >
         <a href={href} target="_blank" rel="noreferrer" tabIndex={-1} aria-hidden="true">
           <img className="ocl-card__image" src={still} alt="" loading="lazy" decoding="async" />
         </a>
@@ -68,13 +71,19 @@ function Window({ page, run, small }: { page: RunPage; run: Run; small?: boolean
         {page.words !== undefined && (
           <p className={styles.meta}>{page.words.toLocaleString("en-US")} words</p>
         )}
+        {page.notes && <p className={styles.meta}>{page.notes}</p>}
+        {page.detail && <p className={styles.meta}>{page.detail}</p>}
         {page.later && (
           <p className={styles.later}>
             <span>Later, in C-010, on what gives it away:</span> “{page.later}”
           </p>
         )}
         <p className={styles.links}>
-          <a href={promptFile(page.file)} target="_blank" rel="noreferrer">Prompt</a>
+          {run.made ? (
+            <a href={repoFile(run.made)} target="_blank" rel="noreferrer">How it was made</a>
+          ) : (
+            <a href={promptFile(page.file)} target="_blank" rel="noreferrer">Prompt</a>
+          )}
           {page.source && (
             <>
               {" · "}
@@ -111,7 +120,7 @@ function Traits({ traits, of }: { traits: [string, number][]; of: number }): Rea
 }
 
 function RunSection({ run }: { run: Run }): ReactNode {
-  const gallery = run.pages.some((p) => p.swatch);
+  const gallery = run.layout === "gallery";
   return (
     <section id={anchor(run.id)} className={styles.run} aria-labelledby={`${anchor(run.id)}-title`}>
       <header className={styles.runHead}>
@@ -121,7 +130,14 @@ function RunSection({ run }: { run: Run }): ReactNode {
       <p className={styles.question}>{run.question}</p>
       {run.brief && (
         <p className={styles.brief}>
-          <span className={styles.label}>Brief</span> {run.brief}
+          <span className={styles.label}>{run.made ? "Setup" : "Brief"}</span> {run.brief}
+        </p>
+      )}
+      {run.credit && (
+        <p className={styles.brief}>
+          {run.credit[0]}
+          <a href={run.credit[2]} target="_blank" rel="noreferrer">{run.credit[1]}</a>
+          {run.credit[3]}
         </p>
       )}
       {run.questions && (
@@ -174,9 +190,10 @@ export default function Patternbook(): ReactNode {
             tests ran.
           </p>
           <p className="ocl-page__note">
-            In a test, two new agents get the same brief and different guidance. The judge,
-            who is also the author, sees the two pages unlabelled and in random order, and
-            answers two questions before finding out which is which.
+            In most tests, two new agents get the same brief and different guidance. C-012 and
+            C-013 keep one page and change only how its drawings are printed. The judge, who is
+            also the author, sees the two pages unlabelled and in random order, and answers the
+            questions before finding out which is which.
           </p>
           <dl className="ocl-tally">
             <div>
@@ -221,14 +238,15 @@ export default function Patternbook(): ReactNode {
             knew what each test was for. Every page came from one model, so C-005 measures this
             agent's default, not that of AI in general. The styles are written from print, and
             a web page isn't print: C-010 found that print's white space reads as cold on a
-            screen.
+            screen. In C-012 and C-013 the judge had already seen the page being printed, and
+            in C-014 the engine's pictures gave away which page used it.
           </p>
         </section>
 
         <p className="ocl-page__foot">
           Source: <a href={PATTERNBOOK.repo} target="_blank" rel="noreferrer">github.com/Rubix982/patternbook</a>,
-          at commit <code>{PINNED.commit}</code>. Tests C-001 to {PINNED.last}, run on {PINNED.date}.
-          The pages open exactly as the agents left them.
+          at commit <code>{PINNED.commit}</code>. Tests C-001 to {PINNED.last}, run on {PINNED.dates}.
+          The pages open exactly as they were judged.
         </p>
       </div>
     </Layout>

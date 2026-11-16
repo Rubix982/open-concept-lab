@@ -12,6 +12,9 @@
 #   in:    another entry's name — this card is a page inside the folder that
 #          entry copies (no `from` of its own); `page` names the file.
 #   page:  a file in the folder other than index.html.
+#   include: with a folder `from`, copy only these paths inside it, each at its
+#          own place, for pages that load a file elsewhere in the folder by a
+#          relative path.
 #   added: the date the card first appeared (YYYY-MM-DD), for "Recently added".
 
 built:
@@ -486,15 +489,17 @@ built:
   - name: patternbook
     added: 2026-11-16
     title: A Hand-Inked Router Guide
-    from: projects/patternbook/runs
-    page: c011/arm-b.html
+    from: projects/patternbook
+    # runs/c014's pages load the Lumenary engine from ../../treatments/lumenary/
+    include: [runs, treatments/lumenary/lumenary.js]
+    page: runs/c011/arm-b.html
     topic: Graphics
     what: >
       A router troubleshooting page an agent built from one style file,
       written from the US Army's PS Magazine of 1953 and 1961: inked
-      drawings, one spot blue, a dense page. In patternbook's latest blind
+      drawings, one spot blue, a dense page. In patternbook's C-011 blind
       test it won both questions against the line-art style that had won
-      before. The other seventeen pages from those tests are on the
-      patternbook page under Graphics.
+      before. The other pages from those tests, including this one with its
+      drawings printed two ways, are on the patternbook page under Graphics.
     ratio: 1.6
     image: /img/graphics/patternbook/c011-arm-b.webp
