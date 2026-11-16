@@ -9877,6 +9877,157 @@ a:hover > .ocl-home__featureCover {
   counter-increment: none;
 }
 
+/* ---- the hero: the result in one picture, before the abstract ----
+ *
+ * It sits full-measure and unframed. A figure frame would make it the paper's
+ * Figure 1, which it is not — it is not referenced from the text and carries no
+ * number. Its numbers come from the same run files the near/far figure reads.
+ */
+.ocl-hero {
+  margin: 0 0 1.9rem;
+}
+
+.ocl-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.markdown:has(> .ocl-paperhead) > .ocl-hero {
+  column-span: all;
+}
+
+/* ---- what is in here: the paper in four parts, shown with its own figures ----
+ *
+ * The thumbnails are figures lifted from the sections they point at, never
+ * decoration drawn for the index. A reader who scans this row has already seen
+ * the evidence before reading a word of the argument.
+ */
+.ocl-parts {
+  margin: 0 0 2.2rem;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.ocl-parts__label {
+  margin-bottom: 1rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-parts ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.6rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocl-parts li {
+  margin: 0;
+}
+
+.ocl-parts a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ocl-parts__figs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  margin-bottom: 0.6rem;
+}
+
+/* The thumbnail is a crop, not a shrunk figure: a whole plot at 4.2rem is a
+   grey smudge. It is scaled up and clipped to the band just below centre,
+   which is where these figures carry their marks — clipping to the top, which
+   is the obvious choice, lands on the figure's own title and renders it as
+   unreadable fuzz. Checked by cropping two of them at the real pixel size. */
+.ocl-parts__figs img {
+  display: block;
+  width: 100%;
+  height: 4.2rem;
+  object-fit: cover;
+  object-position: 50% 58%;
+  background: var(--ocl-paper-raised);
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius);
+  transition: border-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-parts a:hover .ocl-parts__figs img {
+  border-color: var(--ocl-rule-strong);
+}
+
+.ocl-parts__n {
+  margin-right: 0.45rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.78rem;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-parts__title {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--ocl-ink);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-parts a:hover .ocl-parts__title {
+  border-bottom-color: var(--ocl-rule-strong);
+}
+
+.ocl-parts__what {
+  margin: 0.35rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ocl-ink-muted);
+}
+
+/* ---- the plain line under a section heading ---- */
+
+.ocl-gist {
+  margin: -0.35rem 0 1.25rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--ocl-ink-muted);
+  text-align: left;
+  text-wrap: pretty;
+}
+
+/* Paper mode justifies its prose and runs two columns. The index line is
+   apparatus, so it stays ragged-right, and the parts grid spans both columns
+   the way the other front-matter blocks do. */
+.markdown:has(> .ocl-paperhead) .ocl-gist {
+  text-align: left;
+  hyphens: none;
+}
+
+.markdown:has(> .ocl-paperhead) > .ocl-parts {
+  column-span: all;
+}
+
+@media (max-width: 500px) {
+  .ocl-parts ol {
+    grid-template-columns: 1fr;
+    gap: 1.3rem;
+  }
+
+  .ocl-parts__figs img {
+    height: 5rem;
+  }
+}
+
 /* ==========================================================================
    Paper mode, continued — notes, and the pointers a reader navigates by
    ========================================================================== */

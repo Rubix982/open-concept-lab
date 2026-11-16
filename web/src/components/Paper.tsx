@@ -601,7 +601,14 @@ type PaperEntry = {
   keywords?: string[];
   contributions?: string[];
   reading_guide?: string;
+  /** What it costs a reader, e.g. "55-minute read". An estimate, stated so
+      nobody has to discover the length by scrolling. */
+  reading?: string;
   index?: { label: string; what: string }[];
+  /** One picture carrying the result, shown before the abstract. */
+  hero?: { src: string; alt: string };
+  /** The page in four or five parts, each shown with figures drawn from it. */
+  parts?: { n: string; title: string; what: string; href: string; figs?: string[] }[];
   /** Set once `scripts/paper_pdf.py` has written static/pdf/<project>.pdf. */
   pdf?: boolean;
 };
@@ -629,6 +636,9 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
      404 that looks like a working link, which is the same fault <Figure> had
      with its src. useBaseUrl leaves absolute URLs alone. */
   const buildsOn = useBaseUrl(e.builds_on?.href ?? "");
+  /* One hook, not one per thumbnail: a hook inside the parts loop would run a
+     different number of times whenever the list changes. */
+  const base = useBaseUrl("/").replace(/\/$/, "");
   const project = metadata.id.split("/")[0];
   const pdf = useBaseUrl(`/pdf/${project}.pdf`);
 
@@ -657,6 +667,7 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
                 Updated <b>{e.updated}</b>
               </span>
             ) : null}
+            {e.reading ? <span>{e.reading}</span> : null}
             {e.builds_on ? (
               <span>
                 Builds on <a href={buildsOn}>{e.builds_on.label}</a>
@@ -670,6 +681,12 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
           </div>
         ) : null}
       </header>
+
+      {e.hero ? (
+        <div className="ocl-hero">
+          <img src={base + e.hero.src} alt={e.hero.alt} />
+        </div>
+      ) : null}
 
       {e.reading_guide ? (
         <aside className="ocl-paper-guide">
@@ -716,6 +733,42 @@ export function Paper({ children }: { children: ReactNode }): ReactNode {
           </table>
         </div>
       ) : null}
+
+      {e.parts?.length ? (
+        <nav className="ocl-parts" aria-label="What is in this paper">
+          <div className="ocl-parts__label">What is in here</div>
+          <ol>
+            {e.parts.map((part) => (
+              <li key={part.href}>
+                <a href={part.href}>
+                  {part.figs?.length ? (
+                    <span className="ocl-parts__figs" aria-hidden="true">
+                      {part.figs.map((f) => (
+                        <img key={f} src={base + f} alt="" loading="lazy" />
+                      ))}
+                    </span>
+                  ) : null}
+                  <span className="ocl-parts__n">{part.n}</span>
+                  <span className="ocl-parts__title">{part.title}</span>
+                </a>
+                <p className="ocl-parts__what">{part.what}</p>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
     </>
   );
+}
+
+/**
+ * One plain-English line under a section heading, saying what is in the
+ * section. It describes the contents; it never argues that they are good.
+ *
+ * The headings on this paper are claims, which is right for a paper and hard
+ * on a first-time reader — a claim-shaped heading tells you the verdict before
+ * you have the vocabulary to read it. This line carries the vocabulary.
+ */
+export function Gist({ children }: { children: ReactNode }): ReactNode {
+  return <p className="ocl-gist">{children}</p>;
 }
