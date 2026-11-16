@@ -121,6 +121,7 @@ function Traits({ traits, of }: { traits: [string, number][]; of: number }): Rea
 
 function RunSection({ run }: { run: Run }): ReactNode {
   const gallery = run.layout === "gallery";
+  const studio = useBaseUrl(PATTERNBOOK.studio);
   return (
     <section id={anchor(run.id)} className={styles.run} aria-labelledby={`${anchor(run.id)}-title`}>
       <header className={styles.runHead}>
@@ -138,6 +139,11 @@ function RunSection({ run }: { run: Run }): ReactNode {
           {run.credit[0]}
           <a href={run.credit[2]} target="_blank" rel="noreferrer">{run.credit[1]}</a>
           {run.credit[3]}
+        </p>
+      )}
+      {run.studio && (
+        <p className={styles.brief}>
+          <a href={studio + run.studio[1]} target="_blank" rel="noreferrer">{run.studio[0]} ↗</a>
         </p>
       )}
       {run.questions && (

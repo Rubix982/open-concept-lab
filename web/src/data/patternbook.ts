@@ -1,9 +1,10 @@
 // patternbook's runs, for /graphics/patternbook.
 //
 // patternbook is its own repository (github.com/Rubix982/patternbook), checked out here as the
-// submodule projects/patternbook. `npm run sync:demos` copies its runs/ folder, and the
-// Lumenary engine that C-014's pages load, to /demos/patternbook/ (the `patternbook` entry in
-// data/built.yml), so every page below opens as it was judged. The stills are made by
+// submodule projects/patternbook. `npm run sync:demos` copies its runs/ folder, the Lumenary
+// engine that C-014's pages load, and the studio page for the engine's treatments, to
+// /demos/patternbook/ (the `patternbook` entry in data/built.yml), so every page below opens
+// as it was judged. The stills are made by
 // scripts/patternbook-stills.sh.
 //
 // Everything in RUNS is copied from the repository's CARD.md at the commit in PINNED: the
@@ -17,6 +18,8 @@
 export const PATTERNBOOK = {
   repo: "https://github.com/Rubix982/patternbook",
   demos: "/demos/patternbook/runs",
+  /** All of Lumenary's treatments with their dials; takes ?t=<id>, ?src=drawing, ?mode=sheet. */
+  studio: "/demos/patternbook/treatments/lumenary.html",
   stills: "/img/graphics/patternbook",
 };
 
@@ -65,6 +68,8 @@ export type Run = {
   layout?: "gallery";
   /** A line crediting work the test used: [text before, link label, URL, text after]. */
   credit?: [string, string, string, string];
+  /** A link into the Lumenary studio: [label, query string]. */
+  studio?: [string, string];
   showed: string;
 };
 
@@ -428,6 +433,7 @@ export const RUNS: Run[] = [
       LUMENARY,
       ", by Mursal Furqan Kumbhar, used with the author's permission.",
     ],
+    studio: ["Try Lumenary's risograph model on the router drawing, with its dials", "?t=risograph&src=drawing"],
     questions: [
       ["Less AI-made", "Which page looks less AI-made?"],
       ["Drawings look printed", "On which page are the drawings more convincingly printed or hand-made?"],
@@ -475,6 +481,10 @@ export const RUNS: Run[] = [
       "Lumenary",
       LUMENARY,
       ", by Mursal Furqan Kumbhar, used with the author's permission.",
+    ],
+    studio: [
+      "Try all 214 treatments in the Lumenary studio: one at a time with its dials, or every still treatment on one contact sheet",
+      "",
     ],
     questions: [
       ["Less AI-made", "Which one looks less AI-made?"],

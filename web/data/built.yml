@@ -490,8 +490,15 @@ built:
     added: 2026-11-16
     title: A Hand-Inked Router Guide
     from: projects/patternbook
-    # runs/c014's pages load the Lumenary engine from ../../treatments/lumenary/
-    include: [runs, treatments/lumenary/lumenary.js]
+    # runs/c014's pages load the Lumenary engine from ../../treatments/lumenary/;
+    # treatments/lumenary.html is the studio for all its treatments, and loads
+    # the model for the two that find a picture's subject from ../vendor/
+    include:
+      - runs
+      - treatments/lumenary.html
+      - treatments/lumenary/lumenary.js
+      - treatments/treatments.js
+      - vendor/lumenary/public/models/u2netp.onnx
     page: runs/c011/arm-b.html
     topic: Graphics
     what: >
