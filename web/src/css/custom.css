@@ -1766,6 +1766,8 @@ a.ocl-desk__day:focus-visible {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.22em;
   cursor: pointer;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .ocl-gloss__phrase::after {
@@ -10524,6 +10526,50 @@ a:hover > .ocl-home__featureCover {
 @media (max-width: 760px) {
   .ocl-bi {
     grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+/* Three columns for a paragraph written in Roman Urdu: the Roman as written,
+   an English rendering, and the Nastaliq. Below 1100px the English drops
+   under the pair; on a phone all three stack. */
+.ocl-article__body .markdown > .ocl-bi--tri {
+  max-width: min(100%, 66rem);
+}
+
+.ocl-bi--tri {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "ro tr ur";
+  gap: 0 1.75rem;
+}
+
+.ocl-bi--tri > .ocl-bi__en { grid-area: ro; }
+.ocl-bi--tri > .ocl-bi__tr { grid-area: tr; }
+.ocl-bi--tri > .ocl-bi__ur { grid-area: ur; }
+
+.ocl-bi__tr {
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--ocl-rule-strong);
+  font-size: 0.95rem;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-bi__tr > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1099px) {
+  .ocl-bi--tri {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "ro ur" "tr tr";
+    gap: 0.9rem 2.25rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .ocl-bi--tri {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "ro" "tr" "ur";
     gap: 0.75rem;
   }
 }

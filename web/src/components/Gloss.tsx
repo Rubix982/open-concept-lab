@@ -22,15 +22,24 @@ export default function Gloss({
 
   return (
     <span className={`ocl-gloss${open ? " ocl-gloss--open" : ""}`}>
-      <button
-        type="button"
+      {/* A span, not a <button>: a button always renders as one box, so a
+          long phrase could not wrap with the sentence around it. */}
+      <span
+        role="button"
+        tabIndex={0}
         className="ocl-gloss__phrase"
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen(!open)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(!open);
+          }
+        }}
       >
         {on}
-      </button>
+      </span>
       <span className="ocl-gloss__note" id={id} role="note">
         <span className="ocl-gloss__who">Claude</span> {children}
       </span>
