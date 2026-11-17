@@ -147,7 +147,7 @@ You never know what happens to the heart, or when, and on how many nights it ach
 <Figure
   src="/img/writing/two-waters.webp"
   alt="Two pointed marble arches side by side, each framing a painted garden at sunset. In both, a pale stone basin holds water that reflects the sky, next to a bed of earth. On the left the water stays in its basin and the bed holds only dead stems. On the right a channel lets the same water run into the bed, which is full of leaves and red, pink, white and yellow flowers."
-  caption={<><i>Agar paani apna maqsad bhool jai ... magar apne aapko dosron tak na paunchaye, to paani ka asool poora nahi hoga.</i> This picture and the cover were painted with the Impressionist and Mughal Jali treatments in <a href="https://github.com/mursalfk/lumenary">Lumenary</a>, by Mursal Furqan Kumbhar.</>}
+  caption={<><i>Agar paani apna maqsad bhool jai ... magar apne aapko dosron tak na paunchaye, to paani ka asool poora nahi hoga.</i></>}
   wide
   plain
 />
