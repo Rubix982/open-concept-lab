@@ -116,6 +116,8 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
     <tr><td>excess over same-relation floor</td><td className="n">+0.0002</td><td><code>hop2.excess_over_same_relation</code></td></tr>
     <tr><td>floor, different-relation stranger</td><td className="n">+0.0294</td><td><code>hop2.floor_diff_relation</code></td></tr>
     <tr><td>excess over different-relation floor</td><td className="n">+0.0243</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
+    <tr><td>fraction above same-relation floor</td><td className="n">62.6%</td><td><code>per_question.own>per_question.floor_same_relation</code></td></tr>
+    <tr><td>fraction above any-donor floor</td><td className="n">+0.7967</td><td><code>hop2.fraction_above_floor</code></td></tr>
   </tbody>
 </Data>
 
@@ -134,13 +136,14 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
     <tr><td>excess over same-relation floor</td><td className="n">+0.0000</td><td><code>hop2.excess_over_same_relation</code></td></tr>
     <tr><td>floor, different-relation stranger</td><td className="n">+0.0092</td><td><code>hop2.floor_diff_relation</code></td></tr>
     <tr><td>excess over different-relation floor</td><td className="n">+0.0075</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
-    <tr><td>fraction above floor</td><td className="n">+0.7233</td><td><code>hop2.fraction_above_floor</code></td></tr>
+    <tr><td>fraction above same-relation floor</td><td className="n">59.1%</td><td><code>per_question.own>per_question.floor_same_relation</code></td></tr>
+    <tr><td>fraction above any-donor floor</td><td className="n">+0.7233</td><td><code>hop2.fraction_above_floor</code></td></tr>
   </tbody>
 </Data>
 
 **E-045 · The same far-field measurement on GPT-J-6B**
 
-§5.2 and §7, limitations 4 and 5. A second architecture. The sign holds and the effect does not: own and floor are the same number to two decimals, and 52% of questions sit above the floor against 79.7% on 8B.
+§5.2 and §7, limitations 4 and 5. A second architecture. The sign holds and the effect does not: own and floor are the same number to two decimals, and 52% of questions sit above the any-donor floor against 79.7% on 8B — against the stricter same-relation floor it is 46.1%, below a coin flip.
 
 <Data caption={<>Every quantity E-045 produced that the paper cites, with the field it was read from in <code>E-004-far-field-floor-EleutherAI_gpt-j-6b.json</code>.</>}>
   <thead>
@@ -153,7 +156,8 @@ The headline of §5.1. The raw correlation is the one that will be quoted; the e
     <tr><td>excess over same-relation floor</td><td className="n">-0.0000</td><td><code>hop2.excess_over_same_relation</code></td></tr>
     <tr><td>floor, different-relation stranger</td><td className="n">+0.1287</td><td><code>hop2.floor_diff_relation</code></td></tr>
     <tr><td>excess over different-relation floor</td><td className="n">+0.0014</td><td><code>hop2.excess_over_diff_relation</code></td></tr>
-    <tr><td>fraction above floor</td><td className="n">+0.5178</td><td><code>hop2.fraction_above_floor</code></td></tr>
+    <tr><td>fraction above same-relation floor</td><td className="n">46.1%</td><td><code>per_question.own>per_question.floor_same_relation</code></td></tr>
+    <tr><td>fraction above any-donor floor</td><td className="n">+0.5178</td><td><code>hop2.fraction_above_floor</code></td></tr>
     <tr><td>near field, hop-1 natural</td><td className="n">+0.7985</td><td><code>reproduction_gate.hop1_natural</code></td></tr>
   </tbody>
 </Data>

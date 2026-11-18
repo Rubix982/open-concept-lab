@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" width="1000" height="720" role="img" aria-label="Two panels. The top panel pools all 495 probes on one linear axis and draws two medians of per-probe differences: identity, meaning the same-subject control minus another person's edit, at +0.0583 with a 95% interval of 0.0472 to 0.0732; and content, meaning the real edit minus the same-subject control, at +0.0009 with an interval of 0.0004 to 0.0024. On that shared axis content is a hairline, so an inset re-draws it magnified 29 times, where its interval is visible and clears zero. The ratio of the two is 63 to one. The bottom panel splits both numbers by probe family on a log axis, each family drawn as a line running from its content value to its identity value. Five of six families run rightwards — repetition by 534 times, semantics by 444, position by 95 — while exposure runs the other way, its content value 2.0 times its identity value.">
+  <style type="text/css"><![CDATA[
+    /* An SVG loaded as an image is its own document and cannot see the page's
+       custom properties, so it carries its own. Every var() keeps a light
+       fallback, because the PDF converter does not resolve var() at all. */
+    :root {
+        --paper: #f4f1ea;
+        --ink: #2b2a28;
+        --muted: #55534e;
+        --faint: #6b6863;
+        --rule: #d9d3c7;
+        --cool: #5b4fc4;
+        --warm: #a4442f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+          --paper: #1b1a18;
+          --ink: #eeece6;
+          --muted: #c2beb5;
+          --faint: #9a968e;
+          --rule: #3a3833;
+          --cool: #8078e0;
+          --warm: #c9664a;
+      }
+    }
+    text { font-family: Lato, "Helvetica Neue", sans-serif; }
+    .panel    { font-size: 14px; font-weight: 600; fill: var(--ink, #2b2a28); }
+    .note     { font-size: 11.5px; fill: var(--faint, #6b6863); }
+    .rowlab   { font-size: 13px; fill: var(--ink, #2b2a28); }
+    .rowsub   { font-size: 11px; fill: var(--faint, #6b6863); }
+    .tick     { font-size: 11px; fill: var(--faint, #6b6863); }
+    .mid      { text-anchor: middle; }
+    .end      { text-anchor: end; }
+    /* Numbers on every mark, so identity never rests on colour alone. */
+    .val      { font-size: 12.5px; font-family: "IBM Plex Mono", ui-monospace, monospace; fill: var(--ink, #2b2a28); }
+    .famval   { font-size: 11.5px; font-family: "IBM Plex Mono", ui-monospace, monospace; fill: var(--muted, #55534e); }
+    .ratio    { font-size: 26px; font-weight: 600; fill: var(--warm, #a4442f); }
+    .cool     { fill: var(--cool, #5b4fc4); }
+    .warm     { fill: var(--warm, #a4442f); }
+    .axis     { stroke: var(--ink, #2b2a28); stroke-width: 1.2; }
+    .grid     { stroke: var(--rule, #d9d3c7); stroke-width: 1; }
+    .ci       { stroke: var(--ink, #2b2a28); stroke-width: 1.6; }
+    .span     { stroke: var(--rule, #d9d3c7); stroke-width: 2.4; }
+    .lead     { stroke: var(--rule, #d9d3c7); stroke-width: 1; fill: none; }
+    .inset    { fill: none; stroke: var(--rule, #d9d3c7); stroke-width: 1.2; }
+    .zoombox  { fill: none; stroke: var(--rule, #d9d3c7); stroke-width: 1.2; }
+    .insetlab { font-size: 12px; font-weight: 600; fill: var(--ink, #2b2a28); }
+    .insetnote{ font-size: 11px; fill: var(--faint, #6b6863); }
+  ]]></style>
+
+  <rect width="1000" height="720" fill="var(--paper, #f4f1ea)"/>
+  <text x="210" y="42" class="panel end">Pooled over all 495 probes</text>
+  <text x="232" y="42" class="note">median of per-probe differences, 95% bootstrap interval</text>
+  <line x1="232.0" y1="86" x2="232.0" y2="206" class="grid"/>
+  <text x="232.0" y="76" class="tick mid">0.00</text>
+  <line x1="370.1" y1="86" x2="370.1" y2="206" class="grid"/>
+  <text x="370.1" y="76" class="tick mid">0.02</text>
+  <line x1="508.3" y1="86" x2="508.3" y2="206" class="grid"/>
+  <text x="508.3" y="76" class="tick mid">0.04</text>
+  <line x1="646.4" y1="86" x2="646.4" y2="206" class="grid"/>
+  <text x="646.4" y="76" class="tick mid">0.06</text>
+  <line x1="232" y1="86" x2="768" y2="86" class="axis"/>
+  <text x="210" y="119" class="rowlab end">Identity</text>
+  <text x="210" y="134" class="rowsub end">whose fact was edited</text>
+  <rect x="232" y="108" width="402.56" height="26" rx="3" class="warm"/>
+  <line x1="558.4" y1="121.0" x2="737.7" y2="121.0" class="ci"/>
+  <line x1="558.4" y1="116.0" x2="558.4" y2="126.0" class="ci"/>
+  <line x1="737.7" y1="116.0" x2="737.7" y2="126.0" class="ci"/>
+  <text x="749.7" y="125" class="val">+0.0583</text>
+  <text x="210" y="175" class="rowlab end">Content</text>
+  <text x="210" y="190" class="rowsub end">what it was changed to</text>
+  <rect x="232" y="164" width="6.42" height="26" rx="3" class="cool"/>
+  <line x1="234.6" y1="177.0" x2="248.3" y2="177.0" class="ci"/>
+  <line x1="234.6" y1="172.0" x2="234.6" y2="182.0" class="ci"/>
+  <line x1="248.3" y1="172.0" x2="248.3" y2="182.0" class="ci"/>
+  <text x="260.3" y="181" class="val">+0.0009</text>
+  <path d="M232 206 L232 236" class="lead"/>
+  <path d="M250.3 206 L550 236" class="lead"/>
+  <rect x="232" y="164" width="18.25" height="26" class="zoombox"/>
+  <rect x="232" y="236" width="318" height="104" rx="4" class="inset"/>
+  <text x="248" y="260" class="insetlab">Content alone, magnified 29×</text>
+  <line x1="248.0" y1="288" x2="490.0" y2="288" class="axis"/>
+  <text x="248.0" y="280" class="tick mid">0.000</text>
+  <text x="339.6" y="280" class="tick mid">0.001</text>
+  <text x="431.2" y="280" class="tick mid">0.002</text>
+  <rect x="248.0" y="298" width="85.18" height="18" rx="2" class="cool"/>
+  <line x1="282.3" y1="307" x2="464.1" y2="307" class="ci"/>
+  <line x1="282.3" y1="302" x2="282.3" y2="312" class="ci"/>
+  <line x1="464.1" y1="302" x2="464.1" y2="312" class="ci"/>
+  <text x="248" y="330" class="insetnote">interval excludes zero — content is detectable</text>
+  <text x="792" y="156" class="ratio">×63</text>
+  <text x="792" y="176" class="rowsub">identity</text>
+  <text x="792" y="190" class="rowsub">over content</text>
+  <text x="210" y="400" class="panel end">By probe family</text>
+  <text x="232" y="400" class="note">the same two numbers, each line running from content to identity — log scale</text>
+  <line x1="335.6" y1="448" x2="335.6" y2="658" class="grid"/>
+  <text x="335.6" y="438" class="tick mid">0.001</text>
+  <line x1="501.1" y1="448" x2="501.1" y2="658" class="grid"/>
+  <text x="501.1" y="438" class="tick mid">0.01</text>
+  <line x1="666.6" y1="448" x2="666.6" y2="658" class="grid"/>
+  <text x="666.6" y="438" class="tick mid">0.1</text>
+  <line x1="232" y1="448" x2="768" y2="448" class="axis"/>
+  <text x="210" y="476" class="rowlab end">exposure</text>
+  <text x="210" y="490" class="rowsub end">n = 42</text>
+  <line x1="581.8" y1="472" x2="538.3" y2="472" class="span"/>
+  <circle cx="581.8" cy="472" r="4.5" class="cool"/>
+  <path d="M531.3 472 L538.3 467 L538.3 477 Z" class="warm"/>
+  <text x="595.8" y="476" class="famval">content larger, ×2.0</text>
+  <text x="210" y="510" class="rowlab end">alias</text>
+  <text x="210" y="524" class="rowsub end">n = 80</text>
+  <line x1="319.2" y1="506" x2="383.1" y2="506" class="span"/>
+  <circle cx="319.2" cy="506" r="4.5" class="cool"/>
+  <path d="M390.1 506 L383.1 501 L383.1 511 Z" class="warm"/>
+  <text x="404.1" y="510" class="famval">×3</text>
+  <text x="210" y="544" class="rowlab end">discrimination</text>
+  <text x="210" y="558" class="rowsub end">n = 37</text>
+  <line x1="404.4" y1="540" x2="504.7" y2="540" class="span"/>
+  <circle cx="404.4" cy="540" r="4.5" class="cool"/>
+  <path d="M511.7 540 L504.7 535 L504.7 545 Z" class="warm"/>
+  <text x="525.7" y="544" class="famval">×4</text>
+  <text x="210" y="578" class="rowlab end">position</text>
+  <text x="210" y="592" class="rowsub end">n = 210</text>
+  <line x1="314.0" y1="574" x2="634.1" y2="574" class="span"/>
+  <circle cx="314.0" cy="574" r="4.5" class="cool"/>
+  <path d="M641.1 574 L634.1 569 L634.1 579 Z" class="warm"/>
+  <text x="655.1" y="578" class="famval">×95</text>
+  <text x="210" y="612" class="rowlab end">semantics</text>
+  <text x="210" y="626" class="rowsub end">n = 42</text>
+  <line x1="268.7" y1="608" x2="699.9" y2="608" class="span"/>
+  <circle cx="268.7" cy="608" r="4.5" class="cool"/>
+  <path d="M706.9 608 L699.9 603 L699.9 613 Z" class="warm"/>
+  <text x="720.9" y="612" class="famval">×444</text>
+  <text x="210" y="646" class="rowlab end">repetition</text>
+  <text x="210" y="660" class="rowsub end">n = 84</text>
+  <line x1="282.9" y1="642" x2="727.2" y2="642" class="span"/>
+  <circle cx="282.9" cy="642" r="4.5" class="cool"/>
+  <path d="M734.2 642 L727.2 637 L727.2 647 Z" class="warm"/>
+  <text x="748.2" y="646" class="famval">×534</text>
+  <circle cx="238" cy="688" r="4.5" class="cool"/>
+  <text x="250" y="692" class="tick">content</text>
+  <path d="M340 688 L333 683 L333 693 Z" class="warm"/>
+  <text x="348" y="692" class="tick">identity</text>
+</svg>
