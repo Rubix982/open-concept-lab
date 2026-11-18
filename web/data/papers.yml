@@ -905,3 +905,1515 @@ youssef2025tracing:
   verified: true
   projects: [edit-slice, rome-neighbors]
   gives_me: "The other direction on the same rank-one structure - from the edited weights backwards, inferring the edited object at up to 99% and reversing up to 94% of edits. Read its methods before any novelty line rests on it."
+
+marks2024sparse:
+  title: "Sparse Feature Circuits: Discovering and Editing Interpretable Causal Graphs in Language Models"
+  authors: "Samuel Marks, Can Rager, Eric J. Michaud, Yonatan Belinkov, David Bau, Aaron Mueller"
+  year: 2024
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2403.19647
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on anticipat in [T-014]; cited 528 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+tewel2023locked:
+  title: "Key-Locked Rank One Editing for Text-to-Image Personalization"
+  authors: "Yoad Tewel, Rinon Gal, Gal Chechik, Yuval Atzmon"
+  year: 2023
+  venue: "International Conference on Computer Graphics and Interactive Techniques"
+  url: https://arxiv.org/abs/2305.01644
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank one in [T-014]; cited 253 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+gupta2024rebuilding:
+  title: "Rebuilding ROME : Resolving Model Collapse during Sequential Model Editing"
+  authors: "Akshat Gupta, S. Baskaran, G. Anumanchipalli"
+  year: 2024
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2403.07175
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 68 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+das2024larimar:
+  title: "Larimar: Large Language Models with Episodic Memory Control"
+  authors: "Payel Das, Subhajit Chaudhury, Elliot Nelson, I. Melnyk, Sarathkrishna Swaminathan, Si-Hui Dai et al."
+  year: 2024
+  venue: "International Conference on Machine Learning"
+  url: https://arxiv.org/abs/2403.11901
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 64 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+sharma2024locating:
+  title: "Locating and Editing Factual Associations in Mamba"
+  authors: "Arnab Sen Sharma, David Atkinson, David Bau"
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2404.03646
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 54 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+dherin2025learning:
+  title: "Learning without training: The implicit dynamics of in-context learning"
+  authors: "Benoit Dherin, Michael Munn, Hanna Mazzawi, M. Wunder, J. Gonzalvo"
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2507.16003
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 51 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+gandikota2024erasing:
+  title: "Erasing Conceptual Knowledge from Language Models"
+  authors: "Rohit Gandikota, Sheridan Feucht, Samuel Marks, David Bau"
+  year: 2024
+  venue: "Neural Information Processing Systems"
+  url: https://arxiv.org/abs/2410.02760
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 39 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+yang2025mirage:
+  title: "The Mirage of Model Editing: Revisiting Evaluation in the Wild"
+  authors: "Wan-Li Yang, Fei Sun, Jiajun Tan, Xinyu Ma, Qi Cao, Dawei Yin et al."
+  year: 2025
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2502.11177
+  status: read
+  relevance: high
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read from its method sections. A second kind of inflation in the same literature, in the protocol rather than the items: teacher forcing at test time leaks both the content and the length of the ground truth, and editing success falls from 96.8% to 38.5% once it is removed. Worth holding beside \u00a75.5 \u2014 that one is about which items were written, this is about how any item is scored."
+
+rosati2024long:
+  title: "Long-form evaluation of model editing"
+  authors: "Domenic Rosati, Robie Gonzales, Jinkun Chen, Xue-Min Yu, Melis Erkan, Yahya Kayani et al."
+  year: 2024
+  venue: "North American Chapter of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2402.09394
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 30 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+hua2024propagation:
+  title: "Propagation and Pitfalls: Reasoning-based Assessment of Knowledge Editing through Counterfactual Tasks"
+  authors: "Wen-Yue Hua, Jiang Guo, Ming-Wen Dong, He Zhu, Patrick Ng, Zhi-Guo Wang"
+  year: 2024
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2401.17585
+  status: read
+  relevance: high
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read from its method sections. Decomposes why an edit fails to propagate into the competencies a model needs to reason with the edited fact, on counterfactual tasks. It asks why propagation fails; \u00a75.5 asks whether the item could have tested propagation at all. Neither examines the other's question."
+
+wang2024conceptual:
+  title: "Editing Conceptual Knowledge for Large Language Models"
+  authors: "Xiao-Han Wang, Shengyu Mao, Shu-Min Deng, Yunzhi Yao, Yue Shen, Lei Liang et al."
+  year: 2024
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2403.06259
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on anticipat in [T-014]; cited 28 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+li2024should:
+  title: "Should We Really Edit Language Models? On the Evaluation of Edited Language Models"
+  authors: "Qi Li, Xiang Liu, Zhen-Heng Tang, Pei-Jie Dong, Ze-Yu Li, Xinglin Pan et al."
+  year: 2024
+  venue: "Neural Information Processing Systems"
+  url: https://arxiv.org/abs/2410.18785
+  status: read
+  relevance: high
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read from its method sections. Measures what editing costs a model's general abilities rather than how far an edit travels: deterioration within a few dozen edits, instruction-tuned models more robust, safety weakened. Nothing here bears on \u00a75 \u2014 filed so the next sweep does not surface it again as unexamined."
+
+hewitt2023backpack:
+  title: "Backpack Language Models"
+  authors: "John Hewitt, John Thickstun, Christopher D. Manning, Percy Liang"
+  year: 2023
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2305.16765
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 25 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+mao2023personality:
+  title: "Editing Personality For Large Language Models"
+  authors: "Shengyu Mao, Xiao-Han Wang, Meng-Ru Wang, Yong Jiang, Peng-Jun Xie, Fei Huang et al."
+  year: 2023
+  venue: "Natural Language Processing and Chinese Computing"
+  url: https://arxiv.org/abs/2310.02168
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on anticipat in [T-014]; cited 25 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2024evedit:
+  title: "EVEDIT: Event-based Knowledge Editing with Deductive Editing Boundaries"
+  authors: "Jiateng Liu, Peng-Fei Yu, Yu-Ji Zhang, Sha Li, Zixuan Zhang, Heng Ji"
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2402.11324
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 21 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+li2023dependencies:
+  title: "Evaluating Dependencies in Fact Editing for Language Models: Specificity and Implication Awareness"
+  authors: "Zichao Li, Ines Arous, Siva Reddy, J. Cheung"
+  year: 2023
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2312.01858
+  status: skimmed
+  relevance: high
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read at the abstract. DepEdit evaluates whether an edit respects a fact's logical implications under If-Then rules, and reports that editing methods are sensitive to the surface form of knowledge \u2014 the question \u00a73.4's alias family asks from the other side. Read its methods before leaning on that."
+
+hsueh2024mind:
+  title: "Editing the Mind of Giants: An In-Depth Exploration of Pitfalls of Knowledge Editing in Large Language Models"
+  authors: "Cheng-Hsun Hsueh, Paul Kuo-Ming Huang, Tzu-Han Lin, Che-Wei Liao, Hung-Chieh Fang, Chao-Wei Huang et al."
+  year: 2024
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2406.01436
+  status: read
+  relevance: high
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read from its method sections. A survey of editing's side effects re-run under consistent metrics. Its one use of \"edited subject\" is MQuAKE's own metric notation, not an analysis of whether a probe names the subject, so it does not reach \u00a75.5."
+
+facchiano2025video:
+  title: "Video Unlearning via Low-Rank Refusal Vector"
+  authors: "Simone Facchiano, Stefano Saravalle, Matteo Migliarini, Edoardo De Matteis, Alessio Sampieri, A. Pilzer et al."
+  year: 2025
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2506.07891
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on closed-form edit in [T-014]; cited 14 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2025memory:
+  title: "Memory in Large Language Models: Mechanisms, Evaluation and Evolution"
+  authors: "Di Zhang, Wen-Dong Li, K. Song, Jiaye Lu, Gang Li, Liu Yang et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2509.18868
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 13 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+rashid2023gradient:
+  title: "Gradient-Free Privacy Leakage in Federated Language Models through Selective Weight Tampering"
+  authors: "M. Rashid, Vishnu Asutosh Dasu, Kang Gu, Najrin Sultana, Shagufta Mehnaz"
+  year: 2023
+  venue: "Proceedings on Privacy Enhancing Technologies"
+  url: https://arxiv.org/abs/2310.16152
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 13 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+abdali2024fooled:
+  title: "Can LLMs be Fooled? Investigating Vulnerabilities in LLMs"
+  authors: "Sara Abdali, Jia He, C. Barberan, Richard Anarfi"
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2407.20529
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on anticipat in [T-014]; cited 13 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+joshi2026causality:
+  title: "Causality is Key for Interpretability Claims to Generalise"
+  authors: "S. Joshi, Aaron Mueller, David A. Klindt, Wieland Brendel, P. Reizinger, Dhanya Sridhar"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2602.16698
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on pitfall in [T-014]; cited 11 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+venditti2024enhancing:
+  title: "Enhancing Data Privacy in Large Language Models through Private Association Editing"
+  authors: "Davide Venditti, Elena Sofia Ruzzetti, Giancarlo A. Xompero, Cristina Giannone, Andrea Favalli, Raniero Romagnoli et al."
+  year: 2024
+  venue: "Journal of Cybersecurity and Privacy"
+  url: https://arxiv.org/abs/2406.18221
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 11 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+feng2026tracking:
+  title: "Tracking the Limits of Knowledge Propagation: How LLMs Fail at Multi-Step Reasoning with Conflicting Knowledge"
+  authors: "Yiyang Feng, Ze-Ming Chen, Hao-Tian Wu, Jiawei Zhou, Antoine Bosselut"
+  year: 2026
+  venue: "Conference of the European Chapter of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2601.15495
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on flaw in [T-014]; cited 10 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wu2025robust:
+  title: "Robust Knowledge Editing via Explicit Reasoning Chains for Distractor-Resilient Multi-Hop QA"
+  authors: "Yuchen Wu, Liang Ding, Li Shen, Da-Cheng Tao"
+  year: 2025
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2509.01468
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 10 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2024enhancing:
+  title: "Enhancing Multi-hop Reasoning through Knowledge Erasure in Large Language Model Editing"
+  authors: "Mengqi Zhang, Bo-Wen Fang, Q. Liu, P. Ren, Shu Wu, Zhu-Min Chen et al."
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2408.12456
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 10 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+xia2025medrek:
+  title: "MedREK: Retrieval-Based Editing for Medical LLMs with Key-Aware Prompts"
+  authors: "Shu-Jun Xia, Hao-Kun Lin, Yi-Chen Wu, Yi-Nan Zhou, Zixuan Li, Zhongwei Wan et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2510.13500
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 9 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2025disentangling:
+  title: "Disentangling Knowledge Representations for Large Language Model Editing"
+  authors: "Meng-Qi Zhang, Zi-Sheng Zhou, Xiaotian Ye, Qiang Liu, Zhao-Chun Ren, Zhu-Min Chen et al."
+  year: 2025
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2505.18774
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 8 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+anani2026certified:
+  title: "Certified Circuits: Stability Guarantees for Mechanistic Circuits"
+  authors: "Alaa A. Anani"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2602.22968
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on artifact in [T-014]; cited 7 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2025built:
+  title: "Is Model Editing Built on Sand? Revealing Its Illusory Success and Fragile Foundation"
+  authors: "Wei Liu, Hao Xu, Bing-Qing Liu, Zhi-Ying Deng, Hao-Zhao Wang, Jun Wang et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2510.00625
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on shortcut in [T-014]; cited 7 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wei2025setke:
+  title: "SetKE: Knowledge Editing for Knowledge Elements Overlap"
+  authors: "Yi-Fan Wei, Xiao-Yan Yu, Ran Song, Hao Peng, Angsheng Li"
+  year: 2025
+  venue: "International Joint Conference on Artificial Intelligence"
+  url: https://arxiv.org/abs/2504.20972
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 7 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+song2024black:
+  title: "Knowledge Editing on Black-box Large Language Models"
+  authors: "Xiaoshuai Song, Zhengyang Wang, Keqing He, Guanting Dong, Yu-Tao Mou, Jin-Xu Zhao et al."
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2402.08631
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 7 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ge2024well:
+  title: "How Well Can Knowledge Edit Methods Edit Perplexing Knowledge?"
+  authors: "Huai-Zhi Ge, Frank Rudzicz, Zining Zhu"
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2406.17253
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 7 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2026document:
+  title: "Model Editing for New Document Integration in Generative Information Retrieval"
+  authors: "Zhen Zhang, Zi-Han Wang, Xinyu Ma, Shuai-Qiang Wang, Dawei Yin, Xin Xin et al."
+  year: 2026
+  venue: "The Web Conference"
+  url: https://arxiv.org/abs/2603.02773
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 6 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+cao2024mind:
+  title: "One Mind, Many Tongues: A Deep Dive into Language-Agnostic Knowledge Neurons in Large Language Models"
+  authors: "Pengfei Cao, Yuheng Chen, Zhuo-Ran Jin, Yubo Chen, Kang Liu, Jun Zhao"
+  year: 2024
+  venue: "Artificial Intelligence"
+  url: https://arxiv.org/abs/2411.17401
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on mention in [T-014]; cited 6 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+guo2024backdoor:
+  title: "Backdoor in Seconds: Unlocking Vulnerabilities in Large Pre-trained Models via Model Editing"
+  authors: "Dong-Liang Guo, Meng-Xuan Hu, Zi-Han Guan, Junfeng Guo, Thomas Hartvigsen, Sheng Li"
+  year: 2024
+  venue: "International Conference on Information and Knowledge Management"
+  url: https://arxiv.org/abs/2410.18267
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on contamina in [T-014]; cited 6 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zeng2024fame:
+  title: "FAME: Towards Factual Multi-Task Model Editing"
+  authors: "Li Zeng, Yingyu Shan, Zeming Liu, Jiashu Yao, Yuhang Guo"
+  year: 2024
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2410.10859
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on flaw, misleading in [T-014]; cited 5 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2024relation:
+  title: "Relation Also Knows: Rethinking the Recall and Editing of Factual Associations in Auto-Regressive Transformer Language Models"
+  authors: "Xiyu Liu, Zhengxiao Liu, Nai-Bin Gu, Zheng Lin, Wanli Ma, Ji Xiang et al."
+  year: 2024
+  venue: "AAAI Conference on Artificial Intelligence"
+  url: https://arxiv.org/abs/2408.15091
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on flaw in [T-014]; cited 5 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+jiang2025dualedit:
+  title: "DualEdit: Mitigating Safety Fallback in LLM Backdoor Editing via Affirmation-Refusal Regulation"
+  authors: "Hou-Cheng Jiang, Zetong Zhao, Jun-Feng Fang, Hao-Kai Ma, Rui-Peng Wang, Xiang Wang et al."
+  year: 2025
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2506.13285
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 5 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ye2025unlearning:
+  title: "LLM Unlearning Should Be Form-Independent"
+  authors: "Xiaotian Ye, Mengqi Zhang, Shu Wu"
+  year: 2025
+  venue: "IEEE Symposium on Security and Privacy"
+  url: https://arxiv.org/abs/2506.07795
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 5 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+baser2025thinkeval:
+  title: "ThinkEval: Practical Evaluation of Knowledge Leakage in LLM Editing using Thought-based Knowledge Graphs"
+  authors: "Manit Baser, Dinil Mon Divakaran, M. Gurusamy"
+  year: 2025
+  venue: "Trans. Mach. Learn. Res."
+  url: https://arxiv.org/abs/2506.01386
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 4 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+song2025assessing:
+  title: "Assessing and Post-Processing Black Box Large Language Models for Knowledge Editing"
+  authors: "Xiaoshuai Song, Zhengyang Wang, Keqing He, Guanting Dong, Yu-Tao Mou, Jin-Xu Zhao et al."
+  year: 2025
+  venue: "The Web Conference"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 4 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+yang2026attribution:
+  title: "Attribution-Guided Model Rectification of Unreliable Neural Network Behaviors"
+  authors: "Pei-Yu Yang, Naveed Akhtar, Jiantong Jiang, Ajmal Mian"
+  year: 2026
+  venue: "Computer Vision and Pattern Recognition"
+  url: https://arxiv.org/abs/2603.15656
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 4 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2025pome:
+  title: "POME: Post Optimization Model Edit via Muon-style Projection"
+  authors: "Yong Liu, Di Fu, Yang Luo, Zi-Rui Zhu, Minhao Cheng, Cho-Jui Hsieh et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2510.06627
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 4 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2026betaedit:
+  title: "BetaEdit: Null-Space Constrained Sequential Model Editing"
+  authors: "Bing Liu, Wei Liu, Yu-Hua Li"
+  year: 2026
+  venue: "IJCAI/ECAI"
+  url: https://arxiv.org/abs/2605.09285
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+dai2025disarmrag:
+  title: "DisarmRAG: Stealthy Retriever Poisoning to Disable Self-Correction in Retrieval-Augmented Generation"
+  authors: "Yan-Bo Dai, Zhenlan Ji, Zong-Jie Li, Kuan Li, Shuai Wang"
+  year: 2025
+  venue: "Proceedings of the 2026 ACM SIGSAC Conference on Computer and Communications Security"
+  url: https://arxiv.org/abs/2508.20083
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on misleading in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+lin2026ortcl:
+  title: "ORTCL: Towards Continual Learning of Time Series Foundation Models on Streaming Data via Orthogonal Rotation"
+  authors: "Li Lin, Xinrui Zhang, Qi Zhang, Shuai Wang, Kai-Wen Xia"
+  year: 2026
+  venue: "AAAI Conference on Artificial Intelligence"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on forecast in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+sun2026persuaded:
+  title: "How LLMs Are Persuaded: A Few Attention Heads, Rerouted"
+  authors: "Xiang-Kun Sun, Ling-Kai Kong, Ao Zhang, Liang Zeng, Tonghan Wang"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.09314
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+lombardo2026geometric:
+  title: "A Geometric Perspective on Next-Token Prediction in Large Language Models: Three Emerging Phases"
+  authors: "G. Lombardo, Giuseppe Trimigno, S. Cagnoni"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.09011
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+shi2025lark:
+  title: "Lark: Low-Rank Updates After Knowledge Localization for Few-Shot Class-Incremental Learning"
+  authors: "Jin-Xin Shi, Jia-Bao Zhao, Yifan Yang, Xing-Jiao Wu, Jiawen Li, Liang He"
+  year: 2025
+  venue: "IEEE International Conference on Computer Vision"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+feigenbaum2024arbitrary:
+  title: "Editing Arbitrary Propositions in LLMs without Subject Labels"
+  authors: "Itai Feigenbaum, Devansh Arpit, Huan Wang, Shelby Heinecke, Juan Carlos Niebles, Wei-Ran Yao et al."
+  year: 2024
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2401.07526
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 3 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+peng2026represented:
+  title: "Represented but Ignored: A Causal Account of Prosodic Underuse in Audio-Language Models"
+  authors: "Linkai Peng, Baorian Nuchged"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2608.19211
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 2 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ju2025disagreements:
+  title: "When Disagreements Elicit Robustness: Investigating Self-Repair Capabilities under LLM Multi-Agent Disagreements"
+  authors: "Tianjie Ju, Bo-Wen Wang, Hao Fei, Mong Li Lee, W. Hsu, Yun Li et al."
+  year: 2025
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2502.15153
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 2 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zheng2024collabedit:
+  title: "CollabEdit: Towards Non-destructive Collaborative Knowledge Editing"
+  authors: "Jiamu Zheng, Jing-Huai Zhang, Tianyu Du, Xuhong Zhang, Jian-Wei Yin, Tao Lin"
+  year: 2024
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2410.09508
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 2 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+reblitzrichardson2026refusal:
+  title: "Refusal Reads Only a Slice of What the Model Knows: Harm-Keyed Routing and Its Exceptions Across Model Families"
+  authors: "Orion Reblitz-Richardson"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2609.14759
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 2 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wu2026rasteer:
+  title: "RASteer: Retain-Aware Activation Steering for Concept Erasure in Diffusion Models"
+  authors: "Yong-Liang Wu, Haori Lu, Yu-Lun Wu, Jin-Qi Luo, Xing-Yu Zhu, Yaoyao Liu"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2610.01969
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+braun2026interpretable:
+  title: "Interpretable Cross-Lingual Alignment in Small Language Models: Probing Cultural and Pragmatic Reasoning in Japanese-English Bilingual LLMs"
+  authors: "F. Braun"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2608.14896
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+basani2026exposing:
+  title: "Exposing the Illusion of Erasure in Knowledge Editing for LLMs"
+  authors: "Advik Raj Basani, Anshuman Chhabra"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2606.23276
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on illusion; the rank-one structure screen on low-rank update in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+li2026fact:
+  title: "From Fact Overwriting to Knowledge Evolution: Causal Editing via On-Policy Self-Distillation"
+  authors: "Shuai Li, Kai Zhang, Xian-Quan Wang, Jia-Cheng Liu, Sheng-Peng Mo"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.28303
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on flaw in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wu2026uncovering:
+  title: "Uncovering Entity Identity Confusion in Multimodal Knowledge Editing"
+  authors: "Shuangjin Wu, Xiaotian Ye, Xinyu Mou, Dongsheng Liu, Xiao-Han Wang, Mengqi Zhang"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.06096
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on shortcut, spurious in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+dahal2026gone:
+  title: "GONE: Structural Knowledge Unlearning via Neighborhood-Expanded Distribution Shaping"
+  authors: "Chahana Dahal, Ashutosh Balasubramaniam, Zuo-Bin Xiong"
+  year: 2026
+  venue: "Conference on Empirical Methods in Natural Language Processing"
+  url: https://arxiv.org/abs/2603.12275
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+hu2026bench:
+  title: "CLM-Bench: Benchmarking and Analyzing Cross-lingual Misalignment of LLMs in Knowledge Editing"
+  authors: "Yu-Cheng Hu, Wei Zhou, Jue-Si Xiao"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2601.17397
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on artifact in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ji2025grpo:
+  title: "bi-GRPO: Bidirectional Optimization for Jailbreak Backdoor Injection on LLMs"
+  authors: "Wen-Ce Ji, Jian-Can Wu, Ai-Guo Li, Shuyi Zhang, Jun-Kang Wu, An Zhang et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2509.19775
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on flaw in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+deng2025consistency:
+  title: "Consistency-Aware Parameter-Preserving Knowledge Editing Framework for Multi-Hop Question Answering"
+  authors: "L. Deng, Yi-Fei Han, Long Zhang, Yue Du, Bin Li"
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2509.18655
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on contamina in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+marinelli2025leaking:
+  title: "Leaking LoRa: An Evaluation of Password Leaks and Knowledge Storage in Large Language Models"
+  authors: "Ryan Marinelli, M. Eckhoff"
+  year: 2025
+  venue: "xAI"
+  url: https://arxiv.org/abs/2504.00031
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak; the rank-one structure screen on rank one in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+baser2026tokens:
+  title: "The Tokens Remember: When Tokenization Bypasses Knowledge Editing and Unlearning"
+  authors: "Manit Baser, Aditya Nawal, Dinil Mon Divakaran, M. Gurusamy"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2609.29045
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2026hybrid:
+  title: "Hybrid-Policy Self-Editing for Composable Unstructured Knowledge Editing"
+  authors: "Tianci Liu, Zi-Han Dong, Tian-Chun Li, Yi-Chung Chen, Qiming Cao, Xingchen Wang et al."
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2608.11660
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+fu2026correct:
+  title: "Correct When Paired, Wrong When Split: Decoupling and Editing Modality-Specific Neurons in MLLMs"
+  authors: "Ting-Chao Fu, Wen-Kai Wang, Fan-Xiao Li, Hua-Dong Zhang, Jin-Hong Zhang, Da-Yang Li et al."
+  year: 2026
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2606.17057
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+lei2026reforming:
+  title: "Reforming the Mechanism: Editing Reasoning Patterns in LLMs with Circuit Reshaping"
+  authors: "Zhen-Yu Lei, Qiong Wu, Jianxiong Dong, Yin-Han He, Emily Dodwell, Yu-Shun Dong et al."
+  year: 2026
+  venue: "International Conference on Learning Representations"
+  url: https://arxiv.org/abs/2603.06923
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+takahashi2025understanding:
+  title: "Understanding the Side Effects of Rank-One Knowledge Editing"
+  authors: "Ryosuke Takahashi, Go Kamoda, Benjamin Heinzerling, Keisuke Sakaguchi, Kentaro Inui"
+  year: 2025
+  venue: "Proceedings of the 8th BlackboxNLP Workshop: Analyzing and Interpreting Neural Networks for NLP"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 1 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+mishra2026confidence:
+  title: "Confidence Without Cause: Predicting and Localizing Physics-Shortcut Sensitivity in Language Model Hidden States"
+  authors: "Shubham Mishra, Atharv Sharma, Dhruv Kumar"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.19403
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on shortcut in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zeng2026lazare:
+  title: "Lazare, veni foras: Reprogramming Dormant Neurons to Backdoor AI Agents"
+  authors: "Yu-Chen Zeng, Giorgio Severi, Blake Bullwinkel, E. Horvitz, Dimitris Papailiopoulos"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.15118
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+cheng2026context:
+  title: "In-Context Learning as Approximate Belief Propagation"
+  authors: "Ze-Hua Cheng, Wei Dai, Jia-Hao Sun"
+  year: 2026
+  venue: "Proceedings of the 35th ACM International Conference on Information and Knowledge Management"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on misleading, inflat in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2026debug:
+  title: "Can LLMs Debug Robots by Editing Their Weights?"
+  authors: "Jusheng Zhang, Ke-Ze Wang, Liang Lin"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.09376
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zheng2026perceptual:
+  title: "Perceptual Weight Space Programming for Diffusion Super-Resolution"
+  authors: "Chen Zheng, Zhuo-Ran Zheng"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.18690
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on artifact in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhou2026evidence:
+  title: "The Evidence Anchoring Boundary: Where Visual Interventions Matter and When They Help in Multimodal LLMs"
+  authors: "Qi-Ji Zhou, Jun-Yi Hu, Pei-Yu Wang, Yue Zhang"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2610.12981
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on misleading in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+bhupatiraju2026stated:
+  title: "Are Stated Reasoning Steps Causally Load-Bearing?"
+  authors: "Abhiram Bhupatiraju, Rayan Nyaupane"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2609.27038
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overestimat in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+pan2026training:
+  title: "Training a Knowledge Base: Supervised Structure Learning for Agent-Curated Document Stores"
+  authors: "Yu Pan, Hongfeng Yu"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2608.21829
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on contamina, overlap in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+shihab2026spectral:
+  title: "Spectral Tail Interventions in Decoder-Only Language Models: Reasoning-Sensitive Weight Structure from Controlled Surgery"
+  authors: "Ibne Farabi Shihab, Sanjida Akhter, Md Najmus Swaqeeb, Abu Sa-Adat Mohamed Moon-Im Al Ahsan, Anuj Sharma"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2609.26165
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+sharma2026tokens:
+  title: "Tokens to Types: Context Editing with Selective Entity Abstraction for Grounded Generation"
+  authors: "Rounak Sharma, Debabrata Mahapatra, S. Saini"
+  year: 2026
+  venue: "Annual International ACM SIGIR Conference on Research and Development in Information Retrieval"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on spurious, lexical, overlap in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+li2026multimodal:
+  title: "Multimodal Knowledge Edit-Scoped Generalization for Online Recursive MLLM Editing"
+  authors: "Si-Yuan Li, Youyuan Zhang, Rui-Tong Liu, Junxi Wang, Jing Li"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2607.01978
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on leak in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhang2026write:
+  title: "When to Write and When to Suppress: Route-Specialized Dual Adapters for Memory-Assisted Knowledge Editing"
+  authors: "Bai-Jia Zhang, Yi-Ning Huang"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2606.14668
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+mao2026benchmarking:
+  title: "Benchmarking Safety Risks of Knowledge-Intensive Reasoning under Malicious Knowledge Editing"
+  authors: "Qing-Hua Mao, Xi Lin, Jin-Ze Gu, Jun Wu, Si-Yuan Li, Yu-Liang Chen"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.10146
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on misleading in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+shinoda2026debiasing:
+  title: "Debiasing Reward Models via Causally Motivated Inference-Time Intervention"
+  authors: "Kazutoshi Shinoda, Kosuke Nishida, Kyosuke Nishida"
+  year: 2026
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: https://arxiv.org/abs/2604.27495
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on spurious in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+dhayalkar2026overcoming:
+  title: "Overcoming the Impedance Mismatch: A Theoretical Roadmap for Fusing Foundation Models and Knowledge Graphs"
+  authors: "Sahil Rajesh Dhayalkar"
+  year: 2026
+  venue: "Proceedings of the 4th Workshop on Towards Knowledgeable Foundation Models (KnowFM 2026)"
+  url: https://arxiv.org/abs/2606.15656
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on lexical in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+mohan2026competitive:
+  title: "Competitive Memory Editing: A Nash Bargaining Approach to MEMIT Interference Prediction"
+  authors: "Manoj Krishna Mohan, A. Sen"
+  year: 2026
+  venue: "International Congress on Information and Communication Technology"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on overlap; the pre-edit screen screen on before the edit, predict which in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+bugaud2026single:
+  title: "Single-Layer Activation Edits Easily Corrupt Factual Recall but Rarely Repair It"
+  authors: "Zacharie Bugaud"
+  year: 2026
+  venue: "Proceedings of the 6th Workshop on Trustworthy NLP (TrustNLP 2026)"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on artifact in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+hu2025look:
+  title: "Look Closer! An Adversarial Parametric Editing Framework for Hallucination Mitigation in VLMs"
+  authors: "Jia-Yu Hu, Bei-Bei Li, Ji Xia, Yan-Jun Qin, Bing Ji, Zhong-Shi He"
+  year: 2025
+  venue: "AAAI Conference on Artificial Intelligence"
+  url: https://arxiv.org/abs/2512.21999
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Ripple effects and multi-hop"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the contamination screen on artifact in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+baser2026truth:
+  title: "The Truth Beneath the Tokens: Prompt-Space Recovery of Knowledge Edits in Language Models"
+  authors: "Manit Baser, Rachel Yeo Hui Min, Aditya Nawal, Dinil Mon Divakaran, M. Gurusamy"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.10450
+  status: skimmed
+  relevance: high
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read at the abstract. Recovers an edited model's pre-edit answer through the prompt alone, with no weight intervention, at 80.07% \u2014 so editing suppresses a fact without removing it. Adjacent to \u00a77's delivery-is-not-effect gap from the far side: it measures what survives an edit rather than what the edit delivers."
+
+shi2026write:
+  title: "Write Facts the Way Models Read Them: Lifting the Two-Hop Curse"
+  authors: "Zhi-Yun Shi"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.01519
+  status: read
+  relevance: high
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "Read from its \u00a72.1. The nearest thing in the literature to \u00a75.5's observation, reached independently and from the opposite end: it splits multi-hop items by which hop was edited, finding that when the edited hop is last the answer is the newly written object itself, and only when an unedited hop follows is the new object merely a bridge. Its writer is fine-tuning, not a rank-one edit \u2014 \"rank-one\" and \"MEMIT\" appear zero times. It reports lifting the two-hop curse on RippleEdits, the benchmark \u00a75.5 says holds items that cannot test propagation, so the screen has a use on a current published result."
+
+niu2026repeated:
+  title: "Repeated Shared Access Enables Grokking, but Edit Propagation Depends on an Addressable Memory"
+  authors: "Ya-Nan Niu"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2606.20737
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+cao2026anatomy:
+  title: "The Anatomy of an Edit: Mechanism-Guided Activation Steering for Knowledge Editing"
+  authors: "Yuan Cao, Mingyang Wang, Hinrich Schutze"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2603.20795
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on pre-edit in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+liu2025credit:
+  title: "Credit Risk Forecasting Through the Synergy of Large Language Models and Graph Learning"
+  authors: "Shuo-Ling Liu, Yiran Shan, Hui-Dong Wu, Xiao-Qian Sun, Jianqiu Deng, Xiangyu Wang"
+  year: 2025
+  venue: "2025 IEEE International Conference on Data Mining Workshops (ICDMW)"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Evaluating edits"
+  area: "Predicting an edit's reach"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the pre-edit screen screen on forecast in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+abbas2026distilling:
+  title: "Distilling Instructions into Weights: Closed-Form Edits Fix a Robot Policy's Misreading"
+  authors: "A. Abbas, Esmaeil Seraj"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.11894
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on closed-form edit in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+abdulla2026tansar:
+  title: "TANSAR: Editable and Attributable Correlation Matrix Memories under Correlated Keys, with Rule-Constrained Multi-Hop Knowledge Editing"
+  authors: "Abdulhady Abas Abdulla, Jiyan Salim Mahmud, Fatemeh Daneshfar, Hussein Mohammed Ali, M. Oussalah, Muhammad Bilal"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.12374
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+verma2026geometric:
+  title: "On the Geometric Bottlenecks of Cross-Lingual Knowledge Editing"
+  authors: "Aastha A. K. Verma, Anwoy Chatterjee, Sparsh Jain, Tanmoy Chakraborty"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2611.10646
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ke2026safetyedit:
+  title: "SAFETYEDIT: Sparse Internal Targets with Prompt-Wide Control for LLM Jailbreak Backdoors"
+  authors: "Yu-Tong Ke, Yan-Su Wang, Ze-Yu Zhang, Xi-Hao Guo, Chong-Wen Zhao, Kai-Zhu Huang"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2610.22640
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wu2026continual:
+  title: "Continual Concept Erasure in Diffusion Models by Suppressing Cross-Edit Interference"
+  authors: "Yong-Liang Wu, Haori Lu, Jin-Qi Luo, Wei Cao, Xing-Yu Zhu, Yaoyao Liu"
+  year: 2026
+  venue: "Preprint"
+  url: https://arxiv.org/abs/2610.01989
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+perin2026training:
+  title: "Training-Free Task Vectors for LLM Behavioral Control"
+  authors: "Gabriel J. Perin, Lucas Boscaini, Andr\u00e9 Ara\u00fajo, N. S. T. Hirata"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2609.09054
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+beniwal2026where:
+  title: "Where Does Toxicity Live? Mechanistic Localization and Targeted Suppression in Language Models"
+  authors: "Himanshu Beniwal, Mayank Singh"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.27997
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+zhu2026crane:
+  title: "CRANE: Constrained Reasoning Injection for Code Agents via Nullspace Editing"
+  authors: "Ming Zhu, Michele Merler, Raju Pavuluri, Stacy Patterson"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.14084
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+rupa2026probe:
+  title: "Probe-Geometry Alignment: Erasing the Cross-Sequence Memorization Signature Below Chance"
+  authors: "Anamika Paul Rupa, Anietie U Andy"
+  year: 2026
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2605.01699
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+xu2026bargaining:
+  title: "Editing Is a Bargaining Game: Balanced Knowledge Editing in Large Language Models"
+  authors: "Cheng-Hao Xu, Jie-Xi Yan, Mu-Li Yang, Fen Fang, Huilin Chen, Cheng Deng"
+  year: 2026
+  venue: "AAAI Conference on Artificial Intelligence"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+wang2026thinking:
+  title: "More Thinking, Less Talking: Internalizing Deliberative Safety into LLM Parameters"
+  authors: "Guan Wang, Xue-Hai Tang, Bi-Yu Zhou, Ji-Zhong Han, Song-Lin Hu"
+  year: 2026
+  venue: "Annual Meeting of the Association for Computational Linguistics"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+han2025consistency:
+  title: "Consistency-Aware Editing for Entity-level Unlearning in Language Models"
+  authors: "Xiao-Qi Han, V\u00edctor Guti\u00e9rrez-Basulto, Ru Li, Xiao-Li Li, Ji-Ye Liang, Jeff Z. Pan"
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2601.08840
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on low-rank update in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+ma2025unlocking:
+  title: "Unlocking the Address Book: Dissecting the Sparse Semantic Structure of LLM Key-Value Caches via Sparse Autoencoders"
+  authors: "Qing-Sen Ma, Dian-Yun Wang, J. Lyu, Yaoye Wang, Lechen Ning, Sujie Zhu et al."
+  year: 2025
+  venue: "arXiv.org"
+  url: https://arxiv.org/abs/2512.10547
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on key vector in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+yang2025cosped:
+  title: "CoSPED: Consistent Soft Prompt Targeted Data Extraction and Defense"
+  authors: "Zhuo Yang, K. Fok, V. Thing"
+  year: 2025
+  venue: "AAAI Conference on Artificial Intelligence"
+  url: https://arxiv.org/abs/2510.11137
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on rank-one in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
+
+mo2025refedit:
+  title: "ReFEdit: Rehearsal-Free Lifelong Knowledge Editing for Large Language Models"
+  authors: "Xianjie Mo, You-Cheng Pan, Yongshuai Hou, Ping Luo, Yang Xiang"
+  year: 2025
+  venue: "IEEE International Conference on Multimedia and Expo"
+  url: null
+  status: to-read
+  relevance: medium
+  field: "Knowledge editing"
+  area: "Rank-one edits and their structure"
+  verified: false
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "TODO(read) - matched by the rank-one structure screen on update direction in [T-014]; cited 0 times. Relevance is a placeholder: an unread paper has none assessed. Replace this line with what the paper gives, once its methods have been read."
