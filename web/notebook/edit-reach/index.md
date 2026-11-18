@@ -54,7 +54,7 @@ The project set out to build a screen and did not build one. What it has instead
   plain
   caption={<>Four questions, each raised by the answer before it. The first was the project's own, and it came back negative; the three that follow were not planned and are where the positive results are.</>}
 >
-  <svg viewBox="0 0 900 300" role="img" aria-label="Four questions in a chain. Can predicted reach predict an edit's effect? Denied. Which raised: then what does the coefficient detect? Contamination, that a prompt names the edited subject. Which raised: why is there so little effect to predict? Because identity is worth about sixty-five times content. Which raised: then what does one update actually do? It breaks the old answer by identity and supplies the new one by content.">
+  <svg viewBox="0 0 900 300" role="img" aria-label="Four questions in a chain. Can predicted reach predict an edit's effect? Denied. Which raised: then what does the coefficient detect? Contamination, that a prompt names the edited subject. Which raised: why is there so little effect to predict? Because identity is worth about sixty-three times content. Which raised: then what does one update actually do? It breaks the old answer by identity and supplies the new one by content.">
     <g fontFamily="Lato, sans-serif" fontSize="10.5" fontWeight="900" letterSpacing="0.9" fill="var(--ocl-ink-faint)">
       <text x="14" y="22">THE PROJECT'S OWN QUESTION</text>
       <text x="14" y="112">WHAT THE DENIAL RAISED</text>
@@ -79,7 +79,7 @@ The project set out to build a screen and did not build one. What it has instead
 
     <rect x="346" y="124" width="268" height="54" fill="none" stroke="var(--ocl-rule-strong)" strokeWidth="1" />
     <text x="360" y="146" fontFamily="Lato, sans-serif" fontSize="12.5" fill="var(--ocl-ink)">Why so little effect to predict?</text>
-    <text x="360" y="164" fontFamily="Lato, sans-serif" fontSize="11.5" fill="var(--ocl-ink-muted)">Identity is worth about sixty-five</text>
+    <text x="360" y="164" fontFamily="Lato, sans-serif" fontSize="11.5" fill="var(--ocl-ink-muted)">Identity is worth about sixty-three</text>
     <text x="360" y="180" fontFamily="Lato, sans-serif" fontSize="11.5" fill="var(--ocl-ink-muted)">times content.</text>
     <text x="628" y="150" fontFamily="Lato, sans-serif" fontSize="10" fill="var(--ocl-ink-faint)">C‑002 · 31 Oct</text>
 

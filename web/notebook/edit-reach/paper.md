@@ -9,7 +9,7 @@ toc_max_heading_level: 3
 paper:
   kind: Working paper
   id: OCL-2026-07
-  version: v0.5
+  version: v0.6
   author: Saif Ul Islam
   affiliation: Open Concept Lab
   started: 30 Sep 2026
@@ -38,14 +38,14 @@ paper:
       figs: ["/img/edit-reach/two-regimes.svg", "/img/edit-reach/premise-and-floor-by-depth.svg"]
     - n: "2"
       title: Whether it predicts anything
-      href: "#51-the-coefficient-does-not-predict-an-edits-effect"
+      href: "#51-a-number-computable-before-the-edit-tracks-how-far-the-model-moved-until-a-control-removes-almost-all-of-it"
       what: 495 probes, and what is left of a visible correlation once a control on the same subject is taken out of it.
       figs: ["/img/edit-reach/coefficient-vs-movement.svg", "/img/edit-reach/near-and-far-field.svg"]
     - n: "3"
       title: What the edit carries instead
-      href: "#53-identity-is-worth-about-sixty-five-times-content"
+      href: "#53-whose-fact-an-edit-changes-matters-about-sixty-three-times-more-than-what-it-is-changed-to"
       what: Whose fact you edit against what you change it to, the two halves of a single update, and one published benchmark scored on the difference.
-      figs: ["/img/edit-reach/what-carries-each-half.svg", "/img/edit-reach/direct-exposure.svg"]
+      figs: ["/img/edit-reach/identity-against-content.svg", "/img/edit-reach/what-carries-each-half.svg", "/img/edit-reach/direct-exposure.svg"]
     - n: "4"
       title: What is left standing
       href: "#6-findings-and-claims"
@@ -61,7 +61,7 @@ paper:
     - A reach coefficient read off the edit's own rank-one update, computable in one forward pass through the unedited model.
     - A derivation that it is exactly 1 on any prefix-sharing prompt, with its premise measured on three models at four depths each, and the different-subject control it is read against spanning a factor of twelve over the same readings.
     - "Evidence that it does not predict an edit's effect: a raw correlation of rho = 0.522 falls to an excess of 0.085, with an interval touching zero, once a same-subject control is removed."
-    - A measurement of why there is little to predict - whose fact you edit is worth about sixty-five times what you change it to - on a pre-stated test.
+    - A measurement of why there is little to predict - whose fact you edit is worth about sixty-three times what you change it to - on a pre-stated test.
     - A separation of destruction from destination within one rank-one update, on one probe set under one metric, in opposite directions on the same probes.
     - The measure repurposed as a contamination screen, with one published benchmark scored on it, released as editreach.
     - A universal upper bound on an edit's reach, derived in one line and shown to be vacuous where propagation lives - its median far-field value permits a question that never names the edited subject to receive more than one that does.
@@ -80,7 +80,7 @@ We asked whether that number could screen an evaluation item before the item is 
 
 It cannot. The number sits at 1 wherever the prompt names the edited subject, and it is flat wherever the question never names it. Against a control that holds the edit's size fixed, those two regimes separate by **+0.8439** and by **+0.0002**. The second figure is the one that matters, because a question that never names the subject is what propagation means.
 
-That raised a second question: how much was there for any measure to predict? We compared two things on the same 495 probes. Changing what the edit says, holding the person fixed, moves them by **0.0009**. Changing whose fact is edited, holding everything else fixed, moves them by **0.0583** — about sixty-five times as much. Most of what an edit does follows from whose name it touched rather than from what was said, so there was little edit-specific effect for any measure to find.
+That raised a second question: how much was there for any measure to predict? We compared two things on the same 495 probes. Changing what the edit says, holding the person fixed, moves them by **0.0009**. Changing whose fact is edited, holding everything else fixed, moves them by **0.0583** — about sixty-three times as much. Most of what an edit does follows from whose name it touched rather than from what was said, so there was little edit-specific effect for any measure to find.
 
 If the measure cannot predict an edit's reach, can anything bound it? The same algebra gives one universal ceiling. For a question that never names the edited subject, its median value sits *above* what a question that does name it actually receives, so the ceiling cannot tell those two questions apart and forbids nothing.
 
@@ -98,25 +98,59 @@ One more result came off the same probe set, and it was not the one we were look
 
 <Lead>The task.</Lead> A weight edit changes one fact and disturbs an unknown amount of everything else. The disturbance is evaluated with hand-written item sets: paraphrases, neighbours, and multi-hop questions whose answers should follow from the edited fact <Cite id="cohen2024ripple" />, <Cite id="zhong2023mquake" />. Surveys of the field treat these sets as the measurement <Cite id="yao2023survey" />.
 
-<Lead>Why that cannot bound the damage.</Lead> An item set gives a lower bound on an edit's damage and never an upper bound. It can show that an edit broke something; it cannot show that an edit broke nothing, because an item nobody wrote and a failure that never happened produce the same output — an empty result. Writing more items does not close the gap: a hand-written set measures the imagination of whoever wrote it, and consistency work shows a model's behaviour varies across surface forms the author did not think to vary <Cite id="elazar2021pararel" />.
+<Lead>Why that cannot bound the damage.</Lead> An item set gives a lower bound on an edit's damage and never an upper bound.
+
+It can show that an edit broke something. It cannot show that an edit broke nothing, because an item nobody wrote and a failure that never happened produce the same output — an empty result.
+
+Writing more items does not close that gap. A hand-written set measures the imagination of whoever wrote it, and consistency work shows a model's behaviour varies across surface forms the author did not think to vary <Cite id="elazar2021pararel" />.
 
 <Lead>The move that would fix it.</Lead> Stop enumerating; start measuring. Define a quantity for *any* prompt, so an item can be scored without having been anticipated. ROME offers a natural candidate, because its update is rank one and therefore scalar at every token. The fraction of the update landing on a token is a number, computable in one forward pass through the model as it was **before** the edit.
 
 <Lead>What this buys, stated narrowly.</Lead> It removes the need to foresee which items matter. It does not remove the need to have items: the quantity is still evaluated on prompts we hold, and a prompt nobody wrote is still unscored. What changes is that the set no longer has to be *right* in advance, only large.
 
-<Lead>What this paper finds.</Lead> The candidate does one job exactly and the intended job not at all. It is pinned to 1 wherever the prompt names the edited subject, which makes it a reliable detector of that naming; and it is flat where the question does not name the subject, which is where propagation would have to be measured. The same algebra that makes it cheap also yields the upper bound an item set cannot give — and that bound turns out to permit a question which never names the subject to receive more than one which does, so it forbids nothing (§5.6). Nor does any property of the edited subject predict how hard an edit lands (§5.7). §5 gives the numbers, §6 the record of how the control that produced them was got wrong once first.
+<Lead>What this paper finds.</Lead> The candidate does one job exactly, and the intended job not at all.
+
+It is pinned to 1 wherever the prompt names the edited subject, which makes it a reliable detector of that naming. And it is flat where the question does not name the subject — which is the only place propagation could be measured.
+
+The same algebra that makes it cheap also yields the upper bound an item set cannot give. That bound turns out to permit a question which never names the subject to receive more than one which does, so it forbids nothing (§5.6).
+
+Nor does any property of the edited subject predict how hard an edit lands (§5.7).
+
+§5 gives the numbers. §6 is the record of how the control that produced them was got wrong once first.
 
 ## 2. Related work
 
 <Gist>Who else has measured where an edit travels, and what none of them computes in advance of the edit.</Gist>
 
-<Lead>The nearest work.</Lead> <Cite id="he2026romelimits" narrative /> reports both the depth phenomenon and a cosine decay with layer — 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here — eight months before this one. What it does not carry is a control of the kind in §3.3: its reading of the effect as depth rests on edit success rates staying high across layers, which is a different quantity from the one that would separate a real effect from the measure's own behaviour.
+<Lead>The nearest work.</Lead> <Cite id="he2026romelimits" narrative /> reports both the depth phenomenon and a cosine decay with layer, eight months before this paper: 0.80 at layer 5 falling to 0.50 at 25, against 0.98 to 0.47 here.
 
-<Lead>Propagation measured after the fact.</Lead> <Cite id="luo2026knowledgesmith" narrative /> tests how far edits spread against graph structure, finding that *editing tends to over-spread, unintentionally altering related nodes* while unlearning *often under-spreads*, and that *different hierarchical branches exhibit distinct ceilings for achievable accuracy*. The variable it moves is a node's **level** in a hierarchy — root, intermediate, leaf — not the number of facts depending on it, and it uses no measure of how often a subject appears in text. Both of those are relevant to §5.7 and neither is settled by it. <Cite id="rinberg2025ripplebench" narrative /> produces distance-stratified propagation curves across eight methods, with distance taken from semantic neighbours rather than from an edit's own algebra, and evaluates unlearning rather than editing. <Cite id="kruthof2026editpropbench" narrative /> labels cascades by dependency, but over manuscripts and prompted editors rather than weights. All three measure outcomes after an edit is applied. None screens an item before it is run, which is the gap this paper tries to fill and then reports it cannot.
+What it does not carry is a control of the kind in §3.3. Its reading of the effect as depth rests on edit success rates staying high across layers, and that is a different quantity from the one that would separate a real effect from the measure's own behaviour.
 
-<Lead>Where the edit lands.</Lead> The MLP layers ROME edits behave as key-value memories <Cite id="geva2021ffn" />, which is what makes a single projection a sensible place to write a fact. But where a fact can be *located* is not where it can be *edited* <Cite id="hase2023localization" /> — so a measure read off the edit's own update, rather than off a localisation, is the one worth trying. MEMIT extends the same rank-one rule to many facts at once <Cite id="meng2023memit" />, so the quantity below is defined for it too.
+<Lead>Propagation measured after the fact.</Lead> Three papers measure how far an edit spreads, and all three measure it once the edit has been applied.
 
-<Lead>Bounding a perturbation is a field, and it bounds a ball.</Lead> §5.6 computes an upper bound on how much of a weight edit reaches a token, which is the shape of a certified-robustness guarantee. That literature certifies against an adversary free to choose any direction inside a norm ball: <Cite id="weng2020certificated" narrative /> certifies a region in weight space, handling single-layer perturbation analytically, and <Cite id="tsai2021weightperturb" narrative /> works from the classification margin. A rank-one edit is a strictly smaller problem — **one** direction, fixed, and known before the edit is applied — and neither paper considers a low-rank perturbation or evaluates a transformer. So weight-space certification is not an open lane and is not claimed to be. What could not be found is certification that exploits a known rank-one direction for editing locality.
+<Cite id="luo2026knowledgesmith" narrative /> tests spread against graph structure. It finds that *editing tends to over-spread, unintentionally altering related nodes* while unlearning *often under-spreads*, and that *different hierarchical branches exhibit distinct ceilings for achievable accuracy*.
+
+The variable it moves is a node's **level** in a hierarchy — root, intermediate, leaf. That is not the number of facts depending on a node, and the paper uses no measure of how often a subject appears in text. Both of those are relevant to §5.7, and neither is settled by it.
+
+<Cite id="rinberg2025ripplebench" narrative /> produces distance-stratified propagation curves across eight methods. Its distance comes from semantic neighbours rather than from an edit's own algebra, and it evaluates unlearning rather than editing.
+
+<Cite id="kruthof2026editpropbench" narrative /> labels cascades by dependency, but over manuscripts and prompted editors rather than weights.
+
+None of the three screens an item *before* it is run. That is the gap this paper tries to fill, and then reports it cannot.
+
+<Lead>Where the edit lands.</Lead> The MLP layers ROME edits behave as key-value memories <Cite id="geva2021ffn" />, which is what makes a single projection a sensible place to write a fact.
+
+But where a fact can be *located* is not where it can be *edited* <Cite id="hase2023localization" />. So a measure read off the edit's own update, rather than off a localisation, is the one worth trying.
+
+MEMIT extends the same rank-one rule to many facts at once <Cite id="meng2023memit" />, so the quantity below is defined for it too.
+
+<Lead>Bounding a perturbation is a field, and it bounds a ball.</Lead> §5.6 computes an upper bound on how much of a weight edit reaches a token, which is the shape of a certified-robustness guarantee.
+
+That literature certifies against an adversary free to choose any direction inside a norm ball. <Cite id="weng2020certificated" narrative /> certifies a region in weight space, handling single-layer perturbation analytically; <Cite id="tsai2021weightperturb" narrative /> works from the classification margin.
+
+A rank-one edit is a strictly smaller problem: **one** direction, fixed, and known before the edit is applied. Neither paper considers a low-rank perturbation, and neither evaluates a transformer.
+
+So weight-space certification is not an open lane, and nothing here claims it is. What could not be found is certification that exploits a known rank-one direction for editing locality.
 
 <Figure
   src="/img/edit-reach/ball-and-ray.svg"
@@ -126,9 +160,19 @@ One more result came off the same probe set, and it was not the one we were look
   plain
 />
 
-<Lead>Why §5.6's bound stops at the layer it is read in.</Lead> A bound on the perturbation at one layer says nothing about the model's output without a number saying how much the rest of the network can amplify a change fed into it — a Lipschitz constant. <Cite id="kim2021lipschitz" /> is where that number stops being available. It proves dot-product self-attention has no such constant for any $p$-norm on an **unbounded** input domain, because one term in its derivative equals the sample variance of the input, which has no ceiling. The same paper states that on a *compact* domain it is Lipschitz, and declines that route only because the constant depends on the input range and a tight one would be non-trivial work. The honest position is therefore that **no usable constant exists**, not that no constant exists — a distinction this paper got wrong once before reading the theory sections.
+<Lead>Why §5.6's bound stops at the layer it is read in.</Lead> A bound on the perturbation at one layer says nothing about the model's output on its own. It also needs a number saying how much the rest of the network can amplify a change fed into it — a Lipschitz constant.
 
-<Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume without writing it down. The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full — enough to ask the question and not enough to answer it. If it is published, §3 becomes a replication and the contribution is §5.
+<Cite id="kim2021lipschitz" /> is where that number stops being available. It proves dot-product self-attention has no such constant for any $p$-norm on an **unbounded** input domain, because one term in its derivative equals the sample variance of the input, which has no ceiling.
+
+The same paper states that on a *compact* domain it is Lipschitz. It declines that route only because the constant depends on the input range, and a tight one would be non-trivial work.
+
+So the honest position is that **no usable constant exists**, not that no constant exists. This paper got that distinction wrong once, before its theory sections were read.
+
+<Lead>On novelty, plainly.</Lead> The mechanism in §3 is a line of algebra that any practitioner could derive, and several may assume it without writing it down.
+
+The claim here is **not** that it is unpublished. It is that it could not be found stated, on one web-search pass and one neighbouring paper read in full. That is enough to ask the question and not enough to answer it.
+
+If it is published, §3 becomes a replication and the contribution is §5.
 
 ## 3. Methods
 
@@ -138,15 +182,27 @@ Everything below is measured on one kind of object. It is worth naming the parts
 
 <Lead>The edit.</Lead> ROME takes a prompt naming somebody — *Henry Mackenzie was born in the city of* — and rewrites one layer of the model so that the next word becomes whatever was asked for. One person, one fact, one layer. That prompt is the **edit prompt**, and Henry Mackenzie is the example used from here on.
 
-<Lead>The probe.</Lead> Any other prompt scored afterwards, to ask how much of that rewrite reached it. A probe opening with the same name — *Henry Mackenzie is the subject here. Henry Mackenzie was born in the city of* — is in the **near field**. A probe that never names him, such as a question about the head of government of the city he died in, is in the **far field**. Multi-hop propagation — the thing an edit is supposed to do and the reason anyone evaluates one — lives in the far field.
+<Lead>The probe.</Lead> Any other prompt scored afterwards, to ask how much of that rewrite reached it.
+
+A probe opening with the same name — *Henry Mackenzie is the subject here. Henry Mackenzie was born in the city of* — is in the **near field**.
+
+A probe that never names him is in the **far field**. *The author of The Man of Feeling was born in the country of* is one: it reaches him through the book he wrote, and it rests on the city the edit changed.
+
+Multi-hop propagation — the thing an edit is supposed to do, and the reason anyone evaluates one — lives in the far field.
 
 <Lead>The coefficient.</Lead> For any probe, one number: the fraction of the rewrite that lands on a chosen token. It is read off the arithmetic of the edit rather than by running the edited model, which is why it can be computed before the edit exists. §3.1 gives it.
 
-<Lead>The floor.</Lead> A coefficient on its own cannot be judged, because a pipeline hardwired to return 1 looks the same as a correct one. Every reading is paired with a second taken identically but against *somebody else's* edit — the **floor**. If a probe reads the same against a stranger's edit as against its own, the measure has said nothing about this edit.
+<Lead>The floor.</Lead> A coefficient on its own cannot be judged, because a pipeline hardwired to return 1 looks the same as a correct one.
+
+So every reading is paired with a second one, taken identically but against *somebody else's* edit. That second reading is the **floor**.
+
+If a probe reads the same against a stranger's edit as against its own, the measure has said nothing about this edit.
 
 <Lead>The run markers.</Lead> A small marker after a number, like the one at the end of this sentence, names the run that produced it.<Prov id="E-004" /> Appendix B lists every run with its model, its size, its date and the directory it wrote. Nothing on this page is a number without one.
 
-### 3.1 The coefficient
+### 3.1 The edit changes one layer along one direction, so every token receives a fixed fraction of it
+
+<Gist>That fraction is the coefficient. It falls out of the edit's own arithmetic, so it can be read before the edit is applied.</Gist>
 
 <Figure
   src="/img/edit-reach/two-regimes.svg"
@@ -178,13 +234,15 @@ $$
 
 so $c$ is computable in one forward pass through the *unedited* model, needing nothing about the edit beyond $k^{*}$ and $u$. Appendix A derives the pinning result that follows from it.
 
-### 3.2 The near field is pinned by arithmetic
+### 3.2 A probe that opens with the edited name receives the whole of the update, and that is arithmetic rather than a finding
+
+<Gist>The coefficient is exactly 1 there, at any layer, on any model. What was measured is the premise that makes it so.</Gist>
 
 Under causal attention, a prompt opening with the edited subject has, at that subject's last token, exactly the text the edit prompt had. Its key is therefore identical to $k^{*}$, and $c = 1$ — for any covariance, at any layer, whatever relation the prompt goes on to ask about. This is analytic. What was measured is its premise.
 
 It held exactly. On GPT-J-6B, Llama-3.1-8B and Llama-3.1-70B, each read at four fractions of its own depth, the median coefficient over 42 prefix-sharing probes was **1.000** at every one of the twelve readings, with a worst deviation of **0.000e+00** — not a rounded zero, the same float. Served through NDIF <Cite id="fiottokaufman2025nnsight" />.<Prov id="E-040" />
 
-The control is a prompt naming a different person, and it does not travel the way the pinned value does. Over those same twelve readings it runs from **0.031 to 0.388**, a factor of twelve, and it is not ordered by model size or by depth: at 16% of depth the largest model returns the highest floor of the three, and at 30% the middle one does. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.<Prov id="E-040" />
+<Lead>The floor does not travel the way the pinned value does.</Lead> It is a prompt naming a different person, and it moves everywhere the pinned value stays put. Over those same twelve readings it runs from **0.031 to 0.388**, a factor of twelve, and it is not ordered by model size or by depth: at 16% of depth the largest model returns the highest floor of the three, and at 30% the middle one does. Llama-3.1-70B alone reads 0.031, 0.140, 0.046 and 0.161 as the layer descends.<Prov id="E-040" />
 
 So the floor is a property of a model at a layer and of nothing more general. Every excess reported in §5 is measured against one, which is what limitation 6 is about.
 
@@ -196,17 +254,27 @@ So the floor is a property of a model at a layer and of nothing more general. Ev
   plain
 />
 
-### 3.3 The control, and what it cost to get right
+### 3.3 A reading means nothing without a floor, and the first floor this project built was the wrong one
+
+<Gist>The floor has to match the real edit on everything except whose edit it is — the relation included. Getting that wrong is not hypothetical.</Gist>
 
 A coefficient of 1.000 means nothing on its own, because a pipeline hardwired to return 1 looks identical. Every reading is therefore paired with a floor: the same prompt scored against a *different* subject's edit. The floor has to match the real edit on everything except the subject — the relation included. Getting that wrong is not hypothetical. It is what this project did first, and §6 keeps the wrong floor on the page as a withdrawn finding rather than deleting it.
 
-### 3.4 Three arms
+### 3.4 Four of the results below come from the same 495 probes, scored under three different edits
 
-Four of the results below are read from the same 495 probes over 42 subjects, scored under three arms:
+<Gist>One edit is the real one, one changes what the edit says, one changes whose edit it is. Subtracting a pair of them is what separates the two things an edit carries.</Gist>
+
+Four of the results below are read from the same 495 probes over 42 subjects. Each probe is scored three times, under a different edit each time.
 
 - <Lead>real</Lead> — the subject's own edit, applied while probing that subject.
-- <Lead>same-subject control</Lead> — a *different property* of the same person, at comparable magnitude. It holds identity fixed and varies content.
-- <Lead>different-subject control</Lead> — another person's edit, chosen as the nearest edit magnitude. It holds magnitude roughly fixed and varies identity.
+- <Lead>same-subject control</Lead> — a *different property* of the same person, at comparable magnitude. It keeps the person and changes the fact.
+- <Lead>different-subject control</Lead> — another person's edit, chosen as the nearest edit magnitude. It keeps the shape of the edit and changes the person.
+
+An edit therefore carries two things that can be separated by subtraction, and both get a name here because §5.3 and §5.4 are about the difference between them.
+
+<Lead>Content</Lead> is what changes when the person is held and the fact is changed: the real edit minus the same-subject control.
+
+<Lead>Identity</Lead> is what changes when the fact's shape is held and the person is changed: the same-subject control minus the different-subject control.
 
 Those 495 probes fall into six families, which is how the tables below are broken down. Each asks a different way of reaching the same edited person.
 
@@ -224,7 +292,7 @@ Those 495 probes fall into six families, which is how the tables below are broke
   </tbody>
 </Data>
 
-The pair is what makes §5.3 and §5.4 possible: each arm isolates one of the two things a rank-one update carries. Magnitude matching is on `‖Δv‖/‖k*‖`, a single scalar, so two edits of equal norm can still differ in direction relative to the probe's key. A directional control is the obvious refinement and is not run here.
+<Lead>Each of the two differences isolates one of those things and not the other.</Lead> Magnitude matching is on `‖Δv‖/‖k*‖`, a single scalar, so two edits of equal norm can still differ in direction relative to the probe's key. A directional control is the obvious refinement and is not run here.
 
 <Lead>Setting.</Lead> Every measurement uses layer 5, which is where ROME and EasyEdit edit by default. Edits come from CounterFact; questions from MQuAKE-CF-3k <Cite id="zhong2023mquake" /> and RippleEdits <Cite id="cohen2024ripple" />. Appendix B lists each run with its model, its size and the directory it wrote.
 
@@ -246,7 +314,7 @@ $ python -m editreach.run --config configs/mquake-far.toml
   → results/2026-11-06-far/  coefficients.parquet  config.toml  env.json
 $ python -m editreach.report results/2026-11-06-far
   far   own 0.0543  stranger 0.0481  excess +0.0002
-  near  own 0.9334  stranger 0.0506  excess +0.8439
+  near  own 0.9334  stranger 0.0842  excess +0.8439
   Unbaselined: 0 readings
 ```
 
@@ -254,9 +322,15 @@ The seed and the layer live in the config, not in argv, and every result directo
 
 <Lead>What it cannot do.</Lead> Compute a new edit against a remote model. `compute_v` needs a backward pass, which nnsight 0.8.1 refuses mid-trace <Cite id="fiottokaufman2025nnsight" />. The 42 subjects everything here rests on are the ones whose edits were already cached — survivors, not a free draw.
 
-### 4.1 Whether a remote reading can be read twice
+### 4.1 A reading taken off a remote model repeats exactly in its structure, and in its magnitude only within one deployment
 
-Half the tickets in this project are not about editing at all. They ask whether a number read off a remote model is the same number tomorrow, because a result that cannot be read twice is not a result. Nine decisions came out of that, and the useful shape of them is a split: the **structural** claims are properties of the instrument and hold everywhere tested; every **magnitude** belongs to a deployment.
+<Gist>Nine findings about reading numbers off hardware we do not control. Every one of them falls on one side or the other of that split.</Gist>
+
+<Lead>Half the tickets in this project are not about editing at all.</Lead> They ask whether a number read off a remote model is the same number tomorrow, because a result that cannot be read twice is not a result.
+
+Nine decisions came out of that work, and they sort into two kinds.
+
+The **structural** claims are properties of the instrument, and they hold everywhere they have been tested. Every **magnitude** belongs to one deployment and travels nowhere.
 
 <Lead>Structure holds exactly.</Lead> A ratio whose two terms are read inside one trace came back at **0.000e+00** on every one of fifteen layer-model pairs, across three models, two architectures and depths 0 to 79.<Prov id="E-011" /> The suite that checks this runs unchanged on Llama-3.1-8B, Llama-3.1-70B and GPT-J-6B, and carries a per-model table so that a correct deployment running a different model is never reported as a difference.<Prov id="E-008" />
 
@@ -297,7 +371,9 @@ Each value came from one device and each device returned one value, and the conn
   plain
 /> The full reference, with the conformance suite that found four errors in it, is [in the repository](https://github.com/Rubix982/open-concept-lab/blob/main/ai/edit-reach/docs/ndif-reproducibility.md).
 
-### 4.2 What the record cost
+### 4.2 Four in five committed log files held nothing, and a single import was the cause
+
+<Gist>What the kept record actually contained, and the one line of code that emptied it.</Gist>
 
 Before any of the above could be trusted, the log files had to be worth keeping. A census found that **124 of 155 committed log files were a single line naming themselves and nothing else** — 80% of the kept record was content-free. The cause was one import: five run scripts import another as a library for its loaders, and that module calls `logs.setup()` at module scope, so every dry-run pass and every run of five other scripts created a log recording nothing. `setup()` now holds the run header and emits it immediately before the first real record, with the file handler opened lazily. Importing a module costs nothing on disk; running it still produces a self-describing log.
 
@@ -305,13 +381,33 @@ Before any of the above could be trusted, the log files had to be worth keeping.
 
 <Gist>Seven results, in the order the evidence forced them rather than the order we wanted.</Gist>
 
-Five results, in the order they were run. The first two are about the coefficient and are negative. The third and fourth are about what a rank-one update actually does, and are the reason the first two came out the way they did. The fifth applies what survives to a published benchmark.
+The first two are about the number this paper proposes, and both are negative. It does not predict how far an edit moves the model, and where a question avoids the edited name it cannot tell one edit from another.
 
-### 5.1 The coefficient does not predict an edit's effect
+The next two say why. Most of what an edit does follows from whose fact was changed rather than from what it was changed to, so there was very little left for any predictor to find. And the effect is not one thing but two, which come apart under the same controls.
 
-495 probes over 42 subjects, Llama-3.1-8B at layer 5, edits read from cache.<Prov id="E-001" /> Against measured movement — the fall in the probability of the pre-edit top-1 answer — the coefficient correlates at ρ = 0.522, CI (0.450, 0.587). That number is real and will be quoted, so it needs its account.
+The last three take what survives. One scores a published benchmark with it. One derives a ceiling on an edit's reach and finds the ceiling forbids nothing. The last rules out a second family of explanation for how hard an edit lands.
 
-A **same-subject control** — a different property of the same person — already accounts for about 72% of the median movement, |movement| 0.1034 against |control| 0.0740. Removing it leaves an excess correlation of **0.085**, CI (−0.003, 0.172), an interval touching zero.
+### 5.1 A number computable before the edit tracks how far the model moved, until a control removes almost all of it
+
+<Gist>The coefficient looks like a predictor and is not one. What it is really tracking is whether the prompt names the edited person.</Gist>
+
+<Lead>Two things are easy to confuse here.</Lead> Everything in this section depends on keeping them apart.
+
+The first is **delivery**. It is how much of the edit's update vector arrives at a given token. That is what the coefficient measures, and it can be worked out before the edit is made, from the model as it still stands.
+
+The second is **effect**. It is how far the model's answer actually moved once the edit was applied. Here that is measured as the fall in the probability of the answer the model gave before the edit.
+
+This section asks whether the first predicts the second.
+
+The readings come from 495 probes over 42 subjects, on Llama-3.1-8B at layer 5, with the edits read from cache.<Prov id="E-001" />
+
+<Lead>Taken at face value, the answer looks like yes.</Lead> Delivery and effect correlate at ρ = 0.522, CI (0.450, 0.587). That number is real and it will be quoted, so it needs its account.
+
+<Lead>The account is a control.</Lead> For every probe we also apply a second edit — a **different property of the same person**, matched in size — and measure the probe again. Anything that moves under that edit as well was never specific to the edit we care about. It is what happens to this probe whenever this person's key is touched at all.
+
+That control alone accounts for about 72% of the median movement: |movement| 0.1034 against |control| 0.0740.
+
+What is left after it is removed is the part that belongs to this edit and no other. Correlate the coefficient against that instead, and it falls to **0.085**, CI (−0.003, 0.172) — an interval that touches zero.
 
 <Figure
   src="/img/edit-reach/coefficient-vs-movement.svg"
@@ -321,7 +417,11 @@ A **same-subject control** — a different property of the same person — alrea
   plain
 />
 
-<Lead>What the shape of the x-axis does to the statistic.</Lead> The coefficient has almost no values between 0.2 and 0.8, so a rank correlation over it is largely reporting that one cluster moves more than the other. That is consistent with §5.2, where the far field turns out to have no subject-specific dynamic range at all, and it is a second reason not to read **0.522** as a predictive relationship.
+<Lead>There is a second reason not to read 0.522 as a prediction.</Lead> The coefficient hardly ever takes a value in the middle of its range. Of the 495 probes, **329** sit at 0.8 or above and **127** at 0.2 or below, which leaves **39** in between.
+
+A rank correlation over a variable shaped like that is not following a trend. It is reporting that one of two clusters moves more than the other.
+
+And which cluster a probe falls into is decided by whether its prompt names the edited person. So the correlation is largely restating something known before the measurement: questions that name the subject move more than questions that do not. §5.2 goes inside the far cluster and finds no range there at all.
 
 <Figure
   plain
@@ -402,9 +502,9 @@ A **same-subject control** — a different property of the same person — alrea
 
 The same measurement has since run on two more models, and the three do not agree about anything except the sign.
 
-<Data caption={<>The far field on three models, two architectures, all at layer 5. Same 513 instances and the same floor construction on each.<Prov id="E-045" /></>}>
+<Data caption={<>The far field on three models, two architectures, all at layer 5. Same 513 instances and the same floor construction on each. The floor here is drawn from <i>any</i> other edit in the pool; the stricter floor, a stranger matched on the same relation, is in §5.2 and the percentages against it run lower.<Prov id="E-045" /></>}>
   <thead>
-    <tr><th>Model</th><th className="n">own k*</th><th className="n">stranger</th><th className="n">excess</th><th className="n">above floor</th><th className="n">near field</th></tr>
+    <tr><th>Model</th><th className="n">own k*</th><th className="n">any-donor floor</th><th className="n">excess over it</th><th className="n">above it</th><th className="n">near field</th></tr>
   </thead>
   <tbody>
     <tr><td>Llama-3.1-8B</td><td className="n">0.0544</td><td className="n">0.0298</td><td className="n">+0.0231</td><td className="n">79.7%</td><td className="n">0.9334</td></tr>
@@ -413,17 +513,29 @@ The same measurement has since run on two more models, and the three do not agre
   </tbody>
 </Data>
 
-The sign survives: the excess over the different-relation floor is positive on all three, and the excess over the *same*-relation floor is zero on all three. Nothing else survives. On the two Llamas a clear majority of far-field questions sit above their floor; on GPT-J it is 52%, a coin flip, and the two quantities are 0.1303 against 0.1280 — the same number twice. Its floor is four times the 8B one, which is the same model and layer where [E-040] read an anchor-floor of 0.194: GPT-J's keys at layer 5 discriminate less to begin with.
+The sign survives: the excess over a floor drawn from any other edit is positive on all three, as is the excess over a different-relation floor specifically, and the excess over the *same*-relation floor is zero on all three. Nothing else survives. On the two Llamas a clear majority of far-field questions sit above their floor; on GPT-J it is 52%, a coin flip, and the two quantities are 0.1303 against 0.1280 — the same number twice. Its floor is four times the 8B one, which is the same model and layer at which the depth sweep read an anchor-floor of 0.194:<Prov id="E-040" /> GPT-J's keys at layer 5 discriminate less to begin with.
 
 That makes the GPT-J reading consistent with this section and weak evidence for it, and the difference matters. A null on a model whose floor leaves no room for a signal is not the evidence a null on a model with room would be. The two Llamas had room and still returned +0.0231 and +0.0075, and that is where the claim is carried. The near-field column says the same thing from the other side: **0.9334 and 0.9350 are Llama numbers**, and the near field is not pinned the same way on GPT-J, where it reads 0.7985.
 
-<Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims and only the second survives. The question had been written down with both of its answers before the run — if the prediction held, a usable screen; if it did not, the quantity measures delivery and the screen is a proposal — and it closed on the second.
+<Lead>What the quantity actually predicts.</Lead> Not *this edit reaches this probe*, but *this probe is sensitive to an edit on this subject*. Those are different claims, and only the second survives.
+
+Both answers had been written down before the run. If the prediction held, the result was a usable screen for evaluation items. If it did not, the quantity measures delivery rather than effect, and the screen stays a proposal. It closed on the second.
 
 <Lead>One check worth recording.</Lead> On Llama-3.1-8B at layer 5, the `anchor-floor` family — same prompt shape, different person — returned a median coefficient of 0.0809, and a separate run reading the floor against each case's own $k^{*}$ returned 0.0809 on the same model and layer.<Prov id="E-040" /> Two routes to the same number is the cheapest evidence available that the pipeline was measuring what it claimed. It is evidence about this model at this layer and no other: the same control read elsewhere spans 0.031 to 0.388 (§3.2).
 
-### 5.2 The far field has no subject-specific dynamic range
+### 5.2 Where a question never names the edited person, the measure separates a real edit from a stranger's by two ten-thousandths
 
-Near-field and far-field rows use the same code path and the same floor construction; only the question type differs. The far-field excess is more than three orders of magnitude below the near-field excess: **+0.8439** where the prompt names the subject, **+0.0002** where it does not.
+<Gist>In the far field the subject's own edit and an unrelated one score within two ten-thousandths of each other. The far field is where propagation lives.</Gist>
+
+<Lead>A question can mention the edited person or avoid mentioning them.</Lead> That difference matters more than anything else in this paper.
+
+Call the first case the **near field**: the prompt contains the edited name. *Where was Henry Mackenzie born?* is near field.
+
+Call the second the **far field**: the question rests on the edited fact but never names the person. *The author of The Man of Feeling was born in the country of* is far field — the model has to go from the book to Henry Mackenzie, and only then to where he was born, and his name appears nowhere in the prompt.
+
+<Lead>The far field is what propagation means.</Lead> An edit that only repairs the near field has taught the model to say a new string when it hears a name. Whether the change reached the places that never say the name is the question worth asking.
+
+<Lead>Both regimes are read the same way.</Lead> Same code, same floor construction; only the question type differs. The two come out more than three orders of magnitude apart. Against a stranger's edit of the same size, the real edit is ahead by **+0.8439** where the prompt names the subject, and by **+0.0002** where it does not.
 
 <Figure
   src="/img/edit-reach/near-and-far-field.svg"
@@ -445,13 +557,40 @@ Near-field and far-field rows use the same code path and the same floor construc
   </tbody>
 </Data>
 
+<Data caption={<>The same 900 hop-2 questions per model, read against the <i>strict</i> floor: a stranger matched on magnitude <b>and on the same relation</b>. The last column counts how often a question receives more from its own edit than from that stranger's. The percentages in §5.1 are against the looser any-donor floor and run 17 to 6 points higher.<Prov id="E-045" /></>}>
+  <thead>
+    <tr><th>Model</th><th className="n">own k*</th><th className="n">same-relation floor</th><th className="n">excess</th><th className="n">above it</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Llama-3.1-8B</td><td className="n">0.0543</td><td className="n">0.0480</td><td className="n">+0.00021</td><td className="n"><b>62.6%</b></td></tr>
+    <tr><td>Llama-3.1-70B</td><td className="n">0.0174</td><td className="n">0.0119</td><td className="n">+0.00004</td><td className="n">59.1%</td></tr>
+    <tr><td>GPT-J-6B</td><td className="n">0.1302</td><td className="n">0.1255</td><td className="n">−0.00000</td><td className="n"><b>46.1%</b></td></tr>
+  </tbody>
+</Data>
+
+A majority is a direction and not a size, so the spread matters more than the percentage. On Llama-3.1-8B the per-question excess over this floor runs **−0.0003** at the lower quartile, **+0.0088** at the upper, **+0.0201** at the ninetieth percentile and **+0.1549** at its largest. So more far-field questions receive more of their own edit than of a stranger's — and the amount by which is about four thousand times smaller than the near-field excess of +0.8439. On GPT-J-6B the count falls to 46.1%, below a coin flip, which is the same reading §5.1 records as weak evidence: that model's keys leave almost no dynamic range to find.
+
+What that count can and cannot be used for is limitation 9.
+
 <Lead>Reading it plainly.</Lead> In the far field, a stranger's edit reaches a question as much as the real subject's edit does, to within two ten-thousandths. The far field is where multi-hop propagation lives. At layer 5 this measure has no subject-specific dynamic range there at all.
 
-### 5.3 Identity is worth about sixty-five times content
+### 5.3 Whose fact an edit changes matters about sixty-three times more than what it is changed to
 
-The same 495 probes, scored under a third arm: another person's edit, matched on magnitude, applied while probing the first.<Prov id="E-002" /> Paired differences, bootstrap 10,000 resamples, seed 1538.
+<Gist>Most of what an edit does follows from whose name it touched. That is why §5.1 had so little left to predict.</Gist>
 
-<Data caption={<>Median movement by arm, and the paired differences between them. Changing whose key the edit touches is worth about sixty-five times changing what it says.</>}>
+§5.1 showed that the coefficient does not predict an edit's effect. This section asks a different question, and the answer explains the first one: how much edit-specific effect was there to predict in the first place?
+
+<Lead>To find out, the same 495 probes are scored three times over.</Lead><Prov id="E-002" />
+
+1. Under **the real edit** — the one the probe is about.
+2. Under a **different fact about the same person**, matched in size. This is the control §5.1 already used.
+3. Under **another person's edit** entirely, also matched in size, applied while the first person is the one being probed.
+
+<Lead>Those three readings give the two quantities §3.4 named.</Lead> The first score minus the second is **content** — what the edit said, with the person held. The second minus the third is **identity** — whose fact it was, with the edit's shape held.
+
+All three scores come from the same probes, so both differences are taken one probe at a time and only then summarised — paired, with a bootstrap of 10,000 resamples at seed 1538.
+
+<Data caption={<>Median movement under each of the three edits, by probe family. The two quantities this section is about are the gaps between these columns, and they are computed probe by probe rather than from these medians — see the figure below.</>}>
   <thead>
     <tr><th>Probe family</th><th className="n">real</th><th className="n">same-subject</th><th className="n">different-subject</th></tr>
   </thead>
@@ -466,15 +605,37 @@ The same 495 probes, scored under a third arm: another person's edit, matched on
   </tbody>
 </Data>
 
-The paired differences: real minus same-subject is **+0.0009**, CI (+0.0004, +0.0024) — the contribution of content. Same-subject minus different-subject is **+0.0583**, CI (+0.0472, +0.0732) — the contribution of identity. Both exclude zero, so this is not *content is irrelevant*; it is *content is detectable and is roughly 1.5% of the effect of identity*.
+<Lead>The two contributions, measured.</Lead> Content comes to **+0.0009**, CI (+0.0004, +0.0024). Identity comes to **+0.0583**, CI (+0.0472, +0.0732). Neither interval contains zero. So the finding is not that content does not matter. It is that content is detectable, and that it is roughly 1.5% the size of identity.
 
-This is why §5.1 came out the way it did. The coefficient fails to predict a particular edit's effect because there is very little edit-specific effect to predict.
+Unrounded, the two medians are 0.000930 and 0.058282, and their ratio is **62.7**.
 
-<Lead>A statistic that nearly misled, recorded for that reason.</Lead> The per-arm medians are 0.0977 and 0.0625, which reads as the real edit being 56% above its same-subject control — a content effect worth more than half the total. But that is a difference of medians across skewed distributions. The arms share their probes, so the estimator that answers the question is the paired median of differences, and it is +0.0009. **The unpaired form overstates the content effect roughly sixtyfold**, which is the difference between a headline and a footnote. Report paired quantities for paired designs.
+<Figure
+  src="/img/edit-reach/identity-against-content.svg"
+  alt="Two panels. The top panel pools all 495 probes on one linear axis and draws two medians of per-probe differences: identity, the same-subject control minus another person's edit, at +0.0583 with a 95% interval of 0.0472 to 0.0732; and content, the real edit minus the same-subject control, at +0.0009 with an interval of 0.0004 to 0.0024. On that shared axis content is a hairline, so an inset redraws it magnified 29 times, where its interval is visible and clears zero. The ratio of the two is 63 to one. The bottom panel splits both numbers by probe family on a log axis, each family drawn as a line running from its content value to its identity value. Five of six families run rightwards, repetition by 534 times, semantics by 444 and position by 95, while exposure runs the other way, its content value twice its identity value."
+  caption={<>Identity against content, and what the pooled ratio averages over. Every bar is a median of <i>per-probe</i> differences rather than a difference of the per-arm medians — the unpaired form is the one recorded below as overstating content roughly sixtyfold. Content is a hairline beside identity, so the inset redraws it on its own axis, where its interval clears zero. Underneath, the ratio is not uniform: identity is the larger of the two in five families, by <b>×95</b> on <i>position</i> and <b>×534</b> on <i>repetition</i>, and it <b>inverts on <i>exposure</i></b>, where content is about twice identity. Exposure probes ask whether the injected object shows up, so that is the one family whose question is about content. Drawn by <code>tools/figure_identity_content.py</code>.</>}
+  wide
+  plain
+/>
 
-### 5.4 Destruction and destination are separable
+<Lead>This is why §5.1 came out the way it did.</Lead> The coefficient failed to predict a particular edit's effect because almost none of that effect was particular to the edit. It followed from whose key had been touched, which is exactly what the same-subject control also touches — and so the control reproduced it.
 
-One rank-one update does two things. It **breaks** the pre-edit answer, and it **supplies** a new one. Measured on the same 495 probes and the same three arms, changing only the readout — from the named token's probability to a full-vocabulary argmax — the two halves separate in opposite directions.<Prov id="E-003" />
+<Lead>A statistic that nearly misled, recorded for that reason.</Lead> There is an easier way to compute the content effect, and it gives an answer sixty times too large.
+
+Take the two medians in the table above, 0.0977 and 0.0625, and subtract them. The real edit looks 56% higher than its same-subject control — a content effect worth more than half the total.
+
+But that is a difference between two medians drawn from skewed distributions, and the two scores come from the *same* probes. When readings are paired like that, the estimator that answers the question is the median of the per-probe differences, not the difference of the medians. That estimator gives **+0.0009**.
+
+**The unpaired form overstates the content effect roughly sixtyfold**, which is the difference between a headline and a footnote. Report paired quantities for paired designs.
+
+### 5.4 One edit does two jobs, and the two are carried by different things
+
+<Gist>Breaking the old answer follows from whose fact was edited. Supplying the new one follows from what the edit said. So the right control depends on which of the two you are measuring.</Gist>
+
+<Lead>A rank-one update does two things at once.</Lead> It **breaks** the answer the model gave before, and it **supplies** a new one to put there. Nothing says those two have to behave alike, and they do not.
+
+Separating them needs no new experiment. The same 495 probes and the same three edits are used again, and only the readout changes: instead of asking how far the named token's probability fell, ask which word the model now puts first out of the whole vocabulary.<Prov id="E-003" />
+
+Read that way, the two halves move in opposite directions.
 
 <Figure
   plain
@@ -556,7 +717,7 @@ top-1 lands in the
 injected country         1%    29%     1%     1%
 ```
 
-The control and the stranger both sit at the base rate. The real edit is the only arm that puts the new answer anywhere.
+The control and the stranger both sit at the base rate. Of the three, the real edit is the only one that puts the new answer anywhere.
 
 <Data caption={<>The two halves of one update, on the same probes, paired, bootstrap 10,000, seed 1538. Each control is at floor for one half and carries the effect for the other.</>}>
   <thead>
@@ -576,13 +737,15 @@ The control and the stranger both sit at the base rate. The real edit is the onl
   plain
 />
 
-Destruction is **subject-keyed**: it follows whose key the edit touched, and the same-subject control reproduces almost all of it. Destination is **content-specific**: it follows what the edit said, and the same-subject control lands in the injected country at 1%, which is the base rate — it delivers nothing rather than a little. Discordant pairs for destination, real against the same-subject control, run 142 to 2.
+<Lead>Destruction is subject-keyed.</Lead> It follows whose key the edit touched, and the same-subject control reproduces almost all of it.
+
+<Lead>Destination is content-specific.</Lead> It follows what the edit said. The same-subject control lands in the injected country at 1%, which is the base rate — it delivers nothing at all rather than a little. Counting the probes where the two disagree, the real edit beats that control 142 times to 2.
 
 <Lead>Which control is the right one depends on which half you are measuring.</Lead> That is the practical consequence, and it is easy to get wrong in exactly one direction: a same-subject control is at floor for a destination measure and reproduces 98.5% of a destruction measure. Using it on the second is using a control that has already absorbed the signal.
 
 <Lead>What this does not establish.</Lead> The control edit injects an occupation while these probes ask for a city, so there is no arm-symmetric check that *each* edit delivers *its own* content. The claim is that content which can answer the question is what arrives — not that every edit delivers its content somewhere.
 
-### 5.5 What this says about a published benchmark
+### 5.5 A published benchmark has propagation items that name the subject they were built to reach around
 
 <Figure
   src="/img/edit-reach/direct-exposure.svg"
@@ -594,9 +757,9 @@ Destruction is **subject-keyed**: it follows whose key the edit touched, and the
 
 RippleEdits <Cite id="cohen2024ripple" /> has a test type meant to check whether an edit propagates to a *different* entity reached through the edited one. Its prompts read *"the name of the head of government of the place of death of **Leo Arons** is"* — and the edited subject is sitting inside the prompt. Those items receive a median **0.982** of the update. The floor they are read against — the same prompts scored a second time against a stranger's edit — is **0.064 to 0.070**, because which stranger scores which prompt is a choice, and re-pairing under five seeds moves it across that range. It is 0.070 at the seed this project pins everywhere.<Prov id="E-041" /> The gap carries the claim either way; the floor is quoted as a range because it is a property of a pairing and not of the corpus.<Prov id="E-038" />
 
-An item like that can be answered by the update arriving at the mention directly, so a score on it cannot separate propagation from delivery. An editor could score on that test while generalising nothing.
+<Lead>An item like that can be answered without propagating anything.</Lead> The update arrives at the mention directly, so a score on it cannot tell propagation from delivery. An editing method could score well on that test while generalising nothing at all.
 
-The fault is diagnosable rather than universal. MQuAKE names the edited subject when and only when the edit sits on the chain's first hop, which means a clean subset already exists in the field's own data, by construction rather than by design.
+<Lead>The fault is diagnosable rather than universal.</Lead> MQuAKE names the edited subject when, and only when, the edit sits on the chain's first hop. So a clean subset already exists inside the field's own data — by construction, not by anyone's design — and this is the kind of thing the screen is for.
 
 <Data caption={<>Direct exposure of the edited subject in two multi-hop benchmarks, counted over the released sets.</>}>
   <thead>
@@ -609,9 +772,11 @@ The fault is diagnosable rather than universal. MQuAKE names the edited subject 
   </tbody>
 </Data>
 
-### 5.6 A universal upper bound exists, and it forbids nothing
+### 5.6 A ceiling on an edit's reach holds for every prompt, and it rules nothing out
 
-§1 said an item set gives a lower bound on damage and never an upper bound. That is true of item sets. It is not true of the algebra, and the difference is one line.
+<Gist>One line of algebra caps how much of an edit any token can receive. The cap sits above what a question naming the subject actually gets, so it cannot tell the two kinds of question apart.</Gist>
+
+<Lead>§1 said an item set gives a lower bound on damage and never an upper bound.</Lead> That is true of item sets. It is not true of the algebra, and the difference is one line.
 
 Because the update's direction is fixed and only $c$ varies with the token, $c$ is a projection coefficient, and Cauchy–Schwarz bounds it for **every** prompt — no enumeration, no forward pass through the edited model:
 
@@ -644,15 +809,19 @@ So the upper bound that §1 said an item set could never give is available for n
   </tbody>
 </Data>
 
-The number that carries this is the far field's **median bound of 1.1456** against a median coefficient of 0.0544. The bound permits a question that never names the edited subject to receive *more* of the update than the near field actually receives. It cannot tell the two apart, so it forbids nothing that happens.
+<Lead>One number carries this.</Lead> In the far field the bound reads a median of **1.1456**, while the coefficient actually read there has a median of **0.0544**.
+
+A ceiling of 1.1456 permits a question that never names the edited subject to receive *more* of the update than a question that does name it actually receives. It cannot tell those two apart. So it forbids nothing that happens.
 
 <Lead>The near field's 1.05 is not a second result.</Lead> There $k \approx k^{*}$, which is the same prefix-sharing that pins the coefficient at exactly 1 in §3.2, so Cauchy–Schwarz is near-equality by construction. It is reported because it confirms the implementation. Reading it as a positive result would be reporting §3.2 a second time under a new name.
 
 <Lead>A prediction that was right for the wrong reason.</Lead> Before the run, the far-field bound was predicted to read about 1 and therefore forbid nothing. It reads 1.15 and forbids nothing. But the reason given was that the expected squared whitened key norm equals the key dimension — which assumes the covariance is the second moment of keys. It is the identity here, so that argument does not apply. The observed value comes from keys having comparable Euclidean norms, a different fact. The number survived; the derivation that would have carried it to another setting did not.
 
-### 5.7 Nothing about the subject predicts the magnitude either
+### 5.7 Neither how well known a subject is nor how much depends on them predicts the magnitude, to within what 41 subjects can resolve
 
-Seven candidates for what sets the magnitude had already been eliminated, and every one was a property of the activation geometry. This is the first test of a property of the **subject**.<Prov id="E-016" /> For each of 41 edited subjects, damage is the median excess — real movement minus the same-subject control of §3.3 — against two subject properties: prominence, as the number of Wikipedia language editions for the subject's Wikidata item, and dependent count, as the number of distinct properties on it.
+<Gist>Seven earlier candidates were all properties of the activation geometry. These two are properties of the person, and they are the first of that kind to be tested. A null at this size is an absence of evidence, not evidence of absence.</Gist>
+
+<Lead>Something sets how hard an edit lands, and seven candidates have already been ruled out.</Lead> Every one of them was a property of the activation geometry. This is the first test of a property of the **subject** instead.<Prov id="E-016" /> For each of 41 edited subjects, damage is the median excess — real movement minus the same-subject control of §3.3 — against two subject properties: prominence, as the number of Wikipedia language editions for the subject's Wikidata item, and dependent count, as the number of distinct properties on it.
 
 <Figure
   src="/img/edit-reach/nothing-predicts-magnitude.svg"
@@ -678,7 +847,15 @@ Seven candidates for what sets the magnitude had already been eliminated, and ev
   </tbody>
 </Data>
 
-Every interval spans zero and every point estimate sits within 0.13 of it. Three controls were set in advance and all three came back clean: the two predictors correlate at ρ = 0.701, below the 0.8 line at which the partials would have been unstable; controlling for headroom — a better-known subject has more room to fall — moves prominence from +0.059 to +0.038, so there was nothing there to explain away; and recomputing over the four probe families every subject shares leaves prominence at +0.015 and dependent count at −0.039.
+<Lead>Every interval spans zero, and every point estimate sits within 0.13 of it.</Lead>
+
+Three controls had been set before the run, and all three came back clean.
+
+The two predictors correlate at ρ = 0.701, below the 0.8 line at which the partial correlations would have become unstable.
+
+Controlling for headroom — a better-known subject has more room to fall — moves prominence from +0.059 to +0.038. There was nothing there to explain away.
+
+Recomputing over only the four probe families that every subject shares leaves prominence at +0.015 and dependent count at −0.039.
 
 <Lead>What this excludes, and what it does not.</Lead> At 41 subjects the widest interval spans 0.64, so this rules out a monotone relationship of about **|ρ| > 0.37** and nothing smaller. It is no evidence of an effect; it is not evidence of no effect. A real effect of 0.2 would sit inside every interval above and this study would not have seen it.
 
@@ -753,9 +930,9 @@ The table below is every claim this paper has made, numbered in the order they w
     falsifier={<><strong>Refuted if</strong> the excess correlation exceeds 0.5 on any probe set with a same-subject control in place.</>}>
     The coefficient predicts that a probe is sensitive to an edit on its subject, not that a particular edit reaches it. The raw ρ = 0.522 falls to 0.085 once the same-subject control is removed, with an interval touching zero.
   </Finding>
-  <Finding id="F‑11" status="standing" value="×65"
+  <Finding id="F‑11" status="standing" value="×63"
     falsifier={<><strong>Refuted if</strong> the paired real-minus-same-subject difference exceeds the same-subject-minus-different-subject difference on any comparable set.</>}>
-    Changing whose key an edit touches is worth about sixty-five times changing what the edit says. Both differences exclude zero, so content is detectable and is roughly 1.5% of the effect of identity.
+    Changing whose key an edit touches is worth about sixty-three times changing what the edit says. Both differences exclude zero, so content is detectable and is roughly 1.5% of the effect of identity.
   </Finding>
   <Finding id="F‑12" status="standing" value="+0.2828"
     falsifier={<><strong>Refuted if</strong> a readout that can express the control's own content shows the same-subject arm delivering there, or if the two halves stop separating in opposite directions on one probe set.</>}>
@@ -791,20 +968,6 @@ The table below is every claim this paper has made, numbered in the order they w
   </Finding>
 </Ledger>
 
-<Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
-  <Rev date="15 Nov 2026" version="v0.5">The near-field stranger was printed as <b>0.0506</b> and no run produced it; the number was in no result file, and was found missing while redrawing the figure that draws it. The matched floor the excess beside it actually uses is <b>0.0842</b>. The own figure and the excess were both right — 0.9334 and +0.8439 against a recomputed +0.8436 — so one cell was wrong rather than the row. Recovered offline from the keys E‑004 had cached all along, on all three models, and the figure is now generated from the run files rather than drawn by hand.</Rev>
-  <Rev date="15 Nov 2026" version="v0.5">§5.2 ran on a second architecture. The sign holds on GPT-J-6B — the excess over the different-relation floor is positive and over the same-relation floor is zero, as on both Llamas — and nothing else does. Its own and floor readings are 0.1303 and 0.1280 with 52% of questions above the floor, against 79.7% and 72% on the Llamas, so the reading is consistent with the section and weak evidence for it: there was almost no dynamic range available to find missing. Two limitations added and the near-field figures marked as Llama numbers, 0.9334 and 0.9350 against 0.7985.</Rev>
-  <Rev date="15 Nov 2026" version="v0.5">The renamed-subject row was recomputed from the same cached keys. Both statistics come back on their published values — ρ +0.7780 against +0.778, slope +0.8483 against +0.847 — over 371 alias readings against a published 370, and the one-reading difference is unexplained rather than resolved. The row gains the interval it never had, and a qualification the pooled figure was hiding: 85% of those readings come from RippleEdits' <code>random</code> subset, where ρ is +0.787, while on <code>popular</code> it is +0.259 over 20 readings.</Rev>
-  <Rev date="15 Nov 2026" version="v0.5">§5.5's RippleEdits floor was printed as a single <b>0.065</b>. The readings behind it survived in a cached key file even though the run's own outputs did not, so it was recomputed: the <b>0.982</b> reproduces exactly and cannot move with the pairing, because it never touches a partner, while the floor runs 0.064 to 0.070 over five pairings and is 0.070 at the pinned seed. The published 0.065 is a value this measurement produces and not the one it produces at that seed, so the floor is now quoted as a range.</Rev>
-  <Rev date="15 Nov 2026" version="v0.5">§3.2's different-subject floor was a single <b>0.082</b> with no model beside it, read as though it were common to the four models named in the same sentence. It is one reading, Llama-3.1-8B at layer 5. Re-measured on three models at four fractions of each one's depth, the same control spans 0.031 to 0.388 and is ordered by neither size nor depth. The premise itself was re-measured at the same time and held at exactly 1.000 on all twelve readings. The original run behind the 0.082 could not be re-run — its outputs are gone and its script was never committed — so this is a fresh measurement rather than a reproduction, and the runner is in the repository this time.</Rev>
-  <Rev date="10 Nov 2026" version="v0.4">The abstract and the masthead caught up with the body, a day late: the abstract still said "two further results" when there were four, and the masthead still read v0.3 while this table had already turned v0.4. Recorded because a paper whose front matter disagrees with its own revision log is the same fault as a ticket whose status disagrees with its closure note.</Rev>
-  <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
-  <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
-  <Rev date="6 Nov 2026" version="v0.2">F‑07 denied. Every per-family tolerance in §4.1 was removed; the section now says a tolerance must be measured where it runs.</Rev>
-  <Rev date="2 Nov 2026" version="v0.2">F‑09 superseded by F‑02 once the floor was found to be the different-relation floor under another name. §3.3 rewritten around the matched floor.</Rev>
-  <Rev date="31 Oct 2026" version="v0.1">The project's own question closed on its negative branch. The paper's original claim — that the quantity gates a propagation evaluation — was withdrawn and the paper re-scoped to a negative result.</Rev>
-</Revisions>
-
 ## 7. Limitations
 
 <Gist>What this does not show, what was not run, and the uses this result does not license.</Gist>
@@ -827,23 +990,43 @@ Every qualification in this paper is collected here, so the body above runs unhe
 6. <Lead>The different-subject floor is not predictable, and every excess here rests on one.</Lead> It spans 0.031 to 0.388 across three models at four depths each, ordered by neither size nor depth. So an excess measured against a floor on one model says nothing about the excess on another, and any such comparison needs the floor measured where it runs.
 7. <Lead>The 42 subjects are not a sample.</Lead> They are the cached survivors of a blocked path. Any magnitude here generalises no further than that set.
 8. <Lead>Nothing here has been read outside the project.</Lead> Every finding was produced and reviewed by the same two parties. The self-correction record in §6 is evidence the process works, not evidence the conclusions are right.
-9. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its predictors are proxies. Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text, and headroom measures the base model's confidence on the fact being edited, not the exposure behind it. The two are of different kinds — one external to the model, one internal — and both are null, which is stronger than either alone and is still not a measurement of textual frequency.
-10. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
-11. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
+9. <Lead>A fraction above a floor is evidence about a population, not about an item.</Lead> §5.2 reports that 62.6% of far-field questions receive more from their own edit than from a matched stranger's. That does not say the other 37.4% were untouched while these were reached: every one of these questions receives almost nothing from either edit, and the count only records which of two near-identical readings came out larger. It cannot be used to decide anything about a single evaluation item, which is the use §5.1 closed against.
+
+10. <Lead>A null here is an absence of evidence.</Lead> §5.7 rules out a monotone relationship of about |ρ| > 0.37 between a subject's properties and the damage an edit does, because 41 subjects cannot see smaller. An effect of 0.2 would be invisible to it. Its predictors are proxies. Wikipedia language-edition count measures how well an entity is documented, not how often its name appears in text, and headroom measures the base model's confidence on the fact being edited, not the exposure behind it. The two are of different kinds — one external to the model, one internal — and both are null, which is stronger than either alone and is still not a measurement of textual frequency.
+11. <Lead>§5.6's bound stops at the layer it is read in.</Lead> It bounds how much of the update arrives at a token, not how far the output moves. Crossing to behaviour needs a Lipschitz constant for the rest of the network, and §2 reports that none has been computed — not that none exists.
+12. <Lead>This is not an offer.</Lead> The scope above is a finding about a measure, not a method anyone should adopt. Nothing here proposes a better editor, and the novelty position rests on the search described in §2.
 
 ## 8. Conclusion
 
 <Gist>What the number turned out to be good for, which is not what it was built for.</Gist>
 
-A quantity computable before an edit exists tells you, reliably, whether a prompt names the edited subject. It tells you nothing about whether an edit travelled — and §5.3 says why there was little to tell: identity is worth about sixty-five times content, so there is very little edit-specific effect for any measure to predict. The two statements are not in tension: the first is why the measure looked promising, the second is why it cannot do the job it was built for. What survives is the first one — a cheap screen that reads an evaluation item and says whether that item can test propagation at all, which one published benchmark fails. Beside it stands a result the screen was not looking for: the two halves of a rank-one update come apart, and which control is correct depends on which half is being measured.
+<Lead>A quantity computable before an edit exists tells you one thing reliably.</Lead> It tells you whether a prompt names the edited subject.
 
-Two negative results were added late and both close doors rather than open them. The upper bound §1 said an item set could never give does exist, in one line of algebra, and it permits a far-field question to receive more of the update than a near-field one actually receives — so the only universal statement available is vacuous where propagation lives. And the search for what *does* set the magnitude, which had eliminated seven geometric candidates, now has a second class of variable in it: nothing about the subject predicts it either, to within what 41 subjects can see. **Two classes searched — the geometry of the key and the identity of the subject — and neither carries the magnitude.** That sentence is worth more than the one it replaces, because a reader can tell from it what has *not* been searched.
+It tells you nothing about whether an edit travelled.
+
+§5.3 says why there was so little to tell. Identity is worth about sixty-three times content, so there is very little edit-specific effect left for any measure to predict.
+
+The two statements are not in tension. The first is why the measure looked promising. The second is why it cannot do the job it was built for.
+
+<Lead>What survives is the first one.</Lead> A cheap screen that reads an evaluation item and says whether that item is able to test propagation at all — which one published benchmark fails.
+
+Beside it stands a result the screen was not looking for. The two halves of a rank-one update come apart, and which control is the correct one depends on which half is being measured.
+
+<Lead>Two negative results were added late, and both close doors rather than open them.</Lead>
+
+The upper bound §1 said an item set could never give does exist, and it costs one line of algebra. But it permits a far-field question to receive more of the update than a near-field one actually receives. So the only universal statement available is vacuous exactly where propagation lives.
+
+The second is about what sets the magnitude. Seven geometric candidates had already been eliminated. A second class of variable now joins them: nothing about the subject predicts it either, to within what 41 subjects can see.
+
+**Two classes searched — the geometry of the key and the identity of the subject — and neither carries the magnitude.**
+
+That sentence is worth more than the one it replaces, because a reader can tell from it what has *not* been searched.
 
 Five questions stay open. Each is written so it could come back either way, and each names what would change if it did.
 
 1. <Lead>Does a layer sweep find far-field dynamic range at some depth other than 5?</Lead> If yes, the screen is alive again at that depth and the scope sentence narrows to layer 5. If no, the negative result generalises across depth. This is the cheapest open item: one run on the cached subjects.
 2. <Lead>Does a graded relation-similarity control move the +0.0002?</Lead> If the excess moves with relation distance, the categorical same/different split is too coarse and the far field has structure this one missed.
-3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> It surfaced while reading the first run's output, and §5.3 has since measured it on a pre-stated test — identity is worth about sixty-five times content. What stays open is not the measurement but the choice: whether to study the subject-keyed component as the object, or keep controlling it away. *Corrected 9 Nov 2026: this item previously said the question had been deliberately not taken up, to avoid rescuing a withdrawn claim. That reason stopped being true when §5.3 ran, and the item had not been rewritten.*
+3. <Lead>Is subject-keyed movement the phenomenon rather than the confound?</Lead> It surfaced while reading the first run's output, and §5.3 has since measured it on a pre-stated test — identity is worth about sixty-three times content. What stays open is not the measurement but the choice: whether to study the subject-keyed component as the object, or keep controlling it away. *Corrected 9 Nov 2026: this item previously said the question had been deliberately not taken up, to avoid rescuing a withdrawn claim. That reason stopped being true when §5.3 ran, and the item had not been rewritten.*
 4. <Lead>Does whitening make §5.6's bound informative?</Lead> The covariance is the identity throughout this paper. The bound keeps its form under a real covariance but its norm becomes a different quantity, and whitening is precisely the operation that could shrink it in the far field. If it does, the bound forbids something and this section is reopened.
 5. <Lead>Does the backward-pass block lift?</Lead> If nnsight allows `compute_v` mid-trace, the delivery-to-effect gap in §7.1 can be tested on a free draw instead of 42 survivors.
 
@@ -959,4 +1142,20 @@ What a short venue note needs, against what exists today. This is a checklist fo
 
 <ThreadsPanel>
   <ThreadsBody />
+
+<Revisions caption={<>Revisions. A number that moves appears here before it appears anywhere else.</>}>
+  <Rev date="18 Nov 2026" version="v0.6">§4's sample transcript still printed the near-field floor as <b>0.0506</b>. That is the figure withdrawn on 15 November, and the correction reached the §5.2 table and the figure but not this listing. It now reads <b>0.0842</b>, which is what <code>E-046</code> holds for Llama-3.1-8B. No result moves; one illustrative line catches up with the row it illustrates.</Rev>
+  <Rev date="18 Nov 2026" version="v0.6">The identity-to-content ratio was published as <b>×65</b> everywhere it appears. It is the ratio of two medians, and 65 is what those medians give <i>after</i> they are rounded to four decimals for printing — 0.0583 over 0.0009. Unrounded they are 0.058282 and 0.000930, whose ratio is <b>62.7</b>. Found while generating the figure for §5.3, which computes the ratio from the run file rather than from the printed table and so could not reproduce the published number. Now <b>×63</b> in the heading, the abstract, the contributions, F‑11 and §8. The two medians and both intervals are unchanged; only the ratio derived from them moves.</Rev>
+  <Rev date="15 Nov 2026" version="v0.5">The near-field stranger was printed as <b>0.0506</b> and no run produced it; the number was in no result file, and was found missing while redrawing the figure that draws it. The matched floor the excess beside it actually uses is <b>0.0842</b>. The own figure and the excess were both right — 0.9334 and +0.8439 against a recomputed +0.8436 — so one cell was wrong rather than the row. Recovered offline from the keys E‑004 had cached all along, on all three models, and the figure is now generated from the run files rather than drawn by hand.</Rev>
+  <Rev date="15 Nov 2026" version="v0.5">§5.2 ran on a second architecture. The sign holds on GPT-J-6B — the excess over the different-relation floor is positive and over the same-relation floor is zero, as on both Llamas — and nothing else does. Its own and floor readings are 0.1303 and 0.1280 with 52% of questions above the floor, against 79.7% and 72% on the Llamas, so the reading is consistent with the section and weak evidence for it: there was almost no dynamic range available to find missing. Two limitations added and the near-field figures marked as Llama numbers, 0.9334 and 0.9350 against 0.7985.</Rev>
+  <Rev date="15 Nov 2026" version="v0.5">The renamed-subject row was recomputed from the same cached keys. Both statistics come back on their published values — ρ +0.7780 against +0.778, slope +0.8483 against +0.847 — over 371 alias readings against a published 370, and the one-reading difference is unexplained rather than resolved. The row gains the interval it never had, and a qualification the pooled figure was hiding: 85% of those readings come from RippleEdits' <code>random</code> subset, where ρ is +0.787, while on <code>popular</code> it is +0.259 over 20 readings.</Rev>
+  <Rev date="15 Nov 2026" version="v0.5">§5.5's RippleEdits floor was printed as a single <b>0.065</b>. The readings behind it survived in a cached key file even though the run's own outputs did not, so it was recomputed: the <b>0.982</b> reproduces exactly and cannot move with the pairing, because it never touches a partner, while the floor runs 0.064 to 0.070 over five pairings and is 0.070 at the pinned seed. The published 0.065 is a value this measurement produces and not the one it produces at that seed, so the floor is now quoted as a range.</Rev>
+  <Rev date="15 Nov 2026" version="v0.5">§3.2's different-subject floor was a single <b>0.082</b> with no model beside it, read as though it were common to the four models named in the same sentence. It is one reading, Llama-3.1-8B at layer 5. Re-measured on three models at four fractions of each one's depth, the same control spans 0.031 to 0.388 and is ordered by neither size nor depth. The premise itself was re-measured at the same time and held at exactly 1.000 on all twelve readings. The original run behind the 0.082 could not be re-run — its outputs are gone and its script was never committed — so this is a fresh measurement rather than a reproduction, and the runner is in the repository this time.</Rev>
+  <Rev date="10 Nov 2026" version="v0.4">The abstract and the masthead caught up with the body, a day late: the abstract still said "two further results" when there were four, and the masthead still read v0.3 while this table had already turned v0.4. Recorded because a paper whose front matter disagrees with its own revision log is the same fault as a ticket whose status disagrees with its closure note.</Rev>
+  <Rev date="9 Nov 2026" version="v0.4">§5.6 and §5.7 added. The upper bound §1 said an item set could never give turns out to exist in the algebra and to forbid nothing, and no property of the subject predicts the magnitude either. §2 gained the certification and Lipschitz positioning, and a claim that no behavioural bound exists through a transformer was withdrawn after the theory sections were read: a compact domain makes one exist, it is simply uncomputed.</Rev>
+  <Rev date="9 Nov 2026" version="v0.3">Limitations gained the delivery-is-not-effect entry, which §5 had been leaning on without stating.</Rev>
+  <Rev date="6 Nov 2026" version="v0.2">F‑07 denied. Every per-family tolerance in §4.1 was removed; the section now says a tolerance must be measured where it runs.</Rev>
+  <Rev date="2 Nov 2026" version="v0.2">F‑09 superseded by F‑02 once the floor was found to be the different-relation floor under another name. §3.3 rewritten around the matched floor.</Rev>
+  <Rev date="31 Oct 2026" version="v0.1">The project's own question closed on its negative branch. The paper's original claim — that the quantity gates a propagation evaluation — was withdrawn and the paper re-scoped to a negative result.</Rev>
+</Revisions>
 </ThreadsPanel>

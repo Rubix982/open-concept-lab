@@ -345,7 +345,7 @@ Whether a reading can be taken twice is answered in the sibling project rather t
 here, because it was found there: readings off a shared inference fabric vary by
 which replica served the request, exactly and not by drift, so a ratio read inside
 one trace cancels it and a ratio read against a cached value does not. See
-[edit-reach §4.1](/notebook/edit-reach/paper#41-whether-a-remote-reading-can-be-read-twice).
+[edit-reach §4.1](/notebook/edit-reach/paper#41-a-reading-taken-off-a-remote-model-repeats-exactly-in-its-structure-and-in-its-magnitude-only-within-one-deployment).
 
 
 ## 5. Results
