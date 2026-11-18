@@ -24,3 +24,8 @@ __pycache__/
 *.egg-info/
 
 # bearing writes its own outcome ledger; it is a record, so it is kept
+
+# The citation sweep's raw cache is 8.9 MB of Semantic Scholar's records, not
+# ours, and one command rebuilds it. The screened result beside it is small and
+# is the thing the thread cites, so that one is committed.
+results/R-004-rome-citers.json
