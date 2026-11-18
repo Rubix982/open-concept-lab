@@ -877,3 +877,31 @@ tsai2021weightperturb:
   verified: true
   projects: [edit-reach]
   gives_me: Pairwise class margin under weight perturbation. The abstract does not state the perturbation model, so what it certifies is still unread.
+
+ju2024shortcuts:
+  title: Investigating Multi-Hop Factual Shortcuts in Knowledge Editing of Large Language Models
+  authors: Ju, T., Chen, Y., Yuan, X., Zhang, Z., Du, W., Zheng, Y., Liu, G.
+  year: 2024
+  venue: ACL (Long Papers)
+  url: https://aclanthology.org/2024.acl-long.486/
+  status: read
+  relevance: high
+  field: Evaluating edits
+  area: Ripple effects and multi-hop
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "The nearest work to \u00a75.5, read from its method sections. Its shortcut is a learned association between a chain's first subject and its last object, found with Knowledge Neurons and tracking co-occurrence in the pre-training corpus - neuron overlap, not string overlap. Same dataset as \u00a75.2, and the opposite question - why edits fail, not why scores inflate."
+
+youssef2025tracing:
+  title: Tracing and Reversing Edits in LLMs
+  authors: "Youssef, P., Zhao, Z., Seifert, C., Schl\u00f6tterer, J."
+  year: 2025
+  venue: ICLR 2026
+  url: https://arxiv.org/abs/2505.20819
+  status: to-read
+  relevance: high
+  field: Knowledge editing
+  area: Rank-one edits and their structure
+  verified: true
+  projects: [edit-slice, rome-neighbors]
+  gives_me: "The other direction on the same rank-one structure - from the edited weights backwards, inferring the edited object at up to 99% and reversing up to 94% of edits. Read its methods before any novelty line rests on it."

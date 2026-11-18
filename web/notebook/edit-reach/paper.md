@@ -144,6 +144,8 @@ But where a fact can be *located* is not where it can be *edited* <Cite id="hase
 
 MEMIT extends the same rank-one rule to many facts at once <Cite id="meng2023memit" />, so the quantity below is defined for it too.
 
+<Lead>The same structure, read the other way.</Lead> <Cite id="youssef2025tracing" narrative /> works from a model's **edited** weights backwards: inferring which object an edit injected without seeing the editing prompt, at up to 99%, and reversing up to 94% of edits. The quantity in §3 runs the other way — forwards, through the model as it stood *before* the edit, to score a prompt that has not been asked yet. Same rank-one structure, opposite direction, and nothing in that paper computes a per-prompt delivery.
+
 <Lead>Bounding a perturbation is a field, and it bounds a ball.</Lead> §5.6 computes an upper bound on how much of a weight edit reaches a token, which is the shape of a certified-robustness guarantee.
 
 That literature certifies against an adversary free to choose any direction inside a norm ball. <Cite id="weng2020certificated" narrative /> certifies a region in weight space, handling single-layer perturbation analytically; <Cite id="tsai2021weightperturb" narrative /> works from the classification margin.
@@ -758,6 +760,10 @@ The control and the stranger both sit at the base rate. Of the three, the real e
 RippleEdits <Cite id="cohen2024ripple" /> has a test type meant to check whether an edit propagates to a *different* entity reached through the edited one. Its prompts read *"the name of the head of government of the place of death of **Leo Arons** is"* — and the edited subject is sitting inside the prompt. Those items receive a median **0.982** of the update. The floor they are read against — the same prompts scored a second time against a stranger's edit — is **0.064 to 0.070**, because which stranger scores which prompt is a choice, and re-pairing under five seeds moves it across that range. It is 0.070 at the seed this project pins everywhere.<Prov id="E-041" /> The gap carries the claim either way; the floor is quoted as a range because it is a property of a pairing and not of the corpus.<Prov id="E-038" />
 
 <Lead>An item like that can be answered without propagating anything.</Lead> The update arrives at the mention directly, so a score on it cannot tell propagation from delivery. An editing method could score well on that test while generalising nothing at all.
+
+<Lead>A shortcut in a multi-hop item is not a new observation; this one is a different shortcut.</Lead> <Cite id="ju2024shortcuts" narrative /> reads the same MQuAKE-CF-3K and finds that about 20% of multi-hop editing failures come from a *factual shortcut* — a learned association between the chain's first subject and its last object, found with Knowledge Neurons and tracking how often the two co-occur in the pre-training corpus.
+
+That is a property of what the model learned. This is a property of what the benchmark wrote down: the edited name is sitting in the prompt, which can be seen before any model is run. The two also point opposite ways — theirs explains why an edit **fails** a multi-hop item, this explains how one can **pass** without propagating.
 
 <Lead>The fault is diagnosable rather than universal.</Lead> MQuAKE names the edited subject when, and only when, the edit sits on the chain's first hop. So a clean subset already exists inside the field's own data — by construction, not by anyone's design — and this is the kind of thing the screen is for.
 
