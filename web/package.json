@@ -21,7 +21,9 @@
     "journal": "node scripts/journal.mjs",
     "check:papers": "node scripts/check-papers.mjs",
     "check:ledger": "node scripts/check-ledger.mjs",
-    "check:threads-page": "node scripts/check-threads-page.mjs"
+    "check:threads-page": "node scripts/check-threads-page.mjs",
+    "check:anchors": "node scripts/check-anchors.mjs",
+    "postbuild": "npm run check:anchors"
   },
   "dependencies": {
     "@docusaurus/core": "3.8.1",

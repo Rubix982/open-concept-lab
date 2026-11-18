@@ -9402,14 +9402,33 @@ a:hover > .ocl-home__featureCover {
   letter-spacing: -0.008em;
 }
 
+/* A subsection gets the h2 device at half strength. At 0.945rem a bold serif
+   line is *smaller* than the body it is meant to head, and with 1.4 of rhythm
+   above it there was no gap either, so a subsection opened without anything
+   saying so and the previous one ended without anything saying that. Reported
+   as "hard to see when something starts and ends" on a two-column render. The
+   dash and the accent colour are the h2 marks, kept shorter and thinner so the
+   hierarchy still reads at a glance. */
 .markdown:has(> .ocl-paperhead) > h3 {
-  --ifm-h3-vertical-rhythm-top: 1.4;
-  font-size: 0.945rem;
+  --ifm-h3-vertical-rhythm-top: 2.9;
+  position: relative;
+  padding-top: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 1.02rem;
   font-weight: 700;
+  line-height: 1.3;
+  color: var(--ocl-oxide);
 }
 
-.markdown:has(> .ocl-paperhead) > p {
-  margin-bottom: 0.62rem;
+.markdown:has(> .ocl-paperhead) > h3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.3rem;
+  height: 1px;
+  background: var(--ocl-oxide);
+  opacity: 0.6;
 }
 
 .markdown:has(> .ocl-paperhead) > ul,
@@ -9424,6 +9443,153 @@ a:hover > .ocl-home__featureCover {
 .ocl-lead {
   font-weight: 700;
   color: var(--ocl-ink);
+}
+
+/*
+ * Cross-references, set as chips.
+ *
+ * A paper refers to itself constantly — §5.3, §5.6, [E-012] — and until
+ * 18 November 2026 every one of those was plain text. Following one meant
+ * scrolling and counting headings, which is the reader doing by hand what a
+ * link does for nothing. `plugins/remark-paper-refs.mjs` makes them anchors at
+ * build time; this is what they look like.
+ *
+ * Quiet on the page, loud under the cursor. A chip that announced itself in a
+ * column where every line is the same weight would compete with the run-ins,
+ * which are the thing that actually marks a new move.
+ */
+/*
+ * The tip a cross-reference carries.
+ *
+ * This was the browser's own `title` first, and that is drawn by the operating
+ * system: system font, system surface, its own timing, and nothing about it can
+ * be styled. On a page set in a literary serif on paper it arrives as a grey
+ * box from somewhere else. So the page draws its own.
+ *
+ * `data-tip` holds the words and `aria-label` holds them again, because a
+ * tooltip made of `::after` content is invisible to a screen reader — the
+ * visual tip and the accessible name have to be set separately or one of the
+ * two readers gets nothing.
+ */
+[data-tip] {
+  position: relative;
+}
+
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 40;
+  width: max-content;
+  max-width: min(21rem, 68vw);
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--ocl-rule-strong);
+  border-radius: 4px;
+  background: var(--ocl-paper-raised);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 14%);
+  color: var(--ocl-ink);
+  font-family: var(--ocl-font-ui, Lato, sans-serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.42;
+  text-align: left;
+  text-indent: 0;
+  white-space: normal;
+  /* The tip must never sit between the cursor and the link it describes. */
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+/* The notch, drawn as a rotated square so it takes the same border and surface
+   as the bubble and cannot drift out of step with it. */
+[data-tip]::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 0.22rem);
+  left: 0.75rem;
+  z-index: 41;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 1px solid var(--ocl-rule-strong);
+  border-bottom: 1px solid var(--ocl-rule-strong);
+  background: var(--ocl-paper-raised);
+  transform: rotate(45deg) translateY(2px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-tip]:hover::before,
+[data-tip]:focus-visible::before {
+  opacity: 1;
+  transform: rotate(45deg) translateY(0);
+}
+
+/* Near the right edge of a column the bubble would run into the gutter, so a
+   reference in the last third of its line opens leftwards instead. There is no
+   CSS that measures that, so the plugin does not try: the bubble is anchored
+   left and kept narrow enough that a column's width carries it. */
+
+/*
+ * A reference the reader arrived at by keyboard gets the tip too, which is why
+ * `:focus-visible` is here and not only `:hover`. Touch has neither, and tapping
+ * follows the link — which is the right outcome, since the tip only ever
+ * repeats where the link goes.
+ */
+
+.ocl-xref {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--ocl-rule-strong);
+  padding: 0.04em 0.12em;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.ocl-xref:hover,
+.ocl-xref:focus-visible {
+  color: var(--ocl-oxide);
+  background: var(--ocl-paper-raised);
+  border-bottom-color: var(--ocl-oxide);
+}
+
+/* The run id is already a bracketed token, so it needs no underline of its
+   own — the brackets do that job and a rule under them reads as a typo. */
+.ocl-xref--run {
+  border-bottom: none;
+  font-family: var(--ocl-font-mono, ui-monospace, monospace);
+  font-size: 0.86em;
+  color: var(--ocl-ink-muted);
+}
+
+/*
+ * Where a reference lands.
+ *
+ * Jumping to a row in a forty-row table puts it at the top of the viewport and
+ * leaves the reader to work out which one they were sent to. These two rules
+ * say it: the row holds a tint for as long as it is the target, and scroll-margin
+ * keeps it clear of anything fixed at the top of the window.
+ */
+.ocl-ptable tr[id]:target,
+.ocl-ledger tr[id]:target {
+  background: var(--ocl-paper-raised);
+  box-shadow: inset 3px 0 0 var(--ocl-oxide);
+}
+
+.ocl-ptable tr[id],
+.ocl-ledger tr[id],
+.markdown :is(h2, h3)[id] {
+  scroll-margin-top: 4.5rem;
 }
 
 /* A number's provenance: a superscript ticket id pointing at the run table. */
@@ -10061,46 +10227,25 @@ a:hover > .ocl-home__featureCover {
  * alone does not survive being set at 0.9rem in a serif.
  *
  *   the oxide run-in   says "a new move starts here"
- *   the indent         says "this continues the move above"
+ *   the blank line     says "a new paragraph starts here"
  *   the accent rule    says "a new section starts here"
+ *
+ * The middle one was a 1.3em first-line indent, set the way a printed paper
+ * sets its body. It was changed on 18 November 2026 after a two-column render:
+ * the indent only separates paragraphs for a reader already looking for it,
+ * and a run of short paragraphs under it reads as one block of text. A skipped
+ * line separates them for everyone. 1.56em is this column's own leading, so
+ * the gap is exactly one empty line and not an arbitrary margin.
  */
 .markdown:has(> .ocl-paperhead) .ocl-lead {
   color: var(--ocl-oxide);
   font-weight: 700;
 }
 
-/* Paragraphs run on, indented, as a printed paper sets them. A paragraph that
-   opens on a run-in is a new move and starts flush. */
+/* Every paragraph starts flush left, with one empty line before the next. */
 .markdown:has(> .ocl-paperhead) > p {
-  margin-bottom: 0;
-  text-indent: 1.3em;
-}
-
-.markdown:has(> .ocl-paperhead) > p:has(> .ocl-lead:first-child),
-.markdown:has(> .ocl-paperhead) > h2 + p,
-.markdown:has(> .ocl-paperhead) > h3 + p,
-.markdown:has(> .ocl-paperhead) > h4 + p,
-.markdown:has(> .ocl-paperhead) > figure + p,
-.markdown:has(> .ocl-paperhead) > ol + p,
-.markdown:has(> .ocl-paperhead) > ul + p,
-.markdown:has(> .ocl-paperhead) > pre + p,
-.markdown:has(> .ocl-paperhead) > blockquote + p,
-.markdown:has(> .ocl-paperhead) > div + p,
-.markdown:has(> .ocl-paperhead) > section + p,
-.markdown:has(> .ocl-paperhead) > aside + p {
+  margin-bottom: 1.56em;
   text-indent: 0;
-}
-
-/* A paragraph before a block still needs air under it. */
-.markdown:has(> .ocl-paperhead) > p:has(+ h2),
-.markdown:has(> .ocl-paperhead) > p:has(+ h3),
-.markdown:has(> .ocl-paperhead) > p:has(+ figure),
-.markdown:has(> .ocl-paperhead) > p:has(+ div),
-.markdown:has(> .ocl-paperhead) > p:has(+ ol),
-.markdown:has(> .ocl-paperhead) > p:has(+ ul),
-.markdown:has(> .ocl-paperhead) > p:has(+ pre),
-.markdown:has(> .ocl-paperhead) > p:has(+ aside) {
-  margin-bottom: 0.6rem;
 }
 
 /* A short accent above a section, so the eye finds the boundary in a column

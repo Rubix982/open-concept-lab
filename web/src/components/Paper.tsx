@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { Children, cloneElement, isValidElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 import clsx from "clsx";
 import { useDoc } from "@docusaurus/plugin-content-docs/client";
 import useBaseUrl from "@docusaurus/useBaseUrl";
@@ -154,9 +155,31 @@ export function Lead({ children }: { children: ReactNode }): ReactNode {
  * A pointer from a number in the prose to the run that produced it.
  * Renders as a small superscript ticket id linking to the provenance table.
  */
-export function Prov({ id, to = "#runs" }: { id: string; to?: string }): ReactNode {
+export function Prov({
+  id,
+  to,
+  detail,
+}: {
+  id: string;
+  to?: string;
+  /** The run's one-line description. Filled in by `plugins/remark-paper-refs.mjs`
+      from the provenance row itself, so it cannot disagree with the table. */
+  detail?: string;
+}): ReactNode {
+  /* The row, not the top of the table. Landing on `#runs` left the reader to
+     find their own id among forty, which is the work the marker exists to
+     save. `Run` already gives every row a `run-<id>` anchor; the ids here are
+     typed with a non-breaking hyphen so they never wrap, and that character is
+     not the one in the anchor. */
+  const anchor = id.replace(/[\u2010\u2011\u2012\u2013]/g, "-");
+  const tip = detail ? `${anchor} — ${detail}` : `${anchor} — see the provenance table`;
   return (
-    <a className="ocl-prov" href={to} title={`Measured by ${id} — see the provenance table`}>
+    <a
+      className="ocl-prov"
+      href={to ?? `#run-${anchor}`}
+      data-tip={tip}
+      aria-label={tip}
+    >
       [{id}]
     </a>
   );
@@ -261,6 +284,23 @@ export function Runs({
   caption?: ReactNode;
   children: ReactNode;
 }): ReactNode {
+  /* One ticket can write more than one row — a run that swept three models
+     wrote a file per model — and until 18 November 2026 each of those rows
+     carried the same `run-<id>` anchor. Duplicate ids are invalid, and a
+     browser resolves them by going to the first, so the second row could not
+     be linked at all. Numbering repeats here, where the rows are in one place,
+     is the same thing a slugger does to two identical headings: the first keeps
+     the plain anchor, so every reference written as [E-004] still lands on it. */
+  const seen = new Map<string, number>();
+  const rows = Children.map(children, (child) => {
+    if (!isValidElement(child)) return child;
+    const el = child as ReactElement<{ id?: string; occurrence?: number }>;
+    const id = el.props?.id;
+    if (typeof id !== "string") return child;
+    const n = (seen.get(id) ?? 0) + 1;
+    seen.set(id, n);
+    return n === 1 ? child : cloneElement(el, { occurrence: n });
+  });
   return (
     <div className="ocl-ptable" id="runs">
       <table>
@@ -275,7 +315,7 @@ export function Runs({
             <th className="n">output</th>
           </tr>
         </thead>
-        <tbody>{children}</tbody>
+        <tbody>{rows}</tbody>
       </table>
     </div>
   );
@@ -287,6 +327,7 @@ export function Run({
   n,
   date,
   out,
+  occurrence,
   children,
 }: {
   id: string;
@@ -295,6 +336,8 @@ export function Run({
   date: string;
   /** What the run wrote, relative to results/. */
   out: string;
+  /** Set by `Runs` on the second and later rows sharing one id. */
+  occurrence?: number;
   children: ReactNode;
 }): ReactNode {
   // A committed file is linked; a per-run directory is not, because those were
@@ -306,8 +349,13 @@ export function Run({
   // Space-separated, because a run that swept three models wrote three files
   // and naming one of them would be a quieter kind of wrong than naming none.
   const files = out.split(" ").filter((o) => o.endsWith(".json"));
+  /* The id is typeset with a non-breaking hyphen so it never wraps mid-token.
+     That character is not the one anybody types in a link, so the anchor is
+     normalised to ASCII while the cell keeps the typeset form. */
+  const anchor =
+    id.replace(/[\u2010\u2011\u2012\u2013]/g, "-") + (occurrence ? `-${occurrence}` : "");
   return (
-    <tr id={`run-${id}`}>
+    <tr id={`run-${anchor}`}>
       <td className="n">{id}</td>
       <td>{children}</td>
       <td className="n">{model}</td>

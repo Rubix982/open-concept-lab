@@ -1,6 +1,7 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import remarkPaperRefs from "./plugins/remark-paper-refs.mjs";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
@@ -26,7 +27,11 @@ const config: Config = {
      fifteen of them anchors that existed in the HTML but were never registered, so
      the four worth looking at hid among them. Throwing keeps the count at zero,
      which is the only count anyone checks. */
-  onBrokenAnchors: "throw",
+  // Docusaurus only knows the anchors it generated, so a link to an id written
+  // by a component reads as broken here. `scripts/check-anchors.mjs` runs after
+  // the build against the real HTML and does catch those, and it is what the
+  // build now fails on.
+  onBrokenAnchors: "warn",
   onBrokenMarkdownLinks: "warn",
 
   i18n: {
@@ -96,7 +101,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           showLastUpdateTime: true,
           breadcrumbs: false,
-          remarkPlugins: [remarkMath],
+          remarkPlugins: [remarkMath, remarkPaperRefs],
           rehypePlugins: [rehypeKatex],
         },
         blog: {
@@ -111,7 +116,7 @@ const config: Config = {
           showReadingTime: true,
           postsPerPage: 10,
           feedOptions: { type: null },
-          remarkPlugins: [remarkMath],
+          remarkPlugins: [remarkMath, remarkPaperRefs],
           rehypePlugins: [rehypeKatex],
           onInlineTags: "warn",
           onInlineAuthors: "warn",
