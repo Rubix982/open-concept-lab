@@ -1,4 +1,4 @@
-import React, {useState, type ReactNode} from 'react';
+import React, {useEffect, useRef, useState, type ReactNode} from 'react';
 import clsx from 'clsx';
 
 import Link from '@docusaurus/Link';
@@ -9,7 +9,6 @@ import {
   ThemeClassNames,
 } from '@docusaurus/theme-common';
 import BlogLayout from '@theme/BlogLayout';
-import BlogListPaginator from '@theme/BlogListPaginator';
 import SearchMetadata from '@theme/SearchMetadata';
 import type {Props} from '@theme/BlogListPage';
 import BlogPostItem from '@theme/BlogPostItem';
@@ -63,9 +62,36 @@ function BlogListPageMetadata(props: Props): ReactNode {
   );
 }
 
+// Cards are shown a batch at a time; the next batch appears as the reader nears the end of
+// the grid, so nothing has to be pressed. Three rows of three on a wide screen.
+const BATCH = 9;
+
+/** How many of `total` to show, growing by a batch whenever `sentinel` comes near the screen. */
+function useGrowing(total: number, resetKey: string): [number, React.RefObject<HTMLDivElement>] {
+  const [count, setCount] = useState(BATCH);
+  const sentinel = useRef<HTMLDivElement>(null);
+  useEffect(() => setCount(BATCH), [resetKey]);
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || count >= total) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setCount(total);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setCount((c) => Math.min(total, c + BATCH));
+      },
+      {rootMargin: '900px 0px'},
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [count, total]);
+  return [count, sentinel];
+}
+
 function BlogListPageContent(props: Props): ReactNode {
-  const {metadata, items, sidebar} = props;
-  const {page} = metadata;
+  const {items, sidebar} = props;
   const topics = topicsOf(items);
   const [topic, setTopic] = useState<string | null>(null);
   const [stage, setStage] = useState('');
@@ -80,6 +106,7 @@ function BlogListPageContent(props: Props): ReactNode {
       (!stage || statusOf(item) === stage) &&
       (!kind || kindOfItem(item) === kind),
   );
+  const [count, sentinel] = useGrowing(shown.length, `${topic}|${stage}|${kind}`);
 
   return (
     <BlogLayout sidebar={sidebar}>
@@ -140,7 +167,7 @@ function BlogListPageContent(props: Props): ReactNode {
 
         {shown.length > 0 ? (
           <div className="ocl-garden__grid">
-            {shown.map(({content: BlogPostContent}) => (
+            {shown.slice(0, count).map(({content: BlogPostContent}) => (
               <BlogPostProvider
                 key={BlogPostContent.metadata.permalink}
                 content={BlogPostContent}>
@@ -154,14 +181,12 @@ function BlogListPageContent(props: Props): ReactNode {
           <p className="ocl-garden__empty">Nothing growing here with those filters.</p>
         )}
 
-        <BlogListPaginator metadata={metadata} />
+        {count < shown.length ? <div ref={sentinel} className="ocl-garden__more" aria-hidden="true" /> : null}
 
-        {page === 1 ? (
-          <section className="ocl-garden__desk" aria-label="At the desk">
-            <h2 className="ocl-garden__deskTitle">At the desk</h2>
-            <WritingDesk />
-          </section>
-        ) : null}
+        <section className="ocl-garden__desk" aria-label="At the desk">
+          <h2 className="ocl-garden__deskTitle">At the desk</h2>
+          <WritingDesk />
+        </section>
       </div>
     </BlogLayout>
   );

@@ -114,7 +114,9 @@ const config: Config = {
           // contents column the width it needed.
           blogSidebarCount: 0,
           showReadingTime: true,
-          postsPerPage: 10,
+          // One page: the index shows cards in batches as the reader scrolls
+          // (src/theme/BlogListPage), so there is no "Older entries" link to press.
+          postsPerPage: "ALL",
           feedOptions: { type: null },
           remarkPlugins: [remarkMath, remarkPaperRefs],
           rehypePlugins: [rehypeKatex],

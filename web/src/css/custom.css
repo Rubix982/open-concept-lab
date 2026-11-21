@@ -10745,3 +10745,56 @@ a:hover > .ocl-home__featureCover {
     background: color-mix(in srgb, var(--ocl-link) 4%, var(--ocl-paper));
   }
 }
+
+/* --- journal hero ------------------------------------------------------ */
+/* The masthead and the cover share the top of a journal entry. On a wide
+   screen they sit side by side, as wide as the three-column blocks below, so
+   the top of the page isn't one narrow column with empty space beside it. The
+   masthead stretches to the picture's height: the date at the top, the title
+   at the foot. Below 1100px they stack as before. */
+.ocl-hero {
+  max-width: min(100%, 66rem);
+}
+
+.ocl-hero .ocl-journal,
+.ocl-hero .ocl-cover {
+  max-width: none;
+}
+
+@media (min-width: 1100px) {
+  .ocl-hero--cover {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 1.75rem;
+    align-items: stretch;
+    margin: 0 0 2.4rem;
+  }
+
+  .ocl-hero--cover .ocl-journal {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.9rem 2rem 2rem;
+  }
+
+  .ocl-hero--cover .ocl-journal__title {
+    font-size: clamp(2.4rem, 3.4vw, 3.4rem);
+    line-height: 1.05;
+  }
+
+  .ocl-hero--cover .ocl-cover {
+    margin: 0;
+  }
+
+  .ocl-hero--cover .ocl-cover img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* The writing index grows as it's scrolled: this marks where the next cards come in. */
+.ocl-garden__more {
+  height: 1px;
+}

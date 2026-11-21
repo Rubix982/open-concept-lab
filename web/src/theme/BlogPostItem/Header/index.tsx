@@ -78,14 +78,18 @@ export default function BlogPostItemHeader(): ReactNode {
   if (isJournal(tags.map((t) => t.label.toLowerCase()))) {
     return (
       <>
-        <JournalMasthead
-          title={title}
-          date={date}
-          standfirst={fm.standfirst}
-          number={entry ? journalNumber(writing, entry.slug) : undefined}
-          minutes={typeof readingTime === "number" ? Math.ceil(readingTime) : undefined}
-        />
-        <Cover src={entry?.cover} />
+        {/* The masthead and the picture share the top as one hero: side by side on a wide
+            screen, the same width as the widest blocks below; stacked on a narrow one. */}
+        <div className={entry?.cover ? "ocl-hero ocl-hero--cover" : "ocl-hero"}>
+          <JournalMasthead
+            title={title}
+            date={date}
+            standfirst={fm.standfirst}
+            number={entry ? journalNumber(writing, entry.slug) : undefined}
+            minutes={typeof readingTime === "number" ? Math.ceil(readingTime) : undefined}
+          />
+          <Cover src={entry?.cover} />
+        </div>
         <Audience text={fm.audience} />
         {voices}
       </>
