@@ -2,16 +2,48 @@
 title: Mech interp in 2026
 sidebar_label: The field in 2026
 sidebar_position: 4
-description: Where work on model internals was judged in 2026, what each venue asked for, which of those asks this notebook has nothing on, and where work can be submitted in 2027.
+description: Where work on model internals can be submitted in 2027, soonest deadline first, and looking back, where it was judged in 2026, what each venue asked for, and which of those asks this notebook has nothing on.
 ---
 
 <PageArt name="notebook" />
 
 # Mech interp in 2026
 
-**Where work on model internals was judged this year, what each venue asked for, which of those asks nothing here answers, and where a result can be sent in 2027.**
+**Where a result on model internals can be sent in 2027, and where such work was judged in 2026.**
 
-This is not a reading list. [Reading](/reading) is that, and it answers a different question — what I go back to, and for what. This page answers where a finished result goes to be read by people who can say it is wrong, which is a thing the reading list cannot tell me.
+## Where it can go in 2027
+
+Conferences, journals, workshops and competitions, soonest deadline first, with the days left counted from today.
+
+<Venues year={2027} view="timeline" />
+
+<Notice>
+  <strong>Read on 15 November 2026, when most 2027 calls were not out.</strong>
+  Seven were read off the venue's own page or its own announcements: the
+  ICLR blogpost track, ACL, ICML, SemEval, the MIB leaderboard and the two
+  journals. Every other date was worked out from the last edition, shows only
+  its month, and is marked <em>unchecked</em>. Each of those needs reading again
+  once its call is published.
+</Notice>
+
+<details>
+<summary>How to read these: archival, ARR, journals, ICML's new rule, and where competitions run</summary>
+
+**Archival or not.** A non-archival workshop does not use up a result: the same paper can go to a conference afterwards. An archival venue publishes it, and conferences do not take work already published at another archival venue.
+
+**ACL, NAACL, EACL and EMNLP all review through ARR.** A paper is reviewed once in an ARR cycle and then committed to one conference, so the cycle sets the date, not the conference. ARR had not published its 2027 cycles; ACL's own page gives 4 January 2027.
+
+**Journals have no deadline.** TMLR takes submissions at any time, and its Journal-to-Conference certification can still put a paper in front of NeurIPS, ICML or ICLR. TACL closes on the 1st of each month, and its accepted papers can be presented at an ACL conference. A paper cannot be under review at TACL and ARR at the same time.
+
+**ICML has a new reviewing rule.** Each ICML 2027 submission must name one author who is eligible to review and who will. An author who is not eligible can appear on only one submission in which nobody is.
+
+**Where competitions run.** A competition on a fixed problem lives on a platform that holds the data and scores each entry, usually against a test set the entrants never see. Kaggle hosts the large prize competitions, such as the ARC Prize and the AIMO prizes. Codabench hosts most academic shared tasks, SemEval's among them. NeurIPS competitions each pick their own, and have used Kaggle, Codabench, EvalAI and AIcrowd. Standing research leaderboards, like MIB's, often sit in a Hugging Face Space. Red-teaming has platforms of its own, such as Gray Swan's Arena.
+
+</details>
+
+## Where it gets judged
+
+Two things worth keeping in view before the cards: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
 
 <Notice>
   <strong>Every card carries its own source, and unverified cards say so.</strong>
@@ -21,10 +53,6 @@ This is not a reading list. [Reading](/reading) is that, and it answers a differ
   until somebody has opened the primary page. One of the seven is unchecked: a
   funding programme that exists only on grant aggregators.
 </Notice>
-
-## Where it gets judged
-
-Two things worth keeping in view before the cards: this field has **no competition culture to speak of** — one competition ran in 2026, against five workshops — and most of its venues are **non-archival**, which means unfinished work is welcome and a submission does not spend the result.
 
 <Venues />
 
@@ -44,33 +72,10 @@ The cards above are only useful read against the work, so: five of the six venue
 
 **Probes.** Named by NEMI, and named twice in industry postings read on 10 November 2026. Partly answered, under another name: edit-forensics (the report is on [built](/built)) detects a planted fact in a suspect checkpoint — the edited layer from a weight diff, the subject by scoring names on how hard the update fires, and, with no base model at all, the subject from outsized MLP writes. That is a monitor. It has never been called one.
 
-## Where it can go in 2027
-
-The cards above are workshops, one competition and a funding lead. A result that is meant to be cited also needs the main conferences and the journals, so the 2027 list has those too, along with the competitions that set one fixed problem and score every entry on it. Everything is in the order its deadline arrives.
-
-<Notice>
-  <strong>Read on 15 November 2026, when most 2027 calls were not out.</strong>
-  Seven cards were read off the venue's own page or its own announcements: the
-  ICLR blogpost track, ACL, ICML, SemEval, the MIB leaderboard and the two
-  journals. Every other date was worked out from the last
-  edition and says <em>estimated</em>. Those cards are marked unchecked, and
-  each one needs reading again once its call is published.
-</Notice>
-
-<Venues year={2027} />
-
-**Archival or not.** A non-archival workshop does not use up a result: the same paper can go to a conference afterwards. An archival venue publishes it, and conferences do not take work already published at another archival venue.
-
-**ACL, NAACL, EACL and EMNLP all review through ARR.** A paper is reviewed once in an ARR cycle and then committed to one conference, so the cycle sets the date, not the conference. ARR had not published its 2027 cycles; ACL's own page gives 4 January 2027.
-
-**Journals have no deadline.** TMLR takes submissions at any time, and its Journal-to-Conference certification can still put a paper in front of NeurIPS, ICML or ICLR. TACL closes on the 1st of each month, and its accepted papers can be presented at an ACL conference. A paper cannot be under review at TACL and ARR at the same time.
-
-**ICML has a new reviewing rule.** Each ICML 2027 submission must name one author who is eligible to review and who will. An author who is not eligible can appear on only one submission in which nobody is.
-
-**Where competitions run.** A competition on a fixed problem lives on a platform that holds the data and scores each entry, usually against a test set the entrants never see. Kaggle hosts the large prize competitions, such as the ARC Prize and the AIMO prizes. Codabench hosts most academic shared tasks, SemEval's among them. NeurIPS competitions each pick their own, and have used Kaggle, Codabench, EvalAI and AIcrowd. Standing research leaderboards, like MIB's, often sit in a Hugging Face Space. Red-teaming has platforms of its own, such as Gray Swan's Arena.
-
 ## What this page is for
 
-Two things. Looking back, a heading-check: the venues say what the field thinks is worth judging, and reading my own work against that list is cheaper than discovering the mismatch at submission time. Looking forward, the 2027 cards are fixed dates to pace work against, and each one says what its venue asks for, so a result can be aimed at a deadline and checked against the ask before it is written up.
+This is not a reading list. [Reading](/reading) is that, and it answers a different question — what I go back to, and for what. This page answers where a finished result goes to be read by people who can say it is wrong, which is a thing the reading list cannot tell me.
+
+It does that in two directions. Looking forward, the 2027 list is fixed dates to pace work against, and each entry says what its venue asks for, so a result can be aimed at a deadline and checked against the ask before it is written up. Looking back, a heading-check: the 2026 venues say what the field thinks is worth judging, and reading my own work against that list is cheaper than discovering the mismatch at submission time.
 
 The honest finding from the first pass is that **the heading is not wrong and the names are.** Two finished projects here answer things on this list under words nobody searching would use. That is a positioning problem, and positioning is a paragraph, not a project.

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePluginData } from "@docusaurus/useGlobalData";
 import type { LabData, Venue } from "@site/plugins/lab-data";
 
@@ -43,24 +43,36 @@ const ARCHIVAL: Record<string, string> = {
   choice: "archival or not, author's choice",
 };
 
+function VenueName({ venue }: { venue: Venue }): ReactNode {
+  return venue.url ? (
+    <a href={venue.url} target="_blank" rel="noreferrer">
+      {venue.name}
+    </a>
+  ) : (
+    <>{venue.name}</>
+  );
+}
+
 function VenueCard({ venue }: { venue: Venue }): ReactNode {
   return (
     <article className="ocl-venue">
       <header className="ocl-venue__head">
         <h3 className="ocl-venue__name">
-          {venue.url ? (
-            <a href={venue.url} target="_blank" rel="noreferrer">
-              {venue.name}
-            </a>
-          ) : (
-            venue.name
-          )}
+          <VenueName venue={venue} />
         </h3>
         <span className="ocl-venue__series">{venue.series}</span>
       </header>
 
       {venue.due ? <p className="ocl-venue__due">Due {venue.due}</p> : null}
 
+      <VenueBody venue={venue} />
+    </article>
+  );
+}
+
+function VenueBody({ venue }: { venue: Venue }): ReactNode {
+  return (
+    <>
       <p className="ocl-venue__when">
         {venue.when}
         {venue.where ? ` · ${venue.where}` : ""}
@@ -93,11 +105,143 @@ function VenueCard({ venue }: { venue: Venue }): ReactNode {
           </span>
         )}
       </footer>
-    </article>
+    </>
   );
 }
 
-export default function Venues({ year = 2026 }: { year?: number }): ReactNode {
+/*
+ * The timeline view: one line per venue in deadline order, opening into the
+ * card. A page used for pacing is read for "what is next and how long do I
+ * have", and eighteen full cards put the answer to that six screens deep.
+ *
+ * Days left are counted in the reader's browser, after the page has loaded,
+ * because the build runs on one day and the page is read on another. Until
+ * then the rows show dates only, which is what the server-rendered HTML holds.
+ */
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAY = 86_400_000;
+
+function parseDay(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/** A checked date gets its day; an estimated one only its month, since the day would be invented. */
+function dateLabel(v: Venue): string {
+  if (!v.deadline) return "—";
+  const d = parseDay(v.deadline);
+  return v.verified ? `${d.getDate()} ${MONTHS[d.getMonth()]}` : `~${MONTHS[d.getMonth()]}`;
+}
+
+function daysLeft(v: Venue, today: Date): number | null {
+  return v.deadline ? Math.round((parseDay(v.deadline).getTime() - today.getTime()) / DAY) : null;
+}
+
+function leftLabel(n: number, estimated: boolean): string {
+  if (n < 0) return "closed";
+  if (n === 0) return "today";
+  if (n === 1) return "tomorrow";
+  const s = n < 60 ? `${n} days` : n < 120 ? `${Math.round(n / 7)} weeks` : `${Math.round(n / 30.4)} months`;
+  return estimated ? `~${s}` : s;
+}
+
+function VenueRow({ venue, today }: { venue: Venue; today: Date | null }): ReactNode {
+  const n = today ? daysLeft(venue, today) : null;
+  const soon = n !== null && n >= 0 && n <= 30 && venue.verified;
+  return (
+    <details className={`ocl-due${soon ? " ocl-due--soon" : ""}`} id={venue.id}>
+      <summary className="ocl-due__row">
+        <span className="ocl-due__date">
+          <span className="ocl-due__day">{dateLabel(venue)}</span>
+          <span className="ocl-due__left">{n !== null ? leftLabel(n, !venue.verified) : " "}</span>
+        </span>
+        <span className="ocl-due__what">
+          <span className="ocl-due__name">
+            {venue.name}
+            <span className="ocl-due__series">{venue.series}</span>
+          </span>
+          {venue.due ? <span className="ocl-due__text">{venue.due}</span> : null}
+        </span>
+        <span className="ocl-due__kind">{venue.kind}</span>
+      </summary>
+      <div className="ocl-due__body">
+        <VenueBody venue={venue} />
+        {venue.url ? (
+          <p className="ocl-due__link">
+            <a href={venue.url} target="_blank" rel="noreferrer">
+              {new URL(venue.url).hostname.replace(/^www\./, "")} ↗
+            </a>
+          </p>
+        ) : null}
+      </div>
+    </details>
+  );
+}
+
+function Timeline({ venues }: { venues: Venue[] }): ReactNode {
+  const [today, setToday] = useState<Date | null>(null);
+  useEffect(() => {
+    const now = new Date();
+    setToday(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+    // A link to one venue opens its row, not just scrolls to it.
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    if (hash) document.getElementById(hash)?.setAttribute("open", "");
+  }, []);
+
+  const dated = venues.filter((v) => v.deadline);
+  const closed = today ? dated.filter((v) => (daysLeft(v, today) ?? 0) < 0) : [];
+  const ahead = dated.filter((v) => !closed.includes(v));
+  const open = venues.filter((v) => !v.deadline);
+
+  const rows: ReactNode[] = [];
+  let year = "";
+  for (const v of ahead) {
+    const y = v.deadline!.slice(0, 4);
+    if (y !== year) {
+      year = y;
+      rows.push(
+        <li key={`y${y}`} className="ocl-due__group">
+          {y}
+        </li>,
+      );
+    }
+    rows.push(
+      <li key={v.id}>
+        <VenueRow venue={v} today={today} />
+      </li>,
+    );
+  }
+
+  const group = (label: string, list: Venue[]) =>
+    list.length
+      ? [
+          <li key={`g-${label}`} className="ocl-due__group">
+            {label}
+          </li>,
+          ...list.map((v) => (
+            <li key={v.id}>
+              <VenueRow venue={v} today={today} />
+            </li>
+          )),
+        ]
+      : [];
+
+  return (
+    <ol className="ocl-due-list">
+      {rows}
+      {group("No fixed date", open)}
+      {group("Closed", closed)}
+    </ol>
+  );
+}
+
+export default function Venues({
+  year = 2026,
+  view = "cards",
+}: {
+  year?: number;
+  view?: "cards" | "timeline";
+}): ReactNode {
   const all = (usePluginData("ocl-lab-data") as LabData).venues;
   const [kind, setKind] = useState<Venue["kind"] | "all">("all");
 
@@ -127,11 +271,15 @@ export default function Venues({ year = 2026 }: { year?: number }): ReactNode {
         ))}
       </div>
 
-      <div className="ocl-venues__list">
-        {shown.map((venue) => (
-          <VenueCard key={venue.id} venue={venue} />
-        ))}
-      </div>
+      {view === "timeline" ? (
+        <Timeline venues={shown} />
+      ) : (
+        <div className="ocl-venues__list">
+          {shown.map((venue) => (
+            <VenueCard key={venue.id} venue={venue} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -2211,6 +2211,175 @@ a.ocl-desk__day:focus-visible {
   margin-left: auto;
 }
 
+/* ---- venues as a timeline: one line each, opening into the card ---- */
+
+.markdown .ocl-due-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ocl-rule);
+}
+
+.markdown .ocl-due-list > li {
+  margin: 0;
+}
+
+.markdown .ocl-due-list > li + li {
+  margin-top: 0;
+}
+
+.ocl-due__group {
+  padding: 1.1rem 0 0.35rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-due {
+  border-bottom: 1px solid var(--ocl-rule);
+}
+
+.ocl-due__row {
+  display: grid;
+  grid-template-columns: 5.4rem 1fr auto;
+  align-items: baseline;
+  gap: 0.2rem 0.9rem;
+  padding: 0.6rem 0.4rem 0.6rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ocl-due__row::-webkit-details-marker {
+  display: none;
+}
+
+.ocl-due__row:hover .ocl-due__name {
+  color: var(--ocl-link);
+}
+
+.ocl-due__row:focus-visible {
+  outline: 2px solid var(--ocl-link);
+  outline-offset: 2px;
+}
+
+.ocl-due__date {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ocl-apparatus);
+  line-height: 1.25;
+}
+
+.ocl-due__day {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ocl-ink);
+}
+
+.ocl-due__left {
+  font-size: 0.74rem;
+  color: var(--ocl-ink-faint);
+}
+
+/* The one colour on the list: a checked deadline inside thirty days. */
+.ocl-due--soon .ocl-due__day,
+.ocl-due--soon .ocl-due__left {
+  color: var(--ocl-oxide);
+}
+
+.ocl-due__what {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ocl-due__name {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ocl-ink);
+  transition: color var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-due__series {
+  margin-left: 0.55rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-due__text {
+  margin-top: 0.1rem;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ocl-ink-muted);
+}
+
+.ocl-due__kind {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--ocl-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocl-ink-faint);
+}
+
+.ocl-due__kind::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--ocl-fast) var(--ocl-ease);
+}
+
+.ocl-due[open] .ocl-due__kind::after {
+  transform: rotate(45deg);
+}
+
+.ocl-due__body {
+  margin: 0 0 0.9rem 6.3rem;
+  padding: 0.75rem 0.95rem 0.7rem;
+  border: 1px solid var(--ocl-rule);
+  border-radius: var(--ocl-radius);
+  background: var(--ocl-paper-raised);
+}
+
+.markdown .ocl-due__link {
+  margin: 0.6rem 0 0;
+  font-family: var(--ocl-apparatus);
+  font-size: 0.76rem;
+}
+
+@media (max-width: 560px) {
+  .ocl-due__row {
+    grid-template-columns: 4.4rem 1fr auto;
+    gap: 0.2rem 0.6rem;
+  }
+
+  .ocl-due__series {
+    display: none;
+  }
+
+  .ocl-due__kind {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .ocl-due__body {
+    margin-left: 0;
+  }
+}
+
 /*
  * The notebook index wears the writing index's shell, so on that one page the
  * article stops being an article: no measure, no contents column (turned off in
