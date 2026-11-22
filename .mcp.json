@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "patternbook": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${HOME}/code/style/service/mcp.mjs"],
+      "env": { "PATTERNBOOK_OUT": "${HOME}/code/open-concept-lab/web/patternbook-out" }
+    }
+  }
+}

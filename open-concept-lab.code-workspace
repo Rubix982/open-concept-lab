@@ -20,6 +20,15 @@
 		},
 		{
 			"path": "../tq-assignments"
+		},
+		{
+			"path": "../graphics-reuse"
+		},
+		{
+			"path": "../research-craft"
+		},
+		{
+			"path": "../style"
 		}
 	],
 	"settings": {
