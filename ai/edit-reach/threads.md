@@ -226,3 +226,23 @@ Its first version returned **426** for contamination, about a third of everythin
 The other three — *Key-Locked Rank One Editing*, *Larimar*, *Sparse Feature Circuits* — are filed as examined. **The last is a false positive worth recording:** it matched the screen on *anticipat*, a word that occurs only in its reference list. That is what this screen costs in precision, and it is cheaper to record than to re-derive.
 
 **What this still does not establish.** A keyword screen cannot tell whether a paper did the thing; only a methods section can. The shortlist is a reading list. And the screen reads what Semantic Scholar holds, so a paper with no abstract there can only match on its title — 328 of the 3,780 are in that position. Ju et al. was read from its method sections and that verdict is firm. **Youssef et al. was read from its abstract and search summaries only**, so that verdict is weaker than it looks and must not be quoted at this strength until its methods are read — `verified: false` in `web/data/papers.yml` until then. §2's sentence stands as written.
+
+---
+
+## Where this stops — 2026-11-22
+
+The effort is wound up here, not finished. What that means, field by field, so it can be picked up cold.
+
+**What is settled.** The paper at `web/notebook/edit-reach/paper.md` is at v0.6 and every number in it traces to a run file. C-001 through C-008 are closed, each with a number or a sentence that could have come out the other way. The positioning question (T-014) is answered on all three of its parts, and the evidence for it is a script rather than a memory: `tools/citation_sweep.py` over the 3,780 papers citing ROME.
+
+**What is open, and resumable.**
+
+- **C-009** — whether layer 5 is a place the attribute actually lives — is written in full and has never been run. It is parked, not dropped. Its three branches and its 5-point threshold were fixed before any RAVEL number was seen, so resuming it does not require re-deciding anything.
+- **T-009** — the ~2e-04 of session drift that the serving GPU does not explain. Falsifier stated: read the same 42 floor probes daily for a week, recording device set and exact median. Not blocking: every tolerance this project relies on is already wider.
+- **T-013** — the MIB leaderboard entry. Conditional on C-009 closing on branch 1 or 3; on branch 2 it has nothing to align to.
+- **128 papers** are `status: to-read` in `web/data/papers.yml`, ranked by citation count in `results/R-004-sweep.json`. 27 are read, 13 skimmed. The shortlist is a reading list and nothing in the paper rests on an unread one.
+- **Youssef et al. (2505.20819)** is cited in §2 and read only from its abstract. It is `verified: false` and no novelty line may rest on it until its methods are read.
+
+**What is blocked by something outside the project.** [E-043] and [E-047] — ROME's `v*` optimisation returns `out.grad is None` on every served model. [E-004] at 405B waits on that model being WARM or HOT in `tools/ndif_catalogue.py`.
+
+**One thing that has never been checked.** The paper page's custom tooltip has never been seen rendered inside the two-column layout. There is no headless browser on this machine, and CSS multicol can clip an absolutely positioned descendant. It needs a pair of eyes on the page, not a script.

@@ -10,8 +10,9 @@ Promotion to the ten-lens Design Protocol happens only when field 4 names a load
 
 ## C-009 · Is the site where these edits go in a site where the attribute actually lives?
 
-**Status:** open
+**Status:** parked
 **Opened:** 2026-11-15
+**Parked:** 2026-11-22 — written in full, never run. The effort was wound up while the card was still open, so it is parked rather than closed: nothing about it has been decided and nothing needs re-deciding to resume. The three branches and the 5-point threshold below were fixed before any RAVEL number on this setup was looked at, and they still are.
 
 **1. WHERE WE ARE.**
 This project closed negative: the coefficient detects contamination, not propagation (C-001, C-002). Every edit here and in edit-slice is delivered at Llama-3.1-8B **layer 5**, on the subject's **last token** — a choice inherited from ROME and never tested in either project. MIB's RAVEL task (Mueller et al., ICML 2025, arXiv 2504.13151, Table 3g) measures where that same model holds a city's **country, continent and language**, at the last token of the city, at every layer. Its best method, DAS, scores **75 / 58 / 63** IIA averaged over layers and **83 / 64 / 70** at its best layer.
